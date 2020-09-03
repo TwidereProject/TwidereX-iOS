@@ -44,13 +44,13 @@ extension AuthenticationViewController {
             signInButton.centerYAnchor.constraint(equalTo: view.centerYAnchor),
         ])
         
-        signInButton.addTarget(self, action: #selector(AuthenticationViewController.signInButtonPressed(_:)), for: .touchUpInside)
+        signInButton.addTarget(self, action: #selector(AuthenticationViewController.signInWithTwitterButtonPressed(_:)), for: .touchUpInside)
     }
 }
 
 extension AuthenticationViewController {
-    @objc private func signInButtonPressed(_ sender: UIButton) {
-        context.twitterAPIService.requestToken()
+    @objc private func signInWithTwitterButtonPressed(_ sender: UIButton) {
+        context.apiService.twitterRequestToken()
             .handleEvents(receiveSubscription: { _ in
                 sender.isEnabled = false
             }, receiveCompletion: { completion in
@@ -62,7 +62,7 @@ extension AuthenticationViewController {
             } receiveValue: { [weak self] requestToken in
                 guard let self = self else { return }
                 guard requestToken.oauthCallbackConfirmed else { return }
-                self.authenticate(requestToken: requestToken)
+                self.twitterAuthenticate(requestToken: requestToken)
             }
             .store(in: &disposeBag)
 
@@ -70,8 +70,8 @@ extension AuthenticationViewController {
 }
 
 extension AuthenticationViewController {
-    func authenticate(requestToken: TwitterAPI.OAuth.RequestToken) {
-        authenticationSession = ASWebAuthenticationSession(url: TwitterAPI.OAuth.autenticateURL(requestToken: requestToken), callbackURLScheme: "twidere") { [weak self] callback, error in
+    func twitterAuthenticate(requestToken: Twitter.API.OAuth.RequestToken) {
+        authenticationSession = ASWebAuthenticationSession(url: Twitter.API.OAuth.autenticateURL(requestToken: requestToken), callbackURLScheme: "twidere") { [weak self] callback, error in
             guard let self = self else { return }
             os_log("%{public}s[%{public}ld], %{public}s: callback: %s, error: %s", ((#file as NSString).lastPathComponent), #line, #function, callback?.debugDescription ?? "<nil>", error.debugDescription)
 
@@ -80,18 +80,18 @@ extension AuthenticationViewController {
                 assertionFailure(error.localizedDescription)
                 return
             }
-            guard let callbackURL = callback, let accessToken = TwitterAPI.OAuth.Authentication(callbackURL: callbackURL) else {
+            guard let callbackURL = callback, let accessToken = Twitter.API.OAuth.Authentication(callbackURL: callbackURL) else {
                 // TODO: handle error
                 assertionFailure()
                 return
             }
             
-            let property = Authentication.Property(userID: accessToken.userID, screenName: accessToken.screenName, consumerKey: accessToken.consumerKey, consumerSecret: accessToken.consumerSecret, accessToken: accessToken.oauthToken, accessTokenSecret: accessToken.oauthTokenSecret)
+            let property = TwitterAuthentication.Property(userID: accessToken.userID, screenName: accessToken.screenName, consumerKey: accessToken.consumerKey, consumerSecret: accessToken.consumerSecret, accessToken: accessToken.oauthToken, accessTokenSecret: accessToken.oauthTokenSecret)
             
             // TODO: check duplicate
             let managedObjectContext = self.context.managedObjectContext
             managedObjectContext.performChanges {
-                Authentication.insert(into: managedObjectContext, property: property)
+                TwitterAuthentication.insert(into: managedObjectContext, property: property)
             }
             .sink { result in
                 switch result {

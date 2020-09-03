@@ -39,7 +39,7 @@ public final class CoreDataStack {
     }()
 
     static func persistentContainer() -> NSPersistentContainer {
-        let bundles = [Bundle(for: Authentication.self)]
+        let bundles = [Bundle(for: TwitterAuthentication.self)]
         guard let managedObjectModel = NSManagedObjectModel.mergedModel(from: bundles) else {
             fatalError("cannot locate bundles")
         }

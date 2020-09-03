@@ -14,9 +14,23 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "DBDA8E1D24FCF8A3006750DC"
-               BuildableName = "TwidereX.app"
-               BlueprintName = "TwidereX"
+               BlueprintIdentifier = "DBE76CE72500B29300DEB0FC"
+               BuildableName = "StubMixer.app"
+               BlueprintName = "StubMixer"
+               ReferencedContainer = "container:TwidereX.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "NO"
+            buildForProfiling = "NO"
+            buildForArchiving = "NO"
+            buildForAnalyzing = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "DBDA8E6924FE03DB006750DC"
+               BuildableName = "TwitterAPITests.xctest"
+               BlueprintName = "TwitterAPITests"
                ReferencedContainer = "container:TwidereX.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -32,29 +46,9 @@
             skipped = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "DBDA8E3324FCF8A7006750DC"
-               BuildableName = "TwidereXTests.xctest"
-               BlueprintName = "TwidereXTests"
-               ReferencedContainer = "container:TwidereX.xcodeproj">
-            </BuildableReference>
-         </TestableReference>
-         <TestableReference
-            skipped = "NO">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "DBDA8E3E24FCF8A7006750DC"
-               BuildableName = "TwidereXUITests.xctest"
-               BlueprintName = "TwidereXUITests"
-               ReferencedContainer = "container:TwidereX.xcodeproj">
-            </BuildableReference>
-         </TestableReference>
-         <TestableReference
-            skipped = "NO">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "DBE76C97250093CA00DEB0FC"
-               BuildableName = "CoreDataStackTests.xctest"
-               BlueprintName = "CoreDataStackTests"
+               BlueprintIdentifier = "DBDA8E6924FE03DB006750DC"
+               BuildableName = "TwitterAPITests.xctest"
+               BlueprintName = "TwitterAPITests"
                ReferencedContainer = "container:TwidereX.xcodeproj">
             </BuildableReference>
          </TestableReference>
@@ -74,9 +68,9 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "DBDA8E1D24FCF8A3006750DC"
-            BuildableName = "TwidereX.app"
-            BlueprintName = "TwidereX"
+            BlueprintIdentifier = "DBE76CE72500B29300DEB0FC"
+            BuildableName = "StubMixer.app"
+            BlueprintName = "StubMixer"
             ReferencedContainer = "container:TwidereX.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
@@ -91,9 +85,9 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "DBDA8E1D24FCF8A3006750DC"
-            BuildableName = "TwidereX.app"
-            BlueprintName = "TwidereX"
+            BlueprintIdentifier = "DBE76CE72500B29300DEB0FC"
+            BuildableName = "StubMixer.app"
+            BlueprintName = "StubMixer"
             ReferencedContainer = "container:TwidereX.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>

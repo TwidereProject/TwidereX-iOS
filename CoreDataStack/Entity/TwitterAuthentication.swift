@@ -1,5 +1,5 @@
 //
-//  Authentication.swift
+//  TwitterAuthentication.swift
 //  CoreDataStack
 //
 //  Created by Cirno MainasuK on 2020-9-3.
@@ -8,7 +8,7 @@
 import Foundation
 import CoreData
 
-final public class Authentication: NSManagedObject {
+final public class TwitterAuthentication: NSManagedObject {
     
     @NSManaged public private(set) var id: UUID
     
@@ -26,7 +26,7 @@ final public class Authentication: NSManagedObject {
     
 }
 
-extension Authentication {
+extension TwitterAuthentication {
     
     public override func awakeFromInsert() {
         super.awakeFromInsert()
@@ -37,21 +37,19 @@ extension Authentication {
     }
     
     @discardableResult
-    public static func insert(into context: NSManagedObjectContext, property: Property) -> Authentication {
-        let authentication: Authentication = context.insertObject()
+    public static func insert(into context: NSManagedObjectContext, property: Property) -> TwitterAuthentication {
+        let authentication: TwitterAuthentication = context.insertObject()
         authentication.userID = property.userID
         authentication.screenName = property.screenName
         authentication.consumerKey = property.consumerKey
         authentication.consumerSecret = property.consumerSecret
         authentication.accessToken = property.accessToken
         authentication.accessTokenSecret = property.accessTokenSecret
-        authentication.userID = property.userID
-        authentication.screenName = property.screenName
         return authentication
     }
 }
 
-extension Authentication {
+extension TwitterAuthentication {
     public struct Property {
         public let userID: String
         public let screenName: String
@@ -71,8 +69,8 @@ extension Authentication {
     }
 }
 
-extension Authentication: Managed {
+extension TwitterAuthentication: Managed {
     public static var defaultSortDescriptors: [NSSortDescriptor] {
-        return [NSSortDescriptor(keyPath: \Authentication.createdAt, ascending: false)]
+        return [NSSortDescriptor(keyPath: \TwitterAuthentication.createdAt, ascending: false)]
     }
 }

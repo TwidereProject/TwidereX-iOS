@@ -1,42 +1,22 @@
 //
 //  SceneDelegate.swift
-//  TwidereX
+//  StubMixer
 //
-//  Created by Cirno MainasuK on 2020-8-31.
+//  Created by Cirno MainasuK on 2020-9-3.
 //
 
 import UIKit
-import CoreDataStack
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     var window: UIWindow?
-    var coordinator: SceneCoordinator?
+
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
-        guard let windowScene = scene as? UIWindowScene else { return }
-        
-        let window = UIWindow(windowScene: windowScene)
-        self.window = window
-        
-        let appContext = AppContext.shared
-        let sceneCoordinator = SceneCoordinator(scene: scene, sceneDelegate: self, appContext: appContext)
-        self.coordinator = sceneCoordinator
-        
-        sceneCoordinator.setup()
-        
-        do {
-            let request = TwitterAuthentication.sortedFetchRequest
-            if try appContext.managedObjectContext.fetch(request).isEmpty {
-                DispatchQueue.main.async {
-                    sceneCoordinator.present(scene: .authentication, from: nil, transition: .modal(animated: false, completion: nil))
-                }
-            }
-        } catch {
-            assertionFailure(error.localizedDescription)
-        }
-        
-        window.makeKeyAndVisible()
+        // Use this method to optionally configure and attach the UIWindow `window` to the provided UIWindowScene `scene`.
+        // If using a storyboard, the `window` property will automatically be initialized and attached to the scene.
+        // This delegate does not imply the connecting scene or session are new (see `application:configurationForConnectingSceneSession` instead).
+        guard let _ = (scene as? UIWindowScene) else { return }
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {

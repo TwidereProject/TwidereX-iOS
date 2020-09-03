@@ -1,5 +1,5 @@
 //
-//  TwitterAPIService+Autentication.swift
+//  APIService+Autentication.swift
 //  TwidereX
 //
 //  Created by Cirno MainasuK on 2020-9-2.
@@ -9,10 +9,10 @@ import Foundation
 import Combine
 import TwitterAPI
 
-extension TwitterAPIService {
+extension APIService {
     
-    func requestToken() -> AnyPublisher<TwitterAPI.OAuth.RequestToken, Error> {
-        return TwitterAPI.OAuth.requestToken(session: session)
+    func twitterRequestToken() -> AnyPublisher<Twitter.API.OAuth.RequestToken, Error> {
+        return Twitter.API.OAuth.requestToken(session: session)
             .receive(on: DispatchQueue.main)
             .eraseToAnyPublisher()
     }

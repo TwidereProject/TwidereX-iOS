@@ -1,6 +1,22 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="17189" systemVersion="19G2021" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
-    <entity name="Authentication" representedClassName=".Authentication" syncable="YES">
+    <entity name="TimelineIndex" representedClassName=".TimelineIndex" syncable="YES">
+        <attribute name="createdAt" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="id" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="platformRaw" attributeType="String"/>
+        <attribute name="userID" attributeType="String"/>
+        <relationship name="toots" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Toots" inverseName="timelineIndex" inverseEntity="Toots"/>
+        <relationship name="tweet" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Tweet" inverseName="timelineIndex" inverseEntity="Tweet"/>
+    </entity>
+    <entity name="Toots" representedClassName=".Tools" syncable="YES">
+        <attribute name="createdAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <relationship name="timelineIndex" maxCount="1" deletionRule="Nullify" destinationEntity="TimelineIndex" inverseName="toots" inverseEntity="TimelineIndex"/>
+    </entity>
+    <entity name="Tweet" representedClassName=".Tweet" syncable="YES">
+        <attribute name="createdAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <relationship name="timelineIndex" maxCount="1" deletionRule="Nullify" destinationEntity="TimelineIndex" inverseName="tweet" inverseEntity="TimelineIndex"/>
+    </entity>
+    <entity name="TwitterAuthentication" representedClassName=".TwitterAuthentication" syncable="YES">
         <attribute name="accessToken" attributeType="String"/>
         <attribute name="accessTokenSecret" attributeType="String"/>
         <attribute name="consumerKey" attributeType="String"/>
@@ -12,6 +28,9 @@
         <attribute name="userID" attributeType="String"/>
     </entity>
     <elements>
-        <element name="Authentication" positionX="-63" positionY="-18" width="128" height="178"/>
+        <element name="TwitterAuthentication" positionX="-63" positionY="-18" width="128" height="178"/>
+        <element name="TimelineIndex" positionX="-54" positionY="63" width="128" height="133"/>
+        <element name="Tweet" positionX="-36" positionY="72" width="128" height="73"/>
+        <element name="Toots" positionX="-18" positionY="81" width="128" height="73"/>
     </elements>
 </model>
