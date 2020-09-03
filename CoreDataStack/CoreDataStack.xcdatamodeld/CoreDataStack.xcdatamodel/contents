@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="17189" systemVersion="19G2021" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+    <entity name="Authentication" representedClassName=".Authentication" syncable="YES">
+        <attribute name="accessToken" attributeType="String"/>
+        <attribute name="accessTokenSecret" attributeType="String"/>
+        <attribute name="consumerKey" attributeType="String"/>
+        <attribute name="consumerSecret" attributeType="String"/>
+        <attribute name="createdAt" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="id" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="screenName" attributeType="String"/>
+        <attribute name="updatedAt" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="userID" attributeType="String"/>
+    </entity>
+    <elements>
+        <element name="Authentication" positionX="-63" positionY="-18" width="128" height="178"/>
+    </elements>
+</model>
