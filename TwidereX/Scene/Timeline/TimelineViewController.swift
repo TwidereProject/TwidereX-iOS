@@ -101,7 +101,7 @@ extension TimelineViewController {
                 case .finished:
                     break
                 }
-            } receiveValue: { _ in
+            } receiveValue: { tweets in
                 // do nothing
             }
             .store(in: &disposeBag)

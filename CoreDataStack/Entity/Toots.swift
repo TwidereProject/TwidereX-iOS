@@ -13,6 +13,8 @@ final public class Toots: NSManagedObject {
     @NSManaged public private(set) var id: UUID
     
     @NSManaged public private(set) var createdAt: Date
+    @NSManaged public private(set) var updatedAt: Date
+    
     
     // one-to-one relationship
     @NSManaged public private(set) var timelineIndex: TimelineIndex
@@ -29,17 +31,20 @@ extension Toots {
     @discardableResult
     public static func insert(into context: NSManagedObjectContext, property: Property, timelineIndex: TimelineIndex) -> Toots {
         let toots: Toots = context.insertObject()
+        toots.updatedAt = property.networkDate
         toots.timelineIndex = timelineIndex
         return toots
     }
 }
 
 extension Toots {
-    public struct Property {
-        let createdAt: Date
+    public struct Property: NetworkUpdatable {
+        public let createdAt: Date
+        public let networkDate: Date
         
-        public init(createdAt: Date) {
+        public init(createdAt: Date, networkDate: Date) {
             self.createdAt = createdAt
+            self.networkDate = networkDate
         }
     }
 }

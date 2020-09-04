@@ -12,6 +12,8 @@ import TwitterAPI
 
 final class APIService {
         
+    var disposeBag = Set<AnyCancellable>()
+    
     let session: URLSession
     
     // input
@@ -25,6 +27,16 @@ final class APIService {
         
         // setup cache
         URLCache.shared = URLCache(memoryCapacity: 10 * 1024 * 1024, diskCapacity: 50 * 1024 * 1024, diskPath: nil)
+        
+        backgroundManagedObjectContext.mergePolicy = NSMergePolicy.mergeByPropertyObjectTrump
+        
+        NotificationCenter.default.publisher(for: .NSManagedObjectContextDidSave, object: backgroundManagedObjectContext)
+            .sink { notification in
+                managedObjectContext.perform {
+                    managedObjectContext.mergeChanges(fromContextDidSave: notification)
+                }
+            }
+            .store(in: &disposeBag)
     }
     
 }

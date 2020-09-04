@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -79,6 +79,12 @@
 		DBE76D232500FF1C00DEB0FC /* AuthenticationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBE76D222500FF1C00DEB0FC /* AuthenticationService.swift */; };
 		DBE76D252501027900DEB0FC /* Twitter+API.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBE76D242501027900DEB0FC /* Twitter+API.swift */; };
 		DBE76D27250103A500DEB0FC /* Twitter+Entity.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBE76D26250103A500DEB0FC /* Twitter+Entity.swift */; };
+		DBE76D292501F88600DEB0FC /* TwitterUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBE76D282501F88600DEB0FC /* TwitterUser.swift */; };
+		DBE76D2B25020C0F00DEB0FC /* NetworkUpdatable.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBE76D2A25020C0F00DEB0FC /* NetworkUpdatable.swift */; };
+		DBE76D302502146F00DEB0FC /* OSLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBE76D2F2502146F00DEB0FC /* OSLog.swift */; };
+		DBE76D34250214A700DEB0FC /* CommonOSLog in Frameworks */ = {isa = PBXBuildFile; productRef = DBE76D33250214A700DEB0FC /* CommonOSLog */; };
+		DBE76D36250221D700DEB0FC /* TwitterUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBE76D35250221D700DEB0FC /* TwitterUser.swift */; };
+		DBE76D382502228900DEB0FC /* Tweet.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBE76D372502228900DEB0FC /* Tweet.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -271,6 +277,11 @@
 		DBE76D222500FF1C00DEB0FC /* AuthenticationService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AuthenticationService.swift; sourceTree = "<group>"; };
 		DBE76D242501027900DEB0FC /* Twitter+API.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Twitter+API.swift"; sourceTree = "<group>"; };
 		DBE76D26250103A500DEB0FC /* Twitter+Entity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Twitter+Entity.swift"; sourceTree = "<group>"; };
+		DBE76D282501F88600DEB0FC /* TwitterUser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwitterUser.swift; sourceTree = "<group>"; };
+		DBE76D2A25020C0F00DEB0FC /* NetworkUpdatable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkUpdatable.swift; sourceTree = "<group>"; };
+		DBE76D2F2502146F00DEB0FC /* OSLog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OSLog.swift; sourceTree = "<group>"; };
+		DBE76D35250221D700DEB0FC /* TwitterUser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwitterUser.swift; sourceTree = "<group>"; };
+		DBE76D372502228900DEB0FC /* Tweet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tweet.swift; sourceTree = "<group>"; };
 		F58BC0DB264850C274FDE699 /* Pods-TwidereX.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TwidereX.debug.xcconfig"; path = "Target Support Files/Pods-TwidereX/Pods-TwidereX.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -279,6 +290,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DBE76D34250214A700DEB0FC /* CommonOSLog in Frameworks */,
 				DBDA8E7724FE03DB006750DC /* TwitterAPI.framework in Frameworks */,
 				DBE76CA5250093CA00DEB0FC /* CoreDataStack.framework in Frameworks */,
 				44CCAE5E7B79E0C359E367E5 /* Pods_TwidereX.framework in Frameworks */,
@@ -404,6 +416,7 @@
 				DBDA8E8C24FE068C006750DC /* Coordinator */,
 				DBDA8E9B24FE0F8B006750DC /* Generated */,
 				DBDA8E9924FE0DC8006750DC /* Resources */,
+				DBE76D312502147200DEB0FC /* Extension */,
 				DBDA8E5324FDF3D6006750DC /* Supporting Files */,
 			);
 			path = TwidereX;
@@ -601,6 +614,7 @@
 				DBE76D152500D7C200DEB0FC /* TimelineIndex.swift */,
 				DBE76D172500D93400DEB0FC /* Tweet.swift */,
 				DBE76D192500D93D00DEB0FC /* Toots.swift */,
+				DBE76D282501F88600DEB0FC /* TwitterUser.swift */,
 			);
 			path = Entity;
 			sourceTree = "<group>";
@@ -628,6 +642,7 @@
 			isa = PBXGroup;
 			children = (
 				DBE76CBE250093E200DEB0FC /* Managed.swift */,
+				DBE76D2A25020C0F00DEB0FC /* NetworkUpdatable.swift */,
 			);
 			path = Protocol;
 			sourceTree = "<group>";
@@ -675,6 +690,24 @@
 				DBE76D1B2500E5E000DEB0FC /* TimelineCollectionViewCell.swift */,
 			);
 			path = View;
+			sourceTree = "<group>";
+		};
+		DBE76D312502147200DEB0FC /* Extension */ = {
+			isa = PBXGroup;
+			children = (
+				DBE76D2F2502146F00DEB0FC /* OSLog.swift */,
+				DBE76D392502228D00DEB0FC /* CoreDataStack */,
+			);
+			path = Extension;
+			sourceTree = "<group>";
+		};
+		DBE76D392502228D00DEB0FC /* CoreDataStack */ = {
+			isa = PBXGroup;
+			children = (
+				DBE76D372502228900DEB0FC /* Tweet.swift */,
+				DBE76D35250221D700DEB0FC /* TwitterUser.swift */,
+			);
+			path = CoreDataStack;
 			sourceTree = "<group>";
 		};
 		F30A8D6C372DFF6B5AEEE327 /* Frameworks */ = {
@@ -729,6 +762,9 @@
 				DBE76CA4250093CA00DEB0FC /* PBXTargetDependency */,
 			);
 			name = TwidereX;
+			packageProductDependencies = (
+				DBE76D33250214A700DEB0FC /* CommonOSLog */,
+			);
 			productName = TwidereX;
 			productReference = DBDA8E1E24FCF8A3006750DC /* TwidereX.app */;
 			productType = "com.apple.product-type.application";
@@ -915,6 +951,9 @@
 				Base,
 			);
 			mainGroup = DBDA8E1524FCF8A3006750DC;
+			packageReferences = (
+				DBE76D32250214A700DEB0FC /* XCRemoteSwiftPackageReference "CommonOSLog" */,
+			);
 			productRefGroup = DBDA8E1F24FCF8A3006750DC /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -1136,12 +1175,15 @@
 				DBE76D212500ED5100DEB0FC /* APIService+Timeline.swift in Sources */,
 				DBDA8E5824FE0371006750DC /* APIService.swift in Sources */,
 				DBDA8E9824FE075E006750DC /* MainTabBarController.swift in Sources */,
+				DBE76D382502228900DEB0FC /* Tweet.swift in Sources */,
 				DBE76D232500FF1C00DEB0FC /* AuthenticationService.swift in Sources */,
 				DBDA8E9024FE068C006750DC /* NeedsDependency.swift in Sources */,
+				DBE76D302502146F00DEB0FC /* OSLog.swift in Sources */,
 				DBE76C8924FF941400DEB0FC /* APIService+Autentication.swift in Sources */,
 				DBDA8E9424FE06BC006750DC /* RootSplitViewController.swift in Sources */,
 				DBE76D1E2500E65D00DEB0FC /* TimelineViewModel.swift in Sources */,
 				DBDA8E8A24FE0615006750DC /* DocumentStore.swift in Sources */,
+				DBE76D36250221D700DEB0FC /* TwitterUser.swift in Sources */,
 				DBDA8E8F24FE068C006750DC /* SceneCoordinator.swift in Sources */,
 				DBDA8E8B24FE0615006750DC /* AppContext.swift in Sources */,
 				DBE76D1C2500E5E000DEB0FC /* TimelineCollectionViewCell.swift in Sources */,
@@ -1203,6 +1245,7 @@
 			files = (
 				DBE76CCB250093E300DEB0FC /* ManagedObjectContextObjectsDidChangeNotification.swift in Sources */,
 				DBE76D182500D93400DEB0FC /* Tweet.swift in Sources */,
+				DBE76D292501F88600DEB0FC /* TwitterUser.swift in Sources */,
 				DBE76CCC250093E300DEB0FC /* NSManagedObjectContext.swift in Sources */,
 				DBE76CCD250093E300DEB0FC /* URL.swift in Sources */,
 				DBE76CC9250093E300DEB0FC /* CoreDataStack.swift in Sources */,
@@ -1211,6 +1254,7 @@
 				DBE76CCF250093E300DEB0FC /* CoreDataStack.xcdatamodeld in Sources */,
 				DBE76CCE250093E300DEB0FC /* Managed.swift in Sources */,
 				DBE76D162500D7C200DEB0FC /* TimelineIndex.swift in Sources */,
+				DBE76D2B25020C0F00DEB0FC /* NetworkUpdatable.swift in Sources */,
 				DBE76CD12500949900DEB0FC /* TwitterAuthentication.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1906,6 +1950,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		DBE76D32250214A700DEB0FC /* XCRemoteSwiftPackageReference "CommonOSLog" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/MainasuK/CommonOSLog";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.1.1;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		DBE76D33250214A700DEB0FC /* CommonOSLog */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = DBE76D32250214A700DEB0FC /* XCRemoteSwiftPackageReference "CommonOSLog" */;
+			productName = CommonOSLog;
+		};
+/* End XCSwiftPackageProductDependency section */
 
 /* Begin XCVersionGroup section */
 		DBE76CBF250093E200DEB0FC /* CoreDataStack.xcdatamodeld */ = {

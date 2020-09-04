@@ -16,6 +16,11 @@ extension Twitter.API {
         decoder.dateDecodingStrategy = .twitterStrategy
         return decoder
     }()
+    public static let httpHeaderDateFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "EEE, dd MMM yyyy HH:mm:ss zzz"
+        return formatter
+    }()
     
     public enum OAuth { }
     public enum Timeline { }

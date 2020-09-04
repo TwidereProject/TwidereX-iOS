@@ -12,7 +12,7 @@ extension Twitter.API.Timeline {
     
     static let homeTimelineEndpointURL = Twitter.API.endpointURL.appendingPathComponent("statuses/home_timeline.json")
     
-    public static func homeTimeline(session: URLSession, authorization: Twitter.API.OAuth.Authorization) -> AnyPublisher<[Twitter.Entity.Tweet], Error> {
+    public static func homeTimeline(session: URLSession, authorization: Twitter.API.OAuth.Authorization) -> AnyPublisher<Twitter.Response<[Twitter.Entity.Tweet]>, Error> {
         let requestURL = homeTimelineEndpointURL
         var request = URLRequest(
             url: requestURL,
@@ -26,7 +26,8 @@ extension Twitter.API.Timeline {
         
         return session.dataTaskPublisher(for: request)
             .tryMap { data, response in
-                try Twitter.API.decode(type: [Twitter.Entity.Tweet].self, from: data, response: response)
+                let value = try Twitter.API.decode(type: [Twitter.Entity.Tweet].self, from: data, response: response)
+                return Twitter.Response(value: value, response: response)
             }
             .eraseToAnyPublisher()
     }
