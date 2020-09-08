@@ -147,7 +147,7 @@ extension APIService {
         // only fulfill API supported fields
         entity.user.name.flatMap { user.update(name: $0) }
         entity.user.screenName.flatMap { user.update(screenName: $0) }
-        entity.user.profileImageURL.flatMap { user.update(profileImageURL: $0) }
         entity.user.profileImageURLHTTPS.flatMap { user.update(profileImageURLHTTPS: $0) }
+        // TODO: merge more fileds
     }
 }

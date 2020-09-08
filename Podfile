@@ -6,7 +6,10 @@ target 'TwidereX' do
   use_frameworks!
 
   # Pods for TwidereX
+  
+  # misc
   pod 'SwiftGen', '~> 6.3.0'
+  pod 'DateToolsSwift', '~> 5.0.0'
   
   target 'TwidereXTests' do
     inherit! :search_paths

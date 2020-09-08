@@ -21,10 +21,8 @@ extension TwitterUser.Property {
             listedCount: entity.listedCount.flatMap { NSNumber(value: $0) },
             favouritesCount: entity.favouritesCount.flatMap { NSNumber(value: $0) },
             statusesCount: entity.statusesCount.flatMap { NSNumber(value: $0) },
-            profileImageURL: entity.profileImageURL,
             profileImageURLHTTPS: entity.profileImageURLHTTPS,
-            profileBackgroundImageURL: entity.profileBackgroundImageURL,
-            profileBackgroundImageURLHTTPS: entity.profileBackgroundImageURLHTTPS,
+            profileBannerURL: entity.profileBannerURL,
             networkDate: networkDate
         )
     }

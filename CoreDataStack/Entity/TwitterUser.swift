@@ -25,10 +25,8 @@ final public class TwitterUser: NSManagedObject {
     @NSManaged public private(set) var favouritesCount: NSNumber?
     @NSManaged public private(set) var statusesCount: NSNumber?
     
-    @NSManaged public private(set) var profileImageURL: String?
     @NSManaged public private(set) var profileImageURLHTTPS: String?
-    @NSManaged public private(set) var profileBackgroundImageURL: String?
-    @NSManaged public private(set) var profileBackgroundImageURLHTTPS: String?
+    @NSManaged public private(set) var profileBannerURL: String?
     
     // one-to-many relationship
     @NSManaged public private(set) var tweets: Set<Tweet>?
@@ -55,10 +53,8 @@ extension TwitterUser {
         user.listedCount = property.listedCount
         user.favouritesCount = property.favouritesCount
         user.statusesCount = property.statusesCount
-        user.profileImageURL = property.profileImageURL
         user.profileImageURLHTTPS = property.profileImageURLHTTPS
-        user.profileBackgroundImageURL = property.profileBackgroundImageURL
-        user.profileBackgroundImageURLHTTPS = property.profileBackgroundImageURLHTTPS
+        user.profileBannerURL = property.profileBannerURL
         return user
     }
     
@@ -99,24 +95,14 @@ extension TwitterUser {
         }
     }
     
-    public func update(profileImageURL: String?) {
-        if self.profileImageURL != profileImageURL {
-            self.profileImageURL = profileImageURL
-        }
-    }
     public func update(profileImageURLHTTPS: String?) {
         if self.profileImageURLHTTPS != profileImageURLHTTPS {
             self.profileImageURLHTTPS = profileImageURLHTTPS
         }
     }
-    public func update(profileBackgroundImageURL: String?) {
-        if self.profileBackgroundImageURL != profileBackgroundImageURL {
-            self.profileBackgroundImageURL = profileBackgroundImageURL
-        }
-    }
-    public func update(profileBackgroundImageURLHTTPS: String?) {
-        if self.profileBackgroundImageURLHTTPS != profileBackgroundImageURLHTTPS {
-            self.profileBackgroundImageURLHTTPS = profileBackgroundImageURLHTTPS
+    public func update(profileBannerURL: String?) {
+        if self.profileBannerURL != profileBannerURL {
+            self.profileBannerURL = profileBannerURL
         }
     }
     
@@ -139,10 +125,8 @@ extension TwitterUser {
         public let favouritesCount: NSNumber?
         public let statusesCount: NSNumber?
         
-        public let profileImageURL: String?
         public let profileImageURLHTTPS: String?
-        public let profileBackgroundImageURL: String?
-        public let profileBackgroundImageURLHTTPS: String?
+        public let profileBannerURL: String?
         
         public var networkDate: Date
         
@@ -156,10 +140,8 @@ extension TwitterUser {
             listedCount: NSNumber?,
             favouritesCount: NSNumber?,
             statusesCount: NSNumber?,
-            profileImageURL: String?,
             profileImageURLHTTPS: String?,
-            profileBackgroundImageURL: String?,
-            profileBackgroundImageURLHTTPS: String?,
+            profileBannerURL: String?,
             networkDate: Date
         ) {
             self.idStr = idStr
@@ -171,10 +153,8 @@ extension TwitterUser {
             self.listedCount = listedCount
             self.favouritesCount = favouritesCount
             self.statusesCount = statusesCount
-            self.profileImageURL = profileImageURL
             self.profileImageURLHTTPS = profileImageURLHTTPS
-            self.profileBackgroundImageURL = profileBackgroundImageURL
-            self.profileBackgroundImageURLHTTPS = profileBackgroundImageURLHTTPS
+            self.profileBannerURL = profileBannerURL
             self.networkDate = networkDate
         }
     }
@@ -189,5 +169,52 @@ extension TwitterUser: Managed {
 extension TwitterUser {
     public static func predicate(idStrs: [String]) -> NSPredicate {
         return NSPredicate(format: "%K IN %@", #keyPath(TwitterUser.idStr), idStrs)
+    }
+}
+
+extension TwitterUser {
+    public enum ProfileImageSize: String {
+        case original
+        case reasonablySmall = "reasonably_small"    // 128 * 128
+        case bigger                                     // 73 * 73
+        case normal                                     // 48 * 48
+        case mini                                       // 24 * 24
+        
+        static var suffixedSizes: [ProfileImageSize] {
+            return [.reasonablySmall, .bigger, .normal, .mini]
+        }
+    }
+    
+    /// https://developer.twitter.com/en/docs/twitter-api/v1/accounts-and-users/user-profile-images-and-banners
+    public func avatarImageURL(size: ProfileImageSize = .reasonablySmall) -> URL? {
+        guard let imageURLString = profileImageURLHTTPS, var imageURL = URL(string: imageURLString) else { return nil }
+        
+        let pathExtension = imageURL.pathExtension
+        imageURL.deletePathExtension()
+        
+        var imageIdentifier = imageURL.lastPathComponent
+        imageURL.deleteLastPathComponent()
+        for suffixedSize in TwitterUser.ProfileImageSize.suffixedSizes {
+            imageIdentifier.deleteSuffix("_\(suffixedSize.rawValue)")
+        }
+        
+        switch size {
+        case .original:
+            imageURL.appendPathComponent(imageIdentifier)
+        default:
+            imageURL.appendPathComponent(imageIdentifier + "_" + size.rawValue)
+        }
+        
+        imageURL.appendPathExtension(pathExtension)
+        
+        return imageURL
+    }
+    
+}
+
+extension String {
+    mutating func deleteSuffix(_ suffix: String) {
+        guard hasSuffix(suffix) else { return }
+        removeLast(suffix.count)
     }
 }

@@ -12,6 +12,7 @@
 		424B6602E3D34F103A180093 /* Pods_TwitterAPI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7252E908942B535D4A05450E /* Pods_TwitterAPI.framework */; };
 		44CCAE5E7B79E0C359E367E5 /* Pods_TwidereX.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8564534D30DC2640CEB8344E /* Pods_TwidereX.framework */; };
 		AF66F7A022E93DE9E329F6A3 /* Pods_TwidereXTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 62DC6A6809A00EA057395C07 /* Pods_TwidereXTests.framework */; };
+		DB98DC0C25062D4D0087E30F /* ActiveLabel in Frameworks */ = {isa = PBXBuildFile; productRef = DB98DC0B25062D4D0087E30F /* ActiveLabel */; };
 		DBDA8E2224FCF8A3006750DC /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBDA8E2124FCF8A3006750DC /* AppDelegate.swift */; };
 		DBDA8E2424FCF8A3006750DC /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBDA8E2324FCF8A3006750DC /* SceneDelegate.swift */; };
 		DBDA8E2924FCF8A3006750DC /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = DBDA8E2724FCF8A3006750DC /* Main.storyboard */; };
@@ -85,6 +86,9 @@
 		DBE76D34250214A700DEB0FC /* CommonOSLog in Frameworks */ = {isa = PBXBuildFile; productRef = DBE76D33250214A700DEB0FC /* CommonOSLog */; };
 		DBE76D36250221D700DEB0FC /* TwitterUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBE76D35250221D700DEB0FC /* TwitterUser.swift */; };
 		DBE76D382502228900DEB0FC /* Tweet.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBE76D372502228900DEB0FC /* Tweet.swift */; };
+		DBE76D3B25024FDA00DEB0FC /* NSLayoutConstraint.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBE76D3A25024FDA00DEB0FC /* NSLayoutConstraint.swift */; };
+		DBE76D3E2502518D00DEB0FC /* AlamofireImage in Frameworks */ = {isa = PBXBuildFile; productRef = DBE76D3D2502518D00DEB0FC /* AlamofireImage */; };
+		DBE76D402502524500DEB0FC /* UIImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBE76D3F2502524500DEB0FC /* UIImage.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -282,6 +286,8 @@
 		DBE76D2F2502146F00DEB0FC /* OSLog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OSLog.swift; sourceTree = "<group>"; };
 		DBE76D35250221D700DEB0FC /* TwitterUser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwitterUser.swift; sourceTree = "<group>"; };
 		DBE76D372502228900DEB0FC /* Tweet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tweet.swift; sourceTree = "<group>"; };
+		DBE76D3A25024FDA00DEB0FC /* NSLayoutConstraint.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NSLayoutConstraint.swift; sourceTree = "<group>"; };
+		DBE76D3F2502524500DEB0FC /* UIImage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIImage.swift; sourceTree = "<group>"; };
 		F58BC0DB264850C274FDE699 /* Pods-TwidereX.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TwidereX.debug.xcconfig"; path = "Target Support Files/Pods-TwidereX/Pods-TwidereX.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -291,7 +297,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				DBE76D34250214A700DEB0FC /* CommonOSLog in Frameworks */,
+				DB98DC0C25062D4D0087E30F /* ActiveLabel in Frameworks */,
 				DBDA8E7724FE03DB006750DC /* TwitterAPI.framework in Frameworks */,
+				DBE76D3E2502518D00DEB0FC /* AlamofireImage in Frameworks */,
 				DBE76CA5250093CA00DEB0FC /* CoreDataStack.framework in Frameworks */,
 				44CCAE5E7B79E0C359E367E5 /* Pods_TwidereX.framework in Frameworks */,
 			);
@@ -695,6 +703,8 @@
 		DBE76D312502147200DEB0FC /* Extension */ = {
 			isa = PBXGroup;
 			children = (
+				DBE76D3A25024FDA00DEB0FC /* NSLayoutConstraint.swift */,
+				DBE76D3F2502524500DEB0FC /* UIImage.swift */,
 				DBE76D2F2502146F00DEB0FC /* OSLog.swift */,
 				DBE76D392502228D00DEB0FC /* CoreDataStack */,
 			);
@@ -754,6 +764,7 @@
 				DBDA8E1C24FCF8A3006750DC /* Resources */,
 				DBDA8E7C24FE03DB006750DC /* Embed Frameworks */,
 				DBDA8E9A24FE0E4E006750DC /* ShellScript */,
+				6B1901F5A04D5AA62D66599E /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -764,6 +775,8 @@
 			name = TwidereX;
 			packageProductDependencies = (
 				DBE76D33250214A700DEB0FC /* CommonOSLog */,
+				DBE76D3D2502518D00DEB0FC /* AlamofireImage */,
+				DB98DC0B25062D4D0087E30F /* ActiveLabel */,
 			);
 			productName = TwidereX;
 			productReference = DBDA8E1E24FCF8A3006750DC /* TwidereX.app */;
@@ -796,6 +809,7 @@
 				DBDA8E3B24FCF8A7006750DC /* Sources */,
 				DBDA8E3C24FCF8A7006750DC /* Frameworks */,
 				DBDA8E3D24FCF8A7006750DC /* Resources */,
+				3DA1DDD3FB4B131A8A905A41 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -953,6 +967,8 @@
 			mainGroup = DBDA8E1524FCF8A3006750DC;
 			packageReferences = (
 				DBE76D32250214A700DEB0FC /* XCRemoteSwiftPackageReference "CommonOSLog" */,
+				DBE76D3C2502518D00DEB0FC /* XCRemoteSwiftPackageReference "AlamofireImage" */,
+				DB98DC0A25062D4D0087E30F /* XCRemoteSwiftPackageReference "ActiveLabel.swift" */,
 			);
 			productRefGroup = DBDA8E1F24FCF8A3006750DC /* Products */;
 			projectDirPath = "";
@@ -1058,6 +1074,40 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		3DA1DDD3FB4B131A8A905A41 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-TwidereX-TwidereXUITests/Pods-TwidereX-TwidereXUITests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-TwidereX-TwidereXUITests/Pods-TwidereX-TwidereXUITests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-TwidereX-TwidereXUITests/Pods-TwidereX-TwidereXUITests-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		6B1901F5A04D5AA62D66599E /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-TwidereX/Pods-TwidereX-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-TwidereX/Pods-TwidereX-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-TwidereX/Pods-TwidereX-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		758EAC3F115B03577192FC6F /* [CP] Check Pods Manifest.lock */ = {
@@ -1191,8 +1241,10 @@
 				DBDA8E2224FCF8A3006750DC /* AppDelegate.swift in Sources */,
 				DBDA8E9524FE06BC006750DC /* PlaceholderDetailViewController.swift in Sources */,
 				DBDA8E9F24FE0FFF006750DC /* TimelineViewController.swift in Sources */,
+				DBE76D402502524500DEB0FC /* UIImage.swift in Sources */,
 				DBDA8E8524FE05B6006750DC /* AuthenticationViewController.swift in Sources */,
 				DBDA8E2424FCF8A3006750DC /* SceneDelegate.swift in Sources */,
+				DBE76D3B25024FDA00DEB0FC /* NSLayoutConstraint.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1497,7 +1549,6 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = F58BC0DB264850C274FDE699 /* Pods-TwidereX.debug.xcconfig */;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = TwidereX/TwidereX.entitlements;
@@ -1520,7 +1571,6 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 4423B1DC6D103908A7B752AF /* Pods-TwidereX.release.xcconfig */;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = TwidereX/TwidereX.entitlements;
@@ -1543,7 +1593,6 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 3CFF05E953F47DC2B0B5AC95 /* Pods-TwidereXTests.debug.xcconfig */;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 7LFDZ96332;
@@ -1566,7 +1615,6 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 2504A7AE733D038B91122765 /* Pods-TwidereXTests.release.xcconfig */;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 7LFDZ96332;
@@ -1589,7 +1637,6 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 2E41729E598B3379FC09BC03 /* Pods-TwidereX-TwidereXUITests.debug.xcconfig */;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 7LFDZ96332;
 				INFOPLIST_FILE = TwidereXUITests/Info.plist;
@@ -1610,7 +1657,6 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 44D01BA9E21B7F374DBDA38A /* Pods-TwidereX-TwidereXUITests.release.xcconfig */;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 7LFDZ96332;
 				INFOPLIST_FILE = TwidereXUITests/Info.plist;
@@ -1689,7 +1735,6 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 120596A33EFEAC5EEDF6B0FC /* Pods-TwitterAPI-TwitterAPITests.debug.xcconfig */;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 7LFDZ96332;
@@ -1712,7 +1757,6 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 9D73AD6A9D116695A879E8D7 /* Pods-TwitterAPI-TwitterAPITests.release.xcconfig */;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 7LFDZ96332;
@@ -1788,7 +1832,6 @@
 		DBE76CAB250093CA00DEB0FC /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 7LFDZ96332;
 				INFOPLIST_FILE = CoreDataStackTests/Info.plist;
@@ -1809,7 +1852,6 @@
 		DBE76CAC250093CA00DEB0FC /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 7LFDZ96332;
 				INFOPLIST_FILE = CoreDataStackTests/Info.plist;
@@ -1952,6 +1994,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		DB98DC0A25062D4D0087E30F /* XCRemoteSwiftPackageReference "ActiveLabel.swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/optonaut/ActiveLabel.swift.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.1.0;
+			};
+		};
 		DBE76D32250214A700DEB0FC /* XCRemoteSwiftPackageReference "CommonOSLog" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/MainasuK/CommonOSLog";
@@ -1960,13 +2010,31 @@
 				minimumVersion = 0.1.1;
 			};
 		};
+		DBE76D3C2502518D00DEB0FC /* XCRemoteSwiftPackageReference "AlamofireImage" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Alamofire/AlamofireImage";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 4.1.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		DB98DC0B25062D4D0087E30F /* ActiveLabel */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = DB98DC0A25062D4D0087E30F /* XCRemoteSwiftPackageReference "ActiveLabel.swift" */;
+			productName = ActiveLabel;
+		};
 		DBE76D33250214A700DEB0FC /* CommonOSLog */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = DBE76D32250214A700DEB0FC /* XCRemoteSwiftPackageReference "CommonOSLog" */;
 			productName = CommonOSLog;
+		};
+		DBE76D3D2502518D00DEB0FC /* AlamofireImage */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = DBE76D3C2502518D00DEB0FC /* XCRemoteSwiftPackageReference "AlamofireImage" */;
+			productName = AlamofireImage;
 		};
 /* End XCSwiftPackageProductDependency section */
 

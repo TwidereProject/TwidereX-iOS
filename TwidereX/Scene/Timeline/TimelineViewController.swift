@@ -64,6 +64,7 @@ extension TimelineViewController {
         ])
         
         viewModel.collectionView = collectionView
+        viewModel.setupDiffableDataSource(for: collectionView)
         collectionView.delegate = self
         do {
             try viewModel.fetchedResultsController.performFetch()

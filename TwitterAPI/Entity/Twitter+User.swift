@@ -33,20 +33,11 @@ extension Twitter.Entity {
         //public let timeZone: JSONNull?
         public let geoEnabled: Bool?
         public let verified: Bool?
-        //public let lang: JSONNull?
         public let contributorsEnabled: Bool?
-        public let isTranslator: Bool?
-        public let isTranslationEnabled: Bool?
         
-        public let profileBackgroundColor: String?
-        public let profileBackgroundImageURL: String?
-        public let profileBackgroundImageURLHTTPS: String?
-        public let profileBackgroundTile: Bool?
-        public let profileImageURL: String?
         public let profileImageURLHTTPS: String?
-        public let profileUseBackgroundImage: Bool?
-        
         public let profileBannerURL: String?
+        
         public let profileLinkColor: String?
         public let profileSidebarBorderColor: String?
         public let profileSidebarFillColor: String?
@@ -82,24 +73,15 @@ extension Twitter.Entity {
             case geoEnabled = "geo_enabled"
             case verified = "verified"
             case statusesCount = "statuses_count"
-            //case lang = "lang"
             case contributorsEnabled = "contributors_enabled"
-            case isTranslator = "is_translator"
-            case isTranslationEnabled = "is_translation_enabled"
             
-            case profileBackgroundColor = "profile_background_color"
-            case profileBackgroundImageURL = "profile_background_image_url"
-            case profileBackgroundImageURLHTTPS = "profile_background_image_url_https"
-            case profileBackgroundTile = "profile_background_tile"
-            case profileImageURL = "profile_image_url"
             case profileImageURLHTTPS = "profile_image_url_https"
-            
             case profileBannerURL = "profile_banner_url"
+            
             case profileLinkColor = "profile_link_color"
             case profileSidebarBorderColor = "profile_sidebar_border_color"
             case profileSidebarFillColor = "profile_sidebar_fill_color"
             case profileTextColor = "profile_text_color"
-            case profileUseBackgroundImage = "profile_use_background_image"
             case hasExtendedProfile = "has_extended_profile"
             case defaultProfile = "default_profile"
             case defaultProfileImage = "default_profile_image"

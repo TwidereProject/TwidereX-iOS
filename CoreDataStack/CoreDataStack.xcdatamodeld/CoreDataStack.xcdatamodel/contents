@@ -44,9 +44,7 @@
         <attribute name="idStr" attributeType="String"/>
         <attribute name="listedCount" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="name" optional="YES" attributeType="String"/>
-        <attribute name="profileBackgroundImageURL" optional="YES" attributeType="String"/>
-        <attribute name="profileBackgroundImageURLHTTPS" optional="YES" attributeType="String"/>
-        <attribute name="profileImageURL" optional="YES" attributeType="String"/>
+        <attribute name="profileBannerURL" optional="YES" attributeType="String"/>
         <attribute name="profileImageURLHTTPS" optional="YES" attributeType="String"/>
         <attribute name="screenName" optional="YES" attributeType="String"/>
         <attribute name="statusesCount" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
@@ -54,10 +52,10 @@
         <relationship name="tweets" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Tweet" inverseName="user" inverseEntity="Tweet"/>
     </entity>
     <elements>
-        <element name="TwitterAuthentication" positionX="-63" positionY="-18" width="128" height="178"/>
         <element name="TimelineIndex" positionX="-54" positionY="63" width="128" height="133"/>
-        <element name="Tweet" positionX="-36" positionY="72" width="128" height="148"/>
         <element name="Toots" positionX="-18" positionY="81" width="128" height="103"/>
-        <element name="TwitterUser" positionX="0" positionY="108" width="128" height="298"/>
+        <element name="Tweet" positionX="-36" positionY="72" width="128" height="148"/>
+        <element name="TwitterAuthentication" positionX="-63" positionY="-18" width="128" height="178"/>
+        <element name="TwitterUser" positionX="0" positionY="108" width="128" height="268"/>
     </elements>
 </model>

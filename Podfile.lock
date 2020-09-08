@@ -1,16 +1,20 @@
 PODS:
+  - DateToolsSwift (5.0.0)
   - SwiftGen (6.3.0)
 
 DEPENDENCIES:
+  - DateToolsSwift (~> 5.0.0)
   - SwiftGen (~> 6.3.0)
 
 SPEC REPOS:
   trunk:
+    - DateToolsSwift
     - SwiftGen
 
 SPEC CHECKSUMS:
+  DateToolsSwift: 4207ada6ad615d8dc076323d27037c94916dbfa6
   SwiftGen: 3d5024a47ea79e408cded20763d7a17d18a4548c
 
-PODFILE CHECKSUM: e07cc1362a48accba53563e07ea3d1941103c3d7
+PODFILE CHECKSUM: c8ffa12c89bab3dce085c68fd8d3feec7b01ef05
 
 COCOAPODS: 1.9.3
