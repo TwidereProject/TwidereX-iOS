@@ -15,11 +15,11 @@ class MainTabBarController: UITabBarController {
     
     enum Tab: Int, CaseIterable {
         case timeline
-
         
         var title: String {
             switch self {
             case .timeline:    return "Timeline"
+                
             }
         }
         
@@ -33,7 +33,11 @@ class MainTabBarController: UITabBarController {
             let navigationController: UINavigationController
             switch self {
             case .timeline:
-                let viewController = TimelineViewController()
+                #if STUB
+                let viewController = StubTimelineViewController()
+                #else
+                let viewController = HomeTimelineViewController()
+                #endif
                 viewController.context = context
                 viewController.coordinator = coordinator
                 navigationController = UINavigationController(rootViewController: viewController)

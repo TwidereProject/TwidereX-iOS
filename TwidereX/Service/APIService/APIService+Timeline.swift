@@ -10,8 +10,12 @@ import Combine
 import TwitterAPI
 import CoreDataStack
 import CommonOSLog
+import DateToolsSwift
 
 extension APIService {
+    
+    static let homeTimelineRequestWindowInSec: TimeInterval = 15 * 60
+    
     func twitterHomeTimeline(twitterAuthentication authentication: TwitterAuthentication) -> AnyPublisher<Twitter.Response<[Twitter.Entity.Tweet]>, Error> {
         let authorization = Twitter.API.OAuth.Authorization(
             consumerKey: authentication.consumerKey,
@@ -20,17 +24,35 @@ extension APIService {
             accessTokenSecret: authentication.accessTokenSecret
         )
         
+        guard homeTimelineRequestThrottler.available() else {
+            return Fail(error: APIError.requestThrottle).eraseToAnyPublisher()
+        }
+                
         os_log("%{public}s[%{public}ld], %{public}s: fetch home timeline…", ((#file as NSString).lastPathComponent), #line, #function)
-
         return Twitter.API.Timeline.homeTimeline(session: session, authorization: authorization)
-            .handleEvents(receiveOutput: {response in
+            .handleEvents(receiveOutput: { [weak self] response in
+                guard let self = self else { return }
+                
                 let log = OSLog.api
                 if let responseTime = response.responseTime {
                     os_log(.info, log: log, "%{public}s[%{public}ld], %{public}s: response cost %{public}ldms", ((#file as NSString).lastPathComponent), #line, #function, responseTime)
                 }
-                if let rateLimit = response.rateLimit {
-                    os_log(.info, log: log, "%{public}s[%{public}ld], %{public}s: API rate limit: %{public}ld/%{public}ld, reset at %{public}s", ((#file as NSString).lastPathComponent), #line, #function, rateLimit.remaining, rateLimit.limit, rateLimit.reset.debugDescription)
+                if let date = response.date, let rateLimit = response.rateLimit {
+                    let currentTimeInterval = CACurrentMediaTime()
+                    let responseNetworkDate = date
+                    let resetTimeInterval = rateLimit.reset.timeIntervalSince(responseNetworkDate)
+                    let resetAtTimeInterval = currentTimeInterval + resetTimeInterval
+                    
+                    self.homeTimelineRequestThrottler.rateLimit = APIService.RequestThrottler.RateLimit(
+                        limit: rateLimit.limit,
+                        remaining: rateLimit.remaining,
+                        resetAt: resetAtTimeInterval
+                    )
+                    
+                    let resetTimeIntervalInMin = resetTimeInterval / 60.0
+                    os_log(.info, log: log, "%{public}s[%{public}ld], %{public}s: API rate limit: %{public}ld/%{public}ld, reset at %{public}s, left: %.2fm (%.2fs)", ((#file as NSString).lastPathComponent), #line, #function, rateLimit.remaining, rateLimit.limit, rateLimit.reset.debugDescription, resetTimeIntervalInMin, resetTimeInterval)
                 }
+                
                 // switch to background context
                 self.backgroundManagedObjectContext.perform { [weak self] in
                     guard let self = self else { return }
@@ -73,11 +95,13 @@ extension APIService {
                     os_signpost(.begin, log: log, name: "update database", signpostID: updateDatabaseTaskSignpostID)
                     var newUsers: [TwitterUser] = []
                     var newTweets: [Tweet] = []
+                    var oldTweets: [Tweet] = []
                     
                     for entity in tweets {
                         let processEntityTaskSignpostID = OSSignpostID(log: log)
                         os_signpost(.begin, log: log, name: "update database - process entity", signpostID: processEntityTaskSignpostID, "process tweet %{public}s", entity.idStr)
                         if let oldTweet = existTweets.first(where: { $0.idStr == entity.idStr }) {
+                            oldTweets.append(oldTweet)
                             os_signpost(.event, log: log, name: "update database - process entity", signpostID: processEntityTaskSignpostID, "find old tweet %{public}s", entity.idStr)
                             if response.networkDate > oldTweet.updatedAt {
                                 // merge old tweet
@@ -128,6 +152,12 @@ extension APIService {
                         os_signpost(.end, log: log, name: "update database - process entity", signpostID: processEntityTaskSignpostID, "finish process tweet %{public}s", entity.idStr)
                     }   // end for…
                     os_signpost(.end, log: log, name: "update database", signpostID: updateDatabaseTaskSignpostID)
+                    
+                    if oldTweets.isEmpty {
+                        // may have gap, set oldest tweet has more
+                        newTweets.sort(by: { $0.createdAt < $1.createdAt })
+                        newTweets.first.flatMap { $0.update(hasMore: true) }
+                    }
                     
                     do {
                         try self.backgroundManagedObjectContext.saveOrRollback()

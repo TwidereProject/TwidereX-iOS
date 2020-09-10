@@ -76,6 +76,10 @@ extension AuthenticationViewController {
             os_log("%{public}s[%{public}ld], %{public}s: callback: %s, error: %s", ((#file as NSString).lastPathComponent), #line, #function, callback?.debugDescription ?? "<nil>", error.debugDescription)
 
             if let error = error {
+                if let error = error as? ASWebAuthenticationSessionError {
+                    if error.errorCode == ASWebAuthenticationSessionError.canceledLogin.rawValue { return }
+                }
+                
                 // TODO: handle error
                 assertionFailure(error.localizedDescription)
                 return
@@ -91,7 +95,7 @@ extension AuthenticationViewController {
             // TODO: check duplicate
             let managedObjectContext = self.context.managedObjectContext
             managedObjectContext.performChanges {
-                TwitterAuthentication.insert(into: managedObjectContext, property: property)
+                let twitterAuthentication = TwitterAuthentication.insert(into: managedObjectContext, property: property)
             }
             .sink { result in
                 switch result {

@@ -16,6 +16,7 @@ final public class Tweet: NSManagedObject {
     @NSManaged public private(set) var createdAt: Date
     @NSManaged public private(set) var updatedAt: Date
     @NSManaged public private(set) var text: String
+    @NSManaged public private(set) var hasMore: Bool
     
     // one-to-one relationship
     @NSManaged public private(set) var timelineIndex: TimelineIndex
@@ -51,6 +52,12 @@ extension Tweet {
         }
     }
     
+    public func update(hasMore: Bool) {
+        if self.hasMore != hasMore {
+            self.hasMore = hasMore
+        }
+    }
+    
     public func didUpdate(at networkDate: Date) {
         self.updatedAt = networkDate
     }
@@ -83,5 +90,11 @@ extension Tweet: Managed {
 extension Tweet {
     public static func predicate(idStrs: [String]) -> NSPredicate {
         return NSPredicate(format: "%K IN %@", #keyPath(Tweet.idStr), idStrs)
+    }
+}
+
+extension Tweet {
+    public var tweetID: Int {
+        return Int(idStr)!
     }
 }

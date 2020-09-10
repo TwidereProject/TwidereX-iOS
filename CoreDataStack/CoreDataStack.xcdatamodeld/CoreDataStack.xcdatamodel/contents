@@ -16,6 +16,7 @@
     </entity>
     <entity name="Tweet" representedClassName=".Tweet" syncable="YES">
         <attribute name="createdAt" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="hasMore" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
         <attribute name="id" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="idStr" attributeType="String"/>
         <attribute name="text" attributeType="String"/>
@@ -54,7 +55,7 @@
     <elements>
         <element name="TimelineIndex" positionX="-54" positionY="63" width="128" height="133"/>
         <element name="Toots" positionX="-18" positionY="81" width="128" height="103"/>
-        <element name="Tweet" positionX="-36" positionY="72" width="128" height="148"/>
+        <element name="Tweet" positionX="-36" positionY="72" width="128" height="163"/>
         <element name="TwitterAuthentication" positionX="-63" positionY="-18" width="128" height="178"/>
         <element name="TwitterUser" positionX="0" positionY="108" width="128" height="268"/>
     </elements>

@@ -1,5 +1,5 @@
 //
-//  TimelineCollectionViewCell.swift
+//  HomeTimelineTableViewCell.swift
 //  TwidereX
 //
 //  Created by Cirno MainasuK on 2020-9-3.
@@ -10,7 +10,7 @@ import Combine
 import AlamofireImage
 import ActiveLabel
 
-final class TimelineCollectionViewCell: UICollectionViewCell {
+final class HomeTimelineTableViewCell: UITableViewCell {
 
     static let avatarImageViewSize = CGSize(width: 48, height: 48)
     static let verticalMargin: CGFloat = 8
@@ -55,14 +55,14 @@ final class TimelineCollectionViewCell: UICollectionViewCell {
     
     override func prepareForReuse() {
         super.prepareForReuse()
-        
+        dateLabelUpdateSubscription = nil
         disposeBag.removeAll()
         avatarImageView.af.cancelImageRequest()
         avatarImageView.image = .placeholder(color: .placeholderText)
     }
     
-    override init(frame: CGRect) {
-        super.init(frame: frame)
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
         _init()
     }
     
@@ -73,16 +73,16 @@ final class TimelineCollectionViewCell: UICollectionViewCell {
     
 }
 
-extension TimelineCollectionViewCell {
+extension HomeTimelineTableViewCell {
     
     private func _init() {
         avatarImageView.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(avatarImageView)
         NSLayoutConstraint.activate([
-            avatarImageView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: TimelineCollectionViewCell.verticalMargin),
+            avatarImageView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: HomeTimelineTableViewCell.verticalMargin),
             avatarImageView.leadingAnchor.constraint(equalTo: contentView.layoutMarginsGuide.leadingAnchor),
-            avatarImageView.widthAnchor.constraint(equalToConstant: TimelineCollectionViewCell.avatarImageViewSize.width),
-            avatarImageView.heightAnchor.constraint(equalToConstant: TimelineCollectionViewCell.avatarImageViewSize.height).priority(.defaultHigh),
+            avatarImageView.widthAnchor.constraint(equalToConstant: HomeTimelineTableViewCell.avatarImageViewSize.width),
+            avatarImageView.heightAnchor.constraint(equalToConstant: HomeTimelineTableViewCell.avatarImageViewSize.height).priority(.defaultHigh),
             //contentView.bottomAnchor.constraint(greaterThanOrEqualTo: avatarImageView.bottomAnchor, constant: 8).priority(.defaultHigh),
         ])
         
@@ -135,8 +135,8 @@ extension TimelineCollectionViewCell {
         
         /// http://swiftandpainless.com/minimal-distance-to-two-views-in-auto-layout/
         NSLayoutConstraint.activate([
-            paddingView.topAnchor.constraint(greaterThanOrEqualTo: avatarImageView.bottomAnchor, constant: TimelineCollectionViewCell.verticalMargin),
-            paddingView.topAnchor.constraint(equalTo: textlabel.bottomAnchor, constant: TimelineCollectionViewCell.verticalMargin),
+            paddingView.topAnchor.constraint(greaterThanOrEqualTo: avatarImageView.bottomAnchor, constant: HomeTimelineTableViewCell.verticalMargin),
+            paddingView.topAnchor.constraint(equalTo: textlabel.bottomAnchor, constant: HomeTimelineTableViewCell.verticalMargin),
             paddingView.topAnchor.constraint(lessThanOrEqualTo: textlabel.bottomAnchor, constant: 10).priority(.required - 1),
         ])
         
