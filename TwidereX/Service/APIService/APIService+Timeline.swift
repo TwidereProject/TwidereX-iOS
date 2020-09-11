@@ -111,7 +111,7 @@ extension APIService {
                     }   // end for…
                     os_signpost(.end, log: log, name: "update database", signpostID: updateDatabaseTaskSignpostID)
                     
-                    let mergedOldTweetsInTimeline = workingRecords.filter { $0.processType == .merge }
+                    let mergedOldTweetsInTimeline = workingRecords.filter { $0.tweetProcessType == .merge }
                     if mergedOldTweetsInTimeline.isEmpty {
                         // no overlap. may have gap so set oldest tweet hasMore
                         workingRecords
@@ -130,6 +130,11 @@ extension APIService {
                             .map { record in record.log() }
                             .joined(separator: "\n")
                         os_log(.info, log: log, "%{public}s[%{public}ld], %{public}s: working status: \n%s", ((#file as NSString).lastPathComponent), #line, #function, logs)
+                        let counting = workingRecords
+                            .map { record in record.count() }
+                            .reduce(into: WorkingRecord.Counting(), { result, next in result = result + next })
+                        os_log(.info, log: log, "%{public}s[%{public}ld], %{public}s: tweet: insert %{public}ld, merge %{public}ld", ((#file as NSString).lastPathComponent), #line, #function, counting.tweet.create, counting.tweet.merge)
+                        os_log(.info, log: log, "%{public}s[%{public}ld], %{public}s: twitter user: insert %{public}ld, merge %{public}ld", ((#file as NSString).lastPathComponent), #line, #function, counting.user.create, counting.user.merge)
                         #endif
                     } catch {
                         os_log(.info, log: log, "%{public}s[%{public}ld], %{public}s: database update fail. %s", ((#file as NSString).lastPathComponent), #line, #function, error.localizedDescription)
@@ -215,13 +220,15 @@ extension APIService {
         let tweet: Tweet
         let children: [WorkingRecord]
         let recordType: RecordType
-        let processType: ProcessType
+        let tweetProcessType: ProcessType
+        let userProcessType: ProcessType
         
-        init(tweet: Tweet, children: [APIService.WorkingRecord], recordType: APIService.WorkingRecord.RecordType, processType: ProcessType) {
+        init(tweet: Tweet, children: [APIService.WorkingRecord], recordType: APIService.WorkingRecord.RecordType, tweetProcessType: ProcessType, userProcessType: ProcessType) {
             self.tweet = tweet
             self.children = children
             self.recordType = recordType
-            self.processType = processType
+            self.tweetProcessType = tweetProcessType
+            self.userProcessType = userProcessType
         }
 
         enum RecordType {
@@ -252,7 +259,8 @@ extension APIService {
         
         func log(indentLevel: Int = 0) -> String {
             let indent = Array(repeating: "    ", count: indentLevel).joined()
-            let message = "\(indent)[\(processType.flag)\(recordType.flag)](\(tweet.idStr)) @\(tweet.user.name ?? "<nil>")"
+            let tweetPreview = tweet.text.prefix(32).replacingOccurrences(of: "\n", with: " ")
+            let message = "\(indent)[\(tweetProcessType.flag)\(recordType.flag)](\(tweet.idStr)) [\(userProcessType.flag)](\(tweet.user.idStr))@\(tweet.user.name ?? "<nil>") ~> \(tweetPreview)"
             
             var childrenMessages: [String] = []
             for child in children {
@@ -263,6 +271,51 @@ extension APIService {
                 .joined(separator: "\n")
             
             return result
+        }
+        
+        struct Counting {
+            var tweet = Counter()
+            var user = Counter()
+            
+            static func + (left: Counting, right: Counting) -> Counting {
+                return Counting(
+                    tweet: left.tweet + right.tweet,
+                    user: left.user + right.user
+                )
+            }
+            
+            struct Counter {
+                var create = 0
+                var merge  = 0
+                
+                static func + (left: Counter, right: Counter) -> Counter {
+                    return Counter(
+                        create: left.create + right.create,
+                        merge: left.merge + right.merge
+                    )
+                }
+            }
+        }
+        
+        func count() -> Counting {
+            var counting = Counting()
+            
+            switch tweetProcessType {
+            case .create:       counting.tweet.create += 1
+            case .merge:        counting.tweet.merge += 1
+            }
+            
+            switch userProcessType {
+            case .create:       counting.user.create += 1
+            case .merge:        counting.user.merge += 1
+            }
+            
+            for child in children {
+                let childCounting = child.count()
+                counting = counting + childCounting
+            }
+         
+            return counting
         }
         
         static func createOrMergeTweet(
@@ -323,10 +376,10 @@ extension APIService {
                     os_signpost(.event, log: log, name: "update database - process entity: createorMergeTweet", signpostID: processEntityTaskSignpostID, "find old tweet %{public}s", entity.idStr)
                 }
                 
-                return WorkingRecord(tweet: oldTweet, children: children, recordType: recordType, processType: .merge)
+                return WorkingRecord(tweet: oldTweet, children: children, recordType: recordType, tweetProcessType: .merge, userProcessType: .merge)
             } else {
                 // create new tweet
-                let twitterUser = createOrMergeTwitterUser(into: managedObjectContext, entity: entity.user, networkDate: networkDate, log: log)
+                let (twitterUser, isUserCreated) = createOrMergeTwitterUser(into: managedObjectContext, entity: entity.user, networkDate: networkDate, log: log)
                 let timelineIndex: TimelineIndex? = {
                     guard recordType == .timeline else { return nil }
                     let timelineIndexProperty = TimelineIndex.Property(userID: entity.user.idStr, platform: .twitter, createdAt: entity.createdAt)
@@ -338,7 +391,7 @@ extension APIService {
                 let tweetProperty = Tweet.Property(entity: entity, networkDate: networkDate)
                 let tweet = Tweet.insert(into: managedObjectContext, property: tweetProperty, retweet: retweetRecord?.tweet, quote: quoteRecord?.tweet, twitterUser: twitterUser, timelineIndex: timelineIndex)
                 
-                return WorkingRecord(tweet: tweet, children: children, recordType: recordType, processType: .create)
+                return WorkingRecord(tweet: tweet, children: children, recordType: recordType, tweetProcessType: .create, userProcessType: isUserCreated ? .create : .merge)
             }
         }
 
@@ -353,7 +406,7 @@ extension APIService {
         entity: Twitter.Entity.User,
         networkDate: Date,
         log: OSLog
-    ) -> TwitterUser {
+    ) -> (user: TwitterUser, isCreated: Bool) {
         let processEntityTaskSignpostID = OSSignpostID(log: log)
         os_signpost(.begin, log: log, name: "update database - process entity: createOrMergeTwitterUser", signpostID: processEntityTaskSignpostID, "process twitter user %{public}s", entity.idStr)
         defer {
@@ -377,12 +430,12 @@ extension APIService {
             // merge old twitter usre
             APIService.mergeTwitterUser(old: oldTwitterUser, entity: entity, networkDate: networkDate)
             os_signpost(.event, log: log, name: "update database - process entity: createOrMergeTwitterUser", signpostID: processEntityTaskSignpostID, "find old twitter user %{public}s: name %s", entity.idStr, oldTwitterUser.name ?? "<nil>")
-            return oldTwitterUser
+            return (oldTwitterUser, false)
         } else {
             let twitterUserProperty = TwitterUser.Property(entity: entity, networkDate: networkDate)
             let twitterUser = TwitterUser.insert(into: managedObjectContext, property: twitterUserProperty)
             os_signpost(.event, log: log, name: "update database - process entity: createOrMergeTwitterUser", signpostID: processEntityTaskSignpostID, "did insert new twitter user %{public}s: name %s", twitterUser.id.uuidString, twitterUserProperty.name ?? "<nil>")
-            return twitterUser
+            return (twitterUser, true)
         }
     }
     
