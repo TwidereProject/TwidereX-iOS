@@ -24,15 +24,19 @@ final public class Tweet: NSManagedObject {
     @NSManaged public private(set) var favoriteCount: NSNumber?
     @NSManaged public private(set) var favorited: Bool
     
+    @NSManaged public private(set) var quotedStatusIDStr: String?
+    
     // one-to-one relationship
     @NSManaged public private(set) var timelineIndex: TimelineIndex?
     
     // many-to-one relationship
     @NSManaged public private(set) var user: TwitterUser
     @NSManaged public private(set) var retweet: Tweet?
+    @NSManaged public private(set) var quote: Tweet?
     
     // one-to-many relationship
     @NSManaged public private(set) var retweetFrom: Set<Tweet>?
+    @NSManaged public private(set) var quoteFrom: Set<Tweet>?
 }
 
 extension Tweet {
@@ -43,7 +47,7 @@ extension Tweet {
     }
     
     @discardableResult
-    public static func insert(into context: NSManagedObjectContext, property: Property, retweet: Tweet?, twitterUser: TwitterUser,  timelineIndex: TimelineIndex?) -> Tweet {
+    public static func insert(into context: NSManagedObjectContext, property: Property, retweet: Tweet?, quote: Tweet?, twitterUser: TwitterUser,  timelineIndex: TimelineIndex?) -> Tweet {
         let tweet: Tweet = context.insertObject()
         tweet.updatedAt = property.networkDate
         
@@ -51,9 +55,10 @@ extension Tweet {
         tweet.createdAt = property.createdAt
         tweet.text = property.text
         
-        tweet.retweet = retweet
-        tweet.user = twitterUser
         tweet.timelineIndex = timelineIndex
+        tweet.user = twitterUser
+        tweet.retweet = retweet
+        tweet.quote = quote
         return tweet
     }
     
@@ -125,6 +130,8 @@ extension Tweet {
         public let favoriteCount: Int?
         public let favorited: Bool
         
+        public let quotedStatusIDStr: String?
+        
         public let networkDate: Date
         
         public init(
@@ -135,6 +142,7 @@ extension Tweet {
             retweeted: Bool,
             favoriteCount: Int?,
             favorited: Bool,
+            quotedStatusIDStr: String?,
             networkData: Date
         ) {
             self.idStr = idStr
@@ -146,6 +154,8 @@ extension Tweet {
             
             self.favoriteCount = favoriteCount
             self.favorited = favorited
+            
+            self.quotedStatusIDStr = quotedStatusIDStr
             
             self.networkDate = networkData
         }
@@ -159,6 +169,11 @@ extension Tweet: Managed {
 }
 
 extension Tweet {
+    
+    public static func predicate(idStr: String) -> NSPredicate {
+        return NSPredicate(format: "%K == %@", #keyPath(Tweet.idStr), idStr)
+    }
+    
     public static func predicate(idStrs: [String]) -> NSPredicate {
         return NSPredicate(format: "%K IN %@", #keyPath(Tweet.idStr), idStrs)
     }

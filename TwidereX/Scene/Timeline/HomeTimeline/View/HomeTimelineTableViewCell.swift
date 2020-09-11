@@ -116,18 +116,14 @@ final class HomeTimelineTableViewCell: UITableViewCell {
     }()
     
     override func prepareForReuse() {
-        super.prepareForReuse()
+        super.prepareForReuse()        
+        avatarImageView.af.cancelImageRequest()
         dateLabelUpdateSubscription = nil
         disposeBag.removeAll()
-        avatarImageView.af.cancelImageRequest()
-        avatarImageView.image = UIImage
-            .placeholder(size: HomeTimelineTableViewCell.avatarImageViewSize, color: .systemFill)
-            .af.imageRoundedIntoCircle()
+        
         replyButton.setTitle(HomeTimelineTableViewCell.formattedNumberTitleForButton(nil), for: .normal)
         retweetButton.setTitle(HomeTimelineTableViewCell.formattedNumberTitleForButton(nil), for: .normal)
         favoriteButton.setTitle(HomeTimelineTableViewCell.formattedNumberTitleForButton(nil), for: .normal)
-        
-        
     }
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
@@ -226,6 +222,7 @@ extension HomeTimelineTableViewCell {
         tweetMetaInfoContainerStackView.addArrangedSubview(dateLabel)
         nameLabel.setContentHuggingPriority(.defaultHigh, for: .horizontal)
         usernameLabel.setContentHuggingPriority(.defaultHigh, for: .horizontal)
+        usernameLabel.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
         dateLabel.setContentHuggingPriority(.defaultLow, for: .horizontal)
         dateLabel.setContentCompressionResistancePriority(.required - 1, for: .horizontal)
         

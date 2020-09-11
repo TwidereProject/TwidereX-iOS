@@ -53,8 +53,7 @@ extension AuthenticationService: NSFetchedResultsControllerDelegate {
         
     }
     func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
-        if controller === twitterAuthentications {
-            twitterAuthentications.value = controller.fetchedObjects?.compactMap { $0 as? TwitterAuthentication } ?? []
-        }
+        // FIXME:
+        twitterAuthentications.value = controller.fetchedObjects?.compactMap { $0 as? TwitterAuthentication } ?? []
     }
 }

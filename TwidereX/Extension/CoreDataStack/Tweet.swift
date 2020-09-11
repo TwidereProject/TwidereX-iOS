@@ -19,6 +19,7 @@ extension Tweet.Property {
             retweeted: entity.retweeted ?? false,
             favoriteCount: entity.favoriteCount,
             favorited: entity.favorited ?? false,
+            quotedStatusIDStr: entity.quotedStatusIDStr,
             networkData: networkDate
         )
     }

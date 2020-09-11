@@ -7,10 +7,11 @@
 
 import Foundation
 import Combine
-import TwitterAPI
+import CoreData
 import CoreDataStack
 import CommonOSLog
 import DateToolsSwift
+import TwitterAPI
 
 extension APIService {
     
@@ -70,18 +71,21 @@ extension APIService {
                     let tweets = response.value
                     os_log(.info, log: log, "%{public}s[%{public}ld], %{public}s: fetch %{public}ld tweets", ((#file as NSString).lastPathComponent), #line, #function, tweets.count)
                     
-                    // 1. fetch local exist tweets, retweets, twitter user
-                    let retrieveStorageEnityTaskSignpostID = OSSignpostID(log: log)
-                    os_signpost(.begin, log: log, name: "retrieve exist entity", signpostID: retrieveStorageEnityTaskSignpostID)
-                    // 1.1 fetch timeline tweets
-                    let existTimelineTweets: [Tweet] = {
-                        let incoming = tweets.map { $0.idStr } + tweets.compactMap { $0.retweetedStatus?.idStr }
+                    // load working set into context to avoid cache miss
+                    let cacheTaskSignpostID = OSSignpostID(log: log)
+                    os_signpost(.begin, log: log, name: "load tweets into cache", signpostID: cacheTaskSignpostID)
+                    let workingIDRecord = APIService.WorkingIDRecord.workingID(entities: tweets)
+                    
+                    // contains retweet and quote
+                    let _tweetCache: [Tweet] = {
                         let request = Tweet.sortedFetchRequest
+                        let idStrSet = workingIDRecord.timelineTweetIDSet
+                            .union(workingIDRecord.retweetIDSet)
+                            .union(workingIDRecord.quoteIDSet)
+                        let idStrs = Array(idStrSet)
+                        request.predicate = Tweet.predicate(idStrs: idStrs)
                         request.returnsObjectsAsFaults = false
-                        request.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [
-                            Tweet.predicate(idStrs: incoming),
-                            Tweet.inTimeline(),
-                        ])
+                        request.relationshipKeyPathsForPrefetching = [#keyPath(Tweet.retweet), #keyPath(Tweet.quote)]
                         do {
                             return try self.backgroundManagedObjectContext.fetch(request)
                         } catch {
@@ -89,160 +93,48 @@ extension APIService {
                             return []
                         }
                     }()
-                    os_signpost(.event, log: log, name: "retrieve exist entity - tweets", signpostID: retrieveStorageEnityTaskSignpostID, "find %{public}ld exist tweets", existTimelineTweets.count)
-                    // 1.2 fetch not timeline retweets
-                    let existNotInTimelineRetweets: [Tweet] = {
-                        let incoming = tweets.map { $0.idStr } + tweets.compactMap { $0.retweetedStatus?.idStr }
-                        let request = Tweet.sortedFetchRequest
-                        request.returnsObjectsAsFaults = false
-                        request.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [
-                            Tweet.predicate(idStrs: incoming),
-                            Tweet.notInTimeline(),
-                        ])
-                        do {
-                            return try self.backgroundManagedObjectContext.fetch(request)
-                        } catch {
-                            assertionFailure(error.localizedDescription)
-                            return []
-                        }
-                    }()
-                    os_signpost(.event, log: log, name: "retrieve exist entity - retweets", signpostID: retrieveStorageEnityTaskSignpostID, "find %{public}ld exist retweets", existNotInTimelineRetweets.count)
-                    // 1.3 fetch twitter users
-                    let existUsers: [TwitterUser] = {
-                        let request = TwitterUser.sortedFetchRequest
-                        request.returnsObjectsAsFaults = false
-                        let idStrs = Array(Set(tweets.map { $0.user.idStr }))
-                        request.predicate = TwitterUser.predicate(idStrs: idStrs)
-                        do {
-                            return try self.backgroundManagedObjectContext.fetch(request)
-                        } catch {
-                            assertionFailure(error.localizedDescription)
-                            return []
-                        }
-                    }()
-                    os_signpost(.event, log: log, name: "retrieve exist entity - twitter users", signpostID: retrieveStorageEnityTaskSignpostID, "find %{public}ld exist twitter user", existUsers.count)
-                    os_signpost(.end, log: log, name: "retrieve exist entity", signpostID: retrieveStorageEnityTaskSignpostID)
+                    os_signpost(.event, log: log, name: "load tweets into cache", signpostID: cacheTaskSignpostID, "cached %{public}ld tweets", _tweetCache.count)
+                    
+                    //let _twitterUserCache: [TwitterUser] = {
+                    //    let request = TwitterUser.sortedFetchRequest
+                    //    let idStrs = Array(targetIDSet.map { $0.twitterUserID })
+                    //    request.predicate = TwitterUser.predicate(idStrs: idStrs)
+                    //    request.returnsObjectsAsFaults = false
+                    //    do {
+                    //        return try self.backgroundManagedObjectContext.fetch(request)
+                    //    } catch {
+                    //        assertionFailure(error.localizedDescription)
+                    //        return []
+                    //    }
+                    //}()
+                    //os_signpost(.event, log: log, name: "load twitter usrs into cache", signpostID: cacheTaskSignpostID, "cached %{public}ld twitter users", _twitterUserCache.count)
+                    os_signpost(.end, log: log, name: "load tweets into cache", signpostID: cacheTaskSignpostID)
+
+                    let cachedTweetsInTimeline = _tweetCache.filter { tweet in
+                        workingIDRecord.timelineTweetIDSet.contains(tweet.idStr)
+                    }
                     
                     let updateDatabaseTaskSignpostID = OSSignpostID(log: log)
-                    os_signpost(.begin, log: log, name: "update database", signpostID: updateDatabaseTaskSignpostID)
-                    var newUsers: [TwitterUser] = []
                     var newTweets: [Tweet] = []
-                    var newRetweets: [Tweet] = []
-                    var oldTweets: [Tweet] = []
-                    
+                    let workingChangeRecord = WorkingChangeRecord()
+                    os_signpost(.begin, log: log, name: "update database", signpostID: updateDatabaseTaskSignpostID)
                     for entity in tweets {
                         let processEntityTaskSignpostID = OSSignpostID(log: log)
-                        os_signpost(.begin, log: log, name: "update database - process entity", signpostID: processEntityTaskSignpostID, "process tweet %{public}s", entity.idStr)
-
-                        // 2. process incoming tweet entity
-                        if let oldTweet = existTimelineTweets.first(where: { $0.idStr == entity.idStr }) {
-                            oldTweets.append(oldTweet)
-
-                            // 2.1 entity already in timeline (case A3)
-                            os_signpost(.event, log: log, name: "update database - process entity", signpostID: processEntityTaskSignpostID, "find old tweet %{public}s", entity.idStr)
-                            if response.networkDate > oldTweet.updatedAt {
-                                // merge old tweet
-                                APIService.mergeTweet(old: oldTweet, entity: entity)
-                                oldTweet.didUpdate(at: response.networkDate)
-                            }
-                            if response.networkDate > oldTweet.user.updatedAt {
-                                // merge old user
-                                APIService.mergeTwitterUser(old: oldTweet.user, entity: entity)
-                                oldTweet.user.didUpdate(at: response.networkDate)
-                            }
-                            if let oldRetweet = oldTweet.retweet, response.networkDate > oldRetweet.updatedAt {
-                                // merge old retweet
-                                APIService.mergeRetweet(old: oldRetweet, entity: entity)
-                                oldRetweet.didUpdate(at: response.networkDate)
-                            }
-                        } else if let oldRetweet = existNotInTimelineRetweets.first(where: { $0.idStr == entity.idStr }) {
-                            // 2.2 entity not in timeline but contained by other local entity's retweet. Make it indexed (case A2)
-                            // note: user saw that as retweet and then see it as tweet
-                            os_signpost(.event, log: log, name: "update database - process entity", signpostID: processEntityTaskSignpostID, "find old retweet %{public}s", entity.idStr)
-                            let timelineIndexProperty = TimelineIndex.Property(userID: entity.user.idStr, platform: .twitter, createdAt: entity.createdAt)
-                            let timelineIndex = TimelineIndex.insert(into: self.backgroundManagedObjectContext, property: timelineIndexProperty)
-                            oldRetweet.update(timelineIndex: timelineIndex)
-                            APIService.mergeTweet(old: oldRetweet, entity: entity)
-                            oldRetweet.didUpdate(at: response.networkDate)
-                            
-                            // likes new inserted timeline tweet
-                            newTweets.append(oldRetweet)
-                        } else {
-                            // 2.3 create new timeline index
-                            os_signpost(.event, log: log, name: "update database - process entity", signpostID: processEntityTaskSignpostID, "create new tweet %{public}s", entity.idStr)
-                            let tweetProperty = Tweet.Property(entity: entity, networkDate: response.networkDate)
-                            
-                            let timelineIndexProperty = TimelineIndex.Property(userID: entity.user.idStr, platform: .twitter, createdAt: entity.createdAt)
-                            let timelineIndex = TimelineIndex.insert(into: self.backgroundManagedObjectContext, property: timelineIndexProperty)
-                            os_signpost(.event, log: log, name: "update database - process entity", signpostID: processEntityTaskSignpostID, "did insert new timelineIndex %{public}s", timelineIndex.id.uuidString)
-                            
-                            // 2.4 create or reuse new twitter user (just created in the loop)
-                            func createOrFetchTwtterUser(twitter entity: Twitter.Entity.Tweet) -> TwitterUser {
-                                if let oldUser = existUsers.first(where: { $0.idStr == entity.user.idStr }) {
-                                    if response.networkDate > oldUser.updatedAt {
-                                        // merge old user
-                                        APIService.mergeTwitterUser(old: oldUser, entity: entity)
-                                        oldUser.didUpdate(at: response.networkDate)
-                                    }
-                                    return oldUser
-                                } else if let newUser = newUsers.first(where: { $0.idStr == entity.user.idStr }) {
-                                    return newUser
-                                } else {
-                                    let twitterUserProperty = TwitterUser.Property(entity: entity.user, networkDate: response.networkDate)
-                                    let twitterUser = TwitterUser.insert(into: self.backgroundManagedObjectContext, property: twitterUserProperty)
-                                    os_signpost(.event, log: log, name: "update database - process entity", signpostID: processEntityTaskSignpostID, "did insert new twitter user %{public}s: name %s", twitterUser.id.uuidString, twitterUserProperty.name ?? "<nil>")
-                                    
-                                    newUsers.append(twitterUser)
-                                    return twitterUser
-                                }
-                            }
-                            let twitterUser = createOrFetchTwtterUser(twitter: entity)
-                            
-                            // 2.5 create or reuse retweet (case A1)
-                            var retweet: Tweet?
-                            if let retweetedStatus = entity.retweetedStatus {
-                                if let oldTweet = existTimelineTweets.first(where: { $0.idStr == retweetedStatus.idStr }) {
-                                    // retweet in local timeline
-                                    retweet = oldTweet
-                                } else if let oldRetweet = existNotInTimelineRetweets.first(where: { $0.idStr == retweetedStatus.idStr }) {
-                                    // retweet is other tweets' retweet
-                                    retweet = oldRetweet
-                                } else if let newTweet = newTweets.first(where: { $0.idStr == retweetedStatus.idStr }) {
-                                    // retweet is new inserted retweet
-                                    retweet = newTweet
-                                } else {
-                                    // retweet not in local
-                                    let retweetProperty = Tweet.Property(entity: retweetedStatus, networkDate: response.networkDate)
-                                    let twitterUser = createOrFetchTwtterUser(twitter: retweetedStatus)
-                                    retweet = Tweet.insert(into: self.backgroundManagedObjectContext, property: retweetProperty, retweet: nil, twitterUser: twitterUser, timelineIndex: nil)
-                                }
-                            } else {
-                                retweet = nil
-                            }
-                            
-                            // 2.5 create new tweet
-                            let tweet = Tweet.insert(
-                                into: self.backgroundManagedObjectContext,
-                                property: tweetProperty,
-                                retweet: retweet,
-                                twitterUser: twitterUser,
-                                timelineIndex: timelineIndex
-                            )
-                            newTweets.append(tweet)
-                            if let retweet = retweet {
-                                newRetweets.append(retweet)
-                            }
-                            os_signpost(.event, log: log, name: "update database - process entity", signpostID: processEntityTaskSignpostID, "did insert new tweet %{public}s", tweet.id.uuidString)
-                            os_log(.debug, log: log, "%{public}s[%{public}ld], %{public}s: insert tweet %{public}s: %{public}s - %{public}s…", ((#file as NSString).lastPathComponent), #line, #function, tweet.id.uuidString, tweet.idStr, tweet.text.prefix(15).trimmingCharacters(in: .whitespacesAndNewlines))
+                        os_signpost(.begin, log: log, name: "update database - process entity", signpostID: processEntityTaskSignpostID, "process entity %{public}s", entity.idStr)
+                        defer {
+                            os_signpost(.end, log: log, name: "update database - process entity", signpostID: processEntityTaskSignpostID, "process entity %{public}s", entity.idStr)
                         }
                         
-                        // 3.
-        
-                        os_signpost(.end, log: log, name: "update database - process entity", signpostID: processEntityTaskSignpostID, "finish process tweet %{public}s", entity.idStr)
+                        let timelineIndexProperty = TimelineIndex.Property(userID: entity.user.idStr, platform: .twitter, createdAt: entity.createdAt)
+                        let timelineIndex = TimelineIndex.insert(into: self.backgroundManagedObjectContext, property: timelineIndexProperty)
+                            os_signpost(.event, log: log, name: "update database - process entity", signpostID: processEntityTaskSignpostID, "did insert new timelineIndex %{public}s", timelineIndex.id.uuidString)
+                        let tweet = APIService.createOrMergeTweet(into: self.backgroundManagedObjectContext, entity: entity, timelineIndex: timelineIndex, networkDate: response.networkDate, log: log, workingChangeRecord: workingChangeRecord)
+                        newTweets.append(tweet)
                     }   // end for…
                     os_signpost(.end, log: log, name: "update database", signpostID: updateDatabaseTaskSignpostID)
                     
-                    if oldTweets.isEmpty {
+                    // TODO:
+                    if cachedTweetsInTimeline.isEmpty {
                         // may have gap, set oldest tweet has more
                         newTweets.sort(by: { $0.createdAt < $1.createdAt })
                         newTweets.first.flatMap { $0.update(hasMore: true) }
@@ -251,10 +143,16 @@ extension APIService {
                     do {
                         try self.backgroundManagedObjectContext.saveOrRollback()
                         os_log(.info, log: log, "%{public}s[%{public}ld], %{public}s: database updated", ((#file as NSString).lastPathComponent), #line, #function)
-                        os_log(.debug, log: log, "%{public}s[%{public}ld], %{public}s: insert %{public}ld tweets, %{public}ld retweets, %{public}ld twitter users", ((#file as NSString).lastPathComponent), #line, #function, newTweets.count, newRetweets.count, newUsers.count)
-                        os_log(.debug, log: log, "%{public}s[%{public}ld], %{public}s: merge %{public}ld tweets, %{public}ld twitter users", ((#file as NSString).lastPathComponent), #line, #function, existTimelineTweets.count, existUsers.count)
+                        
+                        let newTweetCount = workingChangeRecord.newTweetIDSet.count
+                        let oldTweetCount = workingChangeRecord.oldTweetIDSet.count
+                        
+                        let newTweetIDStrs = newTweets.map { $0.idStr }
+                        let newTweetInTimelineCount = workingChangeRecord.newTweetIDSet.filter { newTweetIDStrs.contains($0) }.count
+                        os_log(.debug, log: log, "%{public}s[%{public}ld], %{public}s: create %{public}ld tweets, merge %{public}ld tweets, new %{public}ld tweets in timeline", ((#file as NSString).lastPathComponent), #line, #function, newTweetCount, oldTweetCount, newTweetInTimelineCount)
                     } catch {
                         os_log(.info, log: log, "%{public}s[%{public}ld], %{public}s: database update fail. %s", ((#file as NSString).lastPathComponent), #line, #function, error.localizedDescription)
+                        assertionFailure(error.localizedDescription)
                     }
                     os_signpost(.end, log: .api, name: #function, signpostID: contextTaskSignpostID)
                 }   // end perform
@@ -262,31 +160,223 @@ extension APIService {
             .eraseToAnyPublisher()
     }
     
-    private static func mergeTweet(old tweet: Tweet, entity: Twitter.Entity.Tweet) {
-        // only fulfill API supported fields
+}
+
+extension APIService {
+    private struct WorkingIDRecord {
+        var timelineTweetIDSet: Set<String>
+        var retweetIDSet: Set<String>
+        var quoteIDSet: Set<String>
+        var twitterUserIDSet: Set<String>
+        
+        enum RecordType {
+            case timeline
+            case retweet
+            case quote
+        }
+        
+        init() {
+            self.init(
+                timelineTweetIDSet: Set(),
+                retweetIDSet: Set(),
+                quoteIDSet: Set(),
+                twitterUserIDSet: Set()
+            )
+        }
+        
+        init(timelineTweetIDSet: Set<String>, retweetIDSet: Set<String>, quoteIDSet: Set<String>, twitterUserIDSet: Set<String>) {
+            self.timelineTweetIDSet = timelineTweetIDSet
+            self.retweetIDSet = retweetIDSet
+            self.quoteIDSet = quoteIDSet
+            self.twitterUserIDSet = twitterUserIDSet
+        }
+        
+        mutating func union(record: WorkingIDRecord) {
+            timelineTweetIDSet = timelineTweetIDSet.union(record.timelineTweetIDSet)
+            retweetIDSet = retweetIDSet.union(record.retweetIDSet)
+            quoteIDSet = quoteIDSet.union(record.quoteIDSet)
+            twitterUserIDSet = twitterUserIDSet.union(record.twitterUserIDSet)
+        }
+        
+        static func workingID(entities: [Twitter.Entity.Tweet]) -> WorkingIDRecord {
+            var value = WorkingIDRecord()
+            for entity in entities {
+                let child = workingID(entity: entity, recordType: .timeline)
+                value.union(record: child)
+            }
+            return value
+        }
+        
+        private static func workingID(entity: Twitter.Entity.Tweet, recordType: RecordType) -> WorkingIDRecord {
+            var value = WorkingIDRecord()
+            switch recordType {
+            case .timeline: value.timelineTweetIDSet = Set([entity.idStr])
+            case .retweet:  value.retweetIDSet = Set([entity.idStr])
+            case.quote:     value.quoteIDSet = Set([entity.idStr])
+            }
+            value.twitterUserIDSet = Set([entity.user.idStr])
+            
+            if let retweetedStatus = entity.retweetedStatus {
+                let child = workingID(entity: retweetedStatus, recordType: .retweet)
+                value.union(record: child)
+            }
+            if let quotedStatus = entity.quotedStatus {
+                let child = workingID(entity: quotedStatus, recordType: .quote)
+                value.union(record: child)
+            }
+            return value
+        }
+    }
+    
+    private class WorkingChangeRecord {
+        var newTweetIDSet: Set<String> = Set()
+        var oldTweetIDSet: Set<String> = Set()
+        var newTwitterUserIDSet: Set<String> = Set()
+        var oldTwitterUserIDSet: Set<String> = Set()
+        
+        func isTracking(_ id: String) -> Bool {
+            return newTweetIDSet.contains(id) || oldTweetIDSet.contains(id) || newTwitterUserIDSet.contains(id) || oldTwitterUserIDSet.contains(id)
+        }
+    }
+    
+    private static func createOrMergeTweet(
+        into managedObjectContext: NSManagedObjectContext,
+        entity: Twitter.Entity.Tweet,
+        timelineIndex: TimelineIndex?,
+        networkDate: Date,
+        log: OSLog,
+        workingChangeRecord: WorkingChangeRecord
+    ) -> Tweet {
+        let processEntityTaskSignpostID = OSSignpostID(log: log)
+        os_signpost(.begin, log: log, name: "update database - process entity: createorMergeTweet", signpostID: processEntityTaskSignpostID, "process tweet %{public}s", entity.idStr)
+        defer {
+            os_signpost(.end, log: log, name: "update database - process entity: createorMergeTweet", signpostID: processEntityTaskSignpostID, "finish process tweet %{public}s", entity.idStr)
+        }
+        
+        // fetch old tweet (should not has cache miss)
+        let oldTweet: Tweet? = {
+            let request = Tweet.sortedFetchRequest
+            request.predicate = Tweet.predicate(idStr: entity.idStr)
+            request.returnsObjectsAsFaults = false
+            request.relationshipKeyPathsForPrefetching = [#keyPath(Tweet.retweet), #keyPath(Tweet.quote)]
+            do {
+                return try managedObjectContext.fetch(request).first
+            } catch {
+                assertionFailure(error.localizedDescription)
+                return nil
+            }
+        }()
+        
+        if let oldTweet = oldTweet {
+            // merge old tweet
+            defer {
+                APIService.mergeTweet(old: oldTweet, entity: entity, networkDate: networkDate)
+            }
+            
+            if oldTweet.timelineIndex == nil {
+                // entity not in timeline but contained by other local entity's retweet/quote
+                os_signpost(.event, log: log, name: "update database - process entity: createorMergeTweet", signpostID: processEntityTaskSignpostID, "find old retweet %{public}s", entity.idStr)
+                let timelineIndexProperty = TimelineIndex.Property(userID: entity.user.idStr, platform: .twitter, createdAt: entity.createdAt)
+                let timelineIndex = TimelineIndex.insert(into: managedObjectContext, property: timelineIndexProperty)
+                // make it indexed
+                oldTweet.update(timelineIndex: timelineIndex)
+            } else {
+                os_signpost(.event, log: log, name: "update database - process entity: createorMergeTweet", signpostID: processEntityTaskSignpostID, "find old tweet %{public}s", entity.idStr)
+            }
+            
+            if !workingChangeRecord.isTracking(oldTweet.idStr) {
+                workingChangeRecord.oldTweetIDSet.insert(oldTweet.idStr)
+            }
+            return oldTweet
+        } else {
+            // create new tweet
+            let tweetProperty = Tweet.Property(entity: entity, networkDate: networkDate)
+            let retweet: Tweet? = entity.retweetedStatus.flatMap { entity -> Tweet in
+                createOrMergeTweet(into: managedObjectContext, entity: entity, timelineIndex: nil, networkDate: networkDate, log: log, workingChangeRecord: workingChangeRecord)
+            }
+            let quote: Tweet? = entity.quotedStatus.flatMap { entity -> Tweet in
+                createOrMergeTweet(into: managedObjectContext, entity: entity, timelineIndex: nil, networkDate: networkDate, log: log, workingChangeRecord: workingChangeRecord)
+            }
+            let twitterUser = createOrMergeTwitterUser(into: managedObjectContext, entity: entity.user, networkDate: networkDate, log: log)
+            let tweet = Tweet.insert(into: managedObjectContext, property: tweetProperty, retweet: retweet, quote: quote, twitterUser: twitterUser, timelineIndex: timelineIndex)
+            
+            if !workingChangeRecord.isTracking(tweet.idStr) {
+                workingChangeRecord.newTweetIDSet.insert(tweet.idStr)
+            }
+            return tweet
+        }
+    }
+    
+    private static func createOrMergeTwitterUser(
+        into managedObjectContext: NSManagedObjectContext,
+        entity: Twitter.Entity.User,
+        networkDate: Date,
+        log: OSLog
+    ) -> TwitterUser {
+        let processEntityTaskSignpostID = OSSignpostID(log: log)
+        os_signpost(.begin, log: log, name: "update database - process entity: createOrMergeTwitterUser", signpostID: processEntityTaskSignpostID, "process twitter user %{public}s", entity.idStr)
+        defer {
+            os_signpost(.end, log: log, name: "update database - process entity: createOrMergeTwitterUser", signpostID: processEntityTaskSignpostID, "process twitter user %{public}s", entity.idStr)
+        }
+        
+        // fetch old tweet (should not has cache miss)
+        let oldTwitterUser: TwitterUser? = {
+            let request = TwitterUser.sortedFetchRequest
+            request.predicate = TwitterUser.predicate(idStr: entity.idStr)
+            request.returnsObjectsAsFaults = false
+            do {
+                return try managedObjectContext.fetch(request).first
+            } catch {
+                assertionFailure(error.localizedDescription)
+                return nil
+            }
+        }()
+        
+        if let oldTwitterUser = oldTwitterUser {
+            // merge old twitter usre
+            APIService.mergeTwitterUser(old: oldTwitterUser, entity: entity, networkDate: networkDate)
+            os_signpost(.event, log: log, name: "update database - process entity: createOrMergeTwitterUser", signpostID: processEntityTaskSignpostID, "find old twitter user %{public}s: name %s", entity.idStr, oldTwitterUser.name ?? "<nil>")
+            return oldTwitterUser
+        } else {
+            let twitterUserProperty = TwitterUser.Property(entity: entity, networkDate: networkDate)
+            let twitterUser = TwitterUser.insert(into: managedObjectContext, property: twitterUserProperty)
+            os_signpost(.event, log: log, name: "update database - process entity: createOrMergeTwitterUser", signpostID: processEntityTaskSignpostID, "did insert new twitter user %{public}s: name %s", twitterUser.id.uuidString, twitterUserProperty.name ?? "<nil>")
+            return twitterUser
+        }
+    }
+    
+    private static func mergeTweet(old tweet: Tweet, entity: Twitter.Entity.Tweet, networkDate: Date) {
+        guard networkDate > tweet.updatedAt else { return }
+        
+        // merge attributes
         tweet.update(text: entity.text)
         tweet.update(retweetCount: entity.retweetCount)
-        entity.retweeted.flatMap { tweet.update(retweeted: $0) }
         tweet.update(favoriteCount: entity.favoriteCount)
+        entity.retweeted.flatMap { tweet.update(retweeted: $0) }
         entity.favorited.flatMap { tweet.update(favorited: $0) }
+        
+        // set updateAt
+        tweet.didUpdate(at: networkDate)
+
+        // merge user
+        mergeTwitterUser(old: tweet.user, entity: entity.user, networkDate: networkDate)
+        
+        // merge indirect retweet & quote
+        if let retweet = tweet.retweet, let retweetedStatus = entity.retweetedStatus {
+            mergeTweet(old: retweet, entity: retweetedStatus, networkDate: networkDate)
+        }
+        if let quote = tweet.quote, let quotedStatus = entity.quotedStatus {
+            mergeTweet(old: quote, entity: quotedStatus, networkDate: networkDate)
+        }
+    }
+    
+    private static func mergeTwitterUser(old user: TwitterUser, entity: Twitter.Entity.User, networkDate: Date) {
+        guard networkDate > user.updatedAt else { return }
+        // only fulfill API supported fields
+        entity.name.flatMap { user.update(name: $0) }
+        entity.screenName.flatMap { user.update(screenName: $0) }
+        entity.profileImageURLHTTPS.flatMap { user.update(profileImageURLHTTPS: $0) }
         // TODO: merge more fileds
     }
     
-    private static func mergeRetweet(old retweet: Tweet, entity: Twitter.Entity.Tweet) {
-        // only fulfill API supported fields
-        entity.retweetedStatus.flatMap { retweet.update(text: $0.text) }
-        retweet.update(retweetCount: entity.retweetCount)
-        entity.retweeted.flatMap { retweet.update(retweeted: $0) }
-        retweet.update(favoriteCount: entity.favoriteCount)
-        entity.favorited.flatMap { retweet.update(favorited: $0) }
-        // TODO: merge more fileds
-    }
-    
-    private static func mergeTwitterUser(old user: TwitterUser, entity: Twitter.Entity.Tweet) {
-        // only fulfill API supported fields
-        entity.user.name.flatMap { user.update(name: $0) }
-        entity.user.screenName.flatMap { user.update(screenName: $0) }
-        entity.user.profileImageURLHTTPS.flatMap { user.update(profileImageURLHTTPS: $0) }
-        // TODO: merge more fileds
-    }
 }

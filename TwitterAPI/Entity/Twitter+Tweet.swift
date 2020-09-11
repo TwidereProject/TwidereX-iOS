@@ -40,6 +40,9 @@ extension Twitter.Entity {
         public let retweeted: Bool?
         public let retweetedStatus: RetweetedStatus?
         
+        public let quotedStatusIDStr: String?
+        public let quotedStatus: QuotedStatus?
+        
         //let source: String
         //let truncated: Bool
         
@@ -72,6 +75,8 @@ extension Twitter.Entity {
             case retweetCount = "retweet_count"
             case retweeted = "retweeted"
             case retweetedStatus = "retweeted_status"
+            case quotedStatusIDStr = "quoted_status_id_str"
+            case quotedStatus = "quoted_status"
             //case source = "source"
             //case truncated = "truncated"
         }
