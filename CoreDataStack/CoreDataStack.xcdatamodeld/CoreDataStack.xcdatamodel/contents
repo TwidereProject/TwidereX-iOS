@@ -17,9 +17,13 @@
     </entity>
     <entity name="Tweet" representedClassName=".Tweet" syncable="YES">
         <attribute name="createdAt" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="favoriteCount" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="favorited" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
         <attribute name="hasMore" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
         <attribute name="id" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="idStr" attributeType="String"/>
+        <attribute name="retweetCount" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="retweeted" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
         <attribute name="text" attributeType="String"/>
         <attribute name="updatedAt" attributeType="Date" usesScalarValueType="NO"/>
         <relationship name="retweet" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Tweet" inverseName="retweetFrom" inverseEntity="Tweet"/>
@@ -56,11 +60,11 @@
         <relationship name="tweets" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Tweet" inverseName="user" inverseEntity="Tweet"/>
     </entity>
     <elements>
+        <element name="Entity" positionX="-27" positionY="135" width="128" height="43"/>
         <element name="TimelineIndex" positionX="-54" positionY="63" width="128" height="133"/>
         <element name="Toots" positionX="-18" positionY="81" width="128" height="103"/>
-        <element name="Tweet" positionX="371.83984375" positionY="-55.8125" width="128" height="193"/>
+        <element name="Tweet" positionX="371.83984375" positionY="-55.8125" width="128" height="253"/>
         <element name="TwitterAuthentication" positionX="-63" positionY="-18" width="128" height="178"/>
         <element name="TwitterUser" positionX="0" positionY="108" width="128" height="268"/>
-        <element name="Entity" positionX="-27" positionY="135" width="128" height="43"/>
     </elements>
 </model>

@@ -86,11 +86,12 @@ extension HomeTimelineViewModel {
     }
 
     private static func configure(cell: HomeTimelineTableViewCell, tweet: Tweet) {
-        // set retweet
-        cell.retweetNameLabel.text = tweet.retweet == nil ? "" : "Retweet"
+        // set retweet display
+        cell.retweetContainerStackView.isHidden = tweet.retweet == nil ? true : false
+        cell.retweetInfoLabel.text = tweet.user.name.flatMap { $0 + " Retweeted" } ?? " "
         
         // set avatar
-        if let avatarImageURL = tweet.user.avatarImageURL() {
+        if let avatarImageURL = (tweet.retweet?.user ?? tweet.user).avatarImageURL() {
             let placeholderImage = UIImage
                 .placeholder(size: HomeTimelineTableViewCell.avatarImageViewSize, color: .systemFill)
                 .af.imageRoundedIntoCircle()
@@ -106,11 +107,11 @@ extension HomeTimelineViewModel {
         }
 
         // set name and username
-        cell.nameLabel.text = tweet.user.name
-        cell.usernameLabel.text = tweet.user.screenName.flatMap { "@" + $0 }
+        cell.nameLabel.text = (tweet.retweet?.user ?? tweet.user).name
+        cell.usernameLabel.text = (tweet.retweet?.user ?? tweet.user).screenName.flatMap { "@" + $0 }
 
         // set date
-        let createdAt = tweet.createdAt
+        let createdAt = (tweet.retweet ?? tweet).createdAt
         cell.dateLabel.text = createdAt.shortTimeAgoSinceNow
         cell.dateLabelUpdateSubscription = Timer.publish(every: 1, on: .main, in: .default)
             .autoconnect()
@@ -120,7 +121,21 @@ extension HomeTimelineViewModel {
             }
         
         // set text
-        cell.textlabel.text = tweet.text
+        cell.activeTextLabel.text = (tweet.retweet ?? tweet).text
+        
+        // set panel
+        let retweetCountTitle: String = {
+            let count = (tweet.retweet ?? tweet).retweetCount.flatMap { Int(truncating: $0) }
+            return HomeTimelineTableViewCell.formattedNumberTitleForButton(count)
+        }()
+        cell.favoriteButton.setTitle(retweetCountTitle, for: .normal)
+        
+        let favoriteCountTitle: String = {
+            let count = (tweet.retweet ?? tweet).favoriteCount.flatMap { Int(truncating: $0) }
+            return HomeTimelineTableViewCell.formattedNumberTitleForButton(count)
+        }()
+        cell.favoriteButton.setTitle(favoriteCountTitle, for: .normal)
+        
     }
     
 }

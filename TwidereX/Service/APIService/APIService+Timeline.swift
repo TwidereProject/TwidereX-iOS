@@ -265,12 +265,20 @@ extension APIService {
     private static func mergeTweet(old tweet: Tweet, entity: Twitter.Entity.Tweet) {
         // only fulfill API supported fields
         tweet.update(text: entity.text)
+        tweet.update(retweetCount: entity.retweetCount)
+        entity.retweeted.flatMap { tweet.update(retweeted: $0) }
+        tweet.update(favoriteCount: entity.favoriteCount)
+        entity.favorited.flatMap { tweet.update(favorited: $0) }
         // TODO: merge more fileds
     }
     
     private static func mergeRetweet(old retweet: Tweet, entity: Twitter.Entity.Tweet) {
         // only fulfill API supported fields
         entity.retweetedStatus.flatMap { retweet.update(text: $0.text) }
+        retweet.update(retweetCount: entity.retweetCount)
+        entity.retweeted.flatMap { retweet.update(retweeted: $0) }
+        retweet.update(favoriteCount: entity.favoriteCount)
+        entity.favorited.flatMap { retweet.update(favorited: $0) }
         // TODO: merge more fileds
     }
     

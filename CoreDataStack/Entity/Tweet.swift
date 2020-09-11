@@ -18,6 +18,12 @@ final public class Tweet: NSManagedObject {
     @NSManaged public private(set) var text: String
     @NSManaged public private(set) var hasMore: Bool
     
+    @NSManaged public private(set) var retweetCount: NSNumber?
+    @NSManaged public private(set) var retweeted: Bool
+    
+    @NSManaged public private(set) var favoriteCount: NSNumber?
+    @NSManaged public private(set) var favorited: Bool
+    
     // one-to-one relationship
     @NSManaged public private(set) var timelineIndex: TimelineIndex?
     
@@ -57,9 +63,35 @@ extension Tweet {
         }
     }
     
-    public func update(hasMore: Bool) {
-        if self.hasMore != hasMore {
-            self.hasMore = hasMore
+    public func update(retweetCount: Int?) {
+        let retweetCount = retweetCount.flatMap { NSNumber(value: $0) }
+        if self.retweetCount != retweetCount {
+            self.retweetCount = retweetCount
+        }
+    }
+    
+    public func update(retweeted: Bool) {
+        if self.retweeted != retweeted {
+            self.retweeted = retweeted
+        }
+    }
+    
+    public func update(retweet: Tweet?) {
+        if self.retweet != retweet {
+            self.retweet = retweet
+        }
+    }
+    
+    public func update(favoriteCount: Int?) {
+        let favoriteCount = favoriteCount.flatMap { NSNumber(value: $0) }
+        if self.favoriteCount != favoriteCount {
+            self.favoriteCount = favoriteCount
+        }
+    }
+    
+    public func update(favorited: Bool) {
+        if self.favorited != favorited {
+            self.favorited = favorited
         }
     }
     
@@ -69,9 +101,9 @@ extension Tweet {
         }
     }
     
-    public func update(retweet: Tweet?) {
-        if self.retweet != retweet {
-            self.retweet = retweet
+    public func update(hasMore: Bool) {
+        if self.hasMore != hasMore {
+            self.hasMore = hasMore
         }
     }
     
@@ -87,12 +119,34 @@ extension Tweet {
         public let createdAt: Date
         public let text: String
         
+        public let retweetCount: Int?
+        public let retweeted: Bool
+        
+        public let favoriteCount: Int?
+        public let favorited: Bool
+        
         public let networkDate: Date
         
-        public init(idStr: String, createdAt: Date, text: String, networkData: Date) {
+        public init(
+            idStr: String,
+            createdAt: Date,
+            text: String,
+            retweetCount: Int?,
+            retweeted: Bool,
+            favoriteCount: Int?,
+            favorited: Bool,
+            networkData: Date
+        ) {
             self.idStr = idStr
             self.createdAt = createdAt
             self.text = text
+            
+            self.retweetCount = retweetCount
+            self.retweeted = retweeted
+            
+            self.favoriteCount = favoriteCount
+            self.favorited = favorited
+            
             self.networkDate = networkData
         }
     }
