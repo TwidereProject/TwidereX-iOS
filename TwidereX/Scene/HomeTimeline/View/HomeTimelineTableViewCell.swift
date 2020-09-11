@@ -23,6 +23,13 @@ final class HomeTimelineTableViewCell: UITableViewCell {
         return imageView
     }()
     
+    let retweetNameLabel: UILabel = {
+        let label = UILabel()
+        label.font = .systemFont(ofSize: 14, weight: .regular)
+        label.textColor = .secondaryLabel
+        return label
+    }()
+    
     let nameLabel: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 14, weight: .semibold)
@@ -76,20 +83,28 @@ final class HomeTimelineTableViewCell: UITableViewCell {
 extension HomeTimelineTableViewCell {
     
     private func _init() {
+        
+        retweetNameLabel.translatesAutoresizingMaskIntoConstraints = false
+        contentView.addSubview(retweetNameLabel)
+        NSLayoutConstraint.activate([
+            retweetNameLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: HomeTimelineTableViewCell.verticalMargin),
+            contentView.layoutMarginsGuide.trailingAnchor.constraint(equalTo: retweetNameLabel.trailingAnchor),
+        ])
+        
         avatarImageView.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(avatarImageView)
         NSLayoutConstraint.activate([
-            avatarImageView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: HomeTimelineTableViewCell.verticalMargin),
+            avatarImageView.topAnchor.constraint(equalTo: retweetNameLabel.bottomAnchor, constant: 4),
             avatarImageView.leadingAnchor.constraint(equalTo: contentView.layoutMarginsGuide.leadingAnchor),
             avatarImageView.widthAnchor.constraint(equalToConstant: HomeTimelineTableViewCell.avatarImageViewSize.width),
             avatarImageView.heightAnchor.constraint(equalToConstant: HomeTimelineTableViewCell.avatarImageViewSize.height).priority(.defaultHigh),
-            //contentView.bottomAnchor.constraint(greaterThanOrEqualTo: avatarImageView.bottomAnchor, constant: 8).priority(.defaultHigh),
+            retweetNameLabel.leadingAnchor.constraint(equalTo: avatarImageView.trailingAnchor, constant: 8),
         ])
         
         nameLabel.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(nameLabel)
         NSLayoutConstraint.activate([
-            nameLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 5),
+            nameLabel.topAnchor.constraint(equalTo: avatarImageView.topAnchor),
             nameLabel.leadingAnchor.constraint(equalTo: avatarImageView.trailingAnchor, constant: 8),
         ])
         nameLabel.setContentHuggingPriority(.defaultHigh, for: .horizontal)
@@ -140,11 +155,10 @@ extension HomeTimelineTableViewCell {
             paddingView.topAnchor.constraint(lessThanOrEqualTo: textlabel.bottomAnchor, constant: 10).priority(.required - 1),
         ])
         
-        
-        contentView.backgroundColor = .systemGray
-        nameLabel.backgroundColor = .systemGreen
-        textlabel.backgroundColor = .systemYellow
-        paddingView.backgroundColor = .systemRed
+        // contentView.backgroundColor = .systemGray
+        // nameLabel.backgroundColor = .systemGreen
+        // textlabel.backgroundColor = .systemYellow
+        // paddingView.backgroundColor = .systemRed
     }
     
 }

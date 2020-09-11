@@ -8,7 +8,7 @@
 import Foundation
 
 extension Twitter.Entity {
-    public struct Tweet: Codable {
+    public class Tweet: Codable {
 
         // Fundamental
         public let createdAt: Date
@@ -38,7 +38,7 @@ extension Twitter.Entity {
         //let possiblySensitiveAppealable: Bool?
         //let retweetCount: Int
         //let retweeted: Bool
-        //let retweetedStatus: RetweetedStatus?
+        public let retweetedStatus: RetweetedStatus?
         //let source: String
         //let truncated: Bool
         
@@ -70,7 +70,7 @@ extension Twitter.Entity {
             //case possiblySensitiveAppealable = "possibly_sensitive_appealable"
             //case retweetCount = "retweet_count"
             //case retweeted = "retweeted"
-            //case retweetedStatus = "retweeted_status"
+            case retweetedStatus = "retweeted_status"
             //case source = "source"
             //case truncated = "truncated"
         }

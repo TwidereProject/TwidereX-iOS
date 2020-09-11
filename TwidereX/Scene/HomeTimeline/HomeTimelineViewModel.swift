@@ -86,6 +86,9 @@ extension HomeTimelineViewModel {
     }
 
     private static func configure(cell: HomeTimelineTableViewCell, tweet: Tweet) {
+        // set retweet
+        cell.retweetNameLabel.text = tweet.retweet == nil ? "" : "Retweet"
+        
         // set avatar
         if let avatarImageURL = tweet.user.avatarImageURL() {
             let placeholderImage = UIImage

@@ -53,6 +53,8 @@ extension APIService {
 }
 
 extension APIService {
+    
+    /// https://developer.twitter.com/en/docs/twitter-api/v1/rate-limits
     final class RequestThrottler {
         var rateLimit: RateLimit?
         
@@ -79,7 +81,7 @@ extension APIService {
             return weights.flatMap { $0 }
         }
         
-        func available() -> Bool {
+        func available(windowSizeInSec window: TimeInterval) -> Bool {
             guard let rateLimit = rateLimit else { return true }
             
             let current = CACurrentMediaTime()
@@ -88,7 +90,7 @@ extension APIService {
             }
             
             let weights = RequestThrottler.weights(limit: rateLimit.limit)
-            let secPerWeight = APIService.homeTimelineRequestWindowInSec / TimeInterval(weights.reduce(0, +))
+            let secPerWeight = window / TimeInterval(weights.reduce(0, +))
             let remainingWeight = TimeInterval(weights.suffix(rateLimit.remaining).reduce(0, +))
             let requestStop = rateLimit.resetAt - (secPerWeight * remainingWeight)
             

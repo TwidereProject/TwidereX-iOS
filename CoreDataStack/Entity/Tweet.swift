@@ -19,10 +19,14 @@ final public class Tweet: NSManagedObject {
     @NSManaged public private(set) var hasMore: Bool
     
     // one-to-one relationship
-    @NSManaged public private(set) var timelineIndex: TimelineIndex
+    @NSManaged public private(set) var timelineIndex: TimelineIndex?
     
     // many-to-one relationship
     @NSManaged public private(set) var user: TwitterUser
+    @NSManaged public private(set) var retweet: Tweet?
+    
+    // one-to-many relationship
+    @NSManaged public private(set) var retweetFrom: Set<Tweet>?
 }
 
 extension Tweet {
@@ -33,7 +37,7 @@ extension Tweet {
     }
     
     @discardableResult
-    public static func insert(into context: NSManagedObjectContext, property: Property, timelineIndex: TimelineIndex, twitterUser: TwitterUser) -> Tweet {
+    public static func insert(into context: NSManagedObjectContext, property: Property, retweet: Tweet?, twitterUser: TwitterUser,  timelineIndex: TimelineIndex?) -> Tweet {
         let tweet: Tweet = context.insertObject()
         tweet.updatedAt = property.networkDate
         
@@ -41,8 +45,9 @@ extension Tweet {
         tweet.createdAt = property.createdAt
         tweet.text = property.text
         
-        tweet.timelineIndex = timelineIndex
+        tweet.retweet = retweet
         tweet.user = twitterUser
+        tweet.timelineIndex = timelineIndex
         return tweet
     }
     
@@ -55,6 +60,18 @@ extension Tweet {
     public func update(hasMore: Bool) {
         if self.hasMore != hasMore {
             self.hasMore = hasMore
+        }
+    }
+    
+    public func update(timelineIndex: TimelineIndex?) {
+        if self.timelineIndex != timelineIndex {
+            self.timelineIndex = timelineIndex
+        }
+    }
+    
+    public func update(retweet: Tweet?) {
+        if self.retweet != retweet {
+            self.retweet = retweet
         }
     }
     
@@ -91,6 +108,15 @@ extension Tweet {
     public static func predicate(idStrs: [String]) -> NSPredicate {
         return NSPredicate(format: "%K IN %@", #keyPath(Tweet.idStr), idStrs)
     }
+    
+    public static func inTimeline() -> NSPredicate {
+        return NSPredicate(format: "%K != nil", #keyPath(Tweet.timelineIndex))
+    }
+    
+    public static func notInTimeline() -> NSPredicate {
+        return NSCompoundPredicate(notPredicateWithSubpredicate: inTimeline())
+    }
+    
 }
 
 extension Tweet {
