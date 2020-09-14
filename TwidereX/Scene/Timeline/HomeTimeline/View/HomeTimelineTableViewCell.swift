@@ -167,6 +167,8 @@ extension HomeTimelineTableViewCell {
 extension HomeTimelineTableViewCell {
     
     private func _init() {
+        selectionStyle = .none
+        
         // container
         let containerStackView = UIStackView()
         containerStackView.axis = .vertical
@@ -266,7 +268,7 @@ extension HomeTimelineTableViewCell {
             paddingView.heightAnchor.constraint(equalToConstant: 12).priority(.defaultHigh),
         ])
         tweetPanelContainerStackView.addArrangedSubview(paddingView)
-//
+
         let tweetPanelContentContainerStackView = UIStackView()
         tweetPanelContainerStackView.addArrangedSubview(tweetPanelContentContainerStackView)
         tweetPanelContentContainerStackView.axis = .horizontal
@@ -276,6 +278,17 @@ extension HomeTimelineTableViewCell {
         tweetPanelContentContainerStackView.addArrangedSubview(retweetButton)
         tweetPanelContentContainerStackView.addArrangedSubview(favoriteButton)
         tweetPanelContentContainerStackView.addArrangedSubview(shareButton)
+        
+        
+        let separatorLine = UIView.separatorLine
+        separatorLine.translatesAutoresizingMaskIntoConstraints = false
+        contentView.addSubview(separatorLine)
+        NSLayoutConstraint.activate([
+            separatorLine.leadingAnchor.constraint(equalTo: contentView.layoutMarginsGuide.leadingAnchor),
+            contentView.layoutMarginsGuide.trailingAnchor.constraint(equalTo: separatorLine.trailingAnchor),
+            contentView.bottomAnchor.constraint(equalTo: separatorLine.bottomAnchor),
+            separatorLine.heightAnchor.constraint(equalToConstant: UIView.separatorLineHeight(of: separatorLine))
+        ])
         
         // default hide panel
         tweetPanelContainerStackView.isHidden = true

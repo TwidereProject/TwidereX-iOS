@@ -176,6 +176,7 @@ extension HomeTimelineViewModel {
         }
         
         snapshot.reloadItems(Array(reloadItems))
+        diffableDataSource.defaultRowAnimation = .automatic
         diffableDataSource.apply(snapshot) // set animation in  cell
     }
 }

@@ -22,6 +22,8 @@ final class HomeTimelineViewController: UIViewController, NeedsDependency {
         tableView.register(HomeTimelineTableViewCell.self, forCellReuseIdentifier: String(describing: HomeTimelineTableViewCell.self))
         tableView.register(HomeTimelineMiddleLoaderCollectionViewCell.self, forCellReuseIdentifier: String(describing: HomeTimelineMiddleLoaderCollectionViewCell.self))
 //        tableView.register(TimelineBottomLoaderCollectionViewCell.self, forCellReuseIdentifier: String(describing: TimelineBottomLoaderCollectionViewCell.self))
+        tableView.estimatedRowHeight = 100      // that fix diffable data source update glitch
+        tableView.separatorStyle = .none
         return tableView
     }()
     
