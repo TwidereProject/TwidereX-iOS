@@ -23,7 +23,23 @@ internal typealias AssetImageTypeAlias = ImageAsset.Image
 internal enum Asset {
   internal static let accentColor = ColorAsset(name: "AccentColor")
   internal enum Arrows {
-    internal static let arrow2Squarepath = ImageAsset(name: "Arrows/arrow.2.squarepath")
+    internal static let mdiTwitterRetweet = ImageAsset(name: "Arrows/mdi.twitter.retweet")
+    internal static let tablerChevronDown = ImageAsset(name: "Arrows/tabler.chevron.down")
+  }
+  internal enum Colors {
+    internal static let heartPink = ColorAsset(name: "Colors/heart.pink")
+    internal static let hightLight = ColorAsset(name: "Colors/hight.light")
+  }
+  internal enum Communication {
+    internal static let mdiMessageReply = ImageAsset(name: "Communication/mdi.message.reply")
+  }
+  internal enum Health {
+    internal static let icRoundFavorite = ImageAsset(name: "Health/ic.round.favorite")
+    internal static let icRoundFavoritePath = ImageAsset(name: "Health/ic.round.favorite.path")
+  }
+  internal enum ObjectTools {
+    internal static let icRoundLocationOn = ImageAsset(name: "Object&Tools/ic.round.location.on")
+    internal static let icRoundShare = ImageAsset(name: "Object&Tools/ic.round.share")
   }
 }
 // swiftlint:enable identifier_name line_length nesting type_body_length type_name

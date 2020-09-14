@@ -19,23 +19,24 @@ final class HomeTimelineTableViewCell: UITableViewCell {
     var disposeBag = Set<AnyCancellable>()
     var dateLabelUpdateSubscription: AnyCancellable?
     
+    let retweetContainerStackView = UIStackView()
+    let tweetPanelContainerStackView = UIStackView()
+
     let avatarImageView: UIImageView = {
         let imageView = UIImageView()
         return imageView
     }()
-    
-    let retweetContainerStackView = UIStackView()
 
     let retweetIconImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.tintColor = .secondaryLabel
-        imageView.image = UIImage(systemName: "arrow.2.squarepath") // Asset.Arrows.arrow2Squarepath.image
+        imageView.image = Asset.Arrows.mdiTwitterRetweet.image.withRenderingMode(.alwaysTemplate)
         return imageView
     }()
     
     let retweetInfoLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 14, weight: .regular)
+        label.font = .systemFont(ofSize: 12, weight: .regular)
         label.textColor = .secondaryLabel
         label.text = "Bob Retweeted"
         return label
@@ -43,15 +44,16 @@ final class HomeTimelineTableViewCell: UITableViewCell {
     
     let nameLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 14, weight: .semibold)
+        label.font = .systemFont(ofSize: 14, weight: .regular)
         label.textColor = .label
+        label.textColor = Asset.Colors.hightLight.color
         label.text = "Alice"
         return label
     }()
     
     let usernameLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 12, weight: .regular)
+        label.font = .systemFont(ofSize: 14, weight: .regular)
         label.textColor = .secondaryLabel
         label.text = "@alice"
         return label
@@ -59,11 +61,18 @@ final class HomeTimelineTableViewCell: UITableViewCell {
     
     let dateLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 12, weight: .regular)
+        label.font = .systemFont(ofSize: 14, weight: .regular)
         label.textAlignment = .right
         label.textColor = .secondaryLabel
         label.text = "1d"
         return label
+    }()
+    
+    let moreMenuButton: UIButton = {
+        let button = UIButton()
+        button.setImage(Asset.Arrows.tablerChevronDown.image.withRenderingMode(.alwaysTemplate), for: .normal)
+        button.imageView?.tintColor = .secondaryLabel
+        return button
     }()
     
     let activeTextLabel: ActiveLabel = {
@@ -71,6 +80,7 @@ final class HomeTimelineTableViewCell: UITableViewCell {
         label.numberOfLines = 0
         label.enabledTypes = [.mention, .hashtag, .url]
         label.textColor = .label
+        label.font = .systemFont(ofSize: 14)
         label.text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
         return label
     }()
@@ -78,7 +88,7 @@ final class HomeTimelineTableViewCell: UITableViewCell {
     let replyButton: UIButton = {
         let button = UIButton()
         button.imageView?.tintColor = .secondaryLabel
-        button.setImage(UIImage(systemName: "arrowshape.turn.up.left"), for: .normal)
+        button.setImage(Asset.Communication.mdiMessageReply.image.withRenderingMode(.alwaysTemplate), for: .normal)
         button.titleLabel?.font = .monospacedSystemFont(ofSize: 12, weight: .regular)
         button.setTitle(HomeTimelineTableViewCell.formattedNumberTitleForButton(nil), for: .normal)
         button.setTitleColor(.secondaryLabel, for: .normal)
@@ -89,7 +99,7 @@ final class HomeTimelineTableViewCell: UITableViewCell {
     let retweetButton: UIButton = {
         let button = UIButton()
         button.imageView?.tintColor = .secondaryLabel
-        button.setImage(UIImage(systemName: "arrow.2.squarepath"), for: .normal)
+        button.setImage(Asset.Arrows.mdiTwitterRetweet.image.withRenderingMode(.alwaysTemplate), for: .normal)
         button.titleLabel?.font = .monospacedSystemFont(ofSize: 12, weight: .regular)
         button.setTitle(HomeTimelineTableViewCell.formattedNumberTitleForButton(nil), for: .normal)
         button.setTitleColor(.secondaryLabel, for: .normal)
@@ -99,8 +109,8 @@ final class HomeTimelineTableViewCell: UITableViewCell {
     
     let favoriteButton: UIButton = {
         let button = UIButton()
+        button.setImage(Asset.Health.icRoundFavoritePath.image.withRenderingMode(.alwaysTemplate), for: .normal)
         button.imageView?.tintColor = .secondaryLabel
-        button.setImage(UIImage(systemName: "heart"), for: .normal)
         button.titleLabel?.font = .monospacedSystemFont(ofSize: 12, weight: .regular)
         button.setTitle(HomeTimelineTableViewCell.formattedNumberTitleForButton(nil), for: .normal)
         button.setTitleColor(.secondaryLabel, for: .normal)
@@ -108,10 +118,10 @@ final class HomeTimelineTableViewCell: UITableViewCell {
         return button
     }()
     
-    let moreButton: UIButton = {
+    let shareButton: UIButton = {
         let button = UIButton()
-        button.setImage(UIImage(systemName: "ellipsis"), for: .normal)
         button.imageView?.tintColor = .secondaryLabel
+        button.setImage(Asset.ObjectTools.icRoundShare.image.withRenderingMode(.alwaysTemplate), for: .normal)
         return button
     }()
     
@@ -212,19 +222,28 @@ extension HomeTimelineTableViewCell {
         tweetContainerStackView.addArrangedSubview(tweetMainContainerStackView)
         tweetMainContainerStackView.axis = .vertical
         
+        // meta info: name | username | date | menu button |
         let tweetMetaInfoContainerStackView = UIStackView()
         tweetMainContainerStackView.addArrangedSubview(tweetMetaInfoContainerStackView)
         tweetMetaInfoContainerStackView.axis = .horizontal
-        tweetMetaInfoContainerStackView.alignment = .firstBaseline
-        tweetMetaInfoContainerStackView.spacing = 10
+        tweetMetaInfoContainerStackView.alignment = .center
+        tweetMetaInfoContainerStackView.spacing = 6
         tweetMetaInfoContainerStackView.addArrangedSubview(nameLabel)
         tweetMetaInfoContainerStackView.addArrangedSubview(usernameLabel)
         tweetMetaInfoContainerStackView.addArrangedSubview(dateLabel)
+        moreMenuButton.translatesAutoresizingMaskIntoConstraints = false
+        tweetMetaInfoContainerStackView.addArrangedSubview(moreMenuButton)
+        NSLayoutConstraint.activate([
+            moreMenuButton.widthAnchor.constraint(equalToConstant: 16),
+            moreMenuButton.heightAnchor.constraint(equalToConstant: 16),
+        ])
         nameLabel.setContentHuggingPriority(.defaultHigh, for: .horizontal)
         usernameLabel.setContentHuggingPriority(.defaultHigh, for: .horizontal)
         usernameLabel.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
         dateLabel.setContentHuggingPriority(.defaultLow, for: .horizontal)
-        dateLabel.setContentCompressionResistancePriority(.required - 1, for: .horizontal)
+        dateLabel.setContentCompressionResistancePriority(.required - 2, for: .horizontal)
+        shareButton.setContentHuggingPriority(.defaultHigh, for: .horizontal)
+        shareButton.setContentCompressionResistancePriority(.required - 1, for: .horizontal)
         
         // align retweet leading to name
         NSLayoutConstraint.activate([
@@ -234,6 +253,11 @@ extension HomeTimelineTableViewCell {
         
         // tweet text
         tweetMainContainerStackView.addArrangedSubview(activeTextLabel)
+    
+        // tweet panel container
+        tweetMainContainerStackView.addArrangedSubview(tweetPanelContainerStackView)
+        tweetPanelContainerStackView.axis = .vertical
+        tweetPanelContainerStackView.distribution = .fill
         
         let paddingView = UIView()
         paddingView.translatesAutoresizingMaskIntoConstraints = false
@@ -241,17 +265,20 @@ extension HomeTimelineTableViewCell {
         NSLayoutConstraint.activate([
             paddingView.heightAnchor.constraint(equalToConstant: 12).priority(.defaultHigh),
         ])
+        tweetPanelContainerStackView.addArrangedSubview(paddingView)
+//
+        let tweetPanelContentContainerStackView = UIStackView()
+        tweetPanelContainerStackView.addArrangedSubview(tweetPanelContentContainerStackView)
+        tweetPanelContentContainerStackView.axis = .horizontal
+        tweetPanelContentContainerStackView.distribution = .equalSpacing
+
+        tweetPanelContentContainerStackView.addArrangedSubview(replyButton)
+        tweetPanelContentContainerStackView.addArrangedSubview(retweetButton)
+        tweetPanelContentContainerStackView.addArrangedSubview(favoriteButton)
+        tweetPanelContentContainerStackView.addArrangedSubview(shareButton)
         
-        // tweet panel container
-        let tweetPanelContainerStackView = UIStackView()
-        tweetMainContainerStackView.addArrangedSubview(tweetPanelContainerStackView)
-        tweetPanelContainerStackView.axis = .horizontal
-        tweetPanelContainerStackView.distribution = .equalSpacing
-        
-        tweetPanelContainerStackView.addArrangedSubview(replyButton)
-        tweetPanelContainerStackView.addArrangedSubview(retweetButton)
-        tweetPanelContainerStackView.addArrangedSubview(favoriteButton)
-        tweetPanelContainerStackView.addArrangedSubview(moreButton)
+        // default hide panel
+        tweetPanelContainerStackView.isHidden = true
     }
     
 }
@@ -278,6 +305,15 @@ struct HomeTimelineTableViewCell_Previews: PreviewProvider {
             UIViewPreview {
                 let cell = HomeTimelineTableViewCell()
                 cell.avatarImageView.image = avatarImage
+                cell.retweetContainerStackView.isHidden = true
+                cell.tweetPanelContainerStackView.isHidden = false
+                return cell
+            }
+            .previewDisplayName("Expand")
+            .previewLayout(.fixed(width: 375, height: 200))
+            UIViewPreview {
+                let cell = HomeTimelineTableViewCell()
+                cell.avatarImageView.image = avatarImage
                 return cell
             }
             .previewDisplayName("Retweet")
@@ -285,9 +321,11 @@ struct HomeTimelineTableViewCell_Previews: PreviewProvider {
             UIViewPreview {
                 let cell = HomeTimelineTableViewCell()
                 cell.avatarImageView.image = avatarImage
+                cell.favoriteButton.imageView?.tintColor = Asset.Colors.heartPink.color
+                cell.favoriteButton.setImage(Asset.Health.icRoundFavorite.image.withRenderingMode(.alwaysTemplate), for: .normal)
                 return cell
             }
-            .previewDisplayName("Dark")
+            .previewDisplayName("Dark + Favorite")
             .preferredColorScheme(.dark)
             .previewLayout(.fixed(width: 375, height: 200))
         }

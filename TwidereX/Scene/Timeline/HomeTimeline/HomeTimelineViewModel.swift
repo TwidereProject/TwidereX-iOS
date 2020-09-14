@@ -27,7 +27,6 @@ final class HomeTimelineViewModel: NSObject {
     weak var tableView: UITableView?
     
     // output
-    //var timelineItems: [TimelineItem] = []
     var currentTwitterAuthentication = CurrentValueSubject<TwitterAuthentication?, Never>(nil)
     var diffableDataSource: UITableViewDiffableDataSource<TimelineSection, TimelineItem>?
     
@@ -56,18 +55,21 @@ final class HomeTimelineViewModel: NSObject {
 extension HomeTimelineViewModel {
 
     func setupDiffableDataSource(for tableView: UITableView) {
-        diffableDataSource = UITableViewDiffableDataSource(tableView: tableView) { tableView, indexPath, item -> UITableViewCell? in
+        diffableDataSource = UITableViewDiffableDataSource(tableView: tableView) { [weak self] tableView, indexPath, item -> UITableViewCell? in
+            guard let self = self else { return nil }
+            
             switch item {
-            case .homeTimelineIndex(let objectID):
+            case .homeTimelineIndex(let objectID, let expandStatus):
                 let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: HomeTimelineTableViewCell.self), for: indexPath) as! HomeTimelineTableViewCell
                 
                 // configure cell
                 let managedObjectContext = self.fetchedResultsController.managedObjectContext
                 managedObjectContext.performAndWait {
                     let timelineIndex = managedObjectContext.object(with: objectID) as! TimelineIndex
-                    HomeTimelineViewModel.configure(cell: cell, timelineIndex: timelineIndex)
+                    HomeTimelineViewModel.configure(cell: cell, timelineIndex: timelineIndex, expandStatus: expandStatus)
                 }
-                
+//                cell.setNeedsLayout()
+//                cell.layoutIfNeeded()
                 return cell
             case .homeTimelineMiddleLoader(let upper):
                 let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: HomeTimelineMiddleLoaderCollectionViewCell.self), for: indexPath) as! HomeTimelineMiddleLoaderCollectionViewCell
@@ -79,13 +81,13 @@ extension HomeTimelineViewModel {
         }
     }
     
-    static func configure(cell: HomeTimelineTableViewCell, timelineIndex: TimelineIndex) {
+    static func configure(cell: HomeTimelineTableViewCell, timelineIndex: TimelineIndex, expandStatus: TimelineItem.ExpandStatus) {
         if let tweet = timelineIndex.tweet {
-            configure(cell: cell, tweet: tweet)
+            configure(cell: cell, tweet: tweet, expandStatus: expandStatus)
         }
     }
 
-    private static func configure(cell: HomeTimelineTableViewCell, tweet: Tweet) {
+    private static func configure(cell: HomeTimelineTableViewCell, tweet: Tweet, expandStatus: TimelineItem.ExpandStatus) {
         // set retweet display
         cell.retweetContainerStackView.isHidden = tweet.retweet == nil ? true : false
         cell.retweetInfoLabel.text = tweet.user.name.flatMap { $0 + " Retweeted" } ?? " "
@@ -135,9 +137,47 @@ extension HomeTimelineViewModel {
             return HomeTimelineTableViewCell.formattedNumberTitleForButton(count)
         }()
         cell.favoriteButton.setTitle(favoriteCountTitle, for: .normal)
-        
+        // set panel display
+        cell.tweetPanelContainerStackView.isHidden = !expandStatus.isExpand
     }
     
+}
+
+extension HomeTimelineViewModel {
+    func focus(cell: HomeTimelineTableViewCell, in tableView: UITableView, at indexPath: IndexPath)  {
+        guard let diffableDataSource = self.diffableDataSource else {
+            assertionFailure()
+            return
+        }
+        
+        guard let focusedTimelineItem = diffableDataSource.itemIdentifier(for: indexPath) else {
+            return
+        }
+        
+        var snapshot = diffableDataSource.snapshot()
+        
+        var reloadItems: Set<TimelineItem> = Set()
+        for item in snapshot.itemIdentifiers where item != focusedTimelineItem {
+            switch item {
+            case .homeTimelineIndex(_, let expandStatus) where expandStatus.isExpand:
+                expandStatus.isExpand = false
+                reloadItems.insert(item)
+            default:
+                continue
+            }
+        }
+        
+        switch focusedTimelineItem {
+        case .homeTimelineIndex(_, let expandStatus):
+            expandStatus.isExpand.toggle()
+            reloadItems.insert(focusedTimelineItem)
+        default:
+            break
+        }
+        
+        snapshot.reloadItems(Array(reloadItems))
+        diffableDataSource.apply(snapshot) // set animation in  cell
+    }
 }
 
 // MARK: - NSFetchedResultsControllerDelegate
@@ -162,9 +202,18 @@ extension HomeTimelineViewModel: NSFetchedResultsControllerDelegate {
         managedObjectContext.performAndWait {
             //var items: [TimelineItem] = []
             for (i, objectID) in snapshot.itemIdentifiers.enumerated() {
+                let expandStatus: TimelineItem.ExpandStatus = {
+                    for item in oldSnapshot.itemIdentifiers {
+                        guard case let .homeTimelineIndex(oldObjectID, expandStatus) = item else { continue }
+                        guard objectID == oldObjectID else { continue }
+                        return expandStatus
+                    }
+                    
+                    return TimelineItem.ExpandStatus()
+                }()
+                
                 // save into buffer
-                newSnapshot.appendItems([.homeTimelineIndex(objectID)], toSection: .main)
-                //items.append(.homeTimelineIndex(objectID))
+                newSnapshot.appendItems([.homeTimelineIndex(objectID: objectID, expandStatus: expandStatus)], toSection: .main)
 
                 let timelineIndex = managedObjectContext.object(with: objectID) as! TimelineIndex
                 if let tweet = timelineIndex.tweet {
@@ -172,10 +221,8 @@ extension HomeTimelineViewModel: NSFetchedResultsControllerDelegate {
                         let isLast = i == snapshot.itemIdentifiers.count - 1
                         if isLast {
                             newSnapshot.appendItems([.bottomLoader], toSection: .main)
-                            //items.append(.bottomLoader)
                         } else {
                             newSnapshot.appendItems([.homeTimelineMiddleLoader(upper: tweet.tweetID)], toSection: .main)
-                            //items.append(.homeTimelineMiddleLoader(upper: tweet.tweetID))
                         }
                     } else {
                         // do nothing

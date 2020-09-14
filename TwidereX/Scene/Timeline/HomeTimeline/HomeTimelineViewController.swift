@@ -171,6 +171,14 @@ extension HomeTimelineViewController {
 // MARK: - UITableViewDelegate
 extension HomeTimelineViewController: UITableViewDelegate {
     
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        os_log("%{public}s[%{public}ld], %{public}s: indexPath %s", ((#file as NSString).lastPathComponent), #line, #function, indexPath.debugDescription)
+        
+        if let cell = tableView.cellForRow(at: indexPath) as? HomeTimelineTableViewCell {
+            viewModel.focus(cell: cell, in: tableView, at: indexPath)
+        }
+    }
+    
 }
 
 extension HomeTimelineViewController: ContentOffsetAdjustableTimelineViewControllerDelegate {
