@@ -12,15 +12,26 @@ import ActiveLabel
 
 final class HomeTimelineTableViewCell: UITableViewCell {
 
+    static let verticalMargin: CGFloat = 8
     static let avatarImageViewSize = CGSize(width: 48, height: 48)
     static let buttonTitleImagePadding: CGFloat = 4
-    static let verticalMargin: CGFloat = 8
+    static let tweetImageContainerStackViewDefaultHeight: CGFloat = 160
+    static let tweetImageContainerStackViewMaxHeight: CGFloat = UIScreen.main.bounds.width * 0.8
     
     var disposeBag = Set<AnyCancellable>()
     var dateLabelUpdateSubscription: AnyCancellable?
     
     let retweetContainerStackView = UIStackView()
     let tweetPanelContainerStackView = UIStackView()
+    let tweetImageContainerStackView: UIStackView = {
+        let stackView = UIStackView()
+        stackView.axis = .horizontal
+        stackView.layer.masksToBounds = true
+        stackView.layer.cornerRadius = 8
+        stackView.distribution = .fillEqually
+        return stackView
+    }()
+    var tweetImageContainerStackViewHeightLayoutConstraint: NSLayoutConstraint!
 
     let avatarImageView: UIImageView = {
         let imageView = UIImageView()
@@ -168,6 +179,7 @@ extension HomeTimelineTableViewCell {
     
     private func _init() {
         selectionStyle = .none
+        contentView.backgroundColor = .systemBackground
         
         // container
         let containerStackView = UIStackView()
@@ -255,6 +267,15 @@ extension HomeTimelineTableViewCell {
         
         // tweet text
         tweetMainContainerStackView.addArrangedSubview(activeTextLabel)
+        
+        // tweet image
+        tweetImageContainerStackView.translatesAutoresizingMaskIntoConstraints = false
+        tweetImageContainerStackViewHeightLayoutConstraint = tweetImageContainerStackView.heightAnchor.constraint(equalToConstant: 162).priority(.required - 1)
+        tweetMainContainerStackView.addArrangedSubview(tweetImageContainerStackView)
+        NSLayoutConstraint.activate([
+            tweetImageContainerStackViewHeightLayoutConstraint,
+        ])
+        tweetImageContainerStackView.setContentHuggingPriority(.defaultHigh, for: .vertical)
     
         // tweet panel container
         tweetMainContainerStackView.addArrangedSubview(tweetPanelContainerStackView)
@@ -279,18 +300,18 @@ extension HomeTimelineTableViewCell {
         tweetPanelContentContainerStackView.addArrangedSubview(favoriteButton)
         tweetPanelContentContainerStackView.addArrangedSubview(shareButton)
         
-        
         let separatorLine = UIView.separatorLine
         separatorLine.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(separatorLine)
         NSLayoutConstraint.activate([
-            separatorLine.leadingAnchor.constraint(equalTo: contentView.layoutMarginsGuide.leadingAnchor),
+            separatorLine.leadingAnchor.constraint(equalTo: nameLabel.leadingAnchor),
             contentView.layoutMarginsGuide.trailingAnchor.constraint(equalTo: separatorLine.trailingAnchor),
             contentView.bottomAnchor.constraint(equalTo: separatorLine.bottomAnchor),
             separatorLine.heightAnchor.constraint(equalToConstant: UIView.separatorLineHeight(of: separatorLine))
         ])
         
-        // default hide panel
+        // default hide image, panel
+        tweetImageContainerStackView.isHidden = true
         tweetPanelContainerStackView.isHidden = true
     }
     

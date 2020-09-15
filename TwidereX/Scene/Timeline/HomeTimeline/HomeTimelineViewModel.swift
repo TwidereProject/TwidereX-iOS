@@ -6,6 +6,7 @@
 //
 
 import os.log
+import func AVFoundation.AVMakeRect
 import UIKit
 import Combine
 import CoreData
@@ -29,6 +30,7 @@ final class HomeTimelineViewModel: NSObject {
     // output
     var currentTwitterAuthentication = CurrentValueSubject<TwitterAuthentication?, Never>(nil)
     var diffableDataSource: UITableViewDiffableDataSource<TimelineSection, TimelineItem>?
+    var cellFrameCache = NSCache<NSNumber, NSValue>()
     
     init(context: AppContext) {
         self.context  = context
@@ -130,15 +132,112 @@ extension HomeTimelineViewModel {
             let count = (tweet.retweet ?? tweet).retweetCount.flatMap { Int(truncating: $0) }
             return HomeTimelineTableViewCell.formattedNumberTitleForButton(count)
         }()
-        cell.favoriteButton.setTitle(retweetCountTitle, for: .normal)
+        cell.retweetButton.setTitle(retweetCountTitle, for: .normal)
         
         let favoriteCountTitle: String = {
             let count = (tweet.retweet ?? tweet).favoriteCount.flatMap { Int(truncating: $0) }
             return HomeTimelineTableViewCell.formattedNumberTitleForButton(count)
         }()
         cell.favoriteButton.setTitle(favoriteCountTitle, for: .normal)
+        
+        
+        // set image display
+        let media = tweet.extendedEntities?.media ?? []
+        for subview in cell.tweetImageContainerStackView.arrangedSubviews {
+            cell.tweetImageContainerStackView.removeArrangedSubview(subview)
+            subview.removeFromSuperview()
+        }
+        var mosaicMetas: [MosaicMeta] = []
+        for element in media {
+            guard let (url, size) = element.photoURL(sizeKind: .small) else { continue }
+            let meta = MosaicMeta(url: url, size: size)
+            mosaicMetas.append(meta)
+        }
+        cell.tweetImageContainerStackView.isHidden = mosaicMetas.isEmpty
+        if mosaicMetas.count == 1 {
+            let maxHeight = HomeTimelineTableViewCell.tweetImageContainerStackViewMaxHeight
+            let meta = mosaicMetas[0]
+            let rect = AVMakeRect(aspectRatio: meta.size, insideRect: CGRect(origin: .zero, size: CGSize(width: cell.tweetImageContainerStackView.frame.width, height: maxHeight)))
+            let imageView = UIImageView()
+            imageView.contentMode = .scaleAspectFill
+            imageView.af.setImage(
+                withURL: meta.url,
+                placeholderImage: UIImage.placeholder(color: .systemFill),
+                imageTransition: .crossDissolve(0.2)
+            )
+            let container = UIView()
+            container.translatesAutoresizingMaskIntoConstraints = false
+            cell.tweetImageContainerStackView.addArrangedSubview(container)
+            
+            imageView.layer.masksToBounds = true
+            imageView.layer.cornerRadius = 8
+            imageView.translatesAutoresizingMaskIntoConstraints = false
+            container.addSubview(imageView)
+            NSLayoutConstraint.activate([
+                imageView.topAnchor.constraint(equalTo: container.topAnchor),
+                imageView.leadingAnchor.constraint(equalTo: container.leadingAnchor),
+                imageView.bottomAnchor.constraint(equalTo: container.bottomAnchor),
+                imageView.widthAnchor.constraint(equalToConstant: rect.width),
+            ])
+
+            cell.tweetImageContainerStackViewHeightLayoutConstraint.constant = rect.height
+            // os_log("%{public}s[%{public}ld], %{public}s: preview image %s", ((#file as NSString).lastPathComponent), #line, #function, meta.url.debugDescription)
+        } else {
+            let imageViews: [UIImageView] = mosaicMetas.map { meta in
+                let imageView = UIImageView()
+                imageView.contentMode = .scaleAspectFill
+                imageView.af.setImage(
+                    withURL: meta.url,
+                    placeholderImage: UIImage.placeholder(color: .systemFill),
+                    imageTransition: .crossDissolve(0.2)
+                )
+                return imageView
+            }
+            
+            let leftVerticalStackView: UIStackView = {
+                let stackView = UIStackView()
+                stackView.axis = .vertical
+                stackView.distribution = .fillEqually
+                return stackView
+            }()
+            let rightVerticalStackView: UIStackView = {
+                let stackView = UIStackView()
+                stackView.axis = .vertical
+                stackView.distribution = .fillEqually
+                return stackView
+            }()
+            cell.tweetImageContainerStackView.addArrangedSubview(leftVerticalStackView)
+            cell.tweetImageContainerStackView.addArrangedSubview(rightVerticalStackView)
+            imageViews.forEach {
+                $0.layer.masksToBounds = true
+            }
+            
+            if mosaicMetas.count == 2 {
+                leftVerticalStackView.addArrangedSubview(imageViews[0])
+                rightVerticalStackView.addArrangedSubview(imageViews[1])
+            } else if mosaicMetas.count == 3 {
+                leftVerticalStackView.addArrangedSubview(imageViews[0])
+                rightVerticalStackView.addArrangedSubview(imageViews[1])
+                rightVerticalStackView.addArrangedSubview(imageViews[2])
+            } else if mosaicMetas.count == 4 {
+                leftVerticalStackView.addArrangedSubview(imageViews[0])
+                rightVerticalStackView.addArrangedSubview(imageViews[1])
+                leftVerticalStackView.addArrangedSubview(imageViews[2])
+                rightVerticalStackView.addArrangedSubview(imageViews[3])
+            }
+            
+            cell.tweetImageContainerStackViewHeightLayoutConstraint.constant = HomeTimelineTableViewCell.tweetImageContainerStackViewDefaultHeight
+        }
+        
+        
         // set panel display
+        cell.tweetPanelContainerStackView.alpha = !expandStatus.isExpand ? 0 : 1
         cell.tweetPanelContainerStackView.isHidden = !expandStatus.isExpand
+    }
+    
+    struct MosaicMeta {
+        let url: URL
+        let size: CGSize
     }
     
 }
@@ -176,8 +275,8 @@ extension HomeTimelineViewModel {
         }
         
         snapshot.reloadItems(Array(reloadItems))
-        diffableDataSource.defaultRowAnimation = .automatic
-        diffableDataSource.apply(snapshot) // set animation in  cell
+        diffableDataSource.defaultRowAnimation = .none
+        diffableDataSource.apply(snapshot) // set animation in cell
     }
 }
 

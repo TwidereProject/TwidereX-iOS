@@ -443,7 +443,6 @@ extension APIService {
         guard networkDate > tweet.updatedAt else { return }
         
         // merge attributes
-        tweet.update(text: entity.text)
         tweet.update(retweetCount: entity.retweetCount)
         tweet.update(favoriteCount: entity.favoriteCount)
         entity.retweeted.flatMap { tweet.update(retweeted: $0) }

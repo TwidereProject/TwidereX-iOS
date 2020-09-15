@@ -15,6 +15,8 @@ extension Tweet.Property {
             idStr: entity.idStr,
             createdAt: entity.createdAt,
             text: entity.text,
+            entities: entity.entities,
+            extendedEntities: entity.extendedEntities,
             retweetCount: entity.retweetCount,
             retweeted: entity.retweeted ?? false,
             favoriteCount: entity.favoriteCount,

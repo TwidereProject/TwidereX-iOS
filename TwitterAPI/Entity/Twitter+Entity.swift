@@ -7,6 +7,4 @@
 
 import Foundation
 
-extension Twitter.Entity {
-
-}
+extension Twitter.Entity { }

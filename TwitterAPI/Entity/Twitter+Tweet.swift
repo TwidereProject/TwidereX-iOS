@@ -23,9 +23,12 @@ extension Twitter.Entity {
 
         //let contributors: JSONNull?
         //let coordinates: Coordinates?
-        //let extendedEntities: TimelineExtendedEntities?
-        public let favoriteCount: Int?
         public let favorited: Bool?
+        public let favoriteCount: Int?
+
+        public let retweeted: Bool?
+        public let retweetCount: Int?
+        public let retweetedStatus: RetweetedStatus?
         //let geo: Coordinates?
         //let inReplyToScreenName: JSONNull?
         //let inReplyToStatusID: JSONNull?
@@ -36,13 +39,10 @@ extension Twitter.Entity {
         //let lang: Lang
         //let possiblySensitive: Bool?
         //let possiblySensitiveAppealable: Bool?
-        public let retweetCount: Int?
-        public let retweeted: Bool?
-        public let retweetedStatus: RetweetedStatus?
         
         public let quotedStatusIDStr: String?
         public let quotedStatus: QuotedStatus?
-        
+                
         //let source: String
         //let truncated: Bool
         
@@ -60,8 +60,16 @@ extension Twitter.Entity {
 
             //case contributors = "contributors"
             //case coordinates = "coordinates"
-            case favoriteCount = "favorite_count"
             case favorited = "favorited"
+            case favoriteCount = "favorite_count"
+            
+            case retweeted = "retweeted"
+            case retweetCount = "retweet_count"
+            case retweetedStatus = "retweeted_status"
+
+            case quotedStatusIDStr = "quoted_status_id_str"
+            case quotedStatus = "quoted_status"
+            
             //case geo = "geo"
             //case inReplyToScreenName = "in_reply_to_screen_name"
             //case inReplyToStatusID = "in_reply_to_status_id"
@@ -72,11 +80,6 @@ extension Twitter.Entity {
             //case lang = "lang"
             //case possiblySensitive = "possibly_sensitive"
             //case possiblySensitiveAppealable = "possibly_sensitive_appealable"
-            case retweetCount = "retweet_count"
-            case retweeted = "retweeted"
-            case retweetedStatus = "retweeted_status"
-            case quotedStatusIDStr = "quoted_status_id_str"
-            case quotedStatus = "quoted_status"
             //case source = "source"
             //case truncated = "truncated"
         }

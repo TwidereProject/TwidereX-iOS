@@ -8,6 +8,7 @@
 import os.log
 import UIKit
 import Combine
+import CoreDataStack
 
 final class HomeTimelineViewController: UIViewController, NeedsDependency {
     
@@ -22,7 +23,7 @@ final class HomeTimelineViewController: UIViewController, NeedsDependency {
         tableView.register(HomeTimelineTableViewCell.self, forCellReuseIdentifier: String(describing: HomeTimelineTableViewCell.self))
         tableView.register(HomeTimelineMiddleLoaderCollectionViewCell.self, forCellReuseIdentifier: String(describing: HomeTimelineMiddleLoaderCollectionViewCell.self))
 //        tableView.register(TimelineBottomLoaderCollectionViewCell.self, forCellReuseIdentifier: String(describing: TimelineBottomLoaderCollectionViewCell.self))
-        tableView.estimatedRowHeight = 100      // that fix diffable data source update glitch
+        tableView.rowHeight = UITableView.automaticDimension
         tableView.separatorStyle = .none
         return tableView
     }()
@@ -31,6 +32,7 @@ final class HomeTimelineViewController: UIViewController, NeedsDependency {
 }
 
 extension HomeTimelineViewController {
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -84,6 +86,19 @@ extension HomeTimelineViewController {
                 }
             }
             .store(in: &disposeBag)
+    }
+ 
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
+        
+        coordinator.animate { _ in
+            // do nothing
+        } completion: { _ in
+            // fix AutoLayout cell height not update after rotate issue
+            self.viewModel.cellFrameCache.removeAllObjects()
+            self.tableView.reloadData()
+            
+        }
     }
 }
 
@@ -173,12 +188,33 @@ extension HomeTimelineViewController {
 // MARK: - UITableViewDelegate
 extension HomeTimelineViewController: UITableViewDelegate {
     
+    func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
+        guard let diffableDataSource = viewModel.diffableDataSource else { return 100 }
+        guard let item = diffableDataSource.itemIdentifier(for: indexPath) else { return 100 }
+        
+        guard let frame = viewModel.cellFrameCache.object(forKey: NSNumber(value: item.hashValue))?.cgRectValue else {
+            return 100
+        }
+        os_log("%{public}s[%{public}ld], %{public}s: cache cell frame %s", ((#file as NSString).lastPathComponent), #line, #function, frame.debugDescription)
+
+        return frame.height
+    }
+    
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         os_log("%{public}s[%{public}ld], %{public}s: indexPath %s", ((#file as NSString).lastPathComponent), #line, #function, indexPath.debugDescription)
         
         if let cell = tableView.cellForRow(at: indexPath) as? HomeTimelineTableViewCell {
             viewModel.focus(cell: cell, in: tableView, at: indexPath)
         }
+    }
+    
+    func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        guard let diffableDataSource = viewModel.diffableDataSource else { return }
+        guard let item = diffableDataSource.itemIdentifier(for: indexPath) else { return }
+        
+        let key = item.hashValue
+        let frame = cell.frame
+        viewModel.cellFrameCache.setObject(NSValue(cgRect: frame), forKey: NSNumber(value: key))
     }
     
 }

@@ -7,6 +7,7 @@
 
 import Foundation
 import CoreData
+import TwitterAPI
 
 final public class Tweet: NSManagedObject {
     
@@ -15,7 +16,57 @@ final public class Tweet: NSManagedObject {
     @NSManaged public private(set) var idStr: String
     @NSManaged public private(set) var createdAt: Date
     @NSManaged public private(set) var updatedAt: Date
+    
     @NSManaged public private(set) var text: String
+    
+    @NSManaged public private(set) var entitiesRaw: Data
+    public var entities: Twitter.Entity.Entities {
+        get {
+            do {
+                let value = try JSONDecoder().decode(Twitter.Entity.Entities.self, from: entitiesRaw)
+                return value
+            } catch {
+                assertionFailure()
+                return Twitter.Entity.Entities()
+            }
+        }
+        set {
+            do {
+                let data = try JSONEncoder().encode(newValue)
+                entitiesRaw = data
+            } catch {
+                assertionFailure()
+                entitiesRaw = Data()
+            }
+        }
+    }
+    @NSManaged public private(set) var extendedEntitiesRaw: Data?
+    public var extendedEntities: Twitter.Entity.ExtendedEntities? {
+        get {
+            guard let data = extendedEntitiesRaw else { return nil }
+            do {
+                let value = try JSONDecoder().decode(Twitter.Entity.ExtendedEntities.self, from: data)
+                return value
+            } catch {
+                assertionFailure()
+                return nil
+            }
+        }
+        set {
+            guard let newValue = newValue else {
+                extendedEntitiesRaw = nil
+                return
+            }
+            do {
+                let data = try JSONEncoder().encode(newValue)
+                extendedEntitiesRaw = data
+            } catch {
+                assertionFailure()
+                extendedEntitiesRaw = nil
+            }
+        }
+    }
+    
     @NSManaged public private(set) var hasMore: Bool
     
     @NSManaged public private(set) var retweetCount: NSNumber?
@@ -53,7 +104,10 @@ extension Tweet {
         
         tweet.idStr = property.idStr
         tweet.createdAt = property.createdAt
+        
         tweet.text = property.text
+        tweet.entities = property.entities
+        tweet.extendedEntities = property.extendedEntities
         
         tweet.timelineIndex = timelineIndex
         tweet.user = twitterUser
@@ -61,13 +115,7 @@ extension Tweet {
         tweet.quote = quote
         return tweet
     }
-    
-    public func update(text: String) {
-        if self.text != text {
-            self.text = text
-        }
-    }
-    
+
     public func update(retweetCount: Int?) {
         let retweetCount = retweetCount.flatMap { NSNumber(value: $0) }
         if self.retweetCount != retweetCount {
@@ -122,7 +170,10 @@ extension Tweet {
     public struct Property: NetworkUpdatable {
         public let idStr: String
         public let createdAt: Date
+        
         public let text: String
+        public let entities: Twitter.Entity.Entities
+        public let extendedEntities: Twitter.Entity.ExtendedEntities?
         
         public let retweetCount: Int?
         public let retweeted: Bool
@@ -138,6 +189,8 @@ extension Tweet {
             idStr: String,
             createdAt: Date,
             text: String,
+            entities: Twitter.Entity.Entities,
+            extendedEntities: Twitter.Entity.ExtendedEntities?,
             retweetCount: Int?,
             retweeted: Bool,
             favoriteCount: Int?,
@@ -147,7 +200,10 @@ extension Tweet {
         ) {
             self.idStr = idStr
             self.createdAt = createdAt
+            
             self.text = text
+            self.entities = entities
+            self.extendedEntities = extendedEntities
             
             self.retweetCount = retweetCount
             self.retweeted = retweeted
