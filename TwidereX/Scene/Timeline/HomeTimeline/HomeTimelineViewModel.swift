@@ -70,8 +70,6 @@ extension HomeTimelineViewModel {
                     let timelineIndex = managedObjectContext.object(with: objectID) as! TimelineIndex
                     HomeTimelineViewModel.configure(cell: cell, timelineIndex: timelineIndex, expandStatus: expandStatus)
                 }
-//                cell.setNeedsLayout()
-//                cell.layoutIfNeeded()
                 return cell
             case .homeTimelineMiddleLoader(let upper):
                 let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: HomeTimelineMiddleLoaderCollectionViewCell.self), for: indexPath) as! HomeTimelineMiddleLoaderCollectionViewCell
@@ -229,7 +227,44 @@ extension HomeTimelineViewModel {
             cell.tweetImageContainerStackViewHeightLayoutConstraint.constant = HomeTimelineTableViewCell.tweetImageContainerStackViewDefaultHeight
         }
         
+        // set quote display
+        let quote = tweet.retweet?.quote ?? tweet.quote
+        if let quote = quote {
+            // set avatar
+            if let avatarImageURL = quote.user.avatarImageURL() {
+                let placeholderImage = UIImage
+                    .placeholder(size: HomeTimelineTableViewCell.avatarImageViewSize, color: .systemFill)
+                    .af.imageRoundedIntoCircle()
+                let filter = ScaledToSizeCircleFilter(size: HomeTimelineTableViewCell.avatarImageViewSize)
+                cell.quoteView.avatarImageView.af.setImage(
+                    withURL: avatarImageURL,
+                    placeholderImage: placeholderImage,
+                    filter: filter,
+                    imageTransition: .crossDissolve(0.2)
+                )
+            } else {
+                assertionFailure()
+            }
+            
+            // set name and username
+            cell.quoteView.nameLabel.text = quote.user.name
+            cell.quoteView.usernameLabel.text = quote.user.screenName.flatMap { "@" + $0 }
+            
+            // set date
+            let createdAt = quote.createdAt
+            cell.quoteView.dateLabel.text = createdAt.shortTimeAgoSinceNow
+            cell.quoteDateLabelUpdateSubscription = Timer.publish(every: 1, on: .main, in: .default)
+                .autoconnect()
+                .sink { _ in
+                    // do not use core date entity in this run loop
+                    cell.quoteView.dateLabel.text = createdAt.shortTimeAgoSinceNow
+                }
+            
+            // set text
+            cell.quoteView.activeTextLabel.text = quote.text
+        }
         
+        cell.tweetQuoteContainerStackView.isHidden = quote == nil
         // set panel display
         cell.tweetPanelContainerStackView.alpha = !expandStatus.isExpand ? 0 : 1
         cell.tweetPanelContainerStackView.isHidden = !expandStatus.isExpand

@@ -20,6 +20,7 @@ final class HomeTimelineTableViewCell: UITableViewCell {
     
     var disposeBag = Set<AnyCancellable>()
     var dateLabelUpdateSubscription: AnyCancellable?
+    var quoteDateLabelUpdateSubscription: AnyCancellable?
     
     let retweetContainerStackView = UIStackView()
     let tweetPanelContainerStackView = UIStackView()
@@ -32,6 +33,7 @@ final class HomeTimelineTableViewCell: UITableViewCell {
         return stackView
     }()
     var tweetImageContainerStackViewHeightLayoutConstraint: NSLayoutConstraint!
+    let tweetQuoteContainerStackView = UIStackView()
 
     let avatarImageView: UIImageView = {
         let imageView = UIImageView()
@@ -96,11 +98,13 @@ final class HomeTimelineTableViewCell: UITableViewCell {
         return label
     }()
     
+    let quoteView = TweetQuoteView()
+    
     let replyButton: UIButton = {
         let button = UIButton()
         button.imageView?.tintColor = .secondaryLabel
         button.setImage(Asset.Communication.mdiMessageReply.image.withRenderingMode(.alwaysTemplate), for: .normal)
-        button.titleLabel?.font = .monospacedSystemFont(ofSize: 12, weight: .regular)
+        button.titleLabel?.font = .monospacedDigitSystemFont(ofSize: 12, weight: .regular)
         button.setTitle(HomeTimelineTableViewCell.formattedNumberTitleForButton(nil), for: .normal)
         button.setTitleColor(.secondaryLabel, for: .normal)
         button.setInsets(forContentPadding: .zero, imageTitlePadding: HomeTimelineTableViewCell.buttonTitleImagePadding)
@@ -111,7 +115,7 @@ final class HomeTimelineTableViewCell: UITableViewCell {
         let button = UIButton()
         button.imageView?.tintColor = .secondaryLabel
         button.setImage(Asset.Arrows.mdiTwitterRetweet.image.withRenderingMode(.alwaysTemplate), for: .normal)
-        button.titleLabel?.font = .monospacedSystemFont(ofSize: 12, weight: .regular)
+        button.titleLabel?.font = .monospacedDigitSystemFont(ofSize: 12, weight: .regular)
         button.setTitle(HomeTimelineTableViewCell.formattedNumberTitleForButton(nil), for: .normal)
         button.setTitleColor(.secondaryLabel, for: .normal)
         button.setInsets(forContentPadding: .zero, imageTitlePadding: HomeTimelineTableViewCell.buttonTitleImagePadding)
@@ -122,7 +126,7 @@ final class HomeTimelineTableViewCell: UITableViewCell {
         let button = UIButton()
         button.setImage(Asset.Health.icRoundFavoritePath.image.withRenderingMode(.alwaysTemplate), for: .normal)
         button.imageView?.tintColor = .secondaryLabel
-        button.titleLabel?.font = .monospacedSystemFont(ofSize: 12, weight: .regular)
+        button.titleLabel?.font = .monospacedDigitSystemFont(ofSize: 12, weight: .regular)
         button.setTitle(HomeTimelineTableViewCell.formattedNumberTitleForButton(nil), for: .normal)
         button.setTitleColor(.secondaryLabel, for: .normal)
         button.setInsets(forContentPadding: .zero, imageTitlePadding: HomeTimelineTableViewCell.buttonTitleImagePadding)
@@ -276,19 +280,34 @@ extension HomeTimelineTableViewCell {
             tweetImageContainerStackViewHeightLayoutConstraint,
         ])
         tweetImageContainerStackView.setContentHuggingPriority(.defaultHigh, for: .vertical)
+        
+        // tweet quote
+        tweetMainContainerStackView.addArrangedSubview(tweetQuoteContainerStackView)
+        tweetQuoteContainerStackView.axis = .vertical
+        
+        let quoteTopPaddingView = UIView()
+        quoteTopPaddingView.translatesAutoresizingMaskIntoConstraints = false
+        tweetMainContainerStackView.addArrangedSubview(quoteTopPaddingView)
+        NSLayoutConstraint.activate([
+            quoteTopPaddingView.heightAnchor.constraint(equalToConstant: 8).priority(.defaultHigh),
+        ])
+        tweetQuoteContainerStackView.addArrangedSubview(quoteTopPaddingView)
+        
+        quoteView.translatesAutoresizingMaskIntoConstraints = false
+        tweetQuoteContainerStackView.addArrangedSubview(quoteView)
     
         // tweet panel container
         tweetMainContainerStackView.addArrangedSubview(tweetPanelContainerStackView)
         tweetPanelContainerStackView.axis = .vertical
         tweetPanelContainerStackView.distribution = .fill
         
-        let paddingView = UIView()
-        paddingView.translatesAutoresizingMaskIntoConstraints = false
-        tweetMainContainerStackView.addArrangedSubview(paddingView)
+        let panelTopPaddingView = UIView()
+        panelTopPaddingView.translatesAutoresizingMaskIntoConstraints = false
+        tweetMainContainerStackView.addArrangedSubview(panelTopPaddingView)
         NSLayoutConstraint.activate([
-            paddingView.heightAnchor.constraint(equalToConstant: 12).priority(.defaultHigh),
+            panelTopPaddingView.heightAnchor.constraint(equalToConstant: 12).priority(.defaultHigh),
         ])
-        tweetPanelContainerStackView.addArrangedSubview(paddingView)
+        tweetPanelContainerStackView.addArrangedSubview(panelTopPaddingView)
 
         let tweetPanelContentContainerStackView = UIStackView()
         tweetPanelContainerStackView.addArrangedSubview(tweetPanelContentContainerStackView)
@@ -310,9 +329,128 @@ extension HomeTimelineTableViewCell {
             separatorLine.heightAnchor.constraint(equalToConstant: UIView.separatorLineHeight(of: separatorLine))
         ])
         
-        // default hide image, panel
+        // default hide image, quote, panel
         tweetImageContainerStackView.isHidden = true
+        tweetQuoteContainerStackView.isHidden = true
         tweetPanelContainerStackView.isHidden = true
+    }
+    
+}
+
+final class TweetQuoteView: UIView {
+    
+    let avatarImageView: UIImageView = {
+        let imageView = UIImageView()
+        return imageView
+    }()
+    
+    let nameLabel: UILabel = {
+        let label = UILabel()
+        label.font = .systemFont(ofSize: 14, weight: .regular)
+        label.textColor = .label
+        label.textColor = Asset.Colors.hightLight.color
+        label.text = "Alice"
+        return label
+    }()
+    
+    let usernameLabel: UILabel = {
+        let label = UILabel()
+        label.font = .systemFont(ofSize: 14, weight: .regular)
+        label.textColor = .secondaryLabel
+        label.text = "@alice"
+        return label
+    }()
+    
+    let dateLabel: UILabel = {
+        let label = UILabel()
+        label.font = .systemFont(ofSize: 14, weight: .regular)
+        label.textAlignment = .right
+        label.textColor = .secondaryLabel
+        label.text = "1d"
+        return label
+    }()
+    
+    let activeTextLabel: ActiveLabel = {
+        let label = ActiveLabel()
+        label.numberOfLines = 0
+        label.enabledTypes = [.mention, .hashtag, .url]
+        label.textColor = .label
+        label.font = .systemFont(ofSize: 14)
+        label.text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+        return label
+    }()
+ 
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        _init()
+    }
+    
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+        _init()
+    }
+    
+}
+
+extension TweetQuoteView {
+    
+    func _init() {
+        backgroundColor = .systemBackground
+        layer.masksToBounds = true
+        layer.cornerRadius = 8
+        layer.borderWidth = 3 * UIView.separatorLineHeight(of: self)    // 3px
+        layer.borderColor = UIColor.secondarySystemBackground.cgColor
+        
+        // container
+        let containerStackView = UIStackView()
+        containerStackView.axis = .vertical
+        containerStackView.spacing = 8
+        containerStackView.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(containerStackView)
+        NSLayoutConstraint.activate([
+            containerStackView.topAnchor.constraint(equalTo: topAnchor, constant: 8),
+            containerStackView.leadingAnchor.constraint(equalTo: layoutMarginsGuide.leadingAnchor),
+            layoutMarginsGuide.trailingAnchor.constraint(equalTo: containerStackView.trailingAnchor),
+            bottomAnchor.constraint(equalTo: containerStackView.bottomAnchor, constant: 8),
+        ])
+        
+        // tweet container: [avatar | main container]
+        let tweetContainerStackView = UIStackView()
+        containerStackView.addArrangedSubview(tweetContainerStackView)
+        tweetContainerStackView.axis = .horizontal
+        tweetContainerStackView.alignment = .top
+        tweetContainerStackView.spacing = 10
+        
+        // user avatar
+        avatarImageView.translatesAutoresizingMaskIntoConstraints = false
+        tweetContainerStackView.addArrangedSubview(avatarImageView)
+        NSLayoutConstraint.activate([
+            avatarImageView.widthAnchor.constraint(equalToConstant: HomeTimelineTableViewCell.avatarImageViewSize.width),
+            avatarImageView.heightAnchor.constraint(equalToConstant: HomeTimelineTableViewCell.avatarImageViewSize.height).priority(.defaultHigh),
+        ])
+        
+        // main container
+        let tweetMainContainerStackView = UIStackView()
+        tweetContainerStackView.addArrangedSubview(tweetMainContainerStackView)
+        tweetMainContainerStackView.axis = .vertical
+        
+        // meta info: name | username | date
+        let tweetMetaInfoContainerStackView = UIStackView()
+        tweetMainContainerStackView.addArrangedSubview(tweetMetaInfoContainerStackView)
+        tweetMetaInfoContainerStackView.axis = .horizontal
+        tweetMetaInfoContainerStackView.alignment = .center
+        tweetMetaInfoContainerStackView.spacing = 6
+        tweetMetaInfoContainerStackView.addArrangedSubview(nameLabel)
+        tweetMetaInfoContainerStackView.addArrangedSubview(usernameLabel)
+        tweetMetaInfoContainerStackView.addArrangedSubview(dateLabel)
+        nameLabel.setContentHuggingPriority(.defaultHigh, for: .horizontal)
+        usernameLabel.setContentHuggingPriority(.defaultHigh, for: .horizontal)
+        usernameLabel.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+        dateLabel.setContentHuggingPriority(.defaultLow, for: .horizontal)
+        dateLabel.setContentCompressionResistancePriority(.required - 2, for: .horizontal)
+        
+        // tweet text
+        tweetMainContainerStackView.addArrangedSubview(activeTextLabel)
     }
     
 }
@@ -323,6 +461,11 @@ import SwiftUI
 struct HomeTimelineTableViewCell_Previews: PreviewProvider {
     static var avatarImage: UIImage {
         UIImage(named: "patrick-perkins")!
+            .af.imageRoundedIntoCircle()
+    }
+    
+    static var avatarImage2: UIImage {
+        UIImage(named: "dan-maisey")!
             .af.imageRoundedIntoCircle()
     }
     
@@ -348,10 +491,26 @@ struct HomeTimelineTableViewCell_Previews: PreviewProvider {
             UIViewPreview {
                 let cell = HomeTimelineTableViewCell()
                 cell.avatarImageView.image = avatarImage
+                cell.tweetImageContainerStackView.isHidden = false
+                let imageView = UIImageView()
+                imageView.contentMode = .scaleAspectFill
+                imageView.image = UIImage(named: "moran")
+                cell.tweetImageContainerStackView.addArrangedSubview(imageView)
                 return cell
             }
             .previewDisplayName("Retweet")
-            .previewLayout(.fixed(width: 375, height: 200))
+            .previewLayout(.fixed(width: 375, height: 400))
+            UIViewPreview {
+                let cell = HomeTimelineTableViewCell()
+                cell.avatarImageView.image = avatarImage
+                cell.tweetQuoteContainerStackView.isHidden = false
+                cell.quoteView.avatarImageView.image = avatarImage2
+                cell.quoteView.nameLabel.text = "Bob"
+                cell.quoteView.usernameLabel.text = "@bob"
+                return cell
+            }
+            .previewDisplayName("Quote")
+            .previewLayout(.fixed(width: 375, height: 400))
             UIViewPreview {
                 let cell = HomeTimelineTableViewCell()
                 cell.avatarImageView.image = avatarImage
