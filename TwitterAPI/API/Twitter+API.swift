@@ -10,6 +10,7 @@ import Foundation
 extension Twitter.API {
     
     public static let endpointURL = URL(string: "https://api.twitter.com/1.1/")!
+    public static let endpointV2URL = URL(string: "https://api.twitter.com/2/")!
     public static let timeoutInterval: TimeInterval = 10
     public static let decoder: JSONDecoder = {
         let decoder = JSONDecoder()
@@ -24,6 +25,7 @@ extension Twitter.API {
     
     public enum OAuth { }
     public enum Timeline { }
+    public enum Lookup { }
 }
 
 extension Twitter.API {
@@ -53,16 +55,16 @@ extension Twitter.API {
 
 extension Twitter.API {
     static func decode<T>(type: T.Type, from data: Data, response: URLResponse) throws -> T where T : Decodable {
-        if let errorResponse = try? Twitter.API.decoder.decode(ErrorResponse.self, from: data),
-           let error = errorResponse.errors.first {
-            throw APIError.response(code: error.code, reason: error.message)
-        }
-        
+        // decode data then decode error if could
         do {
             return try Twitter.API.decoder.decode(type, from: data)
-        } catch {
-            assertionFailure(error.localizedDescription)
-            throw error
+        } catch let decodeError {
+            if let errorResponse = try? Twitter.API.decoder.decode(ErrorResponse.self, from: data),
+               let error = errorResponse.errors.first {
+                throw APIError.response(code: error.code, reason: error.message)
+            }
+            
+            throw decodeError
         }
     }
 }
@@ -71,11 +73,17 @@ extension JSONDecoder.DateDecodingStrategy {
     fileprivate static let twitterStrategy = custom { decoder throws -> Date in
         let container = try decoder.singleValueContainer()
         let string = try container.decode(String.self)
-        let formatter = DateFormatter()
-        formatter.dateFormat = "EEE MMM dd HH:mm:ss Z yyyy"
-        if let date = formatter.date(from: string) {
+        
+        let formatterV1 = DateFormatter()
+        formatterV1.dateFormat = "EEE MMM dd HH:mm:ss Z yyyy"
+        if let date = formatterV1.date(from: string) {
             return date
         }
+        
+        let formatterV2 = ISO8601DateFormatter()
+        if let date = formatterV2.date(from: string) {
+            return date
+        }        
         
         throw DecodingError.dataCorruptedError(in: container, debugDescription: "Invalid date: \(string)")
     }

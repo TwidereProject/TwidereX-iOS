@@ -9,27 +9,29 @@ import Foundation
 
 extension Twitter.Entity {
     public class Tweet: Codable {
+        
+        public typealias ID = String
 
         // Fundamental
         public let createdAt: Date
-        public let idStr: String
+        public let idStr: ID
         public let text: String
 
         public let user: User
         public let entities: Entities
         public let extendedEntities: ExtendedEntities?
         
+        public let coordinates: Coordinates?
         public let place: Place?
 
         //let contributors: JSONNull?
-        //let coordinates: Coordinates?
         public let favorited: Bool?
         public let favoriteCount: Int?
 
         public let retweeted: Bool?
         public let retweetCount: Int?
         public let retweetedStatus: RetweetedStatus?
-        //let geo: Coordinates?
+
         //let inReplyToScreenName: JSONNull?
         //let inReplyToStatusID: JSONNull?
         //let inReplyToStatusIDStr: JSONNull?
@@ -43,7 +45,7 @@ extension Twitter.Entity {
         public let quotedStatusIDStr: String?
         public let quotedStatus: QuotedStatus?
                 
-        //let source: String
+        public let source: String?
         //let truncated: Bool
         
         public enum CodingKeys: String, CodingKey {
@@ -56,10 +58,10 @@ extension Twitter.Entity {
             case entities = "entities"
             case extendedEntities = "extended_entities"
             
+            case coordinates = "coordinates"
             case place = "place"
 
             //case contributors = "contributors"
-            //case coordinates = "coordinates"
             case favorited = "favorited"
             case favoriteCount = "favorite_count"
             
@@ -70,7 +72,6 @@ extension Twitter.Entity {
             case quotedStatusIDStr = "quoted_status_id_str"
             case quotedStatus = "quoted_status"
             
-            //case geo = "geo"
             //case inReplyToScreenName = "in_reply_to_screen_name"
             //case inReplyToStatusID = "in_reply_to_status_id"
             //case inReplyToStatusIDStr = "in_reply_to_status_id_str"
@@ -80,7 +81,8 @@ extension Twitter.Entity {
             //case lang = "lang"
             //case possiblySensitive = "possibly_sensitive"
             //case possiblySensitiveAppealable = "possibly_sensitive_appealable"
-            //case source = "source"
+            
+            case source = "source"
             //case truncated = "truncated"
         }
     }

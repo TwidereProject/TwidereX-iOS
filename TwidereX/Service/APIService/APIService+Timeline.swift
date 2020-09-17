@@ -21,13 +21,7 @@ extension APIService {
     // A1. incoming tweet NOT in local timeline, retweet NOT  in local (never see tweet and retweet)
     // A2. incoming tweet NOT in local timeline, retweet      in local (never see tweet but saw retweet before)
     // A3. incoming tweet     in local timeline, retweet MUST in local (saw tweet before)
-    func twitterHomeTimeline(twitterAuthentication authentication: TwitterAuthentication) -> AnyPublisher<Twitter.Response<[Twitter.Entity.Tweet]>, Error> {
-        let authorization = Twitter.API.OAuth.Authorization(
-            consumerKey: authentication.consumerKey,
-            consumerSecret: authentication.consumerSecret,
-            accessToken: authentication.accessToken,
-            accessTokenSecret: authentication.accessTokenSecret
-        )
+    func twitterHomeTimeline(authorization: Twitter.API.OAuth.Authorization) -> AnyPublisher<Twitter.Response<[Twitter.Entity.Tweet]>, Error> {
         
         // throttle request for API limit
         guard homeTimelineRequestThrottler.available(windowSizeInSec: APIService.homeTimelineRequestWindowInSec) else {
@@ -443,6 +437,8 @@ extension APIService {
         guard networkDate > tweet.updatedAt else { return }
         
         // merge attributes
+        tweet.update(coordinates: entity.coordinates)
+        tweet.update(place: entity.place)
         tweet.update(retweetCount: entity.retweetCount)
         tweet.update(favoriteCount: entity.favoriteCount)
         entity.retweeted.flatMap { tweet.update(retweeted: $0) }

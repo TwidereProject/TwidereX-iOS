@@ -18,6 +18,13 @@ protocol ContentOffsetAdjustableTimelineViewControllerDelegate: class {
     func navigationBar() -> UINavigationBar
 }
 
+final class SwipeEnabledDiffableDataSource: UITableViewDiffableDataSource<TimelineSection, TimelineItem> {
+    
+    override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
+        return true
+    }
+}
+
 final class HomeTimelineViewModel: NSObject {
     
     // input
@@ -29,7 +36,7 @@ final class HomeTimelineViewModel: NSObject {
     
     // output
     var currentTwitterAuthentication = CurrentValueSubject<TwitterAuthentication?, Never>(nil)
-    var diffableDataSource: UITableViewDiffableDataSource<TimelineSection, TimelineItem>?
+    var diffableDataSource: SwipeEnabledDiffableDataSource?
     var cellFrameCache = NSCache<NSNumber, NSValue>()
     
     init(context: AppContext) {
@@ -57,48 +64,49 @@ final class HomeTimelineViewModel: NSObject {
 extension HomeTimelineViewModel {
 
     func setupDiffableDataSource(for tableView: UITableView) {
-        diffableDataSource = UITableViewDiffableDataSource(tableView: tableView) { [weak self] tableView, indexPath, item -> UITableViewCell? in
+        diffableDataSource = SwipeEnabledDiffableDataSource(tableView: tableView) { [weak self] tableView, indexPath, item -> UITableViewCell? in
             guard let self = self else { return nil }
             
             switch item {
             case .homeTimelineIndex(let objectID, let expandStatus):
-                let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: HomeTimelineTableViewCell.self), for: indexPath) as! HomeTimelineTableViewCell
+                let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: TimelinePostTableViewCell.self), for: indexPath) as! TimelinePostTableViewCell
                 
                 // configure cell
                 let managedObjectContext = self.fetchedResultsController.managedObjectContext
                 managedObjectContext.performAndWait {
                     let timelineIndex = managedObjectContext.object(with: objectID) as! TimelineIndex
-                    HomeTimelineViewModel.configure(cell: cell, timelineIndex: timelineIndex, expandStatus: expandStatus)
+                    HomeTimelineViewModel.configure(cell: cell, timelineIndex: timelineIndex, attribute: expandStatus)
                 }
                 return cell
             case .homeTimelineMiddleLoader(let upper):
                 let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: HomeTimelineMiddleLoaderCollectionViewCell.self), for: indexPath) as! HomeTimelineMiddleLoaderCollectionViewCell
                 return cell
             case .bottomLoader:
-                let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: HomeTimelineTableViewCell.self), for: indexPath) as! HomeTimelineTableViewCell
+                // TODO:
+                let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: HomeTimelineMiddleLoaderCollectionViewCell.self), for: indexPath) as! HomeTimelineMiddleLoaderCollectionViewCell
                 return cell
             }
         }
     }
     
-    static func configure(cell: HomeTimelineTableViewCell, timelineIndex: TimelineIndex, expandStatus: TimelineItem.ExpandStatus) {
+    static func configure(cell: TimelinePostTableViewCell, timelineIndex: TimelineIndex, attribute: TimelineItem.Attribute) {
         if let tweet = timelineIndex.tweet {
-            configure(cell: cell, tweet: tweet, expandStatus: expandStatus)
+            configure(cell: cell, tweet: tweet, attribute: attribute)
         }
     }
 
-    private static func configure(cell: HomeTimelineTableViewCell, tweet: Tweet, expandStatus: TimelineItem.ExpandStatus) {
+    private static func configure(cell: TimelinePostTableViewCell, tweet: Tweet, attribute: TimelineItem.Attribute) {
         // set retweet display
-        cell.retweetContainerStackView.isHidden = tweet.retweet == nil ? true : false
-        cell.retweetInfoLabel.text = tweet.user.name.flatMap { $0 + " Retweeted" } ?? " "
-        
+        cell.timelinePostView.retweetContainerStackView.isHidden = tweet.retweet == nil
+        cell.timelinePostView.retweetInfoLabel.text = tweet.user.name.flatMap { $0 + " Retweeted" } ?? " "
+
         // set avatar
         if let avatarImageURL = (tweet.retweet?.user ?? tweet.user).avatarImageURL() {
             let placeholderImage = UIImage
-                .placeholder(size: HomeTimelineTableViewCell.avatarImageViewSize, color: .systemFill)
+                .placeholder(size: TimelinePostView.avatarImageViewSize, color: .systemFill)
                 .af.imageRoundedIntoCircle()
-            let filter = ScaledToSizeCircleFilter(size: HomeTimelineTableViewCell.avatarImageViewSize)
-            cell.avatarImageView.af.setImage(
+            let filter = ScaledToSizeCircleFilter(size: TimelinePostView.avatarImageViewSize)
+            cell.timelinePostView.avatarImageView.af.setImage(
                 withURL: avatarImageURL,
                 placeholderImage: placeholderImage,
                 filter: filter,
@@ -109,134 +117,81 @@ extension HomeTimelineViewModel {
         }
 
         // set name and username
-        cell.nameLabel.text = (tweet.retweet?.user ?? tweet.user).name
-        cell.usernameLabel.text = (tweet.retweet?.user ?? tweet.user).screenName.flatMap { "@" + $0 }
+        cell.timelinePostView.nameLabel.text = (tweet.retweet?.user ?? tweet.user).name
+        cell.timelinePostView.usernameLabel.text = (tweet.retweet?.user ?? tweet.user).screenName.flatMap { "@" + $0 }
 
         // set date
-        let createdAt = (tweet.retweet ?? tweet).createdAt
-        cell.dateLabel.text = createdAt.shortTimeAgoSinceNow
-        cell.dateLabelUpdateSubscription = Timer.publish(every: 1, on: .main, in: .default)
-            .autoconnect()
-            .sink { _ in
-                // do not use core date entity in this run loop
-                cell.dateLabel.text = createdAt.shortTimeAgoSinceNow
-            }
-        
+//        let createdAt = (tweet.retweet ?? tweet).createdAt
+//        cell.dateLabel.text = createdAt.shortTimeAgoSinceNow
+//        cell.dateLabelUpdateSubscription = Timer.publish(every: 1, on: .main, in: .default)
+//            .autoconnect()
+//            .sink { _ in
+//                // do not use core date entity in this run loop
+//                cell.dateLabel.text = createdAt.shortTimeAgoSinceNow
+//            }
+
         // set text
-        cell.activeTextLabel.text = (tweet.retweet ?? tweet).text
-        
-        // set panel
+        cell.timelinePostView.activeTextLabel.text = (tweet.retweet ?? tweet).text
+
+        // set action toolbar title
         let retweetCountTitle: String = {
             let count = (tweet.retweet ?? tweet).retweetCount.flatMap { Int(truncating: $0) }
-            return HomeTimelineTableViewCell.formattedNumberTitleForButton(count)
+            return HomeTimelineViewModel.formattedNumberTitleForActionButton(count)
         }()
-        cell.retweetButton.setTitle(retweetCountTitle, for: .normal)
-        
+        cell.timelinePostView.actionToolbar.retweetButton.setTitle(retweetCountTitle, for: .normal)
+
         let favoriteCountTitle: String = {
             let count = (tweet.retweet ?? tweet).favoriteCount.flatMap { Int(truncating: $0) }
-            return HomeTimelineTableViewCell.formattedNumberTitleForButton(count)
+            return HomeTimelineViewModel.formattedNumberTitleForActionButton(count)
         }()
-        cell.favoriteButton.setTitle(favoriteCountTitle, for: .normal)
-        
-        
+        cell.timelinePostView.actionToolbar.favoriteButton.setTitle(favoriteCountTitle, for: .normal)
+
         // set image display
         let media = tweet.extendedEntities?.media ?? []
-        for subview in cell.tweetImageContainerStackView.arrangedSubviews {
-            cell.tweetImageContainerStackView.removeArrangedSubview(subview)
-            subview.removeFromSuperview()
-        }
         var mosaicMetas: [MosaicMeta] = []
         for element in media {
             guard let (url, size) = element.photoURL(sizeKind: .small) else { continue }
             let meta = MosaicMeta(url: url, size: size)
             mosaicMetas.append(meta)
         }
-        cell.tweetImageContainerStackView.isHidden = mosaicMetas.isEmpty
+        let maxWidth: CGFloat = {
+            var containerWidth = cell.frame.width - 16 * 2  // layout margin
+            containerWidth -= 10
+            containerWidth -= TimelinePostView.avatarImageViewSize.width
+            return containerWidth
+        }()
+        let maxSize = CGSize(width: maxWidth, height: cell.bounds.width * 0.6)
         if mosaicMetas.count == 1 {
-            let maxHeight = HomeTimelineTableViewCell.tweetImageContainerStackViewMaxHeight
             let meta = mosaicMetas[0]
-            let rect = AVMakeRect(aspectRatio: meta.size, insideRect: CGRect(origin: .zero, size: CGSize(width: cell.tweetImageContainerStackView.frame.width, height: maxHeight)))
-            let imageView = UIImageView()
-            imageView.contentMode = .scaleAspectFill
+            let imageView = cell.timelinePostView.mosaicImageView.setupImageView(aspectRatio: meta.size, maxSize: maxSize)
             imageView.af.setImage(
                 withURL: meta.url,
                 placeholderImage: UIImage.placeholder(color: .systemFill),
                 imageTransition: .crossDissolve(0.2)
             )
-            let container = UIView()
-            container.translatesAutoresizingMaskIntoConstraints = false
-            cell.tweetImageContainerStackView.addArrangedSubview(container)
-            
-            imageView.layer.masksToBounds = true
-            imageView.layer.cornerRadius = 8
-            imageView.translatesAutoresizingMaskIntoConstraints = false
-            container.addSubview(imageView)
-            NSLayoutConstraint.activate([
-                imageView.topAnchor.constraint(equalTo: container.topAnchor),
-                imageView.leadingAnchor.constraint(equalTo: container.leadingAnchor),
-                imageView.bottomAnchor.constraint(equalTo: container.bottomAnchor),
-                imageView.widthAnchor.constraint(equalToConstant: rect.width),
-            ])
-
-            cell.tweetImageContainerStackViewHeightLayoutConstraint.constant = rect.height
-            // os_log("%{public}s[%{public}ld], %{public}s: preview image %s", ((#file as NSString).lastPathComponent), #line, #function, meta.url.debugDescription)
         } else {
-            let imageViews: [UIImageView] = mosaicMetas.map { meta in
-                let imageView = UIImageView()
-                imageView.contentMode = .scaleAspectFill
+            let imageViews = cell.timelinePostView.mosaicImageView.setupImageViews(count: mosaicMetas.count, maxHeight: cell.bounds.width * 0.5)
+            for (i, imageView) in imageViews.enumerated() {
+                let meta = mosaicMetas[i]
                 imageView.af.setImage(
                     withURL: meta.url,
                     placeholderImage: UIImage.placeholder(color: .systemFill),
                     imageTransition: .crossDissolve(0.2)
                 )
-                return imageView
             }
-            
-            let leftVerticalStackView: UIStackView = {
-                let stackView = UIStackView()
-                stackView.axis = .vertical
-                stackView.distribution = .fillEqually
-                return stackView
-            }()
-            let rightVerticalStackView: UIStackView = {
-                let stackView = UIStackView()
-                stackView.axis = .vertical
-                stackView.distribution = .fillEqually
-                return stackView
-            }()
-            cell.tweetImageContainerStackView.addArrangedSubview(leftVerticalStackView)
-            cell.tweetImageContainerStackView.addArrangedSubview(rightVerticalStackView)
-            imageViews.forEach {
-                $0.layer.masksToBounds = true
-            }
-            
-            if mosaicMetas.count == 2 {
-                leftVerticalStackView.addArrangedSubview(imageViews[0])
-                rightVerticalStackView.addArrangedSubview(imageViews[1])
-            } else if mosaicMetas.count == 3 {
-                leftVerticalStackView.addArrangedSubview(imageViews[0])
-                rightVerticalStackView.addArrangedSubview(imageViews[1])
-                rightVerticalStackView.addArrangedSubview(imageViews[2])
-            } else if mosaicMetas.count == 4 {
-                leftVerticalStackView.addArrangedSubview(imageViews[0])
-                rightVerticalStackView.addArrangedSubview(imageViews[1])
-                leftVerticalStackView.addArrangedSubview(imageViews[2])
-                rightVerticalStackView.addArrangedSubview(imageViews[3])
-            }
-            
-            cell.tweetImageContainerStackViewHeightLayoutConstraint.constant = HomeTimelineTableViewCell.tweetImageContainerStackViewDefaultHeight
         }
-        
+        cell.timelinePostView.mosaicImageView.isHidden = mosaicMetas.isEmpty
+
         // set quote display
         let quote = tweet.retweet?.quote ?? tweet.quote
         if let quote = quote {
             // set avatar
             if let avatarImageURL = quote.user.avatarImageURL() {
                 let placeholderImage = UIImage
-                    .placeholder(size: HomeTimelineTableViewCell.avatarImageViewSize, color: .systemFill)
+                    .placeholder(size: TimelinePostView.avatarImageViewSize, color: .systemFill)
                     .af.imageRoundedIntoCircle()
-                let filter = ScaledToSizeCircleFilter(size: HomeTimelineTableViewCell.avatarImageViewSize)
-                cell.quoteView.avatarImageView.af.setImage(
+                let filter = ScaledToSizeCircleFilter(size: TimelinePostView.avatarImageViewSize)
+                cell.timelinePostView.quotePostView.avatarImageView.af.setImage(
                     withURL: avatarImageURL,
                     placeholderImage: placeholderImage,
                     filter: filter,
@@ -245,40 +200,57 @@ extension HomeTimelineViewModel {
             } else {
                 assertionFailure()
             }
-            
+
             // set name and username
-            cell.quoteView.nameLabel.text = quote.user.name
-            cell.quoteView.usernameLabel.text = quote.user.screenName.flatMap { "@" + $0 }
-            
-            // set date
-            let createdAt = quote.createdAt
-            cell.quoteView.dateLabel.text = createdAt.shortTimeAgoSinceNow
-            cell.quoteDateLabelUpdateSubscription = Timer.publish(every: 1, on: .main, in: .default)
-                .autoconnect()
-                .sink { _ in
-                    // do not use core date entity in this run loop
-                    cell.quoteView.dateLabel.text = createdAt.shortTimeAgoSinceNow
-                }
-            
+            cell.timelinePostView.quotePostView.nameLabel.text = quote.user.name
+            cell.timelinePostView.quotePostView.usernameLabel.text = quote.user.screenName.flatMap { "@" + $0 }
+
+//            // set date
+//            let createdAt = quote.createdAt
+//            cell.quoteView.dateLabel.text = createdAt.shortTimeAgoSinceNow
+//            cell.quoteDateLabelUpdateSubscription = Timer.publish(every: 1, on: .main, in: .default)
+//                .autoconnect()
+//                .sink { _ in
+//                    // do not use core date entity in this run loop
+//                    cell.quoteView.dateLabel.text = createdAt.shortTimeAgoSinceNow
+//                }
+
             // set text
-            cell.quoteView.activeTextLabel.text = quote.text
+            cell.timelinePostView.quotePostView.activeTextLabel.text = quote.text
         }
+        cell.timelinePostView.quotePostView.isHidden = quote == nil
+
+        // set action toolbar expand / fold
+        cell.timelinePostView.actionToolbar.isHidden = !attribute.isExpand
+        cell.timelinePostView.actionToolbar.alpha = !attribute.isExpand ? 0 : 1
         
-        cell.tweetQuoteContainerStackView.isHidden = quote == nil
-        // set panel display
-        cell.tweetPanelContainerStackView.alpha = !expandStatus.isExpand ? 0 : 1
-        cell.tweetPanelContainerStackView.isHidden = !expandStatus.isExpand
+        // set separator line indent in non-conflict order
+        if attribute.indentSeparatorLine {
+            cell.separatorLineLeadingLayoutConstraint.isActive = false
+            cell.separatorLineIndentLeadingLayoutConstraint.isActive = true
+        } else {
+            cell.separatorLineIndentLeadingLayoutConstraint.isActive = false
+            cell.separatorLineLeadingLayoutConstraint.isActive = true
+        }
     }
     
     struct MosaicMeta {
         let url: URL
         let size: CGSize
     }
+
+    static func formattedNumberTitleForActionButton(_ number: Int?) -> String {
+        guard let number = number, number > 0 else {
+            return ""
+        }
+
+        return String(number)
+    }
     
 }
 
 extension HomeTimelineViewModel {
-    func focus(cell: HomeTimelineTableViewCell, in tableView: UITableView, at indexPath: IndexPath)  {
+    func focus(cell: TimelinePostTableViewCell, in tableView: UITableView, at indexPath: IndexPath)  {
         guard let diffableDataSource = self.diffableDataSource else {
             assertionFailure()
             return
@@ -335,23 +307,24 @@ extension HomeTimelineViewModel: NSFetchedResultsControllerDelegate {
 
         let managedObjectContext = fetchedResultsController.managedObjectContext
         managedObjectContext.performAndWait {
-            //var items: [TimelineItem] = []
             for (i, objectID) in snapshot.itemIdentifiers.enumerated() {
-                let expandStatus: TimelineItem.ExpandStatus = {
+                let attribute: TimelineItem.Attribute = {
                     for item in oldSnapshot.itemIdentifiers {
-                        guard case let .homeTimelineIndex(oldObjectID, expandStatus) = item else { continue }
+                        guard case let .homeTimelineIndex(oldObjectID, attribute) = item else { continue }
                         guard objectID == oldObjectID else { continue }
-                        return expandStatus
+                        return attribute
                     }
                     
-                    return TimelineItem.ExpandStatus()
+                    return TimelineItem.Attribute()
                 }()
                 
                 // save into buffer
-                newSnapshot.appendItems([.homeTimelineIndex(objectID: objectID, expandStatus: expandStatus)], toSection: .main)
+                newSnapshot.appendItems([.homeTimelineIndex(objectID: objectID, attribute: attribute)], toSection: .main)
 
                 let timelineIndex = managedObjectContext.object(with: objectID) as! TimelineIndex
                 if let tweet = timelineIndex.tweet {
+                    attribute.indentSeparatorLine = !tweet.hasMore
+                    
                     if tweet.hasMore {
                         let isLast = i == snapshot.itemIdentifiers.count - 1
                         if isLast {

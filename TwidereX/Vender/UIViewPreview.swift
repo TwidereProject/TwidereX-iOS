@@ -5,8 +5,10 @@ import SwiftUI
 
 public struct UIViewPreview<View: UIView>: UIViewRepresentable {
     public let view: View
-    public init(_ builder: @escaping () -> View) {
-        view = builder()
+    public let width: CGFloat?
+    public init(width: CGFloat? = nil, _ builder: @escaping () -> View) {
+        self.view = builder()
+        self.width = width
     }
     // MARK: - UIViewRepresentable
     public func makeUIView(context: Context) -> UIView {
@@ -16,6 +18,12 @@ public struct UIViewPreview<View: UIView>: UIViewRepresentable {
         view.translatesAutoresizingMaskIntoConstraints = false
         view.setContentHuggingPriority(.required, for: .horizontal)
         view.setContentHuggingPriority(.required, for: .vertical)
+        
+        if let width = width {
+            NSLayoutConstraint.activate([
+                view.widthAnchor.constraint(equalToConstant: width),
+            ])
+        }
     }
 }
 

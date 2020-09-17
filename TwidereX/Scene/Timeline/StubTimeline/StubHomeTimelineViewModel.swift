@@ -57,8 +57,8 @@ extension StubTimelineViewModel: UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: HomeTimelineTableViewCell.self), for: indexPath) as! HomeTimelineTableViewCell
-        cell.nameLabel.text = stubItems[indexPath.row]
+        let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: TimelinePostTableViewCell.self), for: indexPath) as! TimelinePostTableViewCell
+        cell.timelinePostView.nameLabel.text = stubItems[indexPath.row]
         return cell
     }
     

@@ -9,6 +9,7 @@ import os.log
 import UIKit
 import Combine
 import CoreDataStack
+import TwitterAPI
 
 final class HomeTimelineViewController: UIViewController, NeedsDependency {
     
@@ -20,7 +21,7 @@ final class HomeTimelineViewController: UIViewController, NeedsDependency {
     
     lazy var tableView: UITableView = {
         let tableView = UITableView()
-        tableView.register(HomeTimelineTableViewCell.self, forCellReuseIdentifier: String(describing: HomeTimelineTableViewCell.self))
+        tableView.register(TimelinePostTableViewCell.self, forCellReuseIdentifier: String(describing: TimelinePostTableViewCell.self))
         tableView.register(HomeTimelineMiddleLoaderCollectionViewCell.self, forCellReuseIdentifier: String(describing: HomeTimelineMiddleLoaderCollectionViewCell.self))
 //        tableView.register(TimelineBottomLoaderCollectionViewCell.self, forCellReuseIdentifier: String(describing: TimelineBottomLoaderCollectionViewCell.self))
         tableView.rowHeight = UITableView.automaticDimension
@@ -43,9 +44,8 @@ extension HomeTimelineViewController {
         refreshControl.addTarget(self, action: #selector(HomeTimelineViewController.refreshControlValueChanged(_:)), for: .valueChanged)
         
         #if DEBUG
-        navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Fetch", style: .plain, target: self, action: #selector(HomeTimelineViewController.fetchBarButtonItemPressed(_:)))
+        navigationItem.leftBarButtonItem = UIBarButtonItem(title: "hi", style: .plain, target: nil, action: nil)
         navigationItem.rightBarButtonItems = [
-            UIBarButtonItem(title: "Top", style: .plain, target: self, action: #selector(HomeTimelineViewController.topBarButtonItemPressed(_:))),
             UIBarButtonItem(title: "Drop", style: .plain, target: self, action: #selector(HomeTimelineViewController.dropBarButtonItemPressed(_:)))
         ]
         #endif
@@ -69,9 +69,7 @@ extension HomeTimelineViewController {
             assertionFailure(error.localizedDescription)
         }
         tableView.delegate = self
-        //tableView.dataSource = viewModel
         tableView.dataSource = viewModel.diffableDataSource
-        tableView.reloadData()
         
         context.authenticationService.twitterAuthentications
             .map { $0.first }
@@ -100,6 +98,12 @@ extension HomeTimelineViewController {
             
         }
     }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        tableView.reloadData()
+    }
 }
 
 extension HomeTimelineViewController {
@@ -109,11 +113,17 @@ extension HomeTimelineViewController {
             assertionFailure()
             return
         }
+        let authorization = Twitter.API.OAuth.Authorization(
+            consumerKey: twitterAuthentication.consumerKey,
+            consumerSecret: twitterAuthentication.consumerSecret,
+            accessToken: twitterAuthentication.accessToken,
+            accessTokenSecret: twitterAuthentication.accessTokenSecret
+        )
         
         guard !viewModel.isFetchingLatestTimeline.value else { return }
         viewModel.isFetchingLatestTimeline.value = true
         
-        context.apiService.twitterHomeTimeline(twitterAuthentication: twitterAuthentication)
+        context.apiService.twitterHomeTimeline(authorization: authorization)
             .delay(for: .seconds(1), scheduler: DispatchQueue.main)
             .receive(on: DispatchQueue.main)
             .sink { [weak self] completion in
@@ -133,31 +143,6 @@ extension HomeTimelineViewController {
     }
     
     #if DEBUG
-    @objc private func fetchBarButtonItemPressed(_ sender: UIBarButtonItem) {
-        guard let twitterAuthentication = viewModel.currentTwitterAuthentication.value else {
-            assertionFailure()
-            return
-        }
-        context.apiService.twitterHomeTimeline(twitterAuthentication: twitterAuthentication)
-            .receive(on: DispatchQueue.main)
-            .handleEvents(receiveSubscription:  { [weak self] _ in
-                self?.navigationItem.leftBarButtonItem?.isEnabled = false
-            })
-            .sink { [weak self] completion in
-                self?.navigationItem.leftBarButtonItem?.isEnabled = true
-                switch completion {
-                case .failure(let error):
-                    // TODO: handle error
-                    os_log("%{public}s[%{public}ld], %{public}s: fetch tweets failed. %s", ((#file as NSString).lastPathComponent), #line, #function, error.localizedDescription)
-                case .finished:
-                    break
-                }
-            } receiveValue: { tweets in
-                // do nothing
-            }
-            .store(in: &disposeBag)
-    }
-    
     @objc private func dropBarButtonItemPressed(_ sender: UIBarButtonItem) {
         let dropping = Array(viewModel.fetchedResultsController.fetchedObjects?.prefix(10) ?? [])
         viewModel.fetchedResultsController.managedObjectContext.performChanges {
@@ -177,11 +162,6 @@ extension HomeTimelineViewController {
         .store(in: &disposeBag)
     }
     
-    @objc private func topBarButtonItemPressed(_ sender: UIBarButtonItem) {
-        let startTime = CACurrentMediaTime()
-        print(startTime)
-    }
-    
     #endif
 }
 
@@ -193,17 +173,17 @@ extension HomeTimelineViewController: UITableViewDelegate {
         guard let item = diffableDataSource.itemIdentifier(for: indexPath) else { return 100 }
         
         guard let frame = viewModel.cellFrameCache.object(forKey: NSNumber(value: item.hashValue))?.cgRectValue else {
-            return 100
+            return 200
         }
-        //os_log("%{public}s[%{public}ld], %{public}s: cache cell frame %s", ((#file as NSString).lastPathComponent), #line, #function, frame.debugDescription)
+        // os_log("%{public}s[%{public}ld], %{public}s: cache cell frame %s", ((#file as NSString).lastPathComponent), #line, #function, frame.debugDescription)
 
-        return frame.height
+        return ceil(frame.height)
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         os_log("%{public}s[%{public}ld], %{public}s: indexPath %s", ((#file as NSString).lastPathComponent), #line, #function, indexPath.debugDescription)
         
-        if let cell = tableView.cellForRow(at: indexPath) as? HomeTimelineTableViewCell {
+        if let cell = tableView.cellForRow(at: indexPath) as? TimelinePostTableViewCell {
             viewModel.focus(cell: cell, in: tableView, at: indexPath)
         }
     }
@@ -215,6 +195,32 @@ extension HomeTimelineViewController: UITableViewDelegate {
         let key = item.hashValue
         let frame = cell.frame
         viewModel.cellFrameCache.setObject(NSValue(cgRect: frame), forKey: NSNumber(value: key))
+    }
+    
+    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        guard let diffableDataSource = viewModel.diffableDataSource else { return nil }
+        guard let item = diffableDataSource.itemIdentifier(for: indexPath) else { return nil }
+        
+        switch item {
+        case .homeTimelineIndex(let objectID, let attribute):
+            let detailAction = UIContextualAction(style: .normal, title: "Detail", handler: { [weak self] (action, buttonView, completion) in
+                defer { completion(true) }
+                guard let self = self else { return }
+                let managedObjectContext = self.viewModel.fetchedResultsController.managedObjectContext
+                managedObjectContext.performAndWait {
+                    guard let timelineIndex = managedObjectContext.object(with: objectID) as? TimelineIndex else { return }
+                    guard let tweet = timelineIndex.tweet?.retweet ?? timelineIndex.tweet else { return }
+    
+                    let tweetPostViewModel = TweetPostViewModel(context: self.context, tweet: tweet)
+                    self.coordinator.present(scene: .tweetPost(viewModel: tweetPostViewModel), from: self, transition: .showDetail)
+                }
+                completion(true)
+            })
+            detailAction.backgroundColor = .systemGreen
+            return UISwipeActionsConfiguration(actions: [detailAction])
+        default:
+            return nil
+        }
     }
     
 }

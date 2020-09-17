@@ -18,9 +18,8 @@ final public class Tweet: NSManagedObject {
     @NSManaged public private(set) var updatedAt: Date
     
     @NSManaged public private(set) var text: String
-    
     @NSManaged public private(set) var entitiesRaw: Data
-    public var entities: Twitter.Entity.Entities {
+    public private(set) var entities: Twitter.Entity.Entities {
         get {
             do {
                 let value = try JSONDecoder().decode(Twitter.Entity.Entities.self, from: entitiesRaw)
@@ -41,7 +40,7 @@ final public class Tweet: NSManagedObject {
         }
     }
     @NSManaged public private(set) var extendedEntitiesRaw: Data?
-    public var extendedEntities: Twitter.Entity.ExtendedEntities? {
+    public private(set) var extendedEntities: Twitter.Entity.ExtendedEntities? {
         get {
             guard let data = extendedEntitiesRaw else { return nil }
             do {
@@ -63,6 +62,59 @@ final public class Tweet: NSManagedObject {
             } catch {
                 assertionFailure()
                 extendedEntitiesRaw = nil
+            }
+        }
+    }
+    @NSManaged public private(set) var source: String?
+    @NSManaged public private(set) var coordinatesRaw: Data?
+    public private(set) var coordinates: Twitter.Entity.Coordinates? {
+        get {
+            guard let data = coordinatesRaw else { return nil }
+            do {
+                let value = try JSONDecoder().decode(Twitter.Entity.Coordinates.self, from: data)
+                return value
+            } catch {
+                assertionFailure()
+                return nil
+            }
+        }
+        set {
+            guard let newValue = newValue else {
+                coordinatesRaw = nil
+                return
+            }
+            do {
+                let data = try JSONEncoder().encode(newValue)
+                coordinatesRaw = data
+            } catch {
+                assertionFailure()
+                coordinatesRaw = nil
+            }
+        }
+    }
+    @NSManaged public private(set) var placeRaw: Data?
+    public private(set) var place: Twitter.Entity.Place? {
+        get {
+            guard let data = placeRaw else { return nil }
+            do {
+                let value = try JSONDecoder().decode(Twitter.Entity.Place.self, from: data)
+                return value
+            } catch {
+                assertionFailure()
+                return nil
+            }
+        }
+        set {
+            guard let newValue = newValue else {
+                placeRaw = nil
+                return
+            }
+            do {
+                let data = try JSONEncoder().encode(newValue)
+                placeRaw = data
+            } catch {
+                assertionFailure()
+                placeRaw = nil
             }
         }
     }
@@ -108,12 +160,25 @@ extension Tweet {
         tweet.text = property.text
         tweet.entities = property.entities
         tweet.extendedEntities = property.extendedEntities
+        tweet.source = property.source
+        tweet.coordinates = property.coordinates
+        tweet.place = property.place
         
         tweet.timelineIndex = timelineIndex
         tweet.user = twitterUser
         tweet.retweet = retweet
         tweet.quote = quote
         return tweet
+    }
+    
+    // always update scrub-able attribute
+    public func update(coordinates: Twitter.Entity.Coordinates?) {
+        self.coordinates = coordinates
+    }
+    
+    // always update scrub-able attribute
+    public func update(place: Twitter.Entity.Place?) {
+        self.place = place
     }
 
     public func update(retweetCount: Int?) {
@@ -174,6 +239,9 @@ extension Tweet {
         public let text: String
         public let entities: Twitter.Entity.Entities
         public let extendedEntities: Twitter.Entity.ExtendedEntities?
+        public let source: String?
+        public let coordinates: Twitter.Entity.Coordinates?
+        public let place: Twitter.Entity.Place?
         
         public let retweetCount: Int?
         public let retweeted: Bool
@@ -191,6 +259,9 @@ extension Tweet {
             text: String,
             entities: Twitter.Entity.Entities,
             extendedEntities: Twitter.Entity.ExtendedEntities?,
+            source: String?,
+            coordinates: Twitter.Entity.Coordinates?,
+            place: Twitter.Entity.Place?,
             retweetCount: Int?,
             retweeted: Bool,
             favoriteCount: Int?,
@@ -204,6 +275,9 @@ extension Tweet {
             self.text = text
             self.entities = entities
             self.extendedEntities = extendedEntities
+            self.source = source
+            self.coordinates = coordinates
+            self.place = place
             
             self.retweetCount = retweetCount
             self.retweeted = retweeted

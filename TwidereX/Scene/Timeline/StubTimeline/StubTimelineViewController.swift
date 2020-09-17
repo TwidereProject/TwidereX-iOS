@@ -20,7 +20,7 @@ final class StubTimelineViewController: UIViewController, NeedsDependency {
     
     lazy var tableView: UITableView = {
         let tableView = UITableView()
-        tableView.register(HomeTimelineTableViewCell.self, forCellReuseIdentifier: String(describing: HomeTimelineTableViewCell.self))
+        tableView.register(TimelinePostTableViewCell.self, forCellReuseIdentifier: String(describing: TimelinePostTableViewCell.self))
         //        tableView.register(TimelineMiddleLoaderCollectionViewCell.self, forCellReuseIdentifier: String(describing: TimelineMiddleLoaderCollectionViewCell.self))
         //        tableView.register(TimelineBottomLoaderCollectionViewCell.self, forCellReuseIdentifier: String(describing: TimelineBottomLoaderCollectionViewCell.self))
         return tableView

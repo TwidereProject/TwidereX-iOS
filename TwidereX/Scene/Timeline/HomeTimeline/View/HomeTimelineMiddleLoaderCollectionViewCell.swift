@@ -41,6 +41,16 @@ extension HomeTimelineMiddleLoaderCollectionViewCell {
             contentView.layoutMarginsGuide.trailingAnchor.constraint(equalTo: loadMoreButton.trailingAnchor),
             contentView.bottomAnchor.constraint(equalTo: loadMoreButton.bottomAnchor, constant: 8),
         ])
+        
+        let separatorLine = UIView.separatorLine
+        separatorLine.translatesAutoresizingMaskIntoConstraints = false
+        contentView.addSubview(separatorLine)
+        NSLayoutConstraint.activate([
+            separatorLine.leadingAnchor.constraint(equalTo: contentView.layoutMarginsGuide.leadingAnchor),
+            contentView.layoutMarginsGuide.trailingAnchor.constraint(equalTo: separatorLine.trailingAnchor),
+            contentView.bottomAnchor.constraint(equalTo: separatorLine.bottomAnchor),
+            separatorLine.heightAnchor.constraint(equalToConstant: UIView.separatorLineHeight(of: separatorLine))
+        ])
     }
     
 }

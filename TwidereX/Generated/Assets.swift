@@ -40,6 +40,7 @@ internal enum Asset {
   internal enum ObjectTools {
     internal static let icRoundLocationOn = ImageAsset(name: "Object&Tools/ic.round.location.on")
     internal static let icRoundShare = ImageAsset(name: "Object&Tools/ic.round.share")
+    internal static let lockCircle = ImageAsset(name: "Object&Tools/lock.circle")
   }
 }
 // swiftlint:enable identifier_name line_length nesting type_body_length type_name

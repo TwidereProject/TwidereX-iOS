@@ -8,6 +8,7 @@
 import Foundation
 
 public enum Twitter {
+    public enum Request { }
     public enum API { }
     public enum Entity { }
 }

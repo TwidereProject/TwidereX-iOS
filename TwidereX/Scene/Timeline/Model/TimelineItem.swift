@@ -9,16 +9,17 @@ import Foundation
 import CoreData
 
 enum TimelineItem {
-    case homeTimelineIndex(objectID: NSManagedObjectID, expandStatus: ExpandStatus)
+    case homeTimelineIndex(objectID: NSManagedObjectID, attribute: Attribute)
     case homeTimelineMiddleLoader(upper: Int)
     case bottomLoader
 }
 
 extension TimelineItem {
-    class ExpandStatus: Hashable {
+    class Attribute: Hashable {
         var isExpand: Bool = false
+        var indentSeparatorLine: Bool = true
         
-        static func == (lhs: TimelineItem.ExpandStatus, rhs: TimelineItem.ExpandStatus) -> Bool {
+        static func == (lhs: TimelineItem.Attribute, rhs: TimelineItem.Attribute) -> Bool {
             return lhs.isExpand == rhs.isExpand
         }
 
