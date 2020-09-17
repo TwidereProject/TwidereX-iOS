@@ -38,7 +38,7 @@ final class TimelinePostActionToolbar: UIView {
     
     let favoriteButton: UIButton = {
         let button = UIButton()
-        button.setImage(Asset.Health.icRoundFavoritePath.image.withRenderingMode(.alwaysTemplate), for: .normal)
+        button.setImage(Asset.Health.icRoundFavoriteBorder.image.withRenderingMode(.alwaysTemplate), for: .normal)
         button.imageView?.tintColor = .secondaryLabel
         button.titleLabel?.font = .monospacedDigitSystemFont(ofSize: 12, weight: .regular)
         button.setTitle("", for: .normal)

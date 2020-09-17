@@ -24,6 +24,7 @@ internal enum Asset {
   internal static let accentColor = ColorAsset(name: "AccentColor")
   internal enum Arrows {
     internal static let mdiTwitterRetweet = ImageAsset(name: "Arrows/mdi.twitter.retweet")
+    internal static let mdiTwitterRetweetLarge = ImageAsset(name: "Arrows/mdi.twitter.retweet.large")
     internal static let tablerChevronDown = ImageAsset(name: "Arrows/tabler.chevron.down")
   }
   internal enum Colors {
@@ -32,14 +33,18 @@ internal enum Asset {
   }
   internal enum Communication {
     internal static let mdiMessageReply = ImageAsset(name: "Communication/mdi.message.reply")
+    internal static let mdiMessageReplyLarge = ImageAsset(name: "Communication/mdi.message.reply.large")
   }
   internal enum Health {
-    internal static let icRoundFavorite = ImageAsset(name: "Health/ic.round.favorite")
-    internal static let icRoundFavoritePath = ImageAsset(name: "Health/ic.round.favorite.path")
+    internal static let icRoundFavoriteBorder = ImageAsset(name: "Health/ic.round.favorite.border")
+    internal static let icRoundFavoriteBorderLarge = ImageAsset(name: "Health/ic.round.favorite.border.large")
+    internal static let icRoundFavoriteFill = ImageAsset(name: "Health/ic.round.favorite.fill")
+    internal static let icRoundFavoriteFillLarge = ImageAsset(name: "Health/ic.round.favorite.fill.large")
   }
   internal enum ObjectTools {
     internal static let icRoundLocationOn = ImageAsset(name: "Object&Tools/ic.round.location.on")
     internal static let icRoundShare = ImageAsset(name: "Object&Tools/ic.round.share")
+    internal static let icRoundShareLarge = ImageAsset(name: "Object&Tools/ic.round.share.large")
     internal static let lockCircle = ImageAsset(name: "Object&Tools/lock.circle")
   }
 }

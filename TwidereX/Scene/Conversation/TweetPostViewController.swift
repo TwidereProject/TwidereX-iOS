@@ -21,7 +21,7 @@ final class TweetPostViewController: UIViewController, NeedsDependency {
     
     lazy var tableView: UITableView = {
         let tableView = UITableView()
-        tableView.register(TweetPostDetailTableViewCell.self, forCellReuseIdentifier: String(describing: TweetPostDetailTableViewCell.self))
+        tableView.register(ConversationPostTableViewCell.self, forCellReuseIdentifier: String(describing: ConversationPostTableViewCell.self))
         tableView.register(TimelinePostTableViewCell.self, forCellReuseIdentifier: String(describing: TimelinePostTableViewCell.self))
         tableView.rowHeight = UITableView.automaticDimension
         tableView.separatorStyle = .none
@@ -58,4 +58,7 @@ extension TweetPostViewController {
 // MARK: - UITableViewDelegate
 extension TweetPostViewController: UITableViewDelegate {
     
+    func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 200
+    }
 }

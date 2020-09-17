@@ -42,7 +42,7 @@ extension TweetPostViewModel {
             
             switch item {
             case .tweet(let objectID):
-                let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: TweetPostDetailTableViewCell.self), for: indexPath) as! TweetPostDetailTableViewCell
+                let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: ConversationPostTableViewCell.self), for: indexPath) as! ConversationPostTableViewCell
                 let managedObjectContext = self.context.managedObjectContext
                 managedObjectContext.performAndWait {
                     let tweet = managedObjectContext.object(with: objectID) as! Tweet
@@ -58,24 +58,24 @@ extension TweetPostViewModel {
         diffableDataSource?.apply(snapshot)
     }
     
-    static func configure(cell: TweetPostDetailTableViewCell, tweet: Tweet) {
+    static func configure(cell: ConversationPostTableViewCell, tweet: Tweet) {
         // set avatar
-//        if let avatarImageURL = tweet.user.avatarImageURL() {
-//            let placeholderImage = UIImage
-//                .placeholder(size: TweetPostDetailTableViewCell.avatarImageViewSize, color: .systemFill)
-//                .af.imageRoundedIntoCircle()
-//            let filter = ScaledToSizeCircleFilter(size: TweetPostDetailTableViewCell.avatarImageViewSize)
-//            cell.avatarImageView.af.setImage(
-//                withURL: avatarImageURL,
-//                placeholderImage: placeholderImage,
-//                filter: filter,
-//                imageTransition: .crossDissolve(0.2)
-//            )
-//        } else {
-//            assertionFailure()
-//        }
-//        
-//        // set name and username
+        if let avatarImageURL = tweet.user.avatarImageURL() {
+            let placeholderImage = UIImage
+                .placeholder(size: ConversationPostView.avatarImageViewSize, color: .systemFill)
+                .af.imageRoundedIntoCircle()
+            let filter = ScaledToSizeCircleFilter(size: ConversationPostView.avatarImageViewSize)
+            cell.conversationPostView.avatarImageView.af.setImage(
+                withURL: avatarImageURL,
+                placeholderImage: placeholderImage,
+                filter: filter,
+                imageTransition: .crossDissolve(0.2)
+            )
+        } else {
+            assertionFailure()
+        }
+        
+        // set name and username
 //        cell.nameLabel.text = tweet.user.name ?? " "
 //        cell.usernameLabel.text = tweet.user.screenName.flatMap { "@" + $0 } ?? " "
 //        

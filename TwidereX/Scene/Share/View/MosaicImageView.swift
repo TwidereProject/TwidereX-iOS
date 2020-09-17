@@ -33,12 +33,13 @@ extension MosaicImageView {
     private func _init() {
         container.translatesAutoresizingMaskIntoConstraints = false
         addSubview(container)
-        containerHeightLayoutConstraint = container.heightAnchor.constraint(equalToConstant: 162).priority(.defaultHigh)
+        containerHeightLayoutConstraint = container.heightAnchor.constraint(equalToConstant: 162).priority(.required - 1)
         NSLayoutConstraint.activate([
             container.topAnchor.constraint(equalTo: topAnchor),
             container.leadingAnchor.constraint(equalTo: leadingAnchor),
             trailingAnchor.constraint(equalTo: container.trailingAnchor),
             bottomAnchor.constraint(equalTo: container.bottomAnchor),
+            containerHeightLayoutConstraint
         ])
         
         container.axis = .horizontal
@@ -100,6 +101,8 @@ extension MosaicImageView {
         }
         
         containerHeightLayoutConstraint.constant = maxHeight
+        containerHeightLayoutConstraint.isActive = true
+
         container.layer.cornerRadius = cornerRadius
         
         let contentLeftStackView = UIStackView()

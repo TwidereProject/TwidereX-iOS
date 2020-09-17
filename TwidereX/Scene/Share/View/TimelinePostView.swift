@@ -295,7 +295,7 @@ struct TimelinePostView_Previews: PreviewProvider {
                 return view
             }
             .previewLayout(.fixed(width: 375, height: 450))
-            .previewDisplayName("text + quote")
+            .previewDisplayName("text + image + quote")
         }
     }
 }
