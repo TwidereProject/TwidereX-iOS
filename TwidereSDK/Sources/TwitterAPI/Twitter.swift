@@ -1,6 +1,6 @@
 //
 //  Twitter.swift
-//  TwidereX
+//  TwitterAPI
 //
 //  Created by Cirno MainasuK on 2020-9-1.
 //

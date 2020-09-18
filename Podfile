@@ -21,15 +21,3 @@ target 'TwidereX' do
   end
 
 end
-
-target 'TwitterAPI' do
-  # Comment the next line if you don't want to use dynamic frameworks
-  use_frameworks!
-
-  # Pods for TwitterAPI
-
-  target 'TwitterAPITests' do
-    # Pods for testing
-  end
-
-end
