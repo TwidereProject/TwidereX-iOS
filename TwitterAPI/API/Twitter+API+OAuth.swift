@@ -149,6 +149,15 @@ extension Twitter.API.OAuth {
         let encodedTokenSecret = oauthTokenSecret?.urlEncoded ?? ""
         let signingKey = "\(encodedConsumerSecret)&\(encodedTokenSecret)"
         
+        var parameters = parameters
+        
+        var components = URLComponents(string: url.absoluteString)!
+        for item in components.queryItems ?? [] {
+            parameters[item.name] = item.value
+        }
+        components.queryItems = nil
+        let baseURL = components.url!
+        
         var parameterComponents = parameters.urlEncodedQuery.components(separatedBy: "&")
         parameterComponents.sort {
             let p0 = $0.components(separatedBy: "=")
@@ -160,7 +169,7 @@ extension Twitter.API.OAuth {
         let parameterString = parameterComponents.joined(separator: "&")
         let encodedParameterString = parameterString.urlEncoded
         
-        let encodedURL = url.absoluteString.urlEncoded
+        let encodedURL = baseURL.absoluteString.urlEncoded
         
         let signatureBaseString = "\(httpMethod)&\(encodedURL)&\(encodedParameterString)"
         let message = Data(signatureBaseString.utf8)
