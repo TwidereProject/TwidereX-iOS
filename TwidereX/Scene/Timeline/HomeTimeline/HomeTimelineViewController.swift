@@ -44,7 +44,6 @@ extension HomeTimelineViewController {
         refreshControl.addTarget(self, action: #selector(HomeTimelineViewController.refreshControlValueChanged(_:)), for: .valueChanged)
         
         #if DEBUG
-        navigationItem.leftBarButtonItem = UIBarButtonItem(title: "hi", style: .plain, target: nil, action: nil)
         navigationItem.rightBarButtonItems = [
             UIBarButtonItem(title: "Drop", style: .plain, target: self, action: #selector(HomeTimelineViewController.dropBarButtonItemPressed(_:)))
         ]

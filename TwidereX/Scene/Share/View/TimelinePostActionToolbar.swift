@@ -121,9 +121,6 @@ extension TimelinePostActionToolbar {
 #if DEBUG
 import SwiftUI
 
-
-#endif
-
 struct TimelinePostActionToolbar_Previews: PreviewProvider {
     static var previews: some View {
         UIViewPreview(width: 300) {
@@ -133,3 +130,5 @@ struct TimelinePostActionToolbar_Previews: PreviewProvider {
         .previewLayout(.fixed(width: 300, height: 100))
     }
 }
+#endif
+

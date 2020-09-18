@@ -17,6 +17,8 @@
 		DB0849B425137B3E009E0CD7 /* ConversationPostActionToolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB0849B325137B3E009E0CD7 /* ConversationPostActionToolbar.swift */; };
 		DB35C35D25146C58003DA0E9 /* ConversationPostStatusView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB35C35C25146C58003DA0E9 /* ConversationPostStatusView.swift */; };
 		DB41C0DB2513368800521562 /* TimelinePostActionToolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB41C0DA2513368800521562 /* TimelinePostActionToolbar.swift */; };
+		DB56A45C25148D9900A7DA3E /* TwitterAPI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DBDA8E6224FE03DB006750DC /* TwitterAPI.framework */; };
+		DB56A45D25148D9900A7DA3E /* TwitterAPI.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = DBDA8E6224FE03DB006750DC /* TwitterAPI.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		DB7D1248250B5C6C00999903 /* UIButton+Inset.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB7D1247250B5C6C00999903 /* UIButton+Inset.swift */; };
 		DB7D124A250B633500999903 /* Twitter+QuotedStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB7D1249250B633500999903 /* Twitter+QuotedStatus.swift */; };
 		DB7D124C250F875F00999903 /* UIView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB7D124B250F875E00999903 /* UIView.swift */; };
@@ -127,6 +129,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		DB56A45E25148D9900A7DA3E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = DBDA8E1624FCF8A3006750DC /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = DBDA8E6124FE03DB006750DC;
+			remoteInfo = TwitterAPI;
+		};
 		DBDA8E3524FCF8A7006750DC /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = DBDA8E1624FCF8A3006750DC /* Project object */;
@@ -200,6 +209,17 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
+		DB56A46025148D9900A7DA3E /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				DB56A45D25148D9900A7DA3E /* TwitterAPI.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		DBDA8E7C24FE03DB006750DC /* Embed Frameworks */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -412,6 +432,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DB56A45C25148D9900A7DA3E /* TwitterAPI.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -743,6 +764,7 @@
 			children = (
 				DBE76C93250093CA00DEB0FC /* Info.plist */,
 				DBE76C92250093CA00DEB0FC /* CoreDataStack.h */,
+				DBE76CB7250093E200DEB0FC /* CoreDataStack.swift */,
 				DBE76CBF250093E200DEB0FC /* CoreDataStack.xcdatamodeld */,
 				DBE76CAD250093E200DEB0FC /* Entity */,
 				DBE76CBA250093E200DEB0FC /* Extension */,
@@ -776,7 +798,6 @@
 		DBE76CB6250093E200DEB0FC /* Stack */ = {
 			isa = PBXGroup;
 			children = (
-				DBE76CB7250093E200DEB0FC /* CoreDataStack.swift */,
 				DBE76CB8250093E200DEB0FC /* ManagedObjectObserver.swift */,
 				DBE76CB9250093E200DEB0FC /* ManagedObjectContextObjectsDidChangeNotification.swift */,
 			);
@@ -1070,10 +1091,12 @@
 				DBE76C8C250093CA00DEB0FC /* Sources */,
 				DBE76C8D250093CA00DEB0FC /* Frameworks */,
 				DBE76C8E250093CA00DEB0FC /* Resources */,
+				DB56A46025148D9900A7DA3E /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				DB56A45F25148D9900A7DA3E /* PBXTargetDependency */,
 			);
 			name = CoreDataStack;
 			productName = CoreDataStack;
@@ -1569,6 +1592,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		DB56A45F25148D9900A7DA3E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = DBDA8E6124FE03DB006750DC /* TwitterAPI */;
+			targetProxy = DB56A45E25148D9900A7DA3E /* PBXContainerItemProxy */;
+		};
 		DBDA8E3624FCF8A7006750DC /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = DBDA8E1D24FCF8A3006750DC /* TwidereX */;
@@ -1796,7 +1824,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0.0;
+				MARKETING_VERSION = 0.1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.twidere.TwidereX;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
@@ -1819,7 +1847,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0.0;
+				MARKETING_VERSION = 0.1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.twidere.TwidereX;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
