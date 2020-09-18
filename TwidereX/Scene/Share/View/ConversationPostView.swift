@@ -40,14 +40,14 @@ final class ConversationPostView: UIView {
         return label
     }()
     
-    let dateLabel: UILabel = {
-        let label = UILabel()
-        label.font = .systemFont(ofSize: 14, weight: .regular)
-        label.textAlignment = .right
-        label.textColor = .secondaryLabel
-        label.text = "1d"
-        return label
-    }()
+//    let dateLabel: UILabel = {
+//        let label = UILabel()
+//        label.font = .systemFont(ofSize: 14, weight: .regular)
+//        label.textAlignment = .right
+//        label.textColor = .secondaryLabel
+//        label.text = "1d"
+//        return label
+//    }()
     
     let moreMenuButton: UIButton = {
         let button = UIButton()
@@ -56,7 +56,40 @@ final class ConversationPostView: UIView {
         return button
     }()
     
-    let mainContainerStackView = UIStackView()
+    let geoIconImageView: UIImageView = {
+        let imageView = UIImageView()
+        imageView.tintColor = .secondaryLabel
+        imageView.image = Asset.ObjectTools.icRoundLocationOn.image.withRenderingMode(.alwaysTemplate)
+        return imageView
+    }()
+    
+    let geoLabel: UILabel = {
+        let label = UILabel()
+        label.font = .systemFont(ofSize: 14, weight: .regular)
+        label.textColor = .secondaryLabel
+        label.text = "Earth, Galaxy"
+        return label
+        
+    }()
+    
+    let dateLabel: UILabel = {
+        let label = UILabel()
+        label.font = .systemFont(ofSize: 14, weight: .regular)
+        label.textAlignment = .center
+        label.textColor = .secondaryLabel
+        label.text = "2020/01/01 00:00 PM"
+        return label
+    }()
+    
+    let sourceLabel: UILabel = {
+        let label = UILabel()
+        label.font = .systemFont(ofSize: 14, weight: .regular)
+        label.textAlignment = .right
+        label.textColor = Asset.Colors.hightLight.color
+        label.text = "Twidere for iOS"
+        return label
+    }()
+    
     let activeTextLabel: ActiveLabel = {
         let label = ActiveLabel()
         label.numberOfLines = 0
@@ -68,7 +101,10 @@ final class ConversationPostView: UIView {
     }()
     let mosaicImageView = MosaicImageView()
     let quotePostView = QuotePostView()
-    
+    let geoMetaContainerStackView = UIStackView()
+    let retweetPostStatusView = ConversationPostStatusView()
+    let quotePostStatusView = ConversationPostStatusView()
+    let likePostStatusView = ConversationPostStatusView()
     let actionToolbar = ConversationPostActionToolbar()
     
     override init(frame: CGRect) {
@@ -87,7 +123,7 @@ extension ConversationPostView {
     private func _init() {
         backgroundColor = .systemBackground
         
-        // container: [user meta | post]
+        // container: [user meta | main | meta | action toolbar]
         let containerStackView = UIStackView()
         containerStackView.axis = .vertical
         containerStackView.spacing = 2
@@ -143,23 +179,10 @@ extension ConversationPostView {
         moreMenuButton.setContentHuggingPriority(.defaultHigh, for: .horizontal)
         
         authorContainerStackView.addArrangedSubview(usernameLabel)
-        
-        // post container: [tweet container]
-        let postContainerStackView = UIStackView()
-        containerStackView.addArrangedSubview(postContainerStackView)
-        postContainerStackView.axis = .horizontal
-        postContainerStackView.spacing = 10
-        postContainerStackView.alignment = .top
-        
-        
-        // tweet container: [main container | action toolbar]
-        let tweetContainerStackView = UIStackView()
-        postContainerStackView.addArrangedSubview(tweetContainerStackView)
-        tweetContainerStackView.axis = .vertical
-        tweetContainerStackView.spacing = 2
     
         // main container: [text | image | quote]
-        tweetContainerStackView.addArrangedSubview(mainContainerStackView)
+        let mainContainerStackView = UIStackView()
+        containerStackView.addArrangedSubview(mainContainerStackView)
         mainContainerStackView.axis = .vertical
         mainContainerStackView.spacing = 8
         activeTextLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -167,12 +190,63 @@ extension ConversationPostView {
         mosaicImageView.translatesAutoresizingMaskIntoConstraints = false
         mainContainerStackView.addArrangedSubview(mosaicImageView)
         mainContainerStackView.addArrangedSubview(quotePostView)
+        activeTextLabel.setContentHuggingPriority(.defaultHigh, for: .vertical)
         activeTextLabel.setContentCompressionResistancePriority(.required - 2, for: .vertical)
+        
+        // meta container: [geo meta | date meta | status meta]
+        let metaContainerStackView = UIStackView()
+        containerStackView.addArrangedSubview(metaContainerStackView)
+        metaContainerStackView.axis = .vertical
+        metaContainerStackView.spacing = 8
+        metaContainerStackView.alignment = .center
+
+        // top padding for meta container
+        let metaContainerStackViewTopPadding = UIView()
+        metaContainerStackViewTopPadding.translatesAutoresizingMaskIntoConstraints = false
+        metaContainerStackView.addArrangedSubview(metaContainerStackViewTopPadding)
+        NSLayoutConstraint.activate([
+            metaContainerStackViewTopPadding.heightAnchor.constraint(equalToConstant: 4).priority(.defaultHigh),
+        ])
+
+        // geo meta container: [geo icon | geo]
+        metaContainerStackView.addArrangedSubview(geoMetaContainerStackView)
+        geoMetaContainerStackView.axis = .horizontal
+        geoMetaContainerStackView.spacing = 6
+        geoMetaContainerStackView.addArrangedSubview(geoIconImageView)
+        geoMetaContainerStackView.addArrangedSubview(geoLabel)
+
+        // date meta container: [date | source]
+        let dateMetaContainer = UIStackView()
+        metaContainerStackView.addArrangedSubview(dateMetaContainer)
+        dateMetaContainer.axis = .horizontal
+        dateMetaContainer.spacing = 8
+        dateMetaContainer.addArrangedSubview(dateLabel)
+        dateMetaContainer.addArrangedSubview(sourceLabel)
+        
+        // status meta container: [retweet | quote | like]
+        let statusMetaContainer = UIStackView()
+        metaContainerStackView.addArrangedSubview(statusMetaContainer)
+        statusMetaContainer.axis = .horizontal
+        statusMetaContainer.distribution = .fillProportionally
+        statusMetaContainer.alignment = .center
+        statusMetaContainer.spacing = 20
+        
+        // retweet status
+        retweetPostStatusView.statusLabel.text = "Retweet"
+        statusMetaContainer.addArrangedSubview(retweetPostStatusView)
+        
+        // quote status
+        quotePostStatusView.statusLabel.text = "Quote Tweet"
+        statusMetaContainer.addArrangedSubview(quotePostStatusView)
+        
+        // like status
+        likePostStatusView.statusLabel.text = "Like"
+        statusMetaContainer.addArrangedSubview(likePostStatusView)
         
         // action toolbar
         actionToolbar.translatesAutoresizingMaskIntoConstraints = false
         actionToolbar.translatesAutoresizingMaskIntoConstraints = false
-        tweetContainerStackView.addArrangedSubview(actionToolbar)
+        containerStackView.addArrangedSubview(actionToolbar)
         NSLayoutConstraint.activate([
             actionToolbar.heightAnchor.constraint(equalToConstant: 48).priority(.defaultHigh),
         ])

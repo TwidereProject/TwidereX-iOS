@@ -99,7 +99,7 @@ struct TimelinePostTableViewCell_Previews: PreviewProvider {
     
     static var previews: some View {
         Group {
-            UIViewPreview(width: 375) {
+            UIViewPreview {
                 let cell = TimelinePostTableViewCell()
                 cell.timelinePostView.avatarImageView.image = avatarImage
                 cell.timelinePostView.retweetContainerStackView.isHidden = false

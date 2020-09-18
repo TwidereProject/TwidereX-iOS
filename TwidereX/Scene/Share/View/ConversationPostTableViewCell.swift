@@ -32,7 +32,7 @@ extension ConversationPostTableViewCell {
             conversationPostView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 8),
             conversationPostView.leadingAnchor.constraint(equalTo: contentView.layoutMarginsGuide.leadingAnchor),
             contentView.layoutMarginsGuide.trailingAnchor.constraint(equalTo: conversationPostView.trailingAnchor),
-            bottomAnchor.constraint(equalTo: conversationPostView.bottomAnchor),
+            contentView.bottomAnchor.constraint(equalTo: conversationPostView.bottomAnchor),
         ])
     }
     
@@ -53,7 +53,7 @@ struct ConversationPostTableViewCell_Previews: PreviewProvider {
     }
     
     static var previews: some View {
-        UIViewPreview(width: 375) {
+        UIViewPreview {
             let view = ConversationPostTableViewCell()
             view.conversationPostView.avatarImageView.image = avatarImage
 //            let images = MosaicImageView_Previews.images.prefix(3)
@@ -68,7 +68,7 @@ struct ConversationPostTableViewCell_Previews: PreviewProvider {
 //            view.quotePostView.isHidden = false
             return view
         }
-        .previewLayout(.fixed(width: 375, height: 800))
+        .previewLayout(.fixed(width: 375, height: 200))
     }
 }
 #endif

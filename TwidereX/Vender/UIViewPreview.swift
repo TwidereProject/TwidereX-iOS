@@ -16,8 +16,8 @@ public struct UIViewPreview<View: UIView>: UIViewRepresentable {
     }
     public func updateUIView(_ view: UIView, context: Context) {
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.setContentHuggingPriority(.required, for: .horizontal)
-        view.setContentHuggingPriority(.required, for: .vertical)
+        view.setContentHuggingPriority(.defaultHigh, for: .horizontal)
+        view.setContentHuggingPriority(.defaultHigh, for: .vertical)
         
         if let width = width {
             NSLayoutConstraint.activate([

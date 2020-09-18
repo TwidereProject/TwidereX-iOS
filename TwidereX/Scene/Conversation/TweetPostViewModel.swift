@@ -76,36 +76,36 @@ extension TweetPostViewModel {
         }
         
         // set name and username
-//        cell.nameLabel.text = tweet.user.name ?? " "
-//        cell.usernameLabel.text = tweet.user.screenName.flatMap { "@" + $0 } ?? " "
-//        
-//        // set text
-//        cell.activeTextLabel.text = tweet.text
-//        
-//        // set quote
-//        let quote = tweet.quote
-//        if let quote = quote {
-//            // set avatar
-//            if let avatarImageURL = quote.user.avatarImageURL() {
-//                let placeholderImage = UIImage
-//                    .placeholder(size: TweetPostDetailTableViewCell.avatarImageViewSize, color: .systemFill)
-//                    .af.imageRoundedIntoCircle()
-//                let filter = ScaledToSizeCircleFilter(size: TweetPostDetailTableViewCell.avatarImageViewSize)
-//                cell.quoteView.avatarImageView.af.setImage(
-//                    withURL: avatarImageURL,
-//                    placeholderImage: placeholderImage,
-//                    filter: filter,
-//                    imageTransition: .crossDissolve(0.2)
-//                )
-//            } else {
-//                assertionFailure()
-//            }
-//            
-//            // set name and username
-//            cell.quoteView.nameLabel.text = quote.user.name
-//            cell.quoteView.usernameLabel.text = quote.user.screenName.flatMap { "@" + $0 }
-//            
-//            // set date
+        cell.conversationPostView.nameLabel.text = tweet.user.name ?? " "
+        cell.conversationPostView.usernameLabel.text = tweet.user.screenName.flatMap { "@" + $0 } ?? " "
+
+        // set text
+        cell.conversationPostView.activeTextLabel.text = tweet.text
+        
+        // set quote
+        let quote = tweet.quote
+        if let quote = quote {
+            // set avatar
+            if let avatarImageURL = quote.user.avatarImageURL() {
+                let placeholderImage = UIImage
+                    .placeholder(size: ConversationPostView.avatarImageViewSize, color: .systemFill)
+                    .af.imageRoundedIntoCircle()
+                let filter = ScaledToSizeCircleFilter(size: ConversationPostView.avatarImageViewSize)
+                cell.conversationPostView.avatarImageView.af.setImage(
+                    withURL: avatarImageURL,
+                    placeholderImage: placeholderImage,
+                    filter: filter,
+                    imageTransition: .crossDissolve(0.2)
+                )
+            } else {
+                assertionFailure()
+            }
+            
+            // set name and username
+            cell.conversationPostView.quotePostView.nameLabel.text = quote.user.name
+            cell.conversationPostView.quotePostView.usernameLabel.text = quote.user.screenName.flatMap { "@" + $0 }
+            
+            // set date
 //            let createdAt = quote.createdAt
 //            cell.quoteView.dateLabel.text = createdAt.shortTimeAgoSinceNow
 //            cell.quoteDateLabelUpdateSubscription = Timer.publish(every: 1, on: .main, in: .default)
@@ -114,29 +114,43 @@ extension TweetPostViewModel {
 //                    // do not use core date entity in this run loop
 //                    cell.quoteView.dateLabel.text = createdAt.shortTimeAgoSinceNow
 //                }
-//            
-//            // set text
-//            cell.quoteView.activeTextLabel.text = quote.text
-//        }
-//        cell.tweetQuoteContainerStackView.isHidden = quote == nil
-//        
-//        // set geo
-//        let placeFullName = tweet.place.flatMap { $0.fullName } ?? nil
-//        cell.geoLabel.text = placeFullName
-//        cell.tweetGeoMetaContainerStackView.isHidden = placeFullName == nil
-//        
-//        // set date
-//        cell.dateLabel.text = TweetPostViewModel.dateFormatter.string(from: tweet.createdAt)
-//        
-//        // set source
-//        cell.sourceLabel.text = {
-//            guard let sourceHTML = tweet.source,
-//                  let html = try? HTML(html: sourceHTML, encoding: .utf8) else {
-//                return nil
-//            }
-//            
-//            return html.text
-//        }()
+            
+            // set text
+            cell.conversationPostView.quotePostView.activeTextLabel.text = quote.text
+        }
+        cell.conversationPostView.quotePostView.isHidden = quote == nil
+        
+        // set geo
+        let placeFullName = tweet.place.flatMap { $0.fullName } ?? nil
+        cell.conversationPostView.geoLabel.text = placeFullName
+        cell.conversationPostView.geoMetaContainerStackView.isHidden = placeFullName == nil
+        
+        // set date
+        cell.conversationPostView.dateLabel.text = TweetPostViewModel.dateFormatter.string(from: tweet.createdAt)
+        
+        // set status
+        if let retweetCount = tweet.retweetCount?.intValue, retweetCount > 0 {
+            cell.conversationPostView.retweetPostStatusView.countLabel.text = String(retweetCount)
+            cell.conversationPostView.retweetPostStatusView.statusLabel.text = retweetCount > 1 ? "Retweets" : "Retweet"
+            cell.conversationPostView.retweetPostStatusView.isHidden = false
+        } else {
+            cell.conversationPostView.retweetPostStatusView.isHidden = true
+        }
+        // TODO:
+        cell.conversationPostView.quotePostStatusView.isHidden = true
+        if let favoriteCount = tweet.favoriteCount?.intValue, favoriteCount > 0 {
+            cell.conversationPostView.likePostStatusView.countLabel.text = String(favoriteCount)
+            cell.conversationPostView.likePostStatusView.statusLabel.text = favoriteCount > 1 ? "Likes" : "Like"
+            cell.conversationPostView.likePostStatusView.isHidden = false
+        } else {
+            cell.conversationPostView.likePostStatusView.isHidden = true
+        }
+        
+        // set source
+        cell.conversationPostView.sourceLabel.text = {
+            guard let sourceHTML = tweet.source, let html = try? HTML(html: sourceHTML, encoding: .utf8) else { return nil }
+            return html.text
+        }()
     }
     
 }
