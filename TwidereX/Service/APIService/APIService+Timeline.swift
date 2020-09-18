@@ -31,7 +31,8 @@ extension APIService {
         }
                 
         os_log("%{public}s[%{public}ld], %{public}s: fetch home timeline…", ((#file as NSString).lastPathComponent), #line, #function)
-        return Twitter.API.Timeline.homeTimeline(session: session, authorization: authorization)
+        let query = Twitter.API.Timeline.Query(count: 200)
+        return Twitter.API.Timeline.homeTimeline(session: session, authorization: authorization, query: query)
             .handleEvents(receiveOutput: { [weak self] response in
                 guard let self = self else { return }
                 

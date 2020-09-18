@@ -1,5 +1,5 @@
 //
-//  HomeTimelineMiddleLoaderCollectionViewCell.swift
+//  TimelineMiddleLoaderTableViewCell.swift
 //  TwidereX
 //
 //  Created by Cirno MainasuK on 2020-9-8.
@@ -7,7 +7,7 @@
 
 import UIKit
 
-final class HomeTimelineMiddleLoaderCollectionViewCell: UITableViewCell {
+final class TimelineMiddleLoaderTableViewCell: UITableViewCell {
     
     let loadMoreButton: UIButton = {
         let button = UIButton()
@@ -30,7 +30,7 @@ final class HomeTimelineMiddleLoaderCollectionViewCell: UITableViewCell {
     
 }
 
-extension HomeTimelineMiddleLoaderCollectionViewCell {
+extension TimelineMiddleLoaderTableViewCell {
     
     private func _init() {
         loadMoreButton.translatesAutoresizingMaskIntoConstraints = false

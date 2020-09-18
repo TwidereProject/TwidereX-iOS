@@ -1,5 +1,5 @@
 //
-//  TimelineBottomLoaderCollectionViewCell.swift
+//  TimelineBottomLoaderTableViewCell.swift
 //  TwidereX
 //
 //  Created by Cirno MainasuK on 2020-9-8.
@@ -7,7 +7,7 @@
 
 import UIKit
 
-final class TimelineBottomLoaderCollectionViewCell: UICollectionViewCell {
+final class TimelineBottomLoaderTableViewCell: UITableViewCell {
     
     let loadMoreButton: UIButton = {
         let button = UIButton()
@@ -18,8 +18,8 @@ final class TimelineBottomLoaderCollectionViewCell: UICollectionViewCell {
         return button
     }()
     
-    override init(frame: CGRect) {
-        super.init(frame: frame)
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
         _init()
     }
     
@@ -30,7 +30,7 @@ final class TimelineBottomLoaderCollectionViewCell: UICollectionViewCell {
     
 }
 
-extension TimelineBottomLoaderCollectionViewCell {
+extension TimelineBottomLoaderTableViewCell {
     
     private func _init() {
         loadMoreButton.translatesAutoresizingMaskIntoConstraints = false

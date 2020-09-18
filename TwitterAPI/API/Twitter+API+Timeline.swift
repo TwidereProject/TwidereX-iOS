@@ -12,8 +12,10 @@ extension Twitter.API.Timeline {
     
     static let homeTimelineEndpointURL = Twitter.API.endpointURL.appendingPathComponent("statuses/home_timeline.json")
     
-    public static func homeTimeline(session: URLSession, authorization: Twitter.API.OAuth.Authorization) -> AnyPublisher<Twitter.Response<[Twitter.Entity.Tweet]>, Error> {
-        let requestURL = homeTimelineEndpointURL
+    public static func homeTimeline(session: URLSession, authorization: Twitter.API.OAuth.Authorization, query: Query) -> AnyPublisher<Twitter.Response<[Twitter.Entity.Tweet]>, Error> {
+        var components = URLComponents(string: homeTimelineEndpointURL.absoluteString)!
+        components.queryItems = query.queryItems
+        let requestURL = components.url!
         var request = URLRequest(
             url: requestURL,
             cachePolicy: .reloadIgnoringLocalAndRemoteCacheData,
@@ -32,4 +34,25 @@ extension Twitter.API.Timeline {
             .eraseToAnyPublisher()
     }
     
+}
+
+extension Twitter.API.Timeline {
+    public struct Query {
+        public let count: Int?
+        
+        public init(count: Int?) {
+            self.count = count
+        }
+        
+        var queryItems: [URLQueryItem]? {
+            var items: [URLQueryItem] = []
+            if let count = self.count {
+                items.append(URLQueryItem(name: "count", value: String(count)))
+            }
+            guard !items.isEmpty else { return nil }
+            return items
+        }
+        
+        
+    }
 }
