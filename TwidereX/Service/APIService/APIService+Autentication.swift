@@ -11,8 +11,9 @@ import TwitterAPI
 
 extension APIService {
     
-    func twitterRequestToken() -> AnyPublisher<Twitter.API.OAuth.RequestToken, Error> {
-        return Twitter.API.OAuth.requestToken(session: session)
+    func twitterRequestToken() -> AnyPublisher<Twitter.API.OAuth.OAuthRequestTokenExchange, Error> {
+        let oauthExchangeProvider = AppSecret()
+        return Twitter.API.OAuth.requestToken(session: session, oauthExchangeProvider: oauthExchangeProvider)
             .receive(on: DispatchQueue.main)
             .eraseToAnyPublisher()
     }

@@ -108,16 +108,11 @@ extension HomeTimelineViewController {
 extension HomeTimelineViewController {
     
     @objc private func refreshControlValueChanged(_ sender: UIRefreshControl) {
-        guard let twitterAuthentication = viewModel.currentTwitterAuthentication.value else {
+        guard let twitterAuthentication = viewModel.currentTwitterAuthentication.value,
+              let authorization = try? twitterAuthentication.authorization(appSecret: AppSecret.shared) else {
             assertionFailure()
             return
         }
-        let authorization = Twitter.API.OAuth.Authorization(
-            consumerKey: twitterAuthentication.consumerKey,
-            consumerSecret: twitterAuthentication.consumerSecret,
-            accessToken: twitterAuthentication.accessToken,
-            accessTokenSecret: twitterAuthentication.accessTokenSecret
-        )
         
         guard !viewModel.isFetchingLatestTimeline.value else { return }
         viewModel.isFetchingLatestTimeline.value = true
