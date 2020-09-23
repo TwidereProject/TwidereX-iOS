@@ -21,6 +21,8 @@ final public class TwitterAuthentication: NSManagedObject {
     @NSManaged public private(set) var accessToken: String
     @NSManaged public private(set) var accessTokenSecret: String
     
+    @NSManaged public private(set) var nonce: String
+    
     @NSManaged public private(set) var createdAt: Date
     @NSManaged public private(set) var updatedAt: Date
     
@@ -45,6 +47,7 @@ extension TwitterAuthentication {
         authentication.consumerSecret = property.consumerSecret
         authentication.accessToken = property.accessToken
         authentication.accessTokenSecret = property.accessTokenSecret
+        authentication.nonce = property.nonce ?? ""
         return authentication
     }
 }
@@ -57,14 +60,16 @@ extension TwitterAuthentication {
         public let consumerSecret: String
         public let accessToken: String
         public let accessTokenSecret: String
+        public let nonce: String?
         
-        public init(userID: String, screenName: String, consumerKey: String, consumerSecret: String, accessToken: String, accessTokenSecret: String) {
+        public init(userID: String, screenName: String, consumerKey: String, consumerSecret: String, accessToken: String, accessTokenSecret: String, nonce: String? = nil) {
             self.userID = userID
             self.screenName = screenName
             self.consumerKey = consumerKey
             self.consumerSecret = consumerSecret
             self.accessToken = accessToken
             self.accessTokenSecret = accessTokenSecret
+            self.nonce = nonce
         }
     }
 }

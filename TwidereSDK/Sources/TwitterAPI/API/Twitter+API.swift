@@ -30,13 +30,13 @@ extension Twitter.API {
 
 extension Twitter.API {
     enum APIError: Error, LocalizedError {
-        case `internal`
+        case `internal`(message: String)
         case response(code: Int, reason: String)
         
         var errorDescription: String? {
             switch self {
-            case .internal:
-                return "Internal error."
+            case .internal(let message):
+                return "Internal error: \(message)"
             case .response(let code, let reason):
                 return "\(code) - \(reason)"
             }

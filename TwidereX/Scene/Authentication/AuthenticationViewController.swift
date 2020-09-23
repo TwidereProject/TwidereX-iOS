@@ -58,19 +58,30 @@ extension AuthenticationViewController {
             })
             .receive(on: DispatchQueue.main)
             .sink { completion in
+                switch completion {
+                case .failure(let error):
+                    os_log("%{public}s[%{public}ld], %{public}s: request token error: %{public}s", ((#file as NSString).lastPathComponent), #line, #function, error.localizedDescription)
+                case .finished:
+                    break
+                }
                 // TODO: handle error
-            } receiveValue: { [weak self] requestToken in
+            } receiveValue: { [weak self] requestTokenExchange in
                 guard let self = self else { return }
-                guard requestToken.oauthCallbackConfirmed else { return }
-                self.twitterAuthenticate(requestToken: requestToken)
+                self.twitterAuthenticate(requestTokenExchange: requestTokenExchange)
             }
             .store(in: &disposeBag)
-
     }
 }
 
 extension AuthenticationViewController {
-    func twitterAuthenticate(requestToken: Twitter.API.OAuth.RequestToken) {
+    func twitterAuthenticate(requestTokenExchange: Twitter.API.OAuth.OAuthRequestTokenExchange) {
+        let requestToken: String = {
+            switch requestTokenExchange {
+            case .requestTokenResponse(let response):           return response.oauthToken
+            case .customRequestTokenResponse(_, let append):    return append.requestToken
+            }
+        }()
+        
         authenticationSession = ASWebAuthenticationSession(url: Twitter.API.OAuth.autenticateURL(requestToken: requestToken), callbackURLScheme: "twidere") { [weak self] callback, error in
             guard let self = self else { return }
             os_log("%{public}s[%{public}ld], %{public}s: callback: %s, error: %s", ((#file as NSString).lastPathComponent), #line, #function, callback?.debugDescription ?? "<nil>", error.debugDescription)
@@ -84,23 +95,38 @@ extension AuthenticationViewController {
                 assertionFailure(error.localizedDescription)
                 return
             }
-            guard let callbackURL = callback, let accessToken = Twitter.API.OAuth.Authentication(callbackURL: callbackURL) else {
-                // TODO: handle error
-                assertionFailure()
-                return
+            
+            let authenticationProperty: TwitterAuthentication.Property
+            switch requestTokenExchange {
+            case .requestTokenResponse(let response):
+                fatalError("not implement yet")
+            case .customRequestTokenResponse(_, let append):
+                guard let callbackURL = callback,
+                      let oauthCallbackResponse = Twitter.API.OAuth.OAuthCallbackResponse(callbackURL: callbackURL),
+                      let authentication = try? oauthCallbackResponse.authentication(privateKey: append.clientExchangePrivateKey) else {
+                    // handle error
+                    return
+                }
+                os_log("%{public}s[%{public}ld], %{public}s: authentication: %s", ((#file as NSString).lastPathComponent), #line, #function, String(describing: authentication))
+                
+                let rawProperty = TwitterAuthentication.Property(userID: authentication.userID, screenName: authentication.screenName, consumerKey: authentication.consumerKey, consumerSecret: authentication.consumerSecret, accessToken: authentication.accessToken, accessTokenSecret: authentication.accessTokenSecret)
+                do {
+                    authenticationProperty = try rawProperty.seal(appSecret: AppSecret.shared)
+                } catch {
+                    // handle error
+                    return
+                }
             }
             
-            let property = TwitterAuthentication.Property(userID: accessToken.userID, screenName: accessToken.screenName, consumerKey: accessToken.consumerKey, consumerSecret: accessToken.consumerSecret, accessToken: accessToken.oauthToken, accessTokenSecret: accessToken.oauthTokenSecret)
-            
-            // TODO: check duplicate
+            // save authentication
             let managedObjectContext = self.context.managedObjectContext
             managedObjectContext.performChanges {
-                let twitterAuthentication = TwitterAuthentication.insert(into: managedObjectContext, property: property)
+                let twitterAuthentication = TwitterAuthentication.insert(into: managedObjectContext, property: authenticationProperty)
             }
             .sink { result in
                 switch result {
                 case .success:
-                    os_log("%{public}s[%{public}ld], %{public}s: insert Authentication for %s, userID: %s", ((#file as NSString).lastPathComponent), #line, #function, property.screenName, property.userID)
+                    os_log("%{public}s[%{public}ld], %{public}s: insert Authentication for %s, userID: %s", ((#file as NSString).lastPathComponent), #line, #function, authenticationProperty.screenName, authenticationProperty.userID)
                     self.dismiss(animated: true, completion: nil)
                 case .failure(let error):
                     os_log("%{public}s[%{public}ld], %{public}s: insert Authentication failed. %s", ((#file as NSString).lastPathComponent), #line, #function, error.localizedDescription)
@@ -108,12 +134,11 @@ extension AuthenticationViewController {
                 }
             }
             .store(in: &self.disposeBag)
-            
-            os_log("%{public}s[%{public}ld], %{public}s: accessToken: %s", ((#file as NSString).lastPathComponent), #line, #function, String(describing: accessToken))
         }
         authenticationSession?.presentationContextProvider = self
         authenticationSession?.start()
     }
+
 }
 
 // MARK: - ASWebAuthenticationPresentationContextProviding
@@ -128,3 +153,5 @@ extension AuthenticationViewController: UIAdaptivePresentationControllerDelegate
         return .fullScreen
     }
 }
+
+

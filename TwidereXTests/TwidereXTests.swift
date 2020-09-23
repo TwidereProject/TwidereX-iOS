@@ -7,6 +7,8 @@
 
 import XCTest
 @testable import TwidereX
+import CryptoKit
+import CryptoSwift
 
 class TwidereXTests: XCTestCase {
 
@@ -30,4 +32,27 @@ class TwidereXTests: XCTestCase {
         }
     }
 
+}
+
+extension TwidereXTests {
+    
+    @available(iOS 14.0, *)
+    func testHKDF() throws {
+        // CryptoKit
+        let keyMaterial = SymmetricKey(size: .bits256)
+        let salt: Data = {
+            var sha256 = SHA256()
+            sha256.update(data: Data(UUID().uuidString.utf8))
+            let digest = sha256.finalize()
+            return Data(digest)
+        }()
+        let symmetricKey = CryptoKit.HKDF<SHA256>.deriveKey(inputKeyMaterial: keyMaterial, salt: salt, info: Data("authentication key".utf8), outputByteCount: 32)
+        
+        // CryptoSwift
+        let password = keyMaterial.withUnsafeBytes { Data($0) }
+        let wrapKeyData = try CryptoSwift.HKDF(password: password.bytes, salt: salt.bytes, info: Data("authentication key".utf8).bytes, keyLength: 32, variant: .sha256).calculate()
+        let symmetricKey2 = SymmetricKey(data: Data(wrapKeyData))
+        
+        XCTAssertEqual(symmetricKey, symmetricKey2)
+    }
 }

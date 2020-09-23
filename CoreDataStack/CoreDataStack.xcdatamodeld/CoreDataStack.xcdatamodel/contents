@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="17189" systemVersion="19G2021" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="17192" systemVersion="19G2021" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
     <entity name="Entity" representedClassName="Entity" syncable="YES" codeGenerationType="class"/>
     <entity name="TimelineIndex" representedClassName=".TimelineIndex" syncable="YES">
         <attribute name="createdAt" attributeType="Date" usesScalarValueType="NO"/>
@@ -46,6 +46,7 @@
         <attribute name="consumerSecret" attributeType="String"/>
         <attribute name="createdAt" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="id" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="nonce" attributeType="String" defaultValueString=""/>
         <attribute name="screenName" attributeType="String"/>
         <attribute name="updatedAt" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="userID" attributeType="String"/>
@@ -72,7 +73,7 @@
         <element name="TimelineIndex" positionX="-54" positionY="63" width="128" height="133"/>
         <element name="Toots" positionX="-18" positionY="81" width="128" height="103"/>
         <element name="Tweet" positionX="371.83984375" positionY="-55.8125" width="128" height="373"/>
-        <element name="TwitterAuthentication" positionX="-63" positionY="-18" width="128" height="178"/>
+        <element name="TwitterAuthentication" positionX="-63" positionY="-18" width="128" height="193"/>
         <element name="TwitterUser" positionX="0" positionY="108" width="128" height="268"/>
     </elements>
 </model>

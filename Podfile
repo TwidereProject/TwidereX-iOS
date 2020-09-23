@@ -21,3 +21,14 @@ target 'TwidereX' do
   end
 
 end
+
+plugin 'cocoapods-keys', {
+  :project => "TwidereX",
+  :keys => [
+    "app_secret",
+    "consumer_key",
+    "consumer_key_secret",
+    "host_key_public",
+    "oauth_endpoint"
+  ]
+}
