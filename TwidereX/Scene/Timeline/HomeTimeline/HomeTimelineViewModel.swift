@@ -27,6 +27,8 @@ final class SwipeEnabledDiffableDataSource: UITableViewDiffableDataSource<Timeli
 
 final class HomeTimelineViewModel: NSObject {
     
+    var disposeBag = Set<AnyCancellable>()
+    
     // input
     let context: AppContext
     let fetchedResultsController: NSFetchedResultsController<TimelineIndex>
@@ -57,6 +59,12 @@ final class HomeTimelineViewModel: NSObject {
         super.init()
         
         fetchedResultsController.delegate = self
+        Timer.publish(every: 1.0, on: .main, in: .common)
+            .autoconnect()
+            .sink { _ in
+                NotificationCenter.default.post(name: HomeTimelineViewModel.secondStepTimerTriggered, object: nil)
+            }
+            .store(in: &disposeBag)
     }
     
 }
@@ -121,15 +129,14 @@ extension HomeTimelineViewModel {
         cell.timelinePostView.usernameLabel.text = (tweet.retweet?.user ?? tweet.user).screenName.flatMap { "@" + $0 }
 
         // set date
-//        let createdAt = (tweet.retweet ?? tweet).createdAt
-//        cell.dateLabel.text = createdAt.shortTimeAgoSinceNow
-//        cell.dateLabelUpdateSubscription = Timer.publish(every: 1, on: .main, in: .default)
-//            .autoconnect()
-//            .sink { _ in
-//                // do not use core date entity in this run loop
-//                cell.dateLabel.text = createdAt.shortTimeAgoSinceNow
-//            }
-
+        let createdAt = (tweet.retweet ?? tweet).createdAt
+        cell.timelinePostView.dateLabel.text = createdAt.shortTimeAgoSinceNow
+        NotificationCenter.default.publisher(for: HomeTimelineViewModel.secondStepTimerTriggered, object: nil)
+            .sink { _ in
+                cell.timelinePostView.dateLabel.text = createdAt.shortTimeAgoSinceNow
+            }
+            .store(in: &cell.disposeBag)
+        
         // set text
         cell.timelinePostView.activeTextLabel.text = (tweet.retweet ?? tweet).text
 
@@ -205,15 +212,14 @@ extension HomeTimelineViewModel {
             cell.timelinePostView.quotePostView.nameLabel.text = quote.user.name
             cell.timelinePostView.quotePostView.usernameLabel.text = quote.user.screenName.flatMap { "@" + $0 }
 
-//            // set date
-//            let createdAt = quote.createdAt
-//            cell.quoteView.dateLabel.text = createdAt.shortTimeAgoSinceNow
-//            cell.quoteDateLabelUpdateSubscription = Timer.publish(every: 1, on: .main, in: .default)
-//                .autoconnect()
-//                .sink { _ in
-//                    // do not use core date entity in this run loop
-//                    cell.quoteView.dateLabel.text = createdAt.shortTimeAgoSinceNow
-//                }
+            // set date
+            let createdAt = quote.createdAt
+            cell.timelinePostView.quotePostView.dateLabel.text = createdAt.shortTimeAgoSinceNow
+            NotificationCenter.default.publisher(for: HomeTimelineViewModel.secondStepTimerTriggered, object: nil)
+                .sink { _ in
+                    cell.timelinePostView.quotePostView.dateLabel.text = createdAt.shortTimeAgoSinceNow
+                }
+                .store(in: &cell.disposeBag)
 
             // set text
             cell.timelinePostView.quotePostView.activeTextLabel.text = quote.text
@@ -399,4 +405,8 @@ extension HomeTimelineViewModel: NSFetchedResultsControllerDelegate {
         return differenceBetweenTopRowAndNavigationBar
     }
     
+}
+
+extension HomeTimelineViewModel {
+    static let secondStepTimerTriggered = Notification.Name("com.twidere.twiderex.home-timeline.second-step-timer-triggered")
 }
