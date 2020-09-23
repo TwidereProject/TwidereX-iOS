@@ -16,15 +16,14 @@ enum TimelineItem {
 
 extension TimelineItem {
     class Attribute: Hashable {
-        var isExpand: Bool = false
         var indentSeparatorLine: Bool = true
         
         static func == (lhs: TimelineItem.Attribute, rhs: TimelineItem.Attribute) -> Bool {
-            return lhs.isExpand == rhs.isExpand
+            return lhs.indentSeparatorLine == rhs.indentSeparatorLine
         }
 
         func hash(into hasher: inout Hasher) {
-            hasher.combine(isExpand)
+            hasher.combine(indentSeparatorLine)
         }
     }
 }
@@ -32,7 +31,7 @@ extension TimelineItem {
 extension TimelineItem: Equatable {
     static func == (lhs: TimelineItem, rhs: TimelineItem) -> Bool {
         switch (lhs, rhs) {
-        case (.homeTimelineIndex(let objectIDLeft, let expandStatusLeft), .homeTimelineIndex(let objectIDRight, let expandStatusRight)):
+        case (.homeTimelineIndex(let objectIDLeft, _), .homeTimelineIndex(let objectIDRight, _)):
             return objectIDLeft == objectIDRight
         case (.homeTimelineMiddleLoader(let upperLeft), .homeTimelineMiddleLoader(let upperRight)):
             return upperLeft == upperRight

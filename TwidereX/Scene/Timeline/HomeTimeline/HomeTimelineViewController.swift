@@ -178,7 +178,7 @@ extension HomeTimelineViewController: UITableViewDelegate {
         os_log("%{public}s[%{public}ld], %{public}s: indexPath %s", ((#file as NSString).lastPathComponent), #line, #function, indexPath.debugDescription)
         
         if let cell = tableView.cellForRow(at: indexPath) as? TimelinePostTableViewCell {
-            viewModel.focus(cell: cell, in: tableView, at: indexPath)
+            // TODO: enter detail
         }
     }
     

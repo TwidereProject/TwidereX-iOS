@@ -225,10 +225,6 @@ extension HomeTimelineViewModel {
             cell.timelinePostView.quotePostView.activeTextLabel.text = quote.text
         }
         cell.timelinePostView.quotePostView.isHidden = quote == nil
-
-        // set action toolbar expand / fold
-        cell.timelinePostView.actionToolbar.isHidden = !attribute.isExpand
-        cell.timelinePostView.actionToolbar.alpha = !attribute.isExpand ? 0 : 1
         
         // set separator line indent in non-conflict order
         if attribute.indentSeparatorLine {
@@ -253,44 +249,6 @@ extension HomeTimelineViewModel {
         return String(number)
     }
     
-}
-
-extension HomeTimelineViewModel {
-    func focus(cell: TimelinePostTableViewCell, in tableView: UITableView, at indexPath: IndexPath)  {
-        guard let diffableDataSource = self.diffableDataSource else {
-            assertionFailure()
-            return
-        }
-        
-        guard let focusedTimelineItem = diffableDataSource.itemIdentifier(for: indexPath) else {
-            return
-        }
-        
-        var snapshot = diffableDataSource.snapshot()
-        
-        var reloadItems: Set<TimelineItem> = Set()
-        for item in snapshot.itemIdentifiers where item != focusedTimelineItem {
-            switch item {
-            case .homeTimelineIndex(_, let expandStatus) where expandStatus.isExpand:
-                expandStatus.isExpand = false
-                reloadItems.insert(item)
-            default:
-                continue
-            }
-        }
-        
-        switch focusedTimelineItem {
-        case .homeTimelineIndex(_, let expandStatus):
-            expandStatus.isExpand.toggle()
-            reloadItems.insert(focusedTimelineItem)
-        default:
-            break
-        }
-        
-        snapshot.reloadItems(Array(reloadItems))
-        diffableDataSource.defaultRowAnimation = .none
-        diffableDataSource.apply(snapshot) // set animation in cell
-    }
 }
 
 // MARK: - NSFetchedResultsControllerDelegate

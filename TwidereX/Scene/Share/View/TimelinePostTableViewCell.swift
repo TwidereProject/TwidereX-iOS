@@ -30,12 +30,8 @@ final class TimelinePostTableViewCell: UITableViewCell {
         timelinePostView.mosaicImageView.reset()
         timelinePostView.mosaicImageView.isHidden = true
         timelinePostView.quotePostView.isHidden = true
-        
-        timelinePostView.actionToolbar.alpha = 0
-        timelinePostView.actionToolbar.isHidden = true
-//        avatarImageView.af.cancelImageRequest()
-//        dateLabelUpdateSubscription = nil
-//        disposeBag.removeAll()
+        timelinePostView.avatarImageView.af.cancelImageRequest()
+        disposeBag.removeAll()
     }
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
@@ -76,9 +72,6 @@ extension TimelinePostTableViewCell {
             separatorLine.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
             separatorLine.heightAnchor.constraint(equalToConstant: UIView.separatorLineHeight(of: separatorLine))
         ])
-        
-        timelinePostView.actionToolbar.alpha = 0
-        timelinePostView.actionToolbar.isHidden = true
     }
     
 }
