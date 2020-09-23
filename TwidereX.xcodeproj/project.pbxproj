@@ -21,6 +21,7 @@
 		DB4323D22514936F004FAAEC /* TwidereSDK in Frameworks */ = {isa = PBXBuildFile; productRef = DB4323D12514936F004FAAEC /* TwidereSDK */; };
 		DB4323D425149374004FAAEC /* TwidereSDK in Frameworks */ = {isa = PBXBuildFile; productRef = DB4323D325149374004FAAEC /* TwidereSDK */; };
 		DB4323D8251493C5004FAAEC /* TwidereSDK in Embed Frameworks */ = {isa = PBXBuildFile; productRef = DB4323D12514936F004FAAEC /* TwidereSDK */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		DB747FEF251B63E3000C4BD7 /* HitTestExpandedButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB747FEE251B63E3000C4BD7 /* HitTestExpandedButton.swift */; };
 		DB7D1248250B5C6C00999903 /* UIButton+Inset.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB7D1247250B5C6C00999903 /* UIButton+Inset.swift */; };
 		DB7D124C250F875F00999903 /* UIView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB7D124B250F875E00999903 /* UIView.swift */; };
 		DB88AC2F2508BA8C0009E562 /* TimelineSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB88AC2E2508BA8C0009E562 /* TimelineSection.swift */; };
@@ -195,6 +196,7 @@
 		DB35C35C25146C58003DA0E9 /* ConversationPostStatusView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationPostStatusView.swift; sourceTree = "<group>"; };
 		DB41C0DA2513368800521562 /* TimelinePostActionToolbar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimelinePostActionToolbar.swift; sourceTree = "<group>"; };
 		DB43239D251491EB004FAAEC /* TwidereSDK */ = {isa = PBXFileReference; lastKnownFileType = folder; path = TwidereSDK; sourceTree = "<group>"; };
+		DB747FEE251B63E3000C4BD7 /* HitTestExpandedButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HitTestExpandedButton.swift; sourceTree = "<group>"; };
 		DB7D1247250B5C6C00999903 /* UIButton+Inset.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIButton+Inset.swift"; sourceTree = "<group>"; };
 		DB7D124B250F875E00999903 /* UIView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIView.swift; sourceTree = "<group>"; };
 		DB88AC2E2508BA8C0009E562 /* TimelineSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimelineSection.swift; sourceTree = "<group>"; };
@@ -700,6 +702,7 @@
 				DB41C0DA2513368800521562 /* TimelinePostActionToolbar.swift */,
 				DBEA4F8E251314640007FEC5 /* MosaicImageView.swift */,
 				DBEA4F90251331BE0007FEC5 /* QuotePostView.swift */,
+				DB747FEE251B63E3000C4BD7 /* HitTestExpandedButton.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -1127,6 +1130,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DB747FEF251B63E3000C4BD7 /* HitTestExpandedButton.swift in Sources */,
 				DBB09D562511BA9700AE260E /* APIService+Lookup.swift in Sources */,
 				DB7D124C250F875F00999903 /* UIView.swift in Sources */,
 				DBEA4F8F251314640007FEC5 /* MosaicImageView.swift in Sources */,

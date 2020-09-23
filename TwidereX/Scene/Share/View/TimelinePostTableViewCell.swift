@@ -58,7 +58,7 @@ extension TimelinePostTableViewCell {
             timelinePostView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: TimelinePostTableViewCell.verticalMargin),
             timelinePostView.leadingAnchor.constraint(equalTo:  contentView.layoutMarginsGuide.leadingAnchor),
             contentView.layoutMarginsGuide.trailingAnchor.constraint(equalTo: timelinePostView.trailingAnchor),
-            contentView.bottomAnchor.constraint(equalTo: timelinePostView.bottomAnchor, constant: TimelinePostTableViewCell.verticalMargin),
+            contentView.bottomAnchor.constraint(equalTo: timelinePostView.bottomAnchor),    // use action toolbar margin 
         ])
         
         let separatorLine = UIView.separatorLine

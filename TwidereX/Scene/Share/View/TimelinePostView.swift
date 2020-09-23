@@ -42,9 +42,8 @@ final class TimelinePostView: UIView {
     
     let nameLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 14, weight: .regular)
+        label.font = .systemFont(ofSize: 14, weight: .medium)
         label.textColor = .label
-        label.textColor = Asset.Colors.hightLight.color
         label.text = "Alice"
         return label
     }()
@@ -108,7 +107,7 @@ extension TimelinePostView {
         // container: [retweet | post]
         let containerStackView = UIStackView()
         containerStackView.axis = .vertical
-        containerStackView.spacing = 2
+        containerStackView.spacing = 8
         //containerStackView.alignment = .top
         containerStackView.translatesAutoresizingMaskIntoConstraints = false
         addSubview(containerStackView)

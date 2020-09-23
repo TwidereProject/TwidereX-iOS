@@ -5,15 +5,25 @@
 //  Created by Cirno MainasuK on 2020-9-17.
 //
 
+import os.log
 import UIKit
 
+protocol TimelinePostActionToolbarDelegate: class {
+    func timelinePostActionToolbar(_ toolbar: TimelinePostActionToolbar, replayButtonDidPressed sender: UIButton)
+    func timelinePostActionToolbar(_ toolbar: TimelinePostActionToolbar, retweetButtonDidPressed sender: UIButton)
+    func timelinePostActionToolbar(_ toolbar: TimelinePostActionToolbar, favoriteButtonDidPressed sender: UIButton)
+    func timelinePostActionToolbar(_ toolbar: TimelinePostActionToolbar, shareButtonDidPressed sender: UIButton)
+}
+
 final class TimelinePostActionToolbar: UIView {
+    
+    weak var delegate: TimelinePostActionToolbarDelegate?
     
     static let height: CGFloat = 40
     static let buttonTitleImagePadding: CGFloat = 4
     
     let replyButton: UIButton = {
-        let button = UIButton()
+        let button = HitTestExpandedButton()
         button.imageView?.tintColor = .secondaryLabel
         button.setImage(Asset.Communication.mdiMessageReply.image.withRenderingMode(.alwaysTemplate), for: .normal)
         button.titleLabel?.font = .monospacedDigitSystemFont(ofSize: 12, weight: .regular)
@@ -25,7 +35,7 @@ final class TimelinePostActionToolbar: UIView {
     }()
     
     let retweetButton: UIButton = {
-        let button = UIButton()
+        let button = HitTestExpandedButton()
         button.imageView?.tintColor = .secondaryLabel
         button.setImage(Asset.Arrows.mdiTwitterRetweet.image.withRenderingMode(.alwaysTemplate), for: .normal)
         button.titleLabel?.font = .monospacedDigitSystemFont(ofSize: 12, weight: .regular)
@@ -37,7 +47,7 @@ final class TimelinePostActionToolbar: UIView {
     }()
     
     let favoriteButton: UIButton = {
-        let button = UIButton()
+        let button = HitTestExpandedButton()
         button.setImage(Asset.Health.icRoundFavoriteBorder.image.withRenderingMode(.alwaysTemplate), for: .normal)
         button.imageView?.tintColor = .secondaryLabel
         button.titleLabel?.font = .monospacedDigitSystemFont(ofSize: 12, weight: .regular)
@@ -49,7 +59,7 @@ final class TimelinePostActionToolbar: UIView {
     }()
     
     let shareButton: UIButton = {
-        let button = UIButton()
+        let button = HitTestExpandedButton()
         button.imageView?.tintColor = .secondaryLabel
         button.setImage(Asset.ObjectTools.icRoundShare.image.withRenderingMode(.alwaysTemplate), for: .normal)
         button.contentHorizontalAlignment = .trailing
@@ -71,51 +81,65 @@ final class TimelinePostActionToolbar: UIView {
 extension TimelinePostActionToolbar {
     
     private func _init() {
+        let containerStackView = UIStackView()
+        containerStackView.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(containerStackView)
+        NSLayoutConstraint.activate([
+            containerStackView.topAnchor.constraint(equalTo: topAnchor),
+            containerStackView.leadingAnchor.constraint(equalTo: leadingAnchor),
+            trailingAnchor.constraint(equalTo: containerStackView.trailingAnchor),
+            bottomAnchor.constraint(equalTo: containerStackView.bottomAnchor),
+        ])
+        
+        containerStackView.axis = .horizontal
+        containerStackView.distribution = .fill
+        
         replyButton.translatesAutoresizingMaskIntoConstraints = false
-        addSubview(replyButton)
-        NSLayoutConstraint.activate([
-            replyButton.topAnchor.constraint(equalTo: topAnchor),
-            replyButton.leadingAnchor.constraint(equalTo: leadingAnchor),
-            bottomAnchor.constraint(equalTo: replyButton.bottomAnchor),
-            replyButton.heightAnchor.constraint(equalToConstant: TimelinePostActionToolbar.height).priority(.defaultHigh),
-        ])
-
         retweetButton.translatesAutoresizingMaskIntoConstraints = false
-        addSubview(retweetButton)
-        NSLayoutConstraint.activate([
-            retweetButton.topAnchor.constraint(equalTo: topAnchor),
-            retweetButton.leadingAnchor.constraint(equalTo: replyButton.trailingAnchor),
-            bottomAnchor.constraint(equalTo: retweetButton.bottomAnchor),
-        ])
-        
         favoriteButton.translatesAutoresizingMaskIntoConstraints = false
-        addSubview(favoriteButton)
-        NSLayoutConstraint.activate([
-            favoriteButton.topAnchor.constraint(equalTo: topAnchor),
-            favoriteButton.leadingAnchor.constraint(equalTo: retweetButton.trailingAnchor),
-            bottomAnchor.constraint(equalTo: favoriteButton.bottomAnchor),
-        ])
-        
         shareButton.translatesAutoresizingMaskIntoConstraints = false
-        addSubview(shareButton)
+        containerStackView.addArrangedSubview(replyButton)
+        containerStackView.addArrangedSubview(retweetButton)
+        containerStackView.addArrangedSubview(favoriteButton)
+        containerStackView.addArrangedSubview(shareButton)
         NSLayoutConstraint.activate([
-            shareButton.topAnchor.constraint(equalTo: topAnchor),
-            shareButton.leadingAnchor.constraint(equalTo: favoriteButton.trailingAnchor),
-            trailingAnchor.constraint(equalTo: shareButton.trailingAnchor),
-            bottomAnchor.constraint(equalTo: shareButton.bottomAnchor),
-        ])
-        shareButton.setContentHuggingPriority(.defaultHigh, for: .horizontal)
-        
-        NSLayoutConstraint.activate([
+            replyButton.heightAnchor.constraint(equalToConstant: 40),
             replyButton.heightAnchor.constraint(equalTo: retweetButton.heightAnchor),
             replyButton.heightAnchor.constraint(equalTo: favoriteButton.heightAnchor),
             replyButton.heightAnchor.constraint(equalTo: shareButton.heightAnchor),
             replyButton.widthAnchor.constraint(equalTo: retweetButton.widthAnchor),
             replyButton.widthAnchor.constraint(equalTo: favoriteButton.widthAnchor),
-            replyButton.widthAnchor.constraint(equalTo: shareButton.widthAnchor, multiplier: 2),
         ])
+        
+        replyButton.addTarget(self, action: #selector(TimelinePostActionToolbar.replyButtonDidPressed(_:)), for: .touchUpInside)
+        retweetButton.addTarget(self, action: #selector(TimelinePostActionToolbar.retweetButtonDidPressed(_:)), for: .touchUpInside)
+        favoriteButton.addTarget(self, action: #selector(TimelinePostActionToolbar.favoriteButtonDidPressed(_:)), for: .touchUpInside)
+        shareButton.addTarget(self, action: #selector(TimelinePostActionToolbar.shareButtonDidPressed(_:)), for: .touchUpInside)
+    }
+}
+
+extension TimelinePostActionToolbar {
+
+    @objc private func replyButtonDidPressed(_ sender: UIButton) {
+        os_log("%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
+        delegate?.timelinePostActionToolbar(self, replayButtonDidPressed: sender)
     }
     
+    @objc private func retweetButtonDidPressed(_ sender: UIButton) {
+        os_log("%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
+        delegate?.timelinePostActionToolbar(self, retweetButtonDidPressed: sender)
+    }
+    
+    @objc private func favoriteButtonDidPressed(_ sender: UIButton) {
+        os_log("%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
+        delegate?.timelinePostActionToolbar(self, favoriteButtonDidPressed: sender)
+    }
+    
+    @objc private func shareButtonDidPressed(_ sender: UIButton) {
+        os_log("%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
+        delegate?.timelinePostActionToolbar(self, shareButtonDidPressed: sender)
+    }
+
 }
 
 #if DEBUG
