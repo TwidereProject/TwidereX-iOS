@@ -1,28 +1,26 @@
 //
-//  TweetPostViewController.swift
+//  ProfilePostTimelineViewController.swift
 //  TwidereX
 //
-//  Created by Cirno MainasuK on 2020-9-15.
+//  Created by Cirno MainasuK on 2020-9-24.
 //
 
-import os.log
 import UIKit
 import Combine
-import CoreDataStack
-import TwitterAPI
 
-final class TweetPostViewController: UIViewController, NeedsDependency {
+final class ProfilePostTimelineViewController: UIViewController, NeedsDependency {
     
     weak var context: AppContext! { willSet { precondition(!isViewLoaded) } }
     weak var coordinator: SceneCoordinator! { willSet { precondition(!isViewLoaded) } }
     
     var disposeBag = Set<AnyCancellable>()
-    var viewModel: TweetPostViewModel!
+    //var viewModel: TweetPostViewModel!
+    let viewModel = StubTableViewModel()
     
     lazy var tableView: UITableView = {
         let tableView = UITableView()
         tableView.register(ConversationPostTableViewCell.self, forCellReuseIdentifier: String(describing: ConversationPostTableViewCell.self))
-        tableView.register(TimelinePostTableViewCell.self, forCellReuseIdentifier: String(describing: TimelinePostTableViewCell.self))
+        tableView.register(StubTableViewCell.self, forCellReuseIdentifier: String(describing: StubTableViewCell.self))
         tableView.rowHeight = UITableView.automaticDimension
         tableView.separatorStyle = .none
         return tableView
@@ -30,34 +28,32 @@ final class TweetPostViewController: UIViewController, NeedsDependency {
     
 }
 
-extension TweetPostViewController {
+extension ProfilePostTimelineViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        view.backgroundColor = .systemBackground
         
         tableView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(tableView)
         tableView.backgroundColor = .systemBackground
         NSLayoutConstraint.activate([
+            tableView.topAnchor.constraint(equalTo: view.topAnchor),
             tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-            tableView.topAnchor.constraint(equalTo: view.topAnchor)
         ])
         
-        viewModel.setupDiffableDataSource(for: tableView)
         tableView.delegate = self
-        tableView.dataSource = viewModel.diffableDataSource
-        tableView.reloadData()
+        tableView.dataSource = viewModel
+        
+        tableView.contentInset.top = 300
     }
     
 }
 
 // MARK: - UITableViewDelegate
-extension TweetPostViewController: UITableViewDelegate {
-    func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 200
+extension ProfilePostTimelineViewController: UITableViewDelegate {
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        print(scrollView.contentOffset)
     }
 }

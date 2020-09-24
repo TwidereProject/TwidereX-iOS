@@ -15,17 +15,19 @@ class MainTabBarController: UITabBarController {
     
     enum Tab: Int, CaseIterable {
         case timeline
+        case me
         
         var title: String {
             switch self {
-            case .timeline:    return "Timeline"
-                
+            case .timeline:     return "Timeline"
+            case .me:           return "Me"
             }
         }
         
         var image: UIImage {
             switch self {
             case .timeline:     return UIImage(systemName: "house")!
+            case .me:           return UIImage(systemName: "person")!
             }
         }
         
@@ -38,6 +40,11 @@ class MainTabBarController: UITabBarController {
                 #else
                 let viewController = HomeTimelineViewController()
                 #endif
+                viewController.context = context
+                viewController.coordinator = coordinator
+                navigationController = UINavigationController(rootViewController: viewController)
+            case .me:
+                let viewController = ProfileViewController()
                 viewController.context = context
                 viewController.coordinator = coordinator
                 navigationController = UINavigationController(rootViewController: viewController)

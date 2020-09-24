@@ -128,7 +128,7 @@ extension APIService {
                         let counting = workingRecords
                             .map { record in record.count() }
                             .reduce(into: WorkingRecord.Counting(), { result, next in result = result + next })
-                        os_log(.info, log: log, "%{public}s[%{public}ld], %{public}s: tweet: insert %{public}ld, merge %{public}ld", ((#file as NSString).lastPathComponent), #line, #function, counting.tweet.create, counting.tweet.merge)
+                        os_log(.info, log: log, "%{public}s[%{public}ld], %{public}s: tweet: insert %{public}ld, merge %{public}ld(%{public}ld)", ((#file as NSString).lastPathComponent), #line, #function, counting.tweet.create, mergedOldTweetsInTimeline.count, counting.tweet.merge)
                         os_log(.info, log: log, "%{public}s[%{public}ld], %{public}s: twitter user: insert %{public}ld, merge %{public}ld", ((#file as NSString).lastPathComponent), #line, #function, counting.user.create, counting.user.merge)
                         #endif
                     } catch {

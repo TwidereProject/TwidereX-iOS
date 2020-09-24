@@ -54,6 +54,24 @@
           "revision": "609367a2cd84827a33383cf7923cb4fe8f69ee0a",
           "version": "5.2.2"
         }
+      },
+      {
+        "package": "Pageboy",
+        "repositoryURL": "https://github.com/uias/Pageboy",
+        "state": {
+          "branch": null,
+          "revision": "fcaaab06e634de68d2929883083683ec8cf5dade",
+          "version": "3.6.1"
+        }
+      },
+      {
+        "package": "Tabman",
+        "repositoryURL": "https://github.com/uias/Tabman.git",
+        "state": {
+          "branch": null,
+          "revision": "28bcd3d3fca0a5b7c8767d19c91d57fbd04bf60d",
+          "version": "2.9.1"
+        }
       }
     ]
   },
