@@ -110,6 +110,8 @@ extension TimelinePostActionToolbar {
             replyButton.widthAnchor.constraint(equalTo: retweetButton.widthAnchor),
             replyButton.widthAnchor.constraint(equalTo: favoriteButton.widthAnchor),
         ])
+        shareButton.setContentHuggingPriority(.defaultHigh, for: .horizontal)
+        shareButton.setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
         
         replyButton.addTarget(self, action: #selector(TimelinePostActionToolbar.replyButtonDidPressed(_:)), for: .touchUpInside)
         retweetButton.addTarget(self, action: #selector(TimelinePostActionToolbar.retweetButtonDidPressed(_:)), for: .touchUpInside)

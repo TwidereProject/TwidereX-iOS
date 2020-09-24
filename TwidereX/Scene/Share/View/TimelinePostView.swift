@@ -102,8 +102,6 @@ final class TimelinePostView: UIView {
 extension TimelinePostView {
     
     func _init() {
-        backgroundColor = .systemBackground
-        
         // container: [retweet | post]
         let containerStackView = UIStackView()
         containerStackView.axis = .vertical
@@ -188,7 +186,8 @@ extension TimelinePostView {
         usernameLabel.setContentHuggingPriority(.defaultHigh, for: .horizontal)
         usernameLabel.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
         dateLabel.setContentHuggingPriority(.defaultLow, for: .horizontal)
-        dateLabel.setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
+        dateLabel.setContentCompressionResistancePriority(.defaultHigh + 1, for: .horizontal)
+        moreMenuButton.setContentCompressionResistancePriority(.defaultHigh + 2, for: .horizontal)
         
         // align retweet label leading to name
         // align retweet icon trailing to avatar

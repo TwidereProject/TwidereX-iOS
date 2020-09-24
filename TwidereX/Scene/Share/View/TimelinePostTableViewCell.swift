@@ -49,9 +49,6 @@ final class TimelinePostTableViewCell: UITableViewCell {
 extension TimelinePostTableViewCell {
     
     private func _init() {
-        selectionStyle = .none
-        contentView.backgroundColor = .systemBackground
-        
         timelinePostView.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(timelinePostView)
         NSLayoutConstraint.activate([
@@ -70,7 +67,7 @@ extension TimelinePostTableViewCell {
             separatorLineIndentLeadingLayoutConstraint,
             contentView.layoutMarginsGuide.trailingAnchor.constraint(equalTo: separatorLine.trailingAnchor),
             separatorLine.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
-            separatorLine.heightAnchor.constraint(equalToConstant: UIView.separatorLineHeight(of: separatorLine))
+            separatorLine.heightAnchor.constraint(equalToConstant: UIView.separatorLineHeight(of: separatorLine)),
         ])
     }
     

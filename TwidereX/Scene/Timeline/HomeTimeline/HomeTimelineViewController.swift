@@ -84,6 +84,12 @@ extension HomeTimelineViewController {
             }
             .store(in: &disposeBag)
     }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        tableView.deselectRow(with: transitionCoordinator, animated: animated)
+    }
  
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
@@ -97,12 +103,7 @@ extension HomeTimelineViewController {
             
         }
     }
-    
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        
-        tableView.reloadData()
-    }
+
 }
 
 extension HomeTimelineViewController {
@@ -177,9 +178,26 @@ extension HomeTimelineViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         os_log("%{public}s[%{public}ld], %{public}s: indexPath %s", ((#file as NSString).lastPathComponent), #line, #function, indexPath.debugDescription)
         
-        if let cell = tableView.cellForRow(at: indexPath) as? TimelinePostTableViewCell {
-            // TODO: enter detail
+        guard let diffableDataSource = viewModel.diffableDataSource else { return }
+        guard let item = diffableDataSource.itemIdentifier(for: indexPath) else { return }
+
+        switch item {
+        case .homeTimelineIndex(let objectID, let attribute):
+            let managedObjectContext = self.viewModel.fetchedResultsController.managedObjectContext
+            managedObjectContext.performAndWait {
+                guard let timelineIndex = managedObjectContext.object(with: objectID) as? TimelineIndex else { return }
+                guard let tweet = timelineIndex.tweet?.retweet ?? timelineIndex.tweet else { return }
+                
+                let tweetPostViewModel = TweetPostViewModel(context: self.context, tweet: tweet)
+                self.coordinator.present(scene: .tweetPost(viewModel: tweetPostViewModel), from: self, transition: .showDetail)
+            }
+        default:
+            return
         }
+        
+//        if let cell = tableView.cellForRow(at: indexPath) as? TimelinePostTableViewCell {
+//
+//        }
     }
     
     func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
@@ -191,31 +209,31 @@ extension HomeTimelineViewController: UITableViewDelegate {
         viewModel.cellFrameCache.setObject(NSValue(cgRect: frame), forKey: NSNumber(value: key))
     }
     
-    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
-        guard let diffableDataSource = viewModel.diffableDataSource else { return nil }
-        guard let item = diffableDataSource.itemIdentifier(for: indexPath) else { return nil }
-        
-        switch item {
-        case .homeTimelineIndex(let objectID, let attribute):
-            let detailAction = UIContextualAction(style: .normal, title: "Detail", handler: { [weak self] (action, buttonView, completion) in
-                defer { completion(true) }
-                guard let self = self else { return }
-                let managedObjectContext = self.viewModel.fetchedResultsController.managedObjectContext
-                managedObjectContext.performAndWait {
-                    guard let timelineIndex = managedObjectContext.object(with: objectID) as? TimelineIndex else { return }
-                    guard let tweet = timelineIndex.tweet?.retweet ?? timelineIndex.tweet else { return }
-    
-                    let tweetPostViewModel = TweetPostViewModel(context: self.context, tweet: tweet)
-                    self.coordinator.present(scene: .tweetPost(viewModel: tweetPostViewModel), from: self, transition: .showDetail)
-                }
-                completion(true)
-            })
-            detailAction.backgroundColor = .systemGreen
-            return UISwipeActionsConfiguration(actions: [detailAction])
-        default:
-            return nil
-        }
-    }
+//    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+//        guard let diffableDataSource = viewModel.diffableDataSource else { return nil }
+//        guard let item = diffableDataSource.itemIdentifier(for: indexPath) else { return nil }
+//
+//        switch item {
+//        case .homeTimelineIndex(let objectID, let attribute):
+//            let detailAction = UIContextualAction(style: .normal, title: "Detail", handler: { [weak self] (action, buttonView, completion) in
+//                defer { completion(true) }
+//                guard let self = self else { return }
+//                let managedObjectContext = self.viewModel.fetchedResultsController.managedObjectContext
+//                managedObjectContext.performAndWait {
+//                    guard let timelineIndex = managedObjectContext.object(with: objectID) as? TimelineIndex else { return }
+//                    guard let tweet = timelineIndex.tweet?.retweet ?? timelineIndex.tweet else { return }
+//
+//                    let tweetPostViewModel = TweetPostViewModel(context: self.context, tweet: tweet)
+//                    self.coordinator.present(scene: .tweetPost(viewModel: tweetPostViewModel), from: self, transition: .showDetail)
+//                }
+//                completion(true)
+//            })
+//            detailAction.backgroundColor = .systemGreen
+//            return UISwipeActionsConfiguration(actions: [detailAction])
+//        default:
+//            return nil
+//        }
+//    }
     
 }
 

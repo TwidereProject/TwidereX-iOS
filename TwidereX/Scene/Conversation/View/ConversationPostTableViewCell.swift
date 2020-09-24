@@ -26,6 +26,8 @@ final class ConversationPostTableViewCell: UITableViewCell {
 extension ConversationPostTableViewCell {
     
     private func _init() {
+        selectionStyle = .none
+        
         conversationPostView.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(conversationPostView)
         NSLayoutConstraint.activate([
@@ -33,6 +35,16 @@ extension ConversationPostTableViewCell {
             conversationPostView.leadingAnchor.constraint(equalTo: contentView.layoutMarginsGuide.leadingAnchor),
             contentView.layoutMarginsGuide.trailingAnchor.constraint(equalTo: conversationPostView.trailingAnchor),
             contentView.bottomAnchor.constraint(equalTo: conversationPostView.bottomAnchor),
+        ])
+        
+        let separatorLine = UIView.separatorLine
+        separatorLine.translatesAutoresizingMaskIntoConstraints = false
+        contentView.addSubview(separatorLine)
+        NSLayoutConstraint.activate([
+            separatorLine.leadingAnchor.constraint(equalTo: contentView.layoutMarginsGuide.leadingAnchor),
+            contentView.layoutMarginsGuide.trailingAnchor.constraint(equalTo: separatorLine.trailingAnchor),
+            separatorLine.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
+            separatorLine.heightAnchor.constraint(equalToConstant: UIView.separatorLineHeight(of: separatorLine)),
         ])
     }
     

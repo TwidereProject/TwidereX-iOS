@@ -25,9 +25,8 @@ final class ConversationPostView: UIView {
     
     let nameLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 14, weight: .regular)
+        label.font = .systemFont(ofSize: 14, weight: .medium)
         label.textColor = .label
-        label.textColor = Asset.Colors.hightLight.color
         label.text = "Alice"
         return label
     }()
@@ -39,15 +38,6 @@ final class ConversationPostView: UIView {
         label.text = "@alice"
         return label
     }()
-    
-//    let dateLabel: UILabel = {
-//        let label = UILabel()
-//        label.font = .systemFont(ofSize: 14, weight: .regular)
-//        label.textAlignment = .right
-//        label.textColor = .secondaryLabel
-//        label.text = "1d"
-//        return label
-//    }()
     
     let moreMenuButton: UIButton = {
         let button = UIButton()
@@ -120,9 +110,7 @@ final class ConversationPostView: UIView {
 }
 
 extension ConversationPostView {
-    private func _init() {
-        backgroundColor = .systemBackground
-        
+    private func _init() {        
         // container: [user meta | main | meta | action toolbar]
         let containerStackView = UIStackView()
         containerStackView.axis = .vertical
@@ -251,7 +239,7 @@ extension ConversationPostView {
             actionToolbar.heightAnchor.constraint(equalToConstant: 48).priority(.defaultHigh),
         ])
         actionToolbar.setContentCompressionResistancePriority(.defaultLow, for: .vertical)
-        
+                
         lockImageView.isHidden = true
         mosaicImageView.isHidden = true
         quotePostView.isHidden = true
