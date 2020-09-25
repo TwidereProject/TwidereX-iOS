@@ -32,6 +32,15 @@ final class ProfileViewController: UIViewController, NeedsDependency {
     lazy var profileSegmentedViewController = ProfileSegmentedViewController()
     lazy var profileHeaderViewController = ProfileHeaderViewController()
     
+    lazy var bar: TMBar = {
+        let bar = TMBar.ButtonBar()
+        bar.layout.transitionStyle = .snap
+        bar.layout.contentMode = .fit
+        bar.backgroundView.style = .clear
+        bar.backgroundColor = .systemBackground
+        return bar
+    }()
+    
     private var contentOffsets: [Int: CGFloat] = [:]
     var currentPostTimelineTableViewContentSizeObservation: NSKeyValueObservation?
 
@@ -113,12 +122,8 @@ extension ProfileViewController {
         overlayScrollView.delegate = self
         profileHeaderViewController.delegate = self
         profileSegmentedViewController.pagingViewController.pagingDelegate = self
-        profileHeaderViewController.view.backgroundColor = .green
 
         // add segmented bar to header
-        let bar = TMBar.ButtonBar()
-        bar.layout.transitionStyle = .progressive
-        bar.layout.contentMode = .fit
         profileSegmentedViewController.pagingViewController.addBar(
             bar,
             dataSource: profileSegmentedViewController.pagingViewController.viewModel,
@@ -133,6 +138,17 @@ extension ProfileViewController {
                 ])
             })
         )
+        
+        let testView = UIView()
+        testView.backgroundColor = .yellow
+        testView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(testView)
+        NSLayoutConstraint.activate([
+            testView.leadingAnchor.constraint(equalTo: view.readableContentGuide.leadingAnchor),
+            testView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            testView.trailingAnchor.constraint(equalTo: view.readableContentGuide.trailingAnchor),
+            testView.heightAnchor.constraint(equalToConstant: 44),
+        ])
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -150,7 +166,6 @@ extension ProfileViewController {
 extension ProfileViewController: UIScrollViewDelegate {
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        print(scrollView)
         contentOffsets[profileSegmentedViewController.pagingViewController.currentIndex!] = scrollView.contentOffset.y
         
         let topMaxContentOffsetY = profileSegmentedViewController.view.frame.minY - ProfileHeaderViewController.headerMinHeight - containerScrollView.safeAreaInsets.top

@@ -22,6 +22,10 @@
 		DB4323D425149374004FAAEC /* TwidereSDK in Frameworks */ = {isa = PBXBuildFile; productRef = DB4323D325149374004FAAEC /* TwidereSDK */; };
 		DB4323D8251493C5004FAAEC /* TwidereSDK in Embed Frameworks */ = {isa = PBXBuildFile; productRef = DB4323D12514936F004FAAEC /* TwidereSDK */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		DB434874251DEB77005B599F /* ProfileBannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB434873251DEB77005B599F /* ProfileBannerView.swift */; };
+		DB434883251DF18C005B599F /* ProfileBannerInfoActionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB434882251DF18C005B599F /* ProfileBannerInfoActionView.swift */; };
+		DB434888251DFE2D005B599F /* ProfileBannerStatusView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB434887251DFE2D005B599F /* ProfileBannerStatusView.swift */; };
+		DB43488D251DFF0F005B599F /* ProfileBannerStatusItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB43488C251DFF0F005B599F /* ProfileBannerStatusItemView.swift */; };
+		DB434892251E09A8005B599F /* CALayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB434891251E09A8005B599F /* CALayer.swift */; };
 		DB747FEF251B63E3000C4BD7 /* HitTestExpandedButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB747FEE251B63E3000C4BD7 /* HitTestExpandedButton.swift */; };
 		DB747FF4251C47BD000C4BD7 /* UITableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB747FF3251C47BD000C4BD7 /* UITableView.swift */; };
 		DB747FF9251C496A000C4BD7 /* ProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB747FF8251C496A000C4BD7 /* ProfileViewController.swift */; };
@@ -208,6 +212,10 @@
 		DB41C0DA2513368800521562 /* TimelinePostActionToolbar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimelinePostActionToolbar.swift; sourceTree = "<group>"; };
 		DB43239D251491EB004FAAEC /* TwidereSDK */ = {isa = PBXFileReference; lastKnownFileType = folder; path = TwidereSDK; sourceTree = "<group>"; };
 		DB434873251DEB77005B599F /* ProfileBannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileBannerView.swift; sourceTree = "<group>"; };
+		DB434882251DF18C005B599F /* ProfileBannerInfoActionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileBannerInfoActionView.swift; sourceTree = "<group>"; };
+		DB434887251DFE2D005B599F /* ProfileBannerStatusView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileBannerStatusView.swift; sourceTree = "<group>"; };
+		DB43488C251DFF0F005B599F /* ProfileBannerStatusItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileBannerStatusItemView.swift; sourceTree = "<group>"; };
+		DB434891251E09A8005B599F /* CALayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CALayer.swift; sourceTree = "<group>"; };
 		DB747FEE251B63E3000C4BD7 /* HitTestExpandedButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HitTestExpandedButton.swift; sourceTree = "<group>"; };
 		DB747FF3251C47BD000C4BD7 /* UITableView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UITableView.swift; sourceTree = "<group>"; };
 		DB747FF8251C496A000C4BD7 /* ProfileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileViewController.swift; sourceTree = "<group>"; };
@@ -383,6 +391,9 @@
 			isa = PBXGroup;
 			children = (
 				DB434873251DEB77005B599F /* ProfileBannerView.swift */,
+				DB434882251DF18C005B599F /* ProfileBannerInfoActionView.swift */,
+				DB434887251DFE2D005B599F /* ProfileBannerStatusView.swift */,
+				DB43488C251DFF0F005B599F /* ProfileBannerStatusItemView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -753,6 +764,7 @@
 			isa = PBXGroup;
 			children = (
 				DBE76D392502228D00DEB0FC /* CoreDataStack */,
+				DB434891251E09A8005B599F /* CALayer.swift */,
 				DBE76D3A25024FDA00DEB0FC /* NSLayoutConstraint.swift */,
 				DBE76D3F2502524500DEB0FC /* UIImage.swift */,
 				DB7D124B250F875E00999903 /* UIView.swift */,
@@ -1242,13 +1254,16 @@
 				DBEA4F772511DD610007FEC5 /* TweetPostViewModel.swift in Sources */,
 				DBDA8E9424FE06BC006750DC /* RootSplitViewController.swift in Sources */,
 				DBF7F2152508AE31001E8DB0 /* StubTimelineViewController.swift in Sources */,
+				DB434888251DFE2D005B599F /* ProfileBannerStatusView.swift in Sources */,
 				DBEA4F7E2511E7050007FEC5 /* TweetPostDetailSection.swift in Sources */,
 				DB92570A251C8FE0004FEFB5 /* ProfileHeaderViewController.swift in Sources */,
 				DB0849B425137B3E009E0CD7 /* ConversationPostActionToolbar.swift in Sources */,
 				DB747FF9251C496A000C4BD7 /* ProfileViewController.swift in Sources */,
 				DB41C0DB2513368800521562 /* TimelinePostActionToolbar.swift in Sources */,
 				DBF7F2182508AE88001E8DB0 /* StubHomeTimelineViewModel.swift in Sources */,
+				DB434892251E09A8005B599F /* CALayer.swift in Sources */,
 				DB0849B0251375E9009E0CD7 /* ConversationPostView.swift in Sources */,
+				DB43488D251DFF0F005B599F /* ProfileBannerStatusItemView.swift in Sources */,
 				DBE76D1E2500E65D00DEB0FC /* HomeTimelineViewModel.swift in Sources */,
 				DBDA8E8A24FE0615006750DC /* DocumentStore.swift in Sources */,
 				DB98DC0E2507862D0087E30F /* TimelineMiddleLoaderTableViewCell.swift in Sources */,
@@ -1277,6 +1292,7 @@
 				DBEA4F812511E7900007FEC5 /* TweetPostDetailItem.swift in Sources */,
 				DB92575A251CA3FB004FEFB5 /* StubTableViewCell.swift in Sources */,
 				DB925700251C8F29004FEFB5 /* ProfilePostTimelineViewController.swift in Sources */,
+				DB434883251DF18C005B599F /* ProfileBannerInfoActionView.swift in Sources */,
 				DB747FF4251C47BD000C4BD7 /* UITableView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

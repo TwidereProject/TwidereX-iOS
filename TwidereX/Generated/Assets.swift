@@ -42,6 +42,7 @@ internal enum Asset {
     internal static let icRoundFavoriteFillLarge = ImageAsset(name: "Health/ic.round.favorite.fill.large")
   }
   internal enum ObjectTools {
+    internal static let icBaselineInsertLink = ImageAsset(name: "Object&Tools/ic.baseline.insert.link")
     internal static let icRoundLocationOn = ImageAsset(name: "Object&Tools/ic.round.location.on")
     internal static let icRoundShare = ImageAsset(name: "Object&Tools/ic.round.share")
     internal static let icRoundShareLarge = ImageAsset(name: "Object&Tools/ic.round.share.large")

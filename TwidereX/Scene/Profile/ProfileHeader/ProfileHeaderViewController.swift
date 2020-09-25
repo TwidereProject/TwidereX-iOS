@@ -17,49 +17,35 @@ final class ProfileHeaderViewController: UIViewController {
     
     weak var delegate: ProfileHeaderViewControllerDelegate?
     
-    let expandButton: UIButton = {
-        let button = UIButton()
-        button.setTitle("Update header height", for: .normal)
-        button.setTitleColor(.systemBlue, for: .normal)
-        button.setTitleColor(UIColor.systemBlue.withAlphaComponent(0.5), for: .highlighted)
-        return button
-    }()
-    var headerHeight: CGFloat = 100
-    var expandButtonHeightLayoutConstraint: NSLayoutConstraint!
+    let profileBannerView = ProfileBannerView()
+
 }
 
 extension ProfileHeaderViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        view.backgroundColor = .white
         
-        expandButton.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(expandButton)
-        expandButtonHeightLayoutConstraint = expandButton.heightAnchor.constraint(equalToConstant: headerHeight).priority(.defaultHigh)
+        profileBannerView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(profileBannerView)
         NSLayoutConstraint.activate([
-            expandButton.topAnchor.constraint(equalTo: view.topAnchor),
-            expandButton.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            expandButton.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            view.bottomAnchor.constraint(equalTo: expandButton.bottomAnchor, constant: ProfileHeaderViewController.headerMinHeight),
-            expandButtonHeightLayoutConstraint
+            profileBannerView.topAnchor.constraint(equalTo: view.topAnchor),
+            profileBannerView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            profileBannerView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            view.bottomAnchor.constraint(equalTo: profileBannerView.bottomAnchor, constant: ProfileHeaderViewController.headerMinHeight + 8),
         ])
-        expandButton.addTarget(self, action: #selector(ProfileHeaderViewController.expandButtonPressed(_:)), for: .touchUpInside)
     }
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         
         delegate?.profileHeaderViewController(self, viewLayoutDidUpdate: view)
+        view.layer.setupShadow(color: UIColor.black.withAlphaComponent(0.12), alpha: 1, x: 0, y: 2, blur: 2, spread: 0, roundedRect: view.bounds, byRoundingCorners: .allCorners, cornerRadii: .zero)
     }
     
 }
 
 extension ProfileHeaderViewController {
-    @objc private func expandButtonPressed(_ sender: UIButton) {
-        UIView.animate(withDuration: 0.3) {
-            self.headerHeight = self.headerHeight > 300 ? 100 : self.headerHeight + 50
-            self.expandButtonHeightLayoutConstraint.constant = self.headerHeight
-            
-        }
-    }
+
 }
