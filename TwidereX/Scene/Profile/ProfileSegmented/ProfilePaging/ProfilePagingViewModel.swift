@@ -7,7 +7,7 @@
 
 import UIKit
 import Pageboy
-
+import Tabman
 final class ProfilePagingViewModel: NSObject {
     
     let profileTweetPostTimelineViewController = ProfilePostTimelineViewController()
@@ -23,11 +23,19 @@ final class ProfilePagingViewModel: NSObject {
         }
     }
     
-    var viewControllers: [UIViewController] {
+    var viewControllers: [ProfilePostTimelineViewController] {
         return [
             profileTweetPostTimelineViewController,
             profileMediaPostTimelineViewController,
             profileLikesPostTimelineViewController,
+        ]
+    }
+    
+    var barItems: [TMBarItem] {
+        return [
+            TMBarItem(title: "Tweets"),
+            TMBarItem(title: "Medias"),
+            TMBarItem(title: "Likes"),
         ]
     }
     
@@ -48,7 +56,13 @@ extension ProfilePagingViewModel: PageboyViewControllerDataSource {
         return .first
     }
     
-    
+}
 
+// MARK: - TMBarDataSource
+extension ProfilePagingViewModel: TMBarDataSource {
     
+    func barItem(for bar: TMBar, at index: Int) -> TMBarItemable {
+        return barItems[index]
+    }
+
 }

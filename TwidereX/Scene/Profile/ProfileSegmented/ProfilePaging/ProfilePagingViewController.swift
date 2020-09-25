@@ -9,9 +9,23 @@ import UIKit
 import Pageboy
 import Tabman
 
+protocol ProfilePagingViewControllerDelegate: class {
+    func profilePagingViewController(_ viewController: ProfilePagingViewController, didScrollToPostTimelineViewController postTimelineViewController: ProfilePostTimelineViewController, atIndex index: Int)
+}
+
 final class ProfilePagingViewController: TabmanViewController {
     
+    weak var pagingDelegate: ProfilePagingViewControllerDelegate?
     let viewModel = ProfilePagingViewModel()
+    
+    
+    // MARK: - PageboyViewControllerDelegate
+    
+    override func pageboyViewController(_ pageboyViewController: PageboyViewController, didScrollToPageAt index: TabmanViewController.PageIndex, direction: PageboyViewController.NavigationDirection, animated: Bool) {
+        let viewController = viewModel.viewControllers[index]
+        pagingDelegate?.profilePagingViewController(self, didScrollToPostTimelineViewController: viewController, atIndex: index)
+    }
+    
 }
 
 extension ProfilePagingViewController {
@@ -20,17 +34,6 @@ extension ProfilePagingViewController {
         super.viewDidLoad()
         
         dataSource = viewModel
-        
-//        let testView = UIView()
-//        testView.backgroundColor = .systemPink
-//        testView.translatesAutoresizingMaskIntoConstraints = false
-//        view.addSubview(testView)
-//        NSLayoutConstraint.activate([
-//            testView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-//            view.trailingAnchor.constraint(equalTo: testView.trailingAnchor),
-//            view.layoutMarginsGuide.bottomAnchor.constraint(equalTo: testView.bottomAnchor),
-//            testView.heightAnchor.constraint(equalToConstant: 100),
-//        ])
     }
-    
+
 }

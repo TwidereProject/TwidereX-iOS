@@ -83,6 +83,10 @@ extension MainTabBarController {
         }
         setViewControllers(viewControllers, animated: false)
         selectedIndex = 0
+        
+        #if DEBUG
+        selectedIndex = 1
+        #endif
     }
     
 }

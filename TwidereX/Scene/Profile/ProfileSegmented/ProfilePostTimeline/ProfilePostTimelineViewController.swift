@@ -44,16 +44,12 @@ extension ProfilePostTimelineViewController {
         ])
         
         tableView.delegate = self
-        tableView.dataSource = viewModel
-        
-        tableView.contentInset.top = 300
+        tableView.dataSource = viewModel        
     }
     
 }
 
 // MARK: - UITableViewDelegate
 extension ProfilePostTimelineViewController: UITableViewDelegate {
-    func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        print(scrollView.contentOffset)
-    }
+    
 }
