@@ -68,9 +68,8 @@ extension ProfileBannerInfoActionView {
     }
 }
 
+#if DEBUG
 import SwiftUI
-
-
 
 struct ProfileBannerInfoActionView_Previews: PreviewProvider {
     static var previews: some View {
@@ -80,3 +79,4 @@ struct ProfileBannerInfoActionView_Previews: PreviewProvider {
         .previewLayout(.fixed(width: 100, height: 100))
     }
 }
+#endif
