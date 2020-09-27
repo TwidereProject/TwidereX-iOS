@@ -5,16 +5,23 @@
 //  Created by Cirno MainasuK on 2020-9-3.
 //
 
+import os.log
 import UIKit
 import Combine
 import AlamofireImage
 import ActiveLabel
 
+protocol TimelinePostTableViewCellDelegate: class {
+    func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, retweetInfoLabelDidPressed label: UILabel)
+    func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, avatarImageViewDidPressed imageView: UIImageView)
+    func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, quoteAvatarImageViewDidPressed imageView: UIImageView)
+}
+
 final class TimelinePostTableViewCell: UITableViewCell {
 
     static let verticalMargin: CGFloat = 8
-//    static let tweetImageContainerStackViewDefaultHeight: CGFloat = 160
-//    static let tweetImageContainerStackViewMaxHeight: CGFloat = UIScreen.main.bounds.width * 0.8
+    
+    weak var delegate: TimelinePostTableViewCellDelegate?
     
     var disposeBag = Set<AnyCancellable>()
     var dateLabelUpdateSubscription: AnyCancellable?
@@ -23,6 +30,25 @@ final class TimelinePostTableViewCell: UITableViewCell {
     let timelinePostView = TimelinePostView()
     var separatorLineLeadingLayoutConstraint: NSLayoutConstraint!
     var separatorLineIndentLeadingLayoutConstraint: NSLayoutConstraint!
+    
+    private let avatarImageViewTapGestureRecognizer: UITapGestureRecognizer = {
+        let tapGestureRecognizer = UITapGestureRecognizer()
+        tapGestureRecognizer.numberOfTapsRequired = 1
+        tapGestureRecognizer.numberOfTouchesRequired = 1
+        return tapGestureRecognizer
+    }()
+    private let retweetInfoLabelTapGestureRecognizer: UITapGestureRecognizer = {
+        let tapGestureRecognizer = UITapGestureRecognizer()
+        tapGestureRecognizer.numberOfTapsRequired = 1
+        tapGestureRecognizer.numberOfTouchesRequired = 1
+        return tapGestureRecognizer
+    }()
+    private let quoteAvatarImageViewTapGestureRecognizer: UITapGestureRecognizer = {
+        let tapGestureRecognizer = UITapGestureRecognizer()
+        tapGestureRecognizer.numberOfTapsRequired = 1
+        tapGestureRecognizer.numberOfTouchesRequired = 1
+        return tapGestureRecognizer
+    }()
     
     override func prepareForReuse() {
         super.prepareForReuse()
@@ -69,6 +95,43 @@ extension TimelinePostTableViewCell {
             separatorLine.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
             separatorLine.heightAnchor.constraint(equalToConstant: UIView.separatorLineHeight(of: separatorLine)),
         ])
+        
+        retweetInfoLabelTapGestureRecognizer.addTarget(self, action: #selector(TimelinePostTableViewCell.retweetInfoLabelTapGestureRecognizerHandler(_:)))
+        timelinePostView.retweetInfoLabel.isUserInteractionEnabled = true
+        timelinePostView.retweetInfoLabel.addGestureRecognizer(retweetInfoLabelTapGestureRecognizer)
+        
+        avatarImageViewTapGestureRecognizer.addTarget(self, action: #selector(TimelinePostTableViewCell.avatarImageViewTapGestureRecognizerHandler(_:)))
+        timelinePostView.avatarImageView.isUserInteractionEnabled = true
+        timelinePostView.avatarImageView.addGestureRecognizer(avatarImageViewTapGestureRecognizer)
+        
+        quoteAvatarImageViewTapGestureRecognizer.addTarget(self, action: #selector(TimelinePostTableViewCell.quoteAvatarImageViewTapGestureRecognizerHandler(_:)))
+        timelinePostView.quotePostView.avatarImageView.isUserInteractionEnabled = true
+        timelinePostView.quotePostView.avatarImageView.addGestureRecognizer(quoteAvatarImageViewTapGestureRecognizer)
+    }
+    
+}
+
+extension TimelinePostTableViewCell {
+    
+    @objc private func retweetInfoLabelTapGestureRecognizerHandler(_ sender: UITapGestureRecognizer) {
+        os_log("%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
+        guard sender.state == .ended else { return }
+        assert(delegate != nil)
+        delegate?.timelinePostTableViewCell(self, retweetInfoLabelDidPressed: timelinePostView.retweetInfoLabel)
+    }
+    
+    @objc private func avatarImageViewTapGestureRecognizerHandler(_ sender: UITapGestureRecognizer) {
+        os_log("%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
+        guard sender.state == .ended else { return }
+        assert(delegate != nil)
+        delegate?.timelinePostTableViewCell(self, avatarImageViewDidPressed: timelinePostView.avatarImageView)
+    }
+    
+    @objc private func quoteAvatarImageViewTapGestureRecognizerHandler(_ sender: UITapGestureRecognizer) {
+        os_log("%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
+        guard sender.state == .ended else { return }
+        assert(delegate != nil)
+        delegate?.timelinePostTableViewCell(self, quoteAvatarImageViewDidPressed: timelinePostView.quotePostView.avatarImageView)
     }
     
 }

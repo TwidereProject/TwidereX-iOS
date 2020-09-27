@@ -17,9 +17,22 @@ final public class TwitterUser: NSManagedObject {
     @NSManaged public private(set) var name: String?
     @NSManaged public private(set) var screenName: String?
     @NSManaged public private(set) var bioDescription: String?
+    @NSManaged public private(set) var url: String?
+    @NSManaged public private(set) var location: String?
     @NSManaged public private(set) var createdAt: Date?
     @NSManaged public private(set) var updatedAt: Date
     
+    @NSManaged public private(set) var followingRaw: NSNumber?
+    public var following: Bool? {
+        get {
+            return followingRaw.flatMap { Bool(truncating: $0) }
+        }
+        set {
+            followingRaw = newValue.flatMap { NSNumber(booleanLiteral: $0) }
+        }
+    }
+    
+    @NSManaged public private(set) var friendsCount: NSNumber?
     @NSManaged public private(set) var followersCount: NSNumber?
     @NSManaged public private(set) var listedCount: NSNumber?
     @NSManaged public private(set) var favouritesCount: NSNumber?
@@ -48,11 +61,18 @@ extension TwitterUser {
         user.name = property.name
         user.screenName = property.screenName
         user.bioDescription = property.bioDescription
+        user.url = property.url
+        user.location = property.location
         user.createdAt = property.createdAt
+        
+        user.following = property.following
+        
+        user.friendsCount = property.friendsCount
         user.followersCount = property.followersCount
         user.listedCount = property.listedCount
         user.favouritesCount = property.favouritesCount
         user.statusesCount = property.statusesCount
+        
         user.profileImageURLHTTPS = property.profileImageURLHTTPS
         user.profileBannerURL = property.profileBannerURL
         return user
@@ -73,7 +93,28 @@ extension TwitterUser {
             self.bioDescription = bioDescription
         }
     }
+    public func update(url: String) {
+        if self.url != url {
+            self.url = url
+        }
+    }
+    public func update(location: String) {
+        if self.location != location {
+            self.location = location
+        }
+    }
     
+    public func update(following: Bool?) {
+        if self.following != following {
+            self.following = following
+        }
+    }
+    
+    public func update(friendsCount: Int) {
+        if self.friendsCount != NSNumber(value: friendsCount) {
+            self.friendsCount = NSNumber(value: friendsCount)
+        } 
+    }
     public func update(followersCount: Int) {
         if self.followersCount != NSNumber(value: followersCount) {
             self.followersCount = NSNumber(value: followersCount)
@@ -118,8 +159,13 @@ extension TwitterUser {
         public let name: String?
         public let screenName: String?
         public let bioDescription: String?
+        public let url: String?
+        public let location: String?
         public let createdAt: Date?
         
+        public let following: Bool?
+        
+        public let friendsCount: NSNumber?
         public let followersCount: NSNumber?
         public let listedCount: NSNumber?
         public let favouritesCount: NSNumber?
@@ -135,7 +181,11 @@ extension TwitterUser {
             name: String?,
             screenName: String?,
             bioDescription: String?,
+            url: String?,
+            location: String?,
             createdAt: Date?,
+            following: Bool?,
+            friendsCount: NSNumber?,
             followersCount: NSNumber?,
             listedCount: NSNumber?,
             favouritesCount: NSNumber?,
@@ -148,7 +198,11 @@ extension TwitterUser {
             self.name = name
             self.screenName = screenName
             self.bioDescription = bioDescription
+            self.url = url
+            self.location = location
             self.createdAt = createdAt
+            self.following = following
+            self.friendsCount = friendsCount
             self.followersCount = followersCount
             self.listedCount = listedCount
             self.favouritesCount = favouritesCount

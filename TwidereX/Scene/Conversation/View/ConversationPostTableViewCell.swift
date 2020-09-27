@@ -5,11 +5,32 @@
 //  Created by Cirno MainasuK on 2020-9-17.
 //
 
+import os.log
 import UIKit
+
+protocol ConversationPostTableViewCellDelegate: class {
+    func conversationPostTableViewCell(_ cell: ConversationPostTableViewCell, avatarImageViewDidPressed imageView: UIImageView)
+    func conversationPostTableViewCell(_ cell: ConversationPostTableViewCell, quoteAvatarImageViewDidPressed imageView: UIImageView)
+}
 
 final class ConversationPostTableViewCell: UITableViewCell {
     
+    weak var delegate: ConversationPostTableViewCellDelegate?
+
     let conversationPostView = ConversationPostView()
+    
+    private let avatarImageViewTapGestureRecognizer: UITapGestureRecognizer = {
+        let tapGestureRecognizer = UITapGestureRecognizer()
+        tapGestureRecognizer.numberOfTapsRequired = 1
+        tapGestureRecognizer.numberOfTouchesRequired = 1
+        return tapGestureRecognizer
+    }()
+    private let quoteAvatarImageViewTapGestureRecognizer: UITapGestureRecognizer = {
+        let tapGestureRecognizer = UITapGestureRecognizer()
+        tapGestureRecognizer.numberOfTapsRequired = 1
+        tapGestureRecognizer.numberOfTouchesRequired = 1
+        return tapGestureRecognizer
+    }()
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -46,6 +67,32 @@ extension ConversationPostTableViewCell {
             separatorLine.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
             separatorLine.heightAnchor.constraint(equalToConstant: UIView.separatorLineHeight(of: separatorLine)),
         ])
+        
+        avatarImageViewTapGestureRecognizer.addTarget(self, action: #selector(ConversationPostTableViewCell.avatarImageViewTapGestureRecognizerHandler(_:)))
+        conversationPostView.avatarImageView.isUserInteractionEnabled = true
+        conversationPostView.avatarImageView.addGestureRecognizer(avatarImageViewTapGestureRecognizer)
+        
+        quoteAvatarImageViewTapGestureRecognizer.addTarget(self, action: #selector(ConversationPostTableViewCell.quoteAvatarImageViewTapGestureRecognizerHandler(_:)))
+        conversationPostView.quotePostView.avatarImageView.isUserInteractionEnabled = true
+        conversationPostView.quotePostView.avatarImageView.addGestureRecognizer(quoteAvatarImageViewTapGestureRecognizer)
+    }
+    
+}
+
+extension ConversationPostTableViewCell {
+    
+    @objc private func avatarImageViewTapGestureRecognizerHandler(_ sender: UITapGestureRecognizer) {
+        os_log("%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
+        guard sender.state == .ended else { return }
+        assert(delegate != nil)
+        delegate?.conversationPostTableViewCell(self, avatarImageViewDidPressed: conversationPostView.avatarImageView)
+    }
+    
+    @objc private func quoteAvatarImageViewTapGestureRecognizerHandler(_ sender: UITapGestureRecognizer) {
+        os_log("%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
+        guard sender.state == .ended else { return }
+        assert(delegate != nil)
+        delegate?.conversationPostTableViewCell(self, quoteAvatarImageViewDidPressed: conversationPostView.quotePostView.avatarImageView)
     }
     
 }

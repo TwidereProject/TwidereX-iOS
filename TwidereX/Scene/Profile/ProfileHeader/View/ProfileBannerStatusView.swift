@@ -43,6 +43,23 @@ extension ProfileBannerStatusView {
         containerStackView.addArrangedSubview(followingStatusItemView)
         containerStackView.addArrangedSubview(followersStatusItemView)
         containerStackView.addArrangedSubview(listedStatusItemView)
+        
+        let sepratorLine1 = UIView.separatorLine
+        let sepratorLine2 = UIView.separatorLine
+        sepratorLine1.translatesAutoresizingMaskIntoConstraints = false
+        sepratorLine2.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(sepratorLine1)
+        addSubview(sepratorLine2)
+        NSLayoutConstraint.activate([
+            sepratorLine1.leadingAnchor.constraint(equalTo: followingStatusItemView.trailingAnchor),
+            sepratorLine1.centerYAnchor.constraint(equalTo: followingStatusItemView.centerYAnchor),
+            sepratorLine1.widthAnchor.constraint(equalToConstant: UIView.separatorLineHeight(of: self)),
+            sepratorLine1.heightAnchor.constraint(equalToConstant: 24),
+            sepratorLine2.leadingAnchor.constraint(equalTo: followersStatusItemView.trailingAnchor),
+            sepratorLine2.centerYAnchor.constraint(equalTo: followersStatusItemView.centerYAnchor),
+            sepratorLine2.widthAnchor.constraint(equalToConstant: UIView.separatorLineHeight(of: self)),
+            sepratorLine2.heightAnchor.constraint(equalToConstant: 24),
+        ])
     }
 }
 

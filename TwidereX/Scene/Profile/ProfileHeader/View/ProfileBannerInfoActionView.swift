@@ -54,6 +54,7 @@ extension ProfileBannerInfoActionView {
             followActionButton.leadingAnchor.constraint(equalTo: leadingAnchor),
             trailingAnchor.constraint(equalTo: followActionButton.trailingAnchor),
             followActionButton.heightAnchor.constraint(equalToConstant: ProfileBannerInfoActionView.followButtonHeight),
+            followActionButton.widthAnchor.constraint(equalToConstant: 80),
         ])
         
         followStatusLabel.translatesAutoresizingMaskIntoConstraints = false

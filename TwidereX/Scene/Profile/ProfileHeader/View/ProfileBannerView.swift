@@ -10,6 +10,9 @@ import ActiveLabel
 
 final class ProfileBannerView: UIView {
     
+    static let avatarImageViewSize = CGSize(width: 72, height: 72)
+    
+    let profileBannerContainer = UIView()
     let profileBannerImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFill
@@ -17,10 +20,24 @@ final class ProfileBannerView: UIView {
         imageView.layer.masksToBounds = true
         return imageView
     }()
+    var profileBannerImageViewTopLayoutConstraint: NSLayoutConstraint!
+    
+    let profileAvatarImageView: UIImageView = {
+        let imageView = UIImageView()
+        imageView.layer.masksToBounds = true
+        imageView.layer.cornerRadius = ProfileBannerView.avatarImageViewSize.width * 0.5
+        imageView.layer.borderColor = UIColor.white.cgColor
+        imageView.layer.borderWidth = 3
+        imageView.image = .placeholder(color: .secondarySystemBackground)
+        return imageView
+    }()
     
     let nameLabel: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 20, weight: .medium)
+        label.numberOfLines = 3
+        label.adjustsFontSizeToFitWidth = true
+        label.minimumScaleFactor = 0.5
         label.text = "Alice"
         return label
     }()
@@ -28,6 +45,8 @@ final class ProfileBannerView: UIView {
     let usernameLabel: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 14, weight: .regular)
+        label.adjustsFontSizeToFitWidth = true
+        label.minimumScaleFactor = 0.5
         label.text = "@alice"
         return label
     }()
@@ -74,6 +93,10 @@ final class ProfileBannerView: UIView {
         button.setTitle("Earth, Galaxy", for: .normal)
         button.setTitleColor(.secondaryLabel, for: .normal)
         button.setTitleColor(UIColor.secondaryLabel.withAlphaComponent(0.5), for: .highlighted)
+        button.titleLabel?.allowsDefaultTighteningForTruncation = true
+        button.titleLabel?.adjustsFontSizeToFitWidth = true
+        button.titleLabel?.minimumScaleFactor = 0.8
+        button.titleLabel?.lineBreakMode = .byTruncatingTail
         return button
     }()
     
@@ -93,13 +116,38 @@ final class ProfileBannerView: UIView {
 
 extension ProfileBannerView {
     private func _init() {
-        profileBannerImageView.translatesAutoresizingMaskIntoConstraints = false
-        addSubview(profileBannerImageView)
+        // banner
+        
+        profileBannerContainer.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(profileBannerContainer)
         NSLayoutConstraint.activate([
-            profileBannerImageView.topAnchor.constraint(equalTo: topAnchor),
-            profileBannerImageView.leadingAnchor.constraint(equalTo: leadingAnchor),
-            trailingAnchor.constraint(equalTo: profileBannerImageView.trailingAnchor),
-            profileBannerImageView.widthAnchor.constraint(equalTo: profileBannerImageView.heightAnchor, multiplier: 3),
+            profileBannerContainer.topAnchor.constraint(equalTo: topAnchor),
+            profileBannerContainer.leadingAnchor.constraint(equalTo: leadingAnchor),
+            trailingAnchor.constraint(equalTo: profileBannerContainer.trailingAnchor),
+            profileBannerContainer.widthAnchor.constraint(equalTo: profileBannerContainer.heightAnchor, multiplier: 3),
+        ])
+        
+        profileBannerImageView.translatesAutoresizingMaskIntoConstraints = false
+        profileBannerContainer.addSubview(profileBannerImageView)
+        profileBannerImageViewTopLayoutConstraint = profileBannerImageView.topAnchor.constraint(equalTo: profileBannerContainer.topAnchor)
+        NSLayoutConstraint.activate([
+            profileBannerImageViewTopLayoutConstraint,
+            profileBannerImageView.leadingAnchor.constraint(equalTo: profileBannerContainer.leadingAnchor),
+            profileBannerContainer.trailingAnchor.constraint(equalTo: profileBannerImageView.trailingAnchor),
+            profileBannerImageView.bottomAnchor.constraint(equalTo: profileBannerContainer.bottomAnchor),
+        ])
+        
+        // avatar
+        profileAvatarImageView.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(profileAvatarImageView)
+        defer {
+            bringSubviewToFront(profileAvatarImageView)
+        }
+        NSLayoutConstraint.activate([
+            profileAvatarImageView.centerXAnchor.constraint(equalTo: centerXAnchor),
+            profileAvatarImageView.centerYAnchor.constraint(equalTo: profileBannerImageView.bottomAnchor),
+            profileAvatarImageView.widthAnchor.constraint(equalToConstant: ProfileBannerView.avatarImageViewSize.width),
+            profileAvatarImageView.heightAnchor.constraint(equalToConstant: ProfileBannerView.avatarImageViewSize.height),
         ])
         
         // container: [info | bio | link | geo | status]
@@ -107,7 +155,7 @@ extension ProfileBannerView {
         containerStackView.translatesAutoresizingMaskIntoConstraints = false
         addSubview(containerStackView)
         NSLayoutConstraint.activate([
-            containerStackView.topAnchor.constraint(equalTo: profileBannerImageView.bottomAnchor),
+            containerStackView.topAnchor.constraint(equalTo: profileAvatarImageView.bottomAnchor, constant: 8),
             containerStackView.leadingAnchor.constraint(equalTo: readableContentGuide.leadingAnchor),
             containerStackView.trailingAnchor.constraint(equalTo: readableContentGuide.trailingAnchor),
             containerStackView.bottomAnchor.constraint(equalTo: bottomAnchor),
@@ -132,12 +180,26 @@ extension ProfileBannerView {
             usernameLabel.leadingAnchor.constraint(equalTo: infoContainer.leadingAnchor),
             infoContainer.bottomAnchor.constraint(equalTo: usernameLabel.bottomAnchor),
         ])
+        let alignmentLabel = UILabel()
+        alignmentLabel.text = " "
+        alignmentLabel.isHidden = true
+        alignmentLabel.translatesAutoresizingMaskIntoConstraints = false
+        infoContainer.addSubview(alignmentLabel)
+        NSLayoutConstraint.activate([
+            alignmentLabel.topAnchor.constraint(equalTo: nameLabel.topAnchor),
+            alignmentLabel.leadingAnchor.constraint(equalTo: nameLabel.leadingAnchor),
+        ])
         profileBannerInfoActionView.translatesAutoresizingMaskIntoConstraints = false
         infoContainer.addSubview(profileBannerInfoActionView)
         NSLayoutConstraint.activate([
-            profileBannerInfoActionView.followActionButton.centerYAnchor.constraint(equalTo: nameLabel.centerYAnchor),
+            profileBannerInfoActionView.leadingAnchor.constraint(greaterThanOrEqualTo: nameLabel.trailingAnchor, constant: 8.0),
+            profileBannerInfoActionView.leadingAnchor.constraint(greaterThanOrEqualTo: usernameLabel.trailingAnchor, constant: 8.0),
+            profileBannerInfoActionView.followActionButton.centerYAnchor.constraint(equalTo: alignmentLabel.centerYAnchor),
             infoContainer.trailingAnchor.constraint(equalTo: profileBannerInfoActionView.trailingAnchor),
         ])
+        profileBannerInfoActionView.setContentHuggingPriority(.defaultHigh, for: .horizontal)
+        profileBannerInfoActionView.setContentCompressionResistancePriority(.required - 1, for: .horizontal)
+        nameLabel.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
         
         // bio
         containerStackView.addArrangedSubview(bioLabel)
@@ -178,6 +240,8 @@ extension ProfileBannerView {
         
         // status
         containerStackView.addArrangedSubview(profileBannerStatusView)
+        
+        profileBannerInfoActionView.followStatusLabel.isHidden = true
     }
 }
 

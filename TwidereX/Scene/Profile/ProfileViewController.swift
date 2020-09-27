@@ -15,8 +15,8 @@ final class ProfileViewController: UIViewController, NeedsDependency {
     weak var coordinator: SceneCoordinator! { willSet { precondition(!isViewLoaded) } }
     
     var disposeBag = Set<AnyCancellable>()
-    //var viewModel: TweetPostViewModel!
-
+    var viewModel: ProfileViewModel!
+        
     let containerScrollView: UIScrollView = {
         let scrollView = UIScrollView()
         scrollView.scrollsToTop = false
@@ -139,6 +139,93 @@ extension ProfileViewController {
                 ])
             })
         )
+        
+        // setup view model
+        viewModel.bannerImageURL
+            .sink { [weak self] url in
+                guard let self = self else { return }
+                guard let url = url else { return }
+                self.profileHeaderViewController.profileBannerView.profileBannerImageView.af.setImage(
+                    withURL: url,
+                    placeholderImage: UIImage.placeholder(color: Asset.Colors.hightLight.color),
+                    imageTransition: .crossDissolve(0.3),
+                    runImageTransitionIfCached: false,
+                    completion: nil
+                )
+            }
+            .store(in: &disposeBag)
+        viewModel.avatarImageURL
+            .sink { [weak self] url in
+                guard let self = self else { return }
+                guard let url = url else { return }
+                self.profileHeaderViewController.profileBannerView.profileAvatarImageView.af.setImage(
+                    withURL: url,
+                    placeholderImage: UIImage.placeholder(color: .secondarySystemBackground),
+                    imageTransition: .crossDissolve(0.3),
+                    runImageTransitionIfCached: false,
+                    completion: nil
+                )
+            }
+            .store(in: &disposeBag)
+        viewModel.name
+            .map { $0 ?? " " }
+            .assign(to: \.text, on: profileHeaderViewController.profileBannerView.nameLabel)
+            .store(in: &disposeBag)
+        viewModel.username
+            .map { username in username.flatMap { "@" + $0 } ?? " " }
+            .assign(to: \.text, on: profileHeaderViewController.profileBannerView.usernameLabel)
+            .store(in: &disposeBag)
+        viewModel.isFolling
+            .sink { isFolling in
+                let followingButton = self.profileHeaderViewController.profileBannerView.profileBannerInfoActionView.followActionButton
+                let title = isFolling == true ? "Following" : "Follow"
+                followingButton.setTitle(title, for: .normal)
+                followingButton.setBackgroundImage(isFolling == true ? UIImage.placeholder(color: Asset.Colors.hightLight.color) : nil, for: .normal)
+                followingButton.layer.borderWidth = isFolling == true ? 0 : 1
+                followingButton.setTitleColor(isFolling == true ? .white : Asset.Colors.hightLight.color, for: .normal)
+                followingButton.isEnabled = isFolling != nil
+            }
+            .store(in: &disposeBag)
+        viewModel.bioDescription
+            .map { $0 ?? " " }
+            .assign(to: \.text, on: profileHeaderViewController.profileBannerView.bioLabel)
+            .store(in: &disposeBag)
+        viewModel.url
+            .sink { [weak self] url in
+                guard let self = self else { return }
+                let url = url.flatMap { $0.trimmingCharacters(in: .whitespacesAndNewlines) } ?? " "
+                self.profileHeaderViewController.profileBannerView.linkButton.setTitle(url, for: .normal)
+                let isEmpty = url.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+                self.profileHeaderViewController.profileBannerView.linkContainer.isHidden = isEmpty
+            }
+            .store(in: &disposeBag)
+        viewModel.location
+            .sink { [weak self] location in
+                guard let self = self else { return }
+                let location = location.flatMap { $0.trimmingCharacters(in: .whitespacesAndNewlines) } ?? " "
+                self.profileHeaderViewController.profileBannerView.geoButton.setTitle(location, for: .normal)
+                let isEmpty = location.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+                self.profileHeaderViewController.profileBannerView.geoContainer.isHidden = isEmpty
+            }
+            .store(in: &disposeBag)
+        viewModel.friendsCount
+            .sink { [weak self] count in
+                guard let self = self else { return }
+                self.profileHeaderViewController.profileBannerView.profileBannerStatusView.followingStatusItemView.countLabel.text = count.flatMap { "\($0)" } ?? "-"
+            }
+            .store(in: &disposeBag)
+        viewModel.followersCount
+            .sink { [weak self] count in
+                guard let self = self else { return }
+                self.profileHeaderViewController.profileBannerView.profileBannerStatusView.followersStatusItemView.countLabel.text = count.flatMap { "\($0)" } ?? "-"
+            }
+            .store(in: &disposeBag)
+        viewModel.listedCount
+            .sink { [weak self] count in
+                guard let self = self else { return }
+                self.profileHeaderViewController.profileBannerView.profileBannerStatusView.listedStatusItemView.countLabel.text = count.flatMap { "\($0)" } ?? "-"
+            }
+            .store(in: &disposeBag)
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -156,6 +243,15 @@ extension ProfileViewController {
 extension ProfileViewController: UIScrollViewDelegate {
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        // elastically banner
+        if overlayScrollView.contentOffset.y < -overlayScrollView.safeAreaInsets.top {
+            let offset = overlayScrollView.contentOffset.y - (-overlayScrollView.safeAreaInsets.top)
+            profileHeaderViewController.profileBannerView.profileBannerImageViewTopLayoutConstraint.constant = offset
+        } else {
+            profileHeaderViewController.profileBannerView.profileBannerImageViewTopLayoutConstraint.constant = 0
+        }
+        
+        
         contentOffsets[profileSegmentedViewController.pagingViewController.currentIndex!] = scrollView.contentOffset.y
         
         let topMaxContentOffsetY = profileSegmentedViewController.view.frame.minY - ProfileHeaderViewController.headerMinHeight - containerScrollView.safeAreaInsets.top

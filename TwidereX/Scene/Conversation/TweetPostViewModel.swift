@@ -23,6 +23,7 @@ final class TweetPostViewModel: NSObject {
     // input
     let context: AppContext
     let tweet: Tweet
+    weak var conversationPostTableViewCellDelegate: ConversationPostTableViewCellDelegate?
     
     // output
     var diffableDataSource: UITableViewDiffableDataSource<TweetPostDetailSection, TweetPostDetailItem>?
@@ -48,6 +49,7 @@ extension TweetPostViewModel {
                     let tweet = managedObjectContext.object(with: objectID) as! Tweet
                     TweetPostViewModel.configure(cell: cell, tweet: tweet)
                 }
+                cell.delegate = self.conversationPostTableViewCellDelegate
                 return cell
             }
         }
@@ -91,7 +93,7 @@ extension TweetPostViewModel {
                     .placeholder(size: ConversationPostView.avatarImageViewSize, color: .systemFill)
                     .af.imageRoundedIntoCircle()
                 let filter = ScaledToSizeCircleFilter(size: ConversationPostView.avatarImageViewSize)
-                cell.conversationPostView.avatarImageView.af.setImage(
+                cell.conversationPostView.quotePostView.avatarImageView.af.setImage(
                     withURL: avatarImageURL,
                     placeholderImage: placeholderImage,
                     filter: filter,
@@ -136,7 +138,7 @@ extension TweetPostViewModel {
         } else {
             cell.conversationPostView.retweetPostStatusView.isHidden = true
         }
-        // TODO:
+        // TODO: quote status
         cell.conversationPostView.quotePostStatusView.isHidden = true
         if let favoriteCount = tweet.favoriteCount?.intValue, favoriteCount > 0 {
             cell.conversationPostView.likePostStatusView.countLabel.text = String(favoriteCount)

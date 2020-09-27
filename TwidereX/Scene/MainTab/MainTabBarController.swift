@@ -47,6 +47,7 @@ class MainTabBarController: UITabBarController {
                 let viewController = ProfileViewController()
                 viewController.context = context
                 viewController.coordinator = coordinator
+                viewController.viewModel = ProfileViewModel(twitterUserIDStr: "")   // TODO:
                 navigationController = UINavigationController(rootViewController: viewController)
             }
             return navigationController
@@ -85,7 +86,7 @@ extension MainTabBarController {
         selectedIndex = 0
         
         #if DEBUG
-        selectedIndex = 1
+        // selectedIndex = 1
         #endif
     }
     

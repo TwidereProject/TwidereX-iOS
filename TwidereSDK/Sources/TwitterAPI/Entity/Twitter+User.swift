@@ -18,7 +18,6 @@ extension Twitter.Entity {
         
         public let location: String?
         public let url: String?
-        //public let entities: FluffyEntities?
         public let protected: Bool?
         
         public let followersCount: Int?
@@ -29,8 +28,6 @@ extension Twitter.Entity {
         
         public let createdAt: Date?
         
-        //public let utcOffset: JSONNull?
-        //public let timeZone: JSONNull?
         public let geoEnabled: Bool?
         public let verified: Bool?
         public let contributorsEnabled: Bool?
@@ -48,7 +45,6 @@ extension Twitter.Entity {
         public let following: Bool?
         public let followRequestSent: Bool?
         public let notifications: Bool?
-        //public let translatorType: TranslatorType?
         
         enum CodingKeys: String, CodingKey {
             case idStr = "id_str"
@@ -59,7 +55,6 @@ extension Twitter.Entity {
             
             case url = "url"
             case location = "location"
-            //case entities = "entities"
             case protected = "protected"
             
             case followersCount = "followers_count"
@@ -68,8 +63,6 @@ extension Twitter.Entity {
             case createdAt = "created_at"
             case favouritesCount = "favourites_count"
             
-            //case utcOffset = "utc_offset"
-            //case timeZone = "time_zone"
             case geoEnabled = "geo_enabled"
             case verified = "verified"
             case statusesCount = "statuses_count"
@@ -88,7 +81,6 @@ extension Twitter.Entity {
             case following = "following"
             case followRequestSent = "follow_request_sent"
             case notifications = "notifications"
-            //case translatorType = "translator_type"
         }
        
     }

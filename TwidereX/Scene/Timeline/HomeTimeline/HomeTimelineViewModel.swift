@@ -35,6 +35,7 @@ final class HomeTimelineViewModel: NSObject {
     let isFetchingLatestTimeline = CurrentValueSubject<Bool, Never>(false)
     weak var contentOffsetAdjustableTimelineViewControllerDelegate: ContentOffsetAdjustableTimelineViewControllerDelegate?
     weak var tableView: UITableView?
+    weak var timelinePostTableViewCellDelegate: TimelinePostTableViewCellDelegate?
     
     // output
     var currentTwitterAuthentication = CurrentValueSubject<TwitterAuthentication?, Never>(nil)
@@ -85,6 +86,7 @@ extension HomeTimelineViewModel {
                     let timelineIndex = managedObjectContext.object(with: objectID) as! TimelineIndex
                     HomeTimelineViewModel.configure(cell: cell, timelineIndex: timelineIndex, attribute: expandStatus)
                 }
+                cell.delegate = self.timelinePostTableViewCellDelegate
                 return cell
             case .homeTimelineMiddleLoader(let upper):
                 let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: TimelineMiddleLoaderTableViewCell.self), for: indexPath) as! TimelineMiddleLoaderTableViewCell

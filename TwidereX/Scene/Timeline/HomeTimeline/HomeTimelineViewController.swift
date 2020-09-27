@@ -61,6 +61,7 @@ extension HomeTimelineViewController {
         
         viewModel.contentOffsetAdjustableTimelineViewControllerDelegate = self
         viewModel.tableView = tableView
+        viewModel.timelinePostTableViewCellDelegate = self
         viewModel.setupDiffableDataSource(for: tableView)
         do {
             try viewModel.fetchedResultsController.performFetch()
@@ -194,13 +195,16 @@ extension HomeTimelineViewController: UITableViewDelegate {
         default:
             return
         }
-        
-//        if let cell = tableView.cellForRow(at: indexPath) as? TimelinePostTableViewCell {
-//
+    }
+    
+    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+//        if let cell = cell as? TimelinePostTableViewCell {
+//            cell.delegate = self
 //        }
     }
     
     func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        
         guard let diffableDataSource = viewModel.diffableDataSource else { return }
         guard let item = diffableDataSource.itemIdentifier(for: indexPath) else { return }
         
@@ -209,36 +213,75 @@ extension HomeTimelineViewController: UITableViewDelegate {
         viewModel.cellFrameCache.setObject(NSValue(cgRect: frame), forKey: NSNumber(value: key))
     }
     
-//    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
-//        guard let diffableDataSource = viewModel.diffableDataSource else { return nil }
-//        guard let item = diffableDataSource.itemIdentifier(for: indexPath) else { return nil }
-//
-//        switch item {
-//        case .homeTimelineIndex(let objectID, let attribute):
-//            let detailAction = UIContextualAction(style: .normal, title: "Detail", handler: { [weak self] (action, buttonView, completion) in
-//                defer { completion(true) }
-//                guard let self = self else { return }
-//                let managedObjectContext = self.viewModel.fetchedResultsController.managedObjectContext
-//                managedObjectContext.performAndWait {
-//                    guard let timelineIndex = managedObjectContext.object(with: objectID) as? TimelineIndex else { return }
-//                    guard let tweet = timelineIndex.tweet?.retweet ?? timelineIndex.tweet else { return }
-//
-//                    let tweetPostViewModel = TweetPostViewModel(context: self.context, tweet: tweet)
-//                    self.coordinator.present(scene: .tweetPost(viewModel: tweetPostViewModel), from: self, transition: .showDetail)
-//                }
-//                completion(true)
-//            })
-//            detailAction.backgroundColor = .systemGreen
-//            return UISwipeActionsConfiguration(actions: [detailAction])
-//        default:
-//            return nil
-//        }
-//    }
-    
 }
 
+// MARK: - ContentOffsetAdjustableTimelineViewControllerDelegate
 extension HomeTimelineViewController: ContentOffsetAdjustableTimelineViewControllerDelegate {
     func navigationBar() -> UINavigationBar {
         return navigationController!.navigationBar
+    }
+}
+
+// MARK: - TimelinePostTableViewCellDelegate
+extension HomeTimelineViewController: TimelinePostTableViewCellDelegate {
+    
+    func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, retweetInfoLabelDidPressed label: UILabel) {
+        guard let diffableDataSource = viewModel.diffableDataSource else { return }
+        guard let indexPath = tableView.indexPath(for: cell) else { return }
+        guard let item = diffableDataSource.itemIdentifier(for: indexPath) else { return }
+        
+        switch item {
+        case .homeTimelineIndex(let objectID, _):
+            let managedObjectContext = self.viewModel.fetchedResultsController.managedObjectContext
+            managedObjectContext.performAndWait {
+                guard let timelineIndex = managedObjectContext.object(with: objectID) as? TimelineIndex else { return }
+                guard let tweet = timelineIndex.tweet else { return }
+                let twitterUser = tweet.user
+                let profileViewModel = ProfileViewModel(twitterUser: twitterUser)
+                self.coordinator.present(scene: .profile(viewModel: profileViewModel), from: self, transition: .showDetail)
+            }
+        default:
+            return
+        }
+    }
+    
+    func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, avatarImageViewDidPressed imageView: UIImageView) {
+        guard let diffableDataSource = viewModel.diffableDataSource else { return }
+        guard let indexPath = tableView.indexPath(for: cell) else { return }
+        guard let item = diffableDataSource.itemIdentifier(for: indexPath) else { return }
+        
+        switch item {
+        case .homeTimelineIndex(let objectID, _):
+            let managedObjectContext = self.viewModel.fetchedResultsController.managedObjectContext
+            managedObjectContext.performAndWait {
+                guard let timelineIndex = managedObjectContext.object(with: objectID) as? TimelineIndex else { return }
+                guard let tweet = timelineIndex.tweet?.retweet ?? timelineIndex.tweet else { return }
+                let twitterUser = tweet.user
+                let profileViewModel = ProfileViewModel(twitterUser: twitterUser)
+                self.coordinator.present(scene: .profile(viewModel: profileViewModel), from: self, transition: .showDetail)
+            }
+        default:
+            return
+        }
+    }
+    
+    func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, quoteAvatarImageViewDidPressed imageView: UIImageView) {
+        guard let diffableDataSource = viewModel.diffableDataSource else { return }
+        guard let indexPath = tableView.indexPath(for: cell) else { return }
+        guard let item = diffableDataSource.itemIdentifier(for: indexPath) else { return }
+        
+        switch item {
+        case .homeTimelineIndex(let objectID, _):
+            let managedObjectContext = self.viewModel.fetchedResultsController.managedObjectContext
+            managedObjectContext.performAndWait {
+                guard let timelineIndex = managedObjectContext.object(with: objectID) as? TimelineIndex else { return }
+                guard let tweet = timelineIndex.tweet?.retweet?.quote ?? timelineIndex.tweet?.quote else { return }
+                let twitterUser = tweet.user
+                let profileViewModel = ProfileViewModel(twitterUser: twitterUser)
+                self.coordinator.present(scene: .profile(viewModel: profileViewModel), from: self, transition: .showDetail)
+            }
+        default:
+            return
+        }
     }
 }

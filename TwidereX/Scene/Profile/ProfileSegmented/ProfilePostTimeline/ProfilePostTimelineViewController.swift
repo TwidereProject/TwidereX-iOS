@@ -8,19 +8,13 @@
 import UIKit
 import Combine
 
-final class ProfilePostTimelineViewController: UIViewController, NeedsDependency {
-    
-    weak var context: AppContext! { willSet { precondition(!isViewLoaded) } }
-    weak var coordinator: SceneCoordinator! { willSet { precondition(!isViewLoaded) } }
+final class ProfilePostTimelineViewController: UIViewController {
     
     var disposeBag = Set<AnyCancellable>()
-    //var viewModel: TweetPostViewModel!
-    let viewModel = StubTableViewModel()
     
     lazy var tableView: UITableView = {
         let tableView = UITableView()
         tableView.register(ConversationPostTableViewCell.self, forCellReuseIdentifier: String(describing: ConversationPostTableViewCell.self))
-        tableView.register(StubTableViewCell.self, forCellReuseIdentifier: String(describing: StubTableViewCell.self))
         tableView.rowHeight = UITableView.automaticDimension
         tableView.separatorStyle = .none
         return tableView
@@ -44,7 +38,7 @@ extension ProfilePostTimelineViewController {
         ])
         
         tableView.delegate = self
-        tableView.dataSource = viewModel        
+        // tableView.dataSource = viewModel        
     }
     
 }
