@@ -21,6 +21,7 @@ final class ProfileViewController: UIViewController, NeedsDependency {
         let scrollView = UIScrollView()
         scrollView.scrollsToTop = false
         scrollView.showsVerticalScrollIndicator = false
+        scrollView.preservesSuperviewLayoutMargins = true
         return scrollView
     }()
     let overlayScrollView: UIScrollView = {
@@ -138,17 +139,6 @@ extension ProfileViewController {
                 ])
             })
         )
-        
-        let testView = UIView()
-        testView.backgroundColor = .yellow
-        testView.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(testView)
-        NSLayoutConstraint.activate([
-            testView.leadingAnchor.constraint(equalTo: view.readableContentGuide.leadingAnchor),
-            testView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
-            testView.trailingAnchor.constraint(equalTo: view.readableContentGuide.trailingAnchor),
-            testView.heightAnchor.constraint(equalToConstant: 44),
-        ])
     }
     
     override func viewDidAppear(_ animated: Bool) {

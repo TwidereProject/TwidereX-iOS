@@ -35,6 +35,7 @@ extension ProfileHeaderViewController {
             profileBannerView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             view.bottomAnchor.constraint(equalTo: profileBannerView.bottomAnchor, constant: ProfileHeaderViewController.headerMinHeight + 8),
         ])
+        profileBannerView.preservesSuperviewLayoutMargins = true
     }
     
     override func viewDidLayoutSubviews() {
