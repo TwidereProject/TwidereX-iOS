@@ -9,12 +9,12 @@ import Foundation
 import Combine
 import CoreDataStack
 
-final class ProfileViewModel {
+// please override this base class
+class ProfileViewModel: NSObject {
     
     var disposeBag = Set<AnyCancellable>()
     
     // input
-    let twitterUser: CurrentValueSubject<TwitterUser?, Never>
     
     // output
     let bannerImageURL: CurrentValueSubject<URL?, Never>
@@ -29,23 +29,7 @@ final class ProfileViewModel {
     let followersCount: CurrentValueSubject<Int?, Never>
     let listedCount: CurrentValueSubject<Int?, Never>
     
-    init(twitterUser: TwitterUser) {
-        self.twitterUser = CurrentValueSubject(twitterUser)
-        self.bannerImageURL = CurrentValueSubject(twitterUser.profileBannerURL.flatMap { URL(string: $0) })
-        self.avatarImageURL = CurrentValueSubject(twitterUser.avatarImageURL(size: .original))
-        self.name = CurrentValueSubject(twitterUser.name)
-        self.username = CurrentValueSubject(twitterUser.screenName)
-        self.isFolling = CurrentValueSubject(twitterUser.following)
-        self.bioDescription = CurrentValueSubject(twitterUser.bioDescription)
-        self.url = CurrentValueSubject(twitterUser.url)
-        self.location = CurrentValueSubject(twitterUser.location)
-        self.friendsCount = CurrentValueSubject(twitterUser.friendsCount.flatMap { $0.intValue })
-        self.followersCount = CurrentValueSubject(twitterUser.followersCount.flatMap { $0.intValue })
-        self.listedCount = CurrentValueSubject(twitterUser.listedCount.flatMap { $0.intValue })
-    }
-    
-    init(twitterUserIDStr: String) {
-        self.twitterUser = CurrentValueSubject(nil)
+    override init() {
         self.bannerImageURL = CurrentValueSubject(nil)
         self.avatarImageURL = CurrentValueSubject(nil)
         self.name = CurrentValueSubject(nil)
@@ -57,6 +41,22 @@ final class ProfileViewModel {
         self.friendsCount = CurrentValueSubject(nil)
         self.followersCount = CurrentValueSubject(nil)
         self.listedCount = CurrentValueSubject(nil)
+        super.init()
+    }
+    
+    init(twitterUser: TwitterUser) {
+        self.bannerImageURL = CurrentValueSubject(twitterUser.profileBannerURL.flatMap { URL(string: $0) })
+        self.avatarImageURL = CurrentValueSubject(twitterUser.avatarImageURL(size: .original))
+        self.name = CurrentValueSubject(twitterUser.name)
+        self.username = CurrentValueSubject(twitterUser.screenName)
+        self.isFolling = CurrentValueSubject(twitterUser.following)
+        self.bioDescription = CurrentValueSubject(twitterUser.bioDescription)
+        self.url = CurrentValueSubject(twitterUser.url)
+        self.location = CurrentValueSubject(twitterUser.location)
+        self.friendsCount = CurrentValueSubject(twitterUser.friendsCount.flatMap { $0.intValue })
+        self.followersCount = CurrentValueSubject(twitterUser.followersCount.flatMap { $0.intValue })
+        self.listedCount = CurrentValueSubject(twitterUser.listedCount.flatMap { $0.intValue })
+        super.init()
     }
     
 }

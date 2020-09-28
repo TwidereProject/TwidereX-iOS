@@ -7,10 +7,14 @@
 
 import Foundation
 import CoreData
+import TwitterAPI
 
 enum TimelineItem {
     case homeTimelineIndex(objectID: NSManagedObjectID, attribute: Attribute)
     case homeTimelineMiddleLoader(upper: Int)
+    
+    case userTimelineItem(tweet: Twitter.Entity.Tweet)
+    
     case bottomLoader
 }
 
@@ -53,6 +57,8 @@ extension TimelineItem: Hashable {
             hasher.combine(upper)
         case .bottomLoader:
             hasher.combine(String(describing: TimelineItem.bottomLoader.self))
+        case .userTimelineItem(let tweet):
+            hasher.combine(tweet.idStr)
         }
     }
 }

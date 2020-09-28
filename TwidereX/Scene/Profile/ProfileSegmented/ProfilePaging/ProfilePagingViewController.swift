@@ -10,13 +10,13 @@ import Pageboy
 import Tabman
 
 protocol ProfilePagingViewControllerDelegate: class {
-    func profilePagingViewController(_ viewController: ProfilePagingViewController, didScrollToPostTimelineViewController postTimelineViewController: ProfilePostTimelineViewController, atIndex index: Int)
+    func profilePagingViewController(_ viewController: ProfilePagingViewController, didScrollToPostTimelineViewController postTimelineViewController: UserTimelineViewController, atIndex index: Int)
 }
 
 final class ProfilePagingViewController: TabmanViewController {
     
     weak var pagingDelegate: ProfilePagingViewControllerDelegate?
-    let viewModel = ProfilePagingViewModel()
+    var viewModel: ProfilePagingViewModel!
     
     
     // MARK: - PageboyViewControllerDelegate

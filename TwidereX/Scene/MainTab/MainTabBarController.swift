@@ -47,7 +47,7 @@ class MainTabBarController: UITabBarController {
                 let viewController = ProfileViewController()
                 viewController.context = context
                 viewController.coordinator = coordinator
-                viewController.viewModel = ProfileViewModel(twitterUserIDStr: "")   // TODO:
+                viewController.viewModel = MeProfileViewModel(context: context)
                 navigationController = UINavigationController(rootViewController: viewController)
             }
             return navigationController

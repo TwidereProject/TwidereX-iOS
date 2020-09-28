@@ -10,20 +10,23 @@ import Pageboy
 import Tabman
 final class ProfilePagingViewModel: NSObject {
     
-    let profileTweetPostTimelineViewController = ProfilePostTimelineViewController()
-    let profileMediaPostTimelineViewController = ProfilePostTimelineViewController()
-    let profileLikesPostTimelineViewController = ProfilePostTimelineViewController()
+    let profileTweetPostTimelineViewController = UserTimelineViewController()
+    let profileMediaPostTimelineViewController = UserTimelineViewController()
+    let profileLikesPostTimelineViewController = UserTimelineViewController()
     
-    override init() {
+    init(userTimelineViewModel viewModel: UserTimelineViewModel) {
+        profileTweetPostTimelineViewController.viewModel = viewModel
+        profileMediaPostTimelineViewController.viewModel = viewModel
+        profileLikesPostTimelineViewController.viewModel = viewModel
         super.init()
-        
+
         for viewController in viewControllers {
             viewController.view.preservesSuperviewLayoutMargins = true
             viewController.view.insetsLayoutMarginsFromSafeArea = true
         }
     }
     
-    var viewControllers: [ProfilePostTimelineViewController] {
+    var viewControllers: [UserTimelineViewController] {
         return [
             profileTweetPostTimelineViewController,
             profileMediaPostTimelineViewController,

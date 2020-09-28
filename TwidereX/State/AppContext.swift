@@ -29,11 +29,13 @@ class AppContext: ObservableObject {
         managedObjectContext = _managedObjectContext
         
         let _backgroundManagedObjectContext = _coreDataStack.persistentContainer.newBackgroundContext()
-        apiService = APIService(
+        let _apiService = APIService(
             managedObjectContext: _managedObjectContext,
             backgroundManagedObjectContext: _backgroundManagedObjectContext
         )
-        authenticationService = AuthenticationService(managedObjectContext: _managedObjectContext)
+        apiService = _apiService
+        
+        authenticationService = AuthenticationService(managedObjectContext: _managedObjectContext, apiService: _apiService)
         
         documentStore = DocumentStore()
         documentStoreSubscription = documentStore.objectWillChange

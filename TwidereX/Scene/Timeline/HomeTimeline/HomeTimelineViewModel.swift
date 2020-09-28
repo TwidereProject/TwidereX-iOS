@@ -88,6 +88,8 @@ extension HomeTimelineViewModel {
                 // TODO:
                 let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: TimelineBottomLoaderTableViewCell.self), for: indexPath) as! TimelineBottomLoaderTableViewCell
                 return cell
+            default:
+                return nil
             }
         }
     }

@@ -26,6 +26,7 @@ extension Twitter.API {
     public enum OAuth { }
     public enum Timeline { }
     public enum Lookup { }
+    public enum Account { }
 }
 
 extension Twitter.API {
@@ -66,6 +67,22 @@ extension Twitter.API {
             
             throw decodeError
         }
+    }
+    
+    static func request(url: URL, httpMethod: String, authorization: Twitter.API.OAuth.Authorization, queryItems: [URLQueryItem]?) -> URLRequest {
+        var components = URLComponents(string: url.absoluteString)!
+        components.queryItems = queryItems
+        let requestURL = components.url!
+        var request = URLRequest(
+            url: url,
+            cachePolicy: .reloadIgnoringLocalAndRemoteCacheData,
+            timeoutInterval: Twitter.API.timeoutInterval
+        )
+        request.setValue(
+            authorization.authorizationHeader(requestURL: requestURL, httpMethod: httpMethod),
+            forHTTPHeaderField: Twitter.API.OAuth.authorizationField
+        )
+        return request
     }
 }
 

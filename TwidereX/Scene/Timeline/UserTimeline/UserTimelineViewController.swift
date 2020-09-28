@@ -1,5 +1,5 @@
 //
-//  ProfilePostTimelineViewController.swift
+//  UserTimelineViewController.swift
 //  TwidereX
 //
 //  Created by Cirno MainasuK on 2020-9-24.
@@ -8,13 +8,14 @@
 import UIKit
 import Combine
 
-final class ProfilePostTimelineViewController: UIViewController {
+final class UserTimelineViewController: UIViewController {
     
     var disposeBag = Set<AnyCancellable>()
+    var viewModel: UserTimelineViewModel!
     
     lazy var tableView: UITableView = {
         let tableView = UITableView()
-        tableView.register(ConversationPostTableViewCell.self, forCellReuseIdentifier: String(describing: ConversationPostTableViewCell.self))
+        tableView.register(TimelinePostTableViewCell.self, forCellReuseIdentifier: String(describing: TimelinePostTableViewCell.self))
         tableView.rowHeight = UITableView.automaticDimension
         tableView.separatorStyle = .none
         return tableView
@@ -22,7 +23,7 @@ final class ProfilePostTimelineViewController: UIViewController {
     
 }
 
-extension ProfilePostTimelineViewController {
+extension UserTimelineViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -37,13 +38,14 @@ extension ProfilePostTimelineViewController {
             tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
         ])
         
+        viewModel.setupDiffableDataSource(for: tableView)
         tableView.delegate = self
-        // tableView.dataSource = viewModel        
+        tableView.dataSource = viewModel.diffableDataSource
     }
     
 }
 
 // MARK: - UITableViewDelegate
-extension ProfilePostTimelineViewController: UITableViewDelegate {
+extension UserTimelineViewController: UITableViewDelegate {
     
 }

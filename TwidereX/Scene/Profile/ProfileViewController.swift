@@ -76,6 +76,10 @@ extension ProfileViewController {
         title = "Me"
         view.backgroundColor = .systemBackground
         
+        let userTimelineViewModel = UserTweetsTimelineViewModel(context: context)
+        let profilePagingViewModel = ProfilePagingViewModel(userTimelineViewModel: userTimelineViewModel)
+        profileSegmentedViewController.pagingViewController.viewModel = profilePagingViewModel
+        
         overlayScrollView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(overlayScrollView)
         NSLayoutConstraint.activate([
@@ -232,7 +236,7 @@ extension ProfileViewController {
         super.viewDidAppear(animated)
         
         // set overlay scroll view initial content size
-        let currentViewController = profileSegmentedViewController.pagingViewController.currentViewController as! ProfilePostTimelineViewController
+        let currentViewController = profileSegmentedViewController.pagingViewController.currentViewController as! UserTimelineViewController
         currentPostTimelineTableViewContentSizeObservation = observeTableViewContentSize(tableView: currentViewController.tableView)
         currentViewController.tableView.panGestureRecognizer.require(toFail: overlayScrollView.panGestureRecognizer)
     }
@@ -263,7 +267,7 @@ extension ProfileViewController: UIScrollViewDelegate {
             contentOffsets.removeAll()
         } else {
             containerScrollView.contentOffset.y = topMaxContentOffsetY
-            (profileSegmentedViewController.pagingViewController.currentViewController as? ProfilePostTimelineViewController)?.tableView.contentOffset.y = scrollView.contentOffset.y - containerScrollView.contentOffset.y
+            (profileSegmentedViewController.pagingViewController.currentViewController as? UserTimelineViewController)?.tableView.contentOffset.y = scrollView.contentOffset.y - containerScrollView.contentOffset.y
         }
     }
 
@@ -272,7 +276,7 @@ extension ProfileViewController: UIScrollViewDelegate {
 // MARK: - ProfileHeaderViewControllerDelegate
 extension ProfileViewController: ProfileHeaderViewControllerDelegate {
     func profileHeaderViewController(_ viewController: ProfileHeaderViewController, viewLayoutDidUpdate view: UIView) {
-        guard let tableView = (profileSegmentedViewController.pagingViewController.currentViewController as? ProfilePostTimelineViewController)?.tableView else {
+        guard let tableView = (profileSegmentedViewController.pagingViewController.currentViewController as? UserTimelineViewController)?.tableView else {
             assertionFailure()
             return
         }
@@ -284,7 +288,7 @@ extension ProfileViewController: ProfileHeaderViewControllerDelegate {
 // MARK: - ProfilePagingViewControllerDelegate
 extension ProfileViewController: ProfilePagingViewControllerDelegate {
     
-    func profilePagingViewController(_ viewController: ProfilePagingViewController, didScrollToPostTimelineViewController postTimelineViewController: ProfilePostTimelineViewController, atIndex index: Int) {
+    func profilePagingViewController(_ viewController: ProfilePagingViewController, didScrollToPostTimelineViewController postTimelineViewController: UserTimelineViewController, atIndex index: Int) {
         overlayScrollView.contentOffset.y = contentOffsets[index] ?? containerScrollView.contentOffset.y
         
         currentPostTimelineTableViewContentSizeObservation = observeTableViewContentSize(tableView: postTimelineViewController.tableView)

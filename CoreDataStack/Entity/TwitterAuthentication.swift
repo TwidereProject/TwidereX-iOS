@@ -25,6 +25,7 @@ final public class TwitterAuthentication: NSManagedObject {
     
     @NSManaged public private(set) var createdAt: Date
     @NSManaged public private(set) var updatedAt: Date
+    @NSManaged public private(set) var activeAt: Date?
     
 }
 
@@ -48,7 +49,12 @@ extension TwitterAuthentication {
         authentication.accessToken = property.accessToken
         authentication.accessTokenSecret = property.accessTokenSecret
         authentication.nonce = property.nonce ?? ""
+        authentication.activeAt = nil
         return authentication
+    }
+    
+    public func update(activeAt: Date?) {
+        self.activeAt = activeAt
     }
 }
 

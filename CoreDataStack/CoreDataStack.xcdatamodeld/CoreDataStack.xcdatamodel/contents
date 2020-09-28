@@ -42,6 +42,7 @@
     <entity name="TwitterAuthentication" representedClassName=".TwitterAuthentication" syncable="YES">
         <attribute name="accessToken" attributeType="String"/>
         <attribute name="accessTokenSecret" attributeType="String"/>
+        <attribute name="activeAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="consumerKey" attributeType="String"/>
         <attribute name="consumerSecret" attributeType="String"/>
         <attribute name="createdAt" attributeType="Date" usesScalarValueType="NO"/>
@@ -76,7 +77,7 @@
         <element name="TimelineIndex" positionX="-54" positionY="63" width="128" height="133"/>
         <element name="Toots" positionX="-18" positionY="81" width="128" height="103"/>
         <element name="Tweet" positionX="371.83984375" positionY="-55.8125" width="128" height="373"/>
-        <element name="TwitterAuthentication" positionX="-63" positionY="-18" width="128" height="193"/>
+        <element name="TwitterAuthentication" positionX="-63" positionY="-18" width="128" height="208"/>
         <element name="TwitterUser" positionX="0" positionY="108" width="128" height="313"/>
     </elements>
 </model>
