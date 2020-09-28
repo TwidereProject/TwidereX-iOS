@@ -250,12 +250,21 @@ import SwiftUI
 
 struct ProfileBannerView_Previews: PreviewProvider {
     static var previews: some View {
-        UIViewPreview(width: 375) {
-            let banner = ProfileBannerView()
-            banner.profileBannerImageView.image = UIImage(named: "peter-luo")
-            return banner
+        Group {
+            UIViewPreview(width: 375) {
+                let banner = ProfileBannerView()
+                banner.profileBannerImageView.image = UIImage(named: "peter-luo")
+                return banner
+            }
+            .previewLayout(.fixed(width: 375, height: 800))
+            UIViewPreview(width: 375) {
+                let banner = ProfileBannerView()
+                banner.profileBannerImageView.image = UIImage(named: "peter-luo")
+                return banner
+            }
+            .preferredColorScheme(.dark)
+            .previewLayout(.fixed(width: 375, height: 800))
         }
-        .previewLayout(.fixed(width: 375, height: 800))
     }
 }
 #endif
