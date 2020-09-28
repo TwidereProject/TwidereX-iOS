@@ -18,13 +18,6 @@ protocol ContentOffsetAdjustableTimelineViewControllerDelegate: class {
     func navigationBar() -> UINavigationBar
 }
 
-final class SwipeEnabledDiffableDataSource: UITableViewDiffableDataSource<TimelineSection, TimelineItem> {
-    
-    override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
-        return true
-    }
-}
-
 final class HomeTimelineViewModel: NSObject {
     
     var disposeBag = Set<AnyCancellable>()
@@ -39,7 +32,7 @@ final class HomeTimelineViewModel: NSObject {
     
     // output
     var currentTwitterAuthentication = CurrentValueSubject<TwitterAuthentication?, Never>(nil)
-    var diffableDataSource: SwipeEnabledDiffableDataSource?
+    var diffableDataSource: UITableViewDiffableDataSource<TimelineSection, TimelineItem>?
     var cellFrameCache = NSCache<NSNumber, NSValue>()
     
     init(context: AppContext) {
@@ -73,7 +66,7 @@ final class HomeTimelineViewModel: NSObject {
 extension HomeTimelineViewModel {
 
     func setupDiffableDataSource(for tableView: UITableView) {
-        diffableDataSource = SwipeEnabledDiffableDataSource(tableView: tableView) { [weak self] tableView, indexPath, item -> UITableViewCell? in
+        diffableDataSource = UITableViewDiffableDataSource<TimelineSection, TimelineItem>(tableView: tableView) { [weak self] tableView, indexPath, item -> UITableViewCell? in
             guard let self = self else { return nil }
             
             switch item {
