@@ -136,8 +136,8 @@ extension TimelinePostView {
         retweetContainerContentView.addSubview(retweetIconImageView)
         NSLayoutConstraint.activate([
             retweetIconImageView.centerYAnchor.constraint(equalTo: retweetInfoLabel.centerYAnchor),
-            retweetIconImageView.widthAnchor.constraint(equalToConstant: 12),
-            retweetIconImageView.heightAnchor.constraint(equalToConstant: 12).priority(.defaultHigh),
+            retweetIconImageView.widthAnchor.constraint(equalToConstant: 12).priority(.required - 1),
+            retweetIconImageView.heightAnchor.constraint(equalToConstant: 12).priority(.required - 1),
         ])
         
         // post container: [user avatar | tweet container]
@@ -186,8 +186,8 @@ extension TimelinePostView {
         usernameLabel.setContentHuggingPriority(.defaultHigh, for: .horizontal)
         usernameLabel.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
         dateLabel.setContentHuggingPriority(.defaultLow, for: .horizontal)
-        dateLabel.setContentCompressionResistancePriority(.defaultHigh + 1, for: .horizontal)
-        moreMenuButton.setContentCompressionResistancePriority(.defaultHigh + 2, for: .horizontal)
+        dateLabel.setContentCompressionResistancePriority(.required - 2, for: .horizontal)
+        moreMenuButton.setContentCompressionResistancePriority(.required - 1, for: .horizontal)
         
         // align retweet label leading to name
         // align retweet icon trailing to avatar

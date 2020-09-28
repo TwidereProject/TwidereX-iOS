@@ -86,7 +86,7 @@ extension MosaicImageView {
             imageView.topAnchor.constraint(equalTo: contentView.topAnchor),
             imageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
             imageView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
-            imageView.widthAnchor.constraint(equalToConstant: floor(rect.width)).priority(.defaultHigh),
+            imageView.widthAnchor.constraint(equalToConstant: floor(rect.width)).priority(.required - 1),
         ])
         containerHeightLayoutConstraint.constant = floor(rect.height)
         containerHeightLayoutConstraint.isActive = true

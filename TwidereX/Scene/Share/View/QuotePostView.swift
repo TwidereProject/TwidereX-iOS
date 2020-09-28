@@ -43,13 +43,6 @@ final class QuotePostView: UIView {
         return label
     }()
     
-    let moreMenuButton: UIButton = {
-        let button = UIButton()
-        button.setImage(Asset.Arrows.tablerChevronDown.image.withRenderingMode(.alwaysTemplate), for: .normal)
-        button.imageView?.tintColor = .secondaryLabel
-        return button
-    }()
-    
     let activeTextLabel: ActiveLabel = {
         let label = ActiveLabel()
         label.numberOfLines = 0
@@ -116,12 +109,11 @@ extension QuotePostView {
         userMetaContainerStackView.addArrangedSubview(nameLabel)
         userMetaContainerStackView.addArrangedSubview(usernameLabel)
         userMetaContainerStackView.addArrangedSubview(dateLabel)
-        userMetaContainerStackView.addArrangedSubview(moreMenuButton)
         nameLabel.setContentHuggingPriority(.defaultHigh, for: .horizontal)
-        usernameLabel.setContentHuggingPriority(.defaultHigh, for: .horizontal)
+        usernameLabel.setContentHuggingPriority(.defaultLow, for: .horizontal)
         usernameLabel.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
-        dateLabel.setContentHuggingPriority(.defaultLow, for: .horizontal)
-        dateLabel.setContentCompressionResistancePriority(.required - 2, for: .horizontal)
+        dateLabel.setContentHuggingPriority(.defaultHigh, for: .horizontal)
+        dateLabel.setContentCompressionResistancePriority(.required - 1, for: .horizontal)
         
         
         // main container: [text]
