@@ -26,6 +26,8 @@ extension ProfileHeaderViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        view.backgroundColor = .systemBackground
+        
         profileBannerView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(profileBannerView)
         NSLayoutConstraint.activate([

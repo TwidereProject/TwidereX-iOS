@@ -123,6 +123,12 @@ extension QuotePostView {
         mainContainerStackView.addArrangedSubview(activeTextLabel)
     }
     
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        
+        layer.borderColor = UIColor.secondarySystemBackground.cgColor
+    }
+    
 }
 
 #if DEBUG
