@@ -410,12 +410,12 @@
 			path = ViewModel;
 			sourceTree = "<group>";
 		};
-		DB3402AD2521D2E6009EFADF /* SegmentedUserTimeline */ = {
+		DB3402AD2521D2E6009EFADF /* UserTweetsTimeline */ = {
 			isa = PBXGroup;
 			children = (
 				DB3402AE2521D33D009EFADF /* UserTweetsTimelineViewModel.swift */,
 			);
-			path = SegmentedUserTimeline;
+			path = UserTweetsTimeline;
 			sourceTree = "<group>";
 		};
 		DB434878251DEB7A005B599F /* View */ = {
@@ -432,8 +432,8 @@
 		DB747FFD251C496E000C4BD7 /* Profile */ = {
 			isa = PBXGroup;
 			children = (
-				DB92570E251C900F004FEFB5 /* ProfileSegmented */,
-				DB925732251C9294004FEFB5 /* ProfileHeader */,
+				DB92570E251C900F004FEFB5 /* Segmented */,
+				DB925732251C9294004FEFB5 /* Header */,
 				DB3402982521BE6B009EFADF /* ViewModel */,
 				DB747FF8251C496A000C4BD7 /* ProfileViewController.swift */,
 			);
@@ -469,23 +469,23 @@
 			path = Vender;
 			sourceTree = "<group>";
 		};
-		DB92570E251C900F004FEFB5 /* ProfileSegmented */ = {
+		DB92570E251C900F004FEFB5 /* Segmented */ = {
 			isa = PBXGroup;
 			children = (
-				DB3402AD2521D2E6009EFADF /* SegmentedUserTimeline */,
-				DB925742251C9CC8004FEFB5 /* ProfilePaging */,
+				DB3402AD2521D2E6009EFADF /* UserTweetsTimeline */,
+				DB925742251C9CC8004FEFB5 /* Paging */,
 				DB925704251C8FCB004FEFB5 /* ProfileSegmentedViewController.swift */,
 			);
-			path = ProfileSegmented;
+			path = Segmented;
 			sourceTree = "<group>";
 		};
-		DB925732251C9294004FEFB5 /* ProfileHeader */ = {
+		DB925732251C9294004FEFB5 /* Header */ = {
 			isa = PBXGroup;
 			children = (
 				DB434878251DEB7A005B599F /* View */,
 				DB925709251C8FE0004FEFB5 /* ProfileHeaderViewController.swift */,
 			);
-			path = ProfileHeader;
+			path = Header;
 			sourceTree = "<group>";
 		};
 		DB92573B251C9C31004FEFB5 /* UserTimeline */ = {
@@ -497,13 +497,13 @@
 			path = UserTimeline;
 			sourceTree = "<group>";
 		};
-		DB925742251C9CC8004FEFB5 /* ProfilePaging */ = {
+		DB925742251C9CC8004FEFB5 /* Paging */ = {
 			isa = PBXGroup;
 			children = (
 				DB925743251C9CD6004FEFB5 /* ProfilePagingViewController.swift */,
 				DB925748251C9D47004FEFB5 /* ProfilePagingViewModel.swift */,
 			);
-			path = ProfilePaging;
+			path = Paging;
 			sourceTree = "<group>";
 		};
 		DB925755251CA3C1004FEFB5 /* ViewModel */ = {
