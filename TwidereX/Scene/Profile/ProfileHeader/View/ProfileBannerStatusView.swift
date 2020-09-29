@@ -60,6 +60,10 @@ extension ProfileBannerStatusView {
             sepratorLine2.widthAnchor.constraint(equalToConstant: UIView.separatorLineHeight(of: self)),
             sepratorLine2.heightAnchor.constraint(equalToConstant: 24),
         ])
+        
+        followingStatusItemView.statusLabel.text = "Following"
+        followersStatusItemView.statusLabel.text = "Followers"
+        listedStatusItemView.statusLabel.text = "Listed"
     }
 }
 
