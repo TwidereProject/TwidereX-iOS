@@ -24,7 +24,9 @@ extension Twitter.API.Timeline {
     }
     
     public static func userTimeline(session: URLSession, authorization: Twitter.API.OAuth.Authorization, query: Query) -> AnyPublisher<Twitter.Response<[Twitter.Entity.Tweet]>, Error> {
-        var components = URLComponents(string: homeTimelineEndpointURL.absoluteString)!
+        assert(query.userID != nil && query.userID != "")
+        
+        var components = URLComponents(string: userTimelineEndpointURL.absoluteString)!
         components.queryItems = query.queryItems
         let requestURL = components.url!
         var request = URLRequest(
@@ -49,14 +51,21 @@ extension Twitter.API.Timeline {
 
 extension Twitter.API.Timeline {
     public struct Query {
+        // share
         public let count: Int?
         
-        public init() {
-            self.init(count: nil)
-        }
+        // user timeline
+        public let userID: String?
+        public let excludeReplies: Bool?
         
-        public init(count: Int?) {
+        public init(
+            count: Int? = nil,
+            userID: String? = nil,
+            excludeReplies: Bool? = nil
+        ) {
             self.count = count
+            self.userID = userID
+            self.excludeReplies = excludeReplies
         }
         
         var queryItems: [URLQueryItem]? {
@@ -64,10 +73,14 @@ extension Twitter.API.Timeline {
             if let count = self.count {
                 items.append(URLQueryItem(name: "count", value: String(count)))
             }
+            if let userID = self.userID {
+                items.append(URLQueryItem(name: "user_id", value: userID))
+            }
+            if let excludeReplies = self.excludeReplies {
+                items.append(URLQueryItem(name: "exclude_replies", value: excludeReplies ? "true" : "false"))
+            }
             guard !items.isEmpty else { return nil }
             return items
         }
-        
-        
     }
 }

@@ -73,11 +73,20 @@ extension ProfileViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        title = "Me"
         view.backgroundColor = .systemBackground
         
-        let userTimelineViewModel = UserTweetsTimelineViewModel(context: context)
+        let userTimelineViewModel = UserTimelineViewModel(context: context, userID: viewModel.userID.value)
+        viewModel.userID.assign(to: \.value, on: userTimelineViewModel.userID).store(in: &disposeBag)
         let profilePagingViewModel = ProfilePagingViewModel(userTimelineViewModel: userTimelineViewModel)
+        profilePagingViewModel.viewControllers.forEach { viewController in
+            if let viewController = viewController as? NeedsDependency {
+                viewController.context = context
+                viewController.coordinator = coordinator
+            }
+            viewController.view.preservesSuperviewLayoutMargins = true
+            viewController.view.insetsLayoutMarginsFromSafeArea = true
+        }
+        
         profileSegmentedViewController.pagingViewController.viewModel = profilePagingViewModel
         
         overlayScrollView.translatesAutoresizingMaskIntoConstraints = false
@@ -288,7 +297,7 @@ extension ProfileViewController: ProfileHeaderViewControllerDelegate {
 // MARK: - ProfilePagingViewControllerDelegate
 extension ProfileViewController: ProfilePagingViewControllerDelegate {
     
-    func profilePagingViewController(_ viewController: ProfilePagingViewController, didScrollToPostTimelineViewController postTimelineViewController: UserTimelineViewController, atIndex index: Int) {
+    func profilePagingViewController(_ viewController: ProfilePagingViewController, didScrollToPostTimelineViewController postTimelineViewController: CustomTableViewController, atIndex index: Int) {
         overlayScrollView.contentOffset.y = contentOffsets[index] ?? containerScrollView.contentOffset.y
         
         currentPostTimelineTableViewContentSizeObservation = observeTableViewContentSize(tableView: postTimelineViewController.tableView)

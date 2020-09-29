@@ -8,25 +8,29 @@
 import UIKit
 import Pageboy
 import Tabman
+
+protocol CustomTableViewController: UIViewController {
+    var tableView: UITableView { get }
+}
+
+class StubTableViewController: UIViewController, CustomTableViewController {
+    var tableView = UITableView()
+}
+
 final class ProfilePagingViewModel: NSObject {
     
     let profileTweetPostTimelineViewController = UserTimelineViewController()
-    let profileMediaPostTimelineViewController = UserTimelineViewController()
-    let profileLikesPostTimelineViewController = UserTimelineViewController()
+    let profileMediaPostTimelineViewController = StubTableViewController()
+    let profileLikesPostTimelineViewController = StubTableViewController()
     
     init(userTimelineViewModel viewModel: UserTimelineViewModel) {
         profileTweetPostTimelineViewController.viewModel = viewModel
-        profileMediaPostTimelineViewController.viewModel = viewModel
-        profileLikesPostTimelineViewController.viewModel = viewModel
+//        profileMediaPostTimelineViewController.viewModel = viewModel
+//        profileLikesPostTimelineViewController.viewModel = viewModel
         super.init()
-
-        for viewController in viewControllers {
-            viewController.view.preservesSuperviewLayoutMargins = true
-            viewController.view.insetsLayoutMarginsFromSafeArea = true
-        }
     }
     
-    var viewControllers: [UserTimelineViewController] {
+    var viewControllers: [CustomTableViewController] {
         return [
             profileTweetPostTimelineViewController,
             profileMediaPostTimelineViewController,

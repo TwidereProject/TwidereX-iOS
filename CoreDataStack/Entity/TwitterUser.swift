@@ -33,10 +33,15 @@ final public class TwitterUser: NSManagedObject {
     }
     
     @NSManaged public private(set) var friendsCount: NSNumber?
+    public var friendsCountInt: Int? { return friendsCount.flatMap { Int(truncating: $0) } }
     @NSManaged public private(set) var followersCount: NSNumber?
+    public var followersCountInt: Int? { return followersCount.flatMap { Int(truncating: $0) } }
     @NSManaged public private(set) var listedCount: NSNumber?
+    public var listedCountInt: Int? { return listedCount.flatMap { Int(truncating: $0) } }
     @NSManaged public private(set) var favouritesCount: NSNumber?
+    public var favouritesCountInt: Int? { return favouritesCount.flatMap { Int(truncating: $0) } }
     @NSManaged public private(set) var statusesCount: NSNumber?
+    public var statusesCountInt: Int? { return statusesCount.flatMap { Int(truncating: $0) } }
     
     @NSManaged public private(set) var profileImageURLHTTPS: String?
     @NSManaged public private(set) var profileBannerURL: String?
@@ -227,52 +232,5 @@ extension TwitterUser {
     
     public static func predicate(idStrs: [String]) -> NSPredicate {
         return NSPredicate(format: "%K IN %@", #keyPath(TwitterUser.idStr), idStrs)
-    }
-}
-
-extension TwitterUser {
-    public enum ProfileImageSize: String {
-        case original
-        case reasonablySmall = "reasonably_small"    // 128 * 128
-        case bigger                                     // 73 * 73
-        case normal                                     // 48 * 48
-        case mini                                       // 24 * 24
-        
-        static var suffixedSizes: [ProfileImageSize] {
-            return [.reasonablySmall, .bigger, .normal, .mini]
-        }
-    }
-    
-    /// https://developer.twitter.com/en/docs/twitter-api/v1/accounts-and-users/user-profile-images-and-banners
-    public func avatarImageURL(size: ProfileImageSize = .reasonablySmall) -> URL? {
-        guard let imageURLString = profileImageURLHTTPS, var imageURL = URL(string: imageURLString) else { return nil }
-        
-        let pathExtension = imageURL.pathExtension
-        imageURL.deletePathExtension()
-        
-        var imageIdentifier = imageURL.lastPathComponent
-        imageURL.deleteLastPathComponent()
-        for suffixedSize in TwitterUser.ProfileImageSize.suffixedSizes {
-            imageIdentifier.deleteSuffix("_\(suffixedSize.rawValue)")
-        }
-        
-        switch size {
-        case .original:
-            imageURL.appendPathComponent(imageIdentifier)
-        default:
-            imageURL.appendPathComponent(imageIdentifier + "_" + size.rawValue)
-        }
-        
-        imageURL.appendPathExtension(pathExtension)
-        
-        return imageURL
-    }
-    
-}
-
-extension String {
-    mutating func deleteSuffix(_ suffix: String) {
-        guard hasSuffix(suffix) else { return }
-        removeLast(suffix.count)
     }
 }

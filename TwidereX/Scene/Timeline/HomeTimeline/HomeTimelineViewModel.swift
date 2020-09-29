@@ -25,13 +25,13 @@ final class HomeTimelineViewModel: NSObject {
     // input
     let context: AppContext
     let fetchedResultsController: NSFetchedResultsController<TimelineIndex>
+    let currentTwitterAuthentication = CurrentValueSubject<TwitterAuthentication?, Never>(nil)
     let isFetchingLatestTimeline = CurrentValueSubject<Bool, Never>(false)
     weak var contentOffsetAdjustableTimelineViewControllerDelegate: ContentOffsetAdjustableTimelineViewControllerDelegate?
     weak var tableView: UITableView?
     weak var timelinePostTableViewCellDelegate: TimelinePostTableViewCellDelegate?
     
     // output
-    var currentTwitterAuthentication = CurrentValueSubject<TwitterAuthentication?, Never>(nil)
     var diffableDataSource: UITableViewDiffableDataSource<TimelineSection, TimelineItem>?
     var cellFrameCache = NSCache<NSNumber, NSValue>()
     
@@ -96,17 +96,18 @@ extension HomeTimelineViewModel {
     
     static func configure(cell: TimelinePostTableViewCell, timelineIndex: TimelineIndex, attribute: TimelineItem.Attribute) {
         if let tweet = timelineIndex.tweet {
-            configure(cell: cell, tweet: tweet, attribute: attribute)
+            configure(cell: cell, tweetInterface: tweet)
+            internalConfigure(cell: cell, tweet: tweet, attribute: attribute)
         }
     }
 
-    private static func configure(cell: TimelinePostTableViewCell, tweet: Tweet, attribute: TimelineItem.Attribute) {
+    static func configure(cell: TimelinePostTableViewCell, tweetInterface tweet: TweetInterface) {
         // set retweet display
-        cell.timelinePostView.retweetContainerStackView.isHidden = tweet.retweet == nil
-        cell.timelinePostView.retweetInfoLabel.text = tweet.user.name.flatMap { $0 + " Retweeted" } ?? " "
+        cell.timelinePostView.retweetContainerStackView.isHidden = tweet.retweetObject == nil
+        cell.timelinePostView.retweetInfoLabel.text = tweet.userObject.name.flatMap { $0 + " Retweeted" } ?? " "
 
         // set avatar
-        if let avatarImageURL = (tweet.retweet?.user ?? tweet.user).avatarImageURL() {
+        if let avatarImageURL = (tweet.retweetObject?.userObject ?? tweet.userObject).avatarImageURL() {
             let placeholderImage = UIImage
                 .placeholder(size: TimelinePostView.avatarImageViewSize, color: .systemFill)
                 .af.imageRoundedIntoCircle()
@@ -122,30 +123,25 @@ extension HomeTimelineViewModel {
         }
 
         // set name and username
-        cell.timelinePostView.nameLabel.text = (tweet.retweet?.user ?? tweet.user).name
-        cell.timelinePostView.usernameLabel.text = (tweet.retweet?.user ?? tweet.user).screenName.flatMap { "@" + $0 }
+        cell.timelinePostView.nameLabel.text = (tweet.retweetObject?.userObject ?? tweet.userObject).name
+        cell.timelinePostView.usernameLabel.text = (tweet.retweetObject?.userObject ?? tweet.userObject).screenName.flatMap { "@" + $0 }
 
         // set date
-        let createdAt = (tweet.retweet ?? tweet).createdAt
+        let createdAt = (tweet.retweetObject ?? tweet).createdAt
         cell.timelinePostView.dateLabel.text = createdAt.shortTimeAgoSinceNow
-        NotificationCenter.default.publisher(for: HomeTimelineViewModel.secondStepTimerTriggered, object: nil)
-            .sink { _ in
-                cell.timelinePostView.dateLabel.text = createdAt.shortTimeAgoSinceNow
-            }
-            .store(in: &cell.disposeBag)
         
         // set text
-        cell.timelinePostView.activeTextLabel.text = (tweet.retweet ?? tweet).text
+        cell.timelinePostView.activeTextLabel.text = (tweet.retweetObject ?? tweet).text
 
         // set action toolbar title
         let retweetCountTitle: String = {
-            let count = (tweet.retweet ?? tweet).retweetCount.flatMap { Int(truncating: $0) }
+            let count = (tweet.retweetObject ?? tweet).retweetCountInt
             return HomeTimelineViewModel.formattedNumberTitleForActionButton(count)
         }()
         cell.timelinePostView.actionToolbar.retweetButton.setTitle(retweetCountTitle, for: .normal)
 
         let favoriteCountTitle: String = {
-            let count = (tweet.retweet ?? tweet).favoriteCount.flatMap { Int(truncating: $0) }
+            let count = (tweet.retweetObject ?? tweet).favoriteCountInt
             return HomeTimelineViewModel.formattedNumberTitleForActionButton(count)
         }()
         cell.timelinePostView.actionToolbar.favoriteButton.setTitle(favoriteCountTitle, for: .normal)
@@ -187,10 +183,10 @@ extension HomeTimelineViewModel {
         cell.timelinePostView.mosaicImageView.isHidden = mosaicMetas.isEmpty
 
         // set quote display
-        let quote = tweet.retweet?.quote ?? tweet.quote
+        let quote = tweet.retweetObject?.quoteObject ?? tweet.quoteObject
         if let quote = quote {
             // set avatar
-            if let avatarImageURL = quote.user.avatarImageURL() {
+            if let avatarImageURL = quote.userObject.avatarImageURL() {
                 let placeholderImage = UIImage
                     .placeholder(size: TimelinePostView.avatarImageViewSize, color: .systemFill)
                     .af.imageRoundedIntoCircle()
@@ -206,10 +202,31 @@ extension HomeTimelineViewModel {
             }
 
             // set name and username
-            cell.timelinePostView.quotePostView.nameLabel.text = quote.user.name
-            cell.timelinePostView.quotePostView.usernameLabel.text = quote.user.screenName.flatMap { "@" + $0 }
+            cell.timelinePostView.quotePostView.nameLabel.text = quote.userObject.name
+            cell.timelinePostView.quotePostView.usernameLabel.text = quote.userObject.screenName.flatMap { "@" + $0 }
 
             // set date
+            let createdAt = quote.createdAt
+            cell.timelinePostView.quotePostView.dateLabel.text = createdAt.shortTimeAgoSinceNow
+
+            // set text
+            cell.timelinePostView.quotePostView.activeTextLabel.text = quote.text
+        }
+        cell.timelinePostView.quotePostView.isHidden = quote == nil
+    }
+    
+    private static func internalConfigure(cell: TimelinePostTableViewCell, tweet: TweetInterface, attribute: TimelineItem.Attribute) {
+        // tweet date updater
+        let createdAt = (tweet.retweetObject ?? tweet).createdAt
+        NotificationCenter.default.publisher(for: HomeTimelineViewModel.secondStepTimerTriggered, object: nil)
+            .sink { _ in
+                cell.timelinePostView.dateLabel.text = createdAt.shortTimeAgoSinceNow
+            }
+            .store(in: &cell.disposeBag)
+        
+        // quote date updater
+        let quote = tweet.retweetObject?.quoteObject ?? tweet.quoteObject
+        if let quote = quote {
             let createdAt = quote.createdAt
             cell.timelinePostView.quotePostView.dateLabel.text = createdAt.shortTimeAgoSinceNow
             NotificationCenter.default.publisher(for: HomeTimelineViewModel.secondStepTimerTriggered, object: nil)
@@ -217,12 +234,9 @@ extension HomeTimelineViewModel {
                     cell.timelinePostView.quotePostView.dateLabel.text = createdAt.shortTimeAgoSinceNow
                 }
                 .store(in: &cell.disposeBag)
-
-            // set text
-            cell.timelinePostView.quotePostView.activeTextLabel.text = quote.text
         }
-        cell.timelinePostView.quotePostView.isHidden = quote == nil
         
+
         // set separator line indent in non-conflict order
         if attribute.indentSeparatorLine {
             cell.separatorLineLeadingLayoutConstraint.isActive = false
@@ -363,5 +377,5 @@ extension HomeTimelineViewModel: NSFetchedResultsControllerDelegate {
 }
 
 extension HomeTimelineViewModel {
-    static let secondStepTimerTriggered = Notification.Name("com.twidere.twiderex.home-timeline.second-step-timer-triggered")
+    private static let secondStepTimerTriggered = Notification.Name("com.twidere.twiderex.home-timeline.second-step-timer-triggered")
 }

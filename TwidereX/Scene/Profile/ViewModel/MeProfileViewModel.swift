@@ -29,17 +29,7 @@ final class MeProfileViewModel: ProfileViewModel {
                 os_log("%{public}s[%{public}ld], %{public}s: current active twitter user: %s", ((#file as NSString).lastPathComponent), #line, #function, twitterUser?.screenName ?? "<nil>")
                 
                 guard let self = self else { return }
-                self.bannerImageURL.value = twitterUser?.profileBannerURL.flatMap { URL(string: $0) }
-                self.avatarImageURL.value = twitterUser?.avatarImageURL(size: .original)
-                self.name.value = twitterUser?.name
-                self.username.value = twitterUser?.screenName
-                self.isFolling.value = twitterUser?.following
-                self.bioDescription.value = twitterUser?.bioDescription
-                self.url.value = twitterUser?.url
-                self.location.value = twitterUser?.location
-                self.friendsCount.value = twitterUser?.friendsCount.flatMap { Int(truncating: $0) }
-                self.followersCount.value = twitterUser?.followersCount.flatMap { Int(truncating: $0) }
-                self.listedCount.value = twitterUser?.listedCount.flatMap { Int(truncating: $0) }
+                self.update(twitterUser: twitterUser)
             }
             .store(in: &disposeBag)
             

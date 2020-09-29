@@ -18,7 +18,6 @@
 		DB2611B7251B2D42004BF309 /* CryptoSwift in Frameworks */ = {isa = PBXBuildFile; productRef = DB2611B6251B2D42004BF309 /* CryptoSwift */; };
 		DB34028E2521BC06009EFADF /* APIService+UserTimeline.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB34028D2521BC06009EFADF /* APIService+UserTimeline.swift */; };
 		DB34029D2521BE8B009EFADF /* MeProfileViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB34029C2521BE8B009EFADF /* MeProfileViewModel.swift */; };
-		DB3402AF2521D33D009EFADF /* UserTweetsTimelineViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB3402AE2521D33D009EFADF /* UserTweetsTimelineViewModel.swift */; };
 		DB3402B72521D389009EFADF /* UserTimelineViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB3402B62521D389009EFADF /* UserTimelineViewModel.swift */; };
 		DB3402CA2521E4AF009EFADF /* APIService+Account.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB3402C92521E4AF009EFADF /* APIService+Account.swift */; };
 		DB3402CF2521FA77009EFADF /* APIService+CoreData.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB3402CE2521FA77009EFADF /* APIService+CoreData.swift */; };
@@ -52,6 +51,8 @@
 		DB98DC0C25062D4D0087E30F /* ActiveLabel in Frameworks */ = {isa = PBXBuildFile; productRef = DB98DC0B25062D4D0087E30F /* ActiveLabel */; };
 		DB98DC0E2507862D0087E30F /* TimelineMiddleLoaderTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB98DC0D2507862D0087E30F /* TimelineMiddleLoaderTableViewCell.swift */; };
 		DB98DC10250787420087E30F /* TimelineBottomLoaderTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB98DC0F250787420087E30F /* TimelineBottomLoaderTableViewCell.swift */; };
+		DBA4955725231C7E007C7D0E /* TwitterInterface.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBA4955625231C7E007C7D0E /* TwitterInterface.swift */; };
+		DBA4956325231C9D007C7D0E /* TwitterUserInterface.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBA4956225231C9D007C7D0E /* TwitterUserInterface.swift */; };
 		DBA5B1A82510BA330077FDD5 /* TweetPostViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBA5B1A72510BA330077FDD5 /* TweetPostViewController.swift */; };
 		DBB09D562511BA9700AE260E /* APIService+Lookup.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBB09D552511BA9700AE260E /* APIService+Lookup.swift */; };
 		DBD98489251CB88A00ED87A1 /* Tabman in Frameworks */ = {isa = PBXBuildFile; productRef = DBD98488251CB88A00ED87A1 /* Tabman */; };
@@ -217,7 +218,6 @@
 		DB261194251B2139004BF309 /* TwitterAuthentication.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwitterAuthentication.swift; sourceTree = "<group>"; };
 		DB34028D2521BC06009EFADF /* APIService+UserTimeline.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "APIService+UserTimeline.swift"; sourceTree = "<group>"; };
 		DB34029C2521BE8B009EFADF /* MeProfileViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeProfileViewModel.swift; sourceTree = "<group>"; };
-		DB3402AE2521D33D009EFADF /* UserTweetsTimelineViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserTweetsTimelineViewModel.swift; sourceTree = "<group>"; };
 		DB3402B62521D389009EFADF /* UserTimelineViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserTimelineViewModel.swift; sourceTree = "<group>"; };
 		DB3402C92521E4AF009EFADF /* APIService+Account.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "APIService+Account.swift"; sourceTree = "<group>"; };
 		DB3402CE2521FA77009EFADF /* APIService+CoreData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "APIService+CoreData.swift"; sourceTree = "<group>"; };
@@ -248,6 +248,8 @@
 		DB925759251CA3FB004FEFB5 /* StubTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StubTableViewCell.swift; sourceTree = "<group>"; };
 		DB98DC0D2507862D0087E30F /* TimelineMiddleLoaderTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimelineMiddleLoaderTableViewCell.swift; sourceTree = "<group>"; };
 		DB98DC0F250787420087E30F /* TimelineBottomLoaderTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimelineBottomLoaderTableViewCell.swift; sourceTree = "<group>"; };
+		DBA4955625231C7E007C7D0E /* TwitterInterface.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwitterInterface.swift; sourceTree = "<group>"; };
+		DBA4956225231C9D007C7D0E /* TwitterUserInterface.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwitterUserInterface.swift; sourceTree = "<group>"; };
 		DBA5B1A72510BA330077FDD5 /* TweetPostViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TweetPostViewController.swift; sourceTree = "<group>"; };
 		DBB09D552511BA9700AE260E /* APIService+Lookup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "APIService+Lookup.swift"; sourceTree = "<group>"; };
 		DBDA8E1E24FCF8A3006750DC /* TwidereX.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TwidereX.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -410,14 +412,6 @@
 			path = ViewModel;
 			sourceTree = "<group>";
 		};
-		DB3402AD2521D2E6009EFADF /* UserTweetsTimeline */ = {
-			isa = PBXGroup;
-			children = (
-				DB3402AE2521D33D009EFADF /* UserTweetsTimelineViewModel.swift */,
-			);
-			path = UserTweetsTimeline;
-			sourceTree = "<group>";
-		};
 		DB434878251DEB7A005B599F /* View */ = {
 			isa = PBXGroup;
 			children = (
@@ -472,7 +466,6 @@
 		DB92570E251C900F004FEFB5 /* Segmented */ = {
 			isa = PBXGroup;
 			children = (
-				DB3402AD2521D2E6009EFADF /* UserTweetsTimeline */,
 				DB925742251C9CC8004FEFB5 /* Paging */,
 				DB925704251C8FCB004FEFB5 /* ProfileSegmentedViewController.swift */,
 			);
@@ -512,6 +505,15 @@
 				DB92574D251CA3BB004FEFB5 /* StubTableViewModel.swift */,
 			);
 			path = ViewModel;
+			sourceTree = "<group>";
+		};
+		DBA4955B25231C81007C7D0E /* Interface */ = {
+			isa = PBXGroup;
+			children = (
+				DBA4955625231C7E007C7D0E /* TwitterInterface.swift */,
+				DBA4956225231C9D007C7D0E /* TwitterUserInterface.swift */,
+			);
+			path = Interface;
 			sourceTree = "<group>";
 		};
 		DBA5B1A92510BA360077FDD5 /* Conversation */ = {
@@ -801,6 +803,7 @@
 			isa = PBXGroup;
 			children = (
 				DBE76D392502228D00DEB0FC /* CoreDataStack */,
+				DBA4955B25231C81007C7D0E /* Interface */,
 				DB434891251E09A8005B599F /* CALayer.swift */,
 				DBE76D3A25024FDA00DEB0FC /* NSLayoutConstraint.swift */,
 				DBE76D3F2502524500DEB0FC /* UIImage.swift */,
@@ -1306,6 +1309,7 @@
 				DBE76D1E2500E65D00DEB0FC /* HomeTimelineViewModel.swift in Sources */,
 				DBDA8E8A24FE0615006750DC /* DocumentStore.swift in Sources */,
 				DB98DC0E2507862D0087E30F /* TimelineMiddleLoaderTableViewCell.swift in Sources */,
+				DBA4955725231C7E007C7D0E /* TwitterInterface.swift in Sources */,
 				DB7D1248250B5C6C00999903 /* UIButton+Inset.swift in Sources */,
 				DB34028E2521BC06009EFADF /* APIService+UserTimeline.swift in Sources */,
 				DB3402CA2521E4AF009EFADF /* APIService+Account.swift in Sources */,
@@ -1332,9 +1336,9 @@
 				DB88AC332508BACD0009E562 /* TimelineItem.swift in Sources */,
 				DBE76D3B25024FDA00DEB0FC /* NSLayoutConstraint.swift in Sources */,
 				DB0849B22513760D009E0CD7 /* ConversationPostTableViewCell.swift in Sources */,
+				DBA4956325231C9D007C7D0E /* TwitterUserInterface.swift in Sources */,
 				DBEA4F812511E7900007FEC5 /* TweetPostDetailItem.swift in Sources */,
 				DB92575A251CA3FB004FEFB5 /* StubTableViewCell.swift in Sources */,
-				DB3402AF2521D33D009EFADF /* UserTweetsTimelineViewModel.swift in Sources */,
 				DB925700251C8F29004FEFB5 /* UserTimelineViewController.swift in Sources */,
 				DB434883251DF18C005B599F /* ProfileBannerInfoActionView.swift in Sources */,
 				DB747FF4251C47BD000C4BD7 /* UITableView.swift in Sources */,

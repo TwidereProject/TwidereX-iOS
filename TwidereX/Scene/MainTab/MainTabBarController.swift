@@ -32,25 +32,26 @@ class MainTabBarController: UITabBarController {
         }
         
         func viewController(context: AppContext, coordinator: SceneCoordinator) -> UIViewController {
-            let navigationController: UINavigationController
+            let viewController: UIViewController
             switch self {
             case .timeline:
                 #if STUB
-                let viewController = StubTimelineViewController()
+                let _viewController = StubTimelineViewController()
                 #else
-                let viewController = HomeTimelineViewController()
+                let _viewController = HomeTimelineViewController()
                 #endif
-                viewController.context = context
-                viewController.coordinator = coordinator
-                navigationController = UINavigationController(rootViewController: viewController)
+                _viewController.context = context
+                _viewController.coordinator = coordinator
+                viewController = _viewController
             case .me:
-                let viewController = ProfileViewController()
-                viewController.context = context
-                viewController.coordinator = coordinator
-                viewController.viewModel = MeProfileViewModel(context: context)
-                navigationController = UINavigationController(rootViewController: viewController)
+                let _viewController = ProfileViewController()
+                _viewController.context = context
+                _viewController.coordinator = coordinator
+                _viewController.viewModel = MeProfileViewModel(context: context)
+                viewController = _viewController
             }
-            return navigationController
+            viewController.title = self.title
+            return UINavigationController(rootViewController: viewController)
         }
     }
     
@@ -79,7 +80,6 @@ extension MainTabBarController {
             let viewController = tab.viewController(context: context, coordinator: coordinator)
             viewController.tabBarItem.title = tab.title
             viewController.tabBarItem.image = tab.image
-
             return viewController
         }
         setViewControllers(viewControllers, animated: false)

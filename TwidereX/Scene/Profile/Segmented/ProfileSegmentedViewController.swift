@@ -16,6 +16,7 @@ extension ProfileSegmentedViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        addChild(pagingViewController)
         pagingViewController.view.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(pagingViewController.view)
         pagingViewController.didMove(toParent: self)

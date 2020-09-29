@@ -37,7 +37,6 @@ extension HomeTimelineViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        title = "Timeline"
         view.backgroundColor = .systemBackground
         
         tableView.refreshControl = refreshControl
@@ -238,7 +237,7 @@ extension HomeTimelineViewController: TimelinePostTableViewCellDelegate {
                 guard let tweet = timelineIndex.tweet else { return }
                 let twitterUser = tweet.user
                 let profileViewModel = ProfileViewModel(twitterUser: twitterUser)
-                self.coordinator.present(scene: .profile(viewModel: profileViewModel), from: self, transition: .showDetail)
+                self.coordinator.present(scene: .profile(viewModel: profileViewModel), from: self, transition: .show)
             }
         default:
             return
@@ -258,7 +257,7 @@ extension HomeTimelineViewController: TimelinePostTableViewCellDelegate {
                 guard let tweet = timelineIndex.tweet?.retweet ?? timelineIndex.tweet else { return }
                 let twitterUser = tweet.user
                 let profileViewModel = ProfileViewModel(twitterUser: twitterUser)
-                self.coordinator.present(scene: .profile(viewModel: profileViewModel), from: self, transition: .showDetail)
+                self.coordinator.present(scene: .profile(viewModel: profileViewModel), from: self, transition: .show)
             }
         default:
             return
@@ -278,7 +277,7 @@ extension HomeTimelineViewController: TimelinePostTableViewCellDelegate {
                 guard let tweet = timelineIndex.tweet?.retweet?.quote ?? timelineIndex.tweet?.quote else { return }
                 let twitterUser = tweet.user
                 let profileViewModel = ProfileViewModel(twitterUser: twitterUser)
-                self.coordinator.present(scene: .profile(viewModel: profileViewModel), from: self, transition: .showDetail)
+                self.coordinator.present(scene: .profile(viewModel: profileViewModel), from: self, transition: .show)
             }
         default:
             return

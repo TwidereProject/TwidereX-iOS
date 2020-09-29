@@ -103,12 +103,12 @@ extension TimelinePostActionToolbar {
         containerStackView.addArrangedSubview(favoriteButton)
         containerStackView.addArrangedSubview(shareButton)
         NSLayoutConstraint.activate([
-            replyButton.heightAnchor.constraint(equalToConstant: 40),
-            replyButton.heightAnchor.constraint(equalTo: retweetButton.heightAnchor),
-            replyButton.heightAnchor.constraint(equalTo: favoriteButton.heightAnchor),
-            replyButton.heightAnchor.constraint(equalTo: shareButton.heightAnchor),
-            replyButton.widthAnchor.constraint(equalTo: retweetButton.widthAnchor),
-            replyButton.widthAnchor.constraint(equalTo: favoriteButton.widthAnchor),
+            replyButton.heightAnchor.constraint(equalToConstant: 40).priority(.defaultHigh),
+            replyButton.heightAnchor.constraint(equalTo: retweetButton.heightAnchor).priority(.defaultHigh),
+            replyButton.heightAnchor.constraint(equalTo: favoriteButton.heightAnchor).priority(.defaultHigh),
+            replyButton.heightAnchor.constraint(equalTo: shareButton.heightAnchor).priority(.defaultHigh),
+            replyButton.widthAnchor.constraint(equalTo: retweetButton.widthAnchor).priority(.defaultHigh),
+            replyButton.widthAnchor.constraint(equalTo: favoriteButton.widthAnchor).priority(.defaultHigh),
         ])
         shareButton.setContentHuggingPriority(.defaultHigh, for: .horizontal)
         shareButton.setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
