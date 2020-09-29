@@ -16,60 +16,36 @@ final class MeProfileViewModel: ProfileViewModel {
             
     // input
     let context: AppContext
-    let fetchedResultsController: NSFetchedResultsController<TwitterUser>
-    let currentActiveTwitterAutentication = CurrentValueSubject<TwitterAuthentication?, Never>(nil)
     
     // output
     let currentTwitterUser = CurrentValueSubject<TwitterUser?, Never>(nil)
     
     init(context: AppContext) {
         self.context = context
-        self.fetchedResultsController = {
-            let fetchRequest = TwitterUser.sortedFetchRequest
-            fetchRequest.returnsObjectsAsFaults = false
-            fetchRequest.fetchLimit = 1
-            let controller = NSFetchedResultsController(
-                fetchRequest: fetchRequest,
-                managedObjectContext: context.managedObjectContext,
-                sectionNameKeyPath: nil,
-                cacheName: nil
-            )
-
-            return controller
-        }()
         super.init()
         
-        fetchedResultsController.delegate = self
-        
-        // setup publisher
-        currentActiveTwitterAutentication
-            .sink(receiveValue: { [weak self] authentication in
-                guard let self = self else { return }
-                guard let authentication = authentication else { return }
-                
-                self.fetchedResultsController.fetchRequest.predicate = TwitterUser.predicate(idStr: authentication.userID)
-                do {
-                    try self.fetchedResultsController.performFetch()
-                    // set nil if not match any
-                    let twitterUser = self.fetchedResultsController.fetchedObjects?.first
-                    self.currentTwitterUser.value = twitterUser
-                } catch {
-                    assertionFailure(error.localizedDescription)
-                }
-            })
-            .store(in: &disposeBag)
-        
         currentTwitterUser
-            .sink { twitterUser in
+            .sink { [weak self] twitterUser in
                 os_log("%{public}s[%{public}ld], %{public}s: current active twitter user: %s", ((#file as NSString).lastPathComponent), #line, #function, twitterUser?.screenName ?? "<nil>")
+                
+                guard let self = self else { return }
+                self.bannerImageURL.value = twitterUser?.profileBannerURL.flatMap { URL(string: $0) }
+                self.avatarImageURL.value = twitterUser?.avatarImageURL(size: .original)
+                self.name.value = twitterUser?.name
+                self.username.value = twitterUser?.screenName
+                self.isFolling.value = twitterUser?.following
+                self.bioDescription.value = twitterUser?.bioDescription
+                self.url.value = twitterUser?.url
+                self.location.value = twitterUser?.location
+                self.friendsCount.value = twitterUser?.friendsCount.flatMap { Int(truncating: $0) }
+                self.followersCount.value = twitterUser?.followersCount.flatMap { Int(truncating: $0) }
+                self.listedCount.value = twitterUser?.listedCount.flatMap { Int(truncating: $0) }
             }
             .store(in: &disposeBag)
             
         
-        // bind input
-        context.authenticationService.twitterAuthentications
-            .map { $0.first }
-            .assign(to: \.value, on: currentActiveTwitterAutentication)
+        context.authenticationService.currentTwitterUser
+            .assign(to: \.value, on: currentTwitterUser)
             .store(in: &disposeBag)
     }
     
@@ -78,6 +54,8 @@ final class MeProfileViewModel: ProfileViewModel {
 // MARK: - NSFetchedResultsControllerDelegate
 extension MeProfileViewModel: NSFetchedResultsControllerDelegate {
     func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
+        os_log("%{public}s[%{public}ld], %{public}s: fetch %ld TwitterUser object", ((#file as NSString).lastPathComponent), #line, #function, controller.fetchedObjects?.count ?? 0)
+
         // set nil if not match any
         let twitterUser = controller.fetchedObjects?.first as? TwitterUser
         currentTwitterUser.value = twitterUser

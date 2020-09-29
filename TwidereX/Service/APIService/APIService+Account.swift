@@ -22,7 +22,7 @@ extension APIService {
                 let log = OSLog.api
                 let (twitterUser, isCreated) = APIService.createOrMergeTwitterUser(into: self.backgroundManagedObjectContext, entity: entity, networkDate: response.networkDate, log: log)
                 let flag = isCreated ? "+" : "-"
-                os_log(.info, log: log, "%{public}s[%{public}ld], %{public}s: twetter user [%s]%s(%s) verifed", ((#file as NSString).lastPathComponent), #line, #function, flag, twitterUser.name ?? "", twitterUser.idStr)
+                os_log(.info, log: log, "%{public}s[%{public}ld], %{public}s: twetter user [%s](%s)%s verifed", ((#file as NSString).lastPathComponent), #line, #function, flag, twitterUser.idStr, twitterUser.screenName.flatMap { "@" + $0} ?? "<nil>")
             })
             .eraseToAnyPublisher()
     }
