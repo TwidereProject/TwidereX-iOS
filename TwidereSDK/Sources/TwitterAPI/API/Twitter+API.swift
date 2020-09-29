@@ -74,7 +74,7 @@ extension Twitter.API {
         components.queryItems = queryItems
         let requestURL = components.url!
         var request = URLRequest(
-            url: url,
+            url: requestURL,
             cachePolicy: .reloadIgnoringLocalAndRemoteCacheData,
             timeoutInterval: Twitter.API.timeoutInterval
         )

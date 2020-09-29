@@ -5,6 +5,7 @@
 //  Created by Cirno MainasuK on 2020-9-28.
 //
 
+import os.log
 import UIKit
 import Combine
 import CoreData
@@ -12,7 +13,7 @@ import CoreDataStack
 import TwitterAPI
 
 final class MeProfileViewModel: ProfileViewModel {
-        
+            
     // input
     let context: AppContext
     let fetchedResultsController: NSFetchedResultsController<TwitterUser>
@@ -49,13 +50,21 @@ final class MeProfileViewModel: ProfileViewModel {
                 self.fetchedResultsController.fetchRequest.predicate = TwitterUser.predicate(idStr: authentication.userID)
                 do {
                     try self.fetchedResultsController.performFetch()
-                    guard let twitterUser = self.fetchedResultsController.fetchedObjects?.first else { return }
+                    // set nil if not match any
+                    let twitterUser = self.fetchedResultsController.fetchedObjects?.first
                     self.currentTwitterUser.value = twitterUser
                 } catch {
                     assertionFailure(error.localizedDescription)
                 }
             })
             .store(in: &disposeBag)
+        
+        currentTwitterUser
+            .sink { twitterUser in
+                os_log("%{public}s[%{public}ld], %{public}s: current active twitter user: %s", ((#file as NSString).lastPathComponent), #line, #function, twitterUser?.screenName ?? "<nil>")
+            }
+            .store(in: &disposeBag)
+            
         
         // bind input
         context.authenticationService.twitterAuthentications
@@ -69,8 +78,8 @@ final class MeProfileViewModel: ProfileViewModel {
 // MARK: - NSFetchedResultsControllerDelegate
 extension MeProfileViewModel: NSFetchedResultsControllerDelegate {
     func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
-        guard let twitterUser = controller.fetchedObjects?.first as? TwitterUser else { return }
-        guard twitterUser.idStr == currentActiveTwitterAutentication.value?.userID else { return }
+        // set nil if not match any
+        let twitterUser = controller.fetchedObjects?.first as? TwitterUser
         currentTwitterUser.value = twitterUser
     }
 }
