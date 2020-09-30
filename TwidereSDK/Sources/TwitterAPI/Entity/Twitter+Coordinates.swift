@@ -13,3 +13,5 @@ extension Twitter.Entity {
         public var coordinates: [Double]
     }
 }
+
+extension Twitter.Entity.Coordinates: Equatable { }

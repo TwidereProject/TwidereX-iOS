@@ -6,8 +6,11 @@
 //
 
 import UIKit
+import Combine
 
 final class TimelineBottomLoaderTableViewCell: UITableViewCell {
+    
+    var disposeBag = Set<AnyCancellable>()
     
     let loadMoreButton: UIButton = {
         let button = UIButton()
@@ -16,6 +19,14 @@ final class TimelineBottomLoaderTableViewCell: UITableViewCell {
         button.setTitleColor(.systemBlue, for: .normal)
         button.setTitleColor(UIColor.systemBlue.withAlphaComponent(0.5), for: .highlighted)
         return button
+    }()
+    
+    let activityIndicatorView: UIActivityIndicatorView = {
+        let activityIndicatorView = UIActivityIndicatorView(style: .medium)
+        activityIndicatorView.tintColor = .systemFill
+        activityIndicatorView.hidesWhenStopped = true
+        activityIndicatorView.startAnimating()
+        return activityIndicatorView
     }()
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
@@ -40,6 +51,14 @@ extension TimelineBottomLoaderTableViewCell {
             loadMoreButton.leadingAnchor.constraint(equalTo: contentView.layoutMarginsGuide.leadingAnchor),
             contentView.layoutMarginsGuide.trailingAnchor.constraint(equalTo: loadMoreButton.trailingAnchor),
             contentView.bottomAnchor.constraint(equalTo: loadMoreButton.bottomAnchor, constant: 8),
+        ])
+        
+        activityIndicatorView.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(activityIndicatorView)
+        NSLayoutConstraint.activate([
+            activityIndicatorView.topAnchor.constraint(equalTo: topAnchor),
+            activityIndicatorView.centerXAnchor.constraint(equalTo: centerXAnchor),
+            bottomAnchor.constraint(equalTo: activityIndicatorView.bottomAnchor),
         ])
     }
     

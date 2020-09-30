@@ -7,13 +7,24 @@
 
 import Foundation
 import Combine
+import CoreData
+import CoreDataStack
+import CommonOSLog
 import TwitterAPI
 
 extension APIService {
 
-    func twitterUserTimeline(userID: String, authorization: Twitter.API.OAuth.Authorization) -> AnyPublisher<Twitter.Response<[Twitter.Entity.Tweet]>, Error> {
+    func twitterUserTimeline(userID: String, maxID: String? = nil, authorization: Twitter.API.OAuth.Authorization) -> AnyPublisher<Twitter.Response<[Twitter.Entity.Tweet]>, Error> {
         let query = Twitter.API.Timeline.Query(count: 200, userID: userID, excludeReplies: false)
         return Twitter.API.Timeline.userTimeline(session: session, authorization: authorization, query: query)
+            .handleEvents(receiveOutput: { [weak self] response in
+                guard let self = self else { return }
+
+                let log = OSLog.api
+
+                APIService.persist(managedObjectContext: self.backgroundManagedObjectContext, response: response, persistType: .userTimeline, log: log)
+            })
+            .eraseToAnyPublisher()
     }
     
 }

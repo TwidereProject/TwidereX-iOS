@@ -163,6 +163,7 @@ extension Tweet {
         tweet.source = property.source
         tweet.coordinates = property.coordinates
         tweet.place = property.place
+        tweet.quotedStatusIDStr = property.quotedStatusIDStr
         
         tweet.timelineIndex = timelineIndex
         tweet.user = twitterUser
@@ -216,6 +217,12 @@ extension Tweet {
     public func update(timelineIndex: TimelineIndex?) {
         if self.timelineIndex != timelineIndex {
             self.timelineIndex = timelineIndex
+        }
+    }
+    
+    public func update(quotedStatusIDStr: String?) {
+        if self.quotedStatusIDStr != quotedStatusIDStr {
+            self.quotedStatusIDStr = quotedStatusIDStr
         }
     }
     

@@ -5,6 +5,7 @@
 //  Created by Cirno MainasuK on 2020-9-24.
 //
 
+import os.log
 import UIKit
 import Combine
 import Tabman
@@ -44,6 +45,10 @@ final class ProfileViewController: UIViewController, NeedsDependency {
     
     private var contentOffsets: [Int: CGFloat] = [:]
     var currentPostTimelineTableViewContentSizeObservation: NSKeyValueObservation?
+    
+    deinit {
+        os_log("%{public}s[%{public}ld], %{public}s: deinit", ((#file as NSString).lastPathComponent), #line, #function)
+    }
 
 }
 
@@ -74,7 +79,7 @@ extension ProfileViewController {
         super.viewDidLoad()
         
         view.backgroundColor = .systemBackground
-        
+
         let userTimelineViewModel = UserTimelineViewModel(context: context, userID: viewModel.userID.value)
         viewModel.userID.assign(to: \.value, on: userTimelineViewModel.userID).store(in: &disposeBag)
         let profilePagingViewModel = ProfilePagingViewModel(userTimelineViewModel: userTimelineViewModel)
@@ -86,9 +91,9 @@ extension ProfileViewController {
             viewController.view.preservesSuperviewLayoutMargins = true
             viewController.view.insetsLayoutMarginsFromSafeArea = true
         }
-        
+
         profileSegmentedViewController.pagingViewController.viewModel = profilePagingViewModel
-        
+
         overlayScrollView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(overlayScrollView)
         NSLayoutConstraint.activate([
@@ -98,7 +103,7 @@ extension ProfileViewController {
             view.bottomAnchor.constraint(equalTo: overlayScrollView.frameLayoutGuide.bottomAnchor),
             overlayScrollView.contentLayoutGuide.widthAnchor.constraint(equalTo: view.widthAnchor),
         ])
-        
+
         containerScrollView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(containerScrollView)
         NSLayoutConstraint.activate([
@@ -131,7 +136,7 @@ extension ProfileViewController {
             containerScrollView.contentLayoutGuide.trailingAnchor.constraint(equalTo: profileHeaderViewController.view.trailingAnchor),
             profileSegmentedViewController.view.topAnchor.constraint(equalTo: profileHeaderViewController.view.bottomAnchor),
         ])
-        
+
         containerScrollView.addGestureRecognizer(overlayScrollView.panGestureRecognizer)
         overlayScrollView.delegate = self
         profileHeaderViewController.delegate = self
@@ -152,7 +157,7 @@ extension ProfileViewController {
                 ])
             })
         )
-        
+
         // setup view model
         viewModel.bannerImageURL
             .sink { [weak self] url in
@@ -189,7 +194,8 @@ extension ProfileViewController {
             .assign(to: \.text, on: profileHeaderViewController.profileBannerView.usernameLabel)
             .store(in: &disposeBag)
         viewModel.isFolling
-            .sink { isFolling in
+            .sink { [weak self] isFolling in
+                guard let self = self else { return }
                 let followingButton = self.profileHeaderViewController.profileBannerView.profileBannerInfoActionView.followActionButton
                 let title = isFolling == true ? "Following" : "Follow"
                 followingButton.setTitle(title, for: .normal)
@@ -250,6 +256,11 @@ extension ProfileViewController {
         currentViewController.tableView.panGestureRecognizer.require(toFail: overlayScrollView.panGestureRecognizer)
     }
     
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        currentPostTimelineTableViewContentSizeObservation = nil
+    }
+    
 }
 
 // MARK: - UIScrollViewDelegate
@@ -263,7 +274,6 @@ extension ProfileViewController: UIScrollViewDelegate {
         } else {
             profileHeaderViewController.profileBannerView.profileBannerImageViewTopLayoutConstraint.constant = 0
         }
-        
         
         contentOffsets[profileSegmentedViewController.pagingViewController.currentIndex!] = scrollView.contentOffset.y
         

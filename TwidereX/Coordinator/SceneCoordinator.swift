@@ -39,7 +39,7 @@ extension SceneCoordinator {
         case authentication
         
         // Post
-        case tweetPost(viewModel: TweetPostViewModel)
+        case tweetPost(viewModel: TweetConversationViewModel)
         
         // Profile
         case profile(viewModel: ProfileViewModel)
@@ -104,7 +104,7 @@ private extension SceneCoordinator {
         case .authentication:
             viewController = AuthenticationViewController()
         case .tweetPost(let viewModel):
-            let _viewController = TweetPostViewController()
+            let _viewController = TweetConversationViewController()
             _viewController.viewModel = viewModel
             viewController = _viewController
         case .profile(let viewModel):

@@ -87,3 +87,15 @@ extension Twitter.Entity {
         }
     }
 }
+
+extension Twitter.Entity.Tweet: Hashable {
+    
+    public static func == (lhs: Twitter.Entity.Tweet, rhs: Twitter.Entity.Tweet) -> Bool {
+        lhs.idStr == rhs.idStr
+    }
+    
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(idStr)
+    }
+    
+}

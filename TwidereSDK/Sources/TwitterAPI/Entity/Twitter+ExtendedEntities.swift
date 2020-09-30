@@ -15,6 +15,8 @@ extension Twitter.Entity {
     }
 }
 
+extension Twitter.Entity.ExtendedEntities: Equatable { }
+
 extension Twitter.Entity.ExtendedEntities {
     public struct Media: Codable {
         public let id: Double?
@@ -71,6 +73,9 @@ extension Twitter.Entity.ExtendedEntities {
     }
 }
 
+extension Twitter.Entity.ExtendedEntities.Media: Equatable { }
+
+
 extension Twitter.Entity.ExtendedEntities.Media {
     public struct Sizes: Codable {
         public let thumbnail: Size?
@@ -125,3 +130,7 @@ extension Twitter.Entity.ExtendedEntities.Media {
         case crop
     }
 }
+
+extension Twitter.Entity.ExtendedEntities.Media.Sizes: Equatable { }
+extension Twitter.Entity.ExtendedEntities.Media.Size: Equatable { }
+

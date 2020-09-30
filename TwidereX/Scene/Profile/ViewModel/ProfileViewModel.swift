@@ -5,6 +5,7 @@
 //  Created by Cirno MainasuK on 2020-9-27.
 //
 
+import os.log
 import Foundation
 import Combine
 import CoreDataStack
@@ -61,6 +62,9 @@ class ProfileViewModel: NSObject {
         super.init()
     }
     
+    deinit {
+        os_log("%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
+    }
 }
 
 extension ProfileViewModel {

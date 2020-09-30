@@ -9,11 +9,13 @@ import Foundation
 import CoreData
 import TwitterAPI
 
+/// Note: update Equatable when change case
 enum TimelineItem {
+    
     case homeTimelineIndex(objectID: NSManagedObjectID, attribute: Attribute)
     case homeTimelineMiddleLoader(upper: Int)
     
-    case userTimelineItem(tweet: Twitter.Entity.Tweet)
+    case userTimelineItem(objectID: NSManagedObjectID)
     
     case bottomLoader
 }
@@ -41,6 +43,8 @@ extension TimelineItem: Equatable {
             return upperLeft == upperRight
         case (.bottomLoader, .bottomLoader):
             return true
+        case (.userTimelineItem(let objectIDLeft), .userTimelineItem(let objectIDRight)):
+            return objectIDLeft == objectIDRight
         default:
             return false
         }
@@ -57,8 +61,8 @@ extension TimelineItem: Hashable {
             hasher.combine(upper)
         case .bottomLoader:
             hasher.combine(String(describing: TimelineItem.bottomLoader.self))
-        case .userTimelineItem(let tweet):
-            hasher.combine(tweet.idStr)
+        case .userTimelineItem(let objectID):
+            hasher.combine(objectID)
         }
     }
 }

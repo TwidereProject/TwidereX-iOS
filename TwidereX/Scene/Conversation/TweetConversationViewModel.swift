@@ -1,5 +1,5 @@
 //
-//  TweetPostViewModel.swift
+//  TweetConversationViewModel.swift
 //  TwidereX
 //
 //  Created by Cirno MainasuK on 2020-9-16.
@@ -11,7 +11,7 @@ import CoreDataStack
 import AlamofireImage
 import Kanna
 
-final class TweetPostViewModel: NSObject {
+final class TweetConversationViewModel: NSObject {
     
     static let dateFormatter: DateFormatter = {
         let formatter = DateFormatter()
@@ -22,47 +22,55 @@ final class TweetPostViewModel: NSObject {
     
     // input
     let context: AppContext
-    let tweet: Tweet
+    let rootItem: ConversationItem.RootItem
     weak var conversationPostTableViewCellDelegate: ConversationPostTableViewCellDelegate?
     
     // output
-    var diffableDataSource: UITableViewDiffableDataSource<TweetPostDetailSection, TweetPostDetailItem>?
+    var diffableDataSource: UITableViewDiffableDataSource<ConversationSection, ConversationItem>?
     
-    init(context: AppContext, tweet: Tweet) {
+    init(context: AppContext, rootItem: ConversationItem.RootItem) {
         self.context = context
-        self.tweet = tweet
+        self.rootItem = rootItem
     }
     
 }
 
-extension TweetPostViewModel {
+extension TweetConversationViewModel {
     
     func setupDiffableDataSource(for tableView: UITableView) {
         diffableDataSource = UITableViewDiffableDataSource(tableView: tableView) { [weak self] tableView, indexPath, item -> UITableViewCell? in
             guard let self = self else { return nil }
             
             switch item {
-            case .tweet(let objectID):
-                let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: ConversationPostTableViewCell.self), for: indexPath) as! ConversationPostTableViewCell
-                let managedObjectContext = self.context.managedObjectContext
-                managedObjectContext.performAndWait {
-                    let tweet = managedObjectContext.object(with: objectID) as! Tweet
-                    TweetPostViewModel.configure(cell: cell, tweet: tweet)
+            case .root(let item):
+                switch item {
+                case .objectID(let objectID):
+                    let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: ConversationPostTableViewCell.self), for: indexPath) as! ConversationPostTableViewCell
+                    let managedObjectContext = self.context.managedObjectContext
+                    managedObjectContext.performAndWait {
+                        let tweet = managedObjectContext.object(with: objectID) as! Tweet
+                        TweetConversationViewModel.configure(cell: cell, tweetObject: tweet)
+                    }
+                    cell.delegate = self.conversationPostTableViewCellDelegate
+                    return cell
+                case .entity(let tweet):
+                    let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: ConversationPostTableViewCell.self), for: indexPath) as! ConversationPostTableViewCell
+                    TweetConversationViewModel.configure(cell: cell, tweetObject: tweet)
+                    cell.delegate = self.conversationPostTableViewCellDelegate
+                    return cell
                 }
-                cell.delegate = self.conversationPostTableViewCellDelegate
-                return cell
             }
         }
         
-        var snapshot = NSDiffableDataSourceSnapshot<TweetPostDetailSection, TweetPostDetailItem>()
+        var snapshot = NSDiffableDataSourceSnapshot<ConversationSection, ConversationItem>()
         snapshot.appendSections([.main])
-        snapshot.appendItems([.tweet(objectID: tweet.objectID)], toSection: .main)
+        snapshot.appendItems([.root(rootItem)], toSection: .main)
         diffableDataSource?.apply(snapshot)
     }
     
-    static func configure(cell: ConversationPostTableViewCell, tweet: Tweet) {
+    static func configure(cell: ConversationPostTableViewCell, tweetObject tweet: TweetInterface) {
         // set avatar
-        if let avatarImageURL = tweet.user.avatarImageURL() {
+        if let avatarImageURL = tweet.userObject.avatarImageURL() {
             let placeholderImage = UIImage
                 .placeholder(size: ConversationPostView.avatarImageViewSize, color: .systemFill)
                 .af.imageRoundedIntoCircle()
@@ -78,17 +86,17 @@ extension TweetPostViewModel {
         }
         
         // set name and username
-        cell.conversationPostView.nameLabel.text = tweet.user.name ?? " "
-        cell.conversationPostView.usernameLabel.text = tweet.user.screenName.flatMap { "@" + $0 } ?? " "
+        cell.conversationPostView.nameLabel.text = tweet.userObject.name ?? " "
+        cell.conversationPostView.usernameLabel.text = tweet.userObject.screenName.flatMap { "@" + $0 } ?? " "
 
         // set text
         cell.conversationPostView.activeTextLabel.text = tweet.text
         
         // set quote
-        let quote = tweet.quote
+        let quote = tweet.quoteObject
         if let quote = quote {
             // set avatar
-            if let avatarImageURL = quote.user.avatarImageURL() {
+            if let avatarImageURL = quote.userObject.avatarImageURL() {
                 let placeholderImage = UIImage
                     .placeholder(size: ConversationPostView.avatarImageViewSize, color: .systemFill)
                     .af.imageRoundedIntoCircle()
@@ -104,8 +112,8 @@ extension TweetPostViewModel {
             }
             
             // set name and username
-            cell.conversationPostView.quotePostView.nameLabel.text = quote.user.name
-            cell.conversationPostView.quotePostView.usernameLabel.text = quote.user.screenName.flatMap { "@" + $0 }
+            cell.conversationPostView.quotePostView.nameLabel.text = quote.userObject.name
+            cell.conversationPostView.quotePostView.usernameLabel.text = quote.userObject.screenName.flatMap { "@" + $0 }
             
             // set date
 //            let createdAt = quote.createdAt
@@ -128,10 +136,10 @@ extension TweetPostViewModel {
         cell.conversationPostView.geoMetaContainerStackView.isHidden = placeFullName == nil
         
         // set date
-        cell.conversationPostView.dateLabel.text = TweetPostViewModel.dateFormatter.string(from: tweet.createdAt)
+        cell.conversationPostView.dateLabel.text = TweetConversationViewModel.dateFormatter.string(from: tweet.createdAt)
         
         // set status
-        if let retweetCount = tweet.retweetCount?.intValue, retweetCount > 0 {
+        if let retweetCount = tweet.retweetCountInt, retweetCount > 0 {
             cell.conversationPostView.retweetPostStatusView.countLabel.text = String(retweetCount)
             cell.conversationPostView.retweetPostStatusView.statusLabel.text = retweetCount > 1 ? "Retweets" : "Retweet"
             cell.conversationPostView.retweetPostStatusView.isHidden = false
@@ -140,7 +148,7 @@ extension TweetPostViewModel {
         }
         // TODO: quote status
         cell.conversationPostView.quotePostStatusView.isHidden = true
-        if let favoriteCount = tweet.favoriteCount?.intValue, favoriteCount > 0 {
+        if let favoriteCount = tweet.favoriteCountInt, favoriteCount > 0 {
             cell.conversationPostView.likePostStatusView.countLabel.text = String(favoriteCount)
             cell.conversationPostView.likePostStatusView.statusLabel.text = favoriteCount > 1 ? "Likes" : "Like"
             cell.conversationPostView.likePostStatusView.isHidden = false

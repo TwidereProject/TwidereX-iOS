@@ -59,6 +59,7 @@ extension APIService {
         tweet.update(place: entity.place)
         tweet.update(retweetCount: entity.retweetCount)
         tweet.update(favoriteCount: entity.favoriteCount)
+        entity.quotedStatusIDStr.flatMap { tweet.update(quotedStatusIDStr: $0) }
         entity.retweeted.flatMap { tweet.update(retweeted: $0) }
         entity.favorited.flatMap { tweet.update(favorited: $0) }
         

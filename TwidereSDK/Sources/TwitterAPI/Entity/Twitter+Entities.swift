@@ -41,6 +41,8 @@ extension Twitter.Entity {
     }
 }
 
+extension Twitter.Entity.Entities: Equatable { }
+
 extension Twitter.Entity.Entities {
     
     public struct Symbol: Codable {
@@ -128,3 +130,10 @@ extension Twitter.Entity.Entities {
     }
     
 }
+
+extension Twitter.Entity.Entities.Symbol: Equatable { }
+extension Twitter.Entity.Entities.UserMention: Equatable { }
+extension Twitter.Entity.Entities.URL: Equatable { }
+extension Twitter.Entity.Entities.Hashtag: Equatable { }
+extension Twitter.Entity.Entities.Poll: Equatable { }
+extension Twitter.Entity.Entities.Poll.Option: Equatable { }

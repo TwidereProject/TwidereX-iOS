@@ -30,3 +30,5 @@ extension Twitter.Entity {
         }
     }    
 }
+
+extension Twitter.Entity.Place: Equatable { }

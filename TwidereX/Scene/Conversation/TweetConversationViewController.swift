@@ -1,5 +1,5 @@
 //
-//  TweetPostViewController.swift
+//  TweetConversationViewController.swift
 //  TwidereX
 //
 //  Created by Cirno MainasuK on 2020-9-15.
@@ -11,13 +11,13 @@ import Combine
 import CoreDataStack
 import TwitterAPI
 
-final class TweetPostViewController: UIViewController, NeedsDependency {
+final class TweetConversationViewController: UIViewController, NeedsDependency {
     
     weak var context: AppContext! { willSet { precondition(!isViewLoaded) } }
     weak var coordinator: SceneCoordinator! { willSet { precondition(!isViewLoaded) } }
     
     var disposeBag = Set<AnyCancellable>()
-    var viewModel: TweetPostViewModel!
+    var viewModel: TweetConversationViewModel!
     
     lazy var tableView: UITableView = {
         let tableView = UITableView()
@@ -30,7 +30,7 @@ final class TweetPostViewController: UIViewController, NeedsDependency {
     
 }
 
-extension TweetPostViewController {
+extension TweetConversationViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -57,27 +57,27 @@ extension TweetPostViewController {
 }
 
 // MARK: - UITableViewDelegate
-extension TweetPostViewController: UITableViewDelegate {
+extension TweetConversationViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
         return 200
     }
 }
 
 // MARK: - ConversationPostTableViewCellDelegate
-extension TweetPostViewController: ConversationPostTableViewCellDelegate {
+extension TweetConversationViewController: ConversationPostTableViewCellDelegate {
     
     func conversationPostTableViewCell(_ cell: ConversationPostTableViewCell, avatarImageViewDidPressed imageView: UIImageView) {
-        let tweet = viewModel.tweet.retweet ?? viewModel.tweet
-        let twitterUser = tweet.user
-        let profileViewModel = ProfileViewModel(twitterUser: twitterUser)
-        self.coordinator.present(scene: .profile(viewModel: profileViewModel), from: self, transition: .showDetail)
+//        let tweet = viewModel.rootItem.retweetObject ?? viewModel.tweetObject
+//        let twitterUser = tweet.userObject
+//        let profileViewModel = ProfileViewModel(twitterUser: twitterUser)
+//        self.coordinator.present(scene: .profile(viewModel: profileViewModel), from: self, transition: .showDetail)
     }
     
     func conversationPostTableViewCell(_ cell: ConversationPostTableViewCell, quoteAvatarImageViewDidPressed imageView: UIImageView) {
-        guard let tweet = viewModel.tweet.retweet?.quote ?? viewModel.tweet.quote else { return }
-        let twitterUser = tweet.user
-        let profileViewModel = ProfileViewModel(twitterUser: twitterUser)
-        self.coordinator.present(scene: .profile(viewModel: profileViewModel), from: self, transition: .showDetail)
+//        guard let tweet = viewModel.tweetObject.retweetObject?.quoteObject ?? viewModel.tweetObject.quoteObject else { return }
+//        let twitterUser = tweet.userObject
+//        let profileViewModel = ProfileViewModel(twitterUser: twitterUser)
+//        self.coordinator.present(scene: .profile(viewModel: profileViewModel), from: self, transition: .showDetail)
     }
     
     

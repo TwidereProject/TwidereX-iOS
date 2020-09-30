@@ -5,6 +5,7 @@
 //  Created by Cirno MainasuK on 2020-9-24.
 //
 
+import os.log
 import UIKit
 import Pageboy
 import Tabman
@@ -44,6 +45,10 @@ final class ProfilePagingViewModel: NSObject {
             TMBarItem(title: "Medias"),
             TMBarItem(title: "Likes"),
         ]
+    }
+    
+    deinit {
+        os_log("%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
     }
     
 }

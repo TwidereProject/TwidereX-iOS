@@ -56,15 +56,18 @@ extension Twitter.API.Timeline {
         
         // user timeline
         public let userID: String?
+        public let maxID: String?
         public let excludeReplies: Bool?
         
         public init(
             count: Int? = nil,
             userID: String? = nil,
+            maxID: String? = nil,
             excludeReplies: Bool? = nil
         ) {
             self.count = count
             self.userID = userID
+            self.maxID = maxID
             self.excludeReplies = excludeReplies
         }
         
@@ -75,6 +78,9 @@ extension Twitter.API.Timeline {
             }
             if let userID = self.userID {
                 items.append(URLQueryItem(name: "user_id", value: userID))
+            }
+            if let maxID = self.maxID {
+                items.append(URLQueryItem(name: "max_id", value: maxID))
             }
             if let excludeReplies = self.excludeReplies {
                 items.append(URLQueryItem(name: "exclude_replies", value: excludeReplies ? "true" : "false"))

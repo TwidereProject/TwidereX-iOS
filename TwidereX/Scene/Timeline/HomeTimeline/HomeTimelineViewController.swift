@@ -182,24 +182,18 @@ extension HomeTimelineViewController: UITableViewDelegate {
         guard let item = diffableDataSource.itemIdentifier(for: indexPath) else { return }
 
         switch item {
-        case .homeTimelineIndex(let objectID, let attribute):
+        case .homeTimelineIndex(let objectID, _):
             let managedObjectContext = self.viewModel.fetchedResultsController.managedObjectContext
             managedObjectContext.performAndWait {
                 guard let timelineIndex = managedObjectContext.object(with: objectID) as? TimelineIndex else { return }
                 guard let tweet = timelineIndex.tweet?.retweet ?? timelineIndex.tweet else { return }
                 
-                let tweetPostViewModel = TweetPostViewModel(context: self.context, tweet: tweet)
+                let tweetPostViewModel = TweetConversationViewModel(context: self.context, rootItem: .objectID(objectID: tweet.objectID))
                 self.coordinator.present(scene: .tweetPost(viewModel: tweetPostViewModel), from: self, transition: .showDetail)
             }
         default:
             return
         }
-    }
-    
-    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-//        if let cell = cell as? TimelinePostTableViewCell {
-//            cell.delegate = self
-//        }
     }
     
     func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {

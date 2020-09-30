@@ -5,6 +5,7 @@
 //  Created by Cirno MainasuK on 2020-9-24.
 //
 
+import os.log
 import UIKit
 import Pageboy
 import Tabman
@@ -24,6 +25,10 @@ final class ProfilePagingViewController: TabmanViewController {
     override func pageboyViewController(_ pageboyViewController: PageboyViewController, didScrollToPageAt index: TabmanViewController.PageIndex, direction: PageboyViewController.NavigationDirection, animated: Bool) {
         let viewController = viewModel.viewControllers[index]
         pagingDelegate?.profilePagingViewController(self, didScrollToPostTimelineViewController: viewController, atIndex: index)
+    }
+    
+    deinit {
+        os_log("%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
     }
     
 }

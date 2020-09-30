@@ -5,6 +5,7 @@
 //  Created by Cirno MainasuK on 2020-9-24.
 //
 
+import os.log
 import UIKit
 
 protocol ProfileHeaderViewControllerDelegate: class {
@@ -19,6 +20,10 @@ final class ProfileHeaderViewController: UIViewController {
     
     let profileBannerView = ProfileBannerView()
 
+    deinit {
+        os_log("%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
+    }
+    
 }
 
 extension ProfileHeaderViewController {

@@ -89,6 +89,9 @@ extension Twitter.Entity {
     }
 }
 
+extension Twitter.Entity.User: Equatable { }
+
+
 extension Twitter.Entity.User {
     public enum ProfileImageSize: String {
         case original
