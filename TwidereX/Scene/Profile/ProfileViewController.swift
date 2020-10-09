@@ -39,6 +39,7 @@ final class ProfileViewController: UIViewController, NeedsDependency {
         bar.layout.transitionStyle = .snap
         bar.layout.contentMode = .fit
         bar.backgroundView.style = .clear
+        bar.indicator.weight = .custom(value: 2)
         bar.backgroundColor = .systemBackground
         return bar
     }()
