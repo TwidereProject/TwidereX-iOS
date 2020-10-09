@@ -35,12 +35,17 @@ final class ProfileViewController: UIViewController, NeedsDependency {
     lazy var profileHeaderViewController = ProfileHeaderViewController()
     
     lazy var bar: TMBar = {
-        let bar = TMBar.ButtonBar()
+        let bar = TMBarView<TMHorizontalBarLayout, TMTabItemBarButton, TMLineBarIndicator>()
         bar.layout.transitionStyle = .snap
         bar.layout.contentMode = .fit
         bar.backgroundView.style = .clear
         bar.indicator.weight = .custom(value: 2)
         bar.backgroundColor = .systemBackground
+        bar.buttons.customize { barItem in
+            barItem.shrinksImageWhenUnselected = false
+            barItem.selectedTintColor = Asset.Colors.hightLight.color
+            barItem.tintColor = .secondaryLabel
+        }
         return bar
     }()
     

@@ -40,11 +40,12 @@ final class ProfilePagingViewModel: NSObject {
     }
     
     var barItems: [TMBarItem] {
-        return [
-            TMBarItem(title: "Tweets"),
-            TMBarItem(title: "Medias"),
-            TMBarItem(title: "Likes"),
+        let items = [
+            TMBarItem(image: Asset.ObjectTools.uilDocumentLayoutLeft.image.withRenderingMode(.alwaysTemplate)),
+            TMBarItem(image: Asset.ObjectTools.icBaselinePhotoLibrary.image.withRenderingMode(.alwaysTemplate)),
+            TMBarItem(image: Asset.Health.icRoundFavoriteFillLarge.image.withRenderingMode(.alwaysTemplate)),
         ]
+        return items
     }
     
     deinit {
