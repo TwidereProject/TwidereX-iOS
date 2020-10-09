@@ -22,15 +22,15 @@ final class TweetConversationViewModel: NSObject {
     
     // input
     let context: AppContext
-    let rootItem: ConversationItem.RootItem
+    let rootItem: ConversationItem
     weak var conversationPostTableViewCellDelegate: ConversationPostTableViewCellDelegate?
     
     // output
     var diffableDataSource: UITableViewDiffableDataSource<ConversationSection, ConversationItem>?
     
-    init(context: AppContext, rootItem: ConversationItem.RootItem) {
+    init(context: AppContext, tweetObjectID: NSManagedObjectID) {
         self.context = context
-        self.rootItem = rootItem
+        self.rootItem = .root(objectID: tweetObjectID)
     }
     
 }
@@ -42,29 +42,21 @@ extension TweetConversationViewModel {
             guard let self = self else { return nil }
             
             switch item {
-            case .root(let item):
-                switch item {
-                case .objectID(let objectID):
-                    let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: ConversationPostTableViewCell.self), for: indexPath) as! ConversationPostTableViewCell
-                    let managedObjectContext = self.context.managedObjectContext
-                    managedObjectContext.performAndWait {
-                        let tweet = managedObjectContext.object(with: objectID) as! Tweet
-                        TweetConversationViewModel.configure(cell: cell, tweetObject: tweet)
-                    }
-                    cell.delegate = self.conversationPostTableViewCellDelegate
-                    return cell
-                case .entity(let tweet):
-                    let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: ConversationPostTableViewCell.self), for: indexPath) as! ConversationPostTableViewCell
+            case .root(let objectID):
+                let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: ConversationPostTableViewCell.self), for: indexPath) as! ConversationPostTableViewCell
+                let managedObjectContext = self.context.managedObjectContext
+                managedObjectContext.performAndWait {
+                    let tweet = managedObjectContext.object(with: objectID) as! Tweet
                     TweetConversationViewModel.configure(cell: cell, tweetObject: tweet)
-                    cell.delegate = self.conversationPostTableViewCellDelegate
-                    return cell
                 }
+                cell.delegate = self.conversationPostTableViewCellDelegate
+                return cell
             }
         }
         
         var snapshot = NSDiffableDataSourceSnapshot<ConversationSection, ConversationItem>()
         snapshot.appendSections([.main])
-        snapshot.appendItems([.root(rootItem)], toSection: .main)
+        snapshot.appendItems([rootItem], toSection: .main)
         diffableDataSource?.apply(snapshot)
     }
     

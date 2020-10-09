@@ -67,17 +67,34 @@ extension TweetConversationViewController: UITableViewDelegate {
 extension TweetConversationViewController: ConversationPostTableViewCellDelegate {
     
     func conversationPostTableViewCell(_ cell: ConversationPostTableViewCell, avatarImageViewDidPressed imageView: UIImageView) {
-//        let tweet = viewModel.rootItem.retweetObject ?? viewModel.tweetObject
-//        let twitterUser = tweet.userObject
-//        let profileViewModel = ProfileViewModel(twitterUser: twitterUser)
-//        self.coordinator.present(scene: .profile(viewModel: profileViewModel), from: self, transition: .showDetail)
+        os_log("%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
+        
+        guard case let .root(objectID) = viewModel.rootItem else { return }
+        context.managedObjectContext.perform { [weak self] in
+            guard let self = self else { return }
+            guard let tweet = self.context.managedObjectContext.object(with: objectID) as? Tweet else { return }
+            DispatchQueue.main.async { [weak self] in
+                guard let self = self else { return }
+                let profileViewModel = ProfileViewModel(twitterUser: tweet.user)
+                self.coordinator.present(scene: .profile(viewModel: profileViewModel), from: self, transition: .show)
+            }
+        }
     }
     
     func conversationPostTableViewCell(_ cell: ConversationPostTableViewCell, quoteAvatarImageViewDidPressed imageView: UIImageView) {
-//        guard let tweet = viewModel.tweetObject.retweetObject?.quoteObject ?? viewModel.tweetObject.quoteObject else { return }
-//        let twitterUser = tweet.userObject
-//        let profileViewModel = ProfileViewModel(twitterUser: twitterUser)
-//        self.coordinator.present(scene: .profile(viewModel: profileViewModel), from: self, transition: .showDetail)
+        os_log("%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
+        
+        guard case let .root(objectID) = viewModel.rootItem else { return }
+        context.managedObjectContext.perform { [weak self] in
+            guard let self = self else { return }
+            guard let tweet = self.context.managedObjectContext.object(with: objectID) as? Tweet else { return }
+            guard let targetTweet = tweet.retweet?.quote ?? tweet.quote else { return }
+            DispatchQueue.main.async { [weak self] in
+                guard let self = self else { return }
+                let profileViewModel = ProfileViewModel(twitterUser: targetTweet.user)
+                self.coordinator.present(scene: .profile(viewModel: profileViewModel), from: self, transition: .show)
+            }
+        }
     }
     
     

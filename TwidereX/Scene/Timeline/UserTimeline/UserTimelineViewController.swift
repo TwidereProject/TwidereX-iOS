@@ -8,6 +8,7 @@
 import os.log
 import UIKit
 import Combine
+import CoreDataStack
 
 final class UserTimelineViewController: UIViewController, CustomTableViewController, NeedsDependency {
     
@@ -61,6 +62,12 @@ extension UserTimelineViewController {
         viewModel.stateMachine.enter(UserTimelineViewModel.State.Reloading.self)
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        tableView.deselectRow(with: transitionCoordinator, animated: animated)
+    }
+    
 }
 
 // MARK: - UIScrollViewDelegate
@@ -99,24 +106,23 @@ extension UserTimelineViewController: UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-//        os_log("%{public}s[%{public}ld], %{public}s: indexPath %s", ((#file as NSString).lastPathComponent), #line, #function, indexPath.debugDescription)
-//        
-//        guard let diffableDataSource = viewModel.diffableDataSource else { return }
-//        guard let item = diffableDataSource.itemIdentifier(for: indexPath) else { return }
-//        
-//        switch item {
-//        case .userTimelineItem(let tweet):
-//            let managedObjectContext = self.viewModel.fetchedResultsController.managedObjectContext
-//            managedObjectContext.performAndWait {
-//                guard let timelineIndex = managedObjectContext.object(with: objectID) as? TimelineIndex else { return }
-//                guard let tweet = timelineIndex.tweet?.retweet ?? timelineIndex.tweet else { return }
-//                
-//                let tweetPostViewModel = TweetPostViewModel(context: self.context, tweet: tweet)
-//                self.coordinator.present(scene: .tweetPost(viewModel: tweetPostViewModel), from: self, transition: .showDetail)
-//            }
-//        default:
-//            return
-//        }
+        os_log("%{public}s[%{public}ld], %{public}s: indexPath %s", ((#file as NSString).lastPathComponent), #line, #function, indexPath.debugDescription)
+        
+        guard let diffableDataSource = viewModel.diffableDataSource else { return }
+        guard let item = diffableDataSource.itemIdentifier(for: indexPath) else { return }
+        
+        switch item {
+        case .userTimelineItem(let objectID):
+            let managedObjectContext = self.viewModel.fetchedResultsController.managedObjectContext
+            managedObjectContext.performAndWait {
+                guard let tweet = managedObjectContext.object(with: objectID) as? Tweet else { return }
+                let targetTweet = tweet.retweet ?? tweet
+                let tweetPostViewModel = TweetConversationViewModel(context: self.context, tweetObjectID: targetTweet.objectID)
+                self.coordinator.present(scene: .tweetPost(viewModel: tweetPostViewModel), from: self, transition: .show)
+            }
+        default:
+            return
+        }
     }
     
     func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
@@ -137,13 +143,19 @@ extension UserTimelineViewController: TimelinePostTableViewCellDelegate {
         guard let indexPath = tableView.indexPath(for: cell) else { return }
         guard let item = diffableDataSource.itemIdentifier(for: indexPath) else { return }
         
-//        switch item {
-//        case .userTimelineItem(let tweet):
-//            let profileViewModel = ProfileViewModel(twitterUser: tweet.userObject)
-//            self.coordinator.present(scene: .profile(viewModel: profileViewModel), from: self, transition: .show)
-//        default:
-//            return
-//        }
+        switch item {
+        case .userTimelineItem(let objectID):
+            viewModel.fetchedResultsController.managedObjectContext.performAndWait {
+                guard let tweet = viewModel.fetchedResultsController.managedObjectContext.object(with: objectID) as? Tweet else { return }
+                DispatchQueue.main.async { [weak self] in
+                    guard let self = self else { return }
+                    let profileViewModel = ProfileViewModel(twitterUser: tweet.user)        // tweet's user is target retweet user
+                    self.coordinator.present(scene: .profile(viewModel: profileViewModel), from: self, transition: .show)
+                }
+            }
+        default:
+            return
+        }
     }
     
     func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, avatarImageViewDidPressed imageView: UIImageView) {
@@ -151,14 +163,20 @@ extension UserTimelineViewController: TimelinePostTableViewCellDelegate {
         guard let indexPath = tableView.indexPath(for: cell) else { return }
         guard let item = diffableDataSource.itemIdentifier(for: indexPath) else { return }
         
-//        switch item {
-//        case .userTimelineItem(let tweet):
-//            let tweet = tweet.retweetObject ?? tweet
-//            let profileViewModel = ProfileViewModel(twitterUser: tweet.userObject)
-//            self.coordinator.present(scene: .profile(viewModel: profileViewModel), from: self, transition: .show)
-//        default:
-//            return
-//        }
+        switch item {
+        case .userTimelineItem(let objectID):
+            viewModel.fetchedResultsController.managedObjectContext.performAndWait {
+                guard let tweet = viewModel.fetchedResultsController.managedObjectContext.object(with: objectID) as? Tweet else { return }
+                let targetTweet = tweet.retweet ?? tweet
+                DispatchQueue.main.async { [weak self] in
+                    guard let self = self else { return }
+                    let profileViewModel = ProfileViewModel(twitterUser: targetTweet.user)
+                    self.coordinator.present(scene: .profile(viewModel: profileViewModel), from: self, transition: .show)
+                }
+            }
+        default:
+            return
+        }
     }
     
     func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, quoteAvatarImageViewDidPressed imageView: UIImageView) {
@@ -166,14 +184,20 @@ extension UserTimelineViewController: TimelinePostTableViewCellDelegate {
         guard let indexPath = tableView.indexPath(for: cell) else { return }
         guard let item = diffableDataSource.itemIdentifier(for: indexPath) else { return }
         
-//        switch item {
-//        case .userTimelineItem(let tweet):
-//            guard let tweet = tweet.retweetObject?.quoteObject ?? tweet.quoteObject else { return }
-//            let profileViewModel = ProfileViewModel(twitterUser: tweet.userObject)
-//            self.coordinator.present(scene: .profile(viewModel: profileViewModel), from: self, transition: .show)
-//        default:
-//            return
-//        }
+        switch item {
+        case .userTimelineItem(let objectID):
+            viewModel.fetchedResultsController.managedObjectContext.performAndWait {
+                guard let tweet = viewModel.fetchedResultsController.managedObjectContext.object(with: objectID) as? Tweet else { return }
+                guard let targetTweet = tweet.retweet?.quote ?? tweet.quote else { return }
+                DispatchQueue.main.async { [weak self] in
+                    guard let self = self else { return }
+                    let profileViewModel = ProfileViewModel(twitterUser: targetTweet.user)
+                    self.coordinator.present(scene: .profile(viewModel: profileViewModel), from: self, transition: .show)
+                }
+            }
+        default:
+            return
+        }
     }
     
     

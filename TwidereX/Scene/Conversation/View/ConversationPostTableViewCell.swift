@@ -53,8 +53,8 @@ extension ConversationPostTableViewCell {
         contentView.addSubview(conversationPostView)
         NSLayoutConstraint.activate([
             conversationPostView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 8),
-            conversationPostView.leadingAnchor.constraint(equalTo: contentView.layoutMarginsGuide.leadingAnchor),
-            contentView.layoutMarginsGuide.trailingAnchor.constraint(equalTo: conversationPostView.trailingAnchor),
+            conversationPostView.leadingAnchor.constraint(equalTo: contentView.readableContentGuide.leadingAnchor),
+            contentView.readableContentGuide.trailingAnchor.constraint(equalTo: conversationPostView.trailingAnchor),
             contentView.bottomAnchor.constraint(equalTo: conversationPostView.bottomAnchor),
         ])
         
@@ -62,8 +62,8 @@ extension ConversationPostTableViewCell {
         separatorLine.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(separatorLine)
         NSLayoutConstraint.activate([
-            separatorLine.leadingAnchor.constraint(equalTo: contentView.layoutMarginsGuide.leadingAnchor),
-            contentView.layoutMarginsGuide.trailingAnchor.constraint(equalTo: separatorLine.trailingAnchor),
+            separatorLine.leadingAnchor.constraint(equalTo: contentView.readableContentGuide.leadingAnchor),
+            contentView.readableContentGuide.trailingAnchor.constraint(equalTo: separatorLine.trailingAnchor),
             separatorLine.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
             separatorLine.heightAnchor.constraint(equalToConstant: UIView.separatorLineHeight(of: separatorLine)),
         ])

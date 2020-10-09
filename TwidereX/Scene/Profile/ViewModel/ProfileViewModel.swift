@@ -46,7 +46,7 @@ class ProfileViewModel: NSObject {
         super.init()
     }
     
-    init(twitterUser: TwitterUserInterface) {
+    init(twitterUser: TwitterUser) {
         self.userID = CurrentValueSubject(twitterUser.idStr)
         self.bannerImageURL = CurrentValueSubject(twitterUser.profileBannerURL.flatMap { URL(string: $0) })
         self.avatarImageURL = CurrentValueSubject(twitterUser.avatarImageURL(size: .original))
