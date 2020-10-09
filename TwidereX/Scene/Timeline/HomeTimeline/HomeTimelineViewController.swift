@@ -123,16 +123,22 @@ extension HomeTimelineViewController {
             .receive(on: DispatchQueue.main)
             .sink { [weak self] completion in
                 guard let self = self else { return }
-                self.viewModel.isFetchingLatestTimeline.value = false
                 
                 switch completion {
                 case .failure(let error):
                     // TODO: handle error
+                    self.viewModel.isFetchingLatestTimeline.value = false
                     os_log("%{public}s[%{public}ld], %{public}s: fetch tweets failed. %s", ((#file as NSString).lastPathComponent), #line, #function, error.localizedDescription)
-                case .finished: break
+                case .finished:
+                    // handle fetching state changing in viewModel
+                    break
                 }
             } receiveValue: { tweets in
-                // do nothing
+                // fallback path when no new tweets. Note: snapshot average calculate time is 3.0s
+                // FIXME: use notification to stop refresh conrol and avoid this workaround
+                DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
+                    self.viewModel.isFetchingLatestTimeline.value = false
+                }
             }
             .store(in: &disposeBag)
     }

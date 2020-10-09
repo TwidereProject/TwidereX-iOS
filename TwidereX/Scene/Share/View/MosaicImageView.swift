@@ -56,7 +56,12 @@ extension MosaicImageView {
             container.removeArrangedSubview(subview)
             subview.removeFromSuperview()
         }
+        container.subviews.forEach { subview in
+            subview.removeFromSuperview()
+        }
         imageViews = []
+        
+        container.spacing = 1
         
         layer.masksToBounds = true
         layer.cornerRadius = 0
@@ -102,14 +107,13 @@ extension MosaicImageView {
         
         containerHeightLayoutConstraint.constant = maxHeight
         containerHeightLayoutConstraint.isActive = true
-
-        container.layer.cornerRadius = cornerRadius
         
         let contentLeftStackView = UIStackView()
         let contentRightStackView = UIStackView()
         [contentLeftStackView, contentRightStackView].forEach { stackView in
             stackView.axis = .vertical
             stackView.distribution = .fillEqually
+            stackView.spacing = 1
         }
         container.addArrangedSubview(contentLeftStackView)
         container.addArrangedSubview(contentRightStackView)
@@ -121,21 +125,34 @@ extension MosaicImageView {
         self.imageViews.append(contentsOf: imageViews)
         imageViews.forEach { imageView in
             imageView.layer.masksToBounds = true
+            imageView.layer.cornerRadius = cornerRadius
             imageView.contentMode = .scaleAspectFill
         }
         if count == 2 {
             contentLeftStackView.addArrangedSubview(imageViews[0])
+            imageViews[0].layer.maskedCorners = [.layerMinXMinYCorner, .layerMinXMaxYCorner]
             contentRightStackView.addArrangedSubview(imageViews[1])
+            imageViews[1].layer.maskedCorners = [.layerMaxXMinYCorner, .layerMaxXMaxYCorner]
+            
         } else if count == 3 {
             contentLeftStackView.addArrangedSubview(imageViews[0])
+            imageViews[0].layer.maskedCorners = [.layerMinXMinYCorner, .layerMinXMaxYCorner]
             contentRightStackView.addArrangedSubview(imageViews[1])
+            imageViews[1].layer.maskedCorners = [.layerMaxXMinYCorner]
             contentRightStackView.addArrangedSubview(imageViews[2])
+            imageViews[2].layer.maskedCorners = [.layerMaxXMaxYCorner]
+
         } else if count == 4 {
             contentLeftStackView.addArrangedSubview(imageViews[0])
+            imageViews[0].layer.maskedCorners = [.layerMinXMinYCorner]
             contentRightStackView.addArrangedSubview(imageViews[1])
+            imageViews[1].layer.maskedCorners = [.layerMaxXMinYCorner]
             contentLeftStackView.addArrangedSubview(imageViews[2])
+            imageViews[2].layer.maskedCorners = [.layerMinXMaxYCorner]
             contentRightStackView.addArrangedSubview(imageViews[3])
+            imageViews[3].layer.maskedCorners = [.layerMaxXMaxYCorner]
         }
+        
         return imageViews
     }
 }
