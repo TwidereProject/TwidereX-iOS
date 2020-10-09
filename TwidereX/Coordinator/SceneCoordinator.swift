@@ -49,10 +49,13 @@ extension SceneCoordinator {
 extension SceneCoordinator {
     
     func setup() {
-        let viewController = RootSplitViewController()
-        setupDependency(for: viewController)
-        viewController.delegate = self
+        let viewController = MainTabBarController(context: appContext, coordinator: self)
         sceneDelegate.window?.rootViewController = viewController
+        
+//        let viewController = RootSplitViewController()
+//        setupDependency(for: viewController)
+//        viewController.delegate = self
+//        sceneDelegate.window?.rootViewController = viewController
     }
     
     @discardableResult
@@ -126,70 +129,70 @@ private extension SceneCoordinator {
 }
 
 // MARK: - UISplitViewControllerDelegate
-extension SceneCoordinator: UISplitViewControllerDelegate {
-    
-    public func splitViewController(_ splitViewController: UISplitViewController, showDetail vc: UIViewController, sender: Any?) -> Bool {
-        if splitViewController.isCollapsed {
-            let selectedNavigationController = ((splitViewController.viewControllers.first as? UITabBarController)?.selectedViewController as? UINavigationController)
-            if let navigationController = vc as? UINavigationController, let topViewController = navigationController.topViewController {
-                selectedNavigationController?.pushViewController(topViewController, animated: true)
-            } else {
-                selectedNavigationController?.pushViewController(vc, animated: true)
-            }
-            return true
-        } else {
-            return false
-        }
-    }
-    
-    public func splitViewController(_ splitViewController: UISplitViewController, collapseSecondary secondaryViewController: UIViewController, onto primaryViewController: UIViewController) -> Bool {
-        guard let primaeryTabBarController = primaryViewController as? UITabBarController,
-            let selectedNavigationController = primaeryTabBarController.selectedViewController as? UINavigationController else {
-                return false
-        }
-        
-        guard let secondaryNavigationController = secondaryViewController as? UINavigationController else {
-            return false
-        }
-        
-        guard !(secondaryNavigationController.topViewController is PlaceholderDetailViewController) else {
-            // discard collapse operation
-            return true
-        }
-        
-        let secondaryNavigationStack = secondaryNavigationController.viewControllers
-        let collapsedNavigationStack = [selectedNavigationController.viewControllers, secondaryNavigationStack].flatMap { $0 }
-        selectedNavigationController.setViewControllers(collapsedNavigationStack, animated: false)
-        
-        return true
-    }
-    
-    public func splitViewController(_ splitViewController: UISplitViewController, separateSecondaryFrom primaryViewController: UIViewController) -> UIViewController? {
-        guard let primaeryTabBarController = primaryViewController as? UITabBarController,
-            let selectedNavigationController = primaeryTabBarController.selectedViewController as? UINavigationController else {
-                return nil
-        }
-        
-        var primaryViewControllerStack: [UIViewController] = []
-        var secondaryViewControllerStack: [UIViewController] = []
-        for viewController in selectedNavigationController.viewControllers {
-            if secondaryStackHashValues.contains(viewController.hashValue) {
-                secondaryViewControllerStack.append(viewController)
-            } else {
-                primaryViewControllerStack.append(viewController)
-            }
-        }
-        
-        selectedNavigationController.setViewControllers(primaryViewControllerStack, animated: false)
-        
-        let secondaryNavigationController = UINavigationController()
-        if secondaryViewControllerStack.isEmpty {
-            secondaryNavigationController.setViewControllers([PlaceholderDetailViewController()], animated: false)
-        } else {
-            secondaryNavigationController.setViewControllers(secondaryViewControllerStack, animated: false)
-        }
-        
-        return secondaryNavigationController
-    }
-    
-}
+//extension SceneCoordinator: UISplitViewControllerDelegate {
+//    
+//    public func splitViewController(_ splitViewController: UISplitViewController, showDetail vc: UIViewController, sender: Any?) -> Bool {
+//        if splitViewController.isCollapsed {
+//            let selectedNavigationController = ((splitViewController.viewControllers.first as? UITabBarController)?.selectedViewController as? UINavigationController)
+//            if let navigationController = vc as? UINavigationController, let topViewController = navigationController.topViewController {
+//                selectedNavigationController?.pushViewController(topViewController, animated: true)
+//            } else {
+//                selectedNavigationController?.pushViewController(vc, animated: true)
+//            }
+//            return true
+//        } else {
+//            return false
+//        }
+//    }
+//    
+//    public func splitViewController(_ splitViewController: UISplitViewController, collapseSecondary secondaryViewController: UIViewController, onto primaryViewController: UIViewController) -> Bool {
+//        guard let primaeryTabBarController = primaryViewController as? UITabBarController,
+//            let selectedNavigationController = primaeryTabBarController.selectedViewController as? UINavigationController else {
+//                return false
+//        }
+//        
+//        guard let secondaryNavigationController = secondaryViewController as? UINavigationController else {
+//            return false
+//        }
+//        
+//        guard !(secondaryNavigationController.topViewController is PlaceholderDetailViewController) else {
+//            // discard collapse operation
+//            return true
+//        }
+//        
+//        let secondaryNavigationStack = secondaryNavigationController.viewControllers
+//        let collapsedNavigationStack = [selectedNavigationController.viewControllers, secondaryNavigationStack].flatMap { $0 }
+//        selectedNavigationController.setViewControllers(collapsedNavigationStack, animated: false)
+//        
+//        return true
+//    }
+//    
+//    public func splitViewController(_ splitViewController: UISplitViewController, separateSecondaryFrom primaryViewController: UIViewController) -> UIViewController? {
+//        guard let primaeryTabBarController = primaryViewController as? UITabBarController,
+//            let selectedNavigationController = primaeryTabBarController.selectedViewController as? UINavigationController else {
+//                return nil
+//        }
+//        
+//        var primaryViewControllerStack: [UIViewController] = []
+//        var secondaryViewControllerStack: [UIViewController] = []
+//        for viewController in selectedNavigationController.viewControllers {
+//            if secondaryStackHashValues.contains(viewController.hashValue) {
+//                secondaryViewControllerStack.append(viewController)
+//            } else {
+//                primaryViewControllerStack.append(viewController)
+//            }
+//        }
+//        
+//        selectedNavigationController.setViewControllers(primaryViewControllerStack, animated: false)
+//        
+//        let secondaryNavigationController = UINavigationController()
+//        if secondaryViewControllerStack.isEmpty {
+//            secondaryNavigationController.setViewControllers([PlaceholderDetailViewController()], animated: false)
+//        } else {
+//            secondaryNavigationController.setViewControllers(secondaryViewControllerStack, animated: false)
+//        }
+//        
+//        return secondaryNavigationController
+//    }
+//    
+//}
