@@ -64,6 +64,8 @@ extension TimelineBottomLoaderTableViewCell {
             activityIndicatorView.centerXAnchor.constraint(equalTo: centerXAnchor),
             activityIndicatorView.centerYAnchor.constraint(equalTo: centerYAnchor),
         ])
+        
+        loadMoreButton.isHidden = true
     }
     
 }

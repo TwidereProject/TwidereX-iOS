@@ -273,6 +273,7 @@ extension HomeTimelineViewModel: NSFetchedResultsControllerDelegate {
         guard let tableView = self.tableView else { fatalError() }
         guard let navigationBar = self.contentOffsetAdjustableTimelineViewControllerDelegate?.navigationBar() else { fatalError() }
         
+        let start = CACurrentMediaTime()
         guard let diffableDataSource = self.diffableDataSource else { return }
         let oldSnapshot = diffableDataSource.snapshot()
         let snapshot = snapshot as NSDiffableDataSourceSnapshot<String, NSManagedObjectID>
@@ -281,47 +282,56 @@ extension HomeTimelineViewModel: NSFetchedResultsControllerDelegate {
         newSnapshot.appendSections([.main])
 
         let managedObjectContext = fetchedResultsController.managedObjectContext
-        managedObjectContext.performAndWait {
-            for (i, objectID) in snapshot.itemIdentifiers.enumerated() {
-                let attribute: TimelineItem.Attribute = {
-                    for item in oldSnapshot.itemIdentifiers {
-                        guard case let .homeTimelineIndex(oldObjectID, attribute) = item else { continue }
-                        guard objectID == oldObjectID else { continue }
-                        return attribute
-                    }
-                    
-                    return TimelineItem.Attribute()
-                }()
-                
-                // save into buffer
-                newSnapshot.appendItems([.homeTimelineIndex(objectID: objectID, attribute: attribute)], toSection: .main)
-
-                let timelineIndex = managedObjectContext.object(with: objectID) as! TimelineIndex
-                if let tweet = timelineIndex.tweet {
-                    attribute.indentSeparatorLine = !tweet.hasMore
-                    
-                    if tweet.hasMore {
-                        let isLast = i == snapshot.itemIdentifiers.count - 1
-                        if isLast {
-                            newSnapshot.appendItems([.bottomLoader], toSection: .main)
-                        } else {
-                            newSnapshot.appendItems([.homeTimelineMiddleLoader(upper: tweet.tweetID)], toSection: .main)
+        DispatchQueue.global(qos: .userInteractive).async {
+            managedObjectContext.perform {
+                for (i, objectID) in snapshot.itemIdentifiers.enumerated() {
+                    let attribute: TimelineItem.Attribute = {
+                        for item in oldSnapshot.itemIdentifiers {
+                            guard case let .homeTimelineIndex(oldObjectID, attribute) = item else { continue }
+                            guard objectID == oldObjectID else { continue }
+                            return attribute
                         }
-                    } else {
-                        // do nothing
+                        
+                        return TimelineItem.Attribute()
+                    }()
+                    
+                    // save into buffer
+                    newSnapshot.appendItems([.homeTimelineIndex(objectID: objectID, attribute: attribute)], toSection: .main)
+                    
+                    let timelineIndex = managedObjectContext.object(with: objectID) as! TimelineIndex
+                    if let tweet = timelineIndex.tweet {
+                        attribute.indentSeparatorLine = !tweet.hasMore
+                        
+                        if tweet.hasMore {
+                            let isLast = i == snapshot.itemIdentifiers.count - 1
+                            if isLast {
+                                newSnapshot.appendItems([.bottomLoader], toSection: .main)
+                            } else {
+                                newSnapshot.appendItems([.homeTimelineMiddleLoader(upper: tweet.tweetID)], toSection: .main)
+                            }
+                        } else {
+                            // do nothing
+                        }
                     }
-                }
-            }   // end for
-        }   // end performAndWait
+                }   // end for
+                
+                DispatchQueue.main.async {
+                    guard let difference = self.calculateReloadSnapshotDifference(navigationBar: navigationBar, tableView: tableView, oldSnapshot: oldSnapshot, newSnapshot: newSnapshot) else {
+                        diffableDataSource.apply(newSnapshot)
+                        return
+                    }
+                    
+                    diffableDataSource.apply(newSnapshot, animatingDifferences: false) {
+                        tableView.scrollToRow(at: difference.targetIndexPath, at: .top, animated: false)
+                        tableView.contentOffset.y = tableView.contentOffset.y - difference.offset
+                    }
+                    
+                    let end = CACurrentMediaTime()
+                    let interval = end - start
+                    os_log("%{public}s[%{public}ld], %{public}s: calculate home timeline data source cost %.2fs", ((#file as NSString).lastPathComponent), #line, #function, interval)
 
-        guard let difference = calculateReloadSnapshotDifference(navigationBar: navigationBar, tableView: tableView, oldSnapshot: oldSnapshot, newSnapshot: newSnapshot) else {
-            diffableDataSource.apply(newSnapshot)
-            return
-        }
-        
-        diffableDataSource.apply(newSnapshot, animatingDifferences: false) {
-            tableView.scrollToRow(at: difference.targetIndexPath, at: .top, animated: false)
-            tableView.contentOffset.y = tableView.contentOffset.y - difference.offset
+                }
+            }   // end perform
         }
     }
     

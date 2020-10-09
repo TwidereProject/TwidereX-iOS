@@ -139,7 +139,7 @@ extension HomeTimelineViewController {
     
     #if DEBUG
     @objc private func dropBarButtonItemPressed(_ sender: UIBarButtonItem) {
-        let dropping = Array(viewModel.fetchedResultsController.fetchedObjects?.prefix(10) ?? [])
+        let dropping = Array(viewModel.fetchedResultsController.fetchedObjects?.prefix(50) ?? [])
         viewModel.fetchedResultsController.managedObjectContext.performChanges {
             for object in dropping {
                 object.tweet.flatMap { self.viewModel.fetchedResultsController.managedObjectContext.delete($0) }
