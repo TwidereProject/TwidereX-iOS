@@ -86,12 +86,12 @@ extension TimelinePostTableViewCell {
         
         let separatorLine = UIView.separatorLine
         separatorLine.translatesAutoresizingMaskIntoConstraints = false
-        separatorLineLeadingLayoutConstraint = separatorLine.leadingAnchor.constraint(equalTo: contentView.layoutMarginsGuide.leadingAnchor)
+        separatorLineLeadingLayoutConstraint = separatorLine.leadingAnchor.constraint(equalTo: contentView.readableContentGuide.leadingAnchor)
         separatorLineIndentLeadingLayoutConstraint = separatorLine.leadingAnchor.constraint(equalTo: timelinePostView.nameLabel.leadingAnchor)
         contentView.addSubview(separatorLine)
         NSLayoutConstraint.activate([
             separatorLineIndentLeadingLayoutConstraint,
-            contentView.layoutMarginsGuide.trailingAnchor.constraint(equalTo: separatorLine.trailingAnchor),
+            contentView.readableContentGuide.trailingAnchor.constraint(equalTo: separatorLine.trailingAnchor),
             separatorLine.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
             separatorLine.heightAnchor.constraint(equalToConstant: UIView.separatorLineHeight(of: separatorLine)),
         ])

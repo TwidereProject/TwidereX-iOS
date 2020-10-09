@@ -50,6 +50,8 @@
 		DB92575A251CA3FB004FEFB5 /* StubTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB925759251CA3FB004FEFB5 /* StubTableViewCell.swift */; };
 		DB969A0C252475F00053CB31 /* APIService+Timeline.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB969A0B252475F00053CB31 /* APIService+Timeline.swift */; };
 		DB969A2F252490090053CB31 /* UserTimelineViewModel+State.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB969A2E252490090053CB31 /* UserTimelineViewModel+State.swift */; };
+		DB969A3925305EEF0053CB31 /* HomeTimelineViewModel+State.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB969A3825305EEE0053CB31 /* HomeTimelineViewModel+State.swift */; };
+		DB969A66253064FE0053CB31 /* DispatchQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB969A65253064FE0053CB31 /* DispatchQueue.swift */; };
 		DB98DC0C25062D4D0087E30F /* ActiveLabel in Frameworks */ = {isa = PBXBuildFile; productRef = DB98DC0B25062D4D0087E30F /* ActiveLabel */; };
 		DB98DC0E2507862D0087E30F /* TimelineMiddleLoaderTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB98DC0D2507862D0087E30F /* TimelineMiddleLoaderTableViewCell.swift */; };
 		DB98DC10250787420087E30F /* TimelineBottomLoaderTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB98DC0F250787420087E30F /* TimelineBottomLoaderTableViewCell.swift */; };
@@ -250,6 +252,8 @@
 		DB925759251CA3FB004FEFB5 /* StubTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StubTableViewCell.swift; sourceTree = "<group>"; };
 		DB969A0B252475F00053CB31 /* APIService+Timeline.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "APIService+Timeline.swift"; sourceTree = "<group>"; };
 		DB969A2E252490090053CB31 /* UserTimelineViewModel+State.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UserTimelineViewModel+State.swift"; sourceTree = "<group>"; };
+		DB969A3825305EEE0053CB31 /* HomeTimelineViewModel+State.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "HomeTimelineViewModel+State.swift"; sourceTree = "<group>"; };
+		DB969A65253064FE0053CB31 /* DispatchQueue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DispatchQueue.swift; sourceTree = "<group>"; };
 		DB98DC0D2507862D0087E30F /* TimelineMiddleLoaderTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimelineMiddleLoaderTableViewCell.swift; sourceTree = "<group>"; };
 		DB98DC0F250787420087E30F /* TimelineBottomLoaderTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimelineBottomLoaderTableViewCell.swift; sourceTree = "<group>"; };
 		DBA4955625231C7E007C7D0E /* TwitterInterface.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwitterInterface.swift; sourceTree = "<group>"; };
@@ -699,6 +703,7 @@
 				DBE76D1F2500E69F00DEB0FC /* View */,
 				DBDA8E9E24FE0FFF006750DC /* HomeTimelineViewController.swift */,
 				DBE76D1D2500E65D00DEB0FC /* HomeTimelineViewModel.swift */,
+				DB969A3825305EEE0053CB31 /* HomeTimelineViewModel+State.swift */,
 			);
 			path = HomeTimeline;
 			sourceTree = "<group>";
@@ -811,6 +816,7 @@
 				DBE76D392502228D00DEB0FC /* CoreDataStack */,
 				DBA4955B25231C81007C7D0E /* Interface */,
 				DB434891251E09A8005B599F /* CALayer.swift */,
+				DB969A65253064FE0053CB31 /* DispatchQueue.swift */,
 				DBE76D3A25024FDA00DEB0FC /* NSLayoutConstraint.swift */,
 				DBE76D3F2502524500DEB0FC /* UIImage.swift */,
 				DB7D124B250F875E00999903 /* UIView.swift */,
@@ -1045,6 +1051,7 @@
 			attributes = {
 				LastSwiftUpdateCheck = 1200;
 				LastUpgradeCheck = 1200;
+				ORGANIZATIONNAME = Twidere;
 				TargetAttributes = {
 					DBDA8E1D24FCF8A3006750DC = {
 						CreatedOnToolsVersion = 12.0;
@@ -1287,6 +1294,7 @@
 				DB34029D2521BE8B009EFADF /* MeProfileViewModel.swift in Sources */,
 				DB3402CF2521FA77009EFADF /* APIService+CoreData.swift in Sources */,
 				DBDA8E5824FE0371006750DC /* APIService.swift in Sources */,
+				DB969A3925305EEF0053CB31 /* HomeTimelineViewModel+State.swift in Sources */,
 				DBDA8E9824FE075E006750DC /* MainTabBarController.swift in Sources */,
 				DB261195251B213A004BF309 /* TwitterAuthentication.swift in Sources */,
 				DBE76D382502228900DEB0FC /* Tweet.swift in Sources */,
@@ -1312,6 +1320,7 @@
 				DBF7F2182508AE88001E8DB0 /* StubHomeTimelineViewModel.swift in Sources */,
 				DB434892251E09A8005B599F /* CALayer.swift in Sources */,
 				DB0849B0251375E9009E0CD7 /* ConversationPostView.swift in Sources */,
+				DB969A66253064FE0053CB31 /* DispatchQueue.swift in Sources */,
 				DB43488D251DFF0F005B599F /* ProfileBannerStatusItemView.swift in Sources */,
 				DBE76D1E2500E65D00DEB0FC /* HomeTimelineViewModel.swift in Sources */,
 				DBDA8E8A24FE0615006750DC /* DocumentStore.swift in Sources */,

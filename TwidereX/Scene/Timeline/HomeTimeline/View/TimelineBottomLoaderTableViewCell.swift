@@ -53,8 +53,8 @@ extension TimelineBottomLoaderTableViewCell {
         contentView.addSubview(loadMoreButton)
         NSLayoutConstraint.activate([
             loadMoreButton.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 8),
-            loadMoreButton.leadingAnchor.constraint(equalTo: contentView.layoutMarginsGuide.leadingAnchor),
-            contentView.layoutMarginsGuide.trailingAnchor.constraint(equalTo: loadMoreButton.trailingAnchor),
+            loadMoreButton.leadingAnchor.constraint(equalTo: contentView.readableContentGuide.leadingAnchor),
+            contentView.readableContentGuide.trailingAnchor.constraint(equalTo: loadMoreButton.trailingAnchor),
             contentView.bottomAnchor.constraint(equalTo: loadMoreButton.bottomAnchor, constant: 8),
         ])
         

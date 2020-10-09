@@ -8,6 +8,7 @@
 import os.log
 import func AVFoundation.AVMakeRect
 import UIKit
+import GameplayKit
 import Combine
 import CoreData
 import CoreDataStack
@@ -32,6 +33,20 @@ final class HomeTimelineViewModel: NSObject {
     weak var timelinePostTableViewCellDelegate: TimelinePostTableViewCellDelegate?
     
     // output
+    private(set) lazy var stateMachine: GKStateMachine = {
+        // exclude timeline middle fetcher state
+        let stateMachine = GKStateMachine(states: [
+            State.Initial(viewModel: self),
+            State.Reloading(viewModel: self),
+            State.Fail(viewModel: self),
+            State.Idle(viewModel: self),
+            State.LoadingMore(viewModel: self),
+            State.NoMore(viewModel: self),
+        ])
+        stateMachine.enter(State.Initial.self)
+        return stateMachine
+    }()
+    lazy var stateMachinePublisher = CurrentValueSubject<State, Never>(State.Initial(viewModel: self))
     var diffableDataSource: UITableViewDiffableDataSource<TimelineSection, TimelineItem>?
     var cellFrameCache = NSCache<NSNumber, NSValue>()
     
@@ -155,13 +170,27 @@ extension HomeTimelineViewModel {
             let meta = MosaicMeta(url: url, size: size)
             mosaicMetas.append(meta)
         }
-        let maxWidth: CGFloat = {
-            var containerWidth = cell.frame.width - 16 * 2  // layout margin
-            containerWidth -= 10
-            containerWidth -= TimelinePostView.avatarImageViewSize.width
-            return containerWidth
+
+        let maxSize: CGSize = {
+            // auto layout first time fallback
+            if cell.timelinePostView.frame == .zero {
+                let bounds = UIScreen.main.bounds
+                let maxWidth = min(bounds.width, bounds.height)
+                return CGSize(
+                    width: maxWidth,
+                    height: maxWidth * 0.3
+                )
+            }
+            let maxWidth: CGFloat = {
+                // use timelinePostView width as container width
+                // that width follows readable width and keep constant width after rotate
+                var containerWidth = cell.timelinePostView.frame.width
+                containerWidth -= 10
+                containerWidth -= TimelinePostView.avatarImageViewSize.width
+                return containerWidth
+            }()
+            return CGSize(width: maxWidth, height: maxWidth * 0.6)
         }()
-        let maxSize = CGSize(width: maxWidth, height: cell.bounds.width * 0.6)
         if mosaicMetas.count == 1 {
             let meta = mosaicMetas[0]
             let imageView = cell.timelinePostView.mosaicImageView.setupImageView(aspectRatio: meta.size, maxSize: maxSize)
@@ -171,7 +200,7 @@ extension HomeTimelineViewModel {
                 imageTransition: .crossDissolve(0.2)
             )
         } else {
-            let imageViews = cell.timelinePostView.mosaicImageView.setupImageViews(count: mosaicMetas.count, maxHeight: cell.bounds.width * 0.5)
+            let imageViews = cell.timelinePostView.mosaicImageView.setupImageViews(count: mosaicMetas.count, maxHeight: maxSize.height)
             for (i, imageView) in imageViews.enumerated() {
                 let meta = mosaicMetas[i]
                 imageView.af.setImage(

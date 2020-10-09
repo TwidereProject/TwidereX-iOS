@@ -64,17 +64,23 @@ extension HomeTimelineViewController {
         viewModel.setupDiffableDataSource(for: tableView)
         do {
             try viewModel.fetchedResultsController.performFetch()
+            if (viewModel.fetchedResultsController.fetchedObjects ?? []).count == 0 {
+                viewModel.stateMachine.enter(HomeTimelineViewModel.State.Reloading.self)
+            }
         } catch {
             assertionFailure(error.localizedDescription)
         }
         tableView.delegate = self
         tableView.dataSource = viewModel.diffableDataSource
         
+        
+        // bind view model
         context.authenticationService.twitterAuthentications
             .map { $0.first }
             .assign(to: \.value, on: viewModel.currentTwitterAuthentication)
             .store(in: &disposeBag)
         
+        // bind refresh control
         viewModel.isFetchingLatestTimeline
             .sink { [weak self] isFetching in
                 guard let self = self else { return }
@@ -109,38 +115,10 @@ extension HomeTimelineViewController {
 extension HomeTimelineViewController {
     
     @objc private func refreshControlValueChanged(_ sender: UIRefreshControl) {
-        guard let twitterAuthentication = viewModel.currentTwitterAuthentication.value,
-              let authorization = try? twitterAuthentication.authorization(appSecret: AppSecret.shared) else {
-            assertionFailure()
+        guard viewModel.stateMachine.enter(HomeTimelineViewModel.State.Reloading.self) else {
+            sender.endRefreshing()
             return
         }
-        
-        guard !viewModel.isFetchingLatestTimeline.value else { return }
-        viewModel.isFetchingLatestTimeline.value = true
-        
-        context.apiService.twitterHomeTimeline(authorization: authorization)
-            .delay(for: .seconds(1), scheduler: DispatchQueue.main)
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] completion in
-                guard let self = self else { return }
-                
-                switch completion {
-                case .failure(let error):
-                    // TODO: handle error
-                    self.viewModel.isFetchingLatestTimeline.value = false
-                    os_log("%{public}s[%{public}ld], %{public}s: fetch tweets failed. %s", ((#file as NSString).lastPathComponent), #line, #function, error.localizedDescription)
-                case .finished:
-                    // handle fetching state changing in viewModel
-                    break
-                }
-            } receiveValue: { tweets in
-                // fallback path when no new tweets. Note: snapshot average calculate time is 3.0s
-                // FIXME: use notification to stop refresh conrol and avoid this workaround
-                DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
-                    self.viewModel.isFetchingLatestTimeline.value = false
-                }
-            }
-            .store(in: &disposeBag)
     }
     
     #if DEBUG
@@ -165,6 +143,28 @@ extension HomeTimelineViewController {
     
     #endif
 }
+
+// MARK: - UIScrollViewDelegate
+extension HomeTimelineViewController {
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        guard scrollView === tableView else { return }
+        let cells = tableView.visibleCells.compactMap { $0 as? TimelineBottomLoaderTableViewCell }
+        guard let loaderTableViewCell = cells.first else { return }
+        
+        if let tabBar = tabBarController?.tabBar, let window = view.window {
+            let loaderTableViewCellFrameInWindow = tableView.convert(loaderTableViewCell.frame, to: nil)
+            let windowHeight = window.frame.height
+            let loaderAppear = (loaderTableViewCellFrameInWindow.origin.y + 0.8 * loaderTableViewCell.frame.height) < (windowHeight - tabBar.frame.height)
+            if loaderAppear {
+                print("LOAD~~~~~~~")
+//                viewModel.stateMachine.enter(UserTimelineViewModel.State.LoadingMore.self)
+            }
+        } else {
+//            viewModel.stateMachine.enter(UserTimelineViewModel.State.LoadingMore.self)
+        }
+    }
+}
+
 
 // MARK: - UITableViewDelegate
 extension HomeTimelineViewController: UITableViewDelegate {
