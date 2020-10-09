@@ -39,6 +39,12 @@ extension UserTimelineViewModel.State {
         override func didEnter(from previousState: GKState?) {
             super.didEnter(from: previousState)
             guard let viewModel = viewModel, let stateMachine = stateMachine else { return }
+            
+            var snapshot = NSDiffableDataSourceSnapshot<TimelineSection, TimelineItem>()
+            snapshot.appendSections([.main])
+            snapshot.appendItems([.bottomLoader], toSection: .main)
+            viewModel.diffableDataSource?.apply(snapshot)
+            
             viewModel.fetchLatest()
                 .sink { [weak self] completion in
                     guard let self = self else { return }
@@ -51,7 +57,7 @@ extension UserTimelineViewModel.State {
                     }
                 } receiveValue: { [weak self] response in
                     guard let self = self else { return }
-                    
+
                     let tweetIDs = response.value.map { $0.idStr }
                     viewModel.userTimelineTweetIDs.value = tweetIDs
                 }

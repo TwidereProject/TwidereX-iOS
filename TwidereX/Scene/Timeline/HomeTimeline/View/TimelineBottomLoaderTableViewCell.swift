@@ -29,6 +29,11 @@ final class TimelineBottomLoaderTableViewCell: UITableViewCell {
         return activityIndicatorView
     }()
     
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        disposeBag.removeAll()
+    }
+    
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         _init()
@@ -56,9 +61,8 @@ extension TimelineBottomLoaderTableViewCell {
         activityIndicatorView.translatesAutoresizingMaskIntoConstraints = false
         addSubview(activityIndicatorView)
         NSLayoutConstraint.activate([
-            activityIndicatorView.topAnchor.constraint(equalTo: topAnchor),
             activityIndicatorView.centerXAnchor.constraint(equalTo: centerXAnchor),
-            bottomAnchor.constraint(equalTo: activityIndicatorView.bottomAnchor),
+            activityIndicatorView.centerYAnchor.constraint(equalTo: centerYAnchor),
         ])
     }
     

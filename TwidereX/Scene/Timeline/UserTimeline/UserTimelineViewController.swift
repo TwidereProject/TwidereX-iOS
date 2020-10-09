@@ -48,6 +48,7 @@ extension UserTimelineViewController {
         ])
         
         viewModel.timelinePostTableViewCellDelegate = self
+        viewModel.tableView = tableView
         viewModel.setupDiffableDataSource(for: tableView)
         do {
             try viewModel.fetchedResultsController.performFetch()
@@ -56,27 +57,46 @@ extension UserTimelineViewController {
         }
         tableView.delegate = self
         tableView.dataSource = viewModel.diffableDataSource
-                
-//        viewModel.userTimelineTweets
-//            .receive(on: DispatchQueue.main)
-//            .sink { [weak self] tweets in
-//                guard let self = self else { return }
-//                let items = tweets.map { TimelineItem.userTimelineItem(tweet: $0) }
-//                var snapshot = NSDiffableDataSourceSnapshot<TimelineSection, TimelineItem>()
-//                snapshot.appendSections([.main])
-//                snapshot.appendItems(items, toSection: .main)
-//                self.viewModel.diffableDataSource?.apply(snapshot)
-//            }
-//            .store(in: &disposeBag)
-        
         
         viewModel.stateMachine.enter(UserTimelineViewModel.State.Reloading.self)
     }
     
 }
 
+// MARK: - UIScrollViewDelegate
+extension UserTimelineViewController {
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        guard scrollView === tableView else { return }
+        let cells = tableView.visibleCells.compactMap { $0 as? TimelineBottomLoaderTableViewCell }
+        guard let loaderTableViewCell = cells.first else { return }
+        
+        if let tabBar = tabBarController?.tabBar, let window = view.window {
+            let loaderTableViewCellFrameInWindow = tableView.convert(loaderTableViewCell.frame, to: nil)
+            let windowHeight = window.frame.height
+            let loaderAppear = (loaderTableViewCellFrameInWindow.origin.y + 0.8 * loaderTableViewCell.frame.height) < (windowHeight - tabBar.frame.height)
+            if loaderAppear {
+                viewModel.stateMachine.enter(UserTimelineViewModel.State.LoadingMore.self)
+            }
+        } else {
+            viewModel.stateMachine.enter(UserTimelineViewModel.State.LoadingMore.self)
+        }
+    }
+}
+
 // MARK: - UITableViewDelegate
 extension UserTimelineViewController: UITableViewDelegate {
+    
+    func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
+        guard let diffableDataSource = viewModel.diffableDataSource else { return 100 }
+        guard let item = diffableDataSource.itemIdentifier(for: indexPath) else { return 100 }
+        
+        guard let frame = viewModel.cellFrameCache.object(forKey: NSNumber(value: item.hashValue))?.cgRectValue else {
+            return 200
+        }
+        // os_log("%{public}s[%{public}ld], %{public}s: cache cell frame %s", ((#file as NSString).lastPathComponent), #line, #function, frame.debugDescription)
+        
+        return ceil(frame.height)
+    }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
 //        os_log("%{public}s[%{public}ld], %{public}s: indexPath %s", ((#file as NSString).lastPathComponent), #line, #function, indexPath.debugDescription)
@@ -99,13 +119,14 @@ extension UserTimelineViewController: UITableViewDelegate {
 //        }
     }
     
-    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        if let cell = cell as? TimelineBottomLoaderTableViewCell {
-            cell.activityIndicatorView.startAnimating()
-            viewModel.stateMachine.enter(UserTimelineViewModel.State.LoadingMore.self)
-        }
+    func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        guard let diffableDataSource = viewModel.diffableDataSource else { return }
+        guard let item = diffableDataSource.itemIdentifier(for: indexPath) else { return }
+        
+        let key = item.hashValue
+        let frame = cell.frame
+        viewModel.cellFrameCache.setObject(NSValue(cgRect: frame), forKey: NSNumber(value: key))
     }
-    
 }
 
 // MARK: - TimelinePostTableViewCellDelegate

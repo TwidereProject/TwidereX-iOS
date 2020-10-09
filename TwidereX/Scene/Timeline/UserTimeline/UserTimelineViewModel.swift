@@ -25,6 +25,7 @@ class UserTimelineViewModel: NSObject {
     let userID: CurrentValueSubject<String?, Never>
     let currentTwitterAuthentication = CurrentValueSubject<TwitterAuthentication?, Never>(nil)
     let userTimelineTweetIDs = CurrentValueSubject<[Twitter.Entity.Tweet.ID], Never>([])
+    weak var tableView: UITableView?
     weak var timelinePostTableViewCellDelegate: TimelinePostTableViewCellDelegate?
     
     // output
@@ -42,6 +43,7 @@ class UserTimelineViewModel: NSObject {
     }()
     lazy var stateMachinePublisher = CurrentValueSubject<State, Never>(State.Initial(viewModel: self))
     let timelineItems = CurrentValueSubject<[TimelineItem], Never>([])
+    var cellFrameCache = NSCache<NSNumber, NSValue>()
     
     init(context: AppContext, userID: String?) {
         self.context = context
@@ -68,12 +70,18 @@ class UserTimelineViewModel: NSObject {
             timelineItems.eraseToAnyPublisher(),
             stateMachinePublisher.eraseToAnyPublisher()
         )
-        .sink { [weak self] items, state in
+        .debounce(for: .seconds(1), scheduler: DispatchQueue.main)
+        .receive(on: DispatchQueue.main)
+        .sink { [weak self] _, state in
             guard let self = self else { return }
+            os_log("%{public}s[%{public}ld], %{public}s: state did change", ((#file as NSString).lastPathComponent), #line, #function)
+
             var snapshot = NSDiffableDataSourceSnapshot<TimelineSection, TimelineItem>()
             snapshot.appendSections([.main])
+            let items = (self.fetchedResultsController.fetchedObjects ?? []).map { TimelineItem.userTimelineItem(objectID: $0.objectID) }
             snapshot.appendItems(items)
-            if !items.isEmpty {
+            if !items.isEmpty, self.stateMachine.canEnterState(State.LoadingMore.self) ||
+                state is State.LoadingMore {
                 snapshot.appendItems([.bottomLoader], toSection: .main)
             }
             self.diffableDataSource?.apply(snapshot)
@@ -176,11 +184,9 @@ extension UserTimelineViewModel {
                 return cell
             case .bottomLoader:
                 let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: TimelineBottomLoaderTableViewCell.self), for: indexPath) as! TimelineBottomLoaderTableViewCell
-                self.stateMachinePublisher.sink { state in
-                    cell.activityIndicatorView.isHidden = state is State.LoadingMore
-                    cell.loadMoreButton.isHidden = true
-                }
-                .store(in: &cell.disposeBag)
+                cell.activityIndicatorView.isHidden = false
+                cell.activityIndicatorView.startAnimating()
+                cell.loadMoreButton.isHidden = true
                 return cell
             default:
                 assertionFailure()
@@ -193,7 +199,10 @@ extension UserTimelineViewModel {
 // MARK: - NSFetchedResultsControllerDelegate
 extension UserTimelineViewModel: NSFetchedResultsControllerDelegate {
     func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChangeContentWith snapshot: NSDiffableDataSourceSnapshotReference) {
+        os_log("%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
+
         let snapshot = snapshot as NSDiffableDataSourceSnapshot<String, NSManagedObjectID>
+        guard snapshot.numberOfItems == userTimelineTweetIDs.value.count else { return }
         let items = snapshot.itemIdentifiers.map { TimelineItem.userTimelineItem(objectID: $0) }
         timelineItems.value = items
     }
@@ -217,7 +226,7 @@ extension UserTimelineViewModel {
             return Fail(error: UserTimelineError.invalidUserID).eraseToAnyPublisher()
         }
         
-        return context.apiService.twitterUserTimeline(userID: userID, authorization: authorization)
+        return context.apiService.twitterUserTimeline(count: 20, userID: userID, authorization: authorization)
     }
     
     func loadMore() -> AnyPublisher<Twitter.Response<[Twitter.Entity.Tweet]>, Error> {
@@ -233,7 +242,7 @@ extension UserTimelineViewModel {
         }
         
         let maxID = oldestTweet.idStr
-        return context.apiService.twitterUserTimeline(userID: userID, maxID: maxID, authorization: authorization)
+        return context.apiService.twitterUserTimeline(count: 20, userID: userID, maxID: maxID, authorization: authorization)
     }
 }
 

@@ -62,11 +62,11 @@ extension ProfileViewController {
     }
     
     func updateOverlayScrollViewContentSize(tableView: UITableView) {
-        let bottomHeight = max(tableView.contentSize.height, self.containerScrollView.frame.height - ProfileHeaderViewController.headerMinHeight - self.containerScrollView.safeAreaInsets.bottom)
+        let bottomPageHeight = max(tableView.contentSize.height, self.containerScrollView.frame.height - ProfileHeaderViewController.headerMinHeight - self.containerScrollView.safeAreaInsets.bottom)
         let headerViewHeight: CGFloat = profileHeaderViewController.view.frame.height
         let contentSize = CGSize(
             width: self.containerScrollView.contentSize.width,
-            height: bottomHeight + headerViewHeight
+            height: bottomPageHeight + headerViewHeight
         )
         self.overlayScrollView.contentSize = contentSize
     }
@@ -286,7 +286,10 @@ extension ProfileViewController: UIScrollViewDelegate {
             contentOffsets.removeAll()
         } else {
             containerScrollView.contentOffset.y = topMaxContentOffsetY
-            (profileSegmentedViewController.pagingViewController.currentViewController as? UserTimelineViewController)?.tableView.contentOffset.y = scrollView.contentOffset.y - containerScrollView.contentOffset.y
+            if let userTimelineViewController = profileSegmentedViewController.pagingViewController.currentViewController as? UserTimelineViewController {
+                let contentOffsetY = scrollView.contentOffset.y - containerScrollView.contentOffset.y
+                userTimelineViewController.tableView.contentOffset.y = contentOffsetY
+            }
         }
     }
 
