@@ -19,7 +19,7 @@ extension APIService {
         case userTimeline
     }
     
-    static func persist(managedObjectContext: NSManagedObjectContext, response: Twitter.Response<[Twitter.Entity.Tweet]>, persistType: PersistType, log: OSLog) {
+    static func persist(managedObjectContext: NSManagedObjectContext, query: Twitter.API.Timeline.Query, response: Twitter.Response<[Twitter.Entity.Tweet]>, persistType: PersistType, log: OSLog) {
         
         let tweets = response.value
         os_log(.info, log: log, "%{public}s[%{public}ld], %{public}s: fetch %{public}ld tweets", ((#file as NSString).lastPathComponent), #line, #function, tweets.count)
@@ -69,15 +69,52 @@ extension APIService {
             }   // end for…
             os_signpost(.end, log: log, name: "update database", signpostID: updateDatabaseTaskSignpostID)
             
-            let mergedOldTweetsInTimeline = workingRecords.filter { $0.tweetProcessType == .merge }
-
-
-            if persistType == .homeTimeline && mergedOldTweetsInTimeline.isEmpty {
-                // no overlap. may have gap so set oldest tweet hasMore
-                workingRecords
-                    .map { $0.tweet }
-                    .sorted(by: { $0.createdAt < $1.createdAt })
-                    .first.flatMap { $0.update(hasMore: true) }
+            // remote timeline merge local timeline record set
+            let mergedOldTweetsInTimeline = workingRecords.filter {
+                return $0.tweet.timelineIndex != nil && $0.tweetProcessType == .merge
+            }
+            
+            // home timeline tasks
+            if persistType == .homeTimeline {
+                // Task 1: update anchor hasMore
+                // update maxID anchor hasMore attribute when fetching on home timeline
+                // do not use working records due to anchor tweet is removable on the remote
+                var anchorTweet: Tweet?
+                if let maxID = query.maxID {
+                    do {
+                        // load anchor tweet from database
+                        let request = Tweet.sortedFetchRequest
+                        request.predicate = Tweet.predicate(idStr: maxID)
+                        request.returnsObjectsAsFaults = false
+                        request.fetchLimit = 1
+                        anchorTweet = try managedObjectContext.fetch(request).first
+                        anchorTweet?.update(hasMore: false)
+                    } catch {
+                        assertionFailure(error.localizedDescription)
+                    }
+                }
+                
+                // Task 2: set last tweet hasMore when fetched tweets no overlap with the timeline in the local database
+                let _oldestRecord = workingRecords
+                    .sorted(by: { $0.tweet.createdAt < $1.tweet.createdAt })
+                    .first
+                if let oldestRecord = _oldestRecord {
+                    if let anchorTweet = anchorTweet {
+                        // using anchor. set hasMore when (overlap itself OR no overlap) AND oldest record NOT anchor
+                        let isNoOverlap = mergedOldTweetsInTimeline.isEmpty
+                        let isOnlyOverlapItself = mergedOldTweetsInTimeline.count == 1 && mergedOldTweetsInTimeline.first?.tweet.idStr == anchorTweet.idStr
+                        let isAnchorEqualOldestRecord = oldestRecord.tweet.idStr == anchorTweet.idStr
+                        if (isNoOverlap || isOnlyOverlapItself) && !isAnchorEqualOldestRecord {
+                            oldestRecord.tweet.update(hasMore: true)
+                        }
+                        
+                    } else if mergedOldTweetsInTimeline.isEmpty {
+                        // no anchor. set hasMore when no overlap
+                        oldestRecord.tweet.update(hasMore: true)
+                    }
+                } else {
+                    // empty working record. mark anchor hasMore in the task 1
+                }
             }
             
             do {
@@ -94,7 +131,7 @@ extension APIService {
                     let counting = workingRecords
                         .map { record in record.count() }
                         .reduce(into: WorkingRecord.Counting(), { result, next in result = result + next })
-                    os_log(.info, log: log, "%{public}s[%{public}ld], %{public}s: tweet: insert %{public}ld, merge %{public}ld(%{public}ld)", ((#file as NSString).lastPathComponent), #line, #function, counting.tweet.create, mergedOldTweetsInTimeline.count, counting.tweet.merge)
+                    os_log(.info, log: log, "%{public}s[%{public}ld], %{public}s: tweet: insert %{public}ldT(%{public}ldTRQ), merge %{public}ldT(%{public}ldTRQ)", ((#file as NSString).lastPathComponent), #line, #function, tweets.count - mergedOldTweetsInTimeline.count, counting.tweet.create, mergedOldTweetsInTimeline.count, counting.tweet.merge)
                     os_log(.info, log: log, "%{public}s[%{public}ld], %{public}s: twitter user: insert %{public}ld, merge %{public}ld", ((#file as NSString).lastPathComponent), #line, #function, counting.user.create, counting.user.merge)
                 }
                 #endif

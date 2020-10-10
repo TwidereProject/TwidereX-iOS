@@ -21,17 +21,19 @@ extension APIService {
     // A1. incoming tweet NOT in local timeline, retweet NOT  in local (never see tweet and retweet)
     // A2. incoming tweet NOT in local timeline, retweet      in local (never see tweet but saw retweet before)
     // A3. incoming tweet     in local timeline, retweet MUST in local (saw tweet before)
-    func twitterHomeTimeline(authorization: Twitter.API.OAuth.Authorization) -> AnyPublisher<Twitter.Response<[Twitter.Entity.Tweet]>, Error> {
+    func twitterHomeTimeline(count: Int = 200, maxID: String? = nil, authorization: Twitter.API.OAuth.Authorization) -> AnyPublisher<Twitter.Response<[Twitter.Entity.Tweet]>, Error> {
         
-        // throttle request for API limit
-        guard homeTimelineRequestThrottler.available(windowSizeInSec: APIService.homeTimelineRequestWindowInSec) else {
-            return Fail(error: APIError.requestThrottle)
-                .delay(for: .milliseconds(Int.random(in: 200..<1000)), scheduler: DispatchQueue.main)
-                .eraseToAnyPublisher()
+        // throttle latest request for API limit
+        if maxID == nil {
+            guard homeTimelineRequestThrottler.available(windowSizeInSec: APIService.homeTimelineRequestWindowInSec) else {
+                return Fail(error: APIError.requestThrottle)
+                    .delay(for: .milliseconds(Int.random(in: 200..<1000)), scheduler: DispatchQueue.main)
+                    .eraseToAnyPublisher()
+            }
         }
                 
         os_log("%{public}s[%{public}ld], %{public}s: fetch home timeline…", ((#file as NSString).lastPathComponent), #line, #function)
-        let query = Twitter.API.Timeline.Query(count: 200)
+        let query = Twitter.API.Timeline.Query(count: count, maxID: maxID)
         return Twitter.API.Timeline.homeTimeline(session: session, authorization: authorization, query: query)
             .handleEvents(receiveOutput: { [weak self] response in
                 guard let self = self else { return }
@@ -58,7 +60,7 @@ extension APIService {
                     os_log(.info, log: log, "%{public}s[%{public}ld], %{public}s: API rate limit: %{public}ld/%{public}ld, reset at %{public}s, left: %.2fm (%.2fs)", ((#file as NSString).lastPathComponent), #line, #function, rateLimit.remaining, rateLimit.limit, rateLimit.reset.debugDescription, resetTimeIntervalInMin, resetTimeInterval)
                 }
                 
-                APIService.persist(managedObjectContext: self.backgroundManagedObjectContext, response: response, persistType: .homeTimeline, log: log)
+                APIService.persist(managedObjectContext: self.backgroundManagedObjectContext, query: query, response: response, persistType: .homeTimeline, log: log)
             })
             .eraseToAnyPublisher()
     }

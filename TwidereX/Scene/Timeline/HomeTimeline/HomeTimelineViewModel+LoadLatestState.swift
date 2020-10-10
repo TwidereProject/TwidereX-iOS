@@ -1,5 +1,5 @@
 //
-//  HomeTimelineViewModel+State.swift
+//  HomeTimelineViewModel+LoadLatestState.swift
 //  TwidereX
 //
 //  Created by Cirno MainasuK on 2020-10-9.
@@ -10,7 +10,7 @@ import Foundation
 import GameplayKit
 
 extension HomeTimelineViewModel {
-    class State: GKState {
+    class LoadLatestState: GKState {
         weak var viewModel: HomeTimelineViewModel?
         
         init(viewModel: HomeTimelineViewModel) {
@@ -19,19 +19,19 @@ extension HomeTimelineViewModel {
         
         override func didEnter(from previousState: GKState?) {
             os_log("%{public}s[%{public}ld], %{public}s: enter %s, previous: %s", ((#file as NSString).lastPathComponent), #line, #function, self.debugDescription, previousState.debugDescription)
-            viewModel?.stateMachinePublisher.send(self)
+            viewModel?.loadLatestStateMachinePublisher.send(self)
         }
     }
 }
 
-extension HomeTimelineViewModel.State {
-    class Initial: HomeTimelineViewModel.State {
+extension HomeTimelineViewModel.LoadLatestState {
+    class Initial: HomeTimelineViewModel.LoadLatestState {
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {
-            return stateClass == Reloading.self
+            return stateClass == Loading.self
         }
     }
     
-    class Reloading: HomeTimelineViewModel.State {
+    class Loading: HomeTimelineViewModel.LoadLatestState {
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {
             return stateClass == Fail.self || stateClass == Idle.self
         }
@@ -45,7 +45,8 @@ extension HomeTimelineViewModel.State {
                 return
             }
             
-            viewModel.context.apiService.twitterHomeTimeline(authorization: authorization)
+            // TODO: only set large count when using Wi-Fi
+            viewModel.context.apiService.twitterHomeTimeline(count: 200, authorization: authorization)
                 .delay(for: .seconds(1), scheduler: DispatchQueue.main)
                 .receive(on: DispatchQueue.main)
                 .sink { completion in
@@ -72,47 +73,47 @@ extension HomeTimelineViewModel.State {
         }
     }
     
-    class Fail: HomeTimelineViewModel.State {
+    class Fail: HomeTimelineViewModel.LoadLatestState {
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {
-            return stateClass == Reloading.self || stateClass == LoadingMore.self
+            return stateClass == Loading.self || stateClass == Idle.self
         }
     }
     
-    class Idle: HomeTimelineViewModel.State {
+    class Idle: HomeTimelineViewModel.LoadLatestState {
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {
-            return stateClass == Reloading.self || stateClass == LoadingMore.self
+            return stateClass == Loading.self
         }
     }
-    
-    class LoadingMore: HomeTimelineViewModel.State {
-        override func isValidNextState(_ stateClass: AnyClass) -> Bool {
-            return stateClass == Fail.self || stateClass == Idle.self || stateClass == NoMore.self
-        }
-        
-        override func didEnter(from previousState: GKState?) {
-            super.didEnter(from: previousState)
-            guard let viewModel = viewModel, let stateMachine = stateMachine else { return }
-            
-//            viewModel.loadMore()
-//                .sink { [weak self] completion in
-//                    switch completion {
-//                    case .failure(let error):
-//                        stateMachine.enter(Fail.self)
-//                    case .finished:
-//                        stateMachine.enter(Idle.self)
-//                    }
-//                } receiveValue: { [weak self] response in
-//                    let newTweetIds = response.value.map { $0.idStr }
-//                    let idSet = Set(viewModel.userTimelineTweetIDs.value).union(newTweetIds)
-//                    viewModel.userTimelineTweetIDs.value = Array(idSet)
-//                }
-//                .store(in: &viewModel.disposeBag)
-        }
-    }
-    
-    class NoMore: HomeTimelineViewModel.State {
-        override func isValidNextState(_ stateClass: AnyClass) -> Bool {
-            return stateClass == Reloading.self
-        }
-    }
+//
+//    class LoadingMore: HomeTimelineViewModel.State {
+//        override func isValidNextState(_ stateClass: AnyClass) -> Bool {
+//            return stateClass == Fail.self || stateClass == Idle.self || stateClass == NoMore.self
+//        }
+//
+//        override func didEnter(from previousState: GKState?) {
+//            super.didEnter(from: previousState)
+//            guard let viewModel = viewModel, let stateMachine = stateMachine else { return }
+//
+////            viewModel.loadMore()
+////                .sink { [weak self] completion in
+////                    switch completion {
+////                    case .failure(let error):
+////                        stateMachine.enter(Fail.self)
+////                    case .finished:
+////                        stateMachine.enter(Idle.self)
+////                    }
+////                } receiveValue: { [weak self] response in
+////                    let newTweetIds = response.value.map { $0.idStr }
+////                    let idSet = Set(viewModel.userTimelineTweetIDs.value).union(newTweetIds)
+////                    viewModel.userTimelineTweetIDs.value = Array(idSet)
+////                }
+////                .store(in: &viewModel.disposeBag)
+//        }
+//    }
+//
+//    class NoMore: HomeTimelineViewModel.State {
+//        override func isValidNextState(_ stateClass: AnyClass) -> Bool {
+//            return stateClass == Reloading.self
+//        }
+//    }
 }

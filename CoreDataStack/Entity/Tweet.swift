@@ -11,9 +11,11 @@ import TwitterAPI
 
 final public class Tweet: NSManagedObject {
     
+    public typealias TweetID = String
+    
     @NSManaged public private(set) var id: UUID
     
-    @NSManaged public private(set) var idStr: String
+    @NSManaged public private(set) var idStr: TweetID
     @NSManaged public private(set) var createdAt: Date
     @NSManaged public private(set) var updatedAt: Date
     
@@ -323,10 +325,4 @@ extension Tweet {
         return NSCompoundPredicate(notPredicateWithSubpredicate: inTimeline())
     }
     
-}
-
-extension Tweet {
-    public var tweetID: Int {
-        return Int(idStr)!
-    }
 }

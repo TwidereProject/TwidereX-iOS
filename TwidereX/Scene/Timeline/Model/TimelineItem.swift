@@ -8,12 +8,13 @@
 import Foundation
 import CoreData
 import TwitterAPI
+import CoreDataStack
 
 /// Note: update Equatable when change case
 enum TimelineItem {
     
     case homeTimelineIndex(objectID: NSManagedObjectID, attribute: Attribute)
-    case homeTimelineMiddleLoader(upper: Int)
+    case homeTimelineMiddleLoader(upper: Tweet.TweetID)
     
     case userTimelineItem(objectID: NSManagedObjectID)
     
@@ -22,14 +23,20 @@ enum TimelineItem {
 
 extension TimelineItem {
     class Attribute: Hashable {
-        var indentSeparatorLine: Bool = true
+        var separatorLineStyle: SeparatorLineStyle = .normal
         
         static func == (lhs: TimelineItem.Attribute, rhs: TimelineItem.Attribute) -> Bool {
-            return lhs.indentSeparatorLine == rhs.indentSeparatorLine
+            return lhs.separatorLineStyle == rhs.separatorLineStyle
         }
 
         func hash(into hasher: inout Hasher) {
-            hasher.combine(indentSeparatorLine)
+            hasher.combine(separatorLineStyle)
+        }
+        
+        enum SeparatorLineStyle {
+            case expand
+            case normal
+            case indent
         }
     }
 }

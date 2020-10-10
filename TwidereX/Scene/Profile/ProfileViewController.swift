@@ -23,12 +23,14 @@ final class ProfileViewController: UIViewController, NeedsDependency {
         scrollView.scrollsToTop = false
         scrollView.showsVerticalScrollIndicator = false
         scrollView.preservesSuperviewLayoutMargins = true
+        scrollView.delaysContentTouches = false
         return scrollView
     }()
     let overlayScrollView: UIScrollView = {
         let scrollView = UIScrollView()
         scrollView.showsVerticalScrollIndicator = false
         scrollView.backgroundColor = .clear
+        scrollView.delaysContentTouches = false
         return scrollView
     }()
     lazy var profileSegmentedViewController = ProfileSegmentedViewController()
@@ -36,11 +38,9 @@ final class ProfileViewController: UIViewController, NeedsDependency {
     
     lazy var bar: TMBar = {
         let bar = TMBarView<TMHorizontalBarLayout, TMTabItemBarButton, TMLineBarIndicator>()
-        bar.layout.transitionStyle = .snap
         bar.layout.contentMode = .fit
-        bar.backgroundView.style = .clear
         bar.indicator.weight = .custom(value: 2)
-        bar.backgroundColor = .systemBackground
+        bar.backgroundView.style = .flat(color: .systemBackground)
         bar.buttons.customize { barItem in
             barItem.shrinksImageWhenUnselected = false
             barItem.selectedTintColor = Asset.Colors.hightLight.color
@@ -317,8 +317,12 @@ extension ProfileViewController: ProfileHeaderViewControllerDelegate {
 extension ProfileViewController: ProfilePagingViewControllerDelegate {
     
     func profilePagingViewController(_ viewController: ProfilePagingViewController, didScrollToPostTimelineViewController postTimelineViewController: CustomTableViewController, atIndex index: Int) {
+        os_log("%{public}s[%{public}ld], %{public}s: select at index: %ld", ((#file as NSString).lastPathComponent), #line, #function, index)
+        
+        // save content offset
         overlayScrollView.contentOffset.y = contentOffsets[index] ?? containerScrollView.contentOffset.y
         
+        // setup observer and gesture fallback
         currentPostTimelineTableViewContentSizeObservation = observeTableViewContentSize(tableView: postTimelineViewController.tableView)
         postTimelineViewController.tableView.panGestureRecognizer.require(toFail: overlayScrollView.panGestureRecognizer)
     }

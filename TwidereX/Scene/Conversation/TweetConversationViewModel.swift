@@ -47,7 +47,7 @@ extension TweetConversationViewModel {
                 let managedObjectContext = self.context.managedObjectContext
                 managedObjectContext.performAndWait {
                     let tweet = managedObjectContext.object(with: objectID) as! Tweet
-                    TweetConversationViewModel.configure(cell: cell, tweetObject: tweet)
+                    TweetConversationViewModel.configure(cell: cell, tweet: tweet)
                 }
                 cell.delegate = self.conversationPostTableViewCellDelegate
                 return cell
@@ -60,9 +60,9 @@ extension TweetConversationViewModel {
         diffableDataSource?.apply(snapshot)
     }
     
-    static func configure(cell: ConversationPostTableViewCell, tweetObject tweet: TweetInterface) {
+    static func configure(cell: ConversationPostTableViewCell, tweet: Tweet) {
         // set avatar
-        if let avatarImageURL = tweet.userObject.avatarImageURL() {
+        if let avatarImageURL = tweet.user.avatarImageURL() {
             let placeholderImage = UIImage
                 .placeholder(size: ConversationPostView.avatarImageViewSize, color: .systemFill)
                 .af.imageRoundedIntoCircle()
@@ -78,17 +78,17 @@ extension TweetConversationViewModel {
         }
         
         // set name and username
-        cell.conversationPostView.nameLabel.text = tweet.userObject.name ?? " "
-        cell.conversationPostView.usernameLabel.text = tweet.userObject.screenName.flatMap { "@" + $0 } ?? " "
+        cell.conversationPostView.nameLabel.text = tweet.user.name ?? " "
+        cell.conversationPostView.usernameLabel.text = tweet.user.screenName.flatMap { "@" + $0 } ?? " "
 
         // set text
         cell.conversationPostView.activeTextLabel.text = tweet.text
         
         // set quote
-        let quote = tweet.quoteObject
+        let quote = tweet.quote
         if let quote = quote {
             // set avatar
-            if let avatarImageURL = quote.userObject.avatarImageURL() {
+            if let avatarImageURL = quote.user.avatarImageURL() {
                 let placeholderImage = UIImage
                     .placeholder(size: ConversationPostView.avatarImageViewSize, color: .systemFill)
                     .af.imageRoundedIntoCircle()
@@ -104,8 +104,8 @@ extension TweetConversationViewModel {
             }
             
             // set name and username
-            cell.conversationPostView.quotePostView.nameLabel.text = quote.userObject.name
-            cell.conversationPostView.quotePostView.usernameLabel.text = quote.userObject.screenName.flatMap { "@" + $0 }
+            cell.conversationPostView.quotePostView.nameLabel.text = quote.user.name
+            cell.conversationPostView.quotePostView.usernameLabel.text = quote.user.screenName.flatMap { "@" + $0 }
             
             // set date
 //            let createdAt = quote.createdAt
@@ -131,7 +131,7 @@ extension TweetConversationViewModel {
         cell.conversationPostView.dateLabel.text = TweetConversationViewModel.dateFormatter.string(from: tweet.createdAt)
         
         // set status
-        if let retweetCount = tweet.retweetCountInt, retweetCount > 0 {
+        if let retweetCount = tweet.retweetCount.flatMap({ Int(truncating: $0) }), retweetCount > 0 {
             cell.conversationPostView.retweetPostStatusView.countLabel.text = String(retweetCount)
             cell.conversationPostView.retweetPostStatusView.statusLabel.text = retweetCount > 1 ? "Retweets" : "Retweet"
             cell.conversationPostView.retweetPostStatusView.isHidden = false
@@ -140,7 +140,7 @@ extension TweetConversationViewModel {
         }
         // TODO: quote status
         cell.conversationPostView.quotePostStatusView.isHidden = true
-        if let favoriteCount = tweet.favoriteCountInt, favoriteCount > 0 {
+        if let favoriteCount = tweet.favoriteCount.flatMap({ Int(truncating: $0) }), favoriteCount > 0 {
             cell.conversationPostView.likePostStatusView.countLabel.text = String(favoriteCount)
             cell.conversationPostView.likePostStatusView.statusLabel.text = favoriteCount > 1 ? "Likes" : "Like"
             cell.conversationPostView.likePostStatusView.isHidden = false

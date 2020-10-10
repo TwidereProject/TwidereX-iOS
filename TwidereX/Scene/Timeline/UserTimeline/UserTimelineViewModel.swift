@@ -132,7 +132,7 @@ extension UserTimelineViewModel {
 extension UserTimelineViewModel {
     
     private static func configure(cell: TimelinePostTableViewCell, tweet: Tweet, userID: String) {
-        HomeTimelineViewModel.configure(cell: cell, tweetInterface: tweet)
+        HomeTimelineViewModel.configure(cell: cell, tweet: tweet)
         internalConfigure(cell: cell, tweet: tweet, userID: userID)
     }
 

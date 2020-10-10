@@ -39,14 +39,14 @@ final class ProfilePagingViewModel: NSObject {
         ]
     }
     
-    var barItems: [TMBarItem] {
+    let barItems: [TMBarItemable] = {
         let items = [
             TMBarItem(image: Asset.ObjectTools.uilDocumentLayoutLeft.image.withRenderingMode(.alwaysTemplate)),
             TMBarItem(image: Asset.ObjectTools.icBaselinePhotoLibrary.image.withRenderingMode(.alwaysTemplate)),
             TMBarItem(image: Asset.Health.icRoundFavoriteFillLarge.image.withRenderingMode(.alwaysTemplate)),
         ]
         return items
-    }
+    }()
     
     deinit {
         os_log("%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)

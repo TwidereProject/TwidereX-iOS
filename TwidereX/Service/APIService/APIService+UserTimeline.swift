@@ -22,7 +22,7 @@ extension APIService {
 
                 let log = OSLog.api
 
-                APIService.persist(managedObjectContext: self.backgroundManagedObjectContext, response: response, persistType: .userTimeline, log: log)
+                APIService.persist(managedObjectContext: self.backgroundManagedObjectContext, query: query, response: response, persistType: .userTimeline, log: log)
             })
             .eraseToAnyPublisher()
     }

@@ -43,8 +43,12 @@ extension HomeTimelineViewController {
         refreshControl.addTarget(self, action: #selector(HomeTimelineViewController.refreshControlValueChanged(_:)), for: .valueChanged)
         
         #if DEBUG
+        navigationItem.leftBarButtonItems = [
+            UIBarButtonItem(title: "TopGap", style: .plain, target: self, action: #selector(HomeTimelineViewController.topGapBarButtonItemPressed(_:)))
+        ]
         navigationItem.rightBarButtonItems = [
-            UIBarButtonItem(title: "Drop", style: .plain, target: self, action: #selector(HomeTimelineViewController.dropBarButtonItemPressed(_:)))
+            UIBarButtonItem(title: "Drop", style: .plain, target: self, action: #selector(HomeTimelineViewController.dropBarButtonItemPressed(_:))),
+            UIBarButtonItem(title: "Last", style: .plain, target: self, action: #selector(HomeTimelineViewController.lastBarButtonItemPressed(_:)))
         ]
         #endif
         
@@ -64,9 +68,6 @@ extension HomeTimelineViewController {
         viewModel.setupDiffableDataSource(for: tableView)
         do {
             try viewModel.fetchedResultsController.performFetch()
-            if (viewModel.fetchedResultsController.fetchedObjects ?? []).count == 0 {
-                viewModel.stateMachine.enter(HomeTimelineViewModel.State.Reloading.self)
-            }
         } catch {
             assertionFailure(error.localizedDescription)
         }
@@ -96,6 +97,16 @@ extension HomeTimelineViewController {
         
         tableView.deselectRow(with: transitionCoordinator, animated: animated)
     }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        DispatchQueue.once {
+            if (self.viewModel.fetchedResultsController.fetchedObjects ?? []).count == 0 {
+                self.viewModel.loadLatestStateMachine.enter(HomeTimelineViewModel.LoadLatestState.Loading.self)
+            }
+        }
+    }
  
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
@@ -115,19 +126,34 @@ extension HomeTimelineViewController {
 extension HomeTimelineViewController {
     
     @objc private func refreshControlValueChanged(_ sender: UIRefreshControl) {
-        guard viewModel.stateMachine.enter(HomeTimelineViewModel.State.Reloading.self) else {
+        guard viewModel.loadLatestStateMachine.enter(HomeTimelineViewModel.LoadLatestState.Loading.self) else {
             sender.endRefreshing()
             return
         }
     }
     
     #if DEBUG
+    @objc private func topGapBarButtonItemPressed(_ sender: UIBarButtonItem) {
+        guard let diffableDataSource = viewModel.diffableDataSource else { return }
+        let snapshot = diffableDataSource.snapshot()
+        let item = snapshot.itemIdentifiers.first(where: { item in
+            switch item {
+            case .homeTimelineMiddleLoader: return true
+            default:                        return false
+            }
+        })
+        if let targetItem = item, let index = snapshot.indexOfItem(targetItem) {
+            tableView.scrollToRow(at: IndexPath(row: index, section: 0), at: .middle, animated: true)
+        }
+    }
+    
     @objc private func dropBarButtonItemPressed(_ sender: UIBarButtonItem) {
-        let dropping = Array(viewModel.fetchedResultsController.fetchedObjects?.prefix(50) ?? [])
-        viewModel.fetchedResultsController.managedObjectContext.performChanges {
-            for object in dropping {
-                object.tweet.flatMap { self.viewModel.fetchedResultsController.managedObjectContext.delete($0) }
-                self.viewModel.fetchedResultsController.managedObjectContext.delete(object)
+        let droppingObjectIDs = Array(viewModel.fetchedResultsController.fetchedObjects?.prefix(50) ?? []).map { $0.objectID }
+        context.apiService.backgroundManagedObjectContext.performChanges {
+            for objectID in droppingObjectIDs {
+                let object = self.context.apiService.backgroundManagedObjectContext.object(with: objectID) as! TimelineIndex
+                self.context.apiService.backgroundManagedObjectContext.delete(object.tweet!)
+                self.context.apiService.backgroundManagedObjectContext.delete(object)
             }
         }
         .sink { result in
@@ -141,6 +167,25 @@ extension HomeTimelineViewController {
         .store(in: &disposeBag)
     }
     
+    @objc private func lastBarButtonItemPressed(_ sender: UIBarButtonItem) {
+        if let last = viewModel.fetchedResultsController.fetchedObjects?.last {
+            let objectID = last.objectID
+            context.apiService.backgroundManagedObjectContext.performChanges {
+                let object = self.context.apiService.backgroundManagedObjectContext.object(with: objectID) as! TimelineIndex
+                object.tweet!.update(hasMore: true)
+            }
+            .sink { result in
+                switch result {
+                case .success:
+                    break
+                case .failure(let error):
+                    assertionFailure(error.localizedDescription)
+                }
+            }
+            .store(in: &disposeBag)
+        }
+        
+    }
     #endif
 }
 
@@ -156,11 +201,10 @@ extension HomeTimelineViewController {
             let windowHeight = window.frame.height
             let loaderAppear = (loaderTableViewCellFrameInWindow.origin.y + 0.8 * loaderTableViewCell.frame.height) < (windowHeight - tabBar.frame.height)
             if loaderAppear {
-                print("LOAD~~~~~~~")
-//                viewModel.stateMachine.enter(UserTimelineViewModel.State.LoadingMore.self)
+                viewModel.loadoldestStateMachine.enter(HomeTimelineViewModel.LoadOldestState.Loading.self)
             }
         } else {
-//            viewModel.stateMachine.enter(UserTimelineViewModel.State.LoadingMore.self)
+            viewModel.loadoldestStateMachine.enter(HomeTimelineViewModel.LoadOldestState.Loading.self)
         }
     }
 }

@@ -23,6 +23,8 @@ final class ProfilePagingViewController: TabmanViewController {
     // MARK: - PageboyViewControllerDelegate
     
     override func pageboyViewController(_ pageboyViewController: PageboyViewController, didScrollToPageAt index: TabmanViewController.PageIndex, direction: PageboyViewController.NavigationDirection, animated: Bool) {
+        super.pageboyViewController(pageboyViewController, didScrollToPageAt: index, direction: direction, animated: animated)
+        
         let viewController = viewModel.viewControllers[index]
         pagingDelegate?.profilePagingViewController(self, didScrollToPostTimelineViewController: viewController, atIndex: index)
     }

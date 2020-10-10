@@ -33,20 +33,35 @@ final class HomeTimelineViewModel: NSObject {
     weak var timelinePostTableViewCellDelegate: TimelinePostTableViewCellDelegate?
     
     // output
-    private(set) lazy var stateMachine: GKStateMachine = {
+    // top loader
+    private(set) lazy var loadLatestStateMachine: GKStateMachine = {
         // exclude timeline middle fetcher state
         let stateMachine = GKStateMachine(states: [
-            State.Initial(viewModel: self),
-            State.Reloading(viewModel: self),
-            State.Fail(viewModel: self),
-            State.Idle(viewModel: self),
-            State.LoadingMore(viewModel: self),
-            State.NoMore(viewModel: self),
+            LoadLatestState.Initial(viewModel: self),
+            LoadLatestState.Loading(viewModel: self),
+            LoadLatestState.Fail(viewModel: self),
+            LoadLatestState.Idle(viewModel: self),
         ])
-        stateMachine.enter(State.Initial.self)
+        stateMachine.enter(LoadLatestState.Initial.self)
         return stateMachine
     }()
-    lazy var stateMachinePublisher = CurrentValueSubject<State, Never>(State.Initial(viewModel: self))
+    lazy var loadLatestStateMachinePublisher = CurrentValueSubject<LoadLatestState, Never>(LoadLatestState.Initial(viewModel: self))
+    // bottom loader
+    private(set) lazy var loadoldestStateMachine: GKStateMachine = {
+        // exclude timeline middle fetcher state
+        let stateMachine = GKStateMachine(states: [
+            LoadOldestState.Initial(viewModel: self),
+            LoadOldestState.Loading(viewModel: self),
+            LoadOldestState.Fail(viewModel: self),
+            LoadOldestState.Idle(viewModel: self),
+            LoadOldestState.NoMore(viewModel: self),
+        ])
+        stateMachine.enter(LoadOldestState.Initial.self)
+        return stateMachine
+    }()
+    lazy var loadOldestStateMachinePublisher = CurrentValueSubject<LoadOldestState, Never>(LoadOldestState.Initial(viewModel: self))
+    // middle loader
+    let loadMiddleAnchorList = CurrentValueSubject<[Tweet.TweetID], Never>([])
     var diffableDataSource: UITableViewDiffableDataSource<TimelineSection, TimelineItem>?
     var cellFrameCache = NSCache<NSNumber, NSValue>()
     
@@ -98,6 +113,19 @@ extension HomeTimelineViewModel {
                 return cell
             case .homeTimelineMiddleLoader(let upper):
                 let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: TimelineMiddleLoaderTableViewCell.self), for: indexPath) as! TimelineMiddleLoaderTableViewCell
+                self.loadMiddleAnchorList
+                    .receive(on: DispatchQueue.main)
+                    .sink { ids in
+                        let loading = ids.contains(upper)
+                        cell.loadMoreButton.isHidden = loading
+//                        cell.activityIndicatorView.isHidden = !loading
+                        if loading {
+                            cell.activityIndicatorView.startAnimating()
+                        } else {
+                            cell.activityIndicatorView.stopAnimating()
+                        }
+                    }
+                    .store(in: &cell.disposeBag)
                 return cell
             case .bottomLoader:
                 let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: TimelineBottomLoaderTableViewCell.self), for: indexPath) as! TimelineBottomLoaderTableViewCell
@@ -112,18 +140,18 @@ extension HomeTimelineViewModel {
     
     static func configure(cell: TimelinePostTableViewCell, timelineIndex: TimelineIndex, attribute: TimelineItem.Attribute) {
         if let tweet = timelineIndex.tweet {
-            configure(cell: cell, tweetInterface: tweet)
+            configure(cell: cell, tweet: tweet)
             internalConfigure(cell: cell, tweet: tweet, attribute: attribute)
         }
     }
 
-    static func configure(cell: TimelinePostTableViewCell, tweetInterface tweet: TweetInterface) {
+    static func configure(cell: TimelinePostTableViewCell, tweet: Tweet) {
         // set retweet display
-        cell.timelinePostView.retweetContainerStackView.isHidden = tweet.retweetObject == nil
-        cell.timelinePostView.retweetInfoLabel.text = tweet.userObject.name.flatMap { $0 + " Retweeted" } ?? " "
+        cell.timelinePostView.retweetContainerStackView.isHidden = tweet.retweet == nil
+        cell.timelinePostView.retweetInfoLabel.text = tweet.user.name.flatMap { $0 + " Retweeted" } ?? " "
 
         // set avatar
-        if let avatarImageURL = (tweet.retweetObject?.userObject ?? tweet.userObject).avatarImageURL() {
+        if let avatarImageURL = (tweet.retweet?.user ?? tweet.user).avatarImageURL() {
             let placeholderImage = UIImage
                 .placeholder(size: TimelinePostView.avatarImageViewSize, color: .systemFill)
                 .af.imageRoundedIntoCircle()
@@ -139,25 +167,25 @@ extension HomeTimelineViewModel {
         }
 
         // set name and username
-        cell.timelinePostView.nameLabel.text = (tweet.retweetObject?.userObject ?? tweet.userObject).name
-        cell.timelinePostView.usernameLabel.text = (tweet.retweetObject?.userObject ?? tweet.userObject).screenName.flatMap { "@" + $0 }
+        cell.timelinePostView.nameLabel.text = (tweet.retweet?.user ?? tweet.user).name
+        cell.timelinePostView.usernameLabel.text = (tweet.retweet?.user ?? tweet.user).screenName.flatMap { "@" + $0 }
 
         // set date
-        let createdAt = (tweet.retweetObject ?? tweet).createdAt
+        let createdAt = (tweet.retweet ?? tweet).createdAt
         cell.timelinePostView.dateLabel.text = createdAt.shortTimeAgoSinceNow
         
         // set text
-        cell.timelinePostView.activeTextLabel.text = (tweet.retweetObject ?? tweet).text
+        cell.timelinePostView.activeTextLabel.text = (tweet.retweet ?? tweet).text
 
         // set action toolbar title
         let retweetCountTitle: String = {
-            let count = (tweet.retweetObject ?? tweet).retweetCountInt
+            let count = (tweet.retweet ?? tweet).retweetCount.flatMap { Int(truncating: $0) }
             return HomeTimelineViewModel.formattedNumberTitleForActionButton(count)
         }()
         cell.timelinePostView.actionToolbar.retweetButton.setTitle(retweetCountTitle, for: .normal)
 
         let favoriteCountTitle: String = {
-            let count = (tweet.retweetObject ?? tweet).favoriteCountInt
+            let count = (tweet.retweet ?? tweet).favoriteCount.flatMap { Int(truncating: $0) }
             return HomeTimelineViewModel.formattedNumberTitleForActionButton(count)
         }()
         cell.timelinePostView.actionToolbar.favoriteButton.setTitle(favoriteCountTitle, for: .normal)
@@ -213,10 +241,10 @@ extension HomeTimelineViewModel {
         cell.timelinePostView.mosaicImageView.isHidden = mosaicMetas.isEmpty
 
         // set quote display
-        let quote = tweet.retweetObject?.quoteObject ?? tweet.quoteObject
+        let quote = tweet.retweet?.quote ?? tweet.quote
         if let quote = quote {
             // set avatar
-            if let avatarImageURL = quote.userObject.avatarImageURL() {
+            if let avatarImageURL = quote.user.avatarImageURL() {
                 let placeholderImage = UIImage
                     .placeholder(size: TimelinePostView.avatarImageViewSize, color: .systemFill)
                     .af.imageRoundedIntoCircle()
@@ -232,8 +260,8 @@ extension HomeTimelineViewModel {
             }
 
             // set name and username
-            cell.timelinePostView.quotePostView.nameLabel.text = quote.userObject.name
-            cell.timelinePostView.quotePostView.usernameLabel.text = quote.userObject.screenName.flatMap { "@" + $0 }
+            cell.timelinePostView.quotePostView.nameLabel.text = quote.user.name
+            cell.timelinePostView.quotePostView.usernameLabel.text = quote.user.screenName.flatMap { "@" + $0 }
 
             // set date
             let createdAt = quote.createdAt
@@ -245,9 +273,9 @@ extension HomeTimelineViewModel {
         cell.timelinePostView.quotePostView.isHidden = quote == nil
     }
     
-    private static func internalConfigure(cell: TimelinePostTableViewCell, tweet: TweetInterface, attribute: TimelineItem.Attribute) {
+    private static func internalConfigure(cell: TimelinePostTableViewCell, tweet: Tweet, attribute: TimelineItem.Attribute) {
         // tweet date updater
-        let createdAt = (tweet.retweetObject ?? tweet).createdAt
+        let createdAt = (tweet.retweet ?? tweet).createdAt
         NotificationCenter.default.publisher(for: HomeTimelineViewModel.secondStepTimerTriggered, object: nil)
             .sink { _ in
                 cell.timelinePostView.dateLabel.text = createdAt.shortTimeAgoSinceNow
@@ -255,7 +283,7 @@ extension HomeTimelineViewModel {
             .store(in: &cell.disposeBag)
         
         // quote date updater
-        let quote = tweet.retweetObject?.quoteObject ?? tweet.quoteObject
+        let quote = tweet.retweet?.quote ?? tweet.quote
         if let quote = quote {
             let createdAt = quote.createdAt
             cell.timelinePostView.quotePostView.dateLabel.text = createdAt.shortTimeAgoSinceNow
@@ -268,10 +296,14 @@ extension HomeTimelineViewModel {
         
 
         // set separator line indent in non-conflict order
-        if attribute.indentSeparatorLine {
+        switch attribute.separatorLineStyle {
+        case .indent:
             cell.separatorLineLeadingLayoutConstraint.isActive = false
             cell.separatorLineIndentLeadingLayoutConstraint.isActive = true
-        } else {
+        case .expand:
+            cell.separatorLineIndentLeadingLayoutConstraint.isActive = false
+            cell.separatorLineLeadingLayoutConstraint.isActive = true
+        case .normal:
             cell.separatorLineIndentLeadingLayoutConstraint.isActive = false
             cell.separatorLineLeadingLayoutConstraint.isActive = true
         }
@@ -300,6 +332,8 @@ extension HomeTimelineViewModel: NSFetchedResultsControllerDelegate {
     }
     
     func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChangeContentWith snapshot: NSDiffableDataSourceSnapshotReference) {
+        os_log("%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
+
         guard let tableView = self.tableView else { fatalError() }
         guard let navigationBar = self.contentOffsetAdjustableTimelineViewControllerDelegate?.navigationBar() else { fatalError() }
         
@@ -316,6 +350,7 @@ extension HomeTimelineViewModel: NSFetchedResultsControllerDelegate {
         
         managedObjectContext.perform {
             let start = CACurrentMediaTime()
+            var shouldAddBottomLoader = false
             for (i, objectID) in snapshot.itemIdentifiers.enumerated() {
                 let attribute: TimelineItem.Attribute = {
                     for item in oldSnapshot.itemIdentifiers {
@@ -332,17 +367,25 @@ extension HomeTimelineViewModel: NSFetchedResultsControllerDelegate {
                 
                 let timelineIndex = managedObjectContext.object(with: objectID) as! TimelineIndex
                 if let tweet = timelineIndex.tweet {
-                    attribute.indentSeparatorLine = !tweet.hasMore
-                    
-                    if tweet.hasMore {
-                        let isLast = i == snapshot.itemIdentifiers.count - 1
-                        if isLast {
-                            newSnapshot.appendItems([.bottomLoader], toSection: .main)
+                    let isLast = i == snapshot.itemIdentifiers.count - 1
+                    attribute.separatorLineStyle = {
+                        if tweet.hasMore {
+                            // TODO:
+                            return .expand
                         } else {
-                            newSnapshot.appendItems([.homeTimelineMiddleLoader(upper: tweet.tweetID)], toSection: .main)
+                            return .indent
                         }
-                    } else {
-                        // do nothing
+                    }()
+                    switch (isLast, tweet.hasMore) {
+                    case (true, false):
+                        break
+                    case (false, true):
+                        newSnapshot.appendItems([.homeTimelineMiddleLoader(upper: tweet.idStr)], toSection: .main)
+                    case (true, true):
+                        shouldAddBottomLoader = true
+                        break
+                    case (false, false):
+                        break
                     }
                 }
             }   // end for
@@ -350,6 +393,10 @@ extension HomeTimelineViewModel: NSFetchedResultsControllerDelegate {
             os_log("%{public}s[%{public}ld], %{public}s: calculate home timeline snapshot cost %.2fs", ((#file as NSString).lastPathComponent), #line, #function, endSnapshot - start)
             
             DispatchQueue.main.async {
+                if shouldAddBottomLoader, !(self.loadoldestStateMachine.currentState is LoadOldestState.NoMore) {
+                    newSnapshot.appendItems([.bottomLoader], toSection: .main)
+                }
+                
                 guard let difference = self.calculateReloadSnapshotDifference(navigationBar: navigationBar, tableView: tableView, oldSnapshot: oldSnapshot, newSnapshot: newSnapshot) else {
                     diffableDataSource.apply(newSnapshot)
                     return

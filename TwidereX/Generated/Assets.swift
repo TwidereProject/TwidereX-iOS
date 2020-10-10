@@ -45,6 +45,7 @@ internal enum Asset {
     internal static let icBaselineInsertLink = ImageAsset(name: "Object&Tools/ic.baseline.insert.link")
     internal static let icBaselinePhotoLibrary = ImageAsset(name: "Object&Tools/ic.baseline.photo.library")
     internal static let icRoundLocationOn = ImageAsset(name: "Object&Tools/ic.round.location.on")
+    internal static let icRoundRefresh = ImageAsset(name: "Object&Tools/ic.round.refresh")
     internal static let icRoundShare = ImageAsset(name: "Object&Tools/ic.round.share")
     internal static let icRoundShareLarge = ImageAsset(name: "Object&Tools/ic.round.share.large")
     internal static let lockCircle = ImageAsset(name: "Object&Tools/lock.circle")
