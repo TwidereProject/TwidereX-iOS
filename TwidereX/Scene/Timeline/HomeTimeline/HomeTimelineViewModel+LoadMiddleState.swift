@@ -55,6 +55,10 @@ extension HomeTimelineViewModel.LoadMiddleState {
                 assertionFailure()
                 return
             }
+            
+            let tweetIDs = (viewModel.fetchedResultsController.fetchedObjects ?? []).compactMap { timelineIndex in
+                timelineIndex.tweet?.idStr
+            }
 
             // TODO: only set large count when using Wi-Fi
             let maxID = anchorTweetID
@@ -68,16 +72,17 @@ extension HomeTimelineViewModel.LoadMiddleState {
                         os_log("%{public}s[%{public}ld], %{public}s: fetch tweets failed. %s", ((#file as NSString).lastPathComponent), #line, #function, error.localizedDescription)
                         stateMachine.enter(Fail.self)
                     case .finished:
-                        // delay change after snapshot updated
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
-                            stateMachine.enter(Success.self)
-                        }
                         break
                     }
                 } receiveValue: { response in
-                    let value = response.value
-                    os_log("%{public}s[%{public}ld], %{public}s: load %{public}ld tweet", ((#file as NSString).lastPathComponent), #line, #function, value.count)
-
+                    let tweets = response.value
+                    let newTweets = tweets.filter { !tweetIDs.contains($0.idStr) }
+                    os_log("%{public}s[%{public}ld], %{public}s: load %{public}ld tweets, %{public}%ld new tweets", ((#file as NSString).lastPathComponent), #line, #function, tweets.count, newTweets.count)
+                    if newTweets.isEmpty {
+                        stateMachine.enter(Fail.self)
+                    } else {
+                        stateMachine.enter(Success.self)
+                    }
                 }
                 .store(in: &viewModel.disposeBag)
         }
