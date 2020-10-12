@@ -22,7 +22,7 @@ class ProfileViewModel: NSObject {
     let avatarImageURL: CurrentValueSubject<URL?, Never>
     let name: CurrentValueSubject<String?, Never>
     let username: CurrentValueSubject<String?, Never>
-    let isFolling: CurrentValueSubject<Bool?, Never>
+//    let isFolling: CurrentValueSubject<Bool?, Never>
     let bioDescription: CurrentValueSubject<String?, Never>
     let url: CurrentValueSubject<String?, Never>
     let location: CurrentValueSubject<String?, Never>
@@ -36,7 +36,7 @@ class ProfileViewModel: NSObject {
         self.avatarImageURL = CurrentValueSubject(nil)
         self.name = CurrentValueSubject(nil)
         self.username = CurrentValueSubject(nil)
-        self.isFolling = CurrentValueSubject(nil)
+//        self.isFolling = CurrentValueSubject(nil)
         self.bioDescription = CurrentValueSubject(nil)
         self.url = CurrentValueSubject(nil)
         self.location = CurrentValueSubject(nil)
@@ -52,7 +52,7 @@ class ProfileViewModel: NSObject {
         self.avatarImageURL = CurrentValueSubject(twitterUser.avatarImageURL(size: .original))
         self.name = CurrentValueSubject(twitterUser.name)
         self.username = CurrentValueSubject(twitterUser.screenName)
-        self.isFolling = CurrentValueSubject(twitterUser.following)
+//        self.isFolling = CurrentValueSubject(twitterUser.following)
         self.bioDescription = CurrentValueSubject(twitterUser.bioDescription)
         self.url = CurrentValueSubject(twitterUser.url)
         self.location = CurrentValueSubject(twitterUser.location)
@@ -74,7 +74,7 @@ extension ProfileViewModel {
         self.avatarImageURL.value = twitterUser?.avatarImageURL(size: .original)
         self.name.value = twitterUser?.name
         self.username.value = twitterUser?.screenName
-        self.isFolling.value = twitterUser?.following
+//        self.isFolling.value = twitterUser?.following
         self.bioDescription.value = twitterUser?.bioDescription
         self.url.value = twitterUser?.url
         self.location.value = twitterUser?.location

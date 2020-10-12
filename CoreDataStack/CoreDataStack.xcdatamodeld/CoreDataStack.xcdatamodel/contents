@@ -32,6 +32,7 @@
         <attribute name="source" optional="YES" attributeType="String"/>
         <attribute name="text" attributeType="String"/>
         <attribute name="updatedAt" attributeType="Date" usesScalarValueType="NO"/>
+        <relationship name="likeBy" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="TwitterUser" inverseName="likes" inverseEntity="TwitterUser"/>
         <relationship name="quote" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Tweet" inverseName="quoteFrom" inverseEntity="Tweet"/>
         <relationship name="quoteFrom" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Tweet" inverseName="quote" inverseEntity="Tweet"/>
         <relationship name="retweet" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Tweet" inverseName="retweetFrom" inverseEntity="Tweet"/>
@@ -57,7 +58,6 @@
         <attribute name="createdAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="favouritesCount" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="followersCount" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
-        <attribute name="followingRaw" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="friendsCount" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="id" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="idStr" attributeType="String"/>
@@ -70,14 +70,19 @@
         <attribute name="statusesCount" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="updatedAt" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="url" optional="YES" attributeType="String"/>
+        <relationship name="followedBy" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="TwitterUser" inverseName="followedByFrom" inverseEntity="TwitterUser"/>
+        <relationship name="followedByFrom" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="TwitterUser" inverseName="followedBy" inverseEntity="TwitterUser"/>
+        <relationship name="following" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="TwitterUser" inverseName="followingFrom" inverseEntity="TwitterUser"/>
+        <relationship name="followingFrom" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="TwitterUser" inverseName="following" inverseEntity="TwitterUser"/>
+        <relationship name="likes" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Tweet" inverseName="likeBy" inverseEntity="Tweet"/>
         <relationship name="tweets" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Tweet" inverseName="user" inverseEntity="Tweet"/>
     </entity>
     <elements>
         <element name="Entity" positionX="-27" positionY="135" width="128" height="43"/>
         <element name="TimelineIndex" positionX="-54" positionY="63" width="128" height="133"/>
         <element name="Toots" positionX="-18" positionY="81" width="128" height="103"/>
-        <element name="Tweet" positionX="371.83984375" positionY="-55.8125" width="128" height="373"/>
+        <element name="Tweet" positionX="371.83984375" positionY="-55.8125" width="128" height="388"/>
         <element name="TwitterAuthentication" positionX="-63" positionY="-18" width="128" height="208"/>
-        <element name="TwitterUser" positionX="0" positionY="108" width="128" height="313"/>
+        <element name="TwitterUser" positionX="0" positionY="108" width="128" height="373"/>
     </elements>
 </model>

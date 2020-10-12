@@ -142,6 +142,10 @@ final public class Tweet: NSManagedObject {
     // one-to-many relationship
     @NSManaged public private(set) var retweetFrom: Set<Tweet>?
     @NSManaged public private(set) var quoteFrom: Set<Tweet>?
+    
+    // many-to-many relationship
+    @NSManaged public private(set) var likeBy: Set<TwitterUser>?
+    @NSManaged public private(set) var retweetBy: Set<TwitterUser>?
 }
 
 extension Tweet {

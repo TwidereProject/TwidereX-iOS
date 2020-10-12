@@ -199,18 +199,18 @@ extension ProfileViewController {
             .map { username in username.flatMap { "@" + $0 } ?? " " }
             .assign(to: \.text, on: profileHeaderViewController.profileBannerView.usernameLabel)
             .store(in: &disposeBag)
-        viewModel.isFolling
-            .sink { [weak self] isFolling in
-                guard let self = self else { return }
-                let followingButton = self.profileHeaderViewController.profileBannerView.profileBannerInfoActionView.followActionButton
-                let title = isFolling == true ? "Following" : "Follow"
-                followingButton.setTitle(title, for: .normal)
-                followingButton.setBackgroundImage(isFolling == true ? UIImage.placeholder(color: Asset.Colors.hightLight.color) : nil, for: .normal)
-                followingButton.layer.borderWidth = isFolling == true ? 0 : 1
-                followingButton.setTitleColor(isFolling == true ? .white : Asset.Colors.hightLight.color, for: .normal)
-                followingButton.isEnabled = isFolling != nil
-            }
-            .store(in: &disposeBag)
+//        viewModel.isFolling
+//            .sink { [weak self] isFolling in
+//                guard let self = self else { return }
+//                let followingButton = self.profileHeaderViewController.profileBannerView.profileBannerInfoActionView.followActionButton
+//                let title = isFolling == true ? "Following" : "Follow"
+//                followingButton.setTitle(title, for: .normal)
+//                followingButton.setBackgroundImage(isFolling == true ? UIImage.placeholder(color: Asset.Colors.hightLight.color) : nil, for: .normal)
+//                followingButton.layer.borderWidth = isFolling == true ? 0 : 1
+//                followingButton.setTitleColor(isFolling == true ? .white : Asset.Colors.hightLight.color, for: .normal)
+//                followingButton.isEnabled = isFolling != nil
+//            }
+//            .store(in: &disposeBag)
         viewModel.bioDescription
             .map { $0 ?? " " }
             .assign(to: \.text, on: profileHeaderViewController.profileBannerView.bioLabel)

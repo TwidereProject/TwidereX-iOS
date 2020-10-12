@@ -22,15 +22,15 @@ final public class TwitterUser: NSManagedObject {
     @NSManaged public private(set) var createdAt: Date?
     @NSManaged public private(set) var updatedAt: Date
     
-    @NSManaged public private(set) var followingRaw: NSNumber?
-    public var following: Bool? {
-        get {
-            return followingRaw.flatMap { Bool(truncating: $0) }
-        }
-        set {
-            followingRaw = newValue.flatMap { NSNumber(booleanLiteral: $0) }
-        }
-    }
+//    @NSManaged public private(set) var followingRaw: NSNumber?
+//    public var following: Bool? {
+//        get {
+//            return followingRaw.flatMap { Bool(truncating: $0) }
+//        }
+//        set {
+//            followingRaw = newValue.flatMap { NSNumber(booleanLiteral: $0) }
+//        }
+//    }
     
     @NSManaged public private(set) var friendsCount: NSNumber?
     public var friendsCountInt: Int? { return friendsCount.flatMap { Int(truncating: $0) } }
@@ -48,6 +48,16 @@ final public class TwitterUser: NSManagedObject {
     
     // one-to-many relationship
     @NSManaged public private(set) var tweets: Set<Tweet>?
+    
+    // many-to-many relationship
+    @NSManaged public private(set) var likes: Set<Tweet>?
+    @NSManaged public private(set) var retweets: Set<Tweet>?
+    
+    @NSManaged public private(set) var following: Set<TwitterUser>?
+    @NSManaged public private(set) var followingFrom: Set<TwitterUser>?
+    
+    @NSManaged public private(set) var followedBy: Set<TwitterUser>?
+    @NSManaged public private(set) var followedByFrom: Set<TwitterUser>?
 }
 
 extension TwitterUser {
@@ -70,7 +80,7 @@ extension TwitterUser {
         user.location = property.location
         user.createdAt = property.createdAt
         
-        user.following = property.following
+//        user.following = property.following
         
         user.friendsCount = property.friendsCount
         user.followersCount = property.followersCount
@@ -109,11 +119,11 @@ extension TwitterUser {
         }
     }
     
-    public func update(following: Bool?) {
-        if self.following != following {
-            self.following = following
-        }
-    }
+//    public func update(following: Bool?) {
+//        if self.following != following {
+//            self.following = following
+//        }
+//    }
     
     public func update(friendsCount: Int) {
         if self.friendsCount != NSNumber(value: friendsCount) {
@@ -168,7 +178,7 @@ extension TwitterUser {
         public let location: String?
         public let createdAt: Date?
         
-        public let following: Bool?
+//        public let following: Bool?
         
         public let friendsCount: NSNumber?
         public let followersCount: NSNumber?
@@ -189,7 +199,7 @@ extension TwitterUser {
             url: String?,
             location: String?,
             createdAt: Date?,
-            following: Bool?,
+//            following: Bool?,
             friendsCount: NSNumber?,
             followersCount: NSNumber?,
             listedCount: NSNumber?,
@@ -206,7 +216,7 @@ extension TwitterUser {
             self.url = url
             self.location = location
             self.createdAt = createdAt
-            self.following = following
+//            self.following = following
             self.friendsCount = friendsCount
             self.followersCount = followersCount
             self.listedCount = listedCount

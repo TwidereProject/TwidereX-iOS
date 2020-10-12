@@ -86,7 +86,7 @@ extension APIService {
         entity.userDescription.flatMap { user.update(bioDescription: $0) }
         entity.url.flatMap { user.update(url: $0) }
         entity.location.flatMap { user.update(location: $0) }
-        entity.following.flatMap { user.update(following: $0) }
+//        entity.following.flatMap { user.update(following: $0) }
         entity.friendsCount.flatMap { user.update(friendsCount: $0) }
         entity.followersCount.flatMap { user.update(followersCount: $0) }
         entity.listedCount.flatMap { user.update(listedCount: $0) }
