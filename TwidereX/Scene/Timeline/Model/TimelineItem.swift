@@ -23,7 +23,7 @@ enum TimelineItem {
 
 extension TimelineItem {
     class Attribute: Hashable {
-        var separatorLineStyle: SeparatorLineStyle = .normal
+        var separatorLineStyle: SeparatorLineStyle = .indent
         
         static func == (lhs: TimelineItem.Attribute, rhs: TimelineItem.Attribute) -> Bool {
             return lhs.separatorLineStyle == rhs.separatorLineStyle
@@ -34,9 +34,9 @@ extension TimelineItem {
         }
         
         enum SeparatorLineStyle {
-            case expand
-            case normal
-            case indent
+            case indent     // alignment to name label
+            case expand     // alignment to table view two edges
+            case normal     // alignment to readable guideline
         }
     }
 }

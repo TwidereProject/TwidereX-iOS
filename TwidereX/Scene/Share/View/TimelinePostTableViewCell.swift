@@ -28,8 +28,13 @@ final class TimelinePostTableViewCell: UITableViewCell {
     var quoteDateLabelUpdateSubscription: AnyCancellable?
     
     let timelinePostView = TimelinePostView()
-    var separatorLineLeadingLayoutConstraint: NSLayoutConstraint!
+    
+    var separatorLineNormalLeadingLayoutConstraint: NSLayoutConstraint!
+    var separatorLineExpandLeadingLayoutConstraint: NSLayoutConstraint!
     var separatorLineIndentLeadingLayoutConstraint: NSLayoutConstraint!
+    
+    var separatorLineNormalTrailingLayoutConstraint: NSLayoutConstraint!
+    var separatorLineExpandTrailingLayoutConstraint: NSLayoutConstraint!
     
     private let avatarImageViewTapGestureRecognizer: UITapGestureRecognizer = {
         let tapGestureRecognizer = UITapGestureRecognizer()
@@ -86,12 +91,15 @@ extension TimelinePostTableViewCell {
         
         let separatorLine = UIView.separatorLine
         separatorLine.translatesAutoresizingMaskIntoConstraints = false
-        separatorLineLeadingLayoutConstraint = separatorLine.leadingAnchor.constraint(equalTo: contentView.readableContentGuide.leadingAnchor)
+        separatorLineNormalLeadingLayoutConstraint = separatorLine.leadingAnchor.constraint(equalTo: contentView.readableContentGuide.leadingAnchor)
+        separatorLineExpandLeadingLayoutConstraint = separatorLine.leadingAnchor.constraint(equalTo: contentView.leadingAnchor)
         separatorLineIndentLeadingLayoutConstraint = separatorLine.leadingAnchor.constraint(equalTo: timelinePostView.nameLabel.leadingAnchor)
+        separatorLineNormalTrailingLayoutConstraint = separatorLine.trailingAnchor.constraint(equalTo: contentView.readableContentGuide.trailingAnchor)
+        separatorLineExpandTrailingLayoutConstraint = separatorLine.trailingAnchor.constraint(equalTo: contentView.trailingAnchor)
         contentView.addSubview(separatorLine)
         NSLayoutConstraint.activate([
             separatorLineIndentLeadingLayoutConstraint,
-            contentView.readableContentGuide.trailingAnchor.constraint(equalTo: separatorLine.trailingAnchor),
+            separatorLineNormalTrailingLayoutConstraint,
             separatorLine.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
             separatorLine.heightAnchor.constraint(equalToConstant: UIView.separatorLineHeight(of: separatorLine)),
         ])

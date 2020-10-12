@@ -54,6 +54,12 @@ extension APIService {
             os_signpost(.event, log: log, name: "load tweets into cache", signpostID: cacheTaskSignpostID, "cached %{public}ld tweets", _tweetCache.count)
             os_signpost(.end, log: log, name: "load tweets into cache", signpostID: cacheTaskSignpostID)
             
+            // remote timeline merge local timeline record set
+            // declare it before do working
+            let mergedOldTweetsInTimeline = _tweetCache.filter {
+                return $0.timelineIndex != nil
+            }
+            
             let updateDatabaseTaskSignpostID = OSSignpostID(log: log)
             var workingRecords: [WorkingRecord] = []
             os_signpost(.begin, log: log, name: "update database", signpostID: updateDatabaseTaskSignpostID)
@@ -68,11 +74,6 @@ extension APIService {
                 workingRecords.append(record)
             }   // end for…
             os_signpost(.end, log: log, name: "update database", signpostID: updateDatabaseTaskSignpostID)
-            
-            // remote timeline merge local timeline record set
-            let mergedOldTweetsInTimeline = workingRecords.filter {
-                return $0.tweet.timelineIndex != nil && $0.tweetProcessType == .merge
-            }
             
             // home timeline tasks
             if persistType == .homeTimeline {
@@ -102,7 +103,7 @@ extension APIService {
                     if let anchorTweet = anchorTweet {
                         // using anchor. set hasMore when (overlap itself OR no overlap) AND oldest record NOT anchor
                         let isNoOverlap = mergedOldTweetsInTimeline.isEmpty
-                        let isOnlyOverlapItself = mergedOldTweetsInTimeline.count == 1 && mergedOldTweetsInTimeline.first?.tweet.idStr == anchorTweet.idStr
+                        let isOnlyOverlapItself = mergedOldTweetsInTimeline.count == 1 && mergedOldTweetsInTimeline.first?.idStr == anchorTweet.idStr
                         let isAnchorEqualOldestRecord = oldestRecord.tweet.idStr == anchorTweet.idStr
                         if (isNoOverlap || isOnlyOverlapItself) && !isAnchorEqualOldestRecord {
                             oldestRecord.tweet.update(hasMore: true)

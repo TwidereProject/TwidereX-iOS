@@ -59,6 +59,7 @@
 		DBA4956325231C9D007C7D0E /* TwitterUserInterface.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBA4956225231C9D007C7D0E /* TwitterUserInterface.swift */; };
 		DBA5B1A82510BA330077FDD5 /* TweetConversationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBA5B1A72510BA330077FDD5 /* TweetConversationViewController.swift */; };
 		DBA6B19925316800005FB0B4 /* HomeTimelineViewModel+LoadOldestState.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBA6B19825316800005FB0B4 /* HomeTimelineViewModel+LoadOldestState.swift */; };
+		DBA6B1A425340B3F005FB0B4 /* HomeTimelineViewModel+LoadMiddleState.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBA6B1A325340B3F005FB0B4 /* HomeTimelineViewModel+LoadMiddleState.swift */; };
 		DBB09D562511BA9700AE260E /* APIService+Lookup.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBB09D552511BA9700AE260E /* APIService+Lookup.swift */; };
 		DBD98489251CB88A00ED87A1 /* Tabman in Frameworks */ = {isa = PBXBuildFile; productRef = DBD98488251CB88A00ED87A1 /* Tabman */; };
 		DBDA8E2224FCF8A3006750DC /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBDA8E2124FCF8A3006750DC /* AppDelegate.swift */; };
@@ -261,6 +262,7 @@
 		DBA4956225231C9D007C7D0E /* TwitterUserInterface.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwitterUserInterface.swift; sourceTree = "<group>"; };
 		DBA5B1A72510BA330077FDD5 /* TweetConversationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TweetConversationViewController.swift; sourceTree = "<group>"; };
 		DBA6B19825316800005FB0B4 /* HomeTimelineViewModel+LoadOldestState.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "HomeTimelineViewModel+LoadOldestState.swift"; path = "TwidereX/Scene/Timeline/HomeTimeline/HomeTimelineViewModel+LoadOldestState.swift"; sourceTree = SOURCE_ROOT; };
+		DBA6B1A325340B3F005FB0B4 /* HomeTimelineViewModel+LoadMiddleState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "HomeTimelineViewModel+LoadMiddleState.swift"; sourceTree = "<group>"; };
 		DBB09D552511BA9700AE260E /* APIService+Lookup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "APIService+Lookup.swift"; sourceTree = "<group>"; };
 		DBDA8E1E24FCF8A3006750DC /* TwidereX.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TwidereX.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		DBDA8E2124FCF8A3006750DC /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -706,6 +708,7 @@
 				DBDA8E9E24FE0FFF006750DC /* HomeTimelineViewController.swift */,
 				DBE76D1D2500E65D00DEB0FC /* HomeTimelineViewModel.swift */,
 				DB969A3825305EEE0053CB31 /* HomeTimelineViewModel+LoadLatestState.swift */,
+				DBA6B1A325340B3F005FB0B4 /* HomeTimelineViewModel+LoadMiddleState.swift */,
 				DBA6B19825316800005FB0B4 /* HomeTimelineViewModel+LoadOldestState.swift */,
 			);
 			path = HomeTimeline;
@@ -1325,6 +1328,7 @@
 				DB0849B0251375E9009E0CD7 /* ConversationPostView.swift in Sources */,
 				DB969A66253064FE0053CB31 /* DispatchQueue.swift in Sources */,
 				DB43488D251DFF0F005B599F /* ProfileBannerStatusItemView.swift in Sources */,
+				DBA6B1A425340B3F005FB0B4 /* HomeTimelineViewModel+LoadMiddleState.swift in Sources */,
 				DBE76D1E2500E65D00DEB0FC /* HomeTimelineViewModel.swift in Sources */,
 				DBDA8E8A24FE0615006750DC /* DocumentStore.swift in Sources */,
 				DB98DC0E2507862D0087E30F /* TimelineMiddleLoaderTableViewCell.swift in Sources */,
@@ -1619,7 +1623,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = TwidereX/TwidereX.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 5;
+				CURRENT_PROJECT_VERSION = 6;
 				DEVELOPMENT_ASSET_PATHS = "TwidereX/Resources/Preview\\ Assets.xcassets";
 				DEVELOPMENT_TEAM = 7LFDZ96332;
 				INFOPLIST_FILE = TwidereX/Info.plist;
@@ -1627,7 +1631,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.3.1;
+				MARKETING_VERSION = 0.3.2;
 				PRODUCT_BUNDLE_IDENTIFIER = com.twidere.TwidereX;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
@@ -1643,7 +1647,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = TwidereX/TwidereX.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 5;
+				CURRENT_PROJECT_VERSION = 6;
 				DEVELOPMENT_ASSET_PATHS = "TwidereX/Resources/Preview\\ Assets.xcassets";
 				DEVELOPMENT_TEAM = 7LFDZ96332;
 				INFOPLIST_FILE = TwidereX/Info.plist;
@@ -1651,7 +1655,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.3.1;
+				MARKETING_VERSION = 0.3.2;
 				PRODUCT_BUNDLE_IDENTIFIER = com.twidere.TwidereX;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;

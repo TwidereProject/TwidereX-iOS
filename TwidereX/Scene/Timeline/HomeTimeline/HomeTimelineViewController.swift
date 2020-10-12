@@ -8,6 +8,7 @@
 import os.log
 import UIKit
 import Combine
+import CoreData
 import CoreDataStack
 import TwitterAPI
 
@@ -26,6 +27,7 @@ final class HomeTimelineViewController: UIViewController, NeedsDependency {
         tableView.register(TimelineBottomLoaderTableViewCell.self, forCellReuseIdentifier: String(describing: TimelineBottomLoaderTableViewCell.self))
         tableView.rowHeight = UITableView.automaticDimension
         tableView.separatorStyle = .none
+        tableView.delaysContentTouches = false
         return tableView
     }()
     
@@ -65,6 +67,7 @@ extension HomeTimelineViewController {
         viewModel.contentOffsetAdjustableTimelineViewControllerDelegate = self
         viewModel.tableView = tableView
         viewModel.timelinePostTableViewCellDelegate = self
+        viewModel.timelineMiddleLoaderTableViewCellDelegate = self
         viewModel.setupDiffableDataSource(for: tableView)
         do {
             try viewModel.fetchedResultsController.performFetch()
@@ -73,7 +76,6 @@ extension HomeTimelineViewController {
         }
         tableView.delegate = self
         tableView.dataSource = viewModel.diffableDataSource
-        
         
         // bind view model
         context.authenticationService.twitterAuthentications
@@ -148,10 +150,18 @@ extension HomeTimelineViewController {
     }
     
     @objc private func dropBarButtonItemPressed(_ sender: UIBarButtonItem) {
-        let droppingObjectIDs = Array(viewModel.fetchedResultsController.fetchedObjects?.prefix(50) ?? []).map { $0.objectID }
+        guard let diffableDataSource = viewModel.diffableDataSource else { return }
+        let snapshot = diffableDataSource.snapshot()
+        
+        let droppingObjectIDs = snapshot.itemIdentifiers.prefix(50).compactMap { item -> NSManagedObjectID? in
+            switch item {
+            case .homeTimelineIndex(let objectID, _):   return objectID
+            default:                                    return nil
+            }
+        }
         context.apiService.backgroundManagedObjectContext.performChanges {
             for objectID in droppingObjectIDs {
-                let object = self.context.apiService.backgroundManagedObjectContext.object(with: objectID) as! TimelineIndex
+                guard let object = try? self.context.apiService.backgroundManagedObjectContext.existingObject(with: objectID) as? TimelineIndex else { continue }
                 self.context.apiService.backgroundManagedObjectContext.delete(object.tweet!)
                 self.context.apiService.backgroundManagedObjectContext.delete(object)
             }
@@ -324,6 +334,26 @@ extension HomeTimelineViewController: TimelinePostTableViewCellDelegate {
             }
         default:
             return
+        }
+    }
+}
+
+// MARK: - TimelineMiddleLoaderTableViewCellDelegate
+extension HomeTimelineViewController: TimelineMiddleLoaderTableViewCellDelegate {
+    func timelineMiddleLoaderTableViewCell(_ cell: TimelineMiddleLoaderTableViewCell, loadMoreButtonDidPressed button: UIButton) {
+        guard let diffableDataSource = viewModel.diffableDataSource else { return }
+        guard let indexPath = tableView.indexPath(for: cell) else { return }
+        guard let item = diffableDataSource.itemIdentifier(for: indexPath) else { return }
+        
+        switch item {
+        case .homeTimelineMiddleLoader(let upper):
+            guard let stateMachine = viewModel.loadMiddleSateMachineList.value[upper] else {
+                assertionFailure()
+                return
+            }
+            stateMachine.enter(HomeTimelineViewModel.LoadMiddleState.Loading.self)
+        default:
+            assertionFailure()
         }
     }
 }

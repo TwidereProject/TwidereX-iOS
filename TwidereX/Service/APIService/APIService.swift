@@ -11,6 +11,7 @@ import func QuartzCore.CACurrentMediaTime
 import Combine
 import CoreData
 import TwitterAPI
+import AlamofireImage
 
 final class APIService {
         
@@ -30,10 +31,10 @@ final class APIService {
         self.backgroundManagedObjectContext = backgroundManagedObjectContext
         self.session = URLSession(configuration: .default)
         
-        // setup cache
+        // setup cache. 10MB RAM + 50MB Disk
         URLCache.shared = URLCache(memoryCapacity: 10 * 1024 * 1024, diskCapacity: 50 * 1024 * 1024, diskPath: nil)
         
-        backgroundManagedObjectContext.mergePolicy = NSMergePolicy.mergeByPropertyObjectTrump
+        backgroundManagedObjectContext.mergePolicy = NSMergePolicy.overwrite
         
         NotificationCenter.default.publisher(for: .NSManagedObjectContextDidSave, object: backgroundManagedObjectContext)
             .sink { notification in

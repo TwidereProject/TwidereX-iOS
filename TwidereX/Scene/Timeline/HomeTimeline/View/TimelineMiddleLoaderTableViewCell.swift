@@ -5,22 +5,26 @@
 //  Created by Cirno MainasuK on 2020-9-8.
 //
 
+import os.log
 import UIKit
 import Combine
 
+protocol TimelineMiddleLoaderTableViewCellDelegate: class {
+    func timelineMiddleLoaderTableViewCell(_ cell: TimelineMiddleLoaderTableViewCell, loadMoreButtonDidPressed button: UIButton)
+}
+
 final class TimelineMiddleLoaderTableViewCell: UITableViewCell {
     
+    weak var delegate: TimelineMiddleLoaderTableViewCellDelegate?
     var disposeBag = Set<AnyCancellable>()
     
     let loadMoreButton: UIButton = {
-        let button = UIButton()
+        let button = UIButton(type: .system)
         button.setInsets(forContentPadding: .zero, imageTitlePadding: 4)
-        button.titleLabel?.font = .systemFont(ofSize: 14, weight: .medium)
-        button.imageView?.tintColor = Asset.Colors.hightLight.color
         button.setImage(Asset.ObjectTools.icRoundRefresh.image.withRenderingMode(.alwaysTemplate), for: .normal)
         button.setTitle("Load More", for: .normal)
-        button.setTitleColor(Asset.Colors.hightLight.color, for: .normal)
-        button.setTitleColor(UIColor.systemBlue.withAlphaComponent(0.5), for: .highlighted)
+        button.tintColor = Asset.Colors.hightLight.color
+        button.titleLabel?.font = .systemFont(ofSize: 14, weight: .bold)
         return button
     }()
     
@@ -53,13 +57,14 @@ extension TimelineMiddleLoaderTableViewCell {
     
     private func _init() {
         backgroundColor = .secondarySystemBackground
+        selectionStyle = .none
         
         loadMoreButton.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(loadMoreButton)
         NSLayoutConstraint.activate([
             loadMoreButton.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 8),
-            loadMoreButton.leadingAnchor.constraint(equalTo: contentView.layoutMarginsGuide.leadingAnchor),
-            contentView.layoutMarginsGuide.trailingAnchor.constraint(equalTo: loadMoreButton.trailingAnchor),
+            loadMoreButton.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+            contentView.trailingAnchor.constraint(equalTo: loadMoreButton.trailingAnchor),
             contentView.bottomAnchor.constraint(equalTo: loadMoreButton.bottomAnchor, constant: 8),
         ])
         
@@ -79,8 +84,17 @@ extension TimelineMiddleLoaderTableViewCell {
             contentView.bottomAnchor.constraint(equalTo: separatorLine.bottomAnchor),
             separatorLine.heightAnchor.constraint(equalToConstant: UIView.separatorLineHeight(of: separatorLine))
         ])
+        
+        loadMoreButton.addTarget(self, action: #selector(TimelineMiddleLoaderTableViewCell.loadMoreButtonDidPressed(_:)), for: .touchUpInside)
     }
     
+}
+
+extension TimelineMiddleLoaderTableViewCell {
+    @objc private func loadMoreButtonDidPressed(_ sender: UIButton) {
+        os_log("%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
+        delegate?.timelineMiddleLoaderTableViewCell(self, loadMoreButtonDidPressed: sender)
+    }
 }
 
 #if DEBUG

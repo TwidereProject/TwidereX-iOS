@@ -31,6 +31,7 @@ final class HomeTimelineViewModel: NSObject {
     weak var contentOffsetAdjustableTimelineViewControllerDelegate: ContentOffsetAdjustableTimelineViewControllerDelegate?
     weak var tableView: UITableView?
     weak var timelinePostTableViewCellDelegate: TimelinePostTableViewCellDelegate?
+    weak var timelineMiddleLoaderTableViewCellDelegate: TimelineMiddleLoaderTableViewCellDelegate?
     
     // output
     // top loader
@@ -61,7 +62,7 @@ final class HomeTimelineViewModel: NSObject {
     }()
     lazy var loadOldestStateMachinePublisher = CurrentValueSubject<LoadOldestState, Never>(LoadOldestState.Initial(viewModel: self))
     // middle loader
-    let loadMiddleAnchorList = CurrentValueSubject<[Tweet.TweetID], Never>([])
+    let loadMiddleSateMachineList = CurrentValueSubject<[Tweet.TweetID: GKStateMachine], Never>([:])
     var diffableDataSource: UITableViewDiffableDataSource<TimelineSection, TimelineItem>?
     var cellFrameCache = NSCache<NSNumber, NSValue>()
     
@@ -113,19 +114,43 @@ extension HomeTimelineViewModel {
                 return cell
             case .homeTimelineMiddleLoader(let upper):
                 let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: TimelineMiddleLoaderTableViewCell.self), for: indexPath) as! TimelineMiddleLoaderTableViewCell
-                self.loadMiddleAnchorList
+                self.loadMiddleSateMachineList
                     .receive(on: DispatchQueue.main)
                     .sink { ids in
-                        let loading = ids.contains(upper)
-                        cell.loadMoreButton.isHidden = loading
-//                        cell.activityIndicatorView.isHidden = !loading
-                        if loading {
-                            cell.activityIndicatorView.startAnimating()
+                        if let stateMachine = ids[upper] {
+                            guard let state = stateMachine.currentState else {
+                                assertionFailure()
+                                return
+                            }
+                            
+                            let isLoading = state is LoadMiddleState.Loading
+                            cell.loadMoreButton.isHidden = isLoading
+                            if isLoading {
+                                cell.activityIndicatorView.startAnimating()
+                            } else {
+                                cell.activityIndicatorView.stopAnimating()
+                            }
                         } else {
+                            cell.loadMoreButton.isHidden = false
                             cell.activityIndicatorView.stopAnimating()
                         }
                     }
                     .store(in: &cell.disposeBag)
+                var dict = self.loadMiddleSateMachineList.value
+                if let _ = dict[upper] {
+                    // do nothing
+                } else {
+                    let stateMachine = GKStateMachine(states: [
+                        LoadMiddleState.Initial(viewModel: self, anchorTweetID: upper),
+                        LoadMiddleState.Loading(viewModel: self, anchorTweetID: upper),
+                        LoadMiddleState.Fail(viewModel: self, anchorTweetID: upper),
+                        LoadMiddleState.Success(viewModel: self, anchorTweetID: upper),
+                    ])
+                    stateMachine.enter(LoadMiddleState.Initial.self)
+                    dict[upper] = stateMachine
+                    self.loadMiddleSateMachineList.value = dict
+                }
+                cell.delegate = self.timelineMiddleLoaderTableViewCellDelegate
                 return cell
             case .bottomLoader:
                 let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: TimelineBottomLoaderTableViewCell.self), for: indexPath) as! TimelineBottomLoaderTableViewCell
@@ -298,14 +323,23 @@ extension HomeTimelineViewModel {
         // set separator line indent in non-conflict order
         switch attribute.separatorLineStyle {
         case .indent:
-            cell.separatorLineLeadingLayoutConstraint.isActive = false
+            cell.separatorLineExpandLeadingLayoutConstraint.isActive = false
+            cell.separatorLineNormalLeadingLayoutConstraint.isActive = false
+            cell.separatorLineExpandTrailingLayoutConstraint.isActive = false
             cell.separatorLineIndentLeadingLayoutConstraint.isActive = true
+            cell.separatorLineNormalTrailingLayoutConstraint.isActive = true
         case .expand:
+            cell.separatorLineNormalLeadingLayoutConstraint.isActive = false
             cell.separatorLineIndentLeadingLayoutConstraint.isActive = false
-            cell.separatorLineLeadingLayoutConstraint.isActive = true
+            cell.separatorLineNormalTrailingLayoutConstraint.isActive = false
+            cell.separatorLineExpandLeadingLayoutConstraint.isActive = true
+            cell.separatorLineExpandTrailingLayoutConstraint.isActive = true
         case .normal:
+            cell.separatorLineExpandLeadingLayoutConstraint.isActive = false
+            cell.separatorLineExpandTrailingLayoutConstraint.isActive = false
             cell.separatorLineIndentLeadingLayoutConstraint.isActive = false
-            cell.separatorLineLeadingLayoutConstraint.isActive = true
+            cell.separatorLineNormalLeadingLayoutConstraint.isActive = true
+            cell.separatorLineNormalTrailingLayoutConstraint.isActive = true
         }
     }
     
@@ -368,24 +402,17 @@ extension HomeTimelineViewModel: NSFetchedResultsControllerDelegate {
                 let timelineIndex = managedObjectContext.object(with: objectID) as! TimelineIndex
                 if let tweet = timelineIndex.tweet {
                     let isLast = i == snapshot.itemIdentifiers.count - 1
-                    attribute.separatorLineStyle = {
-                        if tweet.hasMore {
-                            // TODO:
-                            return .expand
-                        } else {
-                            return .indent
-                        }
-                    }()
                     switch (isLast, tweet.hasMore) {
                     case (true, false):
-                        break
+                        attribute.separatorLineStyle = .normal
                     case (false, true):
+                        attribute.separatorLineStyle = .expand
                         newSnapshot.appendItems([.homeTimelineMiddleLoader(upper: tweet.idStr)], toSection: .main)
                     case (true, true):
+                        attribute.separatorLineStyle = .normal
                         shouldAddBottomLoader = true
-                        break
                     case (false, false):
-                        break
+                        attribute.separatorLineStyle = .indent
                     }
                 }
             }   // end for
