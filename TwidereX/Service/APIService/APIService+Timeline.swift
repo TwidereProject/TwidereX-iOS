@@ -132,7 +132,10 @@ extension APIService {
                     let counting = workingRecords
                         .map { record in record.count() }
                         .reduce(into: WorkingRecord.Counting(), { result, next in result = result + next })
-                    os_log(.info, log: log, "%{public}s[%{public}ld], %{public}s: tweet: insert %{public}ldT(%{public}ldTRQ), merge %{public}ldT(%{public}ldTRQ)", ((#file as NSString).lastPathComponent), #line, #function, tweets.count - mergedOldTweetsInTimeline.count, counting.tweet.create, mergedOldTweetsInTimeline.count, counting.tweet.merge)
+                    let newTweetsInTimeLineCount = workingRecords.reduce(0, { result, next in
+                        return next.tweetProcessType == .create ? result + 1 : result
+                    })
+                    os_log(.info, log: log, "%{public}s[%{public}ld], %{public}s: tweet: insert %{public}ldT(%{public}ldTRQ), merge %{public}ldT(%{public}ldTRQ)", ((#file as NSString).lastPathComponent), #line, #function, newTweetsInTimeLineCount, counting.tweet.create, mergedOldTweetsInTimeline.count, counting.tweet.merge)
                     os_log(.info, log: log, "%{public}s[%{public}ld], %{public}s: twitter user: insert %{public}ld, merge %{public}ld", ((#file as NSString).lastPathComponent), #line, #function, counting.user.create, counting.user.merge)
                 }
                 #endif

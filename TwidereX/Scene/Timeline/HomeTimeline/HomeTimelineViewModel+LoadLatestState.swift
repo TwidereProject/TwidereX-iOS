@@ -45,6 +45,10 @@ extension HomeTimelineViewModel.LoadLatestState {
                 return
             }
             
+            let tweetIDs = (viewModel.fetchedResultsController.fetchedObjects ?? []).compactMap { timelineIndex in
+                timelineIndex.tweet?.idStr
+            }
+            
             // TODO: only set large count when using Wi-Fi
             viewModel.context.apiService.twitterHomeTimeline(count: 200, authorization: authorization)
                 .delay(for: .seconds(1), scheduler: DispatchQueue.main)
@@ -62,10 +66,13 @@ extension HomeTimelineViewModel.LoadLatestState {
                     
                     stateMachine.enter(Idle.self)
                     
-                } receiveValue: { tweets in
-                    // fallback path when no new tweets. Note: snapshot average calculate time is 3.0s
-                    // FIXME: use notification to stop refresh conrol and avoid this workaround
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
+                } receiveValue: { response in
+                    // stop refresher if no new tweets
+                    let tweets = response.value
+                    let newTweets = tweets.filter { !tweetIDs.contains($0.idStr) }
+                    os_log("%{public}s[%{public}ld], %{public}s: load %{public}ld new tweets", ((#file as NSString).lastPathComponent), #line, #function, newTweets.count)
+
+                    if newTweets.isEmpty {
                         viewModel.isFetchingLatestTimeline.value = false
                     }
                 }

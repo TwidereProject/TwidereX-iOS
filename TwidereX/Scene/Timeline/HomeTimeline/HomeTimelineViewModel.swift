@@ -123,7 +123,8 @@ extension HomeTimelineViewModel {
                                 return
                             }
                             
-                            let isLoading = state is LoadMiddleState.Loading
+                            // make success state same as loading due to snapshot updating delay
+                            let isLoading = state is LoadMiddleState.Loading || state is LoadMiddleState.Success    
                             cell.loadMoreButton.isHidden = isLoading
                             if isLoading {
                                 cell.activityIndicatorView.startAnimating()
