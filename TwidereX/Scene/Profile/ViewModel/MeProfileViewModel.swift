@@ -18,18 +18,21 @@ final class MeProfileViewModel: ProfileViewModel {
     let context: AppContext
     
     // output
-    let currentTwitterUser = CurrentValueSubject<TwitterUser?, Never>(nil)
     
     init(context: AppContext) {
         self.context = context
-        super.init()
+        if let currentTwitterUser = context.authenticationService.currentTwitterUser.value {
+            super.init(twitterUser: currentTwitterUser)
+        } else {
+            super.init()
+        }
         
         currentTwitterUser
-            .sink { [weak self] twitterUser in
-                os_log("%{public}s[%{public}ld], %{public}s: current active twitter user: %s", ((#file as NSString).lastPathComponent), #line, #function, twitterUser?.screenName ?? "<nil>")
+            .sink { [weak self] currentTwitterUser in
+                os_log("%{public}s[%{public}ld], %{public}s: current active twitter user: %s", ((#file as NSString).lastPathComponent), #line, #function, currentTwitterUser?.screenName ?? "<nil>")
                 
                 guard let self = self else { return }
-                self.update(twitterUser: twitterUser)
+                self.twitterUser.value = currentTwitterUser
             }
             .store(in: &disposeBag)
             
@@ -39,15 +42,4 @@ final class MeProfileViewModel: ProfileViewModel {
             .store(in: &disposeBag)
     }
     
-}
-
-// MARK: - NSFetchedResultsControllerDelegate
-extension MeProfileViewModel: NSFetchedResultsControllerDelegate {
-    func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
-        os_log("%{public}s[%{public}ld], %{public}s: fetch %ld TwitterUser object", ((#file as NSString).lastPathComponent), #line, #function, controller.fetchedObjects?.count ?? 0)
-
-        // set nil if not match any
-        let twitterUser = controller.fetchedObjects?.first as? TwitterUser
-        currentTwitterUser.value = twitterUser
-    }
 }

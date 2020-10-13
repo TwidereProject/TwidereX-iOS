@@ -124,10 +124,7 @@ final public class Tweet: NSManagedObject {
     @NSManaged public private(set) var hasMore: Bool
     
     @NSManaged public private(set) var retweetCount: NSNumber?
-    @NSManaged public private(set) var retweeted: Bool
-    
     @NSManaged public private(set) var favoriteCount: NSNumber?
-    @NSManaged public private(set) var favorited: Bool
     
     @NSManaged public private(set) var quotedStatusIDStr: String?
     
@@ -156,7 +153,16 @@ extension Tweet {
     }
     
     @discardableResult
-    public static func insert(into context: NSManagedObjectContext, property: Property, retweet: Tweet?, quote: Tweet?, twitterUser: TwitterUser,  timelineIndex: TimelineIndex?) -> Tweet {
+    public static func insert(
+        into context: NSManagedObjectContext,
+        property: Property,
+        retweet: Tweet?,
+        quote: Tweet?,
+        twitterUser: TwitterUser,
+        timelineIndex: TimelineIndex?,
+        likeBy: TwitterUser?,
+        retweetBy: TwitterUser?
+    ) -> Tweet {
         let tweet: Tweet = context.insertObject()
         tweet.updatedAt = property.networkDate
         
@@ -175,6 +181,14 @@ extension Tweet {
         tweet.user = twitterUser
         tweet.retweet = retweet
         tweet.quote = quote
+        
+        if let likeBy = likeBy {
+            tweet.mutableSetValue(forKey: #keyPath(Tweet.likeBy)).addObjects(from: [likeBy])
+        }
+        if let retweetBy = retweetBy {
+            tweet.mutableSetValue(forKey: #keyPath(Tweet.retweetBy)).addObjects(from: [retweetBy])
+        }
+        
         return tweet
     }
     
@@ -195,12 +209,6 @@ extension Tweet {
         }
     }
     
-    public func update(retweeted: Bool) {
-        if self.retweeted != retweeted {
-            self.retweeted = retweeted
-        }
-    }
-    
     public func update(retweet: Tweet?) {
         if self.retweet != retweet {
             self.retweet = retweet
@@ -211,12 +219,6 @@ extension Tweet {
         let favoriteCount = favoriteCount.flatMap { NSNumber(value: $0) }
         if self.favoriteCount != favoriteCount {
             self.favoriteCount = favoriteCount
-        }
-    }
-    
-    public func update(favorited: Bool) {
-        if self.favorited != favorited {
-            self.favorited = favorited
         }
     }
     
@@ -235,6 +237,32 @@ extension Tweet {
     public func update(hasMore: Bool) {
         if self.hasMore != hasMore {
             self.hasMore = hasMore
+        }
+    }
+    
+    // relationship
+    
+    public func update(favorited: Bool, twitterUser: TwitterUser) {
+        if favorited {
+            if !(self.likeBy ?? Set()).contains(twitterUser) {
+                self.mutableSetValue(forKey: #keyPath(Tweet.likeBy)).addObjects(from: [twitterUser])
+            }
+        } else {
+            if (self.likeBy ?? Set()).contains(twitterUser) {
+                self.mutableSetValue(forKey: #keyPath(Tweet.likeBy)).remove(twitterUser)
+            }
+        }
+    }
+    
+    public func update(retweeted: Bool, twitterUser: TwitterUser) {
+        if retweeted {
+            if !(self.retweetBy ?? Set()).contains(twitterUser) {
+                self.mutableSetValue(forKey: #keyPath(Tweet.retweetBy)).addObjects(from: [twitterUser])
+            }
+        } else {
+            if (self.retweetBy ?? Set()).contains(twitterUser) {
+                self.mutableSetValue(forKey: #keyPath(Tweet.retweetBy)).remove(twitterUser)
+            }
         }
     }
     

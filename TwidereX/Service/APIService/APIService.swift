@@ -6,8 +6,8 @@
 //
 
 import os.log
-import Foundation
 import func QuartzCore.CACurrentMediaTime
+import Foundation
 import Combine
 import CoreData
 import TwitterAPI
@@ -34,7 +34,7 @@ final class APIService {
         // setup cache. 10MB RAM + 50MB Disk
         URLCache.shared = URLCache(memoryCapacity: 10 * 1024 * 1024, diskCapacity: 50 * 1024 * 1024, diskPath: nil)
         
-        backgroundManagedObjectContext.mergePolicy = NSMergePolicy.overwrite
+        backgroundManagedObjectContext.mergePolicy = NSMergePolicy.mergeByPropertyObjectTrump
         
         NotificationCenter.default.publisher(for: .NSManagedObjectContextDidSave, object: backgroundManagedObjectContext)
             .sink { notification in

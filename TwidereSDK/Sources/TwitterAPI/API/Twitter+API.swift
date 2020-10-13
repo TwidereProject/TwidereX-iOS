@@ -23,10 +23,11 @@ extension Twitter.API {
         return formatter
     }()
     
-    public enum OAuth { }
-    public enum Timeline { }
-    public enum Lookup { }
     public enum Account { }
+    public enum Favorites { }
+    public enum Timeline { }
+    public enum OAuth { }
+    public enum Lookup { }
 }
 
 extension Twitter.API {

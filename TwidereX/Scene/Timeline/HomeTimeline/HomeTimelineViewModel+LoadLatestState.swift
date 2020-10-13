@@ -50,7 +50,7 @@ extension HomeTimelineViewModel.LoadLatestState {
             }
             
             // TODO: only set large count when using Wi-Fi
-            viewModel.context.apiService.twitterHomeTimeline(count: 200, authorization: authorization)
+            viewModel.context.apiService.twitterHomeTimeline(count: 200, authorization: authorization, twitterUserID: twitterAuthentication.userID)
                 .delay(for: .seconds(1), scheduler: DispatchQueue.main)
                 .receive(on: DispatchQueue.main)
                 .sink { completion in

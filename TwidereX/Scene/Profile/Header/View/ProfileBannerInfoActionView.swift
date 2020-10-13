@@ -12,7 +12,7 @@ final class ProfileBannerInfoActionView: UIView {
     static let followButtonHeight: CGFloat = 24
     
     let followActionButton: UIButton = {
-        let button = UIButton()
+        let button = UIButton(type: .custom)
         button.layer.masksToBounds = true
         button.layer.cornerRadius = ProfileBannerInfoActionView.followButtonHeight * 0.5
         button.layer.borderWidth = 1

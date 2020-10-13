@@ -27,6 +27,8 @@ extension UserTimelineViewModel {
 extension UserTimelineViewModel.State {
     class Initial: UserTimelineViewModel.State {
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {
+            guard let viewModel = viewModel else { return false }
+            guard viewModel.userID.value != nil else { return false }
             return stateClass == Reloading.self
         }
     }

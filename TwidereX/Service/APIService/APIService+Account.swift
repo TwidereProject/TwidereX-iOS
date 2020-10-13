@@ -18,9 +18,9 @@ extension APIService {
             .handleEvents(receiveOutput: { [weak self] response in
                 guard let self = self else { return }
                 
-                let entity = response.value
                 let log = OSLog.api
-                let (twitterUser, isCreated) = APIService.createOrMergeTwitterUser(into: self.backgroundManagedObjectContext, entity: entity, networkDate: response.networkDate, log: log)
+                let entity = response.value
+                let (twitterUser, isCreated) = APIService.createOrMergeTwitterUser(into: self.backgroundManagedObjectContext, for: nil, entity: entity, networkDate: response.networkDate, log: log)
                 let flag = isCreated ? "+" : "-"
                 os_log(.info, log: log, "%{public}s[%{public}ld], %{public}s: twetter user [%s](%s)%s verifed", ((#file as NSString).lastPathComponent), #line, #function, flag, twitterUser.idStr, twitterUser.screenName.flatMap { "@" + $0} ?? "<nil>")
             })

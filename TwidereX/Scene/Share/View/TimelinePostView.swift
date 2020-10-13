@@ -17,7 +17,7 @@ final class TimelinePostView: UIView {
     let retweetIconImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.tintColor = .secondaryLabel
-        imageView.image = Asset.Arrows.mdiTwitterRetweet.image.withRenderingMode(.alwaysTemplate)
+        imageView.image = Asset.Media.repeat.image.withRenderingMode(.alwaysTemplate)
         return imageView
     }()
     

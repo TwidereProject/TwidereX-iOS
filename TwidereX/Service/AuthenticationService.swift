@@ -150,7 +150,9 @@ extension AuthenticationService {
             return
         }
         let twitterUser = twitterUserFetchedResultsController.fetchedObjects?.first
-        self.currentTwitterUser.value = twitterUser
+        if self.currentTwitterUser.value != twitterUser {
+            self.currentTwitterUser.value = twitterUser
+        }
     }
 }
 
@@ -158,7 +160,7 @@ extension AuthenticationService {
 extension AuthenticationService: NSFetchedResultsControllerDelegate {
     
     func controllerWillChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
-        os_log("%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
+        // os_log("%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
     }
     
     func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
@@ -167,7 +169,7 @@ extension AuthenticationService: NSFetchedResultsControllerDelegate {
             updateTwitterAuthentications()
         }
         if controller === twitterUserFetchedResultsController {
-            os_log("%{public}s[%{public}ld], %{public}s: fetch %ld TwitterUser", ((#file as NSString).lastPathComponent), #line, #function, controller.fetchedObjects?.count ?? 0)
+            // os_log("%{public}s[%{public}ld], %{public}s: fetch %ld TwitterUser", ((#file as NSString).lastPathComponent), #line, #function, controller.fetchedObjects?.count ?? 0)
             updateCurrentTwitterUser()
         }
     }

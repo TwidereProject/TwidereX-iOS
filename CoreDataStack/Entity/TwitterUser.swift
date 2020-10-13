@@ -10,9 +10,11 @@ import CoreData
 
 final public class TwitterUser: NSManagedObject {
     
+    public typealias UserID = String
+    
     @NSManaged public private(set) var id: UUID
 
-    @NSManaged public private(set) var idStr: String
+    @NSManaged public private(set) var idStr: UserID
     
     @NSManaged public private(set) var name: String?
     @NSManaged public private(set) var screenName: String?
@@ -22,15 +24,7 @@ final public class TwitterUser: NSManagedObject {
     @NSManaged public private(set) var createdAt: Date?
     @NSManaged public private(set) var updatedAt: Date
     
-//    @NSManaged public private(set) var followingRaw: NSNumber?
-//    public var following: Bool? {
-//        get {
-//            return followingRaw.flatMap { Bool(truncating: $0) }
-//        }
-//        set {
-//            followingRaw = newValue.flatMap { NSNumber(booleanLiteral: $0) }
-//        }
-//    }
+    @NSManaged public private(set) var protected: Bool
     
     @NSManaged public private(set) var friendsCount: NSNumber?
     public var friendsCountInt: Int? { return friendsCount.flatMap { Int(truncating: $0) } }
@@ -56,8 +50,12 @@ final public class TwitterUser: NSManagedObject {
     @NSManaged public private(set) var following: Set<TwitterUser>?
     @NSManaged public private(set) var followingFrom: Set<TwitterUser>?
     
+    @NSManaged public private(set) var followRequestSent: Set<TwitterUser>?
+    @NSManaged public private(set) var followRequestSentFrom: Set<TwitterUser>?
+    
     @NSManaged public private(set) var followedBy: Set<TwitterUser>?
     @NSManaged public private(set) var followedByFrom: Set<TwitterUser>?
+
 }
 
 extension TwitterUser {
@@ -68,7 +66,13 @@ extension TwitterUser {
     }
     
     @discardableResult
-    public static func insert(into context: NSManagedObjectContext, property: Property) -> TwitterUser {
+    public static func insert(
+        into context: NSManagedObjectContext,
+        property: Property,
+        following: TwitterUser?,
+        followRequestSent: TwitterUser?,
+        protected: TwitterUser?
+    ) -> TwitterUser {
         let user: TwitterUser = context.insertObject()
         user.updatedAt = property.networkDate
         
@@ -80,7 +84,7 @@ extension TwitterUser {
         user.location = property.location
         user.createdAt = property.createdAt
         
-//        user.following = property.following
+        user.protected = property.protected ?? false
         
         user.friendsCount = property.friendsCount
         user.followersCount = property.followersCount
@@ -90,6 +94,17 @@ extension TwitterUser {
         
         user.profileImageURLHTTPS = property.profileImageURLHTTPS
         user.profileBannerURL = property.profileBannerURL
+        
+        if let following = following {
+            user.mutableSetValue(forKey: #keyPath(TwitterUser.following)).addObjects(from: [following])
+        }
+        if let followRequestSent = followRequestSent {
+            user.mutableSetValue(forKey: #keyPath(TwitterUser.followRequestSent)).addObjects(from: [followRequestSent])
+        }
+        if let protected = protected {
+            user.mutableSetValue(forKey: #keyPath(TwitterUser.protected)).addObjects(from: [protected])
+        }
+        
         return user
     }
     
@@ -119,11 +134,11 @@ extension TwitterUser {
         }
     }
     
-//    public func update(following: Bool?) {
-//        if self.following != following {
-//            self.following = following
-//        }
-//    }
+    public func update(protected: Bool) {
+        if self.protected != protected {
+            self.protected = protected
+        }
+    }
     
     public func update(friendsCount: Int) {
         if self.friendsCount != NSNumber(value: friendsCount) {
@@ -162,9 +177,36 @@ extension TwitterUser {
         }
     }
     
+    // relationship
+    
+    public func update(following: Bool, twitterUser: TwitterUser) {
+        if following {
+            if !(self.followingFrom ?? Set()).contains(twitterUser) {
+                self.mutableSetValue(forKey: #keyPath(TwitterUser.followingFrom)).addObjects(from: [twitterUser])
+            }
+        } else {
+            if (self.followingFrom ?? Set()).contains(twitterUser) {
+                self.mutableSetValue(forKey: #keyPath(TwitterUser.followingFrom)).remove(twitterUser)
+            }
+        }
+    }
+    
+    public func update(followRequestSent: Bool, twitterUser: TwitterUser) {
+        if followRequestSent {
+            if !(self.followRequestSent ?? Set()).contains(twitterUser) {
+                self.mutableSetValue(forKey: #keyPath(TwitterUser.followRequestSent)).addObjects(from: [twitterUser])
+            }
+        } else {
+            if (self.followRequestSent ?? Set()).contains(twitterUser) {
+                self.mutableSetValue(forKey: #keyPath(TwitterUser.followRequestSent)).remove(twitterUser)
+            }
+        }
+    }
+    
     public func didUpdate(at networkDate: Date) {
         self.updatedAt = networkDate
     }
+    
 }
 
 extension TwitterUser {
@@ -178,7 +220,7 @@ extension TwitterUser {
         public let location: String?
         public let createdAt: Date?
         
-//        public let following: Bool?
+        public let protected: Bool?
         
         public let friendsCount: NSNumber?
         public let followersCount: NSNumber?
@@ -199,7 +241,7 @@ extension TwitterUser {
             url: String?,
             location: String?,
             createdAt: Date?,
-//            following: Bool?,
+            protected: Bool?,
             friendsCount: NSNumber?,
             followersCount: NSNumber?,
             listedCount: NSNumber?,
@@ -216,7 +258,7 @@ extension TwitterUser {
             self.url = url
             self.location = location
             self.createdAt = createdAt
-//            self.following = following
+            self.protected = protected
             self.friendsCount = friendsCount
             self.followersCount = followersCount
             self.listedCount = listedCount

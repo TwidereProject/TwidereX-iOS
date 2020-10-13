@@ -27,6 +27,7 @@ final class HomeTimelineViewModel: NSObject {
     let context: AppContext
     let fetchedResultsController: NSFetchedResultsController<TimelineIndex>
     let currentTwitterAuthentication = CurrentValueSubject<TwitterAuthentication?, Never>(nil)
+    let currentTwitterUser = CurrentValueSubject<TwitterUser?, Never>(nil)
     let isFetchingLatestTimeline = CurrentValueSubject<Bool, Never>(false)
     weak var contentOffsetAdjustableTimelineViewControllerDelegate: ContentOffsetAdjustableTimelineViewControllerDelegate?
     weak var tableView: UITableView?
@@ -166,12 +167,12 @@ extension HomeTimelineViewModel {
     
     static func configure(cell: TimelinePostTableViewCell, timelineIndex: TimelineIndex, attribute: TimelineItem.Attribute) {
         if let tweet = timelineIndex.tweet {
-            configure(cell: cell, tweet: tweet)
+            configure(cell: cell, tweet: tweet, requestUserID: timelineIndex.userID)
             internalConfigure(cell: cell, tweet: tweet, attribute: attribute)
         }
     }
 
-    static func configure(cell: TimelinePostTableViewCell, tweet: Tweet) {
+    static func configure(cell: TimelinePostTableViewCell, tweet: Tweet, requestUserID: String) {
         // set retweet display
         cell.timelinePostView.retweetContainerStackView.isHidden = tweet.retweet == nil
         cell.timelinePostView.retweetInfoLabel.text = tweet.user.name.flatMap { $0 + " Retweeted" } ?? " "
@@ -210,11 +211,19 @@ extension HomeTimelineViewModel {
         }()
         cell.timelinePostView.actionToolbar.retweetButton.setTitle(retweetCountTitle, for: .normal)
 
+        let isLike = tweet.likeBy.flatMap({ $0.contains(where: { $0.idStr == requestUserID }) }) ?? false
         let favoriteCountTitle: String = {
             let count = (tweet.retweet ?? tweet).favoriteCount.flatMap { Int(truncating: $0) }
             return HomeTimelineViewModel.formattedNumberTitleForActionButton(count)
         }()
+        let likeButtonImage = isLike ? Asset.Health.heartFill.image.withRenderingMode(.alwaysTemplate) :
+            Asset.Health.heart.image.withRenderingMode(.alwaysTemplate)
+        let likeButtonTintColor = isLike ? Asset.Colors.heartPink.color : .secondaryLabel
+        cell.timelinePostView.actionToolbar.favoriteButton.tintColor = likeButtonTintColor
+        cell.timelinePostView.actionToolbar.favoriteButton.setImage(likeButtonImage, for: .normal)
         cell.timelinePostView.actionToolbar.favoriteButton.setTitle(favoriteCountTitle, for: .normal)
+        cell.timelinePostView.actionToolbar.favoriteButton.setTitleColor(likeButtonTintColor, for: .normal)
+        cell.timelinePostView.actionToolbar.favoriteButton.setTitleColor(likeButtonTintColor.withAlphaComponent(0.8), for: .highlighted)
 
         // set image display
         let media = tweet.extendedEntities?.media ?? []

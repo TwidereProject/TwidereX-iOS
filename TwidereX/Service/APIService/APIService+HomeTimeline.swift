@@ -21,7 +21,7 @@ extension APIService {
     // A1. incoming tweet NOT in local timeline, retweet NOT  in local (never see tweet and retweet)
     // A2. incoming tweet NOT in local timeline, retweet      in local (never see tweet but saw retweet before)
     // A3. incoming tweet     in local timeline, retweet MUST in local (saw tweet before)
-    func twitterHomeTimeline(count: Int = 200, maxID: String? = nil, authorization: Twitter.API.OAuth.Authorization) -> AnyPublisher<Twitter.Response<[Twitter.Entity.Tweet]>, Error> {
+    func twitterHomeTimeline(count: Int = 200, maxID: String? = nil, authorization: Twitter.API.OAuth.Authorization, twitterUserID: TwitterUser.UserID) -> AnyPublisher<Twitter.Response<[Twitter.Entity.Tweet]>, Error> {
         
         // throttle latest request for API limit
         if maxID == nil {
@@ -60,7 +60,7 @@ extension APIService {
                     os_log(.info, log: log, "%{public}s[%{public}ld], %{public}s: API rate limit: %{public}ld/%{public}ld, reset at %{public}s, left: %.2fm (%.2fs)", ((#file as NSString).lastPathComponent), #line, #function, rateLimit.remaining, rateLimit.limit, rateLimit.reset.debugDescription, resetTimeIntervalInMin, resetTimeInterval)
                 }
                 
-                APIService.persist(managedObjectContext: self.backgroundManagedObjectContext, query: query, response: response, persistType: .homeTimeline, log: log)
+                APIService.persistTimeline(managedObjectContext: self.backgroundManagedObjectContext, query: query, response: response, persistType: .homeTimeline, requestTwitterUserID: twitterUserID, log: log)
             })
             .eraseToAnyPublisher()
     }

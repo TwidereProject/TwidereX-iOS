@@ -25,7 +25,7 @@ final class TimelinePostActionToolbar: UIView {
     let replyButton: UIButton = {
         let button = HitTestExpandedButton()
         button.imageView?.tintColor = .secondaryLabel
-        button.setImage(Asset.Communication.mdiMessageReply.image.withRenderingMode(.alwaysTemplate), for: .normal)
+        button.setImage(Asset.Arrows.arrowTurnUpLeft.image.withRenderingMode(.alwaysTemplate), for: .normal)
         button.titleLabel?.font = .monospacedDigitSystemFont(ofSize: 12, weight: .regular)
         button.setTitle("", for: .normal)
         button.setTitleColor(.secondaryLabel, for: .normal)
@@ -35,33 +35,32 @@ final class TimelinePostActionToolbar: UIView {
     }()
     
     let retweetButton: UIButton = {
-        let button = HitTestExpandedButton()
-        button.imageView?.tintColor = .secondaryLabel
-        button.setImage(Asset.Arrows.mdiTwitterRetweet.image.withRenderingMode(.alwaysTemplate), for: .normal)
+        let button = HitTestExpandedButton(type: .custom)
+        button.tintColor = .secondaryLabel
         button.titleLabel?.font = .monospacedDigitSystemFont(ofSize: 12, weight: .regular)
-        button.setTitle("", for: .normal)
-        button.setTitleColor(.secondaryLabel, for: .normal)
-        button.setInsets(forContentPadding: .zero, imageTitlePadding: TimelinePostActionToolbar.buttonTitleImagePadding)
         button.contentHorizontalAlignment = .leading
+        button.setImage(Asset.Media.repeat.image.withRenderingMode(.alwaysTemplate), for: .normal)
+        button.setTitle("", for: .normal)
+        button.setInsets(forContentPadding: .zero, imageTitlePadding: TimelinePostActionToolbar.buttonTitleImagePadding)
         return button
     }()
     
     let favoriteButton: UIButton = {
-        let button = HitTestExpandedButton()
-        button.setImage(Asset.Health.icRoundFavoriteBorder.image.withRenderingMode(.alwaysTemplate), for: .normal)
-        button.imageView?.tintColor = .secondaryLabel
+        let button = HitTestExpandedButton(type: .custom)
+        button.tintColor = .secondaryLabel
         button.titleLabel?.font = .monospacedDigitSystemFont(ofSize: 12, weight: .regular)
+        button.contentHorizontalAlignment = .leading
+        button.setImage(Asset.Health.heart.image.withRenderingMode(.alwaysTemplate), for: .normal)
         button.setTitle("", for: .normal)
         button.setTitleColor(.secondaryLabel, for: .normal)
         button.setInsets(forContentPadding: .zero, imageTitlePadding: TimelinePostActionToolbar.buttonTitleImagePadding)
-        button.contentHorizontalAlignment = .leading
         return button
     }()
     
     let shareButton: UIButton = {
         let button = HitTestExpandedButton()
         button.imageView?.tintColor = .secondaryLabel
-        button.setImage(Asset.ObjectTools.icRoundShare.image.withRenderingMode(.alwaysTemplate), for: .normal)
+        button.setImage(Asset.ObjectTools.share.image.withRenderingMode(.alwaysTemplate), for: .normal)
         button.contentHorizontalAlignment = .trailing
         return button
     }()

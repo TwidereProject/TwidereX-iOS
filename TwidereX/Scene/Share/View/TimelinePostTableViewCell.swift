@@ -15,6 +15,11 @@ protocol TimelinePostTableViewCellDelegate: class {
     func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, retweetInfoLabelDidPressed label: UILabel)
     func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, avatarImageViewDidPressed imageView: UIImageView)
     func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, quoteAvatarImageViewDidPressed imageView: UIImageView)
+    
+    func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, actionToolbar: TimelinePostActionToolbar, replayButtonDidPressed sender: UIButton)
+    func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, actionToolbar: TimelinePostActionToolbar, retweetButtonDidPressed sender: UIButton)
+    func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, actionToolbar: TimelinePostActionToolbar, favoriteButtonDidPressed sender: UIButton)
+    func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, actionToolbar: TimelinePostActionToolbar, shareButtonDidPressed sender: UIButton)
 }
 
 final class TimelinePostTableViewCell: UITableViewCell {
@@ -115,6 +120,8 @@ extension TimelinePostTableViewCell {
         quoteAvatarImageViewTapGestureRecognizer.addTarget(self, action: #selector(TimelinePostTableViewCell.quoteAvatarImageViewTapGestureRecognizerHandler(_:)))
         timelinePostView.quotePostView.avatarImageView.isUserInteractionEnabled = true
         timelinePostView.quotePostView.avatarImageView.addGestureRecognizer(quoteAvatarImageViewTapGestureRecognizer)
+        
+        timelinePostView.actionToolbar.delegate = self
     }
     
 }
@@ -140,6 +147,27 @@ extension TimelinePostTableViewCell {
         guard sender.state == .ended else { return }
         assert(delegate != nil)
         delegate?.timelinePostTableViewCell(self, quoteAvatarImageViewDidPressed: timelinePostView.quotePostView.avatarImageView)
+    }
+    
+}
+
+// MARK: - TimelinePostActionToolbarDelegate
+extension TimelinePostTableViewCell: TimelinePostActionToolbarDelegate {
+    
+    func timelinePostActionToolbar(_ toolbar: TimelinePostActionToolbar, replayButtonDidPressed sender: UIButton) {
+        delegate?.timelinePostTableViewCell(self, actionToolbar: toolbar, replayButtonDidPressed: sender)
+    }
+    
+    func timelinePostActionToolbar(_ toolbar: TimelinePostActionToolbar, retweetButtonDidPressed sender: UIButton) {
+        delegate?.timelinePostTableViewCell(self, actionToolbar: toolbar, retweetButtonDidPressed: sender)
+    }
+    
+    func timelinePostActionToolbar(_ toolbar: TimelinePostActionToolbar, favoriteButtonDidPressed sender: UIButton) {
+        delegate?.timelinePostTableViewCell(self, actionToolbar: toolbar, favoriteButtonDidPressed: sender)
+    }
+    
+    func timelinePostActionToolbar(_ toolbar: TimelinePostActionToolbar, shareButtonDidPressed sender: UIButton) {
+        delegate?.timelinePostTableViewCell(self, actionToolbar: toolbar, shareButtonDidPressed: sender)
     }
     
 }

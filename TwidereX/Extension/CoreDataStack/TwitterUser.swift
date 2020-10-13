@@ -19,7 +19,7 @@ extension TwitterUser.Property {
             url: entity.url,
             location: entity.location,
             createdAt: entity.createdAt,
-//            following: entity.following,
+            protected: entity.protected ?? false,
             friendsCount: entity.friendsCount.flatMap { NSNumber(value: $0) },
             followersCount: entity.followersCount.flatMap { NSNumber(value: $0) },
             listedCount: entity.listedCount.flatMap { NSNumber(value: $0) },

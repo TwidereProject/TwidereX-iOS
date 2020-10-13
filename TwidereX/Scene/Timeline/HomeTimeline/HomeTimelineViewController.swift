@@ -21,7 +21,7 @@ final class HomeTimelineViewController: UIViewController, NeedsDependency {
     private(set) lazy var viewModel = HomeTimelineViewModel(context: context)
     
     lazy var tableView: UITableView = {
-        let tableView = UITableView()
+        let tableView = ControlContainableTableView()
         tableView.register(TimelinePostTableViewCell.self, forCellReuseIdentifier: String(describing: TimelinePostTableViewCell.self))
         tableView.register(TimelineMiddleLoaderTableViewCell.self, forCellReuseIdentifier: String(describing: TimelineMiddleLoaderTableViewCell.self))
         tableView.register(TimelineBottomLoaderTableViewCell.self, forCellReuseIdentifier: String(describing: TimelineBottomLoaderTableViewCell.self))
@@ -81,6 +81,9 @@ extension HomeTimelineViewController {
         context.authenticationService.twitterAuthentications
             .map { $0.first }
             .assign(to: \.value, on: viewModel.currentTwitterAuthentication)
+            .store(in: &disposeBag)
+        context.authenticationService.currentTwitterUser
+            .assign(to: \.value, on: viewModel.currentTwitterUser)
             .store(in: &disposeBag)
         
         // bind refresh control
@@ -274,6 +277,10 @@ extension HomeTimelineViewController: ContentOffsetAdjustableTimelineViewControl
     }
 }
 
+extension HomeTimelineViewController {
+    
+}
+
 // MARK: - TimelinePostTableViewCellDelegate
 extension HomeTimelineViewController: TimelinePostTableViewCellDelegate {
     
@@ -290,6 +297,8 @@ extension HomeTimelineViewController: TimelinePostTableViewCellDelegate {
                 guard let tweet = timelineIndex.tweet else { return }
                 let twitterUser = tweet.user
                 let profileViewModel = ProfileViewModel(twitterUser: twitterUser)
+                self.context.authenticationService.currentTwitterUser
+                    .assign(to: \.value, on: profileViewModel.currentTwitterUser).store(in: &profileViewModel.disposeBag)
                 self.coordinator.present(scene: .profile(viewModel: profileViewModel), from: self, transition: .show)
             }
         default:
@@ -310,6 +319,8 @@ extension HomeTimelineViewController: TimelinePostTableViewCellDelegate {
                 guard let tweet = timelineIndex.tweet?.retweet ?? timelineIndex.tweet else { return }
                 let twitterUser = tweet.user
                 let profileViewModel = ProfileViewModel(twitterUser: twitterUser)
+                self.context.authenticationService.currentTwitterUser
+                    .assign(to: \.value, on: profileViewModel.currentTwitterUser).store(in: &profileViewModel.disposeBag)
                 self.coordinator.present(scene: .profile(viewModel: profileViewModel), from: self, transition: .show)
             }
         default:
@@ -330,12 +341,90 @@ extension HomeTimelineViewController: TimelinePostTableViewCellDelegate {
                 guard let tweet = timelineIndex.tweet?.retweet?.quote ?? timelineIndex.tweet?.quote else { return }
                 let twitterUser = tweet.user
                 let profileViewModel = ProfileViewModel(twitterUser: twitterUser)
+                self.context.authenticationService.currentTwitterUser
+                    .assign(to: \.value, on: profileViewModel.currentTwitterUser).store(in: &profileViewModel.disposeBag)
                 self.coordinator.present(scene: .profile(viewModel: profileViewModel), from: self, transition: .show)
             }
         default:
             return
         }
     }
+    
+    // MARK: - ActionToolbar
+    
+    func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, actionToolbar: TimelinePostActionToolbar, replayButtonDidPressed sender: UIButton) {
+    }
+    
+    func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, actionToolbar: TimelinePostActionToolbar, retweetButtonDidPressed sender: UIButton) {
+    }
+    
+    func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, actionToolbar: TimelinePostActionToolbar, favoriteButtonDidPressed sender: UIButton) {
+        guard let currentTwitterUserObjectID = viewModel.currentTwitterUser.value?.objectID else { return }
+        guard let twitterAuthentication = self.viewModel.currentTwitterAuthentication.value,
+              let authorization = try? twitterAuthentication.authorization(appSecret: AppSecret.shared) else {
+            assertionFailure()
+            return
+        }
+        guard let diffableDataSource = viewModel.diffableDataSource else { return }
+        guard let indexPath = tableView.indexPath(for: cell) else { return }
+        guard let timelineItem = diffableDataSource.itemIdentifier(for: indexPath) else { return }
+        guard case let .homeTimelineIndex(timelineIndexObjectID, _) = timelineItem else { return }
+        
+        // TODO: use API service manage like state
+        var targetLikeState = false
+        var tweetID: Tweet.TweetID?
+        let managedObjectContext = context.apiService.backgroundManagedObjectContext
+        managedObjectContext.performChanges {
+            let timelineIndex = managedObjectContext.object(with: timelineIndexObjectID) as! TimelineIndex
+            guard let tweet = timelineIndex.tweet else { return }
+            tweetID = tweet.idStr
+            let currentTwitterUser = managedObjectContext.object(with: currentTwitterUserObjectID) as! TwitterUser
+            targetLikeState = !(tweet.likeBy.flatMap { $0.contains(currentTwitterUser) } ?? false)
+            tweet.update(favorited: targetLikeState, twitterUser: currentTwitterUser)
+        }
+        .sink { [weak self] result in
+            guard let self = self else { return }
+            guard let tweetID = tweetID else { return }
+            
+            switch result {
+            case .failure(let error):
+                os_log("%{public}s[%{public}ld], %{public}s: like fail: %s", ((#file as NSString).lastPathComponent), #line, #function, error.localizedDescription)
+            case .success:
+                os_log("%{public}s[%{public}ld], %{public}s: %{public}s success", ((#file as NSString).lastPathComponent), #line, #function, targetLikeState ? "like" : "unlike")
+                DispatchQueue.main.async {
+                    let generator = UIImpactFeedbackGenerator(style: .light)
+                    generator.impactOccurred()
+                    
+                    var snapshot = diffableDataSource.snapshot()
+                    snapshot.reloadItems([timelineItem])
+                    diffableDataSource.defaultRowAnimation = .none
+                    diffableDataSource.apply(snapshot)
+                    diffableDataSource.defaultRowAnimation = .automatic
+                }
+            }
+            
+            let favoriteKind: Twitter.API.Favorites.FavoriteKind = targetLikeState ? .create : .destroy
+            self.context.apiService.like(tweetID: tweetID, authorization: authorization, twitterUserID: twitterAuthentication.userID, favoriteKind: favoriteKind)
+                .sink { completion in
+                    switch completion {
+                    case .failure(let error):
+                        os_log("%{public}s[%{public}ld], %{public}s: favorite fail: %{public}s", ((#file as NSString).lastPathComponent), #line, #function, error.localizedDescription)
+                    case .finished:
+                        os_log("%{public}s[%{public}ld], %{public}s: favorite success", ((#file as NSString).lastPathComponent), #line, #function)
+                        
+                    }
+                } receiveValue: { tweet in
+                    
+                }
+                .store(in: &self.disposeBag)
+
+        }
+        .store(in: &disposeBag)
+    }
+    
+    func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, actionToolbar: TimelinePostActionToolbar, shareButtonDidPressed sender: UIButton) {
+    }
+    
 }
 
 // MARK: - TimelineMiddleLoaderTableViewCellDelegate

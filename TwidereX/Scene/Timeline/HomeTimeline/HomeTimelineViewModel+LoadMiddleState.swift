@@ -62,7 +62,7 @@ extension HomeTimelineViewModel.LoadMiddleState {
 
             // TODO: only set large count when using Wi-Fi
             let maxID = anchorTweetID
-            viewModel.context.apiService.twitterHomeTimeline(count: 20, maxID: maxID, authorization: authorization)
+            viewModel.context.apiService.twitterHomeTimeline(count: 20, maxID: maxID, authorization: authorization, twitterUserID: twitterAuthentication.userID)
                 .delay(for: .seconds(1), scheduler: DispatchQueue.main)
                 .receive(on: DispatchQueue.main)
                 .sink { completion in
