@@ -9,23 +9,24 @@
 import os.log
 import Foundation
 import GameplayKit
+import CoreData
 import CoreDataStack
 
 extension HomeTimelineViewModel {
     class LoadMiddleState: GKState {
         weak var viewModel: HomeTimelineViewModel?
-        let anchorTweetID: Tweet.TweetID
+        let upperTimelineIndexObjectID: NSManagedObjectID
         
-        init(viewModel: HomeTimelineViewModel, anchorTweetID: Tweet.TweetID) {
+        init(viewModel: HomeTimelineViewModel, upperTimelineIndexObjectID: NSManagedObjectID) {
             self.viewModel = viewModel
-            self.anchorTweetID = anchorTweetID
+            self.upperTimelineIndexObjectID = upperTimelineIndexObjectID
         }
         
         override func didEnter(from previousState: GKState?) {
             os_log("%{public}s[%{public}ld], %{public}s: enter %s, previous: %s", ((#file as NSString).lastPathComponent), #line, #function, self.debugDescription, previousState.debugDescription)
             guard let viewModel = viewModel, let stateMachine = stateMachine else { return }
             var dict = viewModel.loadMiddleSateMachineList.value
-            dict[anchorTweetID] = stateMachine
+            dict[upperTimelineIndexObjectID] = stateMachine
             viewModel.loadMiddleSateMachineList.value = dict    // trigger value change
         }
     }
@@ -56,12 +57,17 @@ extension HomeTimelineViewModel.LoadMiddleState {
                 return
             }
             
+            guard let timelineIndex = (viewModel.fetchedResultsController.fetchedObjects ?? []).first(where: { $0.objectID == upperTimelineIndexObjectID }),
+                  let tweet = timelineIndex.tweet else {
+                stateMachine.enter(Fail.self)
+                return
+            }
             let tweetIDs = (viewModel.fetchedResultsController.fetchedObjects ?? []).compactMap { timelineIndex in
                 timelineIndex.tweet?.idStr
             }
 
             // TODO: only set large count when using Wi-Fi
-            let maxID = anchorTweetID
+            let maxID = tweet.idStr
             viewModel.context.apiService.twitterHomeTimeline(count: 20, maxID: maxID, authorization: authorization, twitterUserID: twitterAuthentication.userID)
                 .delay(for: .seconds(1), scheduler: DispatchQueue.main)
                 .receive(on: DispatchQueue.main)

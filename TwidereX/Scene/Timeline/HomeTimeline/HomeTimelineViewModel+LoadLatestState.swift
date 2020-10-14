@@ -91,36 +91,5 @@ extension HomeTimelineViewModel.LoadLatestState {
             return stateClass == Loading.self
         }
     }
-//
-//    class LoadingMore: HomeTimelineViewModel.State {
-//        override func isValidNextState(_ stateClass: AnyClass) -> Bool {
-//            return stateClass == Fail.self || stateClass == Idle.self || stateClass == NoMore.self
-//        }
-//
-//        override func didEnter(from previousState: GKState?) {
-//            super.didEnter(from: previousState)
-//            guard let viewModel = viewModel, let stateMachine = stateMachine else { return }
-//
-////            viewModel.loadMore()
-////                .sink { [weak self] completion in
-////                    switch completion {
-////                    case .failure(let error):
-////                        stateMachine.enter(Fail.self)
-////                    case .finished:
-////                        stateMachine.enter(Idle.self)
-////                    }
-////                } receiveValue: { [weak self] response in
-////                    let newTweetIds = response.value.map { $0.idStr }
-////                    let idSet = Set(viewModel.userTimelineTweetIDs.value).union(newTweetIds)
-////                    viewModel.userTimelineTweetIDs.value = Array(idSet)
-////                }
-////                .store(in: &viewModel.disposeBag)
-//        }
-//    }
-//
-//    class NoMore: HomeTimelineViewModel.State {
-//        override func isValidNextState(_ stateClass: AnyClass) -> Bool {
-//            return stateClass == Reloading.self
-//        }
-//    }
+
 }

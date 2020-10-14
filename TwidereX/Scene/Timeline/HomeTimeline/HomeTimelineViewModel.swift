@@ -63,7 +63,7 @@ final class HomeTimelineViewModel: NSObject {
     }()
     lazy var loadOldestStateMachinePublisher = CurrentValueSubject<LoadOldestState, Never>(LoadOldestState.Initial(viewModel: self))
     // middle loader
-    let loadMiddleSateMachineList = CurrentValueSubject<[Tweet.TweetID: GKStateMachine], Never>([:])
+    let loadMiddleSateMachineList = CurrentValueSubject<[NSManagedObjectID: GKStateMachine], Never>([:])    // TimelineIndex.objectID : middle loading state machine
     var diffableDataSource: UITableViewDiffableDataSource<TimelineSection, TimelineItem>?
     var cellFrameCache = NSCache<NSNumber, NSValue>()
     
@@ -72,7 +72,9 @@ final class HomeTimelineViewModel: NSObject {
         self.fetchedResultsController = {
             let fetchRequest = TimelineIndex.sortedFetchRequest
             fetchRequest.returnsObjectsAsFaults = false
-            fetchRequest.fetchBatchSize = 20
+            // do not optimize fetch batch size due to diffable we use data source
+            // fetchRequest.fetchBatchSize = 20
+            fetchRequest.relationshipKeyPathsForPrefetching = [#keyPath(TimelineIndex.tweet)]
             let controller = NSFetchedResultsController(
                 fetchRequest: fetchRequest,
                 managedObjectContext: context.managedObjectContext,
@@ -113,12 +115,12 @@ extension HomeTimelineViewModel {
                 }
                 cell.delegate = self.timelinePostTableViewCellDelegate
                 return cell
-            case .homeTimelineMiddleLoader(let upper):
+            case .homeTimelineMiddleLoader(let upperTimelineIndexObjectID):
                 let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: TimelineMiddleLoaderTableViewCell.self), for: indexPath) as! TimelineMiddleLoaderTableViewCell
                 self.loadMiddleSateMachineList
                     .receive(on: DispatchQueue.main)
                     .sink { ids in
-                        if let stateMachine = ids[upper] {
+                        if let stateMachine = ids[upperTimelineIndexObjectID] {
                             guard let state = stateMachine.currentState else {
                                 assertionFailure()
                                 return
@@ -139,17 +141,17 @@ extension HomeTimelineViewModel {
                     }
                     .store(in: &cell.disposeBag)
                 var dict = self.loadMiddleSateMachineList.value
-                if let _ = dict[upper] {
+                if let _ = dict[upperTimelineIndexObjectID] {
                     // do nothing
                 } else {
                     let stateMachine = GKStateMachine(states: [
-                        LoadMiddleState.Initial(viewModel: self, anchorTweetID: upper),
-                        LoadMiddleState.Loading(viewModel: self, anchorTweetID: upper),
-                        LoadMiddleState.Fail(viewModel: self, anchorTweetID: upper),
-                        LoadMiddleState.Success(viewModel: self, anchorTweetID: upper),
+                        LoadMiddleState.Initial(viewModel: self, upperTimelineIndexObjectID: upperTimelineIndexObjectID),
+                        LoadMiddleState.Loading(viewModel: self, upperTimelineIndexObjectID: upperTimelineIndexObjectID),
+                        LoadMiddleState.Fail(viewModel: self, upperTimelineIndexObjectID: upperTimelineIndexObjectID),
+                        LoadMiddleState.Success(viewModel: self, upperTimelineIndexObjectID: upperTimelineIndexObjectID),
                     ])
                     stateMachine.enter(LoadMiddleState.Initial.self)
-                    dict[upper] = stateMachine
+                    dict[upperTimelineIndexObjectID] = stateMachine
                     self.loadMiddleSateMachineList.value = dict
                 }
                 cell.delegate = self.timelineMiddleLoaderTableViewCellDelegate
@@ -384,9 +386,6 @@ extension HomeTimelineViewModel: NSFetchedResultsControllerDelegate {
         guard let diffableDataSource = self.diffableDataSource else { return }
         let oldSnapshot = diffableDataSource.snapshot()
         let snapshot = snapshot as NSDiffableDataSourceSnapshot<String, NSManagedObjectID>
-        
-        var newSnapshot = NSDiffableDataSourceSnapshot<TimelineSection, TimelineItem>()
-        newSnapshot.appendSections([.main])
 
         let parentManagedObjectContext = fetchedResultsController.managedObjectContext
         let managedObjectContext = NSManagedObjectContext(concurrencyType: .privateQueueConcurrencyType)
@@ -395,39 +394,58 @@ extension HomeTimelineViewModel: NSFetchedResultsControllerDelegate {
         managedObjectContext.perform {
             let start = CACurrentMediaTime()
             var shouldAddBottomLoader = false
-            for (i, objectID) in snapshot.itemIdentifiers.enumerated() {
-                let attribute: TimelineItem.Attribute = {
-                    for item in oldSnapshot.itemIdentifiers {
-                        guard case let .homeTimelineIndex(oldObjectID, attribute) = item else { continue }
-                        guard objectID == oldObjectID else { continue }
-                        return attribute
-                    }
-                    
-                    return TimelineItem.Attribute()
-                }()
+            
+            let timelineIndexes: [TimelineIndex] = {
+                let request = TimelineIndex.sortedFetchRequest
+                request.returnsObjectsAsFaults = false
+                do {
+                    return try managedObjectContext.fetch(request)
+                } catch {
+                    assertionFailure(error.localizedDescription)
+                    return []
+                }
+            }()
+            
+            let endFetch = CACurrentMediaTime()
+            os_log("%{public}s[%{public}ld], %{public}s: fetch timelineIndexes cost %.2fs", ((#file as NSString).lastPathComponent), #line, #function, endFetch - start)
+            
+            var oldSnapshotAttributeDict: [NSManagedObjectID : TimelineItem.Attribute] = [:]
+            for item in oldSnapshot.itemIdentifiers {
+                guard case let .homeTimelineIndex(objectID, attribute) = item else { continue }
+                oldSnapshotAttributeDict[objectID] = attribute
+            }
+            let endPrepareCache = CACurrentMediaTime()
+            
+            var newTimelineItems: [TimelineItem] = []
+            os_log("%{public}s[%{public}ld], %{public}s: prepare timelineIndex cache cost %.2fs", ((#file as NSString).lastPathComponent), #line, #function, endPrepareCache - endFetch)
+            for (i, timelineIndex) in timelineIndexes.enumerated() {
+                let attribute = oldSnapshotAttributeDict[timelineIndex.objectID] ?? TimelineItem.Attribute()
+
+                // append new item into snapshot
+                newTimelineItems.append(.homeTimelineIndex(objectID: timelineIndex.objectID, attribute: attribute))
                 
-                // save into buffer
-                newSnapshot.appendItems([.homeTimelineIndex(objectID: objectID, attribute: attribute)], toSection: .main)
-                
-                let timelineIndex = managedObjectContext.object(with: objectID) as! TimelineIndex
-                if let tweet = timelineIndex.tweet {
-                    let isLast = i == snapshot.itemIdentifiers.count - 1
-                    switch (isLast, tweet.hasMore) {
-                    case (true, false):
-                        attribute.separatorLineStyle = .normal
-                    case (false, true):
-                        attribute.separatorLineStyle = .expand
-                        newSnapshot.appendItems([.homeTimelineMiddleLoader(upper: tweet.idStr)], toSection: .main)
-                    case (true, true):
-                        attribute.separatorLineStyle = .normal
-                        shouldAddBottomLoader = true
-                    case (false, false):
-                        attribute.separatorLineStyle = .indent
-                    }
+                let isLast = i == timelineIndexes.count - 1
+                switch (isLast, timelineIndex.hasMore) {
+                case (true, false):
+                    attribute.separatorLineStyle = .normal
+                case (false, true):
+                    attribute.separatorLineStyle = .expand
+                    newTimelineItems.append(.homeTimelineMiddleLoader(upperTimelineIndexAnchorObjectID: timelineIndex.objectID))
+                case (true, true):
+                    attribute.separatorLineStyle = .normal
+                    shouldAddBottomLoader = true
+                case (false, false):
+                    attribute.separatorLineStyle = .indent
                 }
             }   // end for
+
+            var newSnapshot = NSDiffableDataSourceSnapshot<TimelineSection, TimelineItem>()
+            newSnapshot.appendSections([.main])
+            newSnapshot.appendItems(newTimelineItems, toSection: .main)
+            
             let endSnapshot = CACurrentMediaTime()
-            os_log("%{public}s[%{public}ld], %{public}s: calculate home timeline snapshot cost %.2fs", ((#file as NSString).lastPathComponent), #line, #function, endSnapshot - start)
+            let count = max(1, newSnapshot.itemIdentifiers.count)
+            os_log("%{public}s[%{public}ld], %{public}s: calculate home timeline snapshot with %ld items cost %.2fs. avg %.5fs per item", ((#file as NSString).lastPathComponent), #line, #function, newSnapshot.itemIdentifiers.count, endSnapshot - endPrepareCache, (endSnapshot - endPrepareCache) / Double(count))
             
             DispatchQueue.main.async {
                 if shouldAddBottomLoader, !(self.loadoldestStateMachine.currentState is LoadOldestState.NoMore) {
@@ -436,6 +454,7 @@ extension HomeTimelineViewModel: NSFetchedResultsControllerDelegate {
                 
                 guard let difference = self.calculateReloadSnapshotDifference(navigationBar: navigationBar, tableView: tableView, oldSnapshot: oldSnapshot, newSnapshot: newSnapshot) else {
                     diffableDataSource.apply(newSnapshot)
+                    self.isFetchingLatestTimeline.value = false
                     return
                 }
                 

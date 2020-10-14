@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="17192" systemVersion="19H2" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="17510.1" systemVersion="19H2" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
     <entity name="Entity" representedClassName="Entity" syncable="YES" codeGenerationType="class"/>
     <entity name="TimelineIndex" representedClassName=".TimelineIndex" syncable="YES">
         <attribute name="createdAt" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="hasMore" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
         <attribute name="id" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="platformRaw" attributeType="String"/>
         <attribute name="userID" attributeType="String"/>
@@ -21,7 +22,6 @@
         <attribute name="entitiesRaw" attributeType="Binary"/>
         <attribute name="extendedEntitiesRaw" optional="YES" attributeType="Binary"/>
         <attribute name="favoriteCount" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
-        <attribute name="hasMore" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
         <attribute name="id" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="idStr" attributeType="String"/>
         <attribute name="placeRaw" optional="YES" attributeType="Binary"/>
@@ -82,9 +82,9 @@
     </entity>
     <elements>
         <element name="Entity" positionX="-27" positionY="135" width="128" height="43"/>
-        <element name="TimelineIndex" positionX="-54" positionY="63" width="128" height="133"/>
+        <element name="TimelineIndex" positionX="-54" positionY="63" width="128" height="148"/>
         <element name="Toots" positionX="-18" positionY="81" width="128" height="103"/>
-        <element name="Tweet" positionX="371.83984375" positionY="-55.8125" width="128" height="373"/>
+        <element name="Tweet" positionX="371.83984375" positionY="-55.8125" width="128" height="358"/>
         <element name="TwitterAuthentication" positionX="-63" positionY="-18" width="128" height="208"/>
         <element name="TwitterUser" positionX="0" positionY="108" width="128" height="433"/>
     </elements>

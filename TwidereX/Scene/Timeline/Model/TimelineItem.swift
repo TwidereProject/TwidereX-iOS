@@ -14,7 +14,7 @@ import CoreDataStack
 enum TimelineItem {
     
     case homeTimelineIndex(objectID: NSManagedObjectID, attribute: Attribute)
-    case homeTimelineMiddleLoader(upper: Tweet.TweetID)
+    case homeTimelineMiddleLoader(upperTimelineIndexAnchorObjectID: NSManagedObjectID)
     
     case userTimelineItem(objectID: NSManagedObjectID)
     

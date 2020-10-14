@@ -185,7 +185,7 @@ extension HomeTimelineViewController {
             let objectID = last.objectID
             context.apiService.backgroundManagedObjectContext.performChanges {
                 let object = self.context.apiService.backgroundManagedObjectContext.object(with: objectID) as! TimelineIndex
-                object.tweet!.update(hasMore: true)
+                object.update(hasMore: true)
             }
             .sink { result in
                 switch result {

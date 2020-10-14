@@ -16,6 +16,8 @@ final public class TimelineIndex: NSManagedObject {
     @NSManaged public private(set) var platformRaw: String
     @NSManaged public private(set) var createdAt: Date
     
+    @NSManaged public private(set) var hasMore: Bool
+    
     // one-to-one relationship
     @NSManaged public private(set) var tweet: Tweet?
     @NSManaged public private(set) var toots: Toots?
@@ -36,6 +38,13 @@ extension TimelineIndex {
         timelineIndex.createdAt = property.createdAt
         return timelineIndex
     }
+    
+    public func update(hasMore: Bool) {
+        if self.hasMore != hasMore {
+            self.hasMore = hasMore
+        }
+    }
+    
 }
 
 extension TimelineIndex {

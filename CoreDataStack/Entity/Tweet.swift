@@ -121,8 +121,6 @@ final public class Tweet: NSManagedObject {
         }
     }
     
-    @NSManaged public private(set) var hasMore: Bool
-    
     @NSManaged public private(set) var retweetCount: NSNumber?
     @NSManaged public private(set) var favoriteCount: NSNumber?
     
@@ -231,12 +229,6 @@ extension Tweet {
     public func update(quotedStatusIDStr: String?) {
         if self.quotedStatusIDStr != quotedStatusIDStr {
             self.quotedStatusIDStr = quotedStatusIDStr
-        }
-    }
-    
-    public func update(hasMore: Bool) {
-        if self.hasMore != hasMore {
-            self.hasMore = hasMore
         }
     }
     

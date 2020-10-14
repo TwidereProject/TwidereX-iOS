@@ -102,7 +102,7 @@ extension APIService {
                         request.returnsObjectsAsFaults = false
                         request.fetchLimit = 1
                         anchorTweet = try managedObjectContext.fetch(request).first
-                        anchorTweet?.update(hasMore: false)
+                        anchorTweet?.timelineIndex?.update(hasMore: false)
                     } catch {
                         assertionFailure(error.localizedDescription)
                     }
@@ -119,12 +119,12 @@ extension APIService {
                         let isOnlyOverlapItself = mergedOldTweetsInTimeline.count == 1 && mergedOldTweetsInTimeline.first?.idStr == anchorTweet.idStr
                         let isAnchorEqualOldestRecord = oldestRecord.tweet.idStr == anchorTweet.idStr
                         if (isNoOverlap || isOnlyOverlapItself) && !isAnchorEqualOldestRecord {
-                            oldestRecord.tweet.update(hasMore: true)
+                            oldestRecord.tweet.timelineIndex?.update(hasMore: true)
                         }
                         
                     } else if mergedOldTweetsInTimeline.isEmpty {
                         // no anchor. set hasMore when no overlap
-                        oldestRecord.tweet.update(hasMore: true)
+                        oldestRecord.tweet.timelineIndex?.update(hasMore: true)
                     }
                 } else {
                     // empty working record. mark anchor hasMore in the task 1
