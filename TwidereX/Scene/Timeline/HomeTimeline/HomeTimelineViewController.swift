@@ -410,7 +410,8 @@ extension HomeTimelineViewController: TimelinePostTableViewCellDelegate {
                 // TODO: handle error
                 break
             case .finished:
-                os_log("%{public}s[%{public}ld], %{public}s: %{public}s [Like] update local tweet like status to: %s", ((#file as NSString).lastPathComponent), #line, #function, targetFavoriteKind == .create ? "like" : "unlike")
+                os_log("%{public}s[%{public}ld], %{public}s: [Like] update local tweet like status to: %s", ((#file as NSString).lastPathComponent), #line, #function, targetFavoriteKind == .create ? "like" : "unlike")
+
                 // reload item
                 DispatchQueue.main.async {
                     var snapshot = diffableDataSource.snapshot()
