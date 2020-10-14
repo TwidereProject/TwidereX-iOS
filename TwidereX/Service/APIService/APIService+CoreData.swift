@@ -50,8 +50,7 @@ extension APIService {
                 into: managedObjectContext,
                 property: twitterUserProperty,
                 following: (entity.following ?? false) ? requestTwitterUser : nil,
-                followRequestSent: (entity.followRequestSent ?? false) ? requestTwitterUser : nil,
-                protected: (entity.protected ?? false) ? requestTwitterUser : nil
+                followRequestSent: (entity.followRequestSent ?? false) ? requestTwitterUser : nil
             )
             os_signpost(.event, log: log, name: "update database - process entity: createOrMergeTwitterUser", signpostID: processEntityTaskSignpostID, "did insert new twitter user %{public}s: name %s", twitterUser.id.uuidString, twitterUserProperty.name ?? "<nil>")
             return (twitterUser, true)

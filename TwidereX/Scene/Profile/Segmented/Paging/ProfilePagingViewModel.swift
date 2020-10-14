@@ -43,7 +43,7 @@ final class ProfilePagingViewModel: NSObject {
         let items = [
             TMBarItem(image: Asset.ObjectTools.uilDocumentLayoutLeft.image.withRenderingMode(.alwaysTemplate)),
             TMBarItem(image: Asset.ObjectTools.icBaselinePhotoLibrary.image.withRenderingMode(.alwaysTemplate)),
-            TMBarItem(image: Asset.Health.icRoundFavoriteFillLarge.image.withRenderingMode(.alwaysTemplate)),
+            TMBarItem(image: Asset.Health.heartFillLarge.image.withRenderingMode(.alwaysTemplate)),
         ]
         return items
     }()

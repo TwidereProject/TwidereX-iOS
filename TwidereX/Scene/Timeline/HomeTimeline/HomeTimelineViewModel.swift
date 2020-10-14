@@ -71,9 +71,8 @@ final class HomeTimelineViewModel: NSObject {
         self.context  = context
         self.fetchedResultsController = {
             let fetchRequest = TimelineIndex.sortedFetchRequest
+            fetchRequest.fetchBatchSize = 20
             fetchRequest.returnsObjectsAsFaults = false
-            // do not optimize fetch batch size due to diffable we use data source
-            // fetchRequest.fetchBatchSize = 20
             fetchRequest.relationshipKeyPathsForPrefetching = [#keyPath(TimelineIndex.tweet)]
             let controller = NSFetchedResultsController(
                 fetchRequest: fetchRequest,
@@ -213,7 +212,7 @@ extension HomeTimelineViewModel {
         }()
         cell.timelinePostView.actionToolbar.retweetButton.setTitle(retweetCountTitle, for: .normal)
 
-        let isLike = tweet.likeBy.flatMap({ $0.contains(where: { $0.idStr == requestUserID }) }) ?? false
+        let isLike = (tweet.retweet ?? tweet).likeBy.flatMap({ $0.contains(where: { $0.idStr == requestUserID }) }) ?? false
         let favoriteCountTitle: String = {
             let count = (tweet.retweet ?? tweet).favoriteCount.flatMap { Int(truncating: $0) }
             return HomeTimelineViewModel.formattedNumberTitleForActionButton(count)
@@ -308,6 +307,23 @@ extension HomeTimelineViewModel {
             cell.timelinePostView.quotePostView.activeTextLabel.text = quote.text
         }
         cell.timelinePostView.quotePostView.isHidden = quote == nil
+        
+        // observe model change
+        ManagedObjectObserver.observe(object: tweet.retweet ?? tweet)
+            .receive(on: DispatchQueue.main)
+            .sink { _ in
+                // do nothing
+            } receiveValue: { change in
+                guard case let .update(object) = change.changeType,
+                      let newTweet = object as? Tweet else { return }
+                let targetTweet = newTweet.retweet ?? newTweet
+                let count = targetTweet.favoriteCount.flatMap { Int(truncating: $0) }
+                let favoriteCountTitle = HomeTimelineViewModel.formattedNumberTitleForActionButton(count)
+                cell.timelinePostView.actionToolbar.favoriteButton.setTitle(favoriteCountTitle, for: .normal)
+                os_log("%{public}s[%{public}ld], %{public}s: like count label for tweet %s did update: %ld", ((#file as NSString).lastPathComponent), #line, #function, targetTweet.idStr, count ?? 0)
+            }
+            .store(in: &cell.disposeBag)
+
     }
     
     private static func internalConfigure(cell: TimelinePostTableViewCell, tweet: Tweet, attribute: TimelineItem.Attribute) {

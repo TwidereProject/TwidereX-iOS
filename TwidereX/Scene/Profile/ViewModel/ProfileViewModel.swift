@@ -96,9 +96,9 @@ extension ProfileViewModel {
                 self.twitterUserObserver = ManagedObjectObserver.observe(object: twitterUser)
                     .sink { completion in
                         
-                    } receiveValue: { [weak self] changeType in
+                    } receiveValue: { [weak self] change in
                         guard let self = self else { return }
-                        guard let changeType = changeType else { return }
+                        guard let changeType = change.changeType else { return }
                         switch changeType {
                         case .update:
                             self.update(twitterUser: twitterUser)
@@ -118,9 +118,9 @@ extension ProfileViewModel {
                 self.twitterUserObserver = ManagedObjectObserver.observe(object: currentTwitterUser)
                     .sink { completion in
                         
-                    } receiveValue: { [weak self] changeType in
+                    } receiveValue: { [weak self] change in
                         guard let self = self else { return }
-                        guard let changeType = changeType else { return }
+                        guard let changeType = change.changeType else { return }
                         switch changeType {
                         case .update:
                             self.update(twitterUser: twitterUser, currentTwitterUser: currentTwitterUser)

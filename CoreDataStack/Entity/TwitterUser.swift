@@ -70,8 +70,7 @@ extension TwitterUser {
         into context: NSManagedObjectContext,
         property: Property,
         following: TwitterUser?,
-        followRequestSent: TwitterUser?,
-        protected: TwitterUser?
+        followRequestSent: TwitterUser?
     ) -> TwitterUser {
         let user: TwitterUser = context.insertObject()
         user.updatedAt = property.networkDate
@@ -100,9 +99,6 @@ extension TwitterUser {
         }
         if let followRequestSent = followRequestSent {
             user.mutableSetValue(forKey: #keyPath(TwitterUser.followRequestSent)).addObjects(from: [followRequestSent])
-        }
-        if let protected = protected {
-            user.mutableSetValue(forKey: #keyPath(TwitterUser.protected)).addObjects(from: [protected])
         }
         
         return user

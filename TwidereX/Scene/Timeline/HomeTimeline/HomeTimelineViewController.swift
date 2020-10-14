@@ -359,42 +359,60 @@ extension HomeTimelineViewController: TimelinePostTableViewCellDelegate {
     }
     
     func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, actionToolbar: TimelinePostActionToolbar, favoriteButtonDidPressed sender: UIButton) {
-        guard let currentTwitterUserObjectID = viewModel.currentTwitterUser.value?.objectID else { return }
-        guard let twitterAuthentication = self.viewModel.currentTwitterAuthentication.value,
+        // prepare authentication
+        guard let twitterAuthentication = viewModel.currentTwitterAuthentication.value,
               let authorization = try? twitterAuthentication.authorization(appSecret: AppSecret.shared) else {
             assertionFailure()
             return
         }
+        
+        // prepare current user infos
+        guard let _currentTwitterUser = context.authenticationService.currentTwitterUser.value else {
+            assertionFailure()
+            return
+        }
+        let twitterUserID = twitterAuthentication.userID
+        assert(_currentTwitterUser.idStr == twitterUserID)
+        let twitterUserObjectID = _currentTwitterUser.objectID
+        
+        // retrieve target tweet infos
         guard let diffableDataSource = viewModel.diffableDataSource else { return }
         guard let indexPath = tableView.indexPath(for: cell) else { return }
         guard let timelineItem = diffableDataSource.itemIdentifier(for: indexPath) else { return }
         guard case let .homeTimelineIndex(timelineIndexObjectID, _) = timelineItem else { return }
-        
-        // TODO: use API service manage like state
-        var targetLikeState = false
-        var tweetID: Tweet.TweetID?
-        let managedObjectContext = context.apiService.backgroundManagedObjectContext
-        managedObjectContext.performChanges {
-            let timelineIndex = managedObjectContext.object(with: timelineIndexObjectID) as! TimelineIndex
-            guard let tweet = timelineIndex.tweet else { return }
-            tweetID = tweet.idStr
-            let currentTwitterUser = managedObjectContext.object(with: currentTwitterUserObjectID) as! TwitterUser
-            targetLikeState = !(tweet.likeBy.flatMap { $0.contains(currentTwitterUser) } ?? false)
-            tweet.update(favorited: targetLikeState, twitterUser: currentTwitterUser)
-        }
-        .sink { [weak self] result in
-            guard let self = self else { return }
-            guard let tweetID = tweetID else { return }
-            
-            switch result {
+        let timelineIndex = viewModel.fetchedResultsController.managedObjectContext.object(with: timelineIndexObjectID) as! TimelineIndex
+        guard let tweet = timelineIndex.tweet else { return }
+        let tweetObjectID = tweet.objectID
+
+        let targetFavoriteKind: Twitter.API.Favorites.FavoriteKind = {
+            let targetTweet = (tweet.retweet ?? tweet)
+            let isLiked = targetTweet.likeBy.flatMap { $0.contains(where: { $0.idStr == twitterUserID }) } ?? false
+            return isLiked ? .destroy : .create
+        }()
+
+        // trigger like action
+        let generator = UIImpactFeedbackGenerator(style: .light)
+        context.apiService.like(
+            tweetObjectID: tweetObjectID,
+            twitterUserObjectID: twitterUserObjectID,
+            favoriteKind: targetFavoriteKind,
+            authorization: authorization,
+            twitterUserID: twitterUserID
+        )
+        .receive(on: DispatchQueue.main)
+        .handleEvents { _ in
+            generator.prepare()
+        } receiveOutput: { _ in
+            generator.impactOccurred()
+        } receiveCompletion: { completion in
+            switch completion {
             case .failure(let error):
-                os_log("%{public}s[%{public}ld], %{public}s: like fail: %s", ((#file as NSString).lastPathComponent), #line, #function, error.localizedDescription)
-            case .success:
-                os_log("%{public}s[%{public}ld], %{public}s: %{public}s success", ((#file as NSString).lastPathComponent), #line, #function, targetLikeState ? "like" : "unlike")
+                // TODO: handle error
+                break
+            case .finished:
+                os_log("%{public}s[%{public}ld], %{public}s: %{public}s [Like] update local tweet like status to: %s", ((#file as NSString).lastPathComponent), #line, #function, targetFavoriteKind == .create ? "like" : "unlike")
+                // reload item
                 DispatchQueue.main.async {
-                    let generator = UIImpactFeedbackGenerator(style: .light)
-                    generator.impactOccurred()
-                    
                     var snapshot = diffableDataSource.snapshot()
                     snapshot.reloadItems([timelineItem])
                     diffableDataSource.defaultRowAnimation = .none
@@ -402,22 +420,25 @@ extension HomeTimelineViewController: TimelinePostTableViewCellDelegate {
                     diffableDataSource.defaultRowAnimation = .automatic
                 }
             }
+        }
+        .map { targetTweetID in
+            self.context.apiService.like(
+                tweetID: targetTweetID,
+                favoriteKind: targetFavoriteKind,
+                authorization: authorization,
+                twitterUserID: twitterUserID
+            )
+        }
+        .switchToLatest()
+        .sink { completion in
+            switch completion {
+            case .failure(let error):
+                os_log("%{public}s[%{public}ld], %{public}s: [Like] remote like request fail: %{public}s", ((#file as NSString).lastPathComponent), #line, #function, error.localizedDescription)
+            case .finished:
+                os_log("%{public}s[%{public}ld], %{public}s: [Like] remote like request success", ((#file as NSString).lastPathComponent), #line, #function)
+            }
+        } receiveValue: { response in
             
-            let favoriteKind: Twitter.API.Favorites.FavoriteKind = targetLikeState ? .create : .destroy
-            self.context.apiService.like(tweetID: tweetID, authorization: authorization, twitterUserID: twitterAuthentication.userID, favoriteKind: favoriteKind)
-                .sink { completion in
-                    switch completion {
-                    case .failure(let error):
-                        os_log("%{public}s[%{public}ld], %{public}s: favorite fail: %{public}s", ((#file as NSString).lastPathComponent), #line, #function, error.localizedDescription)
-                    case .finished:
-                        os_log("%{public}s[%{public}ld], %{public}s: favorite success", ((#file as NSString).lastPathComponent), #line, #function)
-                        
-                    }
-                } receiveValue: { tweet in
-                    
-                }
-                .store(in: &self.disposeBag)
-
         }
         .store(in: &disposeBag)
     }

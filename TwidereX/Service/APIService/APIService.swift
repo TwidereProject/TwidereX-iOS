@@ -50,6 +50,7 @@ final class APIService {
 extension APIService {
     enum APIError: Error {
         case requestThrottle
+        case badRequest
     }
 }
 

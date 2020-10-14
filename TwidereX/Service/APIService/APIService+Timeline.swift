@@ -70,7 +70,7 @@ extension APIService {
             // remote timeline merge local timeline record set
             // declare it before do working
             let mergedOldTweetsInTimeline = _tweetCache.filter {
-                return $0.timelineIndex != nil
+                return $0.timelineIndexes?.contains(where: { $0.userID == requestTwitterUserID }) ?? false
             }
             
             let updateDatabaseTaskSignpostID = OSSignpostID(log: log)
@@ -102,7 +102,10 @@ extension APIService {
                         request.returnsObjectsAsFaults = false
                         request.fetchLimit = 1
                         anchorTweet = try managedObjectContext.fetch(request).first
-                        anchorTweet?.timelineIndex?.update(hasMore: false)
+                        let timelineIndex = anchorTweet.flatMap { tweet in
+                            tweet.timelineIndexes?.first(where: { $0.userID == requestTwitterUserID })
+                        }
+                        timelineIndex?.update(hasMore: false)
                     } catch {
                         assertionFailure(error.localizedDescription)
                     }
@@ -119,12 +122,16 @@ extension APIService {
                         let isOnlyOverlapItself = mergedOldTweetsInTimeline.count == 1 && mergedOldTweetsInTimeline.first?.idStr == anchorTweet.idStr
                         let isAnchorEqualOldestRecord = oldestRecord.tweet.idStr == anchorTweet.idStr
                         if (isNoOverlap || isOnlyOverlapItself) && !isAnchorEqualOldestRecord {
-                            oldestRecord.tweet.timelineIndex?.update(hasMore: true)
+                            let timelineIndex = oldestRecord.tweet.timelineIndexes?
+                                .first(where: { $0.userID == requestTwitterUserID })
+                            timelineIndex?.update(hasMore: true)
                         }
                         
                     } else if mergedOldTweetsInTimeline.isEmpty {
                         // no anchor. set hasMore when no overlap
-                        oldestRecord.tweet.timelineIndex?.update(hasMore: true)
+                        let timelineIndex = oldestRecord.tweet.timelineIndexes?
+                            .first(where: { $0.userID == requestTwitterUserID })
+                        timelineIndex?.update(hasMore: true)
                     }
                 } else {
                     // empty working record. mark anchor hasMore in the task 1
@@ -379,13 +386,15 @@ extension APIService {
                 
                 if recordType == .timeline {
                     // node is timeline
-                    if oldTweet.timelineIndex == nil {
+                    let timelineIndex = oldTweet.timelineIndexes?
+                        .first(where: { $0.userID == requestTwitterUserID })
+                    if timelineIndex == nil {
                         // exist tweet not in timeline and contained by other local entities' retweet/quote
                         os_signpost(.event, log: log, name: "update database - process entity: createorMergeTweet", signpostID: processEntityTaskSignpostID, "find old retweet %{public}s", entity.idStr)
                         let timelineIndexProperty = TimelineIndex.Property(userID: requestTwitterUserID, platform: .twitter, createdAt: entity.createdAt)
                         let timelineIndex = TimelineIndex.insert(into: managedObjectContext, property: timelineIndexProperty)
                         // make it indexed
-                        oldTweet.update(timelineIndex: timelineIndex)
+                        oldTweet.mutableSetValue(forKey: #keyPath(Tweet.timelineIndexes)).add(timelineIndex)
                     } else {
                         // enity already in timeline
                     }

@@ -125,10 +125,7 @@ final public class Tweet: NSManagedObject {
     @NSManaged public private(set) var favoriteCount: NSNumber?
     
     @NSManaged public private(set) var quotedStatusIDStr: String?
-    
-    // one-to-one relationship
-    @NSManaged public private(set) var timelineIndex: TimelineIndex?
-    
+        
     // many-to-one relationship
     @NSManaged public private(set) var user: TwitterUser
     @NSManaged public private(set) var retweet: Tweet?
@@ -137,6 +134,7 @@ final public class Tweet: NSManagedObject {
     // one-to-many relationship
     @NSManaged public private(set) var retweetFrom: Set<Tweet>?
     @NSManaged public private(set) var quoteFrom: Set<Tweet>?
+    @NSManaged public private(set) var timelineIndexes: Set<TimelineIndex>?
     
     // many-to-many relationship
     @NSManaged public private(set) var likeBy: Set<TwitterUser>?
@@ -173,9 +171,15 @@ extension Tweet {
         tweet.source = property.source
         tweet.coordinates = property.coordinates
         tweet.place = property.place
+        
+        tweet.favoriteCount = property.favoriteCount.flatMap { NSNumber(value: $0) }
+        tweet.retweetCount = property.retweetCount.flatMap { NSNumber(value: $0) }
+        
         tweet.quotedStatusIDStr = property.quotedStatusIDStr
         
-        tweet.timelineIndex = timelineIndex
+        timelineIndex.flatMap {
+            tweet.mutableSetValue(forKey: #keyPath(Tweet.timelineIndexes)).add($0)
+        }
         tweet.user = twitterUser
         tweet.retweet = retweet
         tweet.quote = quote
@@ -217,12 +221,6 @@ extension Tweet {
         let favoriteCount = favoriteCount.flatMap { NSNumber(value: $0) }
         if self.favoriteCount != favoriteCount {
             self.favoriteCount = favoriteCount
-        }
-    }
-    
-    public func update(timelineIndex: TimelineIndex?) {
-        if self.timelineIndex != timelineIndex {
-            self.timelineIndex = timelineIndex
         }
     }
     
@@ -341,12 +339,12 @@ extension Tweet {
         return NSPredicate(format: "%K IN %@", #keyPath(Tweet.idStr), idStrs)
     }
     
-    public static func inTimeline() -> NSPredicate {
-        return NSPredicate(format: "%K != nil", #keyPath(Tweet.timelineIndex))
-    }
-    
-    public static func notInTimeline() -> NSPredicate {
-        return NSCompoundPredicate(notPredicateWithSubpredicate: inTimeline())
-    }
+//    public static func inTimeline(userID: String) -> NSPredicate {
+//        return NSPredicate(format: "%K != nil", #keyPath(Tweet.timelineIndexes))
+//    }
+//    
+//    public static func notInTimeline() -> NSPredicate {
+//        return NSCompoundPredicate(notPredicateWithSubpredicate: inTimeline())
+//    }
     
 }

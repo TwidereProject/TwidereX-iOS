@@ -9,12 +9,54 @@
 import Foundation
 import Combine
 import TwitterAPI
+import CoreData
 import CoreDataStack
 import CommonOSLog
 
 extension APIService {
     
-    func like(tweetID: Twitter.Entity.Tweet.ID, authorization: Twitter.API.OAuth.Authorization, twitterUserID: TwitterUser.UserID, favoriteKind: Twitter.API.Favorites.FavoriteKind) -> AnyPublisher<Twitter.Response<Twitter.Entity.Tweet>, Error> {
+    // make local state change only
+    func like(
+        tweetObjectID: NSManagedObjectID,
+        twitterUserObjectID: NSManagedObjectID,
+        favoriteKind: Twitter.API.Favorites.FavoriteKind,
+        authorization: Twitter.API.OAuth.Authorization,
+        twitterUserID: TwitterUser.UserID
+    ) -> AnyPublisher<Tweet.TweetID, Error> {
+        var _targetTweetID: Tweet.TweetID?
+        let managedObjectContext = backgroundManagedObjectContext
+        return managedObjectContext.performChanges {
+            let tweet = managedObjectContext.object(with: tweetObjectID) as! Tweet
+            let twitterUser = managedObjectContext.object(with: twitterUserObjectID) as! TwitterUser
+            let targetTweet = tweet.retweet ?? tweet
+            let targetTweetID = targetTweet.idStr
+            _targetTweetID = targetTweetID
+            
+            targetTweet.update(favorited: favoriteKind == .create, twitterUser: twitterUser)
+        }
+        .tryMap { result in
+            switch result {
+            case .success:
+                guard let targetTweetID = _targetTweetID else {
+                    throw APIError.badRequest
+                }
+                return targetTweetID
+                
+            case .failure(let error):
+                assertionFailure(error.localizedDescription)
+                throw error
+            }
+        }
+        .eraseToAnyPublisher()
+    }
+    
+    // send favorite request to remote
+    func like(
+        tweetID: Twitter.Entity.Tweet.ID,
+        favoriteKind: Twitter.API.Favorites.FavoriteKind,
+        authorization: Twitter.API.OAuth.Authorization,
+        twitterUserID: TwitterUser.UserID
+    ) -> AnyPublisher<Twitter.Response<Twitter.Entity.Tweet>, Error> {
         let query = Twitter.API.Favorites.Query(id: tweetID)
         return Twitter.API.Favorites.favorites(session: session, authorization: authorization, favoriteKind: favoriteKind, query: query)
             .handleEvents(receiveOutput: { [weak self] response in
@@ -65,8 +107,13 @@ extension APIService {
                     }
                     
                     APIService.mergeTweet(for: requestTwitterUser, old: oldTweet, entity: entity, networkDate: response.networkDate)
-                    os_log(.info, log: log, "%{public}s[%{public}ld], %{public}s: did update tweet %{public}s like status to: %{public}s", ((#file as NSString).lastPathComponent), #line, #function, entity.idStr, entity.favorited.flatMap { $0 ? "like" : "unlike" } ?? "<nil>")
+                    os_log(.info, log: log, "%{public}s[%{public}ld], %{public}s: did update tweet %{public}s like status to: %{public}s. now %ld likes", ((#file as NSString).lastPathComponent), #line, #function, entity.idStr, entity.favorited.flatMap { $0 ? "like" : "unlike" } ?? "<nil>", entity.favoriteCount ?? 0)
                     
+                    do {
+                        try managedObjectContext.saveOrRollback()
+                    } catch {
+                        assertionFailure(error.localizedDescription)
+                    }
                     // TODO: broadcast notification
                 }
             })

@@ -24,33 +24,31 @@ internal enum Asset {
   internal static let accentColor = ColorAsset(name: "AccentColor")
   internal enum Arrows {
     internal static let arrowTurnUpLeft = ImageAsset(name: "Arrows/arrow.turn.up.left")
-    internal static let mdiTwitterRetweetLarge = ImageAsset(name: "Arrows/mdi.twitter.retweet.large")
+    internal static let arrowTurnUpLeftLarge = ImageAsset(name: "Arrows/arrow.turn.up.left.large")
     internal static let tablerChevronDown = ImageAsset(name: "Arrows/tabler.chevron.down")
   }
   internal enum Colors {
     internal static let heartPink = ColorAsset(name: "Colors/heart.pink")
     internal static let hightLight = ColorAsset(name: "Colors/hight.light")
   }
-  internal enum Communication {
-    internal static let mdiMessageReplyLarge = ImageAsset(name: "Communication/mdi.message.reply.large")
-  }
   internal enum Health {
     internal static let heartFill = ImageAsset(name: "Health/heart.fill")
+    internal static let heartFillLarge = ImageAsset(name: "Health/heart.fill.large")
     internal static let heart = ImageAsset(name: "Health/heart")
-    internal static let icRoundFavoriteBorderLarge = ImageAsset(name: "Health/ic.round.favorite.border.large")
-    internal static let icRoundFavoriteFillLarge = ImageAsset(name: "Health/ic.round.favorite.fill.large")
+    internal static let heartLarge = ImageAsset(name: "Health/heart.large")
   }
   internal enum Media {
     internal static let `repeat` = ImageAsset(name: "Media/repeat")
+    internal static let repeatLarge = ImageAsset(name: "Media/repeat.large")
   }
   internal enum ObjectTools {
     internal static let icBaselineInsertLink = ImageAsset(name: "Object&Tools/ic.baseline.insert.link")
     internal static let icBaselinePhotoLibrary = ImageAsset(name: "Object&Tools/ic.baseline.photo.library")
     internal static let icRoundLocationOn = ImageAsset(name: "Object&Tools/ic.round.location.on")
     internal static let icRoundRefresh = ImageAsset(name: "Object&Tools/ic.round.refresh")
-    internal static let icRoundShareLarge = ImageAsset(name: "Object&Tools/ic.round.share.large")
     internal static let lockCircle = ImageAsset(name: "Object&Tools/lock.circle")
     internal static let share = ImageAsset(name: "Object&Tools/share")
+    internal static let shareLarge = ImageAsset(name: "Object&Tools/share.large")
     internal static let uilDocumentLayoutLeft = ImageAsset(name: "Object&Tools/uil.document.layout.left")
   }
 }

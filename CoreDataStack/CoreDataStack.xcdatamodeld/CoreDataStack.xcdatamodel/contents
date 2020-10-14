@@ -8,7 +8,7 @@
         <attribute name="platformRaw" attributeType="String"/>
         <attribute name="userID" attributeType="String"/>
         <relationship name="toots" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Toots" inverseName="timelineIndex" inverseEntity="Toots"/>
-        <relationship name="tweet" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Tweet" inverseName="timelineIndex" inverseEntity="Tweet"/>
+        <relationship name="tweet" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Tweet" inverseName="timelineIndexes" inverseEntity="Tweet"/>
     </entity>
     <entity name="Toots" representedClassName=".Tools" syncable="YES">
         <attribute name="createdAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
@@ -36,7 +36,7 @@
         <relationship name="retweet" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Tweet" inverseName="retweetFrom" inverseEntity="Tweet"/>
         <relationship name="retweetBy" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="TwitterUser" inverseName="retweets" inverseEntity="TwitterUser"/>
         <relationship name="retweetFrom" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Tweet" inverseName="retweet" inverseEntity="Tweet"/>
-        <relationship name="timelineIndex" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="TimelineIndex" inverseName="tweet" inverseEntity="TimelineIndex"/>
+        <relationship name="timelineIndexes" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="TimelineIndex" inverseName="tweet" inverseEntity="TimelineIndex"/>
         <relationship name="user" maxCount="1" deletionRule="Nullify" destinationEntity="TwitterUser" inverseName="tweets" inverseEntity="TwitterUser"/>
     </entity>
     <entity name="TwitterAuthentication" representedClassName=".TwitterAuthentication" syncable="YES">

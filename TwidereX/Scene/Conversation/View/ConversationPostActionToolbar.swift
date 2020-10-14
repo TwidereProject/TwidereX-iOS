@@ -13,10 +13,10 @@ final class ConversationPostActionToolbar: UIView {
     static let buttonTitleImagePadding: CGFloat = 4
     
     let replyButton: UIButton = {
-        let button = UIButton()
-        button.imageView?.tintColor = .secondaryLabel
-        button.setImage(Asset.Communication.mdiMessageReplyLarge.image.withRenderingMode(.alwaysTemplate), for: .normal)
+        let button = UIButton(type: .custom)
+        button.tintColor = .secondaryLabel
         button.titleLabel?.font = .monospacedDigitSystemFont(ofSize: 12, weight: .regular)
+        button.setImage(Asset.Arrows.arrowTurnUpLeftLarge.image.withRenderingMode(.alwaysTemplate), for: .normal)
         button.setTitle("", for: .normal)
         button.setTitleColor(.secondaryLabel, for: .normal)
         button.setInsets(forContentPadding: .zero, imageTitlePadding: TimelinePostActionToolbar.buttonTitleImagePadding)
@@ -24,10 +24,10 @@ final class ConversationPostActionToolbar: UIView {
     }()
     
     let retweetButton: UIButton = {
-        let button = UIButton()
-        button.imageView?.tintColor = .secondaryLabel
-        button.setImage(Asset.Arrows.mdiTwitterRetweetLarge.image.withRenderingMode(.alwaysTemplate), for: .normal)
+        let button = UIButton(type: .custom)
+        button.tintColor = .secondaryLabel
         button.titleLabel?.font = .monospacedDigitSystemFont(ofSize: 12, weight: .regular)
+        button.setImage(Asset.Media.repeatLarge.image.withRenderingMode(.alwaysTemplate), for: .normal)
         button.setTitle("", for: .normal)
         button.setTitleColor(.secondaryLabel, for: .normal)
         button.setInsets(forContentPadding: .zero, imageTitlePadding: TimelinePostActionToolbar.buttonTitleImagePadding)
@@ -35,10 +35,10 @@ final class ConversationPostActionToolbar: UIView {
     }()
     
     let favoriteButton: UIButton = {
-        let button = UIButton()
-        button.setImage(Asset.Health.icRoundFavoriteBorderLarge.image.withRenderingMode(.alwaysTemplate), for: .normal)
-        button.imageView?.tintColor = .secondaryLabel
+        let button = UIButton(type: .custom)
+        button.tintColor = .secondaryLabel
         button.titleLabel?.font = .monospacedDigitSystemFont(ofSize: 12, weight: .regular)
+        button.setImage(Asset.Health.heartLarge.image.withRenderingMode(.alwaysTemplate), for: .normal)
         button.setTitle("", for: .normal)
         button.setTitleColor(.secondaryLabel, for: .normal)
         button.setInsets(forContentPadding: .zero, imageTitlePadding: TimelinePostActionToolbar.buttonTitleImagePadding)
@@ -46,9 +46,9 @@ final class ConversationPostActionToolbar: UIView {
     }()
     
     let shareButton: UIButton = {
-        let button = UIButton()
-        button.imageView?.tintColor = .secondaryLabel
-        button.setImage(Asset.ObjectTools.icRoundShareLarge.image.withRenderingMode(.alwaysTemplate), for: .normal)
+        let button = UIButton(type: .custom)
+        button.tintColor = .secondaryLabel
+        button.setImage(Asset.ObjectTools.shareLarge.image.withRenderingMode(.alwaysTemplate), for: .normal)
         return button
     }()
     
