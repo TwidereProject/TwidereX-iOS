@@ -385,7 +385,6 @@ extension HomeTimelineViewModel: NSFetchedResultsControllerDelegate {
         
         guard let diffableDataSource = self.diffableDataSource else { return }
         let oldSnapshot = diffableDataSource.snapshot()
-        let snapshot = snapshot as NSDiffableDataSourceSnapshot<String, NSManagedObjectID>
 
         let parentManagedObjectContext = fetchedResultsController.managedObjectContext
         let managedObjectContext = NSManagedObjectContext(concurrencyType: .privateQueueConcurrencyType)

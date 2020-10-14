@@ -24,9 +24,9 @@ final class TimelinePostActionToolbar: UIView {
     
     let replyButton: UIButton = {
         let button = HitTestExpandedButton()
-        button.imageView?.tintColor = .secondaryLabel
-        button.setImage(Asset.Arrows.arrowTurnUpLeft.image.withRenderingMode(.alwaysTemplate), for: .normal)
+        button.tintColor = .secondaryLabel
         button.titleLabel?.font = .monospacedDigitSystemFont(ofSize: 12, weight: .regular)
+        button.setImage(Asset.Arrows.arrowTurnUpLeft.image.withRenderingMode(.alwaysTemplate), for: .normal)
         button.setTitle("", for: .normal)
         button.setTitleColor(.secondaryLabel, for: .normal)
         button.setInsets(forContentPadding: .zero, imageTitlePadding: TimelinePostActionToolbar.buttonTitleImagePadding)
@@ -41,6 +41,7 @@ final class TimelinePostActionToolbar: UIView {
         button.contentHorizontalAlignment = .leading
         button.setImage(Asset.Media.repeat.image.withRenderingMode(.alwaysTemplate), for: .normal)
         button.setTitle("", for: .normal)
+        button.setTitleColor(.secondaryLabel, for: .normal)
         button.setInsets(forContentPadding: .zero, imageTitlePadding: TimelinePostActionToolbar.buttonTitleImagePadding)
         return button
     }()
@@ -59,9 +60,10 @@ final class TimelinePostActionToolbar: UIView {
     
     let shareButton: UIButton = {
         let button = HitTestExpandedButton()
-        button.imageView?.tintColor = .secondaryLabel
-        button.setImage(Asset.ObjectTools.share.image.withRenderingMode(.alwaysTemplate), for: .normal)
+        button.tintColor = .secondaryLabel
+        button.titleLabel?.font = .monospacedDigitSystemFont(ofSize: 12, weight: .regular)
         button.contentHorizontalAlignment = .trailing
+        button.setImage(Asset.ObjectTools.share.image.withRenderingMode(.alwaysTemplate), for: .normal)
         return button
     }()
     

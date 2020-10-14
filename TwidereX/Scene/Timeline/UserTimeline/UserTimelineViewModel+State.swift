@@ -48,8 +48,7 @@ extension UserTimelineViewModel.State {
             viewModel.diffableDataSource?.apply(snapshot)
             
             viewModel.fetchLatest()
-                .sink { [weak self] completion in
-                    guard let self = self else { return }
+                .sink { completion in
                     switch completion {
                     case .failure(let error):
                         os_log("%{public}s[%{public}ld], %{public}s: fetch user timeline latest response error: %s", ((#file as NSString).lastPathComponent), #line, #function, error.localizedDescription)
@@ -57,9 +56,7 @@ extension UserTimelineViewModel.State {
                     case .finished:
                         stateMachine.enter(Idle.self)
                     }
-                } receiveValue: { [weak self] response in
-                    guard let self = self else { return }
-
+                } receiveValue: { response in
                     let tweetIDs = response.value.map { $0.idStr }
                     viewModel.userTimelineTweetIDs.value = tweetIDs
                 }
@@ -89,14 +86,16 @@ extension UserTimelineViewModel.State {
             guard let viewModel = viewModel, let stateMachine = stateMachine else { return }
             
             viewModel.loadMore()
-                .sink { [weak self] completion in
+                .sink { completion in
                     switch completion {
                     case .failure(let error):
                         stateMachine.enter(Fail.self)
+                        os_log("%{public}s[%{public}ld], %{public}s: load more fail: %s", ((#file as NSString).lastPathComponent), #line, #function, error.localizedDescription)
+
                     case .finished:
                         stateMachine.enter(Idle.self)
                     }
-                } receiveValue: { [weak self] response in
+                } receiveValue: { response in
                     let newTweetIds = response.value.map { $0.idStr }
                     let idSet = Set(viewModel.userTimelineTweetIDs.value).union(newTweetIds)
                     viewModel.userTimelineTweetIDs.value = Array(idSet)

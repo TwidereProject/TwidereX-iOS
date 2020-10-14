@@ -98,7 +98,7 @@ extension AuthenticationViewController {
             
             let authenticationProperty: TwitterAuthentication.Property
             switch requestTokenExchange {
-            case .requestTokenResponse(let response):
+            case .requestTokenResponse:
                 fatalError("not implement yet")
             case .customRequestTokenResponse(_, let append):
                 guard let callbackURL = callback,
