@@ -19,7 +19,14 @@ final class ConversationPostView: UIView {
     
     let lockImageView: UIImageView = {
         let imageView = UIImageView()
-        imageView.image = Asset.ObjectTools.lockCircle.image
+        imageView.tintColor = .white
+        imageView.contentMode = .center
+        imageView.image = Asset.ObjectTools.lock.image.withRenderingMode(.alwaysTemplate)
+        imageView.backgroundColor = .black
+        imageView.layer.masksToBounds = true
+        imageView.layer.cornerRadius = TimelinePostView.lockImageViewSize.width * 0.5
+        imageView.layer.borderWidth = 1
+        imageView.layer.borderColor = UIColor.white.cgColor
         return imageView
     }()
     
@@ -142,8 +149,10 @@ extension ConversationPostView {
         lockImageView.translatesAutoresizingMaskIntoConstraints = false
         avatarImageView.addSubview(lockImageView)
         NSLayoutConstraint.activate([
-            lockImageView.trailingAnchor.constraint(equalTo: avatarImageView.trailingAnchor, constant: 2),
-            lockImageView.bottomAnchor.constraint(equalTo: avatarImageView.bottomAnchor, constant: 2),
+            lockImageView.leadingAnchor.constraint(equalTo: avatarImageView.leadingAnchor),
+            lockImageView.topAnchor.constraint(equalTo: avatarImageView.topAnchor),
+            lockImageView.widthAnchor.constraint(equalToConstant: 16),
+            lockImageView.heightAnchor.constraint(equalToConstant: 16),
         ])
         
         // author container: [name | username]

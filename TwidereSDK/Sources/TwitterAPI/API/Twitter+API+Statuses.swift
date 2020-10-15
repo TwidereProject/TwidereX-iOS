@@ -1,23 +1,26 @@
 //
-//  Twitter+API+Favorites.swift
+//  Twitter+API+Statuses.swift
 //  
 //
-//  Created by Cirno MainasuK on 2020-10-13.
+//  Created by Cirno MainasuK on 2020-10-15.
 //
 
 import Foundation
 import Combine
 
-extension Twitter.API.Favorites {
-    
-    static let favoritesCreateEndpointURL = Twitter.API.endpointURL.appendingPathComponent("favorites/create.json")
-    static let favoritesDestroyEndpointURL = Twitter.API.endpointURL.appendingPathComponent("favorites/destroy.json")
+extension Twitter.API.Statuses {
 
-    public static func favorites(session: URLSession, authorization: Twitter.API.OAuth.Authorization, favoriteKind: FavoriteKind, query: Query) -> AnyPublisher<Twitter.Response<Twitter.Entity.Tweet>, Error> {
+    static func retweetEndpointURL(tweetID: Twitter.Entity.Tweet.ID) -> URL { return Twitter.API.endpointURL.appendingPathComponent("statuses/retweet/\(tweetID).json")
+    }
+    
+    static func unretweetEndpointURL(tweetID: Twitter.Entity.Tweet.ID) -> URL { return Twitter.API.endpointURL.appendingPathComponent("statuses/unretweet/\(tweetID).json")
+    }
+    
+    public static func retweet(session: URLSession, authorization: Twitter.API.OAuth.Authorization, retweetKind: RetweetKind, query: Query) -> AnyPublisher<Twitter.Response<Twitter.Entity.Tweet>, Error> {
         let url: URL = {
-            switch favoriteKind {
-            case .create: return favoritesCreateEndpointURL
-            case .destroy: return favoritesDestroyEndpointURL
+            switch retweetKind {
+            case .retweet: return retweetEndpointURL(tweetID: query.id)
+            case .unretweet: return unretweetEndpointURL(tweetID: query.id)
             }
         }()
         var request = Twitter.API.request(url: url, httpMethod: "POST", authorization: authorization, queryItems: query.queryItems)
@@ -32,11 +35,11 @@ extension Twitter.API.Favorites {
 
 }
 
-extension Twitter.API.Favorites {
+extension Twitter.API.Statuses {
     
-    public enum FavoriteKind {
-        case create
-        case destroy
+    public enum RetweetKind {
+        case retweet
+        case unretweet
     }
     
     public struct Query {

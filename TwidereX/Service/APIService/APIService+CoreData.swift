@@ -26,7 +26,7 @@ extension APIService {
             os_signpost(.end, log: log, name: "update database - process entity: createOrMergeTwitterUser", signpostID: processEntityTaskSignpostID, "process twitter user %{public}s", entity.idStr)
         }
         
-        // fetch old tweet (should not has cache miss)
+        // fetch old twitter user
         let oldTwitterUser: TwitterUser? = {
             let request = TwitterUser.sortedFetchRequest
             request.predicate = TwitterUser.predicate(idStr: entity.idStr)
@@ -57,6 +57,66 @@ extension APIService {
         }
     }
     
+    static func createOrMergeTweet(
+        into managedObjectContext: NSManagedObjectContext,
+        for requestTwitterUser: TwitterUser?,
+        entity: Twitter.Entity.Tweet,
+        networkDate: Date,
+        log: OSLog
+    ) -> (user: Tweet, isTweetCreated: Bool, isTwitterUserCreated: Bool) {
+        let processEntityTaskSignpostID = OSSignpostID(log: log)
+        os_signpost(.begin, log: log, name: "update database - process entity: createOrMergeTwitter", signpostID: processEntityTaskSignpostID, "process twitter user %{public}s", entity.idStr)
+        defer {
+            os_signpost(.end, log: log, name: "update database - process entity: createOrMergeTwitter", signpostID: processEntityTaskSignpostID, "process twitter user %{public}s", entity.idStr)
+        }
+        
+        // build tree
+        let retweet = entity.retweetedStatus.flatMap { entity -> Tweet in
+            let (tweet, _, _) = createOrMergeTweet(into: managedObjectContext, for: requestTwitterUser, entity: entity, networkDate: networkDate, log: log)
+            return tweet
+        }
+        let quote = entity.quotedStatus.flatMap { entity -> Tweet in
+            let (tweet, _, _) = createOrMergeTweet(into: managedObjectContext, for: requestTwitterUser, entity: entity, networkDate: networkDate, log: log)
+            return tweet
+        }
+        
+        // fetch old tweet
+        let oldTweet: Tweet? = {
+            let request = Tweet.sortedFetchRequest
+            request.predicate = Tweet.predicate(idStr: entity.idStr)
+            request.returnsObjectsAsFaults = false
+            do {
+                return try managedObjectContext.fetch(request).first
+            } catch {
+                assertionFailure(error.localizedDescription)
+                return nil
+            }
+        }()
+        
+        if let oldTweet = oldTweet {
+            // merge old tweet
+            APIService.mergeTweet(for: requestTwitterUser, old: oldTweet, entity: entity, networkDate: networkDate)
+            os_signpost(.event, log: log, name: "update database - process entity: createOrMergeTweet", signpostID: processEntityTaskSignpostID, "find old tweet %{public}s", entity.idStr)
+            return (oldTweet, false, false)
+        } else {
+            let (twitterUser, isTwitterUserCreated) = createOrMergeTwitterUser(into: managedObjectContext, for: requestTwitterUser, entity: entity.user, networkDate: networkDate, log: log)
+            
+            let tweetProperty = Tweet.Property(entity: entity, networkDate: networkDate)
+            let tweet = Tweet.insert(
+                into: managedObjectContext,
+                property: tweetProperty,
+                retweet: retweet,
+                quote: quote,
+                twitterUser: twitterUser,
+                timelineIndex: nil,
+                likeBy: (entity.favorited ?? false) ? requestTwitterUser : nil,
+                retweetBy: (entity.retweeted ?? false) ? requestTwitterUser : nil
+            )
+            os_signpost(.event, log: log, name: "update database - process entity: createOrMergeTweet", signpostID: processEntityTaskSignpostID, "did insert new tweet %{public}s: %s", twitterUser.id.uuidString, entity.idStr)
+            return (tweet, true, isTwitterUserCreated)
+        }
+    }
+    
     static func mergeTweet(for requestTwitterUser: TwitterUser?, old tweet: Tweet, entity: Twitter.Entity.Tweet, networkDate: Date) {
         guard networkDate > tweet.updatedAt else { return }
         
@@ -67,6 +127,7 @@ extension APIService {
         tweet.update(favoriteCount: entity.favoriteCount)
         entity.quotedStatusIDStr.flatMap { tweet.update(quotedStatusIDStr: $0) }
         
+        // relationship with requestTwitterUser
         if let requestTwitterUser = requestTwitterUser {
             entity.favorited.flatMap { tweet.update(favorited: $0, twitterUser: requestTwitterUser) }
             entity.retweeted.flatMap { tweet.update(retweeted: $0, twitterUser: requestTwitterUser) }

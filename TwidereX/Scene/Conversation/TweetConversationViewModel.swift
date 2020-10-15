@@ -76,6 +76,7 @@ extension TweetConversationViewModel {
         } else {
             assertionFailure()
         }
+        cell.conversationPostView.lockImageView.isHidden = !((tweet.retweet ?? tweet).user.protected)
         
         // set name and username
         cell.conversationPostView.nameLabel.text = tweet.user.name ?? " "

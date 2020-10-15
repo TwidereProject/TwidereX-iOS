@@ -44,13 +44,41 @@ extension HomeTimelineViewController {
         refreshControl.addTarget(self, action: #selector(HomeTimelineViewController.refreshControlValueChanged(_:)), for: .valueChanged)
         
         #if DEBUG
-        navigationItem.leftBarButtonItems = [
-            UIBarButtonItem(title: "TopGap", style: .plain, target: self, action: #selector(HomeTimelineViewController.topGapBarButtonItemPressed(_:)))
-        ]
-        navigationItem.rightBarButtonItems = [
-            UIBarButtonItem(title: "Drop", style: .plain, target: self, action: #selector(HomeTimelineViewController.dropBarButtonItemPressed(_:))),
-            UIBarButtonItem(title: "Last", style: .plain, target: self, action: #selector(HomeTimelineViewController.lastBarButtonItemPressed(_:)))
-        ]
+        if #available(iOS 14.0, *) {
+            navigationItem.rightBarButtonItem = UIBarButtonItem(
+                title: "More",
+                image: UIImage(systemName: "ellipsis.circle"),
+                primaryAction: nil,
+                menu: UIMenu(
+                    title: "Debug Tools",
+                    image: nil,
+                    identifier: nil,
+                    options: .displayInline,
+                    children: [
+                        UIAction(title: "Move to First Gap", image: nil, attributes: [], handler: { [weak self] action in
+                            guard let self = self else { return }
+                            self.moveToTopGapAction(action)
+                        }),
+                        UIAction(title: "Move to First Protected Tweet", image: nil, attributes: [], handler: { [weak self] action in
+                            guard let self = self else { return }
+                            self.moveToFirstProtectedTweet(action)
+                        }),
+                        UIAction(title: "Move to First Protected User", image: nil, attributes: [], handler: { [weak self] action in
+                            guard let self = self else { return }
+                            self.moveToFirstProtectedUser(action)
+                        }),
+                        UIAction(title: "Drop Recent 50 Tweets", image: nil, attributes: [], handler: { [weak self] action in
+                            guard let self = self else { return }
+                            self.dropRecentTweetsAction(action)
+                        }),
+                        UIAction(title: "Enable Bottom Fetcher", image: nil, attributes: [], handler: { [weak self] action in
+                            guard let self = self else { return }
+                            self.enableBottomFetcher(action)
+                        }),
+                    ]
+                )
+            )
+        }
         #endif
         
         tableView.translatesAutoresizingMaskIntoConstraints = false
@@ -137,7 +165,7 @@ extension HomeTimelineViewController {
     }
     
     #if DEBUG
-    @objc private func topGapBarButtonItemPressed(_ sender: UIBarButtonItem) {
+    @objc private func moveToTopGapAction(_ sender: UIAction) {
         guard let diffableDataSource = viewModel.diffableDataSource else { return }
         let snapshot = diffableDataSource.snapshot()
         let item = snapshot.itemIdentifiers.first(where: { item in
@@ -151,7 +179,47 @@ extension HomeTimelineViewController {
         }
     }
     
-    @objc private func dropBarButtonItemPressed(_ sender: UIBarButtonItem) {
+    @objc private func moveToFirstProtectedTweet(_ sender: UIAction) {
+        guard let diffableDataSource = viewModel.diffableDataSource else { return }
+        let snapshot = diffableDataSource.snapshot()
+        let item = snapshot.itemIdentifiers.first(where: { item in
+            switch item {
+            case .homeTimelineIndex(let objectID, _):
+                let timelineIndex = viewModel.fetchedResultsController.managedObjectContext.object(with: objectID) as! TimelineIndex
+                guard let targetTweet = (timelineIndex.tweet?.retweet ?? timelineIndex.tweet) else { return false }
+                return targetTweet.user.protected
+            default:
+                return false
+            }
+        })
+        if let targetItem = item, let index = snapshot.indexOfItem(targetItem) {
+            tableView.scrollToRow(at: IndexPath(row: index, section: 0), at: .middle, animated: true)
+        } else {
+            print("Not found protected tweet")
+        }
+    }
+    
+    @objc private func moveToFirstProtectedUser(_ sender: UIAction) {
+        guard let diffableDataSource = viewModel.diffableDataSource else { return }
+        let snapshot = diffableDataSource.snapshot()
+        let item = snapshot.itemIdentifiers.first(where: { item in
+            switch item {
+            case .homeTimelineIndex(let objectID, _):
+                let timelineIndex = viewModel.fetchedResultsController.managedObjectContext.object(with: objectID) as! TimelineIndex
+                guard let targetTweet = (timelineIndex.tweet) else { return false }
+                return targetTweet.user.protected
+            default:
+                return false
+            }
+        })
+        if let targetItem = item, let index = snapshot.indexOfItem(targetItem) {
+            tableView.scrollToRow(at: IndexPath(row: index, section: 0), at: .middle, animated: true)
+        } else {
+            print("Not found protected tweet")
+        }
+    }
+    
+    @objc private func dropRecentTweetsAction(_ sender: UIAction) {
         guard let diffableDataSource = viewModel.diffableDataSource else { return }
         let snapshot = diffableDataSource.snapshot()
         
@@ -179,7 +247,7 @@ extension HomeTimelineViewController {
         .store(in: &disposeBag)
     }
     
-    @objc private func lastBarButtonItemPressed(_ sender: UIBarButtonItem) {
+    @objc private func enableBottomFetcher(_ sender: UIAction) {
         if let last = viewModel.fetchedResultsController.fetchedObjects?.last {
             let objectID = last.objectID
             context.apiService.backgroundManagedObjectContext.performChanges {
@@ -198,6 +266,7 @@ extension HomeTimelineViewController {
         }
         
     }
+    
     #endif
 }
 
@@ -355,6 +424,96 @@ extension HomeTimelineViewController: TimelinePostTableViewCellDelegate {
     }
     
     func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, actionToolbar: TimelinePostActionToolbar, retweetButtonDidPressed sender: UIButton) {
+        // prepare authentication
+        guard let twitterAuthentication = viewModel.currentTwitterAuthentication.value,
+              let authorization = try? twitterAuthentication.authorization(appSecret: AppSecret.shared) else {
+            assertionFailure()
+            return
+        }
+        
+        // prepare current user infos
+        guard let _currentTwitterUser = context.authenticationService.currentTwitterUser.value else {
+            assertionFailure()
+            return
+        }
+        let twitterUserID = twitterAuthentication.userID
+        assert(_currentTwitterUser.idStr == twitterUserID)
+        let twitterUserObjectID = _currentTwitterUser.objectID
+        
+        // retrieve target tweet infos
+        guard let diffableDataSource = viewModel.diffableDataSource else { return }
+        guard let indexPath = tableView.indexPath(for: cell) else { return }
+        guard let timelineItem = diffableDataSource.itemIdentifier(for: indexPath) else { return }
+        guard case let .homeTimelineIndex(timelineIndexObjectID, _) = timelineItem else { return }
+        let timelineIndex = viewModel.fetchedResultsController.managedObjectContext.object(with: timelineIndexObjectID) as! TimelineIndex
+        guard let tweet = timelineIndex.tweet else { return }
+        let tweetObjectID = tweet.objectID
+        
+        let targetRetweetKind: Twitter.API.Statuses.RetweetKind = {
+            let targetTweet = (tweet.retweet ?? tweet)
+            let isRetweeted = targetTweet.retweetBy.flatMap { $0.contains(where: { $0.idStr == twitterUserID }) } ?? false
+            return isRetweeted ? .unretweet : .retweet
+        }()
+        
+        // trigger like action
+        let generator = UIImpactFeedbackGenerator(style: .light)
+        let responseFeedbackGenerator = UIImpactFeedbackGenerator(style: .medium)
+        context.apiService.retweet(
+            tweetObjectID: tweetObjectID,
+            twitterUserObjectID: twitterUserObjectID,
+            retweetKind: targetRetweetKind,
+            authorization: authorization,
+            twitterUserID: twitterUserID
+        )
+        .receive(on: DispatchQueue.main)
+        .handleEvents { _ in
+            generator.prepare()
+            responseFeedbackGenerator.prepare()
+        } receiveOutput: { _ in
+            generator.impactOccurred()
+        } receiveCompletion: { completion in
+            switch completion {
+            case .failure(let error):
+                // TODO: handle error
+                break
+            case .finished:
+                os_log("%{public}s[%{public}ld], %{public}s: [Retweet] update local tweet retweet status to: %s", ((#file as NSString).lastPathComponent), #line, #function, targetRetweetKind == .retweet ? "retweet" : "unretweet")
+
+                // reload item
+                DispatchQueue.main.async {
+                    var snapshot = diffableDataSource.snapshot()
+                    snapshot.reloadItems([timelineItem])
+                    diffableDataSource.defaultRowAnimation = .none
+                    diffableDataSource.apply(snapshot)
+                    diffableDataSource.defaultRowAnimation = .automatic
+                }
+            }
+        }
+        .map { targetTweetID in
+            self.context.apiService.retweet(
+                tweetID: targetTweetID,
+                retweetKind: targetRetweetKind,
+                authorization: authorization,
+                twitterUserID: twitterUserID
+            )
+        }
+        .switchToLatest()
+        .receive(on: DispatchQueue.main)
+        .sink { [weak self] completion in
+            guard let self = self else { return }
+            if self.view.window != nil, (self.tableView.indexPathsForVisibleRows ?? []).contains(indexPath) {
+                responseFeedbackGenerator.impactOccurred()
+            }
+            switch completion {
+            case .failure(let error):
+                os_log("%{public}s[%{public}ld], %{public}s: [Retweet] remote retweet request fail: %{public}s", ((#file as NSString).lastPathComponent), #line, #function, error.localizedDescription)
+            case .finished:
+                os_log("%{public}s[%{public}ld], %{public}s: [Retweet] remote retweet request success", ((#file as NSString).lastPathComponent), #line, #function)
+            }
+        } receiveValue: { response in
+            
+        }
+        .store(in: &disposeBag)
     }
     
     func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, actionToolbar: TimelinePostActionToolbar, favoriteButtonDidPressed sender: UIButton) {
@@ -391,6 +550,7 @@ extension HomeTimelineViewController: TimelinePostTableViewCellDelegate {
 
         // trigger like action
         let generator = UIImpactFeedbackGenerator(style: .light)
+        let responseFeedbackGenerator = UIImpactFeedbackGenerator(style: .medium)
         context.apiService.like(
             tweetObjectID: tweetObjectID,
             twitterUserObjectID: twitterUserObjectID,
@@ -401,6 +561,7 @@ extension HomeTimelineViewController: TimelinePostTableViewCellDelegate {
         .receive(on: DispatchQueue.main)
         .handleEvents { _ in
             generator.prepare()
+            responseFeedbackGenerator.prepare()
         } receiveOutput: { _ in
             generator.impactOccurred()
         } receiveCompletion: { completion in
@@ -430,7 +591,12 @@ extension HomeTimelineViewController: TimelinePostTableViewCellDelegate {
             )
         }
         .switchToLatest()
-        .sink { completion in
+        .receive(on: DispatchQueue.main)
+        .sink { [weak self] completion in
+            guard let self = self else { return }
+            if self.view.window != nil, (self.tableView.indexPathsForVisibleRows ?? []).contains(indexPath) {
+                responseFeedbackGenerator.impactOccurred()
+            }
             switch completion {
             case .failure(let error):
                 os_log("%{public}s[%{public}ld], %{public}s: [Like] remote like request fail: %{public}s", ((#file as NSString).lastPathComponent), #line, #function, error.localizedDescription)

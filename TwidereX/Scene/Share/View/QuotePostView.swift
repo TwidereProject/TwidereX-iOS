@@ -17,6 +17,19 @@ final class QuotePostView: UIView {
         return imageView
     }()
     
+    let lockImageView: UIImageView = {
+        let imageView = UIImageView()
+        imageView.tintColor = .white
+        imageView.contentMode = .center
+        imageView.image = Asset.ObjectTools.lock.image.withRenderingMode(.alwaysTemplate)
+        imageView.backgroundColor = .black
+        imageView.layer.masksToBounds = true
+        imageView.layer.cornerRadius = TimelinePostView.lockImageViewSize.width * 0.5
+        imageView.layer.borderWidth = 1
+        imageView.layer.borderColor = UIColor.white.cgColor
+        return imageView
+    }()
+    
     let nameLabel: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 14, weight: .regular)
@@ -94,6 +107,14 @@ extension QuotePostView {
             avatarImageView.widthAnchor.constraint(equalToConstant: TimelinePostView.avatarImageViewSize.width).priority(.required - 1),
             avatarImageView.heightAnchor.constraint(equalToConstant: TimelinePostView.avatarImageViewSize.height).priority(.required - 1),
         ])
+        lockImageView.translatesAutoresizingMaskIntoConstraints = false
+        avatarImageView.addSubview(lockImageView)
+        NSLayoutConstraint.activate([
+            lockImageView.leadingAnchor.constraint(equalTo: avatarImageView.leadingAnchor),
+            lockImageView.topAnchor.constraint(equalTo: avatarImageView.topAnchor),
+            lockImageView.widthAnchor.constraint(equalToConstant: 16),
+            lockImageView.heightAnchor.constraint(equalToConstant: 16),
+        ])
         
         // tweet container: [user meta container | main container]
         let tweetContainerStackView = UIStackView()
@@ -115,12 +136,13 @@ extension QuotePostView {
         dateLabel.setContentHuggingPriority(.defaultHigh, for: .horizontal)
         dateLabel.setContentCompressionResistancePriority(.required - 1, for: .horizontal)
         
-        
         // main container: [text]
         let mainContainerStackView = UIStackView()
         tweetContainerStackView.addArrangedSubview(mainContainerStackView)
         mainContainerStackView.axis = .vertical
         mainContainerStackView.addArrangedSubview(activeTextLabel)
+        
+        lockImageView.isHidden = true
     }
     
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
@@ -154,6 +176,14 @@ struct QuotePostView_Previews: PreviewProvider {
             }
             .previewLayout(.fixed(width: 375, height: 300))
             .previewDisplayName("text")
+            UIViewPreview(width: 375) {
+                let view = QuotePostView()
+                view.avatarImageView.image = avatarImage
+                view.lockImageView.isHidden = false
+                return view
+            }
+            .previewLayout(.fixed(width: 375, height: 300))
+            .previewDisplayName("text + protected")
         }
     }
 }

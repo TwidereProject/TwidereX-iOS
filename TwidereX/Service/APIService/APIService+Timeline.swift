@@ -340,6 +340,7 @@ extension APIService {
             return counting
         }
         
+        // handle timelineIndex insert with APIService.createOrMergeTweet
         static func createOrMergeTweet(
             into managedObjectContext: NSManagedObjectContext,
             for requestTwitterUser: TwitterUser?,
@@ -355,20 +356,6 @@ extension APIService {
                 os_signpost(.end, log: log, name: "update database - process entity: createorMergeTweet", signpostID: processEntityTaskSignpostID, "finish process tweet %{public}s", entity.idStr)
             }
             
-            // fetch old tweet (should not has cache miss)
-            let oldTweet: Tweet? = {
-                let request = Tweet.sortedFetchRequest
-                request.predicate = Tweet.predicate(idStr: entity.idStr)
-                request.returnsObjectsAsFaults = false
-                request.relationshipKeyPathsForPrefetching = [#keyPath(Tweet.retweet), #keyPath(Tweet.quote)]
-                do {
-                    return try managedObjectContext.fetch(request).first
-                } catch {
-                    assertionFailure(error.localizedDescription)
-                    return nil
-                }
-            }()
-            
             // build tree
             let retweetRecord: WorkingRecord? = entity.retweetedStatus.flatMap { entity -> WorkingRecord in
                 createOrMergeTweet(into: managedObjectContext, for: requestTwitterUser, requestTwitterUserID: requestTwitterUserID, entity: entity, recordType: .retweet, networkDate: networkDate, log: log)
@@ -377,48 +364,39 @@ extension APIService {
                 createOrMergeTweet(into: managedObjectContext, for: requestTwitterUser, requestTwitterUserID: requestTwitterUserID, entity: entity, recordType: .quote, networkDate: networkDate, log: log)
             }
             let children = [retweetRecord, quoteRecord].compactMap { $0 }
+
+            let (tweet, isTweetCreated, isTwitterUserCreated) = APIService.createOrMergeTweet(
+                into: managedObjectContext,
+                for: requestTwitterUser,
+                entity: entity,
+                networkDate: networkDate,
+                log: log
+            )
+            let result = WorkingRecord(
+                tweet: tweet,
+                children: children,
+                recordType: recordType,
+                tweetProcessType: isTweetCreated ? .create : .merge,
+                userProcessType: isTwitterUserCreated ? .create : .merge
+            )
             
-            if let oldTweet = oldTweet {
-                // merge old tweet
-                defer {
-                    APIService.mergeTweet(for: requestTwitterUser, old: oldTweet, entity: entity, networkDate: networkDate)
-                }
-                
-                if recordType == .timeline {
-                    // node is timeline
-                    let timelineIndex = oldTweet.timelineIndexes?
-                        .first(where: { $0.userID == requestTwitterUserID })
-                    if timelineIndex == nil {
-                        // exist tweet not in timeline and contained by other local entities' retweet/quote
-                        os_signpost(.event, log: log, name: "update database - process entity: createorMergeTweet", signpostID: processEntityTaskSignpostID, "find old retweet %{public}s", entity.idStr)
-                        let timelineIndexProperty = TimelineIndex.Property(userID: requestTwitterUserID, platform: .twitter, createdAt: entity.createdAt)
-                        let timelineIndex = TimelineIndex.insert(into: managedObjectContext, property: timelineIndexProperty)
-                        // make it indexed
-                        oldTweet.mutableSetValue(forKey: #keyPath(Tweet.timelineIndexes)).add(timelineIndex)
-                    } else {
-                        // enity already in timeline
-                    }
-                } else {
-                    os_signpost(.event, log: log, name: "update database - process entity: createorMergeTweet", signpostID: processEntityTaskSignpostID, "find old tweet %{public}s", entity.idStr)
-                }
-                
-                return WorkingRecord(tweet: oldTweet, children: children, recordType: recordType, tweetProcessType: .merge, userProcessType: .merge)
-            } else {
-                // create new tweet
-                let (twitterUser, isUserCreated) = createOrMergeTwitterUser(into: managedObjectContext, for: requestTwitterUser, entity: entity.user, networkDate: networkDate, log: log)
-                let timelineIndex: TimelineIndex? = {
-                    guard recordType == .timeline else { return nil }
+            switch (result.tweetProcessType, recordType) {
+            case (.create, .timeline), (.merge, .timeline):
+                let timelineIndex = tweet.timelineIndexes?
+                    .first { $0.userID == requestTwitterUserID }
+                if timelineIndex == nil {
                     let timelineIndexProperty = TimelineIndex.Property(userID: requestTwitterUserID, platform: .twitter, createdAt: entity.createdAt)
                     let timelineIndex = TimelineIndex.insert(into: managedObjectContext, property: timelineIndexProperty)
-                    os_signpost(.event, log: log, name: "update database - process entity: createorMergeTweet", signpostID: processEntityTaskSignpostID, "did insert new timelineIndex %{public}s", timelineIndex.id.uuidString)
-                    return timelineIndex
-                }()
-                
-                let tweetProperty = Tweet.Property(entity: entity, networkDate: networkDate)
-                let tweet = Tweet.insert(into: managedObjectContext, property: tweetProperty, retweet: retweetRecord?.tweet, quote: quoteRecord?.tweet, twitterUser: twitterUser, timelineIndex: timelineIndex, likeBy: (entity.favorited ?? false) ? requestTwitterUser : nil, retweetBy: (entity.retweeted ?? false) ? requestTwitterUser : nil)
-                
-                return WorkingRecord(tweet: tweet, children: children, recordType: recordType, tweetProcessType: .create, userProcessType: isUserCreated ? .create : .merge)
+                    // make it indexed
+                    tweet.mutableSetValue(forKey: #keyPath(Tweet.timelineIndexes)).add(timelineIndex)
+                } else {
+                    // enity already in timeline
+                }
+            default:
+                break
             }
+            
+            return result
         }
         
     }

@@ -193,6 +193,8 @@ extension HomeTimelineViewModel {
         } else {
             assertionFailure()
         }
+        
+        cell.timelinePostView.lockImageView.isHidden = !((tweet.retweet?.user ?? tweet.user).protected)
 
         // set name and username
         cell.timelinePostView.nameLabel.text = (tweet.retweet?.user ?? tweet.user).name
@@ -206,11 +208,17 @@ extension HomeTimelineViewModel {
         cell.timelinePostView.activeTextLabel.text = (tweet.retweet ?? tweet).text
 
         // set action toolbar title
+        let isRetweeted = (tweet.retweet ?? tweet).retweetBy.flatMap({ $0.contains(where: { $0.idStr == requestUserID }) }) ?? false
         let retweetCountTitle: String = {
             let count = (tweet.retweet ?? tweet).retweetCount.flatMap { Int(truncating: $0) }
             return HomeTimelineViewModel.formattedNumberTitleForActionButton(count)
         }()
+        let retweetButtonTintColor = isRetweeted ? Asset.Colors.hightLight.color : .secondaryLabel
+        cell.timelinePostView.actionToolbar.retweetButton.tintColor = retweetButtonTintColor
         cell.timelinePostView.actionToolbar.retweetButton.setTitle(retweetCountTitle, for: .normal)
+        cell.timelinePostView.actionToolbar.retweetButton.setTitleColor(retweetButtonTintColor, for: .normal)
+        cell.timelinePostView.actionToolbar.retweetButton.setTitleColor(retweetButtonTintColor.withAlphaComponent(0.8), for: .highlighted)
+        cell.timelinePostView.actionToolbar.retweetButton.isEnabled = !(tweet.retweet ?? tweet).user.protected
 
         let isLike = (tweet.retweet ?? tweet).likeBy.flatMap({ $0.contains(where: { $0.idStr == requestUserID }) }) ?? false
         let favoriteCountTitle: String = {
@@ -294,6 +302,9 @@ extension HomeTimelineViewModel {
             } else {
                 assertionFailure()
             }
+            
+            // Note: cannot quote protected user
+            cell.timelinePostView.quotePostView.lockImageView.isHidden = !quote.user.protected
 
             // set name and username
             cell.timelinePostView.quotePostView.nameLabel.text = quote.user.name
@@ -317,10 +328,16 @@ extension HomeTimelineViewModel {
                 guard case let .update(object) = change.changeType,
                       let newTweet = object as? Tweet else { return }
                 let targetTweet = newTweet.retweet ?? newTweet
-                let count = targetTweet.favoriteCount.flatMap { Int(truncating: $0) }
-                let favoriteCountTitle = HomeTimelineViewModel.formattedNumberTitleForActionButton(count)
+                
+                let retweetCount = targetTweet.retweetCount.flatMap { Int(truncating: $0) }
+                let retweetCountTitle = HomeTimelineViewModel.formattedNumberTitleForActionButton(retweetCount)
+                cell.timelinePostView.actionToolbar.retweetButton.setTitle(retweetCountTitle, for: .normal)
+                os_log("%{public}s[%{public}ld], %{public}s: retweet count label for tweet %s did update: %ld", ((#file as NSString).lastPathComponent), #line, #function, targetTweet.idStr, retweetCount ?? 0)
+                
+                let favoriteCount = targetTweet.favoriteCount.flatMap { Int(truncating: $0) }
+                let favoriteCountTitle = HomeTimelineViewModel.formattedNumberTitleForActionButton(favoriteCount)
                 cell.timelinePostView.actionToolbar.favoriteButton.setTitle(favoriteCountTitle, for: .normal)
-                os_log("%{public}s[%{public}ld], %{public}s: like count label for tweet %s did update: %ld", ((#file as NSString).lastPathComponent), #line, #function, targetTweet.idStr, count ?? 0)
+                os_log("%{public}s[%{public}ld], %{public}s: like count label for tweet %s did update: %ld", ((#file as NSString).lastPathComponent), #line, #function, targetTweet.idStr, favoriteCount ?? 0)
             }
             .store(in: &cell.disposeBag)
 

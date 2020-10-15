@@ -25,8 +25,9 @@ extension Twitter.API {
     
     public enum Account { }
     public enum Favorites { }
-    public enum Timeline { }
     public enum OAuth { }
+    public enum Statuses { }
+    public enum Timeline { }
     public enum Lookup { }
 }
 
