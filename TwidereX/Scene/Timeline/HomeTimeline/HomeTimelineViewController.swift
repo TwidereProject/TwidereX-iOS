@@ -27,7 +27,6 @@ final class HomeTimelineViewController: UIViewController, NeedsDependency {
         tableView.register(TimelineBottomLoaderTableViewCell.self, forCellReuseIdentifier: String(describing: TimelineBottomLoaderTableViewCell.self))
         tableView.rowHeight = UITableView.automaticDimension
         tableView.separatorStyle = .none
-        tableView.delaysContentTouches = false
         return tableView
     }()
     
