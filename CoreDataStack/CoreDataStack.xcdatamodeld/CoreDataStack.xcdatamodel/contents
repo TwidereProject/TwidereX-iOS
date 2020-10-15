@@ -1,17 +1,91 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="17189" systemVersion="19G2021" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
-    <entity name="Authentication" representedClassName=".Authentication" syncable="YES">
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="17192" systemVersion="19G2021" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+    <entity name="Entity" representedClassName="Entity" syncable="YES" codeGenerationType="class"/>
+    <entity name="TimelineIndex" representedClassName=".TimelineIndex" syncable="YES">
+        <attribute name="createdAt" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="hasMore" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="id" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="platformRaw" attributeType="String"/>
+        <attribute name="userID" attributeType="String"/>
+        <relationship name="toots" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Toots" inverseName="timelineIndex" inverseEntity="Toots"/>
+        <relationship name="tweet" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Tweet" inverseName="timelineIndexes" inverseEntity="Tweet"/>
+    </entity>
+    <entity name="Toots" representedClassName=".Tools" syncable="YES">
+        <attribute name="createdAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="id" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="updatedAt" attributeType="Date" usesScalarValueType="NO"/>
+        <relationship name="timelineIndex" maxCount="1" deletionRule="Nullify" destinationEntity="TimelineIndex" inverseName="toots" inverseEntity="TimelineIndex"/>
+    </entity>
+    <entity name="Tweet" representedClassName=".Tweet" syncable="YES">
+        <attribute name="coordinatesRaw" optional="YES" attributeType="Binary"/>
+        <attribute name="createdAt" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="entitiesRaw" attributeType="Binary"/>
+        <attribute name="extendedEntitiesRaw" optional="YES" attributeType="Binary"/>
+        <attribute name="favoriteCount" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="id" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="idStr" attributeType="String"/>
+        <attribute name="placeRaw" optional="YES" attributeType="Binary"/>
+        <attribute name="quotedStatusIDStr" optional="YES" attributeType="String"/>
+        <attribute name="retweetCount" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="source" optional="YES" attributeType="String"/>
+        <attribute name="text" attributeType="String"/>
+        <attribute name="updatedAt" attributeType="Date" usesScalarValueType="NO"/>
+        <relationship name="likeBy" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="TwitterUser" inverseName="like" inverseEntity="TwitterUser"/>
+        <relationship name="quote" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Tweet" inverseName="quoteFrom" inverseEntity="Tweet"/>
+        <relationship name="quoteFrom" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Tweet" inverseName="quote" inverseEntity="Tweet"/>
+        <relationship name="retweet" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Tweet" inverseName="retweetFrom" inverseEntity="Tweet"/>
+        <relationship name="retweetBy" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="TwitterUser" inverseName="retweets" inverseEntity="TwitterUser"/>
+        <relationship name="retweetFrom" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Tweet" inverseName="retweet" inverseEntity="Tweet"/>
+        <relationship name="timelineIndexes" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="TimelineIndex" inverseName="tweet" inverseEntity="TimelineIndex"/>
+        <relationship name="user" maxCount="1" deletionRule="Nullify" destinationEntity="TwitterUser" inverseName="tweets" inverseEntity="TwitterUser"/>
+    </entity>
+    <entity name="TwitterAuthentication" representedClassName=".TwitterAuthentication" syncable="YES">
         <attribute name="accessToken" attributeType="String"/>
         <attribute name="accessTokenSecret" attributeType="String"/>
+        <attribute name="activeAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="consumerKey" attributeType="String"/>
         <attribute name="consumerSecret" attributeType="String"/>
         <attribute name="createdAt" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="id" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="nonce" attributeType="String" defaultValueString=""/>
         <attribute name="screenName" attributeType="String"/>
         <attribute name="updatedAt" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="userID" attributeType="String"/>
     </entity>
+    <entity name="TwitterUser" representedClassName=".TwitterUser" syncable="YES">
+        <attribute name="bioDescription" optional="YES" attributeType="String"/>
+        <attribute name="createdAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="favouritesCount" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="followersCount" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="friendsCount" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="id" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="idStr" attributeType="String"/>
+        <attribute name="listedCount" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="location" optional="YES" attributeType="String"/>
+        <attribute name="name" optional="YES" attributeType="String"/>
+        <attribute name="profileBannerURL" optional="YES" attributeType="String"/>
+        <attribute name="profileImageURLHTTPS" optional="YES" attributeType="String"/>
+        <attribute name="protected" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="screenName" optional="YES" attributeType="String"/>
+        <attribute name="statusesCount" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="updatedAt" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="url" optional="YES" attributeType="String"/>
+        <relationship name="followedBy" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="TwitterUser" inverseName="followedByFrom" inverseEntity="TwitterUser"/>
+        <relationship name="followedByFrom" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="TwitterUser" inverseName="followedBy" inverseEntity="TwitterUser"/>
+        <relationship name="following" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="TwitterUser" inverseName="followingFrom" inverseEntity="TwitterUser"/>
+        <relationship name="followingFrom" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="TwitterUser" inverseName="following" inverseEntity="TwitterUser"/>
+        <relationship name="followRequestSent" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="TwitterUser" inverseName="followRequestSentFrom" inverseEntity="TwitterUser"/>
+        <relationship name="followRequestSentFrom" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="TwitterUser" inverseName="followRequestSent" inverseEntity="TwitterUser"/>
+        <relationship name="like" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Tweet" inverseName="likeBy" inverseEntity="Tweet"/>
+        <relationship name="retweets" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Tweet" inverseName="retweetBy" inverseEntity="Tweet"/>
+        <relationship name="tweets" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Tweet" inverseName="user" inverseEntity="Tweet"/>
+    </entity>
     <elements>
-        <element name="Authentication" positionX="-63" positionY="-18" width="128" height="178"/>
+        <element name="Entity" positionX="-27" positionY="135" width="128" height="43"/>
+        <element name="TimelineIndex" positionX="-54" positionY="63" width="128" height="148"/>
+        <element name="Toots" positionX="-18" positionY="81" width="128" height="103"/>
+        <element name="Tweet" positionX="371.83984375" positionY="-55.8125" width="128" height="358"/>
+        <element name="TwitterAuthentication" positionX="-63" positionY="-18" width="128" height="208"/>
+        <element name="TwitterUser" positionX="0" positionY="108" width="128" height="433"/>
     </elements>
 </model>

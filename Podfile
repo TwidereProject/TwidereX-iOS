@@ -6,7 +6,13 @@ target 'TwidereX' do
   use_frameworks!
 
   # Pods for TwidereX
+  
+  ## UI
+  pod 'SwipeViewController', '~> 2.0.0'
+  
+  # misc
   pod 'SwiftGen', '~> 6.3.0'
+  pod 'DateToolsSwift', '~> 5.0.0'
   
   target 'TwidereXTests' do
     inherit! :search_paths
@@ -19,14 +25,13 @@ target 'TwidereX' do
 
 end
 
-target 'TwitterAPI' do
-  # Comment the next line if you don't want to use dynamic frameworks
-  use_frameworks!
-
-  # Pods for TwitterAPI
-
-  target 'TwitterAPITests' do
-    # Pods for testing
-  end
-
-end
+plugin 'cocoapods-keys', {
+  :project => "TwidereX",
+  :keys => [
+    "app_secret",
+    "consumer_key",
+    "consumer_key_secret",
+    "host_key_public",
+    "oauth_endpoint"
+  ]
+}

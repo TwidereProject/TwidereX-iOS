@@ -15,30 +15,43 @@ class MainTabBarController: UITabBarController {
     
     enum Tab: Int, CaseIterable {
         case timeline
-
+        case me
         
         var title: String {
             switch self {
-            case .timeline:    return "Timeline"
+            case .timeline:     return "Timeline"
+            case .me:           return "Me"
             }
         }
         
         var image: UIImage {
             switch self {
             case .timeline:     return UIImage(systemName: "house")!
+            case .me:           return UIImage(systemName: "person")!
             }
         }
         
         func viewController(context: AppContext, coordinator: SceneCoordinator) -> UIViewController {
-            let navigationController: UINavigationController
+            let viewController: UIViewController
             switch self {
             case .timeline:
-                let viewController = TimelineViewController()
-                viewController.context = context
-                viewController.coordinator = coordinator
-                navigationController = UINavigationController(rootViewController: viewController)
+                #if STUB
+                let _viewController = StubTimelineViewController()
+                #else
+                let _viewController = HomeTimelineViewController()
+                #endif
+                _viewController.context = context
+                _viewController.coordinator = coordinator
+                viewController = _viewController
+            case .me:
+                let _viewController = ProfileViewController()
+                _viewController.context = context
+                _viewController.coordinator = coordinator
+                _viewController.viewModel = MeProfileViewModel(context: context)
+                viewController = _viewController
             }
-            return navigationController
+            viewController.title = self.title
+            return UINavigationController(rootViewController: viewController)
         }
     }
     
@@ -67,11 +80,14 @@ extension MainTabBarController {
             let viewController = tab.viewController(context: context, coordinator: coordinator)
             viewController.tabBarItem.title = tab.title
             viewController.tabBarItem.image = tab.image
-
             return viewController
         }
         setViewControllers(viewControllers, animated: false)
         selectedIndex = 0
+        
+        #if DEBUG
+        // selectedIndex = 1
+        #endif
     }
     
 }
