@@ -36,7 +36,6 @@ extension HomeTimelineViewModel.LoadMiddleState {
     
     class Initial: HomeTimelineViewModel.LoadMiddleState {
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {
-            // guard let viewModel = viewModel else { return false }
             return stateClass == Loading.self
         }
     }

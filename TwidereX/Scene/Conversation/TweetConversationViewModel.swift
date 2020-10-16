@@ -5,11 +5,15 @@
 //  Created by Cirno MainasuK on 2020-9-16.
 //
 
+import os.log
 import UIKit
+import Combine
+import GameplayKit
 import CoreData
 import CoreDataStack
 import AlamofireImage
 import Kanna
+import TwitterAPI
 
 final class TweetConversationViewModel: NSObject {
     
@@ -20,19 +24,51 @@ final class TweetConversationViewModel: NSObject {
         return formatter
     }()
     
+    var disposeBag = Set<AnyCancellable>()
+    
     // input
     let context: AppContext
     let rootItem: ConversationItem
+    let conversationMeta = CurrentValueSubject<ConversationMeta?, Never>(nil)
+    let currentTwitterAuthentication: CurrentValueSubject<TwitterAuthentication?, Never>
     weak var conversationPostTableViewCellDelegate: ConversationPostTableViewCellDelegate?
     
     // output
     var diffableDataSource: UITableViewDiffableDataSource<ConversationSection, ConversationItem>?
+    private(set) lazy var loadConversationStateMachine: GKStateMachine = {
+        // exclude timeline middle fetcher state
+        let stateMachine = GKStateMachine(states: [
+            LoadConversationState.Initial(viewModel: self),
+            LoadConversationState.Prepare(viewModel: self),
+            LoadConversationState.PrepareFail(viewModel: self),
+            LoadConversationState.Idle(viewModel: self),
+            LoadConversationState.Loading(viewModel: self),
+            LoadConversationState.Fail(viewModel: self),
+            LoadConversationState.NoMore(viewModel: self),
+            
+        ])
+        stateMachine.enter(LoadConversationState.Initial.self)
+        return stateMachine
+    }()
     
     init(context: AppContext, tweetObjectID: NSManagedObjectID) {
         self.context = context
-        self.rootItem = .root(objectID: tweetObjectID)
+        self.rootItem = .root(tweetObjectID: tweetObjectID)
+        self.currentTwitterAuthentication = CurrentValueSubject(context.authenticationService.currentActiveTwitterAutentication.value)
+        super.init()        
     }
     
+    deinit {
+        os_log("%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
+    }
+}
+
+extension TweetConversationViewModel {
+    struct ConversationMeta {
+        let tweetID: Twitter.Entity.TweetV2.ID
+        let authorID: Twitter.Entity.User.ID
+        let conversationID: Twitter.Entity.TweetV2.ConversationID
+    }
 }
 
 extension TweetConversationViewModel {

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="17192" systemVersion="19G2021" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="17510.1" systemVersion="19H2" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
     <entity name="Entity" representedClassName="Entity" syncable="YES" codeGenerationType="class"/>
     <entity name="TimelineIndex" representedClassName=".TimelineIndex" syncable="YES">
         <attribute name="createdAt" attributeType="Date" usesScalarValueType="NO"/>
@@ -17,6 +17,7 @@
         <relationship name="timelineIndex" maxCount="1" deletionRule="Nullify" destinationEntity="TimelineIndex" inverseName="toots" inverseEntity="TimelineIndex"/>
     </entity>
     <entity name="Tweet" representedClassName=".Tweet" syncable="YES">
+        <attribute name="conversationID" optional="YES" attributeType="String"/>
         <attribute name="coordinatesRaw" optional="YES" attributeType="Binary"/>
         <attribute name="createdAt" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="entitiesRaw" attributeType="Binary"/>
@@ -84,7 +85,7 @@
         <element name="Entity" positionX="-27" positionY="135" width="128" height="43"/>
         <element name="TimelineIndex" positionX="-54" positionY="63" width="128" height="148"/>
         <element name="Toots" positionX="-18" positionY="81" width="128" height="103"/>
-        <element name="Tweet" positionX="371.83984375" positionY="-55.8125" width="128" height="358"/>
+        <element name="Tweet" positionX="371.83984375" positionY="-55.8125" width="128" height="373"/>
         <element name="TwitterAuthentication" positionX="-63" positionY="-18" width="128" height="208"/>
         <element name="TwitterUser" positionX="0" positionY="108" width="128" height="433"/>
     </elements>

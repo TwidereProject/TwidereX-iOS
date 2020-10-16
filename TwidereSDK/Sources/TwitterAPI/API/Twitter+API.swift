@@ -28,13 +28,17 @@ extension Twitter.API {
     public enum OAuth { }
     public enum Statuses { }
     public enum Timeline { }
+    
+    // V2
     public enum Lookup { }
+    public enum RecentSearch { }
 }
 
 extension Twitter.API {
     enum APIError: Error, LocalizedError {
         case `internal`(message: String)
         case response(code: Int, reason: String)
+        case responseV2(title: String?, detail: String?)        // v2
         
         var errorDescription: String? {
             switch self {
@@ -42,17 +46,50 @@ extension Twitter.API {
                 return "Internal error: \(message)"
             case .response(let code, let reason):
                 return "\(code) - \(reason)"
+            case .responseV2(let title, let detail):
+                return [title, detail].compactMap { $0 }.joined(separator: " - ")
             }
         }
     }
     
-    struct ErrorResponse: Codable {
-        let errors: [ErrorDescription]
+    public struct ErrorResponse: Codable {
+        public let errors: [ErrorDescription]
         
-        struct ErrorDescription: Codable {
-            let code: Int
-            let message: String
+        public struct ErrorDescription: Codable {
+            public let code: Int
+            public let message: String
         }
+    }
+    
+    public struct ErrorResponseV2: Codable {
+        public let errors: [ErrorDescription]
+        public let title: String?
+        public let detail: String?
+        public let type: String?
+        
+        public struct ErrorDescription: Codable {
+            public let parameters: ErrorDescriptionParameters
+            public let message: String
+        }
+        
+        public struct ErrorDescriptionParameters: Codable {
+            public let expansions: [String]?
+            public let mediaFields: [String]?
+            public let placeFields: [String]?
+            public let poolFields: [String]?
+            public let userFields: [String]?
+            public let tweetFields: [String]?
+            
+            public enum CodingKeys: String, CodingKey {
+                case expansions
+                case mediaFields = "media.fields"
+                case placeFields = "place.fields"
+                case poolFields = "pool.fields"
+                case userFields = "user.fields"
+                case tweetFields = "tweet.fields"
+            }
+        }
+        
     }
 }
 
@@ -65,6 +102,10 @@ extension Twitter.API {
             if let errorResponse = try? Twitter.API.decoder.decode(ErrorResponse.self, from: data),
                let error = errorResponse.errors.first {
                 throw APIError.response(code: error.code, reason: error.message)
+            }
+            
+            if let errorResponse = try? Twitter.API.decoder.decode(ErrorResponseV2.self, from: data) {
+                throw APIError.responseV2(title: errorResponse.title, detail: errorResponse.detail)
             }
             
             throw decodeError

@@ -17,10 +17,12 @@ extension Twitter.Request {
         case id = "id"
         case name = "name"
         case placeType = "place_type"
-        
-        public static var allCasesQueryItem: URLQueryItem {
-            let value = TwitterFields.allCases.map { $0.rawValue }.joined(separator: ",")
-            return URLQueryItem(name: "place.fields", value: value)
-        }
+    }
+}
+
+extension Collection where Element == Twitter.Request.PlaceFields {
+    public var queryItem: URLQueryItem {
+        let value = self.map { $0.rawValue }.joined(separator: ",")
+        return URLQueryItem(name: "place.fields", value: value)
     }
 }

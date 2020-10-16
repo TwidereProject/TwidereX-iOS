@@ -52,6 +52,14 @@ extension TweetConversationViewController {
         tableView.delegate = self
         tableView.dataSource = viewModel.diffableDataSource
         tableView.reloadData()
+        
+        // bind view model
+        context.authenticationService.twitterAuthentications
+            .map { $0.first }
+            .assign(to: \.value, on: viewModel.currentTwitterAuthentication)
+            .store(in: &disposeBag)
+        
+        viewModel.loadConversationStateMachine.enter(TweetConversationViewModel.LoadConversationState.Prepare.self)
     }
     
 }

@@ -25,6 +25,7 @@ extension Tweet.Property {
             favoriteCount: entity.favoriteCount,
             favorited: entity.favorited ?? false,
             quotedStatusIDStr: entity.quotedStatusIDStr,
+            conversationID: nil,        // v2
             networkData: networkDate
         )
     }

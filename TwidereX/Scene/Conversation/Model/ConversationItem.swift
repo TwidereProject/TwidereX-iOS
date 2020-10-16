@@ -10,5 +10,5 @@ import CoreData
 import TwitterAPI
 
 enum ConversationItem: Hashable {
-    case root(objectID: NSManagedObjectID)
+    case root(tweetObjectID: NSManagedObjectID)
 }

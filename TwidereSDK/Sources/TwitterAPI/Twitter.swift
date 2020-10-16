@@ -81,8 +81,3 @@ extension Twitter.Response {
         }
     }
 }
-
-
-
-
-

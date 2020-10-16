@@ -125,6 +125,9 @@ final public class Tweet: NSManagedObject {
     @NSManaged public private(set) var favoriteCount: NSNumber?
     
     @NSManaged public private(set) var quotedStatusIDStr: String?
+    
+    // V2
+    @NSManaged public private(set) var conversationID: String?
         
     // many-to-one relationship
     @NSManaged public private(set) var user: TwitterUser
@@ -176,6 +179,9 @@ extension Tweet {
         tweet.retweetCount = property.retweetCount.flatMap { NSNumber(value: $0) }
         
         tweet.quotedStatusIDStr = property.quotedStatusIDStr
+        
+        // V2
+        tweet.conversationID = property.conversationID
         
         timelineIndex.flatMap {
             tweet.mutableSetValue(forKey: #keyPath(Tweet.timelineIndexes)).add($0)
@@ -282,6 +288,10 @@ extension Tweet {
         
         public let quotedStatusIDStr: String?
         
+        // V2
+        public let conversationID: String?
+        
+        // API
         public let networkDate: Date
         
         public init(
@@ -298,6 +308,7 @@ extension Tweet {
             favoriteCount: Int?,
             favorited: Bool,
             quotedStatusIDStr: String?,
+            conversationID: String?,
             networkData: Date
         ) {
             self.idStr = idStr
@@ -317,6 +328,8 @@ extension Tweet {
             self.favorited = favorited
             
             self.quotedStatusIDStr = quotedStatusIDStr
+            
+            self.conversationID = conversationID
             
             self.networkDate = networkData
         }
