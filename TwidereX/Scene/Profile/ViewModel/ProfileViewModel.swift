@@ -58,17 +58,17 @@ class ProfileViewModel: NSObject {
     
     init(twitterUser: TwitterUser) {
         self.twitterUser = CurrentValueSubject(twitterUser)
-        self.userID = CurrentValueSubject(twitterUser.idStr)
+        self.userID = CurrentValueSubject(twitterUser.id)
         self.bannerImageURL = CurrentValueSubject(twitterUser.profileBannerURL.flatMap { URL(string: $0) })
         self.avatarImageURL = CurrentValueSubject(twitterUser.avatarImageURL(size: .original))
         self.name = CurrentValueSubject(twitterUser.name)
-        self.username = CurrentValueSubject(twitterUser.screenName)
+        self.username = CurrentValueSubject(twitterUser.username)
         self.bioDescription = CurrentValueSubject(twitterUser.bioDescription)
         self.url = CurrentValueSubject(twitterUser.url)
         self.location = CurrentValueSubject(twitterUser.location)
-        self.friendsCount = CurrentValueSubject(twitterUser.friendsCountInt)
-        self.followersCount = CurrentValueSubject(twitterUser.followersCountInt)
-        self.listedCount = CurrentValueSubject(twitterUser.listedCountInt)
+        self.friendsCount = CurrentValueSubject(twitterUser.metrics?.followingCount.flatMap { Int(truncating: $0) })
+        self.followersCount = CurrentValueSubject(twitterUser.metrics?.followersCount.flatMap { Int(truncating: $0) })
+        self.listedCount = CurrentValueSubject(twitterUser.metrics?.listedCount.flatMap{ Int(truncating: $0) })
         self.isFolling = CurrentValueSubject(nil)
         super.init()
         
@@ -137,17 +137,17 @@ extension ProfileViewModel {
     }
     
     private func update(twitterUser: TwitterUser?) {
-        self.userID.value = twitterUser?.idStr
+        self.userID.value = twitterUser?.id
         self.bannerImageURL.value = twitterUser?.profileBannerURL.flatMap { URL(string: $0) }
         self.avatarImageURL.value = twitterUser?.avatarImageURL(size: .original)
         self.name.value = twitterUser?.name
-        self.username.value = twitterUser?.screenName
+        self.username.value = twitterUser?.username
         self.bioDescription.value = twitterUser?.bioDescription
         self.url.value = twitterUser?.url
         self.location.value = twitterUser?.location
-        self.friendsCount.value = twitterUser?.friendsCountInt
-        self.followersCount.value = twitterUser?.followersCountInt
-        self.listedCount.value = twitterUser?.listedCountInt
+        self.friendsCount.value = twitterUser?.metrics?.followingCount.flatMap { Int(truncating: $0) }
+        self.followersCount.value = twitterUser?.metrics?.followersCount.flatMap { Int(truncating: $0) }
+        self.listedCount.value = twitterUser?.metrics?.listedCount.flatMap{ Int(truncating: $0) }
     }
     
     private func update(twitterUser: TwitterUser?, currentTwitterUser: TwitterUser?) {

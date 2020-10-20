@@ -13,7 +13,7 @@ extension Twitter.API.RecentSearch {
     
     static let tweetsSearchRecentEndpointURL = Twitter.API.endpointV2URL.appendingPathComponent("tweets/search/recent")
     
-    public static func tweetsSearchRecent(query: String, maxResults: Int, session: URLSession, authorization: Twitter.API.OAuth.Authorization) -> AnyPublisher<Twitter.Response<Twitter.API.RecentSearch.Content>, Error> {
+    public static func tweetsSearchRecent(query: String, maxResults: Int, session: URLSession, authorization: Twitter.API.OAuth.Authorization) -> AnyPublisher<Twitter.Response.Content<Twitter.API.RecentSearch.Content>, Error> {
         guard var components = URLComponents(string: tweetsSearchRecentEndpointURL.absoluteString) else { fatalError() }
         
         let expansions: [Twitter.Request.Expansions] = [
@@ -31,6 +31,18 @@ extension Twitter.API.RecentSearch {
             .authorID,
             .contextAnnotations,
             .conversationID,
+            .created_at,
+            .entities,
+            .geo,
+            .id,
+            .inReplyToUserID,
+            .lang,
+            .publicMetrics,
+            .possiblySensitive,
+            .referencedTweets,
+            .source,
+            .text,
+            .withheld,
         ]
         let userFields: [Twitter.Request.UserFields] = [
             .createdAt,
@@ -71,7 +83,7 @@ extension Twitter.API.RecentSearch {
             .tryMap { data, response in
                 do {
                     let value = try Twitter.API.decode(type: Twitter.API.RecentSearch.Content.self, from: data, response: response)
-                    return Twitter.Response(value: value, response: response)
+                    return Twitter.Response.Content(value: value, response: response)
                 } catch {
                     os_log("%{public}s[%{public}ld], %{public}s: decode fail. data: %s", ((#file as NSString).lastPathComponent), #line, #function, String(data: data, encoding: .utf8) ?? "<nil>")
 
@@ -85,13 +97,13 @@ extension Twitter.API.RecentSearch {
 
 extension Twitter.API.RecentSearch {
     public struct Content: Codable {
-        public let data: [Twitter.Entity.TweetV2]?
+        public let data: [Twitter.Entity.V2.Tweet]?
         public let includes: Include?
         public let meta: Meta
         
         public struct Include: Codable {
-            public let users: [Twitter.Entity.UserV2]?
-            public let tweets: [Twitter.Entity.TweetV2]?
+            public let users: [Twitter.Entity.V2.User]?
+            public let tweets: [Twitter.Entity.V2.Tweet]?
             // public let media: [Twitter.Entity.UserV2]?
         }
         

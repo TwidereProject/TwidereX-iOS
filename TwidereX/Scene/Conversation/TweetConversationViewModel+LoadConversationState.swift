@@ -51,13 +51,13 @@ extension TweetConversationViewModel.LoadConversationState {
                 return
             }
 
-            var _tweetID: Twitter.Entity.TweetV2.ID?
-            var _authorID: Twitter.Entity.UserV2.ID?
-            var _conversationID: Twitter.Entity.TweetV2.ConversationID?
+            var _tweetID: Twitter.Entity.V2.Tweet.ID?
+            var _authorID: Twitter.Entity.V2.User.ID?
+            var _conversationID: Twitter.Entity.V2.Tweet.ConversationID?
             viewModel.context.managedObjectContext.perform {
                 let tweet = viewModel.context.managedObjectContext.object(with: tweetObjectID) as! Tweet
-                _tweetID = tweet.idStr
-                _authorID = tweet.user.idStr
+                _tweetID = tweet.id
+                _authorID = tweet.author.id
                 _conversationID = tweet.conversationID
              
                 DispatchQueue.main.async {
@@ -153,6 +153,7 @@ extension TweetConversationViewModel.LoadConversationState {
             
             guard let viewModel = viewModel, let stateMachine = stateMachine else { return }
             guard let conversationMeta = viewModel.conversationMeta.value else {
+                assertionFailure()
                 stateMachine.enter(Fail.self)
                 return
             }
@@ -168,7 +169,8 @@ extension TweetConversationViewModel.LoadConversationState {
             viewModel.context.apiService.tweetsRecentSearch(
                 conversationID: conversationMeta.conversationID,
                 authorID: conversationMeta.authorID,
-                authorization: authorization
+                authorization: authorization,
+                requestTwitterUserID: authentication.userID
             )
             .receive(on: DispatchQueue.main)
             .sink { completion in
@@ -191,7 +193,7 @@ extension TweetConversationViewModel.LoadConversationState {
                 
                 // handle data
                 // TODO:
-                stateMachine.enter(Fail.self)
+                stateMachine.enter(Idle.self)
 
             }
             .store(in: &viewModel.disposeBag)

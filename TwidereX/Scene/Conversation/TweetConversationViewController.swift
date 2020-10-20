@@ -83,7 +83,7 @@ extension TweetConversationViewController: ConversationPostTableViewCellDelegate
             guard let tweet = self.context.managedObjectContext.object(with: objectID) as? Tweet else { return }
             DispatchQueue.main.async { [weak self] in
                 guard let self = self else { return }
-                let profileViewModel = ProfileViewModel(twitterUser: tweet.user)
+                let profileViewModel = ProfileViewModel(twitterUser: tweet.author)
                 self.context.authenticationService.currentTwitterUser
                     .assign(to: \.value, on: profileViewModel.currentTwitterUser).store(in: &profileViewModel.disposeBag)
                 self.coordinator.present(scene: .profile(viewModel: profileViewModel), from: self, transition: .show)
@@ -101,7 +101,7 @@ extension TweetConversationViewController: ConversationPostTableViewCellDelegate
             guard let targetTweet = tweet.retweet?.quote ?? tweet.quote else { return }
             DispatchQueue.main.async { [weak self] in
                 guard let self = self else { return }
-                let profileViewModel = ProfileViewModel(twitterUser: targetTweet.user)
+                let profileViewModel = ProfileViewModel(twitterUser: targetTweet.author)
                 self.context.authenticationService.currentTwitterUser
                     .assign(to: \.value, on: profileViewModel.currentTwitterUser).store(in: &profileViewModel.disposeBag)
                 self.coordinator.present(scene: .profile(viewModel: profileViewModel), from: self, transition: .show)

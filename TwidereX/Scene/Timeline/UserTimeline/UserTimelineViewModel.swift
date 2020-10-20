@@ -220,7 +220,7 @@ extension UserTimelineViewModel {
         case invalidAnchorToLoadMore
     }
     
-    func fetchLatest() -> AnyPublisher<Twitter.Response<[Twitter.Entity.Tweet]>, Error> {
+    func fetchLatest() -> AnyPublisher<Twitter.Response.Content<[Twitter.Entity.Tweet]>, Error> {
         guard let authentication = currentTwitterAuthentication.value,
               let authorization = try? authentication.authorization(appSecret: .shared) else {
             return Fail(error: UserTimelineError.invalidAuthorization).eraseToAnyPublisher()
@@ -232,7 +232,7 @@ extension UserTimelineViewModel {
         return context.apiService.twitterUserTimeline(count: 20, userID: userID, authorization: authorization, twitterUserID: authentication.userID)
     }
     
-    func loadMore() -> AnyPublisher<Twitter.Response<[Twitter.Entity.Tweet]>, Error> {
+    func loadMore() -> AnyPublisher<Twitter.Response.Content<[Twitter.Entity.Tweet]>, Error> {
         guard let authentication = currentTwitterAuthentication.value,
               let authorization = try? authentication.authorization(appSecret: .shared) else {
             return Fail(error: UserTimelineError.invalidAuthorization).eraseToAnyPublisher()
@@ -244,7 +244,7 @@ extension UserTimelineViewModel {
             return Fail(error: UserTimelineError.invalidAnchorToLoadMore).eraseToAnyPublisher()
         }
         
-        let maxID = oldestTweet.idStr
+        let maxID = oldestTweet.id
         return context.apiService.twitterUserTimeline(count: 20, userID: userID, maxID: maxID, authorization: authorization, twitterUserID: authentication.userID)
     }
 }

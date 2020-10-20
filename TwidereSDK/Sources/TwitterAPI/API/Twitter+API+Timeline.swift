@@ -13,17 +13,17 @@ extension Twitter.API.Timeline {
     static let homeTimelineEndpointURL = Twitter.API.endpointURL.appendingPathComponent("statuses/home_timeline.json")
     static let userTimelineEndpointURL = Twitter.API.endpointURL.appendingPathComponent("statuses/user_timeline.json")
     
-    public static func homeTimeline(session: URLSession, authorization: Twitter.API.OAuth.Authorization, query: Query) -> AnyPublisher<Twitter.Response<[Twitter.Entity.Tweet]>, Error> {
+    public static func homeTimeline(session: URLSession, authorization: Twitter.API.OAuth.Authorization, query: Query) -> AnyPublisher<Twitter.Response.Content<[Twitter.Entity.Tweet]>, Error> {
         let request = Twitter.API.request(url: homeTimelineEndpointURL, httpMethod: "GET", authorization: authorization, queryItems: query.queryItems)
         return session.dataTaskPublisher(for: request)
             .tryMap { data, response in
                 let value = try Twitter.API.decode(type: [Twitter.Entity.Tweet].self, from: data, response: response)
-                return Twitter.Response(value: value, response: response)
+                return Twitter.Response.Content(value: value, response: response)
             }
             .eraseToAnyPublisher()
     }
     
-    public static func userTimeline(session: URLSession, authorization: Twitter.API.OAuth.Authorization, query: Query) -> AnyPublisher<Twitter.Response<[Twitter.Entity.Tweet]>, Error> {
+    public static func userTimeline(session: URLSession, authorization: Twitter.API.OAuth.Authorization, query: Query) -> AnyPublisher<Twitter.Response.Content<[Twitter.Entity.Tweet]>, Error> {
         assert(query.userID != nil && query.userID != "")
         
         var components = URLComponents(string: userTimelineEndpointURL.absoluteString)!
@@ -42,7 +42,7 @@ extension Twitter.API.Timeline {
         return session.dataTaskPublisher(for: request)
             .tryMap { data, response in
                 let value = try Twitter.API.decode(type: [Twitter.Entity.Tweet].self, from: data, response: response)
-                return Twitter.Response(value: value, response: response)
+                return Twitter.Response.Content(value: value, response: response)
             }
             .eraseToAnyPublisher()
     }

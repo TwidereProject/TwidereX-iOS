@@ -12,7 +12,6 @@ import GameplayKit
 import CoreData
 import CoreDataStack
 import AlamofireImage
-import Kanna
 import TwitterAPI
 
 final class TweetConversationViewModel: NSObject {
@@ -55,7 +54,7 @@ final class TweetConversationViewModel: NSObject {
         self.context = context
         self.rootItem = .root(tweetObjectID: tweetObjectID)
         self.currentTwitterAuthentication = CurrentValueSubject(context.authenticationService.currentActiveTwitterAutentication.value)
-        super.init()        
+        super.init()
     }
     
     deinit {
@@ -65,9 +64,9 @@ final class TweetConversationViewModel: NSObject {
 
 extension TweetConversationViewModel {
     struct ConversationMeta {
-        let tweetID: Twitter.Entity.TweetV2.ID
+        let tweetID: Twitter.Entity.V2.Tweet.ID
         let authorID: Twitter.Entity.User.ID
-        let conversationID: Twitter.Entity.TweetV2.ConversationID
+        let conversationID: Twitter.Entity.V2.Tweet.ConversationID
     }
 }
 
@@ -98,7 +97,7 @@ extension TweetConversationViewModel {
     
     static func configure(cell: ConversationPostTableViewCell, tweet: Tweet) {
         // set avatar
-        if let avatarImageURL = tweet.user.avatarImageURL() {
+        if let avatarImageURL = tweet.author.avatarImageURL() {
             let placeholderImage = UIImage
                 .placeholder(size: ConversationPostView.avatarImageViewSize, color: .systemFill)
                 .af.imageRoundedIntoCircle()
@@ -112,11 +111,11 @@ extension TweetConversationViewModel {
         } else {
             assertionFailure()
         }
-        cell.conversationPostView.lockImageView.isHidden = !((tweet.retweet ?? tweet).user.protected)
+        cell.conversationPostView.lockImageView.isHidden = !((tweet.retweet ?? tweet).author.protected)
         
         // set name and username
-        cell.conversationPostView.nameLabel.text = tweet.user.name ?? " "
-        cell.conversationPostView.usernameLabel.text = tweet.user.screenName.flatMap { "@" + $0 } ?? " "
+        cell.conversationPostView.nameLabel.text = tweet.author.name
+        cell.conversationPostView.usernameLabel.text = tweet.author.username
 
         // set text
         cell.conversationPostView.activeTextLabel.text = tweet.text
@@ -125,7 +124,7 @@ extension TweetConversationViewModel {
         let quote = tweet.quote
         if let quote = quote {
             // set avatar
-            if let avatarImageURL = quote.user.avatarImageURL() {
+            if let avatarImageURL = quote.author.avatarImageURL() {
                 let placeholderImage = UIImage
                     .placeholder(size: ConversationPostView.avatarImageViewSize, color: .systemFill)
                     .af.imageRoundedIntoCircle()
@@ -141,8 +140,8 @@ extension TweetConversationViewModel {
             }
             
             // set name and username
-            cell.conversationPostView.quotePostView.nameLabel.text = quote.user.name
-            cell.conversationPostView.quotePostView.usernameLabel.text = quote.user.screenName.flatMap { "@" + $0 }
+            cell.conversationPostView.quotePostView.nameLabel.text = quote.author.name
+            cell.conversationPostView.quotePostView.usernameLabel.text = "@\(quote.author.username)"
             
             // set date
 //            let createdAt = quote.createdAt
@@ -160,7 +159,7 @@ extension TweetConversationViewModel {
         cell.conversationPostView.quotePostView.isHidden = quote == nil
         
         // set geo
-        let placeFullName = tweet.place.flatMap { $0.fullName } ?? nil
+        let placeFullName = tweet.place?.fullname ?? nil
         cell.conversationPostView.geoLabel.text = placeFullName
         cell.conversationPostView.geoMetaContainerStackView.isHidden = placeFullName == nil
         
@@ -168,7 +167,7 @@ extension TweetConversationViewModel {
         cell.conversationPostView.dateLabel.text = TweetConversationViewModel.dateFormatter.string(from: tweet.createdAt)
         
         // set status
-        if let retweetCount = tweet.retweetCount.flatMap({ Int(truncating: $0) }), retweetCount > 0 {
+        if let retweetCount = tweet.metrics?.retweetCount.flatMap({ Int(truncating: $0) }), retweetCount > 0 {
             cell.conversationPostView.retweetPostStatusView.countLabel.text = String(retweetCount)
             cell.conversationPostView.retweetPostStatusView.statusLabel.text = retweetCount > 1 ? "Retweets" : "Retweet"
             cell.conversationPostView.retweetPostStatusView.isHidden = false
@@ -177,7 +176,7 @@ extension TweetConversationViewModel {
         }
         // TODO: quote status
         cell.conversationPostView.quotePostStatusView.isHidden = true
-        if let favoriteCount = tweet.favoriteCount.flatMap({ Int(truncating: $0) }), favoriteCount > 0 {
+        if let favoriteCount = tweet.metrics?.likeCount.flatMap({ Int(truncating: $0) }), favoriteCount > 0 {
             cell.conversationPostView.likePostStatusView.countLabel.text = String(favoriteCount)
             cell.conversationPostView.likePostStatusView.statusLabel.text = favoriteCount > 1 ? "Likes" : "Like"
             cell.conversationPostView.likePostStatusView.isHidden = false
@@ -186,10 +185,7 @@ extension TweetConversationViewModel {
         }
         
         // set source
-        cell.conversationPostView.sourceLabel.text = {
-            guard let sourceHTML = tweet.source, let html = try? HTML(html: sourceHTML, encoding: .utf8) else { return nil }
-            return html.text
-        }()
+        cell.conversationPostView.sourceLabel.text = tweet.source
     }
     
 }

@@ -10,7 +10,7 @@ import CoreData
 
 final public class Toots: NSManagedObject {
     
-    @NSManaged public private(set) var id: UUID
+    @NSManaged public private(set) var identifier: UUID
     
     @NSManaged public private(set) var createdAt: Date
     @NSManaged public private(set) var updatedAt: Date
@@ -25,7 +25,7 @@ extension Toots {
     
     public override func awakeFromInsert() {
         super.awakeFromInsert()
-        id = UUID()
+        identifier = UUID()
     }
     
     @discardableResult

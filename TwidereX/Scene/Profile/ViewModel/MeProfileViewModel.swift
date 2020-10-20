@@ -29,7 +29,7 @@ final class MeProfileViewModel: ProfileViewModel {
         
         currentTwitterUser
             .sink { [weak self] currentTwitterUser in
-                os_log("%{public}s[%{public}ld], %{public}s: current active twitter user: %s", ((#file as NSString).lastPathComponent), #line, #function, currentTwitterUser?.screenName ?? "<nil>")
+                os_log("%{public}s[%{public}ld], %{public}s: current active twitter user: %s", ((#file as NSString).lastPathComponent), #line, #function, currentTwitterUser?.username ?? "<nil>")
                 
                 guard let self = self else { return }
                 self.twitterUser.value = currentTwitterUser

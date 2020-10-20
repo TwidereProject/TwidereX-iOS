@@ -187,7 +187,7 @@ extension HomeTimelineViewController {
             case .homeTimelineIndex(let objectID, _):
                 let timelineIndex = viewModel.fetchedResultsController.managedObjectContext.object(with: objectID) as! TimelineIndex
                 guard let targetTweet = (timelineIndex.tweet?.retweet ?? timelineIndex.tweet) else { return false }
-                return targetTweet.user.protected
+                return targetTweet.author.protected
             default:
                 return false
             }
@@ -207,7 +207,7 @@ extension HomeTimelineViewController {
             case .homeTimelineIndex(let objectID, _):
                 let timelineIndex = viewModel.fetchedResultsController.managedObjectContext.object(with: objectID) as! TimelineIndex
                 guard let targetTweet = (timelineIndex.tweet) else { return false }
-                return targetTweet.user.protected
+                return targetTweet.author.protected
             default:
                 return false
             }
@@ -363,7 +363,7 @@ extension HomeTimelineViewController: TimelinePostTableViewCellDelegate {
             managedObjectContext.performAndWait {
                 guard let timelineIndex = managedObjectContext.object(with: objectID) as? TimelineIndex else { return }
                 guard let tweet = timelineIndex.tweet else { return }
-                let twitterUser = tweet.user
+                let twitterUser = tweet.author
                 let profileViewModel = ProfileViewModel(twitterUser: twitterUser)
                 self.context.authenticationService.currentTwitterUser
                     .assign(to: \.value, on: profileViewModel.currentTwitterUser).store(in: &profileViewModel.disposeBag)
@@ -385,7 +385,7 @@ extension HomeTimelineViewController: TimelinePostTableViewCellDelegate {
             managedObjectContext.performAndWait {
                 guard let timelineIndex = managedObjectContext.object(with: objectID) as? TimelineIndex else { return }
                 guard let tweet = timelineIndex.tweet?.retweet ?? timelineIndex.tweet else { return }
-                let twitterUser = tweet.user
+                let twitterUser = tweet.author
                 let profileViewModel = ProfileViewModel(twitterUser: twitterUser)
                 self.context.authenticationService.currentTwitterUser
                     .assign(to: \.value, on: profileViewModel.currentTwitterUser).store(in: &profileViewModel.disposeBag)
@@ -407,7 +407,7 @@ extension HomeTimelineViewController: TimelinePostTableViewCellDelegate {
             managedObjectContext.performAndWait {
                 guard let timelineIndex = managedObjectContext.object(with: objectID) as? TimelineIndex else { return }
                 guard let tweet = timelineIndex.tweet?.retweet?.quote ?? timelineIndex.tweet?.quote else { return }
-                let twitterUser = tweet.user
+                let twitterUser = tweet.author
                 let profileViewModel = ProfileViewModel(twitterUser: twitterUser)
                 self.context.authenticationService.currentTwitterUser
                     .assign(to: \.value, on: profileViewModel.currentTwitterUser).store(in: &profileViewModel.disposeBag)
@@ -437,7 +437,7 @@ extension HomeTimelineViewController: TimelinePostTableViewCellDelegate {
             return
         }
         let twitterUserID = twitterAuthentication.userID
-        assert(_currentTwitterUser.idStr == twitterUserID)
+        assert(_currentTwitterUser.id == twitterUserID)
         let twitterUserObjectID = _currentTwitterUser.objectID
         
         // retrieve target tweet infos
@@ -451,7 +451,7 @@ extension HomeTimelineViewController: TimelinePostTableViewCellDelegate {
         
         let targetRetweetKind: Twitter.API.Statuses.RetweetKind = {
             let targetTweet = (tweet.retweet ?? tweet)
-            let isRetweeted = targetTweet.retweetBy.flatMap { $0.contains(where: { $0.idStr == twitterUserID }) } ?? false
+            let isRetweeted = targetTweet.retweetBy.flatMap { $0.contains(where: { $0.id == twitterUserID }) } ?? false
             return isRetweeted ? .unretweet : .retweet
         }()
         
@@ -530,7 +530,7 @@ extension HomeTimelineViewController: TimelinePostTableViewCellDelegate {
             return
         }
         let twitterUserID = twitterAuthentication.userID
-        assert(_currentTwitterUser.idStr == twitterUserID)
+        assert(_currentTwitterUser.id == twitterUserID)
         let twitterUserObjectID = _currentTwitterUser.objectID
         
         // retrieve target tweet infos
@@ -544,7 +544,7 @@ extension HomeTimelineViewController: TimelinePostTableViewCellDelegate {
 
         let targetFavoriteKind: Twitter.API.Favorites.FavoriteKind = {
             let targetTweet = (tweet.retweet ?? tweet)
-            let isLiked = targetTweet.likeBy.flatMap { $0.contains(where: { $0.idStr == twitterUserID }) } ?? false
+            let isLiked = targetTweet.likeBy.flatMap { $0.contains(where: { $0.id == twitterUserID }) } ?? false
             return isLiked ? .destroy : .create
         }()
 

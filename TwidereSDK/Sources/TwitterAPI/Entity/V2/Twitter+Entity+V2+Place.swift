@@ -1,5 +1,5 @@
 //
-//  Twitter+Entity+PlaceV2.swift
+//  Twitter+Entity+V2+Place.swift
 //  
 //
 //  Created by Cirno MainasuK on 2020-10-15.
@@ -7,8 +7,8 @@
 
 import Foundation
 
-extension Twitter.Entity {
-    public struct PlaceV2: Codable {
+extension Twitter.Entity.V2 {
+    public struct Place: Codable {
         public let id: String
         public let fullName: String
         

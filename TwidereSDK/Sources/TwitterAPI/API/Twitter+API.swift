@@ -141,6 +141,7 @@ extension JSONDecoder.DateDecodingStrategy {
         }
         
         let formatterV2 = ISO8601DateFormatter()
+        formatterV2.formatOptions.insert(.withFractionalSeconds)
         if let date = formatterV2.date(from: string) {
             return date
         }        

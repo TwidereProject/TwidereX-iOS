@@ -155,7 +155,7 @@ extension UserTimelineViewController: TimelinePostTableViewCellDelegate {
                 guard let tweet = viewModel.fetchedResultsController.managedObjectContext.object(with: objectID) as? Tweet else { return }
                 DispatchQueue.main.async { [weak self] in
                     guard let self = self else { return }
-                    let profileViewModel = ProfileViewModel(twitterUser: tweet.user)        // tweet's user is target retweet user
+                    let profileViewModel = ProfileViewModel(twitterUser: tweet.author)        // tweet's user is target retweet user
                     self.context.authenticationService.currentTwitterUser
                         .assign(to: \.value, on: profileViewModel.currentTwitterUser).store(in: &profileViewModel.disposeBag)
                     self.coordinator.present(scene: .profile(viewModel: profileViewModel), from: self, transition: .show)
@@ -178,7 +178,7 @@ extension UserTimelineViewController: TimelinePostTableViewCellDelegate {
                 let targetTweet = tweet.retweet ?? tweet
                 DispatchQueue.main.async { [weak self] in
                     guard let self = self else { return }
-                    let profileViewModel = ProfileViewModel(twitterUser: targetTweet.user)
+                    let profileViewModel = ProfileViewModel(twitterUser: targetTweet.author)
                     self.context.authenticationService.currentTwitterUser
                         .assign(to: \.value, on: profileViewModel.currentTwitterUser).store(in: &profileViewModel.disposeBag)
                     self.coordinator.present(scene: .profile(viewModel: profileViewModel), from: self, transition: .show)
@@ -201,7 +201,7 @@ extension UserTimelineViewController: TimelinePostTableViewCellDelegate {
                 guard let targetTweet = tweet.retweet?.quote ?? tweet.quote else { return }
                 DispatchQueue.main.async { [weak self] in
                     guard let self = self else { return }
-                    let profileViewModel = ProfileViewModel(twitterUser: targetTweet.user)
+                    let profileViewModel = ProfileViewModel(twitterUser: targetTweet.author)
                     self.context.authenticationService.currentTwitterUser
                         .assign(to: \.value, on: profileViewModel.currentTwitterUser).store(in: &profileViewModel.disposeBag)
                     self.coordinator.present(scene: .profile(viewModel: profileViewModel), from: self, transition: .show)

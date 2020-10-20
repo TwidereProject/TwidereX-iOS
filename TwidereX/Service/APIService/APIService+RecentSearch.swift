@@ -10,42 +10,31 @@ import Foundation
 import Combine
 import TwitterAPI
 import CoreDataStack
+import CommonOSLog
 
 extension APIService {
     
     // V2
-    func tweetsRecentSearch(conversationID: Twitter.Entity.TweetV2.ConversationID, authorID: Twitter.Entity.User.ID, authorization: Twitter.API.OAuth.Authorization) -> AnyPublisher<Twitter.Response<Twitter.API.RecentSearch.Content>, Error> {
+    func tweetsRecentSearch(conversationID: Twitter.Entity.V2.Tweet.ConversationID, authorID: Twitter.Entity.User.ID, authorization: Twitter.API.OAuth.Authorization, requestTwitterUserID: Twitter.Entity.V2.User.ID) -> AnyPublisher<Twitter.Response.Content<Twitter.API.RecentSearch.Content>, Error> {
         let query = "conversation_id:\(conversationID) (to:\(authorID) OR from:\(authorID))"
         return Twitter.API.RecentSearch.tweetsSearchRecent(query: query, maxResults: 100, session: session, authorization: authorization)
-            .handleEvents(receiveOutput: { response in
-                let content = response.value
-                guard content.meta.resultCount > 0 else { return }
+            .handleEvents(receiveOutput: { [weak self] response in
+                guard let self = self else { return }
+
+                let log = OSLog.api
                 
-                var tweetsDict: [Twitter.Entity.TweetV2.ID: Twitter.Entity.TweetV2] = [:]
-                for tweet in content.data ?? [] {
-                    guard tweetsDict[tweet.id] == nil else {
-                        assertionFailure()
-                        continue
-                    }
-                    tweetsDict[tweet.id] = tweet
+                guard response.value.meta.resultCount > 0 else {
+                    return
                 }
-                for tweet in content.includes?.tweets ?? [] {
-                    guard tweetsDict[tweet.id] == nil else {
-                        assertionFailure()
-                        continue
-                    }
-                    tweetsDict[tweet.id] = tweet
+                let response = response.map { response in
+                    return Twitter.Response.V2.DictContent(
+                        tweets: [response.data, response.includes?.tweets].compactMap { $0 }.flatMap { $0 },
+                        users: response.includes?.users ?? []
+                    )
                 }
-                
-                var usersDict: [Twitter.Entity.UserV2.ID: Twitter.Entity.UserV2] = [:]
-                for user in content.includes?.users ?? [] {
-                    guard usersDict[user.id] == nil else {
-                        assertionFailure()
-                        continue
-                    }
-                    
-                    usersDict[user.id] = user
-                }
+
+                // persist data
+                APIService.Persist.persistDictContent(managedObjectContext: self.backgroundManagedObjectContext, response: response, requestTwitterUserID: requestTwitterUserID, log: log)
             })
             .eraseToAnyPublisher()
         

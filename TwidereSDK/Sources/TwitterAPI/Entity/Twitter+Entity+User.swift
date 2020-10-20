@@ -14,9 +14,9 @@ extension Twitter.Entity {
         
         // Fundamental
         public let idStr: ID
+        public let name: String
+        public let screenName: String
         
-        public let name: String?
-        public let screenName: String?
         public let userDescription: String?
         
         public let location: String?

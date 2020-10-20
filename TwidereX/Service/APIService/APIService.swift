@@ -48,6 +48,13 @@ final class APIService {
 }
 
 extension APIService {
+    public enum Persist { }
+    public enum CoreData {
+        public enum V2 { }
+    }
+}
+
+extension APIService {
     enum APIError: Error {
         case unauthorized
         case requestThrottle

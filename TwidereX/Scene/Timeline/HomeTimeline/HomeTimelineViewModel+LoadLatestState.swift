@@ -46,11 +46,11 @@ extension HomeTimelineViewModel.LoadLatestState {
             }
             
             let tweetIDs = (viewModel.fetchedResultsController.fetchedObjects ?? []).compactMap { timelineIndex in
-                timelineIndex.tweet?.idStr
+                timelineIndex.tweet?.id
             }
             
             // TODO: only set large count when using Wi-Fi
-            viewModel.context.apiService.twitterHomeTimeline(count: 200, authorization: authorization, twitterUserID: twitterAuthentication.userID)
+            viewModel.context.apiService.twitterHomeTimeline(count: 200, authorization: authorization, requestTwitterUserID: twitterAuthentication.userID)
                 .delay(for: .seconds(1), scheduler: DispatchQueue.main)
                 .receive(on: DispatchQueue.main)
                 .sink { completion in

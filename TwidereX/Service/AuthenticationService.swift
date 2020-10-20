@@ -66,7 +66,7 @@ class AuthenticationService: NSObject {
         // verify credentials for active authentication
         twitterAuthentications
             .filter { !$0.isEmpty }
-            .map { authentications -> AnyPublisher<Result<Twitter.Response<Twitter.Entity.User>?, Error>, Never> in
+            .map { authentications -> AnyPublisher<Result<Twitter.Response.Content<Twitter.Entity.User>?, Error>, Never> in
                 assert(self.apiService != nil)
                 guard let apiService = self.apiService,
                       let authentication = authentications.first,
@@ -75,7 +75,7 @@ class AuthenticationService: NSObject {
                 }
                 
                 // prevent terminate stream
-                let result: AnyPublisher<Result<Twitter.Response<Twitter.Entity.User>?, Error>, Never> = Just(authorization)
+                let result: AnyPublisher<Result<Twitter.Response.Content<Twitter.Entity.User>?, Error>, Never> = Just(authorization)
                     .flatMap { authorization in
                         // send request
                         apiService.verifyCredentials(authorization: authorization)

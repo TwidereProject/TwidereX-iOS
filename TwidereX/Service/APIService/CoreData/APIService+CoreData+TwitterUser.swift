@@ -43,17 +43,21 @@ extension APIService {
         if let oldTwitterUser = oldTwitterUser {
             // merge old twitter usre
             APIService.mergeTwitterUser(for: requestTwitterUser, old: oldTwitterUser, entity: entity, networkDate: networkDate)
-            os_signpost(.event, log: log, name: "update database - process entity: createOrMergeTwitterUser", signpostID: processEntityTaskSignpostID, "find old twitter user %{public}s: name %s", entity.idStr, oldTwitterUser.name ?? "<nil>")
+            os_signpost(.event, log: log, name: "update database - process entity: createOrMergeTwitterUser", signpostID: processEntityTaskSignpostID, "find old twitter user %{public}s: name %s", entity.idStr, oldTwitterUser.name)
             return (oldTwitterUser, false)
         } else {
+            let metricsProperty = TwitterUserMetrics.Property(followersCount: entity.followersCount, followingCount: entity.friendsCount, listedCount: entity.listedCount, tweetCount: entity.statusesCount)
+            let metrics = TwitterUserMetrics.insert(into: managedObjectContext, property: metricsProperty)
+            
             let twitterUserProperty = TwitterUser.Property(entity: entity, networkDate: networkDate)
             let twitterUser = TwitterUser.insert(
                 into: managedObjectContext,
                 property: twitterUserProperty,
+                metrics: metrics,
                 following: (entity.following ?? false) ? requestTwitterUser : nil,
                 followRequestSent: (entity.followRequestSent ?? false) ? requestTwitterUser : nil
             )
-            os_signpost(.event, log: log, name: "update database - process entity: createOrMergeTwitterUser", signpostID: processEntityTaskSignpostID, "did insert new twitter user %{public}s: name %s", twitterUser.id.uuidString, twitterUserProperty.name ?? "<nil>")
+            os_signpost(.event, log: log, name: "update database - process entity: createOrMergeTwitterUser", signpostID: processEntityTaskSignpostID, "did insert new twitter user %{public}s: name %s", twitterUser.identifier.uuidString, twitterUserProperty.name)
             return (twitterUser, true)
         }
     }
@@ -61,19 +65,20 @@ extension APIService {
     static func mergeTwitterUser(for requestTwitterUser: TwitterUser?, old user: TwitterUser, entity: Twitter.Entity.User, networkDate: Date) {
         guard networkDate > user.updatedAt else { return }
         // only fulfill API supported fields
-        entity.name.flatMap { user.update(name: $0) }
-        entity.screenName.flatMap { user.update(screenName: $0) }
+        user.update(name: entity.name)
+        user.update(username: entity.screenName)
         entity.userDescription.flatMap { user.update(bioDescription: $0) }
         entity.url.flatMap { user.update(url: $0) }
         entity.location.flatMap { user.update(location: $0) }
         entity.protected.flatMap { user.update(protected: $0) }
-        entity.friendsCount.flatMap { user.update(friendsCount: $0) }
-        entity.followersCount.flatMap { user.update(followersCount: $0) }
-        entity.listedCount.flatMap { user.update(listedCount: $0) }
-        entity.favouritesCount.flatMap { user.update(favouritesCount: $0) }
-        entity.statusesCount.flatMap { user.update(statusesCount: $0) }
-        entity.profileImageURLHTTPS.flatMap { user.update(profileImageURLHTTPS: $0) }
         entity.profileBannerURL.flatMap { user.update(profileBannerURL: $0) }
+        entity.profileImageURLHTTPS.flatMap { user.update(profileImageURL: $0) }
+        
+        user.setupMetricsIfNeeds()
+        entity.friendsCount.flatMap { user.metrics?.update(followingCount: $0) }
+        entity.followersCount.flatMap { user.metrics?.update(followersCount: $0) }
+        entity.listedCount.flatMap { user.metrics?.update(listedCount: $0) }
+        entity.statusesCount.flatMap { user.metrics?.update(tweetCount: $0) }
         
         // relationship with requestTwitterUser
         if let requestTwitterUser = requestTwitterUser {
@@ -81,7 +86,6 @@ extension APIService {
             entity.followRequestSent.flatMap { user.update(followRequestSent: $0, twitterUser: requestTwitterUser) }
         }
         // TODO: merge more fileds
-        
         
         user.didUpdate(at: networkDate)
     }

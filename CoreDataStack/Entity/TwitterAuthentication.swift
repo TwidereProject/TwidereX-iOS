@@ -10,7 +10,7 @@ import CoreData
 
 final public class TwitterAuthentication: NSManagedObject {
     
-    @NSManaged public private(set) var id: UUID
+    @NSManaged public private(set) var identifier: UUID
     
     @NSManaged public private(set) var userID: String
     @NSManaged public private(set) var screenName: String
@@ -33,7 +33,7 @@ extension TwitterAuthentication {
     
     public override func awakeFromInsert() {
         super.awakeFromInsert()
-        id = UUID()
+        identifier = UUID()
         let now = Date()
         createdAt = now
         updatedAt = now
