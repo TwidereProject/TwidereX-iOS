@@ -17,6 +17,17 @@ extension ComposeTweetViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        view.backgroundColor = .systemBackground
+    }
+    
+}
+
+// MARK: - UIAdaptivePresentationControllerDelegate
+extension ComposeTweetViewController: UIAdaptivePresentationControllerDelegate {
+    
+    func adaptivePresentationStyle(for controller: UIPresentationController, traitCollection: UITraitCollection) -> UIModalPresentationStyle {
+        return .formSheet
     }
     
 }

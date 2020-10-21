@@ -37,6 +37,7 @@ extension SceneCoordinator {
     
     enum Scene {
         case authentication
+        case composeTweet
         case tweetConversation(viewModel: TweetConversationViewModel)
         case profile(viewModel: ProfileViewModel)
     }
@@ -102,6 +103,8 @@ private extension SceneCoordinator {
         switch scene {
         case .authentication:
             viewController = AuthenticationViewController()
+        case .composeTweet:
+            viewController = ComposeTweetViewController()
         case .tweetConversation(let viewModel):
             let _viewController = TweetConversationViewController()
             _viewController.viewModel = viewModel

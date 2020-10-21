@@ -67,8 +67,9 @@ final class TweetConversationViewModel: NSObject {
                 guard !nodes.isEmpty else {
                     return
                 }
-                guard let tableView = self.tableView else { fatalError() }
-                guard let navigationBar = self.contentOffsetAdjustableTimelineViewControllerDelegate?.navigationBar() else { fatalError() }
+                guard let tableView = self.tableView,
+                      let navigationBar = self.contentOffsetAdjustableTimelineViewControllerDelegate?.navigationBar()
+                else { return }
                 
                 guard let diffableDataSource = self.diffableDataSource else { return }
                 let oldSnapshot = diffableDataSource.snapshot()
