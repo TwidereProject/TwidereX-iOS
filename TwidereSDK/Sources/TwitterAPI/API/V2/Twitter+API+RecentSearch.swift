@@ -16,7 +16,9 @@ extension Twitter.API.RecentSearch {
     public static func tweetsSearchRecent(
         query: String,
         maxResults: Int,
-        sinceID: Twitter.Entity.V2.Tweet.ID,
+        sinceID: Twitter.Entity.V2.Tweet.ID?,
+        startTime: Date?,
+        nextToken: String?,
         session: URLSession,
         authorization: Twitter.API.OAuth.Authorization
     ) -> AnyPublisher<Twitter.Response.Content<Twitter.API.RecentSearch.Content>, Error> {
@@ -71,9 +73,19 @@ extension Twitter.API.RecentSearch {
             tweetsFields.queryItem,
             userFields.queryItem,
             URLQueryItem(name: "max_results", value: String(min(100, max(10, maxResults)))),
-            URLQueryItem(name: "since_id", value: sinceID),
         ]
-        components.percentEncodedQueryItems = (components.percentEncodedQueryItems ?? []) + [URLQueryItem(name: "query", value: query.urlEncoded)]
+        sinceID.flatMap { components.queryItems?.append(URLQueryItem(name: "since_id", value: $0)) }
+        nextToken.flatMap { components.queryItems?.append(URLQueryItem(name: "next_token", value: $0)) }
+        var encodedQueryItems: [URLQueryItem] = [
+            URLQueryItem(name: "query", value: query.urlEncoded)
+        ]
+        if let startTime = startTime {
+            let formatter = ISO8601DateFormatter()
+            let time = formatter.string(from: startTime)
+            let item = URLQueryItem(name: "start_time", value: time.urlEncoded)
+            encodedQueryItems.append(item)
+        }
+        components.percentEncodedQueryItems = (components.percentEncodedQueryItems ?? []) + encodedQueryItems
         
         guard let requestURL = components.url else { fatalError() }
         var request = URLRequest(
@@ -125,7 +137,6 @@ extension Twitter.API.RecentSearch {
                 case oldestID = "oldest_id"
                 case resultCount = "result_count"
                 case nextToken = "next_token"
-                
             }
         }
     }

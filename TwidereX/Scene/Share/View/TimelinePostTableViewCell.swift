@@ -33,6 +33,8 @@ final class TimelinePostTableViewCell: UITableViewCell {
     var quoteDateLabelUpdateSubscription: AnyCancellable?
     
     let timelinePostView = TimelinePostView()
+    let conversationLinkUpper = UIView.separatorLine
+    let conversationLinkLower = UIView.separatorLine
     
     var separatorLineNormalLeadingLayoutConstraint: NSLayoutConstraint!
     var separatorLineExpandLeadingLayoutConstraint: NSLayoutConstraint!
@@ -67,6 +69,8 @@ final class TimelinePostTableViewCell: UITableViewCell {
         timelinePostView.mosaicImageView.isHidden = true
         timelinePostView.quotePostView.isHidden = true
         timelinePostView.avatarImageView.af.cancelImageRequest()
+        conversationLinkUpper.isHidden = true
+        conversationLinkLower.isHidden = true
         disposeBag.removeAll()
     }
     
@@ -92,6 +96,22 @@ extension TimelinePostTableViewCell {
             timelinePostView.leadingAnchor.constraint(equalTo:  contentView.readableContentGuide.leadingAnchor),
             contentView.readableContentGuide.trailingAnchor.constraint(equalTo: timelinePostView.trailingAnchor),
             contentView.bottomAnchor.constraint(equalTo: timelinePostView.bottomAnchor),    // use action toolbar margin 
+        ])
+        
+        conversationLinkUpper.translatesAutoresizingMaskIntoConstraints = false
+        conversationLinkLower.translatesAutoresizingMaskIntoConstraints = false
+        contentView.addSubview(conversationLinkUpper)
+        contentView.addSubview(conversationLinkLower)
+        NSLayoutConstraint.activate([
+            conversationLinkUpper.topAnchor.constraint(equalTo: contentView.topAnchor),
+            conversationLinkUpper.centerXAnchor.constraint(equalTo: timelinePostView.avatarImageView.centerXAnchor),
+            timelinePostView.avatarImageView.topAnchor.constraint(equalTo: conversationLinkUpper.bottomAnchor, constant: 2),
+            conversationLinkUpper.widthAnchor.constraint(equalToConstant: 1),
+            conversationLinkLower.topAnchor.constraint(equalTo: timelinePostView.avatarImageView.bottomAnchor, constant: 2),
+            conversationLinkLower.centerXAnchor.constraint(equalTo: timelinePostView.avatarImageView.centerXAnchor),
+            contentView.bottomAnchor.constraint(equalTo: conversationLinkLower.bottomAnchor),
+            conversationLinkLower.widthAnchor.constraint(equalToConstant: 1),
+
         ])
         
         let separatorLine = UIView.separatorLine
@@ -122,6 +142,8 @@ extension TimelinePostTableViewCell {
         timelinePostView.quotePostView.avatarImageView.addGestureRecognizer(quoteAvatarImageViewTapGestureRecognizer)
         
         timelinePostView.actionToolbar.delegate = self
+        conversationLinkUpper.isHidden = true
+        conversationLinkLower.isHidden = true
     }
     
 }

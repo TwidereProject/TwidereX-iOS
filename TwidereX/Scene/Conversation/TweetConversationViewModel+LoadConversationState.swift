@@ -39,7 +39,7 @@ extension TweetConversationViewModel.LoadConversationState {
     class Prepare: TweetConversationViewModel.LoadConversationState {
         override var name: String { "Prepare" }
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {
-            return stateClass == Idle.self || stateClass == Loading.self || stateClass == PrepareFail.self
+            return stateClass == Idle.self || stateClass == PrepareFail.self
         }
         
         override func didEnter(from previousState: GKState?) {
@@ -55,14 +55,16 @@ extension TweetConversationViewModel.LoadConversationState {
             var _tweetID: Twitter.Entity.V2.Tweet.ID?
             var _authorID: Twitter.Entity.V2.User.ID?
             var _conversationID: Twitter.Entity.V2.Tweet.ConversationID?
+            var _createdAt: Date?
             viewModel.context.managedObjectContext.perform {
                 let tweet = viewModel.context.managedObjectContext.object(with: tweetObjectID) as! Tweet
                 _tweetID = tweet.id
                 _authorID = tweet.author.id
                 _conversationID = tweet.conversationID
+                _createdAt = tweet.createdAt
              
                 DispatchQueue.main.async {
-                    guard let tweetID = _tweetID, let authorID = _authorID else {
+                    guard let tweetID = _tweetID, let authorID = _authorID, let createdAt = _createdAt else {
                         assertionFailure()
                         stateMachine.enter(PrepareFail.self)
                         return
@@ -72,8 +74,10 @@ extension TweetConversationViewModel.LoadConversationState {
                         viewModel.conversationMeta.value = .init(
                             tweetID: tweetID,
                             authorID: authorID,
-                            conversationID: conversationID
+                            conversationID: conversationID,
+                            createdAt: createdAt
                         )
+                        stateMachine.enter(Idle.self)
                         stateMachine.enter(Loading.self)
                     } else {
                         guard let authentication = viewModel.currentTwitterAuthentication.value,
@@ -107,8 +111,10 @@ extension TweetConversationViewModel.LoadConversationState {
                                 viewModel.conversationMeta.value = .init(
                                     tweetID: tweetID,
                                     authorID: authorID,
-                                    conversationID: conversationID
+                                    conversationID: conversationID,
+                                    createdAt: createdAt
                                 )
+                                stateMachine.enter(Idle.self)
                                 stateMachine.enter(Loading.self)
                             }
                             .store(in: &viewModel.disposeBag)
@@ -150,6 +156,8 @@ extension TweetConversationViewModel.LoadConversationState {
     }
     
     class Loading: TweetConversationViewModel.LoadConversationState {
+        
+        var nextToken: String?
         override var name: String { "Loading" }
         
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {
@@ -174,10 +182,21 @@ extension TweetConversationViewModel.LoadConversationState {
                 return
             }
             
+            let sevenDaysAgo = Date(timeInterval: -((7 * 24 * 60 * 60) - (5 * 60)), since: Date())
+            var sinceID: Twitter.Entity.V2.Tweet.ID?
+            var startTime: Date?
+            if conversationMeta.createdAt < sevenDaysAgo {
+                startTime = sevenDaysAgo
+            } else {
+                sinceID = conversationMeta.tweetID
+            }
+            
             viewModel.context.apiService.tweetsRecentSearch(
                 conversationID: conversationMeta.conversationID,
                 authorID: conversationMeta.authorID,
-                sinceID: conversationMeta.tweetID,
+                sinceID: sinceID,
+                startTime: startTime,
+                nextToken: self.nextToken,
                 authorization: authorization,
                 requestTwitterUserID: authentication.userID
             )
@@ -191,7 +210,8 @@ extension TweetConversationViewModel.LoadConversationState {
                 case .finished:
                     break
                 }
-            } receiveValue: { response in
+            } receiveValue: { [weak self] response in
+                guard let self = self else { return }
                 let content = response.value
                 os_log("%{public}s[%{public}ld], %{public}s: fetch conversation %s success. results count %ld", ((#file as NSString).lastPathComponent), #line, #function, conversationMeta.conversationID, content.meta.resultCount)
 
@@ -200,8 +220,15 @@ extension TweetConversationViewModel.LoadConversationState {
                     return
                 }
                 
-                TweetConversationViewModel.ConversationNode.leafs(for: conversationMeta.tweetID, from: content)
+                let leafs = TweetConversationViewModel.ConversationNode.leafs(for: conversationMeta.tweetID, from: content)
+                let nodes = viewModel.conversationNodes.value
+                viewModel.conversationNodes.value = nodes + leafs
                 
+                guard let nextToken = content.meta.nextToken else {
+                    stateMachine.enter(NoMore.self)
+                    return
+                }
+                self.nextToken = nextToken
                 stateMachine.enter(Idle.self)
 
             }
@@ -222,6 +249,17 @@ extension TweetConversationViewModel.LoadConversationState {
         override var name: String { "NoMore" }
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {
             return false
+        }
+        
+        override func didEnter(from previousState: GKState?) {
+            super.didEnter(from: previousState)
+            guard let viewModel = viewModel, let stateMachine = stateMachine else { return }
+            guard let diffableDataSource = viewModel.diffableDataSource else { return }
+            var snapshot = diffableDataSource.snapshot()
+            if snapshot.itemIdentifiers.contains(.bottomLoader) {
+                snapshot.deleteItems([.bottomLoader])
+                diffableDataSource.apply(snapshot, animatingDifferences: false)
+            }
         }
     }
     

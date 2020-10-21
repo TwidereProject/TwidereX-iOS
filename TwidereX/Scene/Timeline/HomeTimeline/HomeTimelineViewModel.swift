@@ -15,10 +15,6 @@ import CoreDataStack
 import AlamofireImage
 import DateToolsSwift
 
-protocol ContentOffsetAdjustableTimelineViewControllerDelegate: class {
-    func navigationBar() -> UINavigationBar
-}
-
 final class HomeTimelineViewModel: NSObject {
     
     var disposeBag = Set<AnyCancellable>()
@@ -518,7 +514,7 @@ extension HomeTimelineViewModel: NSFetchedResultsControllerDelegate {
         guard oldSnapshot.numberOfItems != 0 else { return nil }
         
         // old snapshot not empty. set source index path to first item if not match
-        let sourceIndexPath = HomeTimelineViewModel.topVisibleTableViewCellIndexPath(in: tableView, navigationBar: navigationBar) ?? IndexPath(row: 0, section: 0)
+        let sourceIndexPath = UIViewController.topVisibleTableViewCellIndexPath(in: tableView, navigationBar: navigationBar) ?? IndexPath(row: 0, section: 0)
         
         guard sourceIndexPath.row < oldSnapshot.itemIdentifiers(inSection: .main).count else { return nil }
         
@@ -526,29 +522,13 @@ extension HomeTimelineViewModel: NSFetchedResultsControllerDelegate {
         guard let itemIndex = newSnapshot.itemIdentifiers(inSection: .main).firstIndex(of: timelineItem) else { return nil }
         let targetIndexPath = IndexPath(row: itemIndex, section: 0)
         
-        let offset = HomeTimelineViewModel.tableViewCellOriginOffsetToWindowTop(in: tableView, at: sourceIndexPath, navigationBar: navigationBar)
+        let offset = UIViewController.tableViewCellOriginOffsetToWindowTop(in: tableView, at: sourceIndexPath, navigationBar: navigationBar)
         return Difference(
             item: timelineItem,
             sourceIndexPath: sourceIndexPath,
             targetIndexPath: targetIndexPath,
             offset: offset
         )
-    }
-    
-    /// https://bluelemonbits.com/2018/08/26/inserting-cells-at-the-top-of-a-uitableview-with-no-scrolling/
-    static func topVisibleTableViewCellIndexPath(in tableView: UITableView, navigationBar: UINavigationBar) -> IndexPath? {
-        let navigationBarRectInTableView = tableView.convert(navigationBar.bounds, from: navigationBar)
-        let navigationBarMaxYPosition = CGPoint(x: 0, y: navigationBarRectInTableView.origin.y + navigationBarRectInTableView.size.height + 1)
-        let mostTopVisiableIndexPath = tableView.indexPathForRow(at: navigationBarMaxYPosition)
-        return mostTopVisiableIndexPath
-    }
-    
-    static func tableViewCellOriginOffsetToWindowTop(in tableView: UITableView, at indexPath: IndexPath, navigationBar: UINavigationBar) -> CGFloat {
-        let rectForTopRow = tableView.rectForRow(at: indexPath)
-        let navigationBarRectInTableView = tableView.convert(navigationBar.bounds, from: navigationBar)
-        let navigationBarMaxYPosition = CGPoint(x: 0, y: navigationBarRectInTableView.origin.y + navigationBarRectInTableView.size.height + 1)
-        let differenceBetweenTopRowAndNavigationBar = rectForTopRow.origin.y - navigationBarMaxYPosition.y
-        return differenceBetweenTopRowAndNavigationBar
     }
     
 }

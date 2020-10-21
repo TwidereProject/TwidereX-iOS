@@ -30,7 +30,10 @@ final class TweetConversationViewModel: NSObject {
     let rootItem: ConversationItem
     let conversationMeta = CurrentValueSubject<ConversationMeta?, Never>(nil)
     let currentTwitterAuthentication: CurrentValueSubject<TwitterAuthentication?, Never>
+    weak var contentOffsetAdjustableTimelineViewControllerDelegate: ContentOffsetAdjustableTimelineViewControllerDelegate?
+    weak var tableView: UITableView?
     weak var conversationPostTableViewCellDelegate: ConversationPostTableViewCellDelegate?
+    weak var timelinePostTableViewCellDelegate: TimelinePostTableViewCellDelegate?
     
     // output
     var diffableDataSource: UITableViewDiffableDataSource<ConversationSection, ConversationItem>?
@@ -49,12 +52,98 @@ final class TweetConversationViewModel: NSObject {
         stateMachine.enter(LoadConversationState.Initial.self)
         return stateMachine
     }()
+    var conversationNodes = CurrentValueSubject<[ConversationNode], Never>([])
     
     init(context: AppContext, tweetObjectID: NSManagedObjectID) {
         self.context = context
         self.rootItem = .root(tweetObjectID: tweetObjectID)
         self.currentTwitterAuthentication = CurrentValueSubject(context.authenticationService.currentActiveTwitterAutentication.value)
         super.init()
+        
+        conversationNodes
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] nodes in
+                guard let self = self else { return }
+                guard !nodes.isEmpty else {
+                    return
+                }
+                guard let tableView = self.tableView else { fatalError() }
+                guard let navigationBar = self.contentOffsetAdjustableTimelineViewControllerDelegate?.navigationBar() else { fatalError() }
+                
+                guard let diffableDataSource = self.diffableDataSource else { return }
+                let oldSnapshot = diffableDataSource.snapshot()
+                
+                let itemIdentifiers = oldSnapshot.itemIdentifiers
+                let currentLeafAttributes: [ConversationItem.LeafAttribute] = {
+                    var attributes: [ConversationItem.LeafAttribute] = []
+                    for item in itemIdentifiers {
+                        guard case let .leaf(_, attribute) = item else { continue }
+                        attributes.append(attribute)
+                    }
+                    return attributes
+                }()
+                let currentLeafTweetIDs = currentLeafAttributes.map { $0.tweetID }
+                
+                let leafIDs = nodes.map { [$0.tweet.id, $0.children.first?.tweet.id].compactMap { $0} }.flatMap { $0 }
+                let request = Tweet.sortedFetchRequest
+                request.predicate = Tweet.predicate(idStrs: leafIDs)
+                var tweetDict: [Tweet.ID: Tweet] = [:]
+                do {
+                    let tweets = try self.context.managedObjectContext.fetch(request)
+                    for tweet in tweets {
+                        tweetDict[tweet.id] = tweet
+                    }
+                } catch {
+                    os_log("%{public}s[%{public}ld], %{public}s: fetch conversation fail: %s", ((#file as NSString).lastPathComponent), #line, #function, error.localizedDescription)
+                    return
+                }
+                
+                var newItems: [ConversationItem] = []
+                for node in nodes {
+                    // 1st level
+                    guard !currentLeafTweetIDs.contains(node.tweet.id) else { continue }
+                    guard let tweet = tweetDict[node.tweet.id] else { continue }
+                    
+                    let firstTierAttribute = ConversationItem.LeafAttribute(tweetID: node.tweet.id, level: 0)
+                    let firstTierItem = ConversationItem.leaf(tweetObjectID: tweet.objectID, attribute: firstTierAttribute)
+                    newItems.append(firstTierItem)
+                    
+                    // 2nd level
+                    if let child = node.children.first {
+                        guard let secondTweet = tweetDict[child.tweet.id] else { continue }
+                        let secondTierAttribute = ConversationItem.LeafAttribute(tweetID: child.tweet.id, level: 1)
+                        let secondTierItem = ConversationItem.leaf(tweetObjectID: secondTweet.objectID, attribute: secondTierAttribute)
+                        newItems.append(secondTierItem)
+                    } else {
+                        firstTierAttribute.hasReply = false
+                    }
+                }
+                
+                var newSnapshot = NSDiffableDataSourceSnapshot<ConversationSection, ConversationItem>()
+                newSnapshot.appendSections([.main])
+                for item in itemIdentifiers {
+                    if case .bottomLoader = item { continue }
+                    newSnapshot.appendItems([item], toSection: .main)
+                }
+                newSnapshot.appendItems(newItems, toSection: .main)
+                
+                if let currentState = self.loadConversationStateMachine.currentState,
+                   currentState is LoadConversationState.Idle || currentState is LoadConversationState.Loading {
+                    newSnapshot.appendItems([.bottomLoader], toSection: .main)
+                }
+                
+                guard let difference = self.calculateReloadSnapshotDifference(navigationBar: navigationBar, tableView: tableView, oldSnapshot: oldSnapshot, newSnapshot: newSnapshot) else {
+                    diffableDataSource.apply(newSnapshot)
+                    return
+                }
+                
+                diffableDataSource.apply(newSnapshot, animatingDifferences: false) {
+                    tableView.scrollToRow(at: difference.targetIndexPath, at: .top, animated: false)
+                    tableView.contentOffset.y = tableView.contentOffset.y - difference.offset
+                }
+
+            }
+            .store(in: &disposeBag)
     }
     
     deinit {
@@ -67,6 +156,7 @@ extension TweetConversationViewModel {
         let tweetID: Twitter.Entity.V2.Tweet.ID
         let authorID: Twitter.Entity.User.ID
         let conversationID: Twitter.Entity.V2.Tweet.ConversationID
+        let createdAt: Date
     }
 }
 
@@ -86,12 +176,28 @@ extension TweetConversationViewModel {
                 }
                 cell.delegate = self.conversationPostTableViewCellDelegate
                 return cell
+            case .leaf(let objectID, let attribute):
+                let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: TimelinePostTableViewCell.self), for: indexPath) as! TimelinePostTableViewCell
+                let managedObjectContext = self.context.managedObjectContext
+                managedObjectContext.performAndWait {
+                    let tweet = managedObjectContext.object(with: objectID) as! Tweet
+                    TweetConversationViewModel.configure(cell: cell, tweet: tweet, requestUserID: self.currentTwitterAuthentication.value?.userID ?? "")
+                }
+                cell.conversationLinkUpper.isHidden = attribute.level == 0
+                cell.conversationLinkLower.isHidden = !attribute.hasReply || attribute.level != 0
+                cell.delegate = self.timelinePostTableViewCellDelegate
+                return cell
+            case .bottomLoader:
+                let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: TimelineBottomLoaderTableViewCell.self), for: indexPath) as! TimelineBottomLoaderTableViewCell
+                cell.activityIndicatorView.isHidden = false
+                cell.activityIndicatorView.startAnimating()
+                return cell
             }
         }
         
         var snapshot = NSDiffableDataSourceSnapshot<ConversationSection, ConversationItem>()
         snapshot.appendSections([.main])
-        snapshot.appendItems([rootItem], toSection: .main)
+        snapshot.appendItems([rootItem, .bottomLoader], toSection: .main)
         diffableDataSource?.apply(snapshot)
     }
     
@@ -188,6 +294,10 @@ extension TweetConversationViewModel {
         cell.conversationPostView.sourceLabel.text = tweet.source
     }
     
+    static func configure(cell: TimelinePostTableViewCell, tweet: Tweet, requestUserID: String) {
+        HomeTimelineViewModel.configure(cell: cell, tweet: tweet, requestUserID: requestUserID)
+    }
+    
 }
 
 extension TweetConversationViewModel {
@@ -208,20 +318,75 @@ extension TweetConversationViewModel {
                 media: content.includes?.media ?? []
             )
             
-            var roots: [ConversationNode] = []
+            var replyToMappingDict: [Twitter.Entity.V2.Tweet.ID: Set<Twitter.Entity.V2.Tweet.ID>] = [:]
             for tweet in tweets {
                 guard let referencedRepliedToTweet = tweet.referencedTweets?.first(where: { $0.type == .repliedTo }),
                       let replyToID = referencedRepliedToTweet.id else {
                     continue
                 }
-                guard replyToID == tweetID else { continue }
-                print(tweet.text)
+                
+                if var mapping = replyToMappingDict[replyToID] {
+                    mapping.insert(tweet.id)
+                    replyToMappingDict[replyToID] = mapping
+                } else {
+                    replyToMappingDict[replyToID] = Set([tweet.id])
+                }
             }
-            return roots
+            
+            var leafs: [ConversationNode] = []
+            let replies = Array(replyToMappingDict[tweetID] ?? Set())
+                .compactMap { dictContent.tweetDict[$0] }
+                .sorted(by: { $0.createdAt > $1.createdAt })
+            for reply in replies {
+                let leaf = node(of: reply, from: dictContent, replyToMappingDict: replyToMappingDict)
+                leafs.append(leaf)
+            }
+            
+            return leafs
         }
         
-        static func node(of tweet: Twitter.Entity.V2.Tweet, from dictContent: Twitter.Response.V2.DictContent) -> ConversationNode {
-            fatalError()
+        static func node(of tweet: Twitter.Entity.V2.Tweet, from dictContent: Twitter.Response.V2.DictContent, replyToMappingDict: [Twitter.Entity.V2.Tweet.ID: Set<Twitter.Entity.V2.Tweet.ID>]) -> ConversationNode {
+            let childrenIDs = replyToMappingDict[tweet.id] ?? []
+            let children = Array(childrenIDs)
+                .compactMap { id in dictContent.tweetDict[id] }
+                .sorted(by: { $0.createdAt > $1.createdAt })
+                .map { tweet in node(of: tweet, from: dictContent, replyToMappingDict: replyToMappingDict) }
+            return ConversationNode(tweet: tweet, children: children)
         }
+    }
+}
+
+extension TweetConversationViewModel {
+    private struct Difference<T> {
+        let item: T
+        let sourceIndexPath: IndexPath
+        let targetIndexPath: IndexPath
+        let offset: CGFloat
+    }
+    
+    private func calculateReloadSnapshotDifference<T: Hashable>(
+        navigationBar: UINavigationBar,
+        tableView: UITableView,
+        oldSnapshot: NSDiffableDataSourceSnapshot<ConversationSection, T>,
+        newSnapshot: NSDiffableDataSourceSnapshot<ConversationSection, T>
+    ) -> Difference<T>? {
+        guard oldSnapshot.numberOfItems != 0 else { return nil }
+        
+        // old snapshot not empty. set source index path to first item if not match
+        let sourceIndexPath = UIViewController.topVisibleTableViewCellIndexPath(in: tableView, navigationBar: navigationBar) ?? IndexPath(row: 0, section: 0)
+        
+        guard sourceIndexPath.row < oldSnapshot.itemIdentifiers(inSection: .main).count else { return nil }
+        
+        let timelineItem = oldSnapshot.itemIdentifiers(inSection: .main)[sourceIndexPath.row]
+        guard let itemIndex = newSnapshot.itemIdentifiers(inSection: .main).firstIndex(of: timelineItem) else { return nil }
+        let targetIndexPath = IndexPath(row: itemIndex, section: 0)
+        
+        let offset = UIViewController.tableViewCellOriginOffsetToWindowTop(in: tableView, at: sourceIndexPath, navigationBar: navigationBar)
+        return Difference(
+            item: timelineItem,
+            sourceIndexPath: sourceIndexPath,
+            targetIndexPath: targetIndexPath,
+            offset: offset
+        )
     }
 }
