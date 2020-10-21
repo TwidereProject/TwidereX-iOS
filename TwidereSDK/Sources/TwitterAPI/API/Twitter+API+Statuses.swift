@@ -16,7 +16,7 @@ extension Twitter.API.Statuses {
     static func unretweetEndpointURL(tweetID: Twitter.Entity.Tweet.ID) -> URL { return Twitter.API.endpointURL.appendingPathComponent("statuses/unretweet/\(tweetID).json")
     }
     
-    public static func retweet(session: URLSession, authorization: Twitter.API.OAuth.Authorization, retweetKind: RetweetKind, query: Query) -> AnyPublisher<Twitter.Response<Twitter.Entity.Tweet>, Error> {
+    public static func retweet(session: URLSession, authorization: Twitter.API.OAuth.Authorization, retweetKind: RetweetKind, query: Query) -> AnyPublisher<Twitter.Response.Content<Twitter.Entity.Tweet>, Error> {
         let url: URL = {
             switch retweetKind {
             case .retweet: return retweetEndpointURL(tweetID: query.id)
@@ -28,7 +28,7 @@ extension Twitter.API.Statuses {
         return session.dataTaskPublisher(for: request)
             .tryMap { data, response in
                 let value = try Twitter.API.decode(type: Twitter.Entity.Tweet.self, from: data, response: response)
-                return Twitter.Response(value: value, response: response)
+                return Twitter.Response.Content(value: value, response: response)
             }
             .eraseToAnyPublisher()
     }

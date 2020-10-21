@@ -12,21 +12,36 @@ import TwitterAPI
 extension TwitterUser.Property {
     init(entity: Twitter.Entity.User, networkDate: Date) {
         self.init(
-            idStr: entity.idStr,
+            id: entity.idStr,
             name: entity.name,
-            screenName: entity.screenName,
+            username: entity.screenName,
             bioDescription: entity.userDescription,
-            url: entity.url,
-            location: entity.location,
             createdAt: entity.createdAt,
-            protected: entity.protected ?? false,
-            friendsCount: entity.friendsCount.flatMap { NSNumber(value: $0) },
-            followersCount: entity.followersCount.flatMap { NSNumber(value: $0) },
-            listedCount: entity.listedCount.flatMap { NSNumber(value: $0) },
-            favouritesCount: entity.favouritesCount.flatMap { NSNumber(value: $0) },
-            statusesCount: entity.statusesCount.flatMap { NSNumber(value: $0) },
-            profileImageURLHTTPS: entity.profileImageURLHTTPS,
+            location: entity.location,
+            pinnedTweetID: nil,
             profileBannerURL: entity.profileBannerURL,
+            profileImageURL: entity.profileImageURLHTTPS,
+            protected: entity.protected ?? false,
+            url: entity.url,
+            verified: entity.verified ?? false,
+            networkDate: networkDate
+        )
+    }
+    
+    init(entity: Twitter.Entity.V2.User, networkDate: Date) {
+        self.init(
+            id: entity.id,
+            name: entity.name,
+            username: entity.username,
+            bioDescription: entity.description,
+            createdAt: entity.createdAt,
+            location: entity.location,
+            pinnedTweetID: entity.pinnedTweetID,
+            profileBannerURL: nil,
+            profileImageURL: entity.profileImageURL,
+            protected: entity.protected ?? false,
+            url: entity.url,
+            verified: entity.verified ?? false,
             networkDate: networkDate
         )
     }
@@ -47,7 +62,7 @@ extension TwitterUser {
     
     /// https://developer.twitter.com/en/docs/twitter-api/v1/accounts-and-users/user-profile-images-and-banners
     public func avatarImageURL(size: ProfileImageSize = .reasonablySmall) -> URL? {
-        guard let imageURLString = profileImageURLHTTPS, var imageURL = URL(string: imageURLString) else { return nil }
+        guard let imageURLString = profileImageURL, var imageURL = URL(string: imageURLString) else { return nil }
         
         let pathExtension = imageURL.pathExtension
         imageURL.deletePathExtension()

@@ -21,18 +21,18 @@ extension APIService {
         twitterUserObjectID: NSManagedObjectID,
         favoriteKind: Twitter.API.Favorites.FavoriteKind,
         authorization: Twitter.API.OAuth.Authorization,
-        twitterUserID: TwitterUser.UserID
-    ) -> AnyPublisher<Tweet.TweetID, Error> {
-        var _targetTweetID: Tweet.TweetID?
+        twitterUserID: TwitterUser.ID
+    ) -> AnyPublisher<Tweet.ID, Error> {
+        var _targetTweetID: Tweet.ID?
         let managedObjectContext = backgroundManagedObjectContext
         return managedObjectContext.performChanges {
             let tweet = managedObjectContext.object(with: tweetObjectID) as! Tweet
             let twitterUser = managedObjectContext.object(with: twitterUserObjectID) as! TwitterUser
             let targetTweet = tweet.retweet ?? tweet
-            let targetTweetID = targetTweet.idStr
+            let targetTweetID = targetTweet.id
             _targetTweetID = targetTweetID
             
-            targetTweet.update(favorited: favoriteKind == .create, twitterUser: twitterUser)
+            targetTweet.update(liked: favoriteKind == .create, twitterUser: twitterUser)
         }
         .tryMap { result in
             switch result {
@@ -55,8 +55,8 @@ extension APIService {
         tweetID: Twitter.Entity.Tweet.ID,
         favoriteKind: Twitter.API.Favorites.FavoriteKind,
         authorization: Twitter.API.OAuth.Authorization,
-        twitterUserID: TwitterUser.UserID
-    ) -> AnyPublisher<Twitter.Response<Twitter.Entity.Tweet>, Error> {
+        twitterUserID: TwitterUser.ID
+    ) -> AnyPublisher<Twitter.Response.Content<Twitter.Entity.Tweet>, Error> {
         let query = Twitter.API.Favorites.Query(id: tweetID)
         return Twitter.API.Favorites.favorites(session: session, authorization: authorization, favoriteKind: favoriteKind, query: query)
             .handleEvents(receiveOutput: { [weak self] response in

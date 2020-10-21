@@ -1,34 +1,33 @@
 //
-//  Twitter+Place.swift
-//  TwitterAPI
+//  Twitter+Entity+V2+Place.swift
+//  
 //
-//  Created by Cirno MainasuK on 2020-9-3.
+//  Created by Cirno MainasuK on 2020-10-15.
 //
 
 import Foundation
 
-extension Twitter.Entity {
+extension Twitter.Entity.V2 {
     public struct Place: Codable {
         public let id: String
-
+        public let fullName: String
+        
         public let country: String?
         public let countryCode: String?
-        public let fullName: String?
         public let name: String?
         public let placeType: String?
-        public let url: String?
+        // public let url: String?
+        // public let geo
         
         enum CodingKeys: String, CodingKey {
             case id = "id"
-
+            case fullName = "full_name"
+            
             case country = "country"
             case countryCode = "country_code"
-            case fullName = "full_name"
             case name = "name"
             case placeType = "place_type"
-            case url = "url"
+            //case url = "url"
         }
-    }    
+    }
 }
-
-extension Twitter.Entity.Place: Equatable { }

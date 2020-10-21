@@ -12,28 +12,28 @@ import CoreDataStack
 import CommonOSLog
 import TwitterAPI
 
-extension APIService {
+extension APIService.Persist {
+    
     
     enum PersistTimelineType {
         case homeTimeline
         case userTimeline
     }
     
-    static func persistTimeline(managedObjectContext: NSManagedObjectContext, query: Twitter.API.Timeline.Query, response: Twitter.Response<[Twitter.Entity.Tweet]>, persistType: PersistTimelineType, requestTwitterUserID: TwitterUser.UserID, log: OSLog) {
+    static func persistTimeline(managedObjectContext: NSManagedObjectContext, query: Twitter.API.Timeline.Query, response: Twitter.Response.Content<[Twitter.Entity.Tweet]>, persistType: PersistTimelineType, requestTwitterUserID: TwitterUser.ID, log: OSLog) {
         
         let tweets = response.value
-        os_log(.info, log: log, "%{public}s[%{public}ld], %{public}s: fetch %{public}ld tweets", ((#file as NSString).lastPathComponent), #line, #function, tweets.count)
+        os_log(.info, log: log, "%{public}s[%{public}ld], %{public}s: persist %{public}ld tweets…", ((#file as NSString).lastPathComponent), #line, #function, tweets.count)
 
         // switch to background context
         managedObjectContext.perform {
             let contextTaskSignpostID = OSSignpostID(log: log)
             os_signpost(.begin, log: log, name: #function, signpostID: contextTaskSignpostID)
+            defer {
+                os_signpost(.end, log: .api, name: #function, signpostID: contextTaskSignpostID)
+            }
             
-            // load working set into context to avoid cache miss
-            let cacheTaskSignpostID = OSSignpostID(log: log)
-            os_signpost(.begin, log: log, name: "load tweets into cache", signpostID: cacheTaskSignpostID)
-            let workingIDRecord = APIService.WorkingIDRecord.workingID(entities: tweets)
-            
+            // load request twitter user
             let requestTwitterUser: TwitterUser? = {
                 let request = TwitterUser.sortedFetchRequest
                 request.predicate = TwitterUser.predicate(idStr: requestTwitterUserID)
@@ -46,6 +46,11 @@ extension APIService {
                     return nil
                 }
             }()
+            
+            // load working set into context to avoid cache miss
+            let cacheTaskSignpostID = OSSignpostID(log: log)
+            os_signpost(.begin, log: log, name: "load tweets into cache", signpostID: cacheTaskSignpostID)
+            let workingIDRecord = APIService.Persist.WorkingIDRecord.workingID(entities: tweets)
             
             // contains retweet and quote
             let _tweetCache: [Tweet] = {
@@ -119,8 +124,8 @@ extension APIService {
                     if let anchorTweet = anchorTweet {
                         // using anchor. set hasMore when (overlap itself OR no overlap) AND oldest record NOT anchor
                         let isNoOverlap = mergedOldTweetsInTimeline.isEmpty
-                        let isOnlyOverlapItself = mergedOldTweetsInTimeline.count == 1 && mergedOldTweetsInTimeline.first?.idStr == anchorTweet.idStr
-                        let isAnchorEqualOldestRecord = oldestRecord.tweet.idStr == anchorTweet.idStr
+                        let isOnlyOverlapItself = mergedOldTweetsInTimeline.count == 1 && mergedOldTweetsInTimeline.first?.id == anchorTweet.id
+                        let isAnchorEqualOldestRecord = oldestRecord.tweet.id == anchorTweet.id
                         if (isNoOverlap || isOnlyOverlapItself) && !isAnchorEqualOldestRecord {
                             let timelineIndex = oldestRecord.tweet.timelineIndexes?
                                 .first(where: { $0.userID == requestTwitterUserID })
@@ -163,12 +168,11 @@ extension APIService {
                 os_log(.info, log: log, "%{public}s[%{public}ld], %{public}s: database update fail. %s", ((#file as NSString).lastPathComponent), #line, #function, error.localizedDescription)
                 assertionFailure(error.localizedDescription)
             }
-            os_signpost(.end, log: .api, name: #function, signpostID: contextTaskSignpostID)
         }   // end perform
     }
 }
 
-extension APIService {
+extension APIService.Persist {
     
     struct WorkingIDRecord {
         var timelineTweetIDSet: Set<String>
@@ -243,7 +247,7 @@ extension APIService {
         let tweetProcessType: ProcessType
         let userProcessType: ProcessType
         
-        init(tweet: Tweet, children: [APIService.WorkingRecord], recordType: APIService.WorkingRecord.RecordType, tweetProcessType: ProcessType, userProcessType: ProcessType) {
+        init(tweet: Tweet, children: [APIService.Persist.WorkingRecord], recordType: APIService.Persist.WorkingRecord.RecordType, tweetProcessType: ProcessType, userProcessType: ProcessType) {
             self.tweet = tweet
             self.children = children
             self.recordType = recordType
@@ -282,7 +286,7 @@ extension APIService {
         func log(indentLevel: Int = 0) -> String {
             let indent = Array(repeating: "    ", count: indentLevel).joined()
             let tweetPreview = tweet.text.prefix(32).replacingOccurrences(of: "\n", with: " ")
-            let message = "\(indent)[\(tweetProcessType.flag)\(recordType.flag)](\(tweet.idStr)) [\(userProcessType.flag)](\(tweet.user.idStr))@\(tweet.user.name ?? "<nil>") ~> \(tweetPreview)"
+            let message = "\(indent)[\(tweetProcessType.flag)\(recordType.flag)](\(tweet.id)) [\(userProcessType.flag)](\(tweet.author.id))@\(tweet.author.name ?? "<nil>") ~> \(tweetPreview)"
             
             var childrenMessages: [String] = []
             for child in children {
@@ -344,7 +348,7 @@ extension APIService {
         static func createOrMergeTweet(
             into managedObjectContext: NSManagedObjectContext,
             for requestTwitterUser: TwitterUser?,
-            requestTwitterUserID: TwitterUser.UserID,
+            requestTwitterUserID: TwitterUser.ID,
             entity: Twitter.Entity.Tweet,
             recordType: RecordType,
             networkDate: Date,

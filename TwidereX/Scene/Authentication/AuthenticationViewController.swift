@@ -128,7 +128,7 @@ extension AuthenticationViewController {
             managedObjectContext.performChanges {
                 _twitterAuthentication = TwitterAuthentication.insert(into: managedObjectContext, property: authenticationProperty)
             }
-            .tryMap { result -> AnyPublisher<Twitter.Response<Twitter.Entity.User>, Error> in
+            .tryMap { result -> AnyPublisher<Twitter.Response.Content<Twitter.Entity.User>, Error> in
                 switch result {
                 case .success:
                     os_log("%{public}s[%{public}ld], %{public}s: insert Authentication for %s, userID: %s", ((#file as NSString).lastPathComponent), #line, #function, authenticationProperty.screenName, authenticationProperty.userID)

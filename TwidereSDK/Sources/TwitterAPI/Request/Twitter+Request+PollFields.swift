@@ -14,10 +14,12 @@ extension Twitter.Request {
         case id = "id"
         case options = "options"
         case votingStatus = "voting_status"
-        
-        public static var allCasesQueryItem: URLQueryItem {
-            let value = TwitterFields.allCases.map { $0.rawValue }.joined(separator: ",")
-            return URLQueryItem(name: "poll.fields", value: value)
-        }
+    }
+}
+
+extension Collection where Element == Twitter.Request.PollFields {
+    public var queryItem: URLQueryItem {
+        let value = self.map { $0.rawValue }.joined(separator: ",")
+        return URLQueryItem(name: "poll.fields", value: value)
     }
 }

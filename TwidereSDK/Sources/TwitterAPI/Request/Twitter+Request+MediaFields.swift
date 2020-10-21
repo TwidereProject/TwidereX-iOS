@@ -20,10 +20,12 @@ extension Twitter.Request {
         case nonPublicMetrics = "non_public_metrics"
         case organicMetrics = "organic_metrics"
         case promotedMetrics = "promoted_metrics"
-        
-        public static var allCasesQueryItem: URLQueryItem {
-            let value = TwitterFields.allCases.map { $0.rawValue }.joined(separator: ",")
-            return URLQueryItem(name: "media.fields", value: value)
-        }
+    }
+}
+
+extension Collection where Element == Twitter.Request.MediaFields {
+    public var queryItem: URLQueryItem {
+        let value = self.map { $0.rawValue }.joined(separator: ",")
+        return URLQueryItem(name: "media.fields", value: value)
     }
 }

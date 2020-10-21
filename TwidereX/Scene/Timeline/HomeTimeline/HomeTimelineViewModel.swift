@@ -15,10 +15,6 @@ import CoreDataStack
 import AlamofireImage
 import DateToolsSwift
 
-protocol ContentOffsetAdjustableTimelineViewControllerDelegate: class {
-    func navigationBar() -> UINavigationBar
-}
-
 final class HomeTimelineViewModel: NSObject {
     
     var disposeBag = Set<AnyCancellable>()
@@ -176,10 +172,10 @@ extension HomeTimelineViewModel {
     static func configure(cell: TimelinePostTableViewCell, tweet: Tweet, requestUserID: String) {
         // set retweet display
         cell.timelinePostView.retweetContainerStackView.isHidden = tweet.retweet == nil
-        cell.timelinePostView.retweetInfoLabel.text = tweet.user.name.flatMap { $0 + " Retweeted" } ?? " "
+        cell.timelinePostView.retweetInfoLabel.text = tweet.author.name + " Retweeted"
 
         // set avatar
-        if let avatarImageURL = (tweet.retweet?.user ?? tweet.user).avatarImageURL() {
+        if let avatarImageURL = (tweet.retweet?.author ?? tweet.author).avatarImageURL() {
             let placeholderImage = UIImage
                 .placeholder(size: TimelinePostView.avatarImageViewSize, color: .systemFill)
                 .af.imageRoundedIntoCircle()
@@ -194,11 +190,11 @@ extension HomeTimelineViewModel {
             assertionFailure()
         }
         
-        cell.timelinePostView.lockImageView.isHidden = !((tweet.retweet?.user ?? tweet.user).protected)
+        cell.timelinePostView.lockImageView.isHidden = !((tweet.retweet?.author ?? tweet.author).protected)
 
         // set name and username
-        cell.timelinePostView.nameLabel.text = (tweet.retweet?.user ?? tweet.user).name
-        cell.timelinePostView.usernameLabel.text = (tweet.retweet?.user ?? tweet.user).screenName.flatMap { "@" + $0 }
+        cell.timelinePostView.nameLabel.text = (tweet.retweet?.author ?? tweet.author).name
+        cell.timelinePostView.usernameLabel.text = "@" + (tweet.retweet?.author ?? tweet.author).username
 
         // set date
         let createdAt = (tweet.retweet ?? tweet).createdAt
@@ -208,9 +204,9 @@ extension HomeTimelineViewModel {
         cell.timelinePostView.activeTextLabel.text = (tweet.retweet ?? tweet).text
 
         // set action toolbar title
-        let isRetweeted = (tweet.retweet ?? tweet).retweetBy.flatMap({ $0.contains(where: { $0.idStr == requestUserID }) }) ?? false
+        let isRetweeted = (tweet.retweet ?? tweet).retweetBy.flatMap({ $0.contains(where: { $0.id == requestUserID }) }) ?? false
         let retweetCountTitle: String = {
-            let count = (tweet.retweet ?? tweet).retweetCount.flatMap { Int(truncating: $0) }
+            let count = (tweet.retweet ?? tweet).metrics?.retweetCount.flatMap { Int(truncating: $0) }
             return HomeTimelineViewModel.formattedNumberTitleForActionButton(count)
         }()
         let retweetButtonTintColor = isRetweeted ? Asset.Colors.hightLight.color : .secondaryLabel
@@ -218,11 +214,11 @@ extension HomeTimelineViewModel {
         cell.timelinePostView.actionToolbar.retweetButton.setTitle(retweetCountTitle, for: .normal)
         cell.timelinePostView.actionToolbar.retweetButton.setTitleColor(retweetButtonTintColor, for: .normal)
         cell.timelinePostView.actionToolbar.retweetButton.setTitleColor(retweetButtonTintColor.withAlphaComponent(0.8), for: .highlighted)
-        cell.timelinePostView.actionToolbar.retweetButton.isEnabled = !(tweet.retweet ?? tweet).user.protected
+        cell.timelinePostView.actionToolbar.retweetButton.isEnabled = !(tweet.retweet ?? tweet).author.protected
 
-        let isLike = (tweet.retweet ?? tweet).likeBy.flatMap({ $0.contains(where: { $0.idStr == requestUserID }) }) ?? false
+        let isLike = (tweet.retweet ?? tweet).likeBy.flatMap({ $0.contains(where: { $0.id == requestUserID }) }) ?? false
         let favoriteCountTitle: String = {
-            let count = (tweet.retweet ?? tweet).favoriteCount.flatMap { Int(truncating: $0) }
+            let count = (tweet.retweet ?? tweet).metrics?.likeCount.flatMap { Int(truncating: $0) }
             return HomeTimelineViewModel.formattedNumberTitleForActionButton(count)
         }()
         let likeButtonImage = isLike ? Asset.Health.heartFill.image.withRenderingMode(.alwaysTemplate) :
@@ -235,7 +231,7 @@ extension HomeTimelineViewModel {
         cell.timelinePostView.actionToolbar.favoriteButton.setTitleColor(likeButtonTintColor.withAlphaComponent(0.8), for: .highlighted)
 
         // set image display
-        let media = tweet.extendedEntities?.media ?? []
+        let media = Array(tweet.media ?? []).sorted { $0.index.compare($1.index) == .orderedAscending }
         var mosaicMetas: [MosaicMeta] = []
         for element in media {
             guard let (url, size) = element.photoURL(sizeKind: .small) else { continue }
@@ -288,7 +284,7 @@ extension HomeTimelineViewModel {
         let quote = tweet.retweet?.quote ?? tweet.quote
         if let quote = quote {
             // set avatar
-            if let avatarImageURL = quote.user.avatarImageURL() {
+            if let avatarImageURL = quote.author.avatarImageURL() {
                 let placeholderImage = UIImage
                     .placeholder(size: TimelinePostView.avatarImageViewSize, color: .systemFill)
                     .af.imageRoundedIntoCircle()
@@ -304,11 +300,11 @@ extension HomeTimelineViewModel {
             }
             
             // Note: cannot quote protected user
-            cell.timelinePostView.quotePostView.lockImageView.isHidden = !quote.user.protected
+            cell.timelinePostView.quotePostView.lockImageView.isHidden = !quote.author.protected
 
             // set name and username
-            cell.timelinePostView.quotePostView.nameLabel.text = quote.user.name
-            cell.timelinePostView.quotePostView.usernameLabel.text = quote.user.screenName.flatMap { "@" + $0 }
+            cell.timelinePostView.quotePostView.nameLabel.text = quote.author.name
+            cell.timelinePostView.quotePostView.usernameLabel.text = "@" + quote.author.username
 
             // set date
             let createdAt = quote.createdAt
@@ -329,15 +325,15 @@ extension HomeTimelineViewModel {
                       let newTweet = object as? Tweet else { return }
                 let targetTweet = newTweet.retweet ?? newTweet
                 
-                let retweetCount = targetTweet.retweetCount.flatMap { Int(truncating: $0) }
+                let retweetCount = targetTweet.metrics?.retweetCount.flatMap { Int(truncating: $0) }
                 let retweetCountTitle = HomeTimelineViewModel.formattedNumberTitleForActionButton(retweetCount)
                 cell.timelinePostView.actionToolbar.retweetButton.setTitle(retweetCountTitle, for: .normal)
-                os_log("%{public}s[%{public}ld], %{public}s: retweet count label for tweet %s did update: %ld", ((#file as NSString).lastPathComponent), #line, #function, targetTweet.idStr, retweetCount ?? 0)
+                os_log("%{public}s[%{public}ld], %{public}s: retweet count label for tweet %s did update: %ld", ((#file as NSString).lastPathComponent), #line, #function, targetTweet.id, retweetCount ?? 0)
                 
-                let favoriteCount = targetTweet.favoriteCount.flatMap { Int(truncating: $0) }
+                let favoriteCount = targetTweet.metrics?.likeCount.flatMap { Int(truncating: $0) }
                 let favoriteCountTitle = HomeTimelineViewModel.formattedNumberTitleForActionButton(favoriteCount)
                 cell.timelinePostView.actionToolbar.favoriteButton.setTitle(favoriteCountTitle, for: .normal)
-                os_log("%{public}s[%{public}ld], %{public}s: like count label for tweet %s did update: %ld", ((#file as NSString).lastPathComponent), #line, #function, targetTweet.idStr, favoriteCount ?? 0)
+                os_log("%{public}s[%{public}ld], %{public}s: like count label for tweet %s did update: %ld", ((#file as NSString).lastPathComponent), #line, #function, targetTweet.id, favoriteCount ?? 0)
             }
             .store(in: &cell.disposeBag)
 
@@ -518,7 +514,7 @@ extension HomeTimelineViewModel: NSFetchedResultsControllerDelegate {
         guard oldSnapshot.numberOfItems != 0 else { return nil }
         
         // old snapshot not empty. set source index path to first item if not match
-        let sourceIndexPath = HomeTimelineViewModel.topVisibleTableViewCellIndexPath(in: tableView, navigationBar: navigationBar) ?? IndexPath(row: 0, section: 0)
+        let sourceIndexPath = UIViewController.topVisibleTableViewCellIndexPath(in: tableView, navigationBar: navigationBar) ?? IndexPath(row: 0, section: 0)
         
         guard sourceIndexPath.row < oldSnapshot.itemIdentifiers(inSection: .main).count else { return nil }
         
@@ -526,29 +522,13 @@ extension HomeTimelineViewModel: NSFetchedResultsControllerDelegate {
         guard let itemIndex = newSnapshot.itemIdentifiers(inSection: .main).firstIndex(of: timelineItem) else { return nil }
         let targetIndexPath = IndexPath(row: itemIndex, section: 0)
         
-        let offset = HomeTimelineViewModel.tableViewCellOriginOffsetToWindowTop(in: tableView, at: sourceIndexPath, navigationBar: navigationBar)
+        let offset = UIViewController.tableViewCellOriginOffsetToWindowTop(in: tableView, at: sourceIndexPath, navigationBar: navigationBar)
         return Difference(
             item: timelineItem,
             sourceIndexPath: sourceIndexPath,
             targetIndexPath: targetIndexPath,
             offset: offset
         )
-    }
-    
-    /// https://bluelemonbits.com/2018/08/26/inserting-cells-at-the-top-of-a-uitableview-with-no-scrolling/
-    static func topVisibleTableViewCellIndexPath(in tableView: UITableView, navigationBar: UINavigationBar) -> IndexPath? {
-        let navigationBarRectInTableView = tableView.convert(navigationBar.bounds, from: navigationBar)
-        let navigationBarMaxYPosition = CGPoint(x: 0, y: navigationBarRectInTableView.origin.y + navigationBarRectInTableView.size.height + 1)
-        let mostTopVisiableIndexPath = tableView.indexPathForRow(at: navigationBarMaxYPosition)
-        return mostTopVisiableIndexPath
-    }
-    
-    static func tableViewCellOriginOffsetToWindowTop(in tableView: UITableView, at indexPath: IndexPath, navigationBar: UINavigationBar) -> CGFloat {
-        let rectForTopRow = tableView.rectForRow(at: indexPath)
-        let navigationBarRectInTableView = tableView.convert(navigationBar.bounds, from: navigationBar)
-        let navigationBarMaxYPosition = CGPoint(x: 0, y: navigationBarRectInTableView.origin.y + navigationBarRectInTableView.size.height + 1)
-        let differenceBetweenTopRowAndNavigationBar = rectForTopRow.origin.y - navigationBarMaxYPosition.y
-        return differenceBetweenTopRowAndNavigationBar
     }
     
 }

@@ -32,11 +32,11 @@ extension Twitter.Entity {
         public let retweetCount: Int?
         public let retweetedStatus: RetweetedStatus?
 
-        //let inReplyToScreenName: JSONNull?
+        public let inReplyToScreenName: String?
         //let inReplyToStatusID: JSONNull?
-        //let inReplyToStatusIDStr: JSONNull?
+        public let inReplyToStatusIDStr: ID?
         //let inReplyToUserID: JSONNull?
-        //let inReplyToUserIDStr: JSONNull?
+        public let inReplyToUserIDStr: User.ID?
         //let isQuoteStatus: Bool
         //let lang: Lang
         //let possiblySensitive: Bool?
@@ -72,11 +72,11 @@ extension Twitter.Entity {
             case quotedStatusIDStr = "quoted_status_id_str"
             case quotedStatus = "quoted_status"
             
-            //case inReplyToScreenName = "in_reply_to_screen_name"
+            case inReplyToScreenName = "in_reply_to_screen_name"
             //case inReplyToStatusID = "in_reply_to_status_id"
-            //case inReplyToStatusIDStr = "in_reply_to_status_id_str"
+            case inReplyToStatusIDStr = "in_reply_to_status_id_str"
             //case inReplyToUserID = "in_reply_to_user_id"
-            //case inReplyToUserIDStr = "in_reply_to_user_id_str"
+            case inReplyToUserIDStr = "in_reply_to_user_id_str"
             //case isQuoteStatus = "is_quote_status"
             //case lang = "lang"
             //case possiblySensitive = "possibly_sensitive"

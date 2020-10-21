@@ -55,6 +55,9 @@ extension ConversationPostStatusView {
             trailingAnchor.constraint(equalTo: statusLabel.trailingAnchor),
             bottomAnchor.constraint(equalTo: statusLabel.bottomAnchor),
         ])
+        
+        countLabel.setContentCompressionResistancePriority(.required, for: .horizontal)
+        statusLabel.setContentCompressionResistancePriority(.required, for: .horizontal)
     }
 }
 

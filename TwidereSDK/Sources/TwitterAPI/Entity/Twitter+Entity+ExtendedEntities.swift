@@ -50,26 +50,6 @@ extension Twitter.Entity.ExtendedEntities {
             case sourceUserID = "source_user_id"
             case sourceUserIDStr = "source_user_id_str"
         }
-        
-        public func photoURL(sizeKind: Sizes.SizeKind) -> (URL, CGSize)? {
-            guard let type = self.type, type == "photo" else { return nil }
-            guard let urlString = mediaURLHTTPS, var url = URL(string: urlString) else { return nil }
-            guard let sizes = self.sizes, let size = sizes.size(kind: sizeKind),
-                  let w = size.w, let h = size.h else { return nil }
-            
-            let format = url.pathExtension
-            url.deletePathExtension()
-            
-            guard var component = URLComponents(url: url, resolvingAgainstBaseURL: false) else { return nil }
-            component.queryItems = [
-                URLQueryItem(name: "format", value: format),
-                URLQueryItem(name: "name", value: sizeKind.rawValue)
-            ]
-            
-            guard let targetURL = component.url else { return nil }
-            let targetSize = CGSize(width: w, height: h)
-            return (targetURL, targetSize)
-        }
     }
 }
 
