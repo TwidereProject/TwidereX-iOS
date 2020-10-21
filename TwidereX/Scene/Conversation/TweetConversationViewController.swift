@@ -120,7 +120,7 @@ extension TweetConversationViewController: UITableViewDelegate {
                 DispatchQueue.main.async { [weak self] in
                     guard let self = self else { return }
                     let tweetPostViewModel = TweetConversationViewModel(context: self.context, tweetObjectID: tweet.objectID)
-                    self.coordinator.present(scene: .tweetPost(viewModel: tweetPostViewModel), from: self, transition: .show)
+                    self.coordinator.present(scene: .tweetConversation(viewModel: tweetPostViewModel), from: self, transition: .show)
                 }
             }
         default:

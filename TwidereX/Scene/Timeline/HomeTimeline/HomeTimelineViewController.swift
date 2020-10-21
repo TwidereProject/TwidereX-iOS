@@ -319,7 +319,7 @@ extension HomeTimelineViewController: UITableViewDelegate {
                 guard let tweet = timelineIndex.tweet?.retweet ?? timelineIndex.tweet else { return }
                 
                 let tweetPostViewModel = TweetConversationViewModel(context: self.context, tweetObjectID: tweet.objectID)
-                self.coordinator.present(scene: .tweetPost(viewModel: tweetPostViewModel), from: self, transition: .show)
+                self.coordinator.present(scene: .tweetConversation(viewModel: tweetPostViewModel), from: self, transition: .show)
             }
         default:
             return
