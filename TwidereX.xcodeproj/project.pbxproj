@@ -148,6 +148,8 @@
 		DBEA4F8D251225610007FEC5 /* TimelinePostView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBEA4F8C251225610007FEC5 /* TimelinePostView.swift */; };
 		DBEA4F8F251314640007FEC5 /* MosaicImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBEA4F8E251314640007FEC5 /* MosaicImageView.swift */; };
 		DBEA4F91251331BE0007FEC5 /* QuotePostView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBEA4F90251331BE0007FEC5 /* QuotePostView.swift */; };
+		DBED96D3253F46CF00C5383A /* TwitterMedia.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBED96D2253F46CF00C5383A /* TwitterMedia.swift */; };
+		DBED96D8253F5D7800C5383A /* NamingState.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBED96D7253F5D7800C5383A /* NamingState.swift */; };
 		DBF7F2152508AE31001E8DB0 /* StubTimelineViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBF7F2142508AE31001E8DB0 /* StubTimelineViewController.swift */; };
 		DBF7F2182508AE88001E8DB0 /* StubHomeTimelineViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBF7F2172508AE88001E8DB0 /* StubHomeTimelineViewModel.swift */; };
 /* End PBXBuildFile section */
@@ -380,6 +382,8 @@
 		DBEA4F8C251225610007FEC5 /* TimelinePostView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimelinePostView.swift; sourceTree = "<group>"; };
 		DBEA4F8E251314640007FEC5 /* MosaicImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MosaicImageView.swift; sourceTree = "<group>"; };
 		DBEA4F90251331BE0007FEC5 /* QuotePostView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuotePostView.swift; sourceTree = "<group>"; };
+		DBED96D2253F46CF00C5383A /* TwitterMedia.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwitterMedia.swift; sourceTree = "<group>"; };
+		DBED96D7253F5D7800C5383A /* NamingState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NamingState.swift; sourceTree = "<group>"; };
 		DBF7F2142508AE31001E8DB0 /* StubTimelineViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StubTimelineViewController.swift; sourceTree = "<group>"; };
 		DBF7F2172508AE88001E8DB0 /* StubHomeTimelineViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StubHomeTimelineViewModel.swift; sourceTree = "<group>"; };
 		F58BC0DB264850C274FDE699 /* Pods-TwidereX.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TwidereX.debug.xcconfig"; path = "Target Support Files/Pods-TwidereX/Pods-TwidereX.debug.xcconfig"; sourceTree = "<group>"; };
@@ -704,6 +708,7 @@
 				DBDA8E9924FE0DC8006750DC /* Resources */,
 				DB88AC34250B25170009E562 /* Vender */,
 				DBE76D312502147200DEB0FC /* Extension */,
+				DBED96DC253F5D7B00C5383A /* Protocol */,
 				DBDA8E5324FDF3D6006750DC /* Supporting Files */,
 			);
 			path = TwidereX;
@@ -963,6 +968,7 @@
 				DBE76D372502228900DEB0FC /* Tweet.swift */,
 				DBE76D35250221D700DEB0FC /* TwitterUser.swift */,
 				DB261194251B2139004BF309 /* TwitterAuthentication.swift */,
+				DBED96D2253F46CF00C5383A /* TwitterMedia.swift */,
 			);
 			path = CoreDataStack;
 			sourceTree = "<group>";
@@ -1008,6 +1014,14 @@
 				DBEA4F802511E7900007FEC5 /* ConversationItem.swift */,
 			);
 			path = Model;
+			sourceTree = "<group>";
+		};
+		DBED96DC253F5D7B00C5383A /* Protocol */ = {
+			isa = PBXGroup;
+			children = (
+				DBED96D7253F5D7800C5383A /* NamingState.swift */,
+			);
+			path = Protocol;
 			sourceTree = "<group>";
 		};
 		DBF7F2162508AE33001E8DB0 /* StubTimeline */ = {
@@ -1441,6 +1455,7 @@
 				DBE76D302502146F00DEB0FC /* OSLog.swift in Sources */,
 				DB98DC10250787420087E30F /* TimelineBottomLoaderTableViewCell.swift in Sources */,
 				DBE76C8924FF941400DEB0FC /* APIService+Autentication.swift in Sources */,
+				DBED96D3253F46CF00C5383A /* TwitterMedia.swift in Sources */,
 				DBEA4F772511DD610007FEC5 /* TweetConversationViewModel.swift in Sources */,
 				DBDA8E9424FE06BC006750DC /* RootSplitViewController.swift in Sources */,
 				DBF7F2152508AE31001E8DB0 /* StubTimelineViewController.swift in Sources */,
@@ -1482,6 +1497,7 @@
 				DB925705251C8FCB004FEFB5 /* ProfileSegmentedViewController.swift in Sources */,
 				DBE76D402502524500DEB0FC /* UIImage.swift in Sources */,
 				DB3402B72521D389009EFADF /* UserTimelineViewModel.swift in Sources */,
+				DBED96D8253F5D7800C5383A /* NamingState.swift in Sources */,
 				DB6DF3E0252060AA00E8A273 /* ProfileViewModel.swift in Sources */,
 				DBEA4F8D251225610007FEC5 /* TimelinePostView.swift in Sources */,
 				DB92574E251CA3BB004FEFB5 /* StubTableViewModel.swift in Sources */,

@@ -17,7 +17,7 @@ extension Twitter.API.Lookup {
         
         let ids = tweetIDs.joined(separator: ",")
         let tweetFields: [Twitter.Request.TwitterFields] = [
-            .authorID, .conversationID
+            .authorID, .conversationID, .created_at
         ]
         components.queryItems = [
             URLQueryItem(name: "ids", value: ids),

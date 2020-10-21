@@ -23,10 +23,26 @@ extension Tweet.Property {
             text: entity.text,
             createdAt: entity.createdAt,
             conversationID: nil,
-            inReplyToUserID: nil,
+            replyToTweetID: entity.inReplyToStatusIDStr,
+            inReplyToUserID: entity.inReplyToUserIDStr,
             lang: nil,
             possiblySensitive: false,
             source: source,
             networkDate: networkDate)
+    }
+    
+    init(entity: Twitter.Entity.V2.Tweet, replyToTweetID: Twitter.Entity.V2.Tweet.ID?, networkDate: Date) {
+        self.init(
+            id: entity.id,
+            text: entity.text,
+            createdAt: entity.createdAt,
+            conversationID: entity.conversationID,
+            replyToTweetID: replyToTweetID,
+            inReplyToUserID: entity.inReplyToUserID,
+            lang: entity.lang,
+            possiblySensitive: entity.possiblySensitive ?? false,
+            source: entity.source,
+            networkDate: networkDate
+        )
     }
 }

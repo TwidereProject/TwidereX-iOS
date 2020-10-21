@@ -21,7 +21,7 @@ extension Twitter.Entity.V2 {
         public let description: String?
         public let entities: Entities?
         public let location: String?
-        public let pinnedTweetID: Tweet.ID
+        public let pinnedTweetID: Tweet.ID?
         public let profileImageURL: String?
         public let protected: Bool?
         public let publicMetrics: PublicMetrics?

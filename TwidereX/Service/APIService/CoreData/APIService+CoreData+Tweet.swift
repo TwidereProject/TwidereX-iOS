@@ -57,13 +57,26 @@ extension APIService {
         } else {
             let (twitterUser, isTwitterUserCreated) = createOrMergeTwitterUser(into: managedObjectContext, for: requestTwitterUser, entity: entity.user, networkDate: networkDate, log: log)
             
-            let media: TwitterMedia? = {
-                // TODO:
-                    return nil
+            let media: [TwitterMedia]? = {
+                guard let media = entity.extendedEntities?.media else { return nil }
+                let result = media.enumerated().compactMap { i, media -> TwitterMedia? in
+                    guard let idStr = media.idStr, let type = media.type else {
+                        assertionFailure()
+                        return nil
+                    }
+                    let size = media.sizes?.large
+                    let property = TwitterMedia.Property(index: i, id: idStr, mediaKey: idStr, type: type, height: size?.h, width: size?.w, durationMS: nil, url: media.mediaURLHTTPS, previewImageURL: nil)
+                    return TwitterMedia.insert(into: managedObjectContext, property: property, metrics: nil)
+                }
+                guard !result.isEmpty else { return nil }
+                return result
             }()
-            
-            let metricsProperty = TweetMetrics.Property(likeCount: entity.favoriteCount, quoteCount: nil, replyCount: nil, retweetCount: entity.retweetCount)
-            let metrics = TweetMetrics.insert(into: managedObjectContext, property: metricsProperty)
+            let metrics: TweetMetrics? = {
+                guard (entity.favoriteCount ?? 0) > 0 || (entity.retweetCount ?? 0) > 0 else { return nil }
+                let metricsProperty = TweetMetrics.Property(likeCount: entity.favoriteCount, quoteCount: nil, replyCount: nil, retweetCount: entity.retweetCount)
+                let metrics = TweetMetrics.insert(into: managedObjectContext, property: metricsProperty)
+                return metrics
+            }()
             
             let tweetProperty = Tweet.Property(entity: entity, networkDate: networkDate)
             let tweet = Tweet.insert(
@@ -74,6 +87,7 @@ extension APIService {
                 metrics: metrics,
                 retweet: retweet,
                 quote: quote,
+                replyTo: nil,
                 timelineIndex: nil,
                 likeBy: (entity.favorited ?? false) ? requestTwitterUser : nil,
                 retweetBy: (entity.retweeted ?? false) ? requestTwitterUser : nil
@@ -113,32 +127,4 @@ extension APIService {
         }
     }
     
-}
-
-extension APIService {
-    
-//    static func createOrMergeTweetAndUser(
-//        into managedObjectContext: NSManagedObjectContext,
-//        for requestTwitterUser: TwitterUser?,
-//        tweet: Twitter.Entity.V2.Tweet,
-//        twitterUser: Twitter.Entity.V2.User,
-//        networkDate: Date,
-//        log: OSLog
-//    ) -> (tweet: Tweet, isTweetCreated: Bool, isTwitterUserCreated: Bool) {
-//        fatalError()
-//        
-//        let _oldTweet: Tweet? = {
-//            let request = Tweet.sortedFetchRequest
-//            request.predicate = Tweet.predicate(idStr: tweet.id)
-//            request.returnsObjectsAsFaults = false
-//            request.relationshipKeyPathsForPrefetching = [#keyPath(Tweet.retweet), #keyPath(Tweet.quote)]
-//            do {
-//                return try managedObjectContext.fetch(request).first
-//            } catch {
-//                assertionFailure(error.localizedDescription)
-//                return nil
-//            }
-//        }()
-//        
-//    }
 }

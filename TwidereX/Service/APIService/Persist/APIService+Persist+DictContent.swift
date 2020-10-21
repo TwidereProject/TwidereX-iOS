@@ -8,19 +8,19 @@
 
 import os.log
 import Foundation
+import Combine
 import CoreData
 import CoreDataStack
 import CommonOSLog
 import TwitterAPI
 
 extension APIService.Persist {
-    static func persistDictContent(managedObjectContext: NSManagedObjectContext, response: Twitter.Response.Content<Twitter.Response.V2.DictContent>, requestTwitterUserID: TwitterUser.ID, log: OSLog) {
-        
+    static func persistDictContent(managedObjectContext: NSManagedObjectContext, response: Twitter.Response.Content<Twitter.Response.V2.DictContent>, requestTwitterUserID: TwitterUser.ID, log: OSLog) -> AnyPublisher<Result<Void, Error>, Never> {
         let dictContent = response.value
         os_log("%{public}s[%{public}ld], %{public}s: persist %{public}ld tweets…", ((#file as NSString).lastPathComponent), #line, #function, dictContent.tweetDict.count)
 
         // switch to background context
-        managedObjectContext.perform {
+        return managedObjectContext.performChanges {
             let contextTaskSignpostID = OSSignpostID(log: log)
             os_signpost(.begin, log: log, name: #function, signpostID: contextTaskSignpostID)
             defer {
@@ -64,26 +64,29 @@ extension APIService.Persist {
             for (tweetID, tweet) in dictContent.tweetDict {
                 guard let authorID = tweet.authorID,
                       let user = dictContent.userDict[authorID] else { continue }
-                let info = APIService.CoreData.V2.TwitterInfo(tweet: tweet, user: user)
+                let info = APIService.CoreData.V2.TwitterInfo(tweet: tweet, user: user, media: dictContent.media(for: tweet))
                 
                 var repliedToInfo: APIService.CoreData.V2.TwitterInfo?
                 var retweetedInfo: APIService.CoreData.V2.TwitterInfo?
                 var quotedInfo: APIService.CoreData.V2.TwitterInfo?
                 
                 for referencedTweet in tweet.referencedTweets ?? [] {
-                    guard let referencedType = referencedTweet.referencedType,
+                    guard let referencedType = referencedTweet.type,
                           let referencedTweetID = referencedTweet.id else { continue }
                     guard let targetReferencedTweet = dictContent.tweetDict[referencedTweetID] else { continue }
                     guard let targetReferencedTweetAuthorID = targetReferencedTweet.authorID,
                           let targetReferencedTweetAuthor = dictContent.userDict[targetReferencedTweetAuthorID] else { continue }
-                    let targetInfo = APIService.CoreData.V2.TwitterInfo(tweet: targetReferencedTweet, user: targetReferencedTweetAuthor)
+                    let targetInfo = APIService.CoreData.V2.TwitterInfo(
+                        tweet: targetReferencedTweet,
+                        user: targetReferencedTweetAuthor,
+                        media: dictContent.media(for: targetReferencedTweet)
+                    )
                     switch referencedType {
                     case .repliedTo: repliedToInfo = targetInfo
                     case .retweeted: retweetedInfo = targetInfo
                     case .quoted: quotedInfo = targetInfo
                     }
                 }
-                
                 
                 let (tweet, isTweetCreated, isTwitterUserCreated) = APIService.CoreData.V2.createOrMergeTweet(
                     into: managedObjectContext,
@@ -98,8 +101,7 @@ extension APIService.Persist {
             }
             
             os_log("%{public}s[%{public}ld], %{public}s: preload %ld tweets in the cache", ((#file as NSString).lastPathComponent), #line, #function, _tweetCache.count)
-
         }
-        
+        .eraseToAnyPublisher()
     }
 }

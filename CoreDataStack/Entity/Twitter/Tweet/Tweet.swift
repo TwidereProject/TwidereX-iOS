@@ -20,6 +20,7 @@ final public class Tweet: NSManagedObject {
     @NSManaged public private(set) var createdAt: Date      // client required
     
     @NSManaged public private(set) var conversationID: String?
+    @NSManaged public private(set) var inReplyToTweetID: ID?
     @NSManaged public private(set) var inReplyToUserID: String?
     @NSManaged public private(set) var lang: String?
     @NSManaged public private(set) var possiblySensitive: Bool
@@ -30,7 +31,6 @@ final public class Tweet: NSManagedObject {
     // one-to-one relationship
     @NSManaged public private(set) var entities: TweetEntities?
     @NSManaged public private(set) var metrics: TweetMetrics?
-    @NSManaged public private(set) var media: TwitterMedia?
     @NSManaged public private(set) var poll: TwitterPoll?
     @NSManaged public private(set) var place: TwitterPlace?
     @NSManaged public private(set) var withheld: TwitteWithheld?
@@ -39,7 +39,6 @@ final public class Tweet: NSManagedObject {
     @NSManaged public private(set) var retweet: Tweet?
     @NSManaged public private(set) var quote: Tweet?
     @NSManaged public private(set) var replyTo: Tweet?
-    @NSManaged public private(set) var inReplyTo: TwitterUser?
     @NSManaged public private(set) var author: TwitterUser
     @NSManaged public private(set) var pinnedBy: TwitterUser    // same to author
         
@@ -48,6 +47,7 @@ final public class Tweet: NSManagedObject {
     @NSManaged public private(set) var quoteFrom: Set<Tweet>?
     @NSManaged public private(set) var replyFrom: Set<Tweet>?
     @NSManaged public private(set) var timelineIndexes: Set<TimelineIndex>?
+    @NSManaged public private(set) var media: Set<TwitterMedia>?
     
     // many-to-many relationship
     @NSManaged public private(set) var likeBy: Set<TwitterUser>?
@@ -66,10 +66,11 @@ extension Tweet {
         into context: NSManagedObjectContext,
         property: Property,
         author: TwitterUser,
-        media: TwitterMedia?,
-        metrics: TweetMetrics,
+        media: [TwitterMedia]?,
+        metrics: TweetMetrics?,
         retweet: Tweet?,
         quote: Tweet?,
+        replyTo: Tweet?,
         timelineIndex: TimelineIndex?,
         likeBy: TwitterUser?,
         retweetBy: TwitterUser?
@@ -81,26 +82,29 @@ extension Tweet {
         tweet.text = property.text
         tweet.createdAt = property.createdAt
         tweet.conversationID = property.conversationID
+        tweet.inReplyToTweetID = property.inReplyToTweetID
         tweet.inReplyToUserID = property.inReplyToUserID
         tweet.lang = property.lang
         tweet.possiblySensitive = property.possiblySensitive
         tweet.source = property.source
         
         tweet.author = author
-        tweet.media = media
         tweet.metrics = metrics
-        
-        timelineIndex.flatMap {
-            tweet.mutableSetValue(forKey: #keyPath(Tweet.timelineIndexes)).add($0)
-        }
         tweet.retweet = retweet
         tweet.quote = quote
+        tweet.replyTo = replyTo
         
+        if let timelineIndex = timelineIndex {
+            tweet.mutableSetValue(forKey: #keyPath(Tweet.timelineIndexes)).add(timelineIndex)
+        }
+        if let media = media {
+            tweet.mutableSetValue(forKey: #keyPath(Tweet.media)).addObjects(from: media)
+        }
         if let likeBy = likeBy {
-            tweet.mutableSetValue(forKey: #keyPath(Tweet.likeBy)).addObjects(from: [likeBy])
+            tweet.mutableSetValue(forKey: #keyPath(Tweet.likeBy)).add(likeBy)
         }
         if let retweetBy = retweetBy {
-            tweet.mutableSetValue(forKey: #keyPath(Tweet.retweetBy)).addObjects(from: [retweetBy])
+            tweet.mutableSetValue(forKey: #keyPath(Tweet.retweetBy)).add(retweetBy)
         }
         
         return tweet
@@ -170,6 +174,7 @@ extension Tweet {
         public let createdAt: Date
         
         public let conversationID: String?
+        public let inReplyToTweetID: Tweet.ID?
         public let inReplyToUserID: String?
         public let lang: String?
         public let possiblySensitive: Bool
@@ -178,11 +183,12 @@ extension Tweet {
         // API required
         public let networkDate: Date
         
-        public init(id: Tweet.ID, text: String, createdAt: Date, conversationID: String?, inReplyToUserID: String?, lang: String?, possiblySensitive: Bool, source: String?, networkDate: Date) {
+        public init(id: Tweet.ID, text: String, createdAt: Date, conversationID: String?, replyToTweetID: Tweet.ID?, inReplyToUserID: TwitterUser.ID?, lang: String?, possiblySensitive: Bool, source: String?, networkDate: Date) {
             self.id = id
             self.text = text
             self.createdAt = createdAt
             self.conversationID = conversationID
+            self.inReplyToTweetID = replyToTweetID
             self.inReplyToUserID = inReplyToUserID
             self.lang = lang
             self.possiblySensitive = possiblySensitive

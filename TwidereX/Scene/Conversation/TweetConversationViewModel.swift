@@ -189,3 +189,39 @@ extension TweetConversationViewModel {
     }
     
 }
+
+extension TweetConversationViewModel {
+    public class ConversationNode {
+        let tweet: Twitter.Entity.V2.Tweet
+        let children: [ConversationNode]
+        
+        init(tweet: Twitter.Entity.V2.Tweet, children: [ConversationNode]) {
+            self.tweet = tweet
+            self.children = children
+        }
+        
+        static func leafs(for tweetID: Twitter.Entity.V2.Tweet.ID, from content: Twitter.API.RecentSearch.Content) -> [ConversationNode] {
+            let tweets = [content.data, content.includes?.tweets].compactMap { $0 }.flatMap { $0 }
+            let dictContent = Twitter.Response.V2.DictContent(
+                tweets: tweets,
+                users: content.includes?.users ?? [],
+                media: content.includes?.media ?? []
+            )
+            
+            var roots: [ConversationNode] = []
+            for tweet in tweets {
+                guard let referencedRepliedToTweet = tweet.referencedTweets?.first(where: { $0.type == .repliedTo }),
+                      let replyToID = referencedRepliedToTweet.id else {
+                    continue
+                }
+                guard replyToID == tweetID else { continue }
+                print(tweet.text)
+            }
+            return roots
+        }
+        
+        static func node(of tweet: Twitter.Entity.V2.Tweet, from dictContent: Twitter.Response.V2.DictContent) -> ConversationNode {
+            fatalError()
+        }
+    }
+}

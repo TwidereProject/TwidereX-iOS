@@ -9,11 +9,11 @@ import Foundation
 
 extension Twitter.Entity.V2.Tweet {
     public struct ReferencedTweet: Codable {
-        public let referencedType: ReferencedType?
+        public let `type`: ReferencedType?
         public let id: Twitter.Entity.V2.Tweet.ID?
         
         public enum CodingKeys: String, CodingKey {
-            case referencedType = "referenced_type"
+            case `type` = "type"
             case id
         }
     }
@@ -22,7 +22,7 @@ extension Twitter.Entity.V2.Tweet {
 
 extension Twitter.Entity.V2.Tweet.ReferencedTweet {
     public enum ReferencedType: String, Codable {
-        case repliedTo
+        case repliedTo = "replied_to"
         case quoted
         case retweeted
         

@@ -13,7 +13,13 @@ extension Twitter.API.RecentSearch {
     
     static let tweetsSearchRecentEndpointURL = Twitter.API.endpointV2URL.appendingPathComponent("tweets/search/recent")
     
-    public static func tweetsSearchRecent(query: String, maxResults: Int, session: URLSession, authorization: Twitter.API.OAuth.Authorization) -> AnyPublisher<Twitter.Response.Content<Twitter.API.RecentSearch.Content>, Error> {
+    public static func tweetsSearchRecent(
+        query: String,
+        maxResults: Int,
+        sinceID: Twitter.Entity.V2.Tweet.ID,
+        session: URLSession,
+        authorization: Twitter.API.OAuth.Authorization
+    ) -> AnyPublisher<Twitter.Response.Content<Twitter.API.RecentSearch.Content>, Error> {
         guard var components = URLComponents(string: tweetsSearchRecentEndpointURL.absoluteString) else { fatalError() }
         
         let expansions: [Twitter.Request.Expansions] = [
@@ -65,6 +71,7 @@ extension Twitter.API.RecentSearch {
             tweetsFields.queryItem,
             userFields.queryItem,
             URLQueryItem(name: "max_results", value: String(min(100, max(10, maxResults)))),
+            URLQueryItem(name: "since_id", value: sinceID),
         ]
         components.percentEncodedQueryItems = (components.percentEncodedQueryItems ?? []) + [URLQueryItem(name: "query", value: query.urlEncoded)]
         
@@ -85,8 +92,8 @@ extension Twitter.API.RecentSearch {
                     let value = try Twitter.API.decode(type: Twitter.API.RecentSearch.Content.self, from: data, response: response)
                     return Twitter.Response.Content(value: value, response: response)
                 } catch {
-                    os_log("%{public}s[%{public}ld], %{public}s: decode fail. data: %s", ((#file as NSString).lastPathComponent), #line, #function, String(data: data, encoding: .utf8) ?? "<nil>")
-
+                    debugPrint(error)
+                    os_log("%{public}s[%{public}ld], %{public}s: decode fail. error: %s. data: %s", ((#file as NSString).lastPathComponent), #line, #function, error.localizedDescription, String(data: data, encoding: .utf8) ?? "<nil>")
                     throw error
                 }
             }
@@ -104,7 +111,7 @@ extension Twitter.API.RecentSearch {
         public struct Include: Codable {
             public let users: [Twitter.Entity.V2.User]?
             public let tweets: [Twitter.Entity.V2.Tweet]?
-            // public let media: [Twitter.Entity.UserV2]?
+            public let media: [Twitter.Entity.V2.Media]?
         }
         
         public struct Meta: Codable {

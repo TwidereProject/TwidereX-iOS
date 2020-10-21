@@ -13,30 +13,31 @@ import CoreDataStack
 import TwitterAPI
 
 extension TweetConversationViewModel {
-    class LoadConversationState: GKState {
+    class LoadConversationState: GKState, NamingState {
         weak var viewModel: TweetConversationViewModel?
-        
-        var prepareFailCount = 0
-        
+        var name: String { "Base" }
+                
         init(viewModel: TweetConversationViewModel) {
             self.viewModel = viewModel
         }
         
         override func didEnter(from previousState: GKState?) {
-            os_log("%{public}s[%{public}ld], %{public}s: enter %s, previous: %s", ((#file as NSString).lastPathComponent), #line, #function, self.debugDescription, previousState.debugDescription)
-            guard let viewModel = viewModel, let stateMachine = stateMachine else { return }
+            os_log("%{public}s[%{public}ld], %{public}s: enter %s, previous: %s", ((#file as NSString).lastPathComponent), #line, #function, name, (previousState as? NamingState)?.name ?? previousState?.description ?? "nil")
+            // guard let viewModel = viewModel, let stateMachine = stateMachine else { return }
         }
     }
 }
 
 extension TweetConversationViewModel.LoadConversationState {
     class Initial: TweetConversationViewModel.LoadConversationState {
+        override var name: String { "Initial" }
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {
             return stateClass == Prepare.self
         }
     }
     
     class Prepare: TweetConversationViewModel.LoadConversationState {
+        override var name: String { "Prepare" }
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {
             return stateClass == Idle.self || stateClass == Loading.self || stateClass == PrepareFail.self
         }
@@ -118,6 +119,9 @@ extension TweetConversationViewModel.LoadConversationState {
     }
     
     class PrepareFail: TweetConversationViewModel.LoadConversationState {
+        override var name: String { "PrepareFail" }
+        var prepareFailCount = 0
+
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {
             return stateClass == Prepare.self
         }
@@ -138,12 +142,16 @@ extension TweetConversationViewModel.LoadConversationState {
     }
     
     class Idle: TweetConversationViewModel.LoadConversationState {
+        override var name: String { "Idle" }
+        
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {
             return stateClass == Loading.self
         }
     }
     
     class Loading: TweetConversationViewModel.LoadConversationState {
+        override var name: String { "Loading" }
+        
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {
             return stateClass == Idle.self || stateClass == Fail.self || stateClass == NoMore.self
         }
@@ -169,6 +177,7 @@ extension TweetConversationViewModel.LoadConversationState {
             viewModel.context.apiService.tweetsRecentSearch(
                 conversationID: conversationMeta.conversationID,
                 authorID: conversationMeta.authorID,
+                sinceID: conversationMeta.tweetID,
                 authorization: authorization,
                 requestTwitterUserID: authentication.userID
             )
@@ -191,8 +200,8 @@ extension TweetConversationViewModel.LoadConversationState {
                     return
                 }
                 
-                // handle data
-                // TODO:
+                TweetConversationViewModel.ConversationNode.leafs(for: conversationMeta.tweetID, from: content)
+                
                 stateMachine.enter(Idle.self)
 
             }
@@ -202,12 +211,15 @@ extension TweetConversationViewModel.LoadConversationState {
     }
     
     class Fail: TweetConversationViewModel.LoadConversationState {
+        override var name: String { "Fail" }
+        
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {
             return stateClass == Loading.self
         }
     }
     
     class NoMore: TweetConversationViewModel.LoadConversationState {
+        override var name: String { "NoMore" }
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {
             return false
         }

@@ -17,6 +17,7 @@ extension APIService.CoreData.V2 {
     struct TwitterInfo {
         let tweet: Twitter.Entity.V2.Tweet
         let user: Twitter.Entity.V2.User
+        let media: [Twitter.Entity.V2.Media]?
     }
     
     static func createOrMergeTweet(
@@ -36,16 +37,16 @@ extension APIService.CoreData.V2 {
         }
         
         // build tree
-        let repliedTo = repliedToInfo.flatMap { info -> Tweet in
+        let replyTo = repliedToInfo.flatMap { info -> Tweet in
             let (tweet, _, _) = createOrMergeTweet(into: managedObjectContext, for: requestTwitterUser, info: info, repliedToInfo: nil, retweetedInfo: nil, quotedInfo: nil, networkDate: networkDate, log: log)
             return tweet
         }
-        let retweeted = retweetedInfo.flatMap { info -> Tweet in
+        let retweet = retweetedInfo.flatMap { info -> Tweet in
             let (tweet, _, _) = createOrMergeTweet(into: managedObjectContext, for: requestTwitterUser, info: info, repliedToInfo: nil, retweetedInfo: nil, quotedInfo: quotedInfo, networkDate: networkDate, log: log)
             return tweet
         }
-        let quoted: Tweet? = {
-            guard retweeted == nil else { return nil }
+        let quote: Tweet? = {
+            guard retweet == nil else { return nil }
             return quotedInfo.flatMap { info -> Tweet in
                 let (tweet, _, _) = createOrMergeTweet(into: managedObjectContext, for: requestTwitterUser, info: info, repliedToInfo: nil, retweetedInfo: nil, quotedInfo: nil, networkDate: networkDate, log: log)
                 return tweet
@@ -71,55 +72,67 @@ extension APIService.CoreData.V2 {
             os_signpost(.event, log: log, name: "update database - process entity: createOrMergeTweet", signpostID: processEntityTaskSignpostID, "find old tweet %{public}s", info.tweet.id)
             return (oldTweet, false, false)
         } else {
-            fatalError()
-//            let (twitterUser, isTwitterUserCreated) = createOrMergeTwitterUser(into: managedObjectContext, for: requestTwitterUser, entity: entity.user, networkDate: networkDate, log: log)
-//
-//            let tweetProperty = Tweet.Property(entity: entity, networkDate: networkDate)
-//            let tweet = Tweet.insert(
-//                into: managedObjectContext,
-//                property: tweetProperty,
-//                retweet: retweet,
-//                quote: quote,
-//                twitterUser: twitterUser,
-//                timelineIndex: nil,
-//                likeBy: (entity.favorited ?? false) ? requestTwitterUser : nil,
-//                retweetBy: (entity.retweeted ?? false) ? requestTwitterUser : nil
-//            )
-//            os_signpost(.event, log: log, name: "update database - process entity: createOrMergeTweet", signpostID: processEntityTaskSignpostID, "did insert new tweet %{public}s: %s", twitterUser.id.uuidString, entity.idStr)
-//            return (tweet, true, isTwitterUserCreated)
+            let (twitterUser, isTwitterUserCreated) = createOrMergeTwitterUser(into: managedObjectContext, for: requestTwitterUser, user: info.user, networkDate: networkDate, log: log)
+            
+            let media: [TwitterMedia]? = {
+                guard let media = info.media else { return nil }
+                let result = media.enumerated().compactMap { i, media -> TwitterMedia? in
+                    let property = TwitterMedia.Property(index: i, id: nil, mediaKey: media.mediaKey, type: media.type, height: media.height, width: media.width, durationMS: media.durationMS, url: media.url, previewImageURL: media.previewImageURL)
+                    let metrics: TwitterMediaMetrics? = {
+                        return media.publicMetrics.flatMap { publicMetrics in
+                            let property = TwitterMediaMetrics.Property(viewCount: publicMetrics.viewCount)
+                            return TwitterMediaMetrics.insert(into: managedObjectContext, property: property)
+                        }
+                    }()
+                    return TwitterMedia.insert(into: managedObjectContext, property: property, metrics: metrics)
+                }
+                guard !result.isEmpty else { return nil }
+                return result
+            }()
+            let metrics: TweetMetrics? = {
+                guard let publicMetrics = info.tweet.publicMetrics else { return nil }
+                guard publicMetrics.likeCount > 0 || publicMetrics.quoteCount > 0 || publicMetrics.replyCount > 0 || publicMetrics.retweetCount > 0 else { return nil }
+                let metricsProperty = TweetMetrics.Property(likeCount: publicMetrics.likeCount, quoteCount: publicMetrics.quoteCount, replyCount: publicMetrics.replyCount, retweetCount: publicMetrics.retweetCount)
+                let metrics = TweetMetrics.insert(into: managedObjectContext, property: metricsProperty)
+                return metrics
+            }()
+            
+            let tweetProperty = Tweet.Property(entity: info.tweet, replyToTweetID: repliedToInfo?.tweet.id, networkDate: networkDate)
+            let tweet = Tweet.insert(
+                into: managedObjectContext,
+                property: tweetProperty,
+                author: twitterUser,
+                media: media,
+                metrics: metrics,
+                retweet: retweet,
+                quote: quote,
+                replyTo: replyTo,
+                timelineIndex: nil,
+                likeBy: nil,
+                retweetBy: nil
+            )
+            os_signpost(.event, log: log, name: "update database - process entity: createOrMergeTweet", signpostID: processEntityTaskSignpostID, "did insert new tweet %{public}s: %s", tweet.identifier.uuidString, info.tweet.id)
+            return (tweet, true, isTwitterUserCreated)
         }
     }
     
     static func mergeTweet(for requestTwitterUser: TwitterUser?, old tweet: Tweet, info: TwitterInfo, networkDate: Date) {
         guard networkDate > tweet.updatedAt else { return }
-        // TODO:
-        print("merge tweet \(info.tweet.id)")
         // merge attributes
-//        tweet.update(coordinates: entity.coordinates)
 //        tweet.update(place: entity.place)
-//        tweet.update(retweetCount: entity.retweetCount)
-//        tweet.update(favoriteCount: entity.favoriteCount)
-//        entity.quotedStatusIDStr.flatMap { tweet.update(quotedStatusIDStr: $0) }
+        tweet.setupMetricsIfNeeds()
+        info.tweet.publicMetrics.flatMap { tweet.metrics?.update(likeCount: $0.likeCount) }
+        info.tweet.publicMetrics.flatMap { tweet.metrics?.update(retweetCount: $0.retweetCount) }
+        info.tweet.publicMetrics.flatMap { tweet.metrics?.update(replyCount: $0.replyCount) }
+        info.tweet.publicMetrics.flatMap { tweet.metrics?.update(quoteCount: $0.quoteCount) }
         
         // relationship with requestTwitterUser
-//        if let requestTwitterUser = requestTwitterUser {
-//            entity.favorited.flatMap { tweet.update(favorited: $0, twitterUser: requestTwitterUser) }
-//            entity.retweeted.flatMap { tweet.update(retweeted: $0, twitterUser: requestTwitterUser) }
-//        }
-//
+
         // set updateAt
-//        tweet.didUpdate(at: networkDate)
+        tweet.didUpdate(at: networkDate)
         
         // merge user
-//        mergeTwitterUser(for: requestTwitterUser, old: tweet.user, entity: entity.user, networkDate: networkDate)
-        
-        // merge indirect retweet & quote
-//        if let retweet = tweet.retweet, let retweetedStatus = entity.retweetedStatus {
-//            mergeTweet(for: requestTwitterUser, old: retweet, entity: retweetedStatus, networkDate: networkDate)
-//        }
-//        if let quote = tweet.quote, let quotedStatus = entity.quotedStatus {
-//            mergeTweet(for: requestTwitterUser, old: quote, entity: quotedStatus, networkDate: networkDate)
-//        }
+        mergeTwitterUser(for: requestTwitterUser, old: tweet.author, entity: info.user, networkDate: networkDate)
     }
     
 }

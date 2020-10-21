@@ -17,13 +17,14 @@ final public class TwitterMedia: NSManagedObject {
     @NSManaged public private(set) var identifier: UUID
     @NSManaged public private(set) var index: NSNumber
     
+    @NSManaged public private(set) var id: ID?          // preserved for v1 usage
     @NSManaged public private(set) var mediaKey: ID
     @NSManaged public private(set) var type: String
     
     /// int64
     @NSManaged public private(set) var height: NSNumber?
     /// int64
-    @NSManaged public private(set) var weight: NSNumber?
+    @NSManaged public private(set) var width: NSNumber?
     /// int64
     @NSManaged public private(set) var durationMS: NSNumber?
     @NSManaged public private(set) var url: String?
@@ -46,22 +47,23 @@ extension TwitterMedia {
     public static func insert(
         into context: NSManagedObjectContext,
         property: Property,
-        metrics: TwitterMediaMetrics
-    ) -> TwitterMediaMetrics {
+        metrics: TwitterMediaMetrics?
+    ) -> TwitterMedia {
         let media: TwitterMedia = context.insertObject()
         
         media.index = property.index
+        media.id = property.id
         media.mediaKey = property.mediaKey
         media.type = property.type
         media.height = property.height
-        media.weight = property.weight
+        media.width = property.width
         media.durationMS = property.durationMS
         media.url = property.url
         media.previewImageURL = property.previewImageURL
 
         media.metrics = metrics
         
-        return metrics
+        return media
     }
     
 }
@@ -69,21 +71,23 @@ extension TwitterMedia {
 extension TwitterMedia {
     public struct Property {
         public let index: NSNumber
+        public let id: ID?
         public let mediaKey: ID
         public let type: String
         
         public let height: NSNumber?
-        public let weight: NSNumber?
+        public let width: NSNumber?
         public let durationMS: NSNumber?
         public let url: String?
         public let previewImageURL: String?
         
-        public init(index: Int, mediaKey: TwitterMedia.ID, type: String, height: Int?, weight: Int?, durationMS: Int?, url: String?, previewImageURL: String?) {
+        public init(index: Int, id: TwitterMedia.ID?, mediaKey: TwitterMedia.ID, type: String, height: Int?, width: Int?, durationMS: Int?, url: String?, previewImageURL: String?) {
             self.index = NSNumber(value: index)
+            self.id = id
             self.mediaKey = mediaKey
             self.type = type
             self.height = height.flatMap { NSNumber(value: $0) }
-            self.weight = weight.flatMap { NSNumber(value: $0) }
+            self.width = width.flatMap { NSNumber(value: $0) }
             self.durationMS = durationMS.flatMap { NSNumber(value: $0) }
             self.url = url
             self.previewImageURL = previewImageURL

@@ -18,13 +18,14 @@ extension Twitter.Entity.V2 {
         public let text: String
         
         // Extra
-        // public let attachments
+        public let attachments: Attachments?
         public let authorID: String?
         // public let contextAnnotations
         public let conversationID: ConversationID?
-        public let createdAt: Date?
+        public let createdAt: Date      // client required
         public let entities: Entities?
         public let geo: Geo?
+        public let inReplyToUserID: User.ID?
         public let lang: String?
         public let publicMetrics: PublicMetrics?
         public let possiblySensitive: Bool?
@@ -36,12 +37,13 @@ extension Twitter.Entity.V2 {
             case id
             case text
             
-            //case attachments
+            case attachments
             case authorID = "author_id"
             //case context_annotations
             case conversationID = "conversation_id"
             case createdAt = "created_at"
             case entities
+            case inReplyToUserID = "in_reply_to_user_id"
             case geo
             case lang
             case publicMetrics = "public_metrics"

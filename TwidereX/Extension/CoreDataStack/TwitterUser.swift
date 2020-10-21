@@ -29,25 +29,21 @@ extension TwitterUser.Property {
     }
     
     init(entity: Twitter.Entity.V2.User, networkDate: Date) {
-        fatalError("TODO:")
-//        self.init(
-//            idStr: entity.id,
-//            name: entity.name,
-//            screenName: entity.username,
-//            bioDescription: entity.description,
-//            url: entity.url,
-//            location: entity.location,
-//            createdAt: entity.createdAt,
-//            protected: entity.protected ?? false,
-//            friendsCount: entity.publicMetrics.publicMetrics?.followersCount.flatMap { NSNumber(value: $0) },
-//            followersCount: entity.publicMetrics?.followersCount.flatMap { NSNumber(value: $0) },
-//            listedCount: entity.publicMetrics?.listedCount.flatMap { NSNumber(value: $0) },
-//            favouritesCount: nil,
-//            statusesCount: entity.publicMetrics?.tweetCount.flatMap { NSNumber(value: $0) },
-//            profileImageURLHTTPS: entity.profileImageURL,
-//            profileBannerURL: nil,
-//            networkDate: networkDate
-//        )
+        self.init(
+            id: entity.id,
+            name: entity.name,
+            username: entity.username,
+            bioDescription: entity.description,
+            createdAt: entity.createdAt,
+            location: entity.location,
+            pinnedTweetID: entity.pinnedTweetID,
+            profileBannerURL: nil,
+            profileImageURL: entity.profileImageURL,
+            protected: entity.protected ?? false,
+            url: entity.url,
+            verified: entity.verified ?? false,
+            networkDate: networkDate
+        )
     }
 }
 

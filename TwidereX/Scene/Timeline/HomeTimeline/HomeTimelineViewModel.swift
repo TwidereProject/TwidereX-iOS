@@ -235,13 +235,13 @@ extension HomeTimelineViewModel {
         cell.timelinePostView.actionToolbar.favoriteButton.setTitleColor(likeButtonTintColor.withAlphaComponent(0.8), for: .highlighted)
 
         // set image display
-        //let media = tweet.extendedEntities?.media ?? []
+        let media = Array(tweet.media ?? []).sorted { $0.index.compare($1.index) == .orderedAscending }
         var mosaicMetas: [MosaicMeta] = []
-//        for element in media {
-//            guard let (url, size) = element.photoURL(sizeKind: .small) else { continue }
-//            let meta = MosaicMeta(url: url, size: size)
-//            mosaicMetas.append(meta)
-//        }
+        for element in media {
+            guard let (url, size) = element.photoURL(sizeKind: .small) else { continue }
+            let meta = MosaicMeta(url: url, size: size)
+            mosaicMetas.append(meta)
+        }
 
         let maxSize: CGSize = {
             // auto layout first time fallback
