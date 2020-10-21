@@ -129,7 +129,7 @@ extension TweetConversationViewModel.LoadConversationState {
         var prepareFailCount = 0
 
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {
-            return stateClass == Prepare.self
+            return stateClass == Prepare.self || stateClass == Fail.self
         }
         
         override func didEnter(from previousState: GKState?) {
@@ -140,7 +140,10 @@ extension TweetConversationViewModel.LoadConversationState {
                 guard let self = self else { return }
                 guard let stateMachine = self.stateMachine else { return }
 
-                guard self.prepareFailCount < 3 else { return }
+                guard self.prepareFailCount < 3 else {
+                    stateMachine.enter(Fail.self)
+                    return
+                }
                 self.prepareFailCount += 1
                 stateMachine.enter(Prepare.self)
             }
@@ -242,6 +245,17 @@ extension TweetConversationViewModel.LoadConversationState {
         
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {
             return stateClass == Loading.self
+        }
+        
+        override func didEnter(from previousState: GKState?) {
+            super.didEnter(from: previousState)
+            guard let viewModel = viewModel, let stateMachine = stateMachine else { return }
+            guard let diffableDataSource = viewModel.diffableDataSource else { return }
+            var snapshot = diffableDataSource.snapshot()
+            if snapshot.itemIdentifiers.contains(.bottomLoader) {
+                snapshot.deleteItems([.bottomLoader])
+                diffableDataSource.apply(snapshot, animatingDifferences: false)
+            }
         }
     }
     
