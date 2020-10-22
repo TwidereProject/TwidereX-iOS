@@ -11,6 +11,7 @@ import Combine
 import CoreData
 import CoreDataStack
 import TwitterAPI
+import Floaty
 
 final class HomeTimelineViewController: UIViewController, NeedsDependency {
     
@@ -31,6 +32,24 @@ final class HomeTimelineViewController: UIViewController, NeedsDependency {
     }()
     
     let refreshControl = UIRefreshControl()
+    private lazy var floatyButton: Floaty = {
+        let button = Floaty()
+        button.plusColor = .white
+        button.buttonColor = Asset.Colors.hightLight.color
+        button.buttonImage = Asset.Editing.featherPen.image
+        button.handleFirstItemDirectly = true
+        
+        let composeItem: FloatyItem = {
+            let item = FloatyItem()
+            item.title = "Compose"
+            item.handler = self.composeFloatyButtonPressed
+            return item
+        }()
+        button.addItem(item: composeItem)
+        
+        return button
+    }()
+
 }
 
 extension HomeTimelineViewController {
@@ -75,6 +94,10 @@ extension HomeTimelineViewController {
                             guard let self = self else { return }
                             self.enableBottomFetcher(action)
                         }),
+                        UIAction(title: "Show Floaty", image: nil, attributes: [], handler: { [weak self] action in
+                            guard let self = self else { return }
+                            self.showFloatyButton(action)
+                        })
                     ]
                 )
             )
@@ -90,6 +113,8 @@ extension HomeTimelineViewController {
             tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
             tableView.topAnchor.constraint(equalTo: view.topAnchor)
         ])
+    
+        view.addSubview(floatyButton)
         
         viewModel.contentOffsetAdjustableTimelineViewControllerDelegate = self
         viewModel.tableView = tableView
@@ -152,6 +177,12 @@ extension HomeTimelineViewController {
             
         }
     }
+    
+    override func viewSafeAreaInsetsDidChange() {
+        super.viewSafeAreaInsetsDidChange()
+        
+        floatyButton.paddingY = view.safeAreaInsets.bottom + UIView.floatyButtonBottomMargin
+    }
 
 }
 
@@ -162,6 +193,13 @@ extension HomeTimelineViewController {
             sender.endRefreshing()
             return
         }
+    }
+    
+    @objc private func composeFloatyButtonPressed(_ sender: FloatyItem) {
+        os_log("%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
+        
+        let composeTweetViewModel = ComposeTweetViewModel(context: context)
+        coordinator.present(scene: .composeTweet(viewModel: composeTweetViewModel), from: self, transition: .modal(animated: true, completion: nil))
     }
     
     #if DEBUG
@@ -265,6 +303,10 @@ extension HomeTimelineViewController {
             .store(in: &disposeBag)
         }
         
+    }
+    
+    @objc private func showFloatyButton(_ sender: UIAction) {
+
     }
     
     #endif

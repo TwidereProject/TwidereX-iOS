@@ -1,20 +1,26 @@
 PODS:
   - DateToolsSwift (5.0.0)
+  - Floaty (4.2.0)
   - Keys (1.0.1)
   - SwiftGen (6.3.0)
   - SwipeViewController (2.0)
+  - twitter-text (3.1.0)
 
 DEPENDENCIES:
   - DateToolsSwift (~> 5.0.0)
+  - Floaty (~> 4.2.0)
   - Keys (from `Pods/CocoaPodsKeys`)
   - SwiftGen (~> 6.3.0)
   - SwipeViewController (~> 2.0.0)
+  - twitter-text (~> 3.1.0)
 
 SPEC REPOS:
   trunk:
     - DateToolsSwift
+    - Floaty
     - SwiftGen
     - SwipeViewController
+    - twitter-text
 
 EXTERNAL SOURCES:
   Keys:
@@ -22,10 +28,12 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   DateToolsSwift: 4207ada6ad615d8dc076323d27037c94916dbfa6
+  Floaty: e2bd5a0f6f7f70899e26ff2da31081c8bee8d1b0
   Keys: a576f4c9c1c641ca913a959a9c62ed3f215a8de9
   SwiftGen: 3d5024a47ea79e408cded20763d7a17d18a4548c
   SwipeViewController: 87ac3b72473f2caee7b84a7761c9367501fd557a
+  twitter-text: 3a0d73ca52955439dc8b208ca7e123ea0abd6a51
 
-PODFILE CHECKSUM: 1e3d005a3edca4b5445a7d042244c89f5e358144
+PODFILE CHECKSUM: 29c3faf889a9509cb09c708646a5ab2df5a38def
 
 COCOAPODS: 1.9.3

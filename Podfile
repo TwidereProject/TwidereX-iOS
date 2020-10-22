@@ -9,10 +9,14 @@ target 'TwidereX' do
   
   ## UI
   pod 'SwipeViewController', '~> 2.0.0'
+  pod 'Floaty', '~> 4.2.0'
   
   # misc
   pod 'SwiftGen', '~> 6.3.0'
   pod 'DateToolsSwift', '~> 5.0.0'
+
+  # Twitter
+  pod 'twitter-text', '~> 3.1.0'
   
   target 'TwidereXTests' do
     inherit! :search_paths

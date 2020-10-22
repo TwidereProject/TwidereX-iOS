@@ -31,6 +31,10 @@ internal enum Asset {
     internal static let heartPink = ColorAsset(name: "Colors/heart.pink")
     internal static let hightLight = ColorAsset(name: "Colors/hight.light")
   }
+  internal enum Editing {
+    internal static let featherPen = ImageAsset(name: "Editing/feather.pen")
+    internal static let xmark = ImageAsset(name: "Editing/xmark")
+  }
   internal enum Health {
     internal static let heartFill = ImageAsset(name: "Health/heart.fill")
     internal static let heartFillLarge = ImageAsset(name: "Health/heart.fill.large")
@@ -47,6 +51,7 @@ internal enum Asset {
     internal static let icRoundLocationOn = ImageAsset(name: "Object&Tools/ic.round.location.on")
     internal static let icRoundRefresh = ImageAsset(name: "Object&Tools/ic.round.refresh")
     internal static let lock = ImageAsset(name: "Object&Tools/lock")
+    internal static let paperplane = ImageAsset(name: "Object&Tools/paperplane")
     internal static let share = ImageAsset(name: "Object&Tools/share")
     internal static let shareLarge = ImageAsset(name: "Object&Tools/share.large")
     internal static let uilDocumentLayoutLeft = ImageAsset(name: "Object&Tools/uil.document.layout.left")
