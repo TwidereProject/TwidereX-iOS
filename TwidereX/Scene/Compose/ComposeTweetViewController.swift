@@ -9,7 +9,6 @@
 import os.log
 import UIKit
 import Combine
-import AlamofireImage
 
 final class ComposeTweetViewController: UIViewController, NeedsDependency {
     
@@ -21,36 +20,15 @@ final class ComposeTweetViewController: UIViewController, NeedsDependency {
     var disposeBag = Set<AnyCancellable>()
     var viewModel: ComposeTweetViewModel!
     
-    let scrollView: UIScrollView = {
-        let scrollView = UIScrollView()
-        scrollView.alwaysBounceVertical = true
-        return scrollView
+    let tableView: UITableView = {
+        let tableView = ControlContainableTableView()
+        tableView.register(ComposeTweetContentTableViewCell.self, forCellReuseIdentifier: String(describing: ComposeTweetContentTableViewCell.self))
+        tableView.rowHeight = UITableView.automaticDimension
+        tableView.separatorStyle = .none
+        return tableView
     }()
     
-    let avatarImageView: UIImageView = {
-        let imageView = UIImageView()
-        imageView.contentMode = .scaleAspectFill
-        return imageView
-    }()
     
-    let lockImageView: UIImageView = {
-        let imageView = UIImageView()
-        imageView.tintColor = .white
-        imageView.contentMode = .center
-        imageView.image = Asset.ObjectTools.lock.image.withRenderingMode(.alwaysTemplate)
-        imageView.backgroundColor = .black
-        imageView.layer.masksToBounds = true
-        imageView.layer.cornerRadius = TimelinePostView.lockImageViewSize.width * 0.5
-        imageView.layer.borderWidth = 1
-        imageView.layer.borderColor = UIColor.white.cgColor
-        return imageView
-    }()
-    
-    let composeTextView: UITextView = {
-        let textView = UITextView()
-        textView.font = .preferredFont(forTextStyle: .body)
-        return textView
-    }()
     
     let cycleCounterView = CycleCounterView()
     let tweetToolbarView = TweetToolbarView()
@@ -66,22 +44,21 @@ extension ComposeTweetViewController {
         navigationItem.leftBarButtonItem = UIBarButtonItem(image: Asset.Editing.xmark.image.withRenderingMode(.alwaysTemplate), style: .plain, target: self, action: #selector(ComposeTweetViewController.closeBarButtonItemPressed(_:)))
         navigationItem.leftBarButtonItem?.tintColor = .label
         navigationItem.rightBarButtonItem = UIBarButtonItem(image: Asset.ObjectTools.paperplane.image.withRenderingMode(.alwaysTemplate), style: .plain, target: self, action: #selector(ComposeTweetViewController.sendBarButtonItemPressed(_:)))
-        navigationItem.leftBarButtonItem?.tintColor = Asset.Colors.hightLight.color
+        navigationItem.rightBarButtonItem?.tintColor = Asset.Colors.hightLight.color
         
-        scrollView.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(scrollView)
+        tableView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(tableView)
         NSLayoutConstraint.activate([
-            scrollView.frameLayoutGuide.topAnchor.constraint(equalTo: view.topAnchor),
-            scrollView.frameLayoutGuide.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            scrollView.frameLayoutGuide.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            scrollView.frameLayoutGuide.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-            scrollView.contentLayoutGuide.widthAnchor.constraint(equalTo: view.widthAnchor),
+            tableView.frameLayoutGuide.topAnchor.constraint(equalTo: view.topAnchor),
+            tableView.frameLayoutGuide.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            tableView.frameLayoutGuide.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            tableView.frameLayoutGuide.bottomAnchor.constraint(equalTo: view.bottomAnchor),
         ])
         
         cycleCounterView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(cycleCounterView)
         NSLayoutConstraint.activate([
-            cycleCounterView.leadingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.leadingAnchor, constant: 12),
+            cycleCounterView.leadingAnchor.constraint(equalTo: view.layoutMarginsGuide.leadingAnchor),
             cycleCounterView.widthAnchor.constraint(equalToConstant: 18).priority(.defaultHigh),
             cycleCounterView.heightAnchor.constraint(equalToConstant: 18).priority(.defaultHigh),
         ])
@@ -97,32 +74,9 @@ extension ComposeTweetViewController {
             tweetToolbarView.heightAnchor.constraint(equalToConstant: 48),
         ])
         
-        // user avatar
-        avatarImageView.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.addSubview(avatarImageView)
-        NSLayoutConstraint.activate([
-            avatarImageView.topAnchor.constraint(equalTo: scrollView.contentLayoutGuide.topAnchor, constant: 8),
-            avatarImageView.leadingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.leadingAnchor, constant: 16),
-            avatarImageView.widthAnchor.constraint(equalToConstant: ComposeTweetViewController.avatarImageViewSize.width).priority(.required - 1),
-            avatarImageView.heightAnchor.constraint(equalToConstant: ComposeTweetViewController.avatarImageViewSize.height).priority(.required - 1),
-        ])
-        lockImageView.translatesAutoresizingMaskIntoConstraints = false
-        avatarImageView.addSubview(lockImageView)
-        NSLayoutConstraint.activate([
-            lockImageView.leadingAnchor.constraint(equalTo: avatarImageView.leadingAnchor),
-            lockImageView.topAnchor.constraint(equalTo: avatarImageView.topAnchor),
-            lockImageView.widthAnchor.constraint(equalToConstant: 16),
-            lockImageView.heightAnchor.constraint(equalToConstant: 16),
-        ])
-        
-        composeTextView.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.addSubview(composeTextView)
-        NSLayoutConstraint.activate([
-            composeTextView.topAnchor.constraint(equalTo: scrollView.contentLayoutGuide.topAnchor),
-            composeTextView.leadingAnchor.constraint(equalTo: avatarImageView.trailingAnchor, constant: 20),
-            composeTextView.trailingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.trailingAnchor),
-            composeTextView.heightAnchor.constraint(equalTo: view.heightAnchor),
-        ])
+        viewModel.setupDiffableDataSource(for: tableView)
+        tableView.delegate = self
+        tableView.dataSource = viewModel.diffableDataSource
         
         // respond scrollView overlap change
         view.layoutIfNeeded()
@@ -133,60 +87,38 @@ extension ComposeTweetViewController {
         )
         .sink(receiveValue: { [weak self] isShow, state, endFrame in
             guard let self = self else { return }
+            
             guard isShow, state == .dock else {
-                self.composeTextView.contentInset.bottom = 0.0
-                self.composeTextView.verticalScrollIndicatorInsets.bottom = 0.0
+                self.tableView.contentInset.bottom = 0.0
+                self.tableView.verticalScrollIndicatorInsets.bottom = 0.0
                 UIView.animate(withDuration: 0.3) {
                     self.tweetToolbarViewBottomLayoutConstraint.constant = 0.0
                     self.view.layoutIfNeeded()
                 }
                 return
             }
-            
+
             // isShow AND dock state
-            let scrollViewFrame = self.view.convert(self.scrollView.frame, to: nil)
-            let padding = scrollViewFrame.maxY - endFrame.minY
+            let contentFrame = self.view.convert(self.tableView.frame, to: nil)
+            let padding = contentFrame.maxY - endFrame.minY
             guard padding > 0 else {
-                self.composeTextView.contentInset.bottom = 0.0
-                self.composeTextView.verticalScrollIndicatorInsets.bottom = 0.0
+                self.tableView.contentInset.bottom = 0.0
+                self.tableView.verticalScrollIndicatorInsets.bottom = 0.0
                 UIView.animate(withDuration: 0.3) {
                     self.tweetToolbarViewBottomLayoutConstraint.constant = 0.0
                     self.view.layoutIfNeeded()
                 }
                 return
             }
-            
-            self.scrollView.contentInset.bottom = padding + self.tweetToolbarView.frame.height + self.view.safeAreaInsets.bottom
-            self.scrollView.verticalScrollIndicatorInsets.bottom = padding + self.tweetToolbarView.frame.height + self.view.safeAreaInsets.bottom
+
+            self.tableView.contentInset.bottom = padding + self.tweetToolbarView.frame.height + self.view.safeAreaInsets.bottom
+            self.tableView.verticalScrollIndicatorInsets.bottom = padding + self.tweetToolbarView.frame.height + self.view.safeAreaInsets.bottom
             UIView.animate(withDuration: 0.3) {
                 self.tweetToolbarViewBottomLayoutConstraint.constant = padding
                 self.view.layoutIfNeeded()
             }
         })
         .store(in: &disposeBag)
-        
-        // set avatar
-        viewModel.avatarImageURL
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] url in
-                guard let self = self else { return }
-                let placeholderImage = UIImage
-                    .placeholder(size: TimelinePostView.avatarImageViewSize, color: .systemFill)
-                    .af.imageRoundedIntoCircle()
-                guard let url = url else {
-                    self.avatarImageView.image = UIImage.placeholder(color: .systemFill)
-                    return
-                }
-                let filter = ScaledToSizeCircleFilter(size: ComposeTweetViewController.avatarImageViewSize)
-                self.avatarImageView.af.setImage(
-                    withURL: url,
-                    placeholderImage: placeholderImage,
-                    filter: filter,
-                    imageTransition: .crossDissolve(0.2)
-                )
-            }
-            .store(in: &disposeBag)
-        viewModel.isAvatarLockHidden.receive(on: DispatchQueue.main).assign(to: \.isHidden, on: lockImageView).store(in: &disposeBag)
         
         // set cycle counter
         viewModel.twitterTextparseResults
@@ -211,14 +143,13 @@ extension ComposeTweetViewController {
                 self.viewModel.isAvatarLockHidden.value = user.flatMap { !$0.protected } ?? true
             }
             .store(in: &disposeBag)
-        
-        composeTextView.delegate = self
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        composeTextView.becomeFirstResponder()
+        guard let cell = self.viewModel.composeTweetContentTableViewCell(of: self.tableView) else { return }
+        cell.composeTextView.becomeFirstResponder()
     }
     
 }
@@ -251,10 +182,9 @@ extension ComposeTweetViewController: UIAdaptivePresentationControllerDelegate {
     
 }
 
-// MARK: - UITextViewDelegate
-extension ComposeTweetViewController: UITextViewDelegate {
-    func textViewDidChangeSelection(_ textView: UITextView) {
-        guard textView === composeTextView else { return }
-        viewModel.composeContent.value = composeTextView.text ?? ""
+// MARK: - UITableViewDelegate
+extension ComposeTweetViewController: UITableViewDelegate {
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return UITableView.automaticDimension
     }
 }

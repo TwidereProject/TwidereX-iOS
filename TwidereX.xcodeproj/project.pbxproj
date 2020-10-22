@@ -69,6 +69,9 @@
 		DB8AC1472541677900E636BE /* ComposeTweetViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB8AC1462541677900E636BE /* ComposeTweetViewModel.swift */; };
 		DB8AC14C254167BE00E636BE /* TweetToolbarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB8AC14B254167BE00E636BE /* TweetToolbarView.swift */; };
 		DB8AC16225417D1300E636BE /* CycleCounterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB8AC16125417D1300E636BE /* CycleCounterView.swift */; };
+		DB8AC167254198D800E636BE /* ComposeTweetContentTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB8AC166254198D800E636BE /* ComposeTweetContentTableViewCell.swift */; };
+		DB8AC16C25419B2E00E636BE /* ComposeTweetSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB8AC16B25419B2E00E636BE /* ComposeTweetSection.swift */; };
+		DB8AC17225419B7500E636BE /* ComposeTweetItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB8AC17125419B7500E636BE /* ComposeTweetItem.swift */; };
 		DB925700251C8F29004FEFB5 /* UserTimelineViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB9256FF251C8F29004FEFB5 /* UserTimelineViewController.swift */; };
 		DB925705251C8FCB004FEFB5 /* ProfileSegmentedViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB925704251C8FCB004FEFB5 /* ProfileSegmentedViewController.swift */; };
 		DB92570A251C8FE0004FEFB5 /* ProfileHeaderViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB925709251C8FE0004FEFB5 /* ProfileHeaderViewController.swift */; };
@@ -305,6 +308,9 @@
 		DB8AC1462541677900E636BE /* ComposeTweetViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComposeTweetViewModel.swift; sourceTree = "<group>"; };
 		DB8AC14B254167BE00E636BE /* TweetToolbarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TweetToolbarView.swift; sourceTree = "<group>"; };
 		DB8AC16125417D1300E636BE /* CycleCounterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CycleCounterView.swift; sourceTree = "<group>"; };
+		DB8AC166254198D800E636BE /* ComposeTweetContentTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComposeTweetContentTableViewCell.swift; sourceTree = "<group>"; };
+		DB8AC16B25419B2E00E636BE /* ComposeTweetSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComposeTweetSection.swift; sourceTree = "<group>"; };
+		DB8AC17125419B7500E636BE /* ComposeTweetItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComposeTweetItem.swift; sourceTree = "<group>"; };
 		DB9256FF251C8F29004FEFB5 /* UserTimelineViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserTimelineViewController.swift; sourceTree = "<group>"; };
 		DB925704251C8FCB004FEFB5 /* ProfileSegmentedViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileSegmentedViewController.swift; sourceTree = "<group>"; };
 		DB925709251C8FE0004FEFB5 /* ProfileHeaderViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileHeaderViewController.swift; sourceTree = "<group>"; };
@@ -626,6 +632,7 @@
 		DB8AC1122540501A00E636BE /* Compose */ = {
 			isa = PBXGroup;
 			children = (
+				DB8AC17025419B6600E636BE /* Model */,
 				DB8AC150254167C100E636BE /* View */,
 				DB8AC10D2540501600E636BE /* ComposeTweetViewController.swift */,
 				DB8AC1462541677900E636BE /* ComposeTweetViewModel.swift */,
@@ -638,8 +645,18 @@
 			children = (
 				DB8AC14B254167BE00E636BE /* TweetToolbarView.swift */,
 				DB8AC16125417D1300E636BE /* CycleCounterView.swift */,
+				DB8AC166254198D800E636BE /* ComposeTweetContentTableViewCell.swift */,
 			);
 			path = View;
+			sourceTree = "<group>";
+		};
+		DB8AC17025419B6600E636BE /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				DB8AC16B25419B2E00E636BE /* ComposeTweetSection.swift */,
+				DB8AC17125419B7500E636BE /* ComposeTweetItem.swift */,
+			);
+			path = Model;
 			sourceTree = "<group>";
 		};
 		DB92570E251C900F004FEFB5 /* Segmented */ = {
@@ -1523,6 +1540,7 @@
 				DBE76D36250221D700DEB0FC /* TwitterUser.swift in Sources */,
 				DB25BA08253D7D6E00A5420F /* APIService+Persist+DictContent.swift in Sources */,
 				DB25B9D1253828AA00A5420F /* APIService+Retweet.swift in Sources */,
+				DB8AC167254198D800E636BE /* ComposeTweetContentTableViewCell.swift in Sources */,
 				DBDA8E8F24FE068C006750DC /* SceneCoordinator.swift in Sources */,
 				DBA5B1A82510BA330077FDD5 /* TweetConversationViewController.swift in Sources */,
 				DBDA8E8B24FE0615006750DC /* AppContext.swift in Sources */,
@@ -1540,6 +1558,7 @@
 				DB3402B72521D389009EFADF /* UserTimelineViewModel.swift in Sources */,
 				DBED96D8253F5D7800C5383A /* NamingState.swift in Sources */,
 				DB6DF3E0252060AA00E8A273 /* ProfileViewModel.swift in Sources */,
+				DB8AC16C25419B2E00E636BE /* ComposeTweetSection.swift in Sources */,
 				DBEA4F8D251225610007FEC5 /* TimelinePostView.swift in Sources */,
 				DB92574E251CA3BB004FEFB5 /* StubTableViewModel.swift in Sources */,
 				DBA6B19925316800005FB0B4 /* HomeTimelineViewModel+LoadOldestState.swift in Sources */,
@@ -1560,6 +1579,7 @@
 				DB434883251DF18C005B599F /* ProfileBannerInfoActionView.swift in Sources */,
 				DB747FF4251C47BD000C4BD7 /* UITableView.swift in Sources */,
 				DB8AC1332541662200E636BE /* KeyboardResponderService.swift in Sources */,
+				DB8AC17225419B7500E636BE /* ComposeTweetItem.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

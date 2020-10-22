@@ -9,8 +9,4 @@ import Foundation
 
 enum ConversationSection: Equatable, Hashable {
     case main
-    
-    // TODO:
-    //case original
-    //case thread
 }
