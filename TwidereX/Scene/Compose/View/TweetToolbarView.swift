@@ -8,7 +8,17 @@
 
 import UIKit
 
+protocol TweetToolbarViewDelegate: class {
+    func tweetToolbarView(_ tweetToolbarView: TweetToolbarView, cameraButtonDidPressed sender: UIButton)
+    func tweetToolbarView(_ tweetToolbarView: TweetToolbarView, gifButtonDidPressed sender: UIButton)
+    func tweetToolbarView(_ tweetToolbarView: TweetToolbarView, atButtonDidPressed sender: UIButton)
+    func tweetToolbarView(_ tweetToolbarView: TweetToolbarView, topicButtonDidPressed sender: UIButton)
+    func tweetToolbarView(_ tweetToolbarView: TweetToolbarView, locationButtonDidPressed sender: UIButton)
+}
+
 final class TweetToolbarView: UIView {
+    
+    weak var delegate: TweetToolbarViewDelegate?
     
     let cameraButton: UIButton = {
         let button = UIButton(type: .system)
@@ -82,5 +92,36 @@ extension TweetToolbarView {
         buttons.forEach { button in
             stackView.addArrangedSubview(button)
         }
+        
+        cameraButton.addTarget(self, action: #selector(TweetToolbarView.cameraButtonDidPressed(_:)), for: .touchUpInside)
+        gifButton.addTarget(self, action: #selector(TweetToolbarView.gifButtonDidPressed(_:)), for: .touchUpInside)
+        atButton.addTarget(self, action: #selector(TweetToolbarView.atButtonDidPressed(_:)), for: .touchUpInside)
+        topicButton.addTarget(self, action: #selector(TweetToolbarView.topicButtonDidPressed(_:)), for: .touchUpInside)
+        locationButton.addTarget(self, action: #selector(TweetToolbarView.locationButtonDidPressed(_:)), for: .touchUpInside)
     }
+}
+
+
+extension TweetToolbarView {
+    
+    @objc private func cameraButtonDidPressed(_ sender: UIButton) {
+        delegate?.tweetToolbarView(self, cameraButtonDidPressed: sender)
+    }
+    
+    @objc private func gifButtonDidPressed(_ sender: UIButton) {
+        delegate?.tweetToolbarView(self, gifButtonDidPressed: sender)
+    }
+    
+    @objc private func atButtonDidPressed(_ sender: UIButton) {
+        delegate?.tweetToolbarView(self, atButtonDidPressed: sender)
+    }
+    
+    @objc private func topicButtonDidPressed(_ sender: UIButton) {
+        delegate?.tweetToolbarView(self, topicButtonDidPressed: sender)
+    }
+    
+    @objc private func locationButtonDidPressed(_ sender: UIButton) {
+        delegate?.tweetToolbarView(self, locationButtonDidPressed: sender)
+    }
+    
 }

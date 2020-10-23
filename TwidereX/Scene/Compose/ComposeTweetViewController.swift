@@ -87,6 +87,7 @@ extension ComposeTweetViewController {
             tweetToolbarView.heightAnchor.constraint(equalToConstant: 48),
         ])
         tweetToolbarView.preservesSuperviewLayoutMargins = true
+        tweetToolbarView.delegate = self
         
         viewModel.setupDiffableDataSource(for: tableView)
         tableView.delegate = self
@@ -289,5 +290,58 @@ extension ComposeTweetViewController: UIScrollViewDelegate {
 extension ComposeTweetViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return UITableView.automaticDimension
+    }
+}
+
+// MARK: - TweetToolbarViewDelegate
+extension ComposeTweetViewController: TweetToolbarViewDelegate {
+    
+    func tweetToolbarView(_ tweetToolbarView: TweetToolbarView, cameraButtonDidPressed sender: UIButton) {
+        let photoSourcePickAlertController = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
+        if UIImagePickerController.isSourceTypeAvailable(.camera) {
+            photoSourcePickAlertController.addAction(UIAlertAction(title: "Take a photo", style: .default, handler: { [weak self] _ in
+                self?.showImagePicker(sourceType: .camera)
+            }))
+        }
+        if UIImagePickerController.isSourceTypeAvailable(.photoLibrary) {
+            photoSourcePickAlertController.addAction(UIAlertAction(title: "Photo library", style: .default, handler: { [weak self] _ in
+                self?.showImagePicker(sourceType: .photoLibrary)
+            }))
+        }
+        photoSourcePickAlertController.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+        photoSourcePickAlertController.popoverPresentationController?.sourceView = sender
+        
+        UIView.animate(withDuration: 0.3) {
+            self.tweetToolbarViewBottomLayoutConstraint.constant = 0.0
+            self.view.layoutIfNeeded()
+        }
+        present(photoSourcePickAlertController, animated: true, completion: nil)
+    }
+    
+    func tweetToolbarView(_ tweetToolbarView: TweetToolbarView, gifButtonDidPressed sender: UIButton) {
+
+    }
+    
+    func tweetToolbarView(_ tweetToolbarView: TweetToolbarView, atButtonDidPressed sender: UIButton) {
+        
+    }
+    
+    func tweetToolbarView(_ tweetToolbarView: TweetToolbarView, topicButtonDidPressed sender: UIButton) {
+        
+    }
+    
+    func tweetToolbarView(_ tweetToolbarView: TweetToolbarView, locationButtonDidPressed sender: UIButton) {
+        
+    }
+    
+}
+
+// MARK: - UIImagePickerControllerDelegate & UINavigationControllerDelegate
+extension ComposeTweetViewController: UIImagePickerControllerDelegate & UINavigationControllerDelegate {
+    private func showImagePicker(sourceType: UIImagePickerController.SourceType) {
+        let picker = UIImagePickerController()
+        picker.sourceType = sourceType
+        picker.delegate = self
+        present(picker, animated: true)
     }
 }
