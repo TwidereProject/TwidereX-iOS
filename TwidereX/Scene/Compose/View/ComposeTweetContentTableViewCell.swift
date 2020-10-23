@@ -34,6 +34,8 @@ final class ComposeTweetContentTableViewCell: UITableViewCell {
         return imageView
     }()
     
+    let conversationLinkUpper = UIView.separatorLine
+    
     let composeTextView: UITextView = {
         let textView = UITextView()
         textView.font = .preferredFont(forTextStyle: .body)
@@ -45,6 +47,7 @@ final class ComposeTweetContentTableViewCell: UITableViewCell {
     
     override func prepareForReuse() {
         super.prepareForReuse()
+        conversationLinkUpper.isHidden = true
         disposeBag.removeAll()
     }
     
@@ -63,6 +66,7 @@ final class ComposeTweetContentTableViewCell: UITableViewCell {
 extension ComposeTweetContentTableViewCell {
     
     private func _init() {
+        selectionStyle = .none
         
         // user avatar
         avatarImageView.translatesAutoresizingMaskIntoConstraints = false
@@ -74,6 +78,15 @@ extension ComposeTweetContentTableViewCell {
             avatarImageView.heightAnchor.constraint(equalToConstant: ComposeTweetViewController.avatarImageViewSize.height).priority(.required - 1),
         ])
         
+        conversationLinkUpper.translatesAutoresizingMaskIntoConstraints = false
+        contentView.addSubview(conversationLinkUpper)
+        NSLayoutConstraint.activate([
+            conversationLinkUpper.topAnchor.constraint(equalTo: contentView.topAnchor),
+            conversationLinkUpper.centerXAnchor.constraint(equalTo: avatarImageView.centerXAnchor),
+            conversationLinkUpper.widthAnchor.constraint(equalToConstant: 1),
+            avatarImageView.topAnchor.constraint(equalTo: conversationLinkUpper.bottomAnchor, constant: 2),
+        ])
+    
         lockImageView.translatesAutoresizingMaskIntoConstraints = false
         avatarImageView.addSubview(lockImageView)
         NSLayoutConstraint.activate([
@@ -87,13 +100,14 @@ extension ComposeTweetContentTableViewCell {
         contentView.addSubview(composeTextView)
         NSLayoutConstraint.activate([
             composeTextView.topAnchor.constraint(equalTo: contentView.topAnchor),
-            composeTextView.leadingAnchor.constraint(equalTo: avatarImageView.trailingAnchor, constant: 20),
+            composeTextView.leadingAnchor.constraint(equalTo: avatarImageView.trailingAnchor, constant: 10),
             composeTextView.trailingAnchor.constraint(equalTo: contentView.layoutMarginsGuide.trailingAnchor),
             contentView.bottomAnchor.constraint(equalTo: composeTextView.bottomAnchor),
             composeTextView.heightAnchor.constraint(greaterThanOrEqualToConstant: 64),
         ])
         
         composeTextView.delegate = self
+        conversationLinkUpper.isHidden = true
     }
     
 }

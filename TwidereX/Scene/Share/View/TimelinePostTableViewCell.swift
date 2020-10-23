@@ -111,7 +111,6 @@ extension TimelinePostTableViewCell {
             conversationLinkLower.centerXAnchor.constraint(equalTo: timelinePostView.avatarImageView.centerXAnchor),
             contentView.bottomAnchor.constraint(equalTo: conversationLinkLower.bottomAnchor),
             conversationLinkLower.widthAnchor.constraint(equalToConstant: 1),
-
         ])
         
         let separatorLine = UIView.separatorLine

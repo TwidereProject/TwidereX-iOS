@@ -171,8 +171,8 @@ extension TweetConversationViewController: ConversationPostTableViewCellDelegate
 
 // MARK: - ContentOffsetAdjustableTimelineViewControllerDelegate
 extension TweetConversationViewController: ContentOffsetAdjustableTimelineViewControllerDelegate {
-    func navigationBar() -> UINavigationBar {
-        return navigationController!.navigationBar
+    func navigationBar() -> UINavigationBar? {
+        return navigationController?.navigationBar
     }
 }
 

@@ -31,6 +31,7 @@ final class CycleCounterView: UIView {
         return shapeLayer
     }()
     
+    let strokeColor = CurrentValueSubject<UIColor, Never>(Asset.Colors.hightLight.color)
     let progress = CurrentValueSubject<CGFloat, Never>(0.0)
     
     override init(frame: CGRect) {
@@ -52,19 +53,27 @@ extension CycleCounterView {
         
         layer.addSublayer(backRingLayer)
         layer.addSublayer(frontRingLayer)
-    }
-    
-    override func layoutSubviews() {
-        super.layoutSubviews()
-        updateLayerPath()
         
-        progress.receive(on: DispatchQueue.main)
+        strokeColor
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] strokeColor in
+                guard let self = self else { return }
+                self.frontRingLayer.strokeColor = strokeColor.cgColor
+            }
+            .store(in: &disposeBag)
+        progress
+            .receive(on: DispatchQueue.main)
             .sink { [weak self] progress in
                 guard let self = self else { return }
                 let progress = max(0, min(100, progress))
                 self.frontRingLayer.strokeEnd = progress
             }
             .store(in: &disposeBag)
+    }
+    
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        updateLayerPath()
     }
     
 }

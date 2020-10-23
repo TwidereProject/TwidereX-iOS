@@ -8,6 +8,7 @@
 
 import Foundation
 import Combine
+import CoreData
 import CoreDataStack
 import AlamofireImage
 import twitter_text
@@ -21,25 +22,38 @@ final class ComposeTweetViewModel {
     let context: AppContext
     let twitterTextParser = TwitterTextParser.defaultParser()
     let currentTwitterAuthentication = CurrentValueSubject<TwitterAuthentication?, Never>(nil)
+    let repliedTweetObjectID: NSManagedObjectID?
     let composeContent = CurrentValueSubject<String, Never>("")
+    let repliedToCellFrame = CurrentValueSubject<CGRect, Never>(.zero)
 
     // output
     var diffableDataSource: UITableViewDiffableDataSource<ComposeTweetSection, ComposeTweetItem>?
+    let tableViewState = CurrentValueSubject<TableViewState, Never>(.fold)
     let avatarImageURL = CurrentValueSubject<URL?, Never>(nil)
     let isAvatarLockHidden = CurrentValueSubject<Bool, Never>(true)
     let twitterTextparseResults = CurrentValueSubject<TwitterTextParseResults, Never>(.init())
     
-    init(context: AppContext) {
+    init(context: AppContext, repliedTweetObjectID: NSManagedObjectID?) {
         self.context = context
+        self.repliedTweetObjectID = repliedTweetObjectID
         
         composeContent
             .map { text in self.twitterTextParser.parseTweet(text) }
             .assign(to: \.value, on: twitterTextparseResults)
             .store(in: &disposeBag)
         
+        #if DEBUG
         twitterTextparseResults.print().sink { _ in }.store(in: &disposeBag)
+        #endif
     }
     
+}
+
+extension ComposeTweetViewModel {
+    enum TableViewState {
+        case fold
+        case expand
+    }
 }
 
 extension ComposeTweetViewModel {
@@ -50,9 +64,16 @@ extension ComposeTweetViewModel {
             
             switch item {
             case .reply(let objectID):
-                fatalError("TODO:")
-                
-            case .input:
+                let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: RepliedToTweetContentTableViewCell.self), for: indexPath) as! RepliedToTweetContentTableViewCell
+                self.context.managedObjectContext.performAndWait {
+                    let tweet = self.context.managedObjectContext.object(with: objectID) as! Tweet
+                    ComposeTweetViewModel.configure(cell: cell, tweet: tweet)
+                }
+                cell.framePublisher.assign(to: \.value, on: self.repliedToCellFrame).store(in: &cell.disposeBag)
+                cell.conversationLinkUpper.isHidden = true
+                cell.conversationLinkLower.isHidden = false
+                return cell
+            case .input(let attribute):
                 let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: ComposeTweetContentTableViewCell.self), for: indexPath) as! ComposeTweetContentTableViewCell
                 
                 // set avatar
@@ -78,6 +99,8 @@ extension ComposeTweetViewModel {
                     .store(in: &cell.disposeBag)
                 self.isAvatarLockHidden.receive(on: DispatchQueue.main).assign(to: \.isHidden, on: cell.lockImageView).store(in: &cell.disposeBag)
                 
+                cell.conversationLinkUpper.isHidden = !attribute.hasReplyTo
+                
                 // self size input cell
                 cell.composeText
                     .receive(on: DispatchQueue.main)
@@ -96,16 +119,51 @@ extension ComposeTweetViewModel {
         
         var snapshot = NSDiffableDataSourceSnapshot<ComposeTweetSection, ComposeTweetItem>()
         snapshot.appendSections([.repliedTo, .input, .quoted])
-        snapshot.appendItems([.input], toSection: .input)
+        if let repliedTweetObjectID = self.repliedTweetObjectID {
+            snapshot.appendItems([.reply(objectID: repliedTweetObjectID)], toSection: .repliedTo)
+        }
+        let inputAttribute = ComposeTweetItem.InputAttribute(hasReplyTo: self.repliedTweetObjectID != nil)
+        snapshot.appendItems([.input(attribute: inputAttribute)], toSection: .input)
         diffableDataSource?.apply(snapshot, animatingDifferences: false)
     }
      
     func composeTweetContentTableViewCell(of tableView: UITableView) -> ComposeTweetContentTableViewCell? {
-        guard let diffableDataSource = diffableDataSource,
-              let indexPath = diffableDataSource.indexPath(for: .input) else { return nil }
-        
+        guard let diffableDataSource = diffableDataSource else { return nil }
+        let _inputItem = diffableDataSource.snapshot().itemIdentifiers.first { item in
+            guard case .input = item else { return false }
+            return true
+        }
+        guard let inputItem = _inputItem,
+              let indexPath = diffableDataSource.indexPath(for: inputItem) else  { return nil }
         let cell = tableView.cellForRow(at: indexPath) as? ComposeTweetContentTableViewCell
         return cell
     }
     
+}
+
+extension ComposeTweetViewModel {
+    static func configure(cell: RepliedToTweetContentTableViewCell, tweet: Tweet) {
+        // set avatar
+        let placeholderImage = UIImage
+            .placeholder(size: TimelinePostView.avatarImageViewSize, color: .systemFill)
+            .af.imageRoundedIntoCircle()
+        if let avatarImageURL = tweet.author.avatarImageURL() {
+            let filter = ScaledToSizeCircleFilter(size: ComposeTweetViewController.avatarImageViewSize)
+            cell.timelinePostView.avatarImageView.af.setImage(
+                withURL: avatarImageURL,
+                placeholderImage: placeholderImage,
+                filter: filter,
+                imageTransition: .crossDissolve(0.2)
+            )
+        } else {
+            cell.timelinePostView.avatarImageView.image = placeholderImage
+        }
+        
+        // set name and username
+        cell.timelinePostView.nameLabel.text = tweet.author.name
+        cell.timelinePostView.usernameLabel.text = "@" + tweet.author.username
+        
+        // set tweet content text
+        cell.timelinePostView.activeTextLabel.text = tweet.text
+    }
 }

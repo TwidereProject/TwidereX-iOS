@@ -22,15 +22,20 @@ final class ComposeTweetViewController: UIViewController, NeedsDependency {
     
     let tableView: UITableView = {
         let tableView = ControlContainableTableView()
+        tableView.register(RepliedToTweetContentTableViewCell.self, forCellReuseIdentifier: String(describing: RepliedToTweetContentTableViewCell.self))
         tableView.register(ComposeTweetContentTableViewCell.self, forCellReuseIdentifier: String(describing: ComposeTweetContentTableViewCell.self))
         tableView.rowHeight = UITableView.automaticDimension
         tableView.separatorStyle = .none
         return tableView
     }()
     
-    
-    
     let cycleCounterView = CycleCounterView()
+    let tweetContentOverflowLabel: UILabel = {
+        let label = UILabel()
+        label.textColor = .systemRed
+        label.font = .systemFont(ofSize: 14, weight: .regular)
+        return label
+    }()
     let tweetToolbarView = TweetToolbarView()
     var tweetToolbarViewBottomLayoutConstraint: NSLayoutConstraint!
 }
@@ -40,6 +45,7 @@ extension ComposeTweetViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        title = "Compose"
         view.backgroundColor = .systemBackground
         navigationItem.leftBarButtonItem = UIBarButtonItem(image: Asset.Editing.xmark.image.withRenderingMode(.alwaysTemplate), style: .plain, target: self, action: #selector(ComposeTweetViewController.closeBarButtonItemPressed(_:)))
         navigationItem.leftBarButtonItem?.tintColor = .label
@@ -63,6 +69,13 @@ extension ComposeTweetViewController {
             cycleCounterView.heightAnchor.constraint(equalToConstant: 18).priority(.defaultHigh),
         ])
         
+        tweetContentOverflowLabel.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(tweetContentOverflowLabel)
+        NSLayoutConstraint.activate([
+            tweetContentOverflowLabel.centerYAnchor.constraint(equalTo: cycleCounterView.centerYAnchor),
+            tweetContentOverflowLabel.leadingAnchor.constraint(equalTo: cycleCounterView.trailingAnchor, constant: 4),
+        ])
+        
         tweetToolbarView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(tweetToolbarView)
         tweetToolbarViewBottomLayoutConstraint = view.bottomAnchor.constraint(equalTo: tweetToolbarView.bottomAnchor)
@@ -73,6 +86,7 @@ extension ComposeTweetViewController {
             tweetToolbarViewBottomLayoutConstraint,
             tweetToolbarView.heightAnchor.constraint(equalToConstant: 48),
         ])
+        tweetToolbarView.preservesSuperviewLayoutMargins = true
         
         viewModel.setupDiffableDataSource(for: tableView)
         tableView.delegate = self
@@ -111,8 +125,8 @@ extension ComposeTweetViewController {
                 return
             }
 
-            self.tableView.contentInset.bottom = padding + self.tweetToolbarView.frame.height + self.view.safeAreaInsets.bottom
-            self.tableView.verticalScrollIndicatorInsets.bottom = padding + self.tweetToolbarView.frame.height + self.view.safeAreaInsets.bottom
+            self.tableView.contentInset.bottom = padding + 16
+            self.tableView.verticalScrollIndicatorInsets.bottom = padding + 16
             UIView.animate(withDuration: 0.3) {
                 self.tweetToolbarViewBottomLayoutConstraint.constant = padding
                 self.view.layoutIfNeeded()
@@ -120,17 +134,52 @@ extension ComposeTweetViewController {
         })
         .store(in: &disposeBag)
         
-        // set cycle counter
+        // set cycle counter. update compose button state
         viewModel.twitterTextparseResults
             .receive(on: DispatchQueue.main)
             .sink { [weak self] parseResult in
                 guard let self = self else { return }
-                let progress = CGFloat(parseResult.weightedLength) / CGFloat(self.viewModel.twitterTextParser.configuration.maxWeightedTweetLength)
+                let maxWeightedTweetLength = self.viewModel.twitterTextParser.configuration.maxWeightedTweetLength
+                let progress = CGFloat(parseResult.weightedLength) / CGFloat(maxWeightedTweetLength)
+                let strokeColor: UIColor = {
+                    if progress > 1.0 {
+                        return .systemRed
+                    } else if progress > 0.9 {
+                        return .systemOrange
+                    } else {
+                        return Asset.Colors.hightLight.color
+                    }
+                }()
                 UIView.animate(withDuration: 0.1) {
+                    self.cycleCounterView.strokeColor.value = strokeColor
                     self.cycleCounterView.progress.value = progress
                 }
+                
+                let overflow = parseResult.weightedLength - maxWeightedTweetLength
+                self.tweetContentOverflowLabel.text = overflow > 0 ? "-\(overflow)" : " "
+                
+                let isComposeButtonEnabled = parseResult.weightedLength > 0 && parseResult.isValid
+                self.navigationItem.rightBarButtonItem?.isEnabled = isComposeButtonEnabled
             }
             .store(in: &disposeBag)
+        
+        // setup snap behavior
+        Publishers.CombineLatest(
+            viewModel.repliedToCellFrame.eraseToAnyPublisher(),
+            viewModel.tableViewState.eraseToAnyPublisher()
+        )
+        .receive(on: DispatchQueue.main)
+        .sink { [weak self] repliedToCellFrame, tableViewState in
+            guard let self = self else { return }
+            guard repliedToCellFrame != .zero else { return }
+            switch tableViewState {
+            case .fold:
+                self.tableView.contentInset.top = -repliedToCellFrame.height
+            case .expand:
+                self.tableView.contentInset.top = 0
+            }
+        }
+        .store(in: &disposeBag)
         
         // bind viewModel
         context.authenticationService.currentActiveTwitterAutentication
@@ -164,6 +213,34 @@ extension ComposeTweetViewController {
     @objc private func sendBarButtonItemPressed(_ sender: UIBarButtonItem) {
         os_log("%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
         
+        // prepare authentication
+        guard let twitterAuthentication = viewModel.currentTwitterAuthentication.value,
+              let authorization = try? twitterAuthentication.authorization(appSecret: AppSecret.shared) else {
+            assertionFailure()
+            return
+        }
+        
+        context.apiService.tweet(
+            content: viewModel.composeContent.value,
+            replyToTweetObjectID: viewModel.repliedTweetObjectID,
+            authorization: authorization
+        )
+        .receive(on: DispatchQueue.main)
+        .handleEvents(receiveSubscription: { [weak self] _ in
+            guard let self = self else { return }
+            self.dismiss(animated: true, completion: nil)
+        })
+        .sink { completion in
+            switch completion {
+            case .failure(let error):
+                os_log("%{public}s[%{public}ld], %{public}s: tweet fail: %s", ((#file as NSString).lastPathComponent), #line, #function, error.localizedDescription)
+            case .finished:
+                os_log("%{public}s[%{public}ld], %{public}s: tweet success", ((#file as NSString).lastPathComponent), #line, #function)
+            }
+        } receiveValue: { response in
+            // do nothing
+        }
+        .store(in: &context.disposeBag)
     }
     
 }
@@ -180,6 +257,32 @@ extension ComposeTweetViewController: UIAdaptivePresentationControllerDelegate {
         }
     }
     
+}
+
+// MARK: - UIScrollViewDelegate
+extension ComposeTweetViewController: UIScrollViewDelegate {
+    func scrollViewWillEndDragging(_ scrollView: UIScrollView, withVelocity velocity: CGPoint, targetContentOffset: UnsafeMutablePointer<CGPoint>) {
+        guard scrollView === tableView else { return }
+
+        let repliedToCellFrame = viewModel.repliedToCellFrame.value
+        guard repliedToCellFrame != .zero else { return }
+        let throttle = viewModel.repliedToCellFrame.value.height - scrollView.adjustedContentInset.top
+        // print("\(throttle) - \(scrollView.contentOffset.y)")
+
+        switch viewModel.tableViewState.value {
+        case .fold:
+            if scrollView.contentOffset.y < throttle {
+                viewModel.tableViewState.value = .expand
+            }
+            os_log("%{public}s[%{public}ld], %{public}s: fold", ((#file as NSString).lastPathComponent), #line, #function)
+
+        case .expand:
+            if scrollView.contentOffset.y > -44 {
+                viewModel.tableViewState.value = .fold
+                os_log("%{public}s[%{public}ld], %{public}s: expand", ((#file as NSString).lastPathComponent), #line, #function)
+            }
+        }
+    }
 }
 
 // MARK: - UITableViewDelegate

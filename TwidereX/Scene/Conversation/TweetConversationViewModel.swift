@@ -222,7 +222,7 @@ extension TweetConversationViewModel {
         
         // set name and username
         cell.conversationPostView.nameLabel.text = tweet.author.name
-        cell.conversationPostView.usernameLabel.text = tweet.author.username
+        cell.conversationPostView.usernameLabel.text = "@" + tweet.author.username
 
         // set text
         cell.conversationPostView.activeTextLabel.text = tweet.text

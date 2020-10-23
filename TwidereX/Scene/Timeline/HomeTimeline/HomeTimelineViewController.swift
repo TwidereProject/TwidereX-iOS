@@ -197,8 +197,7 @@ extension HomeTimelineViewController {
     
     @objc private func composeFloatyButtonPressed(_ sender: FloatyItem) {
         os_log("%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
-        
-        let composeTweetViewModel = ComposeTweetViewModel(context: context)
+        let composeTweetViewModel = ComposeTweetViewModel(context: context, repliedTweetObjectID: nil)
         coordinator.present(scene: .composeTweet(viewModel: composeTweetViewModel), from: self, transition: .modal(animated: true, completion: nil))
     }
     
@@ -381,8 +380,8 @@ extension HomeTimelineViewController: UITableViewDelegate {
 
 // MARK: - ContentOffsetAdjustableTimelineViewControllerDelegate
 extension HomeTimelineViewController: ContentOffsetAdjustableTimelineViewControllerDelegate {
-    func navigationBar() -> UINavigationBar {
-        return navigationController!.navigationBar
+    func navigationBar() -> UINavigationBar? {
+        return navigationController?.navigationBar
     }
 }
 
@@ -462,6 +461,17 @@ extension HomeTimelineViewController: TimelinePostTableViewCellDelegate {
     // MARK: - ActionToolbar
     
     func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, actionToolbar: TimelinePostActionToolbar, replayButtonDidPressed sender: UIButton) {
+        // retrieve target tweet infos
+        guard let diffableDataSource = viewModel.diffableDataSource else { return }
+        guard let indexPath = tableView.indexPath(for: cell) else { return }
+        guard let timelineItem = diffableDataSource.itemIdentifier(for: indexPath) else { return }
+        guard case let .homeTimelineIndex(timelineIndexObjectID, _) = timelineItem else { return }
+        let timelineIndex = viewModel.fetchedResultsController.managedObjectContext.object(with: timelineIndexObjectID) as! TimelineIndex
+        guard let tweet = (timelineIndex.tweet?.retweet ?? timelineIndex.tweet) else { return }
+        let tweetObjectID = tweet.objectID
+        
+        let composeTweetViewModel = ComposeTweetViewModel(context: context, repliedTweetObjectID: tweetObjectID)
+        coordinator.present(scene: .composeTweet(viewModel: composeTweetViewModel), from: self, transition: .modal(animated: true, completion: nil))
     }
     
     func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, actionToolbar: TimelinePostActionToolbar, retweetButtonDidPressed sender: UIButton) {
