@@ -56,15 +56,7 @@ final class QuotePostView: UIView {
         return label
     }()
     
-    let activeTextLabel: ActiveLabel = {
-        let label = ActiveLabel()
-        label.numberOfLines = 0
-        label.enabledTypes = [.mention, .hashtag, .url]
-        label.textColor = .label
-        label.font = .systemFont(ofSize: 14)
-        label.text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
-        return label
-    }()
+    let activeTextLabel = ActiveLabel(style: .default)
         
     override init(frame: CGRect) {
         super.init(frame: frame)
