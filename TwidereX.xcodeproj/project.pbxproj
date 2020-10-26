@@ -23,6 +23,9 @@
 		DB2611472518AC13004BF309 /* AppSecret.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB2611462518AC13004BF309 /* AppSecret.swift */; };
 		DB261195251B213A004BF309 /* TwitterAuthentication.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB261194251B2139004BF309 /* TwitterAuthentication.swift */; };
 		DB2611B7251B2D42004BF309 /* CryptoSwift in Frameworks */ = {isa = PBXBuildFile; productRef = DB2611B6251B2D42004BF309 /* CryptoSwift */; };
+		DB2924C22546A77B003899A7 /* TwitterMediaService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB2924C12546A77B003899A7 /* TwitterMediaService.swift */; };
+		DB2924CB2546B958003899A7 /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = DB2924CA2546B958003899A7 /* Kingfisher */; };
+		DB2924D02546C6DD003899A7 /* APIService+Media.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB2924CF2546C6DD003899A7 /* APIService+Media.swift */; };
 		DB34028E2521BC06009EFADF /* APIService+UserTimeline.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB34028D2521BC06009EFADF /* APIService+UserTimeline.swift */; };
 		DB34029D2521BE8B009EFADF /* MeProfileViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB34029C2521BE8B009EFADF /* MeProfileViewModel.swift */; };
 		DB3402B72521D389009EFADF /* UserTimelineViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB3402B62521D389009EFADF /* UserTimelineViewModel.swift */; };
@@ -267,6 +270,8 @@
 		DB25BA1E253DACD100A5420F /* APIService+CoreData+V2+TwitterUser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "APIService+CoreData+V2+TwitterUser.swift"; sourceTree = "<group>"; };
 		DB2611462518AC13004BF309 /* AppSecret.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSecret.swift; sourceTree = "<group>"; };
 		DB261194251B2139004BF309 /* TwitterAuthentication.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwitterAuthentication.swift; sourceTree = "<group>"; };
+		DB2924C12546A77B003899A7 /* TwitterMediaService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwitterMediaService.swift; sourceTree = "<group>"; };
+		DB2924CF2546C6DD003899A7 /* APIService+Media.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "APIService+Media.swift"; sourceTree = "<group>"; };
 		DB34028D2521BC06009EFADF /* APIService+UserTimeline.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "APIService+UserTimeline.swift"; sourceTree = "<group>"; };
 		DB34029C2521BE8B009EFADF /* MeProfileViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeProfileViewModel.swift; sourceTree = "<group>"; };
 		DB3402B62521D389009EFADF /* UserTimelineViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserTimelineViewModel.swift; sourceTree = "<group>"; };
@@ -424,6 +429,7 @@
 				DB2611B7251B2D42004BF309 /* CryptoSwift in Frameworks */,
 				DB98DC0C25062D4D0087E30F /* ActiveLabel in Frameworks */,
 				DB4323D22514936F004FAAEC /* TwidereSDK in Frameworks */,
+				DB2924CB2546B958003899A7 /* Kingfisher in Frameworks */,
 				DBE76D3E2502518D00DEB0FC /* AlamofireImage in Frameworks */,
 				DBD98489251CB88A00ED87A1 /* Tabman in Frameworks */,
 				DBEA4F842511F7460007FEC5 /* Kanna in Frameworks */,
@@ -821,6 +827,7 @@
 			children = (
 				DBE76D222500FF1C00DEB0FC /* AuthenticationService.swift */,
 				DB8AC1322541662200E636BE /* KeyboardResponderService.swift */,
+				DB2924C12546A77B003899A7 /* TwitterMediaService.swift */,
 				DBE76C8A24FF941A00DEB0FC /* APIService */,
 			);
 			path = Service;
@@ -915,6 +922,7 @@
 				DB25B9D0253828AA00A5420F /* APIService+Retweet.swift */,
 				DB25B9E72539897B00A5420F /* APIService+RecentSearch.swift */,
 				DB8AC1842542BD8600E636BE /* APIService+Tweet.swift */,
+				DB2924CF2546C6DD003899A7 /* APIService+Media.swift */,
 			);
 			path = APIService;
 			sourceTree = "<group>";
@@ -1148,6 +1156,7 @@
 				DB4323D12514936F004FAAEC /* TwidereSDK */,
 				DB2611B6251B2D42004BF309 /* CryptoSwift */,
 				DBD98488251CB88A00ED87A1 /* Tabman */,
+				DB2924CA2546B958003899A7 /* Kingfisher */,
 			);
 			productName = TwidereX;
 			productReference = DBDA8E1E24FCF8A3006750DC /* TwidereX.app */;
@@ -1300,6 +1309,7 @@
 				DBEA4F822511F7460007FEC5 /* XCRemoteSwiftPackageReference "Kanna" */,
 				DB2611B5251B2D42004BF309 /* XCRemoteSwiftPackageReference "CryptoSwift" */,
 				DBD98487251CB88A00ED87A1 /* XCRemoteSwiftPackageReference "Tabman" */,
+				DB2924C92546B958003899A7 /* XCRemoteSwiftPackageReference "Kingfisher" */,
 			);
 			productRefGroup = DBDA8E1F24FCF8A3006750DC /* Products */;
 			projectDirPath = "";
@@ -1496,6 +1506,7 @@
 				DB747FEF251B63E3000C4BD7 /* HitTestExpandedButton.swift in Sources */,
 				DBB09D562511BA9700AE260E /* APIService+Lookup.swift in Sources */,
 				DB7D124C250F875F00999903 /* UIView.swift in Sources */,
+				DB2924D02546C6DD003899A7 /* APIService+Media.swift in Sources */,
 				DBEA4F8F251314640007FEC5 /* MosaicImageView.swift in Sources */,
 				DB25BA1F253DACD100A5420F /* APIService+CoreData+V2+TwitterUser.swift in Sources */,
 				DB2611472518AC13004BF309 /* AppSecret.swift in Sources */,
@@ -1529,6 +1540,7 @@
 				DB92570A251C8FE0004FEFB5 /* ProfileHeaderViewController.swift in Sources */,
 				DB0849B425137B3E009E0CD7 /* ConversationPostActionToolbar.swift in Sources */,
 				DB747FF9251C496A000C4BD7 /* ProfileViewController.swift in Sources */,
+				DB2924C22546A77B003899A7 /* TwitterMediaService.swift in Sources */,
 				DB8AC1852542BD8700E636BE /* APIService+Tweet.swift in Sources */,
 				DB41C0DB2513368800521562 /* TimelinePostActionToolbar.swift in Sources */,
 				DB969A2F252490090053CB31 /* UserTimelineViewModel+State.swift in Sources */,
@@ -2196,6 +2208,14 @@
 				minimumVersion = 1.3.2;
 			};
 		};
+		DB2924C92546B958003899A7 /* XCRemoteSwiftPackageReference "Kingfisher" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/onevcat/Kingfisher.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.15.6;
+			};
+		};
 		DB98DC0A25062D4D0087E30F /* XCRemoteSwiftPackageReference "ActiveLabel.swift" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/optonaut/ActiveLabel.swift.git";
@@ -2243,6 +2263,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = DB2611B5251B2D42004BF309 /* XCRemoteSwiftPackageReference "CryptoSwift" */;
 			productName = CryptoSwift;
+		};
+		DB2924CA2546B958003899A7 /* Kingfisher */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = DB2924C92546B958003899A7 /* XCRemoteSwiftPackageReference "Kingfisher" */;
+			productName = Kingfisher;
 		};
 		DB4323D12514936F004FAAEC /* TwidereSDK */ = {
 			isa = XCSwiftPackageProductDependency;

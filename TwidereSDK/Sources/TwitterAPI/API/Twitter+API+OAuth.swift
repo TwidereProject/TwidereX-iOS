@@ -223,9 +223,10 @@ extension Twitter.API.OAuth {
             self.accessTokenSecret = accessTokenSecret
         }
         
-        func authorizationHeader(requestURL url: URL, httpMethod: String) -> String {
+        func authorizationHeader(requestURL url: URL, requestFormQueryItems: [URLQueryItem]? = nil, httpMethod: String) -> String {
             return Twitter.API.OAuth.authorizationHeader(
                 requestURL: url,
+                requestFormQueryItems: requestFormQueryItems,
                 httpMethod: httpMethod,
                 callbackURL: nil,
                 consumerKey: consumerKey,
@@ -242,7 +243,7 @@ extension Twitter.API.OAuth {
     
     static var authorizationField = "Authorization"
     
-    static func authorizationHeader(requestURL url: URL, httpMethod: String, callbackURL: URL?, consumerKey: String, consumerSecret: String, oauthToken: String?, oauthTokenSecret: String?) -> String {
+    static func authorizationHeader(requestURL url: URL, requestFormQueryItems formQueryItems: [URLQueryItem]?, httpMethod: String, callbackURL: URL?, consumerKey: String, consumerSecret: String, oauthToken: String?, oauthTokenSecret: String?) -> String {
         var authorizationParameters = Dictionary<String, String>()
         authorizationParameters["oauth_version"] = "1.0"
         authorizationParameters["oauth_callback"] = callbackURL?.absoluteString
@@ -253,8 +254,7 @@ extension Twitter.API.OAuth {
         
         authorizationParameters["oauth_token"] = oauthToken
         
-        authorizationParameters["oauth_signature"] = oauthSignature(requestURL: url, httpMethod: httpMethod, consumerSecret: consumerSecret, parameters: authorizationParameters, oauthTokenSecret: oauthTokenSecret)
-        
+        authorizationParameters["oauth_signature"] = oauthSignature(requestURL: url, requestFormQueryItems: formQueryItems, httpMethod: httpMethod, consumerSecret: consumerSecret, parameters: authorizationParameters, oauthTokenSecret: oauthTokenSecret)
         
         var parameterComponents = authorizationParameters.urlEncodedQuery.components(separatedBy: "&") as [String]
         parameterComponents.sort { $0 < $1 }
@@ -270,7 +270,7 @@ extension Twitter.API.OAuth {
         return "OAuth " + headerComponents.joined(separator: ", ")
     }
     
-    static func oauthSignature(requestURL url: URL, httpMethod: String, consumerSecret: String, parameters: Dictionary<String, String>, oauthTokenSecret: String?) -> String {
+    static func oauthSignature(requestURL url: URL, requestFormQueryItems formQueryItems: [URLQueryItem]?, httpMethod: String, consumerSecret: String, parameters: Dictionary<String, String>, oauthTokenSecret: String?) -> String {
         let encodedConsumerSecret = consumerSecret.urlEncoded
         let encodedTokenSecret = oauthTokenSecret?.urlEncoded ?? ""
         let signingKey = "\(encodedConsumerSecret)&\(encodedTokenSecret)"
@@ -281,6 +281,10 @@ extension Twitter.API.OAuth {
         for item in components.queryItems ?? [] {
             parameters[item.name] = item.value
         }
+        for item in formQueryItems ?? [] {
+            parameters[item.name] = item.value
+        }
+
         components.queryItems = nil
         let baseURL = components.url!
         

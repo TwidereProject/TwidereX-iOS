@@ -9,6 +9,7 @@
 import os.log
 import UIKit
 import Combine
+import Photos
 
 final class ComposeTweetViewController: UIViewController, NeedsDependency {
     
@@ -338,10 +339,31 @@ extension ComposeTweetViewController: TweetToolbarViewDelegate {
 
 // MARK: - UIImagePickerControllerDelegate & UINavigationControllerDelegate
 extension ComposeTweetViewController: UIImagePickerControllerDelegate & UINavigationControllerDelegate {
+    
     private func showImagePicker(sourceType: UIImagePickerController.SourceType) {
         let picker = UIImagePickerController()
         picker.sourceType = sourceType
         picker.delegate = self
         present(picker, animated: true)
     }
+    
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        guard let url = info[.imageURL] as? URL else { return }
+        guard let mediaType = info[.mediaType] as? String else { return }
+        
+        // TODO: check media type
+        guard mediaType == "public.image" else { return }
+        let imagePayload = TwitterMediaService.Payload.image(url)
+        let mediaService = TwitterMediaService(context: context, payload: imagePayload)
+        
+        let value = viewModel.mediaServices.value
+        viewModel.mediaServices.value = value + [mediaService]
+        
+        picker.dismiss(animated: true, completion: nil)
+    }
+    
+    func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+        os_log("%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
+    }
+    
 }

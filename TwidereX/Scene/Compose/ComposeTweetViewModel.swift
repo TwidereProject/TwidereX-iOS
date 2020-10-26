@@ -32,6 +32,7 @@ final class ComposeTweetViewModel {
     let avatarImageURL = CurrentValueSubject<URL?, Never>(nil)
     let isAvatarLockHidden = CurrentValueSubject<Bool, Never>(true)
     let twitterTextparseResults = CurrentValueSubject<TwitterTextParseResults, Never>(.init())
+    let mediaServices = CurrentValueSubject<[TwitterMediaService], Never>([])
     
     init(context: AppContext, repliedTweetObjectID: NSManagedObjectID?) {
         self.context = context
@@ -166,4 +167,8 @@ extension ComposeTweetViewModel {
         // set tweet content text
         cell.timelinePostView.activeTextLabel.text = tweet.text
     }
+}
+
+extension ComposeTweetViewModel {
+
 }

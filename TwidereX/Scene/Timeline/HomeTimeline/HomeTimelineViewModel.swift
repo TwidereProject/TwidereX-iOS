@@ -43,7 +43,7 @@ final class HomeTimelineViewModel: NSObject {
         stateMachine.enter(LoadLatestState.Initial.self)
         return stateMachine
     }()
-    lazy var loadLatestStateMachinePublisher = CurrentValueSubject<LoadLatestState, Never>(LoadLatestState.Initial(viewModel: self))
+    lazy var loadLatestStateMachinePublisher = CurrentValueSubject<LoadLatestState?, Never>(nil)
     // bottom loader
     private(set) lazy var loadoldestStateMachine: GKStateMachine = {
         // exclude timeline middle fetcher state
@@ -57,7 +57,7 @@ final class HomeTimelineViewModel: NSObject {
         stateMachine.enter(LoadOldestState.Initial.self)
         return stateMachine
     }()
-    lazy var loadOldestStateMachinePublisher = CurrentValueSubject<LoadOldestState, Never>(LoadOldestState.Initial(viewModel: self))
+    lazy var loadOldestStateMachinePublisher = CurrentValueSubject<LoadOldestState?, Never>(nil)
     // middle loader
     let loadMiddleSateMachineList = CurrentValueSubject<[NSManagedObjectID: GKStateMachine], Never>([:])    // TimelineIndex.objectID : middle loading state machine
     var diffableDataSource: UITableViewDiffableDataSource<TimelineSection, TimelineItem>?
