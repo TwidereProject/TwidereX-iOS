@@ -6,17 +6,29 @@
 //  Copyright © 2020 Twidere. All rights reserved.
 //
 
+import os.log
 import Foundation
 import Combine
+import CoreLocation
 import CoreData
 import CoreDataStack
 import AlamofireImage
 import twitter_text
 
-final class ComposeTweetViewModel {
+final class ComposeTweetViewModel: NSObject {
     
     var disposeBag = Set<AnyCancellable>()
     var mediaServicesUploadStatusStatesDisposeBag = Set<AnyCancellable>()
+    let locationManager: CLLocationManager = {
+        let locationManager = CLLocationManager()
+        if #available(iOS 14.0, *) {
+            locationManager.desiredAccuracy = kCLLocationAccuracyReduced
+        } else {
+            // Fallback on earlier versions
+            locationManager.desiredAccuracy = kCLLocationAccuracyKilometer
+        }
+        return locationManager
+    }()
     
     // input
     let context: AppContext
@@ -36,10 +48,13 @@ final class ComposeTweetViewModel {
     let mediaServices = CurrentValueSubject<[TwitterMediaService], Never>([])
     let isComposeBarButtonEnabled = CurrentValueSubject<Bool, Never>(false)
     let isCameraToolbarButtonEnabled = CurrentValueSubject<Bool, Never>(true)
+    let isRequestLocationMarking = CurrentValueSubject<Bool, Never>(false)
+    let isLocationAutohrizationAllow = CurrentValueSubject<Bool, Never>(false)
     
     init(context: AppContext, repliedTweetObjectID: NSManagedObjectID?) {
         self.context = context
         self.repliedTweetObjectID = repliedTweetObjectID
+        super.init()
         
         composeContent
             .map { text in self.twitterTextParser.parseTweet(text) }
@@ -76,10 +91,28 @@ final class ComposeTweetViewModel {
             }
             .assign(to: \.value, on: isCameraToolbarButtonEnabled)
             .store(in: &disposeBag)
+        
+        locationManager.delegate = self
+        isLocationAutohrizationAllow.value = CLLocationManager.locationServicesEnabled()
+        isRequestLocationMarking
+            .sink { [weak self] isRequestLocationMarking in
+                guard let self = self else { return }
+                if isRequestLocationMarking {
+                    self.requestLocationMarking()
+                } else {
+                    self.cancelLocationMarking()
+                }
+            }
+            .store(in: &disposeBag)
 
         #if DEBUG
         twitterTextParseResults.print().sink { _ in }.store(in: &disposeBag)
         #endif
+    }
+    
+    deinit {
+        os_log("%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
+        locationManager.stopUpdatingLocation()
     }
     
 }
@@ -269,10 +302,78 @@ extension ComposeTweetViewModel {
     
 }
 
+extension ComposeTweetViewModel {
+
+    var authorizationStatus: CLAuthorizationStatus {
+        if #available(iOS 14.0, *) {
+            return locationManager.authorizationStatus
+        } else {
+            // Fallback on earlier versions
+            return CLLocationManager.authorizationStatus()
+        }
+    }
+    
+    func requestLocationMarking() {
+        os_log("%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
+
+        switch authorizationStatus {
+        case .notDetermined:
+            locationManager.requestWhenInUseAuthorization()
+        case .authorizedAlways, .authorizedWhenInUse:
+            locationManager.startUpdatingLocation()
+        case .restricted, .denied:
+            break
+        @unknown default:
+            break
+        }
+    }
+    
+    func cancelLocationMarking() {
+        os_log("%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
+        locationManager.stopUpdatingLocation()
+    }
+    
+}
+
 // MARK: - TwitterMediaServiceDelegate
 extension ComposeTweetViewModel: TwitterMediaServiceDelegate {
     func twitterMediaService(_ service: TwitterMediaService, uploadStateDidChange state: TwitterMediaService.UploadState?) {
         // trigger new output event
         mediaServices.value = mediaServices.value
     }
+}
+
+// MARK: - CLLocationManagerDelegate
+extension ComposeTweetViewModel: CLLocationManagerDelegate {
+    
+    func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
+        os_log("%{public}s[%{public}ld], %{public}s: status: %s", ((#file as NSString).lastPathComponent), #line, #function, String(describing: status))
+
+        switch status {
+        case .authorizedAlways, .authorizedWhenInUse:
+            manager.startUpdatingLocation()
+        default:
+            break
+        }
+    }
+    
+    @available(iOS 14.0, *)
+    func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
+        os_log("%{public}s[%{public}ld], %{public}s: status", ((#file as NSString).lastPathComponent), #line, #function, String(describing: manager.authorizationStatus))
+        switch manager.authorizationStatus {
+        case .authorizedAlways, .authorizedWhenInUse:
+            manager.startUpdatingLocation()
+        default:
+            break
+        }
+    }
+    
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        let location = locations.first
+    }
+    
+    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
+        
+    }
+    
 }

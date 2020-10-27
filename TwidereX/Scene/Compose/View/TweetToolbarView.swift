@@ -21,35 +21,35 @@ final class TweetToolbarView: UIView {
     weak var delegate: TweetToolbarViewDelegate?
     
     let cameraButton: UIButton = {
-        let button = UIButton(type: .system)
+        let button = UIButton(type: .custom)
         button.imageView?.tintColor = .secondaryLabel
         button.setImage(Asset.ObjectTools.camera.image.withRenderingMode(.alwaysTemplate), for: .normal)
         return button
     }()
     
     let gifButton: UIButton = {
-        let button = UIButton(type: .system)
+        let button = UIButton(type: .custom)
         button.imageView?.tintColor = .secondaryLabel
         button.setImage(Asset.ObjectTools.gif.image.withRenderingMode(.alwaysTemplate), for: .normal)
         return button
     }()
     
     let atButton: UIButton = {
-        let button = UIButton(type: .system)
+        let button = UIButton(type: .custom)
         button.imageView?.tintColor = .secondaryLabel
         button.setImage(Asset.Communication.at.image.withRenderingMode(.alwaysTemplate), for: .normal)
         return button
     }()
     
     let topicButton: UIButton = {
-        let button = UIButton(type: .system)
+        let button = UIButton(type: .custom)
         button.imageView?.tintColor = .secondaryLabel
         button.setImage(Asset.Symbol.sharp.image.withRenderingMode(.alwaysTemplate), for: .normal)
         return button
     }()
     
     let locationButton: UIButton = {
-        let button = UIButton(type: .system)
+        let button = UIButton(type: .custom)
         button.imageView?.tintColor = .secondaryLabel
         button.setImage(Asset.ObjectTools.mappin.image.withRenderingMode(.alwaysTemplate), for: .normal)
         return button

@@ -419,7 +419,7 @@ extension ComposeTweetViewController: TweetToolbarViewDelegate {
     }
     
     func tweetToolbarView(_ tweetToolbarView: TweetToolbarView, locationButtonDidPressed sender: UIButton) {
-        
+        viewModel.isRequestLocationMarking.value.toggle()
     }
     
 }

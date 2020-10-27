@@ -28,6 +28,7 @@ extension Twitter.API {
     
     public enum Account { }
     public enum Favorites { }
+    public enum Geo { }
     public enum Media { }
     public enum OAuth { }
     public enum Statuses { }
