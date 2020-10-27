@@ -92,4 +92,14 @@ extension CycleCounterView {
         backRingLayer.path = UIBezierPath(arcCenter: .zero, radius: bounds.width * 0.5, startAngle: -0.5 * CGFloat.pi, endAngle: 1.5 * CGFloat.pi, clockwise: true).cgPath
         frontRingLayer.path = UIBezierPath(arcCenter: .zero, radius: bounds.width * 0.5, startAngle: -0.5 * CGFloat.pi, endAngle: 1.5 * CGFloat.pi, clockwise: true).cgPath
     }
+    
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        
+        backRingLayer.fillColor = UIColor.clear.cgColor
+        backRingLayer.strokeColor = UIColor.secondarySystemBackground.cgColor
+        
+        frontRingLayer.fillColor = UIColor.clear.cgColor
+        frontRingLayer.strokeColor = Asset.Colors.hightLight.color.cgColor
+    }
 }

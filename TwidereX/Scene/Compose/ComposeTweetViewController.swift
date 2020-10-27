@@ -32,6 +32,17 @@ final class ComposeTweetViewController: UIViewController, NeedsDependency {
         return tableView
     }()
     
+    private(set) lazy var mediaCollectionView: UICollectionView = {
+        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: createCollectionViewLayout())
+        collectionView.register(ComposeTweetMediaCollectionViewCell.self, forCellWithReuseIdentifier: String(describing: ComposeTweetMediaCollectionViewCell.self))
+        collectionView.backgroundColor = .clear
+        collectionView.alwaysBounceVertical = false
+        collectionView.alwaysBounceHorizontal = true
+        collectionView.showsVerticalScrollIndicator = false
+        collectionView.showsHorizontalScrollIndicator = false
+        return collectionView
+    }()
+    
     let cycleCounterView = CycleCounterView()
     let tweetContentOverflowLabel: UILabel = {
         let label = UILabel()
@@ -41,6 +52,35 @@ final class ComposeTweetViewController: UIViewController, NeedsDependency {
     }()
     let tweetToolbarView = TweetToolbarView()
     var tweetToolbarViewBottomLayoutConstraint: NSLayoutConstraint!
+}
+
+extension ComposeTweetViewController {
+    func createCollectionViewLayout() -> UICollectionViewCompositionalLayout {
+        let item = NSCollectionLayoutItem(
+            layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0),
+                                               heightDimension: .fractionalHeight(1.0)))
+        item.contentInsets = NSDirectionalEdgeInsets(top: 2, leading: 2, bottom: 2, trailing: 2)
+        
+        let group = NSCollectionLayoutGroup.horizontal(
+            layoutSize: NSCollectionLayoutSize(widthDimension: .absolute(60),
+                                               heightDimension: .absolute(60)),
+            subitems: [item])
+        
+        let section = NSCollectionLayoutSection(group: group)
+        section.interGroupSpacing = 8
+        if #available(iOS 14.0, *) {
+            section.contentInsetsReference = .layoutMargins
+        } else {
+            // Fallback on earlier versions
+            // iOS 13 workaround
+            section.contentInsets.leading = 16
+            section.contentInsets.trailing = 16
+        }
+        section.orthogonalScrollingBehavior = .continuousGroupLeadingBoundary
+        
+        let layout = UICollectionViewCompositionalLayout(section: section)
+        return layout
+    }
 }
 
 extension ComposeTweetViewController {
@@ -64,9 +104,18 @@ extension ComposeTweetViewController {
             tableView.frameLayoutGuide.bottomAnchor.constraint(equalTo: view.bottomAnchor),
         ])
         
+        mediaCollectionView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(mediaCollectionView)
+        NSLayoutConstraint.activate([
+            mediaCollectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            mediaCollectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            mediaCollectionView.heightAnchor.constraint(equalToConstant: 60).priority(.defaultHigh),
+        ])
+        
         cycleCounterView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(cycleCounterView)
         NSLayoutConstraint.activate([
+            cycleCounterView.topAnchor.constraint(equalTo: mediaCollectionView.bottomAnchor, constant: 16),
             cycleCounterView.leadingAnchor.constraint(equalTo: view.layoutMarginsGuide.leadingAnchor),
             cycleCounterView.widthAnchor.constraint(equalToConstant: 18).priority(.defaultHigh),
             cycleCounterView.heightAnchor.constraint(equalToConstant: 18).priority(.defaultHigh),
@@ -95,6 +144,24 @@ extension ComposeTweetViewController {
         viewModel.setupDiffableDataSource(for: tableView)
         tableView.delegate = self
         tableView.dataSource = viewModel.diffableDataSource
+        
+        viewModel.setupDiffableDataSource(for: mediaCollectionView)
+        mediaCollectionView.delegate = self
+        mediaCollectionView.dataSource = viewModel.mediaDiffableDataSource
+        
+        viewModel.mediaServices
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] services in
+                guard let self = self else { return }
+                var snapshot = NSDiffableDataSourceSnapshot<ComposeTweetMediaSection, ComposeTweetMediaItem>()
+                snapshot.appendSections([.main])
+                let items = services.map { service -> ComposeTweetMediaItem in
+                    return ComposeTweetMediaItem.media(mediaService: service)
+                }
+                snapshot.appendItems(items, toSection: .main)
+                self.viewModel.mediaDiffableDataSource.apply(snapshot, animatingDifferences: true, completion: nil)
+            }
+            .store(in: &disposeBag)
         
         // respond scrollView overlap change
         view.layoutIfNeeded()
@@ -171,6 +238,12 @@ extension ComposeTweetViewController {
         viewModel.isComposeBarButtonEnabled
             .receive(on: DispatchQueue.main)
             .assign(to: \.isEnabled, on: composeBarButtonItem)
+            .store(in: &disposeBag)
+        
+        // update toolbar
+        viewModel.isCameraToolbarButtonEnabled
+            .receive(on: DispatchQueue.main)
+            .assign(to: \.isEnabled, on: tweetToolbarView.cameraButton)
             .store(in: &disposeBag)
             
         // setup tableView snap behavior
@@ -379,6 +452,12 @@ extension ComposeTweetViewController: UIImagePickerControllerDelegate & UINaviga
     
     func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
         os_log("%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
+        picker.dismiss(animated: true, completion: nil)
     }
+    
+}
+
+// MARK: - UICollectionViewDelegate
+extension ComposeTweetViewController: UICollectionViewDelegate {
     
 }

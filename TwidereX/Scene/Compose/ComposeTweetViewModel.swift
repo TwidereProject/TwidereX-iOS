@@ -13,7 +13,6 @@ import CoreDataStack
 import AlamofireImage
 import twitter_text
 
-
 final class ComposeTweetViewModel {
     
     var disposeBag = Set<AnyCancellable>()
@@ -28,13 +27,15 @@ final class ComposeTweetViewModel {
     let repliedToCellFrame = CurrentValueSubject<CGRect, Never>(.zero)
 
     // output
-    var diffableDataSource: UITableViewDiffableDataSource<ComposeTweetSection, ComposeTweetItem>?
+    var diffableDataSource: UITableViewDiffableDataSource<ComposeTweetSection, ComposeTweetItem>!
+    var mediaDiffableDataSource: UICollectionViewDiffableDataSource<ComposeTweetMediaSection, ComposeTweetMediaItem>!
     let tableViewState = CurrentValueSubject<TableViewState, Never>(.fold)
     let avatarImageURL = CurrentValueSubject<URL?, Never>(nil)
     let isAvatarLockHidden = CurrentValueSubject<Bool, Never>(true)
     let twitterTextParseResults = CurrentValueSubject<TwitterTextParseResults, Never>(.init())
     let mediaServices = CurrentValueSubject<[TwitterMediaService], Never>([])
     let isComposeBarButtonEnabled = CurrentValueSubject<Bool, Never>(false)
+    let isCameraToolbarButtonEnabled = CurrentValueSubject<Bool, Never>(true)
     
     init(context: AppContext, repliedTweetObjectID: NSManagedObjectID?) {
         self.context = context
@@ -45,20 +46,36 @@ final class ComposeTweetViewModel {
             .assign(to: \.value, on: twitterTextParseResults)
             .store(in: &disposeBag)
         
+        let isTweetContentEmpty = twitterTextParseResults
+            .map { parseResult in parseResult.weightedLength == 0 }
         let isTweetContentValid = twitterTextParseResults
-            .map { parseResult in parseResult.weightedLength > 0 && parseResult.isValid }
-            
+            .map { parseResult in parseResult.isValid }
+        let isMediaEmpty = mediaServices
+            .map { $0.isEmpty }
         let isMediaUploadAllSuccess = mediaServices
             .map { services in services.allSatisfy { $0.uploadStateMachineSubject.value is TwitterMediaService.UploadState.Success } }
-        Publishers.CombineLatest(
+        Publishers.CombineLatest4(
             isTweetContentValid.eraseToAnyPublisher(),
+            isTweetContentEmpty.eraseToAnyPublisher(),
+            isMediaEmpty.eraseToAnyPublisher(),
             isMediaUploadAllSuccess.eraseToAnyPublisher()
         )
-        .map { isTweetContentValid, isMediaUploadAllSuccess in
-            isTweetContentValid && isMediaUploadAllSuccess
+        .map { isTweetContentValid, isTweetContentEmpty, isMediaEmpty, isMediaUploadAllSuccess in
+            if isMediaEmpty {
+                return isTweetContentValid && !isTweetContentEmpty
+            } else {
+                return isTweetContentValid && isMediaUploadAllSuccess
+            }
         }
         .assign(to: \.value, on: isComposeBarButtonEnabled)
         .store(in: &disposeBag)
+        
+        mediaServices
+            .map { services -> Bool in
+                return services.count < 4
+            }
+            .assign(to: \.value, on: isCameraToolbarButtonEnabled)
+            .store(in: &disposeBag)
 
         #if DEBUG
         twitterTextParseResults.print().sink { _ in }.store(in: &disposeBag)
@@ -98,8 +115,7 @@ extension ComposeTweetViewModel {
                 // set avatar
                 self.avatarImageURL
                     .receive(on: DispatchQueue.main)
-                    .sink { [weak self] url in
-                        guard let self = self else { return }
+                    .sink { url in
                         let placeholderImage = UIImage
                             .placeholder(size: TimelinePostView.avatarImageViewSize, color: .systemFill)
                             .af.imageRoundedIntoCircle()
@@ -185,6 +201,72 @@ extension ComposeTweetViewModel {
         // set tweet content text
         cell.timelinePostView.activeTextLabel.text = tweet.text
     }
+}
+
+extension ComposeTweetViewModel {
+    
+    func setupDiffableDataSource(for mediaCollectionView: UICollectionView) {
+        mediaDiffableDataSource = UICollectionViewDiffableDataSource(collectionView: mediaCollectionView) { collectionView, indexPath, item -> UICollectionViewCell? in
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: ComposeTweetMediaCollectionViewCell.self), for: indexPath) as! ComposeTweetMediaCollectionViewCell
+            let imageViewSize = CGSize(width: 56, height: 56)
+            let scale = collectionView.window?.screen.scale ?? UIScreen.main.scale
+            let placehoderImage = UIImage.placeholder(size: imageViewSize, color: .systemFill)
+            if case let .media(service) = item {
+                switch service.payload {
+                case .image(let url):
+                    let imageData = try? Data(contentsOf: url)
+                    let image = imageData.flatMap { UIImage(data: $0, scale: scale) } ?? placehoderImage
+                    image.af.inflate()
+                    let imageFilter = AspectScaledToFillSizeWithRoundedCornersFilter(
+                        size: imageViewSize,
+                        radius: 8.0,
+                        divideRadiusByImageScale: false
+                    )
+                    let filteredImage = imageFilter.filter(image)
+                    cell.imageView.image = filteredImage
+                    
+                default:
+                    // TODO:
+                    break
+                }
+                
+                cell.overlayBlurVisualEffectView.layer.masksToBounds = true
+                cell.overlayBlurVisualEffectView.layer.cornerRadius = 8.0
+                
+                service.uploadStateMachineSubject
+                    .receive(on: DispatchQueue.main)
+                    .sink { state in
+                        guard let state = state else { return }
+                        switch state {
+                        case is TwitterMediaService.UploadState.Init,
+                             is TwitterMediaService.UploadState.Append,
+                             is TwitterMediaService.UploadState.Finalize,
+                             is TwitterMediaService.UploadState.FinalizePending:
+                            UIView.animate(withDuration: 0.3) {
+                                cell.overlayBlurVisualEffectView.alpha = 0.5
+                            }
+                            cell.uploadActivityIndicatorView.startAnimating()
+                        case is TwitterMediaService.UploadState.Success:
+                            UIView.animate(withDuration: 0.3) {
+                                cell.overlayBlurVisualEffectView.alpha = 0.0
+                            }
+                        case is TwitterMediaService.UploadState.Fail:
+                            // TODO:
+                            UIView.animate(withDuration: 0.3) {
+                                cell.overlayBlurVisualEffectView.alpha  = 0.5
+                            }
+                        default:
+                            break
+                        }
+                    }
+                    .store(in: &cell.disposeBag)
+            } else {
+                assertionFailure()
+            }
+            return cell
+        }
+    }
+    
 }
 
 // MARK: - TwitterMediaServiceDelegate

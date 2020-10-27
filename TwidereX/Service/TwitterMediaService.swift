@@ -30,7 +30,7 @@ class TwitterMediaService {
     
     // output
     var slice: [Data] = []
-    var mediaType: String = ""
+    var mediaType: MediaType = .jpeg
     var mediaID: String? = nil
     
     private(set) lazy var uploadStateMachine: GKStateMachine = {
@@ -65,6 +65,27 @@ class TwitterMediaService {
         disposeBag.removeAll()
     }
 
+}
+
+extension TwitterMediaService {
+    enum MediaType: String {
+        case jpeg = "image/jpeg"
+        case png = "image/png"
+        case gif = "image/gif"
+        case mp4 = "video/mp4"
+    }
+}
+
+extension TwitterMediaService: Equatable, Hashable {
+    
+    static func == (lhs: TwitterMediaService, rhs: TwitterMediaService) -> Bool {
+        return lhs.identifier == rhs.identifier
+    }
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(identifier)
+    }
+    
 }
 
 extension TwitterMediaService {
@@ -166,22 +187,22 @@ extension TwitterMediaService.UploadState {
             DispatchQueue.global(qos: .userInitiated)
                 .async {
                     let slice: [Data]
-                    let mediaType: String
+                    let mediaType: TwitterMediaService.MediaType
                     switch payload {
                     case .image(let url):
                         slice = payload.slice()
                         mediaType = slice.first.flatMap { data in
-                            return data.kf.imageFormat == .PNG ? "image/png" : "image/jpeg"
-                        } ?? ""
+                            return data.kf.imageFormat == .PNG ? .png : .jpeg
+                        } ?? .jpeg
                     case .gif(let url):
-                        slice = []
-                        mediaType = "image/gif"
+                        slice = []  // TODO:
+                        mediaType = .gif
                     case .video(let url):
                         slice = []  // TODO:
-                        mediaType = "video/mp4"
+                        mediaType = .mp4
                     }
                     
-                    guard !slice.isEmpty, !mediaType.isEmpty else {
+                    guard !slice.isEmpty else {
                         DispatchQueue.main.async {
                             stateMachine.enter(Fail.self)
                         }
@@ -189,7 +210,7 @@ extension TwitterMediaService.UploadState {
                     }
                     
                     let totalBytes = slice.reduce(0, { result, next in return result + next.count })
-                    service.context.apiService.mediaInit(totalBytes: totalBytes, mediaType: mediaType, authorization: authorization)
+                    service.context.apiService.mediaInit(totalBytes: totalBytes, mediaType: mediaType.rawValue, authorization: authorization)
                         .retry(3)
                         .receive(on: DispatchQueue.main)
                         .sink { completion in
