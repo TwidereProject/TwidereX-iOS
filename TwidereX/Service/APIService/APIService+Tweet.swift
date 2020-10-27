@@ -17,6 +17,7 @@ extension APIService {
     
     func tweet(
         content: String,
+        mediaIDs: [String]?,
         replyToTweetObjectID: NSManagedObjectID?,
         authorization: Twitter.API.OAuth.Authorization
     ) -> AnyPublisher<Twitter.Response.Content<Twitter.Entity.Tweet>, Error> {
@@ -28,7 +29,7 @@ extension APIService {
                     status: content,
                     inReplyToStatusID: nil,
                     autoPopulateReplyMetadata: false,
-                    mediaIDs: nil,
+                    mediaIDs: mediaIDs?.joined(separator: ","),
                     latitude: nil,
                     longitude: nil
                 )

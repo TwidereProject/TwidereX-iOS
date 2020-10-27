@@ -17,6 +17,7 @@ import twitter_text
 final class ComposeTweetViewModel {
     
     var disposeBag = Set<AnyCancellable>()
+    var mediaServicesUploadStatusStatesDisposeBag = Set<AnyCancellable>()
     
     // input
     let context: AppContext
@@ -31,8 +32,9 @@ final class ComposeTweetViewModel {
     let tableViewState = CurrentValueSubject<TableViewState, Never>(.fold)
     let avatarImageURL = CurrentValueSubject<URL?, Never>(nil)
     let isAvatarLockHidden = CurrentValueSubject<Bool, Never>(true)
-    let twitterTextparseResults = CurrentValueSubject<TwitterTextParseResults, Never>(.init())
+    let twitterTextParseResults = CurrentValueSubject<TwitterTextParseResults, Never>(.init())
     let mediaServices = CurrentValueSubject<[TwitterMediaService], Never>([])
+    let isComposeBarButtonEnabled = CurrentValueSubject<Bool, Never>(false)
     
     init(context: AppContext, repliedTweetObjectID: NSManagedObjectID?) {
         self.context = context
@@ -40,20 +42,36 @@ final class ComposeTweetViewModel {
         
         composeContent
             .map { text in self.twitterTextParser.parseTweet(text) }
-            .assign(to: \.value, on: twitterTextparseResults)
+            .assign(to: \.value, on: twitterTextParseResults)
             .store(in: &disposeBag)
         
+        let isTweetContentValid = twitterTextParseResults
+            .map { parseResult in parseResult.weightedLength > 0 && parseResult.isValid }
+            
+        let isMediaUploadAllSuccess = mediaServices
+            .map { services in services.allSatisfy { $0.uploadStateMachineSubject.value is TwitterMediaService.UploadState.Success } }
+        Publishers.CombineLatest(
+            isTweetContentValid.eraseToAnyPublisher(),
+            isMediaUploadAllSuccess.eraseToAnyPublisher()
+        )
+        .map { isTweetContentValid, isMediaUploadAllSuccess in
+            isTweetContentValid && isMediaUploadAllSuccess
+        }
+        .assign(to: \.value, on: isComposeBarButtonEnabled)
+        .store(in: &disposeBag)
+
         #if DEBUG
-        twitterTextparseResults.print().sink { _ in }.store(in: &disposeBag)
+        twitterTextParseResults.print().sink { _ in }.store(in: &disposeBag)
         #endif
     }
     
 }
 
 extension ComposeTweetViewModel {
+    // reply/input snap behavior
     enum TableViewState {
-        case fold
-        case expand
+        case fold       // snap to input
+        case expand     // snap to reply
     }
 }
 
@@ -169,6 +187,10 @@ extension ComposeTweetViewModel {
     }
 }
 
-extension ComposeTweetViewModel {
-
+// MARK: - TwitterMediaServiceDelegate
+extension ComposeTweetViewModel: TwitterMediaServiceDelegate {
+    func twitterMediaService(_ service: TwitterMediaService, uploadStateDidChange state: TwitterMediaService.UploadState?) {
+        // trigger new output event
+        mediaServices.value = mediaServices.value
+    }
 }

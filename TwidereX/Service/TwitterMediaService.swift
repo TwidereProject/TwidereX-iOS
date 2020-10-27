@@ -13,6 +13,10 @@ import GameplayKit
 import TwitterAPI
 import Kingfisher
 
+protocol TwitterMediaServiceDelegate: class {
+    func twitterMediaService(_ service: TwitterMediaService, uploadStateDidChange state: TwitterMediaService.UploadState?)
+}
+
 class TwitterMediaService {
     
     var disposeBag = Set<AnyCancellable>()
@@ -20,38 +24,45 @@ class TwitterMediaService {
     
     // input
     let context: AppContext
-    var isCancelled = false
     let payload: Payload
+    var isCancelled = false
+    weak var delegate: TwitterMediaServiceDelegate?
     
     // output
     var slice: [Data] = []
     var mediaType: String = ""
     var mediaID: String? = nil
     
-    private(set) lazy var uploadStatusStateMachine: GKStateMachine = {
+    private(set) lazy var uploadStateMachine: GKStateMachine = {
         let stateMachine = GKStateMachine(states: [
-            TwitterMediaService.UploadStatusState.Init(service: self),
-            TwitterMediaService.UploadStatusState.Append(service: self),
-            TwitterMediaService.UploadStatusState.Finalize(service: self),
-            TwitterMediaService.UploadStatusState.FinalizePending(service: self),
-            TwitterMediaService.UploadStatusState.Fail(service: self),
-            TwitterMediaService.UploadStatusState.Success(service: self),
+            TwitterMediaService.UploadState.Init(service: self),
+            TwitterMediaService.UploadState.Append(service: self),
+            TwitterMediaService.UploadState.Finalize(service: self),
+            TwitterMediaService.UploadState.FinalizePending(service: self),
+            TwitterMediaService.UploadState.Fail(service: self),
+            TwitterMediaService.UploadState.Success(service: self),
         ])
         return stateMachine
     }()
-    lazy var uploadStatusStateMachinePublisher = CurrentValueSubject<TwitterMediaService.UploadStatusState?, Never>(nil)
+    lazy var uploadStateMachineSubject = CurrentValueSubject<TwitterMediaService.UploadState?, Never>(nil)
     
     init(context: AppContext, payload: Payload) {
         self.context = context
         self.payload = payload
         
-        uploadStatusStateMachine.enter(TwitterMediaService.UploadStatusState.Init.self)
+        uploadStateMachine.enter(TwitterMediaService.UploadState.Init.self)
+        uploadStateMachineSubject
+            .sink { [weak self] state in
+                guard let self = self else { return }
+                self.delegate?.twitterMediaService(self, uploadStateDidChange: state)
+            }
+            .store(in: &disposeBag)
     }
     
     func cancel() {
+        uploadStateMachine.enter(TwitterMediaService.UploadState.Fail.self)
         isCancelled = true
         disposeBag.removeAll()
-        uploadStatusStateMachine.enter(TwitterMediaService.UploadStatusState.Fail.self)
     }
 
 }
@@ -106,7 +117,9 @@ extension TwitterMediaService {
                             }
                         }
                     } while (imageData.count > maxPayloadSizeInBytes)
-                    return [imageData]
+                    let chunks = imageData.chunks(size: 1 * 1024 * 1024)      // 1 MiB chunks
+                    os_log("%{public}s[%{public}ld], %{public}s: split to %ld chunks", ((#file as NSString).lastPathComponent), #line, #function, chunks.count)
+                    return chunks
                 } catch {
                     os_log("%{public}s[%{public}ld], %{public}s: slice get error: %s", ((#file as NSString).lastPathComponent), #line, #function, error.localizedDescription)
                     return []
@@ -121,7 +134,7 @@ extension TwitterMediaService {
 }
 
 extension TwitterMediaService {
-    class UploadStatusState: GKState {
+    class UploadState: GKState {
         weak var service: TwitterMediaService?
         
         init(service: TwitterMediaService) {
@@ -130,12 +143,12 @@ extension TwitterMediaService {
         
         override func didEnter(from previousState: GKState?) {
             os_log("%{public}s[%{public}ld], %{public}s: enter %s, previous: %s", ((#file as NSString).lastPathComponent), #line, #function, self.debugDescription, previousState.debugDescription)
-            service?.uploadStatusStateMachinePublisher.send(self)
+            service?.uploadStateMachineSubject.send(self)
         }
     }
 }
-extension TwitterMediaService.UploadStatusState {
-    class Init: TwitterMediaService.UploadStatusState {
+extension TwitterMediaService.UploadState {
+    class Init: TwitterMediaService.UploadState {
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {
             return stateClass == Append.self || stateClass == Fail.self
         }
@@ -201,7 +214,7 @@ extension TwitterMediaService.UploadStatusState {
         }
     }
     
-    class Append: TwitterMediaService.UploadStatusState {
+    class Append: TwitterMediaService.UploadState {
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {
             return stateClass == Finalize.self || stateClass == Fail.self
         }
@@ -234,40 +247,130 @@ extension TwitterMediaService.UploadStatusState {
                     switch completion {
                     case .finished:
                         os_log("%{public}s[%{public}ld], %{public}s: append success", ((#file as NSString).lastPathComponent), #line, #function)
-
+                        stateMachine.enter(Finalize.self)
                     case .failure(let error):
                         os_log("%{public}s[%{public}ld], %{public}s: append fail: %s", ((#file as NSString).lastPathComponent), #line, #function, error.localizedDescription)
+                        stateMachine.enter(Fail.self)
                     }
                 } receiveValue: { responses in
-                    os_log("%{public}s[%{public}ld], %{public}s: append %ld media chunk", ((#file as NSString).lastPathComponent), #line, #function, responses.count)
-                    stateMachine.enter(Finalize.self)
+                    os_log("%{public}s[%{public}ld], %{public}s: append %ld media chunks", ((#file as NSString).lastPathComponent), #line, #function, responses.count)
                 }
                 .store(in: &service.disposeBag)
         }
     }
     
-    class Finalize: TwitterMediaService.UploadStatusState {
+    class Finalize: TwitterMediaService.UploadState {
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {
             return stateClass == FinalizePending.self || stateClass == Success.self || stateClass == Fail.self
         }
+        
+        override func didEnter(from previousState: GKState?) {
+            super.didEnter(from: previousState)
+            
+            guard let service = service, let stateMachine = stateMachine else { return }
+            guard !service.isCancelled,
+                  let autentication = service.context.authenticationService.currentActiveTwitterAutentication.value,
+                  let authorization = try? autentication.authorization(appSecret: AppSecret.shared)
+            else { return }
+            
+            guard let mediaID = service.mediaID else {
+                stateMachine.enter(Fail.self)
+                return
+            }
+            
+            service.context.apiService.mediaFinalize(mediaID: mediaID, authorization: authorization)
+                .receive(on: DispatchQueue.main)
+                .sink { completion in
+                    switch completion {
+                    case .finished:
+                        break
+                    case .failure(let error):
+                        os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: finalize fail: %s", ((#file as NSString).lastPathComponent), #line, #function, error.localizedDescription)
+                        stateMachine.enter(Fail.self)
+                    }
+                } receiveValue: { response in
+                    let response = response.value
+                    if let info = response.processingInfo {
+                        os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: finalize status pending. check after %lds", ((#file as NSString).lastPathComponent), #line, #function, info.checkAfterSecs)
+                        stateMachine.enter(FinalizePending.self)
+                    } else {
+                        os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: finalize success", ((#file as NSString).lastPathComponent), #line, #function)
+                        stateMachine.enter(Success.self)
+                    }
+                    
+                }
+                .store(in: &service.disposeBag)
+
+        }
     }
     
-    class FinalizePending: TwitterMediaService.UploadStatusState {
+    class FinalizePending: TwitterMediaService.UploadState {
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {
             return stateClass == Success.self || stateClass == Fail.self
         }
+        
+        override func didEnter(from previousState: GKState?) {
+            super.didEnter(from: previousState)
+            
+            guard let service = service, let stateMachine = stateMachine else { return }
+            guard !service.isCancelled,
+                  let autentication = service.context.authenticationService.currentActiveTwitterAutentication.value,
+                  let authorization = try? autentication.authorization(appSecret: AppSecret.shared)
+            else { return }
+            
+            guard let mediaID = service.mediaID else {
+                stateMachine.enter(Fail.self)
+                return
+            }
+            
+            service.context.apiService.mediaStatus(mediaID: mediaID, authorization: authorization)
+                .receive(on: DispatchQueue.main)
+                .sink { completion in
+                    switch completion {
+                    case .finished:
+                        break
+                    case .failure(let error):
+                        os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: check media status fail: %s", ((#file as NSString).lastPathComponent), #line, #function, error.localizedDescription)
+                    }
+                } receiveValue: { response in
+                    let response = response.value
+                    switch response.processingInfo.state {
+                    case "succeeded":
+                        stateMachine.enter(Success.self)
+                    case "pending", "in_progress":
+                        let delay = TimeInterval(response.processingInfo.checkAfterSecs ?? 10)
+                        DispatchQueue.main.asyncAfter(deadline: .now() + delay) { [weak stateMachine] in
+                            stateMachine?.enter(FinalizePending.self)
+                        }
+                    case "failed":
+                        stateMachine.enter(Fail.self)
+                    default:
+                        assertionFailure()
+                        stateMachine.enter(Fail.self)
+                    }
+                }
+                .store(in: &service.disposeBag)
+        }
     }
     
-    class Fail: TwitterMediaService.UploadStatusState {
+    class Fail: TwitterMediaService.UploadState {
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {
             return false
         }
     }
     
-    class Success: TwitterMediaService.UploadStatusState {
+    class Success: TwitterMediaService.UploadState {
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {
             return false
         }
     }
     
+}
+
+extension Data {
+    func chunks(size: Int) -> [Data] {
+        return stride(from: 0, to: count, by: size).map {
+            Data(self[$0..<Swift.min(count, $0 + size)])
+        }
+    }
 }

@@ -21,6 +21,8 @@ final class ComposeTweetViewController: UIViewController, NeedsDependency {
     var disposeBag = Set<AnyCancellable>()
     var viewModel: ComposeTweetViewModel!
     
+    lazy var composeBarButtonItem = UIBarButtonItem(image: Asset.ObjectTools.paperplane.image.withRenderingMode(.alwaysTemplate), style: .plain, target: self, action: #selector(ComposeTweetViewController.sendBarButtonItemPressed(_:)))
+    
     let tableView: UITableView = {
         let tableView = ControlContainableTableView()
         tableView.register(RepliedToTweetContentTableViewCell.self, forCellReuseIdentifier: String(describing: RepliedToTweetContentTableViewCell.self))
@@ -50,7 +52,7 @@ extension ComposeTweetViewController {
         view.backgroundColor = .systemBackground
         navigationItem.leftBarButtonItem = UIBarButtonItem(image: Asset.Editing.xmark.image.withRenderingMode(.alwaysTemplate), style: .plain, target: self, action: #selector(ComposeTweetViewController.closeBarButtonItemPressed(_:)))
         navigationItem.leftBarButtonItem?.tintColor = .label
-        navigationItem.rightBarButtonItem = UIBarButtonItem(image: Asset.ObjectTools.paperplane.image.withRenderingMode(.alwaysTemplate), style: .plain, target: self, action: #selector(ComposeTweetViewController.sendBarButtonItemPressed(_:)))
+        navigationItem.rightBarButtonItem = composeBarButtonItem
         navigationItem.rightBarButtonItem?.tintColor = Asset.Colors.hightLight.color
         
         tableView.translatesAutoresizingMaskIntoConstraints = false
@@ -137,7 +139,7 @@ extension ComposeTweetViewController {
         .store(in: &disposeBag)
         
         // set cycle counter. update compose button state
-        viewModel.twitterTextparseResults
+        viewModel.twitterTextParseResults
             .receive(on: DispatchQueue.main)
             .sink { [weak self] parseResult in
                 guard let self = self else { return }
@@ -152,20 +154,26 @@ extension ComposeTweetViewController {
                         return Asset.Colors.hightLight.color
                     }
                 }()
+                
+                // update counter appearance
                 UIView.animate(withDuration: 0.1) {
                     self.cycleCounterView.strokeColor.value = strokeColor
                     self.cycleCounterView.progress.value = progress
                 }
                 
+                // update overflow label text
                 let overflow = parseResult.weightedLength - maxWeightedTweetLength
                 self.tweetContentOverflowLabel.text = overflow > 0 ? "-\(overflow)" : " "
-                
-                let isComposeButtonEnabled = parseResult.weightedLength > 0 && parseResult.isValid
-                self.navigationItem.rightBarButtonItem?.isEnabled = isComposeButtonEnabled
             }
             .store(in: &disposeBag)
         
-        // setup snap behavior
+        // update composeBarButtonItem state
+        viewModel.isComposeBarButtonEnabled
+            .receive(on: DispatchQueue.main)
+            .assign(to: \.isEnabled, on: composeBarButtonItem)
+            .store(in: &disposeBag)
+            
+        // setup tableView snap behavior
         Publishers.CombineLatest(
             viewModel.repliedToCellFrame.eraseToAnyPublisher(),
             viewModel.tableViewState.eraseToAnyPublisher()
@@ -222,8 +230,14 @@ extension ComposeTweetViewController {
             return
         }
         
+        let mediaIDs: [String]? = {
+            let mediaIDs = viewModel.mediaServices.value.compactMap { $0.mediaID }
+            guard !mediaIDs.isEmpty else { return nil }
+            return mediaIDs
+        }()
         context.apiService.tweet(
             content: viewModel.composeContent.value,
+            mediaIDs: mediaIDs,
             replyToTweetObjectID: viewModel.repliedTweetObjectID,
             authorization: authorization
         )
@@ -355,6 +369,7 @@ extension ComposeTweetViewController: UIImagePickerControllerDelegate & UINaviga
         guard mediaType == "public.image" else { return }
         let imagePayload = TwitterMediaService.Payload.image(url)
         let mediaService = TwitterMediaService(context: context, payload: imagePayload)
+        mediaService.delegate = viewModel
         
         let value = viewModel.mediaServices.value
         viewModel.mediaServices.value = value + [mediaService]

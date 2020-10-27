@@ -29,6 +29,7 @@ extension Twitter.API.Media {
         request.httpMethod = "POST"
         request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
         request.httpBody = ("media_data=" + mediaData.urlEncoded).data(using: .utf8)
+        request.timeoutInterval = 60    // shoudl > 17 Kb/s for 1 MiB chunk
         return session.dataTaskPublisher(for: request)
             .tryMap { data, response in
                 guard data.isEmpty else {
@@ -53,6 +54,17 @@ extension Twitter.API.Media {
         return session.dataTaskPublisher(for: request)
             .tryMap { data, response in
                 let value = try Twitter.API.decode(type: FinalizeResponse.self, from: data, response: response)
+                return Twitter.Response.Content(value: value, response: response)
+            }
+            .eraseToAnyPublisher()
+    }
+    
+    public static func status(session: URLSession, authorization: Twitter.API.OAuth.Authorization, query: StatusQuery) -> AnyPublisher<Twitter.Response.Content<StatusResponse>, Error> {
+        var request = Twitter.API.request(url: uploadEndpointURL, httpMethod: "GET", authorization: authorization, queryItems: query.queryItems)
+        request.httpMethod = "GET"
+        return session.dataTaskPublisher(for: request)
+            .tryMap { data, response in
+                let value = try Twitter.API.decode(type: StatusResponse.self, from: data, response: response)
                 return Twitter.Response.Content(value: value, response: response)
             }
             .eraseToAnyPublisher()
@@ -153,7 +165,46 @@ extension Twitter.API.Media {
             public enum CodingKeys: String, CodingKey {
                 case state
                 case checkAfterSecs = "check_after_secs"
-                
+            }
+        }
+    }
+    
+    public struct StatusQuery {
+        public let command = "STATUS"
+        public let mediaID: String
+        
+        public init(mediaID: String) {
+            self.mediaID = mediaID
+        }
+        
+        var queryItems: [URLQueryItem]? {
+            var items: [URLQueryItem] = []
+            items.append(URLQueryItem(name: "command", value: command))
+            items.append(URLQueryItem(name: "media_id", value: mediaID))
+            guard !items.isEmpty else { return nil }
+            return items
+        }
+    }
+    
+    public struct StatusResponse: Codable {
+        public let mediaIDString: String
+        public let expiresAfterSecs: Int
+        public let processingInfo: ProcessingInfo
+        
+        public enum CodingKeys: String, CodingKey {
+            case mediaIDString = "media_id_string"
+            case expiresAfterSecs = "expires_after_secs"
+            case processingInfo = "processing_info"
+        }
+        
+        public struct ProcessingInfo: Codable {
+            public let state: String        // pending, in_progress, failed, succeeded
+            public let checkAfterSecs: Int?
+
+            
+            public enum CodingKeys: String, CodingKey {
+                case state
+                case checkAfterSecs = "check_after_secs"
             }
         }
     }
