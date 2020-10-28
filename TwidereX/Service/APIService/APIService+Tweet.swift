@@ -18,6 +18,7 @@ extension APIService {
     func tweet(
         content: String,
         mediaIDs: [String]?,
+        placeID: String?,
         replyToTweetObjectID: NSManagedObjectID?,
         authorization: Twitter.API.OAuth.Authorization
     ) -> AnyPublisher<Twitter.Response.Content<Twitter.Entity.Tweet>, Error> {
@@ -31,7 +32,8 @@ extension APIService {
                     autoPopulateReplyMetadata: false,
                     mediaIDs: mediaIDs?.joined(separator: ","),
                     latitude: nil,
-                    longitude: nil
+                    longitude: nil,
+                    placeID: placeID
                 )
                 promise(.success(query))
                 return
@@ -45,7 +47,8 @@ extension APIService {
                     autoPopulateReplyMetadata: true,
                     mediaIDs: nil,
                     latitude: nil,
-                    longitude: nil
+                    longitude: nil,
+                    placeID: nil
                 )
                 DispatchQueue.main.async {
                     promise(.success(query))

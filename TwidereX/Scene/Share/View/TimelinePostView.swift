@@ -86,6 +86,18 @@ final class TimelinePostView: UIView {
     let mosaicImageView = MosaicImageView()
     let quotePostView = QuotePostView()
     
+    let geoContainerStackView = UIStackView()
+    let geoButton: UIButton = {
+        let button = UIButton(type: .custom)
+        button.setInsets(forContentPadding: .zero, imageTitlePadding: 6)
+        button.imageView?.tintColor = .secondaryLabel
+        button.titleLabel?.font = .systemFont(ofSize: 12)
+        button.setImage(Asset.ObjectTools.mappinMini.image.withRenderingMode(.alwaysTemplate), for: .normal)
+        button.setTitleColor(.secondaryLabel, for: .normal)
+        button.isUserInteractionEnabled = false
+        return button
+    }()
+    
     let actionToolbar = TimelinePostActionToolbar()
     
     override init(frame: CGRect) {
@@ -199,7 +211,7 @@ extension TimelinePostView {
             retweetIconImageView.trailingAnchor.constraint(equalTo: avatarImageView.trailingAnchor),
         ])
         
-        // main container: [text | image | quote]
+        // main container: [text | image | quote | geo]
         tweetContainerStackView.addArrangedSubview(mainContainerStackView)
         mainContainerStackView.axis = .vertical
         mainContainerStackView.spacing = 8
@@ -208,7 +220,14 @@ extension TimelinePostView {
         mosaicImageView.translatesAutoresizingMaskIntoConstraints = false
         mainContainerStackView.addArrangedSubview(mosaicImageView)
         mainContainerStackView.addArrangedSubview(quotePostView)
+        mainContainerStackView.addArrangedSubview(geoContainerStackView)
         activeTextLabel.setContentCompressionResistancePriority(.required - 2, for: .vertical)
+        
+        // geo container: [geo | (padding)]
+        geoContainerStackView.axis = .horizontal
+        geoContainerStackView.distribution = .fill
+        geoContainerStackView.addArrangedSubview(geoButton)
+        geoContainerStackView.addArrangedSubview(UIView())
         
         // action toolbar
         actionToolbar.translatesAutoresizingMaskIntoConstraints = false
@@ -219,6 +238,7 @@ extension TimelinePostView {
         retweetContainerStackView.isHidden = true
         mosaicImageView.isHidden = true
         quotePostView.isHidden = true
+        geoContainerStackView.isHidden = true
     }
     
 }

@@ -10,6 +10,7 @@ import os.log
 import UIKit
 import Combine
 import Photos
+import TwitterAPI
 
 final class ComposeTweetViewController: UIViewController, NeedsDependency {
     
@@ -21,7 +22,7 @@ final class ComposeTweetViewController: UIViewController, NeedsDependency {
     var disposeBag = Set<AnyCancellable>()
     var viewModel: ComposeTweetViewModel!
     
-    lazy var composeBarButtonItem = UIBarButtonItem(image: Asset.ObjectTools.paperplane.image.withRenderingMode(.alwaysTemplate), style: .plain, target: self, action: #selector(ComposeTweetViewController.sendBarButtonItemPressed(_:)))
+    lazy var composeBarButtonItem = UIBarButtonItem(image: Asset.ObjectTools.paperplane.image.withRenderingMode(.alwaysTemplate), style: .plain, target: self, action: #selector(ComposeTweetViewController.composeBarButtonItemPressed(_:)))
     
     let tableView: UITableView = {
         let tableView = ControlContainableTableView()
@@ -50,6 +51,16 @@ final class ComposeTweetViewController: UIViewController, NeedsDependency {
         label.font = .systemFont(ofSize: 14, weight: .regular)
         return label
     }()
+    let locationButton: UIButton = {
+        let button = UIButton(type: .custom)
+        button.setInsets(forContentPadding: .zero, imageTitlePadding: 4)
+        button.imageView?.tintColor = .secondaryLabel
+        button.titleLabel?.font = .systemFont(ofSize: 14, weight: .medium)
+        button.setImage(Asset.ObjectTools.mappinMini.image.withRenderingMode(.alwaysTemplate), for: .normal)
+        button.setTitleColor(.secondaryLabel, for: .normal)
+        return button
+    }()
+    
     let tweetToolbarView = TweetToolbarView()
     var tweetToolbarViewBottomLayoutConstraint: NSLayoutConstraint!
 }
@@ -126,6 +137,13 @@ extension ComposeTweetViewController {
         NSLayoutConstraint.activate([
             tweetContentOverflowLabel.centerYAnchor.constraint(equalTo: cycleCounterView.centerYAnchor),
             tweetContentOverflowLabel.leadingAnchor.constraint(equalTo: cycleCounterView.trailingAnchor, constant: 4),
+        ])
+        
+        locationButton.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(locationButton)
+        NSLayoutConstraint.activate([
+            locationButton.trailingAnchor.constraint(equalTo: view.layoutMarginsGuide.trailingAnchor),
+            locationButton.centerYAnchor.constraint(equalTo: cycleCounterView.centerYAnchor),
         ])
         
         tweetToolbarView.translatesAutoresizingMaskIntoConstraints = false
@@ -245,7 +263,67 @@ extension ComposeTweetViewController {
             .receive(on: DispatchQueue.main)
             .assign(to: \.isEnabled, on: tweetToolbarView.cameraButton)
             .store(in: &disposeBag)
+        
+        viewModel.isLocationServicesEnabled
+            .receive(on: DispatchQueue.main)
+            .assign(to: \.isEnabled, on: tweetToolbarView.locationButton)
+            .store(in: &disposeBag)
+        
+        viewModel.isRequestLocationMarking
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] isRequestLocationMarking in
+                guard let self = self else { return }
+                let tintColor = isRequestLocationMarking ? Asset.Colors.hightLight.color : UIColor.secondaryLabel
+                UIView.animate(withDuration: 0.3) {
+                    self.tweetToolbarView.locationButton.imageView?.tintColor = tintColor
+                    self.locationButton.alpha = isRequestLocationMarking ? 1.0 : 0.0
+                }
+            }
+            .store(in: &disposeBag)
             
+        Publishers.CombineLatest(
+            viewModel.isRequestLocationMarking.eraseToAnyPublisher(),
+            viewModel.currentLocation.eraseToAnyPublisher()
+        )
+        .map { [weak self] isRequestLocationMarking, currentLocation -> AnyPublisher<Twitter.Entity.Place?, Never> in
+            guard let self = self else {
+                return Just(nil).eraseToAnyPublisher()
+            }
+            guard let twitterAuthentication = self.viewModel.currentTwitterAuthentication.value,
+                  let authorization = try? twitterAuthentication.authorization(appSecret: AppSecret.shared) else {
+                return Just(nil).eraseToAnyPublisher()
+            }
+            guard isRequestLocationMarking, let currentLocation = currentLocation else {
+                return Just(nil).eraseToAnyPublisher()
+            }
+            
+            if let place = self.viewModel.latestPlace.value {
+                return Just(place).eraseToAnyPublisher()
+            }
+            
+            return self.context.apiService.geoSearch(
+                latitude: currentLocation.coordinate.latitude,
+                longitude: currentLocation.coordinate.longitude,
+                granularity: "city",
+                authorization: authorization
+            )
+            .map { $0.value.first }
+            .replaceError(with: nil)
+            .eraseToAnyPublisher()
+        }
+        .switchToLatest()
+        .receive(on: DispatchQueue.main)
+        .sink { [weak self] place in
+            guard let self = self else { return }
+            os_log("%{public}s[%{public}ld], %{public}s: current place: %s", ((#file as NSString).lastPathComponent), #line, #function, place?.fullName ?? "<nil>")
+            if let place = place {
+                self.viewModel.latestPlace.value = place
+            }
+            self.viewModel.currentPlace.value = place
+            self.locationButton.setTitle(place?.fullName ?? "", for: .normal)
+        }
+        .store(in: &disposeBag)
+        
         // setup tableView snap behavior
         Publishers.CombineLatest(
             viewModel.repliedToCellFrame.eraseToAnyPublisher(),
@@ -293,7 +371,7 @@ extension ComposeTweetViewController {
         dismiss(animated: true, completion: nil)
     }
     
-    @objc private func sendBarButtonItemPressed(_ sender: UIBarButtonItem) {
+    @objc private func composeBarButtonItemPressed(_ sender: UIBarButtonItem) {
         os_log("%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
         
         // prepare authentication
@@ -311,6 +389,7 @@ extension ComposeTweetViewController {
         context.apiService.tweet(
             content: viewModel.composeContent.value,
             mediaIDs: mediaIDs,
+            placeID: viewModel.currentPlace.value?.id,
             replyToTweetObjectID: viewModel.repliedTweetObjectID,
             authorization: authorization
         )
@@ -419,6 +498,7 @@ extension ComposeTweetViewController: TweetToolbarViewDelegate {
     }
     
     func tweetToolbarView(_ tweetToolbarView: TweetToolbarView, locationButtonDidPressed sender: UIButton) {
+        guard viewModel.requestLocationAuthorizationIfNeeds(presentingViewController: self) else { return }
         viewModel.isRequestLocationMarking.value.toggle()
     }
     

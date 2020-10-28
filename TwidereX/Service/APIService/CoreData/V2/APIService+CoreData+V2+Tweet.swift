@@ -96,6 +96,11 @@ extension APIService.CoreData.V2 {
                 let metrics = TweetMetrics.insert(into: managedObjectContext, property: metricsProperty)
                 return metrics
             }()
+            let place: TwitterPlace? = {
+                // guard let place = info.place else { return nil }
+                // let placeProperty = TwitterPlace
+                return nil
+            }()
             
             let tweetProperty = Tweet.Property(entity: info.tweet, replyToTweetID: repliedToInfo?.tweet.id, networkDate: networkDate)
             let tweet = Tweet.insert(
@@ -104,6 +109,7 @@ extension APIService.CoreData.V2 {
                 author: twitterUser,
                 media: media,
                 metrics: metrics,
+                place: place,
                 retweet: retweet,
                 quote: quote,
                 replyTo: replyTo,

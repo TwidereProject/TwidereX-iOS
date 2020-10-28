@@ -57,6 +57,7 @@ internal enum Asset {
     internal static let icRoundRefresh = ImageAsset(name: "Object&Tools/ic.round.refresh")
     internal static let lock = ImageAsset(name: "Object&Tools/lock")
     internal static let mappin = ImageAsset(name: "Object&Tools/mappin")
+    internal static let mappinMini = ImageAsset(name: "Object&Tools/mappin.mini")
     internal static let paperplane = ImageAsset(name: "Object&Tools/paperplane")
     internal static let share = ImageAsset(name: "Object&Tools/share")
     internal static let shareLarge = ImageAsset(name: "Object&Tools/share.large")

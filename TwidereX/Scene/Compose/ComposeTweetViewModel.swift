@@ -13,6 +13,7 @@ import CoreLocation
 import CoreData
 import CoreDataStack
 import AlamofireImage
+import TwitterAPI
 import twitter_text
 
 final class ComposeTweetViewModel: NSObject {
@@ -49,7 +50,10 @@ final class ComposeTweetViewModel: NSObject {
     let isComposeBarButtonEnabled = CurrentValueSubject<Bool, Never>(false)
     let isCameraToolbarButtonEnabled = CurrentValueSubject<Bool, Never>(true)
     let isRequestLocationMarking = CurrentValueSubject<Bool, Never>(false)
-    let isLocationAutohrizationAllow = CurrentValueSubject<Bool, Never>(false)
+    let isLocationServicesEnabled = CurrentValueSubject<Bool, Never>(false)
+    let currentLocation = CurrentValueSubject<CLLocation?, Never>(nil)
+    let latestPlace = CurrentValueSubject<Twitter.Entity.Place?, Never>(nil)
+    let currentPlace = CurrentValueSubject<Twitter.Entity.Place?, Never>(nil)
     
     init(context: AppContext, repliedTweetObjectID: NSManagedObjectID?) {
         self.context = context
@@ -93,7 +97,7 @@ final class ComposeTweetViewModel: NSObject {
             .store(in: &disposeBag)
         
         locationManager.delegate = self
-        isLocationAutohrizationAllow.value = CLLocationManager.locationServicesEnabled()
+        isLocationServicesEnabled.value = CLLocationManager.locationServicesEnabled()
         isRequestLocationMarking
             .sink { [weak self] isRequestLocationMarking in
                 guard let self = self else { return }
@@ -313,12 +317,36 @@ extension ComposeTweetViewModel {
         }
     }
     
+    func requestLocationAuthorizationIfNeeds(presentingViewController: UIViewController) -> Bool {
+        os_log("%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
+        switch authorizationStatus {
+        case .notDetermined:
+            locationManager.requestWhenInUseAuthorization()
+            return false
+        case .authorizedAlways, .authorizedWhenInUse:
+            return true
+        case .restricted, .denied:
+            let alertController = UIAlertController(title: "Location Access Disabled", message: "Please enable location access to compose geo marked tweet", preferredStyle: .alert)
+            let openSettingsAction = UIAlertAction(title: "Open Settings", style: .default) { _ in
+                guard let url = URL(string: UIApplication.openSettingsURLString) else { return }
+                UIApplication.shared.open(url)
+            }
+            let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+            alertController.addAction(openSettingsAction)
+            alertController.addAction(cancelAction)
+            presentingViewController.present(alertController, animated: true, completion: nil)
+            return false
+        @unknown default:
+            return false
+        }
+    }
+    
     func requestLocationMarking() {
         os_log("%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
 
         switch authorizationStatus {
         case .notDetermined:
-            locationManager.requestWhenInUseAuthorization()
+            break
         case .authorizedAlways, .authorizedWhenInUse:
             locationManager.startUpdatingLocation()
         case .restricted, .denied:
@@ -370,6 +398,7 @@ extension ComposeTweetViewModel: CLLocationManagerDelegate {
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         let location = locations.first
+        currentLocation.value = location
     }
     
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {

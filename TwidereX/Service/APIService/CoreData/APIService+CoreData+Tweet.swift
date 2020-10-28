@@ -77,6 +77,11 @@ extension APIService {
                 let metrics = TweetMetrics.insert(into: managedObjectContext, property: metricsProperty)
                 return metrics
             }()
+            let place: TwitterPlace? = {
+                guard let place = entity.place, let fullname = place.fullName else { return nil }
+                let placeProperty = TwitterPlace.Property(id: place.id, fullname: fullname, county: place.country, countyCode: place.countryCode, name: place.name, placeType: place.placeType)
+                return TwitterPlace.insert(into: managedObjectContext, property: placeProperty)
+            }()
             
             let tweetProperty = Tweet.Property(entity: entity, networkDate: networkDate)
             let tweet = Tweet.insert(
@@ -85,6 +90,7 @@ extension APIService {
                 author: twitterUser,
                 media: media,
                 metrics: metrics,
+                place: place,
                 retweet: retweet,
                 quote: quote,
                 replyTo: nil,
@@ -101,7 +107,16 @@ extension APIService {
         guard networkDate > tweet.updatedAt else { return }
         
         // merge attributes
-        //tweet.update(place: entity.place)
+        if tweet.place == nil,
+           let place = entity.place,
+           let fullname = place.fullName,
+           let managedObjectContext = tweet.managedObjectContext
+        {
+            let placeProperty = TwitterPlace.Property(id: place.id, fullname: fullname, county: place.country, countyCode: place.countryCode, name: place.name, placeType: place.placeType)
+            tweet.update(place: TwitterPlace.insert(into: managedObjectContext, property: placeProperty))
+        }
+        
+        // merge metrics
         tweet.setupMetricsIfNeeds()
         entity.favoriteCount.flatMap { tweet.metrics?.update(likeCount: $0) }
         entity.retweetCount.flatMap { tweet.metrics?.update(retweetCount: $0) }

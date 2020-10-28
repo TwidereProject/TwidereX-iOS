@@ -315,6 +315,14 @@ extension HomeTimelineViewModel {
         }
         cell.timelinePostView.quotePostView.isHidden = quote == nil
         
+        // set geo button
+        if let place = tweet.place {
+            cell.timelinePostView.geoButton.setTitle(place.fullname, for: .normal)
+            cell.timelinePostView.geoContainerStackView.isHidden = false
+        } else {
+            cell.timelinePostView.geoContainerStackView.isHidden = true
+        }
+        
         // observe model change
         ManagedObjectObserver.observe(object: tweet.retweet ?? tweet)
             .receive(on: DispatchQueue.main)

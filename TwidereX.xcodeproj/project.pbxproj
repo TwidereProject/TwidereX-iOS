@@ -29,6 +29,7 @@
 		DB2924D72547CCA2003899A7 /* ComposeTweetMediaSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB2924D62547CCA2003899A7 /* ComposeTweetMediaSection.swift */; };
 		DB2924DF2547CCD6003899A7 /* ComposeTweetMediaItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB2924DE2547CCD6003899A7 /* ComposeTweetMediaItem.swift */; };
 		DB2924E42547D4C7003899A7 /* ComposeTweetMediaCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB2924E32547D4C7003899A7 /* ComposeTweetMediaCollectionViewCell.swift */; };
+		DB2924EC25492006003899A7 /* APIService+Geo.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB2924EB25492006003899A7 /* APIService+Geo.swift */; };
 		DB34028E2521BC06009EFADF /* APIService+UserTimeline.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB34028D2521BC06009EFADF /* APIService+UserTimeline.swift */; };
 		DB34029D2521BE8B009EFADF /* MeProfileViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB34029C2521BE8B009EFADF /* MeProfileViewModel.swift */; };
 		DB3402B72521D389009EFADF /* UserTimelineViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB3402B62521D389009EFADF /* UserTimelineViewModel.swift */; };
@@ -278,6 +279,7 @@
 		DB2924D62547CCA2003899A7 /* ComposeTweetMediaSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComposeTweetMediaSection.swift; sourceTree = "<group>"; };
 		DB2924DE2547CCD6003899A7 /* ComposeTweetMediaItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComposeTweetMediaItem.swift; sourceTree = "<group>"; };
 		DB2924E32547D4C7003899A7 /* ComposeTweetMediaCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComposeTweetMediaCollectionViewCell.swift; sourceTree = "<group>"; };
+		DB2924EB25492006003899A7 /* APIService+Geo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "APIService+Geo.swift"; sourceTree = "<group>"; };
 		DB34028D2521BC06009EFADF /* APIService+UserTimeline.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "APIService+UserTimeline.swift"; sourceTree = "<group>"; };
 		DB34029C2521BE8B009EFADF /* MeProfileViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeProfileViewModel.swift; sourceTree = "<group>"; };
 		DB3402B62521D389009EFADF /* UserTimelineViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserTimelineViewModel.swift; sourceTree = "<group>"; };
@@ -531,6 +533,14 @@
 			path = V2;
 			sourceTree = "<group>";
 		};
+		DB2924F325493FB9003899A7 /* Place */ = {
+			isa = PBXGroup;
+			children = (
+				DB491635253ED329008755C3 /* TwitterPlace.swift */,
+			);
+			path = Place;
+			sourceTree = "<group>";
+		};
 		DB3402982521BE6B009EFADF /* ViewModel */ = {
 			isa = PBXGroup;
 			children = (
@@ -558,7 +568,7 @@
 				DB8AC0D7253EE48500E636BE /* User */,
 				DB8AC0DB253EE48B00E636BE /* Media */,
 				DB8AC0E4253EE4BB00E636BE /* Poll */,
-				DB491635253ED329008755C3 /* TwitterPlace.swift */,
+				DB2924F325493FB9003899A7 /* Place */,
 				DB49163A253ED443008755C3 /* TwitteWithheld.swift */,
 			);
 			path = Twitter;
@@ -923,15 +933,16 @@
 				DB25BA03253D7D4800A5420F /* Persist */,
 				DB25B9EC2539A9BA00A5420F /* CoreData */,
 				DBE76C8824FF941400DEB0FC /* APIService+Autentication.swift */,
+				DB3402C92521E4AF009EFADF /* APIService+Account.swift */,
 				DBE76D202500ED5100DEB0FC /* APIService+HomeTimeline.swift */,
 				DB34028D2521BC06009EFADF /* APIService+UserTimeline.swift */,
 				DBA6B1CB2535BC6E005FB0B4 /* APIService+Like.swift */,
 				DBB09D552511BA9700AE260E /* APIService+Lookup.swift */,
-				DB3402C92521E4AF009EFADF /* APIService+Account.swift */,
 				DB25B9D0253828AA00A5420F /* APIService+Retweet.swift */,
 				DB25B9E72539897B00A5420F /* APIService+RecentSearch.swift */,
 				DB8AC1842542BD8600E636BE /* APIService+Tweet.swift */,
 				DB2924CF2546C6DD003899A7 /* APIService+Media.swift */,
+				DB2924EB25492006003899A7 /* APIService+Geo.swift */,
 			);
 			path = APIService;
 			sourceTree = "<group>";
@@ -1609,6 +1620,7 @@
 				DB88AC332508BACD0009E562 /* TimelineItem.swift in Sources */,
 				DBE76D3B25024FDA00DEB0FC /* NSLayoutConstraint.swift in Sources */,
 				DB0849B22513760D009E0CD7 /* ConversationPostTableViewCell.swift in Sources */,
+				DB2924EC25492006003899A7 /* APIService+Geo.swift in Sources */,
 				DBEA4F812511E7900007FEC5 /* ConversationItem.swift in Sources */,
 				DB92575A251CA3FB004FEFB5 /* StubTableViewCell.swift in Sources */,
 				DB925700251C8F29004FEFB5 /* UserTimelineViewController.swift in Sources */,

@@ -10,8 +10,16 @@ import Combine
 
 extension Twitter.API.Geo {
     
+    static let searchEndpointURL = Twitter.API.endpointURL.appendingPathComponent("geo/search.json")
+    
     public static func search(session: URLSession, authorization: Twitter.API.OAuth.Authorization, query: SearchQuery) -> AnyPublisher<Twitter.Response.Content<SearchResponse>, Error> {
-        fatalError("TODO:")
+        let request = Twitter.API.request(url: searchEndpointURL, httpMethod: "GET", authorization: authorization, queryItems: query.queryItems)
+        return session.dataTaskPublisher(for: request)
+            .tryMap { data, response in
+                let value = try Twitter.API.decode(type: SearchResponse.self, from: data, response: response)
+                return Twitter.Response.Content(value: value, response: response)
+            }
+            .eraseToAnyPublisher()
     }
     
 }
@@ -39,6 +47,10 @@ extension Twitter.API.Geo {
     }
     
     public struct SearchResponse: Codable {
+        public let result: Result
         
+        public struct Result: Codable {
+            public let places: [Twitter.Entity.Place]
+        }
     }
 }
