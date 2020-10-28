@@ -43,7 +43,7 @@ final class HomeTimelineViewModel: NSObject {
         stateMachine.enter(LoadLatestState.Initial.self)
         return stateMachine
     }()
-    lazy var loadLatestStateMachinePublisher = CurrentValueSubject<LoadLatestState, Never>(LoadLatestState.Initial(viewModel: self))
+    lazy var loadLatestStateMachinePublisher = CurrentValueSubject<LoadLatestState?, Never>(nil)
     // bottom loader
     private(set) lazy var loadoldestStateMachine: GKStateMachine = {
         // exclude timeline middle fetcher state
@@ -57,7 +57,7 @@ final class HomeTimelineViewModel: NSObject {
         stateMachine.enter(LoadOldestState.Initial.self)
         return stateMachine
     }()
-    lazy var loadOldestStateMachinePublisher = CurrentValueSubject<LoadOldestState, Never>(LoadOldestState.Initial(viewModel: self))
+    lazy var loadOldestStateMachinePublisher = CurrentValueSubject<LoadOldestState?, Never>(nil)
     // middle loader
     let loadMiddleSateMachineList = CurrentValueSubject<[NSManagedObjectID: GKStateMachine], Never>([:])    // TimelineIndex.objectID : middle loading state machine
     var diffableDataSource: UITableViewDiffableDataSource<TimelineSection, TimelineItem>?
@@ -190,6 +190,7 @@ extension HomeTimelineViewModel {
             assertionFailure()
         }
         
+        cell.timelinePostView.verifiedBadgeImageView.isHidden = !((tweet.retweet?.author ?? tweet.author).verified)
         cell.timelinePostView.lockImageView.isHidden = !((tweet.retweet?.author ?? tweet.author).protected)
 
         // set name and username
@@ -298,6 +299,8 @@ extension HomeTimelineViewModel {
             } else {
                 assertionFailure()
             }
+            cell.timelinePostView.quotePostView.verifiedBadgeImageView.isHidden = !quote.author.verified
+            cell.timelinePostView.quotePostView.lockImageView.isHidden = !quote.author.protected
             
             // Note: cannot quote protected user
             cell.timelinePostView.quotePostView.lockImageView.isHidden = !quote.author.protected
@@ -314,6 +317,14 @@ extension HomeTimelineViewModel {
             cell.timelinePostView.quotePostView.activeTextLabel.text = quote.text
         }
         cell.timelinePostView.quotePostView.isHidden = quote == nil
+        
+        // set geo button
+        if let place = tweet.place {
+            cell.timelinePostView.geoButton.setTitle(place.fullname, for: .normal)
+            cell.timelinePostView.geoContainerStackView.isHidden = false
+        } else {
+            cell.timelinePostView.geoContainerStackView.isHidden = true
+        }
         
         // observe model change
         ManagedObjectObserver.observe(object: tweet.retweet ?? tweet)

@@ -11,6 +11,7 @@ import Combine
 import CoreData
 import CoreDataStack
 import TwitterAPI
+import Floaty
 
 final class HomeTimelineViewController: UIViewController, NeedsDependency {
     
@@ -31,6 +32,24 @@ final class HomeTimelineViewController: UIViewController, NeedsDependency {
     }()
     
     let refreshControl = UIRefreshControl()
+    private lazy var floatyButton: Floaty = {
+        let button = Floaty()
+        button.plusColor = .white
+        button.buttonColor = Asset.Colors.hightLight.color
+        button.buttonImage = Asset.Editing.featherPen.image
+        button.handleFirstItemDirectly = true
+        
+        let composeItem: FloatyItem = {
+            let item = FloatyItem()
+            item.title = "Compose"
+            item.handler = self.composeFloatyButtonPressed
+            return item
+        }()
+        button.addItem(item: composeItem)
+        
+        return button
+    }()
+
 }
 
 extension HomeTimelineViewController {
@@ -75,6 +94,10 @@ extension HomeTimelineViewController {
                             guard let self = self else { return }
                             self.enableBottomFetcher(action)
                         }),
+                        UIAction(title: "Show Floaty", image: nil, attributes: [], handler: { [weak self] action in
+                            guard let self = self else { return }
+                            self.showFloatyButton(action)
+                        })
                     ]
                 )
             )
@@ -90,6 +113,8 @@ extension HomeTimelineViewController {
             tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
             tableView.topAnchor.constraint(equalTo: view.topAnchor)
         ])
+    
+        view.addSubview(floatyButton)
         
         viewModel.contentOffsetAdjustableTimelineViewControllerDelegate = self
         viewModel.tableView = tableView
@@ -152,6 +177,12 @@ extension HomeTimelineViewController {
             
         }
     }
+    
+    override func viewSafeAreaInsetsDidChange() {
+        super.viewSafeAreaInsetsDidChange()
+        
+        floatyButton.paddingY = view.safeAreaInsets.bottom + UIView.floatyButtonBottomMargin
+    }
 
 }
 
@@ -162,6 +193,12 @@ extension HomeTimelineViewController {
             sender.endRefreshing()
             return
         }
+    }
+    
+    @objc private func composeFloatyButtonPressed(_ sender: FloatyItem) {
+        os_log("%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
+        let composeTweetViewModel = ComposeTweetViewModel(context: context, repliedTweetObjectID: nil)
+        coordinator.present(scene: .composeTweet(viewModel: composeTweetViewModel), from: self, transition: .modal(animated: true, completion: nil))
     }
     
     #if DEBUG
@@ -267,6 +304,10 @@ extension HomeTimelineViewController {
         
     }
     
+    @objc private func showFloatyButton(_ sender: UIAction) {
+
+    }
+    
     #endif
 }
 
@@ -319,7 +360,7 @@ extension HomeTimelineViewController: UITableViewDelegate {
                 guard let tweet = timelineIndex.tweet?.retweet ?? timelineIndex.tweet else { return }
                 
                 let tweetPostViewModel = TweetConversationViewModel(context: self.context, tweetObjectID: tweet.objectID)
-                self.coordinator.present(scene: .tweetPost(viewModel: tweetPostViewModel), from: self, transition: .show)
+                self.coordinator.present(scene: .tweetConversation(viewModel: tweetPostViewModel), from: self, transition: .show)
             }
         default:
             return
@@ -339,8 +380,8 @@ extension HomeTimelineViewController: UITableViewDelegate {
 
 // MARK: - ContentOffsetAdjustableTimelineViewControllerDelegate
 extension HomeTimelineViewController: ContentOffsetAdjustableTimelineViewControllerDelegate {
-    func navigationBar() -> UINavigationBar {
-        return navigationController!.navigationBar
+    func navigationBar() -> UINavigationBar? {
+        return navigationController?.navigationBar
     }
 }
 
@@ -420,6 +461,17 @@ extension HomeTimelineViewController: TimelinePostTableViewCellDelegate {
     // MARK: - ActionToolbar
     
     func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, actionToolbar: TimelinePostActionToolbar, replayButtonDidPressed sender: UIButton) {
+        // retrieve target tweet infos
+        guard let diffableDataSource = viewModel.diffableDataSource else { return }
+        guard let indexPath = tableView.indexPath(for: cell) else { return }
+        guard let timelineItem = diffableDataSource.itemIdentifier(for: indexPath) else { return }
+        guard case let .homeTimelineIndex(timelineIndexObjectID, _) = timelineItem else { return }
+        let timelineIndex = viewModel.fetchedResultsController.managedObjectContext.object(with: timelineIndexObjectID) as! TimelineIndex
+        guard let tweet = (timelineIndex.tweet?.retweet ?? timelineIndex.tweet) else { return }
+        let tweetObjectID = tweet.objectID
+        
+        let composeTweetViewModel = ComposeTweetViewModel(context: context, repliedTweetObjectID: tweetObjectID)
+        coordinator.present(scene: .composeTweet(viewModel: composeTweetViewModel), from: self, transition: .modal(animated: true, completion: nil))
     }
     
     func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, actionToolbar: TimelinePostActionToolbar, retweetButtonDidPressed sender: UIButton) {

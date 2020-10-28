@@ -17,16 +17,11 @@ final class ConversationPostView: UIView {
         return imageView
     }()
     
-    let lockImageView: UIImageView = {
+    let verifiedBadgeImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.tintColor = .white
         imageView.contentMode = .center
-        imageView.image = Asset.ObjectTools.lock.image.withRenderingMode(.alwaysTemplate)
-        imageView.backgroundColor = .black
-        imageView.layer.masksToBounds = true
-        imageView.layer.cornerRadius = TimelinePostView.lockImageViewSize.width * 0.5
-        imageView.layer.borderWidth = 1
-        imageView.layer.borderColor = UIColor.white.cgColor
+        imageView.image = Asset.ObjectTools.verifiedBadgeMini.image.withRenderingMode(.alwaysOriginal)
         return imageView
     }()
     
@@ -36,6 +31,14 @@ final class ConversationPostView: UIView {
         label.textColor = .label
         label.text = "Alice"
         return label
+    }()
+    
+    let lockImageView: UIImageView = {
+        let imageView = UIImageView()
+        imageView.tintColor = .secondaryLabel
+        imageView.contentMode = .center
+        imageView.image = Asset.ObjectTools.lockMini.image.withRenderingMode(.alwaysTemplate)
+        return imageView
     }()
     
     let usernameLabel: UILabel = {
@@ -56,7 +59,7 @@ final class ConversationPostView: UIView {
     let geoIconImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.tintColor = .secondaryLabel
-        imageView.image = Asset.ObjectTools.icRoundLocationOn.image.withRenderingMode(.alwaysTemplate)
+        imageView.image = Asset.ObjectTools.mappinMini.image.withRenderingMode(.alwaysTemplate)
         return imageView
     }()
     
@@ -87,15 +90,7 @@ final class ConversationPostView: UIView {
         return label
     }()
     
-    let activeTextLabel: ActiveLabel = {
-        let label = ActiveLabel()
-        label.numberOfLines = 0
-        label.enabledTypes = [.mention, .hashtag, .url]
-        label.textColor = .label
-        label.font = .systemFont(ofSize: 14)
-        label.text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
-        return label
-    }()
+    let activeTextLabel = ActiveLabel(style: .default)
     let mosaicImageView = MosaicImageView()
     let quotePostView = QuotePostView()
     let geoMetaContainerStackView = UIStackView()
@@ -146,13 +141,13 @@ extension ConversationPostView {
             avatarImageView.widthAnchor.constraint(equalToConstant: ConversationPostView.avatarImageViewSize.width).priority(.required - 1),
             avatarImageView.heightAnchor.constraint(equalToConstant: ConversationPostView.avatarImageViewSize.height).priority(.required - 1),
         ])
-        lockImageView.translatesAutoresizingMaskIntoConstraints = false
-        avatarImageView.addSubview(lockImageView)
+        verifiedBadgeImageView.translatesAutoresizingMaskIntoConstraints = false
+        avatarImageView.addSubview(verifiedBadgeImageView)
         NSLayoutConstraint.activate([
-            lockImageView.leadingAnchor.constraint(equalTo: avatarImageView.leadingAnchor),
-            lockImageView.topAnchor.constraint(equalTo: avatarImageView.topAnchor),
-            lockImageView.widthAnchor.constraint(equalToConstant: 16),
-            lockImageView.heightAnchor.constraint(equalToConstant: 16),
+            verifiedBadgeImageView.trailingAnchor.constraint(equalTo: avatarImageView.trailingAnchor),
+            verifiedBadgeImageView.bottomAnchor.constraint(equalTo: avatarImageView.bottomAnchor),
+            verifiedBadgeImageView.widthAnchor.constraint(equalToConstant: 16),
+            verifiedBadgeImageView.heightAnchor.constraint(equalToConstant: 16),
         ])
         
         // author container: [name | username]
@@ -161,11 +156,15 @@ extension ConversationPostView {
         authorContainerStackView.axis = .vertical
         authorContainerStackView.spacing = 0
 
-        // name container: [name | more menu]
+        // name container: [name | lock | (padding) | more menu]
         let nameContainerStackView = UIStackView()
         authorContainerStackView.addArrangedSubview(nameContainerStackView)
         nameContainerStackView.axis = .horizontal
+        nameLabel.translatesAutoresizingMaskIntoConstraints = false
         nameContainerStackView.addArrangedSubview(nameLabel)
+        nameLabel.setContentHuggingPriority(.defaultHigh, for: .horizontal)
+        nameContainerStackView.addArrangedSubview(lockImageView)
+        nameContainerStackView.addArrangedSubview(UIView())
         moreMenuButton.translatesAutoresizingMaskIntoConstraints = false
         nameContainerStackView.addArrangedSubview(moreMenuButton)
         NSLayoutConstraint.activate([
@@ -249,6 +248,7 @@ extension ConversationPostView {
         ])
         actionToolbar.setContentCompressionResistancePriority(.defaultLow, for: .vertical)
                 
+        verifiedBadgeImageView.isHidden = true
         lockImageView.isHidden = true
         mosaicImageView.isHidden = true
         quotePostView.isHidden = true

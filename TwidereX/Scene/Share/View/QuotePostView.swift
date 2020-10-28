@@ -17,16 +17,19 @@ final class QuotePostView: UIView {
         return imageView
     }()
     
-    let lockImageView: UIImageView = {
+    let verifiedBadgeImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.tintColor = .white
+        imageView.contentMode = .scaleAspectFill
+        imageView.image = Asset.ObjectTools.verifiedBadge.image.withRenderingMode(.alwaysOriginal)
+        return imageView
+    }()
+    
+    let lockImageView: UIImageView = {
+        let imageView = UIImageView()
+        imageView.tintColor = .secondaryLabel
         imageView.contentMode = .center
-        imageView.image = Asset.ObjectTools.lock.image.withRenderingMode(.alwaysTemplate)
-        imageView.backgroundColor = .black
-        imageView.layer.masksToBounds = true
-        imageView.layer.cornerRadius = TimelinePostView.lockImageViewSize.width * 0.5
-        imageView.layer.borderWidth = 1
-        imageView.layer.borderColor = UIColor.white.cgColor
+        imageView.image = Asset.ObjectTools.lockMini.image.withRenderingMode(.alwaysTemplate)
         return imageView
     }()
     
@@ -56,15 +59,7 @@ final class QuotePostView: UIView {
         return label
     }()
     
-    let activeTextLabel: ActiveLabel = {
-        let label = ActiveLabel()
-        label.numberOfLines = 0
-        label.enabledTypes = [.mention, .hashtag, .url]
-        label.textColor = .label
-        label.font = .systemFont(ofSize: 14)
-        label.text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
-        return label
-    }()
+    let activeTextLabel = ActiveLabel(style: .default)
         
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -107,13 +102,13 @@ extension QuotePostView {
             avatarImageView.widthAnchor.constraint(equalToConstant: TimelinePostView.avatarImageViewSize.width).priority(.required - 1),
             avatarImageView.heightAnchor.constraint(equalToConstant: TimelinePostView.avatarImageViewSize.height).priority(.required - 1),
         ])
-        lockImageView.translatesAutoresizingMaskIntoConstraints = false
-        avatarImageView.addSubview(lockImageView)
+        verifiedBadgeImageView.translatesAutoresizingMaskIntoConstraints = false
+        avatarImageView.addSubview(verifiedBadgeImageView)
         NSLayoutConstraint.activate([
-            lockImageView.leadingAnchor.constraint(equalTo: avatarImageView.leadingAnchor),
-            lockImageView.topAnchor.constraint(equalTo: avatarImageView.topAnchor),
-            lockImageView.widthAnchor.constraint(equalToConstant: 16),
-            lockImageView.heightAnchor.constraint(equalToConstant: 16),
+            verifiedBadgeImageView.trailingAnchor.constraint(equalTo: avatarImageView.trailingAnchor),
+            verifiedBadgeImageView.bottomAnchor.constraint(equalTo: avatarImageView.bottomAnchor),
+            verifiedBadgeImageView.widthAnchor.constraint(equalToConstant: 16),
+            verifiedBadgeImageView.heightAnchor.constraint(equalToConstant: 16),
         ])
         
         // tweet container: [user meta container | main container]
@@ -128,6 +123,7 @@ extension QuotePostView {
         userMetaContainerStackView.alignment = .center
         userMetaContainerStackView.spacing = 4
         userMetaContainerStackView.addArrangedSubview(nameLabel)
+        userMetaContainerStackView.addArrangedSubview(lockImageView)
         userMetaContainerStackView.addArrangedSubview(usernameLabel)
         userMetaContainerStackView.addArrangedSubview(dateLabel)
         nameLabel.setContentHuggingPriority(.defaultHigh, for: .horizontal)

@@ -62,7 +62,7 @@ extension APIService {
         authorization: Twitter.API.OAuth.Authorization,
         twitterUserID: TwitterUser.ID
     ) -> AnyPublisher<Twitter.Response.Content<Twitter.Entity.Tweet>, Error> {
-        let query = Twitter.API.Statuses.Query(id: tweetID)
+        let query = Twitter.API.Statuses.RetweetQuery(id: tweetID)
         return Twitter.API.Statuses.retweet(session: session, authorization: authorization, retweetKind: retweetKind, query: query)
             .handleEvents(receiveOutput: { [weak self] response in
                 guard let self = self else { return }

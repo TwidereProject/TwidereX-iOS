@@ -68,6 +68,7 @@ extension Tweet {
         author: TwitterUser,
         media: [TwitterMedia]?,
         metrics: TweetMetrics?,
+        place: TwitterPlace?,
         retweet: Tweet?,
         quote: Tweet?,
         replyTo: Tweet?,
@@ -90,6 +91,8 @@ extension Tweet {
         
         tweet.author = author
         tweet.metrics = metrics
+        tweet.place = place
+        
         tweet.retweet = retweet
         tweet.quote = quote
         tweet.replyTo = replyTo
@@ -116,9 +119,9 @@ extension Tweet {
 //    }
 //
 //    // always update scrub-able attribute
-//    public func update(place: Twitter.Entity.Place?) {
-//        self.place = place
-//    }
+    public func update(place: TwitterPlace?) {
+        self.place = place
+    }
 //
 //    public func update(retweet: Tweet?) {
 //        if self.retweet != retweet {

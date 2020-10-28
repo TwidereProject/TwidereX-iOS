@@ -191,6 +191,14 @@ extension ProfileViewController {
                 )
             }
             .store(in: &disposeBag)
+        viewModel.protected
+            .map { $0 != true }
+            .assign(to: \.isHidden, on: profileHeaderViewController.profileBannerView.lockImageView)
+            .store(in: &disposeBag)
+        viewModel.verified
+            .map { $0 != true }
+            .assign(to: \.isHidden, on: profileHeaderViewController.profileBannerView.verifiedBadgeImageView)
+            .store(in: &disposeBag)
         viewModel.name
             .map { $0 ?? " " }
             .assign(to: \.text, on: profileHeaderViewController.profileBannerView.nameLabel)

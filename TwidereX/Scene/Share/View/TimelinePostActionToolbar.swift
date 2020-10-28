@@ -63,7 +63,7 @@ final class TimelinePostActionToolbar: UIView {
         button.tintColor = .secondaryLabel
         button.titleLabel?.font = .monospacedDigitSystemFont(ofSize: 12, weight: .regular)
         button.contentHorizontalAlignment = .trailing
-        button.setImage(Asset.ObjectTools.share.image.withRenderingMode(.alwaysTemplate), for: .normal)
+        button.setImage(Asset.Arrows.squareAndArrowUpMini.image.withRenderingMode(.alwaysTemplate), for: .normal)
         return button
     }()
     

@@ -124,7 +124,7 @@ extension UserTimelineViewController: UITableViewDelegate {
                 guard let tweet = managedObjectContext.object(with: objectID) as? Tweet else { return }
                 let targetTweet = tweet.retweet ?? tweet
                 let tweetPostViewModel = TweetConversationViewModel(context: self.context, tweetObjectID: targetTweet.objectID)
-                self.coordinator.present(scene: .tweetPost(viewModel: tweetPostViewModel), from: self, transition: .show)
+                self.coordinator.present(scene: .tweetConversation(viewModel: tweetPostViewModel), from: self, transition: .show)
             }
         default:
             return

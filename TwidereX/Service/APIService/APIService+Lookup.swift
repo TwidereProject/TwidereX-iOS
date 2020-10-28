@@ -19,29 +19,8 @@ extension APIService {
             .handleEvents(receiveOutput: { [weak self] response in
                 guard let self = self else { return }
                 let content = response.value
-//                let dictContent = Twitter.Response.V2.DictContent(content: content)
-//
-//                let log = OSLog.api
-//                let managedObjectContext = self.backgroundManagedObjectContext
-//                managedObjectContext.perform {
-//                    let _requestTwitterUser: TwitterUser? = {
-//                        let request = TwitterUser.sortedFetchRequest
-//                        request.predicate = TwitterUser.predicate(idStr: twitterUserID)
-//                        request.fetchLimit = 1
-//                        request.returnsObjectsAsFaults = false
-//                        do {
-//                            return try managedObjectContext.fetch(request).first
-//                        } catch {
-//                            assertionFailure(error.localizedDescription)
-//                            return nil
-//                        }
-//                    }()
-//
-//                    for tweet in dictContent.tweetDict {
-//
-//                    }
-//
-//                }
+                
+                // TODO: merge tweets
             })
             .eraseToAnyPublisher()
             

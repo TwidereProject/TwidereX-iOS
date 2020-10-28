@@ -48,7 +48,7 @@ final class ConversationPostActionToolbar: UIView {
     let shareButton: UIButton = {
         let button = UIButton(type: .custom)
         button.tintColor = .secondaryLabel
-        button.setImage(Asset.ObjectTools.shareLarge.image.withRenderingMode(.alwaysTemplate), for: .normal)
+        button.setImage(Asset.Arrows.squareAndArrowUp.image.withRenderingMode(.alwaysTemplate), for: .normal)
         return button
     }()
     

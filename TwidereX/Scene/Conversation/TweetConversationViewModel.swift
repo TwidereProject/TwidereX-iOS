@@ -67,8 +67,9 @@ final class TweetConversationViewModel: NSObject {
                 guard !nodes.isEmpty else {
                     return
                 }
-                guard let tableView = self.tableView else { fatalError() }
-                guard let navigationBar = self.contentOffsetAdjustableTimelineViewControllerDelegate?.navigationBar() else { fatalError() }
+                guard let tableView = self.tableView,
+                      let navigationBar = self.contentOffsetAdjustableTimelineViewControllerDelegate?.navigationBar()
+                else { return }
                 
                 guard let diffableDataSource = self.diffableDataSource else { return }
                 let oldSnapshot = diffableDataSource.snapshot()
@@ -217,11 +218,13 @@ extension TweetConversationViewModel {
         } else {
             assertionFailure()
         }
+        
+        cell.conversationPostView.verifiedBadgeImageView.isHidden = !((tweet.retweet ?? tweet).author.verified)
         cell.conversationPostView.lockImageView.isHidden = !((tweet.retweet ?? tweet).author.protected)
         
         // set name and username
         cell.conversationPostView.nameLabel.text = tweet.author.name
-        cell.conversationPostView.usernameLabel.text = tweet.author.username
+        cell.conversationPostView.usernameLabel.text = "@" + tweet.author.username
 
         // set text
         cell.conversationPostView.activeTextLabel.text = tweet.text

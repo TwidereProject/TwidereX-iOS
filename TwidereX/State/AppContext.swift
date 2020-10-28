@@ -12,6 +12,8 @@ import CoreData
 import CoreDataStack
 
 class AppContext: ObservableObject {
+    
+    var disposeBag = Set<AnyCancellable>()
         
     let coreDataStack: CoreDataStack
     let managedObjectContext: NSManagedObjectContext

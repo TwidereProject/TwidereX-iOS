@@ -11,6 +11,9 @@ extension Twitter.API {
     
     public static let endpointURL = URL(string: "https://api.twitter.com/1.1/")!
     public static let endpointV2URL = URL(string: "https://api.twitter.com/2/")!
+    
+    public static let uploadEndpointURL = URL(string: "https://upload.twitter.com/1.1/")!
+    
     public static let timeoutInterval: TimeInterval = 10
     public static let decoder: JSONDecoder = {
         let decoder = JSONDecoder()
@@ -25,6 +28,8 @@ extension Twitter.API {
     
     public enum Account { }
     public enum Favorites { }
+    public enum Geo { }
+    public enum Media { }
     public enum OAuth { }
     public enum Statuses { }
     public enum Timeline { }
@@ -112,7 +117,7 @@ extension Twitter.API {
         }
     }
     
-    static func request(url: URL, httpMethod: String, authorization: Twitter.API.OAuth.Authorization, queryItems: [URLQueryItem]?) -> URLRequest {
+    static func request(url: URL, httpMethod: String, authorization: Twitter.API.OAuth.Authorization, queryItems: [URLQueryItem]?, formQueryItems: [URLQueryItem]? = nil) -> URLRequest {
         var components = URLComponents(string: url.absoluteString)!
         components.queryItems = queryItems
         let requestURL = components.url!
@@ -122,7 +127,7 @@ extension Twitter.API {
             timeoutInterval: Twitter.API.timeoutInterval
         )
         request.setValue(
-            authorization.authorizationHeader(requestURL: requestURL, httpMethod: httpMethod),
+            authorization.authorizationHeader(requestURL: requestURL, requestFormQueryItems: formQueryItems, httpMethod: httpMethod),
             forHTTPHeaderField: Twitter.API.OAuth.authorizationField
         )
         return request
