@@ -21,16 +21,11 @@ final class ComposeTweetContentTableViewCell: UITableViewCell {
         return imageView
     }()
     
-    let lockImageView: UIImageView = {
+    let verifiedBadgeImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.tintColor = .white
-        imageView.contentMode = .center
-        imageView.image = Asset.ObjectTools.lock.image.withRenderingMode(.alwaysTemplate)
-        imageView.backgroundColor = .black
-        imageView.layer.masksToBounds = true
-        imageView.layer.cornerRadius = TimelinePostView.lockImageViewSize.width * 0.5
-        imageView.layer.borderWidth = 1
-        imageView.layer.borderColor = UIColor.white.cgColor
+        imageView.contentMode = .scaleAspectFill
+        imageView.image = Asset.ObjectTools.verifiedBadge.image.withRenderingMode(.alwaysOriginal)
         return imageView
     }()
     
@@ -87,13 +82,13 @@ extension ComposeTweetContentTableViewCell {
             avatarImageView.topAnchor.constraint(equalTo: conversationLinkUpper.bottomAnchor, constant: 2),
         ])
     
-        lockImageView.translatesAutoresizingMaskIntoConstraints = false
-        avatarImageView.addSubview(lockImageView)
+        verifiedBadgeImageView.translatesAutoresizingMaskIntoConstraints = false
+        avatarImageView.addSubview(verifiedBadgeImageView)
         NSLayoutConstraint.activate([
-            lockImageView.leadingAnchor.constraint(equalTo: avatarImageView.leadingAnchor),
-            lockImageView.topAnchor.constraint(equalTo: avatarImageView.topAnchor),
-            lockImageView.widthAnchor.constraint(equalToConstant: 16),
-            lockImageView.heightAnchor.constraint(equalToConstant: 16),
+            verifiedBadgeImageView.trailingAnchor.constraint(equalTo: avatarImageView.trailingAnchor),
+            verifiedBadgeImageView.bottomAnchor.constraint(equalTo: avatarImageView.bottomAnchor),
+            verifiedBadgeImageView.widthAnchor.constraint(equalToConstant: 16),
+            verifiedBadgeImageView.heightAnchor.constraint(equalToConstant: 16),
         ])
         
         composeTextView.translatesAutoresizingMaskIntoConstraints = false

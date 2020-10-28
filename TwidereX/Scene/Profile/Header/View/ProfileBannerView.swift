@@ -32,6 +32,14 @@ final class ProfileBannerView: UIView {
         return imageView
     }()
     
+    let verifiedBadgeImageView: UIImageView = {
+        let imageView = UIImageView()
+        imageView.tintColor = .white
+        imageView.contentMode = .scaleAspectFill
+        imageView.image = Asset.ObjectTools.verifiedBadge.image.withRenderingMode(.alwaysOriginal)
+        return imageView
+    }()
+    
     let nameLabel: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 20, weight: .medium)
@@ -40,6 +48,14 @@ final class ProfileBannerView: UIView {
         label.minimumScaleFactor = 0.5
         label.text = "Alice"
         return label
+    }()
+    
+    let lockImageView: UIImageView = {
+        let imageView = UIImageView()
+        imageView.tintColor = .secondaryLabel
+        imageView.contentMode = .center
+        imageView.image = Asset.ObjectTools.lockMini.image.withRenderingMode(.alwaysTemplate)
+        return imageView
     }()
     
     let usernameLabel: UILabel = {
@@ -67,7 +83,7 @@ final class ProfileBannerView: UIView {
     let linkContainer = UIStackView()
     let linkIconImageView: UIImageView = {
         let imageView = UIImageView()
-        imageView.image = Asset.ObjectTools.icBaselineInsertLink.image.withRenderingMode(.alwaysTemplate)
+        imageView.image = Asset.ObjectTools.globeMini.image.withRenderingMode(.alwaysTemplate)
         imageView.tintColor = .secondaryLabel
         return imageView
     }()
@@ -83,7 +99,7 @@ final class ProfileBannerView: UIView {
     let geoContainer = UIStackView()
     let geoIconImageView: UIImageView = {
         let imageView = UIImageView()
-        imageView.image = Asset.ObjectTools.icRoundLocationOn.image.withRenderingMode(.alwaysTemplate)
+        imageView.image = Asset.ObjectTools.mappinMini.image.withRenderingMode(.alwaysTemplate)
         imageView.tintColor = .secondaryLabel
         return imageView
     }()
@@ -140,14 +156,20 @@ extension ProfileBannerView {
         // avatar
         profileAvatarImageView.translatesAutoresizingMaskIntoConstraints = false
         addSubview(profileAvatarImageView)
-        defer {
-            bringSubviewToFront(profileAvatarImageView)
-        }
         NSLayoutConstraint.activate([
             profileAvatarImageView.centerXAnchor.constraint(equalTo: centerXAnchor),
             profileAvatarImageView.centerYAnchor.constraint(equalTo: profileBannerImageView.bottomAnchor),
             profileAvatarImageView.widthAnchor.constraint(equalToConstant: ProfileBannerView.avatarImageViewSize.width),
             profileAvatarImageView.heightAnchor.constraint(equalToConstant: ProfileBannerView.avatarImageViewSize.height),
+        ])
+        
+        verifiedBadgeImageView.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(verifiedBadgeImageView)
+        NSLayoutConstraint.activate([
+            verifiedBadgeImageView.trailingAnchor.constraint(equalTo: profileAvatarImageView.trailingAnchor),
+            verifiedBadgeImageView.bottomAnchor.constraint(equalTo: profileAvatarImageView.bottomAnchor),
+            verifiedBadgeImageView.widthAnchor.constraint(equalToConstant: 24),
+            verifiedBadgeImageView.heightAnchor.constraint(equalToConstant: 24),
         ])
         
         // container: [info | bio | link | geo | status]
@@ -164,7 +186,7 @@ extension ProfileBannerView {
         containerStackView.axis = .vertical
         containerStackView.spacing = 8
         
-        // info: [name, username | bannerInfoActionView]
+        // info: [name (lock), username | bannerInfoActionView]
         let infoContainer = UIView()
         containerStackView.addArrangedSubview(infoContainer)
         nameLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -172,6 +194,12 @@ extension ProfileBannerView {
         NSLayoutConstraint.activate([
             nameLabel.topAnchor.constraint(equalTo: infoContainer.topAnchor),
             nameLabel.leadingAnchor.constraint(equalTo: infoContainer.leadingAnchor),
+        ])
+        lockImageView.translatesAutoresizingMaskIntoConstraints = false
+        infoContainer.addSubview(lockImageView)
+        NSLayoutConstraint.activate([
+            lockImageView.leadingAnchor.constraint(equalTo: nameLabel.trailingAnchor, constant: 8),
+            lockImageView.centerYAnchor.constraint(equalTo: nameLabel.centerYAnchor),
         ])
         usernameLabel.translatesAutoresizingMaskIntoConstraints = false
         infoContainer.addSubview(usernameLabel)
@@ -192,7 +220,7 @@ extension ProfileBannerView {
         profileBannerInfoActionView.translatesAutoresizingMaskIntoConstraints = false
         infoContainer.addSubview(profileBannerInfoActionView)
         NSLayoutConstraint.activate([
-            profileBannerInfoActionView.leadingAnchor.constraint(greaterThanOrEqualTo: nameLabel.trailingAnchor, constant: 8.0),
+            profileBannerInfoActionView.leadingAnchor.constraint(greaterThanOrEqualTo: lockImageView.trailingAnchor, constant: 8.0),
             profileBannerInfoActionView.leadingAnchor.constraint(greaterThanOrEqualTo: usernameLabel.trailingAnchor, constant: 8.0),
             profileBannerInfoActionView.followActionButton.centerYAnchor.constraint(equalTo: alignmentLabel.centerYAnchor),
             infoContainer.trailingAnchor.constraint(equalTo: profileBannerInfoActionView.trailingAnchor),
@@ -241,7 +269,12 @@ extension ProfileBannerView {
         // status
         containerStackView.addArrangedSubview(profileBannerStatusView)
         
+        verifiedBadgeImageView.isHidden = true
+        lockImageView.isHidden = true
         profileBannerInfoActionView.followStatusLabel.isHidden = true
+        
+        bringSubviewToFront(profileAvatarImageView)
+        bringSubviewToFront(verifiedBadgeImageView)
     }
 }
 

@@ -190,6 +190,7 @@ extension HomeTimelineViewModel {
             assertionFailure()
         }
         
+        cell.timelinePostView.verifiedBadgeImageView.isHidden = !((tweet.retweet?.author ?? tweet.author).verified)
         cell.timelinePostView.lockImageView.isHidden = !((tweet.retweet?.author ?? tweet.author).protected)
 
         // set name and username
@@ -298,6 +299,8 @@ extension HomeTimelineViewModel {
             } else {
                 assertionFailure()
             }
+            cell.timelinePostView.quotePostView.verifiedBadgeImageView.isHidden = !quote.author.verified
+            cell.timelinePostView.quotePostView.lockImageView.isHidden = !quote.author.protected
             
             // Note: cannot quote protected user
             cell.timelinePostView.quotePostView.lockImageView.isHidden = !quote.author.protected

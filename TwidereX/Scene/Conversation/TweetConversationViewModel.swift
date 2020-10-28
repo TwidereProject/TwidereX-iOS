@@ -218,6 +218,8 @@ extension TweetConversationViewModel {
         } else {
             assertionFailure()
         }
+        
+        cell.conversationPostView.verifiedBadgeImageView.isHidden = !((tweet.retweet ?? tweet).author.verified)
         cell.conversationPostView.lockImageView.isHidden = !((tweet.retweet ?? tweet).author.protected)
         
         // set name and username

@@ -350,7 +350,7 @@ extension ComposeTweetViewController {
             .sink { [weak self] user in
                 guard let self = self else { return }
                 self.viewModel.avatarImageURL.value = user?.avatarImageURL(size: .reasonablySmall)
-                self.viewModel.isAvatarLockHidden.value = user.flatMap { !$0.protected } ?? true
+                self.viewModel.isVerifiedBadgekHidden.value = user.flatMap { !$0.verified } ?? true
             }
             .store(in: &disposeBag)
     }

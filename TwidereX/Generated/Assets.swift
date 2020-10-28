@@ -25,6 +25,8 @@ internal enum Asset {
   internal enum Arrows {
     internal static let arrowTurnUpLeft = ImageAsset(name: "Arrows/arrow.turn.up.left")
     internal static let arrowTurnUpLeftLarge = ImageAsset(name: "Arrows/arrow.turn.up.left.large")
+    internal static let squareAndArrowUp = ImageAsset(name: "Arrows/square.and.arrow.up")
+    internal static let squareAndArrowUpMini = ImageAsset(name: "Arrows/square.and.arrow.up.mini")
     internal static let tablerChevronDown = ImageAsset(name: "Arrows/tabler.chevron.down")
   }
   internal enum Colors {
@@ -51,20 +53,21 @@ internal enum Asset {
   internal enum ObjectTools {
     internal static let camera = ImageAsset(name: "Object&Tools/camera")
     internal static let gif = ImageAsset(name: "Object&Tools/gif")
-    internal static let icBaselineInsertLink = ImageAsset(name: "Object&Tools/ic.baseline.insert.link")
-    internal static let icBaselinePhotoLibrary = ImageAsset(name: "Object&Tools/ic.baseline.photo.library")
-    internal static let icRoundLocationOn = ImageAsset(name: "Object&Tools/ic.round.location.on")
+    internal static let globeMini = ImageAsset(name: "Object&Tools/globe.mini")
     internal static let icRoundRefresh = ImageAsset(name: "Object&Tools/ic.round.refresh")
-    internal static let lock = ImageAsset(name: "Object&Tools/lock")
+    internal static let lockMini = ImageAsset(name: "Object&Tools/lock.mini")
     internal static let mappin = ImageAsset(name: "Object&Tools/mappin")
     internal static let mappinMini = ImageAsset(name: "Object&Tools/mappin.mini")
     internal static let paperplane = ImageAsset(name: "Object&Tools/paperplane")
-    internal static let share = ImageAsset(name: "Object&Tools/share")
-    internal static let shareLarge = ImageAsset(name: "Object&Tools/share.large")
-    internal static let uilDocumentLayoutLeft = ImageAsset(name: "Object&Tools/uil.document.layout.left")
+    internal static let photo = ImageAsset(name: "Object&Tools/photo")
+    internal static let verifiedBadge = ImageAsset(name: "Object&Tools/verified.badge")
+    internal static let verifiedBadgeMini = ImageAsset(name: "Object&Tools/verified.badge.mini")
   }
   internal enum Symbol {
     internal static let sharp = ImageAsset(name: "Symbol/sharp")
+  }
+  internal enum TextFormatting {
+    internal static let capitalFloatLeft = ImageAsset(name: "TextFormatting/capital.float.left")
   }
 }
 // swiftlint:enable identifier_name line_length nesting type_body_length type_name

@@ -44,7 +44,8 @@ final class ComposeTweetViewModel: NSObject {
     var mediaDiffableDataSource: UICollectionViewDiffableDataSource<ComposeTweetMediaSection, ComposeTweetMediaItem>!
     let tableViewState = CurrentValueSubject<TableViewState, Never>(.fold)
     let avatarImageURL = CurrentValueSubject<URL?, Never>(nil)
-    let isAvatarLockHidden = CurrentValueSubject<Bool, Never>(true)
+    // let isAvatarLockHidden = CurrentValueSubject<Bool, Never>(true)
+    let isVerifiedBadgekHidden = CurrentValueSubject<Bool, Never>(true)
     let twitterTextParseResults = CurrentValueSubject<TwitterTextParseResults, Never>(.init())
     let mediaServices = CurrentValueSubject<[TwitterMediaService], Never>([])
     let isComposeBarButtonEnabled = CurrentValueSubject<Bool, Never>(false)
@@ -169,7 +170,7 @@ extension ComposeTweetViewModel {
                         )
                     }
                     .store(in: &cell.disposeBag)
-                self.isAvatarLockHidden.receive(on: DispatchQueue.main).assign(to: \.isHidden, on: cell.lockImageView).store(in: &cell.disposeBag)
+                self.isVerifiedBadgekHidden.receive(on: DispatchQueue.main).assign(to: \.isHidden, on: cell.verifiedBadgeImageView).store(in: &cell.disposeBag)
                 
                 cell.conversationLinkUpper.isHidden = !attribute.hasReplyTo
                 

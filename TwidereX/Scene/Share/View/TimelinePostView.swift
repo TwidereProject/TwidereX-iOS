@@ -35,16 +35,11 @@ final class TimelinePostView: UIView {
         return imageView
     }()
     
-    let lockImageView: UIImageView = {
+    let verifiedBadgeImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.tintColor = .white
         imageView.contentMode = .center
-        imageView.image = Asset.ObjectTools.lock.image.withRenderingMode(.alwaysTemplate)
-        imageView.backgroundColor = .black
-        imageView.layer.masksToBounds = true
-        imageView.layer.cornerRadius = TimelinePostView.lockImageViewSize.width * 0.5
-        imageView.layer.borderWidth = 1
-        imageView.layer.borderColor = UIColor.white.cgColor
+        imageView.image = Asset.ObjectTools.verifiedBadgeMini.image.withRenderingMode(.alwaysOriginal)
         return imageView
     }()
     
@@ -54,6 +49,14 @@ final class TimelinePostView: UIView {
         label.textColor = .label
         label.text = "Alice"
         return label
+    }()
+    
+    let lockImageView: UIImageView = {
+        let imageView = UIImageView()
+        imageView.tintColor = .secondaryLabel
+        imageView.contentMode = .center
+        imageView.image = Asset.ObjectTools.lockMini.image.withRenderingMode(.alwaysTemplate)
+        return imageView
     }()
     
     let usernameLabel: UILabel = {
@@ -167,13 +170,13 @@ extension TimelinePostView {
             avatarImageView.widthAnchor.constraint(equalToConstant: TimelinePostView.avatarImageViewSize.width).priority(.required - 1),
             avatarImageView.heightAnchor.constraint(equalToConstant: TimelinePostView.avatarImageViewSize.height).priority(.required - 1),
         ])
-        lockImageView.translatesAutoresizingMaskIntoConstraints = false
-        avatarImageView.addSubview(lockImageView)
+        verifiedBadgeImageView.translatesAutoresizingMaskIntoConstraints = false
+        avatarImageView.addSubview(verifiedBadgeImageView)
         NSLayoutConstraint.activate([
-            lockImageView.leadingAnchor.constraint(equalTo: avatarImageView.leadingAnchor),
-            lockImageView.topAnchor.constraint(equalTo: avatarImageView.topAnchor),
-            lockImageView.widthAnchor.constraint(equalToConstant: 16),
-            lockImageView.heightAnchor.constraint(equalToConstant: 16),
+            verifiedBadgeImageView.trailingAnchor.constraint(equalTo: avatarImageView.trailingAnchor),
+            verifiedBadgeImageView.bottomAnchor.constraint(equalTo: avatarImageView.bottomAnchor),
+            verifiedBadgeImageView.widthAnchor.constraint(equalToConstant: 16),
+            verifiedBadgeImageView.heightAnchor.constraint(equalToConstant: 16),
         ])
 
         // tweet container: [user meta container | main container | action toolbar]
@@ -182,13 +185,14 @@ extension TimelinePostView {
         tweetContainerStackView.axis = .vertical
         tweetContainerStackView.spacing = 2
         
-        // user meta container: [name | username | date | menu]
+        // user meta container: [name | lock | username | date | menu]
         let userMetaContainerStackView = UIStackView()
         tweetContainerStackView.addArrangedSubview(userMetaContainerStackView)
         userMetaContainerStackView.axis = .horizontal
         userMetaContainerStackView.alignment = .center
         userMetaContainerStackView.spacing = 6
         userMetaContainerStackView.addArrangedSubview(nameLabel)
+        userMetaContainerStackView.addArrangedSubview(lockImageView)
         userMetaContainerStackView.addArrangedSubview(usernameLabel)
         userMetaContainerStackView.addArrangedSubview(dateLabel)
         moreMenuButton.translatesAutoresizingMaskIntoConstraints = false
@@ -234,7 +238,7 @@ extension TimelinePostView {
         tweetContainerStackView.addArrangedSubview(actionToolbar)
         actionToolbar.setContentCompressionResistancePriority(.defaultLow, for: .vertical)
         
-        lockImageView.isHidden = true
+        verifiedBadgeImageView.isHidden = true
         retweetContainerStackView.isHidden = true
         mosaicImageView.isHidden = true
         quotePostView.isHidden = true
@@ -284,7 +288,7 @@ struct TimelinePostView_Previews: PreviewProvider {
             UIViewPreview(width: 375) {
                 let view = TimelinePostView()
                 view.avatarImageView.image = avatarImage
-                view.lockImageView.isHidden = false
+                view.verifiedBadgeImageView.isHidden = false
                 return view
             }
             .previewLayout(.fixed(width: 375, height: 200))

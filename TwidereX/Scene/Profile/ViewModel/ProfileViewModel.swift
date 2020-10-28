@@ -26,6 +26,8 @@ class ProfileViewModel: NSObject {
     let userID: CurrentValueSubject<String?, Never>
     let bannerImageURL: CurrentValueSubject<URL?, Never>
     let avatarImageURL: CurrentValueSubject<URL?, Never>
+    let protected: CurrentValueSubject<Bool?, Never>
+    let verified: CurrentValueSubject<Bool?, Never>
     let name: CurrentValueSubject<String?, Never>
     let username: CurrentValueSubject<String?, Never>
     let bioDescription: CurrentValueSubject<String?, Never>
@@ -42,6 +44,8 @@ class ProfileViewModel: NSObject {
         self.userID = CurrentValueSubject(nil)
         self.bannerImageURL = CurrentValueSubject(nil)
         self.avatarImageURL = CurrentValueSubject(nil)
+        self.protected = CurrentValueSubject(nil)
+        self.verified = CurrentValueSubject(nil)
         self.name = CurrentValueSubject(nil)
         self.username = CurrentValueSubject(nil)
         self.bioDescription = CurrentValueSubject(nil)
@@ -61,6 +65,8 @@ class ProfileViewModel: NSObject {
         self.userID = CurrentValueSubject(twitterUser.id)
         self.bannerImageURL = CurrentValueSubject(twitterUser.profileBannerURL.flatMap { URL(string: $0) })
         self.avatarImageURL = CurrentValueSubject(twitterUser.avatarImageURL(size: .original))
+        self.protected = CurrentValueSubject(twitterUser.protected)
+        self.verified = CurrentValueSubject(twitterUser.verified)
         self.name = CurrentValueSubject(twitterUser.name)
         self.username = CurrentValueSubject(twitterUser.username)
         self.bioDescription = CurrentValueSubject(twitterUser.bioDescription)
@@ -140,6 +146,8 @@ extension ProfileViewModel {
         self.userID.value = twitterUser?.id
         self.bannerImageURL.value = twitterUser?.profileBannerURL.flatMap { URL(string: $0) }
         self.avatarImageURL.value = twitterUser?.avatarImageURL(size: .original)
+        self.protected.value = twitterUser?.protected
+        self.verified.value = twitterUser?.verified
         self.name.value = twitterUser?.name
         self.username.value = twitterUser?.username
         self.bioDescription.value = twitterUser?.bioDescription
