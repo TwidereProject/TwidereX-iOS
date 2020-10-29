@@ -35,8 +35,10 @@ extension Twitter.API {
     public enum Timeline { }
     
     // V2
-    public enum Lookup { }
-    public enum RecentSearch { }
+    public enum V2 {
+        public enum Lookup { }
+        public enum RecentSearch { }        
+    }
 }
 
 extension Twitter.API {

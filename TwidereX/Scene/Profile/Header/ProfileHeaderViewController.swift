@@ -52,7 +52,3 @@ extension ProfileHeaderViewController {
     }
     
 }
-
-extension ProfileHeaderViewController {
-
-}

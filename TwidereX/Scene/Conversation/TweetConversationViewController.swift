@@ -101,8 +101,17 @@ extension TweetConversationViewController {
 
 // MARK: - UITableViewDelegate
 extension TweetConversationViewController: UITableViewDelegate {
+    
     func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 200
+        guard let diffableDataSource = viewModel.diffableDataSource else { return 100 }
+        guard let item = diffableDataSource.itemIdentifier(for: indexPath) else { return 100 }
+        
+        guard let frame = viewModel.cellFrameCache.object(forKey: NSNumber(value: item.hashValue))?.cgRectValue else {
+            return 200
+        }
+        // os_log("%{public}s[%{public}ld], %{public}s: cache cell frame %s", ((#file as NSString).lastPathComponent), #line, #function, frame.debugDescription)
+        
+        return ceil(frame.height)
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -127,6 +136,16 @@ extension TweetConversationViewController: UITableViewDelegate {
             return
         }
     }
+    
+    func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        guard let diffableDataSource = viewModel.diffableDataSource else { return }
+        guard let item = diffableDataSource.itemIdentifier(for: indexPath) else { return }
+        
+        let key = item.hashValue
+        let frame = cell.frame
+        viewModel.cellFrameCache.setObject(NSValue(cgRect: frame), forKey: NSNumber(value: key))
+    }
+    
 }
 
 // MARK: - ConversationPostTableViewCellDelegate

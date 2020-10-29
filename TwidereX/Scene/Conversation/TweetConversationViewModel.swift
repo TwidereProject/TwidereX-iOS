@@ -53,6 +53,8 @@ final class TweetConversationViewModel: NSObject {
         return stateMachine
     }()
     var conversationNodes = CurrentValueSubject<[ConversationNode], Never>([])
+    var cellFrameCache = NSCache<NSNumber, NSValue>()
+
     
     init(context: AppContext, tweetObjectID: NSManagedObjectID) {
         self.context = context
@@ -313,7 +315,7 @@ extension TweetConversationViewModel {
             self.children = children
         }
         
-        static func leafs(for tweetID: Twitter.Entity.V2.Tweet.ID, from content: Twitter.API.RecentSearch.Content) -> [ConversationNode] {
+        static func leafs(for tweetID: Twitter.Entity.V2.Tweet.ID, from content: Twitter.API.V2.RecentSearch.Content) -> [ConversationNode] {
             let tweets = [content.data, content.includes?.tweets].compactMap { $0 }.flatMap { $0 }
             let dictContent = Twitter.Response.V2.DictContent(
                 tweets: tweets,

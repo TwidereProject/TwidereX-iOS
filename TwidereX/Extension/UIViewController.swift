@@ -12,7 +12,7 @@ extension UIViewController {
     /// https://bluelemonbits.com/2018/08/26/inserting-cells-at-the-top-of-a-uitableview-with-no-scrolling/
     static func topVisibleTableViewCellIndexPath(in tableView: UITableView, navigationBar: UINavigationBar) -> IndexPath? {
         let navigationBarRectInTableView = tableView.convert(navigationBar.bounds, from: navigationBar)
-        let navigationBarMaxYPosition = CGPoint(x: 0, y: navigationBarRectInTableView.origin.y + navigationBarRectInTableView.size.height + 1)
+        let navigationBarMaxYPosition = CGPoint(x: 0, y: navigationBarRectInTableView.origin.y + navigationBarRectInTableView.size.height + 1)  // +1pt for UIKit cell locate
         let mostTopVisiableIndexPath = tableView.indexPathForRow(at: navigationBarMaxYPosition)
         return mostTopVisiableIndexPath
     }
@@ -20,7 +20,7 @@ extension UIViewController {
     static func tableViewCellOriginOffsetToWindowTop(in tableView: UITableView, at indexPath: IndexPath, navigationBar: UINavigationBar) -> CGFloat {
         let rectForTopRow = tableView.rectForRow(at: indexPath)
         let navigationBarRectInTableView = tableView.convert(navigationBar.bounds, from: navigationBar)
-        let navigationBarMaxYPosition = CGPoint(x: 0, y: navigationBarRectInTableView.origin.y + navigationBarRectInTableView.size.height + 1)
+        let navigationBarMaxYPosition = CGPoint(x: 0, y: navigationBarRectInTableView.origin.y + navigationBarRectInTableView.size.height)      // without +1pt
         let differenceBetweenTopRowAndNavigationBar = rectForTopRow.origin.y - navigationBarMaxYPosition.y
         return differenceBetweenTopRowAndNavigationBar
     }

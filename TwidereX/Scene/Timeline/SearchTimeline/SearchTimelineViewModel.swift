@@ -1,8 +1,9 @@
 //
-//  UserTimelineViewModel.swift
+//  SearchTimelineViewModel.swift
 //  TwidereX
 //
-//  Created by Cirno MainasuK on 2020-9-28.
+//  Created by Cirno MainasuK on 2020-10-28.
+//  Copyright © 2020 Twidere. All rights reserved.
 //
 
 import os.log
@@ -14,7 +15,7 @@ import CoreDataStack
 import TwitterAPI
 import AlamofireImage
 
-class UserTimelineViewModel: NSObject {
+class SearchTimelineViewModel: NSObject {
     
     var disposeBag = Set<AnyCancellable>()
     
@@ -22,20 +23,22 @@ class UserTimelineViewModel: NSObject {
     let context: AppContext
     let fetchedResultsController: NSFetchedResultsController<Tweet>
     var diffableDataSource: UITableViewDiffableDataSource<TimelineSection, TimelineItem>?
-    let userID: CurrentValueSubject<String?, Never>
     let currentTwitterAuthentication: CurrentValueSubject<TwitterAuthentication?, Never>
-    let userTimelineTweetIDs = CurrentValueSubject<[Twitter.Entity.Tweet.ID], Never>([])
+    let searchTimelineTweetIDs = CurrentValueSubject<[Twitter.Entity.Tweet.ID], Never>([])
+    let searchText = CurrentValueSubject<String, Never>("")
+    let searchActionPublisher = PassthroughSubject<Void, Never>()
+
     weak var tableView: UITableView?
     weak var timelinePostTableViewCellDelegate: TimelinePostTableViewCellDelegate?
     
     // output
+    let identifier = UUID()
     private(set) lazy var stateMachine: GKStateMachine = {
         let stateMachine = GKStateMachine(states: [
             State.Initial(viewModel: self),
-            State.Reloading(viewModel: self),
-            State.Fail(viewModel: self),
             State.Idle(viewModel: self),
-            State.LoadingMore(viewModel: self),
+            State.Loading(viewModel: self),
+            State.Fail(viewModel: self),
             State.NoMore(viewModel: self),
         ])
         stateMachine.enter(State.Initial.self)
@@ -45,7 +48,7 @@ class UserTimelineViewModel: NSObject {
     let timelineItems = CurrentValueSubject<[TimelineItem], Never>([])
     var cellFrameCache = NSCache<NSNumber, NSValue>()
     
-    init(context: AppContext, userID: String?) {
+    init(context: AppContext) {
         self.context = context
         self.fetchedResultsController = {
             let fetchRequest = Tweet.sortedFetchRequest
@@ -61,17 +64,16 @@ class UserTimelineViewModel: NSObject {
             
             return controller
         }()
-        self.userID = CurrentValueSubject(userID)
         self.currentTwitterAuthentication = CurrentValueSubject(context.authenticationService.currentActiveTwitterAutentication.value)
         super.init()
         
         self.fetchedResultsController.delegate = self
-        
+
         Publishers.CombineLatest(
             timelineItems.eraseToAnyPublisher(),
             stateMachinePublisher.eraseToAnyPublisher()
         )
-        .debounce(for: .seconds(1), scheduler: DispatchQueue.main)
+        .throttle(for: .seconds(1), scheduler: DispatchQueue.main, latest: true)
         .receive(on: DispatchQueue.main)
         .sink { [weak self] _, state in
             guard let self = self else { return }
@@ -79,17 +81,25 @@ class UserTimelineViewModel: NSObject {
 
             var snapshot = NSDiffableDataSourceSnapshot<TimelineSection, TimelineItem>()
             snapshot.appendSections([.main])
-            let items = (self.fetchedResultsController.fetchedObjects ?? []).map { TimelineItem.userTimelineItem(objectID: $0.objectID) }
+            let items = (self.fetchedResultsController.fetchedObjects ?? []).map { TimelineItem.searchTimelineItem(objectID: $0.objectID) }
             snapshot.appendItems(items)
-            if !items.isEmpty, self.stateMachine.canEnterState(State.LoadingMore.self) ||
-                state is State.LoadingMore {
+            switch self.stateMachine.currentState {
+            case is State.Fail:
+                // TODO:
+                break
+            case is State.Initial, is State.NoMore:
+                break
+            case is State.Idle, is State.Loading:
                 snapshot.appendItems([.bottomLoader], toSection: .main)
+            default:
+                assertionFailure()
             }
-            self.diffableDataSource?.apply(snapshot)
+            
+            self.diffableDataSource?.apply(snapshot, animatingDifferences: true)
         }
         .store(in: &disposeBag)
-        
-        userTimelineTweetIDs
+
+        searchTimelineTweetIDs
             .receive(on: DispatchQueue.main)
             .sink { [weak self] ids in
                 guard let self = self else { return }
@@ -102,12 +112,20 @@ class UserTimelineViewModel: NSObject {
             }
             .store(in: &disposeBag)
         
+        searchActionPublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                guard let self = self else { return }
+                self.stateMachine.enter(State.Loading.self)
+            }
+            .store(in: &disposeBag)
+
         Timer.publish(every: 1.0, on: .main, in: .common)
             .autoconnect()
             .sink { [weak self] _ in
                 guard let self = self else { return }
-                let userInfo: [AnyHashable : Any] = ["userID": self.userID.value ?? ""]
-                NotificationCenter.default.post(name: UserTimelineViewModel.secondStepTimerTriggered, object: nil, userInfo: userInfo)
+                let userInfo: [AnyHashable : Any] = ["identifier": self.identifier]
+                NotificationCenter.default.post(name: SearchTimelineViewModel.secondStepTimerTriggered, object: nil, userInfo: userInfo)
             }
             .store(in: &disposeBag)
     }
@@ -118,7 +136,7 @@ class UserTimelineViewModel: NSObject {
     
 }
 
-extension UserTimelineViewModel {
+extension SearchTimelineViewModel {
     enum LoadingStatus {
         case noMore
         case idle
@@ -126,20 +144,20 @@ extension UserTimelineViewModel {
     }
 }
 
-extension UserTimelineViewModel {
+extension SearchTimelineViewModel {
     
-    private static func configure(cell: TimelinePostTableViewCell, tweet: Tweet, userID: String, requestUserID: String) {
+    private static func configure(cell: TimelinePostTableViewCell, tweet: Tweet, identifier: UUID, requestUserID: String) {
         HomeTimelineViewModel.configure(cell: cell, tweet: tweet, requestUserID: requestUserID)
-        internalConfigure(cell: cell, tweet: tweet, userID: userID)
+        internalConfigure(cell: cell, tweet: tweet, identifier: identifier)
     }
 
-    private static func internalConfigure(cell: TimelinePostTableViewCell, tweet: Tweet, userID: String) {
+    private static func internalConfigure(cell: TimelinePostTableViewCell, tweet: Tweet, identifier: UUID) {
         // tweet date updater
         let createdAt = (tweet.retweet ?? tweet).createdAt
-        NotificationCenter.default.publisher(for: UserTimelineViewModel.secondStepTimerTriggered, object: nil)
+        NotificationCenter.default.publisher(for: SearchTimelineViewModel.secondStepTimerTriggered, object: nil)
             .sink { notification in
-                guard let incomingUserID = notification.userInfo?["userID"] as? String,
-                      incomingUserID == userID else { return }
+                guard let incomingIdentifier = notification.userInfo?["identifier"] as? UUID,
+                      incomingIdentifier == identifier else { return }
                 cell.timelinePostView.dateLabel.text = createdAt.shortTimeAgoSinceNow
             }
             .store(in: &cell.disposeBag)
@@ -149,10 +167,10 @@ extension UserTimelineViewModel {
         if let quote = quote {
             let createdAt = quote.createdAt
             cell.timelinePostView.quotePostView.dateLabel.text = createdAt.shortTimeAgoSinceNow
-            NotificationCenter.default.publisher(for: UserTimelineViewModel.secondStepTimerTriggered, object: nil)
+            NotificationCenter.default.publisher(for: SearchTimelineViewModel.secondStepTimerTriggered, object: nil)
                 .sink { notification in
-                    guard let incomingUserID = notification.userInfo?["userID"] as? String,
-                          incomingUserID == userID else { return }
+                    guard let incomingIdentifier = notification.userInfo?["identifier"] as? UUID,
+                          incomingIdentifier == identifier else { return }
                     cell.timelinePostView.quotePostView.dateLabel.text = createdAt.shortTimeAgoSinceNow
                 }
                 .store(in: &cell.disposeBag)
@@ -161,24 +179,20 @@ extension UserTimelineViewModel {
     
 }
 
-extension UserTimelineViewModel {
+extension SearchTimelineViewModel {
     func setupDiffableDataSource(for tableView: UITableView) {
         diffableDataSource = UITableViewDiffableDataSource<TimelineSection, TimelineItem>(tableView: tableView) { [weak self] tableView, indexPath, item -> UITableViewCell? in
             guard let self = self else { return nil }
-            guard let userID = self.userID.value else {
-                assertionFailure()
-                return nil
-            }
-            
+
             switch item {
-            case .userTimelineItem(let objectID):
+            case .searchTimelineItem(let objectID):
                 let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: TimelinePostTableViewCell.self), for: indexPath) as! TimelinePostTableViewCell
 
                 // configure cell
                 let managedObjectContext = self.fetchedResultsController.managedObjectContext
                 managedObjectContext.performAndWait {
                     let tweet = managedObjectContext.object(with: objectID) as! Tweet
-                    UserTimelineViewModel.configure(cell: cell, tweet: tweet, userID: userID, requestUserID: self.currentTwitterAuthentication.value?.userID ?? "")
+                    SearchTimelineViewModel.configure(cell: cell, tweet: tweet, identifier: self.identifier, requestUserID: self.currentTwitterAuthentication.value?.userID ?? "")
                 }
                 cell.delegate = self.timelinePostTableViewCellDelegate
                 return cell
@@ -197,55 +211,27 @@ extension UserTimelineViewModel {
 }
 
 // MARK: - NSFetchedResultsControllerDelegate
-extension UserTimelineViewModel: NSFetchedResultsControllerDelegate {
+extension SearchTimelineViewModel: NSFetchedResultsControllerDelegate {
     func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChangeContentWith snapshot: NSDiffableDataSourceSnapshotReference) {
         os_log("%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
 
         let snapshot = snapshot as NSDiffableDataSourceSnapshot<String, NSManagedObjectID>
-        guard snapshot.numberOfItems == userTimelineTweetIDs.value.count else { return }
-        let items = snapshot.itemIdentifiers.map { TimelineItem.userTimelineItem(objectID: $0) }
+        guard snapshot.numberOfItems == searchTimelineTweetIDs.value.count else { return }
+        let items = snapshot.itemIdentifiers.map { TimelineItem.searchTimelineItem(objectID: $0) }
         timelineItems.value = items
     }
-    
 }
 
-extension UserTimelineViewModel {
+extension SearchTimelineViewModel {
     
-    enum UserTimelineError: Swift.Error {
+    enum SearchTimelineError: Swift.Error {
         case invalidAuthorization
-        case invalidUserID
+        case invalidSearchText
         case invalidAnchorToLoadMore
     }
     
-    func fetchLatest() -> AnyPublisher<Twitter.Response.Content<[Twitter.Entity.Tweet]>, Error> {
-        guard let authentication = currentTwitterAuthentication.value,
-              let authorization = try? authentication.authorization(appSecret: .shared) else {
-            return Fail(error: UserTimelineError.invalidAuthorization).eraseToAnyPublisher()
-        }
-        guard let userID = self.userID.value, !userID.isEmpty else {
-            return Fail(error: UserTimelineError.invalidUserID).eraseToAnyPublisher()
-        }
-        
-        return context.apiService.twitterUserTimeline(count: 20, userID: userID, authorization: authorization, twitterUserID: authentication.userID)
-    }
-    
-    func loadMore() -> AnyPublisher<Twitter.Response.Content<[Twitter.Entity.Tweet]>, Error> {
-        guard let authentication = currentTwitterAuthentication.value,
-              let authorization = try? authentication.authorization(appSecret: .shared) else {
-            return Fail(error: UserTimelineError.invalidAuthorization).eraseToAnyPublisher()
-        }
-        guard let userID = self.userID.value, !userID.isEmpty else {
-            return Fail(error: UserTimelineError.invalidUserID).eraseToAnyPublisher()
-        }
-        guard let oldestTweet = fetchedResultsController.fetchedObjects?.last else {
-            return Fail(error: UserTimelineError.invalidAnchorToLoadMore).eraseToAnyPublisher()
-        }
-        
-        let maxID = oldestTweet.id
-        return context.apiService.twitterUserTimeline(count: 20, userID: userID, maxID: maxID, authorization: authorization, twitterUserID: authentication.userID)
-    }
 }
 
-extension UserTimelineViewModel {
-    private static let secondStepTimerTriggered = Notification.Name("com.twidere.twiderex.user-timeline.second-step-timer-triggered")
+extension SearchTimelineViewModel {
+    private static let secondStepTimerTriggered = Notification.Name("com.twidere.twiderex.search-timeline.second-step-timer-triggered")
 }

@@ -66,6 +66,10 @@ extension UserTimelineViewController {
                 self.viewModel.stateMachine.enter(UserTimelineViewModel.State.Reloading.self)
             }
             .store(in: &disposeBag)
+        
+        context.authenticationService.currentActiveTwitterAutentication
+            .assign(to: \.value, on: viewModel.currentTwitterAuthentication)
+            .store(in: &disposeBag)
     }
     
     override func viewWillAppear(_ animated: Bool) {

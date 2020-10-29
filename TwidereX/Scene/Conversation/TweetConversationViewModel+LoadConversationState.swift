@@ -267,7 +267,7 @@ extension TweetConversationViewModel.LoadConversationState {
         
         override func didEnter(from previousState: GKState?) {
             super.didEnter(from: previousState)
-            guard let viewModel = viewModel, let stateMachine = stateMachine else { return }
+            guard let viewModel = viewModel else { return }
             guard let diffableDataSource = viewModel.diffableDataSource else { return }
             var snapshot = diffableDataSource.snapshot()
             if snapshot.itemIdentifiers.contains(.bottomLoader) {

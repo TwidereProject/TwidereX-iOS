@@ -15,19 +15,22 @@ class MainTabBarController: UITabBarController {
     
     enum Tab: Int, CaseIterable {
         case timeline
+        case search
         case me
         
         var title: String {
             switch self {
             case .timeline:     return "Timeline"
+            case .search:       return "Search"
             case .me:           return "Me"
             }
         }
         
         var image: UIImage {
             switch self {
-            case .timeline:     return UIImage(systemName: "house")!
-            case .me:           return UIImage(systemName: "person")!
+            case .timeline:     return Asset.ObjectTools.house.image.withRenderingMode(.alwaysTemplate)
+            case .search:       return Asset.ObjectTools.magnifyingglass.image.withRenderingMode(.alwaysTemplate)
+            case .me:           return Asset.Human.person.image.withRenderingMode(.alwaysTemplate)
             }
         }
         
@@ -35,11 +38,12 @@ class MainTabBarController: UITabBarController {
             let viewController: UIViewController
             switch self {
             case .timeline:
-                #if STUB
-                let _viewController = StubTimelineViewController()
-                #else
                 let _viewController = HomeTimelineViewController()
-                #endif
+                _viewController.context = context
+                _viewController.coordinator = coordinator
+                viewController = _viewController
+            case .search:
+                let _viewController = SearchViewController()
                 _viewController.context = context
                 _viewController.coordinator = coordinator
                 viewController = _viewController

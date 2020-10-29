@@ -10,10 +10,38 @@ import CoreData
 import TwitterAPI
 import CoreDataStack
 
-enum ConversationItem: Hashable {
+enum ConversationItem {
     case root(tweetObjectID: NSManagedObjectID)
     case leaf(tweetObjectID: NSManagedObjectID, attribute: LeafAttribute)
     case bottomLoader
+}
+
+extension ConversationItem: Equatable {
+    static func == (lhs: ConversationItem, rhs: ConversationItem) -> Bool {
+        switch (lhs, rhs) {
+        case (.root(let objectIDLeft), .root(let objectIDRight)):
+            return objectIDLeft == objectIDRight
+        case (.leaf(let objectIDLeft, _), .leaf(let objectIDRight, _)):
+            return objectIDLeft == objectIDRight
+        case (.bottomLoader, .bottomLoader):
+            return true
+        default:
+            return false
+        }
+    }
+}
+
+extension ConversationItem: Hashable {
+    func hash(into hasher: inout Hasher) {
+        switch self {
+        case .root(let objectID):
+            hasher.combine(objectID)
+        case .leaf(let objectID, _):
+            hasher.combine(objectID)
+        case .bottomLoader:
+            hasher.combine(String(describing: ConversationItem.bottomLoader.self))
+        }
+    }
 }
 
 extension ConversationItem {
