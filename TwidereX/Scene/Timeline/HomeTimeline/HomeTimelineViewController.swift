@@ -11,7 +11,9 @@ import Combine
 import CoreData
 import CoreDataStack
 import TwitterAPI
+#if !targetEnvironment(macCatalyst)
 import Floaty
+#endif
 
 final class HomeTimelineViewController: UIViewController, NeedsDependency {
     
@@ -31,6 +33,7 @@ final class HomeTimelineViewController: UIViewController, NeedsDependency {
         return tableView
     }()
     
+    #if !targetEnvironment(macCatalyst)
     let refreshControl = UIRefreshControl()
     private lazy var floatyButton: Floaty = {
         let button = Floaty()
@@ -49,6 +52,7 @@ final class HomeTimelineViewController: UIViewController, NeedsDependency {
         
         return button
     }()
+    #endif
 
 }
 
@@ -59,8 +63,10 @@ extension HomeTimelineViewController {
         
         view.backgroundColor = .systemBackground
         
+        #if !targetEnvironment(macCatalyst)
         tableView.refreshControl = refreshControl
         refreshControl.addTarget(self, action: #selector(HomeTimelineViewController.refreshControlValueChanged(_:)), for: .valueChanged)
+        #endif
         
         #if DEBUG
         if #available(iOS 14.0, *) {
@@ -114,7 +120,9 @@ extension HomeTimelineViewController {
             tableView.topAnchor.constraint(equalTo: view.topAnchor)
         ])
     
+        #if !targetEnvironment(macCatalyst)
         view.addSubview(floatyButton)
+        #endif
         
         viewModel.contentOffsetAdjustableTimelineViewControllerDelegate = self
         viewModel.tableView = tableView
@@ -143,7 +151,9 @@ extension HomeTimelineViewController {
             .sink { [weak self] isFetching in
                 guard let self = self else { return }
                 if !isFetching {
+                    #if !targetEnvironment(macCatalyst)
                     self.refreshControl.endRefreshing()
+                    #endif
                 }
             }
             .store(in: &disposeBag)
@@ -181,7 +191,9 @@ extension HomeTimelineViewController {
     override func viewSafeAreaInsetsDidChange() {
         super.viewSafeAreaInsetsDidChange()
         
+        #if !targetEnvironment(macCatalyst)
         floatyButton.paddingY = view.safeAreaInsets.bottom + UIView.floatyButtonBottomMargin
+        #endif
     }
 
 }
@@ -195,11 +207,13 @@ extension HomeTimelineViewController {
         }
     }
     
+    #if !targetEnvironment(macCatalyst)
     @objc private func composeFloatyButtonPressed(_ sender: FloatyItem) {
         os_log("%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
         let composeTweetViewModel = ComposeTweetViewModel(context: context, repliedTweetObjectID: nil)
         coordinator.present(scene: .composeTweet(viewModel: composeTweetViewModel), from: self, transition: .modal(animated: true, completion: nil))
     }
+    #endif
     
     #if DEBUG
     @objc private func moveToTopGapAction(_ sender: UIAction) {

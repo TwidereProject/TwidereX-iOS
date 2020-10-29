@@ -17,6 +17,8 @@ final public class SceneCoordinator {
     let id = UUID().uuidString
     private var secondaryStackHashValues = Set<Int>()
     
+    var mainTabViewController: MainTabBarController!
+    
     init(scene: UIScene, sceneDelegate: SceneDelegate, appContext: AppContext) {
         self.scene = scene
         self.sceneDelegate = sceneDelegate
@@ -46,8 +48,38 @@ extension SceneCoordinator {
 extension SceneCoordinator {
     
     func setup() {
-        let viewController = MainTabBarController(context: appContext, coordinator: self)
-        sceneDelegate.window?.rootViewController = viewController
+        let _mainTabViewController = MainTabBarController(context: appContext, coordinator: self)
+        mainTabViewController = _mainTabViewController
+        
+        if #available(iOS 14.0, *) {
+            
+            if sceneDelegate.window?.traitCollection.userInterfaceIdiom == .pad || sceneDelegate.window?.traitCollection.userInterfaceIdiom == .mac {
+                let sidebarViewController = SidebarViewController()
+                let splitViewController = UISplitViewController(style: .doubleColumn)
+                splitViewController.primaryBackgroundStyle = .sidebar
+                splitViewController.preferredDisplayMode = .automatic
+                splitViewController.setViewController(sidebarViewController, for: .primary)
+                splitViewController.setViewController(_mainTabViewController, for: .secondary)
+                _mainTabViewController.tabBar.isHidden = true
+                sceneDelegate.window?.rootViewController = splitViewController
+                
+                #if targetEnvironment(macCatalyst)
+                guard let windowScene = scene as? UIWindowScene else { return }
+                let toolbar = NSToolbar(identifier: "main")
+                // toolbar.delegate = toolbarDelegate
+                toolbar.displayMode = .iconOnly
+                if let titlebar = windowScene.titlebar {
+                    titlebar.toolbar = toolbar
+                    titlebar.toolbarStyle = .automatic
+                }
+                #endif
+                
+            } else {
+                sceneDelegate.window?.rootViewController = _mainTabViewController
+            }
+        } else {
+            sceneDelegate.window?.rootViewController = _mainTabViewController
+        }
         
 //        let viewController = RootSplitViewController()
 //        setupDependency(for: viewController)

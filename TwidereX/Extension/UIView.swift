@@ -17,7 +17,7 @@ extension UIView {
     }
     
     static func separatorLineHeight(of view: UIView) -> CGFloat {
-        return 1.0 / view.traitCollection.displayScale
+        return 2.0 / view.traitCollection.displayScale
     }
     
     static var floatyButtonBottomMargin: CGFloat {
