@@ -61,6 +61,7 @@ extension SearchDetailViewController {
         setupSearchBar()
         
         pagingViewController = SearchDetailPagingViewController()
+        pagingViewController.pagingDelegate = self
         pagingViewController.viewModel = SearchDetailPagingViewModel(context: context)
         
         pagingViewController.addBar(
@@ -102,8 +103,9 @@ extension SearchDetailViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        DispatchQueue.once {
+        if viewModel.needsBecomeFirstResponder {
             searchBar.becomeFirstResponder()
+            viewModel.needsBecomeFirstResponder = false
         }
     }
     
@@ -119,6 +121,7 @@ extension SearchDetailViewController {
     
     private func setupSearchBar() {
         navigationItem.titleView = searchBar
+        searchBar.searchTextField.allowsCopyingTokens = false
         searchBar.delegate = self
     }
     
@@ -154,4 +157,22 @@ extension SearchDetailViewController: UISearchBarDelegate {
         viewModel.searchActionPublisher.send()
         searchBar.resignFirstResponder()
     }
+}
+
+// MARK: - SearchDetailPagingViewControllerDelegate
+extension SearchDetailViewController: SearchDetailPagingViewControllerDelegate {
+    
+    func searchDetailPagingViewController(_ pagingViewController: SearchDetailPagingViewController, didScrollToViewController viewController: UIViewController, atIndex index: Int) {
+        os_log("%{public}s[%{public}ld], %{public}s: scroll to index: %ld", ((#file as NSString).lastPathComponent), #line, #function, index)
+
+        // trigger uninitialized model perfom search
+        if let searchMediaViewController = viewController as? SearchMediaViewController {
+            searchMediaViewController.viewModel.searchActionPublisher.send()
+        }
+    }
+    
+}
+
+extension SearchDetailViewController {
+    // static let hasMediaSearchToken = UISearchToken(icon: UIImage(systemName: "photo"), text: "Media")
 }

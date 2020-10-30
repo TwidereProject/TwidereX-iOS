@@ -22,7 +22,6 @@ class SearchTimelineViewModel: NSObject {
     // input
     let context: AppContext
     let fetchedResultsController: NSFetchedResultsController<Tweet>
-    var diffableDataSource: UITableViewDiffableDataSource<TimelineSection, TimelineItem>?
     let currentTwitterAuthentication: CurrentValueSubject<TwitterAuthentication?, Never>
     let searchTimelineTweetIDs = CurrentValueSubject<[Twitter.Entity.Tweet.ID], Never>([])
     let searchText = CurrentValueSubject<String, Never>("")
@@ -45,6 +44,7 @@ class SearchTimelineViewModel: NSObject {
         return stateMachine
     }()
     lazy var stateMachinePublisher = CurrentValueSubject<State, Never>(State.Initial(viewModel: self))
+    var diffableDataSource: UITableViewDiffableDataSource<TimelineSection, TimelineItem>?
     let timelineItems = CurrentValueSubject<[TimelineItem], Never>([])
     var cellFrameCache = NSCache<NSNumber, NSValue>()
     
@@ -75,14 +75,13 @@ class SearchTimelineViewModel: NSObject {
         )
         .throttle(for: .seconds(1), scheduler: DispatchQueue.main, latest: true)
         .receive(on: DispatchQueue.main)
-        .sink { [weak self] _, state in
+        .sink { [weak self] timelineItems, state in
             guard let self = self else { return }
             os_log("%{public}s[%{public}ld], %{public}s: state did change", ((#file as NSString).lastPathComponent), #line, #function)
 
             var snapshot = NSDiffableDataSourceSnapshot<TimelineSection, TimelineItem>()
             snapshot.appendSections([.main])
-            let items = (self.fetchedResultsController.fetchedObjects ?? []).map { TimelineItem.searchTimelineItem(objectID: $0.objectID) }
-            snapshot.appendItems(items)
+            snapshot.appendItems(timelineItems)
             switch self.stateMachine.currentState {
             case is State.Fail:
                 // TODO:

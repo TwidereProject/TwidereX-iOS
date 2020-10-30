@@ -11,6 +11,9 @@ import Combine
 
 final class SearchDetailViewModel {
     
+    // input
+    var needsBecomeFirstResponder = false
+    
     // output
     let searchText = CurrentValueSubject<String, Never>("")
     let searchActionPublisher = PassthroughSubject<Void, Never>()

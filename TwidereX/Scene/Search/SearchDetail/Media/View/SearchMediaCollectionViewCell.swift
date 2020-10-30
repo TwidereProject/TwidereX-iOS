@@ -13,6 +13,9 @@ final class SearchMediaCollectionViewCell: UICollectionViewCell {
     lazy var previewCollectionView: UICollectionView = {
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: createCollectionViewLayout())
         collectionView.register(SearchMediaPreviewCollectionViewCell.self, forCellWithReuseIdentifier: String(describing: SearchMediaPreviewCollectionViewCell.self))
+        collectionView.backgroundColor = .clear
+        collectionView.layer.masksToBounds = true
+        collectionView.layer.cornerRadius = 8
         return collectionView
     }()
     

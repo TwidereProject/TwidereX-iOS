@@ -43,6 +43,7 @@ extension SearchViewController {
             .sink { [weak self] _ in
                 guard let self = self else { return }
                 let searchDetailViewModel = SearchDetailViewModel()
+                searchDetailViewModel.needsBecomeFirstResponder = true
                 self.navigationController?.delegate = self.searchDetailTransitionController
                 self.coordinator.present(scene: .searchDetail(viewModel: searchDetailViewModel), from: self, transition: .customPush)
             }

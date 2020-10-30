@@ -1,8 +1,8 @@
 //
-//  SearchTimelineViewModel+State.swift
+//  SearchMediaViewModel+State.swift
 //  TwidereX
 //
-//  Created by Cirno MainasuK on 2020-10-29.
+//  Created by Cirno MainasuK on 2020-10-30.
 //  Copyright © 2020 Twidere. All rights reserved.
 //
 
@@ -11,11 +11,11 @@ import Foundation
 import GameplayKit
 import TwitterAPI
 
-extension SearchTimelineViewModel {
+extension SearchMediaViewModel {
     class State: GKState {
-        weak var viewModel: SearchTimelineViewModel?
+        weak var viewModel: SearchMediaViewModel?
         
-        init(viewModel: SearchTimelineViewModel) {
+        init(viewModel: SearchMediaViewModel) {
             self.viewModel = viewModel
         }
         
@@ -26,20 +26,20 @@ extension SearchTimelineViewModel {
     }
 }
 
-extension SearchTimelineViewModel.State {
-    class Initial: SearchTimelineViewModel.State {
+extension SearchMediaViewModel.State {
+    class Initial: SearchMediaViewModel.State {
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {
             return stateClass == Idle.self || stateClass == Loading.self
         }
     }
     
-    class Idle: SearchTimelineViewModel.State {
+    class Idle: SearchMediaViewModel.State {
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {
             return stateClass == Loading.self
         }
     }
     
-    class Loading: SearchTimelineViewModel.State {
+    class Loading: SearchMediaViewModel.State {
         var error: Error?
         var previoursSearchText = ""
         var nextToken: String?
@@ -54,21 +54,21 @@ extension SearchTimelineViewModel.State {
             
             guard let authentication = viewModel.currentTwitterAuthentication.value,
                   let authorization = try? authentication.authorization(appSecret: .shared) else {
-                error = SearchTimelineViewModel.SearchTimelineError.invalidAuthorization
+                error = SearchMediaViewModel.SearchMediaError.invalidAuthorization
                 stateMachine.enter(Fail.self)
                 return
             }
-            let searchText = viewModel.searchText.value + " (-is:retweet)"
+            let searchText = viewModel.searchText.value + " (-is:retweet has:media)"    // TODO: handle video & GIF
             guard !searchText.isEmpty, searchText.count < 512 else {
-                error = SearchTimelineViewModel.SearchTimelineError.invalidSearchText
+                error = SearchMediaViewModel.SearchMediaError.invalidSearchText
                 stateMachine.enter(Fail.self)
                 return
             }
             if searchText != previoursSearchText {
                 nextToken = nil
                 previoursSearchText = searchText
-                viewModel.searchTimelineTweetIDs.value = []
-                viewModel.timelineItems.value = []
+                viewModel.searchMediaTweetIDs.value = []
+                viewModel.items.value = []
             }
             
             viewModel.context.apiService.tweetsRecentSearch(
@@ -100,33 +100,35 @@ extension SearchTimelineViewModel.State {
                     return
                 }
                 
+                    
                 let newTweets = content.data?.compactMap { $0 } ?? []
-                let oldTweetIDs = viewModel.searchTimelineTweetIDs.value
+                let oldTweetIDs = viewModel.searchMediaTweetIDs.value
                 
                 var tweetIDs: [Twitter.Entity.Tweet.ID] = []
                 for tweetID in oldTweetIDs {
                     guard !tweetIDs.contains(tweetID) else { continue }
                     tweetIDs.append(tweetID)
                 }
+                
                 for tweet in newTweets {
                     guard !tweetIDs.contains(tweet.id) else { continue }
                     tweetIDs.append(tweet.id)
                 }
                 
-                viewModel.searchTimelineTweetIDs.value = tweetIDs
+                viewModel.searchMediaTweetIDs.value = tweetIDs
                 stateMachine.enter(Idle.self)
             }
             .store(in: &viewModel.disposeBag)
         }
     }
     
-    class Fail: SearchTimelineViewModel.State {
+    class Fail: SearchMediaViewModel.State {
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {
             return stateClass == Loading.self
         }
     }
     
-    class NoMore: SearchTimelineViewModel.State {
+    class NoMore: SearchMediaViewModel.State {
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {
             return stateClass == Loading.self
         }

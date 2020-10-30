@@ -60,9 +60,12 @@
 		DB49163B253ED443008755C3 /* TwitteWithheld.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB49163A253ED443008755C3 /* TwitteWithheld.swift */; };
 		DB491640253EDA7D008755C3 /* TwitterUserMetrics.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB49163F253EDA7D008755C3 /* TwitterUserMetrics.swift */; };
 		DB6760F9254AD026006C6798 /* SearchMediaViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB6760F8254AD026006C6798 /* SearchMediaViewModel.swift */; };
-		DB676101254AD12F006C6798 /* SearchMediaPhotoCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB676100254AD12F006C6798 /* SearchMediaPhotoCollectionViewCell.swift */; };
+		DB676101254AD12F006C6798 /* SearchMediaCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB676100254AD12F006C6798 /* SearchMediaCollectionViewCell.swift */; };
 		DB67610D254AD681006C6798 /* ActivityIndicatorCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB67610C254AD681006C6798 /* ActivityIndicatorCollectionViewCell.swift */; };
 		DB676113254ADB43006C6798 /* SwiftyJSON in Frameworks */ = {isa = PBXBuildFile; productRef = DB676112254ADB43006C6798 /* SwiftyJSON */; };
+		DB676118254BBF57006C6798 /* SearchMediaViewModel+State.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB676117254BBF57006C6798 /* SearchMediaViewModel+State.swift */; };
+		DB67611D254BC04B006C6798 /* SearchMediaViewModel+Diffable.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB67611C254BC04B006C6798 /* SearchMediaViewModel+Diffable.swift */; };
+		DB676161254BE580006C6798 /* SearchMediaPreviewCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB676160254BE580006C6798 /* SearchMediaPreviewCollectionViewCell.swift */; };
 		DB6DF3E0252060AA00E8A273 /* ProfileViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB6DF3DF252060AA00E8A273 /* ProfileViewModel.swift */; };
 		DB747FEF251B63E3000C4BD7 /* HitTestExpandedButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB747FEE251B63E3000C4BD7 /* HitTestExpandedButton.swift */; };
 		DB747FF4251C47BD000C4BD7 /* UITableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB747FF3251C47BD000C4BD7 /* UITableView.swift */; };
@@ -325,8 +328,11 @@
 		DB49163A253ED443008755C3 /* TwitteWithheld.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwitteWithheld.swift; sourceTree = "<group>"; };
 		DB49163F253EDA7D008755C3 /* TwitterUserMetrics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwitterUserMetrics.swift; sourceTree = "<group>"; };
 		DB6760F8254AD026006C6798 /* SearchMediaViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchMediaViewModel.swift; sourceTree = "<group>"; };
-		DB676100254AD12F006C6798 /* SearchMediaPhotoCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchMediaPhotoCollectionViewCell.swift; sourceTree = "<group>"; };
+		DB676100254AD12F006C6798 /* SearchMediaCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchMediaCollectionViewCell.swift; sourceTree = "<group>"; };
 		DB67610C254AD681006C6798 /* ActivityIndicatorCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityIndicatorCollectionViewCell.swift; sourceTree = "<group>"; };
+		DB676117254BBF57006C6798 /* SearchMediaViewModel+State.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SearchMediaViewModel+State.swift"; sourceTree = "<group>"; };
+		DB67611C254BC04B006C6798 /* SearchMediaViewModel+Diffable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SearchMediaViewModel+Diffable.swift"; sourceTree = "<group>"; };
+		DB676160254BE580006C6798 /* SearchMediaPreviewCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchMediaPreviewCollectionViewCell.swift; sourceTree = "<group>"; };
 		DB6DF3DF252060AA00E8A273 /* ProfileViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileViewModel.swift; sourceTree = "<group>"; };
 		DB747FEE251B63E3000C4BD7 /* HitTestExpandedButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HitTestExpandedButton.swift; sourceTree = "<group>"; };
 		DB747FF3251C47BD000C4BD7 /* UITableView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UITableView.swift; sourceTree = "<group>"; };
@@ -545,6 +551,8 @@
 				DB676105254AD4B1006C6798 /* View */,
 				DB10B346254AB338002D86F3 /* SearchMediaViewController.swift */,
 				DB6760F8254AD026006C6798 /* SearchMediaViewModel.swift */,
+				DB67611C254BC04B006C6798 /* SearchMediaViewModel+Diffable.swift */,
+				DB676117254BBF57006C6798 /* SearchMediaViewModel+State.swift */,
 			);
 			path = Media;
 			sourceTree = "<group>";
@@ -621,7 +629,8 @@
 		DB676105254AD4B1006C6798 /* View */ = {
 			isa = PBXGroup;
 			children = (
-				DB676100254AD12F006C6798 /* SearchMediaPhotoCollectionViewCell.swift */,
+				DB676100254AD12F006C6798 /* SearchMediaCollectionViewCell.swift */,
+				DB676160254BE580006C6798 /* SearchMediaPreviewCollectionViewCell.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -640,7 +649,7 @@
 		DB88AC302508BA8F0009E562 /* Timeline */ = {
 			isa = PBXGroup;
 			children = (
-				DB88AC312508BA950009E562 /* Model */,
+				DB88AC312508BA950009E562 /* Diffable */,
 				DBDA8EA024FE1002006750DC /* HomeTimeline */,
 				DB92573B251C9C31004FEFB5 /* UserTimeline */,
 				DBF69EF825498AE400E2A915 /* SearchTimeline */,
@@ -649,13 +658,13 @@
 			path = Timeline;
 			sourceTree = "<group>";
 		};
-		DB88AC312508BA950009E562 /* Model */ = {
+		DB88AC312508BA950009E562 /* Diffable */ = {
 			isa = PBXGroup;
 			children = (
 				DB88AC2E2508BA8C0009E562 /* TimelineSection.swift */,
 				DB88AC322508BACD0009E562 /* TimelineItem.swift */,
 			);
-			path = Model;
+			path = Diffable;
 			sourceTree = "<group>";
 		};
 		DB88AC34250B25170009E562 /* Vender */ = {
@@ -1735,11 +1744,13 @@
 				DBDA8E9F24FE0FFF006750DC /* HomeTimelineViewController.swift in Sources */,
 				DB925705251C8FCB004FEFB5 /* ProfileSegmentedViewController.swift in Sources */,
 				DB8AC14C254167BE00E636BE /* TweetToolbarView.swift in Sources */,
+				DB676161254BE580006C6798 /* SearchMediaPreviewCollectionViewCell.swift in Sources */,
 				DBE76D402502524500DEB0FC /* UIImage.swift in Sources */,
 				DBF69EE12549705A00E2A915 /* ViewControllerAnimatedTransitioningDelegate.swift in Sources */,
 				DB3402B72521D389009EFADF /* UserTimelineViewModel.swift in Sources */,
 				DBED96D8253F5D7800C5383A /* NamingState.swift in Sources */,
 				DB6DF3E0252060AA00E8A273 /* ProfileViewModel.swift in Sources */,
+				DB67611D254BC04B006C6798 /* SearchMediaViewModel+Diffable.swift in Sources */,
 				DB8AC16C25419B2E00E636BE /* ComposeTweetSection.swift in Sources */,
 				DBEA4F8D251225610007FEC5 /* TimelinePostView.swift in Sources */,
 				DB92574E251CA3BB004FEFB5 /* StubTableViewModel.swift in Sources */,
@@ -1754,7 +1765,7 @@
 				DBDA8E8524FE05B6006750DC /* AuthenticationViewController.swift in Sources */,
 				DBF69E8F2549601900E2A915 /* SearchViewController.swift in Sources */,
 				DB2924D72547CCA2003899A7 /* ComposeTweetMediaSection.swift in Sources */,
-				DB676101254AD12F006C6798 /* SearchMediaPhotoCollectionViewCell.swift in Sources */,
+				DB676101254AD12F006C6798 /* SearchMediaCollectionViewCell.swift in Sources */,
 				DBDA8E2424FCF8A3006750DC /* SceneDelegate.swift in Sources */,
 				DB88AC332508BACD0009E562 /* TimelineItem.swift in Sources */,
 				DBE76D3B25024FDA00DEB0FC /* NSLayoutConstraint.swift in Sources */,
@@ -1767,6 +1778,7 @@
 				DB434883251DF18C005B599F /* ProfileBannerInfoActionView.swift in Sources */,
 				DB747FF4251C47BD000C4BD7 /* UITableView.swift in Sources */,
 				DB8AC1332541662200E636BE /* KeyboardResponderService.swift in Sources */,
+				DB676118254BBF57006C6798 /* SearchMediaViewModel+State.swift in Sources */,
 				DB8AC17225419B7500E636BE /* ComposeTweetItem.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

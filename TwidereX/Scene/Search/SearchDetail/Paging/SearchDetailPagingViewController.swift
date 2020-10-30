@@ -11,12 +11,20 @@ import UIKit
 import Pageboy
 import Tabman
 
+protocol SearchDetailPagingViewControllerDelegate: class {
+    func searchDetailPagingViewController(_ pagingViewController: SearchDetailPagingViewController, didScrollToViewController viewController: UIViewController, atIndex index: Int)
+}
+
 final class SearchDetailPagingViewController: TabmanViewController {
     
+    weak var pagingDelegate: SearchDetailPagingViewControllerDelegate?
     var viewModel: SearchDetailPagingViewModel!
     
     override func pageboyViewController(_ pageboyViewController: PageboyViewController, didScrollToPageAt index: TabmanViewController.PageIndex, direction: PageboyViewController.NavigationDirection, animated: Bool) {
         super.pageboyViewController(pageboyViewController, didScrollToPageAt: index, direction: direction, animated: animated)
+        
+        let viewController = viewModel.viewControllers[index]
+        pagingDelegate?.searchDetailPagingViewController(self, didScrollToViewController: viewController, atIndex: index)
     }
     
     deinit {

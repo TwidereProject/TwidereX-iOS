@@ -6,70 +6,142 @@
 //  Copyright © 2020 Twidere. All rights reserved.
 //
 
+import os.log
 import UIKit
 import Combine
 import CoreData
+import CoreDataStack
+import GameplayKit
+import TwitterAPI
 
-final class SearchMediaViewModel {
+final class SearchMediaViewModel: NSObject {
     
-    var diffableDataSource: UICollectionViewDiffableDataSource<SearchMediaSection, SearchMediaItem>!
+    var disposeBag = Set<AnyCancellable>()
     
     // input
     let context: AppContext
+    let fetchedResultsController: NSFetchedResultsController<Tweet>
+    let currentTwitterAuthentication: CurrentValueSubject<TwitterAuthentication?, Never>
+    let searchMediaTweetIDs = CurrentValueSubject<[Twitter.Entity.Tweet.ID], Never>([])
     let searchText = CurrentValueSubject<String, Never>("")
     let searchActionPublisher = PassthroughSubject<Void, Never>()
     
+    // output
+    private(set) lazy var stateMachine: GKStateMachine = {
+        let stateMachine = GKStateMachine(states: [
+            State.Initial(viewModel: self),
+            State.Idle(viewModel: self),
+            State.Loading(viewModel: self),
+            State.Fail(viewModel: self),
+            State.NoMore(viewModel: self),
+        ])
+        stateMachine.enter(State.Initial.self)
+        return stateMachine
+    }()
+    lazy var stateMachinePublisher = CurrentValueSubject<State, Never>(State.Initial(viewModel: self))
+    var diffableDataSource: UICollectionViewDiffableDataSource<SearchMediaSection, SearchMediaItem>!
+    let items = CurrentValueSubject<[SearchMediaItem], Never>([])
+    
     init(context: AppContext) {
         self.context = context
-    }
-    
-}
-
-extension SearchMediaViewModel {
-    
-    enum SearchMediaSection: Int {
-        case main
-        case loader
-    }
-
-    enum SearchMediaItem {
-        case photo(tweetObjectID: NSManagedObjectID)
-        case bottomLoader
-    }
-    
-}
-
-extension SearchMediaViewModel.SearchMediaItem: Equatable {
-    static func == (lhs: SearchMediaViewModel.SearchMediaItem, rhs: SearchMediaViewModel.SearchMediaItem) -> Bool {
-        switch (lhs, rhs) {
-        case (.photo(let objectIDLeft), .photo(let objectIDRight)):
-            return objectIDLeft == objectIDRight
-        case (.bottomLoader, bottomLoader):
-            return true
-        default:
-            return false
+        self.fetchedResultsController = {
+            let fetchRequest = Tweet.sortedFetchRequest
+            fetchRequest.predicate = Tweet.predicate(idStrs: [])
+            fetchRequest.returnsObjectsAsFaults = false
+            fetchRequest.fetchBatchSize = 20
+            let controller = NSFetchedResultsController(
+                fetchRequest: fetchRequest,
+                managedObjectContext: context.managedObjectContext,
+                sectionNameKeyPath: nil,
+                cacheName: nil
+            )
+            
+            return controller
+        }()
+        self.currentTwitterAuthentication = CurrentValueSubject(context.authenticationService.currentActiveTwitterAutentication.value)
+        super.init()
+        
+        self.fetchedResultsController.delegate = self
+        
+        Publishers.CombineLatest(
+            items.eraseToAnyPublisher(),
+            stateMachinePublisher.eraseToAnyPublisher()
+        )
+        .throttle(for: .seconds(1), scheduler: DispatchQueue.main, latest: true)
+        .receive(on: DispatchQueue.main)
+        .sink { [weak self] items, state in
+            guard let self = self else { return }
+            os_log("%{public}s[%{public}ld], %{public}s: state did change", ((#file as NSString).lastPathComponent), #line, #function)
+            
+            var snapshot = NSDiffableDataSourceSnapshot<SearchMediaSection, SearchMediaItem>()
+            snapshot.appendSections([.main])
+            snapshot.appendItems(items)
+            switch self.stateMachine.currentState {
+            case is State.Fail:
+                // TODO:
+                break
+            case is State.Initial, is State.NoMore:
+                break
+            case is State.Idle, is State.Loading:
+                snapshot.appendSections([.loader])
+                snapshot.appendItems([.bottomLoader], toSection: .loader)
+            default:
+                assertionFailure()
+            }
+            
+            self.diffableDataSource?.apply(snapshot, animatingDifferences: true)
         }
+        .store(in: &disposeBag)
+        
+        searchMediaTweetIDs
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] ids in
+                guard let self = self else { return }
+                self.fetchedResultsController.fetchRequest.predicate = Tweet.predicate(idStrs: ids)
+                do {
+                    try self.fetchedResultsController.performFetch()
+                } catch {
+                    assertionFailure(error.localizedDescription)
+                }
+            }
+            .store(in: &disposeBag)
+        
+        searchActionPublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                guard let self = self else { return }
+                self.stateMachine.enter(State.Loading.self)
+            }
+            .store(in: &disposeBag)
     }
-}
-
-extension SearchMediaViewModel.SearchMediaItem: Hashable {
-    func hash(into hasher: inout Hasher) {
-        switch self {
-        case .photo(let objectID):
-            hasher.combine(objectID)
-        case .bottomLoader:
-            hasher.combine(String(describing: SearchMediaViewModel.SearchMediaItem.bottomLoader.self))
-        }
-    }
+    
 }
 
 extension SearchMediaViewModel {
     func setupDiffableDataSource(collectionView: UICollectionView) {
-        diffableDataSource = UICollectionViewDiffableDataSource(collectionView: collectionView) { collectionView, indexPath, item -> UICollectionViewCell? in
+        diffableDataSource = UICollectionViewDiffableDataSource(collectionView: collectionView) { [weak self] collectionView, indexPath, item -> UICollectionViewCell? in
+            guard let self = self else { return nil }
             switch item {
-            case .photo(let objectID):
-                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: SearchMediaPhotoCollectionViewCell.self), for: indexPath) as! SearchMediaPhotoCollectionViewCell
-                cell.backgroundColor = .systemGray
+            case .photo(let objectID, let attribute):
+                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: SearchMediaCollectionViewCell.self), for: indexPath) as! SearchMediaCollectionViewCell
+                self.fetchedResultsController.managedObjectContext.performAndWait {
+                    let tweet = self.fetchedResultsController.managedObjectContext.object(with: objectID) as! Tweet
+                    let media = Array(tweet.media ?? Set()).sorted(by: { $0.index.compare($1.index) == .orderedAscending })
+                    if media.isEmpty {
+                        // assertionFailure()
+                    } else {
+                        var snapshot = NSDiffableDataSourceSnapshot<SearchMediaCollectionViewCell.Section, SearchMediaCollectionViewCell.Item>()
+                        snapshot.appendSections([.main])
+                        let items = media.compactMap { element -> SearchMediaCollectionViewCell.Item? in
+                            guard element.type == "photo" else { return nil }
+                            guard let url = element.photoURL(sizeKind: .small)?.0 else { return nil }
+                            return SearchMediaCollectionViewCell.Item.preview(url: url)
+                        }
+                        snapshot.appendItems(items, toSection: .main)
+                        cell.diffableDataSource.apply(snapshot, animatingDifferences: false)
+                    }
+                }
+                // TODO: use attribute control preview position
                 return cell
             case .bottomLoader:
                 let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: ActivityIndicatorCollectionViewCell.self), for: indexPath) as! ActivityIndicatorCollectionViewCell
@@ -77,5 +149,46 @@ extension SearchMediaViewModel {
                 return cell
             }
         }
+    }
+}
+
+// MARK: - NSFetchedResultsControllerDelegate
+extension SearchMediaViewModel: NSFetchedResultsControllerDelegate {
+    func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChangeContentWith snapshot: NSDiffableDataSourceSnapshotReference) {
+        os_log("%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
+        
+        guard diffableDataSource != nil else { return }
+        let oldSnapshot = diffableDataSource.snapshot()
+        
+        var oldSnapshotAttributeDict: [NSManagedObjectID : SearchMediaItem.PhotoAttribute] = [:]
+        for item in oldSnapshot.itemIdentifiers {
+            guard case let .photo(objectID, attribute) = item else { continue }
+            oldSnapshotAttributeDict[objectID] = attribute
+        }
+        
+        // let snapshot = snapshot as NSDiffableDataSourceSnapshot<String, NSManagedObjectID>
+        // guard snapshot.numberOfItems == searchMediaTweetIDs.value.count else { return }
+        let tweets = fetchedResultsController.fetchedObjects ?? []
+        guard tweets.count == searchMediaTweetIDs.value.count else { return }
+        
+        var items: [SearchMediaItem] = []
+        for tweet in tweets {
+            let mediaArray = Array(tweet.media ?? Set())
+            let photoMedia = mediaArray.filter { $0.type == "photo" }
+            guard !photoMedia.isEmpty else { continue }
+            let attribute = oldSnapshotAttributeDict[tweet.objectID] ?? SearchMediaItem.PhotoAttribute(index: 0)
+            let item = SearchMediaItem.photo(tweetObjectID: tweet.objectID, attribute: attribute)
+            items.append(item)
+        }
+        
+        self.items.value = items
+    }
+}
+
+extension SearchMediaViewModel {
+    enum SearchMediaError: Swift.Error {
+        case invalidAuthorization
+        case invalidSearchText
+        case invalidAnchorToLoadMore
     }
 }

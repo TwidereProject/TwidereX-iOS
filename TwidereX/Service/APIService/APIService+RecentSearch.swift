@@ -61,7 +61,7 @@ extension APIService {
     ) -> AnyPublisher<Twitter.Response.Content<Twitter.API.V2.RecentSearch.Content>, Error> {
         let query = Twitter.API.V2.RecentSearch.Query(
             query: searchText,
-            maxResults: 100,
+            maxResults: 20,
             sinceID: nil,
             startTime: nil,
             nextToken: nextToken
@@ -89,4 +89,3 @@ extension APIService {
     }
     
 }
-
