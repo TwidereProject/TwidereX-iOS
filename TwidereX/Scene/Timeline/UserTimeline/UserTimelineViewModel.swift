@@ -226,7 +226,7 @@ extension UserTimelineViewModel {
             return Fail(error: UserTimelineError.invalidUserID).eraseToAnyPublisher()
         }
         
-        return context.apiService.twitterUserTimeline(count: 20, userID: userID, authorization: authorization, twitterUserID: authentication.userID)
+        return context.apiService.twitterUserTimeline(count: 20, userID: userID, authorization: authorization, requestTwitterUserID: authentication.userID)
     }
     
     func loadMore() -> AnyPublisher<Twitter.Response.Content<[Twitter.Entity.Tweet]>, Error> {
@@ -242,7 +242,7 @@ extension UserTimelineViewModel {
         }
         
         let maxID = oldestTweet.id
-        return context.apiService.twitterUserTimeline(count: 20, userID: userID, maxID: maxID, authorization: authorization, twitterUserID: authentication.userID)
+        return context.apiService.twitterUserTimeline(count: 20, userID: userID, maxID: maxID, authorization: authorization, requestTwitterUserID: authentication.userID)
     }
 }
 

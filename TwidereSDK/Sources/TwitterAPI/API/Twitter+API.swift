@@ -33,6 +33,7 @@ extension Twitter.API {
     public enum OAuth { }
     public enum Statuses { }
     public enum Timeline { }
+    public enum Users { }
     
     // V2
     public enum V2 {

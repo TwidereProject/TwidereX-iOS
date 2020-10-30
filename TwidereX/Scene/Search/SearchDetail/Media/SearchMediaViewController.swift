@@ -17,7 +17,6 @@ final class SearchMediaViewController: UIViewController {
     var disposeBag = Set<AnyCancellable>()
     var viewModel: SearchMediaViewModel!
 
-    
     private lazy var collectionView: UICollectionView = {
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: createCollectionViewLayout())
         collectionView.register(SearchMediaCollectionViewCell.self, forCellWithReuseIdentifier: String(describing: SearchMediaCollectionViewCell.self))

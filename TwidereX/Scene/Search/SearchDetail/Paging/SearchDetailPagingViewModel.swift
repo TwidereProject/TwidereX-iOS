@@ -16,12 +16,13 @@ final class SearchDetailPagingViewModel: NSObject {
     
     let searchTimelineViewController = SearchTimelineViewController()
     let searchMediaViewController = SearchMediaViewController()
+    let searchUserViewController = SearchUserViewController()
     
     var viewControllers: [UIViewController] {
         return [
             searchTimelineViewController,
             searchMediaViewController,
-            UIViewController(),
+            searchUserViewController,
         ]
     }
     
@@ -43,6 +44,7 @@ final class SearchDetailPagingViewModel: NSObject {
     init(context: AppContext) {
         searchTimelineViewController.viewModel = SearchTimelineViewModel(context: context)
         searchMediaViewController.viewModel = SearchMediaViewModel(context: context)
+        searchUserViewController.viewModel = SearchUserViewModel(context: context)
         
         searchText
             .assign(to: \.value, on: searchTimelineViewController.viewModel.searchText)
@@ -50,11 +52,18 @@ final class SearchDetailPagingViewModel: NSObject {
         searchText
             .assign(to: \.value, on: searchMediaViewController.viewModel.searchText)
             .store(in: &disposeBag)
+        searchText
+            .assign(to: \.value, on: searchUserViewController.viewModel.searchText)
+            .store(in: &disposeBag)
+        
         searchActionPublisher
             .subscribe(searchTimelineViewController.viewModel.searchActionPublisher)
             .store(in: &disposeBag)
         searchActionPublisher
             .subscribe(searchMediaViewController.viewModel.searchActionPublisher)
+            .store(in: &disposeBag)
+        searchActionPublisher
+            .subscribe(searchUserViewController.viewModel.searchActionPublisher)
             .store(in: &disposeBag)
     }
 }
