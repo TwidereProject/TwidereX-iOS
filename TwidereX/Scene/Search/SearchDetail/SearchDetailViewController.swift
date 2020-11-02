@@ -169,10 +169,10 @@ extension SearchDetailViewController: SearchDetailPagingViewControllerDelegate {
         if let searchMediaViewController = viewController as? SearchMediaViewController {
             searchMediaViewController.viewModel.searchActionPublisher.send()
         }
+        
+        if let searchUserViewController = viewController as? SearchUserViewController {
+            searchUserViewController.viewModel.searchActionPublisher.send()
+        }
     }
     
-}
-
-extension SearchDetailViewController {
-    // static let hasMediaSearchToken = UISearchToken(icon: UIImage(systemName: "photo"), text: "Media")
 }

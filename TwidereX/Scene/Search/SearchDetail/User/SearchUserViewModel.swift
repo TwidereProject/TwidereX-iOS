@@ -122,10 +122,16 @@ extension SearchUserViewModel: NSFetchedResultsControllerDelegate {
     func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChangeContentWith snapshot: NSDiffableDataSourceSnapshotReference) {
         os_log("%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
         
+        let indexes = searchTwitterUserIDs.value
         let twitterUsers = fetchedResultsController.fetchedObjects ?? []
-        guard twitterUsers.count == searchTwitterUserIDs.value.count else { return }
+        guard twitterUsers.count == indexes.count else { return }
         
-        let items: [Item] = twitterUsers.map { Item.user(twitterUserObjectID: $0.objectID) }
+        let items: [Item] = twitterUsers
+            .flatMap { twitterUser in
+                indexes.firstIndex(of: twitterUser.id).map { index in (index, twitterUser) }
+            }
+            .sorted { $0.0 < $1.0 }
+            .map { Item.user(twitterUserObjectID: $0.1.objectID) }
         self.items.value = items
     }
 }
