@@ -26,7 +26,9 @@ extension SearchUserViewModel {
                 managedObjectContext.performAndWait {
                     let twitterUser = managedObjectContext.object(with: objectID) as! TwitterUser
                     SearchUserViewModel.configure(cell: cell, twitterUser: twitterUser, requestTwitterUserID: requestTwitterUserID)
+                    SearchUserViewModel.internalConfigure(cell: cell, twitterUser: twitterUser, requestTwitterUserID: requestTwitterUserID)
                 }
+                cell.delegate = self.userBriefInfoTableViewCellDelegate
                 return cell
             case .bottomLoader:
                 let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: TimelineBottomLoaderTableViewCell.self), for: indexPath) as! TimelineBottomLoaderTableViewCell
@@ -40,6 +42,7 @@ extension SearchUserViewModel {
 }
 
 extension SearchUserViewModel {
+    
     static func configure(cell: UserBriefInfoTableViewCell, twitterUser: TwitterUser, requestTwitterUserID: TwitterUser.ID?) {
         // set avatar
         if let avatarImageURL = twitterUser.avatarImageURL() {
@@ -47,7 +50,7 @@ extension SearchUserViewModel {
                 .placeholder(size: UserBriefInfoView.avatarImageViewSize, color: .systemFill)
                 .af.imageRoundedIntoCircle()
             let filter = ScaledToSizeCircleFilter(size: TimelinePostView.avatarImageViewSize)
-            cell.userBrifeInfoView.avatarImageView.af.setImage(
+            cell.userBriefInfoView.avatarImageView.af.setImage(
                 withURL: avatarImageURL,
                 placeholderImage: placeholderImage,
                 filter: filter,
@@ -57,16 +60,43 @@ extension SearchUserViewModel {
             assertionFailure()
         }
         
-        cell.userBrifeInfoView.verifiedBadgeImageView.isHidden = !twitterUser.verified
-        cell.userBrifeInfoView.lockImageView.isHidden = !twitterUser.protected
+        cell.userBriefInfoView.verifiedBadgeImageView.isHidden = !twitterUser.verified
+        cell.userBriefInfoView.lockImageView.isHidden = !twitterUser.protected
         
         // set name and username
-        cell.userBrifeInfoView.nameLabel.text = twitterUser.name
-        cell.userBrifeInfoView.usernameLabel.text = "@" + twitterUser.username
+        cell.userBriefInfoView.nameLabel.text = twitterUser.name
+        cell.userBriefInfoView.usernameLabel.text = "@" + twitterUser.username
         
         // set detail
         let followersCount = twitterUser.metrics?.followersCount.flatMap { "\($0)" } ?? "-"
-        cell.userBrifeInfoView.detailLabel.text = "Followers: \(followersCount)"
+        cell.userBriefInfoView.detailLabel.text = "Followers: \(followersCount)"
+        
+        
+        if let requestTwitterUserID = requestTwitterUserID {
+            cell.userBriefInfoView.followActionButton.isHidden = twitterUser.id == requestTwitterUserID
+            let isPending = (twitterUser.followRequestSentFrom ?? Set()).contains(where: { $0.id == requestTwitterUserID })
+            let isFollowing = (twitterUser.followingFrom ?? Set()).contains(where: { $0.id == requestTwitterUserID })
+            cell.userBriefInfoView.followActionButton.style = isPending ? .pending : (isFollowing ? .following : .follow)
+        } else {
+            assertionFailure()
+        }
+    }
+    
+    private static func internalConfigure(cell: UserBriefInfoTableViewCell, twitterUser: TwitterUser, requestTwitterUserID: TwitterUser.ID?) {
+        ManagedObjectObserver.observe(object: twitterUser)
+            .sink { completion in
+                
+            } receiveValue: { change in
+                guard let changeType = change.changeType else { return }
+                switch changeType {
+                case .update:
+                    configure(cell: cell, twitterUser: twitterUser, requestTwitterUserID: requestTwitterUserID)
+                case .delete:
+                    break
+                }
+            }
+            .store(in: &cell.disposeBag)
+
     }
 }
 

@@ -12,7 +12,10 @@ import Combine
 import CoreData
 import CoreDataStack
 
-final class SearchMediaViewController: UIViewController {
+final class SearchMediaViewController: UIViewController, NeedsDependency {
+    
+    weak var context: AppContext! { willSet { precondition(!isViewLoaded) } }
+    weak var coordinator: SceneCoordinator! { willSet { precondition(!isViewLoaded) } }
     
     var disposeBag = Set<AnyCancellable>()
     var viewModel: SearchMediaViewModel!

@@ -97,6 +97,8 @@
 		DB8AC1852542BD8700E636BE /* APIService+Tweet.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB8AC1842542BD8600E636BE /* APIService+Tweet.swift */; };
 		DB8AC1902542DA9500E636BE /* ActiveLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB8AC18F2542DA9500E636BE /* ActiveLabel.swift */; };
 		DB915401254C148400613473 /* APIService+User.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB915400254C148400613473 /* APIService+User.swift */; };
+		DB915406254FC8CE00613473 /* FollowActionButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB915405254FC8CE00613473 /* FollowActionButton.swift */; };
+		DB91540B254FE4B200613473 /* APIService+Friendship.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB91540A254FE4B200613473 /* APIService+Friendship.swift */; };
 		DB925700251C8F29004FEFB5 /* UserTimelineViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB9256FF251C8F29004FEFB5 /* UserTimelineViewController.swift */; };
 		DB925705251C8FCB004FEFB5 /* ProfileSegmentedViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB925704251C8FCB004FEFB5 /* ProfileSegmentedViewController.swift */; };
 		DB92570A251C8FE0004FEFB5 /* ProfileHeaderViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB925709251C8FE0004FEFB5 /* ProfileHeaderViewController.swift */; };
@@ -371,6 +373,8 @@
 		DB8AC1842542BD8600E636BE /* APIService+Tweet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "APIService+Tweet.swift"; sourceTree = "<group>"; };
 		DB8AC18F2542DA9500E636BE /* ActiveLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActiveLabel.swift; sourceTree = "<group>"; };
 		DB915400254C148400613473 /* APIService+User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "APIService+User.swift"; sourceTree = "<group>"; };
+		DB915405254FC8CE00613473 /* FollowActionButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FollowActionButton.swift; sourceTree = "<group>"; };
+		DB91540A254FE4B200613473 /* APIService+Friendship.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "APIService+Friendship.swift"; sourceTree = "<group>"; };
 		DB9256FF251C8F29004FEFB5 /* UserTimelineViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserTimelineViewController.swift; sourceTree = "<group>"; };
 		DB925704251C8FCB004FEFB5 /* ProfileSegmentedViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileSegmentedViewController.swift; sourceTree = "<group>"; };
 		DB925709251C8FE0004FEFB5 /* ProfileHeaderViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileHeaderViewController.swift; sourceTree = "<group>"; };
@@ -1033,6 +1037,7 @@
 				DB2924CF2546C6DD003899A7 /* APIService+Media.swift */,
 				DB2924EB25492006003899A7 /* APIService+Geo.swift */,
 				DB915400254C148400613473 /* APIService+User.swift */,
+				DB91540A254FE4B200613473 /* APIService+Friendship.swift */,
 			);
 			path = APIService;
 			sourceTree = "<group>";
@@ -1175,6 +1180,7 @@
 				DB67610C254AD681006C6798 /* ActivityIndicatorCollectionViewCell.swift */,
 				DB67617F254C042C006C6798 /* UserBriefInfoTableViewCell.swift */,
 				DB578CCC254C0BDB00745336 /* UserBriefInfoView.swift */,
+				DB915405254FC8CE00613473 /* FollowActionButton.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -1765,6 +1771,7 @@
 				DB25B9D1253828AA00A5420F /* APIService+Retweet.swift in Sources */,
 				DB8AC167254198D800E636BE /* ComposeTweetContentTableViewCell.swift in Sources */,
 				DBF69ECA25496E6400E2A915 /* SearchDetailTransitionController.swift in Sources */,
+				DB915406254FC8CE00613473 /* FollowActionButton.swift in Sources */,
 				DBDA8E8F24FE068C006750DC /* SceneCoordinator.swift in Sources */,
 				DB8AC1902542DA9500E636BE /* ActiveLabel.swift in Sources */,
 				DBA5B1A82510BA330077FDD5 /* TweetConversationViewController.swift in Sources */,
@@ -1812,6 +1819,7 @@
 				DB92575A251CA3FB004FEFB5 /* StubTableViewCell.swift in Sources */,
 				DB925700251C8F29004FEFB5 /* UserTimelineViewController.swift in Sources */,
 				DB434883251DF18C005B599F /* ProfileBannerInfoActionView.swift in Sources */,
+				DB91540B254FE4B200613473 /* APIService+Friendship.swift in Sources */,
 				DB747FF4251C47BD000C4BD7 /* UITableView.swift in Sources */,
 				DB8AC1332541662200E636BE /* KeyboardResponderService.swift in Sources */,
 				DB676118254BBF57006C6798 /* SearchMediaViewModel+State.swift in Sources */,

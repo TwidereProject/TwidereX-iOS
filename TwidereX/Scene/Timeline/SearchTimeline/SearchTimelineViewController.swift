@@ -11,7 +11,10 @@ import UIKit
 import Combine
 import CoreDataStack
 
-final class SearchTimelineViewController: UIViewController {
+final class SearchTimelineViewController: UIViewController, NeedsDependency {
+    
+    weak var context: AppContext! { willSet { precondition(!isViewLoaded) } }
+    weak var coordinator: SceneCoordinator! { willSet { precondition(!isViewLoaded) } }
     
     var disposeBag = Set<AnyCancellable>()
     var viewModel: SearchTimelineViewModel!

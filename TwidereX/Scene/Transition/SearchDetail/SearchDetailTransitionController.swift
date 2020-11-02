@@ -21,7 +21,6 @@ extension SearchDetailTransitionController: UINavigationControllerDelegate {
         case .pop where fromVC is SearchDetailViewController && toVC is SearchViewController:
             return SearchToSearchDetailViewControllerAnimatedTransitioning(operation: operation)
         default:
-            assertionFailure()
             return nil
         }
     }

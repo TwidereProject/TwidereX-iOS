@@ -38,8 +38,8 @@ extension SearchViewController {
         setupSearchBar()
         
         searchBarTapPublisher
-            .receive(on: DispatchQueue.main)
-            .debounce(for: .milliseconds(500), scheduler: DispatchQueue.main)
+//            .receive(on: DispatchQueue.main)
+//            .debounce(for: .seconds(1), scheduler: DispatchQueue.main)
             .sink { [weak self] _ in
                 guard let self = self else { return }
                 let searchDetailViewModel = SearchDetailViewModel()

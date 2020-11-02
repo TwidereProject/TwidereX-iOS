@@ -10,8 +10,13 @@ import os.log
 import UIKit
 import Combine
 import CoreData
+import CoreDataStack
+import TwitterAPI
 
-final class SearchUserViewController: UIViewController {
+final class SearchUserViewController: UIViewController, NeedsDependency {
+    
+    weak var context: AppContext! { willSet { precondition(!isViewLoaded) } }
+    weak var coordinator: SceneCoordinator! { willSet { precondition(!isViewLoaded) } }
     
     var disposeBag = Set<AnyCancellable>()
     var viewModel: SearchUserViewModel!
@@ -49,9 +54,16 @@ extension SearchUserViewController {
         tableView.delegate = self
         viewModel.setupDiffableDataSource(for: tableView)
         
+        viewModel.userBriefInfoTableViewCellDelegate = self
         viewModel.context.authenticationService.currentActiveTwitterAutentication
             .assign(to: \.value, on: viewModel.currentTwitterAuthentication)
             .store(in: &disposeBag)
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        tableView.deselectRow(with: transitionCoordinator, animated: animated)
     }
     
 }
@@ -78,5 +90,130 @@ extension SearchUserViewController {
 
 // MARK: - UITableViewDelegate
 extension SearchUserViewController: UITableViewDelegate {
+    
+    func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 80
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        guard let diffableDataSource = viewModel.diffableDataSource else { return }
+        guard let item = diffableDataSource.itemIdentifier(for: indexPath) else { return }
+        
+        guard case let .user(objectID) = item else { return }
+        let twitterUser = viewModel.fetchedResultsController.managedObjectContext.object(with: objectID) as! TwitterUser
+        
+        let profileViewModel = ProfileViewModel(twitterUser: twitterUser)
+        coordinator.present(scene: .profile(viewModel: profileViewModel), from: self, transition: .show)
+    }
+    
+}
+
+// MARK: - UserBriefInfoTableViewCellDelegate
+extension SearchUserViewController: UserBriefInfoTableViewCellDelegate {
+    
+    func userBriefInfoTableViewCell(_ cell: UserBriefInfoTableViewCell, followActionButtonPressed button: FollowActionButton) {
+        // prepare authentication
+        guard let twitterAuthentication = viewModel.currentTwitterAuthentication.value,
+              let authorization = try? twitterAuthentication.authorization(appSecret: AppSecret.shared) else {
+            assertionFailure()
+            return
+        }
+        
+        guard let diffableDataSource = viewModel.diffableDataSource else { return }
+        guard let indexPath = tableView.indexPath(for: cell) else { return }
+        guard let item = diffableDataSource.itemIdentifier(for: indexPath) else { return }
+        
+        guard case let .user(objectID) = item else { return }
+        let twitterUser = viewModel.fetchedResultsController.managedObjectContext.object(with: objectID) as! TwitterUser
+        
+        let requestTwitterUserID = twitterAuthentication.userID
+        let isPending = (twitterUser.followRequestSentFrom ?? Set()).contains(where: { $0.id == requestTwitterUserID })
+        let isFollowing = (twitterUser.followingFrom ?? Set()).contains(where: { $0.id == requestTwitterUserID })
+        
+        if isPending || isFollowing {
+            let name = twitterUser.name.trimmingCharacters(in: .whitespacesAndNewlines)
+            let message = isPending ? "Cancel following request for \(name)?" : "Unfollow user \(name)?"
+            let alertController = UIAlertController(title: nil, message: message, preferredStyle: .actionSheet)
+            let confirmAction = UIAlertAction(title: "Confirm", style: .destructive) { [weak self] _ in
+                guard let self = self else { return }
+                self.toggleFollowStatue(for: item, twitterAuthentication: twitterAuthentication)
+            }
+            let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+            alertController.addAction(confirmAction)
+            alertController.addAction(cancelAction)
+            alertController.popoverPresentationController?.sourceView = cell
+            present(alertController, animated: true, completion: nil)
+        } else {
+            toggleFollowStatue(for: item, twitterAuthentication: twitterAuthentication)
+        }
+    }
+    
+    private func toggleFollowStatue(for item: SearchUserViewModel.Item, twitterAuthentication: TwitterAuthentication) {
+        guard let diffableDataSource = viewModel.diffableDataSource else { return }
+        guard let indexPath = diffableDataSource.indexPath(for: item) else { return }
+        guard case let .user(objectID) = item else { return }
+
+        guard let authorization = try? twitterAuthentication.authorization(appSecret: AppSecret.shared) else {
+            assertionFailure()
+            return
+        }
+        let requestTwitterUserID = twitterAuthentication.userID
+
+        let impactFeedbackGenerator = UIImpactFeedbackGenerator(style: .light)
+        let notificationFeedbackGenerator = UINotificationFeedbackGenerator()
+        context.apiService.friendship(
+            twitterUserObjectID: objectID,
+            authorization: authorization,
+            requestTwitterUserID: requestTwitterUserID
+        )
+        .receive(on: DispatchQueue.main)
+        .handleEvents { _ in
+            notificationFeedbackGenerator.prepare()
+            impactFeedbackGenerator.prepare()
+        } receiveOutput: { _ in
+            impactFeedbackGenerator.impactOccurred()
+        } receiveCompletion: { completion in
+            switch completion {
+            case .failure(let error):
+                // TODO: handle error
+                break
+            case .finished:
+                // reload item
+                DispatchQueue.main.async {
+                    var snapshot = diffableDataSource.snapshot()
+                    snapshot.reloadItems([item])
+                    diffableDataSource.defaultRowAnimation = .none
+                    diffableDataSource.apply(snapshot)
+                    diffableDataSource.defaultRowAnimation = .automatic
+                }
+            }
+        }
+        .map { (friendshipQueryType, targetTwitterUserID) in
+            self.context.apiService.friendship(
+                friendshipQueryType: friendshipQueryType,
+                twitterUserID: targetTwitterUserID,
+                authorization: authorization,
+                requestTwitterUserID: requestTwitterUserID
+            )
+        }
+        .switchToLatest()
+        .receive(on: DispatchQueue.main)
+        .sink { [weak self] completion in
+            guard let self = self else { return }
+            if self.view.window != nil, (self.tableView.indexPathsForVisibleRows ?? []).contains(indexPath) {
+                notificationFeedbackGenerator.notificationOccurred(.success)
+            }
+            switch completion {
+            case .failure(let error):
+                os_log("%{public}s[%{public}ld], %{public}s: [Friendship] remote friendship query fail: %{public}s", ((#file as NSString).lastPathComponent), #line, #function, error.localizedDescription)
+            case .finished:
+                os_log("%{public}s[%{public}ld], %{public}s: [Friendship] remote friendship query success", ((#file as NSString).lastPathComponent), #line, #function)
+            }
+        } receiveValue: { response in
+            
+        }
+        .store(in: &disposeBag)
+    }
+    
     
 }

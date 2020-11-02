@@ -41,9 +41,17 @@ final class SearchDetailPagingViewModel: NSObject {
     let searchText = CurrentValueSubject<String, Never>("")
     var searchActionPublisher = PassthroughSubject<Void, Never>()
     
-    init(context: AppContext) {
+    init(context: AppContext, coordinator: SceneCoordinator) {
+        searchTimelineViewController.context = context
+        searchTimelineViewController.coordinator = coordinator
         searchTimelineViewController.viewModel = SearchTimelineViewModel(context: context)
+        
+        searchMediaViewController.context = context
+        searchMediaViewController.coordinator = coordinator
         searchMediaViewController.viewModel = SearchMediaViewModel(context: context)
+        
+        searchUserViewController.context = context
+        searchUserViewController.coordinator = coordinator
         searchUserViewController.viewModel = SearchUserViewModel(context: context)
         
         searchText

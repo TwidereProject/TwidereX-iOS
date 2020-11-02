@@ -190,7 +190,7 @@ extension TwitterUser {
     public func update(following: Bool, twitterUser: TwitterUser) {
         if following {
             if !(self.followingFrom ?? Set()).contains(twitterUser) {
-                self.mutableSetValue(forKey: #keyPath(TwitterUser.followingFrom)).addObjects(from: [twitterUser])
+                self.mutableSetValue(forKey: #keyPath(TwitterUser.followingFrom)).add(twitterUser)
             }
         } else {
             if (self.followingFrom ?? Set()).contains(twitterUser) {
@@ -201,12 +201,12 @@ extension TwitterUser {
     
     public func update(followRequestSent: Bool, twitterUser: TwitterUser) {
         if followRequestSent {
-            if !(self.followRequestSent ?? Set()).contains(twitterUser) {
-                self.mutableSetValue(forKey: #keyPath(TwitterUser.followRequestSent)).addObjects(from: [twitterUser])
+            if !(self.followRequestSentFrom ?? Set()).contains(twitterUser) {
+                self.mutableSetValue(forKey: #keyPath(TwitterUser.followRequestSentFrom)).add(twitterUser)
             }
         } else {
-            if (self.followRequestSent ?? Set()).contains(twitterUser) {
-                self.mutableSetValue(forKey: #keyPath(TwitterUser.followRequestSent)).remove(twitterUser)
+            if (self.followRequestSentFrom ?? Set()).contains(twitterUser) {
+                self.mutableSetValue(forKey: #keyPath(TwitterUser.followRequestSentFrom)).remove(twitterUser)
             }
         }
     }

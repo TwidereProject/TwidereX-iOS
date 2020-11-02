@@ -25,6 +25,7 @@ final class SearchUserViewModel: NSObject {
     let searchTwitterUserIDs = CurrentValueSubject<[Twitter.Entity.V2.User.ID], Never>([])
     let searchText = CurrentValueSubject<String, Never>("")
     let searchActionPublisher = PassthroughSubject<Void, Never>()
+    weak var userBriefInfoTableViewCellDelegate: UserBriefInfoTableViewCellDelegate?
     
     // output
     private(set) lazy var stateMachine: GKStateMachine = {
@@ -127,7 +128,7 @@ extension SearchUserViewModel: NSFetchedResultsControllerDelegate {
         guard twitterUsers.count == indexes.count else { return }
         
         let items: [Item] = twitterUsers
-            .flatMap { twitterUser in
+            .compactMap { twitterUser in
                 indexes.firstIndex(of: twitterUser.id).map { index in (index, twitterUser) }
             }
             .sorted { $0.0 < $1.0 }

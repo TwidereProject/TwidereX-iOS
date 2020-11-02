@@ -71,9 +71,11 @@ extension SearchUserViewModel.State {
                 viewModel.items.value = []
             }
             
+            let count = 20
             viewModel.context.apiService.userSearch(
                 searchText: searchText,
                 page: page,
+                count: count,
                 authorization: authorization,
                 requestTwitterUserID: authentication.userID
             )
@@ -115,7 +117,12 @@ extension SearchUserViewModel.State {
                 }
                 
                 viewModel.searchTwitterUserIDs.value = twitterUserIDs
-                stateMachine.enter(Idle.self)
+                
+                if entities.count < count {
+                    stateMachine.enter(NoMore.self)
+                } else {
+                    stateMachine.enter(Idle.self)
+                }
             }
             .store(in: &viewModel.disposeBag)
         }

@@ -62,7 +62,7 @@ extension SearchDetailViewController {
         
         pagingViewController = SearchDetailPagingViewController()
         pagingViewController.pagingDelegate = self
-        pagingViewController.viewModel = SearchDetailPagingViewModel(context: context)
+        pagingViewController.viewModel = SearchDetailPagingViewModel(context: context, coordinator: coordinator)
         
         pagingViewController.addBar(
             bar,

@@ -54,12 +54,7 @@ final class UserBriefInfoView: UIView {
         return label
     }()
     
-    let moreButton: UIButton = {
-        let button = UIButton()
-        button.setImage(Asset.Editing.ellipsis.image.withRenderingMode(.alwaysTemplate), for: .normal)
-        button.imageView?.tintColor = .secondaryLabel
-        return button
-    }()
+    let followActionButton = FollowActionButton()
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -79,6 +74,7 @@ extension UserBriefInfoView {
         let containerStackView = UIStackView()
         containerStackView.axis = .horizontal
         containerStackView.spacing = 10
+        containerStackView.alignment = .center
         
         containerStackView.translatesAutoresizingMaskIntoConstraints = false
         addSubview(containerStackView)
@@ -124,8 +120,8 @@ extension UserBriefInfoView {
         userMetaContainerStackView.addArrangedSubview(paddingView)
 
         nameLabel.setContentHuggingPriority(.defaultHigh, for: .horizontal)
-        lockImageView.setContentHuggingPriority(.defaultHigh, for: .horizontal)
-        usernameLabel.setContentHuggingPriority(.defaultHigh, for: .horizontal)
+        lockImageView.setContentHuggingPriority(.defaultHigh - 1, for: .horizontal)
+        usernameLabel.setContentHuggingPriority(.defaultHigh - 2, for: .horizontal)
         paddingView.setContentHuggingPriority(.defaultLow, for: .horizontal)
         
         // detail container: [detail]
@@ -136,8 +132,14 @@ extension UserBriefInfoView {
         detailContainerStackView.spacing = 6
         detailContainerStackView.addArrangedSubview(detailLabel)
         
-        containerStackView.addArrangedSubview(moreButton)
-        moreButton.setContentHuggingPriority(.defaultHigh, for: .horizontal)
+        followActionButton.translatesAutoresizingMaskIntoConstraints = false
+        containerStackView.addArrangedSubview(followActionButton)
+        NSLayoutConstraint.activate([
+            followActionButton.heightAnchor.constraint(equalToConstant: FollowActionButton.buttonSize.height).priority(.defaultHigh),
+            followActionButton.widthAnchor.constraint(equalToConstant: FollowActionButton.buttonSize.width).priority(.required - 1),
+        ])
+        followActionButton.setContentHuggingPriority(.defaultHigh, for: .horizontal)
+        followActionButton.setContentCompressionResistancePriority(.required - 1, for: .horizontal)
         
         verifiedBadgeImageView.isHidden = true
         lockImageView.isHidden = true
