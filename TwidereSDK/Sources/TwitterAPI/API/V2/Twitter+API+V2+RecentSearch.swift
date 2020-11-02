@@ -1,5 +1,5 @@
 //
-//  Twitter+API+RecentSearch.swift
+//  Twitter+API+V2+RecentSearch.swift
 //  
 //
 //  Created by Cirno MainasuK on 2020-10-16.
@@ -9,19 +9,15 @@ import os.log
 import Foundation
 import Combine
 
-extension Twitter.API.RecentSearch {
+extension Twitter.API.V2.RecentSearch {
     
     static let tweetsSearchRecentEndpointURL = Twitter.API.endpointV2URL.appendingPathComponent("tweets/search/recent")
     
     public static func tweetsSearchRecent(
-        query: String,
-        maxResults: Int,
-        sinceID: Twitter.Entity.V2.Tweet.ID?,
-        startTime: Date?,
-        nextToken: String?,
+        query: Twitter.API.V2.RecentSearch.Query,
         session: URLSession,
         authorization: Twitter.API.OAuth.Authorization
-    ) -> AnyPublisher<Twitter.Response.Content<Twitter.API.RecentSearch.Content>, Error> {
+    ) -> AnyPublisher<Twitter.Response.Content<Twitter.API.V2.RecentSearch.Content>, Error> {
         guard var components = URLComponents(string: tweetsSearchRecentEndpointURL.absoluteString) else { fatalError() }
         
         let expansions: [Twitter.Request.Expansions] = [
@@ -68,18 +64,29 @@ extension Twitter.API.RecentSearch {
             .verified,
             .withheld
         ]
+        let mediaFields: [Twitter.Request.MediaFields] = [
+            .durationMS,
+            .height,
+            .mediaKey,
+            .previewImageURL,
+            .type,
+            .url,
+            .width,
+            .publicMetrics,
+        ]
         components.queryItems = [
             expansions.queryItem,
             tweetsFields.queryItem,
             userFields.queryItem,
-            URLQueryItem(name: "max_results", value: String(min(100, max(10, maxResults)))),
+            mediaFields.queryItem,
+            URLQueryItem(name: "max_results", value: String(query.maxResults)),
         ]
-        sinceID.flatMap { components.queryItems?.append(URLQueryItem(name: "since_id", value: $0)) }
-        nextToken.flatMap { components.queryItems?.append(URLQueryItem(name: "next_token", value: $0)) }
+        query.sinceID.flatMap { components.queryItems?.append(URLQueryItem(name: "since_id", value: $0)) }
+        query.nextToken.flatMap { components.queryItems?.append(URLQueryItem(name: "next_token", value: $0)) }
         var encodedQueryItems: [URLQueryItem] = [
-            URLQueryItem(name: "query", value: query.urlEncoded)
+            URLQueryItem(name: "query", value: query.query.urlEncoded)
         ]
-        if let startTime = startTime {
+        if let startTime = query.startTime {
             let formatter = ISO8601DateFormatter()
             let time = formatter.string(from: startTime)
             let item = URLQueryItem(name: "start_time", value: time.urlEncoded)
@@ -101,7 +108,7 @@ extension Twitter.API.RecentSearch {
         return session.dataTaskPublisher(for: request)
             .tryMap { data, response in
                 do {
-                    let value = try Twitter.API.decode(type: Twitter.API.RecentSearch.Content.self, from: data, response: response)
+                    let value = try Twitter.API.decode(type: Twitter.API.V2.RecentSearch.Content.self, from: data, response: response)
                     return Twitter.Response.Content(value: value, response: response)
                 } catch {
                     debugPrint(error)
@@ -114,7 +121,23 @@ extension Twitter.API.RecentSearch {
 
 }
 
-extension Twitter.API.RecentSearch {
+extension Twitter.API.V2.RecentSearch {
+    public struct Query {
+        public let query: String
+        public let maxResults: Int
+        public let sinceID: Twitter.Entity.V2.Tweet.ID?
+        public let startTime: Date?
+        public let nextToken: String?
+        
+        public init(query: String, maxResults: Int, sinceID: Twitter.Entity.V2.Tweet.ID?, startTime: Date?, nextToken: String?) {
+            self.query = query
+            self.maxResults = min(100, max(10, maxResults)) 
+            self.sinceID = sinceID
+            self.startTime = startTime
+            self.nextToken = nextToken
+        }
+    }
+    
     public struct Content: Codable {
         public let data: [Twitter.Entity.V2.Tweet]?
         public let includes: Include?

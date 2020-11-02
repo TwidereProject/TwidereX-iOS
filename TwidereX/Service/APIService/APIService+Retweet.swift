@@ -98,7 +98,7 @@ extension APIService {
                         return
                     }
                     
-                    let (tweet, _, _) = APIService.createOrMergeTweet(into: managedObjectContext, for: requestTwitterUser, entity: entity, networkDate: response.networkDate, log: log)
+                    let (tweet, _, _) = APIService.CoreData.createOrMergeTweet(into: managedObjectContext, for: requestTwitterUser, entity: entity, networkDate: response.networkDate, log: log)
                     os_log(.info, log: log, "%{public}s[%{public}ld], %{public}s: did update tweet %{public}s retweet status to: %{public}s. now %ld retweets", ((#file as NSString).lastPathComponent), #line, #function, entity.idStr, (entity.retweetedStatus ?? entity).retweeted.flatMap { $0 ? "retweeted" : "unretweeted" } ?? "<nil>", (entity.retweetedStatus ?? entity).retweetCount ?? 0)
                     
                     // manually update due to API still return retweeted: true

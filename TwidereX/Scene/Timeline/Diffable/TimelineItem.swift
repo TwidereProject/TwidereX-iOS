@@ -18,6 +18,8 @@ enum TimelineItem {
     
     case userTimelineItem(objectID: NSManagedObjectID)
     
+    case searchTimelineItem(objectID: NSManagedObjectID)
+    
     case bottomLoader
 }
 
@@ -52,6 +54,8 @@ extension TimelineItem: Equatable {
             return true
         case (.userTimelineItem(let objectIDLeft), .userTimelineItem(let objectIDRight)):
             return objectIDLeft == objectIDRight
+        case (.searchTimelineItem(let objectIDLeft), .searchTimelineItem(let objectIDRight)):
+            return objectIDLeft == objectIDRight
         default:
             return false
         }
@@ -66,10 +70,12 @@ extension TimelineItem: Hashable {
         case .homeTimelineMiddleLoader(let upper):
             hasher.combine(String(describing: TimelineItem.homeTimelineMiddleLoader.self))
             hasher.combine(upper)
-        case .bottomLoader:
-            hasher.combine(String(describing: TimelineItem.bottomLoader.self))
         case .userTimelineItem(let objectID):
             hasher.combine(objectID)
+        case .searchTimelineItem(let objectID):
+            hasher.combine(objectID)
+        case .bottomLoader:
+            hasher.combine(String(describing: TimelineItem.bottomLoader.self))
         }
     }
 }

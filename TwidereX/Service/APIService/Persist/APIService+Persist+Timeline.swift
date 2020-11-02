@@ -369,7 +369,7 @@ extension APIService.Persist {
             }
             let children = [retweetRecord, quoteRecord].compactMap { $0 }
 
-            let (tweet, isTweetCreated, isTwitterUserCreated) = APIService.createOrMergeTweet(
+            let (tweet, isTweetCreated, isTwitterUserCreated) = APIService.CoreData.createOrMergeTweet(
                 into: managedObjectContext,
                 for: requestTwitterUser,
                 entity: entity,

@@ -39,6 +39,7 @@ extension SceneCoordinator {
         case authentication
         case composeTweet(viewModel: ComposeTweetViewModel)
         case tweetConversation(viewModel: TweetConversationViewModel)
+        case searchDetail(viewModel: SearchDetailViewModel)
         case profile(viewModel: ProfileViewModel)
     }
 }
@@ -87,6 +88,7 @@ extension SceneCoordinator {
             
         case .customPush:
             // set delegate in view controller
+            assert(sender?.navigationController?.delegate != nil)
             sender?.navigationController?.pushViewController(viewController, animated: true)
         }
         
@@ -109,6 +111,10 @@ private extension SceneCoordinator {
             viewController = _viewController
         case .tweetConversation(let viewModel):
             let _viewController = TweetConversationViewController()
+            _viewController.viewModel = viewModel
+            viewController = _viewController
+        case .searchDetail(let viewModel):
+            let _viewController = SearchDetailViewController()
             _viewController.viewModel = viewModel
             viewController = _viewController
         case .profile(let viewModel):

@@ -14,7 +14,7 @@ import TwitterAPI
 
 extension APIService {
 
-    func twitterUserTimeline(count: Int = 200, userID: String, maxID: String? = nil, authorization: Twitter.API.OAuth.Authorization, twitterUserID: TwitterUser.ID) -> AnyPublisher<Twitter.Response.Content<[Twitter.Entity.Tweet]>, Error> {
+    func twitterUserTimeline(count: Int = 200, userID: String, maxID: String? = nil, authorization: Twitter.API.OAuth.Authorization, requestTwitterUserID: TwitterUser.ID) -> AnyPublisher<Twitter.Response.Content<[Twitter.Entity.Tweet]>, Error> {
         let query = Twitter.API.Timeline.Query(count: count, userID: userID, maxID: maxID, excludeReplies: false)
         return Twitter.API.Timeline.userTimeline(session: session, authorization: authorization, query: query)
             .handleEvents(receiveOutput: { [weak self] response in
@@ -22,7 +22,7 @@ extension APIService {
 
                 let log = OSLog.api
 
-                APIService.Persist.persistTimeline(managedObjectContext: self.backgroundManagedObjectContext, query: query, response: response, persistType: .userTimeline, requestTwitterUserID: twitterUserID, log: log)
+                APIService.Persist.persistTimeline(managedObjectContext: self.backgroundManagedObjectContext, query: query, response: response, persistType: .userTimeline, requestTwitterUserID: requestTwitterUserID, log: log)
             })
             .eraseToAnyPublisher()
     }

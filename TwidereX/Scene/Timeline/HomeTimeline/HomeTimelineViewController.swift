@@ -174,7 +174,6 @@ extension HomeTimelineViewController {
             // fix AutoLayout cell height not update after rotate issue
             self.viewModel.cellFrameCache.removeAllObjects()
             self.tableView.reloadData()
-            
         }
     }
     

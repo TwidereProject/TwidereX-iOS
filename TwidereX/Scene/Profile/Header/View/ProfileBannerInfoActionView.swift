@@ -7,22 +7,14 @@
 
 import UIKit
 
+protocol ProfileBannerInfoActionViewDelegate: class {
+    func profileBannerInfoActionView(_ profileBannerInfoActionView: ProfileBannerInfoActionView, followActionButtonPressed button: FollowActionButton)
+}
+
 final class ProfileBannerInfoActionView: UIView {
     
-    static let followButtonHeight: CGFloat = 24
-    
-    let followActionButton: UIButton = {
-        let button = UIButton(type: .custom)
-        button.layer.masksToBounds = true
-        button.layer.cornerRadius = ProfileBannerInfoActionView.followButtonHeight * 0.5
-        button.layer.borderWidth = 1
-        button.layer.borderColor = Asset.Colors.hightLight.color.cgColor
-        button.titleLabel?.font = .systemFont(ofSize: 14, weight: .medium)
-        button.setTitle("Follow", for: .normal)
-        button.setTitleColor(Asset.Colors.hightLight.color, for: .normal)
-        button.setTitleColor(Asset.Colors.hightLight.color.withAlphaComponent(0.5), for: .highlighted)
-        return button
-    }()
+    weak var delegate: ProfileBannerInfoActionViewDelegate?
+    let followActionButton = FollowActionButton()
     
     let followStatusLabel: UILabel = {
         let label = UILabel()
@@ -53,8 +45,8 @@ extension ProfileBannerInfoActionView {
             followActionButton.topAnchor.constraint(equalTo: topAnchor),
             followActionButton.leadingAnchor.constraint(equalTo: leadingAnchor),
             trailingAnchor.constraint(equalTo: followActionButton.trailingAnchor),
-            followActionButton.heightAnchor.constraint(equalToConstant: ProfileBannerInfoActionView.followButtonHeight),
-            followActionButton.widthAnchor.constraint(equalToConstant: 80),
+            followActionButton.heightAnchor.constraint(equalToConstant: FollowActionButton.buttonSize.height),
+            followActionButton.widthAnchor.constraint(equalToConstant: FollowActionButton.buttonSize.width),
         ])
         
         followStatusLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -65,6 +57,14 @@ extension ProfileBannerInfoActionView {
             trailingAnchor.constraint(equalTo: followStatusLabel.trailingAnchor),
             bottomAnchor.constraint(equalTo: followStatusLabel.bottomAnchor),
         ])
+        
+        followActionButton.addTarget(self, action: #selector(ProfileBannerInfoActionView.followActionButtonPressed(_:)), for: .touchUpInside)
+    }
+}
+
+extension ProfileBannerInfoActionView {
+    @objc private func followActionButtonPressed(_ sender: FollowActionButton) {
+        delegate?.profileBannerInfoActionView(self, followActionButtonPressed: sender)
     }
 }
 

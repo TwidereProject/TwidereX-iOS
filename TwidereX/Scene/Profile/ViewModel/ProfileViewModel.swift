@@ -21,6 +21,7 @@ class ProfileViewModel: NSObject {
     // input
     let twitterUser: CurrentValueSubject<TwitterUser?, Never>
     let currentTwitterUser = CurrentValueSubject<TwitterUser?, Never>(nil)
+    let currentTwitterAuthentication = CurrentValueSubject<TwitterAuthentication?, Never>(nil)
         
     // output
     let userID: CurrentValueSubject<String?, Never>
@@ -37,7 +38,7 @@ class ProfileViewModel: NSObject {
     let followersCount: CurrentValueSubject<Int?, Never>
     let listedCount: CurrentValueSubject<Int?, Never>
 
-    let isFolling: CurrentValueSubject<Bool?, Never>
+    let friendship: CurrentValueSubject<Friendship?, Never>
     
     override init() {
         self.twitterUser = CurrentValueSubject(nil)
@@ -54,7 +55,7 @@ class ProfileViewModel: NSObject {
         self.friendsCount = CurrentValueSubject(nil)
         self.followersCount = CurrentValueSubject(nil)
         self.listedCount = CurrentValueSubject(nil)
-        self.isFolling = CurrentValueSubject(nil)
+        self.friendship = CurrentValueSubject(nil)
         super.init()
 
         setup()
@@ -75,7 +76,7 @@ class ProfileViewModel: NSObject {
         self.friendsCount = CurrentValueSubject(twitterUser.metrics?.followingCount.flatMap { Int(truncating: $0) })
         self.followersCount = CurrentValueSubject(twitterUser.metrics?.followersCount.flatMap { Int(truncating: $0) })
         self.listedCount = CurrentValueSubject(twitterUser.metrics?.listedCount.flatMap{ Int(truncating: $0) })
-        self.isFolling = CurrentValueSubject(nil)
+        self.friendship = CurrentValueSubject(nil)
         super.init()
         
         setup()
@@ -84,6 +85,16 @@ class ProfileViewModel: NSObject {
     deinit {
         os_log("%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
     }
+}
+
+extension ProfileViewModel {
+    
+    enum Friendship {
+        case following
+        case pending
+        case none
+    }
+    
 }
 
 extension ProfileViewModel {
@@ -160,7 +171,7 @@ extension ProfileViewModel {
     
     private func update(twitterUser: TwitterUser?, currentTwitterUser: TwitterUser?) {
         guard let twitterUser = twitterUser else {
-            self.isFolling.value = nil
+            self.friendship.value = nil
             return
         }
         
@@ -169,9 +180,11 @@ extension ProfileViewModel {
         }
         
         if twitterUser == currentTwitterUser {
-            self.isFolling.value = nil
+            self.friendship.value = nil
         } else {
-            self.isFolling.value = twitterUser.followingFrom.flatMap { $0.contains(currentTwitterUser) }
+            let isFollowing = twitterUser.followingFrom.flatMap { $0.contains(currentTwitterUser) } ?? false
+            let isPending = twitterUser.followRequestSentFrom.flatMap { $0.contains(currentTwitterUser) } ?? false
+            self.friendship.value = isPending ? .pending : (isFollowing) ? .following : ProfileViewModel.Friendship.none
         }
     }
 }

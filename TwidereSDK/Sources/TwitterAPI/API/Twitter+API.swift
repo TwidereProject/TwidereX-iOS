@@ -28,15 +28,19 @@ extension Twitter.API {
     
     public enum Account { }
     public enum Favorites { }
+    public enum Friendships { }
     public enum Geo { }
     public enum Media { }
     public enum OAuth { }
     public enum Statuses { }
     public enum Timeline { }
+    public enum Users { }
     
     // V2
-    public enum Lookup { }
-    public enum RecentSearch { }
+    public enum V2 {
+        public enum Lookup { }
+        public enum RecentSearch { }        
+    }
 }
 
 extension Twitter.API {

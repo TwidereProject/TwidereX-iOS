@@ -23,7 +23,7 @@ class UserTimelineViewModel: NSObject {
     let fetchedResultsController: NSFetchedResultsController<Tweet>
     var diffableDataSource: UITableViewDiffableDataSource<TimelineSection, TimelineItem>?
     let userID: CurrentValueSubject<String?, Never>
-    let currentTwitterAuthentication = CurrentValueSubject<TwitterAuthentication?, Never>(nil)
+    let currentTwitterAuthentication: CurrentValueSubject<TwitterAuthentication?, Never>
     let userTimelineTweetIDs = CurrentValueSubject<[Twitter.Entity.Tweet.ID], Never>([])
     weak var tableView: UITableView?
     weak var timelinePostTableViewCellDelegate: TimelinePostTableViewCellDelegate?
@@ -62,6 +62,7 @@ class UserTimelineViewModel: NSObject {
             return controller
         }()
         self.userID = CurrentValueSubject(userID)
+        self.currentTwitterAuthentication = CurrentValueSubject(context.authenticationService.currentActiveTwitterAutentication.value)
         super.init()
         
         self.fetchedResultsController.delegate = self
@@ -99,10 +100,6 @@ class UserTimelineViewModel: NSObject {
                     assertionFailure(error.localizedDescription)
                 }
             }
-            .store(in: &disposeBag)
-        
-        context.authenticationService.currentActiveTwitterAutentication
-            .assign(to: \.value, on: currentTwitterAuthentication)
             .store(in: &disposeBag)
         
         Timer.publish(every: 1.0, on: .main, in: .common)
@@ -229,7 +226,7 @@ extension UserTimelineViewModel {
             return Fail(error: UserTimelineError.invalidUserID).eraseToAnyPublisher()
         }
         
-        return context.apiService.twitterUserTimeline(count: 20, userID: userID, authorization: authorization, twitterUserID: authentication.userID)
+        return context.apiService.twitterUserTimeline(count: 20, userID: userID, authorization: authorization, requestTwitterUserID: authentication.userID)
     }
     
     func loadMore() -> AnyPublisher<Twitter.Response.Content<[Twitter.Entity.Tweet]>, Error> {
@@ -245,7 +242,7 @@ extension UserTimelineViewModel {
         }
         
         let maxID = oldestTweet.id
-        return context.apiService.twitterUserTimeline(count: 20, userID: userID, maxID: maxID, authorization: authorization, twitterUserID: authentication.userID)
+        return context.apiService.twitterUserTimeline(count: 20, userID: userID, maxID: maxID, authorization: authorization, requestTwitterUserID: authentication.userID)
     }
 }
 

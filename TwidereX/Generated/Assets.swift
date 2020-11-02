@@ -23,6 +23,7 @@ internal typealias AssetImageTypeAlias = ImageAsset.Image
 internal enum Asset {
   internal static let accentColor = ColorAsset(name: "AccentColor")
   internal enum Arrows {
+    internal static let arrowLeft = ImageAsset(name: "Arrows/arrow.left")
     internal static let arrowTurnUpLeft = ImageAsset(name: "Arrows/arrow.turn.up.left")
     internal static let arrowTurnUpLeftLarge = ImageAsset(name: "Arrows/arrow.turn.up.left.large")
     internal static let squareAndArrowUp = ImageAsset(name: "Arrows/square.and.arrow.up")
@@ -37,6 +38,7 @@ internal enum Asset {
     internal static let at = ImageAsset(name: "Communication/at")
   }
   internal enum Editing {
+    internal static let ellipsis = ImageAsset(name: "Editing/ellipsis")
     internal static let featherPen = ImageAsset(name: "Editing/feather.pen")
     internal static let xmark = ImageAsset(name: "Editing/xmark")
   }
@@ -46,6 +48,9 @@ internal enum Asset {
     internal static let heart = ImageAsset(name: "Health/heart")
     internal static let heartLarge = ImageAsset(name: "Health/heart.large")
   }
+  internal enum Human {
+    internal static let person = ImageAsset(name: "Human/person")
+  }
   internal enum Media {
     internal static let `repeat` = ImageAsset(name: "Media/repeat")
     internal static let repeatLarge = ImageAsset(name: "Media/repeat.large")
@@ -54,8 +59,10 @@ internal enum Asset {
     internal static let camera = ImageAsset(name: "Object&Tools/camera")
     internal static let gif = ImageAsset(name: "Object&Tools/gif")
     internal static let globeMini = ImageAsset(name: "Object&Tools/globe.mini")
+    internal static let house = ImageAsset(name: "Object&Tools/house")
     internal static let icRoundRefresh = ImageAsset(name: "Object&Tools/ic.round.refresh")
     internal static let lockMini = ImageAsset(name: "Object&Tools/lock.mini")
+    internal static let magnifyingglass = ImageAsset(name: "Object&Tools/magnifyingglass")
     internal static let mappin = ImageAsset(name: "Object&Tools/mappin")
     internal static let mappinMini = ImageAsset(name: "Object&Tools/mappin.mini")
     internal static let paperplane = ImageAsset(name: "Object&Tools/paperplane")

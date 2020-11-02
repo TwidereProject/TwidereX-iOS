@@ -12,7 +12,7 @@ import CoreDataStack
 import CommonOSLog
 import TwitterAPI
 
-extension APIService {
+extension APIService.CoreData {
     
     static func createOrMergeTwitterUser(
         into managedObjectContext: NSManagedObjectContext,
@@ -42,7 +42,7 @@ extension APIService {
         
         if let oldTwitterUser = oldTwitterUser {
             // merge old twitter usre
-            APIService.mergeTwitterUser(for: requestTwitterUser, old: oldTwitterUser, entity: entity, networkDate: networkDate)
+            APIService.CoreData.mergeTwitterUser(for: requestTwitterUser, old: oldTwitterUser, entity: entity, networkDate: networkDate)
             os_signpost(.event, log: log, name: "update database - process entity: createOrMergeTwitterUser", signpostID: processEntityTaskSignpostID, "find old twitter user %{public}s: name %s", entity.idStr, oldTwitterUser.name)
             return (oldTwitterUser, false)
         } else {
