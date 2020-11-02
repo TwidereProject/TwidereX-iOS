@@ -7,9 +7,13 @@
 
 import UIKit
 
+protocol ProfileBannerInfoActionViewDelegate: class {
+    func profileBannerInfoActionView(_ profileBannerInfoActionView: ProfileBannerInfoActionView, followActionButtonPressed button: FollowActionButton)
+}
+
 final class ProfileBannerInfoActionView: UIView {
     
-    
+    weak var delegate: ProfileBannerInfoActionViewDelegate?
     let followActionButton = FollowActionButton()
     
     let followStatusLabel: UILabel = {
@@ -53,6 +57,14 @@ extension ProfileBannerInfoActionView {
             trailingAnchor.constraint(equalTo: followStatusLabel.trailingAnchor),
             bottomAnchor.constraint(equalTo: followStatusLabel.bottomAnchor),
         ])
+        
+        followActionButton.addTarget(self, action: #selector(ProfileBannerInfoActionView.followActionButtonPressed(_:)), for: .touchUpInside)
+    }
+}
+
+extension ProfileBannerInfoActionView {
+    @objc private func followActionButtonPressed(_ sender: FollowActionButton) {
+        delegate?.profileBannerInfoActionView(self, followActionButtonPressed: sender)
     }
 }
 

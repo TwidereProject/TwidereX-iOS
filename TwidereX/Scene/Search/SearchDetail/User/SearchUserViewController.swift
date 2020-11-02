@@ -103,6 +103,10 @@ extension SearchUserViewController: UITableViewDelegate {
         let twitterUser = viewModel.fetchedResultsController.managedObjectContext.object(with: objectID) as! TwitterUser
         
         let profileViewModel = ProfileViewModel(twitterUser: twitterUser)
+        context.authenticationService.currentTwitterUser
+            .assign(to: \.value, on: profileViewModel.currentTwitterUser)
+            .store(in: &profileViewModel.disposeBag)
+        navigationController?.delegate = nil
         coordinator.present(scene: .profile(viewModel: profileViewModel), from: self, transition: .show)
     }
     
@@ -113,8 +117,7 @@ extension SearchUserViewController: UserBriefInfoTableViewCellDelegate {
     
     func userBriefInfoTableViewCell(_ cell: UserBriefInfoTableViewCell, followActionButtonPressed button: FollowActionButton) {
         // prepare authentication
-        guard let twitterAuthentication = viewModel.currentTwitterAuthentication.value,
-              let authorization = try? twitterAuthentication.authorization(appSecret: AppSecret.shared) else {
+        guard let twitterAuthentication = viewModel.currentTwitterAuthentication.value else {
             assertionFailure()
             return
         }
@@ -214,6 +217,5 @@ extension SearchUserViewController: UserBriefInfoTableViewCellDelegate {
         }
         .store(in: &disposeBag)
     }
-    
     
 }

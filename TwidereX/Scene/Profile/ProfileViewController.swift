@@ -94,8 +94,6 @@ extension ProfileViewController {
                 viewController.context = context
                 viewController.coordinator = coordinator
             }
-//            viewController.view.preservesSuperviewLayoutMargins = true
-//            viewController.view.insetsLayoutMarginsFromSafeArea = true
         }
 
         profileSegmentedViewController.pagingViewController.viewModel = profilePagingViewModel
@@ -207,18 +205,20 @@ extension ProfileViewController {
             .map { username in username.flatMap { "@" + $0 } ?? " " }
             .assign(to: \.text, on: profileHeaderViewController.profileBannerView.usernameLabel)
             .store(in: &disposeBag)
-        viewModel.isFolling
-            .sink { [weak self] isFolling in
+        viewModel.friendship
+            .sink { [weak self] friendship in
                 guard let self = self else { return }
                 let followingButton = self.profileHeaderViewController.profileBannerView.profileBannerInfoActionView.followActionButton
-                let title = isFolling == true ? "Following" : "Follow"
-                followingButton.setTitle(title, for: .normal)
-                followingButton.setTitleColor(isFolling == true ? .white : Asset.Colors.hightLight.color, for: .normal)
-                followingButton.setTitleColor(isFolling == true ? .white : Asset.Colors.hightLight.color, for: .highlighted)
-                followingButton.setBackgroundImage(isFolling == true ? UIImage.placeholder(color: Asset.Colors.hightLight.color) : nil, for: .normal)
-                followingButton.setBackgroundImage(isFolling == true ? UIImage.placeholder(color: Asset.Colors.hightLight.color.withAlphaComponent(0.5)) : nil, for: .highlighted)
-                followingButton.layer.borderWidth = isFolling == true ? 0 : 1
-                followingButton.isEnabled = isFolling != nil
+
+                guard let friendship = friendship else {
+                    followingButton.isHidden = true
+                    return
+                }
+                switch friendship {
+                case .following:    followingButton.style = .following
+                case .pending:      followingButton.style = .pending
+                case .none:         followingButton.style = .follow
+                }
             }
             .store(in: &disposeBag)
         viewModel.bioDescription
@@ -261,6 +261,12 @@ extension ProfileViewController {
                 self.profileHeaderViewController.profileBannerView.profileBannerStatusView.listedStatusItemView.countLabel.text = count.flatMap { "\($0)" } ?? "-"
             }
             .store(in: &disposeBag)
+        
+        profileHeaderViewController.profileBannerView.profileBannerInfoActionView.delegate = self
+        context.authenticationService.currentActiveTwitterAutentication
+            .assign(to: \.value, on: viewModel.currentTwitterAuthentication)
+            .store(in: &disposeBag)
+            
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -335,6 +341,103 @@ extension ProfileViewController: ProfilePagingViewControllerDelegate {
         // setup observer and gesture fallback
         currentPostTimelineTableViewContentSizeObservation = observeTableViewContentSize(tableView: postTimelineViewController.tableView)
         postTimelineViewController.tableView.panGestureRecognizer.require(toFail: overlayScrollView.panGestureRecognizer)
+    }
+    
+}
+
+// MARK: - ProfileBannerInfoActionViewDelegate
+extension ProfileViewController: ProfileBannerInfoActionViewDelegate {
+    
+    func profileBannerInfoActionView(_ profileBannerInfoActionView: ProfileBannerInfoActionView, followActionButtonPressed button: FollowActionButton) {
+        guard let twitterAuthentication = viewModel.currentTwitterAuthentication.value,
+              let authorization = try? twitterAuthentication.authorization(appSecret: AppSecret.shared) else {
+            assertionFailure()
+            return
+        }
+        
+        guard let twitterUser = viewModel.twitterUser.value else { return }
+        let requestTwitterUserID = twitterAuthentication.userID
+        let isPending = (twitterUser.followRequestSentFrom ?? Set()).contains(where: { $0.id == requestTwitterUserID })
+        let isFollowing = (twitterUser.followingFrom ?? Set()).contains(where: { $0.id == requestTwitterUserID })
+        
+        if isPending || isFollowing {
+            let name = twitterUser.name.trimmingCharacters(in: .whitespacesAndNewlines)
+            let message = isPending ? "Cancel following request for \(name)?" : "Unfollow user \(name)?"
+            let alertController = UIAlertController(title: nil, message: message, preferredStyle: view.traitCollection.userInterfaceIdiom == .phone ? .actionSheet : .alert)
+            let confirmAction = UIAlertAction(title: "Confirm", style: .destructive) { [weak self] _ in
+                guard let self = self else { return }
+                self.toggleFollowStatue()
+            }
+            let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+            alertController.addAction(confirmAction)
+            alertController.addAction(cancelAction)
+            present(alertController, animated: true, completion: nil)
+        } else {
+            toggleFollowStatue()
+        }
+        
+    }
+    
+    private func toggleFollowStatue() {
+        guard let twitterUser = viewModel.twitterUser.value,
+              let requestTwitterUser = viewModel.currentTwitterUser.value
+        else { return }
+        
+        guard let twitterAuthentication = viewModel.currentTwitterAuthentication.value,
+              let authorization = try? twitterAuthentication.authorization(appSecret: AppSecret.shared) else {
+            assertionFailure()
+            return
+        }
+        let requestTwitterUserID = twitterAuthentication.userID
+        
+        let impactFeedbackGenerator = UIImpactFeedbackGenerator(style: .light)
+        let notificationFeedbackGenerator = UINotificationFeedbackGenerator()
+        context.apiService.friendship(
+            twitterUserObjectID: twitterUser.objectID,
+            authorization: authorization,
+            requestTwitterUserID: requestTwitterUserID
+        )
+        .receive(on: DispatchQueue.main)
+        .handleEvents { _ in
+            notificationFeedbackGenerator.prepare()
+            impactFeedbackGenerator.prepare()
+        } receiveOutput: { _ in
+            impactFeedbackGenerator.impactOccurred()
+        } receiveCompletion: { completion in
+            switch completion {
+            case .failure(let error):
+                // TODO: handle error
+                break
+            case .finished:
+                // auto-reload item
+                break
+            }
+        }
+        .map { (friendshipQueryType, targetTwitterUserID) in
+            self.context.apiService.friendship(
+                friendshipQueryType: friendshipQueryType,
+                twitterUserID: targetTwitterUserID,
+                authorization: authorization,
+                requestTwitterUserID: requestTwitterUserID
+            )
+        }
+        .switchToLatest()
+        .receive(on: DispatchQueue.main)
+        .sink { [weak self] completion in
+            guard let self = self else { return }
+            if self.view.window != nil {
+                notificationFeedbackGenerator.notificationOccurred(.success)
+            }
+            switch completion {
+            case .failure(let error):
+                os_log("%{public}s[%{public}ld], %{public}s: [Friendship] remote friendship query fail: %{public}s", ((#file as NSString).lastPathComponent), #line, #function, error.localizedDescription)
+            case .finished:
+                os_log("%{public}s[%{public}ld], %{public}s: [Friendship] remote friendship query success", ((#file as NSString).lastPathComponent), #line, #function)
+            }
+        } receiveValue: { response in
+            
+        }
+        .store(in: &disposeBag)
     }
     
 }

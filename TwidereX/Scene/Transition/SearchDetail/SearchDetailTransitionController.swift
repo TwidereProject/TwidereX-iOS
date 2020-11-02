@@ -21,6 +21,7 @@ extension SearchDetailTransitionController: UINavigationControllerDelegate {
         case .pop where fromVC is SearchDetailViewController && toVC is SearchViewController:
             return SearchToSearchDetailViewControllerAnimatedTransitioning(operation: operation)
         default:
+            assertionFailure("Wrong setup. Edge-drag gesture will be invalid. Set delegate to nil when using system push configuration")
             return nil
         }
     }
