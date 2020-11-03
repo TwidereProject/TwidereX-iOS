@@ -1,8 +1,8 @@
 //
-//  HomeTimelineViewModel+LoadMiddleState.swift
+//  MentionTimelineViewModel+LoadMiddleState.swift
 //  TwidereX
 //
-//  Created by Cirno MainasuK on 2020-10-12.
+//  Created by Cirno MainasuK on 2020-11-3.
 //  Copyright © 2020 Twidere. All rights reserved.
 //
 
@@ -12,12 +12,12 @@ import GameplayKit
 import CoreData
 import CoreDataStack
 
-extension HomeTimelineViewModel {
+extension MentionTimelineViewModel {
     class LoadMiddleState: GKState {
-        weak var viewModel: HomeTimelineViewModel?
+        weak var viewModel: MentionTimelineViewModel?
         let upperTimelineIndexObjectID: NSManagedObjectID
         
-        init(viewModel: HomeTimelineViewModel, upperTimelineIndexObjectID: NSManagedObjectID) {
+        init(viewModel: MentionTimelineViewModel, upperTimelineIndexObjectID: NSManagedObjectID) {
             self.viewModel = viewModel
             self.upperTimelineIndexObjectID = upperTimelineIndexObjectID
         }
@@ -32,15 +32,15 @@ extension HomeTimelineViewModel {
     }
 }
 
-extension HomeTimelineViewModel.LoadMiddleState {
+extension MentionTimelineViewModel.LoadMiddleState {
     
-    class Initial: HomeTimelineViewModel.LoadMiddleState {
+    class Initial: MentionTimelineViewModel.LoadMiddleState {
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {
             return stateClass == Loading.self
         }
     }
     
-    class Loading: HomeTimelineViewModel.LoadMiddleState {
+    class Loading: MentionTimelineViewModel.LoadMiddleState {
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {
             // guard let viewModel = viewModel else { return false }
             return stateClass == Success.self || stateClass == Fail.self
@@ -64,10 +64,10 @@ extension HomeTimelineViewModel.LoadMiddleState {
             let tweetIDs = (viewModel.fetchedResultsController.fetchedObjects ?? []).compactMap { timelineIndex in
                 timelineIndex.tweet?.id
             }
-
+            
             // TODO: only set large count when using Wi-Fi
             let maxID = tweet.id
-            viewModel.context.apiService.twitterHomeTimeline(count: 20, maxID: maxID, authorization: authorization, requestTwitterUserID: twitterAuthentication.userID)
+            viewModel.context.apiService.twitterMentionTimeline(count: 20, maxID: maxID, authorization: authorization, requestTwitterUserID: twitterAuthentication.userID)
                 .delay(for: .seconds(1), scheduler: DispatchQueue.main)
                 .receive(on: DispatchQueue.main)
                 .sink { completion in
@@ -93,14 +93,14 @@ extension HomeTimelineViewModel.LoadMiddleState {
         }
     }
     
-    class Fail: HomeTimelineViewModel.LoadMiddleState {
+    class Fail: MentionTimelineViewModel.LoadMiddleState {
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {
             // guard let viewModel = viewModel else { return false }
             return stateClass == Loading.self
         }
     }
     
-    class Success: HomeTimelineViewModel.LoadMiddleState {
+    class Success: MentionTimelineViewModel.LoadMiddleState {
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {
             // guard let viewModel = viewModel else { return false }
             return false

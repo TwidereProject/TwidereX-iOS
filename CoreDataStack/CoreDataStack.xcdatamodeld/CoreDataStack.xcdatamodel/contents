@@ -1,19 +1,29 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="17510.1" systemVersion="19H2" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+    <entity name="MentionTimelineIndex" representedClassName=".MentionTimelineIndex" syncable="YES">
+        <attribute name="createdAt" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="hasMore" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="identifier" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="platformRaw" attributeType="String"/>
+        <attribute name="userID" attributeType="String"/>
+        <relationship name="toots" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Toots" inverseName="mentionTimelineIndexes" inverseEntity="Toots"/>
+        <relationship name="tweet" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Tweet" inverseName="mentionTimelineIndexes" inverseEntity="Tweet"/>
+    </entity>
     <entity name="TimelineIndex" representedClassName=".TimelineIndex" syncable="YES">
         <attribute name="createdAt" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="hasMore" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
         <attribute name="identifier" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="platformRaw" attributeType="String"/>
         <attribute name="userID" attributeType="String"/>
-        <relationship name="toots" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Toots" inverseName="timelineIndex" inverseEntity="Toots"/>
+        <relationship name="toots" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Toots" inverseName="timelineIndexes" inverseEntity="Toots"/>
         <relationship name="tweet" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Tweet" inverseName="timelineIndexes" inverseEntity="Tweet"/>
     </entity>
     <entity name="Toots" representedClassName=".Tools" syncable="YES">
         <attribute name="createdAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="identifier" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="updatedAt" attributeType="Date" usesScalarValueType="NO"/>
-        <relationship name="timelineIndex" maxCount="1" deletionRule="Nullify" destinationEntity="TimelineIndex" inverseName="toots" inverseEntity="TimelineIndex"/>
+        <relationship name="mentionTimelineIndexes" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="MentionTimelineIndex" inverseName="toots" inverseEntity="MentionTimelineIndex"/>
+        <relationship name="timelineIndexes" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="TimelineIndex" inverseName="toots" inverseEntity="TimelineIndex"/>
     </entity>
     <entity name="Tweet" representedClassName=".Tweet" syncable="YES">
         <attribute name="conversationID" optional="YES" attributeType="String"/>
@@ -31,6 +41,7 @@
         <relationship name="entities" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="TweetEntities" inverseName="tweet" inverseEntity="TweetEntities"/>
         <relationship name="likeBy" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="TwitterUser" inverseName="like" inverseEntity="TwitterUser"/>
         <relationship name="media" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="TwitterMedia" inverseName="tweet" inverseEntity="TwitterMedia"/>
+        <relationship name="mentionTimelineIndexes" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="MentionTimelineIndex" inverseName="tweet" inverseEntity="MentionTimelineIndex"/>
         <relationship name="metrics" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="TweetMetrics" inverseName="tweet" inverseEntity="TweetMetrics"/>
         <relationship name="pinnedBy" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="TwitterUser" inverseName="pinnedTweet" inverseEntity="TwitterUser"/>
         <relationship name="place" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="TwitterPlace" inverseName="tweet" inverseEntity="TwitterPlace"/>
@@ -209,8 +220,8 @@
     </entity>
     <elements>
         <element name="TimelineIndex" positionX="748.46875" positionY="302.9921875" width="128" height="148"/>
-        <element name="Toots" positionX="-267.625" positionY="-3.98828125" width="128" height="103"/>
-        <element name="Tweet" positionX="526.87890625" positionY="-317.48828125" width="128" height="463"/>
+        <element name="Toots" positionX="-267.625" positionY="-3.98828125" width="128" height="118"/>
+        <element name="Tweet" positionX="526.87890625" positionY="-317.48828125" width="128" height="478"/>
         <element name="TweetEntities" positionX="-63" positionY="-45" width="128" height="148"/>
         <element name="TweetEntitiesAnnotation" positionX="-63" positionY="-45" width="128" height="28"/>
         <element name="TweetEntitiesCashtag" positionX="-27" positionY="-9" width="128" height="118"/>
@@ -227,5 +238,6 @@
         <element name="TwitterUser" positionX="281.5234375" positionY="201.703125" width="128" height="448"/>
         <element name="TwitterUserMetrics" positionX="-45" positionY="-180" width="128" height="133"/>
         <element name="TwitterWithheld" positionX="-18" positionY="0" width="128" height="133"/>
+        <element name="MentionTimelineIndex" positionX="-63" positionY="-162" width="128" height="148"/>
     </elements>
 </model>

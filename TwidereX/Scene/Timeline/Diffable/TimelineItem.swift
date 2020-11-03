@@ -14,12 +14,12 @@ import CoreDataStack
 enum TimelineItem {
     
     case homeTimelineIndex(objectID: NSManagedObjectID, attribute: Attribute)
-    case homeTimelineMiddleLoader(upperTimelineIndexAnchorObjectID: NSManagedObjectID)
-    
+    case mentionTimelineIndex(objectID: NSManagedObjectID, attribute: Attribute)
+
     case userTimelineItem(objectID: NSManagedObjectID)
-    
     case searchTimelineItem(objectID: NSManagedObjectID)
     
+    case timelineMiddleLoader(upperTimelineIndexAnchorObjectID: NSManagedObjectID)
     case bottomLoader
 }
 
@@ -48,8 +48,10 @@ extension TimelineItem: Equatable {
         switch (lhs, rhs) {
         case (.homeTimelineIndex(let objectIDLeft, _), .homeTimelineIndex(let objectIDRight, _)):
             return objectIDLeft == objectIDRight
-        case (.homeTimelineMiddleLoader(let upperLeft), .homeTimelineMiddleLoader(let upperRight)):
+        case (.timelineMiddleLoader(let upperLeft), .timelineMiddleLoader(let upperRight)):
             return upperLeft == upperRight
+        case (.mentionTimelineIndex(let objectIDLeft, _), .mentionTimelineIndex(let objectIDRight, _)):
+            return objectIDLeft == objectIDRight
         case (.bottomLoader, .bottomLoader):
             return true
         case (.userTimelineItem(let objectIDLeft), .userTimelineItem(let objectIDRight)):
@@ -67,9 +69,11 @@ extension TimelineItem: Hashable {
         switch self {
         case .homeTimelineIndex(let objectID, _):
             hasher.combine(objectID)
-        case .homeTimelineMiddleLoader(let upper):
-            hasher.combine(String(describing: TimelineItem.homeTimelineMiddleLoader.self))
+        case .timelineMiddleLoader(let upper):
+            hasher.combine(String(describing: TimelineItem.timelineMiddleLoader.self))
             hasher.combine(upper)
+        case .mentionTimelineIndex(let objectID, _):
+            hasher.combine(objectID)
         case .userTimelineItem(let objectID):
             hasher.combine(objectID)
         case .searchTimelineItem(let objectID):

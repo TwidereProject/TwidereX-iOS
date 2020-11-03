@@ -21,8 +21,12 @@ extension APIService {
     // A1. incoming tweet NOT in local timeline, retweet NOT  in local (never see tweet and retweet)
     // A2. incoming tweet NOT in local timeline, retweet      in local (never see tweet but saw retweet before)
     // A3. incoming tweet     in local timeline, retweet MUST in local (saw tweet before)
-    func twitterHomeTimeline(count: Int = 200, maxID: String? = nil, authorization: Twitter.API.OAuth.Authorization, requestTwitterUserID: TwitterUser.ID) -> AnyPublisher<Twitter.Response.Content<[Twitter.Entity.Tweet]>, Error> {
-        
+    func twitterHomeTimeline(
+        count: Int = 200,
+        maxID: String? = nil,
+        authorization: Twitter.API.OAuth.Authorization,
+        requestTwitterUserID: TwitterUser.ID
+    ) -> AnyPublisher<Twitter.Response.Content<[Twitter.Entity.Tweet]>, Error> {    
         // throttle latest request for API limit
         if maxID == nil {
             guard homeTimelineRequestThrottler.available(windowSizeInSec: APIService.homeTimelineRequestWindowInSec) else {
@@ -35,9 +39,7 @@ extension APIService {
         os_log("%{public}s[%{public}ld], %{public}s: fetch home timeline…", ((#file as NSString).lastPathComponent), #line, #function)
         let query = Twitter.API.Timeline.Query(count: count, maxID: maxID)
         return Twitter.API.Timeline.homeTimeline(session: session, authorization: authorization, query: query)
-            .handleEvents(receiveOutput: { [weak self] response in
-                guard let self = self else { return }
-                
+            .map { response -> AnyPublisher<Twitter.Response.Content<[Twitter.Entity.Tweet]>, Error> in
                 let log = OSLog.api
                 
                 // update throttler
@@ -60,8 +62,27 @@ extension APIService {
                     os_log(.info, log: log, "%{public}s[%{public}ld], %{public}s: API rate limit: %{public}ld/%{public}ld, reset at %{public}s, left: %.2fm (%.2fs)", ((#file as NSString).lastPathComponent), #line, #function, rateLimit.remaining, rateLimit.limit, rateLimit.reset.debugDescription, resetTimeIntervalInMin, resetTimeInterval)
                 }
                 
-                APIService.Persist.persistTimeline(managedObjectContext: self.backgroundManagedObjectContext, query: query, response: response, persistType: .homeTimeline, requestTwitterUserID: requestTwitterUserID, log: log)
-            })
+                // update database
+                return APIService.Persist.persistTimeline(
+                    managedObjectContext: self.backgroundManagedObjectContext,
+                    query: query,
+                    response: response,
+                    persistType: .homeTimeline,
+                    requestTwitterUserID: requestTwitterUserID,
+                    log: log
+                )
+                .setFailureType(to: Error.self)
+                .tryMap { result -> Twitter.Response.Content<[Twitter.Entity.Tweet]> in
+                    switch result {
+                    case .success:
+                        return response
+                    case .failure(let error):
+                        throw error
+                    }
+                }
+                .eraseToAnyPublisher()
+            }
+            .switchToLatest()
             .eraseToAnyPublisher()
     }
     

@@ -5,8 +5,9 @@
 //  Created by Cirno MainasuK on 2020-9-30.
 //
 
-import os
+import os.log
 import Foundation
+import Combine
 import CoreData
 import CoreDataStack
 import CommonOSLog
@@ -17,16 +18,21 @@ extension APIService.Persist {
     
     enum PersistTimelineType {
         case homeTimeline
+        case mentionTimeline
         case userTimeline
     }
     
-    static func persistTimeline(managedObjectContext: NSManagedObjectContext, query: Twitter.API.Timeline.Query, response: Twitter.Response.Content<[Twitter.Entity.Tweet]>, persistType: PersistTimelineType, requestTwitterUserID: TwitterUser.ID, log: OSLog) {
-        
+    static func persistTimeline(
+        managedObjectContext: NSManagedObjectContext,
+        query: Twitter.API.Timeline.Query,
+        response: Twitter.Response.Content<[Twitter.Entity.Tweet]>,
+        persistType: PersistTimelineType,
+        requestTwitterUserID: TwitterUser.ID, log: OSLog
+    ) -> AnyPublisher<Result<Void, Error>, Never> {
         let tweets = response.value
         os_log(.info, log: log, "%{public}s[%{public}ld], %{public}s: persist %{public}ld tweets…", ((#file as NSString).lastPathComponent), #line, #function, tweets.count)
 
-        // switch to background context
-        managedObjectContext.perform {
+        return managedObjectContext.performChanges {
             let contextTaskSignpostID = OSSignpostID(log: log)
             os_signpost(.begin, log: log, name: #function, signpostID: contextTaskSignpostID)
             defer {
@@ -79,6 +85,14 @@ extension APIService.Persist {
             }
             
             let updateDatabaseTaskSignpostID = OSSignpostID(log: log)
+            let recordType: WorkingRecord.RecordType = {
+                switch persistType {
+                case .homeTimeline:     return .homeTimeline
+                case .mentionTimeline:  return .mentionTimeline
+                case .userTimeline:     return .userTimeline
+                }
+            }()
+
             var workingRecords: [WorkingRecord] = []
             os_signpost(.begin, log: log, name: "update database", signpostID: updateDatabaseTaskSignpostID)
             for entity in tweets {
@@ -87,14 +101,14 @@ extension APIService.Persist {
                 defer {
                     os_signpost(.end, log: log, name: "update database - process entity", signpostID: processEntityTaskSignpostID, "process entity %{public}s", entity.idStr)
                 }
-                let recordType: WorkingRecord.RecordType = persistType == .homeTimeline ? .timeline : .userTimeline
                 let record = WorkingRecord.createOrMergeTweet(into: managedObjectContext, for: requestTwitterUser, requestTwitterUserID: requestTwitterUserID, entity: entity, recordType: recordType, networkDate: response.networkDate, log: log)
                 workingRecords.append(record)
             }   // end for…
             os_signpost(.end, log: log, name: "update database", signpostID: updateDatabaseTaskSignpostID)
             
-            // home timeline tasks
-            if persistType == .homeTimeline {
+            // home & mention timeline tasks
+            switch persistType {
+            case .homeTimeline, .mentionTimeline:
                 // Task 1: update anchor hasMore
                 // update maxID anchor hasMore attribute when fetching on home timeline
                 // do not use working records due to anchor tweet is removable on the remote
@@ -107,16 +121,25 @@ extension APIService.Persist {
                         request.returnsObjectsAsFaults = false
                         request.fetchLimit = 1
                         anchorTweet = try managedObjectContext.fetch(request).first
-                        let timelineIndex = anchorTweet.flatMap { tweet in
-                            tweet.timelineIndexes?.first(where: { $0.userID == requestTwitterUserID })
+                        if persistType == .homeTimeline {
+                            let timelineIndex = anchorTweet.flatMap { tweet in
+                                tweet.timelineIndexes?.first(where: { $0.userID == requestTwitterUserID })
+                            }
+                            timelineIndex?.update(hasMore: false)
+                        } else if persistType == .mentionTimeline {
+                            let mentionTimelineIndex = anchorTweet.flatMap { tweet in
+                                tweet.mentionTimelineIndexes?.first(where: { $0.userID == requestTwitterUserID })
+                            }
+                            mentionTimelineIndex?.update(hasMore: false)
+                        } else {
+                            assertionFailure()
                         }
-                        timelineIndex?.update(hasMore: false)
                     } catch {
                         assertionFailure(error.localizedDescription)
                     }
                 }
                 
-                // Task 2: set last tweet hasMore when fetched tweets no overlap with the timeline in the local database
+                // Task 2: set last tweet hasMore when fetched tweets not overlap with the timeline in the local database
                 let _oldestRecord = workingRecords
                     .sorted(by: { $0.tweet.createdAt < $1.tweet.createdAt })
                     .first
@@ -127,48 +150,57 @@ extension APIService.Persist {
                         let isOnlyOverlapItself = mergedOldTweetsInTimeline.count == 1 && mergedOldTweetsInTimeline.first?.id == anchorTweet.id
                         let isAnchorEqualOldestRecord = oldestRecord.tweet.id == anchorTweet.id
                         if (isNoOverlap || isOnlyOverlapItself) && !isAnchorEqualOldestRecord {
-                            let timelineIndex = oldestRecord.tweet.timelineIndexes?
-                                .first(where: { $0.userID == requestTwitterUserID })
-                            timelineIndex?.update(hasMore: true)
+                            if persistType == .homeTimeline {
+                                let timelineIndex = oldestRecord.tweet.timelineIndexes?
+                                    .first(where: { $0.userID == requestTwitterUserID })
+                                timelineIndex?.update(hasMore: true)
+                            } else if persistType == .mentionTimeline {
+                                let mentionTimelineIndex = oldestRecord.tweet.mentionTimelineIndexes?
+                                    .first(where: { $0.userID == requestTwitterUserID })
+                                mentionTimelineIndex?.update(hasMore: true)
+                            } else {
+                                assertionFailure()
+                            }
                         }
                         
                     } else if mergedOldTweetsInTimeline.isEmpty {
                         // no anchor. set hasMore when no overlap
-                        let timelineIndex = oldestRecord.tweet.timelineIndexes?
-                            .first(where: { $0.userID == requestTwitterUserID })
-                        timelineIndex?.update(hasMore: true)
+                        if persistType == .homeTimeline {
+                            let timelineIndex = oldestRecord.tweet.timelineIndexes?
+                                .first(where: { $0.userID == requestTwitterUserID })
+                            timelineIndex?.update(hasMore: true)
+                        } else if persistType == .mentionTimeline {
+                            let mentionTimelineIndex = oldestRecord.tweet.mentionTimelineIndexes?
+                                .first(where: { $0.userID == requestTwitterUserID })
+                            mentionTimelineIndex?.update(hasMore: true)
+                        }
                     }
                 } else {
                     // empty working record. mark anchor hasMore in the task 1
                 }
+            default:
+                break
             }
             
-            do {
-                try managedObjectContext.saveOrRollback()
-                os_log(.info, log: log, "%{public}s[%{public}ld], %{public}s: database updated", ((#file as NSString).lastPathComponent), #line, #function)
-                
-                // print working record tree map
-                #if DEBUG
-                DispatchQueue.global(qos: .utility).async {
-                    let logs = workingRecords
-                        .map { record in record.log() }
-                        .joined(separator: "\n")
-                    os_log(.info, log: log, "%{public}s[%{public}ld], %{public}s: working status: \n%s", ((#file as NSString).lastPathComponent), #line, #function, logs)
-                    let counting = workingRecords
-                        .map { record in record.count() }
-                        .reduce(into: WorkingRecord.Counting(), { result, next in result = result + next })
-                    let newTweetsInTimeLineCount = workingRecords.reduce(0, { result, next in
-                        return next.tweetProcessType == .create ? result + 1 : result
-                    })
-                    os_log(.info, log: log, "%{public}s[%{public}ld], %{public}s: tweet: insert %{public}ldT(%{public}ldTRQ), merge %{public}ldT(%{public}ldTRQ)", ((#file as NSString).lastPathComponent), #line, #function, newTweetsInTimeLineCount, counting.tweet.create, mergedOldTweetsInTimeline.count, counting.tweet.merge)
-                    os_log(.info, log: log, "%{public}s[%{public}ld], %{public}s: twitter user: insert %{public}ld, merge %{public}ld", ((#file as NSString).lastPathComponent), #line, #function, counting.user.create, counting.user.merge)
-                }
-                #endif
-            } catch {
-                os_log(.info, log: log, "%{public}s[%{public}ld], %{public}s: database update fail. %s", ((#file as NSString).lastPathComponent), #line, #function, error.localizedDescription)
-                assertionFailure(error.localizedDescription)
+            // print working record tree map
+            #if DEBUG
+            DispatchQueue.global(qos: .utility).async {
+                let logs = workingRecords
+                    .map { record in record.log() }
+                    .joined(separator: "\n")
+                os_log(.info, log: log, "%{public}s[%{public}ld], %{public}s: working status: \n%s", ((#file as NSString).lastPathComponent), #line, #function, logs)
+                let counting = workingRecords
+                    .map { record in record.count() }
+                    .reduce(into: WorkingRecord.Counting(), { result, next in result = result + next })
+                let newTweetsInTimeLineCount = workingRecords.reduce(0, { result, next in
+                    return next.tweetProcessType == .create ? result + 1 : result
+                })
+                os_log(.info, log: log, "%{public}s[%{public}ld], %{public}s: tweet: insert %{public}ldT(%{public}ldTRQ), merge %{public}ldT(%{public}ldTRQ)", ((#file as NSString).lastPathComponent), #line, #function, newTweetsInTimeLineCount, counting.tweet.create, mergedOldTweetsInTimeline.count, counting.tweet.merge)
+                os_log(.info, log: log, "%{public}s[%{public}ld], %{public}s: twitter user: insert %{public}ld, merge %{public}ld", ((#file as NSString).lastPathComponent), #line, #function, counting.user.create, counting.user.merge)
             }
-        }   // end perform
+            #endif
+        }
+        .eraseToAnyPublisher()
     }
 }
 
@@ -256,17 +288,19 @@ extension APIService.Persist {
         }
         
         enum RecordType {
-            case timeline       // a.k.a root
+            case homeTimeline
+            case mentionTimeline
             case userTimeline
             case retweet
             case quote
             
             var flag: String {
                 switch self {
-                case .timeline:     return "T"
-                case .userTimeline: return "U"
-                case .retweet:      return "R"
-                case .quote:        return "Q"
+                case .homeTimeline:     return "H"
+                case .mentionTimeline:  return "M"
+                case .userTimeline:     return "U"
+                case .retweet:          return "R"
+                case .quote:            return "Q"
                 }
             }
         }
@@ -286,7 +320,7 @@ extension APIService.Persist {
         func log(indentLevel: Int = 0) -> String {
             let indent = Array(repeating: "    ", count: indentLevel).joined()
             let tweetPreview = tweet.text.prefix(32).replacingOccurrences(of: "\n", with: " ")
-            let message = "\(indent)[\(tweetProcessType.flag)\(recordType.flag)](\(tweet.id)) [\(userProcessType.flag)](\(tweet.author.id))@\(tweet.author.name ?? "<nil>") ~> \(tweetPreview)"
+            let message = "\(indent)[\(tweetProcessType.flag)\(recordType.flag)](\(tweet.id)) [\(userProcessType.flag)](\(tweet.author.id))@\(tweet.author.name) ~> \(tweetPreview)"
             
             var childrenMessages: [String] = []
             for child in children {
@@ -385,7 +419,7 @@ extension APIService.Persist {
             )
             
             switch (result.tweetProcessType, recordType) {
-            case (.create, .timeline), (.merge, .timeline):
+            case (.create, .homeTimeline), (.merge, .homeTimeline):
                 let timelineIndex = tweet.timelineIndexes?
                     .first { $0.userID == requestTwitterUserID }
                 if timelineIndex == nil {
@@ -394,7 +428,18 @@ extension APIService.Persist {
                     // make it indexed
                     tweet.mutableSetValue(forKey: #keyPath(Tweet.timelineIndexes)).add(timelineIndex)
                 } else {
-                    // enity already in timeline
+                    // enity already in home timeline
+                }
+            case (.create, .mentionTimeline), (.merge, .mentionTimeline):
+                let mentionTimelineIndex = tweet.mentionTimelineIndexes?
+                    .first { $0.userID == requestTwitterUserID }
+                if mentionTimelineIndex == nil {
+                    let mentionTimelineIndexProperty = MentionTimelineIndex.Property(userID: requestTwitterUserID, platform: .twitter, createdAt: entity.createdAt)
+                    let mentionTimelineIndex = MentionTimelineIndex.insert(into: managedObjectContext, property: mentionTimelineIndexProperty)
+                    // make it indexed
+                    tweet.mutableSetValue(forKey: #keyPath(Tweet.mentionTimelineIndexes)).add(mentionTimelineIndex)
+                } else {
+                    // enity already in mention timeline
                 }
             default:
                 break

@@ -16,7 +16,7 @@ extension Twitter.API.Statuses {
     
     public static func update(session: URLSession, authorization: Twitter.API.OAuth.Authorization, query: UpdateQuery) -> AnyPublisher<Twitter.Response.Content<Twitter.Entity.Tweet>, Error> {
         let url = updateEndpointURL
-        var request = Twitter.API.request(url: url, httpMethod: "POST", authorization: authorization, queryItems: query.queryItems)
+        var request = Twitter.API.request(url: url, httpMethod: "POST", authorization: authorization, queryItems: query.queryItems, encodedQueryItems: query.encodedQueryItems)
         request.httpMethod = "POST"
         return session.dataTaskPublisher(for: request)
             .tryMap { data, response in
@@ -68,13 +68,19 @@ extension Twitter.API.Statuses {
         
         var queryItems: [URLQueryItem]? {
             var items: [URLQueryItem] = []
-            items.append(URLQueryItem(name: "status", value: status))
             inReplyToStatusID.flatMap { items.append(URLQueryItem(name: "in_reply_to_status_id", value: $0)) }
             autoPopulateReplyMetadata.flatMap { items.append(URLQueryItem(name: "auto_populate_reply_metadata", value: $0 ? "true" : "false")) }
             mediaIDs.flatMap { items.append(URLQueryItem(name: "media_ids", value: $0)) }
             latitude.flatMap { items.append(URLQueryItem(name: "lat", value: String($0))) }
             longitude.flatMap { items.append(URLQueryItem(name: "long", value: String($0))) }
             placeID.flatMap { items.append(URLQueryItem(name: "place_id", value: $0)) }
+            guard !items.isEmpty else { return nil }
+            return items
+        }
+        
+        var encodedQueryItems: [URLQueryItem]? {
+            var items: [URLQueryItem] = []
+            items.append(URLQueryItem(name: "status", value: status.urlEncoded))
             guard !items.isEmpty else { return nil }
             return items
         }
