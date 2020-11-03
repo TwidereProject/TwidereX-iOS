@@ -1,54 +1,44 @@
 //
-//  HomeTimelineViewModel+LoadMiddleState.swift
+//  MentionTimelineViewModel+LoadLatestState.swift
 //  TwidereX
 //
-//  Created by Cirno MainasuK on 2020-10-12.
+//  Created by Cirno MainasuK on 2020-11-3.
 //  Copyright © 2020 Twidere. All rights reserved.
 //
 
 import os.log
 import Foundation
 import GameplayKit
-import CoreData
-import CoreDataStack
 
-extension HomeTimelineViewModel {
-    class LoadMiddleState: GKState {
-        weak var viewModel: HomeTimelineViewModel?
-        let upperTimelineIndexObjectID: NSManagedObjectID
+extension MentionTimelineViewModel {
+    class LoadLatestState: GKState {
+        weak var viewModel: MentionTimelineViewModel?
         
-        init(viewModel: HomeTimelineViewModel, upperTimelineIndexObjectID: NSManagedObjectID) {
+        init(viewModel: MentionTimelineViewModel) {
             self.viewModel = viewModel
-            self.upperTimelineIndexObjectID = upperTimelineIndexObjectID
         }
         
         override func didEnter(from previousState: GKState?) {
             os_log("%{public}s[%{public}ld], %{public}s: enter %s, previous: %s", ((#file as NSString).lastPathComponent), #line, #function, self.debugDescription, previousState.debugDescription)
-            guard let viewModel = viewModel, let stateMachine = stateMachine else { return }
-            var dict = viewModel.loadMiddleSateMachineList.value
-            dict[upperTimelineIndexObjectID] = stateMachine
-            viewModel.loadMiddleSateMachineList.value = dict    // trigger value change
+            viewModel?.loadLatestStateMachinePublisher.send(self)
         }
     }
 }
 
-extension HomeTimelineViewModel.LoadMiddleState {
-    
-    class Initial: HomeTimelineViewModel.LoadMiddleState {
+extension MentionTimelineViewModel.LoadLatestState {
+    class Initial: MentionTimelineViewModel.LoadLatestState {
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {
             return stateClass == Loading.self
         }
     }
     
-    class Loading: HomeTimelineViewModel.LoadMiddleState {
+    class Loading: MentionTimelineViewModel.LoadLatestState {
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {
-            // guard let viewModel = viewModel else { return false }
-            return stateClass == Success.self || stateClass == Fail.self
+            return stateClass == Fail.self || stateClass == Idle.self
         }
         
         override func didEnter(from previousState: GKState?) {
             super.didEnter(from: previousState)
-            
             guard let viewModel = viewModel, let stateMachine = stateMachine else { return }
             guard let twitterAuthentication = viewModel.currentTwitterAuthentication.value,
                   let authorization = try? twitterAuthentication.authorization(appSecret: AppSecret.shared) else {
@@ -56,54 +46,50 @@ extension HomeTimelineViewModel.LoadMiddleState {
                 return
             }
             
-            guard let timelineIndex = (viewModel.fetchedResultsController.fetchedObjects ?? []).first(where: { $0.objectID == upperTimelineIndexObjectID }),
-                  let tweet = timelineIndex.tweet else {
-                stateMachine.enter(Fail.self)
-                return
-            }
             let tweetIDs = (viewModel.fetchedResultsController.fetchedObjects ?? []).compactMap { timelineIndex in
                 timelineIndex.tweet?.id
             }
-
+            
             // TODO: only set large count when using Wi-Fi
-            let maxID = tweet.id
-            viewModel.context.apiService.twitterHomeTimeline(count: 20, maxID: maxID, authorization: authorization, requestTwitterUserID: twitterAuthentication.userID)
+            viewModel.context.apiService.twitterMentionTimeline(count: 200, authorization: authorization, requestTwitterUserID: twitterAuthentication.userID)
                 .delay(for: .seconds(1), scheduler: DispatchQueue.main)
                 .receive(on: DispatchQueue.main)
                 .sink { completion in
                     switch completion {
                     case .failure(let error):
                         // TODO: handle error
+                        viewModel.isFetchingLatestTimeline.value = false
                         os_log("%{public}s[%{public}ld], %{public}s: fetch tweets failed. %s", ((#file as NSString).lastPathComponent), #line, #function, error.localizedDescription)
-                        stateMachine.enter(Fail.self)
                     case .finished:
+                        // handle isFetchingLatestTimeline in fetch controller delegate
                         break
                     }
+                    
+                    stateMachine.enter(Idle.self)
+                    
                 } receiveValue: { response in
+                    // stop refresher if no new tweets
                     let tweets = response.value
                     let newTweets = tweets.filter { !tweetIDs.contains($0.idStr) }
-                    os_log("%{public}s[%{public}ld], %{public}s: load %{public}ld tweets, %{public}%ld new tweets", ((#file as NSString).lastPathComponent), #line, #function, tweets.count, newTweets.count)
+                    os_log("%{public}s[%{public}ld], %{public}s: load %{public}ld new tweets", ((#file as NSString).lastPathComponent), #line, #function, newTweets.count)
+                    
                     if newTweets.isEmpty {
-                        stateMachine.enter(Fail.self)
-                    } else {
-                        stateMachine.enter(Success.self)
+                        viewModel.isFetchingLatestTimeline.value = false
                     }
                 }
                 .store(in: &viewModel.disposeBag)
         }
     }
     
-    class Fail: HomeTimelineViewModel.LoadMiddleState {
+    class Fail: MentionTimelineViewModel.LoadLatestState {
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {
-            // guard let viewModel = viewModel else { return false }
-            return stateClass == Loading.self
+            return stateClass == Loading.self || stateClass == Idle.self
         }
     }
     
-    class Success: HomeTimelineViewModel.LoadMiddleState {
+    class Idle: MentionTimelineViewModel.LoadLatestState {
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {
-            // guard let viewModel = viewModel else { return false }
-            return false
+            return stateClass == Loading.self
         }
     }
     

@@ -47,6 +47,7 @@ final public class Tweet: NSManagedObject {
     @NSManaged public private(set) var quoteFrom: Set<Tweet>?
     @NSManaged public private(set) var replyFrom: Set<Tweet>?
     @NSManaged public private(set) var timelineIndexes: Set<TimelineIndex>?
+    @NSManaged public private(set) var mentionTimelineIndexes: Set<MentionTimelineIndex>?
     @NSManaged public private(set) var media: Set<TwitterMedia>?
     
     // many-to-many relationship

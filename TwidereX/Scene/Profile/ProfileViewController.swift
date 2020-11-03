@@ -273,7 +273,7 @@ extension ProfileViewController {
         super.viewDidAppear(animated)
         
         // set overlay scroll view initial content size
-        let currentViewController = profileSegmentedViewController.pagingViewController.currentViewController as! UserTimelineViewController
+        guard let currentViewController = profileSegmentedViewController.pagingViewController.currentViewController as? CustomTableViewController else { return }
         currentPostTimelineTableViewContentSizeObservation = observeTableViewContentSize(tableView: currentViewController.tableView)
         currentViewController.tableView.panGestureRecognizer.require(toFail: overlayScrollView.panGestureRecognizer)
     }

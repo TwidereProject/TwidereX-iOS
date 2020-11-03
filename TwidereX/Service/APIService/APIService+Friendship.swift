@@ -92,40 +92,8 @@ extension APIService {
         let query = Twitter.API.Friendships.Query(
             userID: twitterUserID
         )
+        // API not return latest friendship status. not merge result
         return Twitter.API.Friendships.friendships(session: session, authorization: authorization, queryKind: friendshipQueryType, query: query)
-            .map { response -> AnyPublisher<Twitter.Response.Content<Twitter.Entity.User>, Error> in
-                let log = OSLog.api
-                
-                let entity = response.value
-                let managedObjectContext = self.backgroundManagedObjectContext
-                
-                return managedObjectContext.performChanges {
-                    let _requestTwitterUser: TwitterUser? = {
-                        let request = TwitterUser.sortedFetchRequest
-                        request.predicate = TwitterUser.predicate(idStr: requestTwitterUserID)
-                        request.fetchLimit = 1
-                        request.returnsObjectsAsFaults = false
-                        do {
-                            return try managedObjectContext.fetch(request).first
-                        } catch {
-                            assertionFailure(error.localizedDescription)
-                            return nil
-                        }
-                    }()
-                    
-                    guard let requestTwitterUser = _requestTwitterUser else {
-                        assertionFailure()
-                        return
-                    }
-
-                    // API not return latest friendship status. not merge result
-                }
-                .map { _ in return response }
-                .replaceError(with: response)
-                .setFailureType(to: Error.self)
-                .eraseToAnyPublisher()
-            }
-            .switchToLatest()
             .eraseToAnyPublisher()
     }
     

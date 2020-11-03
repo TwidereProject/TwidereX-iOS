@@ -11,7 +11,6 @@ extension Twitter.API {
     
     public static let endpointURL = URL(string: "https://api.twitter.com/1.1/")!
     public static let endpointV2URL = URL(string: "https://api.twitter.com/2/")!
-    
     public static let uploadEndpointURL = URL(string: "https://upload.twitter.com/1.1/")!
     
     public static let timeoutInterval: TimeInterval = 10
@@ -41,6 +40,7 @@ extension Twitter.API {
         public enum Lookup { }
         public enum RecentSearch { }        
     }
+    
 }
 
 extension Twitter.API {
@@ -121,9 +121,12 @@ extension Twitter.API {
         }
     }
     
-    static func request(url: URL, httpMethod: String, authorization: Twitter.API.OAuth.Authorization, queryItems: [URLQueryItem]?, formQueryItems: [URLQueryItem]? = nil) -> URLRequest {
+    static func request(url: URL, httpMethod: String, authorization: Twitter.API.OAuth.Authorization, queryItems: [URLQueryItem]? = nil, encodedQueryItems: [URLQueryItem]? = nil, formQueryItems: [URLQueryItem]? = nil) -> URLRequest {
         var components = URLComponents(string: url.absoluteString)!
         components.queryItems = queryItems
+        if let encodedQueryItems = encodedQueryItems {
+            components.percentEncodedQueryItems = (components.percentEncodedQueryItems ?? []) + encodedQueryItems
+        }
         let requestURL = components.url!
         var request = URLRequest(
             url: requestURL,

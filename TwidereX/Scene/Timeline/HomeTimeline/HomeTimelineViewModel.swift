@@ -99,18 +99,18 @@ extension HomeTimelineViewModel {
             guard let self = self else { return nil }
             
             switch item {
-            case .homeTimelineIndex(let objectID, let expandStatus):
+            case .homeTimelineIndex(let objectID, let attribute):
                 let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: TimelinePostTableViewCell.self), for: indexPath) as! TimelinePostTableViewCell
                 
                 // configure cell
                 let managedObjectContext = self.fetchedResultsController.managedObjectContext
                 managedObjectContext.performAndWait {
                     let timelineIndex = managedObjectContext.object(with: objectID) as! TimelineIndex
-                    HomeTimelineViewModel.configure(cell: cell, timelineIndex: timelineIndex, attribute: expandStatus)
+                    HomeTimelineViewModel.configure(cell: cell, timelineIndex: timelineIndex, attribute: attribute)
                 }
                 cell.delegate = self.timelinePostTableViewCellDelegate
                 return cell
-            case .homeTimelineMiddleLoader(let upperTimelineIndexObjectID):
+            case .timelineMiddleLoader(let upperTimelineIndexObjectID):
                 let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: TimelineMiddleLoaderTableViewCell.self), for: indexPath) as! TimelineMiddleLoaderTableViewCell
                 self.loadMiddleSateMachineList
                     .receive(on: DispatchQueue.main)
@@ -469,7 +469,7 @@ extension HomeTimelineViewModel: NSFetchedResultsControllerDelegate {
                     attribute.separatorLineStyle = .normal
                 case (false, true):
                     attribute.separatorLineStyle = .expand
-                    newTimelineItems.append(.homeTimelineMiddleLoader(upperTimelineIndexAnchorObjectID: timelineIndex.objectID))
+                    newTimelineItems.append(.timelineMiddleLoader(upperTimelineIndexAnchorObjectID: timelineIndex.objectID))
                 case (true, true):
                     attribute.separatorLineStyle = .normal
                     shouldAddBottomLoader = true

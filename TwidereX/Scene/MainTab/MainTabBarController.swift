@@ -15,12 +15,14 @@ class MainTabBarController: UITabBarController {
     
     enum Tab: Int, CaseIterable {
         case timeline
+        case mention
         case search
         case me
         
         var title: String {
             switch self {
             case .timeline:     return "Timeline"
+            case .mention:      return "Mention"
             case .search:       return "Search"
             case .me:           return "Me"
             }
@@ -29,6 +31,7 @@ class MainTabBarController: UITabBarController {
         var image: UIImage {
             switch self {
             case .timeline:     return Asset.ObjectTools.house.image.withRenderingMode(.alwaysTemplate)
+            case .mention:      return Asset.Communication.ellipsesBubble.image.withRenderingMode(.alwaysTemplate)
             case .search:       return Asset.ObjectTools.magnifyingglass.image.withRenderingMode(.alwaysTemplate)
             case .me:           return Asset.Human.person.image.withRenderingMode(.alwaysTemplate)
             }
@@ -39,6 +42,11 @@ class MainTabBarController: UITabBarController {
             switch self {
             case .timeline:
                 let _viewController = HomeTimelineViewController()
+                _viewController.context = context
+                _viewController.coordinator = coordinator
+                viewController = _viewController
+            case .mention:
+                let _viewController = MentionTimelineViewController()
                 _viewController.context = context
                 _viewController.coordinator = coordinator
                 viewController = _viewController
@@ -82,8 +90,9 @@ extension MainTabBarController {
         
         let viewControllers: [UIViewController] = tabs.map { tab in
             let viewController = tab.viewController(context: context, coordinator: coordinator)
-            viewController.tabBarItem.title = tab.title
+            viewController.tabBarItem.title = nil // set text to nil for image only style
             viewController.tabBarItem.image = tab.image
+            viewController.tabBarItem.imageInsets = UIEdgeInsets(top: 5, left: 0, bottom: -5, right: 0)
             return viewController
         }
         setViewControllers(viewControllers, animated: false)
