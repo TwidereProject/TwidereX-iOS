@@ -119,7 +119,7 @@ extension Tweet {
 //        self.coordinates = coordinates
 //    }
 //
-//    // always update scrub-able attribute
+    // always update scrub-able attribute
     public func update(place: TwitterPlace?) {
         self.place = place
     }

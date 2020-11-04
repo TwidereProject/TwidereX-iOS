@@ -42,7 +42,7 @@ extension UserTimelineViewModel.State {
             super.didEnter(from: previousState)
             guard let viewModel = viewModel, let stateMachine = stateMachine else { return }
             
-            var snapshot = NSDiffableDataSourceSnapshot<TimelineSection, TimelineItem>()
+            var snapshot = NSDiffableDataSourceSnapshot<TimelineSection, Item>()
             snapshot.appendSections([.main])
             snapshot.appendItems([.bottomLoader], toSection: .main)
             viewModel.diffableDataSource?.apply(snapshot)

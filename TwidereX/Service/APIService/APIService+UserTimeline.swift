@@ -18,10 +18,11 @@ extension APIService {
         count: Int = 200,
         userID: String,
         maxID: String? = nil,
+        excludeReplies: Bool = false,
         authorization: Twitter.API.OAuth.Authorization,
         requestTwitterUserID: TwitterUser.ID
     ) -> AnyPublisher<Twitter.Response.Content<[Twitter.Entity.Tweet]>, Error> {
-        let query = Twitter.API.Timeline.Query(count: count, userID: userID, maxID: maxID, excludeReplies: false)
+        let query = Twitter.API.Timeline.Query(count: count, userID: userID, maxID: maxID, excludeReplies: excludeReplies)
         return Twitter.API.Timeline.userTimeline(session: session, authorization: authorization, query: query)
             .map { response -> AnyPublisher<Twitter.Response.Content<[Twitter.Entity.Tweet]>, Error> in
                 let log = OSLog.api

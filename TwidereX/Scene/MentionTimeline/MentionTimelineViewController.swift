@@ -593,7 +593,7 @@ extension MentionTimelineViewController: TimelineMiddleLoaderTableViewCellDelega
         guard let item = diffableDataSource.itemIdentifier(for: indexPath) else { return }
 
         switch item {
-        case .timelineMiddleLoader(let upper):
+        case .middleLoader(let upper):
             guard let stateMachine = viewModel.loadMiddleSateMachineList.value[upper] else {
                 assertionFailure()
                 return

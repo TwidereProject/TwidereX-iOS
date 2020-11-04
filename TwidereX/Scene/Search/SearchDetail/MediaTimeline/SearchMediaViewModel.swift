@@ -1,8 +1,8 @@
 //
-//  SearchUserViewModel.swift
+//  SearchMediaViewModel.swift
 //  TwidereX
 //
-//  Created by Cirno MainasuK on 2020-10-30.
+//  Created by Cirno MainasuK on 2020-10-29.
 //  Copyright © 2020 Twidere. All rights reserved.
 //
 
@@ -14,18 +14,17 @@ import CoreDataStack
 import GameplayKit
 import TwitterAPI
 
-final class SearchUserViewModel: NSObject {
+final class SearchMediaViewModel: NSObject {
     
     var disposeBag = Set<AnyCancellable>()
     
     // input
     let context: AppContext
-    let fetchedResultsController: NSFetchedResultsController<TwitterUser>
+    let fetchedResultsController: NSFetchedResultsController<Tweet>
     let currentTwitterAuthentication: CurrentValueSubject<TwitterAuthentication?, Never>
-    let searchTwitterUserIDs = CurrentValueSubject<[Twitter.Entity.V2.User.ID], Never>([])
+    let searchMediaTweetIDs = CurrentValueSubject<[Twitter.Entity.Tweet.ID], Never>([])
     let searchText = CurrentValueSubject<String, Never>("")
     let searchActionPublisher = PassthroughSubject<Void, Never>()
-    weak var userBriefInfoTableViewCellDelegate: UserBriefInfoTableViewCellDelegate?
     
     // output
     private(set) lazy var stateMachine: GKStateMachine = {
@@ -40,14 +39,14 @@ final class SearchUserViewModel: NSObject {
         return stateMachine
     }()
     lazy var stateMachinePublisher = CurrentValueSubject<State, Never>(State.Initial(viewModel: self))
-    var diffableDataSource: UITableViewDiffableDataSource<Section, Item>!
+    var diffableDataSource: UICollectionViewDiffableDataSource<MediaSection, Item>!
     let items = CurrentValueSubject<[Item], Never>([])
-
+    
     init(context: AppContext) {
         self.context = context
         self.fetchedResultsController = {
-            let fetchRequest = TwitterUser.sortedFetchRequest
-            fetchRequest.predicate = TwitterUser.predicate(idStrs: [])
+            let fetchRequest = Tweet.sortedFetchRequest
+            fetchRequest.predicate = Tweet.predicate(idStrs: [])
             fetchRequest.returnsObjectsAsFaults = false
             fetchRequest.fetchBatchSize = 20
             let controller = NSFetchedResultsController(
@@ -74,7 +73,7 @@ final class SearchUserViewModel: NSObject {
             guard let self = self else { return }
             os_log("%{public}s[%{public}ld], %{public}s: state did change", ((#file as NSString).lastPathComponent), #line, #function)
             
-            var snapshot = NSDiffableDataSourceSnapshot<Section, Item>()
+            var snapshot = NSDiffableDataSourceSnapshot<MediaSection, Item>()
             snapshot.appendSections([.main])
             snapshot.appendItems(items)
             switch self.stateMachine.currentState {
@@ -84,7 +83,8 @@ final class SearchUserViewModel: NSObject {
             case is State.Initial, is State.NoMore:
                 break
             case is State.Idle, is State.Loading:
-                snapshot.appendItems([.bottomLoader], toSection: .main)
+                snapshot.appendSections([.loader])
+                snapshot.appendItems([.bottomLoader], toSection: .loader)
             default:
                 assertionFailure()
             }
@@ -93,11 +93,11 @@ final class SearchUserViewModel: NSObject {
         }
         .store(in: &disposeBag)
         
-        searchTwitterUserIDs
+        searchMediaTweetIDs
             .receive(on: DispatchQueue.main)
             .sink { [weak self] ids in
                 guard let self = self else { return }
-                self.fetchedResultsController.fetchRequest.predicate = TwitterUser.predicate(idStrs: ids)
+                self.fetchedResultsController.fetchRequest.predicate = Tweet.predicate(idStrs: ids)
                 do {
                     try self.fetchedResultsController.performFetch()
                 } catch {
@@ -117,22 +117,10 @@ final class SearchUserViewModel: NSObject {
     
 }
 
-
-// MARK: - NSFetchedResultsControllerDelegate
-extension SearchUserViewModel: NSFetchedResultsControllerDelegate {
-    func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChangeContentWith snapshot: NSDiffableDataSourceSnapshotReference) {
-        os_log("%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
-        
-        let indexes = searchTwitterUserIDs.value
-        let twitterUsers = fetchedResultsController.fetchedObjects ?? []
-        guard twitterUsers.count == indexes.count else { return }
-        
-        let items: [Item] = twitterUsers
-            .compactMap { twitterUser in
-                indexes.firstIndex(of: twitterUser.id).map { index in (index, twitterUser) }
-            }
-            .sorted { $0.0 < $1.0 }
-            .map { Item.user(twitterUserObjectID: $0.1.objectID) }
-        self.items.value = items
+extension SearchMediaViewModel {
+    enum SearchMediaError: Swift.Error {
+        case invalidAuthorization
+        case invalidSearchText
+        case invalidAnchorToLoadMore
     }
 }

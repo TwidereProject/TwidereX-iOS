@@ -15,7 +15,7 @@ import GameplayKit
 extension MentionTimelineViewModel {
     
     func setupDiffableDataSource(for tableView: UITableView) {
-        diffableDataSource = UITableViewDiffableDataSource<TimelineSection, TimelineItem>(tableView: tableView) { [weak self] tableView, indexPath, item -> UITableViewCell? in
+        diffableDataSource = UITableViewDiffableDataSource<TimelineSection, Item>(tableView: tableView) { [weak self] tableView, indexPath, item -> UITableViewCell? in
             guard let self = self else { return nil }
             
             switch item {
@@ -30,7 +30,7 @@ extension MentionTimelineViewModel {
                 }
                 cell.delegate = self.timelinePostTableViewCellDelegate
                 return cell
-            case .timelineMiddleLoader(let upperTimelineIndexObjectID):
+            case .middleLoader(let upperTimelineIndexObjectID):
                 let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: TimelineMiddleLoaderTableViewCell.self), for: indexPath) as! TimelineMiddleLoaderTableViewCell
                 self.loadMiddleSateMachineList
                     .receive(on: DispatchQueue.main)
@@ -82,14 +82,14 @@ extension MentionTimelineViewModel {
         }
     }
     
-    static func configure(cell: TimelinePostTableViewCell, mentionTimelineIndex: MentionTimelineIndex, attribute: TimelineItem.Attribute) {
+    static func configure(cell: TimelinePostTableViewCell, mentionTimelineIndex: MentionTimelineIndex, attribute: Item.Attribute) {
         if let tweet = mentionTimelineIndex.tweet {
             HomeTimelineViewModel.configure(cell: cell, tweet: tweet, requestUserID: mentionTimelineIndex.userID)
             internalConfigure(cell: cell, tweet: tweet, attribute: attribute)
         }
     }
  
-    private static func internalConfigure(cell: TimelinePostTableViewCell, tweet: Tweet, attribute: TimelineItem.Attribute) {
+    private static func internalConfigure(cell: TimelinePostTableViewCell, tweet: Tweet, attribute: Item.Attribute) {
         // tweet date updater
         let createdAt = (tweet.retweet ?? tweet).createdAt
         NotificationCenter.default.publisher(for: MentionTimelineViewModel.secondStepTimerTriggered, object: nil)
@@ -175,18 +175,18 @@ extension MentionTimelineViewModel: NSFetchedResultsControllerDelegate {
             let endFetch = CACurrentMediaTime()
             os_log("%{public}s[%{public}ld], %{public}s: fetch mentionTimelineIndexes cost %.2fs", ((#file as NSString).lastPathComponent), #line, #function, endFetch - start)
             
-            var oldSnapshotAttributeDict: [NSManagedObjectID : TimelineItem.Attribute] = [:]
+            var oldSnapshotAttributeDict: [NSManagedObjectID : Item.Attribute] = [:]
             for item in oldSnapshot.itemIdentifiers {
                 guard case let .mentionTimelineIndex(objectID, attribute) = item else { continue }
                 oldSnapshotAttributeDict[objectID] = attribute
             }
             let endPrepareCache = CACurrentMediaTime()
             
-            var newTimelineItems: [TimelineItem] = []
+            var newTimelineItems: [Item] = []
             
             os_log("%{public}s[%{public}ld], %{public}s: prepare timelineIndex cache cost %.2fs", ((#file as NSString).lastPathComponent), #line, #function, endPrepareCache - endFetch)
             for (i, mentionTimelineIndex) in mentionTimelineIndexes.enumerated() {
-                let attribute = oldSnapshotAttributeDict[mentionTimelineIndex.objectID] ?? TimelineItem.Attribute()
+                let attribute = oldSnapshotAttributeDict[mentionTimelineIndex.objectID] ?? Item.Attribute()
                 
                 // append new item into snapshot
                 newTimelineItems.append(.mentionTimelineIndex(objectID: mentionTimelineIndex.objectID, attribute: attribute))
@@ -197,7 +197,7 @@ extension MentionTimelineViewModel: NSFetchedResultsControllerDelegate {
                     attribute.separatorLineStyle = .normal
                 case (false, true):
                     attribute.separatorLineStyle = .expand
-                    newTimelineItems.append(.timelineMiddleLoader(upperTimelineIndexAnchorObjectID: mentionTimelineIndex.objectID))
+                    newTimelineItems.append(.middleLoader(upperTimelineIndexAnchorObjectID: mentionTimelineIndex.objectID))
                 case (true, true):
                     attribute.separatorLineStyle = .normal
                     shouldAddBottomLoader = true
@@ -206,7 +206,7 @@ extension MentionTimelineViewModel: NSFetchedResultsControllerDelegate {
                 }
             }   // end for
             
-            var newSnapshot = NSDiffableDataSourceSnapshot<TimelineSection, TimelineItem>()
+            var newSnapshot = NSDiffableDataSourceSnapshot<TimelineSection, Item>()
             newSnapshot.appendSections([.main])
             newSnapshot.appendItems(newTimelineItems, toSection: .main)
             

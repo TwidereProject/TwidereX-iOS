@@ -30,10 +30,10 @@ extension ActivityIndicatorCollectionViewCell {
         activityIndicatorView.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(activityIndicatorView)
         NSLayoutConstraint.activate([
-            activityIndicatorView.topAnchor.constraint(equalTo: contentView.topAnchor),
+            activityIndicatorView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 8),
             activityIndicatorView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
             activityIndicatorView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
-            activityIndicatorView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
+            contentView.bottomAnchor.constraint(equalTo: activityIndicatorView.bottomAnchor, constant: 16),
         ])
         
         activityIndicatorView.hidesWhenStopped = true

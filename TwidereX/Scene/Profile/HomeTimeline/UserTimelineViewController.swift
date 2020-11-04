@@ -10,7 +10,7 @@ import UIKit
 import Combine
 import CoreDataStack
 
-final class UserTimelineViewController: UIViewController, CustomTableViewController, NeedsDependency {
+final class UserTimelineViewController: UIViewController, NeedsDependency {
     
     weak var context: AppContext! { willSet { precondition(!isViewLoaded) } }
     weak var coordinator: SceneCoordinator! { willSet { precondition(!isViewLoaded) } }
@@ -59,6 +59,7 @@ extension UserTimelineViewController {
         tableView.delegate = self
         tableView.dataSource = viewModel.diffableDataSource
         
+        // trigger user timeline loading
         viewModel.userID
             .removeDuplicates()
             .sink { [weak self] _ in
@@ -122,7 +123,7 @@ extension UserTimelineViewController: UITableViewDelegate {
         guard let item = diffableDataSource.itemIdentifier(for: indexPath) else { return }
         
         switch item {
-        case .userTimelineItem(let objectID):
+        case .tweet(let objectID):
             let managedObjectContext = self.viewModel.fetchedResultsController.managedObjectContext
             managedObjectContext.performAndWait {
                 guard let tweet = managedObjectContext.object(with: objectID) as? Tweet else { return }
@@ -154,7 +155,7 @@ extension UserTimelineViewController: TimelinePostTableViewCellDelegate {
         guard let item = diffableDataSource.itemIdentifier(for: indexPath) else { return }
         
         switch item {
-        case .userTimelineItem(let objectID):
+        case .tweet(let objectID):
             viewModel.fetchedResultsController.managedObjectContext.performAndWait {
                 guard let tweet = viewModel.fetchedResultsController.managedObjectContext.object(with: objectID) as? Tweet else { return }
                 DispatchQueue.main.async { [weak self] in
@@ -176,7 +177,7 @@ extension UserTimelineViewController: TimelinePostTableViewCellDelegate {
         guard let item = diffableDataSource.itemIdentifier(for: indexPath) else { return }
         
         switch item {
-        case .userTimelineItem(let objectID):
+        case .tweet(let objectID):
             viewModel.fetchedResultsController.managedObjectContext.performAndWait {
                 guard let tweet = viewModel.fetchedResultsController.managedObjectContext.object(with: objectID) as? Tweet else { return }
                 let targetTweet = tweet.retweet ?? tweet
@@ -199,7 +200,7 @@ extension UserTimelineViewController: TimelinePostTableViewCellDelegate {
         guard let item = diffableDataSource.itemIdentifier(for: indexPath) else { return }
         
         switch item {
-        case .userTimelineItem(let objectID):
+        case .tweet(let objectID):
             viewModel.fetchedResultsController.managedObjectContext.performAndWait {
                 guard let tweet = viewModel.fetchedResultsController.managedObjectContext.object(with: objectID) as? Tweet else { return }
                 guard let targetTweet = tweet.retweet?.quote ?? tweet.quote else { return }
@@ -234,4 +235,11 @@ extension UserTimelineViewController: TimelinePostTableViewCellDelegate {
         // TODO:
     }
     
+}
+
+// MARK: - CustomScrollViewContainerController
+extension UserTimelineViewController: CustomScrollViewContainerController {
+    var scrollView: UIScrollView {
+        return tableView
+    }
 }

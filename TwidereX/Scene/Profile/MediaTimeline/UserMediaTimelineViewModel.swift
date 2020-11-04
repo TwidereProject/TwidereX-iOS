@@ -1,8 +1,8 @@
 //
-//  SearchMediaViewModel.swift
+//  UserMediaTimelineViewModel.swift
 //  TwidereX
 //
-//  Created by Cirno MainasuK on 2020-10-29.
+//  Created by Cirno MainasuK on 2020-11-4.
 //  Copyright © 2020 Twidere. All rights reserved.
 //
 
@@ -14,7 +14,7 @@ import CoreDataStack
 import GameplayKit
 import TwitterAPI
 
-final class SearchMediaViewModel: NSObject {
+final class UserMediaTimelineViewModel: NSObject {
     
     var disposeBag = Set<AnyCancellable>()
     
@@ -22,27 +22,27 @@ final class SearchMediaViewModel: NSObject {
     let context: AppContext
     let fetchedResultsController: NSFetchedResultsController<Tweet>
     let currentTwitterAuthentication: CurrentValueSubject<TwitterAuthentication?, Never>
-    let searchMediaTweetIDs = CurrentValueSubject<[Twitter.Entity.Tweet.ID], Never>([])
-    let searchText = CurrentValueSubject<String, Never>("")
-    let searchActionPublisher = PassthroughSubject<Void, Never>()
+    let userID: CurrentValueSubject<String?, Never>
     
     // output
     private(set) lazy var stateMachine: GKStateMachine = {
         let stateMachine = GKStateMachine(states: [
             State.Initial(viewModel: self),
+            State.Reloading(viewModel: self),
             State.Idle(viewModel: self),
-            State.Loading(viewModel: self),
             State.Fail(viewModel: self),
+            State.LoadingMore(viewModel: self),
             State.NoMore(viewModel: self),
         ])
         stateMachine.enter(State.Initial.self)
         return stateMachine
     }()
     lazy var stateMachinePublisher = CurrentValueSubject<State, Never>(State.Initial(viewModel: self))
-    var diffableDataSource: UICollectionViewDiffableDataSource<SearchMediaSection, SearchMediaItem>!
-    let items = CurrentValueSubject<[SearchMediaItem], Never>([])
+    var diffableDataSource: UICollectionViewDiffableDataSource<MediaSection, Item>!
+    let tweetIDs = CurrentValueSubject<[Twitter.Entity.Tweet.ID], Never>([])
+    let items = CurrentValueSubject<[Item], Never>([])
     
-    init(context: AppContext) {
+    init(context: AppContext, userID: String?) {
         self.context = context
         self.fetchedResultsController = {
             let fetchRequest = Tweet.sortedFetchRequest
@@ -58,6 +58,7 @@ final class SearchMediaViewModel: NSObject {
             
             return controller
         }()
+        self.userID = CurrentValueSubject(userID)
         self.currentTwitterAuthentication = CurrentValueSubject(context.authenticationService.currentActiveTwitterAutentication.value)
         super.init()
         
@@ -67,33 +68,33 @@ final class SearchMediaViewModel: NSObject {
             items.eraseToAnyPublisher(),
             stateMachinePublisher.eraseToAnyPublisher()
         )
-        .throttle(for: .seconds(1), scheduler: DispatchQueue.main, latest: true)
+        .debounce(for: .seconds(1), scheduler: DispatchQueue.main)
         .receive(on: DispatchQueue.main)
         .sink { [weak self] items, state in
             guard let self = self else { return }
             os_log("%{public}s[%{public}ld], %{public}s: state did change", ((#file as NSString).lastPathComponent), #line, #function)
-            
-            var snapshot = NSDiffableDataSourceSnapshot<SearchMediaSection, SearchMediaItem>()
+
+            var snapshot = NSDiffableDataSourceSnapshot<MediaSection, Item>()
             snapshot.appendSections([.main])
-            snapshot.appendItems(items)
+            snapshot.appendItems(items, toSection: .main)
             switch self.stateMachine.currentState {
             case is State.Fail:
                 // TODO:
                 break
             case is State.Initial, is State.NoMore:
                 break
-            case is State.Idle, is State.Loading:
+            case is State.Idle, is State.Reloading, is State.LoadingMore:
                 snapshot.appendSections([.loader])
                 snapshot.appendItems([.bottomLoader], toSection: .loader)
             default:
                 assertionFailure()
             }
-            
+
             self.diffableDataSource?.apply(snapshot, animatingDifferences: true)
         }
         .store(in: &disposeBag)
-        
-        searchMediaTweetIDs
+
+        tweetIDs
             .receive(on: DispatchQueue.main)
             .sink { [weak self] ids in
                 guard let self = self else { return }
@@ -105,55 +106,43 @@ final class SearchMediaViewModel: NSObject {
                 }
             }
             .store(in: &disposeBag)
-        
-        searchActionPublisher
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] _ in
-                guard let self = self else { return }
-                self.stateMachine.enter(State.Loading.self)
-            }
-            .store(in: &disposeBag)
     }
     
 }
 
-// MARK: - NSFetchedResultsControllerDelegate
-extension SearchMediaViewModel: NSFetchedResultsControllerDelegate {
-    func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChangeContentWith snapshot: NSDiffableDataSourceSnapshotReference) {
-        os_log("%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
-        
-        guard diffableDataSource != nil else { return }
-        let oldSnapshot = diffableDataSource.snapshot()
-        
-        var oldSnapshotAttributeDict: [NSManagedObjectID : SearchMediaItem.PhotoAttribute] = [:]
-        for item in oldSnapshot.itemIdentifiers {
-            guard case let .photo(objectID, attribute) = item else { continue }
-            oldSnapshotAttributeDict[objectID] = attribute
-        }
-        
-        // let snapshot = snapshot as NSDiffableDataSourceSnapshot<String, NSManagedObjectID>
-        // guard snapshot.numberOfItems == searchMediaTweetIDs.value.count else { return }
-        let tweets = fetchedResultsController.fetchedObjects ?? []
-        guard tweets.count == searchMediaTweetIDs.value.count else { return }
-        
-        var items: [SearchMediaItem] = []
-        for tweet in tweets {
-            let mediaArray = Array(tweet.media ?? Set())
-            let photoMedia = mediaArray.filter { $0.type == "photo" }
-            guard !photoMedia.isEmpty else { continue }
-            let attribute = oldSnapshotAttributeDict[tweet.objectID] ?? SearchMediaItem.PhotoAttribute(index: 0)
-            let item = SearchMediaItem.photo(tweetObjectID: tweet.objectID, attribute: attribute)
-            items.append(item)
-        }
-        
-        self.items.value = items
-    }
-}
-
-extension SearchMediaViewModel {
-    enum SearchMediaError: Swift.Error {
+extension UserMediaTimelineViewModel {
+    
+    enum UserTimelineError: Swift.Error {
         case invalidAuthorization
-        case invalidSearchText
+        case invalidUserID
         case invalidAnchorToLoadMore
     }
+    
+    func fetchLatest() -> AnyPublisher<Twitter.Response.Content<[Twitter.Entity.Tweet]>, Error> {
+        guard let authentication = currentTwitterAuthentication.value,
+              let authorization = try? authentication.authorization(appSecret: .shared) else {
+            return Fail(error: UserTimelineError.invalidAuthorization).eraseToAnyPublisher()
+        }
+        guard let userID = self.userID.value, !userID.isEmpty else {
+            return Fail(error: UserTimelineError.invalidUserID).eraseToAnyPublisher()
+        }
+        
+        return context.apiService.twitterUserTimeline(count: 200, userID: userID, excludeReplies: true, authorization: authorization, requestTwitterUserID: authentication.userID)
+    }
+    
+    func loadMore() -> AnyPublisher<Twitter.Response.Content<[Twitter.Entity.Tweet]>, Error> {
+        guard let authentication = currentTwitterAuthentication.value,
+              let authorization = try? authentication.authorization(appSecret: .shared) else {
+            return Fail(error: UserTimelineError.invalidAuthorization).eraseToAnyPublisher()
+        }
+        guard let userID = self.userID.value, !userID.isEmpty else {
+            return Fail(error: UserTimelineError.invalidUserID).eraseToAnyPublisher()
+        }
+        guard let maxID = tweetIDs.value.last else {
+            return Fail(error: UserTimelineError.invalidAnchorToLoadMore).eraseToAnyPublisher()
+        }
+        
+        return context.apiService.twitterUserTimeline(count: 200, userID: userID, maxID: maxID, excludeReplies: true, authorization: authorization, requestTwitterUserID: authentication.userID)
+    }
+    
 }

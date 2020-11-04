@@ -21,7 +21,7 @@ final class SearchMediaViewController: UIViewController, NeedsDependency {
     var viewModel: SearchMediaViewModel!
 
     private lazy var collectionView: UICollectionView = {
-        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: createCollectionViewLayout())
+        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: SearchMediaViewController.createCollectionViewLayout())
         collectionView.register(SearchMediaCollectionViewCell.self, forCellWithReuseIdentifier: String(describing: SearchMediaCollectionViewCell.self))
         collectionView.register(ActivityIndicatorCollectionViewCell.self, forCellWithReuseIdentifier: String(describing: ActivityIndicatorCollectionViewCell.self))
         return collectionView
@@ -56,10 +56,10 @@ extension SearchMediaViewController {
 
 extension SearchMediaViewController {
     
-    private func createCollectionViewLayout() -> UICollectionViewCompositionalLayout {
+    static func createCollectionViewLayout() -> UICollectionViewCompositionalLayout {
         let layout = UICollectionViewCompositionalLayout { sectionIndex, layoutEnvironment -> NSCollectionLayoutSection? in
             switch sectionIndex {
-            case SearchMediaViewModel.SearchMediaSection.main.rawValue:
+            case MediaSection.main.rawValue:
                 let columnCount: CGFloat = round(max(1.0, layoutEnvironment.container.effectiveContentSize.width / 200.0))
                 let item = NSCollectionLayoutItem(
                     layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0 / columnCount),
@@ -82,7 +82,7 @@ extension SearchMediaViewController {
                     section.contentInsets.trailing = 16
                 }
                 return section
-            case SearchMediaViewModel.SearchMediaSection.loader.rawValue:
+            case MediaSection.loader.rawValue:
                 let item = NSCollectionLayoutItem(
                     layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0),
                                                        heightDimension: .fractionalHeight(1.0)))
@@ -134,7 +134,7 @@ extension SearchMediaViewController: UICollectionViewDelegate {
         guard let diffableDataSource = viewModel.diffableDataSource else { return }
         let item = diffableDataSource.itemIdentifier(for: indexPath)
         switch item {
-        case .photo(let objectID, let attribute):
+        case .photoTweet(let objectID, let attribute):
             let managedObjectContext = self.viewModel.fetchedResultsController.managedObjectContext
             managedObjectContext.performAndWait {
                 guard let tweet = managedObjectContext.object(with: objectID) as? Tweet else { return }

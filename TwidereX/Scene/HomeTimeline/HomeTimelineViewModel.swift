@@ -60,7 +60,7 @@ final class HomeTimelineViewModel: NSObject {
     lazy var loadOldestStateMachinePublisher = CurrentValueSubject<LoadOldestState?, Never>(nil)
     // middle loader
     let loadMiddleSateMachineList = CurrentValueSubject<[NSManagedObjectID: GKStateMachine], Never>([:])    // TimelineIndex.objectID : middle loading state machine
-    var diffableDataSource: UITableViewDiffableDataSource<TimelineSection, TimelineItem>?
+    var diffableDataSource: UITableViewDiffableDataSource<TimelineSection, Item>?
     var cellFrameCache = NSCache<NSNumber, NSValue>()
     
     init(context: AppContext) {
@@ -95,7 +95,7 @@ final class HomeTimelineViewModel: NSObject {
 extension HomeTimelineViewModel {
 
     func setupDiffableDataSource(for tableView: UITableView) {
-        diffableDataSource = UITableViewDiffableDataSource<TimelineSection, TimelineItem>(tableView: tableView) { [weak self] tableView, indexPath, item -> UITableViewCell? in
+        diffableDataSource = UITableViewDiffableDataSource<TimelineSection, Item>(tableView: tableView) { [weak self] tableView, indexPath, item -> UITableViewCell? in
             guard let self = self else { return nil }
             
             switch item {
@@ -110,7 +110,7 @@ extension HomeTimelineViewModel {
                 }
                 cell.delegate = self.timelinePostTableViewCellDelegate
                 return cell
-            case .timelineMiddleLoader(let upperTimelineIndexObjectID):
+            case .middleLoader(let upperTimelineIndexObjectID):
                 let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: TimelineMiddleLoaderTableViewCell.self), for: indexPath) as! TimelineMiddleLoaderTableViewCell
                 self.loadMiddleSateMachineList
                     .receive(on: DispatchQueue.main)
@@ -162,7 +162,7 @@ extension HomeTimelineViewModel {
         }
     }
     
-    static func configure(cell: TimelinePostTableViewCell, timelineIndex: TimelineIndex, attribute: TimelineItem.Attribute) {
+    static func configure(cell: TimelinePostTableViewCell, timelineIndex: TimelineIndex, attribute: Item.Attribute) {
         if let tweet = timelineIndex.tweet {
             configure(cell: cell, tweet: tweet, requestUserID: timelineIndex.userID)
             internalConfigure(cell: cell, tweet: tweet, attribute: attribute)
@@ -350,7 +350,7 @@ extension HomeTimelineViewModel {
 
     }
     
-    private static func internalConfigure(cell: TimelinePostTableViewCell, tweet: Tweet, attribute: TimelineItem.Attribute) {
+    private static func internalConfigure(cell: TimelinePostTableViewCell, tweet: Tweet, attribute: Item.Attribute) {
         // tweet date updater
         let createdAt = (tweet.retweet ?? tweet).createdAt
         NotificationCenter.default.publisher(for: HomeTimelineViewModel.secondStepTimerTriggered, object: nil)
@@ -448,17 +448,17 @@ extension HomeTimelineViewModel: NSFetchedResultsControllerDelegate {
             let endFetch = CACurrentMediaTime()
             os_log("%{public}s[%{public}ld], %{public}s: fetch timelineIndexes cost %.2fs", ((#file as NSString).lastPathComponent), #line, #function, endFetch - start)
             
-            var oldSnapshotAttributeDict: [NSManagedObjectID : TimelineItem.Attribute] = [:]
+            var oldSnapshotAttributeDict: [NSManagedObjectID : Item.Attribute] = [:]
             for item in oldSnapshot.itemIdentifiers {
                 guard case let .homeTimelineIndex(objectID, attribute) = item else { continue }
                 oldSnapshotAttributeDict[objectID] = attribute
             }
             let endPrepareCache = CACurrentMediaTime()
             
-            var newTimelineItems: [TimelineItem] = []
+            var newTimelineItems: [Item] = []
             os_log("%{public}s[%{public}ld], %{public}s: prepare timelineIndex cache cost %.2fs", ((#file as NSString).lastPathComponent), #line, #function, endPrepareCache - endFetch)
             for (i, timelineIndex) in timelineIndexes.enumerated() {
-                let attribute = oldSnapshotAttributeDict[timelineIndex.objectID] ?? TimelineItem.Attribute()
+                let attribute = oldSnapshotAttributeDict[timelineIndex.objectID] ?? Item.Attribute()
 
                 // append new item into snapshot
                 newTimelineItems.append(.homeTimelineIndex(objectID: timelineIndex.objectID, attribute: attribute))
@@ -469,7 +469,7 @@ extension HomeTimelineViewModel: NSFetchedResultsControllerDelegate {
                     attribute.separatorLineStyle = .normal
                 case (false, true):
                     attribute.separatorLineStyle = .expand
-                    newTimelineItems.append(.timelineMiddleLoader(upperTimelineIndexAnchorObjectID: timelineIndex.objectID))
+                    newTimelineItems.append(.middleLoader(upperTimelineIndexAnchorObjectID: timelineIndex.objectID))
                 case (true, true):
                     attribute.separatorLineStyle = .normal
                     shouldAddBottomLoader = true
@@ -478,7 +478,7 @@ extension HomeTimelineViewModel: NSFetchedResultsControllerDelegate {
                 }
             }   // end for
 
-            var newSnapshot = NSDiffableDataSourceSnapshot<TimelineSection, TimelineItem>()
+            var newSnapshot = NSDiffableDataSourceSnapshot<TimelineSection, Item>()
             newSnapshot.appendSections([.main])
             newSnapshot.appendItems(newTimelineItems, toSection: .main)
             
