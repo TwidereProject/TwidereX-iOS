@@ -38,6 +38,11 @@
 		DB3402CA2521E4AF009EFADF /* APIService+Account.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB3402C92521E4AF009EFADF /* APIService+Account.swift */; };
 		DB3402CF2521FA77009EFADF /* APIService+CoreData+Tweet.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB3402CE2521FA77009EFADF /* APIService+CoreData+Tweet.swift */; };
 		DB35C35D25146C58003DA0E9 /* ConversationPostStatusView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB35C35C25146C58003DA0E9 /* ConversationPostStatusView.swift */; };
+		DB3FC03125525BFD003A2F8A /* HomeTimelineViewModel+LoadOldestState.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB3FC03025525BFD003A2F8A /* HomeTimelineViewModel+LoadOldestState.swift */; };
+		DB3FC04025527053003A2F8A /* UserMediaTimelineViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB3FC03F25527053003A2F8A /* UserMediaTimelineViewModel.swift */; };
+		DB3FC045255270D6003A2F8A /* UserMediaTimelineViewModel+State.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB3FC044255270D6003A2F8A /* UserMediaTimelineViewModel+State.swift */; };
+		DB3FC04A2552711C003A2F8A /* UserMediaTimelineViewModel+Diffable.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB3FC0492552711C003A2F8A /* UserMediaTimelineViewModel+Diffable.swift */; };
+		DB3FC0522552742E003A2F8A /* MediaSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB3FC0512552742E003A2F8A /* MediaSection.swift */; };
 		DB41C0DB2513368800521562 /* TimelinePostActionToolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB41C0DA2513368800521562 /* TimelinePostActionToolbar.swift */; };
 		DB4323D22514936F004FAAEC /* TwidereSDK in Frameworks */ = {isa = PBXBuildFile; productRef = DB4323D12514936F004FAAEC /* TwidereSDK */; };
 		DB4323D425149374004FAAEC /* TwidereSDK in Frameworks */ = {isa = PBXBuildFile; productRef = DB4323D325149374004FAAEC /* TwidereSDK */; };
@@ -78,7 +83,7 @@
 		DB7D1248250B5C6C00999903 /* UIButton+Inset.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB7D1247250B5C6C00999903 /* UIButton+Inset.swift */; };
 		DB7D124C250F875F00999903 /* UIView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB7D124B250F875E00999903 /* UIView.swift */; };
 		DB88AC2F2508BA8C0009E562 /* TimelineSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB88AC2E2508BA8C0009E562 /* TimelineSection.swift */; };
-		DB88AC332508BACD0009E562 /* TimelineItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB88AC322508BACD0009E562 /* TimelineItem.swift */; };
+		DB88AC332508BACD0009E562 /* Items.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB88AC322508BACD0009E562 /* Items.swift */; };
 		DB88AC38250B25170009E562 /* UIViewPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB88AC35250B25170009E562 /* UIViewPreview.swift */; };
 		DB88AC3C250B26F40009E562 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DB88AC3B250B26F40009E562 /* Preview Assets.xcassets */; };
 		DB8AC0E0253EE4B400E636BE /* TwitterPoll.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB8AC0DF253EE4B400E636BE /* TwitterPoll.swift */; };
@@ -122,7 +127,7 @@
 		DB98DC0E2507862D0087E30F /* TimelineMiddleLoaderTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB98DC0D2507862D0087E30F /* TimelineMiddleLoaderTableViewCell.swift */; };
 		DB98DC10250787420087E30F /* TimelineBottomLoaderTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB98DC0F250787420087E30F /* TimelineBottomLoaderTableViewCell.swift */; };
 		DBA5B1A82510BA330077FDD5 /* TweetConversationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBA5B1A72510BA330077FDD5 /* TweetConversationViewController.swift */; };
-		DBA6B19925316800005FB0B4 /* HomeTimelineViewModel+LoadOldestState.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBA6B19825316800005FB0B4 /* HomeTimelineViewModel+LoadOldestState.swift */; };
+		DBA61AB62552596A006AC169 /* UserMediaTimelineViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBA61AB52552596A006AC169 /* UserMediaTimelineViewController.swift */; };
 		DBA6B1A425340B3F005FB0B4 /* HomeTimelineViewModel+LoadMiddleState.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBA6B1A325340B3F005FB0B4 /* HomeTimelineViewModel+LoadMiddleState.swift */; };
 		DBA6B1B725355C1E005FB0B4 /* UIAlertController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBA6B1B625355C1E005FB0B4 /* UIAlertController.swift */; };
 		DBA6B1BF2535B0BE005FB0B4 /* ControlContainableScrollViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBA6B1BE2535B0BE005FB0B4 /* ControlContainableScrollViews.swift */; };
@@ -207,8 +212,6 @@
 		DBF69EEF25498A4800E2A915 /* SearchDetailPagingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBF69EEE25498A4800E2A915 /* SearchDetailPagingViewModel.swift */; };
 		DBF69EF425498ADC00E2A915 /* SearchTimelineViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBF69EF325498ADC00E2A915 /* SearchTimelineViewController.swift */; };
 		DBF69EFA25498B1500E2A915 /* SearchTimelineViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBF69EF925498B1500E2A915 /* SearchTimelineViewModel.swift */; };
-		DBF7F2152508AE31001E8DB0 /* StubTimelineViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBF7F2142508AE31001E8DB0 /* StubTimelineViewController.swift */; };
-		DBF7F2182508AE88001E8DB0 /* StubHomeTimelineViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBF7F2172508AE88001E8DB0 /* StubHomeTimelineViewModel.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -325,6 +328,11 @@
 		DB3402C92521E4AF009EFADF /* APIService+Account.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "APIService+Account.swift"; sourceTree = "<group>"; };
 		DB3402CE2521FA77009EFADF /* APIService+CoreData+Tweet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "APIService+CoreData+Tweet.swift"; sourceTree = "<group>"; };
 		DB35C35C25146C58003DA0E9 /* ConversationPostStatusView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationPostStatusView.swift; sourceTree = "<group>"; };
+		DB3FC03025525BFD003A2F8A /* HomeTimelineViewModel+LoadOldestState.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "HomeTimelineViewModel+LoadOldestState.swift"; sourceTree = "<group>"; };
+		DB3FC03F25527053003A2F8A /* UserMediaTimelineViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserMediaTimelineViewModel.swift; sourceTree = "<group>"; };
+		DB3FC044255270D6003A2F8A /* UserMediaTimelineViewModel+State.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UserMediaTimelineViewModel+State.swift"; sourceTree = "<group>"; };
+		DB3FC0492552711C003A2F8A /* UserMediaTimelineViewModel+Diffable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UserMediaTimelineViewModel+Diffable.swift"; sourceTree = "<group>"; };
+		DB3FC0512552742E003A2F8A /* MediaSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaSection.swift; sourceTree = "<group>"; };
 		DB41C0DA2513368800521562 /* TimelinePostActionToolbar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimelinePostActionToolbar.swift; sourceTree = "<group>"; };
 		DB43239D251491EB004FAAEC /* TwidereSDK */ = {isa = PBXFileReference; lastKnownFileType = folder; path = TwidereSDK; sourceTree = "<group>"; };
 		DB434873251DEB77005B599F /* ProfileBannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileBannerView.swift; sourceTree = "<group>"; };
@@ -362,7 +370,7 @@
 		DB7D1247250B5C6C00999903 /* UIButton+Inset.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIButton+Inset.swift"; sourceTree = "<group>"; };
 		DB7D124B250F875E00999903 /* UIView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIView.swift; sourceTree = "<group>"; };
 		DB88AC2E2508BA8C0009E562 /* TimelineSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimelineSection.swift; sourceTree = "<group>"; };
-		DB88AC322508BACD0009E562 /* TimelineItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimelineItem.swift; sourceTree = "<group>"; };
+		DB88AC322508BACD0009E562 /* Items.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Items.swift; sourceTree = "<group>"; };
 		DB88AC35250B25170009E562 /* UIViewPreview.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIViewPreview.swift; sourceTree = "<group>"; };
 		DB88AC3B250B26F40009E562 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		DB8AC0DF253EE4B400E636BE /* TwitterPoll.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwitterPoll.swift; sourceTree = "<group>"; };
@@ -405,7 +413,7 @@
 		DB98DC0D2507862D0087E30F /* TimelineMiddleLoaderTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimelineMiddleLoaderTableViewCell.swift; sourceTree = "<group>"; };
 		DB98DC0F250787420087E30F /* TimelineBottomLoaderTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimelineBottomLoaderTableViewCell.swift; sourceTree = "<group>"; };
 		DBA5B1A72510BA330077FDD5 /* TweetConversationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TweetConversationViewController.swift; sourceTree = "<group>"; };
-		DBA6B19825316800005FB0B4 /* HomeTimelineViewModel+LoadOldestState.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "HomeTimelineViewModel+LoadOldestState.swift"; path = "TwidereX/Scene/Timeline/HomeTimeline/HomeTimelineViewModel+LoadOldestState.swift"; sourceTree = SOURCE_ROOT; };
+		DBA61AB52552596A006AC169 /* UserMediaTimelineViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserMediaTimelineViewController.swift; sourceTree = "<group>"; };
 		DBA6B1A325340B3F005FB0B4 /* HomeTimelineViewModel+LoadMiddleState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "HomeTimelineViewModel+LoadMiddleState.swift"; sourceTree = "<group>"; };
 		DBA6B1B625355C1E005FB0B4 /* UIAlertController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIAlertController.swift; sourceTree = "<group>"; };
 		DBA6B1BE2535B0BE005FB0B4 /* ControlContainableScrollViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControlContainableScrollViews.swift; sourceTree = "<group>"; };
@@ -496,8 +504,6 @@
 		DBF69EEE25498A4800E2A915 /* SearchDetailPagingViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchDetailPagingViewModel.swift; sourceTree = "<group>"; };
 		DBF69EF325498ADC00E2A915 /* SearchTimelineViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchTimelineViewController.swift; sourceTree = "<group>"; };
 		DBF69EF925498B1500E2A915 /* SearchTimelineViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchTimelineViewModel.swift; sourceTree = "<group>"; };
-		DBF7F2142508AE31001E8DB0 /* StubTimelineViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StubTimelineViewController.swift; sourceTree = "<group>"; };
-		DBF7F2172508AE88001E8DB0 /* StubHomeTimelineViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StubHomeTimelineViewModel.swift; sourceTree = "<group>"; };
 		F58BC0DB264850C274FDE699 /* Pods-TwidereX.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TwidereX.debug.xcconfig"; path = "Target Support Files/Pods-TwidereX/Pods-TwidereX.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -579,7 +585,7 @@
 			path = Pods;
 			sourceTree = "<group>";
 		};
-		DB10B34B254AB350002D86F3 /* Media */ = {
+		DB10B34B254AB350002D86F3 /* MediaTimeline */ = {
 			isa = PBXGroup;
 			children = (
 				DB676105254AD4B1006C6798 /* View */,
@@ -588,7 +594,7 @@
 				DB67611C254BC04B006C6798 /* SearchMediaViewModel+Diffable.swift */,
 				DB676117254BBF57006C6798 /* SearchMediaViewModel+State.swift */,
 			);
-			path = Media;
+			path = MediaTimeline;
 			sourceTree = "<group>";
 		};
 		DB25B9EC2539A9BA00A5420F /* CoreData */ = {
@@ -627,13 +633,24 @@
 			path = Place;
 			sourceTree = "<group>";
 		};
-		DB3402982521BE6B009EFADF /* ViewModel */ = {
+		DB3FC03825526D6B003A2F8A /* MediaTimeline */ = {
 			isa = PBXGroup;
 			children = (
-				DB6DF3DF252060AA00E8A273 /* ProfileViewModel.swift */,
-				DB34029C2521BE8B009EFADF /* MeProfileViewModel.swift */,
+				DBA61AB52552596A006AC169 /* UserMediaTimelineViewController.swift */,
+				DB3FC03F25527053003A2F8A /* UserMediaTimelineViewModel.swift */,
+				DB3FC0492552711C003A2F8A /* UserMediaTimelineViewModel+Diffable.swift */,
+				DB3FC044255270D6003A2F8A /* UserMediaTimelineViewModel+State.swift */,
 			);
-			path = ViewModel;
+			path = MediaTimeline;
+			sourceTree = "<group>";
+		};
+		DB3FC05625527433003A2F8A /* Section */ = {
+			isa = PBXGroup;
+			children = (
+				DB88AC2E2508BA8C0009E562 /* TimelineSection.swift */,
+				DB3FC0512552742E003A2F8A /* MediaSection.swift */,
+			);
+			path = Section;
 			sourceTree = "<group>";
 		};
 		DB434878251DEB7A005B599F /* View */ = {
@@ -669,7 +686,7 @@
 			path = View;
 			sourceTree = "<group>";
 		};
-		DB676170254C021D006C6798 /* User */ = {
+		DB676170254C021D006C6798 /* UserList */ = {
 			isa = PBXGroup;
 			children = (
 				DB67616B254C021A006C6798 /* SearchUserViewController.swift */,
@@ -677,38 +694,28 @@
 				DBDDE72D254C084A0057CF8E /* SearchUserViewModel+Diffable.swift */,
 				DB578CD7254C0FB500745336 /* SearchUserViewModel+State.swift */,
 			);
-			path = User;
+			path = UserList;
 			sourceTree = "<group>";
 		};
 		DB747FFD251C496E000C4BD7 /* Profile */ = {
 			isa = PBXGroup;
 			children = (
+				DB747FF8251C496A000C4BD7 /* ProfileViewController.swift */,
+				DB6DF3DF252060AA00E8A273 /* ProfileViewModel.swift */,
+				DB34029C2521BE8B009EFADF /* MeProfileViewModel.swift */,
 				DB92570E251C900F004FEFB5 /* Segmented */,
 				DB925732251C9294004FEFB5 /* Header */,
-				DB3402982521BE6B009EFADF /* ViewModel */,
-				DB747FF8251C496A000C4BD7 /* ProfileViewController.swift */,
+				DB92573B251C9C31004FEFB5 /* HomeTimeline */,
+				DB3FC03825526D6B003A2F8A /* MediaTimeline */,
 			);
 			path = Profile;
-			sourceTree = "<group>";
-		};
-		DB88AC302508BA8F0009E562 /* Timeline */ = {
-			isa = PBXGroup;
-			children = (
-				DB88AC312508BA950009E562 /* Diffable */,
-				DBDA8EA024FE1002006750DC /* HomeTimeline */,
-				DB92573B251C9C31004FEFB5 /* UserTimeline */,
-				DBF69EF825498AE400E2A915 /* SearchTimeline */,
-				DBF7F2162508AE33001E8DB0 /* StubTimeline */,
-				DB9154592551210D00613473 /* MentionTimeline */,
-			);
-			path = Timeline;
 			sourceTree = "<group>";
 		};
 		DB88AC312508BA950009E562 /* Diffable */ = {
 			isa = PBXGroup;
 			children = (
-				DB88AC2E2508BA8C0009E562 /* TimelineSection.swift */,
-				DB88AC322508BACD0009E562 /* TimelineItem.swift */,
+				DB3FC05625527433003A2F8A /* Section */,
+				DB88AC322508BACD0009E562 /* Items.swift */,
 			);
 			path = Diffable;
 			sourceTree = "<group>";
@@ -830,14 +837,14 @@
 			path = Header;
 			sourceTree = "<group>";
 		};
-		DB92573B251C9C31004FEFB5 /* UserTimeline */ = {
+		DB92573B251C9C31004FEFB5 /* HomeTimeline */ = {
 			isa = PBXGroup;
 			children = (
 				DB9256FF251C8F29004FEFB5 /* UserTimelineViewController.swift */,
 				DB3402B62521D389009EFADF /* UserTimelineViewModel.swift */,
 				DB969A2E252490090053CB31 /* UserTimelineViewModel+State.swift */,
 			);
-			path = UserTimeline;
+			path = HomeTimeline;
 			sourceTree = "<group>";
 		};
 		DB925742251C9CC8004FEFB5 /* Paging */ = {
@@ -903,6 +910,7 @@
 			children = (
 				DBDA8E2F24FCF8A6006750DC /* Info.plist */,
 				DBE76CD2250095D900DEB0FC /* TwidereX.entitlements */,
+				DB88AC312508BA950009E562 /* Diffable */,
 				DBDA8E8724FE0615006750DC /* State */,
 				DBDA8E5924FE0374006750DC /* Service */,
 				DBDA8E5424FDF3E2006750DC /* Scene */,
@@ -955,7 +963,8 @@
 				DBEA4F782511E4660007FEC5 /* Share */,
 				DBDA8E9624FE075E006750DC /* MainTab */,
 				DBDA8E8624FE05B9006750DC /* Authentication */,
-				DB88AC302508BA8F0009E562 /* Timeline */,
+				DBDA8EA024FE1002006750DC /* HomeTimeline */,
+				DB9154592551210D00613473 /* MentionTimeline */,
 				DBA5B1A92510BA360077FDD5 /* Conversation */,
 				DB747FFD251C496E000C4BD7 /* Profile */,
 				DB8AC1122540501A00E636BE /* Compose */,
@@ -1044,7 +1053,7 @@
 				DBE76D1D2500E65D00DEB0FC /* HomeTimelineViewModel.swift */,
 				DB969A3825305EEE0053CB31 /* HomeTimelineViewModel+LoadLatestState.swift */,
 				DBA6B1A325340B3F005FB0B4 /* HomeTimelineViewModel+LoadMiddleState.swift */,
-				DBA6B19825316800005FB0B4 /* HomeTimelineViewModel+LoadOldestState.swift */,
+				DB3FC03025525BFD003A2F8A /* HomeTimelineViewModel+LoadOldestState.swift */,
 			);
 			path = HomeTimeline;
 			sourceTree = "<group>";
@@ -1269,8 +1278,9 @@
 				DBF69E9B25496BB100E2A915 /* SearchDetailViewController.swift */,
 				DBF69EAB25496C9F00E2A915 /* SearchDetailViewModel.swift */,
 				DBF69EEA25498A3A00E2A915 /* Paging */,
-				DB10B34B254AB350002D86F3 /* Media */,
-				DB676170254C021D006C6798 /* User */,
+				DBF69EF825498AE400E2A915 /* HomeTimeline */,
+				DB10B34B254AB350002D86F3 /* MediaTimeline */,
+				DB676170254C021D006C6798 /* UserList */,
 			);
 			path = SearchDetail;
 			sourceTree = "<group>";
@@ -1303,23 +1313,14 @@
 			path = Paging;
 			sourceTree = "<group>";
 		};
-		DBF69EF825498AE400E2A915 /* SearchTimeline */ = {
+		DBF69EF825498AE400E2A915 /* HomeTimeline */ = {
 			isa = PBXGroup;
 			children = (
 				DBF69EF325498ADC00E2A915 /* SearchTimelineViewController.swift */,
 				DBF69EF925498B1500E2A915 /* SearchTimelineViewModel.swift */,
 				DB10B32B254A7633002D86F3 /* SearchTimelineViewModel+State.swift */,
 			);
-			path = SearchTimeline;
-			sourceTree = "<group>";
-		};
-		DBF7F2162508AE33001E8DB0 /* StubTimeline */ = {
-			isa = PBXGroup;
-			children = (
-				DBF7F2142508AE31001E8DB0 /* StubTimelineViewController.swift */,
-				DBF7F2172508AE88001E8DB0 /* StubHomeTimelineViewModel.swift */,
-			);
-			path = StubTimeline;
+			path = HomeTimeline;
 			sourceTree = "<group>";
 		};
 		F30A8D6C372DFF6B5AEEE327 /* Frameworks */ = {
@@ -1725,6 +1726,7 @@
 			files = (
 				DB747FEF251B63E3000C4BD7 /* HitTestExpandedButton.swift in Sources */,
 				DBB09D562511BA9700AE260E /* APIService+Lookup.swift in Sources */,
+				DB3FC045255270D6003A2F8A /* UserMediaTimelineViewModel+State.swift in Sources */,
 				DB7D124C250F875F00999903 /* UIView.swift in Sources */,
 				DB10B32C254A7633002D86F3 /* SearchTimelineViewModel+State.swift in Sources */,
 				DB2924D02546C6DD003899A7 /* APIService+Media.swift in Sources */,
@@ -1753,10 +1755,12 @@
 				DBE76D232500FF1C00DEB0FC /* AuthenticationService.swift in Sources */,
 				DBDA8E9024FE068C006750DC /* NeedsDependency.swift in Sources */,
 				DB25B9F42539A9CE00A5420F /* APIService+CoreData+TwitterUser.swift in Sources */,
+				DB3FC04025527053003A2F8A /* UserMediaTimelineViewModel.swift in Sources */,
 				DBF69E9C25496BB100E2A915 /* SearchDetailViewController.swift in Sources */,
 				DBE76D302502146F00DEB0FC /* OSLog.swift in Sources */,
 				DB98DC10250787420087E30F /* TimelineBottomLoaderTableViewCell.swift in Sources */,
 				DB8AC10025401C2700E636BE /* ContentOffsetAdjustableTimelineViewControllerDelegate.swift in Sources */,
+				DB3FC0522552742E003A2F8A /* MediaSection.swift in Sources */,
 				DB10B347254AB338002D86F3 /* SearchMediaViewController.swift in Sources */,
 				DB2924E42547D4C7003899A7 /* ComposeTweetMediaCollectionViewCell.swift in Sources */,
 				DB91547525514B1C00613473 /* MentionTimelineViewModel+LoadOldestState.swift in Sources */,
@@ -1772,7 +1776,6 @@
 				DBF69EDA2549701B00E2A915 /* SearchToSearchDetailViewControllerAnimatedTransitioning.swift in Sources */,
 				DBF69EFA25498B1500E2A915 /* SearchTimelineViewModel.swift in Sources */,
 				DBDA8E9424FE06BC006750DC /* RootSplitViewController.swift in Sources */,
-				DBF7F2152508AE31001E8DB0 /* StubTimelineViewController.swift in Sources */,
 				DB8AC0F825401BA200E636BE /* UIViewController.swift in Sources */,
 				DB434888251DFE2D005B599F /* ProfileBannerStatusView.swift in Sources */,
 				DBEA4F7E2511E7050007FEC5 /* ConversationSection.swift in Sources */,
@@ -1785,7 +1788,6 @@
 				DB8AC1852542BD8700E636BE /* APIService+Tweet.swift in Sources */,
 				DB41C0DB2513368800521562 /* TimelinePostActionToolbar.swift in Sources */,
 				DB969A2F252490090053CB31 /* UserTimelineViewModel+State.swift in Sources */,
-				DBF7F2182508AE88001E8DB0 /* StubHomeTimelineViewModel.swift in Sources */,
 				DB434892251E09A8005B599F /* CALayer.swift in Sources */,
 				DB0849B0251375E9009E0CD7 /* ConversationPostView.swift in Sources */,
 				DB969A66253064FE0053CB31 /* DispatchQueue.swift in Sources */,
@@ -1815,6 +1817,7 @@
 				DBA5B1A82510BA330077FDD5 /* TweetConversationViewController.swift in Sources */,
 				DBDA8E8B24FE0615006750DC /* AppContext.swift in Sources */,
 				DBE76D1C2500E5E000DEB0FC /* TimelinePostTableViewCell.swift in Sources */,
+				DB3FC04A2552711C003A2F8A /* UserMediaTimelineViewModel+Diffable.swift in Sources */,
 				DB969A0C252475F00053CB31 /* APIService+Persist+Timeline.swift in Sources */,
 				DB925744251C9CD6004FEFB5 /* ProfilePagingViewController.swift in Sources */,
 				DB25B9E325385EFD00A5420F /* TweetConversationViewModel+LoadConversationState.swift in Sources */,
@@ -1822,6 +1825,7 @@
 				DBF69EEF25498A4800E2A915 /* SearchDetailPagingViewModel.swift in Sources */,
 				DBDA8E2224FCF8A3006750DC /* AppDelegate.swift in Sources */,
 				DBDA8E9524FE06BC006750DC /* PlaceholderDetailViewController.swift in Sources */,
+				DB3FC03125525BFD003A2F8A /* HomeTimelineViewModel+LoadOldestState.swift in Sources */,
 				DBDA8E9F24FE0FFF006750DC /* HomeTimelineViewController.swift in Sources */,
 				DB925705251C8FCB004FEFB5 /* ProfileSegmentedViewController.swift in Sources */,
 				DB8AC14C254167BE00E636BE /* TweetToolbarView.swift in Sources */,
@@ -1835,7 +1839,6 @@
 				DB8AC16C25419B2E00E636BE /* ComposeTweetSection.swift in Sources */,
 				DBEA4F8D251225610007FEC5 /* TimelinePostView.swift in Sources */,
 				DB92574E251CA3BB004FEFB5 /* StubTableViewModel.swift in Sources */,
-				DBA6B19925316800005FB0B4 /* HomeTimelineViewModel+LoadOldestState.swift in Sources */,
 				DB35C35D25146C58003DA0E9 /* ConversationPostStatusView.swift in Sources */,
 				DB8AC10E2540501600E636BE /* ComposeTweetViewController.swift in Sources */,
 				DB9154682551389D00613473 /* APIService+MentionTimeline.swift in Sources */,
@@ -1849,7 +1852,8 @@
 				DB2924D72547CCA2003899A7 /* ComposeTweetMediaSection.swift in Sources */,
 				DB676101254AD12F006C6798 /* SearchMediaCollectionViewCell.swift in Sources */,
 				DBDA8E2424FCF8A3006750DC /* SceneDelegate.swift in Sources */,
-				DB88AC332508BACD0009E562 /* TimelineItem.swift in Sources */,
+				DB88AC332508BACD0009E562 /* Items.swift in Sources */,
+				DBA61AB62552596A006AC169 /* UserMediaTimelineViewController.swift in Sources */,
 				DBE76D3B25024FDA00DEB0FC /* NSLayoutConstraint.swift in Sources */,
 				DBF69EE02549705A00E2A915 /* ViewControllerAnimatedTransitioning.swift in Sources */,
 				DB0849B22513760D009E0CD7 /* ConversationPostTableViewCell.swift in Sources */,
@@ -2135,7 +2139,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = TwidereX/TwidereX.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 18;
+				CURRENT_PROJECT_VERSION = 19;
 				DEVELOPMENT_ASSET_PATHS = "TwidereX/Resources/Preview\\ Assets.xcassets";
 				DEVELOPMENT_TEAM = 7LFDZ96332;
 				INFOPLIST_FILE = TwidereX/Info.plist;
@@ -2143,7 +2147,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.7.1;
+				MARKETING_VERSION = 0.7.2;
 				PRODUCT_BUNDLE_IDENTIFIER = com.twidere.TwidereX;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
@@ -2159,7 +2163,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = TwidereX/TwidereX.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 18;
+				CURRENT_PROJECT_VERSION = 19;
 				DEVELOPMENT_ASSET_PATHS = "TwidereX/Resources/Preview\\ Assets.xcassets";
 				DEVELOPMENT_TEAM = 7LFDZ96332;
 				INFOPLIST_FILE = TwidereX/Info.plist;
@@ -2167,7 +2171,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.7.1;
+				MARKETING_VERSION = 0.7.2;
 				PRODUCT_BUNDLE_IDENTIFIER = com.twidere.TwidereX;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;

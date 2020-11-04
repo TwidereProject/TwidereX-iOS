@@ -206,7 +206,7 @@ extension HomeTimelineViewController {
         let snapshot = diffableDataSource.snapshot()
         let item = snapshot.itemIdentifiers.first(where: { item in
             switch item {
-            case .timelineMiddleLoader: return true
+            case .middleLoader: return true
             default:                        return false
             }
         })
@@ -672,7 +672,7 @@ extension HomeTimelineViewController: TimelineMiddleLoaderTableViewCellDelegate 
         guard let item = diffableDataSource.itemIdentifier(for: indexPath) else { return }
         
         switch item {
-        case .timelineMiddleLoader(let upper):
+        case .middleLoader(let upper):
             guard let stateMachine = viewModel.loadMiddleSateMachineList.value[upper] else {
                 assertionFailure()
                 return

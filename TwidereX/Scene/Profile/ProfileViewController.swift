@@ -60,15 +60,15 @@ final class ProfileViewController: UIViewController, NeedsDependency {
 
 extension ProfileViewController {
     
-    func observeTableViewContentSize(tableView: UITableView) -> NSKeyValueObservation {
-        updateOverlayScrollViewContentSize(tableView: tableView)
-        return tableView.observe(\.contentSize, options: .new) { tableView, change in
-            self.updateOverlayScrollViewContentSize(tableView: tableView)
+    func observeTableViewContentSize(scrollView: UIScrollView) -> NSKeyValueObservation {
+        updateOverlayScrollViewContentSize(scrollView: scrollView)
+        return scrollView.observe(\.contentSize, options: .new) { scrollView, change in
+            self.updateOverlayScrollViewContentSize(scrollView: scrollView)
         }
     }
     
-    func updateOverlayScrollViewContentSize(tableView: UITableView) {
-        let bottomPageHeight = max(tableView.contentSize.height, self.containerScrollView.frame.height - ProfileHeaderViewController.headerMinHeight - self.containerScrollView.safeAreaInsets.bottom)
+    func updateOverlayScrollViewContentSize(scrollView: UIScrollView) {
+        let bottomPageHeight = max(scrollView.contentSize.height, self.containerScrollView.frame.height - ProfileHeaderViewController.headerMinHeight - self.containerScrollView.safeAreaInsets.bottom)
         let headerViewHeight: CGFloat = profileHeaderViewController.view.frame.height
         let contentSize = CGSize(
             width: self.containerScrollView.contentSize.width,
@@ -88,15 +88,23 @@ extension ProfileViewController {
 
         let userTimelineViewModel = UserTimelineViewModel(context: context, userID: viewModel.userID.value)
         viewModel.userID.assign(to: \.value, on: userTimelineViewModel.userID).store(in: &disposeBag)
-        let profilePagingViewModel = ProfilePagingViewModel(userTimelineViewModel: userTimelineViewModel)
-        profilePagingViewModel.viewControllers.forEach { viewController in
-            if let viewController = viewController as? NeedsDependency {
-                viewController.context = context
-                viewController.coordinator = coordinator
+        
+        let userMediaTimelineViewModel = UserMediaTimelineViewModel(context: context, userID: viewModel.userID.value)
+        viewModel.userID.assign(to: \.value, on: userMediaTimelineViewModel.userID).store(in: &disposeBag)
+        
+        profileSegmentedViewController.pagingViewController.viewModel = {
+            let profilePagingViewModel = ProfilePagingViewModel(
+                userTimelineViewModel: userTimelineViewModel,
+                userMediaTimelineViewModel: userMediaTimelineViewModel
+            )
+            profilePagingViewModel.viewControllers.forEach { viewController in
+                if let viewController = viewController as? NeedsDependency {
+                    viewController.context = context
+                    viewController.coordinator = coordinator
+                }
             }
-        }
-
-        profileSegmentedViewController.pagingViewController.viewModel = profilePagingViewModel
+            return profilePagingViewModel
+        }()
 
         overlayScrollView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(overlayScrollView)
@@ -273,9 +281,9 @@ extension ProfileViewController {
         super.viewDidAppear(animated)
         
         // set overlay scroll view initial content size
-        guard let currentViewController = profileSegmentedViewController.pagingViewController.currentViewController as? CustomTableViewController else { return }
-        currentPostTimelineTableViewContentSizeObservation = observeTableViewContentSize(tableView: currentViewController.tableView)
-        currentViewController.tableView.panGestureRecognizer.require(toFail: overlayScrollView.panGestureRecognizer)
+        guard let currentViewController = profileSegmentedViewController.pagingViewController.currentViewController as? CustomScrollViewContainerController else { return }
+        currentPostTimelineTableViewContentSizeObservation = observeTableViewContentSize(scrollView: currentViewController.scrollView)
+        currentViewController.scrollView.panGestureRecognizer.require(toFail: overlayScrollView.panGestureRecognizer)
     }
     
     override func viewDidDisappear(_ animated: Bool) {
@@ -303,14 +311,14 @@ extension ProfileViewController: UIScrollViewDelegate {
         if scrollView.contentOffset.y < topMaxContentOffsetY {
             self.containerScrollView.contentOffset.y = scrollView.contentOffset.y
             for postTimelineView in profileSegmentedViewController.pagingViewController.viewModel.viewControllers {
-                postTimelineView.tableView.contentOffset.y = 0
+                postTimelineView.scrollView.contentOffset.y = 0
             }
             contentOffsets.removeAll()
         } else {
             containerScrollView.contentOffset.y = topMaxContentOffsetY
-            if let userTimelineViewController = profileSegmentedViewController.pagingViewController.currentViewController as? UserTimelineViewController {
+            if let customScrollViewContainerController = profileSegmentedViewController.pagingViewController.currentViewController as? CustomScrollViewContainerController {
                 let contentOffsetY = scrollView.contentOffset.y - containerScrollView.contentOffset.y
-                userTimelineViewController.tableView.contentOffset.y = contentOffsetY
+                customScrollViewContainerController.scrollView.contentOffset.y = contentOffsetY
             }
         }
     }
@@ -320,27 +328,32 @@ extension ProfileViewController: UIScrollViewDelegate {
 // MARK: - ProfileHeaderViewControllerDelegate
 extension ProfileViewController: ProfileHeaderViewControllerDelegate {
     func profileHeaderViewController(_ viewController: ProfileHeaderViewController, viewLayoutDidUpdate view: UIView) {
-        guard let tableView = (profileSegmentedViewController.pagingViewController.currentViewController as? UserTimelineViewController)?.tableView else {
+        guard let scrollView = (profileSegmentedViewController.pagingViewController.currentViewController as? UserTimelineViewController)?.scrollView else {
             assertionFailure()
             return
         }
         
-        updateOverlayScrollViewContentSize(tableView: tableView)
+        updateOverlayScrollViewContentSize(scrollView: scrollView)
     }
 }
 
 // MARK: - ProfilePagingViewControllerDelegate
 extension ProfileViewController: ProfilePagingViewControllerDelegate {
     
-    func profilePagingViewController(_ viewController: ProfilePagingViewController, didScrollToPostTimelineViewController postTimelineViewController: CustomTableViewController, atIndex index: Int) {
+    func profilePagingViewController(_ viewController: ProfilePagingViewController, didScrollToPostTimelineViewController postTimelineViewController: CustomScrollViewContainerController, atIndex index: Int) {
         os_log("%{public}s[%{public}ld], %{public}s: select at index: %ld", ((#file as NSString).lastPathComponent), #line, #function, index)
         
         // save content offset
         overlayScrollView.contentOffset.y = contentOffsets[index] ?? containerScrollView.contentOffset.y
         
         // setup observer and gesture fallback
-        currentPostTimelineTableViewContentSizeObservation = observeTableViewContentSize(tableView: postTimelineViewController.tableView)
-        postTimelineViewController.tableView.panGestureRecognizer.require(toFail: overlayScrollView.panGestureRecognizer)
+        currentPostTimelineTableViewContentSizeObservation = observeTableViewContentSize(scrollView: postTimelineViewController.scrollView)
+        postTimelineViewController.scrollView.panGestureRecognizer.require(toFail: overlayScrollView.panGestureRecognizer)
+        
+        
+        if let userMediaTimelineViewController = postTimelineViewController as? UserMediaTimelineViewController, userMediaTimelineViewController.viewModel.items.value.isEmpty {
+            userMediaTimelineViewController.viewModel.stateMachine.enter(UserMediaTimelineViewModel.State.Reloading.self)
+        }
     }
     
 }

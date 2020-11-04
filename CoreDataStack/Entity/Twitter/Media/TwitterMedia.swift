@@ -66,6 +66,12 @@ extension TwitterMedia {
         return media
     }
     
+    public func update(url: String?) {
+        if self.url != url {
+            self.url = url
+        }
+    }
+    
 }
 
 extension TwitterMedia {

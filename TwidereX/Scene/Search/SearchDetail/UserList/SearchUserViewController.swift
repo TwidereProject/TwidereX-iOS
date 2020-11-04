@@ -151,7 +151,7 @@ extension SearchUserViewController: UserBriefInfoTableViewCellDelegate {
         }
     }
     
-    private func toggleFollowStatue(for item: SearchUserViewModel.Item, twitterAuthentication: TwitterAuthentication) {
+    private func toggleFollowStatue(for item: Item, twitterAuthentication: TwitterAuthentication) {
         guard let diffableDataSource = viewModel.diffableDataSource else { return }
         guard let indexPath = diffableDataSource.indexPath(for: item) else { return }
         guard case let .user(objectID) = item else { return }

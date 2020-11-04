@@ -36,6 +36,9 @@ extension SearchUserViewModel {
                 cell.activityIndicatorView.startAnimating()
                 cell.loadMoreButton.isHidden = true
                 return cell
+            default:
+                assertionFailure()
+                return nil
             }
         }
     }
@@ -97,36 +100,5 @@ extension SearchUserViewModel {
             }
             .store(in: &cell.disposeBag)
 
-    }
-}
-
-extension SearchUserViewModel {
-    enum Section: Hashable {
-        case main
-    }
-    
-    enum Item: Hashable {
-        case user(twitterUserObjectID: NSManagedObjectID)
-        case bottomLoader
-        
-        static func == (lhs: SearchUserViewModel.Item, rhs: SearchUserViewModel.Item) -> Bool {
-            switch (lhs, rhs) {
-            case (.user(let objectIDLeft), .user(let objectIDRight)):
-                return objectIDLeft == objectIDRight
-            case (.bottomLoader, bottomLoader):
-                return true
-            default:
-                return false
-            }
-        }
-        
-        func hash(into hasher: inout Hasher) {
-            switch self {
-            case .user(let objectID):
-                hasher.combine(objectID)
-            case .bottomLoader:
-                hasher.combine(String(describing: self))
-            }
-        }
     }
 }

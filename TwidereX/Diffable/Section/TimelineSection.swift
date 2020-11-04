@@ -10,3 +10,4 @@ import Foundation
 enum TimelineSection: Equatable, Hashable {
     case main
 }
+

@@ -106,7 +106,7 @@ extension APIService.CoreData {
     static func mergeTweet(for requestTwitterUser: TwitterUser?, old tweet: Tweet, entity: Twitter.Entity.Tweet, networkDate: Date) {
         guard networkDate > tweet.updatedAt else { return }
         
-        // merge attributes
+        // merge place
         if tweet.place == nil,
            let place = entity.place,
            let fullname = place.fullName,
@@ -114,6 +114,14 @@ extension APIService.CoreData {
         {
             let placeProperty = TwitterPlace.Property(id: place.id, fullname: fullname, county: place.country, countyCode: place.countryCode, name: place.name, placeType: place.placeType)
             tweet.update(place: TwitterPlace.insert(into: managedObjectContext, property: placeProperty))
+        }
+        
+        if let media = tweet.media {
+            for newMedia in entity.extendedEntities?.media ?? [] {
+                guard let id = newMedia.idStr else { continue }
+                guard let targetMedia = media.first(where: { $0.id == id }) else { continue }
+                targetMedia.update(url: newMedia.mediaURLHTTPS)
+            }
         }
         
         // merge metrics

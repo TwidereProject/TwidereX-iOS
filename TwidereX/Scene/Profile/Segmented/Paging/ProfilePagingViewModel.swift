@@ -10,32 +10,31 @@ import UIKit
 import Pageboy
 import Tabman
 
-protocol CustomTableViewController: UIViewController {
-    var tableView: UITableView { get }
-}
-
-class StubTableViewController: UIViewController, CustomTableViewController {
-    var tableView = UITableView()
+protocol CustomScrollViewContainerController: UIViewController {
+    var scrollView: UIScrollView { get }
 }
 
 final class ProfilePagingViewModel: NSObject {
     
     let profileTweetPostTimelineViewController = UserTimelineViewController()
-    let profileMediaPostTimelineViewController = StubTableViewController()
-    let profileLikesPostTimelineViewController = StubTableViewController()
+    let profileMediaPostTimelineViewController = UserMediaTimelineViewController()
+//    let profileLikesPostTimelineViewController = UserMediaTimelineViewController()
     
-    init(userTimelineViewModel viewModel: UserTimelineViewModel) {
-        profileTweetPostTimelineViewController.viewModel = viewModel
-//        profileMediaPostTimelineViewController.viewModel = viewModel
+    init(
+        userTimelineViewModel: UserTimelineViewModel,
+        userMediaTimelineViewModel: UserMediaTimelineViewModel
+    ) {
+        profileTweetPostTimelineViewController.viewModel = userTimelineViewModel
+        profileMediaPostTimelineViewController.viewModel = userMediaTimelineViewModel
 //        profileLikesPostTimelineViewController.viewModel = viewModel
         super.init()
     }
     
-    var viewControllers: [CustomTableViewController] {
+    var viewControllers: [CustomScrollViewContainerController] {
         return [
             profileTweetPostTimelineViewController,
             profileMediaPostTimelineViewController,
-            profileLikesPostTimelineViewController,
+//            profileLikesPostTimelineViewController,
         ]
     }
     
@@ -43,7 +42,7 @@ final class ProfilePagingViewModel: NSObject {
         let items = [
             TMBarItem(image: Asset.TextFormatting.capitalFloatLeft.image.withRenderingMode(.alwaysTemplate)),
             TMBarItem(image: Asset.ObjectTools.photo.image.withRenderingMode(.alwaysTemplate)),
-            TMBarItem(image: Asset.Health.heartFillLarge.image.withRenderingMode(.alwaysTemplate)),
+//            TMBarItem(image: Asset.Health.heartFillLarge.image.withRenderingMode(.alwaysTemplate)),
         ]
         return items
     }()

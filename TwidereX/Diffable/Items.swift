@@ -1,5 +1,5 @@
 //
-//  TimelineItem.swift
+//  Items.swift
 //  TwidereX
 //
 //  Created by Cirno MainasuK on 2020-9-9.
@@ -11,23 +11,24 @@ import TwitterAPI
 import CoreDataStack
 
 /// Note: update Equatable when change case
-enum TimelineItem {
+enum Item {
     
     case homeTimelineIndex(objectID: NSManagedObjectID, attribute: Attribute)
     case mentionTimelineIndex(objectID: NSManagedObjectID, attribute: Attribute)
 
-    case userTimelineItem(objectID: NSManagedObjectID)
-    case searchTimelineItem(objectID: NSManagedObjectID)
+    case tweet(objectID: NSManagedObjectID)
+    case photoTweet(objectID: NSManagedObjectID, attribute: PhotoAttribute)
+    case user(objectID: NSManagedObjectID)
     
-    case timelineMiddleLoader(upperTimelineIndexAnchorObjectID: NSManagedObjectID)
+    case middleLoader(upperTimelineIndexAnchorObjectID: NSManagedObjectID)
     case bottomLoader
 }
 
-extension TimelineItem {
+extension Item {
     class Attribute: Hashable {
         var separatorLineStyle: SeparatorLineStyle = .indent
         
-        static func == (lhs: TimelineItem.Attribute, rhs: TimelineItem.Attribute) -> Bool {
+        static func == (lhs: Item.Attribute, rhs: Item.Attribute) -> Bool {
             return lhs.separatorLineStyle == rhs.separatorLineStyle
         }
 
@@ -41,45 +42,66 @@ extension TimelineItem {
             case normal     // alignment to readable guideline
         }
     }
+    
+    class PhotoAttribute: Hashable {
+        let id = UUID()
+        let index: Int
+        
+        public init(index: Int) {
+            self.index = index
+        }
+        
+        static func == (lhs: Item.PhotoAttribute, rhs: Item.PhotoAttribute) -> Bool {
+            return lhs.index == rhs.index
+        }
+        
+        func hash(into hasher: inout Hasher) {
+            hasher.combine(id)
+        }
+    }
 }
 
-extension TimelineItem: Equatable {
-    static func == (lhs: TimelineItem, rhs: TimelineItem) -> Bool {
+extension Item: Equatable {
+    static func == (lhs: Item, rhs: Item) -> Bool {
         switch (lhs, rhs) {
         case (.homeTimelineIndex(let objectIDLeft, _), .homeTimelineIndex(let objectIDRight, _)):
             return objectIDLeft == objectIDRight
-        case (.timelineMiddleLoader(let upperLeft), .timelineMiddleLoader(let upperRight)):
-            return upperLeft == upperRight
         case (.mentionTimelineIndex(let objectIDLeft, _), .mentionTimelineIndex(let objectIDRight, _)):
             return objectIDLeft == objectIDRight
+        case (.tweet(let objectIDLeft), .tweet(let objectIDRight)):
+            return objectIDLeft == objectIDRight
+        case (.photoTweet(let objectIDLeft, _), .photoTweet(let objectIDRight, _)):
+            return objectIDLeft == objectIDRight
+        case (.user(let objectIDLeft), .user(let objectIDRight)):
+            return objectIDLeft == objectIDRight
+        case (.middleLoader(let upperLeft), .middleLoader(let upperRight)):
+            return upperLeft == upperRight
         case (.bottomLoader, .bottomLoader):
             return true
-        case (.userTimelineItem(let objectIDLeft), .userTimelineItem(let objectIDRight)):
-            return objectIDLeft == objectIDRight
-        case (.searchTimelineItem(let objectIDLeft), .searchTimelineItem(let objectIDRight)):
-            return objectIDLeft == objectIDRight
         default:
             return false
         }
     }
 }
 
-extension TimelineItem: Hashable {
+extension Item: Hashable {
     func hash(into hasher: inout Hasher) {
         switch self {
         case .homeTimelineIndex(let objectID, _):
             hasher.combine(objectID)
-        case .timelineMiddleLoader(let upper):
-            hasher.combine(String(describing: TimelineItem.timelineMiddleLoader.self))
-            hasher.combine(upper)
         case .mentionTimelineIndex(let objectID, _):
             hasher.combine(objectID)
-        case .userTimelineItem(let objectID):
+        case .tweet(let objectID):
             hasher.combine(objectID)
-        case .searchTimelineItem(let objectID):
+        case .photoTweet(let objectID, _):
             hasher.combine(objectID)
+        case .user(let objectID):
+            hasher.combine(objectID)
+        case .middleLoader(let upper):
+            hasher.combine(String(describing: Item.middleLoader.self))
+            hasher.combine(upper)
         case .bottomLoader:
-            hasher.combine(String(describing: TimelineItem.bottomLoader.self))
+            hasher.combine(String(describing: Item.bottomLoader.self))
         }
     }
 }
