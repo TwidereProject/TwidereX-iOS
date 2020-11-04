@@ -150,4 +150,5 @@ extension SearchUserViewModel.State {
             }
         }
     }
+    
 }

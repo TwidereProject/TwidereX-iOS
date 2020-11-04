@@ -92,10 +92,14 @@ extension ProfileViewController {
         let userMediaTimelineViewModel = UserMediaTimelineViewModel(context: context, userID: viewModel.userID.value)
         viewModel.userID.assign(to: \.value, on: userMediaTimelineViewModel.userID).store(in: &disposeBag)
         
+        let userLikeTimelineViewModel = UserLikeTimelineViewModel(context: context, userID: viewModel.userID.value)
+
+        
         profileSegmentedViewController.pagingViewController.viewModel = {
             let profilePagingViewModel = ProfilePagingViewModel(
                 userTimelineViewModel: userTimelineViewModel,
-                userMediaTimelineViewModel: userMediaTimelineViewModel
+                userMediaTimelineViewModel: userMediaTimelineViewModel,
+                userLikeTimelineViewModel: userLikeTimelineViewModel
             )
             profilePagingViewModel.viewControllers.forEach { viewController in
                 if let viewController = viewController as? NeedsDependency {
@@ -329,7 +333,7 @@ extension ProfileViewController: UIScrollViewDelegate {
 extension ProfileViewController: ProfileHeaderViewControllerDelegate {
     func profileHeaderViewController(_ viewController: ProfileHeaderViewController, viewLayoutDidUpdate view: UIView) {
         guard let scrollView = (profileSegmentedViewController.pagingViewController.currentViewController as? UserTimelineViewController)?.scrollView else {
-            assertionFailure()
+            // assertionFailure()
             return
         }
         
@@ -353,6 +357,10 @@ extension ProfileViewController: ProfilePagingViewControllerDelegate {
         
         if let userMediaTimelineViewController = postTimelineViewController as? UserMediaTimelineViewController, userMediaTimelineViewController.viewModel.items.value.isEmpty {
             userMediaTimelineViewController.viewModel.stateMachine.enter(UserMediaTimelineViewModel.State.Reloading.self)
+        }
+        
+        if let userLikeTimelineViewController = postTimelineViewController as? UserLikeTimelineViewController, userLikeTimelineViewController.viewModel.items.value.isEmpty {
+            userLikeTimelineViewController.viewModel.stateMachine.enter(UserLikeTimelineViewModel.State.Reloading.self)
         }
     }
     

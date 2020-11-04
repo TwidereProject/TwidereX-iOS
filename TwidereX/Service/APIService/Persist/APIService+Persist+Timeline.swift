@@ -20,6 +20,7 @@ extension APIService.Persist {
         case homeTimeline
         case mentionTimeline
         case userTimeline
+        case likeList
     }
     
     static func persistTimeline(
@@ -90,6 +91,7 @@ extension APIService.Persist {
                 case .homeTimeline:     return .homeTimeline
                 case .mentionTimeline:  return .mentionTimeline
                 case .userTimeline:     return .userTimeline
+                case .likeList:         return .likeList
                 }
             }()
 
@@ -291,6 +293,8 @@ extension APIService.Persist {
             case homeTimeline
             case mentionTimeline
             case userTimeline
+            case likeList
+            
             case retweet
             case quote
             
@@ -299,6 +303,7 @@ extension APIService.Persist {
                 case .homeTimeline:     return "H"
                 case .mentionTimeline:  return "M"
                 case .userTimeline:     return "U"
+                case .likeList:         return "L"
                 case .retweet:          return "R"
                 case .quote:            return "Q"
                 }
