@@ -18,15 +18,16 @@ final class ProfilePagingViewModel: NSObject {
     
     let profileTweetPostTimelineViewController = UserTimelineViewController()
     let profileMediaPostTimelineViewController = UserMediaTimelineViewController()
-//    let profileLikesPostTimelineViewController = UserMediaTimelineViewController()
+    let profileLikesPostTimelineViewController = UserLikeTimelineViewController()
     
     init(
         userTimelineViewModel: UserTimelineViewModel,
-        userMediaTimelineViewModel: UserMediaTimelineViewModel
+        userMediaTimelineViewModel: UserMediaTimelineViewModel,
+        userLikeTimelineViewModel: UserLikeTimelineViewModel
     ) {
         profileTweetPostTimelineViewController.viewModel = userTimelineViewModel
         profileMediaPostTimelineViewController.viewModel = userMediaTimelineViewModel
-//        profileLikesPostTimelineViewController.viewModel = viewModel
+        profileLikesPostTimelineViewController.viewModel = userLikeTimelineViewModel
         super.init()
     }
     
@@ -34,7 +35,7 @@ final class ProfilePagingViewModel: NSObject {
         return [
             profileTweetPostTimelineViewController,
             profileMediaPostTimelineViewController,
-//            profileLikesPostTimelineViewController,
+            profileLikesPostTimelineViewController,
         ]
     }
     
@@ -42,7 +43,7 @@ final class ProfilePagingViewModel: NSObject {
         let items = [
             TMBarItem(image: Asset.TextFormatting.capitalFloatLeft.image.withRenderingMode(.alwaysTemplate)),
             TMBarItem(image: Asset.ObjectTools.photo.image.withRenderingMode(.alwaysTemplate)),
-//            TMBarItem(image: Asset.Health.heartFillLarge.image.withRenderingMode(.alwaysTemplate)),
+            TMBarItem(image: Asset.Health.heartFillLarge.image.withRenderingMode(.alwaysTemplate)),
         ]
         return items
     }()

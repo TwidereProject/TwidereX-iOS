@@ -57,7 +57,7 @@ extension APIService {
         authorization: Twitter.API.OAuth.Authorization,
         twitterUserID: TwitterUser.ID
     ) -> AnyPublisher<Twitter.Response.Content<Twitter.Entity.Tweet>, Error> {
-        let query = Twitter.API.Favorites.Query(id: tweetID)
+        let query = Twitter.API.Favorites.FavoriteQuery(id: tweetID)
         return Twitter.API.Favorites.favorites(session: session, authorization: authorization, favoriteKind: favoriteKind, query: query)
             .handleEvents(receiveOutput: { [weak self] response in
                 guard let self = self else { return }
@@ -120,4 +120,41 @@ extension APIService {
             .eraseToAnyPublisher()
     }
     
+}
+
+extension APIService {
+    func likeList(
+        count: Int = 200,
+        userID: String,
+        maxID: String? = nil,
+        authorization: Twitter.API.OAuth.Authorization,
+        requestTwitterUserID: TwitterUser.ID
+    ) -> AnyPublisher<Twitter.Response.Content<[Twitter.Entity.Tweet]>, Error> {
+        let query = Twitter.API.Timeline.Query(count: count, userID: userID, maxID: maxID)
+        return Twitter.API.Favorites.list(session: session, authorization: authorization, query: query)
+            .map { response -> AnyPublisher<Twitter.Response.Content<[Twitter.Entity.Tweet]>, Error> in
+                let log = OSLog.api
+                
+                return APIService.Persist.persistTimeline(
+                    managedObjectContext: self.backgroundManagedObjectContext,
+                    query: query,
+                    response: response,
+                    persistType: .likeList,
+                    requestTwitterUserID: requestTwitterUserID,
+                    log: log
+                )
+                .setFailureType(to: Error.self)
+                .tryMap { result -> Twitter.Response.Content<[Twitter.Entity.Tweet]> in
+                    switch result {
+                    case .success:
+                        return response
+                    case .failure(let error):
+                        throw error
+                    }
+                }
+                .eraseToAnyPublisher()
+            }
+            .switchToLatest()
+            .eraseToAnyPublisher()
+    }
 }
