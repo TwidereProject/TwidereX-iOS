@@ -235,6 +235,11 @@ extension UserTimelineViewController: TimelinePostTableViewCellDelegate {
         // TODO:
     }
     
+    // MARK: - MosaicImageView
+    func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, mosaicImageView: MosaicImageView, didTapImageView imageView: UIImageView, atIndex index: Int) {
+        // TODO:
+    }
+    
 }
 
 // MARK: - CustomScrollViewContainerController

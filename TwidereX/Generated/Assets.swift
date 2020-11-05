@@ -70,6 +70,7 @@ internal enum Asset {
     internal static let photo = ImageAsset(name: "Object&Tools/photo")
     internal static let verifiedBadge = ImageAsset(name: "Object&Tools/verified.badge")
     internal static let verifiedBadgeMini = ImageAsset(name: "Object&Tools/verified.badge.mini")
+    internal static let verifiedBadgeSmall = ImageAsset(name: "Object&Tools/verified.badge.small")
   }
   internal enum Symbol {
     internal static let sharp = ImageAsset(name: "Symbol/sharp")

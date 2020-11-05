@@ -1,5 +1,5 @@
 //
-//  ConversationPostActionToolbar.swift
+//  StatusActionToolbar.swift
 //  TwidereX
 //
 //  Created by Cirno MainasuK on 2020-9-17.
@@ -7,7 +7,7 @@
 
 import UIKit
 
-final class ConversationPostActionToolbar: UIView {
+final class StatusActionToolbar: UIView {
     
     static let height: CGFloat = 40
     static let buttonTitleImagePadding: CGFloat = 4
@@ -64,7 +64,7 @@ final class ConversationPostActionToolbar: UIView {
     
 }
 
-extension ConversationPostActionToolbar {
+extension StatusActionToolbar {
     
     private func _init() {
         let container = UIStackView()
@@ -93,7 +93,7 @@ import SwiftUI
 struct ConversationPostActionToolbar_Previews: PreviewProvider {
     static var previews: some View {
         UIViewPreview(width: 300) {
-            let toolbar = ConversationPostActionToolbar()
+            let toolbar = StatusActionToolbar()
             return toolbar
         }
         .previewLayout(.fixed(width: 300, height: 100))

@@ -5,15 +5,23 @@
 //  Created by Cirno MainasuK on 2020-9-17.
 //
 
+import os.log
 import func AVFoundation.AVMakeRect
 import UIKit
 
+protocol MosaicImageViewDelegate: class {
+    func mosaicImageView(_ mosaicImageView: MosaicImageView, didTapImageView imageView: UIImageView, atIndex index: Int)
+}
+
 final class MosaicImageView: UIView {
 
+    weak var delegate: MosaicImageViewDelegate?
     var cornerRadius: CGFloat = 8
+    
     let container = UIStackView()
     var imageViews = [UIImageView]()
 
+    private let photoTapGestureRecognizer = UITapGestureRecognizer.singleTapGestureRecognizer
     private var containerHeightLayoutConstraint: NSLayoutConstraint!
     
     override init(frame: CGRect) {
@@ -45,6 +53,9 @@ extension MosaicImageView {
         container.axis = .horizontal
         container.distribution = .fillEqually
         container.layer.masksToBounds = true
+        
+        photoTapGestureRecognizer.addTarget(self, action: #selector(MosaicImageView.photoTapGestureRecognizerHandler(_:)))
+        container.addGestureRecognizer(photoTapGestureRecognizer)
     }
     
 }
@@ -157,6 +168,20 @@ extension MosaicImageView {
     }
 }
 
+extension MosaicImageView {
+
+    @objc private func photoTapGestureRecognizerHandler(_ sender: UITapGestureRecognizer) {
+        let position = sender.location(in: nil)
+        for (i, imageView) in imageViews.enumerated() {
+            guard let superViewOfImageView = imageView.superview else { continue }
+            let imageViewFrameInWindow = superViewOfImageView.convert(imageView.frame, to: nil)
+            guard imageViewFrameInWindow.contains(position) else { continue }
+            os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: tap photo at index: %ld", ((#file as NSString).lastPathComponent), #line, #function, i)
+            delegate?.mosaicImageView(self, didTapImageView: imageView, atIndex: i)
+            break
+        }
+    }
+}
 
 #if DEBUG
 import SwiftUI
@@ -232,5 +257,6 @@ struct MosaicImageView_Previews: PreviewProvider {
             .previewDisplayName("four image")
         }
     }
+    
 }
 #endif

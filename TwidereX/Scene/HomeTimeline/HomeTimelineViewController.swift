@@ -20,6 +20,7 @@ final class HomeTimelineViewController: UIViewController, NeedsDependency {
     
     var disposeBag = Set<AnyCancellable>()
     private(set) lazy var viewModel = HomeTimelineViewModel(context: context)
+    private let mediaPreviewTransitionController = MediaPreviewTransitionController()
     
     lazy var tableView: UITableView = {
         let tableView = ControlContainableTableView()
@@ -662,6 +663,12 @@ extension HomeTimelineViewController: TimelinePostTableViewCellDelegate {
     func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, actionToolbar: TimelinePostActionToolbar, shareButtonDidPressed sender: UIButton) {
     }
     
+    // MARK: - MosaicImageViewDelegate
+    func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, mosaicImageView: MosaicImageView, didTapImageView imageView: UIImageView, atIndex index: Int) {
+        let mediaPreviewViewModel = MediaPreviewViewModel()
+        coordinator.present(scene: .mediaPreview(viewModel: mediaPreviewViewModel), from: self, transition: .custom(transitioningDelegate: mediaPreviewTransitionController))
+    }
+    
 }
 
 // MARK: - TimelineMiddleLoaderTableViewCellDelegate
@@ -682,4 +689,9 @@ extension HomeTimelineViewController: TimelineMiddleLoaderTableViewCellDelegate 
             assertionFailure()
         }
     }
+}
+
+// MARK: - MediaHostViewController
+extension HomeTimelineViewController: MediaHostViewController {
+    
 }
