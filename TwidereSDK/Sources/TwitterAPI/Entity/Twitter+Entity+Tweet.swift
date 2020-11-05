@@ -15,7 +15,9 @@ extension Twitter.Entity {
         // Fundamental
         public let createdAt: Date
         public let idStr: ID
-        public let text: String
+        
+        public let text: String?
+        public let fullText: String?
 
         public let user: User
         public let entities: Entities
@@ -52,7 +54,9 @@ extension Twitter.Entity {
             // Fundamental
             case createdAt = "created_at"
             case idStr = "id_str"
+            
             case text = "text"
+            case fullText = "full_text"
             
             case user = "user"
             case entities = "entities"

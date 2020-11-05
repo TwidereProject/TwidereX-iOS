@@ -52,8 +52,13 @@ extension Twitter.API.Timeline {
         
         return session.dataTaskPublisher(for: request)
             .tryMap { data, response in
-                let value = try Twitter.API.decode(type: [Twitter.Entity.Tweet].self, from: data, response: response)
-                return Twitter.Response.Content(value: value, response: response)
+                do {
+                    let value = try Twitter.API.decode(type: [Twitter.Entity.Tweet].self, from: data, response: response)
+                    return Twitter.Response.Content(value: value, response: response)
+                } catch {
+                    debugPrint(error)
+                    throw error
+                }
             }
             .eraseToAnyPublisher()
     }
@@ -96,6 +101,9 @@ extension Twitter.API.Timeline {
             if let excludeReplies = self.excludeReplies {
                 items.append(URLQueryItem(name: "exclude_replies", value: excludeReplies ? "true" : "false"))
             }
+            items.append(URLQueryItem(name: "include_ext_alt_text", value: "true"))
+            items.append(URLQueryItem(name: "tweet_mode", value: "extended"))
+            
             guard !items.isEmpty else { return nil }
             return items
         }

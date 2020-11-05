@@ -17,10 +17,10 @@ extension Tweet.Property {
             guard let sourceHTML = entity.source, let html = try? HTML(html: sourceHTML, encoding: .utf8) else { return nil }
             return html.text
         }()
-        
+
         self.init(
             id: entity.idStr,
-            text: entity.text,
+            text: entity.fullText ?? entity.text ?? "",
             createdAt: entity.createdAt,
             conversationID: nil,
             replyToTweetID: entity.inReplyToStatusIDStr,
