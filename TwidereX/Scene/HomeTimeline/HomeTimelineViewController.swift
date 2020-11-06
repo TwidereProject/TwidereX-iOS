@@ -665,7 +665,20 @@ extension HomeTimelineViewController: TimelinePostTableViewCellDelegate {
     
     // MARK: - MosaicImageViewDelegate
     func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, mosaicImageView: MosaicImageView, didTapImageView imageView: UIImageView, atIndex index: Int) {
-        let mediaPreviewViewModel = MediaPreviewViewModel()
+        guard let diffableDataSource = viewModel.diffableDataSource else { return }
+        guard let indexPath = tableView.indexPath(for: cell) else { return }
+        guard let item = diffableDataSource.itemIdentifier(for: indexPath) else { return }
+        guard case let .homeTimelineIndex(objectID, _) = item else { return }
+        guard let timelineIndex = viewModel.fetchedResultsController.managedObjectContext.object(with: objectID) as? TimelineIndex,
+              let tweet = timelineIndex.tweet
+        else { return }
+        
+        let root = MediaPreviewViewModel.Root(
+            tweetObjectID: tweet.objectID,
+            initialIndex: index,
+            preloadThumbnailImages: mosaicImageView.imageViews.map { $0.image }
+        )
+        let mediaPreviewViewModel = MediaPreviewViewModel(context: context, root: root)
         coordinator.present(scene: .mediaPreview(viewModel: mediaPreviewViewModel), from: self, transition: .custom(transitioningDelegate: mediaPreviewTransitionController))
     }
     

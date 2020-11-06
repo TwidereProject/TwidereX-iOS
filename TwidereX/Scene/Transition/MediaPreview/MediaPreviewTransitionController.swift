@@ -10,6 +10,8 @@ import UIKit
 
 final class MediaPreviewTransitionController: NSObject {
     
+    weak var mediaPreviewViewController: MediaPreviewViewController?
+    
     var wantsInteractive = false
     private var panGestureRecognizer: UIPanGestureRecognizer = {
         let gestureRecognizer = UIPanGestureRecognizer()
@@ -23,12 +25,13 @@ final class MediaPreviewTransitionController: NSObject {
 extension MediaPreviewTransitionController: UIViewControllerTransitioningDelegate {
     
     func animationController(forPresented presented: UIViewController, presenting: UIViewController, source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
-        guard let mediaHostViewController = presented as? MediaPreviewViewController else {
+        guard let mediaPreviewViewController = presented as? MediaPreviewViewController else {
             assertionFailure()
             return nil
         }
+        self.mediaPreviewViewController = mediaPreviewViewController
         
-        let transitionItem = MediaPreviewTransitionItem(id: UUID().uuidString, initialFrame: .zero)
+        let transitionItem = MediaPreviewTransitionItem(id: UUID().uuidString)
         return MediaHostToMediaPreviewViewControllerAnimatedTransitioning(
             operation: .push,
             transitionItem: transitionItem,
@@ -37,19 +40,26 @@ extension MediaPreviewTransitionController: UIViewControllerTransitioningDelegat
     }
     
     func interactionControllerForPresentation(using animator: UIViewControllerAnimatedTransitioning) -> UIViewControllerInteractiveTransitioning? {
-        guard wantsInteractive else {
-            return nil
-        }
-
+        // not support interactive present
         return nil
     }
     
     func animationController(forDismissed dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
-        fatalError()
+        guard let mediaPreviewViewController = dismissed as? MediaPreviewViewController else {
+            assertionFailure()
+            return nil
+        }
+        let transitionItem = MediaPreviewTransitionItem(id: UUID().uuidString)
+        return MediaHostToMediaPreviewViewControllerAnimatedTransitioning(
+            operation: .pop,
+            transitionItem: transitionItem,
+            panGestureRecognizer: panGestureRecognizer
+        )
     }
     
     func interactionControllerForDismissal(using animator: UIViewControllerAnimatedTransitioning) -> UIViewControllerInteractiveTransitioning? {
-        fatalError()
+        // TODO:
+        return nil
     }
     
 }

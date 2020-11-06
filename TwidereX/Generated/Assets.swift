@@ -42,6 +42,7 @@ internal enum Asset {
     internal static let ellipsis = ImageAsset(name: "Editing/ellipsis")
     internal static let featherPen = ImageAsset(name: "Editing/feather.pen")
     internal static let xmark = ImageAsset(name: "Editing/xmark")
+    internal static let xmarkRound = ImageAsset(name: "Editing/xmark.round")
   }
   internal enum Health {
     internal static let heartFill = ImageAsset(name: "Health/heart.fill")
