@@ -42,6 +42,7 @@ internal enum Asset {
     internal static let ellipsis = ImageAsset(name: "Editing/ellipsis")
     internal static let featherPen = ImageAsset(name: "Editing/feather.pen")
     internal static let xmark = ImageAsset(name: "Editing/xmark")
+    internal static let xmarkRound = ImageAsset(name: "Editing/xmark.round")
   }
   internal enum Health {
     internal static let heartFill = ImageAsset(name: "Health/heart.fill")
@@ -70,6 +71,7 @@ internal enum Asset {
     internal static let photo = ImageAsset(name: "Object&Tools/photo")
     internal static let verifiedBadge = ImageAsset(name: "Object&Tools/verified.badge")
     internal static let verifiedBadgeMini = ImageAsset(name: "Object&Tools/verified.badge.mini")
+    internal static let verifiedBadgeSmall = ImageAsset(name: "Object&Tools/verified.badge.small")
   }
   internal enum Symbol {
     internal static let sharp = ImageAsset(name: "Symbol/sharp")

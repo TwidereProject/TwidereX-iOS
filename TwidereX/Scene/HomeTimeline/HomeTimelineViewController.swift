@@ -20,6 +20,7 @@ final class HomeTimelineViewController: UIViewController, NeedsDependency {
     
     var disposeBag = Set<AnyCancellable>()
     private(set) lazy var viewModel = HomeTimelineViewModel(context: context)
+    private let mediaPreviewTransitionController = MediaPreviewTransitionController()
     
     lazy var tableView: UITableView = {
         let tableView = ControlContainableTableView()
@@ -662,6 +663,25 @@ extension HomeTimelineViewController: TimelinePostTableViewCellDelegate {
     func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, actionToolbar: TimelinePostActionToolbar, shareButtonDidPressed sender: UIButton) {
     }
     
+    // MARK: - MosaicImageViewDelegate
+    func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, mosaicImageView: MosaicImageView, didTapImageView imageView: UIImageView, atIndex index: Int) {
+        guard let diffableDataSource = viewModel.diffableDataSource else { return }
+        guard let indexPath = tableView.indexPath(for: cell) else { return }
+        guard let item = diffableDataSource.itemIdentifier(for: indexPath) else { return }
+        guard case let .homeTimelineIndex(objectID, _) = item else { return }
+        guard let timelineIndex = viewModel.fetchedResultsController.managedObjectContext.object(with: objectID) as? TimelineIndex,
+              let tweet = timelineIndex.tweet
+        else { return }
+        
+        let root = MediaPreviewViewModel.Root(
+            tweetObjectID: tweet.objectID,
+            initialIndex: index,
+            preloadThumbnailImages: mosaicImageView.imageViews.map { $0.image }
+        )
+        let mediaPreviewViewModel = MediaPreviewViewModel(context: context, root: root)
+        coordinator.present(scene: .mediaPreview(viewModel: mediaPreviewViewModel), from: self, transition: .custom(transitioningDelegate: mediaPreviewTransitionController))
+    }
+    
 }
 
 // MARK: - TimelineMiddleLoaderTableViewCellDelegate
@@ -682,4 +702,9 @@ extension HomeTimelineViewController: TimelineMiddleLoaderTableViewCellDelegate 
             assertionFailure()
         }
     }
+}
+
+// MARK: - MediaHostViewController
+extension HomeTimelineViewController: MediaHostViewController {
+    
 }

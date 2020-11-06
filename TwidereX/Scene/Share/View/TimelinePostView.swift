@@ -102,7 +102,7 @@ final class TimelinePostView: UIView {
     }()
     
     let actionToolbar = TimelinePostActionToolbar()
-    
+        
     override init(frame: CGRect) {
         super.init(frame: frame)
         _init()

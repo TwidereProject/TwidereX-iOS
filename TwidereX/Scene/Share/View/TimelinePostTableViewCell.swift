@@ -20,6 +20,8 @@ protocol TimelinePostTableViewCellDelegate: class {
     func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, actionToolbar: TimelinePostActionToolbar, retweetButtonDidPressed sender: UIButton)
     func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, actionToolbar: TimelinePostActionToolbar, favoriteButtonDidPressed sender: UIButton)
     func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, actionToolbar: TimelinePostActionToolbar, shareButtonDidPressed sender: UIButton)
+    
+    func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, mosaicImageView: MosaicImageView, didTapImageView imageView: UIImageView, atIndex index: Int)
 }
 
 final class TimelinePostTableViewCell: UITableViewCell {
@@ -43,24 +45,9 @@ final class TimelinePostTableViewCell: UITableViewCell {
     var separatorLineNormalTrailingLayoutConstraint: NSLayoutConstraint!
     var separatorLineExpandTrailingLayoutConstraint: NSLayoutConstraint!
     
-    private let avatarImageViewTapGestureRecognizer: UITapGestureRecognizer = {
-        let tapGestureRecognizer = UITapGestureRecognizer()
-        tapGestureRecognizer.numberOfTapsRequired = 1
-        tapGestureRecognizer.numberOfTouchesRequired = 1
-        return tapGestureRecognizer
-    }()
-    private let retweetInfoLabelTapGestureRecognizer: UITapGestureRecognizer = {
-        let tapGestureRecognizer = UITapGestureRecognizer()
-        tapGestureRecognizer.numberOfTapsRequired = 1
-        tapGestureRecognizer.numberOfTouchesRequired = 1
-        return tapGestureRecognizer
-    }()
-    private let quoteAvatarImageViewTapGestureRecognizer: UITapGestureRecognizer = {
-        let tapGestureRecognizer = UITapGestureRecognizer()
-        tapGestureRecognizer.numberOfTapsRequired = 1
-        tapGestureRecognizer.numberOfTouchesRequired = 1
-        return tapGestureRecognizer
-    }()
+    private let avatarImageViewTapGestureRecognizer = UITapGestureRecognizer.singleTapGestureRecognizer
+    private let retweetInfoLabelTapGestureRecognizer = UITapGestureRecognizer.singleTapGestureRecognizer
+    private let quoteAvatarImageViewTapGestureRecognizer = UITapGestureRecognizer.singleTapGestureRecognizer
     
     override func prepareForReuse() {
         super.prepareForReuse()
@@ -141,6 +128,7 @@ extension TimelinePostTableViewCell {
         timelinePostView.quotePostView.avatarImageView.addGestureRecognizer(quoteAvatarImageViewTapGestureRecognizer)
         
         timelinePostView.actionToolbar.delegate = self
+        timelinePostView.mosaicImageView.delegate = self
         conversationLinkUpper.isHidden = true
         conversationLinkLower.isHidden = true
     }
@@ -191,6 +179,13 @@ extension TimelinePostTableViewCell: TimelinePostActionToolbarDelegate {
         delegate?.timelinePostTableViewCell(self, actionToolbar: toolbar, shareButtonDidPressed: sender)
     }
     
+}
+
+// MARK: - MosaicImageViewDelegate
+extension TimelinePostTableViewCell: MosaicImageViewDelegate {
+    func mosaicImageView(_ mosaicImageView: MosaicImageView, didTapImageView imageView: UIImageView, atIndex index: Int) {
+        delegate?.timelinePostTableViewCell(self, mosaicImageView: mosaicImageView, didTapImageView: imageView, atIndex: index)
+    }
 }
 
 #if DEBUG

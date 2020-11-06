@@ -97,7 +97,7 @@ final class ConversationPostView: UIView {
     let retweetPostStatusView = ConversationPostStatusView()
     let quotePostStatusView = ConversationPostStatusView()
     let likePostStatusView = ConversationPostStatusView()
-    let actionToolbar = ConversationPostActionToolbar()
+    let actionToolbar = StatusActionToolbar()
     
     override init(frame: CGRect) {
         super.init(frame: frame)

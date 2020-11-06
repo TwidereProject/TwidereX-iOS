@@ -582,6 +582,11 @@ extension MentionTimelineViewController: TimelinePostTableViewCellDelegate {
 
     func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, actionToolbar: TimelinePostActionToolbar, shareButtonDidPressed sender: UIButton) {
     }
+    
+    // MARK: - MosaicImageViewDelegate
+    func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, mosaicImageView: MosaicImageView, didTapImageView imageView: UIImageView, atIndex index: Int) {
+        // TODO:
+    }
 
 }
 
