@@ -344,7 +344,7 @@ extension ProfileViewController: ProfileHeaderViewControllerDelegate {
 // MARK: - ProfilePagingViewControllerDelegate
 extension ProfileViewController: ProfilePagingViewControllerDelegate {
     
-    func profilePagingViewController(_ viewController: ProfilePagingViewController, didScrollToPostTimelineViewController postTimelineViewController: CustomScrollViewContainerController, atIndex index: Int) {
+    func profilePagingViewController(_ viewController: ProfilePagingViewController, didScrollToPostCustomScrollViewContainerController postTimelineViewController: CustomScrollViewContainerController, atIndex index: Int) {
         os_log("%{public}s[%{public}ld], %{public}s: select at index: %ld", ((#file as NSString).lastPathComponent), #line, #function, index)
         
         // save content offset

@@ -20,15 +20,24 @@ final class MediaPreviewViewModel: NSObject {
     
     // output
     let viewControllers: [UIViewController]
+
+    let avatarImageURL = CurrentValueSubject<URL?, Never>(nil)
+    let isVerified = CurrentValueSubject<Bool, Never>(false)
+    let name = CurrentValueSubject<String?, Never>(nil)
+    let content = CurrentValueSubject<String?, Never>(nil)
     
     internal init(context: AppContext, root: Root) {
         self.context = context
         self.rootItem = .root(root)
         // setup viewControllers
+        var _tweet: Tweet?
         var viewControllers: [UIViewController] = []
         let managedObjectContext = self.context.managedObjectContext
         managedObjectContext.performAndWait {
             let tweet = managedObjectContext.object(with: root.tweetObjectID) as! Tweet
+            _tweet = tweet
+            
+            // configure viewControllers
             guard let media = tweet.media?.sorted(by: { $0.index.compare($1.index) == .orderedAscending }) else { return }
             
             for (mediaEntity, image) in zip(media, root.preloadThumbnailImages) {
@@ -46,11 +55,20 @@ final class MediaPreviewViewModel: NSObject {
         }
         self.viewControllers = viewControllers
         super.init()
+        
+        // configure description view
+        if let tweet = _tweet {
+            self.avatarImageURL.value = (tweet.retweet ?? tweet).author.avatarImageURL()
+            self.isVerified.value = (tweet.retweet ?? tweet).author.verified
+            self.name.value = (tweet.retweet ?? tweet).author.name
+            self.content.value = (tweet.retweet ?? tweet).text
+        }
     }
     
 }
 
 extension MediaPreviewViewModel {
+    
     enum PreviewItem {
         case root(Root)
     }
@@ -60,6 +78,7 @@ extension MediaPreviewViewModel {
         let initialIndex: Int
         let preloadThumbnailImages: [UIImage?]
     }
+        
 }
 
 // MARK: - PageboyViewControllerDataSource

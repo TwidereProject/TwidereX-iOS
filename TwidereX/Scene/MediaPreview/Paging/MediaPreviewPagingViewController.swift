@@ -9,5 +9,12 @@
 import UIKit
 import Pageboy
 
-final class MediaPreviewPagingViewController: PageboyViewController { }
+protocol MediaPreviewPagingViewControllerDelegate: class {
+    func profilePagingViewController(_ viewController: ProfilePagingViewController, didScrollToPostTimelineViewController postTimelineViewController: CustomScrollViewContainerController, atIndex index: Int)
+}
+
+
+final class MediaPreviewPagingViewController: PageboyViewController {
+
+}
 

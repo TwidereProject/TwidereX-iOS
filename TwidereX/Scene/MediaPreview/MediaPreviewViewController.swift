@@ -9,6 +9,7 @@
 import os.log
 import UIKit
 import Combine
+import AlamofireImage
 import Pageboy
 
 final class MediaPreviewViewController: UIViewController, NeedsDependency {
@@ -16,6 +17,7 @@ final class MediaPreviewViewController: UIViewController, NeedsDependency {
     weak var context: AppContext! { willSet { precondition(!isViewLoaded) } }
     weak var coordinator: SceneCoordinator! { willSet { precondition(!isViewLoaded) } }
 
+    var disposeBag = Set<AnyCancellable>()
     var viewModel: MediaPreviewViewModel!
     
     // TODO: adapt Reduce Transparency preference
@@ -34,15 +36,20 @@ final class MediaPreviewViewController: UIViewController, NeedsDependency {
         return backgroundView
     }()
     
-    let closeButtonBackgroundVisualEffectView = UIVisualEffectView(effect:
-        UIVibrancyEffect(blurEffect: UIBlurEffect(style: .systemMaterial))
-    )
+    let closeButtonBackgroundVisualEffectView = UIVisualEffectView(effect: UIVibrancyEffect(blurEffect: UIBlurEffect(style: .systemMaterial)))
     
     let closeButton: UIButton = {
         let button = HitTestExpandedButton(type: .custom)
         button.imageView?.tintColor = .label
         button.setImage(Asset.Editing.xmarkRound.image.withRenderingMode(.alwaysTemplate), for: .normal)
         return button
+    }()
+    
+    let pageControlBackgroundVisualEffectView = UIVisualEffectView(effect:UIVibrancyEffect(blurEffect: UIBlurEffect(style: .systemMaterial)))
+    
+    let pageControl: UIPageControl = {
+        let pageControl = UIPageControl()
+        return pageControl
     }()
     
 }
@@ -59,21 +66,21 @@ extension MediaPreviewViewController {
         
         pagingViewConttroller.view.translatesAutoresizingMaskIntoConstraints = false
         addChild(pagingViewConttroller)
-        view.addSubview(pagingViewConttroller.view)
+        visualEffectView.contentView.addSubview(pagingViewConttroller.view)
         NSLayoutConstraint.activate([
-            view.topAnchor.constraint(equalTo: pagingViewConttroller.view.topAnchor),
-            view.bottomAnchor.constraint(equalTo: pagingViewConttroller.view.bottomAnchor),
-            view.leadingAnchor.constraint(equalTo: pagingViewConttroller.view.leadingAnchor),
-            view.trailingAnchor.constraint(equalTo: pagingViewConttroller.view.trailingAnchor),
+            visualEffectView.topAnchor.constraint(equalTo: pagingViewConttroller.view.topAnchor),
+            visualEffectView.bottomAnchor.constraint(equalTo: pagingViewConttroller.view.bottomAnchor),
+            visualEffectView.leadingAnchor.constraint(equalTo: pagingViewConttroller.view.leadingAnchor),
+            visualEffectView.trailingAnchor.constraint(equalTo: pagingViewConttroller.view.trailingAnchor),
         ])
         pagingViewConttroller.didMove(toParent: self)
         
         mediaInfoDescriptionView.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(mediaInfoDescriptionView)
+        visualEffectView.contentView.addSubview(mediaInfoDescriptionView)
         NSLayoutConstraint.activate([
-            view.bottomAnchor.constraint(equalTo: mediaInfoDescriptionView.bottomAnchor),
-            view.leadingAnchor.constraint(equalTo: mediaInfoDescriptionView.leadingAnchor),
-            view.trailingAnchor.constraint(equalTo: mediaInfoDescriptionView.trailingAnchor),
+            visualEffectView.bottomAnchor.constraint(equalTo: mediaInfoDescriptionView.bottomAnchor),
+            visualEffectView.leadingAnchor.constraint(equalTo: mediaInfoDescriptionView.leadingAnchor),
+            visualEffectView.trailingAnchor.constraint(equalTo: mediaInfoDescriptionView.trailingAnchor),
         ])
 
         closeButtonBackground.translatesAutoresizingMaskIntoConstraints = false
@@ -94,10 +101,70 @@ extension MediaPreviewViewController {
             closeButtonBackgroundVisualEffectView.bottomAnchor.constraint(equalTo: closeButton.bottomAnchor, constant: 4),
         ])
         
+        pageControlBackgroundVisualEffectView.translatesAutoresizingMaskIntoConstraints = false
+        visualEffectView.contentView.addSubview(pageControlBackgroundVisualEffectView)
+        NSLayoutConstraint.activate([
+            pageControlBackgroundVisualEffectView.centerXAnchor.constraint(equalTo: mediaInfoDescriptionView.centerXAnchor),
+            mediaInfoDescriptionView.topAnchor.constraint(equalTo: pageControlBackgroundVisualEffectView.bottomAnchor, constant: 8),
+        ])
+        
+        pageControl.translatesAutoresizingMaskIntoConstraints = false
+        pageControlBackgroundVisualEffectView.contentView.addSubview(pageControl)
+        NSLayoutConstraint.activate([
+            pageControl.topAnchor.constraint(equalTo: pageControlBackgroundVisualEffectView.topAnchor),
+            pageControl.leadingAnchor.constraint(equalTo: pageControlBackgroundVisualEffectView.leadingAnchor),
+            pageControl.trailingAnchor.constraint(equalTo: pageControlBackgroundVisualEffectView.trailingAnchor),
+            pageControl.bottomAnchor.constraint(equalTo: pageControlBackgroundVisualEffectView.bottomAnchor),
+        ])
+        
+        viewModel.avatarImageURL
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] avatarImageURL in
+                guard let self = self else { return }
+                let placeholderImage = UIImage
+                    .placeholder(size: MediaInfoDescriptionView.avatarImageViewSize, color: .systemFill)
+                    .af.imageRoundedIntoCircle()
+                guard let url = avatarImageURL else {
+                    self.mediaInfoDescriptionView.avatarImageView.af.cancelImageRequest()
+                    self.mediaInfoDescriptionView.avatarImageView.image = placeholderImage
+                    return
+                }
+                let filter = ScaledToSizeCircleFilter(size: MediaInfoDescriptionView.avatarImageViewSize)
+                self.mediaInfoDescriptionView.avatarImageView.af.setImage(
+                    withURL: url,
+                    placeholderImage: placeholderImage,
+                    filter: filter,
+                    imageTransition: .crossDissolve(0.2)
+                )
+            }
+            .store(in: &disposeBag)
+        viewModel.isVerified
+            .receive(on: DispatchQueue.main)
+            .map { !$0 }
+            .assign(to: \.isHidden, on: mediaInfoDescriptionView.verifiedBadgeImageView)
+            .store(in: &disposeBag)
+        viewModel.name
+            .receive(on: DispatchQueue.main)
+            .assign(to: \.text, on: mediaInfoDescriptionView.nameLabel)
+            .store(in: &disposeBag)
+        viewModel.content
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] content in
+                guard let self = self else { return }
+                self.mediaInfoDescriptionView.activeTextLabel.text = content
+            }
+            .store(in: &disposeBag)
+        
         closeButton.addTarget(self, action: #selector(MediaPreviewViewController.closeButtonPressed(_:)), for: .touchUpInside)
         
         pagingViewConttroller.interPageSpacing = 10
+        pagingViewConttroller.delegate = self
         pagingViewConttroller.dataSource = viewModel
+        
+        pageControl.numberOfPages = viewModel.viewControllers.count
+        if case let .root(root) = viewModel.rootItem {
+            pageControl.currentPage = root.initialIndex
+        }
     }
     
     override func viewDidLayoutSubviews() {
@@ -115,4 +182,44 @@ extension MediaPreviewViewController {
         dismiss(animated: true, completion: nil)
     }
     
+}
+
+// MARK: - PageboyViewControllerDelegate
+extension MediaPreviewViewController: PageboyViewControllerDelegate {
+    func pageboyViewController(
+        _ pageboyViewController: PageboyViewController,
+        willScrollToPageAt index: PageboyViewController.PageIndex,
+        direction: PageboyViewController.NavigationDirection,
+        animated: Bool
+    ) {
+        // do nothing
+    }
+    
+    func pageboyViewController(
+        _ pageboyViewController: PageboyViewController,
+        didScrollTo position: CGPoint,
+        direction: PageboyViewController.NavigationDirection,
+        animated: Bool
+    ) {
+        // do nothing
+    }
+    
+    func pageboyViewController(
+        _ pageboyViewController: PageboyViewController,
+        didScrollToPageAt index: PageboyViewController.PageIndex,
+        direction: PageboyViewController.NavigationDirection,
+        animated: Bool
+    ) {
+        // update page control
+        pageControl.currentPage = index
+    }
+    
+    func pageboyViewController(
+        _ pageboyViewController: PageboyViewController,
+        didReloadWith currentViewController: UIViewController,
+        currentPageIndex: PageboyViewController.PageIndex
+    ) {
+        // do nothing
+    }
+
 }
