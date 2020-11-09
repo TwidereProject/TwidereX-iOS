@@ -9,6 +9,7 @@
 import os.log
 import UIKit
 import Combine
+import AlamofireImage
 
 final class SearchViewController: UIViewController, NeedsDependency {
     
@@ -19,6 +20,8 @@ final class SearchViewController: UIViewController, NeedsDependency {
 
     var disposeBag = Set<AnyCancellable>()
     
+    let avatarButton = UIButton.avatarButton
+
     let searchBar: UISearchBar = {
         let searchBar = UISearchBar()
         searchBar.placeholder = "Search tweets or users"
@@ -33,7 +36,7 @@ extension SearchViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "person"), style: .plain, target: nil, action: nil)
+        navigationItem.leftBarButtonItem = UIBarButtonItem(customView: avatarButton)
         
         setupSearchBar()
         
@@ -46,6 +49,25 @@ extension SearchViewController {
                 searchDetailViewModel.needsBecomeFirstResponder = true
                 self.navigationController?.delegate = self.searchDetailTransitionController
                 self.coordinator.present(scene: .searchDetail(viewModel: searchDetailViewModel), from: self, transition: .customPush)
+            }
+            .store(in: &disposeBag)
+        context.authenticationService.currentTwitterUser
+            .sink { [weak self] twitterUser in
+                guard let self = self else { return }
+                let placeholderImage = UIImage
+                    .placeholder(size: UIButton.avatarButtonSize, color: .systemFill)
+                    .af.imageRoundedIntoCircle()
+                guard let twitterUser = twitterUser, let avatarImageURL = twitterUser.avatarImageURL() else {
+                    self.avatarButton.setImage(placeholderImage, for: .normal)
+                    return
+                }
+                let filter = ScaledToSizeCircleFilter(size: UIButton.avatarButtonSize)
+                self.avatarButton.af.setImage(
+                    for: .normal,
+                    url: avatarImageURL,
+                    placeholderImage: placeholderImage,
+                    filter: filter
+                )
             }
             .store(in: &disposeBag)
     }

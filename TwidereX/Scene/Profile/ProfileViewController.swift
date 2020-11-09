@@ -9,6 +9,7 @@ import os.log
 import UIKit
 import Combine
 import Tabman
+import AlamofireImage
 
 final class ProfileViewController: UIViewController, NeedsDependency {
     
@@ -17,7 +18,9 @@ final class ProfileViewController: UIViewController, NeedsDependency {
     
     var disposeBag = Set<AnyCancellable>()
     var viewModel: ProfileViewModel!
-        
+    
+    let avatarButton = UIButton.avatarButton
+    
     let containerScrollView: UIScrollView = {
         let scrollView = UIScrollView()
         scrollView.scrollsToTop = false
@@ -85,7 +88,10 @@ extension ProfileViewController {
         super.viewDidLoad()
         
         view.backgroundColor = .systemBackground
-
+        if navigationController?.viewControllers.first == self {
+            navigationItem.leftBarButtonItem = UIBarButtonItem(customView: avatarButton)
+        }
+        
         let userTimelineViewModel = UserTimelineViewModel(context: context, userID: viewModel.userID.value)
         viewModel.userID.assign(to: \.value, on: userTimelineViewModel.userID).store(in: &disposeBag)
         
@@ -277,6 +283,25 @@ extension ProfileViewController {
         profileHeaderViewController.profileBannerView.profileBannerInfoActionView.delegate = self
         context.authenticationService.currentActiveTwitterAutentication
             .assign(to: \.value, on: viewModel.currentTwitterAuthentication)
+            .store(in: &disposeBag)
+        context.authenticationService.currentTwitterUser
+            .sink { [weak self] twitterUser in
+                guard let self = self else { return }
+                let placeholderImage = UIImage
+                    .placeholder(size: UIButton.avatarButtonSize, color: .systemFill)
+                    .af.imageRoundedIntoCircle()
+                guard let twitterUser = twitterUser, let avatarImageURL = twitterUser.avatarImageURL() else {
+                    self.avatarButton.setImage(placeholderImage, for: .normal)
+                    return
+                }
+                let filter = ScaledToSizeCircleFilter(size: UIButton.avatarButtonSize)
+                self.avatarButton.af.setImage(
+                    for: .normal,
+                    url: avatarImageURL,
+                    placeholderImage: placeholderImage,
+                    filter: filter
+                )
+            }
             .store(in: &disposeBag)
             
     }

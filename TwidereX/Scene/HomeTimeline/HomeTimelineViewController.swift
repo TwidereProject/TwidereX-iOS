@@ -12,6 +12,7 @@ import CoreData
 import CoreDataStack
 import TwitterAPI
 import Floaty
+import AlamofireImage
 
 final class HomeTimelineViewController: UIViewController, NeedsDependency {
     
@@ -21,6 +22,8 @@ final class HomeTimelineViewController: UIViewController, NeedsDependency {
     var disposeBag = Set<AnyCancellable>()
     private(set) lazy var viewModel = HomeTimelineViewModel(context: context)
     private let mediaPreviewTransitionController = MediaPreviewTransitionController()
+    
+    let avatarButton = UIButton.avatarButton
     
     lazy var tableView: UITableView = {
         let tableView = ControlContainableTableView()
@@ -33,6 +36,7 @@ final class HomeTimelineViewController: UIViewController, NeedsDependency {
     }()
     
     let refreshControl = UIRefreshControl()
+    
     private lazy var floatyButton: Floaty = {
         let button = Floaty()
         button.plusColor = .white
@@ -59,6 +63,7 @@ extension HomeTimelineViewController {
         super.viewDidLoad()
         
         view.backgroundColor = .systemBackground
+        navigationItem.leftBarButtonItem = UIBarButtonItem(customView: avatarButton)
         
         tableView.refreshControl = refreshControl
         refreshControl.addTarget(self, action: #selector(HomeTimelineViewController.refreshControlValueChanged(_:)), for: .valueChanged)
@@ -146,6 +151,25 @@ extension HomeTimelineViewController {
                 if !isFetching {
                     self.refreshControl.endRefreshing()
                 }
+            }
+            .store(in: &disposeBag)
+        context.authenticationService.currentTwitterUser
+            .sink { [weak self] twitterUser in
+                guard let self = self else { return }
+                let placeholderImage = UIImage
+                    .placeholder(size: UIButton.avatarButtonSize, color: .systemFill)
+                    .af.imageRoundedIntoCircle()
+                guard let twitterUser = twitterUser, let avatarImageURL = twitterUser.avatarImageURL() else {
+                    self.avatarButton.setImage(placeholderImage, for: .normal)
+                    return
+                }
+                let filter = ScaledToSizeCircleFilter(size: UIButton.avatarButtonSize)
+                self.avatarButton.af.setImage(
+                    for: .normal,
+                    url: avatarImageURL,
+                    placeholderImage: placeholderImage,
+                    filter: filter
+                )
             }
             .store(in: &disposeBag)
     }
