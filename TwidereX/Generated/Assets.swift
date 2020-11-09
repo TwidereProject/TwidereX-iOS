@@ -53,6 +53,9 @@ internal enum Asset {
   internal enum Human {
     internal static let person = ImageAsset(name: "Human/person")
   }
+  internal enum Logo {
+    internal static let twidere = ImageAsset(name: "Logo/twidere")
+  }
   internal enum Media {
     internal static let `repeat` = ImageAsset(name: "Media/repeat")
     internal static let repeatLarge = ImageAsset(name: "Media/repeat.large")
