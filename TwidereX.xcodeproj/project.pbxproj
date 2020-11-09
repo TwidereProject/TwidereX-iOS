@@ -219,6 +219,8 @@
 		DBED96D3253F46CF00C5383A /* TwitterMedia.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBED96D2253F46CF00C5383A /* TwitterMedia.swift */; };
 		DBED96D8253F5D7800C5383A /* NamingState.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBED96D7253F5D7800C5383A /* NamingState.swift */; };
 		DBEFDC7D255918D70086F268 /* UIButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBEFDC7C255918D70086F268 /* UIButton.swift */; };
+		DBEFDC8825591F5C0086F268 /* DrawerSidebarViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBEFDC8725591F5C0086F268 /* DrawerSidebarViewController.swift */; };
+		DBEFDC92255920060086F268 /* DrawerSidebarTransitionController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBEFDC91255920060086F268 /* DrawerSidebarTransitionController.swift */; };
 		DBF69E8F2549601900E2A915 /* SearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBF69E8E2549601900E2A915 /* SearchViewController.swift */; };
 		DBF69E9C25496BB100E2A915 /* SearchDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBF69E9B25496BB100E2A915 /* SearchDetailViewController.swift */; };
 		DBF69EAC25496C9F00E2A915 /* SearchDetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBF69EAB25496C9F00E2A915 /* SearchDetailViewModel.swift */; };
@@ -529,6 +531,8 @@
 		DBED96D2253F46CF00C5383A /* TwitterMedia.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwitterMedia.swift; sourceTree = "<group>"; };
 		DBED96D7253F5D7800C5383A /* NamingState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NamingState.swift; sourceTree = "<group>"; };
 		DBEFDC7C255918D70086F268 /* UIButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIButton.swift; sourceTree = "<group>"; };
+		DBEFDC8725591F5C0086F268 /* DrawerSidebarViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawerSidebarViewController.swift; sourceTree = "<group>"; };
+		DBEFDC91255920060086F268 /* DrawerSidebarTransitionController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawerSidebarTransitionController.swift; sourceTree = "<group>"; };
 		DBF69E8E2549601900E2A915 /* SearchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewController.swift; sourceTree = "<group>"; };
 		DBF69E9B25496BB100E2A915 /* SearchDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchDetailViewController.swift; sourceTree = "<group>"; };
 		DBF69EAB25496C9F00E2A915 /* SearchDetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchDetailViewModel.swift; sourceTree = "<group>"; };
@@ -1068,6 +1072,7 @@
 				DB8AC1122540501A00E636BE /* Compose */,
 				DBF69E932549601C00E2A915 /* Search */,
 				DBA5F9E42553CFEB00D2E98E /* MediaPreview */,
+				DBEFDC8C25591F5F0086F268 /* Sidebar */,
 			);
 			path = Scene;
 			sourceTree = "<group>";
@@ -1356,6 +1361,22 @@
 			path = Protocol;
 			sourceTree = "<group>";
 		};
+		DBEFDC8C25591F5F0086F268 /* Sidebar */ = {
+			isa = PBXGroup;
+			children = (
+				DBEFDC8D25591F650086F268 /* Drawer */,
+			);
+			path = Sidebar;
+			sourceTree = "<group>";
+		};
+		DBEFDC8D25591F650086F268 /* Drawer */ = {
+			isa = PBXGroup;
+			children = (
+				DBEFDC8725591F5C0086F268 /* DrawerSidebarViewController.swift */,
+			);
+			path = Drawer;
+			sourceTree = "<group>";
+		};
 		DBF69E932549601C00E2A915 /* Search */ = {
 			isa = PBXGroup;
 			children = (
@@ -1393,6 +1414,7 @@
 				DBF69EDF2549705A00E2A915 /* ViewControllerAnimatedTransitioningDelegate.swift */,
 				DBF69ED525496E7600E2A915 /* SearchDetail */,
 				DBA5F9F32553D06800D2E98E /* MediaPreview */,
+				DBEFDC91255920060086F268 /* DrawerSidebarTransitionController.swift */,
 			);
 			path = Transition;
 			sourceTree = "<group>";
@@ -1856,6 +1878,7 @@
 				DB88AC38250B25170009E562 /* UIViewPreview.swift in Sources */,
 				DBE76D232500FF1C00DEB0FC /* AuthenticationService.swift in Sources */,
 				DB7E22FE2552A6A700551314 /* UserLikeTimelineViewModel+State.swift in Sources */,
+				DBEFDC92255920060086F268 /* DrawerSidebarTransitionController.swift in Sources */,
 				DBDA8E9024FE068C006750DC /* NeedsDependency.swift in Sources */,
 				DB25B9F42539A9CE00A5420F /* APIService+CoreData+TwitterUser.swift in Sources */,
 				DB3FC04025527053003A2F8A /* UserMediaTimelineViewModel.swift in Sources */,
@@ -1882,6 +1905,7 @@
 				DBED96D3253F46CF00C5383A /* TwitterMedia.swift in Sources */,
 				DBEA4F772511DD610007FEC5 /* TweetConversationViewModel.swift in Sources */,
 				DBF69EDA2549701B00E2A915 /* SearchToSearchDetailViewControllerAnimatedTransitioning.swift in Sources */,
+				DBEFDC8825591F5C0086F268 /* DrawerSidebarViewController.swift in Sources */,
 				DBF69EFA25498B1500E2A915 /* SearchTimelineViewModel.swift in Sources */,
 				DBDA8E9424FE06BC006750DC /* RootSplitViewController.swift in Sources */,
 				DB8AC0F825401BA200E636BE /* UIViewController.swift in Sources */,
