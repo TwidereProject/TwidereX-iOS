@@ -3,6 +3,7 @@
 //  TwidereX
 //
 //  Created by Cirno MainasuK on 2020-9-1.
+//  Copyright © 2020 Twidere. All rights reserved.
 //
 
 import os.log
@@ -14,13 +15,14 @@ import TwitterAPI
 import Floaty
 import AlamofireImage
 
-final class HomeTimelineViewController: UIViewController, NeedsDependency {
+final class HomeTimelineViewController: UIViewController, DrawerSidebarTransitionableViewController, NeedsDependency {
     
     weak var context: AppContext! { willSet { precondition(!isViewLoaded) } }
     weak var coordinator: SceneCoordinator! { willSet { precondition(!isViewLoaded) } }
     
     var disposeBag = Set<AnyCancellable>()
     private(set) lazy var viewModel = HomeTimelineViewModel(context: context)
+    private(set) var drawerSidebarTransitionController: DrawerSidebarTransitionController!
     private let mediaPreviewTransitionController = MediaPreviewTransitionController()
     
     let avatarButton = UIButton.avatarButton
@@ -65,6 +67,7 @@ extension HomeTimelineViewController {
         view.backgroundColor = .systemBackground
         navigationItem.leftBarButtonItem = UIBarButtonItem(customView: avatarButton)
         
+        drawerSidebarTransitionController = DrawerSidebarTransitionController(drawerSidebarTransitionableViewController: self)
         tableView.refreshControl = refreshControl
         refreshControl.addTarget(self, action: #selector(HomeTimelineViewController.refreshControlValueChanged(_:)), for: .valueChanged)
         

@@ -2,7 +2,8 @@
 //  ViewControllerAnimatedTransitioning.swift
 //  TwidereX
 //
-//  Created by Cirno MainasuK on 12/21/18.
+//  Created by Cirno MainasuK on 2020-12-21.
+//  Copyright © 2020 Twidere. All rights reserved.
 //
 
 import os.log

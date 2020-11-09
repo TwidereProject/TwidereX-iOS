@@ -2,7 +2,7 @@
 //  DrawerSidebarViewController.swift
 //  TwidereX
 //
-//  Created by DTK on 2020-11-9.
+//  Created by Cirno MainasuK on 2020-11-9.
 //  Copyright © 2020 Twidere. All rights reserved.
 //
 
@@ -16,7 +16,31 @@ final class DrawerSidebarViewController: UIViewController, NeedsDependency {
 
     var disposeBag = Set<AnyCancellable>()
 
-    let avatarButton = UIButton.avatarButton
+    let headerView = DrawerSidebarHeaderView()    
     
+    let tableView: UITableView = {
+        let tableView = UITableView()
+        tableView.register(DrawerSidebarEntryTableViewCell.self, forCellReuseIdentifier: String(describing: DrawerSidebarEntryTableViewCell.self))
+        tableView.tableFooterView = UIView()
+        tableView.separatorStyle = .none
+        return tableView
+    }()
+}
+
+extension DrawerSidebarViewController {
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        view.backgroundColor = .systemBackground
+        headerView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(headerView)
+        NSLayoutConstraint.activate([
+            headerView.topAnchor.constraint(equalTo: view.layoutMarginsGuide.topAnchor),
+            headerView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            headerView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+        ])
+        
+    }
     
 }
