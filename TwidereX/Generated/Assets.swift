@@ -29,6 +29,7 @@ internal enum Asset {
     internal static let squareAndArrowUp = ImageAsset(name: "Arrows/square.and.arrow.up")
     internal static let squareAndArrowUpMini = ImageAsset(name: "Arrows/square.and.arrow.up.mini")
     internal static let tablerChevronDown = ImageAsset(name: "Arrows/tabler.chevron.down")
+    internal static let trendingUp = ImageAsset(name: "Arrows/trending.up")
   }
   internal enum Colors {
     internal static let heartPink = ColorAsset(name: "Colors/heart.pink")
@@ -37,10 +38,12 @@ internal enum Asset {
   internal enum Communication {
     internal static let at = ImageAsset(name: "Communication/at")
     internal static let ellipsesBubble = ImageAsset(name: "Communication/ellipses.bubble")
+    internal static let mail = ImageAsset(name: "Communication/mail")
   }
   internal enum Editing {
     internal static let ellipsis = ImageAsset(name: "Editing/ellipsis")
     internal static let featherPen = ImageAsset(name: "Editing/feather.pen")
+    internal static let sliderHorizontal3 = ImageAsset(name: "Editing/slider.horizontal.3")
     internal static let xmark = ImageAsset(name: "Editing/xmark")
     internal static let xmarkRound = ImageAsset(name: "Editing/xmark.round")
   }
@@ -55,6 +58,7 @@ internal enum Asset {
   }
   internal enum Indices {
     internal static let exclamationmarkCircle = ImageAsset(name: "Indices/exclamationmark.circle")
+    internal static let infoCircle = ImageAsset(name: "Indices/info.circle")
   }
   internal enum Logo {
     internal static let twidere = ImageAsset(name: "Logo/twidere")
@@ -64,7 +68,9 @@ internal enum Asset {
     internal static let repeatLarge = ImageAsset(name: "Media/repeat.large")
   }
   internal enum ObjectTools {
+    internal static let bookmarks = ImageAsset(name: "Object&Tools/bookmarks")
     internal static let camera = ImageAsset(name: "Object&Tools/camera")
+    internal static let clothes = ImageAsset(name: "Object&Tools/clothes")
     internal static let gif = ImageAsset(name: "Object&Tools/gif")
     internal static let globeMini = ImageAsset(name: "Object&Tools/globe.mini")
     internal static let house = ImageAsset(name: "Object&Tools/house")
@@ -73,6 +79,7 @@ internal enum Asset {
     internal static let magnifyingglass = ImageAsset(name: "Object&Tools/magnifyingglass")
     internal static let mappin = ImageAsset(name: "Object&Tools/mappin")
     internal static let mappinMini = ImageAsset(name: "Object&Tools/mappin.mini")
+    internal static let note = ImageAsset(name: "Object&Tools/note")
     internal static let paperplane = ImageAsset(name: "Object&Tools/paperplane")
     internal static let photo = ImageAsset(name: "Object&Tools/photo")
     internal static let verifiedBadge = ImageAsset(name: "Object&Tools/verified.badge")
@@ -84,7 +91,11 @@ internal enum Asset {
   }
   internal enum TextFormatting {
     internal static let capitalFloatLeft = ImageAsset(name: "TextFormatting/capital.float.left")
+    internal static let listBullet = ImageAsset(name: "TextFormatting/list.bullet")
+    internal static let textHeaderRedaction = ImageAsset(name: "TextFormatting/text.header.redaction")
   }
+  internal static let sidebarLeft = ImageAsset(name: "sidebar.left")
+  internal static let window = ImageAsset(name: "window")
 }
 // swiftlint:enable identifier_name line_length nesting type_body_length type_name
 

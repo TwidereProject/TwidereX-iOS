@@ -14,6 +14,8 @@ import CoreDataStack
 class AppContext: ObservableObject {
     
     var disposeBag = Set<AnyCancellable>()
+    
+    @Published var viewStateStore = ViewStateStore()
         
     let coreDataStack: CoreDataStack
     let managedObjectContext: NSManagedObjectContext

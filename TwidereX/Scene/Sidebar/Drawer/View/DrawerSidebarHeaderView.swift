@@ -6,6 +6,7 @@
 //  Copyright © 2020 Twidere. All rights reserved.
 //
 
+import os.log
 import UIKit
 
 protocol DrawerSidebarHeaderViewDelegate: class {
@@ -136,10 +137,12 @@ extension DrawerSidebarHeaderView {
 extension DrawerSidebarHeaderView {
     
     @objc private func menuButtonPressed(_ sender: UIButton) {
+        os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
         delegate?.drawerSidebarHeaderView(self, menuButtonDidPressed: sender)
     }
     
     @objc private func closeButtonPressed(_ sender: UIButton) {
+        os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
         delegate?.drawerSidebarHeaderView(self, closeButtonDidPressed: sender)
     }
     

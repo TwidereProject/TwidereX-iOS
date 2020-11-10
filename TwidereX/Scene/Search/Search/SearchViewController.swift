@@ -11,6 +11,12 @@ import UIKit
 import Combine
 import AlamofireImage
 
+final class HeightFixedSearchBar: UISearchBar {
+    override var intrinsicContentSize: CGSize {
+        return CGSize(width: CGFloat.greatestFiniteMagnitude, height: 44)
+    }
+}
+
 final class SearchViewController: UIViewController, NeedsDependency {
     
     weak var context: AppContext! { willSet { precondition(!isViewLoaded) } }
@@ -23,7 +29,7 @@ final class SearchViewController: UIViewController, NeedsDependency {
     let avatarButton = UIButton.avatarButton
 
     let searchBar: UISearchBar = {
-        let searchBar = UISearchBar()
+        let searchBar = HeightFixedSearchBar()
         searchBar.placeholder = "Search tweets or users"
         return searchBar
     }()
@@ -37,9 +43,8 @@ extension SearchViewController {
         super.viewDidLoad()
         
         navigationItem.leftBarButtonItem = UIBarButtonItem(customView: avatarButton)
-        
         setupSearchBar()
-        
+
         searchBarTapPublisher
 //            .receive(on: DispatchQueue.main)
 //            .debounce(for: .seconds(1), scheduler: DispatchQueue.main)
@@ -77,13 +82,19 @@ extension SearchViewController {
 extension SearchViewController {
 
     private func setupSearchBar() {
-        navigationItem.titleView = searchBar
+        let searchBarContainerView = UIView()
+        searchBar.translatesAutoresizingMaskIntoConstraints = false
+        searchBarContainerView.addSubview(searchBar)
+        NSLayoutConstraint.activate([
+            searchBar.topAnchor.constraint(equalTo: searchBarContainerView.topAnchor),
+            searchBar.leadingAnchor.constraint(equalTo: searchBarContainerView.leadingAnchor),
+            searchBar.trailingAnchor.constraint(equalTo: searchBarContainerView.trailingAnchor),
+            searchBar.bottomAnchor.constraint(equalTo: searchBarContainerView.bottomAnchor),
+        ])
         searchBar.delegate = self
+        
+        navigationItem.titleView = searchBarContainerView
     }
-
-}
-
-extension SearchViewController {
 
 }
 

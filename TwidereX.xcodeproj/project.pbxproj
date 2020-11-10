@@ -147,6 +147,9 @@
 		DB98DC10250787420087E30F /* TimelineBottomLoaderTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB98DC0F250787420087E30F /* TimelineBottomLoaderTableViewCell.swift */; };
 		DB9EC4E1255A6317005403AA /* SwiftMessages in Frameworks */ = {isa = PBXBuildFile; productRef = DB9EC4E0255A6317005403AA /* SwiftMessages */; };
 		DB9EC4EA255A6BC7005403AA /* TwitterAccountUnlockViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB9EC4E9255A6BC7005403AA /* TwitterAccountUnlockViewController.swift */; };
+		DB9EC519255A8285005403AA /* SettingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB9EC518255A8285005403AA /* SettingViewController.swift */; };
+		DB9EC532255A87A4005403AA /* SettingListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB9EC531255A87A4005403AA /* SettingListView.swift */; };
+		DB9EC537255A8CEE005403AA /* ViewStateStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB9EC536255A8CEE005403AA /* ViewStateStore.swift */; };
 		DBA397B4255513AD00A95662 /* MediaPreviewImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBA397B3255513AD00A95662 /* MediaPreviewImageView.swift */; };
 		DBA397BD25551C0900A95662 /* MediaPreviewPagingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBA397BC25551C0900A95662 /* MediaPreviewPagingViewController.swift */; };
 		DBA397C925551EB500A95662 /* MediaPreviewImageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBA397C825551EB500A95662 /* MediaPreviewImageViewController.swift */; };
@@ -467,6 +470,9 @@
 		DB98DC0D2507862D0087E30F /* TimelineMiddleLoaderTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimelineMiddleLoaderTableViewCell.swift; sourceTree = "<group>"; };
 		DB98DC0F250787420087E30F /* TimelineBottomLoaderTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimelineBottomLoaderTableViewCell.swift; sourceTree = "<group>"; };
 		DB9EC4E9255A6BC7005403AA /* TwitterAccountUnlockViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwitterAccountUnlockViewController.swift; sourceTree = "<group>"; };
+		DB9EC518255A8285005403AA /* SettingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingViewController.swift; sourceTree = "<group>"; };
+		DB9EC531255A87A4005403AA /* SettingListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingListView.swift; sourceTree = "<group>"; };
+		DB9EC536255A8CEE005403AA /* ViewStateStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewStateStore.swift; sourceTree = "<group>"; };
 		DBA397B3255513AD00A95662 /* MediaPreviewImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaPreviewImageView.swift; sourceTree = "<group>"; };
 		DBA397BC25551C0900A95662 /* MediaPreviewPagingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaPreviewPagingViewController.swift; sourceTree = "<group>"; };
 		DBA397C825551EB500A95662 /* MediaPreviewImageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaPreviewImageViewController.swift; sourceTree = "<group>"; };
@@ -984,6 +990,15 @@
 			path = TwitterAccountUnlock;
 			sourceTree = "<group>";
 		};
+		DB9EC51D255A828C005403AA /* Setting */ = {
+			isa = PBXGroup;
+			children = (
+				DB9EC518255A8285005403AA /* SettingViewController.swift */,
+				DB9EC531255A87A4005403AA /* SettingListView.swift */,
+			);
+			path = Setting;
+			sourceTree = "<group>";
+		};
 		DBA397C125551C0E00A95662 /* Paging */ = {
 			isa = PBXGroup;
 			children = (
@@ -1142,6 +1157,7 @@
 				DBA5F9E42553CFEB00D2E98E /* MediaPreview */,
 				DBEFDC8C25591F5F0086F268 /* Sidebar */,
 				DB9EC4F8255A6BCA005403AA /* TwitterAccountUnlock */,
+				DB9EC51D255A828C005403AA /* Setting */,
 			);
 			path = Scene;
 			sourceTree = "<group>";
@@ -1170,6 +1186,7 @@
 			children = (
 				DBDA8E8824FE0615006750DC /* DocumentStore.swift */,
 				DBDA8E8924FE0615006750DC /* AppContext.swift */,
+				DB9EC536255A8CEE005403AA /* ViewStateStore.swift */,
 			);
 			path = State;
 			sourceTree = "<group>";
@@ -1995,6 +2012,7 @@
 				DB92570A251C8FE0004FEFB5 /* ProfileHeaderViewController.swift in Sources */,
 				DB0849B425137B3E009E0CD7 /* StatusActionToolbar.swift in Sources */,
 				DB747FF9251C496A000C4BD7 /* ProfileViewController.swift in Sources */,
+				DB9EC519255A8285005403AA /* SettingViewController.swift in Sources */,
 				DBA5FA192553DCBC00D2E98E /* TransitioningMath.swift in Sources */,
 				DBF69EAC25496C9F00E2A915 /* SearchDetailViewModel.swift in Sources */,
 				DB915470255142A500613473 /* MentionTimelineViewModel+LoadLatestState.swift in Sources */,
@@ -2086,7 +2104,9 @@
 				DBEA4F812511E7900007FEC5 /* ConversationItem.swift in Sources */,
 				DB92575A251CA3FB004FEFB5 /* StubTableViewCell.swift in Sources */,
 				DBA5F9E02553CFE800D2E98E /* MediaPreviewViewController.swift in Sources */,
+				DB9EC537255A8CEE005403AA /* ViewStateStore.swift in Sources */,
 				DB925700251C8F29004FEFB5 /* UserTimelineViewController.swift in Sources */,
+				DB9EC532255A87A4005403AA /* SettingListView.swift in Sources */,
 				DB434883251DF18C005B599F /* ProfileBannerInfoActionView.swift in Sources */,
 				DBA397B4255513AD00A95662 /* MediaPreviewImageView.swift in Sources */,
 				DB91540B254FE4B200613473 /* APIService+Friendship.swift in Sources */,

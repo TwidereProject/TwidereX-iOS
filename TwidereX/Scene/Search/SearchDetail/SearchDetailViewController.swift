@@ -22,7 +22,7 @@ final class SearchDetailViewController: UIViewController, NeedsDependency {
     private(set) var pagingViewController: SearchDetailPagingViewController!
     
     let searchBar: UISearchBar = {
-        let searchBar = UISearchBar()
+        let searchBar = HeightFixedSearchBar()
         searchBar.placeholder = "Search tweets or users"
         return searchBar
     }()
@@ -120,9 +120,18 @@ extension SearchDetailViewController {
 extension SearchDetailViewController {
     
     private func setupSearchBar() {
-        navigationItem.titleView = searchBar
-        searchBar.searchTextField.allowsCopyingTokens = false
+        let searchBarContainerView = UIView()
+        searchBar.translatesAutoresizingMaskIntoConstraints = false
+        searchBarContainerView.addSubview(searchBar)
+        NSLayoutConstraint.activate([
+            searchBar.topAnchor.constraint(equalTo: searchBarContainerView.topAnchor),
+            searchBar.leadingAnchor.constraint(equalTo: searchBarContainerView.leadingAnchor),
+            searchBar.trailingAnchor.constraint(equalTo: searchBarContainerView.trailingAnchor),
+            searchBar.bottomAnchor.constraint(equalTo: searchBarContainerView.bottomAnchor),
+        ])
         searchBar.delegate = self
+        
+        navigationItem.titleView = searchBarContainerView
     }
     
 }

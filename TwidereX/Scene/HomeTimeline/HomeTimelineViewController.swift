@@ -26,6 +26,7 @@ final class HomeTimelineViewController: UIViewController, DrawerSidebarTransitio
     let mediaPreviewTransitionController = MediaPreviewTransitionController()
     
     let avatarButton = UIButton.avatarButton
+    lazy var avatarBarButtonItem = UIBarButtonItem(customView: avatarButton)
     
     lazy var tableView: UITableView = {
         let tableView = ControlContainableTableView()
@@ -65,7 +66,8 @@ extension HomeTimelineViewController {
         super.viewDidLoad()
         
         view.backgroundColor = .systemBackground
-        navigationItem.leftBarButtonItem = UIBarButtonItem(customView: avatarButton)
+        navigationItem.leftBarButtonItem = avatarBarButtonItem
+        avatarButton.addTarget(self, action: #selector(HomeTimelineViewController.avatarButtonPressed(_:)), for: .touchUpInside)
         
         drawerSidebarTransitionController = DrawerSidebarTransitionController(drawerSidebarTransitionableViewController: self)
         tableView.refreshControl = refreshControl
@@ -214,6 +216,11 @@ extension HomeTimelineViewController {
 }
 
 extension HomeTimelineViewController {
+    
+    @objc private func avatarButtonPressed(_ sender: UIButton) {
+        os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
+        coordinator.present(scene: .drawerSidebar, from: self, transition: .custom(transitioningDelegate: drawerSidebarTransitionController))
+    }
     
     @objc private func refreshControlValueChanged(_ sender: UIRefreshControl) {
         guard viewModel.loadLatestStateMachine.enter(HomeTimelineViewModel.LoadLatestState.Loading.self) else {

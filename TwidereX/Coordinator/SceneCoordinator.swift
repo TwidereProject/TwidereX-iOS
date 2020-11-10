@@ -45,6 +45,7 @@ extension SceneCoordinator {
         case profile(viewModel: ProfileViewModel)
         case mediaPreview(viewModel: MediaPreviewViewModel)
         case drawerSidebar
+        case setting
     }
 }
 
@@ -133,6 +134,8 @@ private extension SceneCoordinator {
             viewController = _viewController
         case .drawerSidebar:
             viewController = DrawerSidebarViewController()
+        case .setting:
+            viewController = SettingViewController()
         }
         
         setupDependency(for: viewController as? NeedsDependency)
