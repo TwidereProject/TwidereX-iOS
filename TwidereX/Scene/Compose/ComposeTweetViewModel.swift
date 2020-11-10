@@ -231,6 +231,9 @@ extension ComposeTweetViewModel {
         } else {
             cell.timelinePostView.avatarImageView.image = placeholderImage
         }
+    
+        // set protect locker
+        cell.timelinePostView.lockImageView.isHidden = !tweet.author.protected
         
         // set name and username
         cell.timelinePostView.nameLabel.text = tweet.author.name

@@ -218,6 +218,10 @@ extension UserLikeTimelineViewController: TimelinePostTableViewCellDelegate {
         }
     }
     
+    func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, quotePostViewDidPressed quotePostView: QuotePostView) {
+        
+    }
+    
     // MARK: - ActionToolbar
     
     func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, actionToolbar: TimelinePostActionToolbar, replayButtonDidPressed sender: UIButton) {

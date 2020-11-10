@@ -116,6 +116,10 @@ extension SearchTimelineViewController: TimelinePostTableViewCellDelegate {
         
     }
     
+    func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, quotePostViewDidPressed quotePostView: QuotePostView) {
+        
+    }
+    
     func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, actionToolbar: TimelinePostActionToolbar, replayButtonDidPressed sender: UIButton) {
         
     }

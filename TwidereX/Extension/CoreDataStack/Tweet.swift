@@ -46,3 +46,18 @@ extension Tweet.Property {
         )
     }
 }
+
+extension Tweet {
+    var activityItems: [Any] {
+        var items: [Any] = []
+        
+        let tweetURL = URL(string: "https://twitter.com/\(author.username)/status/\(id)")!
+        items.append(tweetURL)
+        
+        if !text.isEmpty {
+            items.append(text)
+        }
+        
+        return items
+    }
+}
