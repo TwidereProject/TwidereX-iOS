@@ -59,6 +59,7 @@ extension DrawerSidebarEntryView {
     }
 }
 
+#if DEBUG
 
 struct DrawerSidebarEntryView_Previews: PreviewProvider {
     static var previews: some View {
@@ -71,3 +72,5 @@ struct DrawerSidebarEntryView_Previews: PreviewProvider {
         .previewLayout(.fixed(width: 375, height: 320))
     }
 }
+
+#endif
