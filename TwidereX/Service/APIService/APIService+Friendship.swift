@@ -71,7 +71,7 @@ extension APIService {
             case .success:
                 guard let targetTwitterUserID = _targetTwitterUserID,
                       let queryType = _queryType else {
-                    throw APIError.badRequest
+                    throw APIError.silent(.badRequest)
                 }
                 return (queryType, targetTwitterUserID)
                 

@@ -26,6 +26,9 @@ final class APIService {
     let managedObjectContext: NSManagedObjectContext
     let backgroundManagedObjectContext: NSManagedObjectContext
     
+    // output
+    let error = CurrentValueSubject<Error?, Never>(nil)
+    
     init(managedObjectContext: NSManagedObjectContext, backgroundManagedObjectContext: NSManagedObjectContext) {
         self.managedObjectContext = managedObjectContext
         self.backgroundManagedObjectContext = backgroundManagedObjectContext
@@ -56,7 +59,11 @@ extension APIService {
 
 extension APIService {
     enum APIError: Error {
-        case unauthorized
+        case silent(SilentError)        
+        case accountTemporarilyLocked
+    }
+    
+    enum SilentError {
         case requestThrottle
         case badRequest
     }

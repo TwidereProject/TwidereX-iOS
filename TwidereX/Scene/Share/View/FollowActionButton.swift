@@ -63,7 +63,7 @@ extension FollowActionButton {
         case following
     }
     
-    func followActionButtonStyleDidChanged(to style: Style) {
+    private func followActionButtonStyleDidChanged(to style: Style) {
         let title: String
         let (titleColor, titleHighlightColor): (UIColor, UIColor)
         let (backgroundImage, backgroundHighlightImage): (UIImage?, UIImage?)

@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import SafariServices
 
 final public class SceneCoordinator {
     
@@ -37,6 +38,7 @@ extension SceneCoordinator {
     
     enum Scene {
         case authentication
+        case twitterAccountUnlock
         case composeTweet(viewModel: ComposeTweetViewModel)
         case tweetConversation(viewModel: TweetConversationViewModel)
         case searchDetail(viewModel: SearchDetailViewModel)
@@ -107,6 +109,8 @@ private extension SceneCoordinator {
         switch scene {
         case .authentication:
             viewController = AuthenticationViewController()
+        case .twitterAccountUnlock:
+            viewController = TwitterAccountUnlockViewController()
         case .composeTweet(let viewModel):
             let _viewController = ComposeTweetViewController()
             _viewController.viewModel = viewModel

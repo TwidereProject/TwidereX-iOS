@@ -54,7 +54,6 @@ final class TweetConversationViewModel: NSObject {
     }()
     var conversationNodes = CurrentValueSubject<[ConversationNode], Never>([])
     var cellFrameCache = NSCache<NSNumber, NSValue>()
-
     
     init(context: AppContext, tweetObjectID: NSManagedObjectID) {
         self.context = context

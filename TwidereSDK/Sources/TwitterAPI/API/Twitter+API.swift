@@ -44,12 +44,12 @@ extension Twitter.API {
 }
 
 extension Twitter.API {
-    enum APIError: Error, LocalizedError {
+    public enum APIError: Error, LocalizedError {
         case `internal`(message: String)
         case response(code: Int, reason: String)
         case responseV2(title: String?, detail: String?)        // v2
         
-        var errorDescription: String? {
+        public var errorDescription: String? {
             switch self {
             case .internal(let message):
                 return "Internal error: \(message)"

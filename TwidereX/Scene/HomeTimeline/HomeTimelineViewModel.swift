@@ -210,27 +210,18 @@ extension HomeTimelineViewModel {
             let count = (tweet.retweet ?? tweet).metrics?.retweetCount.flatMap { Int(truncating: $0) }
             return HomeTimelineViewModel.formattedNumberTitleForActionButton(count)
         }()
-        let retweetButtonTintColor = isRetweeted ? Asset.Colors.hightLight.color : .secondaryLabel
-        cell.timelinePostView.actionToolbar.retweetButton.tintColor = retweetButtonTintColor
         cell.timelinePostView.actionToolbar.retweetButton.setTitle(retweetCountTitle, for: .normal)
-        cell.timelinePostView.actionToolbar.retweetButton.setTitleColor(retweetButtonTintColor, for: .normal)
-        cell.timelinePostView.actionToolbar.retweetButton.setTitleColor(retweetButtonTintColor.withAlphaComponent(0.8), for: .highlighted)
         cell.timelinePostView.actionToolbar.retweetButton.isEnabled = !(tweet.retweet ?? tweet).author.protected
+        cell.timelinePostView.actionToolbar.retweetButtonHighligh = isRetweeted
 
         let isLike = (tweet.retweet ?? tweet).likeBy.flatMap({ $0.contains(where: { $0.id == requestUserID }) }) ?? false
         let favoriteCountTitle: String = {
             let count = (tweet.retweet ?? tweet).metrics?.likeCount.flatMap { Int(truncating: $0) }
             return HomeTimelineViewModel.formattedNumberTitleForActionButton(count)
         }()
-        let likeButtonImage = isLike ? Asset.Health.heartFill.image.withRenderingMode(.alwaysTemplate) :
-            Asset.Health.heart.image.withRenderingMode(.alwaysTemplate)
-        let likeButtonTintColor = isLike ? Asset.Colors.heartPink.color : .secondaryLabel
-        cell.timelinePostView.actionToolbar.favoriteButton.tintColor = likeButtonTintColor
-        cell.timelinePostView.actionToolbar.favoriteButton.setImage(likeButtonImage, for: .normal)
         cell.timelinePostView.actionToolbar.favoriteButton.setTitle(favoriteCountTitle, for: .normal)
-        cell.timelinePostView.actionToolbar.favoriteButton.setTitleColor(likeButtonTintColor, for: .normal)
-        cell.timelinePostView.actionToolbar.favoriteButton.setTitleColor(likeButtonTintColor.withAlphaComponent(0.8), for: .highlighted)
-
+        cell.timelinePostView.actionToolbar.likeButtonHighlight = isLike
+        
         // set image display
         let media = Array(tweet.media ?? []).sorted { $0.index.compare($1.index) == .orderedAscending }
         var mosaicMetas: [MosaicMeta] = []
@@ -336,18 +327,21 @@ extension HomeTimelineViewModel {
                       let newTweet = object as? Tweet else { return }
                 let targetTweet = newTweet.retweet ?? newTweet
                 
+                let isRetweeted = targetTweet.retweetBy.flatMap({ $0.contains(where: { $0.id == requestUserID }) }) ?? false
                 let retweetCount = targetTweet.metrics?.retweetCount.flatMap { Int(truncating: $0) }
                 let retweetCountTitle = HomeTimelineViewModel.formattedNumberTitleForActionButton(retweetCount)
                 cell.timelinePostView.actionToolbar.retweetButton.setTitle(retweetCountTitle, for: .normal)
+                cell.timelinePostView.actionToolbar.retweetButtonHighligh = isRetweeted
                 os_log("%{public}s[%{public}ld], %{public}s: retweet count label for tweet %s did update: %ld", ((#file as NSString).lastPathComponent), #line, #function, targetTweet.id, retweetCount ?? 0)
                 
+                let isLike = targetTweet.likeBy.flatMap({ $0.contains(where: { $0.id == requestUserID }) }) ?? false
                 let favoriteCount = targetTweet.metrics?.likeCount.flatMap { Int(truncating: $0) }
                 let favoriteCountTitle = HomeTimelineViewModel.formattedNumberTitleForActionButton(favoriteCount)
                 cell.timelinePostView.actionToolbar.favoriteButton.setTitle(favoriteCountTitle, for: .normal)
+                cell.timelinePostView.actionToolbar.likeButtonHighlight = isLike
                 os_log("%{public}s[%{public}ld], %{public}s: like count label for tweet %s did update: %ld", ((#file as NSString).lastPathComponent), #line, #function, targetTweet.id, favoriteCount ?? 0)
             }
             .store(in: &cell.disposeBag)
-
     }
     
     private static func internalConfigure(cell: TimelinePostTableViewCell, tweet: Tweet, attribute: Item.Attribute) {

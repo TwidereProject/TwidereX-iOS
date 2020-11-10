@@ -14,6 +14,14 @@ import TwitterAPI
 
 // MARK: - TweetProvider
 extension HomeTimelineViewController: TweetProvider {
+    
+    func item(for cell: TimelinePostTableViewCell) -> Item? {
+//        guard let diffableDataSource = viewModel.diffableDataSource else { return }
+//        guard let indexPath = tableView.indexPath(for: cell) else { return }
+//        guard let timelineItem = diffableDataSource.itemIdentifier(for: indexPath) else { return }
+        return nil
+    }
+    
     func tweet(for cell: TimelinePostTableViewCell) -> Future<Tweet?, Never> {
         return Future { promise in
             guard let diffableDataSource = self.viewModel.diffableDataSource,
