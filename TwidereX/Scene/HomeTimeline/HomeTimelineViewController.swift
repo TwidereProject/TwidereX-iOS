@@ -15,13 +15,14 @@ import TwitterAPI
 import Floaty
 import AlamofireImage
 
-final class HomeTimelineViewController: UIViewController, DrawerSidebarTransitionableViewController, NeedsDependency {
+final class HomeTimelineViewController: UIViewController, NeedsDependency, DrawerSidebarTransitionableViewController, MediaPreviewableViewController {
     
     weak var context: AppContext! { willSet { precondition(!isViewLoaded) } }
     weak var coordinator: SceneCoordinator! { willSet { precondition(!isViewLoaded) } }
     
     var disposeBag = Set<AnyCancellable>()
     private(set) lazy var viewModel = HomeTimelineViewModel(context: context)
+    
     private(set) var drawerSidebarTransitionController: DrawerSidebarTransitionController!
     let mediaPreviewTransitionController = MediaPreviewTransitionController()
     
@@ -444,3 +445,6 @@ extension HomeTimelineViewController: TimelineMiddleLoaderTableViewCellDelegate 
 extension HomeTimelineViewController: MediaHostViewController {
     
 }
+
+// MARK: - TimelinePostTableViewCellDelegate
+extension HomeTimelineViewController: TimelinePostTableViewCellDelegate { }

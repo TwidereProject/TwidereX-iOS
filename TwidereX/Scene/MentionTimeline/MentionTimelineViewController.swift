@@ -15,13 +15,15 @@ import TwitterAPI
 import Floaty
 import AlamofireImage
 
-final class MentionTimelineViewController: UIViewController, NeedsDependency {
+final class MentionTimelineViewController: UIViewController, NeedsDependency, MediaPreviewableViewController {
     
     weak var context: AppContext! { willSet { precondition(!isViewLoaded) } }
     weak var coordinator: SceneCoordinator! { willSet { precondition(!isViewLoaded) } }
     
     var disposeBag = Set<AnyCancellable>()
     private(set) lazy var viewModel = MentionTimelineViewModel(context: context)
+   
+    let mediaPreviewTransitionController = MediaPreviewTransitionController()
     
     let avatarButton = UIButton.avatarButton
 
@@ -351,3 +353,6 @@ extension MentionTimelineViewController: TimelineMiddleLoaderTableViewCellDelega
         }
     }
 }
+
+// MARK: - TimelinePostTableViewCellDelegate
+extension MentionTimelineViewController: TimelinePostTableViewCellDelegate { }
