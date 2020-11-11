@@ -65,6 +65,7 @@ struct SettingListEntryRow: View {
     var body: some View {
         HStack {
             icon
+                .renderingMode(.template)
             Text(title)
             Spacer()
             Image(systemName: "chevron.right")
@@ -130,7 +131,11 @@ struct SettingListView: View {
 
 struct SettingListView_Previews: PreviewProvider {
     static var previews: some View {
-        SettingListView()
+        Group {
+            SettingListView()
+            SettingListView()
+                .preferredColorScheme(.dark)
+        }
     }
 }
 
