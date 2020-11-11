@@ -21,13 +21,12 @@ class UserTimelineViewModel: NSObject {
     // input
     let context: AppContext
     let fetchedResultsController: NSFetchedResultsController<Tweet>
-    var diffableDataSource: UITableViewDiffableDataSource<TimelineSection, Item>?
     let userID: CurrentValueSubject<String?, Never>
-    let currentTwitterAuthentication: CurrentValueSubject<TwitterAuthentication?, Never>
     weak var tableView: UITableView?
     weak var timelinePostTableViewCellDelegate: TimelinePostTableViewCellDelegate?
     
     // output
+    var diffableDataSource: UITableViewDiffableDataSource<TimelineSection, Item>?
     private(set) lazy var stateMachine: GKStateMachine = {
         let stateMachine = GKStateMachine(states: [
             State.Initial(viewModel: self),
@@ -62,7 +61,6 @@ class UserTimelineViewModel: NSObject {
             return controller
         }()
         self.userID = CurrentValueSubject(userID)
-        self.currentTwitterAuthentication = CurrentValueSubject(context.authenticationService.currentActiveTwitterAutentication.value)
         super.init()
         
         self.fetchedResultsController.delegate = self
@@ -173,12 +171,13 @@ extension UserTimelineViewModel {
             switch item {
             case .tweet(let objectID):
                 let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: TimelinePostTableViewCell.self), for: indexPath) as! TimelinePostTableViewCell
-
+                let activeTwitterAuthenticationBox = self.context.authenticationService.activeTwitterAuthenticationBox.value
+                let requestTwitterUserID = activeTwitterAuthenticationBox?.twitterUserID ?? ""
                 // configure cell
                 let managedObjectContext = self.fetchedResultsController.managedObjectContext
                 managedObjectContext.performAndWait {
                     let tweet = managedObjectContext.object(with: objectID) as! Tweet
-                    UserTimelineViewModel.configure(cell: cell, tweet: tweet, userID: userID, requestUserID: self.currentTwitterAuthentication.value?.userID ?? "")
+                    UserTimelineViewModel.configure(cell: cell, tweet: tweet, userID: userID, requestUserID: requestTwitterUserID)
                 }
                 cell.delegate = self.timelinePostTableViewCellDelegate
                 return cell
@@ -218,20 +217,18 @@ extension UserTimelineViewModel {
     }
     
     func fetchLatest() -> AnyPublisher<Twitter.Response.Content<[Twitter.Entity.Tweet]>, Error> {
-        guard let authentication = currentTwitterAuthentication.value,
-              let authorization = try? authentication.authorization(appSecret: .shared) else {
+        guard let activeTwitterAuthenticationBox = context.authenticationService.activeTwitterAuthenticationBox.value else {
             return Fail(error: UserTimelineError.invalidAuthorization).eraseToAnyPublisher()
         }
         guard let userID = self.userID.value, !userID.isEmpty else {
             return Fail(error: UserTimelineError.invalidUserID).eraseToAnyPublisher()
         }
         
-        return context.apiService.twitterUserTimeline(count: 20, userID: userID, authorization: authorization, requestTwitterUserID: authentication.userID)
+        return context.apiService.twitterUserTimeline(count: 20, userID: userID, twitterAuthenticationBox: activeTwitterAuthenticationBox)
     }
     
     func loadMore() -> AnyPublisher<Twitter.Response.Content<[Twitter.Entity.Tweet]>, Error> {
-        guard let authentication = currentTwitterAuthentication.value,
-              let authorization = try? authentication.authorization(appSecret: .shared) else {
+        guard let activeTwitterAuthenticationBox = context.authenticationService.activeTwitterAuthenticationBox.value else {
             return Fail(error: UserTimelineError.invalidAuthorization).eraseToAnyPublisher()
         }
         guard let userID = self.userID.value, !userID.isEmpty else {
@@ -242,7 +239,7 @@ extension UserTimelineViewModel {
         }
         
         let maxID = oldestTweet.id
-        return context.apiService.twitterUserTimeline(count: 20, userID: userID, maxID: maxID, authorization: authorization, requestTwitterUserID: authentication.userID)
+        return context.apiService.twitterUserTimeline(count: 20, userID: userID, maxID: maxID, twitterAuthenticationBox: activeTwitterAuthenticationBox)
     }
     
 }

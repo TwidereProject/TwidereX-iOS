@@ -147,6 +147,7 @@ extension UserBriefInfoView {
         followActionButton.setContentHuggingPriority(.defaultHigh, for: .horizontal)
         followActionButton.setContentCompressionResistancePriority(.required - 1, for: .horizontal)
         
+        containerStackView.translatesAutoresizingMaskIntoConstraints = false
         containerStackView.addArrangedSubview(menuButton)
         menuButton.setContentHuggingPriority(.defaultHigh, for: .horizontal)
         menuButton.setContentCompressionResistancePriority(.required - 1, for: .horizontal)

@@ -80,14 +80,13 @@ extension TweetConversationViewModel.LoadConversationState {
                         stateMachine.enter(Idle.self)
                         stateMachine.enter(Loading.self)
                     } else {
-                        guard let authentication = viewModel.currentTwitterAuthentication.value,
-                              let authorization = try? authentication.authorization(appSecret: AppSecret.shared) else
+                        guard let activeTwitterAuthenticationBox = viewModel.context.authenticationService.activeTwitterAuthenticationBox.value else
                         {
                             assertionFailure()
                             stateMachine.enter(PrepareFail.self)
                             return
                         }
-                        viewModel.context.apiService.tweets(tweetIDs: [tweetID], authorization: authorization, twitterUserID: authentication.userID)
+                        viewModel.context.apiService.tweets(tweetIDs: [tweetID], twitterAuthenticationBox: activeTwitterAuthenticationBox)
                             .receive(on: DispatchQueue.main)
                             .sink { completion in
                                 switch completion {
@@ -177,8 +176,7 @@ extension TweetConversationViewModel.LoadConversationState {
                 return
             }
             
-            guard let authentication = viewModel.currentTwitterAuthentication.value,
-                  let authorization = try? authentication.authorization(appSecret: AppSecret.shared) else
+            guard let activeTwitterAuthenticationBox = viewModel.context.authenticationService.activeTwitterAuthenticationBox.value else
             {
                 assertionFailure()
                 stateMachine.enter(Fail.self)
@@ -200,8 +198,7 @@ extension TweetConversationViewModel.LoadConversationState {
                 sinceID: sinceID,
                 startTime: startTime,
                 nextToken: self.nextToken,
-                authorization: authorization,
-                requestTwitterUserID: authentication.userID
+                twitterAuthenticationBox: activeTwitterAuthenticationBox
             )
             .receive(on: DispatchQueue.main)
             .sink { completion in

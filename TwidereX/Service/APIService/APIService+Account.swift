@@ -15,15 +15,20 @@ extension APIService {
     
     public func verifyCredentials(authorization: Twitter.API.OAuth.Authorization) -> AnyPublisher<Twitter.Response.Content<Twitter.Entity.User>, Error> {
         return Twitter.API.Account.verifyCredentials(session: session, authorization: authorization)
-            .handleEvents(receiveOutput: { [weak self] response in
-                guard let self = self else { return }
-                
+            .map { response -> AnyPublisher<Twitter.Response.Content<Twitter.Entity.User>, Error> in
                 let log = OSLog.api
                 let entity = response.value
-                let (twitterUser, isCreated) = APIService.CoreData.createOrMergeTwitterUser(into: self.backgroundManagedObjectContext, for: nil, entity: entity, networkDate: response.networkDate, log: log)
-                let flag = isCreated ? "+" : "-"
-                os_log(.info, log: log, "%{public}s[%{public}ld], %{public}s: twetter user [%s](%s)%s verifed", ((#file as NSString).lastPathComponent), #line, #function, flag, twitterUser.id, twitterUser.username)
-            })
+                
+                return self.backgroundManagedObjectContext.performChanges {
+                    let (twitterUser, isCreated) = APIService.CoreData.createOrMergeTwitterUser(into: self.backgroundManagedObjectContext, for: nil, entity: entity, networkDate: response.networkDate, log: log)
+                    let flag = isCreated ? "+" : "-"
+                    os_log(.info, log: log, "%{public}s[%{public}ld], %{public}s: twetter user [%s](%s)%s verifed", ((#file as NSString).lastPathComponent), #line, #function, flag, twitterUser.id, twitterUser.username)
+                }
+                .setFailureType(to: Error.self)
+                .map { _ in return response }
+                .eraseToAnyPublisher()
+            }
+            .switchToLatest()
             .eraseToAnyPublisher()
     }
     

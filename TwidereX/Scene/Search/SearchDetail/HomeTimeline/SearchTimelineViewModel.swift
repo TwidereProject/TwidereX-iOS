@@ -22,7 +22,6 @@ class SearchTimelineViewModel: NSObject {
     // input
     let context: AppContext
     let fetchedResultsController: NSFetchedResultsController<Tweet>
-    let currentTwitterAuthentication: CurrentValueSubject<TwitterAuthentication?, Never>
     let searchTimelineTweetIDs = CurrentValueSubject<[Twitter.Entity.Tweet.ID], Never>([])
     let searchText = CurrentValueSubject<String, Never>("")
     let searchActionPublisher = PassthroughSubject<Void, Never>()
@@ -64,7 +63,6 @@ class SearchTimelineViewModel: NSObject {
             
             return controller
         }()
-        self.currentTwitterAuthentication = CurrentValueSubject(context.authenticationService.currentActiveTwitterAutentication.value)
         super.init()
         
         self.fetchedResultsController.delegate = self
@@ -186,12 +184,13 @@ extension SearchTimelineViewModel {
             switch item {
             case .tweet(let objectID):
                 let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: TimelinePostTableViewCell.self), for: indexPath) as! TimelinePostTableViewCell
-
+                let twitterAuthenticationBox = self.context.authenticationService.activeTwitterAuthenticationBox.value
+                let requestUserID = twitterAuthenticationBox?.twitterUserID ?? ""
                 // configure cell
                 let managedObjectContext = self.fetchedResultsController.managedObjectContext
                 managedObjectContext.performAndWait {
                     let tweet = managedObjectContext.object(with: objectID) as! Tweet
-                    SearchTimelineViewModel.configure(cell: cell, tweet: tweet, identifier: self.identifier, requestUserID: self.currentTwitterAuthentication.value?.userID ?? "")
+                    SearchTimelineViewModel.configure(cell: cell, tweet: tweet, identifier: self.identifier, requestUserID: requestUserID)
                 }
                 cell.delegate = self.timelinePostTableViewCellDelegate
                 return cell

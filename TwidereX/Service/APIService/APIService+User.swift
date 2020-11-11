@@ -16,7 +16,9 @@ import CommonOSLog
 
 extension APIService {
     
-    func userSearch(searchText: String, page: Int, count: Int = 20, authorization: Twitter.API.OAuth.Authorization, requestTwitterUserID: TwitterUser.ID) -> AnyPublisher<Twitter.Response.Content<[Twitter.Entity.User]>, Error> {
+    func userSearch(searchText: String, page: Int, count: Int = 20, twitterAuthenticationBox: AuthenticationService.TwitterAuthenticationBox) -> AnyPublisher<Twitter.Response.Content<[Twitter.Entity.User]>, Error> {
+        let authorization = twitterAuthenticationBox.twitterAuthorization
+        let requestTwitterUserID = twitterAuthenticationBox.twitterUserID
         let query = Twitter.API.Users.SearchQuery(
             q: searchText,
             page: page,

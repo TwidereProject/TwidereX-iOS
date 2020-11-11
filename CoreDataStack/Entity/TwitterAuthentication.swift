@@ -25,7 +25,11 @@ final public class TwitterAuthentication: NSManagedObject {
     
     @NSManaged public private(set) var createdAt: Date
     @NSManaged public private(set) var updatedAt: Date
-    @NSManaged public private(set) var activeAt: Date?
+    
+    // one-to-one relationship
+    @NSManaged public private(set) var authenticationIndex: AuthenticationIndex?
+    @NSManaged public private(set) var twitterUser: TwitterUser?
+
     
 }
 
@@ -40,7 +44,7 @@ extension TwitterAuthentication {
     }
     
     @discardableResult
-    public static func insert(into context: NSManagedObjectContext, property: Property) -> TwitterAuthentication {
+    public static func insert(into context: NSManagedObjectContext, property: Property, authenticationIndex: AuthenticationIndex, twitterUser: TwitterUser) -> TwitterAuthentication {
         let authentication: TwitterAuthentication = context.insertObject()
         authentication.userID = property.userID
         authentication.screenName = property.screenName
@@ -49,13 +53,55 @@ extension TwitterAuthentication {
         authentication.accessToken = property.accessToken
         authentication.accessTokenSecret = property.accessTokenSecret
         authentication.nonce = property.nonce ?? ""
-        authentication.activeAt = nil
+        
+        authentication.authenticationIndex = authenticationIndex
+        authentication.twitterUser = twitterUser
+        
         return authentication
     }
     
-    public func update(activeAt: Date?) {
-        self.activeAt = activeAt
+    public func update(screenName: String) {
+        if self.screenName != screenName {
+            self.screenName = screenName
+        }
     }
+    
+    public func update(consumerKey: String) {
+        if self.consumerKey != consumerKey {
+            self.consumerKey = consumerKey
+        }
+    }
+    
+    public func update(consumerSecret: String) {
+        if self.consumerSecret != consumerSecret {
+            self.consumerSecret = consumerSecret
+        }
+    }
+    
+    public func update(accessToken: String) {
+        if self.accessToken != accessToken {
+            self.accessToken = accessToken
+        }
+    }
+    
+    public func update(accessTokenSecret: String) {
+        if self.accessTokenSecret != accessTokenSecret {
+            self.accessTokenSecret = accessTokenSecret
+        }
+    }
+    
+    public func update(nonce: String) {
+        if self.nonce != nonce {
+            self.nonce = nonce
+        }
+    }
+    
+    public func update(updatedAt: Date) {
+        if self.updatedAt != updatedAt {
+            self.updatedAt = updatedAt
+        }
+    }
+    
 }
 
 extension TwitterAuthentication {
@@ -84,4 +130,12 @@ extension TwitterAuthentication: Managed {
     public static var defaultSortDescriptors: [NSSortDescriptor] {
         return [NSSortDescriptor(keyPath: \TwitterAuthentication.createdAt, ascending: false)]
     }
+}
+
+extension TwitterAuthentication {
+    
+    public static func predicate(userID: String) -> NSPredicate {
+        return NSPredicate(format: "%K == %@", #keyPath(TwitterAuthentication.userID), userID)
+    }
+    
 }

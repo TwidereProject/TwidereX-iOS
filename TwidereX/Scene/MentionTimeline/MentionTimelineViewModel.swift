@@ -23,8 +23,6 @@ final class MentionTimelineViewModel: NSObject {
     // input
     let context: AppContext
     let fetchedResultsController: NSFetchedResultsController<MentionTimelineIndex>
-    let currentTwitterAuthentication = CurrentValueSubject<TwitterAuthentication?, Never>(nil)
-    let currentTwitterUser = CurrentValueSubject<TwitterUser?, Never>(nil)
     weak var contentOffsetAdjustableTimelineViewControllerDelegate: ContentOffsetAdjustableTimelineViewControllerDelegate?
     weak var tableView: UITableView?
     weak var timelinePostTableViewCellDelegate: TimelinePostTableViewCellDelegate?

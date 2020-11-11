@@ -22,8 +22,6 @@ final class HomeTimelineViewModel: NSObject {
     // input
     let context: AppContext
     let fetchedResultsController: NSFetchedResultsController<TimelineIndex>
-    let currentTwitterAuthentication = CurrentValueSubject<TwitterAuthentication?, Never>(nil)
-    let currentTwitterUser = CurrentValueSubject<TwitterUser?, Never>(nil)
     let isFetchingLatestTimeline = CurrentValueSubject<Bool, Never>(false)
     weak var contentOffsetAdjustableTimelineViewControllerDelegate: ContentOffsetAdjustableTimelineViewControllerDelegate?
     weak var tableView: UITableView?

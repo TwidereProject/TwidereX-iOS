@@ -51,13 +51,11 @@ extension SearchUserViewModel.State {
         override func didEnter(from previousState: GKState?) {
             super.didEnter(from: previousState)
             guard let viewModel = viewModel, let stateMachine = stateMachine else { return }
-            
-            guard let authentication = viewModel.currentTwitterAuthentication.value,
-                  let authorization = try? authentication.authorization(appSecret: .shared) else {
-                error = SearchMediaViewModel.SearchMediaError.invalidAuthorization
+            guard let twitterAuthenticationBox = viewModel.context.authenticationService.activeTwitterAuthenticationBox.value else {
                 stateMachine.enter(Fail.self)
                 return
             }
+            
             let searchText = viewModel.searchText.value
             guard !searchText.isEmpty, searchText.count < 512 else {
                 error = SearchMediaViewModel.SearchMediaError.invalidSearchText
@@ -76,8 +74,7 @@ extension SearchUserViewModel.State {
                 searchText: searchText,
                 page: page,
                 count: count,
-                authorization: authorization,
-                requestTwitterUserID: authentication.userID
+                twitterAuthenticationBox: twitterAuthenticationBox
             )
             .receive(on: DispatchQueue.main)
             .sink { [weak self] completion in

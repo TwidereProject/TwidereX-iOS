@@ -51,13 +51,11 @@ extension SearchTimelineViewModel.State {
         override func didEnter(from previousState: GKState?) {
             super.didEnter(from: previousState)
             guard let viewModel = viewModel, let stateMachine = stateMachine else { return }
-            
-            guard let authentication = viewModel.currentTwitterAuthentication.value,
-                  let authorization = try? authentication.authorization(appSecret: .shared) else {
-                error = SearchTimelineViewModel.SearchTimelineError.invalidAuthorization
+            guard let activeTwitterAuthenticationBox = viewModel.context.authenticationService.activeTwitterAuthenticationBox.value else {
                 stateMachine.enter(Fail.self)
                 return
             }
+            
             let searchText = viewModel.searchText.value + " (-is:retweet)"
             guard !searchText.isEmpty, searchText.count < 512 else {
                 error = SearchTimelineViewModel.SearchTimelineError.invalidSearchText
@@ -74,8 +72,7 @@ extension SearchTimelineViewModel.State {
             viewModel.context.apiService.tweetsRecentSearch(
                 searchText: searchText,
                 nextToken: nextToken,
-                authorization: authorization,
-                requestTwitterUserID: authentication.userID
+                twitterAuthenticationBox: activeTwitterAuthenticationBox
             )
             .receive(on: DispatchQueue.main)
             .sink { [weak self] completion in

@@ -23,12 +23,12 @@ extension UserLikeTimelineViewModel {
             switch item {
             case .tweet(let objectID):
                 let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: TimelinePostTableViewCell.self), for: indexPath) as! TimelinePostTableViewCell
-                
+                let requestTwitterUserID = self.context.authenticationService.activeTwitterAuthenticationBox.value?.twitterUserID ?? ""
                 // configure cell
                 let managedObjectContext = self.fetchedResultsController.managedObjectContext
                 managedObjectContext.performAndWait {
                     let tweet = managedObjectContext.object(with: objectID) as! Tweet
-                    UserLikeTimelineViewModel.configure(cell: cell, tweet: tweet, userID: userID, requestUserID: self.currentTwitterAuthentication.value?.userID ?? "")
+                    UserLikeTimelineViewModel.configure(cell: cell, tweet: tweet, userID: userID, requestUserID: requestTwitterUserID)
                 }
                 cell.delegate = self.timelinePostTableViewCellDelegate
                 return cell

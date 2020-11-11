@@ -18,9 +18,9 @@ extension SearchUserViewModel {
             guard let self = self else { return nil }
             
             switch item {
-            case .tweetUser(let objectID):
+            case .twittertUser(let objectID):
                 let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: UserBriefInfoTableViewCell.self), for: indexPath) as! UserBriefInfoTableViewCell
-                let requestTwitterUserID = self.context.authenticationService.currentTwitterUser.value?.id
+                let requestTwitterUserID = self.context.authenticationService.activeTwitterAuthenticationBox.value?.twitterUserID
                 
                 // configure cell
                 let managedObjectContext = self.fetchedResultsController.managedObjectContext
@@ -119,7 +119,7 @@ extension SearchUserViewModel: NSFetchedResultsControllerDelegate {
                 indexes.firstIndex(of: twitterUser.id).map { index in (index, twitterUser) }
             }
             .sorted { $0.0 < $1.0 }
-            .map { Item.tweetUser(objectID: $0.1.objectID) }
+            .map { Item.twittertUser(objectID: $0.1.objectID) }
         self.items.value = items
     }
 }

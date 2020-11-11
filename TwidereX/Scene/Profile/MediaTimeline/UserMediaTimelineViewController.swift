@@ -46,10 +46,6 @@ extension UserMediaTimelineViewController {
         
         collectionView.delegate = self
         viewModel.setupDiffableDataSource(collectionView: collectionView)
-        
-        viewModel.context.authenticationService.currentActiveTwitterAutentication
-            .assign(to: \.value, on: viewModel.currentTwitterAuthentication)
-            .store(in: &disposeBag)
     }
     
 }

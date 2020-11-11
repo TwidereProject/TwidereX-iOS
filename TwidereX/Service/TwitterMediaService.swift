@@ -178,9 +178,9 @@ extension TwitterMediaService.UploadState {
             super.didEnter(from: previousState)
             guard let service = service, let stateMachine = stateMachine else { return }
             guard !service.isCancelled,
-                  let autentication = service.context.authenticationService.currentActiveTwitterAutentication.value,
-                  let authorization = try? autentication.authorization(appSecret: AppSecret.shared)
-            else { return }
+                  let activeTwitterAuthenticationBox = service.context.authenticationService.activeTwitterAuthenticationBox.value else {
+                return
+            }
             
 
             let payload = service.payload
@@ -210,7 +210,7 @@ extension TwitterMediaService.UploadState {
                     }
                     
                     let totalBytes = slice.reduce(0, { result, next in return result + next.count })
-                    service.context.apiService.mediaInit(totalBytes: totalBytes, mediaType: mediaType.rawValue, authorization: authorization)
+                    service.context.apiService.mediaInit(totalBytes: totalBytes, mediaType: mediaType.rawValue, twitterAuthenticationBox: activeTwitterAuthenticationBox)
                         .retry(3)
                         .receive(on: DispatchQueue.main)
                         .sink { completion in
@@ -245,9 +245,9 @@ extension TwitterMediaService.UploadState {
             
             guard let service = service, let stateMachine = stateMachine else { return }
             guard !service.isCancelled,
-                  let autentication = service.context.authenticationService.currentActiveTwitterAutentication.value,
-                  let authorization = try? autentication.authorization(appSecret: AppSecret.shared)
-            else { return }
+                  let activeTwitterAuthenticationBox = service.context.authenticationService.activeTwitterAuthenticationBox.value else {
+                return
+            }
             
             guard let mediaID = service.mediaID, !service.slice.isEmpty else {
                 stateMachine.enter(Fail.self)
@@ -258,7 +258,7 @@ extension TwitterMediaService.UploadState {
                 .publisher
                 .setFailureType(to: Error.self)
                 .flatMap { i, chunk in
-                    service.context.apiService.mediaAppend(mediaID: mediaID, chunk: chunk, index: i, authorization: authorization)
+                    service.context.apiService.mediaAppend(mediaID: mediaID, chunk: chunk, index: i, twitterAuthenticationBox: activeTwitterAuthenticationBox)
                         .retry(3)
                         .eraseToAnyPublisher()
                 }
@@ -290,16 +290,15 @@ extension TwitterMediaService.UploadState {
             
             guard let service = service, let stateMachine = stateMachine else { return }
             guard !service.isCancelled,
-                  let autentication = service.context.authenticationService.currentActiveTwitterAutentication.value,
-                  let authorization = try? autentication.authorization(appSecret: AppSecret.shared)
-            else { return }
-            
+                  let activeTwitterAuthenticationBox = service.context.authenticationService.activeTwitterAuthenticationBox.value else {
+                return
+            }
             guard let mediaID = service.mediaID else {
                 stateMachine.enter(Fail.self)
                 return
             }
             
-            service.context.apiService.mediaFinalize(mediaID: mediaID, authorization: authorization)
+            service.context.apiService.mediaFinalize(mediaID: mediaID, twitterAuthenticationBox: activeTwitterAuthenticationBox)
                 .receive(on: DispatchQueue.main)
                 .sink { completion in
                     switch completion {
@@ -335,16 +334,16 @@ extension TwitterMediaService.UploadState {
             
             guard let service = service, let stateMachine = stateMachine else { return }
             guard !service.isCancelled,
-                  let autentication = service.context.authenticationService.currentActiveTwitterAutentication.value,
-                  let authorization = try? autentication.authorization(appSecret: AppSecret.shared)
-            else { return }
+                  let activeTwitterAuthenticationBox = service.context.authenticationService.activeTwitterAuthenticationBox.value else {
+                return
+            }
             
             guard let mediaID = service.mediaID else {
                 stateMachine.enter(Fail.self)
                 return
             }
             
-            service.context.apiService.mediaStatus(mediaID: mediaID, authorization: authorization)
+            service.context.apiService.mediaStatus(mediaID: mediaID, twitterAuthenticationBox: activeTwitterAuthenticationBox)
                 .receive(on: DispatchQueue.main)
                 .sink { completion in
                     switch completion {

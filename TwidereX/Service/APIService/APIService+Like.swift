@@ -19,9 +19,7 @@ extension APIService {
     func like(
         tweetObjectID: NSManagedObjectID,
         twitterUserObjectID: NSManagedObjectID,
-        favoriteKind: Twitter.API.Favorites.FavoriteKind,
-        authorization: Twitter.API.OAuth.Authorization,
-        twitterUserID: TwitterUser.ID
+        favoriteKind: Twitter.API.Favorites.FavoriteKind
     ) -> AnyPublisher<Tweet.ID, Error> {
         var _targetTweetID: Tweet.ID?
         let managedObjectContext = backgroundManagedObjectContext
@@ -54,9 +52,10 @@ extension APIService {
     func like(
         tweetID: Twitter.Entity.Tweet.ID,
         favoriteKind: Twitter.API.Favorites.FavoriteKind,
-        authorization: Twitter.API.OAuth.Authorization,
-        twitterUserID: TwitterUser.ID
+        twitterAuthenticationBox: AuthenticationService.TwitterAuthenticationBox
     ) -> AnyPublisher<Twitter.Response.Content<Twitter.Entity.Tweet>, Error> {
+        let authorization = twitterAuthenticationBox.twitterAuthorization
+        let requestTwitterUserID = twitterAuthenticationBox.twitterUserID
         let query = Twitter.API.Favorites.FavoriteQuery(id: tweetID)
         return Twitter.API.Favorites.favorites(session: session, authorization: authorization, favoriteKind: favoriteKind, query: query)
             .handleEvents(receiveOutput: { [weak self] response in
@@ -77,7 +76,7 @@ extension APIService {
                 managedObjectContext.perform {
                     let _requestTwitterUser: TwitterUser? = {
                         let request = TwitterUser.sortedFetchRequest
-                        request.predicate = TwitterUser.predicate(idStr: twitterUserID)
+                        request.predicate = TwitterUser.predicate(idStr: requestTwitterUserID)
                         request.fetchLimit = 1
                         request.returnsObjectsAsFaults = false
                         do {
@@ -127,9 +126,10 @@ extension APIService {
         count: Int = 200,
         userID: String,
         maxID: String? = nil,
-        authorization: Twitter.API.OAuth.Authorization,
-        requestTwitterUserID: TwitterUser.ID
+        twitterAuthenticationBox: AuthenticationService.TwitterAuthenticationBox
     ) -> AnyPublisher<Twitter.Response.Content<[Twitter.Entity.Tweet]>, Error> {
+        let authorization = twitterAuthenticationBox.twitterAuthorization
+        let requestTwitterUserID = twitterAuthenticationBox.twitterUserID
         let query = Twitter.API.Timeline.Query(count: count, userID: userID, maxID: maxID)
         return Twitter.API.Favorites.list(session: session, authorization: authorization, query: query)
             .map { response -> AnyPublisher<Twitter.Response.Content<[Twitter.Entity.Tweet]>, Error> in

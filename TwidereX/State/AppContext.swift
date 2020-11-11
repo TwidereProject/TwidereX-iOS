@@ -19,6 +19,7 @@ class AppContext: ObservableObject {
         
     let coreDataStack: CoreDataStack
     let managedObjectContext: NSManagedObjectContext
+    let backgroundManagedObjectContext: NSManagedObjectContext
     
     let apiService: APIService
     let authenticationService: AuthenticationService
@@ -29,17 +30,19 @@ class AppContext: ObservableObject {
     init() {
         let _coreDataStack = CoreDataStack()
         let _managedObjectContext = _coreDataStack.persistentContainer.viewContext
+        let _backgroundManagedObjectContext = _coreDataStack.persistentContainer.newBackgroundContext()
         coreDataStack = _coreDataStack
         managedObjectContext = _managedObjectContext
+        backgroundManagedObjectContext = _backgroundManagedObjectContext
         
-        let _backgroundManagedObjectContext = _coreDataStack.persistentContainer.newBackgroundContext()
-        let _apiService = APIService(
-            managedObjectContext: _managedObjectContext,
-            backgroundManagedObjectContext: _backgroundManagedObjectContext
-        )
+        let _apiService = APIService(backgroundManagedObjectContext: _backgroundManagedObjectContext)
         apiService = _apiService
         
-        authenticationService = AuthenticationService(managedObjectContext: _managedObjectContext, apiService: _apiService)
+        authenticationService = AuthenticationService(
+            managedObjectContext: _managedObjectContext,
+            backgroundManagedObjectContext: _backgroundManagedObjectContext,
+            apiService: _apiService
+        )
         
         documentStore = DocumentStore()
         documentStoreSubscription = documentStore.objectWillChange
@@ -47,6 +50,16 @@ class AppContext: ObservableObject {
             .sink { [unowned self] in
                 self.objectWillChange.send()
             }
+        
+        backgroundManagedObjectContext.mergePolicy = NSMergePolicy.mergeByPropertyObjectTrump
+        NotificationCenter.default.publisher(for: .NSManagedObjectContextDidSave, object: backgroundManagedObjectContext)
+            .sink { [weak self] notification in
+                guard let self = self else { return }
+                self.managedObjectContext.perform {
+                    self.managedObjectContext.mergeChanges(fromContextDidSave: notification)
+                }
+            }
+            .store(in: &disposeBag)
     }
     
 }

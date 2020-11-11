@@ -24,9 +24,11 @@ extension APIService {
     func twitterHomeTimeline(
         count: Int = 200,
         maxID: String? = nil,
-        authorization: Twitter.API.OAuth.Authorization,
-        requestTwitterUserID: TwitterUser.ID
-    ) -> AnyPublisher<Twitter.Response.Content<[Twitter.Entity.Tweet]>, Error> {    
+        twitterAuthenticationBox: AuthenticationService.TwitterAuthenticationBox
+    ) -> AnyPublisher<Twitter.Response.Content<[Twitter.Entity.Tweet]>, Error> {
+        let authorization = twitterAuthenticationBox.twitterAuthorization
+        let requestTwitterUserID = twitterAuthenticationBox.twitterUserID
+        
         // throttle latest request for API limit
         if maxID == nil {
             guard homeTimelineRequestThrottler.available(windowSizeInSec: APIService.homeTimelineRequestWindowInSec) else {

@@ -21,7 +21,6 @@ final class SearchMediaViewModel: NSObject {
     // input
     let context: AppContext
     let fetchedResultsController: NSFetchedResultsController<Tweet>
-    let currentTwitterAuthentication: CurrentValueSubject<TwitterAuthentication?, Never>
     let searchMediaTweetIDs = CurrentValueSubject<[Twitter.Entity.Tweet.ID], Never>([])
     let searchText = CurrentValueSubject<String, Never>("")
     let searchActionPublisher = PassthroughSubject<Void, Never>()
@@ -58,7 +57,6 @@ final class SearchMediaViewModel: NSObject {
             
             return controller
         }()
-        self.currentTwitterAuthentication = CurrentValueSubject(context.authenticationService.currentActiveTwitterAutentication.value)
         super.init()
         
         self.fetchedResultsController.delegate = self

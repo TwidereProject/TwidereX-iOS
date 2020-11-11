@@ -7,3 +7,7 @@
 //
 
 import Foundation
+
+enum AccountListSection {
+    case main
+}

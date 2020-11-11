@@ -280,11 +280,7 @@ extension ProfileViewController {
             }
             .store(in: &disposeBag)
         
-        profileHeaderViewController.profileBannerView.profileBannerInfoActionView.delegate = self
-        context.authenticationService.currentActiveTwitterAutentication
-            .assign(to: \.value, on: viewModel.currentTwitterAuthentication)
-            .store(in: &disposeBag)
-        context.authenticationService.currentTwitterUser
+        viewModel.currentTwitterUser
             .sink { [weak self] twitterUser in
                 guard let self = self else { return }
                 let placeholderImage = UIImage
@@ -304,6 +300,7 @@ extension ProfileViewController {
             }
             .store(in: &disposeBag)
             
+        profileHeaderViewController.profileBannerView.profileBannerInfoActionView.delegate = self
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -395,14 +392,10 @@ extension ProfileViewController: ProfilePagingViewControllerDelegate {
 extension ProfileViewController: ProfileBannerInfoActionViewDelegate {
     
     func profileBannerInfoActionView(_ profileBannerInfoActionView: ProfileBannerInfoActionView, followActionButtonPressed button: FollowActionButton) {
-        guard let twitterAuthentication = viewModel.currentTwitterAuthentication.value,
-              let authorization = try? twitterAuthentication.authorization(appSecret: AppSecret.shared) else {
-            assertionFailure()
-            return
-        }
+        guard let twitterUser = viewModel.twitterUser.value,
+              let currentTwitterUser = viewModel.currentTwitterUser.value else { return }
+        let requestTwitterUserID = currentTwitterUser.id
         
-        guard let twitterUser = viewModel.twitterUser.value else { return }
-        let requestTwitterUserID = twitterAuthentication.userID
         let isPending = (twitterUser.followRequestSentFrom ?? Set()).contains(where: { $0.id == requestTwitterUserID })
         let isFollowing = (twitterUser.followingFrom ?? Set()).contains(where: { $0.id == requestTwitterUserID })
         
@@ -425,23 +418,19 @@ extension ProfileViewController: ProfileBannerInfoActionViewDelegate {
     }
     
     private func toggleFollowStatue() {
-        guard let twitterUser = viewModel.twitterUser.value,
-              let requestTwitterUser = viewModel.currentTwitterUser.value
-        else { return }
-        
-        guard let twitterAuthentication = viewModel.currentTwitterAuthentication.value,
-              let authorization = try? twitterAuthentication.authorization(appSecret: AppSecret.shared) else {
+        guard let twitterUser = viewModel.twitterUser.value else {
+            return
+        }
+        guard let activeTwitterAuthenticationBox = context.authenticationService.activeTwitterAuthenticationBox.value else {
             assertionFailure()
             return
         }
-        let requestTwitterUserID = twitterAuthentication.userID
         
         let impactFeedbackGenerator = UIImpactFeedbackGenerator(style: .light)
         let notificationFeedbackGenerator = UINotificationFeedbackGenerator()
         context.apiService.friendship(
             twitterUserObjectID: twitterUser.objectID,
-            authorization: authorization,
-            requestTwitterUserID: requestTwitterUserID
+            twitterAuthenticationBox: activeTwitterAuthenticationBox
         )
         .receive(on: DispatchQueue.main)
         .handleEvents { _ in
@@ -463,8 +452,7 @@ extension ProfileViewController: ProfileBannerInfoActionViewDelegate {
             self.context.apiService.friendship(
                 friendshipQueryType: friendshipQueryType,
                 twitterUserID: targetTwitterUserID,
-                authorization: authorization,
-                requestTwitterUserID: requestTwitterUserID
+                twitterAuthenticationBox: activeTwitterAuthenticationBox
             )
         }
         .switchToLatest()

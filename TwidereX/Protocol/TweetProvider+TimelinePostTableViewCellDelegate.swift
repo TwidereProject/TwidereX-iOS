@@ -23,8 +23,10 @@ extension TimelinePostTableViewCellDelegate where Self: TweetProvider {
                 let twitterUser = tweet.author
                 
                 let profileViewModel = ProfileViewModel(twitterUser: twitterUser)
-                self.context.authenticationService.currentTwitterUser
-                    .assign(to: \.value, on: profileViewModel.currentTwitterUser).store(in: &profileViewModel.disposeBag)
+                self.context.authenticationService.activeAuthenticationIndex
+                    .map { $0?.twitterAuthentication?.twitterUser }
+                    .assign(to: \.value, on: profileViewModel.currentTwitterUser)
+                    .store(in: &profileViewModel.disposeBag)
                 DispatchQueue.main.async {
                     self.coordinator.present(scene: .profile(viewModel: profileViewModel), from: self, transition: .show)
                 }
@@ -40,8 +42,10 @@ extension TimelinePostTableViewCellDelegate where Self: TweetProvider {
                 let twitterUser = tweet.author
                 
                 let profileViewModel = ProfileViewModel(twitterUser: twitterUser)
-                self.context.authenticationService.currentTwitterUser
-                    .assign(to: \.value, on: profileViewModel.currentTwitterUser).store(in: &profileViewModel.disposeBag)
+                self.context.authenticationService.activeAuthenticationIndex
+                    .map { $0?.twitterAuthentication?.twitterUser }
+                    .assign(to: \.value, on: profileViewModel.currentTwitterUser)
+                    .store(in: &profileViewModel.disposeBag)
                 DispatchQueue.main.async {
                     self.coordinator.present(scene: .profile(viewModel: profileViewModel), from: self, transition: .show)
                 }
@@ -57,8 +61,10 @@ extension TimelinePostTableViewCellDelegate where Self: TweetProvider {
                 let twitterUser = tweet.author
                 
                 let profileViewModel = ProfileViewModel(twitterUser: twitterUser)
-                self.context.authenticationService.currentTwitterUser
-                    .assign(to: \.value, on: profileViewModel.currentTwitterUser).store(in: &profileViewModel.disposeBag)
+                self.context.authenticationService.activeAuthenticationIndex
+                    .map { $0?.twitterAuthentication?.twitterUser }
+                    .assign(to: \.value, on: profileViewModel.currentTwitterUser)
+                    .store(in: &profileViewModel.disposeBag)
                 DispatchQueue.main.async {
                     self.coordinator.present(scene: .profile(viewModel: profileViewModel), from: self, transition: .show)
                 }
@@ -99,18 +105,17 @@ extension TimelinePostTableViewCellDelegate where Self: TweetProvider {
     
     func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, actionToolbar: TimelinePostActionToolbar, retweetButtonDidPressed sender: UIButton) {
         // prepare authentication
-        guard let twitterAuthentication = context.authenticationService.currentActiveTwitterAutentication.value,
-              let authorization = try? twitterAuthentication.authorization(appSecret: AppSecret.shared) else {
+        guard let activeTwitterAuthenticationBox = context.authenticationService.activeTwitterAuthenticationBox.value else {
             assertionFailure()
             return
         }
         
         // prepare current user infos
-        guard let _currentTwitterUser = context.authenticationService.currentTwitterUser.value else {
+        guard let _currentTwitterUser = context.authenticationService.activeAuthenticationIndex.value?.twitterAuthentication?.twitterUser else {
             assertionFailure()
             return
         }
-        let twitterUserID = twitterAuthentication.userID
+        let twitterUserID = activeTwitterAuthenticationBox.twitterUserID
         assert(_currentTwitterUser.id == twitterUserID)
         let twitterUserObjectID = _currentTwitterUser.objectID
         
@@ -135,8 +140,7 @@ extension TimelinePostTableViewCellDelegate where Self: TweetProvider {
                     tweetObjectID: tweetObjectID,
                     twitterUserObjectID: twitterUserObjectID,
                     retweetKind: retweetKind,
-                    authorization: authorization,
-                    twitterUserID: twitterUserID
+                    twitterAuthenticationBox: activeTwitterAuthenticationBox
                 )
                 .map { tweetID in (tweetID, retweetKind) }
                 .eraseToAnyPublisher()
@@ -164,8 +168,7 @@ extension TimelinePostTableViewCellDelegate where Self: TweetProvider {
                 return context.apiService.retweet(
                     tweetID: tweetID,
                     retweetKind: retweetKind,
-                    authorization: authorization,
-                    twitterUserID: twitterUserID
+                    twitterAuthenticationBox: activeTwitterAuthenticationBox
                 )
             }
             .switchToLatest()
@@ -189,18 +192,17 @@ extension TimelinePostTableViewCellDelegate where Self: TweetProvider {
     
     func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, actionToolbar: TimelinePostActionToolbar, favoriteButtonDidPressed sender: UIButton) {
         // prepare authentication
-        guard let twitterAuthentication = context.authenticationService.currentActiveTwitterAutentication.value,
-              let authorization = try? twitterAuthentication.authorization(appSecret: AppSecret.shared) else {
+        guard let activeTwitterAuthenticationBox = context.authenticationService.activeTwitterAuthenticationBox.value else {
             assertionFailure()
             return
         }
         
         // prepare current user infos
-        guard let _currentTwitterUser = context.authenticationService.currentTwitterUser.value else {
+        guard let _currentTwitterUser = context.authenticationService.activeAuthenticationIndex.value?.twitterAuthentication?.twitterUser else {
             assertionFailure()
             return
         }
-        let twitterUserID = twitterAuthentication.userID
+        let twitterUserID = activeTwitterAuthenticationBox.twitterUserID
         assert(_currentTwitterUser.id == twitterUserID)
         let twitterUserObjectID = _currentTwitterUser.objectID
         
@@ -224,9 +226,7 @@ extension TimelinePostTableViewCellDelegate where Self: TweetProvider {
                 return context.apiService.like(
                     tweetObjectID: tweetObjectID,
                     twitterUserObjectID: twitterUserObjectID,
-                    favoriteKind: favoriteKind,
-                    authorization: authorization,
-                    twitterUserID: twitterUserID
+                    favoriteKind: favoriteKind
                 )
                 .map { tweetID in (tweetID, favoriteKind) }
                 .eraseToAnyPublisher()
@@ -254,8 +254,7 @@ extension TimelinePostTableViewCellDelegate where Self: TweetProvider {
                 return context.apiService.like(
                     tweetID: tweetID,
                     favoriteKind: favoriteKind,
-                    authorization: authorization,
-                    twitterUserID: twitterUserID
+                    twitterAuthenticationBox: activeTwitterAuthenticationBox
                 )
             }
             .switchToLatest()

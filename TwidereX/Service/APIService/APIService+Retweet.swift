@@ -20,8 +20,7 @@ extension APIService {
         tweetObjectID: NSManagedObjectID,
         twitterUserObjectID: NSManagedObjectID,
         retweetKind: Twitter.API.Statuses.RetweetKind,
-        authorization: Twitter.API.OAuth.Authorization,
-        twitterUserID: TwitterUser.ID
+        twitterAuthenticationBox: AuthenticationService.TwitterAuthenticationBox
     ) -> AnyPublisher<Tweet.ID, Error> {
         var _targetTweetID: Tweet.ID?
         let managedObjectContext = backgroundManagedObjectContext
@@ -59,9 +58,10 @@ extension APIService {
     func retweet(
         tweetID: Twitter.Entity.Tweet.ID,
         retweetKind: Twitter.API.Statuses.RetweetKind,
-        authorization: Twitter.API.OAuth.Authorization,
-        twitterUserID: TwitterUser.ID
+        twitterAuthenticationBox: AuthenticationService.TwitterAuthenticationBox
     ) -> AnyPublisher<Twitter.Response.Content<Twitter.Entity.Tweet>, Error> {
+        let authorization = twitterAuthenticationBox.twitterAuthorization
+        let requestTwitterUserID = twitterAuthenticationBox.twitterUserID
         let query = Twitter.API.Statuses.RetweetQuery(id: tweetID)
         return Twitter.API.Statuses.retweet(session: session, authorization: authorization, retweetKind: retweetKind, query: query)
             .handleEvents(receiveOutput: { [weak self] response in
@@ -82,7 +82,7 @@ extension APIService {
                 managedObjectContext.perform {
                     let _requestTwitterUser: TwitterUser? = {
                         let request = TwitterUser.sortedFetchRequest
-                        request.predicate = TwitterUser.predicate(idStr: twitterUserID)
+                        request.predicate = TwitterUser.predicate(idStr: requestTwitterUserID)
                         request.fetchLimit = 1
                         request.returnsObjectsAsFaults = false
                         do {

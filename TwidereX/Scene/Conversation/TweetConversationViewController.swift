@@ -62,12 +62,6 @@ extension TweetConversationViewController {
         tableView.dataSource = viewModel.diffableDataSource
         tableView.reloadData()
         
-        // bind view model
-        context.authenticationService.twitterAuthentications
-            .map { $0.first }
-            .assign(to: \.value, on: viewModel.currentTwitterAuthentication)
-            .store(in: &disposeBag)
-        
         viewModel.loadConversationStateMachine.enter(TweetConversationViewModel.LoadConversationState.Prepare.self)
     }
     
@@ -161,8 +155,10 @@ extension TweetConversationViewController: ConversationPostTableViewCellDelegate
             DispatchQueue.main.async { [weak self] in
                 guard let self = self else { return }
                 let profileViewModel = ProfileViewModel(twitterUser: tweet.author)
-                self.context.authenticationService.currentTwitterUser
-                    .assign(to: \.value, on: profileViewModel.currentTwitterUser).store(in: &profileViewModel.disposeBag)
+                self.context.authenticationService.activeAuthenticationIndex
+                    .map { $0?.twitterAuthentication?.twitterUser }
+                    .assign(to: \.value, on: profileViewModel.currentTwitterUser)
+                    .store(in: &profileViewModel.disposeBag)
                 self.coordinator.present(scene: .profile(viewModel: profileViewModel), from: self, transition: .show)
             }
         }
@@ -179,8 +175,10 @@ extension TweetConversationViewController: ConversationPostTableViewCellDelegate
             DispatchQueue.main.async { [weak self] in
                 guard let self = self else { return }
                 let profileViewModel = ProfileViewModel(twitterUser: targetTweet.author)
-                self.context.authenticationService.currentTwitterUser
-                    .assign(to: \.value, on: profileViewModel.currentTwitterUser).store(in: &profileViewModel.disposeBag)
+                self.context.authenticationService.activeAuthenticationIndex
+                    .map { $0?.twitterAuthentication?.twitterUser }
+                    .assign(to: \.value, on: profileViewModel.currentTwitterUser)
+                    .store(in: &profileViewModel.disposeBag)
                 self.coordinator.present(scene: .profile(viewModel: profileViewModel), from: self, transition: .show)
             }
         }

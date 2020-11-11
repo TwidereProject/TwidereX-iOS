@@ -56,13 +56,14 @@ extension SearchViewController {
                 self.coordinator.present(scene: .searchDetail(viewModel: searchDetailViewModel), from: self, transition: .customPush)
             }
             .store(in: &disposeBag)
-        context.authenticationService.currentTwitterUser
-            .sink { [weak self] twitterUser in
+        context.authenticationService.activeAuthenticationIndex
+            .sink { [weak self] activeAuthenticationIndex in
                 guard let self = self else { return }
                 let placeholderImage = UIImage
                     .placeholder(size: UIButton.avatarButtonSize, color: .systemFill)
                     .af.imageRoundedIntoCircle()
-                guard let twitterUser = twitterUser, let avatarImageURL = twitterUser.avatarImageURL() else {
+                guard let twitterUser = activeAuthenticationIndex?.twitterAuthentication?.twitterUser,
+                      let avatarImageURL = twitterUser.avatarImageURL() else {
                     self.avatarButton.setImage(placeholderImage, for: .normal)
                     return
                 }

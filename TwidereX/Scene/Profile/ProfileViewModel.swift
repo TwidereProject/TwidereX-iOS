@@ -21,7 +21,6 @@ class ProfileViewModel: NSObject {
     // input
     let twitterUser: CurrentValueSubject<TwitterUser?, Never>
     let currentTwitterUser = CurrentValueSubject<TwitterUser?, Never>(nil)
-    let currentTwitterAuthentication = CurrentValueSubject<TwitterAuthentication?, Never>(nil)
         
     // output
     let userID: CurrentValueSubject<String?, Never>

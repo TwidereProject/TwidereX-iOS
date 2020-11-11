@@ -85,10 +85,11 @@ extension DrawerSidebarViewController {
         pinnedTableViewDiffableDataSourceSnapshot.appendItems([.settings], toSection: .main)
         pinnedTableViewDiffableDataSource.apply(pinnedTableViewDiffableDataSourceSnapshot)
         
-        context.authenticationService.currentTwitterUser
+        context.authenticationService.activeAuthenticationIndex
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] twitterUser in
+            .sink { [weak self] activeAuthenticationIndex in
                 guard let self = self else { return }
+                let twitterUser = activeAuthenticationIndex?.twitterAuthentication?.twitterUser
                 // bind avatar
                 let placeholderImage = UIImage
                     .placeholder(size: DrawerSidebarHeaderView.avatarImageViewSize, color: .systemFill)

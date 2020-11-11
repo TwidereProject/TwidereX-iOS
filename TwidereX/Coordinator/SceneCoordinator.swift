@@ -55,11 +55,6 @@ extension SceneCoordinator {
     func setup() {
         let viewController = MainTabBarController(context: appContext, coordinator: self)
         sceneDelegate.window?.rootViewController = viewController
-        
-//        let viewController = RootSplitViewController()
-//        setupDependency(for: viewController)
-//        viewController.delegate = self
-//        sceneDelegate.window?.rootViewController = viewController
     }
     
     @discardableResult

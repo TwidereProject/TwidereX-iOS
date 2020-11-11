@@ -29,7 +29,6 @@ final class TweetConversationViewModel: NSObject {
     let context: AppContext
     let rootItem: ConversationItem
     let conversationMeta = CurrentValueSubject<ConversationMeta?, Never>(nil)
-    let currentTwitterAuthentication: CurrentValueSubject<TwitterAuthentication?, Never>
     weak var contentOffsetAdjustableTimelineViewControllerDelegate: ContentOffsetAdjustableTimelineViewControllerDelegate?
     weak var tableView: UITableView?
     weak var conversationPostTableViewCellDelegate: ConversationPostTableViewCellDelegate?
@@ -58,7 +57,6 @@ final class TweetConversationViewModel: NSObject {
     init(context: AppContext, tweetObjectID: NSManagedObjectID) {
         self.context = context
         self.rootItem = .root(tweetObjectID: tweetObjectID)
-        self.currentTwitterAuthentication = CurrentValueSubject(context.authenticationService.currentActiveTwitterAutentication.value)
         super.init()
         
         conversationNodes
@@ -180,10 +178,12 @@ extension TweetConversationViewModel {
                 return cell
             case .leaf(let objectID, let attribute):
                 let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: TimelinePostTableViewCell.self), for: indexPath) as! TimelinePostTableViewCell
+                let twitterAuthenticationBox = self.context.authenticationService.activeTwitterAuthenticationBox.value
+                let requestUserID = twitterAuthenticationBox?.twitterUserID ?? ""
                 let managedObjectContext = self.context.managedObjectContext
                 managedObjectContext.performAndWait {
                     let tweet = managedObjectContext.object(with: objectID) as! Tweet
-                    TweetConversationViewModel.configure(cell: cell, tweet: tweet, requestUserID: self.currentTwitterAuthentication.value?.userID ?? "")
+                    TweetConversationViewModel.configure(cell: cell, tweet: tweet, requestUserID: requestUserID)
                 }
                 cell.conversationLinkUpper.isHidden = attribute.level == 0
                 cell.conversationLinkLower.isHidden = !attribute.hasReply || attribute.level != 0

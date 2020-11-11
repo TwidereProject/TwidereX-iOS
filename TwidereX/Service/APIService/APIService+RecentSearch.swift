@@ -21,9 +21,11 @@ extension APIService {
         sinceID: Twitter.Entity.V2.Tweet.ID?,
         startTime: Date?,
         nextToken: String?,
-        authorization: Twitter.API.OAuth.Authorization,
-        requestTwitterUserID: Twitter.Entity.V2.User.ID
+        twitterAuthenticationBox: AuthenticationService.TwitterAuthenticationBox
     ) -> AnyPublisher<Twitter.Response.Content<Twitter.API.V2.RecentSearch.Content>, Error> {
+        let requestTwitterUserID = twitterAuthenticationBox.twitterUserID
+        let authorization = twitterAuthenticationBox.twitterAuthorization
+        
         let query = Twitter.API.V2.RecentSearch.Query(
             query: "conversation_id:\(conversationID) (to:\(authorID) OR from:\(authorID))",
             maxResults: 100,
@@ -56,9 +58,10 @@ extension APIService {
     func tweetsRecentSearch(
         searchText: String,
         nextToken: String?,
-        authorization: Twitter.API.OAuth.Authorization,
-        requestTwitterUserID: Twitter.Entity.V2.User.ID
+        twitterAuthenticationBox: AuthenticationService.TwitterAuthenticationBox
     ) -> AnyPublisher<Twitter.Response.Content<Twitter.API.V2.RecentSearch.Content>, Error> {
+        let requestTwitterUserID = twitterAuthenticationBox.twitterUserID
+        let authorization = twitterAuthenticationBox.twitterAuthorization
         let query = Twitter.API.V2.RecentSearch.Query(
             query: searchText,
             maxResults: 20,

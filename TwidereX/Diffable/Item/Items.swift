@@ -19,7 +19,7 @@ enum Item {
     // normal list
     case tweet(objectID: NSManagedObjectID)
     case photoTweet(objectID: NSManagedObjectID, attribute: PhotoAttribute)
-    case tweetUser(objectID: NSManagedObjectID)
+    case twittertUser(objectID: NSManagedObjectID)
     
     // loader
     case middleLoader(upperTimelineIndexAnchorObjectID: NSManagedObjectID)
@@ -74,7 +74,7 @@ extension Item: Equatable {
             return objectIDLeft == objectIDRight
         case (.photoTweet(let objectIDLeft, _), .photoTweet(let objectIDRight, _)):
             return objectIDLeft == objectIDRight
-        case (.tweetUser(let objectIDLeft), .tweetUser(let objectIDRight)):
+        case (.twittertUser(let objectIDLeft), .twittertUser(let objectIDRight)):
             return objectIDLeft == objectIDRight
         case (.middleLoader(let upperLeft), .middleLoader(let upperRight)):
             return upperLeft == upperRight
@@ -97,7 +97,7 @@ extension Item: Hashable {
             hasher.combine(objectID)
         case .photoTweet(let objectID, _):
             hasher.combine(objectID)
-        case .tweetUser(let objectID):
+        case .twittertUser(let objectID):
             hasher.combine(objectID)
         case .middleLoader(let upper):
             hasher.combine(String(describing: Item.middleLoader.self))

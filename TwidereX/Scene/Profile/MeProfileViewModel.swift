@@ -21,7 +21,9 @@ final class MeProfileViewModel: ProfileViewModel {
     
     init(context: AppContext) {
         self.context = context
-        if let currentTwitterUser = context.authenticationService.currentTwitterUser.value {
+        assert(Thread.isMainThread)
+        if let activeAuthenticationIndex = context.authenticationService.activeAuthenticationIndex.value,
+           let currentTwitterUser = activeAuthenticationIndex.twitterAuthentication?.twitterUser {
             super.init(twitterUser: currentTwitterUser)
         } else {
             super.init()
@@ -37,7 +39,8 @@ final class MeProfileViewModel: ProfileViewModel {
             .store(in: &disposeBag)
             
         
-        context.authenticationService.currentTwitterUser
+        context.authenticationService.activeAuthenticationIndex
+            .map { $0?.twitterAuthentication?.twitterUser }
             .assign(to: \.value, on: currentTwitterUser)
             .store(in: &disposeBag)
     }

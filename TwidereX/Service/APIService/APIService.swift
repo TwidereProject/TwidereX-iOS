@@ -10,6 +10,7 @@ import func QuartzCore.CACurrentMediaTime
 import Foundation
 import Combine
 import CoreData
+import CoreDataStack
 import TwitterAPI
 import AlamofireImage
 
@@ -17,35 +18,22 @@ final class APIService {
         
     var disposeBag = Set<AnyCancellable>()
     
-    let session: URLSession
-    
     // internal
+    let session: URLSession
     var homeTimelineRequestThrottler = RequestThrottler()
     
     // input
-    let managedObjectContext: NSManagedObjectContext
     let backgroundManagedObjectContext: NSManagedObjectContext
-    
+
     // output
     let error = CurrentValueSubject<Error?, Never>(nil)
     
-    init(managedObjectContext: NSManagedObjectContext, backgroundManagedObjectContext: NSManagedObjectContext) {
-        self.managedObjectContext = managedObjectContext
+    init(backgroundManagedObjectContext: NSManagedObjectContext) {
         self.backgroundManagedObjectContext = backgroundManagedObjectContext
         self.session = URLSession(configuration: .default)
         
         // setup cache. 10MB RAM + 50MB Disk
         URLCache.shared = URLCache(memoryCapacity: 10 * 1024 * 1024, diskCapacity: 50 * 1024 * 1024, diskPath: nil)
-        
-        backgroundManagedObjectContext.mergePolicy = NSMergePolicy.mergeByPropertyObjectTrump
-        
-        NotificationCenter.default.publisher(for: .NSManagedObjectContextDidSave, object: backgroundManagedObjectContext)
-            .sink { notification in
-                managedObjectContext.perform {
-                    managedObjectContext.mergeChanges(fromContextDidSave: notification)
-                }
-            }
-            .store(in: &disposeBag)
     }
     
 }
@@ -61,6 +49,7 @@ extension APIService {
     enum APIError: Error {
         case silent(SilentError)        
         case accountTemporarilyLocked
+        case authenticationMissing
     }
     
     enum SilentError {

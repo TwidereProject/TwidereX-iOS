@@ -68,10 +68,6 @@ extension UserLikeTimelineViewController {
                 self.viewModel.stateMachine.enter(UserTimelineViewModel.State.Reloading.self)
             }
             .store(in: &disposeBag)
-        
-        context.authenticationService.currentActiveTwitterAutentication
-            .assign(to: \.value, on: viewModel.currentTwitterAuthentication)
-            .store(in: &disposeBag)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -162,8 +158,10 @@ extension UserLikeTimelineViewController: TimelinePostTableViewCellDelegate {
                 DispatchQueue.main.async { [weak self] in
                     guard let self = self else { return }
                     let profileViewModel = ProfileViewModel(twitterUser: tweet.author)        // tweet's user is target retweet user
-                    self.context.authenticationService.currentTwitterUser
-                        .assign(to: \.value, on: profileViewModel.currentTwitterUser).store(in: &profileViewModel.disposeBag)
+                    self.context.authenticationService.activeAuthenticationIndex
+                        .map { $0?.twitterAuthentication?.twitterUser }
+                        .assign(to: \.value, on: profileViewModel.currentTwitterUser)
+                        .store(in: &profileViewModel.disposeBag)
                     self.coordinator.present(scene: .profile(viewModel: profileViewModel), from: self, transition: .show)
                 }
             }
@@ -185,8 +183,10 @@ extension UserLikeTimelineViewController: TimelinePostTableViewCellDelegate {
                 DispatchQueue.main.async { [weak self] in
                     guard let self = self else { return }
                     let profileViewModel = ProfileViewModel(twitterUser: targetTweet.author)
-                    self.context.authenticationService.currentTwitterUser
-                        .assign(to: \.value, on: profileViewModel.currentTwitterUser).store(in: &profileViewModel.disposeBag)
+                    self.context.authenticationService.activeAuthenticationIndex
+                        .map { $0?.twitterAuthentication?.twitterUser }
+                        .assign(to: \.value, on: profileViewModel.currentTwitterUser)
+                        .store(in: &profileViewModel.disposeBag)
                     self.coordinator.present(scene: .profile(viewModel: profileViewModel), from: self, transition: .show)
                 }
             }
@@ -208,8 +208,10 @@ extension UserLikeTimelineViewController: TimelinePostTableViewCellDelegate {
                 DispatchQueue.main.async { [weak self] in
                     guard let self = self else { return }
                     let profileViewModel = ProfileViewModel(twitterUser: targetTweet.author)
-                    self.context.authenticationService.currentTwitterUser
-                        .assign(to: \.value, on: profileViewModel.currentTwitterUser).store(in: &profileViewModel.disposeBag)
+                    self.context.authenticationService.activeAuthenticationIndex
+                        .map { $0?.twitterAuthentication?.twitterUser }
+                        .assign(to: \.value, on: profileViewModel.currentTwitterUser)
+                        .store(in: &profileViewModel.disposeBag)
                     self.coordinator.present(scene: .profile(viewModel: profileViewModel), from: self, transition: .show)
                 }
             }

@@ -34,7 +34,6 @@ final class ComposeTweetViewModel: NSObject {
     // input
     let context: AppContext
     let twitterTextParser = TwitterTextParser.defaultParser()
-    let currentTwitterAuthentication = CurrentValueSubject<TwitterAuthentication?, Never>(nil)
     let repliedTweetObjectID: NSManagedObjectID?
     let composeContent = CurrentValueSubject<String, Never>("")
     let repliedToCellFrame = CurrentValueSubject<CGRect, Never>(.zero)

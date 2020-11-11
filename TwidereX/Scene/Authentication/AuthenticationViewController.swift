@@ -178,6 +178,7 @@ extension AuthenticationViewController {
                 return
             }
             
+            let rawProperty: TwitterAuthentication.Property
             let authenticationProperty: TwitterAuthentication.Property
             switch requestTokenExchange {
             case .requestTokenResponse:
@@ -185,7 +186,8 @@ extension AuthenticationViewController {
             case .customRequestTokenResponse(_, let append):
                 guard let callbackURL = callback,
                       let oauthCallbackResponse = Twitter.API.OAuth.OAuthCallbackResponse(callbackURL: callbackURL),
-                      let authentication = try? oauthCallbackResponse.authentication(privateKey: append.clientExchangePrivateKey) else {
+                      let authentication = try? oauthCallbackResponse.authentication(privateKey: append.clientExchangePrivateKey)
+                else {
                     let error = AuthenticationError.invalidOAuthCallback(error: nil)
                     let alertController = UIAlertController.standardAlert(of: error)
                     self.present(alertController, animated: true, completion: nil)
@@ -193,7 +195,7 @@ extension AuthenticationViewController {
                 }
                 os_log("%{public}s[%{public}ld], %{public}s: authentication: %s", ((#file as NSString).lastPathComponent), #line, #function, String(describing: authentication))
                 
-                let rawProperty = TwitterAuthentication.Property(userID: authentication.userID, screenName: authentication.screenName, consumerKey: authentication.consumerKey, consumerSecret: authentication.consumerSecret, accessToken: authentication.accessToken, accessTokenSecret: authentication.accessTokenSecret)
+                rawProperty = TwitterAuthentication.Property(userID: authentication.userID, screenName: authentication.screenName, consumerKey: authentication.consumerKey, consumerSecret: authentication.consumerSecret, accessToken: authentication.accessToken, accessTokenSecret: authentication.accessTokenSecret)
                 do {
                     authenticationProperty = try rawProperty.seal(appSecret: AppSecret.shared)
                 } catch {
@@ -204,48 +206,81 @@ extension AuthenticationViewController {
                 }
             }
             
-            // save authentication
-            let managedObjectContext = self.context.managedObjectContext
-            var _twitterAuthentication: TwitterAuthentication?
-            managedObjectContext.performChanges {
-                _twitterAuthentication = TwitterAuthentication.insert(into: managedObjectContext, property: authenticationProperty)
-            }
-            .tryMap { result -> AnyPublisher<Twitter.Response.Content<Twitter.Entity.User>, Error> in
-                switch result {
-                case .success:
-                    os_log("%{public}s[%{public}ld], %{public}s: insert Authentication for %s, userID: %s", ((#file as NSString).lastPathComponent), #line, #function, authenticationProperty.screenName, authenticationProperty.userID)
-                    
-                    guard let twitterAuthentication = _twitterAuthentication,
-                          let authorization = try? twitterAuthentication.authorization(appSecret: AppSecret.shared)
-                    else {
+            let managedObjectContext = self.context.backgroundManagedObjectContext
+            let authorization = Twitter.API.OAuth.Authorization(
+                consumerKey: rawProperty.consumerKey,
+                consumerSecret: rawProperty.consumerSecret,
+                accessToken: rawProperty.accessToken,
+                accessTokenSecret: rawProperty.accessTokenSecret
+            )
+            self.context.apiService.verifyCredentials(authorization: authorization)
+                .retry(3)
+                .tryMap { response -> AnyPublisher<Twitter.Response.Content<Twitter.Entity.User>, Error> in
+                    let entity = response.value
+                    let userID = entity.idStr
+                    assert(userID == authenticationProperty.userID)
+                    let twitterUserRequest = TwitterUser.sortedFetchRequest
+                    twitterUserRequest.predicate = TwitterUser.predicate(idStr: userID)
+                    twitterUserRequest.fetchLimit = 1
+                    guard let authenticatedTwitterUser = try? managedObjectContext.fetch(twitterUserRequest).first else {
                         throw AuthenticationError.verifyCredentialsFail(error: error)
                     }
                     
-                    return self.context.apiService.verifyCredentials(authorization: authorization)
-                case .failure(let error):
-                    os_log("%{public}s[%{public}ld], %{public}s: insert Authentication failed. %s", ((#file as NSString).lastPathComponent), #line, #function, error.localizedDescription)
-                    throw AuthenticationError.verifyCredentialsFail(error: error)
-                }
-            }
-            .switchToLatest()
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] completion in
-                guard let self = self else { return }
-                switch completion {
-                case .failure(let error):
-                    let alertController = UIAlertController.standardAlert(of: error)
-                    self.present(alertController, animated: true) { [weak self] in
-                        self?.isSigning.value = false
+                    return managedObjectContext.performChanges {
+                        let twitterAuthenticationRequest = TwitterAuthentication.sortedFetchRequest
+                        twitterAuthenticationRequest.predicate = TwitterAuthentication.predicate(userID: authenticationProperty.userID)
+                        twitterAuthenticationRequest.fetchLimit = 1
+                        if let oldTwitterAuthentication = try! managedObjectContext.fetch(twitterAuthenticationRequest).first {
+                            oldTwitterAuthentication.update(screenName: authenticationProperty.screenName)
+                            oldTwitterAuthentication.update(consumerKey: authenticationProperty.consumerKey)
+                            oldTwitterAuthentication.update(consumerSecret: authenticationProperty.consumerSecret)
+                            oldTwitterAuthentication.update(accessToken: authenticationProperty.accessToken)
+                            oldTwitterAuthentication.update(accessTokenSecret: authenticationProperty.accessTokenSecret)
+                            oldTwitterAuthentication.update(nonce: authenticationProperty.nonce ?? "")
+                            oldTwitterAuthentication.update(updatedAt: Date())
+                        } else {
+                            let authenticationIndexProperty = AuthenticationIndex.Property(platform: .twitter)
+                            let authenticationIndex = AuthenticationIndex.insert(into: managedObjectContext, property: authenticationIndexProperty)
+                            _ = TwitterAuthentication.insert(
+                                into: managedObjectContext,
+                                property: authenticationProperty,
+                                authenticationIndex: authenticationIndex,
+                                twitterUser: authenticatedTwitterUser
+                            )
+                        }
                     }
-                case .finished:
-                    self.dismiss(animated: true, completion: nil)
+                    .setFailureType(to: Error.self)
+                    .tryMap { result in
+                        switch result {
+                        case .failure(let error):
+                            throw error
+                        case .success:
+                            return response
+                        }
+                    }
+                    .eraseToAnyPublisher()
                 }
-            } receiveValue: { response in
-                let user = response.value
-                os_log("%{public}s[%{public}ld], %{public}s: user @%s verified", ((#file as NSString).lastPathComponent), #line, #function, user.screenName)
-            }
-            .store(in: &self.disposeBag)
+                .switchToLatest()
+                .receive(on: DispatchQueue.main)
+                .sink { [weak self] completion in
+                    guard let self = self else { return }
+                    switch completion {
+                    case .failure(let error):
+                        let alertController = UIAlertController.standardAlert(of: error)
+                        self.present(alertController, animated: true) { [weak self] in
+                            self?.isSigning.value = false
+                        }
+                    case .finished:
+                        self.dismiss(animated: true, completion: nil)
+                    }
+                } receiveValue: { response in
+                    let user = response.value
+                    os_log("%{public}s[%{public}ld], %{public}s: user @%s verified", ((#file as NSString).lastPathComponent), #line, #function, user.screenName)
+                }
+                .store(in: &self.disposeBag)
         }
+        
+        authenticationSession?.prefersEphemeralWebBrowserSession = true
         authenticationSession?.presentationContextProvider = self
         authenticationSession?.start()
     }
