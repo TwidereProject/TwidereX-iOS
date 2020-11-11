@@ -46,6 +46,7 @@ extension SceneCoordinator {
         case mediaPreview(viewModel: MediaPreviewViewModel)
         case drawerSidebar
         case setting
+        case accountList(viewModel: AccountListViewModel)
     }
 }
 
@@ -136,6 +137,10 @@ private extension SceneCoordinator {
             viewController = DrawerSidebarViewController()
         case .setting:
             viewController = SettingViewController()
+        case .accountList(let viewModel):
+            let _viewController = AccountListViewController()
+            _viewController.viewModel = viewModel
+            viewController = _viewController
         }
         
         setupDependency(for: viewController as? NeedsDependency)

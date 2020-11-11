@@ -138,7 +138,10 @@ extension DrawerSidebarViewController {
 extension DrawerSidebarViewController: DrawerSidebarHeaderViewDelegate {
     
     func drawerSidebarHeaderView(_ headerView: DrawerSidebarHeaderView, menuButtonDidPressed button: UIButton) {
-        // TODO:
+        dismiss(animated: true) {
+            let accountListViewModel = AccountListViewModel(context: self.context)
+            self.coordinator.present(scene: .accountList(viewModel: accountListViewModel), from: nil, transition: .modal(animated: true, completion: nil))
+        }
     }
     
     func drawerSidebarHeaderView(_ headerView: DrawerSidebarHeaderView, closeButtonDidPressed button: UIButton) {

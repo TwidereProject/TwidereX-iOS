@@ -55,6 +55,12 @@ final class UserBriefInfoView: UIView {
     }()
     
     let followActionButton = FollowActionButton()
+    let menuButton: UIButton = {
+        let button = UIButton()
+        button.setImage(UIImage(systemName: "ellipsis.circle"), for: .normal)
+        button.tintColor = Asset.Colors.hightLight.color
+        return button
+    }()
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -141,8 +147,13 @@ extension UserBriefInfoView {
         followActionButton.setContentHuggingPriority(.defaultHigh, for: .horizontal)
         followActionButton.setContentCompressionResistancePriority(.required - 1, for: .horizontal)
         
+        containerStackView.addArrangedSubview(menuButton)
+        menuButton.setContentHuggingPriority(.defaultHigh, for: .horizontal)
+        menuButton.setContentCompressionResistancePriority(.required - 1, for: .horizontal)
+        
         verifiedBadgeImageView.isHidden = true
         lockImageView.isHidden = true
+        menuButton.isHidden = true
     }
 }
 

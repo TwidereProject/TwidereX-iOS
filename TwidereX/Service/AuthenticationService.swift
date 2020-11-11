@@ -27,6 +27,8 @@ class AuthenticationService: NSObject {
     // output
     let twitterAuthentications = CurrentValueSubject<[TwitterAuthentication], Never>([])
     let currentActiveTwitterAutentication = CurrentValueSubject<TwitterAuthentication?, Never>(nil)
+    
+    let twitterUsers = CurrentValueSubject<[TwitterUser], Never>([])
     let currentTwitterUser = CurrentValueSubject<TwitterUser?, Never>(nil)
 
     init(managedObjectContext: NSManagedObjectContext, apiService: APIService) {
@@ -63,7 +65,7 @@ class AuthenticationService: NSObject {
         twitterAuthenticationFetchedResultsController.delegate = self
         twitterUserFetchedResultsController.delegate = self
         
-        // verify credentials for active authentication
+        // verify credentials for active authentication (sorted first)
         twitterAuthentications
             .filter { !$0.isEmpty }
             .map { authentications -> AnyPublisher<Result<Twitter.Response.Content<Twitter.Entity.User>?, Error>, Never> in
@@ -74,7 +76,7 @@ class AuthenticationService: NSObject {
                     return Just(Result.success(nil)).eraseToAnyPublisher()
                 }
                 
-                // prevent terminate stream
+                // prevent error terminate stream
                 let result: AnyPublisher<Result<Twitter.Response.Content<Twitter.Entity.User>?, Error>, Never> = Just(authorization)
                     .flatMap { authorization in
                         // send request
@@ -101,15 +103,15 @@ class AuthenticationService: NSObject {
             .store(in: &disposeBag)
         
         // setup publisher
-        currentActiveTwitterAutentication
-            .sink(receiveValue: { [weak self] authentication in
+        twitterAuthentications
+            .sink(receiveValue: { [weak self] authentications in
                 guard let self = self else { return }
-                guard let authentication = authentication else { return }
+                guard !authentications.isEmpty else { return }
                 
-                self.twitterUserFetchedResultsController.fetchRequest.predicate = TwitterUser.predicate(idStr: authentication.userID)
+                self.twitterUserFetchedResultsController.fetchRequest.predicate = TwitterUser.predicate(idStrs: authentications.map { $0.userID })
                 do {
                     try self.twitterUserFetchedResultsController.performFetch()
-                    self.updateCurrentTwitterUser()
+                    self.updateTwitterUsers()
                 } catch {
                     assertionFailure(error.localizedDescription)
                 }
@@ -144,14 +146,22 @@ extension AuthenticationService {
         self.twitterAuthentications.value = authentications
     }
     
-    func updateCurrentTwitterUser() {
+    func updateTwitterUsers() {
         guard twitterUserFetchedResultsController.fetchRequest.predicate != nil else {
+            self.twitterUsers.value = []
             self.currentTwitterUser.value = nil
             return
         }
-        let twitterUser = twitterUserFetchedResultsController.fetchedObjects?.first
-        if self.currentTwitterUser.value != twitterUser {
-            self.currentTwitterUser.value = twitterUser
+        let twitterUsers = twitterUserFetchedResultsController.fetchedObjects ?? []
+        if self.twitterUsers.value != twitterUsers {
+            self.twitterUsers.value = twitterUsers
+        }
+        let activeTwitterUserID = currentActiveTwitterAutentication.value?.userID
+        let activeTwitterUser = activeTwitterUserID.flatMap { twitterUserID in
+            twitterUsers.first(where: { $0.id == twitterUserID })
+        }
+        if self.currentTwitterUser.value != activeTwitterUser {
+            self.currentTwitterUser.value = activeTwitterUser
         }
     }
 }
@@ -170,7 +180,7 @@ extension AuthenticationService: NSFetchedResultsControllerDelegate {
         }
         if controller === twitterUserFetchedResultsController {
             // os_log("%{public}s[%{public}ld], %{public}s: fetch %ld TwitterUser", ((#file as NSString).lastPathComponent), #line, #function, controller.fetchedObjects?.count ?? 0)
-            updateCurrentTwitterUser()
+            updateTwitterUsers()
         }
     }
     

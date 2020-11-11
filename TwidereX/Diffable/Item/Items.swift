@@ -12,14 +12,16 @@ import CoreDataStack
 
 /// Note: update Equatable when change case
 enum Item {
-    
+    // indexed timeline
     case homeTimelineIndex(objectID: NSManagedObjectID, attribute: Attribute)
     case mentionTimelineIndex(objectID: NSManagedObjectID, attribute: Attribute)
-
+    
+    // normal list
     case tweet(objectID: NSManagedObjectID)
     case photoTweet(objectID: NSManagedObjectID, attribute: PhotoAttribute)
-    case user(objectID: NSManagedObjectID)
+    case tweetUser(objectID: NSManagedObjectID)
     
+    // loader
     case middleLoader(upperTimelineIndexAnchorObjectID: NSManagedObjectID)
     case bottomLoader
 }
@@ -72,7 +74,7 @@ extension Item: Equatable {
             return objectIDLeft == objectIDRight
         case (.photoTweet(let objectIDLeft, _), .photoTweet(let objectIDRight, _)):
             return objectIDLeft == objectIDRight
-        case (.user(let objectIDLeft), .user(let objectIDRight)):
+        case (.tweetUser(let objectIDLeft), .tweetUser(let objectIDRight)):
             return objectIDLeft == objectIDRight
         case (.middleLoader(let upperLeft), .middleLoader(let upperRight)):
             return upperLeft == upperRight
@@ -95,7 +97,7 @@ extension Item: Hashable {
             hasher.combine(objectID)
         case .photoTweet(let objectID, _):
             hasher.combine(objectID)
-        case .user(let objectID):
+        case .tweetUser(let objectID):
             hasher.combine(objectID)
         case .middleLoader(let upper):
             hasher.combine(String(describing: Item.middleLoader.self))
