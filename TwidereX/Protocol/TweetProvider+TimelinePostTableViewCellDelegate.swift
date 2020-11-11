@@ -283,6 +283,7 @@ extension TimelinePostTableViewCellDelegate where Self: TweetProvider {
             .sink { [weak self] activityItems in
                 guard let self = self else { return }
                 let activityViewController = UIActivityViewController(activityItems: activityItems, applicationActivities: nil)
+                activityViewController.popoverPresentationController?.sourceView = sender
                 self.present(activityViewController, animated: true, completion: nil)
             }
             .store(in: &disposeBag)
