@@ -17,7 +17,7 @@ extension AccountListViewModel {
         diffableDataSource = UITableViewDiffableDataSource(tableView: tableView) { [weak self] tableView, indexPath, item -> UITableViewCell? in
             guard let self = self else { return nil }
             switch item {
-            case .twittertUser(let objectID):
+            case .twitterUser(let objectID):
                 let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: AccountListTableViewCell.self), for: indexPath) as! AccountListTableViewCell
                 let managedObjectContext = self.context.managedObjectContext
                 managedObjectContext.performAndWait {

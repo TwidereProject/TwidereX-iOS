@@ -29,7 +29,6 @@ final public class TwitterAuthentication: NSManagedObject {
     // one-to-one relationship
     @NSManaged public private(set) var authenticationIndex: AuthenticationIndex?
     @NSManaged public private(set) var twitterUser: TwitterUser?
-
     
 }
 
@@ -93,6 +92,18 @@ extension TwitterAuthentication {
     public func update(nonce: String) {
         if self.nonce != nonce {
             self.nonce = nonce
+        }
+    }
+    
+    public func update(authenticationIndex: AuthenticationIndex?) {
+        if self.authenticationIndex != authenticationIndex {
+            self.authenticationIndex = authenticationIndex
+        }
+    }
+    
+    public func update(twitterUser: TwitterUser?) {
+        if self.twitterUser != twitterUser {
+            self.twitterUser = twitterUser
         }
     }
     

@@ -8,8 +8,10 @@
 
 import os.log
 import UIKit
+import AuthenticationServices
 import Combine
 import CoreDataStack
+import TwitterAPI
 
 final class AccountListViewController: UIViewController, NeedsDependency {
     
@@ -19,6 +21,14 @@ final class AccountListViewController: UIViewController, NeedsDependency {
     var disposeBag = Set<AnyCancellable>()
     var viewModel: AccountListViewModel!
     
+    let addBarButtonItem = UIBarButtonItem(title: "Add", style: .done, target: self, action: #selector(AccountListViewController.addBarButtonItemPressed(_:)))
+    let activityIndicatorBarButtonItem: UIBarButtonItem = {
+        let activityIndicatorView = UIActivityIndicatorView(style: .medium)
+        let barButtonItem = UIBarButtonItem(customView: activityIndicatorView)
+        activityIndicatorView.startAnimating()
+        return barButtonItem
+    }()
+    
     lazy var tableView: UITableView = {
         let tableView = ControlContainableTableView()
         tableView.register(AccountListTableViewCell.self, forCellReuseIdentifier: String(describing: AccountListTableViewCell.self))
@@ -26,6 +36,8 @@ final class AccountListViewController: UIViewController, NeedsDependency {
         tableView.separatorStyle = .none
         return tableView
     }()
+    
+    private var twitterAuthenticationController: TwitterAuthenticationController?
     
 }
 
@@ -37,7 +49,7 @@ extension AccountListViewController {
         title = "Accounts"
         view.backgroundColor = .systemBackground
         navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Close", style: .plain, target: self, action: #selector(AccountListViewController.closeBarButtonItemPressed(_:)))
-        navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Add", style: .done, target: self, action: #selector(AccountListViewController.closeBarButtonItemPressed(_:)))
+        navigationItem.rightBarButtonItem = addBarButtonItem
         
         tableView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(tableView)
@@ -51,6 +63,9 @@ extension AccountListViewController {
         tableView.delegate = self
         viewModel.accountListTableViewCellDelegate = self
         viewModel.setupDiffableDataSource(for: tableView)
+        
+        addBarButtonItem.target = self
+        addBarButtonItem.action = #selector(AccountListViewController.addBarButtonItemPressed(_:))
     }
     
 }
@@ -64,9 +79,80 @@ extension AccountListViewController {
     
     @objc private func addBarButtonItemPressed(_ sender: UIBarButtonItem) {
         os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
-        
+        context.apiService.twitterRequestToken()
+            .receive(on: DispatchQueue.main)
+            .handleEvents(receiveSubscription: { [weak self] _ in
+                guard let self = self else { return }
+                self.navigationItem.rightBarButtonItem = self.activityIndicatorBarButtonItem
+            })
+            .sink { [weak self] completion in
+                guard let self = self else { return }
+                switch completion {
+                case .failure(let error):
+                    os_log("%{public}s[%{public}ld], %{public}s: request token error: %{public}s", ((#file as NSString).lastPathComponent), #line, #function, error.localizedDescription)
+                    self.navigationItem.rightBarButtonItem = self.addBarButtonItem
+                    let alertController = UIAlertController.standardAlert(of: error)
+                    self.present(alertController, animated: true)
+                case .finished:
+                    break
+                }
+            } receiveValue: { [weak self] requestTokenExchange in
+                guard let self = self else { return }
+                self.twitterAuthenticate(requestTokenExchange: requestTokenExchange)
+            }
+            .store(in: &disposeBag)
     }
     
+}
+
+extension AccountListViewController {
+    func twitterAuthenticate(requestTokenExchange: Twitter.API.OAuth.OAuthRequestTokenExchange) {
+        let requestToken: String = {
+            switch requestTokenExchange {
+            case .requestTokenResponse(let response):           return response.oauthToken
+            case .customRequestTokenResponse(_, let append):    return append.requestToken
+            }
+        }()
+        let authenticateURL = Twitter.API.OAuth.autenticateURL(requestToken: requestToken)
+        
+        twitterAuthenticationController = TwitterAuthenticationController(
+            context: context,
+            authenticateURL: authenticateURL,
+            requestTokenExchange: requestTokenExchange
+        )
+        
+        twitterAuthenticationController?.isAuthenticating
+            .receive(on: DispatchQueue.main)
+            .sink(receiveValue: { [weak self] isAuthenticating in
+                guard let self = self else { return }
+                if !isAuthenticating {
+                    self.navigationItem.rightBarButtonItem = self.addBarButtonItem
+                }
+            })
+            .store(in: &disposeBag)
+        
+        twitterAuthenticationController?.error
+            .receive(on: DispatchQueue.main)
+            .sink(receiveValue: { [weak self] error in
+                guard let self = self else { return }
+                guard let error = error else { return }
+                let alertController = UIAlertController.standardAlert(of: error)
+                self.present(alertController, animated: true)
+            })
+            .store(in: &disposeBag)
+        
+        twitterAuthenticationController?.authenticationSession?.prefersEphemeralWebBrowserSession = true
+        twitterAuthenticationController?.authenticationSession?.presentationContextProvider = self
+        twitterAuthenticationController?.authenticationSession?.start()
+    }
+
+}
+
+// MARK: - ASWebAuthenticationPresentationContextProviding
+extension AccountListViewController: ASWebAuthenticationPresentationContextProviding {
+    func presentationAnchor(for session: ASWebAuthenticationSession) -> ASPresentationAnchor {
+        return view.window!
+    }
 }
 
 // MARK: - UITableViewDelegate
@@ -85,7 +171,7 @@ extension AccountListViewController: AccountListTableViewCellDelegate {
         guard let diffableDataSource = viewModel.diffableDataSource else { return }
         guard let indexPath = tableView.indexPath(for: cell) else { return }
         guard let item = diffableDataSource.itemIdentifier(for: indexPath) else { return }
-        guard case let .twittertUser(objectID) = item else { return }
+        guard case let .twitterUser(objectID) = item else { return }
         
         let managedObjectContext = context.managedObjectContext
         managedObjectContext.perform {

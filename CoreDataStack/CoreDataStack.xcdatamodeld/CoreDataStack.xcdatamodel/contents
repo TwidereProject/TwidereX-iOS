@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="17511" systemVersion="20B5022a" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="17192" systemVersion="19H15" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
     <entity name="AuthenticationIndex" representedClassName=".AuthenticationIndex" syncable="YES">
         <attribute name="activedAt" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="createdAt" attributeType="Date" usesScalarValueType="NO"/>
@@ -134,6 +134,7 @@
         <attribute name="updatedAt" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="userID" attributeType="String"/>
         <relationship name="authenticationIndex" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="AuthenticationIndex" inverseName="twitterAuthentication" inverseEntity="AuthenticationIndex"/>
+        <relationship name="twitterUser" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="TwitterUser" inverseName="twitterAuthentication" inverseEntity="TwitterUser"/>
     </entity>
     <entity name="TwitterMedia" representedClassName=".TwitterMedia" syncable="YES">
         <attribute name="durationMS" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
@@ -208,6 +209,7 @@
         <relationship name="pinnedTweet" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Tweet" inverseName="pinnedBy" inverseEntity="Tweet"/>
         <relationship name="retweets" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Tweet" inverseName="retweetBy" inverseEntity="Tweet"/>
         <relationship name="tweets" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Tweet" inverseName="author" inverseEntity="Tweet"/>
+        <relationship name="twitterAuthentication" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="TwitterAuthentication" inverseName="twitterUser" inverseEntity="TwitterAuthentication"/>
         <relationship name="withheld" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="TwitterWithheld" inverseName="twitterUser" inverseEntity="TwitterWithheld"/>
     </entity>
     <entity name="TwitterUserMetrics" representedClassName=".TwitterUserMetrics" syncable="YES">
@@ -227,6 +229,7 @@
         <relationship name="twitterUser" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="TwitterUser" inverseName="withheld" inverseEntity="TwitterUser"/>
     </entity>
     <elements>
+        <element name="AuthenticationIndex" positionX="-63" positionY="-153" width="128" height="118"/>
         <element name="MentionTimelineIndex" positionX="-63" positionY="-162" width="128" height="148"/>
         <element name="TimelineIndex" positionX="748.46875" positionY="302.9921875" width="128" height="148"/>
         <element name="Toots" positionX="-267.625" positionY="-3.98828125" width="128" height="118"/>
@@ -238,15 +241,14 @@
         <element name="TweetEntitiesMention" positionX="-36" positionY="-18" width="128" height="133"/>
         <element name="TweetEntitiesURL" positionX="-54" positionY="-36" width="128" height="163"/>
         <element name="TweetMetrics" positionX="968.33984375" positionY="-300.5078125" width="128" height="58"/>
-        <element name="TwitterAuthentication" positionX="-109.453125" positionY="275.71875" width="128" height="209"/>
+        <element name="TwitterAuthentication" positionX="-109.453125" positionY="275.71875" width="128" height="238"/>
         <element name="TwitterMedia" positionX="1009.765625" positionY="-162.66796875" width="128" height="223"/>
         <element name="TwitterMediaMetrics" positionX="1124.859375" positionY="38.72265625" width="128" height="58"/>
         <element name="TwitterPlace" positionX="1146.6953125" positionY="350.890625" width="128" height="178"/>
         <element name="TwitterPoll" positionX="-54" positionY="-36" width="128" height="148"/>
         <element name="TwitterPollOption" positionX="-45" positionY="-27" width="128" height="28"/>
-        <element name="TwitterUser" positionX="281.5234375" positionY="201.703125" width="128" height="448"/>
+        <element name="TwitterUser" positionX="281.5234375" positionY="201.703125" width="128" height="463"/>
         <element name="TwitterUserMetrics" positionX="-45" positionY="-180" width="128" height="133"/>
         <element name="TwitterWithheld" positionX="-18" positionY="0" width="128" height="133"/>
-        <element name="AuthenticationIndex" positionX="-63" positionY="-153" width="128" height="104"/>
     </elements>
 </model>

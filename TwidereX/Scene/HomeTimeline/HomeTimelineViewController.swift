@@ -133,11 +133,28 @@ extension HomeTimelineViewController {
         viewModel.timelinePostTableViewCellDelegate = self
         viewModel.timelineMiddleLoaderTableViewCellDelegate = self
         viewModel.setupDiffableDataSource(for: tableView)
-        do {
-            try viewModel.fetchedResultsController.performFetch()
-        } catch {
-            assertionFailure(error.localizedDescription)
-        }
+        context.authenticationService.activeAuthenticationIndex
+            .sink { [weak self] activeAuthenticationIndex in
+                guard let self = self else { return }
+                let predicate: NSPredicate
+                if let activeAuthenticationIndex = activeAuthenticationIndex {
+                    let userID = activeAuthenticationIndex.twitterAuthentication?.twitterUser?.id ?? ""
+                    predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [
+                        TimelineIndex.predicate(platform: .twitter),
+                        TimelineIndex.predicate(userID: userID),
+                    ])
+                } else {
+                    // use invalid predicate
+                    predicate = TimelineIndex.predicate(userID: "")
+                }
+                self.viewModel.fetchedResultsController.fetchRequest.predicate = predicate
+                do {
+                    try self.viewModel.fetchedResultsController.performFetch()
+                } catch {
+                    assertionFailure(error.localizedDescription)
+                }
+            }
+            .store(in: &disposeBag)
         tableView.delegate = self
         tableView.dataSource = viewModel.diffableDataSource
         

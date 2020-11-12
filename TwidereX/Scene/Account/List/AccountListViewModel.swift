@@ -26,22 +26,24 @@ final class AccountListViewModel: NSObject {
         self.context = context
         super.init()
         
-//        context.authenticationService.twitterUsers
-//            .receive(on: DispatchQueue.main)
-//            .sink { [weak self] twitterUsers in
-//                guard let self = self else { return }
-//                guard let diffableDataSource = self.diffableDataSource else { return }
-//
-//                var snapshot = NSDiffableDataSourceSnapshot<AccountListSection, Item>()
-//                snapshot.appendSections([.main])
-//                for twitterUser in twitterUsers {
-//                    let item = Item.twittertUser(objectID: twitterUser.objectID)
-//                    snapshot.appendItems([item], toSection: .main)
-//                }
-//                diffableDataSource.defaultRowAnimation = .none
-//                diffableDataSource.apply(snapshot)
-//            }
-//            .store(in: &disposeBag)
+        context.authenticationService.authenticationIndexes
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] authenticationIndexes in
+                guard let self = self else { return }
+                guard let diffableDataSource = self.diffableDataSource else { return }
+
+                var snapshot = NSDiffableDataSourceSnapshot<AccountListSection, Item>()
+                snapshot.appendSections([.main])
+                for authenticationIndex in authenticationIndexes {
+                    if let twitterUser = authenticationIndex.twitterAuthentication?.twitterUser {
+                        let item = Item.twitterUser(objectID: twitterUser.objectID)
+                        snapshot.appendItems([item], toSection: .main)
+                    }
+                }
+                diffableDataSource.defaultRowAnimation = .none
+                diffableDataSource.apply(snapshot)
+            }
+            .store(in: &disposeBag)
     }
     
 }

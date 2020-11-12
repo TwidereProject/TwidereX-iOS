@@ -80,6 +80,7 @@ final class HomeTimelineViewModel: NSObject {
         super.init()
         
         fetchedResultsController.delegate = self
+        
         Timer.publish(every: 1.0, on: .main, in: .common)
             .autoconnect()
             .sink { _ in
@@ -418,6 +419,7 @@ extension HomeTimelineViewModel: NSFetchedResultsControllerDelegate {
         guard let diffableDataSource = self.diffableDataSource else { return }
         let oldSnapshot = diffableDataSource.snapshot()
 
+        let predicate = fetchedResultsController.fetchRequest.predicate
         let parentManagedObjectContext = fetchedResultsController.managedObjectContext
         let managedObjectContext = NSManagedObjectContext(concurrencyType: .privateQueueConcurrencyType)
         managedObjectContext.parent = parentManagedObjectContext
@@ -429,6 +431,7 @@ extension HomeTimelineViewModel: NSFetchedResultsControllerDelegate {
             let timelineIndexes: [TimelineIndex] = {
                 let request = TimelineIndex.sortedFetchRequest
                 request.returnsObjectsAsFaults = false
+                request.predicate = predicate
                 do {
                     return try managedObjectContext.fetch(request)
                 } catch {
@@ -441,6 +444,7 @@ extension HomeTimelineViewModel: NSFetchedResultsControllerDelegate {
             os_log("%{public}s[%{public}ld], %{public}s: fetch timelineIndexes cost %.2fs", ((#file as NSString).lastPathComponent), #line, #function, endFetch - start)
             
             var oldSnapshotAttributeDict: [NSManagedObjectID : Item.Attribute] = [:]
+            
             for item in oldSnapshot.itemIdentifiers {
                 guard case let .homeTimelineIndex(objectID, attribute) = item else { continue }
                 oldSnapshotAttributeDict[objectID] = attribute

@@ -96,7 +96,7 @@ extension SearchUserViewController: UITableViewDelegate {
         guard let diffableDataSource = viewModel.diffableDataSource else { return }
         guard let item = diffableDataSource.itemIdentifier(for: indexPath) else { return }
         
-        guard case let .twittertUser(objectID) = item else { return }
+        guard case let .twitterUser(objectID) = item else { return }
         let twitterUser = viewModel.fetchedResultsController.managedObjectContext.object(with: objectID) as! TwitterUser
         
         let profileViewModel = ProfileViewModel(twitterUser: twitterUser)
@@ -124,7 +124,7 @@ extension SearchUserViewController: UserBriefInfoTableViewCellDelegate {
         guard let indexPath = tableView.indexPath(for: cell) else { return }
         guard let item = diffableDataSource.itemIdentifier(for: indexPath) else { return }
         
-        guard case let .twittertUser(objectID) = item else { return }
+        guard case let .twitterUser(objectID) = item else { return }
         let twitterUser = viewModel.fetchedResultsController.managedObjectContext.object(with: objectID) as! TwitterUser
         
         let requestTwitterUserID = twitterAuthenticationBox.twitterUserID
@@ -152,7 +152,7 @@ extension SearchUserViewController: UserBriefInfoTableViewCellDelegate {
     private func toggleFollowStatue(for item: Item, twitterAuthenticationBox: AuthenticationService.TwitterAuthenticationBox) {
         guard let diffableDataSource = viewModel.diffableDataSource else { return }
         guard let indexPath = diffableDataSource.indexPath(for: item) else { return }
-        guard case let .twittertUser(objectID) = item else { return }
+        guard case let .twitterUser(objectID) = item else { return }
 
         let impactFeedbackGenerator = UIImpactFeedbackGenerator(style: .light)
         let notificationFeedbackGenerator = UINotificationFeedbackGenerator()

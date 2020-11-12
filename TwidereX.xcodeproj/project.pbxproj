@@ -175,6 +175,7 @@
 		DBCB4047255B683B00DD8D8F /* AccountListTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBCB4046255B683B00DD8D8F /* AccountListTableViewCell.swift */; };
 		DBCB4053255B6EB100DD8D8F /* AccountListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBCB4052255B6EB100DD8D8F /* AccountListViewModel.swift */; };
 		DBCB4058255B6ECA00DD8D8F /* AccountListSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBCB4057255B6ECA00DD8D8F /* AccountListSection.swift */; };
+		DBCB4060255CAC0300DD8D8F /* TwitterAuthenticationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBCB405F255CAC0300DD8D8F /* TwitterAuthenticationController.swift */; };
 		DBD98489251CB88A00ED87A1 /* Tabman in Frameworks */ = {isa = PBXBuildFile; productRef = DBD98488251CB88A00ED87A1 /* Tabman */; };
 		DBDA8E2224FCF8A3006750DC /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBDA8E2124FCF8A3006750DC /* AppDelegate.swift */; };
 		DBDA8E2424FCF8A3006750DC /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBDA8E2324FCF8A3006750DC /* SceneDelegate.swift */; };
@@ -503,6 +504,7 @@
 		DBCB4046255B683B00DD8D8F /* AccountListTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountListTableViewCell.swift; sourceTree = "<group>"; };
 		DBCB4052255B6EB100DD8D8F /* AccountListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountListViewModel.swift; sourceTree = "<group>"; };
 		DBCB4057255B6ECA00DD8D8F /* AccountListSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountListSection.swift; sourceTree = "<group>"; };
+		DBCB405F255CAC0300DD8D8F /* TwitterAuthenticationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwitterAuthenticationController.swift; sourceTree = "<group>"; };
 		DBDA8E1E24FCF8A3006750DC /* TwidereX.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TwidereX.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		DBDA8E2124FCF8A3006750DC /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		DBDA8E2324FCF8A3006750DC /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -1215,6 +1217,7 @@
 			isa = PBXGroup;
 			children = (
 				DBDA8E8424FE05B6006750DC /* AuthenticationViewController.swift */,
+				DBCB405F255CAC0300DD8D8F /* TwitterAuthenticationController.swift */,
 			);
 			path = Authentication;
 			sourceTree = "<group>";
@@ -2026,6 +2029,7 @@
 				DB3FC0522552742E003A2F8A /* MediaSection.swift in Sources */,
 				DBA397C925551EB500A95662 /* MediaPreviewImageViewController.swift in Sources */,
 				DB10B347254AB338002D86F3 /* SearchMediaViewController.swift in Sources */,
+				DBCB4060255CAC0300DD8D8F /* TwitterAuthenticationController.swift in Sources */,
 				DB2924E42547D4C7003899A7 /* ComposeTweetMediaCollectionViewCell.swift in Sources */,
 				DB91547525514B1C00613473 /* MentionTimelineViewModel+LoadOldestState.swift in Sources */,
 				DB6760F9254AD026006C6798 /* SearchMediaViewModel.swift in Sources */,

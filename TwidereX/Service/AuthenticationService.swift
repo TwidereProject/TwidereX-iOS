@@ -108,7 +108,7 @@ class AuthenticationService: NSObject {
 
         do {
             try authenticationIndexFetchedResultsController.performFetch()
-            //updateTwitterAuthentications()
+            authenticationIndexes.value = authenticationIndexFetchedResultsController.fetchedObjects ?? []
         } catch {
             assertionFailure(error.localizedDescription)
         }
