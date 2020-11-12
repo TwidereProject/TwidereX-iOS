@@ -46,6 +46,15 @@ extension UserMediaTimelineViewController {
         
         collectionView.delegate = self
         viewModel.setupDiffableDataSource(collectionView: collectionView)
+        
+        // trigger timeline loading
+        viewModel.userID
+            .removeDuplicates()
+            .sink { [weak self] _ in
+                guard let self = self else { return }
+                self.viewModel.stateMachine.enter(UserMediaTimelineViewModel.State.Reloading.self)
+            }
+            .store(in: &disposeBag)
     }
     
 }

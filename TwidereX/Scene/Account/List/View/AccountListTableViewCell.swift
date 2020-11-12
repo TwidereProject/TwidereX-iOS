@@ -42,7 +42,7 @@ extension AccountListTableViewCell {
             userBriefInfoView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 20),
             userBriefInfoView.leadingAnchor.constraint(equalTo:  contentView.readableContentGuide.leadingAnchor),
             contentView.readableContentGuide.trailingAnchor.constraint(equalTo: userBriefInfoView.trailingAnchor),
-            contentView.bottomAnchor.constraint(equalTo: userBriefInfoView.bottomAnchor, constant: 16),
+            contentView.bottomAnchor.constraint(equalTo: userBriefInfoView.bottomAnchor, constant: 16).priority(.defaultHigh),
         ])
         
         userBriefInfoView.followActionButton.isHidden = true

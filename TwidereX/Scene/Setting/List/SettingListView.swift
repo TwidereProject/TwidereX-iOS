@@ -57,22 +57,6 @@ struct SettingListEntry: Identifiable {
     let title: String
 }
 
-struct SettingListEntryRow: View {
-    
-    let icon: Image
-    let title: String
-    
-    var body: some View {
-        HStack {
-            icon
-                .renderingMode(.template)
-            Text(title)
-            Spacer()
-            Image(systemName: "chevron.right")
-        }
-    }
-}
-
 struct SettingListView: View {
     
     @EnvironmentObject var context: AppContext
@@ -100,25 +84,28 @@ struct SettingListView: View {
     
     var body: some View {
         List {
+            #if DEBUG
             Section(header: Text(verbatim: "General")) {
                 ForEach(SettingListView.generalSection) { entry in
                     Button(action: {
                         context.viewStateStore.settingView.presentSettingListEntryPublisher.send(entry)
                     }, label: {
-                        SettingListEntryRow(icon: entry.image, title: entry.title)
+                        TableViewEntryRow(icon: entry.image, title: entry.title)
                             .foregroundColor(Color(.label))
                     })
                 }
             }
             .modifier(SectionHeaderStyle())
+            #endif
             Section(header: Text(verbatim: "About")) {
                 ForEach(SettingListView.aboutSection) { entry in
                     Button(action: {
-                        print("Tapped!")
+                        context.viewStateStore.settingView.presentSettingListEntryPublisher.send(entry)
                     }, label: {
-                        SettingListEntryRow(icon: entry.image, title: entry.title)
+                        TableViewEntryRow(icon: entry.image, title: entry.title)
                             .foregroundColor(Color(.label))
-                    })                }
+                    })
+                }
             }
             .modifier(SectionHeaderStyle())
         }

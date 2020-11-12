@@ -10,6 +10,7 @@ import Combine
 
 struct ViewStateStore {
     var settingView = ViewState.SettingView()
+    var aboutView = ViewState.AboutView()
 }
 
 enum ViewState { }
@@ -17,5 +18,11 @@ enum ViewState { }
 extension ViewState {
     struct SettingView {
         let presentSettingListEntryPublisher = PassthroughSubject<SettingListEntry, Never>()
+    }
+}
+
+extension ViewState {
+    struct AboutView {
+        let aboutEntryPublisher = PassthroughSubject<AboutEntryType, Never>()
     }
 }

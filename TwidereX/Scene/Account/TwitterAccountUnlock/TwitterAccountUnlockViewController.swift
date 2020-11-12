@@ -63,9 +63,9 @@ extension TwitterAccountUnlockViewController: WKNavigationDelegate {
         
         // TODO:
         #if DEBUG
-        if (navigationAction.request.url?.absoluteString ?? "").hasPrefix("https://mobile.twitter.com") {
-            dismiss(animated: true, completion: nil)
-        }
+//        if (navigationAction.request.url?.absoluteString ?? "").hasPrefix("https://mobile.twitter.com") {
+//            dismiss(animated: true, completion: nil)
+//        }
         #endif
     }
     

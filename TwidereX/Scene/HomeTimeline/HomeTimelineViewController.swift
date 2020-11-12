@@ -149,7 +149,11 @@ extension HomeTimelineViewController {
                 }
                 self.viewModel.fetchedResultsController.fetchRequest.predicate = predicate
                 do {
+                    self.viewModel.diffableDataSource?.defaultRowAnimation = .fade
                     try self.viewModel.fetchedResultsController.performFetch()
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+                        self.viewModel.diffableDataSource?.defaultRowAnimation = .automatic
+                    }
                 } catch {
                     assertionFailure(error.localizedDescription)
                 }

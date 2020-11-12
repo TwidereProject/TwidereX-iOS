@@ -60,12 +60,12 @@ extension UserLikeTimelineViewController {
         tableView.delegate = self
         tableView.dataSource = viewModel.diffableDataSource
         
-        // trigger user timeline loading
+        // trigger timeline loading
         viewModel.userID
             .removeDuplicates()
             .sink { [weak self] _ in
                 guard let self = self else { return }
-                self.viewModel.stateMachine.enter(UserTimelineViewModel.State.Reloading.self)
+                self.viewModel.stateMachine.enter(UserLikeTimelineViewModel.State.Reloading.self)
             }
             .store(in: &disposeBag)
     }

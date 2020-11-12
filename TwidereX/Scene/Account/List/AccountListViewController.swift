@@ -159,7 +159,27 @@ extension AccountListViewController: ASWebAuthenticationPresentationContextProvi
 extension AccountListViewController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        guard let diffableDataSource = viewModel.diffableDataSource else { return }
+        guard let item = diffableDataSource.itemIdentifier(for: indexPath) else { return }
+        guard case let .twitterUser(objectID) = item else { return }
         
+        let managedObjectContext = context.managedObjectContext
+        managedObjectContext.perform {
+            guard let twitterUser = managedObjectContext.object(with: objectID) as? TwitterUser else { return }
+            self.context.authenticationService.activeTwitterUser(id: twitterUser.id)
+                .receive(on: DispatchQueue.main)
+                .sink { [weak self] result in
+                    guard let self = self else { return }
+                    switch result {
+                    case .failure(let error):
+                        assertionFailure(error.localizedDescription)
+                    case .success(let isActived):
+                        assert(isActived)
+                        self.dismiss(animated: true, completion: nil)
+                    }
+                }
+                .store(in: &self.disposeBag)
+        }
     }
     
 }

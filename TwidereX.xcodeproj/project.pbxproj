@@ -39,6 +39,9 @@
 		DB2924DF2547CCD6003899A7 /* ComposeTweetMediaItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB2924DE2547CCD6003899A7 /* ComposeTweetMediaItem.swift */; };
 		DB2924E42547D4C7003899A7 /* ComposeTweetMediaCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB2924E32547D4C7003899A7 /* ComposeTweetMediaCollectionViewCell.swift */; };
 		DB2924EC25492006003899A7 /* APIService+Geo.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB2924EB25492006003899A7 /* APIService+Geo.swift */; };
+		DB2EBBD5255D344800956CAA /* AboutViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB2EBBD4255D344800956CAA /* AboutViewController.swift */; };
+		DB2EBBEB255D34BE00956CAA /* AboutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB2EBBEA255D34BE00956CAA /* AboutView.swift */; };
+		DB2EBBF0255D368200956CAA /* TableViewEntryRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB2EBBEF255D368200956CAA /* TableViewEntryRow.swift */; };
 		DB34028E2521BC06009EFADF /* APIService+UserTimeline.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB34028D2521BC06009EFADF /* APIService+UserTimeline.swift */; };
 		DB34029D2521BE8B009EFADF /* MeProfileViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB34029C2521BE8B009EFADF /* MeProfileViewModel.swift */; };
 		DB3402B72521D389009EFADF /* UserTimelineViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB3402B62521D389009EFADF /* UserTimelineViewModel.swift */; };
@@ -148,7 +151,7 @@
 		DB98DC10250787420087E30F /* TimelineBottomLoaderTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB98DC0F250787420087E30F /* TimelineBottomLoaderTableViewCell.swift */; };
 		DB9EC4E1255A6317005403AA /* SwiftMessages in Frameworks */ = {isa = PBXBuildFile; productRef = DB9EC4E0255A6317005403AA /* SwiftMessages */; };
 		DB9EC4EA255A6BC7005403AA /* TwitterAccountUnlockViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB9EC4E9255A6BC7005403AA /* TwitterAccountUnlockViewController.swift */; };
-		DB9EC519255A8285005403AA /* SettingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB9EC518255A8285005403AA /* SettingViewController.swift */; };
+		DB9EC519255A8285005403AA /* SettingListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB9EC518255A8285005403AA /* SettingListViewController.swift */; };
 		DB9EC532255A87A4005403AA /* SettingListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB9EC531255A87A4005403AA /* SettingListView.swift */; };
 		DB9EC537255A8CEE005403AA /* ViewStateStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB9EC536255A8CEE005403AA /* ViewStateStore.swift */; };
 		DBA397B4255513AD00A95662 /* MediaPreviewImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBA397B3255513AD00A95662 /* MediaPreviewImageView.swift */; };
@@ -373,6 +376,9 @@
 		DB2924DE2547CCD6003899A7 /* ComposeTweetMediaItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComposeTweetMediaItem.swift; sourceTree = "<group>"; };
 		DB2924E32547D4C7003899A7 /* ComposeTweetMediaCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComposeTweetMediaCollectionViewCell.swift; sourceTree = "<group>"; };
 		DB2924EB25492006003899A7 /* APIService+Geo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "APIService+Geo.swift"; sourceTree = "<group>"; };
+		DB2EBBD4255D344800956CAA /* AboutViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutViewController.swift; sourceTree = "<group>"; };
+		DB2EBBEA255D34BE00956CAA /* AboutView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutView.swift; sourceTree = "<group>"; };
+		DB2EBBEF255D368200956CAA /* TableViewEntryRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TableViewEntryRow.swift; sourceTree = "<group>"; };
 		DB34028D2521BC06009EFADF /* APIService+UserTimeline.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "APIService+UserTimeline.swift"; sourceTree = "<group>"; };
 		DB34029C2521BE8B009EFADF /* MeProfileViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeProfileViewModel.swift; sourceTree = "<group>"; };
 		DB3402B62521D389009EFADF /* UserTimelineViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserTimelineViewModel.swift; sourceTree = "<group>"; };
@@ -477,7 +483,7 @@
 		DB98DC0D2507862D0087E30F /* TimelineMiddleLoaderTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimelineMiddleLoaderTableViewCell.swift; sourceTree = "<group>"; };
 		DB98DC0F250787420087E30F /* TimelineBottomLoaderTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimelineBottomLoaderTableViewCell.swift; sourceTree = "<group>"; };
 		DB9EC4E9255A6BC7005403AA /* TwitterAccountUnlockViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwitterAccountUnlockViewController.swift; sourceTree = "<group>"; };
-		DB9EC518255A8285005403AA /* SettingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingViewController.swift; sourceTree = "<group>"; };
+		DB9EC518255A8285005403AA /* SettingListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingListViewController.swift; sourceTree = "<group>"; };
 		DB9EC531255A87A4005403AA /* SettingListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingListView.swift; sourceTree = "<group>"; };
 		DB9EC536255A8CEE005403AA /* ViewStateStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewStateStore.swift; sourceTree = "<group>"; };
 		DBA397B3255513AD00A95662 /* MediaPreviewImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaPreviewImageView.swift; sourceTree = "<group>"; };
@@ -719,6 +725,32 @@
 				DB491635253ED329008755C3 /* TwitterPlace.swift */,
 			);
 			path = Place;
+			sourceTree = "<group>";
+		};
+		DB2EBBD9255D344C00956CAA /* About */ = {
+			isa = PBXGroup;
+			children = (
+				DB2EBBD4255D344800956CAA /* AboutViewController.swift */,
+				DB2EBBEA255D34BE00956CAA /* AboutView.swift */,
+			);
+			path = About;
+			sourceTree = "<group>";
+		};
+		DB2EBBDD255D345500956CAA /* List */ = {
+			isa = PBXGroup;
+			children = (
+				DB9EC518255A8285005403AA /* SettingListViewController.swift */,
+				DB9EC531255A87A4005403AA /* SettingListView.swift */,
+			);
+			path = List;
+			sourceTree = "<group>";
+		};
+		DB2EBBF4255D368400956CAA /* SwiftUI */ = {
+			isa = PBXGroup;
+			children = (
+				DB2EBBEF255D368200956CAA /* TableViewEntryRow.swift */,
+			);
+			path = SwiftUI;
 			sourceTree = "<group>";
 		};
 		DB3FC03825526D6B003A2F8A /* MediaTimeline */ = {
@@ -1005,8 +1037,8 @@
 		DB9EC51D255A828C005403AA /* Setting */ = {
 			isa = PBXGroup;
 			children = (
-				DB9EC518255A8285005403AA /* SettingViewController.swift */,
-				DB9EC531255A87A4005403AA /* SettingListView.swift */,
+				DB2EBBDD255D345500956CAA /* List */,
+				DB2EBBD9255D344C00956CAA /* About */,
 			);
 			path = Setting;
 			sourceTree = "<group>";
@@ -1184,8 +1216,8 @@
 		DBDA8E5424FDF3E2006750DC /* Scene */ = {
 			isa = PBXGroup;
 			children = (
-				DBF69ECE25496E6800E2A915 /* Transition */,
 				DBEA4F782511E4660007FEC5 /* Share */,
+				DBF69ECE25496E6800E2A915 /* Transition */,
 				DBDA8E9624FE075E006750DC /* MainTab */,
 				DBDA8E8624FE05B9006750DC /* Authentication */,
 				DBCB4032255B670F00DD8D8F /* Account */,
@@ -1430,6 +1462,7 @@
 			children = (
 				DB925755251CA3C1004FEFB5 /* ViewModel */,
 				DBEA4F792511E46A0007FEC5 /* View */,
+				DB2EBBF4255D368400956CAA /* SwiftUI */,
 			);
 			path = Share;
 			sourceTree = "<group>";
@@ -1979,6 +2012,7 @@
 			files = (
 				DB747FEF251B63E3000C4BD7 /* HitTestExpandedButton.swift in Sources */,
 				DBB09D562511BA9700AE260E /* APIService+Lookup.swift in Sources */,
+				DB2EBBEB255D34BE00956CAA /* AboutView.swift in Sources */,
 				DB761E72255946720050DC01 /* SidebarSection.swift in Sources */,
 				DB3FC045255270D6003A2F8A /* UserMediaTimelineViewModel+State.swift in Sources */,
 				DB7D124C250F875F00999903 /* UIView.swift in Sources */,
@@ -2047,6 +2081,7 @@
 				DBEA4F772511DD610007FEC5 /* TweetConversationViewModel.swift in Sources */,
 				DB1A1D6B2559A0A50049DA6D /* TweetProvider.swift in Sources */,
 				DBF69EDA2549701B00E2A915 /* SearchToSearchDetailViewControllerAnimatedTransitioning.swift in Sources */,
+				DB2EBBF0255D368200956CAA /* TableViewEntryRow.swift in Sources */,
 				DBEFDC8825591F5C0086F268 /* DrawerSidebarViewController.swift in Sources */,
 				DBF69EFA25498B1500E2A915 /* SearchTimelineViewModel.swift in Sources */,
 				DB8AC0F825401BA200E636BE /* UIViewController.swift in Sources */,
@@ -2057,7 +2092,7 @@
 				DB92570A251C8FE0004FEFB5 /* ProfileHeaderViewController.swift in Sources */,
 				DB0849B425137B3E009E0CD7 /* StatusActionToolbar.swift in Sources */,
 				DB747FF9251C496A000C4BD7 /* ProfileViewController.swift in Sources */,
-				DB9EC519255A8285005403AA /* SettingViewController.swift in Sources */,
+				DB9EC519255A8285005403AA /* SettingListViewController.swift in Sources */,
 				DBA5FA192553DCBC00D2E98E /* TransitioningMath.swift in Sources */,
 				DBF69EAC25496C9F00E2A915 /* SearchDetailViewModel.swift in Sources */,
 				DB915470255142A500613473 /* MentionTimelineViewModel+LoadLatestState.swift in Sources */,
@@ -2109,6 +2144,7 @@
 				DBDA8E9D24FE0F8B006750DC /* Assets.swift in Sources */,
 				DBF69EEF25498A4800E2A915 /* SearchDetailPagingViewModel.swift in Sources */,
 				DBDA8E2224FCF8A3006750DC /* AppDelegate.swift in Sources */,
+				DB2EBBD5255D344800956CAA /* AboutViewController.swift in Sources */,
 				DBAC4A6725552A1E00140B23 /* MediaPreviewImageViewModel.swift in Sources */,
 				DB3FC03125525BFD003A2F8A /* HomeTimelineViewModel+LoadOldestState.swift in Sources */,
 				DBDA8E9F24FE0FFF006750DC /* HomeTimelineViewController.swift in Sources */,

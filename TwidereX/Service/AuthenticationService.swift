@@ -127,6 +127,24 @@ extension AuthenticationService {
 }
 
 extension AuthenticationService {
+    
+    func activeTwitterUser(id: TwitterUser.ID) -> AnyPublisher<Result<Bool, Error>, Never> {
+        var isActived = false
+        
+        return backgroundManagedObjectContext.performChanges {
+            let request = TwitterAuthentication.sortedFetchRequest
+            let twitterAutentications = try? self.backgroundManagedObjectContext.fetch(request)
+            guard let activeTwitterAutentication = (twitterAutentications ?? []).first(where: { $0.userID == id }) else { return }
+            guard let authenticationIndex = activeTwitterAutentication.authenticationIndex else { return }
+            authenticationIndex.update(activedAt: Date())
+            isActived = true
+        }
+        .map { result in
+            return result.map { isActived }
+        }
+        .eraseToAnyPublisher()
+    }
+    
     func signOutTwitterUser(id: TwitterUser.ID) -> AnyPublisher<Result<Bool, Error>, Never> {
         var isSignOut = false
         
@@ -144,6 +162,7 @@ extension AuthenticationService {
         }
         .eraseToAnyPublisher()
     }
+    
 }
 
 // MARK: - NSFetchedResultsControllerDelegate

@@ -99,7 +99,7 @@ extension ProfileViewController {
         viewModel.userID.assign(to: \.value, on: userMediaTimelineViewModel.userID).store(in: &disposeBag)
         
         let userLikeTimelineViewModel = UserLikeTimelineViewModel(context: context, userID: viewModel.userID.value)
-
+        viewModel.userID.assign(to: \.value, on: userLikeTimelineViewModel.userID).store(in: &disposeBag)
         
         profileSegmentedViewController.pagingViewController.viewModel = {
             let profilePagingViewModel = ProfilePagingViewModel(
