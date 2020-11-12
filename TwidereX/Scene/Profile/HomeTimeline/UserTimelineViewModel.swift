@@ -126,8 +126,8 @@ extension UserTimelineViewModel {
 
 extension UserTimelineViewModel {
     
-    private static func configure(cell: TimelinePostTableViewCell, tweet: Tweet, userID: String, requestUserID: String) {
-        HomeTimelineViewModel.configure(cell: cell, tweet: tweet, requestUserID: requestUserID)
+    private static func configure(cell: TimelinePostTableViewCell, readableLayoutFrame: CGRect? = nil, tweet: Tweet, userID: String, requestUserID: String) {
+        HomeTimelineViewModel.configure(cell: cell, readableLayoutFrame: readableLayoutFrame, tweet: tweet, requestUserID: requestUserID)
         internalConfigure(cell: cell, tweet: tweet, userID: userID)
     }
 
@@ -177,7 +177,7 @@ extension UserTimelineViewModel {
                 let managedObjectContext = self.fetchedResultsController.managedObjectContext
                 managedObjectContext.performAndWait {
                     let tweet = managedObjectContext.object(with: objectID) as! Tweet
-                    UserTimelineViewModel.configure(cell: cell, tweet: tweet, userID: userID, requestUserID: requestTwitterUserID)
+                    UserTimelineViewModel.configure(cell: cell, readableLayoutFrame: tableView.readableContentGuide.layoutFrame, tweet: tweet, userID: userID, requestUserID: requestTwitterUserID)
                 }
                 cell.delegate = self.timelinePostTableViewCellDelegate
                 return cell

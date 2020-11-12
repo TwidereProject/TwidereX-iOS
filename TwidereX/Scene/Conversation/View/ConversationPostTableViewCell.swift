@@ -115,19 +115,19 @@ struct ConversationPostTableViewCell_Previews: PreviewProvider {
         UIViewPreview {
             let view = ConversationPostTableViewCell()
             view.conversationPostView.avatarImageView.image = avatarImage
-//            let images = MosaicImageView_Previews.images.prefix(3)
-//            let imageViews = view.mosaicImageView.setupImageViews(count: images.count, maxHeight: 162)
-//            for (i, imageView) in imageViews.enumerated() {
-//                imageView.image = images[i]
-//            }
-//            view.mosaicImageView.isHidden = false
-//            view.quotePostView.avatarImageView.image = avatarImage2
-//            view.quotePostView.nameLabel.text = "Bob"
-//            view.quotePostView.usernameLabel.text = "@bob"
-//            view.quotePostView.isHidden = false
+            let images = MosaicImageView_Previews.images.prefix(3)
+            let imageViews = view.conversationPostView.mosaicImageView.setupImageViews(count: images.count, maxHeight: 162)
+            for (i, imageView) in imageViews.enumerated() {
+                imageView.image = images[i]
+            }
+            view.conversationPostView.mosaicImageView.isHidden = false
+            // view.quotePostView.avatarImageView.image = avatarImage2
+            // view.quotePostView.nameLabel.text = "Bob"
+            // view.quotePostView.usernameLabel.text = "@bob"
+            // view.quotePostView.isHidden = false
             return view
         }
-        .previewLayout(.fixed(width: 375, height: 200))
+        .previewLayout(.fixed(width: 375, height: 500))
     }
 }
 #endif

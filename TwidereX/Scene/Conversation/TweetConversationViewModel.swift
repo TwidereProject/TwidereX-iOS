@@ -230,6 +230,56 @@ extension TweetConversationViewModel {
         // set text
         cell.conversationPostView.activeTextLabel.text = tweet.text
         
+        // set image display
+        let media = Array(tweet.media ?? []).sorted { $0.index.compare($1.index) == .orderedAscending }
+        var mosaicMetas: [MosaicMeta] = []
+        for element in media {
+            guard let (url, size) = element.photoURL(sizeKind: .small) else { continue }
+            let meta = MosaicMeta(url: url, size: size)
+            mosaicMetas.append(meta)
+        }
+
+//        let maxSize: CGSize = {
+//            // auto layout first time fallback
+//            if cell.timelinePostView.frame == .zero {
+//                let bounds = UIScreen.main.bounds
+//                let maxWidth = min(bounds.width, bounds.height)
+//                return CGSize(
+//                    width: maxWidth,
+//                    height: maxWidth * 0.3
+//                )
+//            }
+//            let maxWidth: CGFloat = {
+//                // use timelinePostView width as container width
+//                // that width follows readable width and keep constant width after rotate
+//                var containerWidth = cell.timelinePostView.frame.width
+//                containerWidth -= 10
+//                containerWidth -= TimelinePostView.avatarImageViewSize.width
+//                return containerWidth
+//            }()
+//            return CGSize(width: maxWidth, height: maxWidth * 0.6)
+//        }()
+//        if mosaicMetas.count == 1 {
+//            let meta = mosaicMetas[0]
+//            let imageView = cell.timelinePostView.mosaicImageView.setupImageView(aspectRatio: meta.size, maxSize: maxSize)
+//            imageView.af.setImage(
+//                withURL: meta.url,
+//                placeholderImage: UIImage.placeholder(color: .systemFill),
+//                imageTransition: .crossDissolve(0.2)
+//            )
+//        } else {
+//            let imageViews = cell.timelinePostView.mosaicImageView.setupImageViews(count: mosaicMetas.count, maxHeight: maxSize.height)
+//            for (i, imageView) in imageViews.enumerated() {
+//                let meta = mosaicMetas[i]
+//                imageView.af.setImage(
+//                    withURL: meta.url,
+//                    placeholderImage: UIImage.placeholder(color: .systemFill),
+//                    imageTransition: .crossDissolve(0.2)
+//                )
+//            }
+//        }
+//        cell.timelinePostView.mosaicImageView.isHidden = mosaicMetas.isEmpty
+        
         // set quote
         let quote = tweet.quote
         if let quote = quote {

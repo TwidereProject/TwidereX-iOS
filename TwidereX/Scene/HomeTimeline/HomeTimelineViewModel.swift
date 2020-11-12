@@ -105,7 +105,7 @@ extension HomeTimelineViewModel {
                 let managedObjectContext = self.fetchedResultsController.managedObjectContext
                 managedObjectContext.performAndWait {
                     let timelineIndex = managedObjectContext.object(with: objectID) as! TimelineIndex
-                    HomeTimelineViewModel.configure(cell: cell, timelineIndex: timelineIndex, attribute: attribute)
+                    HomeTimelineViewModel.configure(cell: cell, readableLayoutFrame: tableView.readableContentGuide.layoutFrame, timelineIndex: timelineIndex, attribute: attribute)
                 }
                 cell.delegate = self.timelinePostTableViewCellDelegate
                 return cell
@@ -161,14 +161,14 @@ extension HomeTimelineViewModel {
         }
     }
     
-    static func configure(cell: TimelinePostTableViewCell, timelineIndex: TimelineIndex, attribute: Item.Attribute) {
+    static func configure(cell: TimelinePostTableViewCell, readableLayoutFrame: CGRect? = nil, timelineIndex: TimelineIndex, attribute: Item.Attribute) {
         if let tweet = timelineIndex.tweet {
-            configure(cell: cell, tweet: tweet, requestUserID: timelineIndex.userID)
+            configure(cell: cell, readableLayoutFrame: readableLayoutFrame, tweet: tweet, requestUserID: timelineIndex.userID)
             internalConfigure(cell: cell, tweet: tweet, attribute: attribute)
         }
     }
 
-    static func configure(cell: TimelinePostTableViewCell, tweet: Tweet, requestUserID: String) {
+    static func configure(cell: TimelinePostTableViewCell, readableLayoutFrame: CGRect? = nil, tweet: Tweet, requestUserID: String) {
         // set retweet display
         cell.timelinePostView.retweetContainerStackView.isHidden = tweet.retweet == nil
         cell.timelinePostView.retweetInfoLabel.text = tweet.author.name + " Retweeted"
@@ -223,35 +223,28 @@ extension HomeTimelineViewModel {
         
         // set image display
         let media = Array(tweet.media ?? []).sorted { $0.index.compare($1.index) == .orderedAscending }
-        var mosaicMetas: [MosaicMeta] = []
-        for element in media {
-            guard let (url, size) = element.photoURL(sizeKind: .small) else { continue }
-            let meta = MosaicMeta(url: url, size: size)
-            mosaicMetas.append(meta)
-        }
+        let mosiacImageViewModel = MosaicImageViewModel(twitterMedia: media)
 
         let maxSize: CGSize = {
-            // auto layout first time fallback
-            if cell.timelinePostView.frame == .zero {
-                let bounds = UIScreen.main.bounds
-                let maxWidth = min(bounds.width, bounds.height)
-                return CGSize(
-                    width: maxWidth,
-                    height: maxWidth * 0.3
-                )
-            }
             let maxWidth: CGFloat = {
                 // use timelinePostView width as container width
                 // that width follows readable width and keep constant width after rotate
-                var containerWidth = cell.timelinePostView.frame.width
+                let containerFrame = readableLayoutFrame ?? cell.timelinePostView.frame
+                var containerWidth = containerFrame.width
                 containerWidth -= 10
                 containerWidth -= TimelinePostView.avatarImageViewSize.width
                 return containerWidth
             }()
-            return CGSize(width: maxWidth, height: maxWidth * 0.6)
+            let scale: CGFloat = {
+                switch mosiacImageViewModel.metas.count {
+                case 1:     return 1.3
+                default:    return 0.7
+                }
+            }()
+            return CGSize(width: maxWidth, height: maxWidth * scale)
         }()
-        if mosaicMetas.count == 1 {
-            let meta = mosaicMetas[0]
+        if mosiacImageViewModel.metas.count == 1 {
+            let meta = mosiacImageViewModel.metas[0]
             let imageView = cell.timelinePostView.mosaicImageView.setupImageView(aspectRatio: meta.size, maxSize: maxSize)
             imageView.af.setImage(
                 withURL: meta.url,
@@ -259,9 +252,9 @@ extension HomeTimelineViewModel {
                 imageTransition: .crossDissolve(0.2)
             )
         } else {
-            let imageViews = cell.timelinePostView.mosaicImageView.setupImageViews(count: mosaicMetas.count, maxHeight: maxSize.height)
+            let imageViews = cell.timelinePostView.mosaicImageView.setupImageViews(count: mosiacImageViewModel.metas.count, maxHeight: maxSize.height)
             for (i, imageView) in imageViews.enumerated() {
-                let meta = mosaicMetas[i]
+                let meta = mosiacImageViewModel.metas[i]
                 imageView.af.setImage(
                     withURL: meta.url,
                     placeholderImage: UIImage.placeholder(color: .systemFill),
@@ -269,7 +262,7 @@ extension HomeTimelineViewModel {
                 )
             }
         }
-        cell.timelinePostView.mosaicImageView.isHidden = mosaicMetas.isEmpty
+        cell.timelinePostView.mosaicImageView.isHidden = mosiacImageViewModel.metas.isEmpty
 
         // set quote display
         let quote = tweet.retweet?.quote ?? tweet.quote
@@ -386,11 +379,6 @@ extension HomeTimelineViewModel {
             cell.separatorLineNormalLeadingLayoutConstraint.isActive = true
             cell.separatorLineNormalTrailingLayoutConstraint.isActive = true
         }
-    }
-    
-    struct MosaicMeta {
-        let url: URL
-        let size: CGSize
     }
 
     static func formattedNumberTitleForActionButton(_ number: Int?) -> String {
