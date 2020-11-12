@@ -195,21 +195,24 @@ extension AccountListViewController: AccountListTableViewCellDelegate {
     }
     
     private func signoutTwitterUser(id: TwitterUser.ID) {
-//        context.authenticationService.signOutTwitterUser(id: id)
-//            .receive(on: DispatchQueue.main)
-//            .sink { [weak self] result in
-//                guard let self = self else { return }
-//                switch result {
-//                case .failure(let error):
-//                    // TODO:
-//                    break
-//                case .success:
-//                    self.dismiss(animated: true) {
-//                        self.coordinator.present(scene: .authentication, from: nil, transition: .modal(animated: true, completion: nil))                        
-//                    }
-//                }
-//            }
-//            .store(in: &disposeBag)
+        let currentAccountCount = viewModel.diffableDataSource.snapshot().itemIdentifiers.count
+        context.authenticationService.signOutTwitterUser(id: id)
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] result in
+                guard let self = self else { return }
+                switch result {
+                case .failure(let error):
+                    break
+                case .success(let isSignOut):
+                    guard isSignOut else { return }
+                    self.dismiss(animated: true) {
+                        if currentAccountCount == 1 {
+                            self.coordinator.present(scene: .authentication, from: nil, transition: .modal(animated: true, completion: nil))
+                        }
+                    }
+                }
+            }
+            .store(in: &disposeBag)
     }
     
 }

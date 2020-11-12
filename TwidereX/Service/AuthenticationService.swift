@@ -113,6 +113,7 @@ class AuthenticationService: NSObject {
             assertionFailure(error.localizedDescription)
         }
     }
+    
 }
 
 extension AuthenticationService {
@@ -126,59 +127,23 @@ extension AuthenticationService {
 }
 
 extension AuthenticationService {
-    
-//    func signOutTwitterUser(id: TwitterUser.ID) -> AnyPublisher<Result<Void, Error>, Never> {
-//        let removingObjectIDs = twitterAuthentications.value
-//            .filter { $0.userID == id }
-//            .map { $0.objectID }
-//
-//        let backgroundManagedObjectContext = self.backgroundManagedObjectContext
-//        return backgroundManagedObjectContext.performChanges {
-//            for objectID in removingObjectIDs {
-//                let removingTwitterAuthentication = backgroundManagedObjectContext.object(with: objectID) as! TwitterAuthentication
-//                backgroundManagedObjectContext.delete(removingTwitterAuthentication)
-//            }
-//        }
-//        .eraseToAnyPublisher()
-//    }
-    
-}
-
-extension AuthenticationService {
-//    private func updateTwitterAuthentications() {
-//        let authentications = (twitterAuthenticationFetchedResultsController.fetchedObjects ?? [])
-//            .filter { (try? $0.authorization(appSecret: AppSecret.shared)) != nil }
-//            .sorted { lh, rh -> Bool in
-//                guard let leftActiveAt = lh.activeAt else { return false }
-//                guard let rightActiveAt = rh.activeAt else { return true }
-//                return leftActiveAt > rightActiveAt
-//            }
-//        self.twitterAuthentications.value = authentications
-//    }
-//
-//    private func updateTwitterUsers() {
-//        guard !twitterAuthentications.value.isEmpty else {
-//            twitterUsers.value = []
-//            currentTwitterUser.value = nil
-//            return
-//        }
-//        guard twitterUserFetchedResultsController.fetchRequest.predicate != nil else {
-//            twitterUsers.value = []
-//            currentTwitterUser.value = nil
-//            return
-//        }
-//        let twitterUsers = twitterUserFetchedResultsController.fetchedObjects ?? []
-//        if self.twitterUsers.value != twitterUsers {
-//            self.twitterUsers.value = twitterUsers
-//        }
-//        let activeTwitterUserID = twitterAuthentications.value.first?.userID
-//        let activeTwitterUser = activeTwitterUserID.flatMap { twitterUserID in
-//            twitterUsers.first(where: { $0.id == twitterUserID })
-//        }
-//        if self.currentTwitterUser.value != activeTwitterUser {
-//            self.currentTwitterUser.value = activeTwitterUser
-//        }
-//    }
+    func signOutTwitterUser(id: TwitterUser.ID) -> AnyPublisher<Result<Bool, Error>, Never> {
+        var isSignOut = false
+        
+        return backgroundManagedObjectContext.performChanges {
+            let request = TwitterAuthentication.sortedFetchRequest
+            let twitterAutentications = try? self.backgroundManagedObjectContext.fetch(request)
+            guard let deleteTwitterAutentication = (twitterAutentications ?? []).first(where: { $0.userID == id }) else { return }
+            guard let authenticationIndex = deleteTwitterAutentication.authenticationIndex else { return }
+            self.backgroundManagedObjectContext.delete(authenticationIndex)
+            self.backgroundManagedObjectContext.delete(deleteTwitterAutentication)
+            isSignOut = true
+        }
+        .map { result in
+            return result.map { isSignOut }
+        }
+        .eraseToAnyPublisher()
+    }
 }
 
 // MARK: - NSFetchedResultsControllerDelegate
