@@ -222,7 +222,7 @@ extension HomeTimelineViewModel {
         cell.timelinePostView.actionToolbar.likeButtonHighlight = isLike
         
         // set image display
-        let media = Array(tweet.media ?? []).sorted { $0.index.compare($1.index) == .orderedAscending }
+        let media = Array((tweet.retweet ?? tweet).media ?? []).sorted { $0.index.compare($1.index) == .orderedAscending }
         let mosiacImageViewModel = MosaicImageViewModel(twitterMedia: media)
 
         let maxSize: CGSize = {

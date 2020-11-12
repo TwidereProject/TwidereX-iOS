@@ -19,7 +19,6 @@
 		DB1A1D732559A3C10049DA6D /* TweetProvider+TimelinePostTableViewCellDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB1A1D722559A3C10049DA6D /* TweetProvider+TimelinePostTableViewCellDelegate.swift */; };
 		DB1A1D842559AAFD0049DA6D /* HomeTimelineViewController+TweetProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB1A1D832559AAFD0049DA6D /* HomeTimelineViewController+TweetProvider.swift */; };
 		DB1A1D892559AB510049DA6D /* MentionTimelineViewController+TweetProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB1A1D882559AB510049DA6D /* MentionTimelineViewController+TweetProvider.swift */; };
-		DB1A1D962559AC2A0049DA6D /* TweetConversationViewController+TimelinePostTableViewCellDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB1A1D952559AC2A0049DA6D /* TweetConversationViewController+TimelinePostTableViewCellDelegate.swift */; };
 		DB1A1D9B2559AC640049DA6D /* TweetConversationViewController+TweetProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB1A1D9A2559AC640049DA6D /* TweetConversationViewController+TweetProvider.swift */; };
 		DB1A1DA9255B5C780049DA6D /* MediaPreviewableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB1A1DA8255B5C780049DA6D /* MediaPreviewableViewController.swift */; };
 		DB25B9D1253828AA00A5420F /* APIService+Retweet.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB25B9D0253828AA00A5420F /* APIService+Retweet.swift */; };
@@ -358,7 +357,6 @@
 		DB1A1D722559A3C10049DA6D /* TweetProvider+TimelinePostTableViewCellDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TweetProvider+TimelinePostTableViewCellDelegate.swift"; sourceTree = "<group>"; };
 		DB1A1D832559AAFD0049DA6D /* HomeTimelineViewController+TweetProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "HomeTimelineViewController+TweetProvider.swift"; sourceTree = "<group>"; };
 		DB1A1D882559AB510049DA6D /* MentionTimelineViewController+TweetProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MentionTimelineViewController+TweetProvider.swift"; sourceTree = "<group>"; };
-		DB1A1D952559AC2A0049DA6D /* TweetConversationViewController+TimelinePostTableViewCellDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TweetConversationViewController+TimelinePostTableViewCellDelegate.swift"; sourceTree = "<group>"; };
 		DB1A1D9A2559AC640049DA6D /* TweetConversationViewController+TweetProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TweetConversationViewController+TweetProvider.swift"; sourceTree = "<group>"; };
 		DB1A1DA8255B5C780049DA6D /* MediaPreviewableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaPreviewableViewController.swift; sourceTree = "<group>"; };
 		DB25B9D0253828AA00A5420F /* APIService+Retweet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "APIService+Retweet.swift"; sourceTree = "<group>"; };
@@ -1069,7 +1067,6 @@
 				DBEA4F7C2511E48A0007FEC5 /* View */,
 				DBA5B1A72510BA330077FDD5 /* TweetConversationViewController.swift */,
 				DB1A1D9A2559AC640049DA6D /* TweetConversationViewController+TweetProvider.swift */,
-				DB1A1D952559AC2A0049DA6D /* TweetConversationViewController+TimelinePostTableViewCellDelegate.swift */,
 				DBEA4F762511DD610007FEC5 /* TweetConversationViewModel.swift */,
 				DB25B9E225385EFD00A5420F /* TweetConversationViewModel+LoadConversationState.swift */,
 			);
@@ -2019,7 +2016,6 @@
 				DB10B32C254A7633002D86F3 /* SearchTimelineViewModel+State.swift in Sources */,
 				DB2924D02546C6DD003899A7 /* APIService+Media.swift in Sources */,
 				DBEA4F8F251314640007FEC5 /* MosaicImageView.swift in Sources */,
-				DB1A1D962559AC2A0049DA6D /* TweetConversationViewController+TimelinePostTableViewCellDelegate.swift in Sources */,
 				DB915401254C148400613473 /* APIService+User.swift in Sources */,
 				DB25BA1F253DACD100A5420F /* APIService+CoreData+V2+TwitterUser.swift in Sources */,
 				DB91545E2551241F00613473 /* MentionTimelineViewModel.swift in Sources */,

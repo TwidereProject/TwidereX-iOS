@@ -11,13 +11,15 @@ import Combine
 import CoreDataStack
 import TwitterAPI
 
-final class TweetConversationViewController: UIViewController, NeedsDependency {
+final class TweetConversationViewController: UIViewController, NeedsDependency, MediaPreviewableViewController {
     
     weak var context: AppContext! { willSet { precondition(!isViewLoaded) } }
     weak var coordinator: SceneCoordinator! { willSet { precondition(!isViewLoaded) } }
     
     var disposeBag = Set<AnyCancellable>()
     var viewModel: TweetConversationViewModel!
+    
+    let mediaPreviewTransitionController = MediaPreviewTransitionController()
     
     lazy var tableView: UITableView = {
         let tableView = UITableView()
@@ -192,3 +194,6 @@ extension TweetConversationViewController: ContentOffsetAdjustableTimelineViewCo
         return navigationController?.navigationBar
     }
 }
+
+// MARK: - TimelinePostTableViewCellDelegate
+extension TweetConversationViewController: TimelinePostTableViewCellDelegate { }
