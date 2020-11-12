@@ -35,6 +35,7 @@ final class ComposeTweetViewModel: NSObject {
     let context: AppContext
     let twitterTextParser = TwitterTextParser.defaultParser()
     let repliedTweetObjectID: NSManagedObjectID?
+    let avatarImageURL = CurrentValueSubject<URL?, Never>(nil)
     let composeContent = CurrentValueSubject<String, Never>("")
     let repliedToCellFrame = CurrentValueSubject<CGRect, Never>(.zero)
 
@@ -42,8 +43,6 @@ final class ComposeTweetViewModel: NSObject {
     var diffableDataSource: UITableViewDiffableDataSource<ComposeTweetSection, ComposeTweetItem>!
     var mediaDiffableDataSource: UICollectionViewDiffableDataSource<ComposeTweetMediaSection, ComposeTweetMediaItem>!
     let tableViewState = CurrentValueSubject<TableViewState, Never>(.fold)
-    let avatarImageURL = CurrentValueSubject<URL?, Never>(nil)
-    // let isAvatarLockHidden = CurrentValueSubject<Bool, Never>(true)
     let isVerifiedBadgekHidden = CurrentValueSubject<Bool, Never>(true)
     let twitterTextParseResults = CurrentValueSubject<TwitterTextParseResults, Never>(.init())
     let mediaServices = CurrentValueSubject<[TwitterMediaService], Never>([])
@@ -157,7 +156,7 @@ extension ComposeTweetViewModel {
                             .placeholder(size: TimelinePostView.avatarImageViewSize, color: .systemFill)
                             .af.imageRoundedIntoCircle()
                         guard let url = url else {
-                            cell.avatarImageView.image = UIImage.placeholder(color: .systemFill)
+                            cell.avatarImageView.image = placeholderImage
                             return
                         }
                         let filter = ScaledToSizeCircleFilter(size: ComposeTweetViewController.avatarImageViewSize)

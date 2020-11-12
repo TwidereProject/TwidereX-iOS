@@ -340,6 +340,13 @@ extension ComposeTweetViewController {
             }
         }
         .store(in: &disposeBag)
+        
+        context.authenticationService.activeAuthenticationIndex
+            .sink { [weak self] activeAuthenticationIndex in
+                guard let self = self else { return }
+                self.viewModel.avatarImageURL.value = activeAuthenticationIndex?.twitterAuthentication?.twitterUser?.avatarImageURL()
+            }
+            .store(in: &disposeBag)
     }
     
     override func viewWillAppear(_ animated: Bool) {
