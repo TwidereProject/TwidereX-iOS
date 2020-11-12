@@ -67,7 +67,7 @@ extension TweetConversationViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
+        tableView.reloadData()
         tableView.deselectRow(with: transitionCoordinator, animated: animated)
     }
     
