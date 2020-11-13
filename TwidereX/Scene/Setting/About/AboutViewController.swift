@@ -48,6 +48,9 @@ extension AboutViewController {
                 case .github:
                     let url = URL(string: "https://github.com/TwidereProject/TwidereX-iOS")!
                     self.coordinator.present(scene: .safari(url: url), from: nil, transition: .show)
+                case .twitter:
+                    let url = URL(string: "https://twitter.com/TwidereProject")!
+                    self.coordinator.present(scene: .safari(url: url), from: nil, transition: .show)
                 }
             }
             .store(in: &disposeBag)

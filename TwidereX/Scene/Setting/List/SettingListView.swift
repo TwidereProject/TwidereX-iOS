@@ -8,7 +8,7 @@
 
 import SwiftUI
 
-struct SectionHeaderStyle: ViewModifier {
+struct TextCaseEraseStyle: ViewModifier {
     func body(content: Content) -> some View {
         Group {
             if #available(iOS 14, *) {
@@ -95,7 +95,7 @@ struct SettingListView: View {
                     })
                 }
             }
-            .modifier(SectionHeaderStyle())
+            .modifier(TextCaseEraseStyle())
             #endif
             Section(header: Text(verbatim: "About")) {
                 ForEach(SettingListView.aboutSection) { entry in
@@ -107,7 +107,7 @@ struct SettingListView: View {
                     })
                 }
             }
-            .modifier(SectionHeaderStyle())
+            .modifier(TextCaseEraseStyle())
         }
         .listStyle(GroupedListStyle())
     }

@@ -78,6 +78,7 @@
 		DB578CCD254C0BDB00745336 /* UserBriefInfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB578CCC254C0BDB00745336 /* UserBriefInfoView.swift */; };
 		DB578CD8254C0FB500745336 /* SearchUserViewModel+State.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB578CD7254C0FB500745336 /* SearchUserViewModel+State.swift */; };
 		DB5918F7255E81FB00B20F6F /* MediaPreviewViewController+TweetProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB5918F6255E81FB00B20F6F /* MediaPreviewViewController+TweetProvider.swift */; };
+		DB5918FC255E918200B20F6F /* UIApplication.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB5918FB255E918200B20F6F /* UIApplication.swift */; };
 		DB5A2288255B9155006CA5B2 /* AccountListViewModel+Diffable.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB5A2287255B9155006CA5B2 /* AccountListViewModel+Diffable.swift */; };
 		DB5A229A255BC82D006CA5B2 /* AuthenticationIndex.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB5A2299255BC82D006CA5B2 /* AuthenticationIndex.swift */; };
 		DB6760F9254AD026006C6798 /* SearchMediaViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB6760F8254AD026006C6798 /* SearchMediaViewModel.swift */; };
@@ -423,6 +424,7 @@
 		DB578CCC254C0BDB00745336 /* UserBriefInfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserBriefInfoView.swift; sourceTree = "<group>"; };
 		DB578CD7254C0FB500745336 /* SearchUserViewModel+State.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SearchUserViewModel+State.swift"; sourceTree = "<group>"; };
 		DB5918F6255E81FB00B20F6F /* MediaPreviewViewController+TweetProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MediaPreviewViewController+TweetProvider.swift"; sourceTree = "<group>"; };
+		DB5918FB255E918200B20F6F /* UIApplication.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIApplication.swift; sourceTree = "<group>"; };
 		DB5A2287255B9155006CA5B2 /* AccountListViewModel+Diffable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AccountListViewModel+Diffable.swift"; sourceTree = "<group>"; };
 		DB5A2299255BC82D006CA5B2 /* AuthenticationIndex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationIndex.swift; sourceTree = "<group>"; };
 		DB6760F8254AD026006C6798 /* SearchMediaViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchMediaViewModel.swift; sourceTree = "<group>"; };
@@ -1468,6 +1470,7 @@
 				DB969A65253064FE0053CB31 /* DispatchQueue.swift */,
 				DBE76D3A25024FDA00DEB0FC /* NSLayoutConstraint.swift */,
 				DBA6B1B625355C1E005FB0B4 /* UIAlertController.swift */,
+				DB5918FB255E918200B20F6F /* UIApplication.swift */,
 				DBEFDC7C255918D70086F268 /* UIButton.swift */,
 				DB747FF3251C47BD000C4BD7 /* UITableView.swift */,
 				DBA5FA1D2553DDDD00D2E98E /* UITapGestureRecognizer.swift */,
@@ -2076,6 +2079,7 @@
 				DB3402CF2521FA77009EFADF /* APIService+CoreData+Tweet.swift in Sources */,
 				DBDA8E5824FE0371006750DC /* APIService.swift in Sources */,
 				DBBABA04255E54A000C1B3D9 /* UserMediaTimelineViewController+TweetProvider.swift in Sources */,
+				DB5918FC255E918200B20F6F /* UIApplication.swift in Sources */,
 				DB761E4E255935380050DC01 /* DrawerSidebarHeaderView.swift in Sources */,
 				DBCB402E255B670C00DD8D8F /* AccountListViewController.swift in Sources */,
 				DB969A3925305EEF0053CB31 /* HomeTimelineViewModel+LoadLatestState.swift in Sources */,
