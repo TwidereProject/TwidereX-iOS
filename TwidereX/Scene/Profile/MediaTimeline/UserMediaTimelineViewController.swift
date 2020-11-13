@@ -12,15 +12,17 @@ import Combine
 import CoreData
 import CoreDataStack
 
-final class UserMediaTimelineViewController: UIViewController, NeedsDependency {
+final class UserMediaTimelineViewController: UIViewController, MediaPreviewableViewController, NeedsDependency {
     
     weak var context: AppContext! { willSet { precondition(!isViewLoaded) } }
     weak var coordinator: SceneCoordinator! { willSet { precondition(!isViewLoaded) } }
     
+    let mediaPreviewTransitionController = MediaPreviewTransitionController()
+
     var disposeBag = Set<AnyCancellable>()
     var viewModel: UserMediaTimelineViewModel!
     
-    private lazy var collectionView: UICollectionView = {
+    private(set) lazy var collectionView: UICollectionView = {
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: SearchMediaViewController.createCollectionViewLayout())
         collectionView.register(SearchMediaCollectionViewCell.self, forCellWithReuseIdentifier: String(describing: SearchMediaCollectionViewCell.self))
         collectionView.register(ActivityIndicatorCollectionViewCell.self, forCellWithReuseIdentifier: String(describing: ActivityIndicatorCollectionViewCell.self))
@@ -45,7 +47,7 @@ extension UserMediaTimelineViewController {
         collectionView.backgroundColor = .systemBackground
         
         collectionView.delegate = self
-        viewModel.setupDiffableDataSource(collectionView: collectionView)
+        viewModel.setupDiffableDataSource(collectionView: collectionView, searchMediaCollectionViewCellDelegate: self)
         
         // trigger timeline loading
         viewModel.userID
@@ -80,30 +82,22 @@ extension UserMediaTimelineViewController {
 }
 
 // MARK: - UICollectionViewDelegate
-extension UserMediaTimelineViewController: UICollectionViewDelegate {
-    
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        os_log("%{public}s[%{public}ld], %{public}s: select at indexPath: %s", ((#file as NSString).lastPathComponent), #line, #function, indexPath.description)
-        
-        guard let diffableDataSource = viewModel.diffableDataSource else { return }
-        let item = diffableDataSource.itemIdentifier(for: indexPath)
-        switch item {
-        case .photoTweet(let objectID, let attribute):
-            let managedObjectContext = self.viewModel.fetchedResultsController.managedObjectContext
-            managedObjectContext.performAndWait {
-                guard let tweet = managedObjectContext.object(with: objectID) as? Tweet else { return }
-                os_log("%{public}s[%{public}ld], %{public}s: select tweet: %s", ((#file as NSString).lastPathComponent), #line, #function, tweet.id)
-            }
-            
-        default:
-            return
-        }
-    }
-}
+extension UserMediaTimelineViewController: UICollectionViewDelegate { }
 
 // MARK: - CustomScrollViewContainerController
 extension UserMediaTimelineViewController: CustomScrollViewContainerController {
     var scrollView: UIScrollView {
         return collectionView
     }
+}
+
+// MARK: - SearchMediaCollectionViewCellDelegate
+extension UserMediaTimelineViewController: SearchMediaCollectionViewCellDelegate {
+    
+    func searchMediaCollectionViewCell(_ cell: SearchMediaCollectionViewCell, collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        // discard nest collectionView and indexPath
+        guard let indexPath = self.collectionView.indexPath(for: cell) else { return }
+        handleCollectionView(self.collectionView, didSelectItemAt: indexPath)
+    }
+    
 }

@@ -13,4 +13,17 @@ import CoreDataStack
 protocol TweetProvider: NeedsDependency & UIViewController {
     var disposeBag: Set<AnyCancellable> { get set }
     func tweet(for cell: TimelinePostTableViewCell) -> Future<Tweet?, Never>
+    func tweet(for cell: SearchMediaCollectionViewCell) -> Future<Tweet?, Never>
+}
+
+extension TweetProvider {
+    
+    func tweet(for cell: TimelinePostTableViewCell) -> Future<Tweet?, Never> {
+        return Future { promise in promise(.success(nil)) }
+    }
+    
+    func tweet(for cell: SearchMediaCollectionViewCell) -> Future<Tweet?, Never> {
+        return Future { promise in promise(.success(nil)) }
+    }
+    
 }

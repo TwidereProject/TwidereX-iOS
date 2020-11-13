@@ -8,21 +8,41 @@
 
 import UIKit
 
+protocol SearchMediaCollectionViewCellDelegate: class {
+    func searchMediaCollectionViewCell(_ cell: SearchMediaCollectionViewCell, collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath)
+}
+
 final class SearchMediaCollectionViewCell: UICollectionViewCell {
+    
+    weak var delegate: SearchMediaCollectionViewCellDelegate?
     
     lazy var previewCollectionView: UICollectionView = {
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: createCollectionViewLayout())
         collectionView.register(SearchMediaPreviewCollectionViewCell.self, forCellWithReuseIdentifier: String(describing: SearchMediaPreviewCollectionViewCell.self))
-        collectionView.backgroundColor = .clear
+        collectionView.backgroundColor = .systemFill
         collectionView.layer.masksToBounds = true
         collectionView.layer.cornerRadius = 8
         return collectionView
+    }()
+    
+    let multiplePhotosIndicatorBackgroundVisualEffectView: UIVisualEffectView = {
+        let visualEffectView = UIVisualEffectView(effect: UIBlurEffect(style: .systemMaterialDark))
+        visualEffectView.layer.masksToBounds = true
+        visualEffectView.layer.cornerRadius = 4
+        return visualEffectView
+    }()
+    let multiplePhotosIndicatorImageView: UIImageView = {
+        let imageView = UIImageView()
+        imageView.image = Asset.ObjectTools.photos.image.withRenderingMode(.alwaysTemplate)
+        imageView.tintColor = .white
+        return imageView
     }()
     
     var diffableDataSource: UICollectionViewDiffableDataSource<Section, Item>!
     
     override func prepareForReuse() {
         super.prepareForReuse()
+        multiplePhotosIndicatorBackgroundVisualEffectView.isHidden = true
         diffableDataSource.apply(NSDiffableDataSourceSnapshot())
     }
     
@@ -50,6 +70,22 @@ extension SearchMediaCollectionViewCell {
             previewCollectionView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
         ])
         
+        multiplePhotosIndicatorBackgroundVisualEffectView.translatesAutoresizingMaskIntoConstraints = false
+        contentView.addSubview(multiplePhotosIndicatorBackgroundVisualEffectView)
+        NSLayoutConstraint.activate([
+            contentView.trailingAnchor.constraint(equalTo: multiplePhotosIndicatorBackgroundVisualEffectView.trailingAnchor, constant: 4),
+            contentView.bottomAnchor.constraint(equalTo: multiplePhotosIndicatorBackgroundVisualEffectView.bottomAnchor, constant: 4),
+        ])
+        
+        multiplePhotosIndicatorImageView.translatesAutoresizingMaskIntoConstraints = false
+        multiplePhotosIndicatorBackgroundVisualEffectView.contentView.addSubview(multiplePhotosIndicatorImageView)
+        NSLayoutConstraint.activate([
+            multiplePhotosIndicatorImageView.topAnchor.constraint(equalTo: multiplePhotosIndicatorBackgroundVisualEffectView.topAnchor),
+            multiplePhotosIndicatorImageView.leadingAnchor.constraint(equalTo: multiplePhotosIndicatorBackgroundVisualEffectView.leadingAnchor),
+            multiplePhotosIndicatorBackgroundVisualEffectView.trailingAnchor.constraint(equalTo: multiplePhotosIndicatorImageView.trailingAnchor),
+            multiplePhotosIndicatorBackgroundVisualEffectView.bottomAnchor.constraint(equalTo: multiplePhotosIndicatorImageView.bottomAnchor),
+        ])
+        
         previewCollectionView.delegate = self
         diffableDataSource = UICollectionViewDiffableDataSource(collectionView: previewCollectionView) { collectionView, indexPath, item -> UICollectionViewCell? in
             switch item {
@@ -68,6 +104,8 @@ extension SearchMediaCollectionViewCell {
                 return cell
             }
         }
+        
+        multiplePhotosIndicatorBackgroundVisualEffectView.isHidden = true
     }
     
 }
@@ -105,5 +143,9 @@ extension SearchMediaCollectionViewCell {
 
 // MARK: - UICollectionViewDelegate
 extension SearchMediaCollectionViewCell: UICollectionViewDelegate {
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        delegate?.searchMediaCollectionViewCell(self, collectionView: collectionView, didSelectItemAt: indexPath)
+    }
     
 }

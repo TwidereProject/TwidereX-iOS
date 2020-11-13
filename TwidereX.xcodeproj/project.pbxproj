@@ -174,6 +174,9 @@
 		DBA6B1CC2535BC6E005FB0B4 /* APIService+Like.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBA6B1CB2535BC6E005FB0B4 /* APIService+Like.swift */; };
 		DBAC4A6725552A1E00140B23 /* MediaPreviewImageViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBAC4A6625552A1E00140B23 /* MediaPreviewImageViewModel.swift */; };
 		DBB09D562511BA9700AE260E /* APIService+Lookup.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBB09D552511BA9700AE260E /* APIService+Lookup.swift */; };
+		DBBABA04255E54A000C1B3D9 /* UserMediaTimelineViewController+TweetProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBBABA03255E54A000C1B3D9 /* UserMediaTimelineViewController+TweetProvider.swift */; };
+		DBBABA0C255E550D00C1B3D9 /* TweetProvider+UICollectionViewDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBBABA0B255E550D00C1B3D9 /* TweetProvider+UICollectionViewDelegate.swift */; };
+		DBBABA11255E61C900C1B3D9 /* SearchMediaViewController+TweetProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBBABA10255E61C900C1B3D9 /* SearchMediaViewController+TweetProvider.swift */; };
 		DBCB402E255B670C00DD8D8F /* AccountListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBCB402D255B670C00DD8D8F /* AccountListViewController.swift */; };
 		DBCB4047255B683B00DD8D8F /* AccountListTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBCB4046255B683B00DD8D8F /* AccountListTableViewCell.swift */; };
 		DBCB4053255B6EB100DD8D8F /* AccountListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBCB4052255B6EB100DD8D8F /* AccountListViewModel.swift */; };
@@ -510,6 +513,9 @@
 		DBA6B1CB2535BC6E005FB0B4 /* APIService+Like.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "APIService+Like.swift"; sourceTree = "<group>"; };
 		DBAC4A6625552A1E00140B23 /* MediaPreviewImageViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaPreviewImageViewModel.swift; sourceTree = "<group>"; };
 		DBB09D552511BA9700AE260E /* APIService+Lookup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "APIService+Lookup.swift"; sourceTree = "<group>"; };
+		DBBABA03255E54A000C1B3D9 /* UserMediaTimelineViewController+TweetProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UserMediaTimelineViewController+TweetProvider.swift"; sourceTree = "<group>"; };
+		DBBABA0B255E550D00C1B3D9 /* TweetProvider+UICollectionViewDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TweetProvider+UICollectionViewDelegate.swift"; sourceTree = "<group>"; };
+		DBBABA10255E61C900C1B3D9 /* SearchMediaViewController+TweetProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SearchMediaViewController+TweetProvider.swift"; sourceTree = "<group>"; };
 		DBCB402D255B670C00DD8D8F /* AccountListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountListViewController.swift; sourceTree = "<group>"; };
 		DBCB4046255B683B00DD8D8F /* AccountListTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountListTableViewCell.swift; sourceTree = "<group>"; };
 		DBCB4052255B6EB100DD8D8F /* AccountListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountListViewModel.swift; sourceTree = "<group>"; };
@@ -692,6 +698,7 @@
 			children = (
 				DB676105254AD4B1006C6798 /* View */,
 				DB10B346254AB338002D86F3 /* SearchMediaViewController.swift */,
+				DBBABA10255E61C900C1B3D9 /* SearchMediaViewController+TweetProvider.swift */,
 				DB6760F8254AD026006C6798 /* SearchMediaViewModel.swift */,
 				DB67611C254BC04B006C6798 /* SearchMediaViewModel+Diffable.swift */,
 				DB676117254BBF57006C6798 /* SearchMediaViewModel+State.swift */,
@@ -765,6 +772,7 @@
 			isa = PBXGroup;
 			children = (
 				DBA61AB52552596A006AC169 /* UserMediaTimelineViewController.swift */,
+				DBBABA03255E54A000C1B3D9 /* UserMediaTimelineViewController+TweetProvider.swift */,
 				DB3FC03F25527053003A2F8A /* UserMediaTimelineViewModel.swift */,
 				DB3FC0492552711C003A2F8A /* UserMediaTimelineViewModel+Diffable.swift */,
 				DB3FC044255270D6003A2F8A /* UserMediaTimelineViewModel+State.swift */,
@@ -1534,6 +1542,7 @@
 				DB1A1D6A2559A0A50049DA6D /* TweetProvider.swift */,
 				DB1A1D722559A3C10049DA6D /* TweetProvider+TimelinePostTableViewCellDelegate.swift */,
 				DBCB4098255D948400DD8D8F /* TweetProvider+UITableViewDelegate.swift */,
+				DBBABA0B255E550D00C1B3D9 /* TweetProvider+UICollectionViewDelegate.swift */,
 			);
 			path = Protocol;
 			sourceTree = "<group>";
@@ -2056,6 +2065,7 @@
 				DB761E3F25592AA20050DC01 /* DrawerSidebarAnimatedTransitioning.swift in Sources */,
 				DB3402CF2521FA77009EFADF /* APIService+CoreData+Tweet.swift in Sources */,
 				DBDA8E5824FE0371006750DC /* APIService.swift in Sources */,
+				DBBABA04255E54A000C1B3D9 /* UserMediaTimelineViewController+TweetProvider.swift in Sources */,
 				DB761E4E255935380050DC01 /* DrawerSidebarHeaderView.swift in Sources */,
 				DBCB402E255B670C00DD8D8F /* AccountListViewController.swift in Sources */,
 				DB969A3925305EEF0053CB31 /* HomeTimelineViewModel+LoadLatestState.swift in Sources */,
@@ -2190,7 +2200,9 @@
 				DB67610D254AD681006C6798 /* ActivityIndicatorCollectionViewCell.swift in Sources */,
 				DBA5FA2E2553F06B00D2E98E /* MediaInfoDescriptionView.swift in Sources */,
 				DBA6B1B725355C1E005FB0B4 /* UIAlertController.swift in Sources */,
+				DBBABA11255E61C900C1B3D9 /* SearchMediaViewController+TweetProvider.swift in Sources */,
 				DB25B9E82539897B00A5420F /* APIService+RecentSearch.swift in Sources */,
+				DBBABA0C255E550D00C1B3D9 /* TweetProvider+UICollectionViewDelegate.swift in Sources */,
 				DB8AC16225417D1300E636BE /* CycleCounterView.swift in Sources */,
 				DB1A1D9B2559AC640049DA6D /* TweetConversationViewController+TweetProvider.swift in Sources */,
 				DBA5FA262553ED1000D2E98E /* MediaPreviewViewModel.swift in Sources */,

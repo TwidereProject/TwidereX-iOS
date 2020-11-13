@@ -82,6 +82,7 @@ internal enum Asset {
     internal static let note = ImageAsset(name: "Object&Tools/note")
     internal static let paperplane = ImageAsset(name: "Object&Tools/paperplane")
     internal static let photo = ImageAsset(name: "Object&Tools/photo")
+    internal static let photos = ImageAsset(name: "Object&Tools/photos")
     internal static let verifiedBadge = ImageAsset(name: "Object&Tools/verified.badge")
     internal static let verifiedBadgeMini = ImageAsset(name: "Object&Tools/verified.badge.mini")
     internal static let verifiedBadgeSmall = ImageAsset(name: "Object&Tools/verified.badge.small")

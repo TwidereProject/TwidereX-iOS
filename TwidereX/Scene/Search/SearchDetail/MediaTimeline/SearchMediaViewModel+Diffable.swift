@@ -12,10 +12,11 @@ import CoreData
 import CoreDataStack
 
 extension SearchMediaViewModel {
-    func setupDiffableDataSource(collectionView: UICollectionView) {
+    func setupDiffableDataSource(collectionView: UICollectionView, searchMediaCollectionViewCellDelegate: SearchMediaCollectionViewCellDelegate?) {
         diffableDataSource = MediaSection.collectionViewDiffableDataSource(
             collectionView: collectionView,
-            managedObjectContext: fetchedResultsController.managedObjectContext
+            managedObjectContext: fetchedResultsController.managedObjectContext,
+            searchMediaCollectionViewCellDelegate: searchMediaCollectionViewCellDelegate
         )
     }
 }
@@ -39,7 +40,7 @@ extension SearchMediaViewModel: NSFetchedResultsControllerDelegate {
         
         var items: [Item] = []
         for tweet in tweets {
-            let mediaArray = Array(tweet.media ?? Set())
+            let mediaArray = Array(tweet.media ?? Set()).sorted(by: { $0.index.compare($1.index) == .orderedAscending })
             let photoMedia = mediaArray.filter { $0.type == "photo" }
             guard !photoMedia.isEmpty else { continue }
             let attribute = oldSnapshotAttributeDict[tweet.objectID] ?? Item.PhotoAttribute(index: 0)

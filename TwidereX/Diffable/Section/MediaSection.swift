@@ -18,7 +18,8 @@ enum MediaSection: Int {
 extension MediaSection {
     static func collectionViewDiffableDataSource(
         collectionView: UICollectionView,
-        managedObjectContext: NSManagedObjectContext
+        managedObjectContext: NSManagedObjectContext,
+        searchMediaCollectionViewCellDelegate: SearchMediaCollectionViewCellDelegate?
     ) -> UICollectionViewDiffableDataSource<MediaSection, Item> {
         UICollectionViewDiffableDataSource(collectionView: collectionView) { collectionView, indexPath, item -> UICollectionViewCell? in
             switch item {
@@ -39,9 +40,11 @@ extension MediaSection {
                         }
                         snapshot.appendItems(items, toSection: .main)
                         cell.diffableDataSource.apply(snapshot, animatingDifferences: false)
+                        cell.multiplePhotosIndicatorBackgroundVisualEffectView.isHidden = items.count <= 1
                     }
                 }
                 // TODO: use attribute control preview position
+                cell.delegate = searchMediaCollectionViewCellDelegate
                 return cell
             case .bottomLoader:
                 let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: ActivityIndicatorCollectionViewCell.self), for: indexPath) as! ActivityIndicatorCollectionViewCell
