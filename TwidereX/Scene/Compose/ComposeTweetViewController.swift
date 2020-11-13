@@ -347,6 +347,9 @@ extension ComposeTweetViewController {
                 self.viewModel.avatarImageURL.value = activeAuthenticationIndex?.twitterAuthentication?.twitterUser?.avatarImageURL()
             }
             .store(in: &disposeBag)
+        
+        // TODO:
+        tweetToolbarView.gifButton.isHidden = true
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -479,15 +482,29 @@ extension ComposeTweetViewController: TweetToolbarViewDelegate {
     }
     
     func tweetToolbarView(_ tweetToolbarView: TweetToolbarView, gifButtonDidPressed sender: UIButton) {
-
+        // TODO:
     }
     
     func tweetToolbarView(_ tweetToolbarView: TweetToolbarView, atButtonDidPressed sender: UIButton) {
-        
+        let items = viewModel.diffableDataSource.snapshot().itemIdentifiers
+        for item in items {
+            guard case let .input(attribute) = item else { continue }
+            guard let indexPath = viewModel.diffableDataSource.indexPath(for: item) else { continue }
+            guard let cell = tableView.cellForRow(at: indexPath) as? ComposeTweetContentTableViewCell else { continue }
+            
+            cell.composeTextView.insertText("@")
+        }
     }
     
     func tweetToolbarView(_ tweetToolbarView: TweetToolbarView, topicButtonDidPressed sender: UIButton) {
-        
+        let items = viewModel.diffableDataSource.snapshot().itemIdentifiers
+        for item in items {
+            guard case let .input(attribute) = item else { continue }
+            guard let indexPath = viewModel.diffableDataSource.indexPath(for: item) else { continue }
+            guard let cell = tableView.cellForRow(at: indexPath) as? ComposeTweetContentTableViewCell else { continue }
+            
+            cell.composeTextView.insertText("#")
+        }
     }
     
     func tweetToolbarView(_ tweetToolbarView: TweetToolbarView, locationButtonDidPressed sender: UIButton) {
