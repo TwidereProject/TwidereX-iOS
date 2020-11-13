@@ -13,6 +13,7 @@
 		DB0849B0251375E9009E0CD7 /* ConversationPostView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB0849AF251375E9009E0CD7 /* ConversationPostView.swift */; };
 		DB0849B22513760D009E0CD7 /* ConversationPostTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB0849B12513760D009E0CD7 /* ConversationPostTableViewCell.swift */; };
 		DB0849B425137B3E009E0CD7 /* StatusActionToolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB0849B325137B3E009E0CD7 /* StatusActionToolbar.swift */; };
+		DB0D3A38255E4341000BB9FA /* UserLikeTimelineViewController+TweetProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB0D3A37255E4341000BB9FA /* UserLikeTimelineViewController+TweetProvider.swift */; };
 		DB10B32C254A7633002D86F3 /* SearchTimelineViewModel+State.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB10B32B254A7633002D86F3 /* SearchTimelineViewModel+State.swift */; };
 		DB10B347254AB338002D86F3 /* SearchMediaViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB10B346254AB338002D86F3 /* SearchMediaViewController.swift */; };
 		DB1A1D6B2559A0A50049DA6D /* TweetProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB1A1D6A2559A0A50049DA6D /* TweetProvider.swift */; };
@@ -355,6 +356,7 @@
 		DB0849AF251375E9009E0CD7 /* ConversationPostView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationPostView.swift; sourceTree = "<group>"; };
 		DB0849B12513760D009E0CD7 /* ConversationPostTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationPostTableViewCell.swift; sourceTree = "<group>"; };
 		DB0849B325137B3E009E0CD7 /* StatusActionToolbar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusActionToolbar.swift; sourceTree = "<group>"; };
+		DB0D3A37255E4341000BB9FA /* UserLikeTimelineViewController+TweetProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UserLikeTimelineViewController+TweetProvider.swift"; sourceTree = "<group>"; };
 		DB10B32B254A7633002D86F3 /* SearchTimelineViewModel+State.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SearchTimelineViewModel+State.swift"; sourceTree = "<group>"; };
 		DB10B346254AB338002D86F3 /* SearchMediaViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchMediaViewController.swift; sourceTree = "<group>"; };
 		DB1A1D6A2559A0A50049DA6D /* TweetProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TweetProvider.swift; sourceTree = "<group>"; };
@@ -870,6 +872,7 @@
 			isa = PBXGroup;
 			children = (
 				DB7E22EF2552A3D500551314 /* UserLikeTimelineViewController.swift */,
+				DB0D3A37255E4341000BB9FA /* UserLikeTimelineViewController+TweetProvider.swift */,
 				DB7E22F82552A40000551314 /* UserLikeTimelineViewModel.swift */,
 				DB7E23022552A6D100551314 /* UserLikeTimelineViewModel+Diffable.swift */,
 				DB7E22FD2552A6A700551314 /* UserLikeTimelineViewModel+State.swift */,
@@ -2065,6 +2068,7 @@
 				DBCB4058255B6ECA00DD8D8F /* AccountListSection.swift in Sources */,
 				DB925749251C9D48004FEFB5 /* ProfilePagingViewModel.swift in Sources */,
 				DB88AC38250B25170009E562 /* UIViewPreview.swift in Sources */,
+				DB0D3A38255E4341000BB9FA /* UserLikeTimelineViewController+TweetProvider.swift in Sources */,
 				DBE76D232500FF1C00DEB0FC /* AuthenticationService.swift in Sources */,
 				DB7E22FE2552A6A700551314 /* UserLikeTimelineViewModel+State.swift in Sources */,
 				DBEFDC92255920060086F268 /* DrawerSidebarTransitionController.swift in Sources */,
