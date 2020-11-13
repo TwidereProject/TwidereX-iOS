@@ -169,10 +169,12 @@ extension TweetConversationViewModel {
             switch item {
             case .root(let objectID):
                 let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: ConversationPostTableViewCell.self), for: indexPath) as! ConversationPostTableViewCell
+                let activeTwitterAuthenticationBox = self.context.authenticationService.activeTwitterAuthenticationBox.value
+                let requestTwitterUserID = activeTwitterAuthenticationBox?.twitterUserID ?? ""
                 let managedObjectContext = self.context.managedObjectContext
                 managedObjectContext.performAndWait {
                     let tweet = managedObjectContext.object(with: objectID) as! Tweet
-                    TweetConversationViewModel.configure(cell: cell, readableLayoutFrame: tableView.readableContentGuide.layoutFrame, tweet: tweet)
+                    TweetConversationViewModel.configure(cell: cell, readableLayoutFrame: tableView.readableContentGuide.layoutFrame, tweet: tweet, requestUserID: requestTwitterUserID)
                 }
                 cell.delegate = self.conversationPostTableViewCellDelegate
                 return cell
@@ -203,7 +205,7 @@ extension TweetConversationViewModel {
         diffableDataSource?.apply(snapshot)
     }
     
-    static func configure(cell: ConversationPostTableViewCell, readableLayoutFrame: CGRect? = nil, tweet: Tweet) {
+    static func configure(cell: ConversationPostTableViewCell, readableLayoutFrame: CGRect? = nil, tweet: Tweet, requestUserID: String) {
         // set avatar
         if let avatarImageURL = tweet.author.avatarImageURL() {
             let placeholderImage = UIImage
@@ -337,6 +339,32 @@ extension TweetConversationViewModel {
         
         // set source
         cell.conversationPostView.sourceLabel.text = tweet.source
+        
+        // set action toolbar title
+        let isRetweeted = (tweet.retweet ?? tweet).retweetBy.flatMap({ $0.contains(where: { $0.id == requestUserID }) }) ?? false
+        cell.conversationPostView.actionToolbar.retweetButton.isEnabled = !(tweet.retweet ?? tweet).author.protected
+        cell.conversationPostView.actionToolbar.retweetButtonHighligh = isRetweeted
+
+        let isLike = (tweet.retweet ?? tweet).likeBy.flatMap({ $0.contains(where: { $0.id == requestUserID }) }) ?? false
+        cell.conversationPostView.actionToolbar.likeButtonHighlight = isLike
+        
+        // observe model change
+        ManagedObjectObserver.observe(object: tweet.retweet ?? tweet)
+            .receive(on: DispatchQueue.main)
+            .sink { _ in
+                // do nothing
+            } receiveValue: { change in
+                guard case let .update(object) = change.changeType,
+                      let newTweet = object as? Tweet else { return }
+                let targetTweet = newTweet.retweet ?? newTweet
+                
+                let isRetweeted = targetTweet.retweetBy.flatMap({ $0.contains(where: { $0.id == requestUserID }) }) ?? false
+                cell.conversationPostView.actionToolbar.retweetButtonHighligh = isRetweeted
+
+                let isLike = targetTweet.likeBy.flatMap({ $0.contains(where: { $0.id == requestUserID }) }) ?? false
+                cell.conversationPostView.actionToolbar.likeButtonHighlight = isLike
+            }
+            .store(in: &cell.disposeBag)
     }
     
     static func configure(cell: TimelinePostTableViewCell, readableLayoutFrame: CGRect? = nil, tweet: Tweet, requestUserID: String) {

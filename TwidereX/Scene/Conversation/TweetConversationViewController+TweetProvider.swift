@@ -14,6 +14,7 @@ import TwitterAPI
 
 // MARK: - TweetProvider
 extension TweetConversationViewController: TweetProvider {
+    
     func tweet(for cell: TimelinePostTableViewCell) -> Future<Tweet?, Never> {
         return Future { promise in
             guard let diffableDataSource = self.viewModel.diffableDataSource,
@@ -35,4 +36,27 @@ extension TweetConversationViewController: TweetProvider {
             }
         }
     }
+    
+    func tweet(for cell: ConversationPostTableViewCell) -> Future<Tweet?, Never> {
+        return Future { promise in
+            guard let diffableDataSource = self.viewModel.diffableDataSource,
+                  let indexPath = self.tableView.indexPath(for: cell),
+                  let item = diffableDataSource.itemIdentifier(for: indexPath) else {
+                promise(.success(nil))
+                return
+            }
+            
+            switch item {
+            case .root(let objectID):
+                let managedObjectContext = self.context.managedObjectContext
+                managedObjectContext.perform {
+                    let tweet = managedObjectContext.object(with: objectID) as? Tweet
+                    promise(.success(tweet))
+                }
+            default:
+                promise(.success(nil))
+            }
+        }
+    }
+    
 }

@@ -5,12 +5,34 @@
 //  Created by Cirno MainasuK on 2020-9-17.
 //
 
+import os.log
 import UIKit
+
+protocol StatusActionToolbarDelegate: class {
+    func statusActionToolbar(_ toolbar: StatusActionToolbar, replayButtonDidPressed sender: UIButton)
+    func statusActionToolbar(_ toolbar: StatusActionToolbar, retweetButtonDidPressed sender: UIButton)
+    func statusActionToolbar(_ toolbar: StatusActionToolbar, favoriteButtonDidPressed sender: UIButton)
+    func statusActionToolbar(_ toolbar: StatusActionToolbar, shareButtonDidPressed sender: UIButton)
+}
 
 final class StatusActionToolbar: UIView {
     
+    weak var delegate: StatusActionToolbarDelegate?
+    
     static let height: CGFloat = 40
     static let buttonTitleImagePadding: CGFloat = 4
+    
+    var retweetButtonHighligh: Bool = false {
+        didSet {
+            retweetButtonHighlightStateDidChange(to: retweetButtonHighligh)
+        }
+    }
+    
+    var likeButtonHighlight: Bool = false {
+        didSet {
+            likeButtonHighlightStateDidChange(to: likeButtonHighlight)
+        }
+    }
     
     let replyButton: UIButton = {
         let button = UIButton(type: .custom)
@@ -83,6 +105,52 @@ extension StatusActionToolbar {
         container.addArrangedSubview(retweetButton)
         container.addArrangedSubview(favoriteButton)
         container.addArrangedSubview(shareButton)
+        
+        replyButton.addTarget(self, action: #selector(StatusActionToolbar.replyButtonDidPressed(_:)), for: .touchUpInside)
+        retweetButton.addTarget(self, action: #selector(StatusActionToolbar.retweetButtonDidPressed(_:)), for: .touchUpInside)
+        favoriteButton.addTarget(self, action: #selector(StatusActionToolbar.favoriteButtonDidPressed(_:)), for: .touchUpInside)
+        shareButton.addTarget(self, action: #selector(StatusActionToolbar.shareButtonDidPressed(_:)), for: .touchUpInside)
+    }
+    
+}
+
+extension StatusActionToolbar {
+
+    @objc private func replyButtonDidPressed(_ sender: UIButton) {
+        os_log("%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
+        delegate?.statusActionToolbar(self, replayButtonDidPressed: sender)
+    }
+    
+    @objc private func retweetButtonDidPressed(_ sender: UIButton) {
+        os_log("%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
+        delegate?.statusActionToolbar(self, retweetButtonDidPressed: sender)
+    }
+    
+    @objc private func favoriteButtonDidPressed(_ sender: UIButton) {
+        os_log("%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
+        delegate?.statusActionToolbar(self, favoriteButtonDidPressed: sender)
+    }
+    
+    @objc private func shareButtonDidPressed(_ sender: UIButton) {
+        os_log("%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
+        delegate?.statusActionToolbar(self, shareButtonDidPressed: sender)
+    }
+
+}
+
+extension StatusActionToolbar {
+    
+    private func retweetButtonHighlightStateDidChange(to isHighlight: Bool) {
+        let tintColor = isHighlight ? Asset.Colors.hightLight.color : .secondaryLabel
+        retweetButton.tintColor = tintColor
+    }
+    
+    private func likeButtonHighlightStateDidChange(to isHighlight: Bool) {
+        let tintColor = isHighlight ? Asset.Colors.heartPink.color : .secondaryLabel
+        let buttonImage = isHighlight ? Asset.Health.heartFillLarge.image.withRenderingMode(.alwaysTemplate) :
+            Asset.Health.heartLarge.image.withRenderingMode(.alwaysTemplate)
+        favoriteButton.tintColor = tintColor
+        favoriteButton.setImage(buttonImage, for: .normal)
     }
     
 }

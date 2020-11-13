@@ -7,30 +7,36 @@
 
 import os.log
 import UIKit
+import Combine
 
 protocol ConversationPostTableViewCellDelegate: class {
     func conversationPostTableViewCell(_ cell: ConversationPostTableViewCell, avatarImageViewDidPressed imageView: UIImageView)
     func conversationPostTableViewCell(_ cell: ConversationPostTableViewCell, quoteAvatarImageViewDidPressed imageView: UIImageView)
+    func conversationPostTableViewCell(_ cell: ConversationPostTableViewCell, quotePostViewDidPressed quotePostView: QuotePostView)
+
+    func conversationPostTableViewCell(_ cell: ConversationPostTableViewCell, actionToolbar: StatusActionToolbar, replayButtonDidPressed sender: UIButton)
+    func conversationPostTableViewCell(_ cell: ConversationPostTableViewCell, actionToolbar: StatusActionToolbar, retweetButtonDidPressed sender: UIButton)
+    func conversationPostTableViewCell(_ cell: ConversationPostTableViewCell, actionToolbar: StatusActionToolbar, favoriteButtonDidPressed sender: UIButton)
+    func conversationPostTableViewCell(_ cell: ConversationPostTableViewCell, actionToolbar: StatusActionToolbar, shareButtonDidPressed sender: UIButton)
+    
+    func conversationPostTableViewCell(_ cell: ConversationPostTableViewCell, mosaicImageView: MosaicImageView, didTapImageView imageView: UIImageView, atIndex index: Int)
 }
 
 final class ConversationPostTableViewCell: UITableViewCell {
     
+    var disposeBag = Set<AnyCancellable>()
     weak var delegate: ConversationPostTableViewCellDelegate?
 
     let conversationPostView = ConversationPostView()
     
-    private let avatarImageViewTapGestureRecognizer: UITapGestureRecognizer = {
-        let tapGestureRecognizer = UITapGestureRecognizer()
-        tapGestureRecognizer.numberOfTapsRequired = 1
-        tapGestureRecognizer.numberOfTouchesRequired = 1
-        return tapGestureRecognizer
-    }()
-    private let quoteAvatarImageViewTapGestureRecognizer: UITapGestureRecognizer = {
-        let tapGestureRecognizer = UITapGestureRecognizer()
-        tapGestureRecognizer.numberOfTapsRequired = 1
-        tapGestureRecognizer.numberOfTouchesRequired = 1
-        return tapGestureRecognizer
-    }()
+    private let avatarImageViewTapGestureRecognizer = UITapGestureRecognizer.singleTapGestureRecognizer
+    private let quoteAvatarImageViewTapGestureRecognizer = UITapGestureRecognizer.singleTapGestureRecognizer
+    private let quotePostViewTapGestureRecognizer = UITapGestureRecognizer.singleTapGestureRecognizer
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        disposeBag.removeAll()
+    }
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -75,6 +81,13 @@ extension ConversationPostTableViewCell {
         quoteAvatarImageViewTapGestureRecognizer.addTarget(self, action: #selector(ConversationPostTableViewCell.quoteAvatarImageViewTapGestureRecognizerHandler(_:)))
         conversationPostView.quotePostView.avatarImageView.isUserInteractionEnabled = true
         conversationPostView.quotePostView.avatarImageView.addGestureRecognizer(quoteAvatarImageViewTapGestureRecognizer)
+        
+        quotePostViewTapGestureRecognizer.addTarget(self, action: #selector(ConversationPostTableViewCell.quotePostViewTapGestureRecognizerHandler(_:)))
+        conversationPostView.quotePostView.isUserInteractionEnabled = true
+        conversationPostView.quotePostView.addGestureRecognizer(quotePostViewTapGestureRecognizer)
+        
+        conversationPostView.actionToolbar.delegate = self
+        conversationPostView.mosaicImageView.delegate = self
     }
     
 }
@@ -95,6 +108,41 @@ extension ConversationPostTableViewCell {
         delegate?.conversationPostTableViewCell(self, quoteAvatarImageViewDidPressed: conversationPostView.quotePostView.avatarImageView)
     }
     
+    @objc private func quotePostViewTapGestureRecognizerHandler(_ sender: UITapGestureRecognizer) {
+        os_log("%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
+        guard sender.state == .ended else { return }
+        assert(delegate != nil)
+        delegate?.conversationPostTableViewCell(self, quotePostViewDidPressed: conversationPostView.quotePostView)
+    }
+    
+}
+
+// MARK: - TimelinePostActionToolbarDelegate
+extension ConversationPostTableViewCell: StatusActionToolbarDelegate {
+    
+    func statusActionToolbar(_ toolbar: StatusActionToolbar, replayButtonDidPressed sender: UIButton) {
+        delegate?.conversationPostTableViewCell(self, actionToolbar: toolbar, replayButtonDidPressed: sender)
+    }
+    
+    func statusActionToolbar(_ toolbar: StatusActionToolbar, retweetButtonDidPressed sender: UIButton) {
+        delegate?.conversationPostTableViewCell(self, actionToolbar: toolbar, retweetButtonDidPressed: sender)
+    }
+    
+    func statusActionToolbar(_ toolbar: StatusActionToolbar, favoriteButtonDidPressed sender: UIButton) {
+        delegate?.conversationPostTableViewCell(self, actionToolbar: toolbar, favoriteButtonDidPressed: sender)
+    }
+    
+    func statusActionToolbar(_ toolbar: StatusActionToolbar, shareButtonDidPressed sender: UIButton) {
+        delegate?.conversationPostTableViewCell(self, actionToolbar: toolbar, shareButtonDidPressed: sender)
+    }
+    
+}
+
+// MARK: - MosaicImageViewDelegate
+extension ConversationPostTableViewCell: MosaicImageViewDelegate {
+    func mosaicImageView(_ mosaicImageView: MosaicImageView, didTapImageView imageView: UIImageView, atIndex index: Int) {
+        delegate?.conversationPostTableViewCell(self, mosaicImageView: mosaicImageView, didTapImageView: imageView, atIndex: index)
+    }
 }
 
 #if DEBUG

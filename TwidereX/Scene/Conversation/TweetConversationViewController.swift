@@ -145,48 +145,7 @@ extension TweetConversationViewController: UITableViewDelegate {
 }
 
 // MARK: - ConversationPostTableViewCellDelegate
-extension TweetConversationViewController: ConversationPostTableViewCellDelegate {
-    
-    func conversationPostTableViewCell(_ cell: ConversationPostTableViewCell, avatarImageViewDidPressed imageView: UIImageView) {
-        os_log("%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
-        
-        guard case let .root(objectID) = viewModel.rootItem else { return }
-        context.managedObjectContext.perform { [weak self] in
-            guard let self = self else { return }
-            guard let tweet = self.context.managedObjectContext.object(with: objectID) as? Tweet else { return }
-            DispatchQueue.main.async { [weak self] in
-                guard let self = self else { return }
-                let profileViewModel = ProfileViewModel(twitterUser: tweet.author)
-                self.context.authenticationService.activeAuthenticationIndex
-                    .map { $0?.twitterAuthentication?.twitterUser }
-                    .assign(to: \.value, on: profileViewModel.currentTwitterUser)
-                    .store(in: &profileViewModel.disposeBag)
-                self.coordinator.present(scene: .profile(viewModel: profileViewModel), from: self, transition: .show)
-            }
-        }
-    }
-    
-    func conversationPostTableViewCell(_ cell: ConversationPostTableViewCell, quoteAvatarImageViewDidPressed imageView: UIImageView) {
-        os_log("%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
-        
-        guard case let .root(objectID) = viewModel.rootItem else { return }
-        context.managedObjectContext.perform { [weak self] in
-            guard let self = self else { return }
-            guard let tweet = self.context.managedObjectContext.object(with: objectID) as? Tweet else { return }
-            guard let targetTweet = tweet.retweet?.quote ?? tweet.quote else { return }
-            DispatchQueue.main.async { [weak self] in
-                guard let self = self else { return }
-                let profileViewModel = ProfileViewModel(twitterUser: targetTweet.author)
-                self.context.authenticationService.activeAuthenticationIndex
-                    .map { $0?.twitterAuthentication?.twitterUser }
-                    .assign(to: \.value, on: profileViewModel.currentTwitterUser)
-                    .store(in: &profileViewModel.disposeBag)
-                self.coordinator.present(scene: .profile(viewModel: profileViewModel), from: self, transition: .show)
-            }
-        }
-    }
-        
-}
+extension TweetConversationViewController: ConversationPostTableViewCellDelegate { }
 
 // MARK: - ContentOffsetAdjustableTimelineViewControllerDelegate
 extension TweetConversationViewController: ContentOffsetAdjustableTimelineViewControllerDelegate {
