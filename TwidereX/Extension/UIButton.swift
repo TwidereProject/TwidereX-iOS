@@ -2,7 +2,7 @@
 //  UIBarButton.swift
 //  TwidereX
 //
-//  Created by DTK on 2020-11-9.
+//  Created by Cirno MainasuK on 2020-11-9.
 //  Copyright © 2020 Twidere. All rights reserved.
 //
 
