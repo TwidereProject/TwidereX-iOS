@@ -1,0 +1,31 @@
+//
+//  MediaPreviewViewController+TweetProvider.swift
+//  TwidereX
+//
+//  Created by Cirno MainasuK on 2020-11-13.
+//  Copyright © 2020 Twidere. All rights reserved.
+//
+
+import UIKit
+import Combine
+import CoreDataStack
+
+// MARK: - TweetProvider
+extension MediaPreviewViewController: TweetProvider {
+    
+    func tweet() -> Future<Tweet?, Never> {
+        return Future { promise in
+            guard case let .root(root) = self.viewModel.rootItem else {
+                promise(.success(nil))
+                return
+            }
+
+            let managedObjectContext = self.context.managedObjectContext
+            managedObjectContext.perform {
+                let tweet = managedObjectContext.object(with: root.tweetObjectID) as? Tweet
+                promise(.success(tweet))
+            }
+        }
+    }
+    
+}

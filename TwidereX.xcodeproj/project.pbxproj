@@ -77,6 +77,7 @@
 		DB491640253EDA7D008755C3 /* TwitterUserMetrics.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB49163F253EDA7D008755C3 /* TwitterUserMetrics.swift */; };
 		DB578CCD254C0BDB00745336 /* UserBriefInfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB578CCC254C0BDB00745336 /* UserBriefInfoView.swift */; };
 		DB578CD8254C0FB500745336 /* SearchUserViewModel+State.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB578CD7254C0FB500745336 /* SearchUserViewModel+State.swift */; };
+		DB5918F7255E81FB00B20F6F /* MediaPreviewViewController+TweetProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB5918F6255E81FB00B20F6F /* MediaPreviewViewController+TweetProvider.swift */; };
 		DB5A2288255B9155006CA5B2 /* AccountListViewModel+Diffable.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB5A2287255B9155006CA5B2 /* AccountListViewModel+Diffable.swift */; };
 		DB5A229A255BC82D006CA5B2 /* AuthenticationIndex.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB5A2299255BC82D006CA5B2 /* AuthenticationIndex.swift */; };
 		DB6760F9254AD026006C6798 /* SearchMediaViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB6760F8254AD026006C6798 /* SearchMediaViewModel.swift */; };
@@ -178,6 +179,7 @@
 		DBBABA0C255E550D00C1B3D9 /* TweetProvider+UICollectionViewDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBBABA0B255E550D00C1B3D9 /* TweetProvider+UICollectionViewDelegate.swift */; };
 		DBBABA11255E61C900C1B3D9 /* SearchMediaViewController+TweetProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBBABA10255E61C900C1B3D9 /* SearchMediaViewController+TweetProvider.swift */; };
 		DBBABA16255E786000C1B3D9 /* TweetProvider+ConversationPostTableViewCellDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBBABA15255E786000C1B3D9 /* TweetProvider+ConversationPostTableViewCellDelegate.swift */; };
+		DBBABA1E255E805F00C1B3D9 /* TweetProvider+StatusActionToolbarDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBBABA1D255E805F00C1B3D9 /* TweetProvider+StatusActionToolbarDelegate.swift */; };
 		DBCB402E255B670C00DD8D8F /* AccountListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBCB402D255B670C00DD8D8F /* AccountListViewController.swift */; };
 		DBCB4047255B683B00DD8D8F /* AccountListTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBCB4046255B683B00DD8D8F /* AccountListTableViewCell.swift */; };
 		DBCB4053255B6EB100DD8D8F /* AccountListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBCB4052255B6EB100DD8D8F /* AccountListViewModel.swift */; };
@@ -420,6 +422,7 @@
 		DB49163F253EDA7D008755C3 /* TwitterUserMetrics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwitterUserMetrics.swift; sourceTree = "<group>"; };
 		DB578CCC254C0BDB00745336 /* UserBriefInfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserBriefInfoView.swift; sourceTree = "<group>"; };
 		DB578CD7254C0FB500745336 /* SearchUserViewModel+State.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SearchUserViewModel+State.swift"; sourceTree = "<group>"; };
+		DB5918F6255E81FB00B20F6F /* MediaPreviewViewController+TweetProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MediaPreviewViewController+TweetProvider.swift"; sourceTree = "<group>"; };
 		DB5A2287255B9155006CA5B2 /* AccountListViewModel+Diffable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AccountListViewModel+Diffable.swift"; sourceTree = "<group>"; };
 		DB5A2299255BC82D006CA5B2 /* AuthenticationIndex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationIndex.swift; sourceTree = "<group>"; };
 		DB6760F8254AD026006C6798 /* SearchMediaViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchMediaViewModel.swift; sourceTree = "<group>"; };
@@ -518,6 +521,7 @@
 		DBBABA0B255E550D00C1B3D9 /* TweetProvider+UICollectionViewDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TweetProvider+UICollectionViewDelegate.swift"; sourceTree = "<group>"; };
 		DBBABA10255E61C900C1B3D9 /* SearchMediaViewController+TweetProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SearchMediaViewController+TweetProvider.swift"; sourceTree = "<group>"; };
 		DBBABA15255E786000C1B3D9 /* TweetProvider+ConversationPostTableViewCellDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TweetProvider+ConversationPostTableViewCellDelegate.swift"; sourceTree = "<group>"; };
+		DBBABA1D255E805F00C1B3D9 /* TweetProvider+StatusActionToolbarDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TweetProvider+StatusActionToolbarDelegate.swift"; sourceTree = "<group>"; };
 		DBCB402D255B670C00DD8D8F /* AccountListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountListViewController.swift; sourceTree = "<group>"; };
 		DBCB4046255B683B00DD8D8F /* AccountListTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountListTableViewCell.swift; sourceTree = "<group>"; };
 		DBCB4052255B6EB100DD8D8F /* AccountListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountListViewModel.swift; sourceTree = "<group>"; };
@@ -1101,6 +1105,7 @@
 				DBA397C125551C0E00A95662 /* Paging */,
 				DBA5FA322553F06E00D2E98E /* View */,
 				DBA5F9DF2553CFE800D2E98E /* MediaPreviewViewController.swift */,
+				DB5918F6255E81FB00B20F6F /* MediaPreviewViewController+TweetProvider.swift */,
 				DBA5FA252553ED1000D2E98E /* MediaPreviewViewModel.swift */,
 			);
 			path = MediaPreview;
@@ -1546,6 +1551,7 @@
 				DBBABA15255E786000C1B3D9 /* TweetProvider+ConversationPostTableViewCellDelegate.swift */,
 				DBCB4098255D948400DD8D8F /* TweetProvider+UITableViewDelegate.swift */,
 				DBBABA0B255E550D00C1B3D9 /* TweetProvider+UICollectionViewDelegate.swift */,
+				DBBABA1D255E805F00C1B3D9 /* TweetProvider+StatusActionToolbarDelegate.swift */,
 			);
 			path = Protocol;
 			sourceTree = "<group>";
@@ -2045,6 +2051,7 @@
 				DB747FEF251B63E3000C4BD7 /* HitTestExpandedButton.swift in Sources */,
 				DBB09D562511BA9700AE260E /* APIService+Lookup.swift in Sources */,
 				DBCB40A4255D9AC200DD8D8F /* SearchTimelineViewController+TweetProvider.swift in Sources */,
+				DBBABA1E255E805F00C1B3D9 /* TweetProvider+StatusActionToolbarDelegate.swift in Sources */,
 				DB2EBBEB255D34BE00956CAA /* AboutView.swift in Sources */,
 				DB761E72255946720050DC01 /* SidebarSection.swift in Sources */,
 				DB3FC045255270D6003A2F8A /* UserMediaTimelineViewModel+State.swift in Sources */,
@@ -2202,6 +2209,7 @@
 				DBEA4F91251331BE0007FEC5 /* QuotePostView.swift in Sources */,
 				DB67610D254AD681006C6798 /* ActivityIndicatorCollectionViewCell.swift in Sources */,
 				DBA5FA2E2553F06B00D2E98E /* MediaInfoDescriptionView.swift in Sources */,
+				DB5918F7255E81FB00B20F6F /* MediaPreviewViewController+TweetProvider.swift in Sources */,
 				DBA6B1B725355C1E005FB0B4 /* UIAlertController.swift in Sources */,
 				DBBABA11255E61C900C1B3D9 /* SearchMediaViewController+TweetProvider.swift in Sources */,
 				DB25B9E82539897B00A5420F /* APIService+RecentSearch.swift in Sources */,
