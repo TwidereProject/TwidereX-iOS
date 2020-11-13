@@ -395,24 +395,7 @@ extension HomeTimelineViewController: UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        os_log("%{public}s[%{public}ld], %{public}s: indexPath %s", ((#file as NSString).lastPathComponent), #line, #function, indexPath.debugDescription)
-        
-        guard let diffableDataSource = viewModel.diffableDataSource else { return }
-        guard let item = diffableDataSource.itemIdentifier(for: indexPath) else { return }
-
-        switch item {
-        case .homeTimelineIndex(let objectID, _):
-            let managedObjectContext = self.viewModel.fetchedResultsController.managedObjectContext
-            managedObjectContext.performAndWait {
-                guard let timelineIndex = managedObjectContext.object(with: objectID) as? TimelineIndex else { return }
-                guard let tweet = timelineIndex.tweet?.retweet ?? timelineIndex.tweet else { return }
-                
-                let tweetPostViewModel = TweetConversationViewModel(context: self.context, tweetObjectID: tweet.objectID)
-                self.coordinator.present(scene: .tweetConversation(viewModel: tweetPostViewModel), from: self, transition: .show)
-            }
-        default:
-            return
-        }
+        handleTableView(tableView, didSelectRowAt: indexPath)
     }
     
     func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {

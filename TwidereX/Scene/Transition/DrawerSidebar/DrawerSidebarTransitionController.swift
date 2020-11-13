@@ -40,9 +40,7 @@ final class DrawerSidebarTransitionController: NSObject {
     init(drawerSidebarTransitionableViewController: DrawerSidebarTransitionableViewController) {
         self.drawerSidebarTransitionableViewController = drawerSidebarTransitionableViewController
         super.init()
-        
-        drawerSidebarTransitionableViewController.transitioningDelegate = self
-        
+                
         // edge pan present gesture
         screenEdgePanGestureRecognizer.delegate = self
         screenEdgePanGestureRecognizer.addTarget(self, action: #selector(DrawerSidebarTransitionController.edgePan(_:)))

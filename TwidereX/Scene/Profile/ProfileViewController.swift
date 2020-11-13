@@ -184,10 +184,14 @@ extension ProfileViewController {
         viewModel.bannerImageURL
             .sink { [weak self] url in
                 guard let self = self else { return }
-                guard let url = url else { return }
+                let placeholderImage = UIImage.placeholder(color: Asset.Colors.hightLight.color)
+                guard let url = url else {
+                    self.profileHeaderViewController.profileBannerView.profileBannerImageView.image = placeholderImage
+                    return
+                }
                 self.profileHeaderViewController.profileBannerView.profileBannerImageView.af.setImage(
                     withURL: url,
-                    placeholderImage: UIImage.placeholder(color: Asset.Colors.hightLight.color),
+                    placeholderImage: placeholderImage,
                     imageTransition: .crossDissolve(0.3),
                     runImageTransitionIfCached: false,
                     completion: nil

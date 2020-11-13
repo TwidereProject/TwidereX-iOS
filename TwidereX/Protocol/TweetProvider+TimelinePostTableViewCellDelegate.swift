@@ -76,7 +76,7 @@ extension TimelinePostTableViewCellDelegate where Self: TweetProvider {
         tweet(for: cell)
             .sink { [weak self] tweet in
                 guard let self = self else { return }
-                guard let tweet = tweet?.quote else { return }
+                guard let tweet = (tweet?.retweet ?? tweet)?.quote else { return }
                 
                 let tweetPostViewModel = TweetConversationViewModel(context: self.context, tweetObjectID: tweet.objectID)
                 DispatchQueue.main.async {
@@ -281,7 +281,7 @@ extension TimelinePostTableViewCellDelegate where Self: TweetProvider {
             .compactMap { $0?.activityItems }
             .sink { [weak self] activityItems in
                 guard let self = self else { return }
-                let activityViewController = UIActivityViewController(activityItems: activityItems, applicationActivities: nil)
+                let activityViewController = UIActivityViewController(activityItems: activityItems, applicationActivities: [SafariActivity(sceneCoordinator: self.coordinator)])
                 activityViewController.popoverPresentationController?.sourceView = sender
                 self.present(activityViewController, animated: true, completion: nil)
             }
@@ -296,7 +296,7 @@ extension TimelinePostTableViewCellDelegate where Self: TweetProvider & MediaPre
         tweet(for: cell)
             .sink { [weak self] tweet in
                 guard let self = self else { return }
-                guard let tweet = tweet else { return }
+                guard let tweet = (tweet?.retweet ?? tweet) else { return }
                 
                 let root = MediaPreviewViewModel.Root(
                     tweetObjectID: tweet.objectID,

@@ -45,7 +45,7 @@ final class MediaPreviewViewController: UIViewController, NeedsDependency {
         return button
     }()
     
-    let pageControlBackgroundVisualEffectView = UIVisualEffectView(effect:UIVibrancyEffect(blurEffect: UIBlurEffect(style: .systemMaterial)))
+    let pageControlBackgroundVisualEffectView = UIVisualEffectView(effect: UIVibrancyEffect(blurEffect: UIBlurEffect(style: .systemMaterial), style: .label))
     
     let pageControl: UIPageControl = {
         let pageControl = UIPageControl()
@@ -165,6 +165,7 @@ extension MediaPreviewViewController {
         if case let .root(root) = viewModel.rootItem {
             pageControl.currentPage = root.initialIndex
         }
+        pageControl.isHidden = viewModel.viewControllers.count == 1
     }
     
     override func viewDidLayoutSubviews() {

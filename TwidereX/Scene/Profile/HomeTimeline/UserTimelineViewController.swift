@@ -10,7 +10,7 @@ import UIKit
 import Combine
 import CoreDataStack
 
-final class UserTimelineViewController: UIViewController, NeedsDependency {
+final class UserTimelineViewController: UIViewController, MediaPreviewableViewController, NeedsDependency {
     
     weak var context: AppContext! { willSet { precondition(!isViewLoaded) } }
     weak var coordinator: SceneCoordinator! { willSet { precondition(!isViewLoaded) } }
@@ -18,6 +18,8 @@ final class UserTimelineViewController: UIViewController, NeedsDependency {
     var disposeBag = Set<AnyCancellable>()
     var viewModel: UserTimelineViewModel!
     
+    let mediaPreviewTransitionController = MediaPreviewTransitionController()
+
     lazy var tableView: UITableView = {
         let tableView = UITableView()
         tableView.register(TimelinePostTableViewCell.self, forCellReuseIdentifier: String(describing: TimelinePostTableViewCell.self))
@@ -143,110 +145,7 @@ extension UserTimelineViewController: UITableViewDelegate {
 }
 
 // MARK: - TimelinePostTableViewCellDelegate
-extension UserTimelineViewController: TimelinePostTableViewCellDelegate {
-    
-    func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, retweetInfoLabelDidPressed label: UILabel) {
-        guard let diffableDataSource = viewModel.diffableDataSource else { return }
-        guard let indexPath = tableView.indexPath(for: cell) else { return }
-        guard let item = diffableDataSource.itemIdentifier(for: indexPath) else { return }
-        
-        switch item {
-        case .tweet(let objectID):
-            viewModel.fetchedResultsController.managedObjectContext.performAndWait {
-                guard let tweet = viewModel.fetchedResultsController.managedObjectContext.object(with: objectID) as? Tweet else { return }
-                DispatchQueue.main.async { [weak self] in
-                    guard let self = self else { return }
-                    let profileViewModel = ProfileViewModel(twitterUser: tweet.author)        // tweet's user is target retweet user
-                    self.context.authenticationService.activeAuthenticationIndex
-                        .map { $0?.twitterAuthentication?.twitterUser }
-                        .assign(to: \.value, on: profileViewModel.currentTwitterUser)
-                        .store(in: &profileViewModel.disposeBag)
-                    self.coordinator.present(scene: .profile(viewModel: profileViewModel), from: self, transition: .show)
-                }
-            }
-        default:
-            return
-        }
-    }
-    
-    func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, avatarImageViewDidPressed imageView: UIImageView) {
-        guard let diffableDataSource = viewModel.diffableDataSource else { return }
-        guard let indexPath = tableView.indexPath(for: cell) else { return }
-        guard let item = diffableDataSource.itemIdentifier(for: indexPath) else { return }
-        
-        switch item {
-        case .tweet(let objectID):
-            viewModel.fetchedResultsController.managedObjectContext.performAndWait {
-                guard let tweet = viewModel.fetchedResultsController.managedObjectContext.object(with: objectID) as? Tweet else { return }
-                let targetTweet = tweet.retweet ?? tweet
-                DispatchQueue.main.async { [weak self] in
-                    guard let self = self else { return }
-                    let profileViewModel = ProfileViewModel(twitterUser: targetTweet.author)
-                    self.context.authenticationService.activeAuthenticationIndex
-                        .map { $0?.twitterAuthentication?.twitterUser }
-                        .assign(to: \.value, on: profileViewModel.currentTwitterUser)
-                        .store(in: &profileViewModel.disposeBag)
-                    self.coordinator.present(scene: .profile(viewModel: profileViewModel), from: self, transition: .show)
-                }
-            }
-        default:
-            return
-        }
-    }
-    
-    func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, quoteAvatarImageViewDidPressed imageView: UIImageView) {
-        guard let diffableDataSource = viewModel.diffableDataSource else { return }
-        guard let indexPath = tableView.indexPath(for: cell) else { return }
-        guard let item = diffableDataSource.itemIdentifier(for: indexPath) else { return }
-        
-        switch item {
-        case .tweet(let objectID):
-            viewModel.fetchedResultsController.managedObjectContext.performAndWait {
-                guard let tweet = viewModel.fetchedResultsController.managedObjectContext.object(with: objectID) as? Tweet else { return }
-                guard let targetTweet = tweet.retweet?.quote ?? tweet.quote else { return }
-                DispatchQueue.main.async { [weak self] in
-                    guard let self = self else { return }
-                    let profileViewModel = ProfileViewModel(twitterUser: targetTweet.author)
-                    self.context.authenticationService.activeAuthenticationIndex
-                        .map { $0?.twitterAuthentication?.twitterUser }
-                        .assign(to: \.value, on: profileViewModel.currentTwitterUser)
-                        .store(in: &profileViewModel.disposeBag)
-                    self.coordinator.present(scene: .profile(viewModel: profileViewModel), from: self, transition: .show)
-                }
-            }
-        default:
-            return
-        }
-    }
-    
-    func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, quotePostViewDidPressed quotePostView: QuotePostView) {
-        
-    }
-    
-    // MARK: - ActionToolbar
-    
-    func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, actionToolbar: TimelinePostActionToolbar, replayButtonDidPressed sender: UIButton) {
-        // TODO:
-    }
-    
-    func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, actionToolbar: TimelinePostActionToolbar, retweetButtonDidPressed sender: UIButton) {
-        // TODO:
-    }
-    
-    func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, actionToolbar: TimelinePostActionToolbar, favoriteButtonDidPressed sender: UIButton) {
-        // TODO:
-    }
-    
-    func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, actionToolbar: TimelinePostActionToolbar, shareButtonDidPressed sender: UIButton) {
-        // TODO:
-    }
-    
-    // MARK: - MosaicImageView
-    func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, mosaicImageView: MosaicImageView, didTapImageView imageView: UIImageView, atIndex index: Int) {
-        // TODO:
-    }
-    
-}
+extension UserTimelineViewController: TimelinePostTableViewCellDelegate { }
 
 // MARK: - CustomScrollViewContainerController
 extension UserTimelineViewController: CustomScrollViewContainerController {
