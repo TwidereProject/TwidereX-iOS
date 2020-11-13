@@ -21,7 +21,6 @@ final class UserMediaTimelineViewModel: NSObject {
     // input
     let context: AppContext
     let fetchedResultsController: NSFetchedResultsController<Tweet>
-    let currentTwitterAuthentication: CurrentValueSubject<TwitterAuthentication?, Never>
     let userID: CurrentValueSubject<String?, Never>
     
     // output
@@ -59,7 +58,6 @@ final class UserMediaTimelineViewModel: NSObject {
             return controller
         }()
         self.userID = CurrentValueSubject(userID)
-        self.currentTwitterAuthentication = CurrentValueSubject(context.authenticationService.currentActiveTwitterAutentication.value)
         super.init()
         
         self.fetchedResultsController.delegate = self
@@ -119,20 +117,18 @@ extension UserMediaTimelineViewModel {
     }
     
     func fetchLatest() -> AnyPublisher<Twitter.Response.Content<[Twitter.Entity.Tweet]>, Error> {
-        guard let authentication = currentTwitterAuthentication.value,
-              let authorization = try? authentication.authorization(appSecret: .shared) else {
+        guard let twitterAuthenticationBox = context.authenticationService.activeTwitterAuthenticationBox.value else {
             return Fail(error: UserTimelineError.invalidAuthorization).eraseToAnyPublisher()
         }
         guard let userID = self.userID.value, !userID.isEmpty else {
             return Fail(error: UserTimelineError.invalidUserID).eraseToAnyPublisher()
         }
         
-        return context.apiService.twitterUserTimeline(count: 200, userID: userID, excludeReplies: true, authorization: authorization, requestTwitterUserID: authentication.userID)
+        return context.apiService.twitterUserTimeline(count: 200, userID: userID, excludeReplies: true, twitterAuthenticationBox: twitterAuthenticationBox)
     }
     
     func loadMore() -> AnyPublisher<Twitter.Response.Content<[Twitter.Entity.Tweet]>, Error> {
-        guard let authentication = currentTwitterAuthentication.value,
-              let authorization = try? authentication.authorization(appSecret: .shared) else {
+        guard let twitterAuthenticationBox = context.authenticationService.activeTwitterAuthenticationBox.value else {
             return Fail(error: UserTimelineError.invalidAuthorization).eraseToAnyPublisher()
         }
         guard let userID = self.userID.value, !userID.isEmpty else {
@@ -142,7 +138,7 @@ extension UserMediaTimelineViewModel {
             return Fail(error: UserTimelineError.invalidAnchorToLoadMore).eraseToAnyPublisher()
         }
         
-        return context.apiService.twitterUserTimeline(count: 200, userID: userID, maxID: maxID, excludeReplies: true, authorization: authorization, requestTwitterUserID: authentication.userID)
+        return context.apiService.twitterUserTimeline(count: 200, userID: userID, maxID: maxID, excludeReplies: true, twitterAuthenticationBox: twitterAuthenticationBox)
     }
     
 }

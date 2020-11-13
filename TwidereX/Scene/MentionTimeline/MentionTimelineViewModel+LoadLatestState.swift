@@ -40,9 +40,8 @@ extension MentionTimelineViewModel.LoadLatestState {
         override func didEnter(from previousState: GKState?) {
             super.didEnter(from: previousState)
             guard let viewModel = viewModel, let stateMachine = stateMachine else { return }
-            guard let twitterAuthentication = viewModel.currentTwitterAuthentication.value,
-                  let authorization = try? twitterAuthentication.authorization(appSecret: AppSecret.shared) else {
-                assertionFailure()
+            guard let twitterAuthenticationBox = viewModel.context.authenticationService.activeTwitterAuthenticationBox.value else {
+                stateMachine.enter(Fail.self)
                 return
             }
             
@@ -51,7 +50,7 @@ extension MentionTimelineViewModel.LoadLatestState {
             }
             
             // TODO: only set large count when using Wi-Fi
-            viewModel.context.apiService.twitterMentionTimeline(count: 200, authorization: authorization, requestTwitterUserID: twitterAuthentication.userID)
+            viewModel.context.apiService.twitterMentionTimeline(count: 200, twitterAuthenticationBox: twitterAuthenticationBox)
                 .delay(for: .seconds(1), scheduler: DispatchQueue.main)
                 .receive(on: DispatchQueue.main)
                 .sink { completion in

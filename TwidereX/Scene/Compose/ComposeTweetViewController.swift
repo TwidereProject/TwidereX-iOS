@@ -289,8 +289,7 @@ extension ComposeTweetViewController {
             guard let self = self else {
                 return Just(nil).eraseToAnyPublisher()
             }
-            guard let twitterAuthentication = self.viewModel.currentTwitterAuthentication.value,
-                  let authorization = try? twitterAuthentication.authorization(appSecret: AppSecret.shared) else {
+            guard let activeTwitterAuthenticationBox = self.viewModel.context.authenticationService.activeTwitterAuthenticationBox.value else {
                 return Just(nil).eraseToAnyPublisher()
             }
             guard isRequestLocationMarking, let currentLocation = currentLocation else {
@@ -305,7 +304,7 @@ extension ComposeTweetViewController {
                 latitude: currentLocation.coordinate.latitude,
                 longitude: currentLocation.coordinate.longitude,
                 granularity: "city",
-                authorization: authorization
+                twitterAuthenticationBox: activeTwitterAuthenticationBox
             )
             .map { $0.value.first }
             .replaceError(with: nil)
@@ -342,17 +341,15 @@ extension ComposeTweetViewController {
         }
         .store(in: &disposeBag)
         
-        // bind viewModel
-        context.authenticationService.currentActiveTwitterAutentication
-            .assign(to: \.value, on: viewModel.currentTwitterAuthentication)
-            .store(in: &disposeBag)
-        context.authenticationService.currentTwitterUser
-            .sink { [weak self] user in
+        context.authenticationService.activeAuthenticationIndex
+            .sink { [weak self] activeAuthenticationIndex in
                 guard let self = self else { return }
-                self.viewModel.avatarImageURL.value = user?.avatarImageURL(size: .reasonablySmall)
-                self.viewModel.isVerifiedBadgekHidden.value = user.flatMap { !$0.verified } ?? true
+                self.viewModel.avatarImageURL.value = activeAuthenticationIndex?.twitterAuthentication?.twitterUser?.avatarImageURL()
             }
             .store(in: &disposeBag)
+        
+        // TODO:
+        tweetToolbarView.gifButton.isHidden = true
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -375,8 +372,7 @@ extension ComposeTweetViewController {
         os_log("%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
         
         // prepare authentication
-        guard let twitterAuthentication = viewModel.currentTwitterAuthentication.value,
-              let authorization = try? twitterAuthentication.authorization(appSecret: AppSecret.shared) else {
+        guard let activeTwitterAuthenticationBox = self.viewModel.context.authenticationService.activeTwitterAuthenticationBox.value else {
             assertionFailure()
             return
         }
@@ -391,7 +387,7 @@ extension ComposeTweetViewController {
             mediaIDs: mediaIDs,
             placeID: viewModel.currentPlace.value?.id,
             replyToTweetObjectID: viewModel.repliedTweetObjectID,
-            authorization: authorization
+            twitterAuthenticationBox: activeTwitterAuthenticationBox
         )
         .receive(on: DispatchQueue.main)
         .handleEvents(receiveSubscription: { [weak self] _ in
@@ -486,15 +482,29 @@ extension ComposeTweetViewController: TweetToolbarViewDelegate {
     }
     
     func tweetToolbarView(_ tweetToolbarView: TweetToolbarView, gifButtonDidPressed sender: UIButton) {
-
+        // TODO:
     }
     
     func tweetToolbarView(_ tweetToolbarView: TweetToolbarView, atButtonDidPressed sender: UIButton) {
-        
+        let items = viewModel.diffableDataSource.snapshot().itemIdentifiers
+        for item in items {
+            guard case let .input(attribute) = item else { continue }
+            guard let indexPath = viewModel.diffableDataSource.indexPath(for: item) else { continue }
+            guard let cell = tableView.cellForRow(at: indexPath) as? ComposeTweetContentTableViewCell else { continue }
+            
+            cell.composeTextView.insertText("@")
+        }
     }
     
     func tweetToolbarView(_ tweetToolbarView: TweetToolbarView, topicButtonDidPressed sender: UIButton) {
-        
+        let items = viewModel.diffableDataSource.snapshot().itemIdentifiers
+        for item in items {
+            guard case let .input(attribute) = item else { continue }
+            guard let indexPath = viewModel.diffableDataSource.indexPath(for: item) else { continue }
+            guard let cell = tableView.cellForRow(at: indexPath) as? ComposeTweetContentTableViewCell else { continue }
+            
+            cell.composeTextView.insertText("#")
+        }
     }
     
     func tweetToolbarView(_ tweetToolbarView: TweetToolbarView, locationButtonDidPressed sender: UIButton) {

@@ -26,7 +26,7 @@ extension MentionTimelineViewModel {
                 let managedObjectContext = self.fetchedResultsController.managedObjectContext
                 managedObjectContext.performAndWait {
                     let mentionTimelineIndex = managedObjectContext.object(with: objectID) as! MentionTimelineIndex
-                     MentionTimelineViewModel.configure(cell: cell, mentionTimelineIndex: mentionTimelineIndex, attribute: attribute)
+                    MentionTimelineViewModel.configure(cell: cell, readableLayoutFrame: tableView.readableContentGuide.layoutFrame, mentionTimelineIndex: mentionTimelineIndex, attribute: attribute)
                 }
                 cell.delegate = self.timelinePostTableViewCellDelegate
                 return cell
@@ -82,9 +82,9 @@ extension MentionTimelineViewModel {
         }
     }
     
-    static func configure(cell: TimelinePostTableViewCell, mentionTimelineIndex: MentionTimelineIndex, attribute: Item.Attribute) {
+    static func configure(cell: TimelinePostTableViewCell, readableLayoutFrame: CGRect? = nil, mentionTimelineIndex: MentionTimelineIndex, attribute: Item.Attribute) {
         if let tweet = mentionTimelineIndex.tweet {
-            HomeTimelineViewModel.configure(cell: cell, tweet: tweet, requestUserID: mentionTimelineIndex.userID)
+            HomeTimelineViewModel.configure(cell: cell, readableLayoutFrame: readableLayoutFrame, tweet: tweet, requestUserID: mentionTimelineIndex.userID)
             internalConfigure(cell: cell, tweet: tweet, attribute: attribute)
         }
     }

@@ -22,8 +22,6 @@ final class HomeTimelineViewModel: NSObject {
     // input
     let context: AppContext
     let fetchedResultsController: NSFetchedResultsController<TimelineIndex>
-    let currentTwitterAuthentication = CurrentValueSubject<TwitterAuthentication?, Never>(nil)
-    let currentTwitterUser = CurrentValueSubject<TwitterUser?, Never>(nil)
     let isFetchingLatestTimeline = CurrentValueSubject<Bool, Never>(false)
     weak var contentOffsetAdjustableTimelineViewControllerDelegate: ContentOffsetAdjustableTimelineViewControllerDelegate?
     weak var tableView: UITableView?
@@ -82,6 +80,7 @@ final class HomeTimelineViewModel: NSObject {
         super.init()
         
         fetchedResultsController.delegate = self
+        
         Timer.publish(every: 1.0, on: .main, in: .common)
             .autoconnect()
             .sink { _ in
@@ -106,7 +105,7 @@ extension HomeTimelineViewModel {
                 let managedObjectContext = self.fetchedResultsController.managedObjectContext
                 managedObjectContext.performAndWait {
                     let timelineIndex = managedObjectContext.object(with: objectID) as! TimelineIndex
-                    HomeTimelineViewModel.configure(cell: cell, timelineIndex: timelineIndex, attribute: attribute)
+                    HomeTimelineViewModel.configure(cell: cell, readableLayoutFrame: tableView.readableContentGuide.layoutFrame, timelineIndex: timelineIndex, attribute: attribute)
                 }
                 cell.delegate = self.timelinePostTableViewCellDelegate
                 return cell
@@ -162,14 +161,14 @@ extension HomeTimelineViewModel {
         }
     }
     
-    static func configure(cell: TimelinePostTableViewCell, timelineIndex: TimelineIndex, attribute: Item.Attribute) {
+    static func configure(cell: TimelinePostTableViewCell, readableLayoutFrame: CGRect? = nil, timelineIndex: TimelineIndex, attribute: Item.Attribute) {
         if let tweet = timelineIndex.tweet {
-            configure(cell: cell, tweet: tweet, requestUserID: timelineIndex.userID)
+            configure(cell: cell, readableLayoutFrame: readableLayoutFrame, tweet: tweet, requestUserID: timelineIndex.userID)
             internalConfigure(cell: cell, tweet: tweet, attribute: attribute)
         }
     }
 
-    static func configure(cell: TimelinePostTableViewCell, tweet: Tweet, requestUserID: String) {
+    static func configure(cell: TimelinePostTableViewCell, readableLayoutFrame: CGRect? = nil, tweet: Tweet, requestUserID: String) {
         // set retweet display
         cell.timelinePostView.retweetContainerStackView.isHidden = tweet.retweet == nil
         cell.timelinePostView.retweetInfoLabel.text = tweet.author.name + " Retweeted"
@@ -210,58 +209,42 @@ extension HomeTimelineViewModel {
             let count = (tweet.retweet ?? tweet).metrics?.retweetCount.flatMap { Int(truncating: $0) }
             return HomeTimelineViewModel.formattedNumberTitleForActionButton(count)
         }()
-        let retweetButtonTintColor = isRetweeted ? Asset.Colors.hightLight.color : .secondaryLabel
-        cell.timelinePostView.actionToolbar.retweetButton.tintColor = retweetButtonTintColor
         cell.timelinePostView.actionToolbar.retweetButton.setTitle(retweetCountTitle, for: .normal)
-        cell.timelinePostView.actionToolbar.retweetButton.setTitleColor(retweetButtonTintColor, for: .normal)
-        cell.timelinePostView.actionToolbar.retweetButton.setTitleColor(retweetButtonTintColor.withAlphaComponent(0.8), for: .highlighted)
         cell.timelinePostView.actionToolbar.retweetButton.isEnabled = !(tweet.retweet ?? tweet).author.protected
+        cell.timelinePostView.actionToolbar.retweetButtonHighligh = isRetweeted
 
         let isLike = (tweet.retweet ?? tweet).likeBy.flatMap({ $0.contains(where: { $0.id == requestUserID }) }) ?? false
         let favoriteCountTitle: String = {
             let count = (tweet.retweet ?? tweet).metrics?.likeCount.flatMap { Int(truncating: $0) }
             return HomeTimelineViewModel.formattedNumberTitleForActionButton(count)
         }()
-        let likeButtonImage = isLike ? Asset.Health.heartFill.image.withRenderingMode(.alwaysTemplate) :
-            Asset.Health.heart.image.withRenderingMode(.alwaysTemplate)
-        let likeButtonTintColor = isLike ? Asset.Colors.heartPink.color : .secondaryLabel
-        cell.timelinePostView.actionToolbar.favoriteButton.tintColor = likeButtonTintColor
-        cell.timelinePostView.actionToolbar.favoriteButton.setImage(likeButtonImage, for: .normal)
         cell.timelinePostView.actionToolbar.favoriteButton.setTitle(favoriteCountTitle, for: .normal)
-        cell.timelinePostView.actionToolbar.favoriteButton.setTitleColor(likeButtonTintColor, for: .normal)
-        cell.timelinePostView.actionToolbar.favoriteButton.setTitleColor(likeButtonTintColor.withAlphaComponent(0.8), for: .highlighted)
-
+        cell.timelinePostView.actionToolbar.likeButtonHighlight = isLike
+        
         // set image display
-        let media = Array(tweet.media ?? []).sorted { $0.index.compare($1.index) == .orderedAscending }
-        var mosaicMetas: [MosaicMeta] = []
-        for element in media {
-            guard let (url, size) = element.photoURL(sizeKind: .small) else { continue }
-            let meta = MosaicMeta(url: url, size: size)
-            mosaicMetas.append(meta)
-        }
+        let media = Array((tweet.retweet ?? tweet).media ?? []).sorted { $0.index.compare($1.index) == .orderedAscending }
+        let mosiacImageViewModel = MosaicImageViewModel(twitterMedia: media)
 
         let maxSize: CGSize = {
-            // auto layout first time fallback
-            if cell.timelinePostView.frame == .zero {
-                let bounds = UIScreen.main.bounds
-                let maxWidth = min(bounds.width, bounds.height)
-                return CGSize(
-                    width: maxWidth,
-                    height: maxWidth * 0.3
-                )
-            }
             let maxWidth: CGFloat = {
                 // use timelinePostView width as container width
                 // that width follows readable width and keep constant width after rotate
-                var containerWidth = cell.timelinePostView.frame.width
+                let containerFrame = readableLayoutFrame ?? cell.timelinePostView.frame
+                var containerWidth = containerFrame.width
                 containerWidth -= 10
                 containerWidth -= TimelinePostView.avatarImageViewSize.width
                 return containerWidth
             }()
-            return CGSize(width: maxWidth, height: maxWidth * 0.6)
+            let scale: CGFloat = {
+                switch mosiacImageViewModel.metas.count {
+                case 1:     return 1.3
+                default:    return 0.7
+                }
+            }()
+            return CGSize(width: maxWidth, height: maxWidth * scale)
         }()
-        if mosaicMetas.count == 1 {
-            let meta = mosaicMetas[0]
+        if mosiacImageViewModel.metas.count == 1 {
+            let meta = mosiacImageViewModel.metas[0]
             let imageView = cell.timelinePostView.mosaicImageView.setupImageView(aspectRatio: meta.size, maxSize: maxSize)
             imageView.af.setImage(
                 withURL: meta.url,
@@ -269,9 +252,9 @@ extension HomeTimelineViewModel {
                 imageTransition: .crossDissolve(0.2)
             )
         } else {
-            let imageViews = cell.timelinePostView.mosaicImageView.setupImageViews(count: mosaicMetas.count, maxHeight: maxSize.height)
+            let imageViews = cell.timelinePostView.mosaicImageView.setupImageViews(count: mosiacImageViewModel.metas.count, maxHeight: maxSize.height)
             for (i, imageView) in imageViews.enumerated() {
-                let meta = mosaicMetas[i]
+                let meta = mosiacImageViewModel.metas[i]
                 imageView.af.setImage(
                     withURL: meta.url,
                     placeholderImage: UIImage.placeholder(color: .systemFill),
@@ -279,7 +262,7 @@ extension HomeTimelineViewModel {
                 )
             }
         }
-        cell.timelinePostView.mosaicImageView.isHidden = mosaicMetas.isEmpty
+        cell.timelinePostView.mosaicImageView.isHidden = mosiacImageViewModel.metas.isEmpty
 
         // set quote display
         let quote = tweet.retweet?.quote ?? tweet.quote
@@ -336,18 +319,21 @@ extension HomeTimelineViewModel {
                       let newTweet = object as? Tweet else { return }
                 let targetTweet = newTweet.retweet ?? newTweet
                 
+                let isRetweeted = targetTweet.retweetBy.flatMap({ $0.contains(where: { $0.id == requestUserID }) }) ?? false
                 let retweetCount = targetTweet.metrics?.retweetCount.flatMap { Int(truncating: $0) }
                 let retweetCountTitle = HomeTimelineViewModel.formattedNumberTitleForActionButton(retweetCount)
                 cell.timelinePostView.actionToolbar.retweetButton.setTitle(retweetCountTitle, for: .normal)
+                cell.timelinePostView.actionToolbar.retweetButtonHighligh = isRetweeted
                 os_log("%{public}s[%{public}ld], %{public}s: retweet count label for tweet %s did update: %ld", ((#file as NSString).lastPathComponent), #line, #function, targetTweet.id, retweetCount ?? 0)
                 
+                let isLike = targetTweet.likeBy.flatMap({ $0.contains(where: { $0.id == requestUserID }) }) ?? false
                 let favoriteCount = targetTweet.metrics?.likeCount.flatMap { Int(truncating: $0) }
                 let favoriteCountTitle = HomeTimelineViewModel.formattedNumberTitleForActionButton(favoriteCount)
                 cell.timelinePostView.actionToolbar.favoriteButton.setTitle(favoriteCountTitle, for: .normal)
+                cell.timelinePostView.actionToolbar.likeButtonHighlight = isLike
                 os_log("%{public}s[%{public}ld], %{public}s: like count label for tweet %s did update: %ld", ((#file as NSString).lastPathComponent), #line, #function, targetTweet.id, favoriteCount ?? 0)
             }
             .store(in: &cell.disposeBag)
-
     }
     
     private static func internalConfigure(cell: TimelinePostTableViewCell, tweet: Tweet, attribute: Item.Attribute) {
@@ -394,11 +380,6 @@ extension HomeTimelineViewModel {
             cell.separatorLineNormalTrailingLayoutConstraint.isActive = true
         }
     }
-    
-    struct MosaicMeta {
-        let url: URL
-        let size: CGSize
-    }
 
     static func formattedNumberTitleForActionButton(_ number: Int?) -> String {
         guard let number = number, number > 0 else {
@@ -426,6 +407,7 @@ extension HomeTimelineViewModel: NSFetchedResultsControllerDelegate {
         guard let diffableDataSource = self.diffableDataSource else { return }
         let oldSnapshot = diffableDataSource.snapshot()
 
+        let predicate = fetchedResultsController.fetchRequest.predicate
         let parentManagedObjectContext = fetchedResultsController.managedObjectContext
         let managedObjectContext = NSManagedObjectContext(concurrencyType: .privateQueueConcurrencyType)
         managedObjectContext.parent = parentManagedObjectContext
@@ -437,6 +419,7 @@ extension HomeTimelineViewModel: NSFetchedResultsControllerDelegate {
             let timelineIndexes: [TimelineIndex] = {
                 let request = TimelineIndex.sortedFetchRequest
                 request.returnsObjectsAsFaults = false
+                request.predicate = predicate
                 do {
                     return try managedObjectContext.fetch(request)
                 } catch {
@@ -449,6 +432,7 @@ extension HomeTimelineViewModel: NSFetchedResultsControllerDelegate {
             os_log("%{public}s[%{public}ld], %{public}s: fetch timelineIndexes cost %.2fs", ((#file as NSString).lastPathComponent), #line, #function, endFetch - start)
             
             var oldSnapshotAttributeDict: [NSManagedObjectID : Item.Attribute] = [:]
+            
             for item in oldSnapshot.itemIdentifiers {
                 guard case let .homeTimelineIndex(objectID, attribute) = item else { continue }
                 oldSnapshotAttributeDict[objectID] = attribute

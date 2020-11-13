@@ -12,10 +12,11 @@ import CoreData
 import CoreDataStack
 
 extension UserMediaTimelineViewModel {
-    func setupDiffableDataSource(collectionView: UICollectionView) {
+    func setupDiffableDataSource(collectionView: UICollectionView, searchMediaCollectionViewCellDelegate: SearchMediaCollectionViewCellDelegate?) {
         diffableDataSource = MediaSection.collectionViewDiffableDataSource(
             collectionView: collectionView,
-            managedObjectContext: fetchedResultsController.managedObjectContext
+            managedObjectContext: fetchedResultsController.managedObjectContext,
+            searchMediaCollectionViewCellDelegate: searchMediaCollectionViewCellDelegate
         )
     }
 }

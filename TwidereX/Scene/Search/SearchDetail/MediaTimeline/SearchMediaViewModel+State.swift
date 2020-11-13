@@ -52,8 +52,7 @@ extension SearchMediaViewModel.State {
             super.didEnter(from: previousState)
             guard let viewModel = viewModel, let stateMachine = stateMachine else { return }
             
-            guard let authentication = viewModel.currentTwitterAuthentication.value,
-                  let authorization = try? authentication.authorization(appSecret: .shared) else {
+            guard let activeTwitterAuthenticationBox = viewModel.context.authenticationService.activeTwitterAuthenticationBox.value else {
                 error = SearchMediaViewModel.SearchMediaError.invalidAuthorization
                 stateMachine.enter(Fail.self)
                 return
@@ -74,8 +73,7 @@ extension SearchMediaViewModel.State {
             viewModel.context.apiService.tweetsRecentSearch(
                 searchText: searchText,
                 nextToken: nextToken,
-                authorization: authorization,
-                requestTwitterUserID: authentication.userID
+                twitterAuthenticationBox: activeTwitterAuthenticationBox
             )
             .receive(on: DispatchQueue.main)
             .sink { [weak self] completion in

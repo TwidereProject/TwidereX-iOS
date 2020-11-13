@@ -11,13 +11,15 @@ import UIKit
 import Combine
 import CoreDataStack
 
-final class SearchTimelineViewController: UIViewController, NeedsDependency {
+final class SearchTimelineViewController: UIViewController, MediaPreviewableViewController, NeedsDependency {
     
     weak var context: AppContext! { willSet { precondition(!isViewLoaded) } }
     weak var coordinator: SceneCoordinator! { willSet { precondition(!isViewLoaded) } }
     
     var disposeBag = Set<AnyCancellable>()
     var viewModel: SearchTimelineViewModel!
+    
+    let mediaPreviewTransitionController = MediaPreviewTransitionController()
     
     lazy var tableView: UITableView = {
         let tableView = UITableView()
@@ -59,10 +61,6 @@ extension SearchTimelineViewController {
         }
         tableView.delegate = self
         tableView.dataSource = viewModel.diffableDataSource
-        
-        viewModel.context.authenticationService.currentActiveTwitterAutentication
-            .assign(to: \.value, on: viewModel.currentTwitterAuthentication)
-            .store(in: &disposeBag)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -96,45 +94,17 @@ extension SearchTimelineViewController {
 
 // MARK: - UITableViewDelegate
 extension SearchTimelineViewController: UITableViewDelegate {
+    
     func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
         return 200
     }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        handleTableView(tableView, didSelectRowAt: indexPath)
+    }
+    
 }
 
 // MARK: - TimelinePostTableViewCellDelegate
-extension SearchTimelineViewController: TimelinePostTableViewCellDelegate {
-    
-    func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, retweetInfoLabelDidPressed label: UILabel) {
-            
-    }
-    
-    func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, avatarImageViewDidPressed imageView: UIImageView) {
-        
-    }
-    
-    func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, quoteAvatarImageViewDidPressed imageView: UIImageView) {
-        
-    }
-    
-    func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, actionToolbar: TimelinePostActionToolbar, replayButtonDidPressed sender: UIButton) {
-        
-    }
-    
-    func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, actionToolbar: TimelinePostActionToolbar, retweetButtonDidPressed sender: UIButton) {
-        
-    }
-    
-    func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, actionToolbar: TimelinePostActionToolbar, favoriteButtonDidPressed sender: UIButton) {
-        
-    }
-    
-    func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, actionToolbar: TimelinePostActionToolbar, shareButtonDidPressed sender: UIButton) {
-        
-    }
-    
-    // MARK: - MosaicImageViewDelegate
-    func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, mosaicImageView: MosaicImageView, didTapImageView imageView: UIImageView, atIndex index: Int) {
-        // TODO:
-    }
-    
-}
+extension SearchTimelineViewController: TimelinePostTableViewCellDelegate { }
+

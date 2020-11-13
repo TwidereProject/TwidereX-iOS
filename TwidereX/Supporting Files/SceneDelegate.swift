@@ -26,7 +26,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         sceneCoordinator.setup()
         
         do {
-            let request = TwitterAuthentication.sortedFetchRequest
+            let request = AuthenticationIndex.sortedFetchRequest
             if try appContext.managedObjectContext.fetch(request).isEmpty {
                 DispatchQueue.main.async {
                     sceneCoordinator.present(scene: .authentication, from: nil, transition: .modal(animated: false, completion: nil))

@@ -74,6 +74,15 @@
         }
       },
       {
+        "package": "SwiftMessages",
+        "repositoryURL": "https://github.com/SwiftKickMobile/SwiftMessages",
+        "state": {
+          "branch": null,
+          "revision": "0d1068917cc7cb4de0d50de736aa3ed50b227bf0",
+          "version": "8.0.3"
+        }
+      },
+      {
         "package": "SwiftyJSON",
         "repositoryURL": "https://github.com/SwiftyJSON/SwiftyJSON",
         "state": {

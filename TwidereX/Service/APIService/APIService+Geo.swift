@@ -15,7 +15,8 @@ import CommonOSLog
 
 extension APIService {
  
-    func geoSearch(latitude: Double, longitude: Double, granularity: String, authorization: Twitter.API.OAuth.Authorization) -> AnyPublisher<Twitter.Response.Content<[Twitter.Entity.Place]>, Error> {
+    func geoSearch(latitude: Double, longitude: Double, granularity: String, twitterAuthenticationBox: AuthenticationService.TwitterAuthenticationBox) -> AnyPublisher<Twitter.Response.Content<[Twitter.Entity.Place]>, Error> {
+        let authorization = twitterAuthenticationBox.twitterAuthorization
         let query = Twitter.API.Geo.SearchQuery(latitude: latitude, longitude: longitude, granularity: granularity)
         return Twitter.API.Geo.search(session: session, authorization: authorization, query: query)
             .map { response in

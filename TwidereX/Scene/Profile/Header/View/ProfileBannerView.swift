@@ -69,16 +69,7 @@ final class ProfileBannerView: UIView {
     
     let profileBannerInfoActionView = ProfileBannerInfoActionView()
     
-    let bioLabel: ActiveLabel = {
-        let label = ActiveLabel()
-        label.numberOfLines = 0
-        label.enabledTypes = [.url]
-        label.textColor = .label
-        label.font = .systemFont(ofSize: 14)
-        label.text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
-        label.textColor = .secondaryLabel
-        return label
-    }()
+    let bioLabel = ActiveLabel(style: .default)
     
     let linkContainer = UIStackView()
     let linkIconImageView: UIImageView = {

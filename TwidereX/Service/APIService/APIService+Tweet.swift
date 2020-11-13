@@ -20,10 +20,10 @@ extension APIService {
         mediaIDs: [String]?,
         placeID: String?,
         replyToTweetObjectID: NSManagedObjectID?,
-        authorization: Twitter.API.OAuth.Authorization
+        twitterAuthenticationBox: AuthenticationService.TwitterAuthenticationBox
     ) -> AnyPublisher<Twitter.Response.Content<Twitter.Entity.Tweet>, Error> {
+        let authorization = twitterAuthenticationBox.twitterAuthorization
         let managedObjectContext = backgroundManagedObjectContext
-        
         let query = Future<Twitter.API.Statuses.UpdateQuery, Never> { promise in
             guard let replyToTweetObjectID = replyToTweetObjectID else {
                 let query = Twitter.API.Statuses.UpdateQuery(

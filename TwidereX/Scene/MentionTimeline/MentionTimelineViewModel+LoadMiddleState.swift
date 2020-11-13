@@ -50,8 +50,7 @@ extension MentionTimelineViewModel.LoadMiddleState {
             super.didEnter(from: previousState)
             
             guard let viewModel = viewModel, let stateMachine = stateMachine else { return }
-            guard let twitterAuthentication = viewModel.currentTwitterAuthentication.value,
-                  let authorization = try? twitterAuthentication.authorization(appSecret: AppSecret.shared) else {
+            guard let twitterAuthenticationBox = viewModel.context.authenticationService.activeTwitterAuthenticationBox.value else {
                 assertionFailure()
                 return
             }
@@ -67,7 +66,7 @@ extension MentionTimelineViewModel.LoadMiddleState {
             
             // TODO: only set large count when using Wi-Fi
             let maxID = tweet.id
-            viewModel.context.apiService.twitterMentionTimeline(count: 20, maxID: maxID, authorization: authorization, requestTwitterUserID: twitterAuthentication.userID)
+            viewModel.context.apiService.twitterMentionTimeline(count: 20, maxID: maxID, twitterAuthenticationBox: twitterAuthenticationBox)
                 .delay(for: .seconds(1), scheduler: DispatchQueue.main)
                 .receive(on: DispatchQueue.main)
                 .sink { completion in

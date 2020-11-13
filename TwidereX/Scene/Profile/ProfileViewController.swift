@@ -9,6 +9,7 @@ import os.log
 import UIKit
 import Combine
 import Tabman
+import AlamofireImage
 
 final class ProfileViewController: UIViewController, NeedsDependency {
     
@@ -17,7 +18,9 @@ final class ProfileViewController: UIViewController, NeedsDependency {
     
     var disposeBag = Set<AnyCancellable>()
     var viewModel: ProfileViewModel!
-        
+    
+    let avatarButton = UIButton.avatarButton
+    
     let containerScrollView: UIScrollView = {
         let scrollView = UIScrollView()
         scrollView.scrollsToTop = false
@@ -85,7 +88,10 @@ extension ProfileViewController {
         super.viewDidLoad()
         
         view.backgroundColor = .systemBackground
-
+        if navigationController?.viewControllers.first == self {
+            navigationItem.leftBarButtonItem = UIBarButtonItem(customView: avatarButton)
+        }
+        
         let userTimelineViewModel = UserTimelineViewModel(context: context, userID: viewModel.userID.value)
         viewModel.userID.assign(to: \.value, on: userTimelineViewModel.userID).store(in: &disposeBag)
         
@@ -93,7 +99,7 @@ extension ProfileViewController {
         viewModel.userID.assign(to: \.value, on: userMediaTimelineViewModel.userID).store(in: &disposeBag)
         
         let userLikeTimelineViewModel = UserLikeTimelineViewModel(context: context, userID: viewModel.userID.value)
-
+        viewModel.userID.assign(to: \.value, on: userLikeTimelineViewModel.userID).store(in: &disposeBag)
         
         profileSegmentedViewController.pagingViewController.viewModel = {
             let profilePagingViewModel = ProfilePagingViewModel(
@@ -178,10 +184,14 @@ extension ProfileViewController {
         viewModel.bannerImageURL
             .sink { [weak self] url in
                 guard let self = self else { return }
-                guard let url = url else { return }
+                let placeholderImage = UIImage.placeholder(color: Asset.Colors.hightLight.color)
+                guard let url = url else {
+                    self.profileHeaderViewController.profileBannerView.profileBannerImageView.image = placeholderImage
+                    return
+                }
                 self.profileHeaderViewController.profileBannerView.profileBannerImageView.af.setImage(
                     withURL: url,
-                    placeholderImage: UIImage.placeholder(color: Asset.Colors.hightLight.color),
+                    placeholderImage: placeholderImage,
                     imageTransition: .crossDissolve(0.3),
                     runImageTransitionIfCached: false,
                     completion: nil
@@ -274,11 +284,27 @@ extension ProfileViewController {
             }
             .store(in: &disposeBag)
         
-        profileHeaderViewController.profileBannerView.profileBannerInfoActionView.delegate = self
-        context.authenticationService.currentActiveTwitterAutentication
-            .assign(to: \.value, on: viewModel.currentTwitterAuthentication)
+        viewModel.currentTwitterUser
+            .sink { [weak self] twitterUser in
+                guard let self = self else { return }
+                let placeholderImage = UIImage
+                    .placeholder(size: UIButton.avatarButtonSize, color: .systemFill)
+                    .af.imageRoundedIntoCircle()
+                guard let twitterUser = twitterUser, let avatarImageURL = twitterUser.avatarImageURL() else {
+                    self.avatarButton.setImage(placeholderImage, for: .normal)
+                    return
+                }
+                let filter = ScaledToSizeCircleFilter(size: UIButton.avatarButtonSize)
+                self.avatarButton.af.setImage(
+                    for: .normal,
+                    url: avatarImageURL,
+                    placeholderImage: placeholderImage,
+                    filter: filter
+                )
+            }
             .store(in: &disposeBag)
             
+        profileHeaderViewController.profileBannerView.profileBannerInfoActionView.delegate = self
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -370,14 +396,10 @@ extension ProfileViewController: ProfilePagingViewControllerDelegate {
 extension ProfileViewController: ProfileBannerInfoActionViewDelegate {
     
     func profileBannerInfoActionView(_ profileBannerInfoActionView: ProfileBannerInfoActionView, followActionButtonPressed button: FollowActionButton) {
-        guard let twitterAuthentication = viewModel.currentTwitterAuthentication.value,
-              let authorization = try? twitterAuthentication.authorization(appSecret: AppSecret.shared) else {
-            assertionFailure()
-            return
-        }
+        guard let twitterUser = viewModel.twitterUser.value,
+              let currentTwitterUser = viewModel.currentTwitterUser.value else { return }
+        let requestTwitterUserID = currentTwitterUser.id
         
-        guard let twitterUser = viewModel.twitterUser.value else { return }
-        let requestTwitterUserID = twitterAuthentication.userID
         let isPending = (twitterUser.followRequestSentFrom ?? Set()).contains(where: { $0.id == requestTwitterUserID })
         let isFollowing = (twitterUser.followingFrom ?? Set()).contains(where: { $0.id == requestTwitterUserID })
         
@@ -400,23 +422,19 @@ extension ProfileViewController: ProfileBannerInfoActionViewDelegate {
     }
     
     private func toggleFollowStatue() {
-        guard let twitterUser = viewModel.twitterUser.value,
-              let requestTwitterUser = viewModel.currentTwitterUser.value
-        else { return }
-        
-        guard let twitterAuthentication = viewModel.currentTwitterAuthentication.value,
-              let authorization = try? twitterAuthentication.authorization(appSecret: AppSecret.shared) else {
+        guard let twitterUser = viewModel.twitterUser.value else {
+            return
+        }
+        guard let activeTwitterAuthenticationBox = context.authenticationService.activeTwitterAuthenticationBox.value else {
             assertionFailure()
             return
         }
-        let requestTwitterUserID = twitterAuthentication.userID
         
         let impactFeedbackGenerator = UIImpactFeedbackGenerator(style: .light)
         let notificationFeedbackGenerator = UINotificationFeedbackGenerator()
         context.apiService.friendship(
             twitterUserObjectID: twitterUser.objectID,
-            authorization: authorization,
-            requestTwitterUserID: requestTwitterUserID
+            twitterAuthenticationBox: activeTwitterAuthenticationBox
         )
         .receive(on: DispatchQueue.main)
         .handleEvents { _ in
@@ -438,8 +456,7 @@ extension ProfileViewController: ProfileBannerInfoActionViewDelegate {
             self.context.apiService.friendship(
                 friendshipQueryType: friendshipQueryType,
                 twitterUserID: targetTwitterUserID,
-                authorization: authorization,
-                requestTwitterUserID: requestTwitterUserID
+                twitterAuthenticationBox: activeTwitterAuthenticationBox
             )
         }
         .switchToLatest()

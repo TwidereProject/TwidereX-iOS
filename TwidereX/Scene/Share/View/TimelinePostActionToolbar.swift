@@ -22,6 +22,18 @@ final class TimelinePostActionToolbar: UIView {
     static let height: CGFloat = 40
     static let buttonTitleImagePadding: CGFloat = 4
     
+    var retweetButtonHighligh: Bool = false {
+        didSet {
+            retweetButtonHighlightStateDidChange(to: retweetButtonHighligh)
+        }
+    }
+    
+    var likeButtonHighlight: Bool = false {
+        didSet {
+            likeButtonHighlightStateDidChange(to: likeButtonHighlight)
+        }
+    }
+    
     let replyButton: UIButton = {
         let button = HitTestExpandedButton()
         button.tintColor = .secondaryLabel
@@ -143,6 +155,27 @@ extension TimelinePostActionToolbar {
         delegate?.timelinePostActionToolbar(self, shareButtonDidPressed: sender)
     }
 
+}
+
+extension TimelinePostActionToolbar {
+    
+    private func retweetButtonHighlightStateDidChange(to isHighlight: Bool) {
+        let tintColor = isHighlight ? Asset.Colors.hightLight.color : .secondaryLabel
+        retweetButton.tintColor = tintColor
+        retweetButton.setTitleColor(tintColor, for: .normal)
+        retweetButton.setTitleColor(tintColor.withAlphaComponent(0.8), for: .highlighted)
+    }
+    
+    private func likeButtonHighlightStateDidChange(to isHighlight: Bool) {
+        let tintColor = isHighlight ? Asset.Colors.heartPink.color : .secondaryLabel
+        let buttonImage = isHighlight ? Asset.Health.heartFill.image.withRenderingMode(.alwaysTemplate) :
+            Asset.Health.heart.image.withRenderingMode(.alwaysTemplate)
+        favoriteButton.tintColor = tintColor
+        favoriteButton.setImage(buttonImage, for: .normal)
+        favoriteButton.setTitleColor(tintColor, for: .normal)
+        favoriteButton.setTitleColor(tintColor.withAlphaComponent(0.8), for: .highlighted)
+    }
+    
 }
 
 #if DEBUG

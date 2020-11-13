@@ -24,7 +24,6 @@ class UserLikeTimelineViewModel: NSObject {
     let fetchedResultsController: NSFetchedResultsController<Tweet>
     var diffableDataSource: UITableViewDiffableDataSource<TimelineSection, Item>?
     let userID: CurrentValueSubject<String?, Never>
-    let currentTwitterAuthentication: CurrentValueSubject<TwitterAuthentication?, Never>
     weak var tableView: UITableView?
     weak var timelinePostTableViewCellDelegate: TimelinePostTableViewCellDelegate?
     
@@ -63,7 +62,6 @@ class UserLikeTimelineViewModel: NSObject {
             return controller
         }()
         self.userID = CurrentValueSubject(userID)
-        self.currentTwitterAuthentication = CurrentValueSubject(context.authenticationService.currentActiveTwitterAutentication.value)
         super.init()
         
         self.fetchedResultsController.delegate = self
@@ -136,20 +134,18 @@ extension UserLikeTimelineViewModel {
     }
     
     func fetchLatest() -> AnyPublisher<Twitter.Response.Content<[Twitter.Entity.Tweet]>, Error> {
-        guard let authentication = currentTwitterAuthentication.value,
-              let authorization = try? authentication.authorization(appSecret: .shared) else {
+        guard let twitterAuthenticationBox = context.authenticationService.activeTwitterAuthenticationBox.value else {
             return Fail(error: UserTimelineError.invalidAuthorization).eraseToAnyPublisher()
         }
         guard let userID = self.userID.value, !userID.isEmpty else {
             return Fail(error: UserTimelineError.invalidUserID).eraseToAnyPublisher()
         }
         
-        return context.apiService.likeList(count: 50, userID: userID, authorization: authorization, requestTwitterUserID: authentication.userID)
+        return context.apiService.likeList(count: 50, userID: userID, twitterAuthenticationBox: twitterAuthenticationBox)
     }
     
     func loadMore() -> AnyPublisher<Twitter.Response.Content<[Twitter.Entity.Tweet]>, Error> {
-        guard let authentication = currentTwitterAuthentication.value,
-              let authorization = try? authentication.authorization(appSecret: .shared) else {
+        guard let twitterAuthenticationBox = context.authenticationService.activeTwitterAuthenticationBox.value else {
             return Fail(error: UserTimelineError.invalidAuthorization).eraseToAnyPublisher()
         }
         guard let userID = self.userID.value, !userID.isEmpty else {
@@ -159,7 +155,7 @@ extension UserLikeTimelineViewModel {
             return Fail(error: UserTimelineError.invalidAnchorToLoadMore).eraseToAnyPublisher()
         }
         
-        return context.apiService.likeList(count: 50, userID: userID, maxID: maxID, authorization: authorization, requestTwitterUserID: authentication.userID)
+        return context.apiService.likeList(count: 50, userID: userID, maxID: maxID, twitterAuthenticationBox: twitterAuthenticationBox)
     }
     
 }

@@ -9,6 +9,8 @@
 import os.log
 import UIKit
 import Combine
+import CoreData
+import CoreDataStack
 import AlamofireImage
 import Pageboy
 
@@ -45,7 +47,7 @@ final class MediaPreviewViewController: UIViewController, NeedsDependency {
         return button
     }()
     
-    let pageControlBackgroundVisualEffectView = UIVisualEffectView(effect:UIVibrancyEffect(blurEffect: UIBlurEffect(style: .systemMaterial)))
+    let pageControlBackgroundVisualEffectView = UIVisualEffectView(effect: UIVibrancyEffect(blurEffect: UIBlurEffect(style: .systemMaterial), style: .label))
     
     let pageControl: UIPageControl = {
         let pageControl = UIPageControl()
@@ -165,6 +167,37 @@ extension MediaPreviewViewController {
         if case let .root(root) = viewModel.rootItem {
             pageControl.currentPage = root.initialIndex
         }
+        pageControl.isHidden = viewModel.viewControllers.count == 1
+        
+        mediaInfoDescriptionView.statusActionToolbar.delegate = self
+        
+        if case let .root(root) = viewModel.rootItem {
+            let managedObjectContext = self.context.managedObjectContext
+            managedObjectContext.perform {
+                let tweet = managedObjectContext.object(with: root.tweetObjectID) as! Tweet
+                let targetTweet = tweet.retweet ?? tweet
+                let activeTwitterAuthenticationBox = self.context.authenticationService.activeTwitterAuthenticationBox.value
+                let requestTwitterUserID = activeTwitterAuthenticationBox?.twitterUserID ?? ""
+                MediaPreviewViewController.configure(statusActionToolbar: self.mediaInfoDescriptionView.statusActionToolbar, tweet: targetTweet, requestTwitterUserID: requestTwitterUserID)
+                
+                // observe model change
+                ManagedObjectObserver.observe(object: tweet.retweet ?? tweet)
+                    .receive(on: DispatchQueue.main)
+                    .sink { _ in
+                        // do nothing
+                    } receiveValue: { [weak self] change in
+                        guard let self = self else { return }
+                        guard case let .update(object) = change.changeType,
+                              let newTweet = object as? Tweet else { return }
+                        let targetTweet = newTweet.retweet ?? newTweet
+                        let activeTwitterAuthenticationBox = self.context.authenticationService.activeTwitterAuthenticationBox.value
+                        let requestTwitterUserID = activeTwitterAuthenticationBox?.twitterUserID ?? ""
+                        
+                        MediaPreviewViewController.configure(statusActionToolbar: self.mediaInfoDescriptionView.statusActionToolbar, tweet: targetTweet, requestTwitterUserID: requestTwitterUserID)
+                    }
+                    .store(in: &self.disposeBag)
+            }
+        }
     }
     
     override func viewDidLayoutSubviews() {
@@ -173,6 +206,16 @@ extension MediaPreviewViewController {
         visualEffectView.frame = view.bounds
     }
     
+}
+
+extension MediaPreviewViewController {
+    static func configure(statusActionToolbar: StatusActionToolbar, tweet: Tweet, requestTwitterUserID: TwitterUser.ID) {
+        let isRetweeted = tweet.retweetBy.flatMap({ $0.contains(where: { $0.id == requestTwitterUserID }) }) ?? false
+        statusActionToolbar.retweetButtonHighligh = isRetweeted
+        
+        let isLike = tweet.likeBy.flatMap({ $0.contains(where: { $0.id == requestTwitterUserID }) }) ?? false
+        statusActionToolbar.likeButtonHighlight = isLike
+    }
 }
 
 extension MediaPreviewViewController {
@@ -223,3 +266,6 @@ extension MediaPreviewViewController: PageboyViewControllerDelegate {
     }
 
 }
+
+// MARK: - StatusActionToolbarDelegate
+extension MediaPreviewViewController: StatusActionToolbarDelegate { }

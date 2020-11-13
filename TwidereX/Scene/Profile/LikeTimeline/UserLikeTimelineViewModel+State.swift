@@ -49,6 +49,7 @@ extension UserLikeTimelineViewModel.State {
             snapshot.appendItems([.bottomLoader], toSection: .main)
             viewModel.diffableDataSource?.apply(snapshot)
             
+            let userID = viewModel.userID.value
             viewModel.fetchLatest()
                 .sink { completion in
                     switch completion {
@@ -59,6 +60,7 @@ extension UserLikeTimelineViewModel.State {
                         break
                     }
                 } receiveValue: { response in
+                    guard viewModel.userID.value == userID else { return }
                     let tweetIDs = response.value.map { $0.idStr }
                     viewModel.tweetIDs.value = tweetIDs
                     
@@ -90,6 +92,7 @@ extension UserLikeTimelineViewModel.State {
             super.didEnter(from: previousState)
             guard let viewModel = viewModel, let stateMachine = stateMachine else { return }
             
+            let userID = viewModel.userID.value
             viewModel.loadMore()
                 .sink { completion in
                     switch completion {
@@ -101,6 +104,8 @@ extension UserLikeTimelineViewModel.State {
                         stateMachine.enter(Idle.self)
                     }
                 } receiveValue: { response in
+                    guard viewModel.userID.value == userID else { return }
+                    
                     let oldTweetIDs = viewModel.tweetIDs.value
                     let newTweets = response.value.filter { !oldTweetIDs.contains($0.idStr) }
                     let newTweetIDs = newTweets.map { $0.idStr }

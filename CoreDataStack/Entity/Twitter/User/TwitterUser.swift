@@ -35,6 +35,8 @@ final public class TwitterUser: NSManagedObject {
     @NSManaged public private(set) var metrics: TwitterUserMetrics?
     @NSManaged public private(set) var withheld: TwitteWithheld?
     
+    @NSManaged public private(set) var twitterAuthentication: TwitterAuthentication?
+    
     // one-to-many relationship
     @NSManaged public private(set) var tweets: Set<Tweet>?
     @NSManaged public private(set) var inReplyFrom: Set<Tweet>?

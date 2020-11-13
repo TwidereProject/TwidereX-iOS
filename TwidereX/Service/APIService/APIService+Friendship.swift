@@ -19,9 +19,10 @@ extension APIService {
     
     func friendship(
         twitterUserObjectID: NSManagedObjectID,
-        authorization: Twitter.API.OAuth.Authorization,
-        requestTwitterUserID: TwitterUser.ID
+        twitterAuthenticationBox: AuthenticationService.TwitterAuthenticationBox
     ) -> AnyPublisher<(Twitter.API.Friendships.QueryType, TwitterUser.ID), Error> {
+        let requestTwitterUserID = twitterAuthenticationBox.twitterUserID
+        
         var _targetTwitterUserID: TwitterUser.ID?
         var _queryType: Twitter.API.Friendships.QueryType?
         let managedObjectContext = backgroundManagedObjectContext
@@ -71,7 +72,7 @@ extension APIService {
             case .success:
                 guard let targetTwitterUserID = _targetTwitterUserID,
                       let queryType = _queryType else {
-                    throw APIError.badRequest
+                    throw APIError.silent(.badRequest)
                 }
                 return (queryType, targetTwitterUserID)
                 
@@ -86,9 +87,9 @@ extension APIService {
     func friendship(
         friendshipQueryType: Twitter.API.Friendships.QueryType,
         twitterUserID: TwitterUser.ID,
-        authorization: Twitter.API.OAuth.Authorization,
-        requestTwitterUserID: TwitterUser.ID
+        twitterAuthenticationBox: AuthenticationService.TwitterAuthenticationBox
     ) -> AnyPublisher<Twitter.Response.Content<Twitter.Entity.User>, Error> {
+        let authorization = twitterAuthenticationBox.twitterAuthorization
         let query = Twitter.API.Friendships.Query(
             userID: twitterUserID
         )

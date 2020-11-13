@@ -29,7 +29,6 @@ final class TweetConversationViewModel: NSObject {
     let context: AppContext
     let rootItem: ConversationItem
     let conversationMeta = CurrentValueSubject<ConversationMeta?, Never>(nil)
-    let currentTwitterAuthentication: CurrentValueSubject<TwitterAuthentication?, Never>
     weak var contentOffsetAdjustableTimelineViewControllerDelegate: ContentOffsetAdjustableTimelineViewControllerDelegate?
     weak var tableView: UITableView?
     weak var conversationPostTableViewCellDelegate: ConversationPostTableViewCellDelegate?
@@ -54,12 +53,10 @@ final class TweetConversationViewModel: NSObject {
     }()
     var conversationNodes = CurrentValueSubject<[ConversationNode], Never>([])
     var cellFrameCache = NSCache<NSNumber, NSValue>()
-
     
     init(context: AppContext, tweetObjectID: NSManagedObjectID) {
         self.context = context
         self.rootItem = .root(tweetObjectID: tweetObjectID)
-        self.currentTwitterAuthentication = CurrentValueSubject(context.authenticationService.currentActiveTwitterAutentication.value)
         super.init()
         
         conversationNodes
@@ -172,19 +169,23 @@ extension TweetConversationViewModel {
             switch item {
             case .root(let objectID):
                 let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: ConversationPostTableViewCell.self), for: indexPath) as! ConversationPostTableViewCell
+                let activeTwitterAuthenticationBox = self.context.authenticationService.activeTwitterAuthenticationBox.value
+                let requestTwitterUserID = activeTwitterAuthenticationBox?.twitterUserID ?? ""
                 let managedObjectContext = self.context.managedObjectContext
                 managedObjectContext.performAndWait {
                     let tweet = managedObjectContext.object(with: objectID) as! Tweet
-                    TweetConversationViewModel.configure(cell: cell, tweet: tweet)
+                    TweetConversationViewModel.configure(cell: cell, readableLayoutFrame: tableView.readableContentGuide.layoutFrame, tweet: tweet, requestUserID: requestTwitterUserID)
                 }
                 cell.delegate = self.conversationPostTableViewCellDelegate
                 return cell
             case .leaf(let objectID, let attribute):
                 let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: TimelinePostTableViewCell.self), for: indexPath) as! TimelinePostTableViewCell
+                let twitterAuthenticationBox = self.context.authenticationService.activeTwitterAuthenticationBox.value
+                let requestUserID = twitterAuthenticationBox?.twitterUserID ?? ""
                 let managedObjectContext = self.context.managedObjectContext
                 managedObjectContext.performAndWait {
                     let tweet = managedObjectContext.object(with: objectID) as! Tweet
-                    TweetConversationViewModel.configure(cell: cell, tweet: tweet, requestUserID: self.currentTwitterAuthentication.value?.userID ?? "")
+                    TweetConversationViewModel.configure(cell: cell, readableLayoutFrame: tableView.readableContentGuide.layoutFrame, tweet: tweet, requestUserID: requestUserID)
                 }
                 cell.conversationLinkUpper.isHidden = attribute.level == 0
                 cell.conversationLinkLower.isHidden = !attribute.hasReply || attribute.level != 0
@@ -204,7 +205,7 @@ extension TweetConversationViewModel {
         diffableDataSource?.apply(snapshot)
     }
     
-    static func configure(cell: ConversationPostTableViewCell, tweet: Tweet) {
+    static func configure(cell: ConversationPostTableViewCell, readableLayoutFrame: CGRect? = nil, tweet: Tweet, requestUserID: String) {
         // set avatar
         if let avatarImageURL = tweet.author.avatarImageURL() {
             let placeholderImage = UIImage
@@ -230,6 +231,47 @@ extension TweetConversationViewModel {
 
         // set text
         cell.conversationPostView.activeTextLabel.text = tweet.text
+        
+        // set image display
+        let media = Array(tweet.media ?? []).sorted { $0.index.compare($1.index) == .orderedAscending }
+        let mosiacImageViewModel = MosaicImageViewModel(twitterMedia: media)
+
+        let maxSize: CGSize = {
+            let maxWidth: CGFloat = {
+                // use timelinePostView width as container width
+                // that width follows readable width and keep constant width after rotate
+                let containerFrame = readableLayoutFrame ?? cell.conversationPostView.frame
+                let containerWidth = containerFrame.width
+                return containerWidth
+            }()
+            let scale: CGFloat = {
+                switch mosiacImageViewModel.metas.count {
+                case 1:     return 1.3
+                default:    return 0.7
+                }
+            }()
+            return CGSize(width: maxWidth, height: maxWidth * scale)
+        }()
+        if mosiacImageViewModel.metas.count == 1 {
+            let meta = mosiacImageViewModel.metas[0]
+            let imageView = cell.conversationPostView.mosaicImageView.setupImageView(aspectRatio: meta.size, maxSize: maxSize)
+            imageView.af.setImage(
+                withURL: meta.url,
+                placeholderImage: UIImage.placeholder(color: .systemFill),
+                imageTransition: .crossDissolve(0.2)
+            )
+        } else {
+            let imageViews = cell.conversationPostView.mosaicImageView.setupImageViews(count: mosiacImageViewModel.metas.count, maxHeight: maxSize.height)
+            for (i, imageView) in imageViews.enumerated() {
+                let meta = mosiacImageViewModel.metas[i]
+                imageView.af.setImage(
+                    withURL: meta.url,
+                    placeholderImage: UIImage.placeholder(color: .systemFill),
+                    imageTransition: .crossDissolve(0.2)
+                )
+            }
+        }
+        cell.conversationPostView.mosaicImageView.isHidden = mosiacImageViewModel.metas.isEmpty
         
         // set quote
         let quote = tweet.quote
@@ -297,10 +339,36 @@ extension TweetConversationViewModel {
         
         // set source
         cell.conversationPostView.sourceLabel.text = tweet.source
+        
+        // set action toolbar title
+        let isRetweeted = (tweet.retweet ?? tweet).retweetBy.flatMap({ $0.contains(where: { $0.id == requestUserID }) }) ?? false
+        cell.conversationPostView.actionToolbar.retweetButton.isEnabled = !(tweet.retweet ?? tweet).author.protected
+        cell.conversationPostView.actionToolbar.retweetButtonHighligh = isRetweeted
+
+        let isLike = (tweet.retweet ?? tweet).likeBy.flatMap({ $0.contains(where: { $0.id == requestUserID }) }) ?? false
+        cell.conversationPostView.actionToolbar.likeButtonHighlight = isLike
+        
+        // observe model change
+        ManagedObjectObserver.observe(object: tweet.retweet ?? tweet)
+            .receive(on: DispatchQueue.main)
+            .sink { _ in
+                // do nothing
+            } receiveValue: { change in
+                guard case let .update(object) = change.changeType,
+                      let newTweet = object as? Tweet else { return }
+                let targetTweet = newTweet.retweet ?? newTweet
+                
+                let isRetweeted = targetTweet.retweetBy.flatMap({ $0.contains(where: { $0.id == requestUserID }) }) ?? false
+                cell.conversationPostView.actionToolbar.retweetButtonHighligh = isRetweeted
+
+                let isLike = targetTweet.likeBy.flatMap({ $0.contains(where: { $0.id == requestUserID }) }) ?? false
+                cell.conversationPostView.actionToolbar.likeButtonHighlight = isLike
+            }
+            .store(in: &cell.disposeBag)
     }
     
-    static func configure(cell: TimelinePostTableViewCell, tweet: Tweet, requestUserID: String) {
-        HomeTimelineViewModel.configure(cell: cell, tweet: tweet, requestUserID: requestUserID)
+    static func configure(cell: TimelinePostTableViewCell, readableLayoutFrame: CGRect? = nil, tweet: Tweet, requestUserID: String) {
+        HomeTimelineViewModel.configure(cell: cell, readableLayoutFrame: readableLayoutFrame, tweet: tweet, requestUserID: requestUserID)
     }
     
 }

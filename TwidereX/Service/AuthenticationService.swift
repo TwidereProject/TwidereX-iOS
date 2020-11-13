@@ -19,21 +19,25 @@ class AuthenticationService: NSObject {
     
     // input
     weak var apiService: APIService?
-    let managedObjectContext: NSManagedObjectContext
-    let twitterAuthenticationFetchedResultsController: NSFetchedResultsController<TwitterAuthentication>
-    let twitterUserFetchedResultsController: NSFetchedResultsController<TwitterUser>
-
+    let managedObjectContext: NSManagedObjectContext    // read-only
+    let backgroundManagedObjectContext: NSManagedObjectContext
+    let authenticationIndexFetchedResultsController: NSFetchedResultsController<AuthenticationIndex>
 
     // output
-    let twitterAuthentications = CurrentValueSubject<[TwitterAuthentication], Never>([])
-    let currentActiveTwitterAutentication = CurrentValueSubject<TwitterAuthentication?, Never>(nil)
-    let currentTwitterUser = CurrentValueSubject<TwitterUser?, Never>(nil)
+    let authenticationIndexes = CurrentValueSubject<[AuthenticationIndex], Never>([])
+    let activeAuthenticationIndex = CurrentValueSubject<AuthenticationIndex?, Never>(nil)
+    let activeTwitterAuthenticationBox = CurrentValueSubject<AuthenticationService.TwitterAuthenticationBox?, Never>(nil)
 
-    init(managedObjectContext: NSManagedObjectContext, apiService: APIService) {
+    init(
+        managedObjectContext: NSManagedObjectContext,
+        backgroundManagedObjectContext: NSManagedObjectContext,
+        apiService: APIService
+    ) {
         self.managedObjectContext = managedObjectContext
+        self.backgroundManagedObjectContext = backgroundManagedObjectContext
         self.apiService = apiService
-        self.twitterAuthenticationFetchedResultsController = {
-            let fetchRequest = TwitterAuthentication.sortedFetchRequest
+        self.authenticationIndexFetchedResultsController = {
+            let fetchRequest = AuthenticationIndex.sortedFetchRequest
             fetchRequest.returnsObjectsAsFaults = false
             fetchRequest.fetchBatchSize = 20
             let controller = NSFetchedResultsController(
@@ -42,50 +46,32 @@ class AuthenticationService: NSObject {
                 sectionNameKeyPath: nil,
                 cacheName: nil
             )
-            
-            return controller
-        }()
-        self.twitterUserFetchedResultsController = {
-            let fetchRequest = TwitterUser.sortedFetchRequest
-            fetchRequest.returnsObjectsAsFaults = false
-            fetchRequest.fetchLimit = 1
-            let controller = NSFetchedResultsController(
-                fetchRequest: fetchRequest,
-                managedObjectContext: managedObjectContext,
-                sectionNameKeyPath: nil,
-                cacheName: nil
-            )
-            
             return controller
         }()
         super.init()
-        
-        twitterAuthenticationFetchedResultsController.delegate = self
-        twitterUserFetchedResultsController.delegate = self
-        
+
+        authenticationIndexFetchedResultsController.delegate = self
+
         // verify credentials for active authentication
-        twitterAuthentications
-            .filter { !$0.isEmpty }
-            .map { authentications -> AnyPublisher<Result<Twitter.Response.Content<Twitter.Entity.User>?, Error>, Never> in
-                assert(self.apiService != nil)
-                guard let apiService = self.apiService,
-                      let authentication = authentications.first,
-                      let authorization = try? authentication.authorization(appSecret: AppSecret.shared) else {
+        activeAuthenticationIndex
+            .map { [weak self] activeAuthenticationIndex -> AnyPublisher<Result<Twitter.Response.Content<Twitter.Entity.User>?, Error>, Never> in
+                guard let self = self,
+                      let activeAuthenticationIndex = activeAuthenticationIndex,
+                      let apiService = self.apiService,
+                      let twitterAuthentication = activeAuthenticationIndex.twitterAuthentication,
+                      let authorization = try? twitterAuthentication.authorization(appSecret: AppSecret.shared) else {
                     return Just(Result.success(nil)).eraseToAnyPublisher()
                 }
                 
-                // prevent terminate stream
-                let result: AnyPublisher<Result<Twitter.Response.Content<Twitter.Entity.User>?, Error>, Never> = Just(authorization)
-                    .flatMap { authorization in
+                return Just(authorization)
+                    .flatMap { authorization -> AnyPublisher<Result<Twitter.Response.Content<Twitter.Entity.User>?, Error>, Never> in
                         // send request
                         apiService.verifyCredentials(authorization: authorization)
-                        .map { response in Result.success(response) }
-                        .catch { error in Just(Result.failure(error)) }
-                        .eraseToAnyPublisher()
+                            .map { response in Result.success(response) }
+                            .catch { error in Just(Result.failure(error)) }
+                            .eraseToAnyPublisher()
                     }
                     .eraseToAnyPublisher()
-                
-                return result
             }
             .switchToLatest()
             .eraseToAnyPublisher()
@@ -99,78 +85,96 @@ class AuthenticationService: NSObject {
                 }
             }
             .store(in: &disposeBag)
-        
-        // setup publisher
-        currentActiveTwitterAutentication
-            .sink(receiveValue: { [weak self] authentication in
-                guard let self = self else { return }
-                guard let authentication = authentication else { return }
-                
-                self.twitterUserFetchedResultsController.fetchRequest.predicate = TwitterUser.predicate(idStr: authentication.userID)
-                do {
-                    try self.twitterUserFetchedResultsController.performFetch()
-                    self.updateCurrentTwitterUser()
-                } catch {
-                    assertionFailure(error.localizedDescription)
-                }
-            })
+
+        // bind data
+        authenticationIndexes
+            .map { $0.sorted(by: { $0.activedAt > $1.activedAt }).first }
+            .assign(to: \.value, on: activeAuthenticationIndex)
             .store(in: &disposeBag)
         
-        // bind input
-        twitterAuthentications
-            .map { $0.first }
-            .assign(to: \.value, on: currentActiveTwitterAutentication)
+        activeAuthenticationIndex
+            .map { activeAuthenticationIndex -> AuthenticationService.TwitterAuthenticationBox? in
+                guard let activeAuthenticationIndex = activeAuthenticationIndex else  { return nil }
+                guard let twitterAuthentication = activeAuthenticationIndex.twitterAuthentication else { return nil }
+                guard let authorization = try? twitterAuthentication.authorization(appSecret: .shared) else { return nil }
+                return AuthenticationService.TwitterAuthenticationBox(
+                    authenticationIndexObjectID: activeAuthenticationIndex.objectID,
+                    twitterUserID: twitterAuthentication.userID,
+                    twitterAuthorization: authorization
+                )
+            }
+            .assign(to: \.value, on: activeTwitterAuthenticationBox)
             .store(in: &disposeBag)
 
-        
         do {
-            try twitterAuthenticationFetchedResultsController.performFetch()
-            updateTwitterAuthentications()
+            try authenticationIndexFetchedResultsController.performFetch()
+            authenticationIndexes.value = authenticationIndexFetchedResultsController.fetchedObjects ?? []
         } catch {
             assertionFailure(error.localizedDescription)
         }
     }
+    
 }
 
 extension AuthenticationService {
-    func updateTwitterAuthentications() {
-        let authentications = (twitterAuthenticationFetchedResultsController.fetchedObjects ?? [])
-            .filter { (try? $0.authorization(appSecret: AppSecret.shared)) != nil }
-            .sorted { lh, rh -> Bool in
-                guard let leftActiveAt = lh.activeAt else { return false }
-                guard let rightActiveAt = rh.activeAt else { return true }
-                return leftActiveAt > rightActiveAt
-            }
-        self.twitterAuthentications.value = authentications
+    
+    struct TwitterAuthenticationBox {
+        let authenticationIndexObjectID: NSManagedObjectID
+        let twitterUserID: TwitterUser.ID
+        let twitterAuthorization: Twitter.API.OAuth.Authorization
+    }
+
+}
+
+extension AuthenticationService {
+    
+    func activeTwitterUser(id: TwitterUser.ID) -> AnyPublisher<Result<Bool, Error>, Never> {
+        var isActived = false
+        
+        return backgroundManagedObjectContext.performChanges {
+            let request = TwitterAuthentication.sortedFetchRequest
+            let twitterAutentications = try? self.backgroundManagedObjectContext.fetch(request)
+            guard let activeTwitterAutentication = (twitterAutentications ?? []).first(where: { $0.userID == id }) else { return }
+            guard let authenticationIndex = activeTwitterAutentication.authenticationIndex else { return }
+            authenticationIndex.update(activedAt: Date())
+            isActived = true
+        }
+        .map { result in
+            return result.map { isActived }
+        }
+        .eraseToAnyPublisher()
     }
     
-    func updateCurrentTwitterUser() {
-        guard twitterUserFetchedResultsController.fetchRequest.predicate != nil else {
-            self.currentTwitterUser.value = nil
-            return
+    func signOutTwitterUser(id: TwitterUser.ID) -> AnyPublisher<Result<Bool, Error>, Never> {
+        var isSignOut = false
+        
+        return backgroundManagedObjectContext.performChanges {
+            let request = TwitterAuthentication.sortedFetchRequest
+            let twitterAutentications = try? self.backgroundManagedObjectContext.fetch(request)
+            guard let deleteTwitterAutentication = (twitterAutentications ?? []).first(where: { $0.userID == id }) else { return }
+            guard let authenticationIndex = deleteTwitterAutentication.authenticationIndex else { return }
+            self.backgroundManagedObjectContext.delete(authenticationIndex)
+            self.backgroundManagedObjectContext.delete(deleteTwitterAutentication)
+            isSignOut = true
         }
-        let twitterUser = twitterUserFetchedResultsController.fetchedObjects?.first
-        if self.currentTwitterUser.value != twitterUser {
-            self.currentTwitterUser.value = twitterUser
+        .map { result in
+            return result.map { isSignOut }
         }
+        .eraseToAnyPublisher()
     }
+    
 }
 
 // MARK: - NSFetchedResultsControllerDelegate
 extension AuthenticationService: NSFetchedResultsControllerDelegate {
     
     func controllerWillChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
-        // os_log("%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
+         os_log("%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
     }
-    
+
     func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
-        if controller === twitterAuthenticationFetchedResultsController {
-            os_log("%{public}s[%{public}ld], %{public}s: fetch %ld TwitterAuthentication", ((#file as NSString).lastPathComponent), #line, #function, controller.fetchedObjects?.count ?? 0)
-            updateTwitterAuthentications()
-        }
-        if controller === twitterUserFetchedResultsController {
-            // os_log("%{public}s[%{public}ld], %{public}s: fetch %ld TwitterUser", ((#file as NSString).lastPathComponent), #line, #function, controller.fetchedObjects?.count ?? 0)
-            updateCurrentTwitterUser()
+        if controller === authenticationIndexFetchedResultsController {
+            authenticationIndexes.value = authenticationIndexFetchedResultsController.fetchedObjects ?? []
         }
     }
     

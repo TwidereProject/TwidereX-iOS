@@ -24,13 +24,15 @@ extension APIService {
     func twitterHomeTimeline(
         count: Int = 200,
         maxID: String? = nil,
-        authorization: Twitter.API.OAuth.Authorization,
-        requestTwitterUserID: TwitterUser.ID
-    ) -> AnyPublisher<Twitter.Response.Content<[Twitter.Entity.Tweet]>, Error> {    
+        twitterAuthenticationBox: AuthenticationService.TwitterAuthenticationBox
+    ) -> AnyPublisher<Twitter.Response.Content<[Twitter.Entity.Tweet]>, Error> {
+        let authorization = twitterAuthenticationBox.twitterAuthorization
+        let requestTwitterUserID = twitterAuthenticationBox.twitterUserID
+        
         // throttle latest request for API limit
         if maxID == nil {
             guard homeTimelineRequestThrottler.available(windowSizeInSec: APIService.homeTimelineRequestWindowInSec) else {
-                return Fail(error: APIError.requestThrottle)
+                return Fail(error: APIError.silent(.requestThrottle))
                     .delay(for: .milliseconds(Int.random(in: 200..<1000)), scheduler: DispatchQueue.main)
                     .eraseToAnyPublisher()
             }
@@ -83,6 +85,17 @@ extension APIService {
                 .eraseToAnyPublisher()
             }
             .switchToLatest()
+            .handleEvents(receiveCompletion: { [weak self] completion in
+                guard let self = self else { return }
+                switch completion {
+                case .failure(let error):
+                    if case let Twitter.API.APIError.response(code, _) = error, code == 326 {
+                        self.error.value = APIService.APIError.accountTemporarilyLocked
+                    }
+                case .finished:
+                    break
+                }
+            })
             .eraseToAnyPublisher()
     }
     

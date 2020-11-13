@@ -9,6 +9,13 @@
 import os.log
 import UIKit
 import Combine
+import AlamofireImage
+
+final class HeightFixedSearchBar: UISearchBar {
+    override var intrinsicContentSize: CGSize {
+        return CGSize(width: CGFloat.greatestFiniteMagnitude, height: 44)
+    }
+}
 
 final class SearchViewController: UIViewController, NeedsDependency {
     
@@ -19,8 +26,10 @@ final class SearchViewController: UIViewController, NeedsDependency {
 
     var disposeBag = Set<AnyCancellable>()
     
+    let avatarButton = UIButton.avatarButton
+
     let searchBar: UISearchBar = {
-        let searchBar = UISearchBar()
+        let searchBar = HeightFixedSearchBar()
         searchBar.placeholder = "Search tweets or users"
         return searchBar
     }()
@@ -33,10 +42,9 @@ extension SearchViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "person"), style: .plain, target: nil, action: nil)
-        
+        navigationItem.leftBarButtonItem = UIBarButtonItem(customView: avatarButton)
         setupSearchBar()
-        
+
         searchBarTapPublisher
 //            .receive(on: DispatchQueue.main)
 //            .debounce(for: .seconds(1), scheduler: DispatchQueue.main)
@@ -48,6 +56,26 @@ extension SearchViewController {
                 self.coordinator.present(scene: .searchDetail(viewModel: searchDetailViewModel), from: self, transition: .customPush)
             }
             .store(in: &disposeBag)
+        context.authenticationService.activeAuthenticationIndex
+            .sink { [weak self] activeAuthenticationIndex in
+                guard let self = self else { return }
+                let placeholderImage = UIImage
+                    .placeholder(size: UIButton.avatarButtonSize, color: .systemFill)
+                    .af.imageRoundedIntoCircle()
+                guard let twitterUser = activeAuthenticationIndex?.twitterAuthentication?.twitterUser,
+                      let avatarImageURL = twitterUser.avatarImageURL() else {
+                    self.avatarButton.setImage(placeholderImage, for: .normal)
+                    return
+                }
+                let filter = ScaledToSizeCircleFilter(size: UIButton.avatarButtonSize)
+                self.avatarButton.af.setImage(
+                    for: .normal,
+                    url: avatarImageURL,
+                    placeholderImage: placeholderImage,
+                    filter: filter
+                )
+            }
+            .store(in: &disposeBag)
     }
     
 }
@@ -55,13 +83,19 @@ extension SearchViewController {
 extension SearchViewController {
 
     private func setupSearchBar() {
-        navigationItem.titleView = searchBar
+        let searchBarContainerView = UIView()
+        searchBar.translatesAutoresizingMaskIntoConstraints = false
+        searchBarContainerView.addSubview(searchBar)
+        NSLayoutConstraint.activate([
+            searchBar.topAnchor.constraint(equalTo: searchBarContainerView.topAnchor),
+            searchBar.leadingAnchor.constraint(equalTo: searchBarContainerView.leadingAnchor),
+            searchBar.trailingAnchor.constraint(equalTo: searchBarContainerView.trailingAnchor),
+            searchBar.bottomAnchor.constraint(equalTo: searchBarContainerView.bottomAnchor),
+        ])
         searchBar.delegate = self
+        
+        navigationItem.titleView = searchBarContainerView
     }
-
-}
-
-extension SearchViewController {
 
 }
 

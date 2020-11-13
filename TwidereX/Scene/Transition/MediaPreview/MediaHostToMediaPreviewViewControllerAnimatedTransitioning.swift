@@ -93,7 +93,7 @@ extension MediaHostToMediaPreviewViewControllerAnimatedTransitioning {
 //        switch operation {
 //        case .pop:
 //            animator = popTransition(using: transitionContext, curve: .linear)
-//            panGestureRecognizer.addTarget(self, action: #selector(MediaHostToMediaPreviewViewControllerAnimatedTransitioning.dismissalPan(_:)))
+//            panGestureRecognizer.addTarget(self, action: #selector(MediaHostToMediaPreviewViewControllerAnimatedTransitioning.dismisslPan(_:)))
 //
 //        default:
 //            assertionFailure()

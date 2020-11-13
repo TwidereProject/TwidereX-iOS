@@ -3,6 +3,7 @@
 //  TwidereX
 //
 //  Created by Cirno MainasuK on 2020-9-1.
+//  Copyright © 2020 Twidere. All rights reserved.
 //
 
 import os.log
@@ -12,15 +13,21 @@ import CoreData
 import CoreDataStack
 import TwitterAPI
 import Floaty
+import AlamofireImage
 
-final class HomeTimelineViewController: UIViewController, NeedsDependency {
+final class HomeTimelineViewController: UIViewController, NeedsDependency, DrawerSidebarTransitionableViewController, MediaPreviewableViewController {
     
     weak var context: AppContext! { willSet { precondition(!isViewLoaded) } }
     weak var coordinator: SceneCoordinator! { willSet { precondition(!isViewLoaded) } }
     
     var disposeBag = Set<AnyCancellable>()
     private(set) lazy var viewModel = HomeTimelineViewModel(context: context)
-    private let mediaPreviewTransitionController = MediaPreviewTransitionController()
+    
+    private(set) var drawerSidebarTransitionController: DrawerSidebarTransitionController!
+    let mediaPreviewTransitionController = MediaPreviewTransitionController()
+    
+    let avatarButton = UIButton.avatarButton
+    lazy var avatarBarButtonItem = UIBarButtonItem(customView: avatarButton)
     
     lazy var tableView: UITableView = {
         let tableView = ControlContainableTableView()
@@ -33,6 +40,7 @@ final class HomeTimelineViewController: UIViewController, NeedsDependency {
     }()
     
     let refreshControl = UIRefreshControl()
+    
     private lazy var floatyButton: Floaty = {
         let button = Floaty()
         button.plusColor = .white
@@ -59,7 +67,10 @@ extension HomeTimelineViewController {
         super.viewDidLoad()
         
         view.backgroundColor = .systemBackground
+        navigationItem.leftBarButtonItem = avatarBarButtonItem
+        avatarButton.addTarget(self, action: #selector(HomeTimelineViewController.avatarButtonPressed(_:)), for: .touchUpInside)
         
+        drawerSidebarTransitionController = DrawerSidebarTransitionController(drawerSidebarTransitionableViewController: self)
         tableView.refreshControl = refreshControl
         refreshControl.addTarget(self, action: #selector(HomeTimelineViewController.refreshControlValueChanged(_:)), for: .valueChanged)
         
@@ -122,22 +133,34 @@ extension HomeTimelineViewController {
         viewModel.timelinePostTableViewCellDelegate = self
         viewModel.timelineMiddleLoaderTableViewCellDelegate = self
         viewModel.setupDiffableDataSource(for: tableView)
-        do {
-            try viewModel.fetchedResultsController.performFetch()
-        } catch {
-            assertionFailure(error.localizedDescription)
-        }
+        context.authenticationService.activeAuthenticationIndex
+            .sink { [weak self] activeAuthenticationIndex in
+                guard let self = self else { return }
+                let predicate: NSPredicate
+                if let activeAuthenticationIndex = activeAuthenticationIndex {
+                    let userID = activeAuthenticationIndex.twitterAuthentication?.twitterUser?.id ?? ""
+                    predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [
+                        TimelineIndex.predicate(platform: .twitter),
+                        TimelineIndex.predicate(userID: userID),
+                    ])
+                } else {
+                    // use invalid predicate
+                    predicate = TimelineIndex.predicate(userID: "")
+                }
+                self.viewModel.fetchedResultsController.fetchRequest.predicate = predicate
+                do {
+                    self.viewModel.diffableDataSource?.defaultRowAnimation = .fade
+                    try self.viewModel.fetchedResultsController.performFetch()
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+                        self.viewModel.diffableDataSource?.defaultRowAnimation = .automatic
+                    }
+                } catch {
+                    assertionFailure(error.localizedDescription)
+                }
+            }
+            .store(in: &disposeBag)
         tableView.delegate = self
         tableView.dataSource = viewModel.diffableDataSource
-        
-        // bind view model
-        context.authenticationService.twitterAuthentications
-            .map { $0.first }
-            .assign(to: \.value, on: viewModel.currentTwitterAuthentication)
-            .store(in: &disposeBag)
-        context.authenticationService.currentTwitterUser
-            .assign(to: \.value, on: viewModel.currentTwitterUser)
-            .store(in: &disposeBag)
         
         // bind refresh control
         viewModel.isFetchingLatestTimeline
@@ -146,6 +169,26 @@ extension HomeTimelineViewController {
                 if !isFetching {
                     self.refreshControl.endRefreshing()
                 }
+            }
+            .store(in: &disposeBag)
+        context.authenticationService.activeAuthenticationIndex
+            .sink { [weak self] activeAuthenticationIndex in
+                guard let self = self else { return }
+                let placeholderImage = UIImage
+                    .placeholder(size: UIButton.avatarButtonSize, color: .systemFill)
+                    .af.imageRoundedIntoCircle()
+                guard let twitterUser = activeAuthenticationIndex?.twitterAuthentication?.twitterUser,
+                      let avatarImageURL = twitterUser.avatarImageURL() else {
+                    self.avatarButton.setImage(placeholderImage, for: .normal)
+                    return
+                }
+                let filter = ScaledToSizeCircleFilter(size: UIButton.avatarButtonSize)
+                self.avatarButton.af.setImage(
+                    for: .normal,
+                    url: avatarImageURL,
+                    placeholderImage: placeholderImage,
+                    filter: filter
+                )
             }
             .store(in: &disposeBag)
     }
@@ -188,6 +231,11 @@ extension HomeTimelineViewController {
 
 extension HomeTimelineViewController {
     
+    @objc private func avatarButtonPressed(_ sender: UIButton) {
+        os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
+        coordinator.present(scene: .drawerSidebar, from: self, transition: .custom(transitioningDelegate: drawerSidebarTransitionController))
+    }
+    
     @objc private func refreshControlValueChanged(_ sender: UIRefreshControl) {
         guard viewModel.loadLatestStateMachine.enter(HomeTimelineViewModel.LoadLatestState.Loading.self) else {
             sender.endRefreshing()
@@ -222,8 +270,8 @@ extension HomeTimelineViewController {
         let item = snapshot.itemIdentifiers.first(where: { item in
             switch item {
             case .homeTimelineIndex(let objectID, _):
-                let timelineIndex = viewModel.fetchedResultsController.managedObjectContext.object(with: objectID) as! TimelineIndex
-                guard let targetTweet = (timelineIndex.tweet?.retweet ?? timelineIndex.tweet) else { return false }
+                let tweet = viewModel.fetchedResultsController.managedObjectContext.object(with: objectID) as! TimelineIndex
+                guard let targetTweet = (tweet.tweet?.retweet ?? tweet.tweet) else { return false }
                 return targetTweet.author.protected
             default:
                 return false
@@ -242,8 +290,8 @@ extension HomeTimelineViewController {
         let item = snapshot.itemIdentifiers.first(where: { item in
             switch item {
             case .homeTimelineIndex(let objectID, _):
-                let timelineIndex = viewModel.fetchedResultsController.managedObjectContext.object(with: objectID) as! TimelineIndex
-                guard let targetTweet = (timelineIndex.tweet) else { return false }
+                let tweet = viewModel.fetchedResultsController.managedObjectContext.object(with: objectID) as! TimelineIndex
+                guard let targetTweet = (tweet.tweet) else { return false }
                 return targetTweet.author.protected
             default:
                 return false
@@ -347,24 +395,7 @@ extension HomeTimelineViewController: UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        os_log("%{public}s[%{public}ld], %{public}s: indexPath %s", ((#file as NSString).lastPathComponent), #line, #function, indexPath.debugDescription)
-        
-        guard let diffableDataSource = viewModel.diffableDataSource else { return }
-        guard let item = diffableDataSource.itemIdentifier(for: indexPath) else { return }
-
-        switch item {
-        case .homeTimelineIndex(let objectID, _):
-            let managedObjectContext = self.viewModel.fetchedResultsController.managedObjectContext
-            managedObjectContext.performAndWait {
-                guard let timelineIndex = managedObjectContext.object(with: objectID) as? TimelineIndex else { return }
-                guard let tweet = timelineIndex.tweet?.retweet ?? timelineIndex.tweet else { return }
-                
-                let tweetPostViewModel = TweetConversationViewModel(context: self.context, tweetObjectID: tweet.objectID)
-                self.coordinator.present(scene: .tweetConversation(viewModel: tweetPostViewModel), from: self, transition: .show)
-            }
-        default:
-            return
-        }
+        handleTableView(tableView, didSelectRowAt: indexPath)
     }
     
     func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
@@ -385,304 +416,6 @@ extension HomeTimelineViewController: ContentOffsetAdjustableTimelineViewControl
     }
 }
 
-extension HomeTimelineViewController {
-    
-}
-
-// MARK: - TimelinePostTableViewCellDelegate
-extension HomeTimelineViewController: TimelinePostTableViewCellDelegate {
-    
-    func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, retweetInfoLabelDidPressed label: UILabel) {
-        guard let diffableDataSource = viewModel.diffableDataSource else { return }
-        guard let indexPath = tableView.indexPath(for: cell) else { return }
-        guard let item = diffableDataSource.itemIdentifier(for: indexPath) else { return }
-        
-        switch item {
-        case .homeTimelineIndex(let objectID, _):
-            let managedObjectContext = self.viewModel.fetchedResultsController.managedObjectContext
-            managedObjectContext.performAndWait {
-                guard let timelineIndex = managedObjectContext.object(with: objectID) as? TimelineIndex else { return }
-                guard let tweet = timelineIndex.tweet else { return }
-                let twitterUser = tweet.author
-                let profileViewModel = ProfileViewModel(twitterUser: twitterUser)
-                self.context.authenticationService.currentTwitterUser
-                    .assign(to: \.value, on: profileViewModel.currentTwitterUser).store(in: &profileViewModel.disposeBag)
-                self.coordinator.present(scene: .profile(viewModel: profileViewModel), from: self, transition: .show)
-            }
-        default:
-            return
-        }
-    }
-    
-    func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, avatarImageViewDidPressed imageView: UIImageView) {
-        guard let diffableDataSource = viewModel.diffableDataSource else { return }
-        guard let indexPath = tableView.indexPath(for: cell) else { return }
-        guard let item = diffableDataSource.itemIdentifier(for: indexPath) else { return }
-        
-        switch item {
-        case .homeTimelineIndex(let objectID, _):
-            let managedObjectContext = self.viewModel.fetchedResultsController.managedObjectContext
-            managedObjectContext.performAndWait {
-                guard let timelineIndex = managedObjectContext.object(with: objectID) as? TimelineIndex else { return }
-                guard let tweet = timelineIndex.tweet?.retweet ?? timelineIndex.tweet else { return }
-                let twitterUser = tweet.author
-                let profileViewModel = ProfileViewModel(twitterUser: twitterUser)
-                self.context.authenticationService.currentTwitterUser
-                    .assign(to: \.value, on: profileViewModel.currentTwitterUser).store(in: &profileViewModel.disposeBag)
-                self.coordinator.present(scene: .profile(viewModel: profileViewModel), from: self, transition: .show)
-            }
-        default:
-            return
-        }
-    }
-    
-    func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, quoteAvatarImageViewDidPressed imageView: UIImageView) {
-        guard let diffableDataSource = viewModel.diffableDataSource else { return }
-        guard let indexPath = tableView.indexPath(for: cell) else { return }
-        guard let item = diffableDataSource.itemIdentifier(for: indexPath) else { return }
-        
-        switch item {
-        case .homeTimelineIndex(let objectID, _):
-            let managedObjectContext = self.viewModel.fetchedResultsController.managedObjectContext
-            managedObjectContext.performAndWait {
-                guard let timelineIndex = managedObjectContext.object(with: objectID) as? TimelineIndex else { return }
-                guard let tweet = timelineIndex.tweet?.retweet?.quote ?? timelineIndex.tweet?.quote else { return }
-                let twitterUser = tweet.author
-                let profileViewModel = ProfileViewModel(twitterUser: twitterUser)
-                self.context.authenticationService.currentTwitterUser
-                    .assign(to: \.value, on: profileViewModel.currentTwitterUser).store(in: &profileViewModel.disposeBag)
-                self.coordinator.present(scene: .profile(viewModel: profileViewModel), from: self, transition: .show)
-            }
-        default:
-            return
-        }
-    }
-    
-    // MARK: - ActionToolbar
-    
-    func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, actionToolbar: TimelinePostActionToolbar, replayButtonDidPressed sender: UIButton) {
-        // retrieve target tweet infos
-        guard let diffableDataSource = viewModel.diffableDataSource else { return }
-        guard let indexPath = tableView.indexPath(for: cell) else { return }
-        guard let timelineItem = diffableDataSource.itemIdentifier(for: indexPath) else { return }
-        guard case let .homeTimelineIndex(timelineIndexObjectID, _) = timelineItem else { return }
-        let timelineIndex = viewModel.fetchedResultsController.managedObjectContext.object(with: timelineIndexObjectID) as! TimelineIndex
-        guard let tweet = (timelineIndex.tweet?.retweet ?? timelineIndex.tweet) else { return }
-        let tweetObjectID = tweet.objectID
-        
-        let composeTweetViewModel = ComposeTweetViewModel(context: context, repliedTweetObjectID: tweetObjectID)
-        coordinator.present(scene: .composeTweet(viewModel: composeTweetViewModel), from: self, transition: .modal(animated: true, completion: nil))
-    }
-    
-    func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, actionToolbar: TimelinePostActionToolbar, retweetButtonDidPressed sender: UIButton) {
-        // prepare authentication
-        guard let twitterAuthentication = viewModel.currentTwitterAuthentication.value,
-              let authorization = try? twitterAuthentication.authorization(appSecret: AppSecret.shared) else {
-            assertionFailure()
-            return
-        }
-        
-        // prepare current user infos
-        guard let _currentTwitterUser = context.authenticationService.currentTwitterUser.value else {
-            assertionFailure()
-            return
-        }
-        let twitterUserID = twitterAuthentication.userID
-        assert(_currentTwitterUser.id == twitterUserID)
-        let twitterUserObjectID = _currentTwitterUser.objectID
-        
-        // retrieve target tweet infos
-        guard let diffableDataSource = viewModel.diffableDataSource else { return }
-        guard let indexPath = tableView.indexPath(for: cell) else { return }
-        guard let timelineItem = diffableDataSource.itemIdentifier(for: indexPath) else { return }
-        guard case let .homeTimelineIndex(timelineIndexObjectID, _) = timelineItem else { return }
-        let timelineIndex = viewModel.fetchedResultsController.managedObjectContext.object(with: timelineIndexObjectID) as! TimelineIndex
-        guard let tweet = timelineIndex.tweet else { return }
-        let tweetObjectID = tweet.objectID
-        
-        let targetRetweetKind: Twitter.API.Statuses.RetweetKind = {
-            let targetTweet = (tweet.retweet ?? tweet)
-            let isRetweeted = targetTweet.retweetBy.flatMap { $0.contains(where: { $0.id == twitterUserID }) } ?? false
-            return isRetweeted ? .unretweet : .retweet
-        }()
-        
-        // trigger like action
-        let generator = UIImpactFeedbackGenerator(style: .light)
-        let responseFeedbackGenerator = UIImpactFeedbackGenerator(style: .medium)
-        context.apiService.retweet(
-            tweetObjectID: tweetObjectID,
-            twitterUserObjectID: twitterUserObjectID,
-            retweetKind: targetRetweetKind,
-            authorization: authorization,
-            twitterUserID: twitterUserID
-        )
-        .receive(on: DispatchQueue.main)
-        .handleEvents { _ in
-            generator.prepare()
-            responseFeedbackGenerator.prepare()
-        } receiveOutput: { _ in
-            generator.impactOccurred()
-        } receiveCompletion: { completion in
-            switch completion {
-            case .failure(let error):
-                // TODO: handle error
-                break
-            case .finished:
-                os_log("%{public}s[%{public}ld], %{public}s: [Retweet] update local tweet retweet status to: %s", ((#file as NSString).lastPathComponent), #line, #function, targetRetweetKind == .retweet ? "retweet" : "unretweet")
-
-                // reload item
-                DispatchQueue.main.async {
-                    var snapshot = diffableDataSource.snapshot()
-                    snapshot.reloadItems([timelineItem])
-                    diffableDataSource.defaultRowAnimation = .none
-                    diffableDataSource.apply(snapshot)
-                    diffableDataSource.defaultRowAnimation = .automatic
-                }
-            }
-        }
-        .map { targetTweetID in
-            self.context.apiService.retweet(
-                tweetID: targetTweetID,
-                retweetKind: targetRetweetKind,
-                authorization: authorization,
-                twitterUserID: twitterUserID
-            )
-        }
-        .switchToLatest()
-        .receive(on: DispatchQueue.main)
-        .sink { [weak self] completion in
-            guard let self = self else { return }
-            if self.view.window != nil, (self.tableView.indexPathsForVisibleRows ?? []).contains(indexPath) {
-                responseFeedbackGenerator.impactOccurred()
-            }
-            switch completion {
-            case .failure(let error):
-                os_log("%{public}s[%{public}ld], %{public}s: [Retweet] remote retweet request fail: %{public}s", ((#file as NSString).lastPathComponent), #line, #function, error.localizedDescription)
-            case .finished:
-                os_log("%{public}s[%{public}ld], %{public}s: [Retweet] remote retweet request success", ((#file as NSString).lastPathComponent), #line, #function)
-            }
-        } receiveValue: { response in
-            
-        }
-        .store(in: &disposeBag)
-    }
-    
-    func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, actionToolbar: TimelinePostActionToolbar, favoriteButtonDidPressed sender: UIButton) {
-        // prepare authentication
-        guard let twitterAuthentication = viewModel.currentTwitterAuthentication.value,
-              let authorization = try? twitterAuthentication.authorization(appSecret: AppSecret.shared) else {
-            assertionFailure()
-            return
-        }
-        
-        // prepare current user infos
-        guard let _currentTwitterUser = context.authenticationService.currentTwitterUser.value else {
-            assertionFailure()
-            return
-        }
-        let twitterUserID = twitterAuthentication.userID
-        assert(_currentTwitterUser.id == twitterUserID)
-        let twitterUserObjectID = _currentTwitterUser.objectID
-        
-        // retrieve target tweet infos
-        guard let diffableDataSource = viewModel.diffableDataSource else { return }
-        guard let indexPath = tableView.indexPath(for: cell) else { return }
-        guard let timelineItem = diffableDataSource.itemIdentifier(for: indexPath) else { return }
-        guard case let .homeTimelineIndex(timelineIndexObjectID, _) = timelineItem else { return }
-        let timelineIndex = viewModel.fetchedResultsController.managedObjectContext.object(with: timelineIndexObjectID) as! TimelineIndex
-        guard let tweet = timelineIndex.tweet else { return }
-        let tweetObjectID = tweet.objectID
-
-        let targetFavoriteKind: Twitter.API.Favorites.FavoriteKind = {
-            let targetTweet = (tweet.retweet ?? tweet)
-            let isLiked = targetTweet.likeBy.flatMap { $0.contains(where: { $0.id == twitterUserID }) } ?? false
-            return isLiked ? .destroy : .create
-        }()
-
-        // trigger like action
-        let generator = UIImpactFeedbackGenerator(style: .light)
-        let responseFeedbackGenerator = UIImpactFeedbackGenerator(style: .medium)
-        context.apiService.like(
-            tweetObjectID: tweetObjectID,
-            twitterUserObjectID: twitterUserObjectID,
-            favoriteKind: targetFavoriteKind,
-            authorization: authorization,
-            twitterUserID: twitterUserID
-        )
-        .receive(on: DispatchQueue.main)
-        .handleEvents { _ in
-            generator.prepare()
-            responseFeedbackGenerator.prepare()
-        } receiveOutput: { _ in
-            generator.impactOccurred()
-        } receiveCompletion: { completion in
-            switch completion {
-            case .failure(let error):
-                // TODO: handle error
-                break
-            case .finished:
-                os_log("%{public}s[%{public}ld], %{public}s: [Like] update local tweet like status to: %s", ((#file as NSString).lastPathComponent), #line, #function, targetFavoriteKind == .create ? "like" : "unlike")
-
-                // reload item
-                DispatchQueue.main.async {
-                    var snapshot = diffableDataSource.snapshot()
-                    snapshot.reloadItems([timelineItem])
-                    diffableDataSource.defaultRowAnimation = .none
-                    diffableDataSource.apply(snapshot)
-                    diffableDataSource.defaultRowAnimation = .automatic
-                }
-            }
-        }
-        .map { targetTweetID in
-            self.context.apiService.like(
-                tweetID: targetTweetID,
-                favoriteKind: targetFavoriteKind,
-                authorization: authorization,
-                twitterUserID: twitterUserID
-            )
-        }
-        .switchToLatest()
-        .receive(on: DispatchQueue.main)
-        .sink { [weak self] completion in
-            guard let self = self else { return }
-            if self.view.window != nil, (self.tableView.indexPathsForVisibleRows ?? []).contains(indexPath) {
-                responseFeedbackGenerator.impactOccurred()
-            }
-            switch completion {
-            case .failure(let error):
-                os_log("%{public}s[%{public}ld], %{public}s: [Like] remote like request fail: %{public}s", ((#file as NSString).lastPathComponent), #line, #function, error.localizedDescription)
-            case .finished:
-                os_log("%{public}s[%{public}ld], %{public}s: [Like] remote like request success", ((#file as NSString).lastPathComponent), #line, #function)
-            }
-        } receiveValue: { response in
-            
-        }
-        .store(in: &disposeBag)
-    }
-    
-    func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, actionToolbar: TimelinePostActionToolbar, shareButtonDidPressed sender: UIButton) {
-    }
-    
-    // MARK: - MosaicImageViewDelegate
-    func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, mosaicImageView: MosaicImageView, didTapImageView imageView: UIImageView, atIndex index: Int) {
-        guard let diffableDataSource = viewModel.diffableDataSource else { return }
-        guard let indexPath = tableView.indexPath(for: cell) else { return }
-        guard let item = diffableDataSource.itemIdentifier(for: indexPath) else { return }
-        guard case let .homeTimelineIndex(objectID, _) = item else { return }
-        guard let timelineIndex = viewModel.fetchedResultsController.managedObjectContext.object(with: objectID) as? TimelineIndex,
-              let tweet = timelineIndex.tweet
-        else { return }
-        
-        let root = MediaPreviewViewModel.Root(
-            tweetObjectID: tweet.objectID,
-            initialIndex: index,
-            preloadThumbnailImages: mosaicImageView.imageViews.map { $0.image }
-        )
-        let mediaPreviewViewModel = MediaPreviewViewModel(context: context, root: root)
-        coordinator.present(scene: .mediaPreview(viewModel: mediaPreviewViewModel), from: self, transition: .custom(transitioningDelegate: mediaPreviewTransitionController))
-    }
-    
-}
 
 // MARK: - TimelineMiddleLoaderTableViewCellDelegate
 extension HomeTimelineViewController: TimelineMiddleLoaderTableViewCellDelegate {
@@ -708,3 +441,6 @@ extension HomeTimelineViewController: TimelineMiddleLoaderTableViewCellDelegate 
 extension HomeTimelineViewController: MediaHostViewController {
     
 }
+
+// MARK: - TimelinePostTableViewCellDelegate
+extension HomeTimelineViewController: TimelinePostTableViewCellDelegate { }

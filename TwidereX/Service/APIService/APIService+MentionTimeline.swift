@@ -18,10 +18,12 @@ extension APIService {
     func twitterMentionTimeline(
         count: Int = 200,
         maxID: String? = nil,
-        authorization: Twitter.API.OAuth.Authorization,
-        requestTwitterUserID: TwitterUser.ID
+        twitterAuthenticationBox: AuthenticationService.TwitterAuthenticationBox
     ) -> AnyPublisher<Twitter.Response.Content<[Twitter.Entity.Tweet]>, Error> {
+        let authorization = twitterAuthenticationBox.twitterAuthorization
+        let requestTwitterUserID = twitterAuthenticationBox.twitterUserID
         let query = Twitter.API.Timeline.Query(count: count, maxID: maxID)
+        
         return Twitter.API.Timeline.mentionTimeline(session: session, authorization: authorization, query: query)
             .map { response -> AnyPublisher<Twitter.Response.Content<[Twitter.Entity.Tweet]>, Error> in
                 let log = OSLog.api

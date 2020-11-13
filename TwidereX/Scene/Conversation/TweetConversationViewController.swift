@@ -11,13 +11,15 @@ import Combine
 import CoreDataStack
 import TwitterAPI
 
-final class TweetConversationViewController: UIViewController, NeedsDependency {
+final class TweetConversationViewController: UIViewController, NeedsDependency, MediaPreviewableViewController {
     
     weak var context: AppContext! { willSet { precondition(!isViewLoaded) } }
     weak var coordinator: SceneCoordinator! { willSet { precondition(!isViewLoaded) } }
     
     var disposeBag = Set<AnyCancellable>()
     var viewModel: TweetConversationViewModel!
+    
+    let mediaPreviewTransitionController = MediaPreviewTransitionController()
     
     lazy var tableView: UITableView = {
         let tableView = UITableView()
@@ -62,18 +64,12 @@ extension TweetConversationViewController {
         tableView.dataSource = viewModel.diffableDataSource
         tableView.reloadData()
         
-        // bind view model
-        context.authenticationService.twitterAuthentications
-            .map { $0.first }
-            .assign(to: \.value, on: viewModel.currentTwitterAuthentication)
-            .store(in: &disposeBag)
-        
         viewModel.loadConversationStateMachine.enter(TweetConversationViewModel.LoadConversationState.Prepare.self)
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
+        tableView.reloadData()
         tableView.deselectRow(with: transitionCoordinator, animated: animated)
     }
     
@@ -149,44 +145,7 @@ extension TweetConversationViewController: UITableViewDelegate {
 }
 
 // MARK: - ConversationPostTableViewCellDelegate
-extension TweetConversationViewController: ConversationPostTableViewCellDelegate {
-    
-    func conversationPostTableViewCell(_ cell: ConversationPostTableViewCell, avatarImageViewDidPressed imageView: UIImageView) {
-        os_log("%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
-        
-        guard case let .root(objectID) = viewModel.rootItem else { return }
-        context.managedObjectContext.perform { [weak self] in
-            guard let self = self else { return }
-            guard let tweet = self.context.managedObjectContext.object(with: objectID) as? Tweet else { return }
-            DispatchQueue.main.async { [weak self] in
-                guard let self = self else { return }
-                let profileViewModel = ProfileViewModel(twitterUser: tweet.author)
-                self.context.authenticationService.currentTwitterUser
-                    .assign(to: \.value, on: profileViewModel.currentTwitterUser).store(in: &profileViewModel.disposeBag)
-                self.coordinator.present(scene: .profile(viewModel: profileViewModel), from: self, transition: .show)
-            }
-        }
-    }
-    
-    func conversationPostTableViewCell(_ cell: ConversationPostTableViewCell, quoteAvatarImageViewDidPressed imageView: UIImageView) {
-        os_log("%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
-        
-        guard case let .root(objectID) = viewModel.rootItem else { return }
-        context.managedObjectContext.perform { [weak self] in
-            guard let self = self else { return }
-            guard let tweet = self.context.managedObjectContext.object(with: objectID) as? Tweet else { return }
-            guard let targetTweet = tweet.retweet?.quote ?? tweet.quote else { return }
-            DispatchQueue.main.async { [weak self] in
-                guard let self = self else { return }
-                let profileViewModel = ProfileViewModel(twitterUser: targetTweet.author)
-                self.context.authenticationService.currentTwitterUser
-                    .assign(to: \.value, on: profileViewModel.currentTwitterUser).store(in: &profileViewModel.disposeBag)
-                self.coordinator.present(scene: .profile(viewModel: profileViewModel), from: self, transition: .show)
-            }
-        }
-    }
-        
-}
+extension TweetConversationViewController: ConversationPostTableViewCellDelegate { }
 
 // MARK: - ContentOffsetAdjustableTimelineViewControllerDelegate
 extension TweetConversationViewController: ContentOffsetAdjustableTimelineViewControllerDelegate {
@@ -196,61 +155,4 @@ extension TweetConversationViewController: ContentOffsetAdjustableTimelineViewCo
 }
 
 // MARK: - TimelinePostTableViewCellDelegate
-extension TweetConversationViewController: TimelinePostTableViewCellDelegate {
-    
-    func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, retweetInfoLabelDidPressed label: UILabel) {
-        assertionFailure("no retweet in conversation")
-    }
-    
-    func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, avatarImageViewDidPressed imageView: UIImageView) {
-        guard let diffableDataSource = viewModel.diffableDataSource else { return }
-        guard let indexPath = tableView.indexPath(for: cell) else { return }
-        guard let item = diffableDataSource.itemIdentifier(for: indexPath) else { return }
-        
-        switch item {
-        case .leaf(let objectID, let attribute):
-            let managedObjectContext = context.managedObjectContext
-            managedObjectContext.perform {
-                let tweet = managedObjectContext.object(with: objectID) as! Tweet
-                let targetTweet = tweet.retweet ?? tweet
-                DispatchQueue.main.async { [weak self] in
-                    guard let self = self else { return }
-                    let profileViewModel = ProfileViewModel(twitterUser: targetTweet.author)
-                    self.context.authenticationService.currentTwitterUser
-                        .assign(to: \.value, on: profileViewModel.currentTwitterUser).store(in: &profileViewModel.disposeBag)
-                    self.coordinator.present(scene: .profile(viewModel: profileViewModel), from: self, transition: .show)
-                }
-            }
-        default:
-            return
-        }
-    }
-    
-    // MARK: - ActionToolbar
-
-    func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, quoteAvatarImageViewDidPressed imageView: UIImageView) {
-        assertionFailure("no quote in conversation")
-    }
-    
-    func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, actionToolbar: TimelinePostActionToolbar, replayButtonDidPressed sender: UIButton) {
-        // TODO:
-    }
-    
-    func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, actionToolbar: TimelinePostActionToolbar, retweetButtonDidPressed sender: UIButton) {
-        // TODO:
-    }
-    
-    func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, actionToolbar: TimelinePostActionToolbar, favoriteButtonDidPressed sender: UIButton) {
-        // TODO:
-    }
-    
-    func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, actionToolbar: TimelinePostActionToolbar, shareButtonDidPressed sender: UIButton) {
-        // TODO:
-    }
-    
-    // MARK: - MosaicImageViewDelegate
-    func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, mosaicImageView: MosaicImageView, didTapImageView imageView: UIImageView, atIndex index: Int) {
-        // TODO:
-    }
-    
-}
+extension TweetConversationViewController: TimelinePostTableViewCellDelegate { }

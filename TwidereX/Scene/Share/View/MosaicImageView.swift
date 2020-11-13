@@ -19,9 +19,18 @@ final class MosaicImageView: UIView {
     var cornerRadius: CGFloat = 8
     
     let container = UIStackView()
-    var imageViews = [UIImageView]()
+    var imageViews = [UIImageView]() {
+        didSet {
+            imageViews.forEach { imageView in
+                imageView.isUserInteractionEnabled = true
+                let tapGesture = UITapGestureRecognizer.singleTapGestureRecognizer
+                tapGesture.addTarget(self, action: #selector(MosaicImageView.photoTapGestureRecognizerHandler(_:)))
+                imageView.addGestureRecognizer(tapGesture)
+            }
+        }
+    }
 
-    private let photoTapGestureRecognizer = UITapGestureRecognizer.singleTapGestureRecognizer
+    //private let photoTapGestureRecognizer = UITapGestureRecognizer.singleTapGestureRecognizer
     private var containerHeightLayoutConstraint: NSLayoutConstraint!
     
     override init(frame: CGRect) {
@@ -54,8 +63,8 @@ extension MosaicImageView {
         container.distribution = .fillEqually
         container.layer.masksToBounds = true
         
-        photoTapGestureRecognizer.addTarget(self, action: #selector(MosaicImageView.photoTapGestureRecognizerHandler(_:)))
-        container.addGestureRecognizer(photoTapGestureRecognizer)
+//        photoTapGestureRecognizer.addTarget(self, action: #selector(MosaicImageView.photoTapGestureRecognizerHandler(_:)))
+//        container.addGestureRecognizer(photoTapGestureRecognizer)
     }
     
 }
@@ -171,15 +180,10 @@ extension MosaicImageView {
 extension MosaicImageView {
 
     @objc private func photoTapGestureRecognizerHandler(_ sender: UITapGestureRecognizer) {
-        let position = sender.location(in: nil)
-        for (i, imageView) in imageViews.enumerated() {
-            guard let superViewOfImageView = imageView.superview else { continue }
-            let imageViewFrameInWindow = superViewOfImageView.convert(imageView.frame, to: nil)
-            guard imageViewFrameInWindow.contains(position) else { continue }
-            os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: tap photo at index: %ld", ((#file as NSString).lastPathComponent), #line, #function, i)
-            delegate?.mosaicImageView(self, didTapImageView: imageView, atIndex: i)
-            break
-        }
+        guard let imageView = sender.view as? UIImageView else { return }
+        guard let index = imageViews.firstIndex(of: imageView) else { return }
+        os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: tap photo at index: %ld", ((#file as NSString).lastPathComponent), #line, #function, index)
+        delegate?.mosaicImageView(self, didTapImageView: imageView, atIndex: index)
     }
 }
 

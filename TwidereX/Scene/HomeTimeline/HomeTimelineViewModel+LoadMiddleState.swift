@@ -50,9 +50,8 @@ extension HomeTimelineViewModel.LoadMiddleState {
             super.didEnter(from: previousState)
             
             guard let viewModel = viewModel, let stateMachine = stateMachine else { return }
-            guard let twitterAuthentication = viewModel.currentTwitterAuthentication.value,
-                  let authorization = try? twitterAuthentication.authorization(appSecret: AppSecret.shared) else {
-                assertionFailure()
+            guard let activeTwitterAuthenticationBox = viewModel.context.authenticationService.activeTwitterAuthenticationBox.value else {
+                stateMachine.enter(Fail.self)
                 return
             }
             
@@ -67,7 +66,7 @@ extension HomeTimelineViewModel.LoadMiddleState {
 
             // TODO: only set large count when using Wi-Fi
             let maxID = tweet.id
-            viewModel.context.apiService.twitterHomeTimeline(count: 20, maxID: maxID, authorization: authorization, requestTwitterUserID: twitterAuthentication.userID)
+            viewModel.context.apiService.twitterHomeTimeline(count: 20, maxID: maxID, twitterAuthenticationBox: activeTwitterAuthenticationBox)
                 .delay(for: .seconds(1), scheduler: DispatchQueue.main)
                 .receive(on: DispatchQueue.main)
                 .sink { completion in

@@ -21,7 +21,6 @@ final class SearchUserViewModel: NSObject {
     // input
     let context: AppContext
     let fetchedResultsController: NSFetchedResultsController<TwitterUser>
-    let currentTwitterAuthentication: CurrentValueSubject<TwitterAuthentication?, Never>
     let searchTwitterUserIDs = CurrentValueSubject<[Twitter.Entity.V2.User.ID], Never>([])
     let searchText = CurrentValueSubject<String, Never>("")
     let searchActionPublisher = PassthroughSubject<Void, Never>()
@@ -59,7 +58,6 @@ final class SearchUserViewModel: NSObject {
             
             return controller
         }()
-        self.currentTwitterAuthentication = CurrentValueSubject(context.authenticationService.currentActiveTwitterAutentication.value)
         super.init()
         
         self.fetchedResultsController.delegate = self

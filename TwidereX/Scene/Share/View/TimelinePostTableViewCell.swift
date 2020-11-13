@@ -15,6 +15,7 @@ protocol TimelinePostTableViewCellDelegate: class {
     func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, retweetInfoLabelDidPressed label: UILabel)
     func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, avatarImageViewDidPressed imageView: UIImageView)
     func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, quoteAvatarImageViewDidPressed imageView: UIImageView)
+    func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, quotePostViewDidPressed quotePostView: QuotePostView)
     
     func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, actionToolbar: TimelinePostActionToolbar, replayButtonDidPressed sender: UIButton)
     func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, actionToolbar: TimelinePostActionToolbar, retweetButtonDidPressed sender: UIButton)
@@ -48,6 +49,7 @@ final class TimelinePostTableViewCell: UITableViewCell {
     private let avatarImageViewTapGestureRecognizer = UITapGestureRecognizer.singleTapGestureRecognizer
     private let retweetInfoLabelTapGestureRecognizer = UITapGestureRecognizer.singleTapGestureRecognizer
     private let quoteAvatarImageViewTapGestureRecognizer = UITapGestureRecognizer.singleTapGestureRecognizer
+    private let quotePostViewTapGestureRecognizer = UITapGestureRecognizer.singleTapGestureRecognizer
     
     override func prepareForReuse() {
         super.prepareForReuse()
@@ -127,6 +129,10 @@ extension TimelinePostTableViewCell {
         timelinePostView.quotePostView.avatarImageView.isUserInteractionEnabled = true
         timelinePostView.quotePostView.avatarImageView.addGestureRecognizer(quoteAvatarImageViewTapGestureRecognizer)
         
+        quotePostViewTapGestureRecognizer.addTarget(self, action: #selector(TimelinePostTableViewCell.quotePostViewTapGestureRecognizerHandler(_:)))
+        timelinePostView.quotePostView.isUserInteractionEnabled = true
+        timelinePostView.quotePostView.addGestureRecognizer(quotePostViewTapGestureRecognizer)
+        
         timelinePostView.actionToolbar.delegate = self
         timelinePostView.mosaicImageView.delegate = self
         conversationLinkUpper.isHidden = true
@@ -156,6 +162,13 @@ extension TimelinePostTableViewCell {
         guard sender.state == .ended else { return }
         assert(delegate != nil)
         delegate?.timelinePostTableViewCell(self, quoteAvatarImageViewDidPressed: timelinePostView.quotePostView.avatarImageView)
+    }
+    
+    @objc private func quotePostViewTapGestureRecognizerHandler(_ sender: UITapGestureRecognizer) {
+        os_log("%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
+        guard sender.state == .ended else { return }
+        assert(delegate != nil)
+        delegate?.timelinePostTableViewCell(self, quotePostViewDidPressed: timelinePostView.quotePostView)
     }
     
 }
