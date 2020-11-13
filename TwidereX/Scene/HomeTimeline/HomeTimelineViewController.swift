@@ -51,7 +51,10 @@ final class HomeTimelineViewController: UIViewController, NeedsDependency, Drawe
         let composeItem: FloatyItem = {
             let item = FloatyItem()
             item.title = "Compose"
-            item.handler = self.composeFloatyButtonPressed
+            item.handler = { [weak self] item in
+                guard let self = self else { return }
+                self.composeFloatyButtonPressed(item)
+            }
             return item
         }()
         button.addItem(item: composeItem)
@@ -59,6 +62,9 @@ final class HomeTimelineViewController: UIViewController, NeedsDependency, Drawe
         return button
     }()
 
+    deinit {
+        os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s:", ((#file as NSString).lastPathComponent), #line, #function)
+    }
 }
 
 extension HomeTimelineViewController {
@@ -69,11 +75,11 @@ extension HomeTimelineViewController {
         view.backgroundColor = .systemBackground
         navigationItem.leftBarButtonItem = avatarBarButtonItem
         avatarButton.addTarget(self, action: #selector(HomeTimelineViewController.avatarButtonPressed(_:)), for: .touchUpInside)
-        
+
         drawerSidebarTransitionController = DrawerSidebarTransitionController(drawerSidebarTransitionableViewController: self)
         tableView.refreshControl = refreshControl
         refreshControl.addTarget(self, action: #selector(HomeTimelineViewController.refreshControlValueChanged(_:)), for: .valueChanged)
-        
+
         #if DEBUG
         if #available(iOS 14.0, *) {
             navigationItem.rightBarButtonItem = UIBarButtonItem(
@@ -115,7 +121,7 @@ extension HomeTimelineViewController {
             )
         }
         #endif
-        
+
         tableView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(tableView)
         tableView.backgroundColor = .systemBackground
@@ -125,9 +131,9 @@ extension HomeTimelineViewController {
             tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
             tableView.topAnchor.constraint(equalTo: view.topAnchor)
         ])
-    
+
         view.addSubview(floatyButton)
-        
+
         viewModel.contentOffsetAdjustableTimelineViewControllerDelegate = self
         viewModel.tableView = tableView
         viewModel.timelinePostTableViewCellDelegate = self
@@ -161,7 +167,7 @@ extension HomeTimelineViewController {
             .store(in: &disposeBag)
         tableView.delegate = self
         tableView.dataSource = viewModel.diffableDataSource
-        
+
         // bind refresh control
         viewModel.isFetchingLatestTimeline
             .sink { [weak self] isFetching in
@@ -195,23 +201,24 @@ extension HomeTimelineViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
+
         tableView.deselectRow(with: transitionCoordinator, animated: animated)
     }
-    
+
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        
-        DispatchQueue.once {
+
+        DispatchQueue.once { [weak self] in
+            guard let self = self else { return }
             if (self.viewModel.fetchedResultsController.fetchedObjects ?? []).count == 0 {
                 self.viewModel.loadLatestStateMachine.enter(HomeTimelineViewModel.LoadLatestState.Loading.self)
             }
         }
     }
- 
+
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
-        
+
         coordinator.animate { _ in
             // do nothing
         } completion: { _ in
@@ -220,11 +227,14 @@ extension HomeTimelineViewController {
             self.tableView.reloadData()
         }
     }
-    
+
     override func viewSafeAreaInsetsDidChange() {
         super.viewSafeAreaInsetsDidChange()
         
-        floatyButton.paddingY = view.safeAreaInsets.bottom + UIView.floatyButtonBottomMargin
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            self.floatyButton.paddingY = self.view.safeAreaInsets.bottom + UIView.floatyButtonBottomMargin
+        }
     }
 
 }
@@ -314,7 +324,8 @@ extension HomeTimelineViewController {
             default:                                    return nil
             }
         }
-        context.apiService.backgroundManagedObjectContext.performChanges {
+        context.apiService.backgroundManagedObjectContext.performChanges { [weak self] in
+            guard let self = self else { return }
             for objectID in droppingObjectIDs {
                 guard let object = try? self.context.apiService.backgroundManagedObjectContext.existingObject(with: objectID) as? TimelineIndex else { continue }
                 self.context.apiService.backgroundManagedObjectContext.delete(object.tweet!)
@@ -335,7 +346,8 @@ extension HomeTimelineViewController {
     @objc private func enableBottomFetcher(_ sender: UIAction) {
         if let last = viewModel.fetchedResultsController.fetchedObjects?.last {
             let objectID = last.objectID
-            context.apiService.backgroundManagedObjectContext.performChanges {
+            context.apiService.backgroundManagedObjectContext.performChanges { [weak self] in
+                guard let self = self else { return }
                 let object = self.context.apiService.backgroundManagedObjectContext.object(with: objectID) as! TimelineIndex
                 object.update(hasMore: true)
             }

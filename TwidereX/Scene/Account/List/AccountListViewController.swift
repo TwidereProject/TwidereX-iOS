@@ -175,7 +175,8 @@ extension AccountListViewController: UITableViewDelegate {
                         assertionFailure(error.localizedDescription)
                     case .success(let isActived):
                         assert(isActived)
-                        self.dismiss(animated: true, completion: nil)
+                        self.coordinator.setup()
+                        // self.dismiss(animated: true, completion: nil)
                     }
                 }
                 .store(in: &self.disposeBag)

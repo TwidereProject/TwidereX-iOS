@@ -89,6 +89,10 @@ final class TimelinePostActionToolbar: UIView {
         _init()
     }
     
+    deinit {
+        delegate = nil
+    }
+    
 }
 
 extension TimelinePostActionToolbar {

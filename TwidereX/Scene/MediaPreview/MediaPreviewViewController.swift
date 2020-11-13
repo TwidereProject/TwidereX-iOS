@@ -54,6 +54,10 @@ final class MediaPreviewViewController: UIViewController, NeedsDependency {
         return pageControl
     }()
     
+    deinit {
+        os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s:", ((#file as NSString).lastPathComponent), #line, #function)
+    }
+    
 }
 
 extension MediaPreviewViewController {
