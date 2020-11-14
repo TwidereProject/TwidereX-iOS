@@ -15,7 +15,7 @@ import TwitterAPI
 import Floaty
 import AlamofireImage
 
-final class MentionTimelineViewController: UIViewController, NeedsDependency, MediaPreviewableViewController {
+final class MentionTimelineViewController: UIViewController, NeedsDependency, DrawerSidebarTransitionableViewController, MediaPreviewableViewController {
     
     weak var context: AppContext! { willSet { precondition(!isViewLoaded) } }
     weak var coordinator: SceneCoordinator! { willSet { precondition(!isViewLoaded) } }
@@ -23,6 +23,7 @@ final class MentionTimelineViewController: UIViewController, NeedsDependency, Me
     var disposeBag = Set<AnyCancellable>()
     private(set) lazy var viewModel = MentionTimelineViewModel(context: context)
    
+    private(set) var drawerSidebarTransitionController: DrawerSidebarTransitionController!
     let mediaPreviewTransitionController = MediaPreviewTransitionController()
     
     let avatarButton = UIButton.avatarButton
@@ -69,7 +70,9 @@ extension MentionTimelineViewController {
 
         view.backgroundColor = .systemBackground
         navigationItem.leftBarButtonItem = UIBarButtonItem(customView: avatarButton)
+        avatarButton.addTarget(self, action: #selector(MentionTimelineViewController.avatarButtonPressed(_:)), for: .touchUpInside)
 
+        drawerSidebarTransitionController = DrawerSidebarTransitionController(drawerSidebarTransitionableViewController: self)
         tableView.refreshControl = refreshControl
         refreshControl.addTarget(self, action: #selector(MentionTimelineViewController.refreshControlValueChanged(_:)), for: .valueChanged)
         
@@ -196,6 +199,11 @@ extension MentionTimelineViewController {
 }
 
 extension MentionTimelineViewController {
+    
+    @objc private func avatarButtonPressed(_ sender: UIButton) {
+        os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
+        coordinator.present(scene: .drawerSidebar, from: self, transition: .custom(transitioningDelegate: drawerSidebarTransitionController))
+    }
     
     @objc private func refreshControlValueChanged(_ sender: UIRefreshControl) {
         guard viewModel.loadLatestStateMachine.enter(MentionTimelineViewModel.LoadLatestState.Loading.self) else {

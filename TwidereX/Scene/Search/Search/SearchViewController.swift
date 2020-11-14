@@ -17,11 +17,12 @@ final class HeightFixedSearchBar: UISearchBar {
     }
 }
 
-final class SearchViewController: UIViewController, NeedsDependency {
+final class SearchViewController: UIViewController, DrawerSidebarTransitionableViewController, NeedsDependency {
     
     weak var context: AppContext! { willSet { precondition(!isViewLoaded) } }
     weak var coordinator: SceneCoordinator! { willSet { precondition(!isViewLoaded) } }
     
+    private(set) var drawerSidebarTransitionController: DrawerSidebarTransitionController!
     private var searchDetailTransitionController = SearchDetailTransitionController()
 
     var disposeBag = Set<AnyCancellable>()
@@ -44,7 +45,10 @@ extension SearchViewController {
         
         navigationItem.leftBarButtonItem = UIBarButtonItem(customView: avatarButton)
         setupSearchBar()
-
+        avatarButton.addTarget(self, action: #selector(SearchViewController.avatarButtonPressed(_:)), for: .touchUpInside)
+        
+        drawerSidebarTransitionController = DrawerSidebarTransitionController(drawerSidebarTransitionableViewController: self)
+        
         searchBarTapPublisher
 //            .receive(on: DispatchQueue.main)
 //            .debounce(for: .seconds(1), scheduler: DispatchQueue.main)
@@ -97,6 +101,15 @@ extension SearchViewController {
         navigationItem.titleView = searchBarContainerView
     }
 
+}
+
+extension SearchViewController {
+    
+    @objc private func avatarButtonPressed(_ sender: UIButton) {
+        os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
+        coordinator.present(scene: .drawerSidebar, from: self, transition: .custom(transitioningDelegate: drawerSidebarTransitionController))
+    }
+    
 }
 
 // MARK: - UISearchBarDelegate
