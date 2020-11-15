@@ -164,7 +164,7 @@
 		DBA5F9EF2553D06400D2E98E /* MediaPreviewTransitionController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBA5F9EE2553D06400D2E98E /* MediaPreviewTransitionController.swift */; };
 		DBA5FA0A2553D1FD00D2E98E /* MediaHostToMediaPreviewViewControllerAnimatedTransitioning.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBA5FA092553D1FD00D2E98E /* MediaHostToMediaPreviewViewControllerAnimatedTransitioning.swift */; };
 		DBA5FA0F2553D59E00D2E98E /* MediaPreviewTransitionItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBA5FA0E2553D59E00D2E98E /* MediaPreviewTransitionItem.swift */; };
-		DBA5FA142553DB4300D2E98E /* MediaHostViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBA5FA132553DB4300D2E98E /* MediaHostViewController.swift */; };
+		DBA5FA142553DB4300D2E98E /* MediaPreviewingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBA5FA132553DB4300D2E98E /* MediaPreviewingViewController.swift */; };
 		DBA5FA192553DCBC00D2E98E /* TransitioningMath.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBA5FA182553DCBC00D2E98E /* TransitioningMath.swift */; };
 		DBA5FA1E2553DDDD00D2E98E /* UITapGestureRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBA5FA1D2553DDDD00D2E98E /* UITapGestureRecognizer.swift */; };
 		DBA5FA262553ED1000D2E98E /* MediaPreviewViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBA5FA252553ED1000D2E98E /* MediaPreviewViewModel.swift */; };
@@ -507,7 +507,7 @@
 		DBA5F9EE2553D06400D2E98E /* MediaPreviewTransitionController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaPreviewTransitionController.swift; sourceTree = "<group>"; };
 		DBA5FA092553D1FD00D2E98E /* MediaHostToMediaPreviewViewControllerAnimatedTransitioning.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaHostToMediaPreviewViewControllerAnimatedTransitioning.swift; sourceTree = "<group>"; };
 		DBA5FA0E2553D59E00D2E98E /* MediaPreviewTransitionItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaPreviewTransitionItem.swift; sourceTree = "<group>"; };
-		DBA5FA132553DB4300D2E98E /* MediaHostViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaHostViewController.swift; sourceTree = "<group>"; };
+		DBA5FA132553DB4300D2E98E /* MediaPreviewingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaPreviewingViewController.swift; sourceTree = "<group>"; };
 		DBA5FA182553DCBC00D2E98E /* TransitioningMath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransitioningMath.swift; sourceTree = "<group>"; };
 		DBA5FA1D2553DDDD00D2E98E /* UITapGestureRecognizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UITapGestureRecognizer.swift; sourceTree = "<group>"; };
 		DBA5FA252553ED1000D2E98E /* MediaPreviewViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaPreviewViewModel.swift; sourceTree = "<group>"; };
@@ -1119,7 +1119,8 @@
 				DBA5F9EE2553D06400D2E98E /* MediaPreviewTransitionController.swift */,
 				DBA5FA092553D1FD00D2E98E /* MediaHostToMediaPreviewViewControllerAnimatedTransitioning.swift */,
 				DBA5FA0E2553D59E00D2E98E /* MediaPreviewTransitionItem.swift */,
-				DBA5FA132553DB4300D2E98E /* MediaHostViewController.swift */,
+				DB1A1DA8255B5C780049DA6D /* MediaPreviewableViewController.swift */,
+				DBA5FA132553DB4300D2E98E /* MediaPreviewingViewController.swift */,
 			);
 			path = MediaPreview;
 			sourceTree = "<group>";
@@ -1548,7 +1549,6 @@
 			children = (
 				DBED96D7253F5D7800C5383A /* NamingState.swift */,
 				DB8AC0FF25401C2700E636BE /* ContentOffsetAdjustableTimelineViewControllerDelegate.swift */,
-				DB1A1DA8255B5C780049DA6D /* MediaPreviewableViewController.swift */,
 				DB1A1D6A2559A0A50049DA6D /* TweetProvider.swift */,
 				DB1A1D722559A3C10049DA6D /* TweetProvider+TimelinePostTableViewCellDelegate.swift */,
 				DBBABA15255E786000C1B3D9 /* TweetProvider+ConversationPostTableViewCellDelegate.swift */,
@@ -2204,7 +2204,7 @@
 				DBED96D8253F5D7800C5383A /* NamingState.swift in Sources */,
 				DB6DF3E0252060AA00E8A273 /* ProfileViewModel.swift in Sources */,
 				DB67611D254BC04B006C6798 /* SearchMediaViewModel+Diffable.swift in Sources */,
-				DBA5FA142553DB4300D2E98E /* MediaHostViewController.swift in Sources */,
+				DBA5FA142553DB4300D2E98E /* MediaPreviewingViewController.swift in Sources */,
 				DB8AC16C25419B2E00E636BE /* ComposeTweetSection.swift in Sources */,
 				DBEA4F8D251225610007FEC5 /* TimelinePostView.swift in Sources */,
 				DB35C35D25146C58003DA0E9 /* ConversationPostStatusView.swift in Sources */,

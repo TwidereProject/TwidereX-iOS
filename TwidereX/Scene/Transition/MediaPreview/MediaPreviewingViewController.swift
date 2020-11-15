@@ -1,5 +1,5 @@
 //
-//  MediaHostViewController.swift
+//  MediaPreviewingViewController.swift
 //  TwidereX
 //
 //  Created by Cirno MainasuK on 2020-11-5.
@@ -8,4 +8,6 @@
 
 import Foundation
 
-protocol MediaHostViewController { }
+protocol MediaPreviewingViewController: class {
+    func isInteractiveDismissable() -> Bool
+}

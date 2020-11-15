@@ -6,19 +6,54 @@
 //  Copyright © 2020 Twidere. All rights reserved.
 //
 
+import os.log
 import UIKit
 
 final class MediaPreviewTransitionController: NSObject {
     
     weak var mediaPreviewViewController: MediaPreviewViewController?
     
-    var wantsInteractive = false
+    var wantsInteractiveStart = false
     private var panGestureRecognizer: UIPanGestureRecognizer = {
         let gestureRecognizer = UIPanGestureRecognizer()
         gestureRecognizer.maximumNumberOfTouches = 1
         return gestureRecognizer
     }()
+    private var dismissInteractiveTransitioning: MediaHostToMediaPreviewViewControllerAnimatedTransitioning?
     
+    override init() {
+        super.init()
+        
+        panGestureRecognizer.delegate = self
+        panGestureRecognizer.addTarget(self, action: #selector(MediaPreviewTransitionController.panGestureRecognizerHandler(_:)))
+    }
+    
+}
+
+extension MediaPreviewTransitionController {
+    
+    @objc private func panGestureRecognizerHandler(_ sender: UIPanGestureRecognizer) {
+        guard dismissInteractiveTransitioning == nil else { return }
+        
+        guard let mediaPreviewViewController = self.mediaPreviewViewController else { return }
+        wantsInteractiveStart = true
+        mediaPreviewViewController.dismiss(animated: true, completion: nil)
+        os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: start interactive dismiss", ((#file as NSString).lastPathComponent), #line, #function)
+    }
+    
+}
+
+// MARK: - UIGestureRecognizerDelegate
+extension MediaPreviewTransitionController: UIGestureRecognizerDelegate {
+
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+        return false
+    }
+
+    func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+        guard let mediaPreviewViewController = self.mediaPreviewViewController else { return false }
+        return mediaPreviewViewController.isInteractiveDismissable()
+    }
 }
 
 // MARK: - UIViewControllerTransitioningDelegate
@@ -30,6 +65,7 @@ extension MediaPreviewTransitionController: UIViewControllerTransitioningDelegat
             return nil
         }
         self.mediaPreviewViewController = mediaPreviewViewController
+        self.mediaPreviewViewController?.view.addGestureRecognizer(panGestureRecognizer)
         
         let transitionItem = MediaPreviewTransitionItem(id: UUID().uuidString)
         return MediaHostToMediaPreviewViewControllerAnimatedTransitioning(
@@ -58,8 +94,26 @@ extension MediaPreviewTransitionController: UIViewControllerTransitioningDelegat
     }
     
     func interactionControllerForDismissal(using animator: UIViewControllerAnimatedTransitioning) -> UIViewControllerInteractiveTransitioning? {
-        // TODO:
-        return nil
+        guard let transitioning = animator as? MediaHostToMediaPreviewViewControllerAnimatedTransitioning,
+        transitioning.operation == .pop, wantsInteractiveStart else {
+            return nil
+        }
+
+        dismissInteractiveTransitioning = transitioning
+        transitioning.delegate = self
+        return transitioning
     }
     
+}
+
+// MARK: - ViewControllerAnimatedTransitioningDelegate
+extension MediaPreviewTransitionController: ViewControllerAnimatedTransitioningDelegate {
+
+    func animationEnded(_ transitionCompleted: Bool) {
+        os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: completed: %s", ((#file as NSString).lastPathComponent), #line, #function, transitionCompleted.description)
+
+        dismissInteractiveTransitioning = nil
+        wantsInteractiveStart = false
+    }
+
 }

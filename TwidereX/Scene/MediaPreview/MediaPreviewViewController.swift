@@ -163,6 +163,8 @@ extension MediaPreviewViewController {
         
         closeButton.addTarget(self, action: #selector(MediaPreviewViewController.closeButtonPressed(_:)), for: .touchUpInside)
         
+        viewModel.mediaPreviewImageViewControllerDelegate = self
+        
         pagingViewConttroller.interPageSpacing = 10
         pagingViewConttroller.delegate = self
         pagingViewConttroller.dataSource = viewModel
@@ -273,3 +275,26 @@ extension MediaPreviewViewController: PageboyViewControllerDelegate {
 
 // MARK: - StatusActionToolbarDelegate
 extension MediaPreviewViewController: StatusActionToolbarDelegate { }
+
+// MARK: - MediaPreviewingViewController
+extension MediaPreviewViewController: MediaPreviewingViewController {
+    
+    func isInteractiveDismissable() -> Bool {
+        if let mediaPreviewImageViewController = pagingViewConttroller.currentViewController as? MediaPreviewImageViewController {
+            let safeAreaInsets = mediaPreviewImageViewController.previewImageView.safeAreaInsets
+            return mediaPreviewImageViewController.previewImageView.contentOffset.y < -safeAreaInsets.top
+        }
+        
+        return false
+    }
+    
+}
+
+// MARK: - MediaPreviewImageViewControllerDelegate
+extension MediaPreviewViewController: MediaPreviewImageViewControllerDelegate {
+    
+    func mediaPreviewImageViewController(_ viewController: MediaPreviewImageViewController, tapGestureRecognizerDidTrigger tapGestureRecognizer: UITapGestureRecognizer) {
+        
+    }
+    
+}

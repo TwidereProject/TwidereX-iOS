@@ -13,10 +13,10 @@ class MediaPreviewTransitionItem: Identifiable {
     let id: String
     
     // TODO:
-    // var initialFrame: CGRect? = nil
-    // var targetFrame: CGRect? = nil
-    // var imageView: UIImageView? = nil
-    // var touchOffset: CGVector = CGVector.zero
+    var imageView: UIImageView?
+    var initialFrame: CGRect? = nil
+    var targetFrame: CGRect? = nil
+    var touchOffset: CGVector = CGVector.zero
 
     init(id: String) {
         self.id = id

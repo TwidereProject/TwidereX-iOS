@@ -10,10 +10,15 @@ import os.log
 import UIKit
 import Combine
 
+protocol MediaPreviewImageViewControllerDelegate: class {
+    func mediaPreviewImageViewController(_ viewController: MediaPreviewImageViewController, tapGestureRecognizerDidTrigger tapGestureRecognizer: UITapGestureRecognizer)
+}
+
 final class MediaPreviewImageViewController: UIViewController {
     
     var disposeBag = Set<AnyCancellable>()
     var viewModel: MediaPreviewImageViewModel!
+    weak var delegate: MediaPreviewImageViewControllerDelegate?
     
     let thumbnailImageView: UIImageView = {
         let imageView = UIImageView()
@@ -75,7 +80,6 @@ extension MediaPreviewImageViewController {
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         coordinator.animate { _ in
             guard let image = self.previewImageView.imageView.image else { return }
-            self.previewImageView.setup(image: image, container: self.previewImageView)
         } completion: { _ in
             // do nothing
         }
@@ -89,6 +93,7 @@ extension MediaPreviewImageViewController {
     
     @objc private func tapGestureRecognizerHandler(_ sender: UITapGestureRecognizer) {
         os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
+        delegate?.mediaPreviewImageViewController(self, tapGestureRecognizerDidTrigger: sender)
     }
     
 }

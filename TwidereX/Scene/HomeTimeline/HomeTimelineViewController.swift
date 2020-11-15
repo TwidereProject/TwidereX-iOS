@@ -449,10 +449,5 @@ extension HomeTimelineViewController: TimelineMiddleLoaderTableViewCellDelegate 
     }
 }
 
-// MARK: - MediaHostViewController
-extension HomeTimelineViewController: MediaHostViewController {
-    
-}
-
 // MARK: - TimelinePostTableViewCellDelegate
 extension HomeTimelineViewController: TimelinePostTableViewCellDelegate { }
