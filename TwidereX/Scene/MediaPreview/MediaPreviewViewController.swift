@@ -29,16 +29,15 @@ final class MediaPreviewViewController: UIViewController, NeedsDependency {
         
     let mediaInfoDescriptionView = MediaInfoDescriptionView()
     
-    let closeButtonBackground: UIView = {
-        let backgroundView = UIView()
-        backgroundView.backgroundColor = .systemBackground
-        backgroundView.alpha = 0.5
+    let closeButtonBackground: UIVisualEffectView = {
+        let backgroundView = UIVisualEffectView(effect: UIBlurEffect(style: .systemUltraThinMaterial))
+        backgroundView.alpha = 0.9
         backgroundView.layer.masksToBounds = true
         backgroundView.layer.cornerRadius = 8
         return backgroundView
     }()
     
-    let closeButtonBackgroundVisualEffectView = UIVisualEffectView(effect: UIVibrancyEffect(blurEffect: UIBlurEffect(style: .systemMaterial)))
+    let closeButtonBackgroundVisualEffectView = UIVisualEffectView(effect: UIVibrancyEffect(blurEffect: UIBlurEffect(style: .systemUltraThinMaterial)))
     
     let closeButton: UIButton = {
         let button = HitTestExpandedButton(type: .custom)
@@ -96,7 +95,7 @@ extension MediaPreviewViewController {
             closeButtonBackground.leadingAnchor.constraint(equalTo: view.layoutMarginsGuide.leadingAnchor)
         ])
         closeButtonBackgroundVisualEffectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        closeButtonBackground.addSubview(closeButtonBackgroundVisualEffectView)
+        closeButtonBackground.contentView.addSubview(closeButtonBackgroundVisualEffectView)
 
         closeButton.translatesAutoresizingMaskIntoConstraints = false
         closeButtonBackgroundVisualEffectView.contentView.addSubview(closeButton)
