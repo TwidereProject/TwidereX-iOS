@@ -6,13 +6,17 @@
 //  Copyright © 2020 Twidere. All rights reserved.
 //
 
+import os.log
 import UIKit
 
 final class MediaHostToMediaPreviewViewControllerAnimatedTransitioning: ViewControllerAnimatedTransitioning {
     
+    
     let transitionItem: MediaPreviewTransitionItem
     let panGestureRecognizer: UIPanGestureRecognizer
 
+    private var isTransitionContextFinish = false
+    
     private var popInteractiveTransitionAnimator = MediaHostToMediaPreviewViewControllerAnimatedTransitioning.animator(initialVelocity: .zero)
     private var itemInteractiveTransitionAnimator = MediaHostToMediaPreviewViewControllerAnimatedTransitioning.animator(initialVelocity: .zero)
 
@@ -125,6 +129,7 @@ extension MediaHostToMediaPreviewViewControllerAnimatedTransitioning {
             self.transitionItem.imageView?.alpha = 0.4
             fromVC.mediaInfoDescriptionView.alpha = 0
             fromVC.closeButtonBackground.alpha = 0
+            fromVC.pageControl.alpha = 0
             fromVC.visualEffectView.effect = nil
         }
 
@@ -139,6 +144,8 @@ extension MediaHostToMediaPreviewViewControllerAnimatedTransitioning {
 extension MediaHostToMediaPreviewViewControllerAnimatedTransitioning {
     
     @objc func updatePanGestureInteractive(_ sender: UIPanGestureRecognizer) {
+        guard !isTransitionContextFinish else { return }    // do not accept transition abort
+
         switch sender.state {
         case .began, .changed:
             let translation = sender.translation(in: transitionContext.containerView)
@@ -151,8 +158,9 @@ extension MediaHostToMediaPreviewViewControllerAnimatedTransitioning {
             sender.setTranslation(CGPoint.zero, in: transitionContext.containerView)
         case .ended, .cancelled:
             let targetPosition = completionPosition()
+            os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: target position: %s", ((#file as NSString).lastPathComponent), #line, #function, targetPosition == .end ? "end" : "start")
             targetPosition == .end ? transitionContext.finishInteractiveTransition() : transitionContext.cancelInteractiveTransition()
-
+            isTransitionContextFinish = targetPosition == .end
             animate(targetPosition)
 
         default:

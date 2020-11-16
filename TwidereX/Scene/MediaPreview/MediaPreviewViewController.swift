@@ -282,7 +282,8 @@ extension MediaPreviewViewController: MediaPreviewingViewController {
     func isInteractiveDismissable() -> Bool {
         if let mediaPreviewImageViewController = pagingViewConttroller.currentViewController as? MediaPreviewImageViewController {
             let safeAreaInsets = mediaPreviewImageViewController.previewImageView.safeAreaInsets
-            return mediaPreviewImageViewController.previewImageView.contentOffset.y < -safeAreaInsets.top
+            let statusBarFrameHeight = view.window?.windowScene?.statusBarManager?.statusBarFrame.height ?? 0
+            return mediaPreviewImageViewController.previewImageView.contentOffset.y < -(safeAreaInsets.top - statusBarFrameHeight)
         }
         
         return false
