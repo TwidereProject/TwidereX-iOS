@@ -123,6 +123,8 @@ extension MediaPreviewViewController {
             pageControl.bottomAnchor.constraint(equalTo: pageControlBackgroundVisualEffectView.bottomAnchor),
         ])
         
+        mediaInfoDescriptionView.delegate = self
+        
         viewModel.avatarImageURL
             .receive(on: DispatchQueue.main)
             .sink { [weak self] avatarImageURL in
@@ -157,7 +159,7 @@ extension MediaPreviewViewController {
             .receive(on: DispatchQueue.main)
             .sink { [weak self] content in
                 guard let self = self else { return }
-                self.mediaInfoDescriptionView.activeTextLabel.text = content
+                self.mediaInfoDescriptionView.activeLabel.text = content
             }
             .store(in: &disposeBag)
         
@@ -299,3 +301,6 @@ extension MediaPreviewViewController: MediaPreviewImageViewControllerDelegate {
     }
     
 }
+
+// MARK: - MediaInfoDescriptionViewDelegate
+extension MediaPreviewViewController: MediaInfoDescriptionViewDelegate { }

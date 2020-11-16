@@ -16,7 +16,6 @@ final public class SceneCoordinator {
     private weak var appContext: AppContext!
     
     let id = UUID().uuidString
-    private var secondaryStackHashValues = Set<Int>()
     
     init(scene: UIScene, sceneDelegate: SceneDelegate, appContext: AppContext) {
         self.scene = scene
@@ -67,13 +66,9 @@ extension SceneCoordinator {
         
         switch transition {
         case .show:
-            if secondaryStackHashValues.contains(presentingViewController.hashValue) {
-                secondaryStackHashValues.insert(viewController.hashValue)
-            }
             presentingViewController.show(viewController, sender: sender)
             
         case .showDetail:
-            secondaryStackHashValues.insert(viewController.hashValue)
             let navigationController = UINavigationController(rootViewController: viewController)
             presentingViewController.showDetailViewController(navigationController, sender: sender)
             
