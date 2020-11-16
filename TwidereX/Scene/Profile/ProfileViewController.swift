@@ -207,9 +207,14 @@ extension ProfileViewController {
             .sink { [weak self] url in
                 guard let self = self else { return }
                 guard let url = url else { return }
+                let placeholderImage = UIImage
+                    .placeholder(size: ProfileBannerView.avatarImageViewSize, color: .systemFill)
+                    .af.imageRoundedIntoCircle()
+                let filter = ScaledToSizeCircleFilter(size: ProfileBannerView.avatarImageViewSize)
                 self.profileHeaderViewController.profileBannerView.profileAvatarImageView.af.setImage(
                     withURL: url,
-                    placeholderImage: UIImage.placeholder(color: .secondarySystemBackground),
+                    placeholderImage: placeholderImage,
+                    filter: filter,
                     imageTransition: .crossDissolve(0.3),
                     runImageTransitionIfCached: false,
                     completion: nil
