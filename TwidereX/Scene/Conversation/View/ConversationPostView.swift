@@ -252,6 +252,9 @@ extension ConversationPostView {
         lockImageView.isHidden = true
         mosaicImageView.isHidden = true
         quotePostView.isHidden = true
+        
+        // TODO:
+        moreMenuButton.isHidden = true
     }
 }
 

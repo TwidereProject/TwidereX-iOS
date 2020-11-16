@@ -243,6 +243,9 @@ extension TimelinePostView {
         mosaicImageView.isHidden = true
         quotePostView.isHidden = true
         geoContainerStackView.isHidden = true
+        
+        // TODO:
+        moreMenuButton.isHidden = true
     }
     
 }
