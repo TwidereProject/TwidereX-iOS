@@ -72,3 +72,15 @@ extension MentionTimelineIndex: Managed {
         return [NSSortDescriptor(keyPath: \MentionTimelineIndex.createdAt, ascending: false)]
     }
 }
+
+extension MentionTimelineIndex {
+    
+    public static func predicate(userID: String) -> NSPredicate {
+        return NSPredicate(format: "%K == %@", #keyPath(MentionTimelineIndex.userID), userID)
+    }
+    
+    public static func predicate(platform: Platform) -> NSPredicate {
+        return NSPredicate(format: "%K == %@", #keyPath(MentionTimelineIndex.platformRaw), platform.rawValue)
+    }
+    
+}

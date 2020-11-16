@@ -123,11 +123,32 @@ extension MentionTimelineViewController {
         viewModel.timelinePostTableViewCellDelegate = self
         viewModel.timelineMiddleLoaderTableViewCellDelegate = self
         viewModel.setupDiffableDataSource(for: tableView)
-        do {
-            try viewModel.fetchedResultsController.performFetch()
-        } catch {
-            assertionFailure(error.localizedDescription)
-        }
+        context.authenticationService.activeAuthenticationIndex
+            .sink { [weak self] activeAuthenticationIndex in
+                guard let self = self else { return }
+                let predicate: NSPredicate
+                if let activeAuthenticationIndex = activeAuthenticationIndex {
+                    let userID = activeAuthenticationIndex.twitterAuthentication?.twitterUser?.id ?? ""
+                    predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [
+                        MentionTimelineIndex.predicate(platform: .twitter),
+                        MentionTimelineIndex.predicate(userID: userID),
+                    ])
+                } else {
+                    // use invalid predicate
+                    predicate = MentionTimelineIndex.predicate(userID: "")
+                }
+                self.viewModel.fetchedResultsController.fetchRequest.predicate = predicate
+                do {
+                    self.viewModel.diffableDataSource?.defaultRowAnimation = .fade
+                    try self.viewModel.fetchedResultsController.performFetch()
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+                        self.viewModel.diffableDataSource?.defaultRowAnimation = .automatic
+                    }
+                } catch {
+                    assertionFailure(error.localizedDescription)
+                }
+            }
+            .store(in: &disposeBag)
         tableView.delegate = self
         tableView.dataSource = viewModel.diffableDataSource
 
