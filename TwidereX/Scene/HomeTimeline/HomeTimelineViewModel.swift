@@ -170,6 +170,7 @@ extension HomeTimelineViewModel {
 
     static func configure(cell: TimelinePostTableViewCell, readableLayoutFrame: CGRect? = nil, tweet: Tweet, requestUserID: String) {
         // set retweet display
+        cell.timelinePostViewTopLayoutConstraint.constant = tweet.retweet == nil ? TimelinePostTableViewCell.verticalMargin : TimelinePostTableViewCell.verticalMarginAlt
         cell.timelinePostView.retweetContainerStackView.isHidden = tweet.retweet == nil
         cell.timelinePostView.retweetInfoLabel.text = tweet.author.name + " Retweeted"
 

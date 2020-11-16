@@ -116,7 +116,7 @@ extension ConversationPostView {
         // container: [user meta | main | meta | action toolbar]
         let containerStackView = UIStackView()
         containerStackView.axis = .vertical
-        containerStackView.spacing = 2
+        containerStackView.spacing = 8
         //containerStackView.alignment = .top
         containerStackView.translatesAutoresizingMaskIntoConstraints = false
         addSubview(containerStackView)

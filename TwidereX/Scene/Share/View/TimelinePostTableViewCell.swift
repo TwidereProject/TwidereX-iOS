@@ -26,8 +26,9 @@ protocol TimelinePostTableViewCellDelegate: class {
 }
 
 final class TimelinePostTableViewCell: UITableViewCell {
-
-    static let verticalMargin: CGFloat = 8
+    
+    static let verticalMargin: CGFloat = 16         // without retweet indicator
+    static let verticalMarginAlt: CGFloat = 8       // with retweet indicator
     
     weak var delegate: TimelinePostTableViewCellDelegate?
     
@@ -38,6 +39,8 @@ final class TimelinePostTableViewCell: UITableViewCell {
     let timelinePostView = TimelinePostView()
     let conversationLinkUpper = UIView.separatorLine
     let conversationLinkLower = UIView.separatorLine
+    
+    var timelinePostViewTopLayoutConstraint: NSLayoutConstraint!
     
     var separatorLineNormalLeadingLayoutConstraint: NSLayoutConstraint!
     var separatorLineExpandLeadingLayoutConstraint: NSLayoutConstraint!
@@ -79,9 +82,10 @@ extension TimelinePostTableViewCell {
     
     private func _init() {
         timelinePostView.translatesAutoresizingMaskIntoConstraints = false
+        timelinePostViewTopLayoutConstraint = timelinePostView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: TimelinePostTableViewCell.verticalMargin)
         contentView.addSubview(timelinePostView)
         NSLayoutConstraint.activate([
-            timelinePostView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: TimelinePostTableViewCell.verticalMargin),
+            timelinePostViewTopLayoutConstraint,
             timelinePostView.leadingAnchor.constraint(equalTo:  contentView.readableContentGuide.leadingAnchor),
             contentView.readableContentGuide.trailingAnchor.constraint(equalTo: timelinePostView.trailingAnchor),
             contentView.bottomAnchor.constraint(equalTo: timelinePostView.bottomAnchor),    // use action toolbar margin 
