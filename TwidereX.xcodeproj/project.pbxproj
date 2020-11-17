@@ -128,6 +128,9 @@
 		DB8AC180254275C600E636BE /* RepliedToTweetContentTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB8AC17F254275C600E636BE /* RepliedToTweetContentTableViewCell.swift */; };
 		DB8AC1852542BD8700E636BE /* APIService+Tweet.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB8AC1842542BD8600E636BE /* APIService+Tweet.swift */; };
 		DB8AC1902542DA9500E636BE /* ActiveLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB8AC18F2542DA9500E636BE /* ActiveLabel.swift */; };
+		DB8E4FBA2563B61500459DA2 /* DisplayPreferenceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB8E4FB92563B61500459DA2 /* DisplayPreferenceViewController.swift */; };
+		DB8E4FD92563CD6900459DA2 /* TwitterPinBasedAuthenticationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB8E4FD82563CD6900459DA2 /* TwitterPinBasedAuthenticationViewController.swift */; };
+		DB8E4FEC2563D42800459DA2 /* TwitterPinBasedAuthenticationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB8E4FEB2563D42800459DA2 /* TwitterPinBasedAuthenticationViewModel.swift */; };
 		DB915401254C148400613473 /* APIService+User.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB915400254C148400613473 /* APIService+User.swift */; };
 		DB915406254FC8CE00613473 /* FollowActionButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB915405254FC8CE00613473 /* FollowActionButton.swift */; };
 		DB91540B254FE4B200613473 /* APIService+Friendship.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB91540A254FE4B200613473 /* APIService+Friendship.swift */; };
@@ -474,6 +477,9 @@
 		DB8AC17F254275C600E636BE /* RepliedToTweetContentTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RepliedToTweetContentTableViewCell.swift; sourceTree = "<group>"; };
 		DB8AC1842542BD8600E636BE /* APIService+Tweet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "APIService+Tweet.swift"; sourceTree = "<group>"; };
 		DB8AC18F2542DA9500E636BE /* ActiveLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActiveLabel.swift; sourceTree = "<group>"; };
+		DB8E4FB92563B61500459DA2 /* DisplayPreferenceViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisplayPreferenceViewController.swift; sourceTree = "<group>"; };
+		DB8E4FD82563CD6900459DA2 /* TwitterPinBasedAuthenticationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwitterPinBasedAuthenticationViewController.swift; sourceTree = "<group>"; };
+		DB8E4FEB2563D42800459DA2 /* TwitterPinBasedAuthenticationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwitterPinBasedAuthenticationViewModel.swift; sourceTree = "<group>"; };
 		DB915400254C148400613473 /* APIService+User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "APIService+User.swift"; sourceTree = "<group>"; };
 		DB915405254FC8CE00613473 /* FollowActionButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FollowActionButton.swift; sourceTree = "<group>"; };
 		DB91540A254FE4B200613473 /* APIService+Friendship.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "APIService+Friendship.swift"; sourceTree = "<group>"; };
@@ -994,6 +1000,24 @@
 			path = Model;
 			sourceTree = "<group>";
 		};
+		DB8E4FDD2563D3F700459DA2 /* PinBased */ = {
+			isa = PBXGroup;
+			children = (
+				DB8E4FD82563CD6900459DA2 /* TwitterPinBasedAuthenticationViewController.swift */,
+				DB8E4FEB2563D42800459DA2 /* TwitterPinBasedAuthenticationViewModel.swift */,
+			);
+			path = PinBased;
+			sourceTree = "<group>";
+		};
+		DB8E4FE42563D41000459DA2 /* Twitter */ = {
+			isa = PBXGroup;
+			children = (
+				DBCB405F255CAC0300DD8D8F /* TwitterAuthenticationController.swift */,
+				DB8E4FDD2563D3F700459DA2 /* PinBased */,
+			);
+			path = Twitter;
+			sourceTree = "<group>";
+		};
 		DB9154592551210D00613473 /* MentionTimeline */ = {
 			isa = PBXGroup;
 			children = (
@@ -1067,6 +1091,7 @@
 			children = (
 				DB2EBBDD255D345500956CAA /* List */,
 				DB2EBBD9255D344C00956CAA /* About */,
+				DB8E4FB92563B61500459DA2 /* DisplayPreferenceViewController.swift */,
 			);
 			path = Setting;
 			sourceTree = "<group>";
@@ -1287,7 +1312,7 @@
 			isa = PBXGroup;
 			children = (
 				DBDA8E8424FE05B6006750DC /* AuthenticationViewController.swift */,
-				DBCB405F255CAC0300DD8D8F /* TwitterAuthenticationController.swift */,
+				DB8E4FE42563D41000459DA2 /* Twitter */,
 			);
 			path = Authentication;
 			sourceTree = "<group>";
@@ -2060,6 +2085,7 @@
 				DBBABA1E255E805F00C1B3D9 /* TweetProvider+StatusActionToolbarDelegate.swift in Sources */,
 				DB2EBBEB255D34BE00956CAA /* AboutView.swift in Sources */,
 				DB761E72255946720050DC01 /* SidebarSection.swift in Sources */,
+				DB8E4FD92563CD6900459DA2 /* TwitterPinBasedAuthenticationViewController.swift in Sources */,
 				DB3FC045255270D6003A2F8A /* UserMediaTimelineViewModel+State.swift in Sources */,
 				DB7D124C250F875F00999903 /* UIView.swift in Sources */,
 				DB10B32C254A7633002D86F3 /* SearchTimelineViewModel+State.swift in Sources */,
@@ -2164,6 +2190,7 @@
 				DBE76D1E2500E65D00DEB0FC /* HomeTimelineViewModel.swift in Sources */,
 				DBDA8E8A24FE0615006750DC /* DocumentStore.swift in Sources */,
 				DB5A2288255B9155006CA5B2 /* AccountListViewModel+Diffable.swift in Sources */,
+				DB8E4FBA2563B61500459DA2 /* DisplayPreferenceViewController.swift in Sources */,
 				DBA6B1BF2535B0BE005FB0B4 /* ControlContainableScrollViews.swift in Sources */,
 				DB2924DF2547CCD6003899A7 /* ComposeTweetMediaItem.swift in Sources */,
 				DB98DC0E2507862D0087E30F /* TimelineMiddleLoaderTableViewCell.swift in Sources */,
@@ -2234,6 +2261,7 @@
 				DBA61AB62552596A006AC169 /* UserMediaTimelineViewController.swift in Sources */,
 				DBE76D3B25024FDA00DEB0FC /* NSLayoutConstraint.swift in Sources */,
 				DBF69EE02549705A00E2A915 /* ViewControllerAnimatedTransitioning.swift in Sources */,
+				DB8E4FEC2563D42800459DA2 /* TwitterPinBasedAuthenticationViewModel.swift in Sources */,
 				DB0849B22513760D009E0CD7 /* ConversationPostTableViewCell.swift in Sources */,
 				DB2924EC25492006003899A7 /* APIService+Geo.swift in Sources */,
 				DBCB40A9255DA58000DD8D8F /* UserTimelineViewController+TweetProvider.swift in Sources */,

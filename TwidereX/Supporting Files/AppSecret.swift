@@ -42,23 +42,29 @@ extension AppSecret {
                     
                 return key
             }()
+            #if DEBUG
+            self.oauthEndpoint = keys.oauth_endpoint_debug
+            #else
             self.oauthEndpoint = keys.oauth_endpoint
+            #endif
         }
     }
 }
 
 extension AppSecret: OAuthExchangeProvider {
     func oauthExcahnge() -> Twitter.API.OAuth.OAuthExchange {
-        if let hostPublicKey = oauthSecret.hostPublicKey {
-            return .custom(
-                consumerKey: oauthSecret.consumerKey,
-                hostPublicKey: hostPublicKey,
-                oauthEndpoint: oauthSecret.oauthEndpoint
-            )
-        } else {
+        let oauthEndpoint = oauthSecret.oauthEndpoint
+        switch oauthEndpoint {
+        case "oob":
             return .pin(
                 consumerKey: oauthSecret.consumerKey,
                 consumerKeySecret: oauthSecret.consumerKeySecret
+            )
+        default:
+            return .custom(
+                consumerKey: oauthSecret.consumerKey,
+                hostPublicKey: oauthSecret.hostPublicKey!,
+                oauthEndpoint: oauthSecret.oauthEndpoint
             )
         }
     }

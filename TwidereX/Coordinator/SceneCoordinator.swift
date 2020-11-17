@@ -37,6 +37,7 @@ extension SceneCoordinator {
     
     enum Scene {
         case authentication
+        case twitterPinBasedAuthentication(viewModel: TwitterPinBasedAuthenticationViewModel)
         case accountList(viewModel: AccountListViewModel)
         case composeTweet(viewModel: ComposeTweetViewModel)
         case tweetConversation(viewModel: TweetConversationViewModel)
@@ -60,7 +61,7 @@ extension SceneCoordinator {
     @discardableResult
     func present(scene: Scene, from sender: UIViewController?, transition: Transition) -> UIViewController? {
         let viewController = get(scene: scene)
-        guard let presentingViewController = sender ?? sceneDelegate.window?.rootViewController else {
+        guard let presentingViewController = sender ?? sceneDelegate.window?.rootViewController?.topMost else {
             return nil
         }
         
@@ -102,6 +103,10 @@ private extension SceneCoordinator {
         switch scene {
         case .authentication:
             viewController = AuthenticationViewController()
+        case .twitterPinBasedAuthentication(let viewModel):
+            let _viewController = TwitterPinBasedAuthenticationViewController()
+            _viewController.viewModel = viewModel
+            viewController = _viewController
         case .accountList(let viewModel):
             let _viewController = AccountListViewController()
             _viewController.viewModel = viewModel

@@ -55,4 +55,5 @@ extension TwidereXTests {
         
         XCTAssertEqual(symmetricKey, symmetricKey2)
     }
+    
 }

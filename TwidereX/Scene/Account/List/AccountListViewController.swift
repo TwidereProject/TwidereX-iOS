@@ -117,6 +117,7 @@ extension AccountListViewController {
         
         twitterAuthenticationController = TwitterAuthenticationController(
             context: context,
+            coordinator: coordinator,
             authenticateURL: authenticateURL,
             requestTokenExchange: requestTokenExchange
         )

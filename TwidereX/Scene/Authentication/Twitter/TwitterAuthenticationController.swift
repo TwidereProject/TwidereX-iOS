@@ -11,14 +11,16 @@ import Foundation
 import Combine
 import CoreDataStack
 import AuthenticationServices
+import WebKit
 import TwitterAPI
 
-final class TwitterAuthenticationController {
+final class TwitterAuthenticationController: NeedsDependency {
     
     var disposeBag = Set<AnyCancellable>()
     
     // input
-    let context: AppContext
+    var context: AppContext!
+    var coordinator: SceneCoordinator!
     var authenticationSession: ASWebAuthenticationSession?
     
     // output
@@ -26,9 +28,26 @@ final class TwitterAuthenticationController {
     let error = CurrentValueSubject<Error?, Never>(nil)
     let authenticated = PassthroughSubject<Void, Never>()
 
-    init(context: AppContext, authenticateURL: URL, requestTokenExchange: Twitter.API.OAuth.OAuthRequestTokenExchange) {
+    init(context: AppContext, coordinator: SceneCoordinator, authenticateURL: URL, requestTokenExchange: Twitter.API.OAuth.OAuthRequestTokenExchange) {
         self.context = context
+        self.coordinator = coordinator
         
+        switch requestTokenExchange {
+        case .customRequestTokenResponse(_, let append):
+            authentication(authenticateURL: authenticateURL, append: append)
+        case .requestTokenResponse(let requestTokenResponse):
+            let twitterPinBasedAuthenticationViewModel = TwitterPinBasedAuthenticationViewModel(authenticateURL: authenticateURL)
+            authentication(requestTokenResponse: requestTokenResponse, pinCodePublisher: twitterPinBasedAuthenticationViewModel.pinCodePublisher)
+
+            coordinator.present(scene: .twitterPinBasedAuthentication(viewModel: twitterPinBasedAuthenticationViewModel), from: nil, transition: .modal(animated: true, completion: nil))
+        }
+    }
+    
+}
+
+extension TwitterAuthenticationController {
+    
+    func authentication(authenticateURL: URL, append: Twitter.API.OAuth.CustomRequestTokenResponseAppend) {
         authenticationSession = ASWebAuthenticationSession(url: authenticateURL, callbackURLScheme: "twidere") { [weak self] callback, error in
             guard let self = self else { return }
             os_log("%{public}s[%{public}ld], %{public}s: callback: %s, error: %s", ((#file as NSString).lastPathComponent), #line, #function, callback?.debugDescription ?? "<nil>", error.debugDescription)
@@ -48,29 +67,24 @@ final class TwitterAuthenticationController {
             
             let rawProperty: TwitterAuthentication.Property
             let authenticationProperty: TwitterAuthentication.Property
-            switch requestTokenExchange {
-            case .requestTokenResponse:
-                fatalError("not implement yet")
-            case .customRequestTokenResponse(_, let append):
-                guard let callbackURL = callback,
-                      let oauthCallbackResponse = Twitter.API.OAuth.OAuthCallbackResponse(callbackURL: callbackURL),
-                      let authentication = try? oauthCallbackResponse.authentication(privateKey: append.clientExchangePrivateKey)
-                else {
-                    let error = AuthenticationError.invalidOAuthCallback(error: nil)
-                    self.isAuthenticating.value = false
-                    self.error.value = error
-                    return
-                }
-                os_log("%{public}s[%{public}ld], %{public}s: authentication: %s", ((#file as NSString).lastPathComponent), #line, #function, String(describing: authentication))
-                
-                rawProperty = TwitterAuthentication.Property(userID: authentication.userID, screenName: authentication.screenName, consumerKey: authentication.consumerKey, consumerSecret: authentication.consumerSecret, accessToken: authentication.accessToken, accessTokenSecret: authentication.accessTokenSecret)
-                do {
-                    authenticationProperty = try rawProperty.seal(appSecret: AppSecret.shared)
-                } catch {
-                    self.isAuthenticating.value = false
-                    self.error.value = error
-                    return
-                }
+            guard let callbackURL = callback,
+                  let oauthCallbackResponse = Twitter.API.OAuth.OAuthCallbackResponse(callbackURL: callbackURL),
+                  let authentication = try? oauthCallbackResponse.authentication(privateKey: append.clientExchangePrivateKey)
+            else {
+                let error = AuthenticationError.invalidOAuthCallback(error: nil)
+                self.isAuthenticating.value = false
+                self.error.value = error
+                return
+            }
+            os_log("%{public}s[%{public}ld], %{public}s: authentication: %s", ((#file as NSString).lastPathComponent), #line, #function, String(describing: authentication))
+            
+            rawProperty = TwitterAuthentication.Property(userID: authentication.userID, screenName: authentication.screenName, consumerKey: authentication.consumerKey, consumerSecret: authentication.consumerSecret, accessToken: authentication.accessToken, accessTokenSecret: authentication.accessTokenSecret)
+            do {
+                authenticationProperty = try rawProperty.seal(appSecret: AppSecret.shared)
+            } catch {
+                self.isAuthenticating.value = false
+                self.error.value = error
+                return
             }
             
             let managedObjectContext = self.context.backgroundManagedObjectContext
@@ -154,6 +168,35 @@ final class TwitterAuthenticationController {
                 }
                 .store(in: &self.disposeBag)
         }
+    }
+    
+    func authentication(requestTokenResponse: Twitter.API.OAuth.RequestTokenResponse, pinCodePublisher: PassthroughSubject<String, Never>) {
+        pinCodePublisher
+            .handleEvents(receiveOutput: { [weak self] _ in
+                guard let self = self else { return }
+                self.isAuthenticating.send(true)
+            })
+            .setFailureType(to: Error.self)
+            .map { pinCode in
+                return self.context.apiService.twitterAccessToken(requestToken: requestTokenResponse.oauthToken, pinCode: pinCode)
+            }
+            .switchToLatest()
+            .map { accessTokenResponse in
+                accessTokenResponse
+                
+            }
+//            .sink { completion in
+//                switch completion {
+//                case .failure(let error):
+//                    self.isAuthenticating.send(false)
+//                    self.error.send(error)
+//                case .finished:
+//                    break
+//                }
+//            } receiveValue: { response in
+//
+//            }
+//            .store(in: &disposeBag)
     }
     
 }

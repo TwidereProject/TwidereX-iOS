@@ -36,6 +36,7 @@ plugin 'cocoapods-keys', {
     "consumer_key",
     "consumer_key_secret",
     "host_key_public",
-    "oauth_endpoint"
+    "oauth_endpoint",
+    "oauth_endpoint_debug"
   ]
 }

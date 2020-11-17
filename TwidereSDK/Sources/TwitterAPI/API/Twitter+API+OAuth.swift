@@ -16,20 +16,26 @@ public protocol OAuthExchangeProvider: class {
 
 extension Twitter.API.OAuth {
     
-    static let authorizeEndpointURL = URL(string: "https://api.twitter.com/oauth/authorize")!
     static let requestTokenEndpointURL = URL(string: "https://api.twitter.com/oauth/request_token")!
+    static let authorizeEndpointURL = URL(string: "https://api.twitter.com/oauth/authorize")!
+    static let accessTokenURL = URL(string: "https://api.twitter.com/oauth/access_token")!
     
     public static func requestToken(session: URLSession, oauthExchangeProvider: OAuthExchangeProvider) -> AnyPublisher<OAuthRequestTokenExchange, Error> {
         let oauthExchange = oauthExchangeProvider.oauthExcahnge()
         switch oauthExchange {
         case .pin(let consumerKey, let consumerKeySecret):
-            fatalError("TODO:")
-//            let request = URLRequest(url: Twitter.API.OAuth.requestTokenEndpointURL, cachePolicy: .reloadIgnoringLocalAndRemoteCacheData, timeoutInterval: Twitter.API.timeoutInterval)
-//            return session.dataTaskPublisher(for: request)
-//                .tryMap { data, response -> OAuthRequestTokenExchange in
-//                    try Twitter.API.decode(type: RequestTokenResponse.self, from: data, response: response)
-//                }
-//                .eraseToAnyPublisher()
+            let request = Twitter.API.OAuth.requestTokenURLRequest(consumerKey: consumerKey, consumerSecret: consumerKeySecret)
+            return session.dataTaskPublisher(for: request)
+                .tryMap { data, response -> OAuthRequestTokenExchange in
+                    let templateURLString = Twitter.API.OAuth.requestTokenEndpointURL.absoluteString
+                    guard let body = String(data: data, encoding: .utf8),
+                          let components = URLComponents(string: templateURLString + "?" + body),
+                          let requestTokenResponse = RequestTokenResponse(queryItems: components.queryItems ?? []) else {
+                        throw Twitter.API.APIError.internal(message: "process requestToken response fail")
+                    }
+                    return .requestTokenResponse(requestTokenResponse)
+                }
+                .eraseToAnyPublisher()
             
         case .custom(let consumerKey, let hostPublicKey, let oauthEndpoint):
             os_log("%{public}s[%{public}ld], %{public}s: request token %s", ((#file as NSString).lastPathComponent), #line, #function, oauthEndpoint)
@@ -96,6 +102,77 @@ extension Twitter.API.OAuth {
         return urlComponents.url!
     }
     
+    static func requestTokenURLRequest(consumerKey: String, consumerSecret: String) -> URLRequest {
+        var components = URLComponents(string: Twitter.API.OAuth.requestTokenEndpointURL.absoluteString)!
+        let queryItems = [URLQueryItem(name: "oauth_callback", value: "oob")]
+        components.queryItems = queryItems
+        let requestURL = components.url!
+        var request = URLRequest(
+            url: requestURL,
+            cachePolicy: .reloadIgnoringLocalAndRemoteCacheData,
+            timeoutInterval: Twitter.API.timeoutInterval
+        )
+        request.httpMethod = "POST"
+        let authorizationHeader = Twitter.API.OAuth.authorizationHeader(
+            requestURL: requestURL,
+            requestFormQueryItems: queryItems,
+            httpMethod: "POST",
+            callbackURL: nil,
+            consumerKey: consumerKey,
+            consumerSecret: consumerSecret,
+            oauthToken: nil,
+            oauthTokenSecret: nil
+        )
+        request.setValue(authorizationHeader, forHTTPHeaderField: Twitter.API.OAuth.authorizationField)
+        return request
+    }
+    
+}
+
+extension Twitter.API.OAuth {
+
+    public static func accessToken(session: URLSession, consumerKey: String, consumerSecret: String, requestToken: String, pinCode: String) -> AnyPublisher<AccessTokenResponse, Error> {
+        let request = Twitter.API.OAuth.accessTokenURLRequest(consumerKey: consumerKey, consumerSecret: consumerSecret, requestToken: requestToken, pinCode: pinCode)
+        return session.dataTaskPublisher(for: request)
+            .tryMap { data, response -> AccessTokenResponse in
+                guard let body = String(data: data, encoding: .utf8),
+                      let accessTokenResponse = AccessTokenResponse(urlEncodedForm: body) else {
+                    throw Twitter.API.APIError.internal(message: "process requestToken response fail")
+                }
+                return accessTokenResponse
+            }
+            .eraseToAnyPublisher()
+
+    }
+    
+    static func accessTokenURLRequest(consumerKey: String, consumerSecret: String, requestToken: String, pinCode: String) -> URLRequest {
+        var components = URLComponents(string: Twitter.API.OAuth.accessTokenURL.absoluteString)!
+        let queryItems = [
+            URLQueryItem(name: "oauth_token", value: requestToken),
+            URLQueryItem(name: "oauth_verifier", value: pinCode)
+        ]
+        components.queryItems = queryItems
+        let requestURL = components.url!
+        var request = URLRequest(
+            url: requestURL,
+            cachePolicy: .reloadIgnoringLocalAndRemoteCacheData,
+            timeoutInterval: Twitter.API.timeoutInterval
+        )
+        request.httpMethod = "POST"
+        let authorizationHeader = Twitter.API.OAuth.authorizationHeader(
+            requestURL: requestURL,
+            requestFormQueryItems: queryItems,
+            httpMethod: "POST",
+            callbackURL: nil,
+            consumerKey: consumerKey,
+            consumerSecret: consumerSecret,
+            oauthToken: requestToken,
+            oauthTokenSecret: nil
+        )
+        request.setValue(authorizationHeader, forHTTPHeaderField: Twitter.API.OAuth.authorizationField)
+        return request
+    }
+    
 }
 
 extension Twitter.API.OAuth {
@@ -119,6 +196,30 @@ extension Twitter.API.OAuth {
         public let oauthToken: String
         public let oauthTokenSecret: String
         public let oauthCallbackConfirmed: Bool
+        
+        init?(queryItems: [URLQueryItem]) {
+            var _oauthToken: String?
+            var _oauthTokenSecret: String?
+            var _oauthCallbackConfirmed: Bool?
+            for item in queryItems {
+                switch item.name {
+                case "oauth_token":                 _oauthToken = item.value
+                case "oauth_token_secret":          _oauthTokenSecret = item.value
+                case "oauth_callback_confirmed":    _oauthCallbackConfirmed = item.value == "true"
+                default:                            continue
+                }
+            }
+            
+            guard let oauthToken = _oauthToken,
+                  let oauthTokenSecret = _oauthTokenSecret,
+                  let oauthCallbackConfirmed = _oauthCallbackConfirmed else {
+                return nil
+            }
+            
+            self.oauthToken = oauthToken
+            self.oauthTokenSecret = oauthTokenSecret
+            self.oauthCallbackConfirmed = oauthCallbackConfirmed
+        }
         
         public enum CodingKeys: String, CodingKey {
             case oauthToken = "oauth_token"
@@ -190,6 +291,43 @@ extension Twitter.API.OAuth {
             }
         }
         
+    }
+    
+    public struct AccessTokenResponse: Codable {
+        public let oauthToken: String
+        public let oauthTokenSecret: String
+        public let userID: String
+        public let screenName: String
+        
+        enum CodingKeys: String, CodingKey, CaseIterable {
+            case oauthToken = "oauth_token"
+            case oauthTokenSecret = "oauth_token_secret"
+            case userID = "user_id"
+            case screenName = "screen_name"
+        }
+        
+        init?(urlEncodedForm form: String) {
+            var dict: [String: String] = [:]
+            for component in form.components(separatedBy: "&") {
+                let tuple = component.components(separatedBy: "=")
+                for key in CodingKeys.allCases {
+                    if tuple[0] == key.rawValue { dict[key.rawValue] = tuple[1] }
+                }
+            }
+            
+            guard let oauthToken = dict[CodingKeys.oauthToken.rawValue],
+                  let oauthTokenSecret = dict[CodingKeys.oauthTokenSecret.rawValue],
+                  let userID = dict[CodingKeys.userID.rawValue],
+                  let screenName = dict[CodingKeys.screenName.rawValue] else
+            {
+                return nil
+            }
+            
+            self.oauthToken = oauthToken
+            self.oauthTokenSecret = oauthTokenSecret
+            self.userID = userID
+            self.screenName = screenName
+        }
     }
     
     public struct Authentication: Codable {
