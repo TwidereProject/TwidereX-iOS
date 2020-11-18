@@ -1,0 +1,25 @@
+name: CI
+
+on:
+  push:
+    branches:
+    - master
+    - develop
+    - feature/*
+  pull_request:
+    branches:
+    - develop
+
+# macOS environments: https://github.com/actions/virtual-environments/tree/main/images/macos
+
+jobs:
+  build:
+    name: CI Build test for Twidere X
+    runs-on: macOS-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v2
+      - name: setup
+        uses: exec ./.github/scripts/setup.sh
+      - name: build
+        uses: exec ./.github/scripts/build.sh
