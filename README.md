@@ -1,5 +1,6 @@
 # Twidere X
 
+![CI](https://github.com/TwidereProject/TwidereX-iOS/workflows/CI/badge.svg)
 
 ## Requirements
 
