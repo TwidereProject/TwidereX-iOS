@@ -19,8 +19,6 @@ jobs:
     steps:
       - name: checkout
         uses: actions/checkout@v2
-      - name: install cocoapods-keys
-        run: sudo gem install cocoapods-keys
       - name: setup
         run: exec ./.github/scripts/setup.sh
       - name: build
