@@ -39,9 +39,12 @@ extension TwitterPinBasedAuthenticationViewController {
             webView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
         ])
         
-        os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: authenticate via: %s", ((#file as NSString).lastPathComponent), #line, #function, viewModel.authenticateURL.debugDescription)
+        
+        var request = URLRequest(url: viewModel.authenticateURL)
+        request.httpShouldHandleCookies = false
         webView.navigationDelegate = self
-        webView.load(URLRequest(url: viewModel.authenticateURL))
+        webView.load(request)
+        os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: authenticate via: %s", ((#file as NSString).lastPathComponent), #line, #function, viewModel.authenticateURL.debugDescription)
     }
     
 }
@@ -64,7 +67,6 @@ extension TwitterPinBasedAuthenticationViewController: WKNavigationDelegate {
             guard error == nil else { return }
             guard let pinCode = any as? String else { return }
             self.viewModel.pinCodePublisher.send(pinCode)
-            self.dismiss(animated: true, completion: nil)
         })
     }
     
