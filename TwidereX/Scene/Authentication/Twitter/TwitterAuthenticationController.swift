@@ -151,19 +151,15 @@ extension TwitterAuthenticationController {
 
 extension TwitterAuthenticationController {
     
-    static func verifyAndSaveAuthentication(context: AppContext, property: TwitterAuthentication.Property, appSecret: AppSecret?) -> AnyPublisher<Twitter.Response.Content<Twitter.Entity.User>, Error> {
+    static func verifyAndSaveAuthentication(context: AppContext, property: TwitterAuthentication.Property, appSecret: AppSecret) -> AnyPublisher<Twitter.Response.Content<Twitter.Entity.User>, Error> {
         Just(property)
             .setFailureType(to: Error.self)
             .flatMap { property -> AnyPublisher<Twitter.Response.Content<Twitter.Entity.User>, Error> in
                 let persistProperty: TwitterAuthentication.Property
-                if let appSecret = appSecret {
-                    do {
-                        persistProperty = try property.seal(appSecret: appSecret)
-                    } catch {
-                        return Fail(error: AuthenticationError.verifyCredentialsFail(error: error)).eraseToAnyPublisher()
-                    }
-                } else {
-                    persistProperty = property
+                do {
+                    persistProperty = try property.seal(appSecret: appSecret)
+                } catch {
+                    return Fail(error: AuthenticationError.verifyCredentialsFail(error: error)).eraseToAnyPublisher()
                 }
                 
                 let authorization = Twitter.API.OAuth.Authorization(

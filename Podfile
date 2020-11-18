@@ -8,7 +8,6 @@ target 'TwidereX' do
   # Pods for TwidereX
   
   ## UI
-  pod 'SwipeViewController', '~> 2.0.0'
   pod 'Floaty', '~> 4.2.0'
   
   # misc
