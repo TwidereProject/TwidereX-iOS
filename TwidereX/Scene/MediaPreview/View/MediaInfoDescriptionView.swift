@@ -6,12 +6,20 @@
 //  Copyright © 2020 Twidere. All rights reserved.
 //
 
+import os.log
 import UIKit
 import ActiveLabel
+
+protocol MediaInfoDescriptionViewDelegate: class {
+    func mediaInfoDescriptionView(_ mediaInfoDescriptionView: MediaInfoDescriptionView, avatarImageViewDidPressed imageView: UIImageView)
+    func mediaInfoDescriptionView(_ mediaInfoDescriptionView: MediaInfoDescriptionView, activeLabelDidPressed activeLabel: ActiveLabel)
+}
 
 final class MediaInfoDescriptionView: UIView {
     
     static let avatarImageViewSize = CGSize(width: 32, height: 32)
+    
+    weak var delegate: MediaInfoDescriptionViewDelegate?
     
     let avatarImageView = UIImageView()
     
@@ -28,12 +36,16 @@ final class MediaInfoDescriptionView: UIView {
         return label
     }()
     
-    let activeTextLabel: ActiveLabel = {
+    let activeLabel: ActiveLabel = {
         let activeLabel = ActiveLabel(style: .default)
         activeLabel.numberOfLines = 2
         return activeLabel
     }()
+    
     let statusActionToolbar = StatusActionToolbar()
+    
+    let avatarImageViewTapGestureRecognizer = UITapGestureRecognizer.singleTapGestureRecognizer
+    let activelabelTapGestureRecognizer = UITapGestureRecognizer.singleTapGestureRecognizer
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -48,6 +60,7 @@ final class MediaInfoDescriptionView: UIView {
 }
 
 extension MediaInfoDescriptionView {
+    
     private func _init() {
         backgroundColor = UIColor.systemBackground.withAlphaComponent(0.5)
         
@@ -64,7 +77,7 @@ extension MediaInfoDescriptionView {
             safeAreaLayoutGuide.bottomAnchor.constraint(equalTo: containserStackView.bottomAnchor, constant: 8),
         ])
         
-        containserStackView.addArrangedSubview(activeTextLabel)
+        containserStackView.addArrangedSubview(activeLabel)
         
         // bottom container: [avatar | name | (padding) | action toolbar ]
         let bottomContainerStackView = UIStackView()
@@ -93,7 +106,29 @@ extension MediaInfoDescriptionView {
         NSLayoutConstraint.activate([
             statusActionToolbar.widthAnchor.constraint(equalToConstant: 180).priority(.defaultHigh),
         ])
+        
+        avatarImageViewTapGestureRecognizer.addTarget(self, action: #selector(MediaInfoDescriptionView.avatarImageViewTapGestureRecognizerHandler(_:)))
+        avatarImageView.isUserInteractionEnabled = true
+        avatarImageView.addGestureRecognizer(avatarImageViewTapGestureRecognizer)
+        
+        activelabelTapGestureRecognizer.addTarget(self, action: #selector(MediaInfoDescriptionView.activeLabelTapGestureRecognizerHandler(_:)))
+        activeLabel.addGestureRecognizer(activelabelTapGestureRecognizer)
     }
+    
+}
+
+extension MediaInfoDescriptionView {
+    
+    @objc private func avatarImageViewTapGestureRecognizerHandler(_ sender: UITapGestureRecognizer) {
+        os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
+        delegate?.mediaInfoDescriptionView(self, avatarImageViewDidPressed: avatarImageView)
+    }
+    
+    @objc private func activeLabelTapGestureRecognizerHandler(_ sender: UITapGestureRecognizer) {
+        os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
+        delegate?.mediaInfoDescriptionView(self, activeLabelDidPressed: activeLabel)
+    }
+
 }
 
 #if DEBUG

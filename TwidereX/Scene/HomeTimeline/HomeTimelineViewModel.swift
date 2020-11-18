@@ -170,6 +170,7 @@ extension HomeTimelineViewModel {
 
     static func configure(cell: TimelinePostTableViewCell, readableLayoutFrame: CGRect? = nil, tweet: Tweet, requestUserID: String) {
         // set retweet display
+        cell.timelinePostViewTopLayoutConstraint.constant = tweet.retweet == nil ? TimelinePostTableViewCell.verticalMargin : TimelinePostTableViewCell.verticalMarginAlt
         cell.timelinePostView.retweetContainerStackView.isHidden = tweet.retweet == nil
         cell.timelinePostView.retweetInfoLabel.text = tweet.author.name + " Retweeted"
 
@@ -401,8 +402,8 @@ extension HomeTimelineViewModel: NSFetchedResultsControllerDelegate {
     func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChangeContentWith snapshot: NSDiffableDataSourceSnapshotReference) {
         os_log("%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
 
-        guard let tableView = self.tableView else { fatalError() }
-        guard let navigationBar = self.contentOffsetAdjustableTimelineViewControllerDelegate?.navigationBar() else { fatalError() }
+        guard let tableView = self.tableView else { return }
+        guard let navigationBar = self.contentOffsetAdjustableTimelineViewControllerDelegate?.navigationBar() else { return }
         
         guard let diffableDataSource = self.diffableDataSource else { return }
         let oldSnapshot = diffableDataSource.snapshot()

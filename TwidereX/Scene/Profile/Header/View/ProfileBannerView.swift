@@ -11,6 +11,7 @@ import ActiveLabel
 final class ProfileBannerView: UIView {
     
     static let avatarImageViewSize = CGSize(width: 72, height: 72)
+    static let avatarImageViewBackgroundSize = CGSize(width: 72 + 2 * 4, height: 72 + 2 * 4)    // 4pt outside border
     
     let profileBannerContainer = UIView()
     let profileBannerImageView: UIImageView = {
@@ -22,13 +23,20 @@ final class ProfileBannerView: UIView {
     }()
     var profileBannerImageViewTopLayoutConstraint: NSLayoutConstraint!
     
+    let profileAvatarImageViewBackground: UIView = {
+        let view = UIView()
+        view.backgroundColor = .systemBackground
+        view.layer.masksToBounds = true
+        view.layer.cornerRadius = 0.5 * ProfileBannerView.avatarImageViewBackgroundSize.width
+        return view
+    }()
+    
     let profileAvatarImageView: UIImageView = {
         let imageView = UIImageView()
-        imageView.layer.masksToBounds = true
-        imageView.layer.cornerRadius = ProfileBannerView.avatarImageViewSize.width * 0.5
-        imageView.layer.borderColor = UIColor.white.cgColor
-        imageView.layer.borderWidth = 3
-        imageView.image = .placeholder(color: .secondarySystemBackground)
+        let placeholderImage = UIImage
+            .placeholder(size: ProfileBannerView.avatarImageViewSize, color: .systemFill)
+            .af.imageRoundedIntoCircle()
+        imageView.image = placeholderImage
         return imageView
     }()
     
@@ -145,6 +153,15 @@ extension ProfileBannerView {
         ])
         
         // avatar
+        profileAvatarImageViewBackground.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(profileAvatarImageViewBackground)
+        NSLayoutConstraint.activate([
+            profileAvatarImageViewBackground.centerXAnchor.constraint(equalTo: centerXAnchor),
+            profileAvatarImageViewBackground.centerYAnchor.constraint(equalTo: profileBannerImageView.bottomAnchor),
+            profileAvatarImageViewBackground.widthAnchor.constraint(equalToConstant: ProfileBannerView.avatarImageViewBackgroundSize.width),
+            profileAvatarImageViewBackground.heightAnchor.constraint(equalToConstant: ProfileBannerView.avatarImageViewBackgroundSize.height),
+        ])
+        
         profileAvatarImageView.translatesAutoresizingMaskIntoConstraints = false
         addSubview(profileAvatarImageView)
         NSLayoutConstraint.activate([

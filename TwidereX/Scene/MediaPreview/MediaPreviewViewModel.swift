@@ -17,6 +17,7 @@ final class MediaPreviewViewModel: NSObject {
     // input
     let context: AppContext
     let rootItem: PreviewItem
+    weak var mediaPreviewImageViewControllerDelegate: MediaPreviewImageViewControllerDelegate?
     
     // output
     let viewControllers: [UIViewController]
@@ -90,6 +91,9 @@ extension MediaPreviewViewModel: PageboyViewControllerDataSource {
     
     func viewController(for pageboyViewController: PageboyViewController, at index: PageboyViewController.PageIndex) -> UIViewController? {
         let viewController = viewControllers[index]
+        if let mediaPreviewImageViewController = viewController as? MediaPreviewImageViewController {
+            mediaPreviewImageViewController.delegate = mediaPreviewImageViewControllerDelegate
+        }
         return viewController
     }
     

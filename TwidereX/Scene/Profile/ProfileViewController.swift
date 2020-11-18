@@ -11,13 +11,15 @@ import Combine
 import Tabman
 import AlamofireImage
 
-final class ProfileViewController: UIViewController, NeedsDependency {
+final class ProfileViewController: UIViewController, DrawerSidebarTransitionableViewController, NeedsDependency {
     
     weak var context: AppContext! { willSet { precondition(!isViewLoaded) } }
     weak var coordinator: SceneCoordinator! { willSet { precondition(!isViewLoaded) } }
     
     var disposeBag = Set<AnyCancellable>()
     var viewModel: ProfileViewModel!
+    
+    private(set) var drawerSidebarTransitionController: DrawerSidebarTransitionController!
     
     let avatarButton = UIButton.avatarButton
     
@@ -91,6 +93,9 @@ extension ProfileViewController {
         if navigationController?.viewControllers.first == self {
             navigationItem.leftBarButtonItem = UIBarButtonItem(customView: avatarButton)
         }
+        avatarButton.addTarget(self, action: #selector(ProfileViewController.avatarButtonPressed(_:)), for: .touchUpInside)
+        
+        drawerSidebarTransitionController = DrawerSidebarTransitionController(drawerSidebarTransitionableViewController: self)
         
         let userTimelineViewModel = UserTimelineViewModel(context: context, userID: viewModel.userID.value)
         viewModel.userID.assign(to: \.value, on: userTimelineViewModel.userID).store(in: &disposeBag)
@@ -202,9 +207,14 @@ extension ProfileViewController {
             .sink { [weak self] url in
                 guard let self = self else { return }
                 guard let url = url else { return }
+                let placeholderImage = UIImage
+                    .placeholder(size: ProfileBannerView.avatarImageViewSize, color: .systemFill)
+                    .af.imageRoundedIntoCircle()
+                let filter = ScaledToSizeCircleFilter(size: ProfileBannerView.avatarImageViewSize)
                 self.profileHeaderViewController.profileBannerView.profileAvatarImageView.af.setImage(
                     withURL: url,
-                    placeholderImage: UIImage.placeholder(color: .secondarySystemBackground),
+                    placeholderImage: placeholderImage,
+                    filter: filter,
                     imageTransition: .crossDissolve(0.3),
                     runImageTransitionIfCached: false,
                     completion: nil
@@ -319,6 +329,15 @@ extension ProfileViewController {
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         currentPostTimelineTableViewContentSizeObservation = nil
+    }
+    
+}
+
+extension ProfileViewController {
+    
+    @objc private func avatarButtonPressed(_ sender: UIButton) {
+        os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
+        coordinator.present(scene: .drawerSidebar, from: self, transition: .custom(transitioningDelegate: drawerSidebarTransitionController))
     }
     
 }

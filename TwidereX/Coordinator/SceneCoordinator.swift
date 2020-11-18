@@ -16,7 +16,6 @@ final public class SceneCoordinator {
     private weak var appContext: AppContext!
     
     let id = UUID().uuidString
-    private var secondaryStackHashValues = Set<Int>()
     
     init(scene: UIScene, sceneDelegate: SceneDelegate, appContext: AppContext) {
         self.scene = scene
@@ -38,6 +37,7 @@ extension SceneCoordinator {
     
     enum Scene {
         case authentication
+        case twitterPinBasedAuthentication(viewModel: TwitterPinBasedAuthenticationViewModel)
         case accountList(viewModel: AccountListViewModel)
         case composeTweet(viewModel: ComposeTweetViewModel)
         case tweetConversation(viewModel: TweetConversationViewModel)
@@ -61,19 +61,15 @@ extension SceneCoordinator {
     @discardableResult
     func present(scene: Scene, from sender: UIViewController?, transition: Transition) -> UIViewController? {
         let viewController = get(scene: scene)
-        guard let presentingViewController = sender ?? sceneDelegate.window?.rootViewController else {
+        guard let presentingViewController = sender ?? sceneDelegate.window?.rootViewController?.topMost else {
             return nil
         }
         
         switch transition {
         case .show:
-            if secondaryStackHashValues.contains(presentingViewController.hashValue) {
-                secondaryStackHashValues.insert(viewController.hashValue)
-            }
             presentingViewController.show(viewController, sender: sender)
             
         case .showDetail:
-            secondaryStackHashValues.insert(viewController.hashValue)
             let navigationController = UINavigationController(rootViewController: viewController)
             presentingViewController.showDetailViewController(navigationController, sender: sender)
             
@@ -107,6 +103,10 @@ private extension SceneCoordinator {
         switch scene {
         case .authentication:
             viewController = AuthenticationViewController()
+        case .twitterPinBasedAuthentication(let viewModel):
+            let _viewController = TwitterPinBasedAuthenticationViewController()
+            _viewController.viewModel = viewModel
+            viewController = _viewController
         case .accountList(let viewModel):
             let _viewController = AccountListViewController()
             _viewController.viewModel = viewModel

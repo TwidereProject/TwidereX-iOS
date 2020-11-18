@@ -190,6 +190,7 @@ extension Tweet {
         public init(id: Tweet.ID, text: String, createdAt: Date, conversationID: String?, replyToTweetID: Tweet.ID?, inReplyToUserID: TwitterUser.ID?, lang: String?, possiblySensitive: Bool, source: String?, networkDate: Date) {
             self.id = id
             self.text = text
+                .replacingOccurrences(of: "&amp;", with: "&")
             self.createdAt = createdAt
             self.conversationID = conversationID
             self.inReplyToTweetID = replyToTweetID

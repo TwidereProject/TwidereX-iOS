@@ -29,16 +29,15 @@ final class MediaPreviewViewController: UIViewController, NeedsDependency {
         
     let mediaInfoDescriptionView = MediaInfoDescriptionView()
     
-    let closeButtonBackground: UIView = {
-        let backgroundView = UIView()
-        backgroundView.backgroundColor = .systemBackground
-        backgroundView.alpha = 0.5
+    let closeButtonBackground: UIVisualEffectView = {
+        let backgroundView = UIVisualEffectView(effect: UIBlurEffect(style: .systemUltraThinMaterial))
+        backgroundView.alpha = 0.9
         backgroundView.layer.masksToBounds = true
         backgroundView.layer.cornerRadius = 8
         return backgroundView
     }()
     
-    let closeButtonBackgroundVisualEffectView = UIVisualEffectView(effect: UIVibrancyEffect(blurEffect: UIBlurEffect(style: .systemMaterial)))
+    let closeButtonBackgroundVisualEffectView = UIVisualEffectView(effect: UIVibrancyEffect(blurEffect: UIBlurEffect(style: .systemUltraThinMaterial)))
     
     let closeButton: UIButton = {
         let button = HitTestExpandedButton(type: .custom)
@@ -53,6 +52,10 @@ final class MediaPreviewViewController: UIViewController, NeedsDependency {
         let pageControl = UIPageControl()
         return pageControl
     }()
+    
+    deinit {
+        os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s:", ((#file as NSString).lastPathComponent), #line, #function)
+    }
     
 }
 
@@ -92,7 +95,7 @@ extension MediaPreviewViewController {
             closeButtonBackground.leadingAnchor.constraint(equalTo: view.layoutMarginsGuide.leadingAnchor)
         ])
         closeButtonBackgroundVisualEffectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        closeButtonBackground.addSubview(closeButtonBackgroundVisualEffectView)
+        closeButtonBackground.contentView.addSubview(closeButtonBackgroundVisualEffectView)
 
         closeButton.translatesAutoresizingMaskIntoConstraints = false
         closeButtonBackgroundVisualEffectView.contentView.addSubview(closeButton)
@@ -118,6 +121,8 @@ extension MediaPreviewViewController {
             pageControl.trailingAnchor.constraint(equalTo: pageControlBackgroundVisualEffectView.trailingAnchor),
             pageControl.bottomAnchor.constraint(equalTo: pageControlBackgroundVisualEffectView.bottomAnchor),
         ])
+        
+        mediaInfoDescriptionView.delegate = self
         
         viewModel.avatarImageURL
             .receive(on: DispatchQueue.main)
@@ -153,11 +158,13 @@ extension MediaPreviewViewController {
             .receive(on: DispatchQueue.main)
             .sink { [weak self] content in
                 guard let self = self else { return }
-                self.mediaInfoDescriptionView.activeTextLabel.text = content
+                self.mediaInfoDescriptionView.activeLabel.text = content
             }
             .store(in: &disposeBag)
         
         closeButton.addTarget(self, action: #selector(MediaPreviewViewController.closeButtonPressed(_:)), for: .touchUpInside)
+        
+        viewModel.mediaPreviewImageViewControllerDelegate = self
         
         pagingViewConttroller.interPageSpacing = 10
         pagingViewConttroller.delegate = self
@@ -269,3 +276,30 @@ extension MediaPreviewViewController: PageboyViewControllerDelegate {
 
 // MARK: - StatusActionToolbarDelegate
 extension MediaPreviewViewController: StatusActionToolbarDelegate { }
+
+// MARK: - MediaPreviewingViewController
+extension MediaPreviewViewController: MediaPreviewingViewController {
+    
+    func isInteractiveDismissable() -> Bool {
+        if let mediaPreviewImageViewController = pagingViewConttroller.currentViewController as? MediaPreviewImageViewController {
+            let safeAreaInsets = mediaPreviewImageViewController.previewImageView.safeAreaInsets
+            let statusBarFrameHeight = view.window?.windowScene?.statusBarManager?.statusBarFrame.height ?? 0
+            return mediaPreviewImageViewController.previewImageView.contentOffset.y < -(safeAreaInsets.top - statusBarFrameHeight)
+        }
+        
+        return false
+    }
+    
+}
+
+// MARK: - MediaPreviewImageViewControllerDelegate
+extension MediaPreviewViewController: MediaPreviewImageViewControllerDelegate {
+    
+    func mediaPreviewImageViewController(_ viewController: MediaPreviewImageViewController, tapGestureRecognizerDidTrigger tapGestureRecognizer: UITapGestureRecognizer) {
+        
+    }
+    
+}
+
+// MARK: - MediaInfoDescriptionViewDelegate
+extension MediaPreviewViewController: MediaInfoDescriptionViewDelegate { }

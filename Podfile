@@ -8,7 +8,6 @@ target 'TwidereX' do
   # Pods for TwidereX
   
   ## UI
-  pod 'SwipeViewController', '~> 2.0.0'
   pod 'Floaty', '~> 4.2.0'
   
   # misc
@@ -36,6 +35,7 @@ plugin 'cocoapods-keys', {
     "consumer_key",
     "consumer_key_secret",
     "host_key_public",
-    "oauth_endpoint"
+    "oauth_endpoint",
+    "oauth_endpoint_debug"
   ]
 }

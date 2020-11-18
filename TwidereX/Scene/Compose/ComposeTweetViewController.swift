@@ -63,6 +63,11 @@ final class ComposeTweetViewController: UIViewController, NeedsDependency {
     
     let tweetToolbarView = TweetToolbarView()
     var tweetToolbarViewBottomLayoutConstraint: NSLayoutConstraint!
+    
+    deinit {
+        os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s:", ((#file as NSString).lastPathComponent), #line, #function)
+    }
+    
 }
 
 extension ComposeTweetViewController {
