@@ -15,10 +15,12 @@ on:
 jobs:
   build:
     name: CI Build test for Twidere X
-    runs-on: macOS-latest
+    runs-on: macos-11.0
     steps:
       - name: checkout
         uses: actions/checkout@v2
+      - name: force Xcode 11.2
+        run: sudo xcode-select -switch /Applications/Xcode_12.2.app
       - name: setup
         run: exec ./.github/scripts/setup.sh
       - name: build
