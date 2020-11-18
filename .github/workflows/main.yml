@@ -20,6 +20,6 @@ jobs:
       - name: checkout
         uses: actions/checkout@v2
       - name: setup
-        uses: exec ./.github/scripts/setup.sh
+        run: exec ./.github/scripts/setup.sh
       - name: build
-        uses: exec ./.github/scripts/build.sh
+        run: exec ./.github/scripts/build.sh
