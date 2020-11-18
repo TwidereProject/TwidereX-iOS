@@ -9,3 +9,5 @@ pod keys set consumer_key_secret "<consumer_key_secret>"
 pod keys set host_key_public ""
 pod keys set oauth_endpoint "oob"
 pod keys set oauth_endpoint_debug "oob"
+
+pod install
