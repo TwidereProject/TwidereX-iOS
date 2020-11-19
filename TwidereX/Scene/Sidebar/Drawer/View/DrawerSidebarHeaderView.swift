@@ -160,9 +160,9 @@ struct DrawerSidebarHeaderView_Previews: PreviewProvider {
     
     static var previews: some View {
         UIViewPreview(width: 375) {
-            let header = DrawerSidebarHeaderView()
-            header.avatarImageView.image = avatarImage
-            return header
+            let headerLabel = DrawerSidebarHeaderView()
+            headerLabel.avatarImageView.image = avatarImage
+            return headerLabel
         }
         .previewLayout(.fixed(width: 375, height: 140))
     }

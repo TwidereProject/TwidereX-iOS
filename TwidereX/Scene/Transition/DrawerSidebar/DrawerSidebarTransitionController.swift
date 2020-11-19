@@ -118,9 +118,9 @@ extension DrawerSidebarTransitionController: UIViewControllerTransitioningDelega
         return nil
     }
     
-//    func presentationController(forPresented presented: UIViewController, presenting: UIViewController?, source: UIViewController) -> UIPresentationController? {
-//        return SidebarPresentationController(presentedViewController: presented, presenting: presenting)
-//    }
+    func presentationController(forPresented presented: UIViewController, presenting: UIViewController?, source: UIViewController) -> UIPresentationController? {
+        return DrawerSidebarPresentationController(presentedViewController: presented, presenting: presenting)
+    }
     
 }
 

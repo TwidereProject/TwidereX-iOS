@@ -47,7 +47,7 @@ extension SearchToSearchDetailViewControllerAnimatedTransitioning {
             
         }
         animator.addCompletion { position in
-            transitionContext.completeTransition(position == .end)
+            transitionContext.completeTransition(true)
         }
         return animator
     }
@@ -67,7 +67,7 @@ extension SearchToSearchDetailViewControllerAnimatedTransitioning {
             
         }
         animator.addCompletion { position in
-            transitionContext.completeTransition(position == .end)
+            transitionContext.completeTransition(true)
         }
         return animator
     }

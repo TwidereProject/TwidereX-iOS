@@ -39,7 +39,8 @@ final class TimelinePostTableViewCell: UITableViewCell {
     let timelinePostView = TimelinePostView()
     let conversationLinkUpper = UIView.separatorLine
     let conversationLinkLower = UIView.separatorLine
-    
+    let separatorLine = UIView.separatorLine
+
     var timelinePostViewTopLayoutConstraint: NSLayoutConstraint!
     
     var separatorLineNormalLeadingLayoutConstraint: NSLayoutConstraint!
@@ -106,7 +107,6 @@ extension TimelinePostTableViewCell {
             conversationLinkLower.widthAnchor.constraint(equalToConstant: 1),
         ])
         
-        let separatorLine = UIView.separatorLine
         separatorLine.translatesAutoresizingMaskIntoConstraints = false
         separatorLineNormalLeadingLayoutConstraint = separatorLine.leadingAnchor.constraint(equalTo: contentView.readableContentGuide.leadingAnchor)
         separatorLineExpandLeadingLayoutConstraint = separatorLine.leadingAnchor.constraint(equalTo: contentView.leadingAnchor)
@@ -150,28 +150,24 @@ extension TimelinePostTableViewCell {
     @objc private func retweetInfoLabelTapGestureRecognizerHandler(_ sender: UITapGestureRecognizer) {
         os_log("%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
         guard sender.state == .ended else { return }
-        assert(delegate != nil)
         delegate?.timelinePostTableViewCell(self, retweetInfoLabelDidPressed: timelinePostView.retweetInfoLabel)
     }
     
     @objc private func avatarImageViewTapGestureRecognizerHandler(_ sender: UITapGestureRecognizer) {
         os_log("%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
         guard sender.state == .ended else { return }
-        assert(delegate != nil)
         delegate?.timelinePostTableViewCell(self, avatarImageViewDidPressed: timelinePostView.avatarImageView)
     }
     
     @objc private func quoteAvatarImageViewTapGestureRecognizerHandler(_ sender: UITapGestureRecognizer) {
         os_log("%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
         guard sender.state == .ended else { return }
-        assert(delegate != nil)
         delegate?.timelinePostTableViewCell(self, quoteAvatarImageViewDidPressed: timelinePostView.quotePostView.avatarImageView)
     }
     
     @objc private func quotePostViewTapGestureRecognizerHandler(_ sender: UITapGestureRecognizer) {
         os_log("%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
         guard sender.state == .ended else { return }
-        assert(delegate != nil)
         delegate?.timelinePostTableViewCell(self, quotePostViewDidPressed: timelinePostView.quotePostView)
     }
     

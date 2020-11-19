@@ -6,7 +6,7 @@
 //  Copyright © 2020 Twidere. All rights reserved.
 //
 
-import Foundation
+import UIKit
 import ActiveLabel
 
 extension ActiveLabel {
@@ -23,8 +23,9 @@ extension ActiveLabel {
         mentionColor = Asset.Colors.hightLight.color
         hashtagColor = Asset.Colors.hightLight.color
         URLColor = Asset.Colors.hightLight.color
-        textColor = .label
-        font = .systemFont(ofSize: 14)
+        textColor = UIColor.label.withAlphaComponent(0.8)
+        font = .preferredFont(forTextStyle: .body)
+        adjustsFontForContentSizeCategory = true
         text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
     }
     

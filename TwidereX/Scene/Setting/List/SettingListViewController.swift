@@ -26,6 +26,7 @@ extension SettingListViewController {
         super.viewDidLoad()
         
         title = "Settings"
+        parent?.title = "Settings"
         
         let hostingViewController = UIHostingController(rootView: settingListView.environmentObject(context))
         addChild(hostingViewController)
@@ -46,7 +47,7 @@ extension SettingListViewController {
                 case .appearance:
                     break
                 case .display:
-                    break
+                    self.coordinator.present(scene: .displayPreference, from: self, transition: .show)
                 case .layout:
                     break
                 case .webBrowser:

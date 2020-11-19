@@ -45,8 +45,11 @@ extension SceneCoordinator {
         case profile(viewModel: ProfileViewModel)
         case mediaPreview(viewModel: MediaPreviewViewModel)
         case drawerSidebar
+        
         case setting
+        case displayPreference
         case about
+        
         case safari(url: URL)
     }
 }
@@ -134,7 +137,13 @@ private extension SceneCoordinator {
         case .drawerSidebar:
             viewController = DrawerSidebarViewController()
         case .setting:
-            viewController = SettingListViewController()
+            let _viewController = DynamicFontContainerViewController()
+            _viewController.child = SettingListViewController()
+            viewController = _viewController
+        case .displayPreference:
+            let _viewController = DynamicFontContainerViewController()
+            _viewController.child = DisplayPreferenceViewController()
+            viewController = _viewController
         case .about:
             viewController = AboutViewController()
         case .safari(let url):
@@ -142,6 +151,9 @@ private extension SceneCoordinator {
         }
         
         setupDependency(for: viewController as? NeedsDependency)
+        if let viewController = viewController as? DynamicFontContainerViewController {
+            setupDependency(for: viewController.child as? NeedsDependency)
+        }
 
         return viewController
     }
