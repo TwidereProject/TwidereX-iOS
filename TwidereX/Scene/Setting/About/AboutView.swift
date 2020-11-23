@@ -33,10 +33,11 @@ struct AboutView: View {
                 header:
                     VStack {
                         Image(uiImage: Asset.Logo.twidere.image)
+                            .padding(44)
                         Text("Twidere X")
-                            .font(.system(size: 24))
+                            .font(.headline)
                         Text(UIApplication.versionBuild())
-                            .font(.system(size: 16))
+                            .font(.subheadline)
                     }
                     .modifier(TextCaseEraseStyle())
                     .frame(maxWidth: .infinity)

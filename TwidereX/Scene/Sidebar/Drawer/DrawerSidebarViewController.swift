@@ -115,7 +115,7 @@ extension DrawerSidebarViewController {
                 
                 // bind name
                 self.headerView.nameLabel.text = twitterUser?.name ?? "-"
-                self.headerView.usernameLabel.text = twitterUser?.username ?? "-"
+                self.headerView.usernameLabel.text = twitterUser.flatMap { "@" + $0.username } ?? "-"
                 
                 // bind status
                 self.headerView.profileBannerStatusView.followingStatusItemView.countLabel.text = twitterUser?.metrics?.followingCount.flatMap { "\($0.intValue)" } ?? "-"

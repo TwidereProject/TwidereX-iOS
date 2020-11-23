@@ -31,7 +31,7 @@ final class DrawerSidebarTransitionController: NSObject {
         gestureRecognizer.maximumNumberOfTouches = 1
         return gestureRecognizer
     }()
-    
+
     private(set) var transitionType: TransitionType?
     private var interactiveTransitioning: UIViewControllerInteractiveTransitioning?
     

@@ -14,6 +14,7 @@ final class SlideTableViewCell: UITableViewCell {
     
     var disposeBag = Set<AnyCancellable>()
     
+    let container = UIStackView()
     let leadingLabel = UILabel()
     let trailingLabel = UILabel()
     let slider = UISlider()
@@ -44,7 +45,6 @@ extension SlideTableViewCell {
     private func _init() {
         selectionStyle = .none
         
-        let container = UIStackView()
         container.axis = .horizontal
         container.spacing = 8
         
@@ -58,15 +58,10 @@ extension SlideTableViewCell {
             container.heightAnchor.constraint(equalToConstant: 44).priority(.required - 1),
         ])
         
-//        leadingLabel.translatesAutoresizingMaskIntoConstraints = false
         container.addArrangedSubview(leadingLabel)
         container.addArrangedSubview(slider)
         container.addArrangedSubview(trailingLabel)
-        
-        NSLayoutConstraint.activate([
-//            slider.heightAnchor.constraint(equalToConstant: 44).priority(.defaultHigh),
-        ])
-        
+
         slider.addTarget(self, action: #selector(SlideTableViewCell.sliderValueChagned(_:event:)), for: .valueChanged)
     }
     

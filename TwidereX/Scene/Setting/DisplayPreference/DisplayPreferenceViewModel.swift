@@ -12,7 +12,10 @@ import Combine
 
 final class DisplayPreferenceViewModel: NSObject {
     
+    var disposeBag = Set<AnyCancellable>()
+    
     // input
+    let customContentSizeCatagory: CurrentValueSubject<UIContentSizeCategory, Never>
     
     // output
     let sections: [Section] = [
@@ -24,6 +27,22 @@ final class DisplayPreferenceViewModel: NSObject {
         Section(header: "Date Format", settings: [.useTheSystemFontSizeSwitch]),
         Section(header: "Media", settings: [.useTheSystemFontSizeSwitch]),
     ]
+    let fontSizeSlideTableViewCell = SlideTableViewCell()
+    
+    override init() {
+        customContentSizeCatagory = CurrentValueSubject(UserDefaults.shared.customContentSizeCatagory)
+        super.init()
+        
+        let feedbackGenerator = UIImpactFeedbackGenerator(style: .light)
+        customContentSizeCatagory
+            .dropFirst()
+            .removeDuplicates()
+            .sink { customContentSizeCatagory in
+                feedbackGenerator.impactOccurred()
+                UserDefaults.shared.customContentSizeCatagory = customContentSizeCatagory
+            }
+            .store(in: &disposeBag)
+    }
     
     
 }
@@ -81,9 +100,11 @@ extension DisplayPreferenceViewModel: UITableViewDataSource {
                 .store(in: &_cell.disposeBag)
             cell = _cell
         case .fontSizeSlider:
-            let _cell = tableView.dequeueReusableCell(withIdentifier: String(describing: SlideTableViewCell.self), for: indexPath) as! SlideTableViewCell
+            let _cell = fontSizeSlideTableViewCell      // prevent dequeue new cell instance
+            _cell.disposeBag.removeAll()
             DisplayPreferenceViewModel.configureFontSizeSlider(cell: _cell)
             cell = _cell
+            print(cell)
         }
         return cell
     }
@@ -109,31 +130,19 @@ extension DisplayPreferenceViewModel {
     
     
     static func configureFontSizeSlider(cell: SlideTableViewCell) {
-        cell.leadingLabel.font = .preferredFont(forTextStyle: .caption1)
+        cell.leadingLabel.font = .systemFont(ofSize: 12)
         cell.leadingLabel.text = "Aa"
 
-        cell.trailingLabel.font = .preferredFont(forTextStyle: .callout)
+        cell.trailingLabel.font = .systemFont(ofSize: 18)
         cell.trailingLabel.text = "Aa"
         
+        // disable the superview of slider to prevent user directly control
+        cell.container.isUserInteractionEnabled = false
         cell.slider.minimumValue = 0
         cell.slider.maximumValue = Float(UserDefaults.contentSizeCategory.count - 1)
-        
-        let customContentSizeCatagory = CurrentValueSubject<UIContentSizeCategory, Never>(UserDefaults.shared.customContentSizeCatagory)
-        if let index = UserDefaults.contentSizeCategory.firstIndex(of: customContentSizeCatagory.value) {
+        if let index = UserDefaults.contentSizeCategory.firstIndex(of: UserDefaults.shared.customContentSizeCatagory) {
             cell.slider.value = Float(index)
         }
-        
-        let feedbackGenerator = UIImpactFeedbackGenerator(style: .light)
-        feedbackGenerator.prepare()
-        customContentSizeCatagory
-            .dropFirst()
-            .removeDuplicates()
-            .sink { customContentSizeCatagory in
-                UserDefaults.shared.customContentSizeCatagory = customContentSizeCatagory
-                feedbackGenerator.impactOccurred()
-                os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: customContentSizeCatagory: %s", ((#file as NSString).lastPathComponent), #line, #function, String(describing: customContentSizeCatagory))
-            }
-            .store(in: &cell.disposeBag)
         
         UserDefaults.shared.publisher(for: \.useTheSystemFontSize)
             .receive(on: DispatchQueue.main)
@@ -141,15 +150,6 @@ extension DisplayPreferenceViewModel {
                 cell.slider.tintColor = useTheSystemFontSize ? .secondaryLabel : .systemBlue
                 cell.slider.isUserInteractionEnabled = !useTheSystemFontSize
             })
-            .store(in: &cell.disposeBag)
-        
-        cell.sliderPublisher
-            .sink { value in
-                let index = Int(round(value))
-                cell.slider.value = Float(index)   // set back to move by step
-                let selectContentSizeCatagory = UserDefaults.contentSizeCategory[index]
-                customContentSizeCatagory.value = selectContentSizeCatagory
-            }
             .store(in: &cell.disposeBag)
     }
     

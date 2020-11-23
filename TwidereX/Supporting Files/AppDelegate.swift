@@ -6,14 +6,24 @@
 //
 
 import UIKit
+import Combine
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
+    var disposeBag = Set<AnyCancellable>()
+
     let appContext = AppContext()
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        // Override point for customization after application launch.
+
+        NotificationCenter.default.publisher(for: UIContentSizeCategory.didChangeNotification)
+            .sink { _ in
+                // only trigger update
+                UserDefaults.shared.useTheSystemFontSize = UserDefaults.shared.useTheSystemFontSize
+            }
+            .store(in: &disposeBag)
+
         return true
     }
 

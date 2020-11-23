@@ -50,24 +50,24 @@ extension DrawerSidebarAnimatedTransitioning {
             fatalError()
         }
         
-        let toViewEndFrame = transitionContext.finalFrame(for: toVC)
-        let toViewStartFrame: CGRect = {
-            switch UIApplication.shared.userInterfaceLayoutDirection {
-            case .rightToLeft:
-                return CGRect(x: toViewEndFrame.origin.x + toView.bounds.width,
-                              y: toViewEndFrame.origin.y,
-                              width: toViewEndFrame.width,
-                              height: toViewEndFrame.height)
-            default:
-                return CGRect(x: toViewEndFrame.origin.x - toViewEndFrame.width,
-                              y: toViewEndFrame.origin.y,
-                              width: toViewEndFrame.width,
-                              height: toViewEndFrame.height)
-            }
-        }()
-        
+//        let toViewEndFrame = transitionContext.finalFrame(for: toVC)
+//        let toViewStartFrame: CGRect = {
+//            switch UIApplication.shared.userInterfaceLayoutDirection {
+//            case .rightToLeft:
+//                return CGRect(x: toViewEndFrame.origin.x + toView.bounds.width,
+//                              y: toViewEndFrame.origin.y,
+//                              width: toViewEndFrame.width,
+//                              height: toViewEndFrame.height)
+//            default:
+//                return CGRect(x: toViewEndFrame.origin.x - toViewEndFrame.width,
+//                              y: toViewEndFrame.origin.y,
+//                              width: toViewEndFrame.width,
+//                              height: toViewEndFrame.height)
+//            }
+//        }()
+        let toViewStartTransform: CGAffineTransform = CGAffineTransform(translationX: -toView.frame.width, y: 0)
         transitionContext.containerView.addSubview(toView)
-        toView.frame = toViewStartFrame
+        toView.transform = toViewStartTransform
         
         // fix custom presention container cause layout along with animation issue
         UIView.performWithoutAnimation {
@@ -78,11 +78,14 @@ extension DrawerSidebarAnimatedTransitioning {
         let animator = UIViewPropertyAnimator(duration: transitionDuration(using: transitionContext), curve: curve)
         
         animator.addAnimations {
-            toView.frame = toViewEndFrame
+            toView.transform = .identity
         }
         
         animator.addCompletion { position in
-            transitionContext.completeTransition(position == .end)
+            if transitionContext.transitionWasCancelled {
+                toView.removeFromSuperview()
+            }
+            transitionContext.completeTransition(!transitionContext.transitionWasCancelled)
         }
         
         return animator
@@ -90,10 +93,14 @@ extension DrawerSidebarAnimatedTransitioning {
     
     private func popTransition(using transitionContext: UIViewControllerContextTransitioning, curve: UIView.AnimationCurve = .easeInOut) -> UIViewPropertyAnimator {
         guard let fromVC = transitionContext.viewController(forKey: .from) as? DrawerSidebarViewController,
-              let fromView = transitionContext.view(forKey: .from) else {
+              let fromView = transitionContext.view(forKey: .from),
+              let toView = transitionContext.view(forKey: .to) else {
             fatalError()
         }
-        
+
+        transitionContext.containerView.addSubview(toView)
+        transitionContext.containerView.bringSubviewToFront(fromView)
+
         let fromViewStartFrame = fromView.frame
         let fromViewEndFrame: CGRect = {
             switch UIApplication.shared.userInterfaceLayoutDirection {
@@ -118,7 +125,10 @@ extension DrawerSidebarAnimatedTransitioning {
         }
         
         animator.addCompletion { position in
-            transitionContext.completeTransition(position == .end)
+            if transitionContext.transitionWasCancelled {
+                toView.removeFromSuperview()
+            }
+            transitionContext.completeTransition(!transitionContext.transitionWasCancelled)
         }
         
         return animator

@@ -6,7 +6,7 @@
 //  Copyright © 2020 Dimension. All rights reserved.
 //
 
-import Foundation
+import UIKit
 import Combine
 import CoreData
 import CoreDataStack
@@ -26,7 +26,9 @@ class AppContext: ObservableObject {
     
     let documentStore: DocumentStore
     private var documentStoreSubscription: AnyCancellable!
-        
+
+    let overrideTraitCollection = CurrentValueSubject<UITraitCollection?, Never>(nil)
+
     init() {
         let _coreDataStack = CoreDataStack()
         let _managedObjectContext = _coreDataStack.persistentContainer.viewContext
@@ -60,6 +62,19 @@ class AppContext: ObservableObject {
                 }
             }
             .store(in: &disposeBag)
+
+        Publishers.CombineLatest(
+            UserDefaults.shared.publisher(for: \.useTheSystemFontSize).eraseToAnyPublisher(),
+            UserDefaults.shared.publisher(for: \.customContentSizeCatagory)
+        )
+        .receive(on: DispatchQueue.main)
+        .sink { [weak self] useTheSystemFontSize, customContentSizeCatagory in
+            guard let self = self else { return }
+            // let traitCollection = useTheSystemFontSize ? UITraitCollection(preferredContentSizeCategory: UIApplication.shared.preferredContentSizeCategory) : UITraitCollection(preferredContentSizeCategory: customContentSizeCatagory)
+            let traitCollection = UITraitCollection(preferredContentSizeCategory: UIApplication.shared.preferredContentSizeCategory)
+            self.overrideTraitCollection.value = traitCollection
+        }
+        .store(in: &disposeBag)
     }
     
 }

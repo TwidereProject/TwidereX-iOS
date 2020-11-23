@@ -1,12 +1,34 @@
 PODS:
   - DateToolsSwift (5.0.0)
+  - FirebaseCore (7.2.0):
+    - FirebaseCoreDiagnostics (~> 7.0)
+    - GoogleUtilities/Environment (~> 7.0)
+    - GoogleUtilities/Logger (~> 7.0)
+  - FirebaseCoreDiagnostics (7.1.0):
+    - GoogleDataTransport (~> 8.0)
+    - GoogleUtilities/Environment (~> 7.0)
+    - GoogleUtilities/Logger (~> 7.0)
+    - nanopb (~> 2.30906.0)
   - Floaty (4.2.0)
+  - GoogleDataTransport (8.0.1):
+    - nanopb (~> 2.30906.0)
+  - GoogleUtilities/Environment (7.1.1):
+    - PromisesObjC (~> 1.2)
+  - GoogleUtilities/Logger (7.1.1):
+    - GoogleUtilities/Environment
   - Keys (1.0.1)
+  - nanopb (2.30906.0):
+    - nanopb/decode (= 2.30906.0)
+    - nanopb/encode (= 2.30906.0)
+  - nanopb/decode (2.30906.0)
+  - nanopb/encode (2.30906.0)
+  - PromisesObjC (1.2.11)
   - SwiftGen (6.3.0)
   - twitter-text (3.1.0)
 
 DEPENDENCIES:
   - DateToolsSwift (~> 5.0.0)
+  - FirebaseCore (from `https://github.com/firebase/firebase-ios-sdk.git`, branch `release-7.2`)
   - Floaty (~> 4.2.0)
   - Keys (from `Pods/CocoaPodsKeys`)
   - SwiftGen (~> 6.3.0)
@@ -15,21 +37,40 @@ DEPENDENCIES:
 SPEC REPOS:
   trunk:
     - DateToolsSwift
+    - FirebaseCoreDiagnostics
     - Floaty
+    - GoogleDataTransport
+    - GoogleUtilities
+    - nanopb
+    - PromisesObjC
     - SwiftGen
     - twitter-text
 
 EXTERNAL SOURCES:
+  FirebaseCore:
+    :branch: release-7.2
+    :git: https://github.com/firebase/firebase-ios-sdk.git
   Keys:
     :path: Pods/CocoaPodsKeys
 
+CHECKOUT OPTIONS:
+  FirebaseCore:
+    :commit: 9f2062f73b1ed3f3ea554635bd4d4c2568e86257
+    :git: https://github.com/firebase/firebase-ios-sdk.git
+
 SPEC CHECKSUMS:
   DateToolsSwift: 4207ada6ad615d8dc076323d27037c94916dbfa6
+  FirebaseCore: c959e8a598f83125c01c1700d9161b236ab3833c
+  FirebaseCoreDiagnostics: 872cdb9b749b23346dddd5c1014d1babd2257de3
   Floaty: e2bd5a0f6f7f70899e26ff2da31081c8bee8d1b0
+  GoogleDataTransport: e4085e6762f36a6141738f46b0153473ce57fb18
+  GoogleUtilities: 3dc4ff0d5e4840e2fa8eef0889620e8c33d4218c
   Keys: a576f4c9c1c641ca913a959a9c62ed3f215a8de9
+  nanopb: 1bf24dd71191072e120b83dd02d08f3da0d65e53
+  PromisesObjC: 8c196f5a328c2cba3e74624585467a557dcb482f
   SwiftGen: 3d5024a47ea79e408cded20763d7a17d18a4548c
   twitter-text: 3a0d73ca52955439dc8b208ca7e123ea0abd6a51
 
-PODFILE CHECKSUM: 7ebae1dcf1d210f5185dd99d13d94806f05bf8d0
+PODFILE CHECKSUM: 8bb8bc5bee039b884eb8981044059a18050b77da
 
 COCOAPODS: 1.10.0

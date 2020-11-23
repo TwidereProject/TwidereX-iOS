@@ -175,6 +175,7 @@ extension TweetConversationViewModel {
                 managedObjectContext.performAndWait {
                     let tweet = managedObjectContext.object(with: objectID) as! Tweet
                     TweetConversationViewModel.configure(cell: cell, readableLayoutFrame: tableView.readableContentGuide.layoutFrame, tweet: tweet, requestUserID: requestTwitterUserID)
+                    TweetConversationViewModel.configure(cell: cell, overrideTraitCollection: self.context.overrideTraitCollection.value)
                 }
                 cell.delegate = self.conversationPostTableViewCellDelegate
                 return cell
@@ -185,7 +186,8 @@ extension TweetConversationViewModel {
                 let managedObjectContext = self.context.managedObjectContext
                 managedObjectContext.performAndWait {
                     let tweet = managedObjectContext.object(with: objectID) as! Tweet
-                    TweetConversationViewModel.configure(cell: cell, readableLayoutFrame: tableView.readableContentGuide.layoutFrame, tweet: tweet, requestUserID: requestUserID)
+                    HomeTimelineViewModel.configure(cell: cell, readableLayoutFrame: tableView.readableContentGuide.layoutFrame, tweet: tweet, requestUserID: requestUserID)
+                    HomeTimelineViewModel.configure(cell: cell, overrideTraitCollection: self.context.overrideTraitCollection.value)
                 }
                 cell.conversationLinkUpper.isHidden = attribute.level == 0
                 cell.conversationLinkLower.isHidden = !attribute.hasReply || attribute.level != 0
@@ -366,11 +368,28 @@ extension TweetConversationViewModel {
             }
             .store(in: &cell.disposeBag)
     }
-    
-    static func configure(cell: TimelinePostTableViewCell, readableLayoutFrame: CGRect? = nil, tweet: Tweet, requestUserID: String) {
-        HomeTimelineViewModel.configure(cell: cell, readableLayoutFrame: readableLayoutFrame, tweet: tweet, requestUserID: requestUserID)
+
+    static func configure(cell: ConversationPostTableViewCell, overrideTraitCollection traitCollection: UITraitCollection?) {
+        cell.conversationPostView.nameLabel.font = .preferredFont(forTextStyle: .headline, compatibleWith: traitCollection)
+        cell.conversationPostView.usernameLabel.font = .preferredFont(forTextStyle: .subheadline, compatibleWith: traitCollection)
+        cell.conversationPostView.activeTextLabel.font = .preferredFont(forTextStyle: .body, compatibleWith: traitCollection)
+        cell.conversationPostView.geoLabel.font = .preferredFont(forTextStyle: .callout, compatibleWith: traitCollection)
+        cell.conversationPostView.dateLabel.font = .preferredFont(forTextStyle: .callout, compatibleWith: traitCollection)
+        cell.conversationPostView.sourceLabel.font = .preferredFont(forTextStyle: .callout, compatibleWith: traitCollection)
+
+        cell.conversationPostView.quotePostView.nameLabel.font = .preferredFont(forTextStyle: .headline, compatibleWith: traitCollection)
+        cell.conversationPostView.quotePostView.usernameLabel.font = .preferredFont(forTextStyle: .subheadline, compatibleWith: traitCollection)
+        cell.conversationPostView.quotePostView.dateLabel.font = .preferredFont(forTextStyle: .callout, compatibleWith: traitCollection)
+        cell.conversationPostView.quotePostView.activeTextLabel.font = .preferredFont(forTextStyle: .body, compatibleWith: traitCollection)
+
+        cell.conversationPostView.retweetPostStatusView.countLabel.font = .preferredFont(forTextStyle: .callout, compatibleWith: traitCollection)
+        cell.conversationPostView.retweetPostStatusView.statusLabel.font = .preferredFont(forTextStyle: .callout, compatibleWith: traitCollection)
+        cell.conversationPostView.quotePostStatusView.countLabel.font = .preferredFont(forTextStyle: .callout, compatibleWith: traitCollection)
+        cell.conversationPostView.quotePostStatusView.statusLabel.font = .preferredFont(forTextStyle: .callout, compatibleWith: traitCollection)
+        cell.conversationPostView.likePostStatusView.countLabel.font = .preferredFont(forTextStyle: .callout, compatibleWith: traitCollection)
+        cell.conversationPostView.likePostStatusView.statusLabel.font = .preferredFont(forTextStyle: .callout, compatibleWith: traitCollection)
     }
-    
+
 }
 
 extension TweetConversationViewModel {

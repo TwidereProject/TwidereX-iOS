@@ -26,7 +26,6 @@ extension SettingListViewController {
         super.viewDidLoad()
         
         title = "Settings"
-        parent?.title = "Settings"
         
         let hostingViewController = UIHostingController(rootView: settingListView.environmentObject(context))
         addChild(hostingViewController)

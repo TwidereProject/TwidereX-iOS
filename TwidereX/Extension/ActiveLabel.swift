@@ -25,7 +25,6 @@ extension ActiveLabel {
         URLColor = Asset.Colors.hightLight.color
         textColor = UIColor.label.withAlphaComponent(0.8)
         font = .preferredFont(forTextStyle: .body)
-        adjustsFontForContentSizeCategory = true
         text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
     }
     

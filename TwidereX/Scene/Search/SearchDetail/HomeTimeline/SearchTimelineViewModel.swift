@@ -191,6 +191,7 @@ extension SearchTimelineViewModel {
                 managedObjectContext.performAndWait {
                     let tweet = managedObjectContext.object(with: objectID) as! Tweet
                     SearchTimelineViewModel.configure(cell: cell, tweet: tweet, identifier: self.identifier, requestUserID: requestUserID)
+                    HomeTimelineViewModel.configure(cell: cell, overrideTraitCollection: self.context.overrideTraitCollection.value)
                 }
                 cell.delegate = self.timelinePostTableViewCellDelegate
                 return cell

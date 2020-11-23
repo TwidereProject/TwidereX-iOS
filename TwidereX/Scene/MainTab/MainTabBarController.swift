@@ -138,23 +138,16 @@ extension MainTabBarController {
             }
             .store(in: &disposeBag)
         
-        Publishers.CombineLatest(
-            UserDefaults.shared.publisher(for: \.useTheSystemFontSize).eraseToAnyPublisher(),
-            UserDefaults.shared.publisher(for: \.customContentSizeCatagory)
-        )
-        .sink { [weak self] useTheSystemFontSize, customContentSizeCatagory in
-            os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
-            
-            guard let self = self else { return }
-            viewControllers.forEach { viewController in
-                let traitCollection = useTheSystemFontSize ? UITraitCollection(preferredContentSizeCategory: UIApplication.shared.preferredContentSizeCategory) : UITraitCollection(preferredContentSizeCategory: customContentSizeCatagory)
-                self.setOverrideTraitCollection(traitCollection, forChild: viewController)
-            }
-        }
-        .store(in: &disposeBag)
-        
         #if DEBUG
         // selectedIndex = 1
+        #endif
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        #if DEBUG
+        //coordinator.present(scene: .displayPreference, from: nil, transition: .show)
         #endif
     }
         

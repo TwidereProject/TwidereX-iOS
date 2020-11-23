@@ -13,6 +13,9 @@ target 'TwidereX' do
   # misc
   pod 'SwiftGen', '~> 6.3.0'
   pod 'DateToolsSwift', '~> 5.0.0'
+  # pod 'Firebase/Analytics'
+  pod 'FirebaseCore', :git => 'https://github.com/firebase/firebase-ios-sdk.git', :branch => 'release-7.2'
+  pod 'Firebase/Analytics', :git => 'https://github.com/firebase/firebase-ios-sdk.git', :branch => 'release-7.2'
 
   # Twitter
   pod 'twitter-text', '~> 3.1.0'

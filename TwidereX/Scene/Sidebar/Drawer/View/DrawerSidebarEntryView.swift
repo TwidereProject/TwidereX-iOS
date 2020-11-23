@@ -19,7 +19,7 @@ final class DrawerSidebarEntryView: UIView {
     
     let titleLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 14, weight: .medium)
+        label.font = .preferredFont(forTextStyle: .body)
         label.textColor = .label
         return label
     }()

@@ -31,14 +31,14 @@ final class DrawerSidebarHeaderView: UIView {
     
     let nameLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 20, weight: .medium)
+        label.font = .preferredFont(withTextStyle: .headline, maxSize: 20)
         label.text = "Alice"
         return label
     }()
     
     let usernameLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 14)
+        label.font = .preferredFont(withTextStyle: .subheadline, maxSize: 13)
         label.text = "@alice"
         label.textColor = .secondaryLabel
         return label

@@ -27,6 +27,7 @@ extension MentionTimelineViewModel {
                 managedObjectContext.performAndWait {
                     let mentionTimelineIndex = managedObjectContext.object(with: objectID) as! MentionTimelineIndex
                     MentionTimelineViewModel.configure(cell: cell, readableLayoutFrame: tableView.readableContentGuide.layoutFrame, mentionTimelineIndex: mentionTimelineIndex, attribute: attribute)
+                    HomeTimelineViewModel.configure(cell: cell, overrideTraitCollection: self.context.overrideTraitCollection.value)
                 }
                 cell.delegate = self.timelinePostTableViewCellDelegate
                 return cell

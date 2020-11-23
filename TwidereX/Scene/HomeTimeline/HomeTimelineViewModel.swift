@@ -106,6 +106,7 @@ extension HomeTimelineViewModel {
                 managedObjectContext.performAndWait {
                     let timelineIndex = managedObjectContext.object(with: objectID) as! TimelineIndex
                     HomeTimelineViewModel.configure(cell: cell, readableLayoutFrame: tableView.readableContentGuide.layoutFrame, timelineIndex: timelineIndex, attribute: attribute)
+                    HomeTimelineViewModel.configure(cell: cell, overrideTraitCollection: self.context.overrideTraitCollection.value)
                 }
                 cell.delegate = self.timelinePostTableViewCellDelegate
                 return cell
@@ -336,6 +337,20 @@ extension HomeTimelineViewModel {
             }
             .store(in: &cell.disposeBag)
     }
+
+    static func configure(cell: TimelinePostTableViewCell, overrideTraitCollection traitCollection: UITraitCollection?) {
+        cell.timelinePostView.retweetInfoLabel.font = .preferredFont(forTextStyle: .callout, compatibleWith: traitCollection)
+        cell.timelinePostView.nameLabel.font = .preferredFont(forTextStyle: .headline, compatibleWith: traitCollection)
+        cell.timelinePostView.usernameLabel.font = .preferredFont(forTextStyle: .subheadline, compatibleWith: traitCollection)
+        cell.timelinePostView.dateLabel.font = .preferredFont(forTextStyle: .callout, compatibleWith: traitCollection)
+        cell.timelinePostView.activeTextLabel.font = .preferredFont(forTextStyle: .body, compatibleWith: traitCollection)
+
+        cell.timelinePostView.quotePostView.nameLabel.font = .preferredFont(forTextStyle: .headline, compatibleWith: traitCollection)
+        cell.timelinePostView.quotePostView.usernameLabel.font = .preferredFont(forTextStyle: .subheadline, compatibleWith: traitCollection)
+        cell.timelinePostView.quotePostView.dateLabel.font = .preferredFont(forTextStyle: .callout, compatibleWith: traitCollection)
+        cell.timelinePostView.quotePostView.activeTextLabel.font = .preferredFont(forTextStyle: .body, compatibleWith: traitCollection)
+    }
+
     
     private static func internalConfigure(cell: TimelinePostTableViewCell, tweet: Tweet, attribute: Item.Attribute) {
         // tweet date updater

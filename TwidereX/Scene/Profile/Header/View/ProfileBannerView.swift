@@ -50,7 +50,7 @@ final class ProfileBannerView: UIView {
     
     let nameLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 20, weight: .medium)
+        label.font = .preferredFont(forTextStyle: .headline)
         label.numberOfLines = 3
         label.adjustsFontSizeToFitWidth = true
         label.minimumScaleFactor = 0.5
@@ -68,7 +68,7 @@ final class ProfileBannerView: UIView {
     
     let usernameLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 14, weight: .regular)
+        label.font = .preferredFont(forTextStyle: .subheadline)
         label.adjustsFontSizeToFitWidth = true
         label.minimumScaleFactor = 0.5
         label.text = "@alice"
@@ -86,9 +86,11 @@ final class ProfileBannerView: UIView {
         imageView.tintColor = .secondaryLabel
         return imageView
     }()
+    var linkIconImageViewHeightAnchor: NSLayoutConstraint!
+    var linkIconImageViewWidthAnchor: NSLayoutConstraint!
     let linkButton: UIButton = {
         let button = UIButton()
-        button.titleLabel?.font = .systemFont(ofSize: 14, weight: .regular)
+        button.titleLabel?.font = .preferredFont(forTextStyle: .callout)
         button.setTitle("https://twidere.com", for: .normal)
         button.setTitleColor(Asset.Colors.hightLight.color, for: .normal)
         button.setTitleColor(Asset.Colors.hightLight.color.withAlphaComponent(0.5), for: .highlighted)
@@ -102,9 +104,11 @@ final class ProfileBannerView: UIView {
         imageView.tintColor = .secondaryLabel
         return imageView
     }()
+    var geoIconImageViewHeightAnchor: NSLayoutConstraint!
+    var geoIconImageViewWidthAnchor: NSLayoutConstraint!
     let geoButton: UIButton = {
         let button = UIButton()
-        button.titleLabel?.font = .systemFont(ofSize: 14, weight: .regular)
+        button.titleLabel?.font = .preferredFont(forTextStyle: .callout)
         button.setTitle("Earth, Galaxy", for: .normal)
         button.setTitleColor(.secondaryLabel, for: .normal)
         button.setTitleColor(UIColor.secondaryLabel.withAlphaComponent(0.5), for: .highlighted)
@@ -222,7 +226,7 @@ extension ProfileBannerView {
         alignmentLabel.translatesAutoresizingMaskIntoConstraints = false
         infoContainer.addSubview(alignmentLabel)
         NSLayoutConstraint.activate([
-            alignmentLabel.topAnchor.constraint(equalTo: nameLabel.topAnchor),
+            alignmentLabel.centerYAnchor.constraint(equalTo: nameLabel.centerYAnchor),
             alignmentLabel.leadingAnchor.constraint(equalTo: nameLabel.leadingAnchor),
         ])
         profileBannerInfoActionView.translatesAutoresizingMaskIntoConstraints = false
@@ -247,9 +251,11 @@ extension ProfileBannerView {
         linkContainer.spacing = 6
         linkIconImageView.translatesAutoresizingMaskIntoConstraints = false
         linkContainer.addArrangedSubview(linkIconImageView)
+        linkIconImageViewWidthAnchor = linkIconImageView.heightAnchor.constraint(equalToConstant: 16)
+        linkIconImageViewHeightAnchor = linkIconImageView.widthAnchor.constraint(equalToConstant: 16).priority(.defaultHigh)
         NSLayoutConstraint.activate([
-            linkIconImageView.heightAnchor.constraint(equalToConstant: 16),
-            linkIconImageView.widthAnchor.constraint(equalToConstant: 16).priority(.defaultHigh),
+            linkIconImageViewWidthAnchor,
+            linkIconImageViewHeightAnchor,
         ])
         linkContainer.addArrangedSubview(linkButton)
         let linkPadding = UIView()
@@ -264,9 +270,11 @@ extension ProfileBannerView {
         geoContainer.spacing = 6
         geoIconImageView.translatesAutoresizingMaskIntoConstraints = false
         geoContainer.addArrangedSubview(geoIconImageView)
+        geoIconImageViewWidthAnchor = geoIconImageView.heightAnchor.constraint(equalToConstant: 16)
+        geoIconImageViewHeightAnchor = geoIconImageView.widthAnchor.constraint(equalToConstant: 16).priority(.defaultHigh)
         NSLayoutConstraint.activate([
-            geoIconImageView.heightAnchor.constraint(equalToConstant: 16),
-            geoIconImageView.widthAnchor.constraint(equalToConstant: 16).priority(.defaultHigh),
+            geoIconImageViewWidthAnchor,
+            geoIconImageViewHeightAnchor,
         ])
         geoContainer.addArrangedSubview(geoButton)
         let geoPadding = UIView()
@@ -284,7 +292,9 @@ extension ProfileBannerView {
         bringSubviewToFront(profileAvatarImageView)
         bringSubviewToFront(verifiedBadgeImageView)
     }
+
 }
+
 
 #if DEBUG
 import SwiftUI
