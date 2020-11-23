@@ -7,6 +7,7 @@
 
 import UIKit
 import Combine
+import Firebase
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -16,7 +17,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     let appContext = AppContext()
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-
+        
+        if let options = AppSecret.shared.firebaseOptions {
+            FirebaseApp.configure(options: options)
+        }
+        
         NotificationCenter.default.publisher(for: UIContentSizeCategory.didChangeNotification)
             .sink { _ in
                 // only trigger update

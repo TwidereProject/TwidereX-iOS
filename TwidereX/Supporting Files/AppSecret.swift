@@ -10,6 +10,7 @@ import CryptoKit
 import CryptoSwift
 import TwitterAPI
 import Keys
+import FirebaseCore
 
 class AppSecret {
     
@@ -17,6 +18,22 @@ class AppSecret {
     public static let shared = AppSecret()
 
     lazy var oauthSecret = OAuthSecret()
+    lazy var firebaseOptions: FirebaseOptions? = {
+        let keys = TwidereXKeys()
+        guard !keys.firebase_google_app_id.isEmpty else { return nil }
+        let options = FirebaseOptions(
+            googleAppID: keys.firebase_google_app_id,
+            gcmSenderID: keys.firebase_gcm_sender_id
+        )
+        options.clientID = keys.firebase_client_id
+        options.apiKey = keys.firebase_api_key
+        options.gcmSenderID = keys.firebase_gcm_sender_id
+        options.bundleID = keys.firebase_bundle_id
+        options.projectID = keys.firebase_project_id
+        options.storageBucket = keys.firebase_storage_bucket
+        options.databaseURL = keys.firebase_database_url
+        return options
+    }()
 }
 
 extension AppSecret {
