@@ -21,7 +21,7 @@ final class MediaPreviewImageViewController: UIViewController {
     weak var delegate: MediaPreviewImageViewControllerDelegate?
 
     let progressBarView = ProgressBarView()
-    lazy var previewImageView = MediaPreviewImageView(frame: view.bounds)
+    let previewImageView = MediaPreviewImageView()
 
     let tapGestureRecognizer = UITapGestureRecognizer.singleTapGestureRecognizer
     

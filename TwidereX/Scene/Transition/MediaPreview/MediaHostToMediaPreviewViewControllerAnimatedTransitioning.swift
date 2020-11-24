@@ -120,7 +120,8 @@ extension MediaHostToMediaPreviewViewControllerAnimatedTransitioning {
                 transitionContext.completeTransition(false)
                 return
             }
-            transitionContext.containerView.addSubview(snapshot)
+            mediaPreviewImageViewController.view.insertSubview(snapshot, aboveSubview: mediaPreviewImageViewController.previewImageView)
+            
             snapshot.center = transitionContext.containerView.center
 
             transitionItem.imageView = imageView
