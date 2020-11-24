@@ -107,7 +107,16 @@ extension MediaHostToMediaPreviewViewControllerAnimatedTransitioning {
             }
             
             let imageView = mediaPreviewImageViewController.previewImageView.imageView
-            guard let snapshot = imageView.snapshotView(afterScreenUpdates: false) else {
+            let _snapshot: UIView? = {
+                if imageView.image == nil {
+                    transitionItem.snapshotRaw = mediaPreviewImageViewController.progressBarView
+                    return mediaPreviewImageViewController.progressBarView.snapshotView(afterScreenUpdates: false)
+                } else {
+                    transitionItem.snapshotRaw = imageView
+                    return imageView.snapshotView(afterScreenUpdates: false)
+                }
+            }()
+            guard let snapshot = _snapshot else {
                 transitionContext.completeTransition(false)
                 return
             }
@@ -115,7 +124,7 @@ extension MediaHostToMediaPreviewViewControllerAnimatedTransitioning {
             snapshot.center = transitionContext.containerView.center
 
             transitionItem.imageView = imageView
-            transitionItem.imageViewSnapshot = snapshot
+            transitionItem.snapshotTransitioning = snapshot
             transitionItem.initialFrame = snapshot.frame
             transitionItem.targetFrame = snapshot.frame
             
@@ -137,8 +146,9 @@ extension MediaHostToMediaPreviewViewControllerAnimatedTransitioning {
 
         let blurEffect = fromVC.visualEffectView.effect
         self.transitionItem.imageView?.isHidden = true
+        self.transitionItem.snapshotRaw?.alpha = 0.0
         animator.addAnimations {
-            self.transitionItem.imageViewSnapshot?.alpha = 0.4
+            self.transitionItem.snapshotTransitioning?.alpha = 0.4
             fromVC.mediaInfoDescriptionView.alpha = 0
             fromVC.closeButtonBackground.alpha = 0
             fromVC.pageControl.alpha = 0
@@ -147,7 +157,8 @@ extension MediaHostToMediaPreviewViewControllerAnimatedTransitioning {
 
         animator.addCompletion { position in
             self.transitionItem.imageView?.isHidden = position == .end
-            self.transitionItem.imageViewSnapshot?.removeFromSuperview()
+            self.transitionItem.snapshotRaw?.alpha = position == .start ? 1.0 : 0.0
+            self.transitionItem.snapshotTransitioning?.removeFromSuperview()
             fromVC.visualEffectView.effect = position == .end ? nil : blurEffect
             transitionContext.completeTransition(position == .end)
         }
@@ -228,10 +239,10 @@ extension MediaHostToMediaPreviewViewControllerAnimatedTransitioning {
 
         itemAnimator.addAnimations {
             if toPosition == .end {
-                self.transitionItem.imageViewSnapshot?.alpha = 0
+                self.transitionItem.snapshotTransitioning?.alpha = 0
             } else {
-                self.transitionItem.imageViewSnapshot?.alpha = 1
-                self.transitionItem.imageViewSnapshot?.frame = self.transitionItem.initialFrame!
+                self.transitionItem.snapshotTransitioning?.alpha = 1
+                self.transitionItem.snapshotTransitioning?.frame = self.transitionItem.initialFrame!
             }
         }
 
@@ -260,7 +271,7 @@ extension MediaHostToMediaPreviewViewControllerAnimatedTransitioning {
         let initialSize = transitionItem.initialFrame!.size
         assert(initialSize != .zero)
 
-        guard let snapshot = transitionItem.imageViewSnapshot,
+        guard let snapshot = transitionItem.snapshotTransitioning,
         let finalSize = transitionItem.targetFrame?.size else {
             return
         }

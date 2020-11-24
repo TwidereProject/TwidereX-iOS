@@ -284,8 +284,7 @@ extension MediaPreviewViewController: MediaPreviewingViewController {
         if let mediaPreviewImageViewController = pagingViewConttroller.currentViewController as? MediaPreviewImageViewController {
             let previewImageView = mediaPreviewImageViewController.previewImageView
             // TODO: allow zooming pan dismiss
-            guard previewImageView.zoomScale == previewImageView.minimumZoomScale,
-                  previewImageView.imageView.image != nil else {
+            guard previewImageView.zoomScale == previewImageView.minimumZoomScale else {
                 return false
             }
             

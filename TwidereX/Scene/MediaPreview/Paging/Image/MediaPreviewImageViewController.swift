@@ -67,7 +67,6 @@ extension MediaPreviewImageViewController {
             filter: nil,
             progress: { [weak self] progress in
                 guard let self = self else { return }
-                self.progressBarView.isHidden = progress.fractionCompleted == 1.0
                 self.progressBarView.progress.value = CGFloat(progress.fractionCompleted)
                 os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: load %s progress: %.2f", ((#file as NSString).lastPathComponent), #line, #function, self.viewModel.url.debugDescription, progress.fractionCompleted)
             },

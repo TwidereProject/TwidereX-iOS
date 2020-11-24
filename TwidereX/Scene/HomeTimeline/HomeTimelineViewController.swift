@@ -266,22 +266,22 @@ extension HomeTimelineViewController {
     #if DEBUG
     @objc private func moveToTopGapAction(_ sender: UIAction) {
         guard let diffableDataSource = viewModel.diffableDataSource else { return }
-        let snapshot = diffableDataSource.snapshot()
-        let item = snapshot.itemIdentifiers.first(where: { item in
+        let snapshotTransitioning = diffableDataSource.snapshot()
+        let item = snapshotTransitioning.itemIdentifiers.first(where: { item in
             switch item {
             case .middleLoader: return true
             default:                        return false
             }
         })
-        if let targetItem = item, let index = snapshot.indexOfItem(targetItem) {
+        if let targetItem = item, let index = snapshotTransitioning.indexOfItem(targetItem) {
             tableView.scrollToRow(at: IndexPath(row: index, section: 0), at: .middle, animated: true)
         }
     }
     
     @objc private func moveToFirstProtectedTweet(_ sender: UIAction) {
         guard let diffableDataSource = viewModel.diffableDataSource else { return }
-        let snapshot = diffableDataSource.snapshot()
-        let item = snapshot.itemIdentifiers.first(where: { item in
+        let snapshotTransitioning = diffableDataSource.snapshot()
+        let item = snapshotTransitioning.itemIdentifiers.first(where: { item in
             switch item {
             case .homeTimelineIndex(let objectID, _):
                 let tweet = viewModel.fetchedResultsController.managedObjectContext.object(with: objectID) as! TimelineIndex
@@ -291,7 +291,7 @@ extension HomeTimelineViewController {
                 return false
             }
         })
-        if let targetItem = item, let index = snapshot.indexOfItem(targetItem) {
+        if let targetItem = item, let index = snapshotTransitioning.indexOfItem(targetItem) {
             tableView.scrollToRow(at: IndexPath(row: index, section: 0), at: .middle, animated: true)
         } else {
             print("Not found protected tweet")
@@ -300,8 +300,8 @@ extension HomeTimelineViewController {
     
     @objc private func moveToFirstProtectedUser(_ sender: UIAction) {
         guard let diffableDataSource = viewModel.diffableDataSource else { return }
-        let snapshot = diffableDataSource.snapshot()
-        let item = snapshot.itemIdentifiers.first(where: { item in
+        let snapshotTransitioning = diffableDataSource.snapshot()
+        let item = snapshotTransitioning.itemIdentifiers.first(where: { item in
             switch item {
             case .homeTimelineIndex(let objectID, _):
                 let tweet = viewModel.fetchedResultsController.managedObjectContext.object(with: objectID) as! TimelineIndex
@@ -311,7 +311,7 @@ extension HomeTimelineViewController {
                 return false
             }
         })
-        if let targetItem = item, let index = snapshot.indexOfItem(targetItem) {
+        if let targetItem = item, let index = snapshotTransitioning.indexOfItem(targetItem) {
             tableView.scrollToRow(at: IndexPath(row: index, section: 0), at: .middle, animated: true)
         } else {
             print("Not found protected tweet")
@@ -320,9 +320,9 @@ extension HomeTimelineViewController {
     
     @objc private func dropRecentTweetsAction(_ sender: UIAction) {
         guard let diffableDataSource = viewModel.diffableDataSource else { return }
-        let snapshot = diffableDataSource.snapshot()
+        let snapshotTransitioning = diffableDataSource.snapshot()
         
-        let droppingObjectIDs = snapshot.itemIdentifiers.prefix(50).compactMap { item -> NSManagedObjectID? in
+        let droppingObjectIDs = snapshotTransitioning.itemIdentifiers.prefix(50).compactMap { item -> NSManagedObjectID? in
             switch item {
             case .homeTimelineIndex(let objectID, _):   return objectID
             default:                                    return nil
