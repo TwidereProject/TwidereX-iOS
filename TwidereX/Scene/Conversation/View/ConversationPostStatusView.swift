@@ -13,7 +13,7 @@ final class ConversationPostStatusView: UIView {
         let label = UILabel()
         label.text = "1"
         label.textAlignment = .right
-        label.font = .systemFont(ofSize: 14)
+        label.font = .preferredFont(forTextStyle: .callout)
         return label
     }()
     
@@ -21,7 +21,7 @@ final class ConversationPostStatusView: UIView {
         let label = UILabel()
         label.text = "Retweet"
         label.textColor = .secondaryLabel
-        label.font = .systemFont(ofSize: 14)
+        label.font = .preferredFont(forTextStyle: .callout)
         return label
     }()
     

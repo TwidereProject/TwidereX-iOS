@@ -24,7 +24,7 @@ final class TimelineMiddleLoaderTableViewCell: UITableViewCell {
         button.setImage(Asset.ObjectTools.icRoundRefresh.image.withRenderingMode(.alwaysTemplate), for: .normal)
         button.setTitle("Load More", for: .normal)
         button.tintColor = Asset.Colors.hightLight.color
-        button.titleLabel?.font = .systemFont(ofSize: 14, weight: .bold)
+        button.titleLabel?.font = .preferredFont(forTextStyle: .callout)
         return button
     }()
     

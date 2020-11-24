@@ -11,7 +11,7 @@ final class ProfileBannerStatusItemView: UIView {
     
     let countLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 14, weight: .medium)
+        label.font = .preferredFont(forTextStyle: .body)
         label.textColor = .label
         label.text = "999"
         label.textAlignment = .center
@@ -20,7 +20,7 @@ final class ProfileBannerStatusItemView: UIView {
     
     let statusLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 14, weight: .regular)
+        label.font = .preferredFont(forTextStyle: .body)
         label.textColor = .secondaryLabel
         label.text = "Following"
         label.textAlignment = .center

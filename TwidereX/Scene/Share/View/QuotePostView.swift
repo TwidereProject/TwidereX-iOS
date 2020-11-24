@@ -35,7 +35,7 @@ final class QuotePostView: UIView {
     
     let nameLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 14, weight: .regular)
+        label.font = .preferredFont(forTextStyle: .headline)
         label.textColor = .label
         label.textColor = Asset.Colors.hightLight.color
         label.text = "Alice"
@@ -44,7 +44,7 @@ final class QuotePostView: UIView {
     
     let usernameLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 14, weight: .regular)
+        label.font = .preferredFont(forTextStyle: .subheadline)
         label.textColor = .secondaryLabel
         label.text = "@alice"
         return label
@@ -52,7 +52,7 @@ final class QuotePostView: UIView {
     
     let dateLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 14, weight: .regular)
+        label.font = .preferredFont(forTextStyle: .callout)
         label.textAlignment = .right
         label.textColor = .secondaryLabel
         label.text = "1d"

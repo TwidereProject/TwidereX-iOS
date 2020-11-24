@@ -57,10 +57,12 @@ internal enum Asset {
     internal static let person = ImageAsset(name: "Human/person")
   }
   internal enum Indices {
+    internal static let checkmarkCircle = ImageAsset(name: "Indices/checkmark.circle")
     internal static let exclamationmarkCircle = ImageAsset(name: "Indices/exclamationmark.circle")
     internal static let infoCircle = ImageAsset(name: "Indices/info.circle")
   }
   internal enum Logo {
+    internal static let twidereAvatar = ImageAsset(name: "Logo/twidere.avatar")
     internal static let twidere = ImageAsset(name: "Logo/twidere")
   }
   internal enum Media {

@@ -12,12 +12,14 @@ import Combine
 class MediaPreviewImageViewModel {
     
     // input
+    let url: URL
     let thumbnail: UIImage?
     
     // output
     let preview = CurrentValueSubject<UIImage?, Never>(nil)
     
-    init(thumbnail: UIImage?) {
+    init(url: URL, thumbnail: UIImage?) {
+        self.url = url
         self.thumbnail = thumbnail
     }
 }

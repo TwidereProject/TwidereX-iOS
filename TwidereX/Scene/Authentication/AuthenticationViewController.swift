@@ -29,7 +29,7 @@ final class AuthenticationViewController: UIViewController, NeedsDependency {
         let label = UILabel()
         label.font = .systemFont(ofSize: 24)
         label.text = "Twidere X"
-        label.textColor = .secondaryLabel
+        label.textColor = UIColor.label.withAlphaComponent(0.6)
         return label
     }()
     
@@ -86,7 +86,7 @@ extension AuthenticationViewController {
         logoLabel.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(logoLabel)
         NSLayoutConstraint.activate([
-            logoLabel.topAnchor.constraint(equalTo: logoImageView.bottomAnchor),
+            logoLabel.topAnchor.constraint(equalTo: logoImageView.bottomAnchor, constant: 44),
             logoLabel.centerXAnchor.constraint(equalTo: logoImageView.centerXAnchor),
         ])
         

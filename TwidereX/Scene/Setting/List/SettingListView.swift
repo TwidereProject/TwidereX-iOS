@@ -63,10 +63,10 @@ struct SettingListView: View {
     
     static let generalSection: [SettingListEntry] = {
         let types: [SettingListEntryType]  = [
-            .appearance,
+//            .appearance,
             .display,
-            .layout,
-            .webBrowser
+//            .layout,
+//            .webBrowser
         ]
         return types.map { type in
             return SettingListEntry(type: type, image: type.image, title: type.title)

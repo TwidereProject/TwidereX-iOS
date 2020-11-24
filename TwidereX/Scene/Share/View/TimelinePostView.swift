@@ -24,7 +24,7 @@ final class TimelinePostView: UIView {
     
     let retweetInfoLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 12, weight: .regular)
+        label.font = .preferredFont(forTextStyle: .callout)
         label.textColor = .secondaryLabel
         label.text = "Bob Retweeted"
         return label
@@ -32,6 +32,8 @@ final class TimelinePostView: UIView {
     
     let avatarImageView: UIImageView = {
         let imageView = UIImageView()
+        imageView.layer.masksToBounds = true
+        imageView.layer.cornerRadius = 0.5 * TimelinePostView.avatarImageViewSize.width
         return imageView
     }()
     
@@ -45,7 +47,7 @@ final class TimelinePostView: UIView {
     
     let nameLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 14, weight: .medium)
+        label.font = .preferredFont(forTextStyle: .headline)
         label.textColor = .label
         label.text = "Alice"
         return label
@@ -61,7 +63,7 @@ final class TimelinePostView: UIView {
     
     let usernameLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 14, weight: .regular)
+        label.font = .preferredFont(forTextStyle: .subheadline)
         label.textColor = .secondaryLabel
         label.text = "@alice"
         return label
@@ -69,7 +71,7 @@ final class TimelinePostView: UIView {
     
     let dateLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 14, weight: .regular)
+        label.font = .preferredFont(forTextStyle: .callout)
         label.textAlignment = .right
         label.textColor = .secondaryLabel
         label.text = "1d"
@@ -171,7 +173,7 @@ extension TimelinePostView {
             avatarImageView.heightAnchor.constraint(equalToConstant: TimelinePostView.avatarImageViewSize.height).priority(.required - 1),
         ])
         verifiedBadgeImageView.translatesAutoresizingMaskIntoConstraints = false
-        avatarImageView.addSubview(verifiedBadgeImageView)
+        addSubview(verifiedBadgeImageView)
         NSLayoutConstraint.activate([
             verifiedBadgeImageView.trailingAnchor.constraint(equalTo: avatarImageView.trailingAnchor),
             verifiedBadgeImageView.bottomAnchor.constraint(equalTo: avatarImageView.bottomAnchor),

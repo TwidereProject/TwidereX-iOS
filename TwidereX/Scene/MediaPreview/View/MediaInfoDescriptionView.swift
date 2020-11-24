@@ -31,7 +31,7 @@ final class MediaInfoDescriptionView: UIView {
     
     let nameLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 14, weight: .medium)
+        label.font = .preferredFont(forTextStyle: .headline)
         label.text = "Alice"
         return label
     }()

@@ -24,7 +24,8 @@ final class UserBriefInfoView: UIView {
     
     let nameLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 14, weight: .medium)
+        label.font = .preferredFont(forTextStyle: .headline)
+        label.adjustsFontForContentSizeCategory = true
         label.textColor = .label
         label.text = "Alice"
         return label
@@ -40,7 +41,8 @@ final class UserBriefInfoView: UIView {
     
     let usernameLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 14, weight: .regular)
+        label.font = .preferredFont(forTextStyle: .subheadline)
+        label.adjustsFontForContentSizeCategory = true
         label.textColor = .secondaryLabel
         label.text = "@alice"
         return label
@@ -48,7 +50,8 @@ final class UserBriefInfoView: UIView {
     
     let detailLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 14, weight: .regular)
+        label.font = .preferredFont(forTextStyle: .callout)
+        label.adjustsFontForContentSizeCategory = true
         label.textColor = .secondaryLabel
         label.text = "Followers: -"
         return label

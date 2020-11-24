@@ -27,7 +27,7 @@ final class ConversationPostView: UIView {
     
     let nameLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 14, weight: .medium)
+        label.font = .preferredFont(forTextStyle: .headline)
         label.textColor = .label
         label.text = "Alice"
         return label
@@ -43,7 +43,7 @@ final class ConversationPostView: UIView {
     
     let usernameLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 14, weight: .regular)
+        label.font = .preferredFont(forTextStyle: .subheadline)
         label.textColor = .secondaryLabel
         label.text = "@alice"
         return label
@@ -59,13 +59,14 @@ final class ConversationPostView: UIView {
     let geoIconImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.tintColor = .secondaryLabel
+        imageView.contentMode = .scaleAspectFit
         imageView.image = Asset.ObjectTools.mappinMini.image.withRenderingMode(.alwaysTemplate)
         return imageView
     }()
     
     let geoLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 14, weight: .regular)
+        label.font = .preferredFont(forTextStyle: .callout)
         label.textColor = .secondaryLabel
         label.text = "Earth, Galaxy"
         return label
@@ -74,7 +75,7 @@ final class ConversationPostView: UIView {
     
     let dateLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 14, weight: .regular)
+        label.font = .preferredFont(forTextStyle: .callout)
         label.textAlignment = .center
         label.textColor = .secondaryLabel
         label.text = "2020/01/01 00:00 PM"
@@ -83,7 +84,7 @@ final class ConversationPostView: UIView {
     
     let sourceLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 14, weight: .regular)
+        label.font = .preferredFont(forTextStyle: .callout)
         label.textAlignment = .right
         label.textColor = Asset.Colors.hightLight.color
         label.text = "Twidere for iOS"
@@ -94,6 +95,8 @@ final class ConversationPostView: UIView {
     let mosaicImageView = MosaicImageView()
     let quotePostView = QuotePostView()
     let geoMetaContainerStackView = UIStackView()
+    let dateMetaContainer = UIStackView()
+
     let retweetPostStatusView = ConversationPostStatusView()
     let quotePostStatusView = ConversationPostStatusView()
     let likePostStatusView = ConversationPostStatusView()
@@ -112,12 +115,12 @@ final class ConversationPostView: UIView {
 }
 
 extension ConversationPostView {
+
     private func _init() {        
         // container: [user meta | main | meta | action toolbar]
         let containerStackView = UIStackView()
         containerStackView.axis = .vertical
         containerStackView.spacing = 8
-        //containerStackView.alignment = .top
         containerStackView.translatesAutoresizingMaskIntoConstraints = false
         addSubview(containerStackView)
         NSLayoutConstraint.activate([
@@ -212,9 +215,9 @@ extension ConversationPostView {
         geoMetaContainerStackView.addArrangedSubview(geoLabel)
 
         // date meta container: [date | source]
-        let dateMetaContainer = UIStackView()
         metaContainerStackView.addArrangedSubview(dateMetaContainer)
         dateMetaContainer.axis = .horizontal
+        dateMetaContainer.alignment = .center
         dateMetaContainer.spacing = 8
         dateMetaContainer.addArrangedSubview(dateLabel)
         dateMetaContainer.addArrangedSubview(sourceLabel)
@@ -256,6 +259,7 @@ extension ConversationPostView {
         // TODO:
         moreMenuButton.isHidden = true
     }
+
 }
 
 #if DEBUG

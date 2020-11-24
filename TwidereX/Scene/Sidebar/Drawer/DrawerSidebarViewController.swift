@@ -6,6 +6,7 @@
 //  Copyright © 2020 Twidere. All rights reserved.
 //
 
+import os.log
 import UIKit
 import Combine
 import AlamofireImage
@@ -39,6 +40,11 @@ final class DrawerSidebarViewController: UIViewController, NeedsDependency {
         tableView.alwaysBounceVertical = false
         return tableView
     }()
+    
+    deinit {
+        os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s:", ((#file as NSString).lastPathComponent), #line, #function)
+    }
+    
 }
 
 extension DrawerSidebarViewController {
@@ -109,7 +115,7 @@ extension DrawerSidebarViewController {
                 
                 // bind name
                 self.headerView.nameLabel.text = twitterUser?.name ?? "-"
-                self.headerView.usernameLabel.text = twitterUser?.username ?? "-"
+                self.headerView.usernameLabel.text = twitterUser.flatMap { "@" + $0.username } ?? "-"
                 
                 // bind status
                 self.headerView.profileBannerStatusView.followingStatusItemView.countLabel.text = twitterUser?.metrics?.followingCount.flatMap { "\($0.intValue)" } ?? "-"

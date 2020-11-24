@@ -11,6 +11,7 @@ import UIKit
 import Combine
 import Photos
 import TwitterAPI
+import SwiftMessages
 
 final class ComposeTweetViewController: UIViewController, NeedsDependency {
     
@@ -403,8 +404,28 @@ extension ComposeTweetViewController {
             switch completion {
             case .failure(let error):
                 os_log("%{public}s[%{public}ld], %{public}s: tweet fail: %s", ((#file as NSString).lastPathComponent), #line, #function, error.localizedDescription)
+                var config = SwiftMessages.defaultConfig
+                config.duration = .seconds(seconds: 3)
+                config.interactiveHide = true
+                let bannerView = NotifyBannerView()
+                bannerView.configure(for: .error)
+                bannerView.titleLabel.text = "Tweet Fail"
+                bannerView.messageLabel.text = "Please try again"
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                    SwiftMessages.show(config: config, view: bannerView)
+                }
             case .finished:
                 os_log("%{public}s[%{public}ld], %{public}s: tweet success", ((#file as NSString).lastPathComponent), #line, #function)
+                var config = SwiftMessages.defaultConfig
+                config.duration = .seconds(seconds: 3)
+                config.interactiveHide = true
+                let bannerView = NotifyBannerView()
+                bannerView.configure(for: .normal)
+                bannerView.titleLabel.text = "Tweet Sent"
+                bannerView.messageLabel.isHidden = true
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                    SwiftMessages.show(config: config, view: bannerView)
+                }
             }
         } receiveValue: { response in
             // do nothing

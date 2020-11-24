@@ -17,6 +17,7 @@ class AppSecret {
     public static let shared = AppSecret()
 
     lazy var oauthSecret = OAuthSecret()
+    
 }
 
 extension AppSecret {

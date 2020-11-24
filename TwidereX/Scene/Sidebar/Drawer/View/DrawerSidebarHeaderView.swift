@@ -31,14 +31,14 @@ final class DrawerSidebarHeaderView: UIView {
     
     let nameLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 20, weight: .medium)
+        label.font = .preferredFont(withTextStyle: .headline, maxSize: 20)
         label.text = "Alice"
         return label
     }()
     
     let usernameLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 14)
+        label.font = .preferredFont(withTextStyle: .subheadline, maxSize: 13)
         label.text = "@alice"
         label.textColor = .secondaryLabel
         return label
@@ -160,9 +160,9 @@ struct DrawerSidebarHeaderView_Previews: PreviewProvider {
     
     static var previews: some View {
         UIViewPreview(width: 375) {
-            let header = DrawerSidebarHeaderView()
-            header.avatarImageView.image = avatarImage
-            return header
+            let headerLabel = DrawerSidebarHeaderView()
+            headerLabel.avatarImageView.image = avatarImage
+            return headerLabel
         }
         .previewLayout(.fixed(width: 375, height: 140))
     }

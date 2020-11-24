@@ -33,6 +33,7 @@ extension SceneCoordinator {
         case modal(animated: Bool, completion: (() -> Void)? = nil)
         case custom(transitioningDelegate: UIViewControllerTransitioningDelegate)
         case customPush
+        case customModal(animated: Bool, completion: (() -> Void)? = nil)
     }
     
     enum Scene {
@@ -45,8 +46,11 @@ extension SceneCoordinator {
         case profile(viewModel: ProfileViewModel)
         case mediaPreview(viewModel: MediaPreviewViewModel)
         case drawerSidebar
+        
         case setting
+        case displayPreference
         case about
+        
         case safari(url: URL)
     }
 }
@@ -88,12 +92,14 @@ extension SceneCoordinator {
             // set delegate in view controller
             assert(sender?.navigationController?.delegate != nil)
             sender?.navigationController?.pushViewController(viewController, animated: true)
+            
+        case .customModal(let animated, let completion):
+            presentingViewController.present(viewController, animated: animated, completion: completion)
         }
         
         return viewController
     }
-    
-    
+
 }
 
 private extension SceneCoordinator {
@@ -135,6 +141,8 @@ private extension SceneCoordinator {
             viewController = DrawerSidebarViewController()
         case .setting:
             viewController = SettingListViewController()
+        case .displayPreference:
+            viewController = DisplayPreferenceViewController()
         case .about:
             viewController = AboutViewController()
         case .safari(let url):

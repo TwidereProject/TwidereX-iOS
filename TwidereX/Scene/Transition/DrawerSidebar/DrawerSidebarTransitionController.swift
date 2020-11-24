@@ -31,7 +31,7 @@ final class DrawerSidebarTransitionController: NSObject {
         gestureRecognizer.maximumNumberOfTouches = 1
         return gestureRecognizer
     }()
-    
+
     private(set) var transitionType: TransitionType?
     private var interactiveTransitioning: UIViewControllerInteractiveTransitioning?
     
@@ -118,9 +118,9 @@ extension DrawerSidebarTransitionController: UIViewControllerTransitioningDelega
         return nil
     }
     
-//    func presentationController(forPresented presented: UIViewController, presenting: UIViewController?, source: UIViewController) -> UIPresentationController? {
-//        return SidebarPresentationController(presentedViewController: presented, presenting: presenting)
-//    }
+    func presentationController(forPresented presented: UIViewController, presenting: UIViewController?, source: UIViewController) -> UIPresentationController? {
+        return DrawerSidebarPresentationController(presentedViewController: presented, presenting: presenting)
+    }
     
 }
 

@@ -46,7 +46,7 @@ extension SettingListViewController {
                 case .appearance:
                     break
                 case .display:
-                    break
+                    self.coordinator.present(scene: .displayPreference, from: self, transition: .show)
                 case .layout:
                     break
                 case .webBrowser:

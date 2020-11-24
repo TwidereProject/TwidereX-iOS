@@ -105,9 +105,30 @@ extension MediaHostToMediaPreviewViewControllerAnimatedTransitioning {
                 transitionContext.completeTransition(false)
                 return
             }
-            transitionItem.imageView = mediaPreviewImageViewController.previewImageView.imageView
-            transitionItem.initialFrame = mediaPreviewImageViewController.previewImageView.imageView.frame
-            transitionItem.targetFrame = mediaPreviewImageViewController.previewImageView.imageView.frame
+            
+            let imageView = mediaPreviewImageViewController.previewImageView.imageView
+            let _snapshot: UIView? = {
+                if imageView.image == nil {
+                    transitionItem.snapshotRaw = mediaPreviewImageViewController.progressBarView
+                    return mediaPreviewImageViewController.progressBarView.snapshotView(afterScreenUpdates: false)
+                } else {
+                    transitionItem.snapshotRaw = imageView
+                    return imageView.snapshotView(afterScreenUpdates: false)
+                }
+            }()
+            guard let snapshot = _snapshot else {
+                transitionContext.completeTransition(false)
+                return
+            }
+            mediaPreviewImageViewController.view.insertSubview(snapshot, aboveSubview: mediaPreviewImageViewController.previewImageView)
+            
+            snapshot.center = transitionContext.containerView.center
+
+            transitionItem.imageView = imageView
+            transitionItem.snapshotTransitioning = snapshot
+            transitionItem.initialFrame = snapshot.frame
+            transitionItem.targetFrame = snapshot.frame
+            
             panGestureRecognizer.addTarget(self, action: #selector(MediaHostToMediaPreviewViewControllerAnimatedTransitioning.updatePanGestureInteractive(_:)))
             popInteractiveTransition(using: transitionContext)
         default:
@@ -125,8 +146,10 @@ extension MediaHostToMediaPreviewViewControllerAnimatedTransitioning {
         let animator = popInteractiveTransitionAnimator
 
         let blurEffect = fromVC.visualEffectView.effect
+        self.transitionItem.imageView?.isHidden = true
+        self.transitionItem.snapshotRaw?.alpha = 0.0
         animator.addAnimations {
-            self.transitionItem.imageView?.alpha = 0.4
+            self.transitionItem.snapshotTransitioning?.alpha = 0.4
             fromVC.mediaInfoDescriptionView.alpha = 0
             fromVC.closeButtonBackground.alpha = 0
             fromVC.pageControl.alpha = 0
@@ -134,6 +157,9 @@ extension MediaHostToMediaPreviewViewControllerAnimatedTransitioning {
         }
 
         animator.addCompletion { position in
+            self.transitionItem.imageView?.isHidden = position == .end
+            self.transitionItem.snapshotRaw?.alpha = position == .start ? 1.0 : 0.0
+            self.transitionItem.snapshotTransitioning?.removeFromSuperview()
             fromVC.visualEffectView.effect = position == .end ? nil : blurEffect
             transitionContext.completeTransition(position == .end)
         }
@@ -160,7 +186,7 @@ extension MediaHostToMediaPreviewViewControllerAnimatedTransitioning {
             let targetPosition = completionPosition()
             os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: target position: %s", ((#file as NSString).lastPathComponent), #line, #function, targetPosition == .end ? "end" : "start")
             targetPosition == .end ? transitionContext.finishInteractiveTransition() : transitionContext.cancelInteractiveTransition()
-            isTransitionContextFinish = targetPosition == .end
+            isTransitionContextFinish = true
             animate(targetPosition)
 
         default:
@@ -214,10 +240,10 @@ extension MediaHostToMediaPreviewViewControllerAnimatedTransitioning {
 
         itemAnimator.addAnimations {
             if toPosition == .end {
-                self.transitionItem.imageView?.alpha = 0
+                self.transitionItem.snapshotTransitioning?.alpha = 0
             } else {
-                self.transitionItem.imageView?.alpha = 1
-                self.transitionItem.imageView?.frame = self.transitionItem.initialFrame!
+                self.transitionItem.snapshotTransitioning?.alpha = 1
+                self.transitionItem.snapshotTransitioning?.frame = self.transitionItem.initialFrame!
             }
         }
 
@@ -246,16 +272,16 @@ extension MediaHostToMediaPreviewViewControllerAnimatedTransitioning {
         let initialSize = transitionItem.initialFrame!.size
         assert(initialSize != .zero)
 
-        guard let imageView = transitionItem.imageView,
+        guard let snapshot = transitionItem.snapshotTransitioning,
         let finalSize = transitionItem.targetFrame?.size else {
             return
         }
 
-        if imageView.frame.size == .zero {
-            imageView.frame.size = initialSize
+        if snapshot.frame.size == .zero {
+            snapshot.frame.size = initialSize
         }
 
-        let currentSize = imageView.frame.size
+        let currentSize = snapshot.frame.size
 
         let itemPercentComplete = clip(-0.05, 1.05, (currentSize.width - initialSize.width) / (finalSize.width - initialSize.width) + progress)
         let itemWidth = lerp(initialSize.width, finalSize.width, itemPercentComplete)
@@ -265,8 +291,8 @@ extension MediaHostToMediaPreviewViewControllerAnimatedTransitioning {
         let scaleTransform = CGAffineTransform(scaleX: (itemWidth / currentSize.width), y: (itemHeight / currentSize.height))
         let scaledOffset = transitionItem.touchOffset.apply(transform: scaleTransform)
 
-        imageView.center = (imageView.center + (translation + (transitionItem.touchOffset - scaledOffset))).point
-        imageView.bounds = CGRect(origin: CGPoint.zero, size: CGSize(width: itemWidth, height: itemHeight))
+        snapshot.center = (snapshot.center + (translation + (transitionItem.touchOffset - scaledOffset))).point
+        snapshot.bounds = CGRect(origin: CGPoint.zero, size: CGSize(width: itemWidth, height: itemHeight))
         transitionItem.touchOffset = scaledOffset
     }
     

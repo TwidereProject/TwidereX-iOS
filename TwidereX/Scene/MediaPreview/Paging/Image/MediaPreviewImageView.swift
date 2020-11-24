@@ -96,11 +96,14 @@ extension MediaPreviewImageView {
 
 extension MediaPreviewImageView {
 
-    func setup(image: UIImage, container: UIView) {
+    func setup(image: UIImage, container: UIView, forceUpdate: Bool = false) {
         guard image.size.width > 0, image.size.height > 0 else  { return }
         guard container.bounds.width > 0, container.bounds.height > 0 else  { return }
         
-        guard containerFrame != container.frame else { return }
+        // do not setup when frame not change except force update
+        if containerFrame == container.frame && !forceUpdate {
+            return
+        }
         containerFrame = container.frame
         
         // reset to normal
@@ -122,7 +125,7 @@ extension MediaPreviewImageView {
         centerScrollViewContents()
         contentOffset = CGPoint(x: -contentInset.left, y: -contentInset.top)
         
-        os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
+        os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: setup image for container %s", ((#file as NSString).lastPathComponent), #line, #function, container.frame.debugDescription)
     }
     
 }

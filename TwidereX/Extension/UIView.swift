@@ -1,6 +1,6 @@
 //
 //  UIView.swift
-//  Mailway
+//  TwidereX
 //
 //  Created by Cirno MainasuK on 2020-7-2.
 //  Copyright © 2020 Dimension. All rights reserved.

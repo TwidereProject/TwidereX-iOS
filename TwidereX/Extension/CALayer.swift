@@ -1,9 +1,9 @@
 //
 //  CALayer.swift
-//  Mailway
+//  TwidereX
 //
 //  Created by Cirno MainasuK on 2020-7-10.
-//  Copyright © 2020 Dimension. All rights reserved.
+//  Copyright © 2020 Twidere. All rights reserved.
 //
 
 import UIKit
