@@ -160,7 +160,7 @@ extension MediaHostToMediaPreviewViewControllerAnimatedTransitioning {
             let targetPosition = completionPosition()
             os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: target position: %s", ((#file as NSString).lastPathComponent), #line, #function, targetPosition == .end ? "end" : "start")
             targetPosition == .end ? transitionContext.finishInteractiveTransition() : transitionContext.cancelInteractiveTransition()
-            isTransitionContextFinish = targetPosition == .end
+            isTransitionContextFinish = true
             animate(targetPosition)
 
         default:
