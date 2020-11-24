@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # mock firebase config file
-cp ./TwidereX/mock-GoogleService-Info.plist GoogleService-Info.plist
+cp ./TwidereX/mock-GoogleService-Info.plist ./TwidereX/GoogleService-Info.plist
 
 sudo gem install cocoapods-keys
 
