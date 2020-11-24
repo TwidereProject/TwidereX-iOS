@@ -19,13 +19,7 @@ final class MediaPreviewImageViewController: UIViewController {
     var disposeBag = Set<AnyCancellable>()
     var viewModel: MediaPreviewImageViewModel!
     weak var delegate: MediaPreviewImageViewControllerDelegate?
-    
-    let thumbnailImageView: UIImageView = {
-        let imageView = UIImageView()
-        imageView.contentMode = .scaleAspectFit
-        return imageView
-    }()
-    
+
     lazy var previewImageView = MediaPreviewImageView(frame: view.bounds)
 
     let tapGestureRecognizer = UITapGestureRecognizer.singleTapGestureRecognizer
@@ -36,15 +30,6 @@ extension MediaPreviewImageViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        thumbnailImageView.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(thumbnailImageView)
-        NSLayoutConstraint.activate([
-            thumbnailImageView.topAnchor.constraint(equalTo: view.topAnchor),
-            thumbnailImageView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            thumbnailImageView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            thumbnailImageView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-        ])
         
         previewImageView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(previewImageView)
@@ -58,33 +43,30 @@ extension MediaPreviewImageViewController {
         tapGestureRecognizer.addTarget(self, action: #selector(MediaPreviewImageViewController.tapGestureRecognizerHandler(_:)))
         tapGestureRecognizer.shouldRequireFailure(of: previewImageView.doubleTapGestureRecognizer)
         view.addGestureRecognizer(tapGestureRecognizer)
-
         
-        viewModel.preview
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] preview in
+        previewImageView.imageView.af.setImage(
+            withURL: viewModel.url,
+            placeholderImage: viewModel.thumbnail,
+            filter: nil,
+            progress: { [weak self] progress in
                 guard let self = self else { return }
-                guard let image = preview else {
-                    self.previewImageView.imageView.image = nil
-                    return
+                os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: load %s progress: %.2f", ((#file as NSString).lastPathComponent), #line, #function, self.viewModel.url.debugDescription, progress.fractionCompleted)
+            },
+            imageTransition: .crossDissolve(0.3),
+            runImageTransitionIfCached: false,
+            completion: { [weak self] response in
+                guard let self = self else { return }
+                switch response.result {
+                case .success(let image):
+                    self.previewImageView.imageView.image = image
+                    self.previewImageView.setup(image: image, container: self.previewImageView, forceUpdate: true)
+                case .failure(let error):
+                    // TODO:
+                    break
                 }
-                
-                self.previewImageView.setup(image: image, container: self.previewImageView)
             }
-            .store(in: &disposeBag)
-        
-        //        thumbnailImageView.image = viewModel.thumbnail
-        viewModel.preview.send(viewModel.thumbnail)
-    }
-    
-    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
-        coordinator.animate { _ in
-            guard let image = self.previewImageView.imageView.image else { return }
-        } completion: { _ in
-            // do nothing
-        }
-
-        super.viewWillTransition(to: size, with: coordinator)
+        )
+        os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: setImage url: %s", ((#file as NSString).lastPathComponent), #line, #function, viewModel.url.debugDescription)
     }
     
 }

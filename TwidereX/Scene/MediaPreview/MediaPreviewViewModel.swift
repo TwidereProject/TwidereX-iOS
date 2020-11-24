@@ -44,7 +44,8 @@ final class MediaPreviewViewModel: NSObject {
             for (mediaEntity, image) in zip(media, root.preloadThumbnailImages) {
                 switch mediaEntity.type {
                 case "photo":
-                    let mediaPreviewImageModel = MediaPreviewImageViewModel(thumbnail: image)
+                    guard let url = mediaEntity.photoURL(sizeKind: .large)?.0 else { continue }
+                    let mediaPreviewImageModel = MediaPreviewImageViewModel(url: url, thumbnail: image)
                     let mediaPreviewImageViewController = MediaPreviewImageViewController()
                     mediaPreviewImageViewController.viewModel = mediaPreviewImageModel
                     viewControllers.append(mediaPreviewImageViewController)

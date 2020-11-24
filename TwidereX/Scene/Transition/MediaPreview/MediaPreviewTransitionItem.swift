@@ -14,6 +14,7 @@ class MediaPreviewTransitionItem: Identifiable {
     
     // TODO:
     var imageView: UIImageView?
+    var imageViewSnapshot: UIView?
     var initialFrame: CGRect? = nil
     var targetFrame: CGRect? = nil
     var touchOffset: CGVector = CGVector.zero
