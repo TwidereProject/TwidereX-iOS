@@ -11,3 +11,6 @@ pod keys set oauth_endpoint "oob"
 pod keys set oauth_endpoint_debug "oob"
 
 pod install
+
+# mock firebase config file
+touch ./TwidereX/GoogleService-Info.plist

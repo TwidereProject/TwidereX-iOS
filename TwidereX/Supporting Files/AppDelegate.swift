@@ -18,9 +18,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         
-        if let options = AppSecret.shared.firebaseOptions {
-            FirebaseApp.configure(options: options)
-        }
+        FirebaseApp.configure()
         
         NotificationCenter.default.publisher(for: UIContentSizeCategory.didChangeNotification)
             .sink { _ in

@@ -37,14 +37,6 @@ plugin 'cocoapods-keys', {
     "consumer_key_secret",
     "host_key_public",
     "oauth_endpoint",
-    "oauth_endpoint_debug",
-    "firebase_client_id",
-    "firebase_api_key",
-    "firebase_gcm_sender_id",
-    "firebase_bundle_id",
-    "firebase_project_id",
-    "firebase_storage_bucket",
-    "firebase_google_app_id",
-    "firebase_database_url"
+    "oauth_endpoint_debug"
   ]
 }
