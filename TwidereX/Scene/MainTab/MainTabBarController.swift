@@ -115,22 +115,17 @@ extension MainTabBarController {
                     case .accountTemporarilyLocked:
                         var config = SwiftMessages.defaultConfig
                         config.duration = .seconds(seconds: 10)
-                        let messageView = MessageView.viewFromNib(layout: .cardView)
-                        messageView.configureTheme(Theme.error)
-                        messageView.configureContent(
-                            title: "Temporarily locked",
-                            body: "Please log in Twitter to unlock your account.",
-                            iconImage: Asset.Indices.exclamationmarkCircle.image.withRenderingMode(.alwaysTemplate),
-                            iconText: nil,
-                            buttonImage: nil,
-                            buttonTitle: "Unlock"
-                        ) { [weak self] button in
+                        config.interactiveHide = true
+                        let bannerView = NotifyBannerView()
+                        bannerView.configure(for: .error)
+                        bannerView.titleLabel.text = "Account Temporarily Locked"
+                        bannerView.messageLabel.text = "Open Twitter to unlock"
+                        bannerView.actionButtonTapHandler = { [weak self] button in
                             guard let self = self else { return }
                             let url = URL(string: "https://twitter.com/account/access")!
                             UIApplication.shared.open(url)
-                            // self.coordinator.present(scene: .twitterAccountUnlock, from: self, transition: .modal(animated: true, completion: nil))
                         }
-                        SwiftMessages.show(config: config, view: messageView)
+                        SwiftMessages.show(config: config, view: bannerView)
                     default:
                         break
                     }

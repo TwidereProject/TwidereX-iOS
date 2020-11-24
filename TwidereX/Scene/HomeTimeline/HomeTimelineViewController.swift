@@ -115,6 +115,10 @@ extension HomeTimelineViewController {
                         UIAction(title: "Show Floaty", image: nil, attributes: [], handler: { [weak self] action in
                             guard let self = self else { return }
                             self.showFloatyButton(action)
+                        }),
+                        UIAction(title: "Show Account unlock alert", image: nil, attributes: [], handler: { [weak self] action in
+                            guard let self = self else { return }
+                            self.context.apiService.error.send(APIService.APIError.accountTemporarilyLocked)
                         })
                     ]
                 )
