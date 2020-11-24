@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# mock firebase config file
+cp ./TwidereX/mock-GoogleService-Info.plist GoogleService-Info.plist
+
 sudo gem install cocoapods-keys
 
 # stub keys. DO NOT use in production
@@ -11,6 +14,3 @@ pod keys set oauth_endpoint "oob"
 pod keys set oauth_endpoint_debug "oob"
 
 pod install
-
-# mock firebase config file
-touch ./TwidereX/GoogleService-Info.plist
