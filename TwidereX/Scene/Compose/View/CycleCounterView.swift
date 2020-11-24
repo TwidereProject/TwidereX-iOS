@@ -65,7 +65,7 @@ extension CycleCounterView {
             .receive(on: DispatchQueue.main)
             .sink { [weak self] progress in
                 guard let self = self else { return }
-                let progress = max(0, min(100, progress))
+                let progress = max(0, min(1, progress))
                 self.frontRingLayer.strokeEnd = progress
             }
             .store(in: &disposeBag)

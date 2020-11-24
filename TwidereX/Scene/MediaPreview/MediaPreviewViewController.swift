@@ -282,9 +282,16 @@ extension MediaPreviewViewController: MediaPreviewingViewController {
     
     func isInteractiveDismissable() -> Bool {
         if let mediaPreviewImageViewController = pagingViewConttroller.currentViewController as? MediaPreviewImageViewController {
-            let safeAreaInsets = mediaPreviewImageViewController.previewImageView.safeAreaInsets
+            let previewImageView = mediaPreviewImageViewController.previewImageView
+            // TODO: allow zooming pan dismiss
+            guard previewImageView.zoomScale == previewImageView.minimumZoomScale,
+                  previewImageView.imageView.image != nil else {
+                return false
+            }
+            
+            let safeAreaInsets = previewImageView.safeAreaInsets
             let statusBarFrameHeight = view.window?.windowScene?.statusBarManager?.statusBarFrame.height ?? 0
-            return mediaPreviewImageViewController.previewImageView.contentOffset.y <= -(safeAreaInsets.top - statusBarFrameHeight)
+            return previewImageView.contentOffset.y <= -(safeAreaInsets.top - statusBarFrameHeight)
         }
         
         return false

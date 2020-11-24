@@ -20,16 +20,33 @@ final class MediaPreviewImageViewController: UIViewController {
     var viewModel: MediaPreviewImageViewModel!
     weak var delegate: MediaPreviewImageViewControllerDelegate?
 
+    let progressBarView = ProgressBarView()
     lazy var previewImageView = MediaPreviewImageView(frame: view.bounds)
 
     let tapGestureRecognizer = UITapGestureRecognizer.singleTapGestureRecognizer
     
+    deinit {
+        os_log("%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
+        previewImageView.imageView.af.cancelImageRequest()
+    }
 }
 
 extension MediaPreviewImageViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        progressBarView.tintColor = .white
+        progressBarView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(progressBarView)
+        NSLayoutConstraint.activate([
+            progressBarView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            progressBarView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            progressBarView.widthAnchor.constraint(equalToConstant: 120),
+            progressBarView.heightAnchor.constraint(equalToConstant: 44),
+        ])
+        
+        progressBarView.isHidden = viewModel.thumbnail != nil
         
         previewImageView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(previewImageView)
@@ -50,6 +67,8 @@ extension MediaPreviewImageViewController {
             filter: nil,
             progress: { [weak self] progress in
                 guard let self = self else { return }
+                self.progressBarView.isHidden = progress.fractionCompleted == 1.0
+                self.progressBarView.progress.value = CGFloat(progress.fractionCompleted)
                 os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: load %s progress: %.2f", ((#file as NSString).lastPathComponent), #line, #function, self.viewModel.url.debugDescription, progress.fractionCompleted)
             },
             imageTransition: .crossDissolve(0.3),
@@ -58,6 +77,7 @@ extension MediaPreviewImageViewController {
                 guard let self = self else { return }
                 switch response.result {
                 case .success(let image):
+                    self.progressBarView.isHidden = true
                     self.previewImageView.imageView.image = image
                     self.previewImageView.setup(image: image, container: self.previewImageView, forceUpdate: true)
                 case .failure(let error):

@@ -27,7 +27,7 @@ final class MediaPreviewViewModel: NSObject {
     let name = CurrentValueSubject<String?, Never>(nil)
     let content = CurrentValueSubject<String?, Never>(nil)
     
-    internal init(context: AppContext, root: Root) {
+    init(context: AppContext, root: Root) {
         self.context = context
         self.rootItem = .root(root)
         // setup viewControllers
@@ -42,10 +42,11 @@ final class MediaPreviewViewModel: NSObject {
             guard let media = tweet.media?.sorted(by: { $0.index.compare($1.index) == .orderedAscending }) else { return }
             
             for (mediaEntity, image) in zip(media, root.preloadThumbnailImages) {
+                let thumbnail: UIImage? = image.flatMap { $0.size != CGSize(width: 1, height: 1) ? $0 : nil }
                 switch mediaEntity.type {
                 case "photo":
                     guard let url = mediaEntity.photoURL(sizeKind: .large)?.0 else { continue }
-                    let mediaPreviewImageModel = MediaPreviewImageViewModel(url: url, thumbnail: image)
+                    let mediaPreviewImageModel = MediaPreviewImageViewModel(url: url, thumbnail: thumbnail)
                     let mediaPreviewImageViewController = MediaPreviewImageViewController()
                     mediaPreviewImageViewController.viewModel = mediaPreviewImageModel
                     viewControllers.append(mediaPreviewImageViewController)
