@@ -49,23 +49,15 @@ extension DrawerSidebarAnimatedTransitioning {
               let toView = transitionContext.view(forKey: .to) else {
             fatalError()
         }
-        
-//        let toViewEndFrame = transitionContext.finalFrame(for: toVC)
-//        let toViewStartFrame: CGRect = {
-//            switch UIApplication.shared.userInterfaceLayoutDirection {
-//            case .rightToLeft:
-//                return CGRect(x: toViewEndFrame.origin.x + toView.bounds.width,
-//                              y: toViewEndFrame.origin.y,
-//                              width: toViewEndFrame.width,
-//                              height: toViewEndFrame.height)
-//            default:
-//                return CGRect(x: toViewEndFrame.origin.x - toViewEndFrame.width,
-//                              y: toViewEndFrame.origin.y,
-//                              width: toViewEndFrame.width,
-//                              height: toViewEndFrame.height)
-//            }
-//        }()
-        let toViewStartTransform: CGAffineTransform = CGAffineTransform(translationX: -toView.frame.width, y: 0)
+
+        let toViewStartTransform: CGAffineTransform = {
+            switch UIApplication.shared.userInterfaceLayoutDirection {
+            case .rightToLeft:
+                return CGAffineTransform(translationX: toView.frame.width, y: 0)
+            default:
+                return CGAffineTransform(translationX: -toView.frame.width, y: 0)
+            }
+        }()
         transitionContext.containerView.addSubview(toView)
         toView.transform = toViewStartTransform
         
