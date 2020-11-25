@@ -101,7 +101,15 @@ extension ProgressBarView {
         
         progressMaskLayer.path = {
             var rect = bounds.insetBy(dx: margin + borderWidth, dy: margin + borderWidth)
-            rect.size.width = progress.value * rect.width
+            let newWidth = progress.value * rect.width
+            let widthChanged = rect.width - newWidth
+            rect.size.width = newWidth
+            switch UIApplication.shared.userInterfaceLayoutDirection {
+            case .rightToLeft:
+                rect.origin.x += widthChanged
+            default:
+                break
+            }
             let path = UIBezierPath(rect: rect)
             return path.cgPath
         }()

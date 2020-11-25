@@ -12,7 +12,7 @@ final class ConversationPostStatusView: UIView {
     let countLabel: UILabel = {
         let label = UILabel()
         label.text = "1"
-        label.textAlignment = .right
+        label.textAlignment = UIApplication.shared.userInterfaceLayoutDirection == .rightToLeft ? .left : .right
         label.font = .preferredFont(forTextStyle: .callout)
         return label
     }()

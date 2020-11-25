@@ -150,27 +150,47 @@ extension MosaicImageView {
         }
         if count == 2 {
             contentLeftStackView.addArrangedSubview(imageViews[0])
-            imageViews[0].layer.maskedCorners = [.layerMinXMinYCorner, .layerMinXMaxYCorner]
             contentRightStackView.addArrangedSubview(imageViews[1])
-            imageViews[1].layer.maskedCorners = [.layerMaxXMinYCorner, .layerMaxXMaxYCorner]
+            switch UIApplication.shared.userInterfaceLayoutDirection {
+            case .rightToLeft:
+                imageViews[1].layer.maskedCorners = [.layerMinXMinYCorner, .layerMinXMaxYCorner]
+                imageViews[0].layer.maskedCorners = [.layerMaxXMinYCorner, .layerMaxXMaxYCorner]
+            default:
+                imageViews[0].layer.maskedCorners = [.layerMinXMinYCorner, .layerMinXMaxYCorner]
+                imageViews[1].layer.maskedCorners = [.layerMaxXMinYCorner, .layerMaxXMaxYCorner]
+            }
             
         } else if count == 3 {
             contentLeftStackView.addArrangedSubview(imageViews[0])
-            imageViews[0].layer.maskedCorners = [.layerMinXMinYCorner, .layerMinXMaxYCorner]
             contentRightStackView.addArrangedSubview(imageViews[1])
-            imageViews[1].layer.maskedCorners = [.layerMaxXMinYCorner]
             contentRightStackView.addArrangedSubview(imageViews[2])
-            imageViews[2].layer.maskedCorners = [.layerMaxXMaxYCorner]
-
+            switch UIApplication.shared.userInterfaceLayoutDirection {
+            case .rightToLeft:
+                imageViews[0].layer.maskedCorners = [.layerMaxXMinYCorner, .layerMaxXMaxYCorner]
+                imageViews[1].layer.maskedCorners = [.layerMinXMinYCorner]
+                imageViews[2].layer.maskedCorners = [.layerMinXMaxYCorner]
+            default:
+                imageViews[0].layer.maskedCorners = [.layerMinXMinYCorner, .layerMinXMaxYCorner]
+                imageViews[1].layer.maskedCorners = [.layerMaxXMinYCorner]
+                imageViews[2].layer.maskedCorners = [.layerMaxXMaxYCorner]
+            }
         } else if count == 4 {
             contentLeftStackView.addArrangedSubview(imageViews[0])
-            imageViews[0].layer.maskedCorners = [.layerMinXMinYCorner]
             contentRightStackView.addArrangedSubview(imageViews[1])
-            imageViews[1].layer.maskedCorners = [.layerMaxXMinYCorner]
             contentLeftStackView.addArrangedSubview(imageViews[2])
-            imageViews[2].layer.maskedCorners = [.layerMinXMaxYCorner]
             contentRightStackView.addArrangedSubview(imageViews[3])
-            imageViews[3].layer.maskedCorners = [.layerMaxXMaxYCorner]
+            switch UIApplication.shared.userInterfaceLayoutDirection {
+            case .rightToLeft:
+                imageViews[0].layer.maskedCorners = [.layerMaxXMinYCorner]
+                imageViews[1].layer.maskedCorners = [.layerMinXMinYCorner]
+                imageViews[2].layer.maskedCorners = [.layerMaxXMaxYCorner]
+                imageViews[3].layer.maskedCorners = [.layerMinXMaxYCorner]
+            default:
+                imageViews[0].layer.maskedCorners = [.layerMinXMinYCorner]
+                imageViews[1].layer.maskedCorners = [.layerMaxXMinYCorner]
+                imageViews[2].layer.maskedCorners = [.layerMinXMaxYCorner]
+                imageViews[3].layer.maskedCorners = [.layerMaxXMaxYCorner]
+            }
         }
         
         return imageViews
