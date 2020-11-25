@@ -402,6 +402,7 @@ extension ComposeTweetViewController {
             guard !mediaIDs.isEmpty else { return nil }
             return mediaIDs
         }()
+        let feedbackGenerator = UINotificationFeedbackGenerator()
         context.apiService.tweet(
             content: viewModel.composeContent.value,
             mediaIDs: mediaIDs,
@@ -413,6 +414,8 @@ extension ComposeTweetViewController {
         .handleEvents(receiveSubscription: { [weak self] _ in
             guard let self = self else { return }
             self.dismiss(animated: true, completion: nil)
+        }, receiveOutput: { _ in
+            feedbackGenerator.prepare()
         })
         .sink { completion in
             switch completion {
@@ -427,6 +430,7 @@ extension ComposeTweetViewController {
                 bannerView.messageLabel.text = "Please try again"
                 DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                     SwiftMessages.show(config: config, view: bannerView)
+                    feedbackGenerator.notificationOccurred(.error)
                 }
             case .finished:
                 os_log("%{public}s[%{public}ld], %{public}s: tweet success", ((#file as NSString).lastPathComponent), #line, #function)
@@ -439,6 +443,7 @@ extension ComposeTweetViewController {
                 bannerView.messageLabel.isHidden = true
                 DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                     SwiftMessages.show(config: config, view: bannerView)
+                    feedbackGenerator.notificationOccurred(.success)
                 }
             }
         } receiveValue: { response in
