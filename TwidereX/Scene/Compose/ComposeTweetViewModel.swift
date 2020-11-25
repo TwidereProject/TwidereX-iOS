@@ -247,18 +247,14 @@ extension ComposeTweetViewModel {
     func setupDiffableDataSource(for mediaCollectionView: UICollectionView) {
         mediaDiffableDataSource = UICollectionViewDiffableDataSource(collectionView: mediaCollectionView) { collectionView, indexPath, item -> UICollectionViewCell? in
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: ComposeTweetMediaCollectionViewCell.self), for: indexPath) as! ComposeTweetMediaCollectionViewCell
-            let imageViewSize = CGSize(width: 56, height: 56)
             let scale = collectionView.window?.screen.scale ?? UIScreen.main.scale
-            let placehoderImage = UIImage.placeholder(size: imageViewSize, color: .systemFill)
+            let size = CGSize(width: 56 * scale, height: 56 * scale)
             if case let .media(service) = item {
                 switch service.payload {
-                case .image(let url):
-                    let imageData = try? Data(contentsOf: url)
-                    let image = imageData.flatMap { UIImage(data: $0, scale: scale) } ?? placehoderImage
-                    image.af.inflate()
+                case .image(let image):
                     let imageFilter = AspectScaledToFillSizeWithRoundedCornersFilter(
-                        size: imageViewSize,
-                        radius: 8.0,
+                        size: size,
+                        radius: 8.0 * scale,
                         divideRadiusByImageScale: false
                     )
                     let filteredImage = imageFilter.filter(image)
@@ -302,6 +298,7 @@ extension ComposeTweetViewModel {
             } else {
                 assertionFailure()
             }
+            
             return cell
         }
     }

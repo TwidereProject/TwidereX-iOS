@@ -12,14 +12,31 @@ import Combine
 class MediaPreviewImageViewModel {
     
     // input
-    let url: URL
-    let thumbnail: UIImage?
-    
-    // output
-    let preview = CurrentValueSubject<UIImage?, Never>(nil)
-    
-    init(url: URL, thumbnail: UIImage?) {
-        self.url = url
-        self.thumbnail = thumbnail
+    let item: ImagePreviewItem
+        
+    init(meta: TweetImagePreviewMeta) {
+        self.item = .tweet(meta)
     }
+    
+    init(meta: LocalImagePreviewMeta) {
+        self.item = .local(meta)
+    }
+    
+}
+
+extension MediaPreviewImageViewModel {
+    enum ImagePreviewItem {
+        case tweet(TweetImagePreviewMeta)
+        case local(LocalImagePreviewMeta)
+    }
+    
+    struct TweetImagePreviewMeta {
+        let url: URL
+        let thumbnail: UIImage?
+    }
+    
+    struct LocalImagePreviewMeta {
+        let image: UIImage
+    }
+    
 }

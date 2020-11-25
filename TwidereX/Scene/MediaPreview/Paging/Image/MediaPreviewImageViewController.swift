@@ -12,6 +12,7 @@ import Combine
 
 protocol MediaPreviewImageViewControllerDelegate: class {
     func mediaPreviewImageViewController(_ viewController: MediaPreviewImageViewController, tapGestureRecognizerDidTrigger tapGestureRecognizer: UITapGestureRecognizer)
+    func mediaPreviewImageViewController(_ viewController: MediaPreviewImageViewController, longPressGestureRecognizerDidTrigger longPressGestureRecognizer: UILongPressGestureRecognizer)
 }
 
 final class MediaPreviewImageViewController: UIViewController {
@@ -24,6 +25,7 @@ final class MediaPreviewImageViewController: UIViewController {
     let previewImageView = MediaPreviewImageView()
 
     let tapGestureRecognizer = UITapGestureRecognizer.singleTapGestureRecognizer
+    let longPressGestureRecognizer = UILongPressGestureRecognizer()
     
     deinit {
         os_log("%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
@@ -46,8 +48,6 @@ extension MediaPreviewImageViewController {
             progressBarView.heightAnchor.constraint(equalToConstant: 44),
         ])
         
-        progressBarView.isHidden = viewModel.thumbnail != nil
-        
         previewImageView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(previewImageView)
         NSLayoutConstraint.activate([
@@ -58,34 +58,45 @@ extension MediaPreviewImageViewController {
         ])
         
         tapGestureRecognizer.addTarget(self, action: #selector(MediaPreviewImageViewController.tapGestureRecognizerHandler(_:)))
-        tapGestureRecognizer.shouldRequireFailure(of: previewImageView.doubleTapGestureRecognizer)
-        view.addGestureRecognizer(tapGestureRecognizer)
+        longPressGestureRecognizer.addTarget(self, action: #selector(MediaPreviewImageViewController.longPressGestureRecognizerHandler(_:)))
+        tapGestureRecognizer.require(toFail: previewImageView.doubleTapGestureRecognizer)
+        tapGestureRecognizer.require(toFail: longPressGestureRecognizer)
+        previewImageView.addGestureRecognizer(tapGestureRecognizer)
+        previewImageView.addGestureRecognizer(longPressGestureRecognizer)
         
-        previewImageView.imageView.af.setImage(
-            withURL: viewModel.url,
-            placeholderImage: viewModel.thumbnail,
-            filter: nil,
-            progress: { [weak self] progress in
-                guard let self = self else { return }
-                self.progressBarView.progress.value = CGFloat(progress.fractionCompleted)
-                os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: load %s progress: %.2f", ((#file as NSString).lastPathComponent), #line, #function, self.viewModel.url.debugDescription, progress.fractionCompleted)
-            },
-            imageTransition: .crossDissolve(0.3),
-            runImageTransitionIfCached: false,
-            completion: { [weak self] response in
-                guard let self = self else { return }
-                switch response.result {
-                case .success(let image):
-                    self.progressBarView.isHidden = true
-                    self.previewImageView.imageView.image = image
-                    self.previewImageView.setup(image: image, container: self.previewImageView, forceUpdate: true)
-                case .failure(let error):
-                    // TODO:
-                    break
+        switch viewModel.item {
+        case .tweet(let meta):
+            progressBarView.isHidden = meta.thumbnail != nil
+            previewImageView.imageView.af.setImage(
+                withURL: meta.url,
+                placeholderImage: meta.thumbnail,
+                filter: nil,
+                progress: { [weak self] progress in
+                    guard let self = self else { return }
+                    self.progressBarView.progress.value = CGFloat(progress.fractionCompleted)
+                    os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: load %s progress: %.2f", ((#file as NSString).lastPathComponent), #line, #function, meta.url.debugDescription, progress.fractionCompleted)
+                },
+                imageTransition: .crossDissolve(0.3),
+                runImageTransitionIfCached: false,
+                completion: { [weak self] response in
+                    guard let self = self else { return }
+                    switch response.result {
+                    case .success(let image):
+                        self.progressBarView.isHidden = true
+                        self.previewImageView.imageView.image = image
+                        self.previewImageView.setup(image: image, container: self.previewImageView, forceUpdate: true)
+                    case .failure(let error):
+                        // TODO:
+                        break
+                    }
                 }
-            }
-        )
-        os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: setImage url: %s", ((#file as NSString).lastPathComponent), #line, #function, viewModel.url.debugDescription)
+            )
+            os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: setImage url: %s", ((#file as NSString).lastPathComponent), #line, #function, meta.url.debugDescription)
+        case .local(let meta):
+            progressBarView.isHidden = true
+            previewImageView.imageView.image = meta.image
+            self.previewImageView.setup(image: meta.image, container: self.previewImageView, forceUpdate: true)
+        }
     }
     
 }
@@ -95,6 +106,11 @@ extension MediaPreviewImageViewController {
     @objc private func tapGestureRecognizerHandler(_ sender: UITapGestureRecognizer) {
         os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
         delegate?.mediaPreviewImageViewController(self, tapGestureRecognizerDidTrigger: sender)
+    }
+    
+    @objc private func longPressGestureRecognizerHandler(_ sender: UILongPressGestureRecognizer) {
+        os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
+        delegate?.mediaPreviewImageViewController(self, longPressGestureRecognizerDidTrigger: sender)
     }
     
 }

@@ -47,6 +47,7 @@ the `host_key_public` is preserved by App Store release and not needs for open-s
 - [ActiveLabel](https://github.com/optonaut/ActiveLabel.swift)
 - [AlamofireImage](https://github.com/Alamofire/AlamofireImage)
 - [Alamofire](https://github.com/Alamofire/Alamofire)
+- [cocoapods-keys](https://github.com/orta/cocoapods-keys)
 - [CommonOSLog](https://github.com/mainasuk/CommonOSLog)
 - [CryptoSwift](https://github.com/krzyzanowskim/CryptoSwift)
 - [DateToolSwift](https://github.com/MatthewYork/DateTools)
@@ -58,9 +59,9 @@ the `host_key_public` is preserved by App Store release and not needs for open-s
 - [SwiftMessages](https://github.com/SwiftKickMobile/SwiftMessages)
 - [SwiftyJSON](https://github.com/SwiftyJSON/SwiftyJSON)
 - [Tabman](https://github.com/uias/Tabman)
-- [TwitterProfile](https://github.com/OfTheWolf/TwitterProfile)
-- [cocoapods-keys](https://github.com/orta/cocoapods-keys)
+- [TOCropViewController](https://github.com/TimOliver/TOCropViewController)
 - [twitter-text](https://github.com/twitter/twitter-text)
+- [TwitterProfile](https://github.com/OfTheWolf/TwitterProfile)
 
 ## License
 

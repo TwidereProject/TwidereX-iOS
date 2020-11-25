@@ -12,8 +12,9 @@ import Combine
 import Photos
 import TwitterAPI
 import SwiftMessages
+import CropViewController
 
-final class ComposeTweetViewController: UIViewController, NeedsDependency {
+final class ComposeTweetViewController: UIViewController, NeedsDependency, MediaPreviewableViewController {
     
     static let avatarImageViewSize = CGSize(width: 44, height: 44)
     
@@ -22,6 +23,8 @@ final class ComposeTweetViewController: UIViewController, NeedsDependency {
     
     var disposeBag = Set<AnyCancellable>()
     var viewModel: ComposeTweetViewModel!
+    
+    let mediaPreviewTransitionController = MediaPreviewTransitionController()
     
     lazy var composeBarButtonItem = UIBarButtonItem(image: Asset.ObjectTools.paperplane.image.withRenderingMode(.alwaysTemplate), style: .plain, target: self, action: #selector(ComposeTweetViewController.composeBarButtonItemPressed(_:)))
     
@@ -64,6 +67,7 @@ final class ComposeTweetViewController: UIViewController, NeedsDependency {
     
     let tweetToolbarView = TweetToolbarView()
     var tweetToolbarViewBottomLayoutConstraint: NSLayoutConstraint!
+    let tweetToolbarBackgroundView = UIView()
     
     deinit {
         os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s:", ((#file as NSString).lastPathComponent), #line, #function)
@@ -164,6 +168,16 @@ extension ComposeTweetViewController {
         ])
         tweetToolbarView.preservesSuperviewLayoutMargins = true
         tweetToolbarView.delegate = self
+        
+        tweetToolbarBackgroundView.translatesAutoresizingMaskIntoConstraints = false
+        view.insertSubview(tweetToolbarBackgroundView, belowSubview: tweetToolbarView)
+        NSLayoutConstraint.activate([
+            tweetToolbarBackgroundView.topAnchor.constraint(equalTo: tweetToolbarView.topAnchor),
+            tweetToolbarBackgroundView.leadingAnchor.constraint(equalTo: tweetToolbarView.leadingAnchor),
+            tweetToolbarBackgroundView.trailingAnchor.constraint(equalTo: tweetToolbarView.trailingAnchor),
+            view.bottomAnchor.constraint(equalTo: tweetToolbarBackgroundView.bottomAnchor),
+        ])
+        tweetToolbarBackgroundView.backgroundColor = tweetToolbarView.backgroundColor
         
         viewModel.setupDiffableDataSource(for: tableView)
         tableView.delegate = self
@@ -443,7 +457,7 @@ extension ComposeTweetViewController: UIAdaptivePresentationControllerDelegate {
         case .phone:
             return .fullScreen
         default:
-            return .formSheet
+            return .pageSheet
         }
     }
     
@@ -551,19 +565,20 @@ extension ComposeTweetViewController: UIImagePickerControllerDelegate & UINaviga
     }
     
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
-        guard let url = info[.imageURL] as? URL else { return }
+        guard let image = info[.originalImage] as? UIImage else { return }
         guard let mediaType = info[.mediaType] as? String else { return }
         
         // TODO: check media type
         guard mediaType == "public.image" else { return }
-        let imagePayload = TwitterMediaService.Payload.image(url)
-        let mediaService = TwitterMediaService(context: context, payload: imagePayload)
-        mediaService.delegate = viewModel
         
-        let value = viewModel.mediaServices.value
-        viewModel.mediaServices.value = value + [mediaService]
-        
-        picker.dismiss(animated: true, completion: nil)
+        let cropViewController = CropViewController(croppingStyle: .default, image: image)
+        cropViewController.delegate = self
+        cropViewController.modalPresentationStyle = .fullScreen
+        cropViewController.modalTransitionStyle = .crossDissolve
+        cropViewController.transitioningDelegate = nil
+        picker.dismiss(animated: true) {
+            self.present(cropViewController, animated: true, completion: nil)
+        }
     }
     
     func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
@@ -573,7 +588,77 @@ extension ComposeTweetViewController: UIImagePickerControllerDelegate & UINaviga
     
 }
 
+// MARK: - CropViewControllerDelegate
+extension ComposeTweetViewController: CropViewControllerDelegate {
+    func cropViewController(_ cropViewController: CropViewController, didCropToImage image: UIImage, withRect cropRect: CGRect, angle: Int) {
+        let imagePayload = TwitterMediaService.Payload.image(image)
+        let mediaService = TwitterMediaService(context: context, payload: imagePayload)
+        mediaService.delegate = viewModel
+        
+        let value = viewModel.mediaServices.value
+        viewModel.mediaServices.value = value + [mediaService]
+        
+        cropViewController.dismiss(animated: true, completion: nil)
+    }
+}
+
 // MARK: - UICollectionViewDelegate
 extension ComposeTweetViewController: UICollectionViewDelegate {
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: select item at: %s", ((#file as NSString).lastPathComponent), #line, #function, indexPath.debugDescription)
+        let mediaServices = viewModel.mediaServices.value
+        guard indexPath.row < mediaServices.count else { return }
+        let mediaService = mediaServices[indexPath.row]
+        
+        let payload = mediaService.payload
+        switch payload {
+        case .image(let image):
+            let meta = MediaPreviewViewModel.LocalImagePreviewMeta(image: image)
+            let mediaPreviewViewModel = MediaPreviewViewModel(context: context, meta: meta)
+            coordinator.present(scene: .mediaPreview(viewModel: mediaPreviewViewModel), from: self, transition: .custom(transitioningDelegate: mediaPreviewTransitionController))
+        default:
+            return
+        }
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
+        os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: select item at: %s", ((#file as NSString).lastPathComponent), #line, #function, indexPath.debugDescription)
+        let mediaServices = viewModel.mediaServices.value
+        guard indexPath.row < mediaServices.count else { return nil }
+        let mediaService = mediaServices[indexPath.row]
+        
+        let payload = mediaService.payload
+        switch payload {
+        case .image(let image):
+            return UIContextMenuConfiguration(identifier: nil) { () -> UIViewController? in
+                let previewProvider = ContextMenuImagePreviewViewController()
+                previewProvider.image = image
+                return previewProvider
+            } actionProvider: { _ -> UIMenu? in
+                return UIMenu(
+                    title: "",
+                    image: nil,
+                    children: [
+                        UIAction(title: "Preview", image: UIImage(systemName: "eye"), identifier: nil, attributes: [], state: .off, handler: { [weak self] _ in
+                            guard let self = self else { return }
+                            let meta = MediaPreviewViewModel.LocalImagePreviewMeta(image: image)
+                            let mediaPreviewViewModel = MediaPreviewViewModel(context: self.context, meta: meta)
+                            self.coordinator.present(scene: .mediaPreview(viewModel: mediaPreviewViewModel), from: self, transition: .custom(transitioningDelegate: self.mediaPreviewTransitionController))
+                        }),
+                        UIAction(title: "Remove", image: UIImage(systemName: "minus.circle"), identifier: nil, attributes: .destructive, state: .off, handler: { [weak self] _ in
+                            guard let self = self else { return }
+                            var mediaServices = mediaServices
+                            mediaServices.remove(at: indexPath.row)
+                            self.viewModel.mediaServices.value = mediaServices
+                        })
+                    ]
+                )
+            }
+            
+        default:
+            return nil
+        }
+    }
     
 }

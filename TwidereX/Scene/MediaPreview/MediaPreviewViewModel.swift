@@ -22,31 +22,33 @@ final class MediaPreviewViewModel: NSObject {
     // output
     let viewControllers: [UIViewController]
 
+    // description view
     let avatarImageURL = CurrentValueSubject<URL?, Never>(nil)
     let isVerified = CurrentValueSubject<Bool, Never>(false)
     let name = CurrentValueSubject<String?, Never>(nil)
     let content = CurrentValueSubject<String?, Never>(nil)
     
-    init(context: AppContext, root: Root) {
+    init(context: AppContext, meta: TweetImagePreviewMeta) {
         self.context = context
-        self.rootItem = .root(root)
+        self.rootItem = .tweet(meta)
         // setup viewControllers
         var _tweet: Tweet?
         var viewControllers: [UIViewController] = []
         let managedObjectContext = self.context.managedObjectContext
         managedObjectContext.performAndWait {
-            let tweet = managedObjectContext.object(with: root.tweetObjectID) as! Tweet
+            let tweet = managedObjectContext.object(with: meta.tweetObjectID) as! Tweet
             _tweet = tweet
             
             // configure viewControllers
             guard let media = tweet.media?.sorted(by: { $0.index.compare($1.index) == .orderedAscending }) else { return }
             
-            for (mediaEntity, image) in zip(media, root.preloadThumbnailImages) {
+            for (mediaEntity, image) in zip(media, meta.preloadThumbnailImages) {
                 let thumbnail: UIImage? = image.flatMap { $0.size != CGSize(width: 1, height: 1) ? $0 : nil }
                 switch mediaEntity.type {
                 case "photo":
                     guard let url = mediaEntity.photoURL(sizeKind: .large)?.0 else { continue }
-                    let mediaPreviewImageModel = MediaPreviewImageViewModel(url: url, thumbnail: thumbnail)
+                    let meta = MediaPreviewImageViewModel.TweetImagePreviewMeta(url: url, thumbnail: thumbnail)
+                    let mediaPreviewImageModel = MediaPreviewImageViewModel(meta: meta)
                     let mediaPreviewImageViewController = MediaPreviewImageViewController()
                     mediaPreviewImageViewController.viewModel = mediaPreviewImageModel
                     viewControllers.append(mediaPreviewImageViewController)
@@ -72,18 +74,35 @@ final class MediaPreviewViewModel: NSObject {
         }
     }
     
+    init(context: AppContext, meta: LocalImagePreviewMeta) {
+        self.context = context
+        self.rootItem = .local(meta)
+        // setup viewControllers
+        let meta = MediaPreviewImageViewModel.LocalImagePreviewMeta(image: meta.image)
+        let mediaPreviewImageModel = MediaPreviewImageViewModel(meta: meta)
+        let mediaPreviewImageViewController = MediaPreviewImageViewController()
+        mediaPreviewImageViewController.viewModel = mediaPreviewImageModel
+        self.viewControllers = [mediaPreviewImageViewController]
+        super.init()
+    }
+    
 }
 
 extension MediaPreviewViewModel {
     
     enum PreviewItem {
-        case root(Root)
+        case tweet(TweetImagePreviewMeta)
+        case local(LocalImagePreviewMeta)
     }
     
-    struct Root {
+    struct TweetImagePreviewMeta {
         let tweetObjectID: NSManagedObjectID
         let initialIndex: Int
         let preloadThumbnailImages: [UIImage?]
+    }
+    
+    struct LocalImagePreviewMeta {
+        let image: UIImage
     }
         
 }
@@ -104,7 +123,7 @@ extension MediaPreviewViewModel: PageboyViewControllerDataSource {
     }
     
     func defaultPage(for pageboyViewController: PageboyViewController) -> PageboyViewController.Page? {
-        guard case let .root(root) = rootItem else { return nil }
+        guard case let .tweet(root) = rootItem else { return nil }
         return .at(index: root.initialIndex)
     }
     

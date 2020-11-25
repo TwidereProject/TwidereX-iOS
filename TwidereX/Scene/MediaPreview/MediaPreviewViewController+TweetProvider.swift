@@ -15,14 +15,14 @@ extension MediaPreviewViewController: TweetProvider {
     
     func tweet() -> Future<Tweet?, Never> {
         return Future { promise in
-            guard case let .root(root) = self.viewModel.rootItem else {
+            guard case let .tweet(meta) = self.viewModel.rootItem else {
                 promise(.success(nil))
                 return
             }
 
             let managedObjectContext = self.context.managedObjectContext
             managedObjectContext.perform {
-                let tweet = managedObjectContext.object(with: root.tweetObjectID) as? Tweet
+                let tweet = managedObjectContext.object(with: meta.tweetObjectID) as? Tweet
                 promise(.success(tweet))
             }
         }
