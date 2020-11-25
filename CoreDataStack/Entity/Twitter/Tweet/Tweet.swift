@@ -191,6 +191,10 @@ extension Tweet {
             self.id = id
             self.text = text
                 .replacingOccurrences(of: "&amp;", with: "&")
+                .replacingOccurrences(of: "&lt;", with: "<")
+                .replacingOccurrences(of: "&gt;", with: ">")
+                .replacingOccurrences(of: "&quot;", with: "\"")
+                .replacingOccurrences(of: "&apos;", with: "'")
             self.createdAt = createdAt
             self.conversationID = conversationID
             self.inReplyToTweetID = replyToTweetID
