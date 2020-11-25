@@ -39,6 +39,7 @@ final class MediaInfoDescriptionView: UIView {
     let activeLabel: ActiveLabel = {
         let activeLabel = ActiveLabel(style: .default)
         activeLabel.numberOfLines = 2
+        activeLabel.lineBreakMode = .byTruncatingTail
         return activeLabel
     }()
     
@@ -77,7 +78,9 @@ extension MediaInfoDescriptionView {
             safeAreaLayoutGuide.bottomAnchor.constraint(equalTo: containserStackView.bottomAnchor, constant: 8),
         ])
         
+        activeLabel.translatesAutoresizingMaskIntoConstraints = false
         containserStackView.addArrangedSubview(activeLabel)
+        activeLabel.setContentHuggingPriority(.defaultHigh + 1, for: .vertical)
         
         // bottom container: [avatar | name | (padding) | action toolbar ]
         let bottomContainerStackView = UIStackView()

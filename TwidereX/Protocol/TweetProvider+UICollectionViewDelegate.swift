@@ -31,12 +31,12 @@ extension UICollectionViewDelegate where Self: TweetProvider & MediaPreviewableV
                     return i == initialIndex ? preloadImageAtInitialIndex : nil
                 }
                 
-                let root = MediaPreviewViewModel.Root(
+                let root = MediaPreviewViewModel.TweetImagePreviewMeta(
                     tweetObjectID: tweet.objectID,
                     initialIndex: initialIndex,
                     preloadThumbnailImages: preloadThumbnailImages
                 )
-                let mediaPreviewViewModel = MediaPreviewViewModel(context: self.context, root: root)
+                let mediaPreviewViewModel = MediaPreviewViewModel(context: self.context, meta: root)
                 DispatchQueue.main.async {
                     self.coordinator.present(scene: .mediaPreview(viewModel: mediaPreviewViewModel), from: self, transition: .custom(transitioningDelegate: self.mediaPreviewTransitionController))
                 }

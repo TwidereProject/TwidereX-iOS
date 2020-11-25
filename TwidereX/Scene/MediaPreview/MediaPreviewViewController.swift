@@ -14,6 +14,10 @@ import CoreDataStack
 import AlamofireImage
 import Pageboy
 
+protocol MediaPreviewViewControllerDelegate: class {
+    func mediaPreviewViewController(_ viewController: MediaPreviewViewController, longPressGestureRecognizerTriggered longPressGestureRecognizer: UILongPressGestureRecognizer)
+}
+
 final class MediaPreviewViewController: UIViewController, NeedsDependency {
 
     weak var context: AppContext! { willSet { precondition(!isViewLoaded) } }
@@ -21,6 +25,7 @@ final class MediaPreviewViewController: UIViewController, NeedsDependency {
 
     var disposeBag = Set<AnyCancellable>()
     var viewModel: MediaPreviewViewModel!
+    weak var delegate: MediaPreviewViewControllerDelegate?
     
     // TODO: adapt Reduce Transparency preference
     let visualEffectView = UIVisualEffectView(effect: UIBlurEffect(style: .systemMaterial))
@@ -170,18 +175,17 @@ extension MediaPreviewViewController {
         pagingViewConttroller.delegate = self
         pagingViewConttroller.dataSource = viewModel
         
-        pageControl.numberOfPages = viewModel.viewControllers.count
-        if case let .root(root) = viewModel.rootItem {
-            pageControl.currentPage = root.initialIndex
-        }
-        pageControl.isHidden = viewModel.viewControllers.count == 1
-        
-        mediaInfoDescriptionView.statusActionToolbar.delegate = self
-        
-        if case let .root(root) = viewModel.rootItem {
+        switch viewModel.rootItem {
+        case .tweet(let meta):
+            pageControl.numberOfPages = viewModel.viewControllers.count
+            if case let .tweet(meta) = viewModel.rootItem {
+                pageControl.currentPage = meta.initialIndex
+            }
+            pageControl.isHidden = viewModel.viewControllers.count == 1
+            mediaInfoDescriptionView.statusActionToolbar.delegate = self
             let managedObjectContext = self.context.managedObjectContext
             managedObjectContext.perform {
-                let tweet = managedObjectContext.object(with: root.tweetObjectID) as! Tweet
+                let tweet = managedObjectContext.object(with: meta.tweetObjectID) as! Tweet
                 let targetTweet = tweet.retweet ?? tweet
                 let activeTwitterAuthenticationBox = self.context.authenticationService.activeTwitterAuthenticationBox.value
                 let requestTwitterUserID = activeTwitterAuthenticationBox?.twitterUserID ?? ""
@@ -204,6 +208,9 @@ extension MediaPreviewViewController {
                     }
                     .store(in: &self.disposeBag)
             }
+        case .local(let meta):
+            pageControl.isHidden = true
+            mediaInfoDescriptionView.isHidden = true
         }
     }
     
@@ -303,6 +310,10 @@ extension MediaPreviewViewController: MediaPreviewImageViewControllerDelegate {
     
     func mediaPreviewImageViewController(_ viewController: MediaPreviewImageViewController, tapGestureRecognizerDidTrigger tapGestureRecognizer: UITapGestureRecognizer) {
         
+    }
+    
+    func mediaPreviewImageViewController(_ viewController: MediaPreviewImageViewController, longPressGestureRecognizerDidTrigger longPressGestureRecognizer: UILongPressGestureRecognizer) {
+        delegate?.mediaPreviewViewController(self, longPressGestureRecognizerTriggered: longPressGestureRecognizer)
     }
     
 }

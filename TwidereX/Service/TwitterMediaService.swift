@@ -90,7 +90,7 @@ extension TwitterMediaService: Equatable, Hashable {
 
 extension TwitterMediaService {
     enum Payload {
-        case image(URL)
+        case image(UIImage)
         case gif(URL) // TODO:
         case video(URL)
         
@@ -104,9 +104,9 @@ extension TwitterMediaService {
         
         func slice() -> [Data] {
             switch self {
-            case .image(let url):
+            case .image(let image):
                 do {
-                    var imageData = try Data(contentsOf: url)
+                    guard var imageData = image.pngData() else { return [] }
                     var didRemoveEXIF = false
                     repeat {
                         guard let image = KFCrossPlatformImage(data: imageData) else { return [] }

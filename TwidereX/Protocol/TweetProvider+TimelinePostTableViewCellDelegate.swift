@@ -298,12 +298,12 @@ extension TimelinePostTableViewCellDelegate where Self: TweetProvider & MediaPre
                 guard let self = self else { return }
                 guard let tweet = (tweet?.retweet ?? tweet) else { return }
                 
-                let root = MediaPreviewViewModel.Root(
+                let root = MediaPreviewViewModel.TweetImagePreviewMeta(
                     tweetObjectID: tweet.objectID,
                     initialIndex: index,
                     preloadThumbnailImages: mosaicImageView.imageViews.map { $0.image }
                 )
-                let mediaPreviewViewModel = MediaPreviewViewModel(context: self.context, root: root)
+                let mediaPreviewViewModel = MediaPreviewViewModel(context: self.context, meta: root)
                 DispatchQueue.main.async {
                     self.coordinator.present(scene: .mediaPreview(viewModel: mediaPreviewViewModel), from: self, transition: .custom(transitioningDelegate: self.mediaPreviewTransitionController))
                 }

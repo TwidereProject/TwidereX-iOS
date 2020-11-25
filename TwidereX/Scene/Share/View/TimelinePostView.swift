@@ -203,9 +203,11 @@ extension TimelinePostView {
             moreMenuButton.widthAnchor.constraint(equalToConstant: 16),
             moreMenuButton.heightAnchor.constraint(equalToConstant: 16).priority(.defaultHigh),
         ])
-        nameLabel.setContentHuggingPriority(.defaultHigh + 3, for: .horizontal)
-        lockImageView.setContentHuggingPriority(.defaultHigh + 2, for: .horizontal)
-        usernameLabel.setContentHuggingPriority(.defaultHigh + 1, for: .horizontal)
+        nameLabel.setContentHuggingPriority(.defaultHigh + 10, for: .horizontal)
+        nameLabel.setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
+        lockImageView.setContentHuggingPriority(.defaultHigh + 5, for: .horizontal)
+        usernameLabel.setContentHuggingPriority(.defaultHigh + 3, for: .horizontal)
+        usernameLabel.setContentCompressionResistancePriority(.defaultHigh - 1, for: .horizontal)
         dateLabel.setContentHuggingPriority(.defaultLow, for: .horizontal)
         dateLabel.setContentCompressionResistancePriority(.required - 2, for: .horizontal)
         moreMenuButton.setContentCompressionResistancePriority(.required - 1, for: .horizontal)
