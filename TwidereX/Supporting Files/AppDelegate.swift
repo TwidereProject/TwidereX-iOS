@@ -8,6 +8,7 @@
 import UIKit
 import Combine
 import Firebase
+import Floaty
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -19,6 +20,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         
         FirebaseApp.configure()
+        
+        Floaty.global.rtlMode = UIApplication.shared.userInterfaceLayoutDirection == .rightToLeft
         
         NotificationCenter.default.publisher(for: UIContentSizeCategory.didChangeNotification)
             .sink { _ in

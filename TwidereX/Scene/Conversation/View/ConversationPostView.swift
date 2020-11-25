@@ -85,7 +85,6 @@ final class ConversationPostView: UIView {
     let sourceLabel: UILabel = {
         let label = UILabel()
         label.font = .preferredFont(forTextStyle: .callout)
-        label.textAlignment = .right
         label.textColor = Asset.Colors.hightLight.color
         label.text = "Twidere for iOS"
         return label

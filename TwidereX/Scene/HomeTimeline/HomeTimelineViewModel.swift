@@ -344,6 +344,7 @@ extension HomeTimelineViewModel {
         cell.timelinePostView.usernameLabel.font = .preferredFont(forTextStyle: .subheadline, compatibleWith: traitCollection)
         cell.timelinePostView.dateLabel.font = .preferredFont(forTextStyle: .callout, compatibleWith: traitCollection)
         cell.timelinePostView.activeTextLabel.font = .preferredFont(forTextStyle: .body, compatibleWith: traitCollection)
+        cell.timelinePostView.geoButton.titleLabel?.font = .preferredFont(forTextStyle: .footnote, compatibleWith: traitCollection)
 
         cell.timelinePostView.quotePostView.nameLabel.font = .preferredFont(forTextStyle: .headline, compatibleWith: traitCollection)
         cell.timelinePostView.quotePostView.usernameLabel.font = .preferredFont(forTextStyle: .subheadline, compatibleWith: traitCollection)
