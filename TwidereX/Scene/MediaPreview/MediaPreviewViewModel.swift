@@ -64,7 +64,11 @@ final class MediaPreviewViewModel: NSObject {
             self.avatarImageURL.value = (tweet.retweet ?? tweet).author.avatarImageURL()
             self.isVerified.value = (tweet.retweet ?? tweet).author.verified
             self.name.value = (tweet.retweet ?? tweet).author.name
-            self.content.value = (tweet.retweet ?? tweet).text
+            
+            // remove line break
+            let text = (tweet.retweet ?? tweet).text
+                .replacingOccurrences(of: "\n", with: " ")
+            self.content.value = text
         }
     }
     
