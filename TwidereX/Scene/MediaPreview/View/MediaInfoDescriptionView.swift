@@ -91,8 +91,8 @@ extension MediaInfoDescriptionView {
         avatarImageView.translatesAutoresizingMaskIntoConstraints = false
         bottomContainerStackView.addArrangedSubview(avatarImageView)
         NSLayoutConstraint.activate([
-            avatarImageView.widthAnchor.constraint(equalToConstant: MediaInfoDescriptionView.avatarImageViewSize.width).priority(.defaultHigh),
-            avatarImageView.heightAnchor.constraint(equalToConstant: MediaInfoDescriptionView.avatarImageViewSize.height).priority(.defaultHigh),
+            avatarImageView.widthAnchor.constraint(equalToConstant: MediaInfoDescriptionView.avatarImageViewSize.width).priority(.required - 1),
+            avatarImageView.heightAnchor.constraint(equalToConstant: MediaInfoDescriptionView.avatarImageViewSize.height).priority(.required - 1),
         ])
         verifiedBadgeImageView.translatesAutoresizingMaskIntoConstraints = false
         avatarImageView.addSubview(verifiedBadgeImageView)

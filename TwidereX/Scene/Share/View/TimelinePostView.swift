@@ -30,12 +30,7 @@ final class TimelinePostView: UIView {
         return label
     }()
     
-    let avatarImageView: UIImageView = {
-        let imageView = UIImageView()
-        imageView.layer.masksToBounds = true
-        imageView.layer.cornerRadius = 0.5 * TimelinePostView.avatarImageViewSize.width
-        return imageView
-    }()
+    let avatarImageView = UIImageView()
     
     let verifiedBadgeImageView: UIImageView = {
         let imageView = UIImageView()

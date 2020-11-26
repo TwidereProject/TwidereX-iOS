@@ -12,6 +12,7 @@ import Combine
 import CoreData
 import CoreDataStack
 import AlamofireImage
+import Kingfisher
 import Pageboy
 
 protocol MediaPreviewViewControllerDelegate: class {
@@ -133,21 +134,37 @@ extension MediaPreviewViewController {
             .receive(on: DispatchQueue.main)
             .sink { [weak self] avatarImageURL in
                 guard let self = self else { return }
+                self.mediaInfoDescriptionView.avatarImageView.af.cancelImageRequest()
+                self.mediaInfoDescriptionView.avatarImageView.kf.cancelDownloadTask()
+                
                 let placeholderImage = UIImage
                     .placeholder(size: MediaInfoDescriptionView.avatarImageViewSize, color: .systemFill)
                     .af.imageRoundedIntoCircle()
                 guard let url = avatarImageURL else {
-                    self.mediaInfoDescriptionView.avatarImageView.af.cancelImageRequest()
                     self.mediaInfoDescriptionView.avatarImageView.image = placeholderImage
                     return
                 }
-                let filter = ScaledToSizeCircleFilter(size: MediaInfoDescriptionView.avatarImageViewSize)
-                self.mediaInfoDescriptionView.avatarImageView.af.setImage(
-                    withURL: url,
-                    placeholderImage: placeholderImage,
-                    filter: filter,
-                    imageTransition: .crossDissolve(0.2)
-                )
+                if url.pathExtension == "gif" {
+                    self.mediaInfoDescriptionView.avatarImageView.kf.setImage(
+                        with: url,
+                        placeholder: placeholderImage,
+                        options: [
+                            .processor(
+                                CroppingImageProcessor(size: MediaInfoDescriptionView.avatarImageViewSize, anchor: CGPoint(x: 0.5, y: 0.5)) |>
+                                RoundCornerImageProcessor(cornerRadius: 0.5 * MediaInfoDescriptionView.avatarImageViewSize.width)
+                            ),
+                            .transition(.fade(0.2))
+                        ]
+                    )
+                } else {
+                    let filter = ScaledToSizeCircleFilter(size: MediaInfoDescriptionView.avatarImageViewSize)
+                    self.mediaInfoDescriptionView.avatarImageView.af.setImage(
+                        withURL: url,
+                        placeholderImage: placeholderImage,
+                        filter: filter,
+                        imageTransition: .crossDissolve(0.2)
+                    )
+                }
             }
             .store(in: &disposeBag)
         viewModel.isVerified

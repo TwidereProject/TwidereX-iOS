@@ -46,7 +46,7 @@ final class MediaPreviewViewModel: NSObject {
                 let thumbnail: UIImage? = image.flatMap { $0.size != CGSize(width: 1, height: 1) ? $0 : nil }
                 switch mediaEntity.type {
                 case "photo":
-                    guard let url = mediaEntity.photoURL(sizeKind: .large)?.0 else { continue }
+                    guard let url = mediaEntity.photoURL(sizeKind: .original)?.0 else { continue }
                     let meta = MediaPreviewImageViewModel.TweetImagePreviewMeta(url: url, thumbnail: thumbnail)
                     let mediaPreviewImageModel = MediaPreviewImageViewModel(meta: meta)
                     let mediaPreviewImageViewController = MediaPreviewImageViewController()
@@ -68,7 +68,7 @@ final class MediaPreviewViewModel: NSObject {
             self.name.value = (tweet.retweet ?? tweet).author.name
             
             // remove line break
-            let text = (tweet.retweet ?? tweet).text
+            let text = (tweet.retweet ?? tweet).displayText
                 .replacingOccurrences(of: "\n", with: " ")
             self.content.value = text
         }

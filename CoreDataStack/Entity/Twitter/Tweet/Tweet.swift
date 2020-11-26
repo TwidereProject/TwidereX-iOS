@@ -68,6 +68,7 @@ extension Tweet {
         property: Property,
         author: TwitterUser,
         media: [TwitterMedia]?,
+        entities: TweetEntities?,
         metrics: TweetMetrics?,
         place: TwitterPlace?,
         retweet: Tweet?,
@@ -91,6 +92,7 @@ extension Tweet {
         tweet.source = property.source
         
         tweet.author = author
+        tweet.entities = entities
         tweet.metrics = metrics
         tweet.place = place
         
@@ -114,21 +116,10 @@ extension Tweet {
         return tweet
     }
     
-//    // always update scrub-able attribute
-//    public func update(coordinates: Twitter.Entity.Coordinates?) {
-//        self.coordinates = coordinates
-//    }
-//
     // always update scrub-able attribute
     public func update(place: TwitterPlace?) {
         self.place = place
     }
-//
-//    public func update(retweet: Tweet?) {
-//        if self.retweet != retweet {
-//            self.retweet = retweet
-//        }
-//    }
 
     // relationship
     

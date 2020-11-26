@@ -46,6 +46,15 @@ extension APIService.CoreData {
             os_signpost(.event, log: log, name: "update database - process entity: createOrMergeTwitterUser", signpostID: processEntityTaskSignpostID, "find old twitter user %{public}s: name %s", entity.idStr, oldTwitterUser.name)
             return (oldTwitterUser, false)
         } else {
+            let entities: TwitterUserEntities? = {
+                let properties = entity.entities
+                    .flatMap { TwitterUserEntitiesURL.Property.properties(from: $0, networkDate: networkDate) } ?? []
+                let urls: [TwitterUserEntitiesURL] = properties.map { property in
+                    TwitterUserEntitiesURL.insert(into: managedObjectContext, property: property)
+                }
+                guard !urls.isEmpty else { return nil }
+                return TwitterUserEntities.insert(into: managedObjectContext, urls: urls)
+            }()
             let metricsProperty = TwitterUserMetrics.Property(followersCount: entity.followersCount, followingCount: entity.friendsCount, listedCount: entity.listedCount, tweetCount: entity.statusesCount)
             let metrics = TwitterUserMetrics.insert(into: managedObjectContext, property: metricsProperty)
             
@@ -53,6 +62,7 @@ extension APIService.CoreData {
             let twitterUser = TwitterUser.insert(
                 into: managedObjectContext,
                 property: twitterUserProperty,
+                entities: entities,
                 metrics: metrics,
                 following: (entity.following ?? false) ? requestTwitterUser : nil,
                 followRequestSent: (entity.followRequestSent ?? false) ? requestTwitterUser : nil
@@ -74,6 +84,12 @@ extension APIService.CoreData {
         entity.profileBannerURL.flatMap { user.update(profileBannerURL: $0) }
         entity.profileImageURLHTTPS.flatMap { user.update(profileImageURL: $0) }
         
+        // update entities
+        user.setupEntitiesIfNeeds()
+        let entitiesURLProperties = entity.entities
+            .flatMap { TwitterUserEntitiesURL.Property.properties(from: $0, networkDate: networkDate) } ?? []
+        user.update(entitiesURLProperties: entitiesURLProperties)
+        
         user.setupMetricsIfNeeds()
         entity.friendsCount.flatMap { user.metrics?.update(followingCount: $0) }
         entity.followersCount.flatMap { user.metrics?.update(followersCount: $0) }
@@ -85,6 +101,7 @@ extension APIService.CoreData {
             entity.following.flatMap { user.update(following: $0, twitterUser: requestTwitterUser) }
             entity.followRequestSent.flatMap { user.update(followRequestSent: $0, twitterUser: requestTwitterUser) }
         }
+
         // TODO: merge more fileds
         
         user.didUpdate(at: networkDate)

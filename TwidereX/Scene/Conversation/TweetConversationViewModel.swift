@@ -12,6 +12,7 @@ import GameplayKit
 import CoreData
 import CoreDataStack
 import AlamofireImage
+import Kingfisher
 import TwitterAPI
 
 final class TweetConversationViewModel: NSObject {
@@ -210,16 +211,7 @@ extension TweetConversationViewModel {
     static func configure(cell: ConversationPostTableViewCell, readableLayoutFrame: CGRect? = nil, tweet: Tweet, requestUserID: String) {
         // set avatar
         if let avatarImageURL = tweet.author.avatarImageURL() {
-            let placeholderImage = UIImage
-                .placeholder(size: ConversationPostView.avatarImageViewSize, color: .systemFill)
-                .af.imageRoundedIntoCircle()
-            let filter = ScaledToSizeCircleFilter(size: ConversationPostView.avatarImageViewSize)
-            cell.conversationPostView.avatarImageView.af.setImage(
-                withURL: avatarImageURL,
-                placeholderImage: placeholderImage,
-                filter: filter,
-                imageTransition: .crossDissolve(0.2)
-            )
+            TweetConversationViewModel.configure(avatarImageView: cell.conversationPostView.avatarImageView, avatarImageURL: avatarImageURL)
         } else {
             assertionFailure()
         }
@@ -232,7 +224,7 @@ extension TweetConversationViewModel {
         cell.conversationPostView.usernameLabel.text = "@" + tweet.author.username
 
         // set text
-        cell.conversationPostView.activeTextLabel.text = tweet.text
+        cell.conversationPostView.activeTextLabel.text = tweet.displayText
         
         // set image display
         let media = Array(tweet.media ?? []).sorted { $0.index.compare($1.index) == .orderedAscending }
@@ -280,16 +272,7 @@ extension TweetConversationViewModel {
         if let quote = quote {
             // set avatar
             if let avatarImageURL = quote.author.avatarImageURL() {
-                let placeholderImage = UIImage
-                    .placeholder(size: ConversationPostView.avatarImageViewSize, color: .systemFill)
-                    .af.imageRoundedIntoCircle()
-                let filter = ScaledToSizeCircleFilter(size: ConversationPostView.avatarImageViewSize)
-                cell.conversationPostView.quotePostView.avatarImageView.af.setImage(
-                    withURL: avatarImageURL,
-                    placeholderImage: placeholderImage,
-                    filter: filter,
-                    imageTransition: .crossDissolve(0.2)
-                )
+                TweetConversationViewModel.configure(avatarImageView: cell.conversationPostView.quotePostView.avatarImageView, avatarImageURL: avatarImageURL)
             } else {
                 assertionFailure()
             }
@@ -309,7 +292,7 @@ extension TweetConversationViewModel {
 //                }
             
             // set text
-            cell.conversationPostView.quotePostView.activeTextLabel.text = quote.text
+            cell.conversationPostView.quotePostView.activeTextLabel.text = quote.displayText
         }
         cell.conversationPostView.quotePostView.isHidden = quote == nil
         
@@ -388,6 +371,34 @@ extension TweetConversationViewModel {
         cell.conversationPostView.quotePostStatusView.statusLabel.font = .preferredFont(forTextStyle: .callout, compatibleWith: traitCollection)
         cell.conversationPostView.likePostStatusView.countLabel.font = .preferredFont(forTextStyle: .callout, compatibleWith: traitCollection)
         cell.conversationPostView.likePostStatusView.statusLabel.font = .preferredFont(forTextStyle: .callout, compatibleWith: traitCollection)
+    }
+    
+    static func configure(avatarImageView: UIImageView, avatarImageURL: URL) {
+        let placeholderImage = UIImage
+            .placeholder(size: ConversationPostView.avatarImageViewSize, color: .systemFill)
+            .af.imageRoundedIntoCircle()
+        
+        if avatarImageURL.pathExtension == "gif" {
+            avatarImageView.kf.setImage(
+                with: avatarImageURL,
+                placeholder: placeholderImage,
+                options: [
+                    .processor(
+                        CroppingImageProcessor(size: ConversationPostView.avatarImageViewSize, anchor: CGPoint(x: 0.5, y: 0.5)) |>
+                        RoundCornerImageProcessor(cornerRadius: 0.5 * ConversationPostView.avatarImageViewSize.width)
+                    ),
+                    .transition(.fade(0.2))
+                ]
+            )
+        } else {
+            let filter = ScaledToSizeCircleFilter(size: ConversationPostView.avatarImageViewSize)
+            avatarImageView.af.setImage(
+                withURL: avatarImageURL,
+                placeholderImage: placeholderImage,
+                filter: filter,
+                imageTransition: .crossDissolve(0.2)
+            )
+        }
     }
 
 }

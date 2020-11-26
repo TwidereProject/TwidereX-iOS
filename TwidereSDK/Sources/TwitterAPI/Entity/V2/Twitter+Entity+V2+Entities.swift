@@ -8,10 +8,15 @@
 import Foundation
 
 extension Twitter.Entity.V2 {
-    public struct Entities: Codable {
+    public class Entities: Codable {
+        // tweet
         public let urls: [URL]?
         public let hashtags: [Hashtag]?
         public let mentions: [Mention]?
+ 
+        // user
+        public let url: Entities?
+        public let description: Entities?
     }
 }
 

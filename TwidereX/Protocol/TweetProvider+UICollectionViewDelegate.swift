@@ -9,9 +9,9 @@
 import os.log
 import UIKit
 
-// needs manually dispath
 extension UICollectionViewDelegate where Self: TweetProvider & MediaPreviewableViewController {
     
+    // manually dispath for collectionView(_:didSelectItemAt:)
     func handleCollectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         os_log("%{public}s[%{public}ld], %{public}s: indexPath %s", ((#file as NSString).lastPathComponent), #line, #function, indexPath.debugDescription)
         guard let cell = collectionView.cellForItem(at: indexPath) as? SearchMediaCollectionViewCell else { return }

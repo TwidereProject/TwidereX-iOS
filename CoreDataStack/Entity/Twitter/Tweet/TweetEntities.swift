@@ -33,10 +33,20 @@ extension TweetEntities {
         identifier = UUID()
     }
     
-}
-
-extension TweetEntities {
-
+    @discardableResult
+    public static func insert(
+        into context: NSManagedObjectContext,
+        urls: [TweetEntitiesURL]?
+    ) -> TweetEntities {
+        let entities: TweetEntities = context.insertObject()
+        
+        if let urls = urls {
+            entities.mutableSetValue(forKey: #keyPath(TweetEntities.urls)).addObjects(from: urls)
+        }
+        
+        return entities
+    }
+    
 }
 
 extension TweetEntities: Managed {

@@ -105,6 +105,8 @@
 		DB74A164256E148F00C5F3C9 /* CropViewController in Frameworks */ = {isa = PBXBuildFile; productRef = DB74A163256E148F00C5F3C9 /* CropViewController */; };
 		DB74A169256E392F00C5F3C9 /* ContextMenuImagePreviewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB74A168256E392F00C5F3C9 /* ContextMenuImagePreviewViewController.swift */; };
 		DB74A16E256E50E300C5F3C9 /* UIColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB74A16D256E50E300C5F3C9 /* UIColor.swift */; };
+		DB74A18F256F6FA000C5F3C9 /* TwitterUserEntities.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB74A18E256F6FA000C5F3C9 /* TwitterUserEntities.swift */; };
+		DB74A194256F6FF400C5F3C9 /* TwitterUserEntitiesURL.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB74A193256F6FF400C5F3C9 /* TwitterUserEntitiesURL.swift */; };
 		DB761E3F25592AA20050DC01 /* DrawerSidebarAnimatedTransitioning.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB761E3E25592AA20050DC01 /* DrawerSidebarAnimatedTransitioning.swift */; };
 		DB761E4E255935380050DC01 /* DrawerSidebarHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB761E4D255935380050DC01 /* DrawerSidebarHeaderView.swift */; };
 		DB761E5D255940EF0050DC01 /* DrawerSidebarEntryTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB761E5C255940EF0050DC01 /* DrawerSidebarEntryTableViewCell.swift */; };
@@ -226,6 +228,7 @@
 		DBDA8E9F24FE0FFF006750DC /* HomeTimelineViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBDA8E9E24FE0FFF006750DC /* HomeTimelineViewController.swift */; };
 		DBDA8EA324FE107E006750DC /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = DBDA8EA524FE107E006750DC /* Localizable.strings */; };
 		DBDDE72E254C084A0057CF8E /* SearchUserViewModel+Diffable.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBDDE72D254C084A0057CF8E /* SearchUserViewModel+Diffable.swift */; };
+		DBE196DB256FB48E004E831A /* TwitterUserEntitiesURL.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBE196DA256FB48E004E831A /* TwitterUserEntitiesURL.swift */; };
 		DBE716F82536CA9C00DF98C5 /* Collection.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBE716F72536CA9C00DF98C5 /* Collection.swift */; };
 		DBE76C8924FF941400DEB0FC /* APIService+Autentication.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBE76C8824FF941400DEB0FC /* APIService+Autentication.swift */; };
 		DBE76C99250093CA00DEB0FC /* CoreDataStack.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DBE76C90250093CA00DEB0FC /* CoreDataStack.framework */; };
@@ -468,6 +471,8 @@
 		DB747FF8251C496A000C4BD7 /* ProfileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileViewController.swift; sourceTree = "<group>"; };
 		DB74A168256E392F00C5F3C9 /* ContextMenuImagePreviewViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContextMenuImagePreviewViewController.swift; sourceTree = "<group>"; };
 		DB74A16D256E50E300C5F3C9 /* UIColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIColor.swift; sourceTree = "<group>"; };
+		DB74A18E256F6FA000C5F3C9 /* TwitterUserEntities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwitterUserEntities.swift; sourceTree = "<group>"; };
+		DB74A193256F6FF400C5F3C9 /* TwitterUserEntitiesURL.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwitterUserEntitiesURL.swift; sourceTree = "<group>"; };
 		DB761E3E25592AA20050DC01 /* DrawerSidebarAnimatedTransitioning.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawerSidebarAnimatedTransitioning.swift; sourceTree = "<group>"; };
 		DB761E4D255935380050DC01 /* DrawerSidebarHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawerSidebarHeaderView.swift; sourceTree = "<group>"; };
 		DB761E5C255940EF0050DC01 /* DrawerSidebarEntryTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawerSidebarEntryTableViewCell.swift; sourceTree = "<group>"; };
@@ -592,6 +597,7 @@
 		DBDA8E9E24FE0FFF006750DC /* HomeTimelineViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeTimelineViewController.swift; sourceTree = "<group>"; };
 		DBDA8EA424FE107E006750DC /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		DBDDE72D254C084A0057CF8E /* SearchUserViewModel+Diffable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SearchUserViewModel+Diffable.swift"; sourceTree = "<group>"; };
+		DBE196DA256FB48E004E831A /* TwitterUserEntitiesURL.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwitterUserEntitiesURL.swift; sourceTree = "<group>"; };
 		DBE716F72536CA9C00DF98C5 /* Collection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Collection.swift; sourceTree = "<group>"; };
 		DBE76C8824FF941400DEB0FC /* APIService+Autentication.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "APIService+Autentication.swift"; sourceTree = "<group>"; };
 		DBE76C90250093CA00DEB0FC /* CoreDataStack.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = CoreDataStack.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -993,6 +999,8 @@
 			children = (
 				DBE76D282501F88600DEB0FC /* TwitterUser.swift */,
 				DB49163F253EDA7D008755C3 /* TwitterUserMetrics.swift */,
+				DB74A18E256F6FA000C5F3C9 /* TwitterUserEntities.swift */,
+				DB74A193256F6FF400C5F3C9 /* TwitterUserEntitiesURL.swift */,
 			);
 			path = User;
 			sourceTree = "<group>";
@@ -1602,6 +1610,7 @@
 				DBE76D35250221D700DEB0FC /* TwitterUser.swift */,
 				DB261194251B2139004BF309 /* TwitterAuthentication.swift */,
 				DBED96D2253F46CF00C5383A /* TwitterMedia.swift */,
+				DBE196DA256FB48E004E831A /* TwitterUserEntitiesURL.swift */,
 			);
 			path = CoreDataStack;
 			sourceTree = "<group>";
@@ -2270,6 +2279,7 @@
 				DB41C0DB2513368800521562 /* TimelinePostActionToolbar.swift in Sources */,
 				DBA5FA0F2553D59E00D2E98E /* MediaPreviewTransitionItem.swift in Sources */,
 				DB969A2F252490090053CB31 /* UserTimelineViewModel+State.swift in Sources */,
+				DBE196DB256FB48E004E831A /* TwitterUserEntitiesURL.swift in Sources */,
 				DB434892251E09A8005B599F /* CALayer.swift in Sources */,
 				DB0849B0251375E9009E0CD7 /* ConversationPostView.swift in Sources */,
 				DB969A66253064FE0053CB31 /* DispatchQueue.swift in Sources */,
@@ -2406,6 +2416,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				DBE76CCB250093E300DEB0FC /* ManagedObjectContextObjectsDidChangeNotification.swift in Sources */,
+				DB74A194256F6FF400C5F3C9 /* TwitterUserEntitiesURL.swift in Sources */,
 				DB491618253ECF58008755C3 /* TweetEntitiesHashtag.swift in Sources */,
 				DB5A229A255BC82D006CA5B2 /* AuthenticationIndex.swift in Sources */,
 				DB49161D253ECF81008755C3 /* TweetEntitiesMention.swift in Sources */,
@@ -2418,6 +2429,7 @@
 				DBE716F82536CA9C00DF98C5 /* Collection.swift in Sources */,
 				DB8AC0E0253EE4B400E636BE /* TwitterPoll.swift in Sources */,
 				DB491631253ED295008755C3 /* TweetMetrics.swift in Sources */,
+				DB74A18F256F6FA000C5F3C9 /* TwitterUserEntities.swift in Sources */,
 				DB491613253ECF25008755C3 /* TweetEntitiesCashtag.swift in Sources */,
 				DB49163B253ED443008755C3 /* TwitteWithheld.swift in Sources */,
 				DB491640253EDA7D008755C3 /* TwitterUserMetrics.swift in Sources */,
@@ -2655,7 +2667,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = TwidereX/TwidereX.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 28;
+				CURRENT_PROJECT_VERSION = 29;
 				DEVELOPMENT_ASSET_PATHS = "TwidereX/Resources/Preview\\ Assets.xcassets";
 				DEVELOPMENT_TEAM = 7LFDZ96332;
 				INFOPLIST_FILE = TwidereX/Info.plist;
@@ -2663,7 +2675,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.10.4;
+				MARKETING_VERSION = 0.10.5;
 				PRODUCT_BUNDLE_IDENTIFIER = com.twidere.TwidereX;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
@@ -2679,7 +2691,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = TwidereX/TwidereX.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 28;
+				CURRENT_PROJECT_VERSION = 29;
 				DEVELOPMENT_ASSET_PATHS = "TwidereX/Resources/Preview\\ Assets.xcassets";
 				DEVELOPMENT_TEAM = 7LFDZ96332;
 				INFOPLIST_FILE = TwidereX/Info.plist;
@@ -2687,7 +2699,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.10.4;
+				MARKETING_VERSION = 0.10.5;
 				PRODUCT_BUNDLE_IDENTIFIER = com.twidere.TwidereX;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;

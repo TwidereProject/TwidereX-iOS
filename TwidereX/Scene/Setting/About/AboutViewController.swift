@@ -48,11 +48,11 @@ extension AboutViewController {
                 case .github:
                     let url = URL(string: "https://github.com/TwidereProject/TwidereX-iOS")!
 //                    self.definesPresentationContext = true
-                    self.coordinator.present(scene: .safari(url: url), from: nil, transition: .customModal(animated: true, completion: nil))
+                    self.coordinator.present(scene: .safari(url: url), from: nil, transition: .safariPresent(animated: true, completion: nil))
                 case .twitter:
                     let url = URL(string: "https://twitter.com/TwidereProject")!
 //                    self.definesPresentationContext = true
-                    self.coordinator.present(scene: .safari(url: url), from: self, transition: .customModal(animated: true, completion: nil))
+                    self.coordinator.present(scene: .safari(url: url), from: self, transition: .safariPresent(animated: true, completion: nil))
                 }
             }
             .store(in: &disposeBag)

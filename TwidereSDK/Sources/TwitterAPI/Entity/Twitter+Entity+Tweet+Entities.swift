@@ -1,35 +1,19 @@
 //
-//  Twitter+Entities.swift
+//  Twitter+Entity+Tweet+Entities.swift
 //  TwitterAPI
 //
 //  Created by Cirno MainasuK on 2020-9-3.
 //
 
 import Foundation
-extension Twitter.Entity {
+
+extension Twitter.Entity.Tweet {
     public struct Entities: Codable {
-        
-        public let symbols: [Symbol]
-        public let userMentions: [UserMention]
-        public let urls: [URL]
-        public let hashtags: [Hashtag]
+        public let symbols: [Symbol]?
+        public let userMentions: [UserMention]?
+        public let urls: [URL]?
+        public let hashtags: [Hashtag]?
         public let polls: [Poll]?
-        
-        public init() {
-            self.symbols = []
-            self.userMentions = []
-            self.urls = []
-            self.hashtags = []
-            self.polls = nil
-        }
-        
-        public init(symbols: [Twitter.Entity.Entities.Symbol], userMentions: [Twitter.Entity.Entities.UserMention], urls: [Twitter.Entity.Entities.URL], hashtags: [Twitter.Entity.Entities.Hashtag], polls: [Twitter.Entity.Entities.Poll]?) {
-            self.symbols = symbols
-            self.userMentions = userMentions
-            self.urls = urls
-            self.hashtags = hashtags
-            self.polls = polls
-        }
         
         public enum CodingKeys: String, CodingKey {
             case symbols = "symbols"
@@ -41,9 +25,9 @@ extension Twitter.Entity {
     }
 }
 
-extension Twitter.Entity.Entities: Equatable { }
+extension Twitter.Entity.Tweet.Entities: Equatable { }
 
-extension Twitter.Entity.Entities {
+extension Twitter.Entity.Tweet.Entities {
     
     public struct Symbol: Codable {
         public let text: String?
@@ -131,9 +115,9 @@ extension Twitter.Entity.Entities {
     
 }
 
-extension Twitter.Entity.Entities.Symbol: Equatable { }
-extension Twitter.Entity.Entities.UserMention: Equatable { }
-extension Twitter.Entity.Entities.URL: Equatable { }
-extension Twitter.Entity.Entities.Hashtag: Equatable { }
-extension Twitter.Entity.Entities.Poll: Equatable { }
-extension Twitter.Entity.Entities.Poll.Option: Equatable { }
+extension Twitter.Entity.Tweet.Entities.Symbol: Equatable { }
+extension Twitter.Entity.Tweet.Entities.UserMention: Equatable { }
+extension Twitter.Entity.Tweet.Entities.URL: Equatable { }
+extension Twitter.Entity.Tweet.Entities.Hashtag: Equatable { }
+extension Twitter.Entity.Tweet.Entities.Poll: Equatable { }
+extension Twitter.Entity.Tweet.Entities.Poll.Option: Equatable { }

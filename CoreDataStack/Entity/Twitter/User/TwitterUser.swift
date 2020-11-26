@@ -32,6 +32,7 @@ final public class TwitterUser: NSManagedObject {
     
     // one-to-one relationship
     @NSManaged public private(set) var pinnedTweet: Tweet?
+    @NSManaged public private(set) var entities: TwitterUserEntities?
     @NSManaged public private(set) var metrics: TwitterUserMetrics?
     @NSManaged public private(set) var withheld: TwitteWithheld?
     
@@ -68,6 +69,7 @@ extension TwitterUser {
     public static func insert(
         into context: NSManagedObjectContext,
         property: Property,
+        entities: TwitterUserEntities?,
         metrics: TwitterUserMetrics,
         following: TwitterUser?,
         followRequestSent: TwitterUser?
@@ -88,13 +90,14 @@ extension TwitterUser {
         user.url = property.url
         user.verified = property.verified
         
+        user.entities = entities
         user.metrics = metrics
         
         if let following = following {
-            user.mutableSetValue(forKey: #keyPath(TwitterUser.following)).addObjects(from: [following])
+            user.mutableSetValue(forKey: #keyPath(TwitterUser.following)).add(following)
         }
         if let followRequestSent = followRequestSent {
-            user.mutableSetValue(forKey: #keyPath(TwitterUser.followRequestSent)).addObjects(from: [followRequestSent])
+            user.mutableSetValue(forKey: #keyPath(TwitterUser.followRequestSent)).add(followRequestSent)
         }
         
         return user
@@ -151,34 +154,25 @@ extension TwitterUser {
         }
     }
     
-//    public func update(friendsCount: Int) {
-//        if self.friendsCount != NSNumber(value: friendsCount) {
-//            self.friendsCount = NSNumber(value: friendsCount)
-//        }
-//    }
-//    public func update(followersCount: Int) {
-//        if self.followersCount != NSNumber(value: followersCount) {
-//            self.followersCount = NSNumber(value: followersCount)
-//        }
-//    }
-//    public func update(listedCount: Int) {
-//        if self.listedCount != NSNumber(value: listedCount) {
-//            self.listedCount = NSNumber(value: listedCount)
-//        }
-//    }
-//    public func update(favouritesCount: Int) {
-//        if self.favouritesCount != NSNumber(value: favouritesCount) {
-//            self.favouritesCount = NSNumber(value: favouritesCount)
-//        }
-//    }
-//    public func update(statusesCount: Int) {
-//        if self.statusesCount != NSNumber(value: statusesCount) {
-//            self.statusesCount = NSNumber(value: statusesCount)
-//        }
-//    }
-    
-    
     // relationship
+    public func setupEntitiesIfNeeds() {
+        if entities == nil {
+            entities = TwitterUserEntities.insert(into: managedObjectContext!, urls: nil)
+        }
+    }
+
+    public func update(entitiesURLProperties: [TwitterUserEntitiesURL.Property]) {
+        guard let entities = entities else { return }
+        let oldURLs = Set((entities.urls ?? Set()).compactMap { $0.url })
+        let newURLs = Set(entitiesURLProperties.compactMap { $0.url })
+        if oldURLs != newURLs {
+            entities.mutableSetValue(forKey: #keyPath(TwitterUserEntities.urls)).removeAllObjects()
+            let urls = entitiesURLProperties.map { property in
+                TwitterUserEntitiesURL.insert(into: managedObjectContext!, property: property)
+            }
+            entities.mutableSetValue(forKey: #keyPath(TwitterUserEntities.urls)).addObjects(from: urls)
+        }
+    }
     
     public func setupMetricsIfNeeds() {
         if metrics == nil {
