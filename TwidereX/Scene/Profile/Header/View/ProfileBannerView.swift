@@ -97,6 +97,7 @@ final class ProfileBannerView: UIView {
     var linkIconImageViewWidthAnchor: NSLayoutConstraint!
     let linkButton: UIButton = {
         let button = UIButton()
+        button.titleLabel?.lineBreakMode = .byTruncatingTail
         button.titleLabel?.font = .preferredFont(forTextStyle: .callout)
         button.setTitle("https://twidere.com", for: .normal)
         button.setTitleColor(Asset.Colors.hightLight.color, for: .normal)

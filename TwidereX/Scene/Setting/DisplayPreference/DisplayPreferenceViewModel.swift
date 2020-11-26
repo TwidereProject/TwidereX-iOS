@@ -117,6 +117,8 @@ extension DisplayPreferenceViewModel {
         cell.selectionStyle = .none
         
         cell.timelinePostView.avatarImageView.image = Asset.Logo.twidereAvatar.image
+        cell.timelinePostView.avatarImageView.layer.masksToBounds = true
+        cell.timelinePostView.avatarImageView.layer.cornerRadius = 0.5 * TimelinePostView.avatarImageViewSize.width
         cell.timelinePostView.avatarImageView.layer.borderWidth = 1
         cell.timelinePostView.avatarImageView.layer.borderColor = UIColor.systemFill.cgColor
         

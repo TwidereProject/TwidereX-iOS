@@ -154,34 +154,25 @@ extension TwitterUser {
         }
     }
     
-//    public func update(friendsCount: Int) {
-//        if self.friendsCount != NSNumber(value: friendsCount) {
-//            self.friendsCount = NSNumber(value: friendsCount)
-//        }
-//    }
-//    public func update(followersCount: Int) {
-//        if self.followersCount != NSNumber(value: followersCount) {
-//            self.followersCount = NSNumber(value: followersCount)
-//        }
-//    }
-//    public func update(listedCount: Int) {
-//        if self.listedCount != NSNumber(value: listedCount) {
-//            self.listedCount = NSNumber(value: listedCount)
-//        }
-//    }
-//    public func update(favouritesCount: Int) {
-//        if self.favouritesCount != NSNumber(value: favouritesCount) {
-//            self.favouritesCount = NSNumber(value: favouritesCount)
-//        }
-//    }
-//    public func update(statusesCount: Int) {
-//        if self.statusesCount != NSNumber(value: statusesCount) {
-//            self.statusesCount = NSNumber(value: statusesCount)
-//        }
-//    }
-    
-    
     // relationship
+    public func setupEntitiesIfNeeds() {
+        if entities == nil {
+            entities = TwitterUserEntities.insert(into: managedObjectContext!, urls: nil)
+        }
+    }
+
+    public func update(entitiesURLProperties: [TwitterUserEntitiesURL.Property]) {
+        guard let entities = entities else { return }
+        let oldURLs = Set((entities.urls ?? Set()).compactMap { $0.url })
+        let newURLs = Set(entitiesURLProperties.compactMap { $0.url })
+        if oldURLs != newURLs {
+            entities.mutableSetValue(forKey: #keyPath(TwitterUserEntities.urls)).removeAllObjects()
+            let urls = entitiesURLProperties.map { property in
+                TwitterUserEntitiesURL.insert(into: managedObjectContext!, property: property)
+            }
+            entities.mutableSetValue(forKey: #keyPath(TwitterUserEntities.urls)).addObjects(from: urls)
+        }
+    }
     
     public func setupMetricsIfNeeds() {
         if metrics == nil {

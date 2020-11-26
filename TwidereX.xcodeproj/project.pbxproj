@@ -228,6 +228,7 @@
 		DBDA8E9F24FE0FFF006750DC /* HomeTimelineViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBDA8E9E24FE0FFF006750DC /* HomeTimelineViewController.swift */; };
 		DBDA8EA324FE107E006750DC /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = DBDA8EA524FE107E006750DC /* Localizable.strings */; };
 		DBDDE72E254C084A0057CF8E /* SearchUserViewModel+Diffable.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBDDE72D254C084A0057CF8E /* SearchUserViewModel+Diffable.swift */; };
+		DBE196DB256FB48E004E831A /* TwitterUserEntitiesURL.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBE196DA256FB48E004E831A /* TwitterUserEntitiesURL.swift */; };
 		DBE716F82536CA9C00DF98C5 /* Collection.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBE716F72536CA9C00DF98C5 /* Collection.swift */; };
 		DBE76C8924FF941400DEB0FC /* APIService+Autentication.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBE76C8824FF941400DEB0FC /* APIService+Autentication.swift */; };
 		DBE76C99250093CA00DEB0FC /* CoreDataStack.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DBE76C90250093CA00DEB0FC /* CoreDataStack.framework */; };
@@ -596,6 +597,7 @@
 		DBDA8E9E24FE0FFF006750DC /* HomeTimelineViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeTimelineViewController.swift; sourceTree = "<group>"; };
 		DBDA8EA424FE107E006750DC /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		DBDDE72D254C084A0057CF8E /* SearchUserViewModel+Diffable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SearchUserViewModel+Diffable.swift"; sourceTree = "<group>"; };
+		DBE196DA256FB48E004E831A /* TwitterUserEntitiesURL.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwitterUserEntitiesURL.swift; sourceTree = "<group>"; };
 		DBE716F72536CA9C00DF98C5 /* Collection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Collection.swift; sourceTree = "<group>"; };
 		DBE76C8824FF941400DEB0FC /* APIService+Autentication.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "APIService+Autentication.swift"; sourceTree = "<group>"; };
 		DBE76C90250093CA00DEB0FC /* CoreDataStack.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = CoreDataStack.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -1608,6 +1610,7 @@
 				DBE76D35250221D700DEB0FC /* TwitterUser.swift */,
 				DB261194251B2139004BF309 /* TwitterAuthentication.swift */,
 				DBED96D2253F46CF00C5383A /* TwitterMedia.swift */,
+				DBE196DA256FB48E004E831A /* TwitterUserEntitiesURL.swift */,
 			);
 			path = CoreDataStack;
 			sourceTree = "<group>";
@@ -2276,6 +2279,7 @@
 				DB41C0DB2513368800521562 /* TimelinePostActionToolbar.swift in Sources */,
 				DBA5FA0F2553D59E00D2E98E /* MediaPreviewTransitionItem.swift in Sources */,
 				DB969A2F252490090053CB31 /* UserTimelineViewModel+State.swift in Sources */,
+				DBE196DB256FB48E004E831A /* TwitterUserEntitiesURL.swift in Sources */,
 				DB434892251E09A8005B599F /* CALayer.swift in Sources */,
 				DB0849B0251375E9009E0CD7 /* ConversationPostView.swift in Sources */,
 				DB969A66253064FE0053CB31 /* DispatchQueue.swift in Sources */,

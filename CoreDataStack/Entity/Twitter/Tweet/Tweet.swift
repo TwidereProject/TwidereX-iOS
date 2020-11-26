@@ -116,21 +116,10 @@ extension Tweet {
         return tweet
     }
     
-//    // always update scrub-able attribute
-//    public func update(coordinates: Twitter.Entity.Coordinates?) {
-//        self.coordinates = coordinates
-//    }
-//
     // always update scrub-able attribute
     public func update(place: TwitterPlace?) {
         self.place = place
     }
-//
-//    public func update(retweet: Tweet?) {
-//        if self.retweet != retweet {
-//            self.retweet = retweet
-//        }
-//    }
 
     // relationship
     

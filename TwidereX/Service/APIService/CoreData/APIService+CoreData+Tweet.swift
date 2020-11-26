@@ -148,6 +148,7 @@ extension APIService.CoreData {
             tweet.update(place: TwitterPlace.insert(into: managedObjectContext, property: placeProperty))
         }
         
+        // media URL may change
         if let media = tweet.media {
             for newMedia in entity.extendedEntities?.media ?? [] {
                 guard let id = newMedia.idStr else { continue }

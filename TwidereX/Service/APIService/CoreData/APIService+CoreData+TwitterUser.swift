@@ -47,30 +47,11 @@ extension APIService.CoreData {
             return (oldTwitterUser, false)
         } else {
             let entities: TwitterUserEntities? = {
-                let urls: [TwitterUserEntitiesURL] = {
-                    var urls: [TwitterUserEntitiesURL] = []
-                    if let urlEntities = entity.entities?.url?.urls {
-                        let properties = urlEntities.compactMap { urlEntity -> TwitterUserEntitiesURL.Property? in
-                            guard let indices = urlEntity.indices, indices.count == 2 else { return nil }
-                            return TwitterUserEntitiesURL.Property(start: indices[0], end: indices[1], url: urlEntity.url, expandedURL: urlEntity.expandedURL, displayURL: urlEntity.displayURL, networkDate: networkDate)
-                        }
-                        let newURLs = properties.map { property in
-                            TwitterUserEntitiesURL.insert(into: managedObjectContext, property: property)
-                        }
-                        urls.append(contentsOf: newURLs)
-                    }
-                    if let urlEntities = entity.entities?.description?.urls {
-                        let properties = urlEntities.compactMap { urlEntity -> TwitterUserEntitiesURL.Property? in
-                            guard let indices = urlEntity.indices, indices.count == 2 else { return nil }
-                            return TwitterUserEntitiesURL.Property(start: indices[0], end: indices[1], url: urlEntity.url, expandedURL: urlEntity.expandedURL, displayURL: urlEntity.displayURL, networkDate: networkDate)
-                        }
-                        let newURLs = properties.map { property in
-                            TwitterUserEntitiesURL.insert(into: managedObjectContext, property: property)
-                        }
-                        urls.append(contentsOf: newURLs)
-                    }
-                    return urls
-                }()
+                let properties = entity.entities
+                    .flatMap { TwitterUserEntitiesURL.Property.properties(from: $0, networkDate: networkDate) } ?? []
+                let urls: [TwitterUserEntitiesURL] = properties.map { property in
+                    TwitterUserEntitiesURL.insert(into: managedObjectContext, property: property)
+                }
                 guard !urls.isEmpty else { return nil }
                 return TwitterUserEntities.insert(into: managedObjectContext, urls: urls)
             }()
@@ -103,6 +84,12 @@ extension APIService.CoreData {
         entity.profileBannerURL.flatMap { user.update(profileBannerURL: $0) }
         entity.profileImageURLHTTPS.flatMap { user.update(profileImageURL: $0) }
         
+        // update entities
+        user.setupEntitiesIfNeeds()
+        let entitiesURLProperties = entity.entities
+            .flatMap { TwitterUserEntitiesURL.Property.properties(from: $0, networkDate: networkDate) } ?? []
+        user.update(entitiesURLProperties: entitiesURLProperties)
+        
         user.setupMetricsIfNeeds()
         entity.friendsCount.flatMap { user.metrics?.update(followingCount: $0) }
         entity.followersCount.flatMap { user.metrics?.update(followersCount: $0) }
@@ -114,6 +101,7 @@ extension APIService.CoreData {
             entity.following.flatMap { user.update(following: $0, twitterUser: requestTwitterUser) }
             entity.followRequestSent.flatMap { user.update(followRequestSent: $0, twitterUser: requestTwitterUser) }
         }
+
         // TODO: merge more fileds
         
         user.didUpdate(at: networkDate)
