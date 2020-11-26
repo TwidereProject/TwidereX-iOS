@@ -18,6 +18,7 @@ extension Twitter.Entity {
         public let screenName: String
         
         public let userDescription: String?
+        public let entities: Entities?
         
         public let location: String?
         public let url: String?
@@ -54,7 +55,9 @@ extension Twitter.Entity {
             
             case name = "name"
             case screenName = "screen_name"
+            
             case userDescription = "description"
+            case entities = "entities"
             
             case url = "url"
             case location = "location"

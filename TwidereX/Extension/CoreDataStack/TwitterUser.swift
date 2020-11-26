@@ -86,6 +86,30 @@ extension TwitterUser {
     }
 }
 
+extension TwitterUser {
+    var displayBioDescription: String? {
+        return bioDescription.flatMap { bioDescription in
+            var bioDescription = bioDescription
+            for url in entities?.urls ?? [] {
+                guard let shortURL = url.url, let expandedURL = url.expandedURL else { continue }
+                bioDescription = bioDescription.replacingOccurrences(of: shortURL, with: expandedURL)
+            }
+            return bioDescription
+        }
+    }
+    
+    var displayURL: String? {
+        return url.flatMap { text in
+            var text = text
+            for url in entities?.urls ?? [] {
+                guard let shortURL = url.url, let expandedURL = url.expandedURL else { continue }
+                text = text.replacingOccurrences(of: shortURL, with: expandedURL)
+            }
+            return text
+        }
+    }
+}
+
 extension String {
     mutating func deleteSuffix(_ suffix: String) {
         guard hasSuffix(suffix) else { return }

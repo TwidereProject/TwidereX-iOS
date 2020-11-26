@@ -11,6 +11,7 @@ import UIKit
 import CoreData
 import CoreDataStack
 import AlamofireImage
+import Kingfisher
 
 extension SearchUserViewModel {
     func setupDiffableDataSource(for tableView: UITableView) {
@@ -50,16 +51,7 @@ extension SearchUserViewModel {
     static func configure(cell: UserBriefInfoTableViewCell, twitterUser: TwitterUser, requestTwitterUserID: TwitterUser.ID?) {
         // set avatar
         if let avatarImageURL = twitterUser.avatarImageURL() {
-            let placeholderImage = UIImage
-                .placeholder(size: UserBriefInfoView.avatarImageViewSize, color: .systemFill)
-                .af.imageRoundedIntoCircle()
-            let filter = ScaledToSizeCircleFilter(size: TimelinePostView.avatarImageViewSize)
-            cell.userBriefInfoView.avatarImageView.af.setImage(
-                withURL: avatarImageURL,
-                placeholderImage: placeholderImage,
-                filter: filter,
-                imageTransition: .crossDissolve(0.2)
-            )
+            SearchUserViewModel.configure(avatarImageView: cell.userBriefInfoView.avatarImageView, avatarImageURL: avatarImageURL)
         } else {
             assertionFailure()
         }
@@ -100,6 +92,34 @@ extension SearchUserViewModel {
                 }
             }
             .store(in: &cell.disposeBag)
+    }
+    
+    static func configure(avatarImageView: UIImageView, avatarImageURL: URL) {
+        let placeholderImage = UIImage
+            .placeholder(size: UserBriefInfoView.avatarImageViewSize, color: .systemFill)
+            .af.imageRoundedIntoCircle()
+        
+        if avatarImageURL.pathExtension == "gif" {
+            avatarImageView.kf.setImage(
+                with: avatarImageURL,
+                placeholder: placeholderImage,
+                options: [
+                    .processor(
+                        CroppingImageProcessor(size: UserBriefInfoView.avatarImageViewSize, anchor: CGPoint(x: 0.5, y: 0.5)) |>
+                        RoundCornerImageProcessor(cornerRadius: 0.5 * UserBriefInfoView.avatarImageViewSize.width)
+                    ),
+                    .transition(.fade(0.2))
+                ]
+            )
+        } else {
+            let filter = ScaledToSizeCircleFilter(size: UserBriefInfoView.avatarImageViewSize)
+            avatarImageView.af.setImage(
+                withURL: avatarImageURL,
+                placeholderImage: placeholderImage,
+                filter: filter,
+                imageTransition: .crossDissolve(0.2)
+            )
+        }
     }
     
 }

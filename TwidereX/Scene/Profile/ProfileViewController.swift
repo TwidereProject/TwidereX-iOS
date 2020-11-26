@@ -10,6 +10,7 @@ import UIKit
 import Combine
 import Tabman
 import AlamofireImage
+import Kingfisher
 
 final class ProfileViewController: UIViewController, DrawerSidebarTransitionableViewController, NeedsDependency {
     
@@ -228,18 +229,35 @@ extension ProfileViewController {
             .sink { [weak self] url in
                 guard let self = self else { return }
                 guard let url = url else { return }
+                self.profileHeaderViewController.profileBannerView.profileAvatarImageView.af.cancelImageRequest()
+                self.profileHeaderViewController.profileBannerView.profileAvatarImageView.kf.cancelDownloadTask()
+                
                 let placeholderImage = UIImage
                     .placeholder(size: ProfileBannerView.avatarImageViewSize, color: .systemFill)
                     .af.imageRoundedIntoCircle()
-                let filter = ScaledToSizeCircleFilter(size: ProfileBannerView.avatarImageViewSize)
-                self.profileHeaderViewController.profileBannerView.profileAvatarImageView.af.setImage(
-                    withURL: url,
-                    placeholderImage: placeholderImage,
-                    filter: filter,
-                    imageTransition: .crossDissolve(0.3),
-                    runImageTransitionIfCached: false,
-                    completion: nil
-                )
+                if url.pathExtension == "gif" {
+                    self.profileHeaderViewController.profileBannerView.profileAvatarImageView.kf.setImage(
+                        with: url,
+                        placeholder: placeholderImage,
+                        options: [
+                            .processor(
+                                CroppingImageProcessor(size: ProfileBannerView.avatarImageViewSize, anchor: CGPoint(x: 0.5, y: 0.5)) |>
+                                RoundCornerImageProcessor(cornerRadius: 0.5 * ProfileBannerView.avatarImageViewSize.width)
+                            ),
+                            .transition(.fade(0.2))
+                        ]
+                    )
+                } else {
+                    let filter = ScaledToSizeCircleFilter(size: ProfileBannerView.avatarImageViewSize)
+                    self.profileHeaderViewController.profileBannerView.profileAvatarImageView.af.setImage(
+                        withURL: url,
+                        placeholderImage: placeholderImage,
+                        filter: filter,
+                        imageTransition: .crossDissolve(0.3),
+                        runImageTransitionIfCached: false,
+                        completion: nil
+                    )
+                }
             }
             .store(in: &disposeBag)
         viewModel.protected
@@ -287,6 +305,7 @@ extension ProfileViewController {
                 self.profileHeaderViewController.profileBannerView.linkContainer.isHidden = isEmpty
             }
             .store(in: &disposeBag)
+        
         viewModel.location
             .sink { [weak self] location in
                 guard let self = self else { return }
@@ -338,8 +357,8 @@ extension ProfileViewController {
         context.overrideTraitCollection
             .sink { [weak self] traitCollection in
                 guard let self = self else { return }
-                self.profileHeaderViewController.profileBannerView.nameLabel.font = .preferredFont(forTextStyle: .title1, compatibleWith: traitCollection)
-                self.profileHeaderViewController.profileBannerView.usernameLabel.font = .preferredFont(forTextStyle: .title2, compatibleWith: traitCollection)
+                self.profileHeaderViewController.profileBannerView.nameLabel.font = .preferredFont(forTextStyle: .headline, compatibleWith: traitCollection)
+                self.profileHeaderViewController.profileBannerView.usernameLabel.font = .preferredFont(forTextStyle: .subheadline, compatibleWith: traitCollection)
                 self.profileHeaderViewController.profileBannerView.bioLabel.font = .preferredFont(forTextStyle: .body, compatibleWith: traitCollection)
                 self.profileHeaderViewController.profileBannerView.linkButton.titleLabel?.font = .preferredFont(forTextStyle: .callout, compatibleWith: traitCollection)
                 self.profileHeaderViewController.profileBannerView.geoButton.titleLabel?.font = .preferredFont(forTextStyle: .callout, compatibleWith: traitCollection)
@@ -353,6 +372,7 @@ extension ProfileViewController {
             .store(in: &disposeBag)
             
         profileHeaderViewController.profileBannerView.profileBannerInfoActionView.delegate = self
+        profileHeaderViewController.profileBannerView.delegate = self
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -550,6 +570,16 @@ extension ProfileViewController: ProfileBannerInfoActionViewDelegate {
             
         }
         .store(in: &disposeBag)
+    }
+    
+}
+
+// MARK: - ProfileBannerViewDelegate
+extension ProfileViewController: ProfileBannerViewDelegate {
+    
+    func profileBannerView(_ profileBannerView: ProfileBannerView, linkButtonDidPressed button: UIButton) {
+        guard let urlString = viewModel.url.value, let url = URL(string: urlString) else { return }
+        coordinator.present(scene: .safari(url: url), from: nil, transition: .safariPresent(animated: true, completion: nil))
     }
     
 }

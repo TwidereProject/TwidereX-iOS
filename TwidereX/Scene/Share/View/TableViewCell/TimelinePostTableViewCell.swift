@@ -8,7 +8,6 @@
 import os.log
 import UIKit
 import Combine
-import AlamofireImage
 import ActiveLabel
 
 protocol TimelinePostTableViewCellDelegate: class {
@@ -23,6 +22,14 @@ protocol TimelinePostTableViewCellDelegate: class {
     func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, actionToolbar: TimelinePostActionToolbar, shareButtonDidPressed sender: UIButton)
     
     func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, mosaicImageView: MosaicImageView, didTapImageView imageView: UIImageView, atIndex index: Int)
+    
+    func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, activeLabel: ActiveLabel, didTapMention mention: String)
+    func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, activeLabel: ActiveLabel, didTapHashtag hashtag: String)
+    func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, activeLabel: ActiveLabel, didTapURL url: URL)
+    
+    func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, quoteActiveLabel: ActiveLabel, didTapMention mention: String)
+    func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, quoteActiveLabel: ActiveLabel, didTapHashtag hashtag: String)
+    func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, quoteActiveLabel: ActiveLabel, didTapURL url: URL)
 }
 
 final class TimelinePostTableViewCell: UITableViewCell {
@@ -62,6 +69,7 @@ final class TimelinePostTableViewCell: UITableViewCell {
         timelinePostView.mosaicImageView.isHidden = true
         timelinePostView.quotePostView.isHidden = true
         timelinePostView.avatarImageView.af.cancelImageRequest()
+        timelinePostView.avatarImageView.kf.cancelDownloadTask()
         conversationLinkUpper.isHidden = true
         conversationLinkLower.isHidden = true
         disposeBag.removeAll()
@@ -136,6 +144,34 @@ extension TimelinePostTableViewCell {
         quotePostViewTapGestureRecognizer.addTarget(self, action: #selector(TimelinePostTableViewCell.quotePostViewTapGestureRecognizerHandler(_:)))
         timelinePostView.quotePostView.isUserInteractionEnabled = true
         timelinePostView.quotePostView.addGestureRecognizer(quotePostViewTapGestureRecognizer)
+        
+        let activeLabel = timelinePostView.activeTextLabel
+        activeLabel.handleMentionTap { [weak self] mention in
+            guard let self = self else { return }
+            self.delegate?.timelinePostTableViewCell(self, activeLabel: activeLabel, didTapMention: mention)
+        }
+        activeLabel.handleHashtagTap { [weak self] hashtag in
+            guard let self = self else { return }
+            self.delegate?.timelinePostTableViewCell(self, activeLabel: activeLabel, didTapHashtag: hashtag)
+        }
+        activeLabel.handleURLTap { [weak self] url in
+            guard let self = self else { return }
+            self.delegate?.timelinePostTableViewCell(self, activeLabel: activeLabel, didTapURL: url)
+        }
+        
+        let quoteActiveLabel = timelinePostView.quotePostView.activeTextLabel
+        quoteActiveLabel.handleMentionTap { [weak self] mention in
+            guard let self = self else { return }
+            self.delegate?.timelinePostTableViewCell(self, quoteActiveLabel: quoteActiveLabel, didTapMention: mention)
+        }
+        quoteActiveLabel.handleHashtagTap { [weak self] hashtag in
+            guard let self = self else { return }
+            self.delegate?.timelinePostTableViewCell(self, quoteActiveLabel: quoteActiveLabel, didTapHashtag: hashtag)
+        }
+        quoteActiveLabel.handleURLTap { [weak self] url in
+            guard let self = self else { return }
+            self.delegate?.timelinePostTableViewCell(self, quoteActiveLabel: quoteActiveLabel, didTapURL: url)
+        }
         
         timelinePostView.actionToolbar.delegate = self
         timelinePostView.mosaicImageView.delegate = self

@@ -68,7 +68,7 @@ final class MediaPreviewViewModel: NSObject {
             self.name.value = (tweet.retweet ?? tweet).author.name
             
             // remove line break
-            let text = (tweet.retweet ?? tweet).text
+            let text = (tweet.retweet ?? tweet).displayText
                 .replacingOccurrences(of: "\n", with: " ")
             self.content.value = text
         }

@@ -13,6 +13,7 @@ import Combine
 import CoreData
 import CoreDataStack
 import AlamofireImage
+import Kingfisher
 import DateToolsSwift
 
 final class HomeTimelineViewModel: NSObject {
@@ -177,16 +178,7 @@ extension HomeTimelineViewModel {
 
         // set avatar
         if let avatarImageURL = (tweet.retweet?.author ?? tweet.author).avatarImageURL() {
-            let placeholderImage = UIImage
-                .placeholder(size: TimelinePostView.avatarImageViewSize, color: .systemFill)
-                .af.imageRoundedIntoCircle()
-            let filter = ScaledToSizeCircleFilter(size: TimelinePostView.avatarImageViewSize)
-            cell.timelinePostView.avatarImageView.af.setImage(
-                withURL: avatarImageURL,
-                placeholderImage: placeholderImage,
-                filter: filter,
-                imageTransition: .crossDissolve(0.2)
-            )
+            HomeTimelineViewModel.configure(avatarImageView: cell.timelinePostView.avatarImageView, avatarImageURL: avatarImageURL)
         } else {
             assertionFailure()
         }
@@ -271,16 +263,7 @@ extension HomeTimelineViewModel {
         if let quote = quote {
             // set avatar
             if let avatarImageURL = quote.author.avatarImageURL() {
-                let placeholderImage = UIImage
-                    .placeholder(size: TimelinePostView.avatarImageViewSize, color: .systemFill)
-                    .af.imageRoundedIntoCircle()
-                let filter = ScaledToSizeCircleFilter(size: TimelinePostView.avatarImageViewSize)
-                cell.timelinePostView.quotePostView.avatarImageView.af.setImage(
-                    withURL: avatarImageURL,
-                    placeholderImage: placeholderImage,
-                    filter: filter,
-                    imageTransition: .crossDissolve(0.2)
-                )
+                HomeTimelineViewModel.configure(avatarImageView: cell.timelinePostView.quotePostView.avatarImageView, avatarImageURL: avatarImageURL)
             } else {
                 assertionFailure()
             }
@@ -299,7 +282,7 @@ extension HomeTimelineViewModel {
             cell.timelinePostView.quotePostView.dateLabel.text = createdAt.shortTimeAgoSinceNow
 
             // set text
-            cell.timelinePostView.quotePostView.activeTextLabel.text = quote.text
+            cell.timelinePostView.quotePostView.activeTextLabel.text = quote.displayText
         }
         cell.timelinePostView.quotePostView.isHidden = quote == nil
         
@@ -395,6 +378,34 @@ extension HomeTimelineViewModel {
             cell.separatorLineIndentLeadingLayoutConstraint.isActive = false
             cell.separatorLineNormalLeadingLayoutConstraint.isActive = true
             cell.separatorLineNormalTrailingLayoutConstraint.isActive = true
+        }
+    }
+    
+    static func configure(avatarImageView: UIImageView, avatarImageURL: URL) {
+        let placeholderImage = UIImage
+            .placeholder(size: TimelinePostView.avatarImageViewSize, color: .systemFill)
+            .af.imageRoundedIntoCircle()
+        
+        if avatarImageURL.pathExtension == "gif" {
+            avatarImageView.kf.setImage(
+                with: avatarImageURL,
+                placeholder: placeholderImage,
+                options: [
+                    .processor(
+                        CroppingImageProcessor(size: TimelinePostView.avatarImageViewSize, anchor: CGPoint(x: 0.5, y: 0.5)) |>
+                        RoundCornerImageProcessor(cornerRadius: 0.5 * TimelinePostView.avatarImageViewSize.width)
+                    ),
+                    .transition(.fade(0.2))
+                ]
+            )
+        } else {
+            let filter = ScaledToSizeCircleFilter(size: TimelinePostView.avatarImageViewSize)
+            avatarImageView.af.setImage(
+                withURL: avatarImageURL,
+                placeholderImage: placeholderImage,
+                filter: filter,
+                imageTransition: .crossDissolve(0.2)
+            )
         }
     }
 

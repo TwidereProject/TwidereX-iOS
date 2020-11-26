@@ -32,6 +32,7 @@ final public class TwitterUser: NSManagedObject {
     
     // one-to-one relationship
     @NSManaged public private(set) var pinnedTweet: Tweet?
+    @NSManaged public private(set) var entities: TwitterUserEntities?
     @NSManaged public private(set) var metrics: TwitterUserMetrics?
     @NSManaged public private(set) var withheld: TwitteWithheld?
     
@@ -68,6 +69,7 @@ extension TwitterUser {
     public static func insert(
         into context: NSManagedObjectContext,
         property: Property,
+        entities: TwitterUserEntities?,
         metrics: TwitterUserMetrics,
         following: TwitterUser?,
         followRequestSent: TwitterUser?
@@ -88,13 +90,14 @@ extension TwitterUser {
         user.url = property.url
         user.verified = property.verified
         
+        user.entities = entities
         user.metrics = metrics
         
         if let following = following {
-            user.mutableSetValue(forKey: #keyPath(TwitterUser.following)).addObjects(from: [following])
+            user.mutableSetValue(forKey: #keyPath(TwitterUser.following)).add(following)
         }
         if let followRequestSent = followRequestSent {
-            user.mutableSetValue(forKey: #keyPath(TwitterUser.followRequestSent)).addObjects(from: [followRequestSent])
+            user.mutableSetValue(forKey: #keyPath(TwitterUser.followRequestSent)).add(followRequestSent)
         }
         
         return user

@@ -8,6 +8,7 @@
 import os.log
 import UIKit
 import Combine
+import ActiveLabel
 
 protocol ConversationPostTableViewCellDelegate: class {
     func conversationPostTableViewCell(_ cell: ConversationPostTableViewCell, avatarImageViewDidPressed imageView: UIImageView)
@@ -20,6 +21,15 @@ protocol ConversationPostTableViewCellDelegate: class {
     func conversationPostTableViewCell(_ cell: ConversationPostTableViewCell, actionToolbar: StatusActionToolbar, shareButtonDidPressed sender: UIButton)
     
     func conversationPostTableViewCell(_ cell: ConversationPostTableViewCell, mosaicImageView: MosaicImageView, didTapImageView imageView: UIImageView, atIndex index: Int)
+    
+    func conversationPostTableViewCell(_ cell: ConversationPostTableViewCell, activeLabel: ActiveLabel, didTapMention mention: String)
+    func conversationPostTableViewCell(_ cell: ConversationPostTableViewCell, activeLabel: ActiveLabel, didTapHashtag hashtag: String)
+    func conversationPostTableViewCell(_ cell: ConversationPostTableViewCell, activeLabel: ActiveLabel, didTapURL url: URL)
+    
+    func conversationPostTableViewCell(_ cell: ConversationPostTableViewCell, quoteActiveLabel: ActiveLabel, didTapMention mention: String)
+    func conversationPostTableViewCell(_ cell: ConversationPostTableViewCell, quoteActiveLabel: ActiveLabel, didTapHashtag hashtag: String)
+    func conversationPostTableViewCell(_ cell: ConversationPostTableViewCell, quoteActiveLabel: ActiveLabel, didTapURL url: URL)
+
 }
 
 final class ConversationPostTableViewCell: UITableViewCell {
@@ -85,6 +95,34 @@ extension ConversationPostTableViewCell {
         quotePostViewTapGestureRecognizer.addTarget(self, action: #selector(ConversationPostTableViewCell.quotePostViewTapGestureRecognizerHandler(_:)))
         conversationPostView.quotePostView.isUserInteractionEnabled = true
         conversationPostView.quotePostView.addGestureRecognizer(quotePostViewTapGestureRecognizer)
+        
+        let activeLabel = conversationPostView.activeTextLabel
+        activeLabel.handleMentionTap { [weak self] mention in
+            guard let self = self else { return }
+            self.delegate?.conversationPostTableViewCell(self, activeLabel: activeLabel, didTapMention: mention)
+        }
+        activeLabel.handleHashtagTap { [weak self] hashtag in
+            guard let self = self else { return }
+            self.delegate?.conversationPostTableViewCell(self, activeLabel: activeLabel, didTapHashtag: hashtag)
+        }
+        activeLabel.handleURLTap { [weak self] url in
+            guard let self = self else { return }
+            self.delegate?.conversationPostTableViewCell(self, activeLabel: activeLabel, didTapURL: url)
+        }
+        
+        let quoteActiveLabel = conversationPostView.quotePostView.activeTextLabel
+        quoteActiveLabel.handleMentionTap { [weak self] mention in
+            guard let self = self else { return }
+            self.delegate?.conversationPostTableViewCell(self, quoteActiveLabel: quoteActiveLabel, didTapMention: mention)
+        }
+        quoteActiveLabel.handleHashtagTap { [weak self] hashtag in
+            guard let self = self else { return }
+            self.delegate?.conversationPostTableViewCell(self, quoteActiveLabel: quoteActiveLabel, didTapHashtag: hashtag)
+        }
+        quoteActiveLabel.handleURLTap { [weak self] url in
+            guard let self = self else { return }
+            self.delegate?.conversationPostTableViewCell(self, quoteActiveLabel: quoteActiveLabel, didTapURL: url)
+        }
         
         conversationPostView.actionToolbar.delegate = self
         conversationPostView.mosaicImageView.delegate = self

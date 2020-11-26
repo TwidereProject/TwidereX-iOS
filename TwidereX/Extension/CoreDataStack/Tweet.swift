@@ -66,7 +66,20 @@ extension Tweet {
     var displayText: String {
         var text = self.text
         for url in entities?.urls ?? [] {
-            guard let shortURL = url.url, let expandedURL = url.expandedURL else { continue }
+            guard let shortURL = url.url, let displayURL = url.displayURL, let expandedURL = url.expandedURL else { continue }
+            guard !displayURL.hasPrefix("pic.twitter.com") else {
+                text = text.replacingOccurrences(of: shortURL, with: "")
+                continue
+            }
+
+            if let quote = quote {
+                let quoteID = quote.id
+                guard !displayURL.hasPrefix("twitter.com"), !expandedURL.hasPrefix(quoteID) else {
+                    text = text.replacingOccurrences(of: shortURL, with: "")
+                    continue
+                }
+            }
+            
             text = text.replacingOccurrences(of: shortURL, with: expandedURL)
         }
         return text

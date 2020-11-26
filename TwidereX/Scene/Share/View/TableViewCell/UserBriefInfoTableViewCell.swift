@@ -21,6 +21,13 @@ final class UserBriefInfoTableViewCell: UITableViewCell {
     weak var delegate: UserBriefInfoTableViewCellDelegate?
     let userBriefInfoView = UserBriefInfoView()
     
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        
+        userBriefInfoView.avatarImageView.af.cancelImageRequest()
+        userBriefInfoView.avatarImageView.kf.cancelDownloadTask()
+    }
+    
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         _init()

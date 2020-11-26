@@ -33,7 +33,7 @@ extension SceneCoordinator {
         case modal(animated: Bool, completion: (() -> Void)? = nil)
         case custom(transitioningDelegate: UIViewControllerTransitioningDelegate)
         case customPush
-        case customModal(animated: Bool, completion: (() -> Void)? = nil)
+        case safariPresent(animated: Bool, completion: (() -> Void)? = nil)
     }
     
     enum Scene {
@@ -93,7 +93,7 @@ extension SceneCoordinator {
             assert(sender?.navigationController?.delegate != nil)
             sender?.navigationController?.pushViewController(viewController, animated: true)
             
-        case .customModal(let animated, let completion):
+        case .safariPresent(let animated, let completion):
             presentingViewController.present(viewController, animated: animated, completion: completion)
         }
         

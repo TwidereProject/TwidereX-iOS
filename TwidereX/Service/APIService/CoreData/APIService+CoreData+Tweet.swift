@@ -72,14 +72,32 @@ extension APIService.CoreData {
                 return result
             }()
             let entities: TweetEntities? = {
-                let properties = entity.entities.urls.compactMap { urlEntity -> TweetEntitiesURL.Property? in
-                    guard let indices = urlEntity.indices, indices.count == 2 else { return nil }
-                    let property = TweetEntitiesURL.Property(start: indices[0], end: indices[1], url: urlEntity.url, expandedURL: urlEntity.expandedURL, displayURL: urlEntity.displayURL, unwoundURL: nil, networkDate: networkDate)
-                    return property
-                }
-                let urls = properties.map { property in
-                    return TweetEntitiesURL.insert(into: managedObjectContext, property: property)
-                }
+                let urls: [TweetEntitiesURL] = {
+                    var urls: [TweetEntitiesURL] = []
+                    if let urlEntities = entity.entities.urls {
+                        let properties = urlEntities.compactMap { urlEntity -> TweetEntitiesURL.Property? in
+                            guard let indices = urlEntity.indices, indices.count == 2 else { return nil }
+                            let property = TweetEntitiesURL.Property(start: indices[0], end: indices[1], url: urlEntity.url, expandedURL: urlEntity.expandedURL, displayURL: urlEntity.displayURL, unwoundURL: nil, networkDate: networkDate)
+                            return property
+                        }
+                        let newUrls = properties.map { property in
+                            return TweetEntitiesURL.insert(into: managedObjectContext, property: property)
+                        }
+                        urls.append(contentsOf: newUrls)
+                    }
+                    if let mediaEntities = entity.extendedEntities?.media {
+                        let properties = mediaEntities.compactMap { urlEntity -> TweetEntitiesURL.Property? in
+                            guard let indices = urlEntity.indices, indices.count == 2 else { return nil }
+                            let property = TweetEntitiesURL.Property(start: indices[0], end: indices[1], url: urlEntity.url, expandedURL: urlEntity.expandedURL, displayURL: urlEntity.displayURL, unwoundURL: nil, networkDate: networkDate)
+                            return property
+                        }
+                        let newUrls = properties.map { property in
+                            return TweetEntitiesURL.insert(into: managedObjectContext, property: property)
+                        }
+                        urls.append(contentsOf: newUrls)
+                    }
+                    return urls
+                }()
                 guard !urls.isEmpty else { return nil }
                 let entities = TweetEntities.insert(into: managedObjectContext, urls: urls)
                 return entities

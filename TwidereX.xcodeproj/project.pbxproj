@@ -105,6 +105,8 @@
 		DB74A164256E148F00C5F3C9 /* CropViewController in Frameworks */ = {isa = PBXBuildFile; productRef = DB74A163256E148F00C5F3C9 /* CropViewController */; };
 		DB74A169256E392F00C5F3C9 /* ContextMenuImagePreviewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB74A168256E392F00C5F3C9 /* ContextMenuImagePreviewViewController.swift */; };
 		DB74A16E256E50E300C5F3C9 /* UIColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB74A16D256E50E300C5F3C9 /* UIColor.swift */; };
+		DB74A18F256F6FA000C5F3C9 /* TwitterUserEntities.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB74A18E256F6FA000C5F3C9 /* TwitterUserEntities.swift */; };
+		DB74A194256F6FF400C5F3C9 /* TwitterUserEntitiesURL.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB74A193256F6FF400C5F3C9 /* TwitterUserEntitiesURL.swift */; };
 		DB761E3F25592AA20050DC01 /* DrawerSidebarAnimatedTransitioning.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB761E3E25592AA20050DC01 /* DrawerSidebarAnimatedTransitioning.swift */; };
 		DB761E4E255935380050DC01 /* DrawerSidebarHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB761E4D255935380050DC01 /* DrawerSidebarHeaderView.swift */; };
 		DB761E5D255940EF0050DC01 /* DrawerSidebarEntryTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB761E5C255940EF0050DC01 /* DrawerSidebarEntryTableViewCell.swift */; };
@@ -468,6 +470,8 @@
 		DB747FF8251C496A000C4BD7 /* ProfileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileViewController.swift; sourceTree = "<group>"; };
 		DB74A168256E392F00C5F3C9 /* ContextMenuImagePreviewViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContextMenuImagePreviewViewController.swift; sourceTree = "<group>"; };
 		DB74A16D256E50E300C5F3C9 /* UIColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIColor.swift; sourceTree = "<group>"; };
+		DB74A18E256F6FA000C5F3C9 /* TwitterUserEntities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwitterUserEntities.swift; sourceTree = "<group>"; };
+		DB74A193256F6FF400C5F3C9 /* TwitterUserEntitiesURL.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwitterUserEntitiesURL.swift; sourceTree = "<group>"; };
 		DB761E3E25592AA20050DC01 /* DrawerSidebarAnimatedTransitioning.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawerSidebarAnimatedTransitioning.swift; sourceTree = "<group>"; };
 		DB761E4D255935380050DC01 /* DrawerSidebarHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawerSidebarHeaderView.swift; sourceTree = "<group>"; };
 		DB761E5C255940EF0050DC01 /* DrawerSidebarEntryTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawerSidebarEntryTableViewCell.swift; sourceTree = "<group>"; };
@@ -993,6 +997,8 @@
 			children = (
 				DBE76D282501F88600DEB0FC /* TwitterUser.swift */,
 				DB49163F253EDA7D008755C3 /* TwitterUserMetrics.swift */,
+				DB74A18E256F6FA000C5F3C9 /* TwitterUserEntities.swift */,
+				DB74A193256F6FF400C5F3C9 /* TwitterUserEntitiesURL.swift */,
 			);
 			path = User;
 			sourceTree = "<group>";
@@ -2406,6 +2412,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				DBE76CCB250093E300DEB0FC /* ManagedObjectContextObjectsDidChangeNotification.swift in Sources */,
+				DB74A194256F6FF400C5F3C9 /* TwitterUserEntitiesURL.swift in Sources */,
 				DB491618253ECF58008755C3 /* TweetEntitiesHashtag.swift in Sources */,
 				DB5A229A255BC82D006CA5B2 /* AuthenticationIndex.swift in Sources */,
 				DB49161D253ECF81008755C3 /* TweetEntitiesMention.swift in Sources */,
@@ -2418,6 +2425,7 @@
 				DBE716F82536CA9C00DF98C5 /* Collection.swift in Sources */,
 				DB8AC0E0253EE4B400E636BE /* TwitterPoll.swift in Sources */,
 				DB491631253ED295008755C3 /* TweetMetrics.swift in Sources */,
+				DB74A18F256F6FA000C5F3C9 /* TwitterUserEntities.swift in Sources */,
 				DB491613253ECF25008755C3 /* TweetEntitiesCashtag.swift in Sources */,
 				DB49163B253ED443008755C3 /* TwitteWithheld.swift in Sources */,
 				DB491640253EDA7D008755C3 /* TwitterUserMetrics.swift in Sources */,

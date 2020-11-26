@@ -5,13 +5,20 @@
 //  Created by Cirno MainasuK on 2020-9-25.
 //
 
+import os.log
 import UIKit
 import ActiveLabel
+
+protocol ProfileBannerViewDelegate: class {
+    func profileBannerView(_ profileBannerView: ProfileBannerView, linkButtonDidPressed button: UIButton)
+}
 
 final class ProfileBannerView: UIView {
     
     static let avatarImageViewSize = CGSize(width: 72, height: 72)
     static let avatarImageViewBackgroundSize = CGSize(width: 72 + 2 * 4, height: 72 + 2 * 4)    // 4pt outside border
+    
+    weak var delegate: ProfileBannerViewDelegate?
     
     let profileBannerContainer = UIView()
     let profileBannerImageView: UIImageView = {
@@ -162,8 +169,8 @@ extension ProfileBannerView {
         NSLayoutConstraint.activate([
             profileAvatarImageViewBackground.centerXAnchor.constraint(equalTo: centerXAnchor),
             profileAvatarImageViewBackground.centerYAnchor.constraint(equalTo: profileBannerImageView.bottomAnchor),
-            profileAvatarImageViewBackground.widthAnchor.constraint(equalToConstant: ProfileBannerView.avatarImageViewBackgroundSize.width),
-            profileAvatarImageViewBackground.heightAnchor.constraint(equalToConstant: ProfileBannerView.avatarImageViewBackgroundSize.height),
+            profileAvatarImageViewBackground.widthAnchor.constraint(equalToConstant: ProfileBannerView.avatarImageViewBackgroundSize.width).priority(.required - 1),
+            profileAvatarImageViewBackground.heightAnchor.constraint(equalToConstant: ProfileBannerView.avatarImageViewBackgroundSize.height).priority(.required - 1),
         ])
         
         profileAvatarImageView.translatesAutoresizingMaskIntoConstraints = false
@@ -288,11 +295,19 @@ extension ProfileBannerView {
         verifiedBadgeImageView.isHidden = true
         lockImageView.isHidden = true
         profileBannerInfoActionView.followStatusLabel.isHidden = true
+        linkButton.addTarget(self, action: #selector(ProfileBannerView.linkButtonDidPressed(_:)), for: .touchUpInside)
         
         bringSubviewToFront(profileAvatarImageView)
         bringSubviewToFront(verifiedBadgeImageView)
     }
 
+}
+
+extension ProfileBannerView {
+    @objc private func linkButtonDidPressed(_ sender: UIButton) {
+        os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
+        delegate?.profileBannerView(self, linkButtonDidPressed: sender)
+    }
 }
 
 

@@ -9,9 +9,9 @@
 import os.log
 import UIKit
 
-// needs manually dispath
 extension UITableViewDelegate where Self: TweetProvider {
     
+    // manually dispath for tableView(_:didSelectRowAt:)
     func handleTableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         os_log("%{public}s[%{public}ld], %{public}s: indexPath %s", ((#file as NSString).lastPathComponent), #line, #function, indexPath.debugDescription)
         guard let cell = tableView.cellForRow(at: indexPath) as? TimelinePostTableViewCell else { return }

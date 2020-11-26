@@ -12,6 +12,7 @@ import Combine
 import CoreData
 import CoreDataStack
 import TwitterAPI
+import ActiveLabel
 
 extension TimelinePostTableViewCellDelegate where Self: TweetProvider {
     
@@ -310,4 +311,32 @@ extension TimelinePostTableViewCellDelegate where Self: TweetProvider & MediaPre
             }
             .store(in: &disposeBag)
     }
+}
+
+extension TimelinePostTableViewCellDelegate where Self: TweetProvider {
+
+    func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, activeLabel: ActiveLabel, didTapMention mention: String) {
+        
+    }
+    
+    func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, activeLabel: ActiveLabel, didTapHashtag hashtag: String) {
+        
+    }
+    
+    func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, activeLabel: ActiveLabel, didTapURL url: URL) {
+        coordinator.present(scene: .safari(url: url), from: nil, transition: .safariPresent(animated: true, completion: nil))
+    }
+    
+    func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, quoteActiveLabel: ActiveLabel, didTapMention mention: String) {
+        
+    }
+    
+    func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, quoteActiveLabel: ActiveLabel, didTapHashtag hashtag: String) {
+        
+    }
+    
+    func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, quoteActiveLabel: ActiveLabel, didTapURL url: URL) {
+        
+    }
+
 }

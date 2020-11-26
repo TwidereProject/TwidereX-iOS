@@ -69,8 +69,8 @@ class ProfileViewModel: NSObject {
         self.verified = CurrentValueSubject(twitterUser.verified)
         self.name = CurrentValueSubject(twitterUser.name)
         self.username = CurrentValueSubject(twitterUser.username)
-        self.bioDescription = CurrentValueSubject(twitterUser.bioDescription)
-        self.url = CurrentValueSubject(twitterUser.url)
+        self.bioDescription = CurrentValueSubject(twitterUser.displayBioDescription)
+        self.url = CurrentValueSubject(twitterUser.displayURL)
         self.location = CurrentValueSubject(twitterUser.location)
         self.friendsCount = CurrentValueSubject(twitterUser.metrics?.followingCount.flatMap { Int(truncating: $0) })
         self.followersCount = CurrentValueSubject(twitterUser.metrics?.followersCount.flatMap { Int(truncating: $0) })
@@ -160,8 +160,8 @@ extension ProfileViewModel {
         self.verified.value = twitterUser?.verified
         self.name.value = twitterUser?.name
         self.username.value = twitterUser?.username
-        self.bioDescription.value = twitterUser?.bioDescription
-        self.url.value = twitterUser?.url
+        self.bioDescription.value = twitterUser?.displayBioDescription
+        self.url.value = twitterUser?.displayURL
         self.location.value = twitterUser?.location
         self.friendsCount.value = twitterUser?.metrics?.followingCount.flatMap { Int(truncating: $0) }
         self.followersCount.value = twitterUser?.metrics?.followersCount.flatMap { Int(truncating: $0) }
