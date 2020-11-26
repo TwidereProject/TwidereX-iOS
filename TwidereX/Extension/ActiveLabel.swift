@@ -26,6 +26,7 @@ extension ActiveLabel {
         textColor = UIColor.label.withAlphaComponent(0.8)
         font = .preferredFont(forTextStyle: .body)
         text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+        urlMaximumLength = 30
     }
     
 }

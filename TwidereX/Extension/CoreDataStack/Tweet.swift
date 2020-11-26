@@ -61,3 +61,14 @@ extension Tweet {
         return items
     }
 }
+
+extension Tweet {
+    var displayText: String {
+        var text = self.text
+        for url in entities?.urls ?? [] {
+            guard let shortURL = url.url, let expandedURL = url.expandedURL else { continue }
+            text = text.replacingOccurrences(of: shortURL, with: expandedURL)
+        }
+        return text
+    }
+}

@@ -71,6 +71,19 @@ extension APIService.CoreData {
                 guard !result.isEmpty else { return nil }
                 return result
             }()
+            let entities: TweetEntities? = {
+                let properties = entity.entities.urls.compactMap { urlEntity -> TweetEntitiesURL.Property? in
+                    guard let indices = urlEntity.indices, indices.count == 2 else { return nil }
+                    let property = TweetEntitiesURL.Property(start: indices[0], end: indices[1], url: urlEntity.url, expandedURL: urlEntity.expandedURL, displayURL: urlEntity.displayURL, unwoundURL: nil, networkDate: networkDate)
+                    return property
+                }
+                let urls = properties.map { property in
+                    return TweetEntitiesURL.insert(into: managedObjectContext, property: property)
+                }
+                guard !urls.isEmpty else { return nil }
+                let entities = TweetEntities.insert(into: managedObjectContext, urls: urls)
+                return entities
+            }()
             let metrics: TweetMetrics? = {
                 guard (entity.favoriteCount ?? 0) > 0 || (entity.retweetCount ?? 0) > 0 else { return nil }
                 let metricsProperty = TweetMetrics.Property(likeCount: entity.favoriteCount, quoteCount: nil, replyCount: nil, retweetCount: entity.retweetCount)
@@ -89,6 +102,7 @@ extension APIService.CoreData {
                 property: tweetProperty,
                 author: twitterUser,
                 media: media,
+                entities: entities,
                 metrics: metrics,
                 place: place,
                 retweet: retweet,

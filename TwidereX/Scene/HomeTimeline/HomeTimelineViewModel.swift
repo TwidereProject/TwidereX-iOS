@@ -203,7 +203,7 @@ extension HomeTimelineViewModel {
         cell.timelinePostView.dateLabel.text = createdAt.shortTimeAgoSinceNow
         
         // set text
-        cell.timelinePostView.activeTextLabel.text = (tweet.retweet ?? tweet).text
+        cell.timelinePostView.activeTextLabel.text = (tweet.retweet ?? tweet).displayText
 
         // set action toolbar title
         let isRetweeted = (tweet.retweet ?? tweet).retweetBy.flatMap({ $0.contains(where: { $0.id == requestUserID }) }) ?? false
