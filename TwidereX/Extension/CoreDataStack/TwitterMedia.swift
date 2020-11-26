@@ -16,6 +16,7 @@ extension TwitterMedia {
         case small
         case medium
         case large
+        case original = "orig"
     }
     
     public func photoURL(sizeKind: SizeKind) -> (URL, CGSize)? {
