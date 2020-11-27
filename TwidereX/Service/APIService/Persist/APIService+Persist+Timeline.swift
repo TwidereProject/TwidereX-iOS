@@ -6,6 +6,7 @@
 //
 
 import os.log
+import func QuartzCore.CACurrentMediaTime
 import Foundation
 import Combine
 import CoreData
@@ -35,9 +36,12 @@ extension APIService.Persist {
 
         return managedObjectContext.performChanges {
             let contextTaskSignpostID = OSSignpostID(log: log)
+            let start = CACurrentMediaTime()
             os_signpost(.begin, log: log, name: #function, signpostID: contextTaskSignpostID)
             defer {
                 os_signpost(.end, log: .api, name: #function, signpostID: contextTaskSignpostID)
+                let end = CACurrentMediaTime()
+                os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: persist cost %.2fs", ((#file as NSString).lastPathComponent), #line, #function, end - start)
             }
             
             // load request twitter user

@@ -122,6 +122,11 @@ extension Tweet {
     }
 
     // relationship
+    public func setupEntitiesIfNeeds() {
+        if entities == nil {
+            entities = TweetEntities.insert(into: managedObjectContext!, urls: nil, mentions: nil)
+        }
+    }
     
     public func setupMetricsIfNeeds() {
         if metrics == nil {

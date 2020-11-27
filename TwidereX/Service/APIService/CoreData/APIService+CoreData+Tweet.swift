@@ -73,33 +73,36 @@ extension APIService.CoreData {
             }()
             let entities: TweetEntities? = {
                 let urls: [TweetEntitiesURL] = {
-                    var urls: [TweetEntitiesURL] = []
-                    if let urlEntities = entity.entities.urls {
-                        let properties = urlEntities.compactMap { urlEntity -> TweetEntitiesURL.Property? in
-                            guard let indices = urlEntity.indices, indices.count == 2 else { return nil }
-                            let property = TweetEntitiesURL.Property(start: indices[0], end: indices[1], url: urlEntity.url, expandedURL: urlEntity.expandedURL, displayURL: urlEntity.displayURL, unwoundURL: nil, networkDate: networkDate)
-                            return property
-                        }
-                        let newUrls = properties.map { property in
-                            return TweetEntitiesURL.insert(into: managedObjectContext, property: property)
-                        }
-                        urls.append(contentsOf: newUrls)
-                    }
-                    if let mediaEntities = entity.extendedEntities?.media {
-                        let properties = mediaEntities.compactMap { urlEntity -> TweetEntitiesURL.Property? in
-                            guard let indices = urlEntity.indices, indices.count == 2 else { return nil }
-                            let property = TweetEntitiesURL.Property(start: indices[0], end: indices[1], url: urlEntity.url, expandedURL: urlEntity.expandedURL, displayURL: urlEntity.displayURL, unwoundURL: nil, networkDate: networkDate)
-                            return property
-                        }
-                        let newUrls = properties.map { property in
-                            return TweetEntitiesURL.insert(into: managedObjectContext, property: property)
-                        }
-                        urls.append(contentsOf: newUrls)
+                    let entitiesURLProperties = TweetEntitiesURL.Property.properties(from: entity.entities, networkDate: networkDate)
+                    let extendedEntitiesURLProperties = entity.extendedEntities
+                        .flatMap { TweetEntitiesURL.Property.properties(from: $0, networkDate: networkDate) } ?? []
+                    let properties = entitiesURLProperties + extendedEntitiesURLProperties
+                    let urls: [TweetEntitiesURL] = properties.map { property in
+                        TweetEntitiesURL.insert(into: managedObjectContext, property: property)
                     }
                     return urls
                 }()
-                guard !urls.isEmpty else { return nil }
-                let entities = TweetEntities.insert(into: managedObjectContext, urls: urls)
+                let mentions: [TweetEntitiesMention] = {
+                    let properties = TweetEntitiesMention.Property.properties(from: entity.entities, networkDate: networkDate)
+                    let mentions: [TweetEntitiesMention] = properties.map { property in
+                        let twitterUser: TwitterUser? = {
+                            guard let username = property.username else { return nil }
+                            let userRequest = TwitterUser.sortedFetchRequest
+                            userRequest.fetchLimit = 1
+                            userRequest.predicate = TwitterUser.predicate(username: username)
+                            do {
+                                return try managedObjectContext.fetch(userRequest).first
+                            } catch {
+                                assertionFailure(error.localizedDescription)
+                                return nil
+                            }
+                        }()
+                        return TweetEntitiesMention.insert(into: managedObjectContext, property: property, user: twitterUser)
+                    }
+                    return mentions
+                }()
+                guard !urls.isEmpty || !mentions.isEmpty else { return nil }
+                let entities = TweetEntities.insert(into: managedObjectContext, urls: urls, mentions: mentions)
                 return entities
             }()
             let metrics: TweetMetrics? = {
@@ -154,6 +157,49 @@ extension APIService.CoreData {
                 guard let id = newMedia.idStr else { continue }
                 guard let targetMedia = media.first(where: { $0.id == id }) else { continue }
                 targetMedia.update(url: newMedia.mediaURLHTTPS)
+            }
+        }
+        
+        // update mentions
+        tweet.setupEntitiesIfNeeds()
+        if let userMentions = entity.entities.userMentions, !userMentions.isEmpty {
+            let managedObjectContext = tweet.managedObjectContext!
+            let persistedMentsions = tweet.entities?.mentions ?? Set()
+            
+            for userMension in userMentions {
+                guard let username = userMension.screenName else { continue }
+                if let persistedMentsion = persistedMentsions.first(where: { $0.username == username }) {
+                    guard persistedMentsion.user == nil else { continue }
+                    let twitterUser: TwitterUser? = {
+                        guard let username = persistedMentsion.username else { return nil }
+                        let userRequest = TwitterUser.sortedFetchRequest
+                        userRequest.fetchLimit = 1
+                        userRequest.predicate = TwitterUser.predicate(username: username)
+                        do {
+                            return try managedObjectContext.fetch(userRequest).first
+                        } catch {
+                            assertionFailure(error.localizedDescription)
+                            return nil
+                        }
+                    }()
+                    persistedMentsion.update(user: twitterUser)
+                } else {
+                    guard let indices = userMension.indices, indices.count == 2 else { continue }
+                    let property = TweetEntitiesMention.Property(start: indices[0], end: indices[1], username: username, userID: userMension.idStr)
+                    let twitterUser: TwitterUser? = {
+                        let userRequest = TwitterUser.sortedFetchRequest
+                        userRequest.fetchLimit = 1
+                        userRequest.predicate = TwitterUser.predicate(username: username)
+                        do {
+                            return try managedObjectContext.fetch(userRequest).first
+                        } catch {
+                            assertionFailure(error.localizedDescription)
+                            return nil
+                        }
+                    }()
+                    let persistMention = TweetEntitiesMention.insert(into: managedObjectContext, property: property, user: twitterUser)
+                    persistMention.update(entities: tweet.entities)
+                }
             }
         }
         

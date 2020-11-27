@@ -64,7 +64,12 @@ extension APIService.Persist {
             for (tweetID, tweet) in dictContent.tweetDict {
                 guard let authorID = tweet.authorID,
                       let user = dictContent.userDict[authorID] else { continue }
-                let info = APIService.CoreData.V2.TwitterInfo(tweet: tweet, user: user, media: dictContent.media(for: tweet))
+                let info = APIService.CoreData.V2.TwitterInfo(
+                    tweet: tweet,
+                    user: user,
+                    media: dictContent.media(for: tweet),
+                    dictContent: dictContent
+                )
                 
                 var repliedToInfo: APIService.CoreData.V2.TwitterInfo?
                 var retweetedInfo: APIService.CoreData.V2.TwitterInfo?
@@ -79,7 +84,8 @@ extension APIService.Persist {
                     let targetInfo = APIService.CoreData.V2.TwitterInfo(
                         tweet: targetReferencedTweet,
                         user: targetReferencedTweetAuthor,
-                        media: dictContent.media(for: targetReferencedTweet)
+                        media: dictContent.media(for: targetReferencedTweet),
+                        dictContent: dictContent
                     )
                     switch referencedType {
                     case .repliedTo: repliedToInfo = targetInfo
@@ -95,6 +101,16 @@ extension APIService.Persist {
                     repliedToInfo: repliedToInfo,
                     retweetedInfo: retweetedInfo,
                     quotedInfo: quotedInfo,
+                    networkDate: response.networkDate,
+                    log: log
+                )
+            }
+            
+            for (userID, user) in dictContent.userDict {
+                _ = APIService.CoreData.V2.createOrMergeTwitterUser(
+                    into: managedObjectContext,
+                    for: requestTwitterUser,
+                    user: user,
                     networkDate: response.networkDate,
                     log: log
                 )

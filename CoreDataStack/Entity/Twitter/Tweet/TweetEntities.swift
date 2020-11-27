@@ -36,12 +36,16 @@ extension TweetEntities {
     @discardableResult
     public static func insert(
         into context: NSManagedObjectContext,
-        urls: [TweetEntitiesURL]?
+        urls: [TweetEntitiesURL]?,
+        mentions: [TweetEntitiesMention]?
     ) -> TweetEntities {
         let entities: TweetEntities = context.insertObject()
         
         if let urls = urls {
             entities.mutableSetValue(forKey: #keyPath(TweetEntities.urls)).addObjects(from: urls)
+        }
+        if let mentions = mentions {
+            entities.mutableSetValue(forKey: #keyPath(TweetEntities.mentions)).addObjects(from: mentions)
         }
         
         return entities

@@ -148,28 +148,34 @@ extension TimelinePostTableViewCell {
         let activeLabel = timelinePostView.activeTextLabel
         activeLabel.handleMentionTap { [weak self] mention in
             guard let self = self else { return }
+            os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: handleMentionTap: %s", ((#file as NSString).lastPathComponent), #line, #function, mention)
             self.delegate?.timelinePostTableViewCell(self, activeLabel: activeLabel, didTapMention: mention)
         }
         activeLabel.handleHashtagTap { [weak self] hashtag in
             guard let self = self else { return }
+            os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: handleHashtagTap: %s", ((#file as NSString).lastPathComponent), #line, #function, hashtag)
             self.delegate?.timelinePostTableViewCell(self, activeLabel: activeLabel, didTapHashtag: hashtag)
         }
         activeLabel.handleURLTap { [weak self] url in
             guard let self = self else { return }
+            os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: handleURLTap: %s", ((#file as NSString).lastPathComponent), #line, #function, url.absoluteString)
             self.delegate?.timelinePostTableViewCell(self, activeLabel: activeLabel, didTapURL: url)
         }
         
         let quoteActiveLabel = timelinePostView.quotePostView.activeTextLabel
         quoteActiveLabel.handleMentionTap { [weak self] mention in
             guard let self = self else { return }
+            os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: handleMentionTap: %s", ((#file as NSString).lastPathComponent), #line, #function, mention)
             self.delegate?.timelinePostTableViewCell(self, quoteActiveLabel: quoteActiveLabel, didTapMention: mention)
         }
         quoteActiveLabel.handleHashtagTap { [weak self] hashtag in
             guard let self = self else { return }
+            os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: handleHashtagTap: %s", ((#file as NSString).lastPathComponent), #line, #function, hashtag)
             self.delegate?.timelinePostTableViewCell(self, quoteActiveLabel: quoteActiveLabel, didTapHashtag: hashtag)
         }
         quoteActiveLabel.handleURLTap { [weak self] url in
             guard let self = self else { return }
+            os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: handleURLTap: %s", ((#file as NSString).lastPathComponent), #line, #function, url.absoluteString)
             self.delegate?.timelinePostTableViewCell(self, quoteActiveLabel: quoteActiveLabel, didTapURL: url)
         }
         

@@ -8,7 +8,7 @@
 import Foundation
 
 extension Twitter.Request {
-    public enum Expansions: String, CaseIterable {
+    public enum Expansions: String {
         case attachmentsPollIDs = "attachments.poll_ids"
         case attachmentsMediaKeys = "attachments.media_keys"
         case authorID = "author_id"
@@ -17,6 +17,7 @@ extension Twitter.Request {
         case inReplyToUserID = "in_reply_to_user_id"
         case referencedTweetsID = "referenced_tweets.id"
         case referencedTweetsIDAuthorID = "referenced_tweets.id.author_id"
+        case pinnedTweetID = "pinned_tweet_id"
     }
 }
 

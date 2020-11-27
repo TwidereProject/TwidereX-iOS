@@ -99,6 +99,7 @@
         <attribute name="end" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="identifier" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="start" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="userID" optional="YES" attributeType="String"/>
         <attribute name="username" optional="YES" attributeType="String"/>
         <relationship name="entities" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="TweetEntities" inverseName="mentions" inverseEntity="TweetEntities"/>
         <relationship name="user" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="TwitterUser" inverseName="mentionIn" inverseEntity="TwitterUser"/>
@@ -253,7 +254,7 @@
         <element name="TweetEntitiesAnnotation" positionX="-63" positionY="-45" width="128" height="28"/>
         <element name="TweetEntitiesCashtag" positionX="-27" positionY="-9" width="128" height="118"/>
         <element name="TweetEntitiesHashtag" positionX="-45" positionY="-27" width="128" height="28"/>
-        <element name="TweetEntitiesMention" positionX="-36" positionY="-18" width="128" height="133"/>
+        <element name="TweetEntitiesMention" positionX="-36" positionY="-18" width="128" height="148"/>
         <element name="TweetEntitiesURL" positionX="-54" positionY="-36" width="128" height="163"/>
         <element name="TweetMetrics" positionX="968.33984375" positionY="-300.5078125" width="128" height="58"/>
         <element name="TwitterAuthentication" positionX="-109.453125" positionY="275.71875" width="128" height="238"/>
@@ -263,9 +264,9 @@
         <element name="TwitterPoll" positionX="-54" positionY="-36" width="128" height="148"/>
         <element name="TwitterPollOption" positionX="-45" positionY="-27" width="128" height="28"/>
         <element name="TwitterUser" positionX="281.5234375" positionY="201.703125" width="128" height="478"/>
-        <element name="TwitterUserMetrics" positionX="-45" positionY="-180" width="128" height="133"/>
-        <element name="TwitterWithheld" positionX="-18" positionY="0" width="128" height="133"/>
         <element name="TwitterUserEntities" positionX="-72" positionY="-171" width="128" height="88"/>
         <element name="TwitterUserEntitiesURL" positionX="-63" positionY="-162" width="128" height="148"/>
+        <element name="TwitterUserMetrics" positionX="-45" positionY="-180" width="128" height="133"/>
+        <element name="TwitterWithheld" positionX="-18" positionY="0" width="128" height="133"/>
     </elements>
 </model>

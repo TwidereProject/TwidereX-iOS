@@ -19,6 +19,7 @@ class ProfileViewModel: NSObject {
     private var currentTwitterUserObserver: AnyCancellable?
     
     // input
+    // FIXME: multi-platform support
     let twitterUser: CurrentValueSubject<TwitterUser?, Never>
     let currentTwitterUser = CurrentValueSubject<TwitterUser?, Never>(nil)
         
@@ -79,6 +80,110 @@ class ProfileViewModel: NSObject {
         super.init()
         
         setup()
+    }
+    
+    init(context: AppContext, userID: TwitterUser.ID) {
+        self.twitterUser = CurrentValueSubject(nil)
+        self.userID = CurrentValueSubject(nil)
+        self.bannerImageURL = CurrentValueSubject(nil)
+        self.avatarImageURL = CurrentValueSubject(nil)
+        self.protected = CurrentValueSubject(nil)
+        self.verified = CurrentValueSubject(nil)
+        self.name = CurrentValueSubject(nil)
+        self.username = CurrentValueSubject(nil)
+        self.bioDescription = CurrentValueSubject(nil)
+        self.url = CurrentValueSubject(nil)
+        self.location = CurrentValueSubject(nil)
+        self.friendsCount = CurrentValueSubject(nil)
+        self.followersCount = CurrentValueSubject(nil)
+        self.listedCount = CurrentValueSubject(nil)
+        self.friendship = CurrentValueSubject(nil)
+        super.init()
+        
+        setup()
+
+        guard let activeTwitterAuthenticationBox = context.authenticationService.activeTwitterAuthenticationBox.value else {
+            return
+        }
+        context.apiService.users(userIDs: [userID], twitterAuthenticationBox: activeTwitterAuthenticationBox)
+            .retry(3)
+            .receive(on: DispatchQueue.main)
+            .sink { completion in
+                switch completion {
+                case .failure(let error):
+                    os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: user lookup %s fail: %s", ((#file as NSString).lastPathComponent), #line, #function, userID, error.localizedDescription)
+                case .finished:
+                    os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: user lookup %s success", ((#file as NSString).lastPathComponent), #line, #function, userID)
+                }
+            } receiveValue: { [weak self] content in
+                guard let self = self else { return }
+                let managedObjectContext = context.managedObjectContext
+                let request = TwitterUser.sortedFetchRequest
+                request.fetchLimit = 1
+                request.predicate = TwitterUser.predicate(idStr: userID)
+                do {
+                    guard let twitterUser = try managedObjectContext.fetch(request).first else {
+                        assertionFailure()
+                        return
+                    }
+                    self.twitterUser.value = twitterUser
+                } catch {
+                    assertionFailure(error.localizedDescription)
+                }
+            }
+            .store(in: &disposeBag)
+    }
+    
+    init(context: AppContext, username: TwitterUser.ID) {
+        self.twitterUser = CurrentValueSubject(nil)
+        self.userID = CurrentValueSubject(nil)
+        self.bannerImageURL = CurrentValueSubject(nil)
+        self.avatarImageURL = CurrentValueSubject(nil)
+        self.protected = CurrentValueSubject(nil)
+        self.verified = CurrentValueSubject(nil)
+        self.name = CurrentValueSubject(nil)
+        self.username = CurrentValueSubject(nil)
+        self.bioDescription = CurrentValueSubject(nil)
+        self.url = CurrentValueSubject(nil)
+        self.location = CurrentValueSubject(nil)
+        self.friendsCount = CurrentValueSubject(nil)
+        self.followersCount = CurrentValueSubject(nil)
+        self.listedCount = CurrentValueSubject(nil)
+        self.friendship = CurrentValueSubject(nil)
+        super.init()
+        
+        setup()
+        
+        guard let activeTwitterAuthenticationBox = context.authenticationService.activeTwitterAuthenticationBox.value else {
+            return
+        }
+        context.apiService.users(usernames: [username], twitterAuthenticationBox: activeTwitterAuthenticationBox)
+            .retry(3)
+            .receive(on: DispatchQueue.main)
+            .sink { completion in
+                switch completion {
+                case .failure(let error):
+                    os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: user lookup %s fail: %s", ((#file as NSString).lastPathComponent), #line, #function, username, error.localizedDescription)
+                case .finished:
+                    os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: user lookup %s success", ((#file as NSString).lastPathComponent), #line, #function, username)
+                }
+            } receiveValue: { [weak self] content in
+                guard let self = self else { return }
+                let managedObjectContext = context.managedObjectContext
+                let request = TwitterUser.sortedFetchRequest
+                request.fetchLimit = 1
+                request.predicate = TwitterUser.predicate(username: username)
+                do {
+                    guard let twitterUser = try managedObjectContext.fetch(request).first else {
+                        assertionFailure()
+                        return
+                    }
+                    self.twitterUser.value = twitterUser
+                } catch {
+                    assertionFailure(error.localizedDescription)
+                }
+            }
+            .store(in: &disposeBag)
     }
     
     deinit {

@@ -104,11 +104,10 @@ extension HomeTimelineViewModel {
                 
                 // configure cell
                 let managedObjectContext = self.fetchedResultsController.managedObjectContext
-                managedObjectContext.performAndWait {
-                    let timelineIndex = managedObjectContext.object(with: objectID) as! TimelineIndex
-                    HomeTimelineViewModel.configure(cell: cell, readableLayoutFrame: tableView.readableContentGuide.layoutFrame, timelineIndex: timelineIndex, attribute: attribute)
-                    HomeTimelineViewModel.configure(cell: cell, overrideTraitCollection: self.context.overrideTraitCollection.value)
-                }
+                assert(Thread.isMainThread)
+                let timelineIndex = managedObjectContext.object(with: objectID) as! TimelineIndex
+                HomeTimelineViewModel.configure(cell: cell, readableLayoutFrame: tableView.readableContentGuide.layoutFrame, timelineIndex: timelineIndex, attribute: attribute)
+                HomeTimelineViewModel.configure(cell: cell, overrideTraitCollection: self.context.overrideTraitCollection.value)
                 cell.delegate = self.timelinePostTableViewCellDelegate
                 return cell
             case .middleLoader(let upperTimelineIndexObjectID):

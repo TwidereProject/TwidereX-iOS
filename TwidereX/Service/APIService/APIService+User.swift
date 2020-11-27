@@ -64,3 +64,64 @@ extension APIService {
     }
     
 }
+
+// V2
+extension APIService {
+
+    func users(
+        userIDs: [Twitter.Entity.User.ID],
+        twitterAuthenticationBox: AuthenticationService.TwitterAuthenticationBox
+    ) -> AnyPublisher<Twitter.Response.Content<Twitter.API.V2.UserLookup.Content>, Error> {
+        let authorization = twitterAuthenticationBox.twitterAuthorization
+        let requestTwitterUserID = twitterAuthenticationBox.twitterUserID
+        return Twitter.API.V2.UserLookup.users(userIDs: userIDs, session: session, authorization: authorization)
+            .map { response -> AnyPublisher<Twitter.Response.Content<Twitter.API.V2.UserLookup.Content>, Error> in
+                let log = OSLog.api
+                
+                let dictResponse = response.map { response in
+                    return Twitter.Response.V2.DictContent(
+                        tweets: [],
+                        users: response.data ?? [],
+                        media: []
+                    )
+                }
+                
+                // persist data
+                return APIService.Persist.persistDictContent(managedObjectContext: self.backgroundManagedObjectContext, response: dictResponse, requestTwitterUserID: requestTwitterUserID, log: log)
+                    .map { _ in return response }
+                    .setFailureType(to: Error.self)
+                    .eraseToAnyPublisher()
+            }
+            .switchToLatest()
+            .eraseToAnyPublisher()
+    }
+    
+    func users(
+        usernames: [String],
+        twitterAuthenticationBox: AuthenticationService.TwitterAuthenticationBox
+    ) -> AnyPublisher<Twitter.Response.Content<Twitter.API.V2.UserLookup.Content>, Error> {
+        let authorization = twitterAuthenticationBox.twitterAuthorization
+        let requestTwitterUserID = twitterAuthenticationBox.twitterUserID
+        return Twitter.API.V2.UserLookup.users(usernames: usernames, session: session, authorization: authorization)
+            .map { response -> AnyPublisher<Twitter.Response.Content<Twitter.API.V2.UserLookup.Content>, Error> in
+                let log = OSLog.api
+                
+                let dictResponse = response.map { response in
+                    return Twitter.Response.V2.DictContent(
+                        tweets: [],
+                        users: response.data ?? [],
+                        media: []
+                    )
+                }
+                
+                // persist data
+                return APIService.Persist.persistDictContent(managedObjectContext: self.backgroundManagedObjectContext, response: dictResponse, requestTwitterUserID: requestTwitterUserID, log: log)
+                    .map { _ in return response }
+                    .setFailureType(to: Error.self)
+                    .eraseToAnyPublisher()
+            }
+            .switchToLatest()
+            .eraseToAnyPublisher()
+    }
+
+}
