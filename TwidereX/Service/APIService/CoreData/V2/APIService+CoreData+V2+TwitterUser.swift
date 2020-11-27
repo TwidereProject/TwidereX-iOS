@@ -85,6 +85,20 @@ extension APIService.CoreData.V2 {
                 following: nil,
                 followRequestSent: nil
             )
+            
+            // update tweet mentions
+            let mentionsRequest = TweetEntitiesMention.sortedFetchRequest
+            mentionsRequest.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [
+                TweetEntitiesMention.predicate(username: twitterUserProperty.username),
+                TweetEntitiesMention.notHasUser()
+            ])
+            do {
+                let mentsions = try managedObjectContext.fetch(mentionsRequest)
+                mentsions.forEach { mention in mention.update(user: twitterUser) }
+            } catch {
+                assertionFailure(error.localizedDescription)
+            }
+            
             os_signpost(.event, log: log, name: "update database - process entity: createOrMergeTwitterUser", signpostID: processEntityTaskSignpostID, "did insert new twitter user %{public}s: name %s", twitterUser.identifier.uuidString, twitterUserProperty.name)
             return (twitterUser, true)
         }

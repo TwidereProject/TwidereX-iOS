@@ -31,14 +31,57 @@ extension TweetEntitiesMention {
         identifier = UUID()
     }
     
+    @discardableResult
+    public static func insert(
+        into context: NSManagedObjectContext,
+        property: Property,
+        user: TwitterUser?
+    ) -> TweetEntitiesMention {
+        let mention: TweetEntitiesMention = context.insertObject()
+        
+        mention.start = property.start
+        mention.end = property.end
+        mention.username = property.username
+        
+        mention.user = user
+        
+        return mention
+    }
+    
+    public func update(user: TwitterUser?) {
+        if self.user != user {
+            self.user = user
+        }
+    }
+    
 }
 
 extension TweetEntitiesMention {
+    public struct Property {
+        public var start: NSNumber?
+        public var end: NSNumber?
+        public var username: String?
     
+        public init(start: Int? = nil, end: Int? = nil, username: String? = nil) {
+            self.start = start.flatMap { NSNumber(value: $0) }
+            self.end = end.flatMap { NSNumber(value: $0) }
+            self.username = username
+        }
+    }
 }
 
 extension TweetEntitiesMention: Managed {
     public static var defaultSortDescriptors: [NSSortDescriptor] {
         return [NSSortDescriptor(keyPath: \TweetEntitiesMention.identifier, ascending: false)]
+    }
+}
+
+extension TweetEntitiesMention {
+    public static func predicate(username: String) -> NSPredicate {
+        return NSPredicate(format: "%K == %@", #keyPath(TweetEntitiesMention.username), username)
+    }
+    
+    public static func notHasUser() -> NSPredicate {
+        return NSPredicate(format: "%K == nil", #keyPath(TweetEntitiesMention.user))
     }
 }

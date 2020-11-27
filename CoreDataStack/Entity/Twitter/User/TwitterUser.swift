@@ -256,6 +256,7 @@ extension TwitterUser: Managed {
 }
 
 extension TwitterUser {
+    
     public static func predicate(idStr: String) -> NSPredicate {
         return NSPredicate(format: "%K == %@", #keyPath(TwitterUser.id), idStr)
     }
@@ -263,4 +264,9 @@ extension TwitterUser {
     public static func predicate(idStrs: [String]) -> NSPredicate {
         return NSPredicate(format: "%K IN %@", #keyPath(TwitterUser.id), idStrs)
     }
+    
+    public static func predicate(username: String) -> NSPredicate {
+        return NSPredicate(format: "%K == %@", #keyPath(TwitterUser.username), username)
+    }
+    
 }

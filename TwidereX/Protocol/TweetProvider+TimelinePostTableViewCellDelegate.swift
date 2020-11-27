@@ -316,6 +316,27 @@ extension TimelinePostTableViewCellDelegate where Self: TweetProvider & MediaPre
 extension TimelinePostTableViewCellDelegate where Self: TweetProvider {
 
     func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, activeLabel: ActiveLabel, didTapMention mention: String) {
+        tweet(for: cell)
+            .sink { [weak self] tweet in
+                guard let self = self else { return }
+                guard let tweet = tweet else { return }
+                
+//                let managedObjectContext = self.context.managedObjectContext
+//                let request = TwitterUser.sortedFetchRequest
+//                //        request.predicate = TwitterUser.predicate(idStr: <#T##String#>)
+//                request.returnsObjectsAsFaults = false
+//                request.fetchLimit = 1
+                let profileViewModel = ProfileViewModel()
+                self.context.authenticationService.activeAuthenticationIndex
+                    .map { $0?.twitterAuthentication?.twitterUser }
+                    .assign(to: \.value, on: profileViewModel.currentTwitterUser)
+                    .store(in: &profileViewModel.disposeBag)
+                
+                DispatchQueue.main.async {
+                    self.coordinator.present(scene: .profile(viewModel: profileViewModel), from: self, transition: .show)
+                }
+            }
+            .store(in: &disposeBag)
         
     }
     

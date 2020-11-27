@@ -89,17 +89,38 @@ extension APIService.CoreData.V2 {
                 guard !result.isEmpty else { return nil }
                 return result
             }()
+            
             let entities: TweetEntities? = {
-                guard let urlEntities = info.tweet.entities?.urls else { return nil }
-                let properties = urlEntities.compactMap { urlEntity -> TweetEntitiesURL.Property? in
-                    let property = TweetEntitiesURL.Property(start: urlEntity.start, end: urlEntity.end, url: urlEntity.url, expandedURL: urlEntity.expandedURL, displayURL: urlEntity.displayURL, unwoundURL: urlEntity.unwoundURL, networkDate: networkDate)
-                    return property
-                }
-                let urls = properties.map { property in
-                    return TweetEntitiesURL.insert(into: managedObjectContext, property: property)
-                }
-                guard !urls.isEmpty else { return nil }
-                let entities = TweetEntities.insert(into: managedObjectContext, urls: urls)
+                let urls: [TweetEntitiesURL] = {
+                    let properties = info.tweet.entities
+                        .flatMap { TweetEntitiesURL.Property.properties(from: $0, networkDate: networkDate) } ?? []
+                    let urls: [TweetEntitiesURL] = properties.map { property in
+                        TweetEntitiesURL.insert(into: managedObjectContext, property: property)
+                    }
+                    return urls
+                }()
+                let mentions: [TweetEntitiesMention] = {
+                    let properties = info.tweet.entities
+                        .flatMap { TweetEntitiesMention.Property.properties(from: $0, networkDate: networkDate) } ?? []
+                    let mentions: [TweetEntitiesMention] = properties.map { property in
+                        let twitterUser: TwitterUser? = {
+                            guard let username = property.username else { return nil }
+                            let userRequest = TwitterUser.sortedFetchRequest
+                            userRequest.fetchLimit = 1
+                            userRequest.predicate = TwitterUser.predicate(username: username)
+                            do {
+                                return try managedObjectContext.fetch(userRequest).first
+                            } catch {
+                                assertionFailure(error.localizedDescription)
+                                return nil
+                            }
+                        }()
+                        return TweetEntitiesMention.insert(into: managedObjectContext, property: property, user: twitterUser)
+                    }
+                    return mentions
+                }()
+                guard !urls.isEmpty || !mentions.isEmpty else { return nil }
+                let entities = TweetEntities.insert(into: managedObjectContext, urls: urls, mentions: mentions)
                 return entities
             }()
             let metrics: TweetMetrics? = {
@@ -140,6 +161,27 @@ extension APIService.CoreData.V2 {
         guard networkDate > tweet.updatedAt else { return }
         // merge attributes
 //        tweet.update(place: entity.place)
+        
+        // update mentions
+        if let mentions = tweet.entities?.mentions {
+            for mention in mentions where mention.user == nil {
+                let managedObjectContext = tweet.managedObjectContext!
+                let twitterUser: TwitterUser? = {
+                    guard let username = mention.username else { return nil }
+                    let userRequest = TwitterUser.sortedFetchRequest
+                    userRequest.fetchLimit = 1
+                    userRequest.predicate = TwitterUser.predicate(username: username)
+                    do {
+                        return try managedObjectContext.fetch(userRequest).first
+                    } catch {
+                        assertionFailure(error.localizedDescription)
+                        return nil
+                    }
+                }()
+                mention.update(user: twitterUser)
+            }
+        }
+        
         tweet.setupMetricsIfNeeds()
         info.tweet.publicMetrics.flatMap { tweet.metrics?.update(likeCount: $0.likeCount) }
         info.tweet.publicMetrics.flatMap { tweet.metrics?.update(retweetCount: $0.retweetCount) }
