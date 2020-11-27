@@ -4,8 +4,8 @@
 
 ## Requirements
 
-- Xcode 11+
-- Swift 5.1+
+- Xcode 12.2+
+- Swift 5.3+
 
 
 ## Quick Start
