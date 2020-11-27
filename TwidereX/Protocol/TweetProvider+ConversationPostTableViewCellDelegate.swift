@@ -297,7 +297,7 @@ extension ConversationPostTableViewCellDelegate where Self: TweetProvider & Medi
 extension ConversationPostTableViewCellDelegate where Self: TweetProvider {
     
     func conversationPostTableViewCell(_ cell: ConversationPostTableViewCell, activeLabel: ActiveLabel, didTapMention mention: String) {
-        
+        conversationPostTableViewCell(cell, didTapMention: mention, isQuote: false)
     }
     
     func conversationPostTableViewCell(_ cell: ConversationPostTableViewCell, activeLabel: ActiveLabel, didTapHashtag hashtag: String) {
@@ -309,7 +309,7 @@ extension ConversationPostTableViewCellDelegate where Self: TweetProvider {
     }
     
     func conversationPostTableViewCell(_ cell: ConversationPostTableViewCell, quoteActiveLabel: ActiveLabel, didTapMention mention: String) {
-        
+        conversationPostTableViewCell(cell, didTapMention: mention, isQuote: true)
     }
     
     func conversationPostTableViewCell(_ cell: ConversationPostTableViewCell, quoteActiveLabel: ActiveLabel, didTapHashtag hashtag: String) {
@@ -318,6 +318,75 @@ extension ConversationPostTableViewCellDelegate where Self: TweetProvider {
     
     func conversationPostTableViewCell(_ cell: ConversationPostTableViewCell, quoteActiveLabel: ActiveLabel, didTapURL url: URL) {
         
+    }
+    
+    func conversationPostTableViewCell(_ cell: ConversationPostTableViewCell, didTapMention mention: String, isQuote: Bool) {
+        tweet(for: cell)
+            .sink { [weak self] tweet in
+                guard let self = self else { return }
+                let _tweet: Tweet? = isQuote ? (tweet?.retweet?.quote ?? tweet?.quote) : (tweet?.retweet ?? tweet)
+                guard let tweet = _tweet else { return }
+                
+                let profileViewModel: ProfileViewModel = {
+                    let targetUsername: String
+                    var targetUserID: TwitterUser.ID?
+                    var targetUser: TwitterUser?
+                    if let mentionEntity = (tweet.entities?.mentions ?? Set()).first(where: { $0.username == mention }) {
+                        targetUsername = mentionEntity.username ?? mention
+                        targetUserID = mentionEntity.userID
+                        targetUser = mentionEntity.user
+                    } else {
+                        targetUsername = mention
+                        targetUserID = nil
+                        targetUser = nil
+                    }
+                    
+                    if targetUser == nil {
+                        targetUser = {
+                            let userRequest = TwitterUser.sortedFetchRequest
+                            userRequest.fetchLimit = 1
+                            userRequest.predicate = {
+                                if let targetUserID = targetUserID {
+                                    return TwitterUser.predicate(idStr: targetUserID)
+                                } else {
+                                    return TwitterUser.predicate(username: targetUsername)
+                                }
+                            }()
+                            do {
+                                return try self.context.managedObjectContext.fetch(userRequest).first
+                            } catch {
+                                assertionFailure(error.localizedDescription)
+                                return nil
+                            }
+                        }()
+                    }
+                    
+                    if let targetUser = targetUser {
+                        let activeAuthenticationIndex = self.context.authenticationService.activeAuthenticationIndex.value
+                        let currentTwitterUser = activeAuthenticationIndex?.twitterAuthentication?.twitterUser
+                        if targetUser.id == currentTwitterUser?.id {
+                            return MeProfileViewModel(activeAuthenticationIndex: activeAuthenticationIndex)
+                        } else {
+                            return ProfileViewModel(twitterUser: targetUser)
+                        }
+                    } else {
+                        if let targetUserID = targetUserID {
+                            return ProfileViewModel(context: self.context, userID: targetUserID)
+                        } else {
+                            return ProfileViewModel(context: self.context, username: targetUsername)
+                        }
+                    }
+                }()
+                self.context.authenticationService.activeAuthenticationIndex
+                    .map { $0?.twitterAuthentication?.twitterUser }
+                    .assign(to: \.value, on: profileViewModel.currentTwitterUser)
+                    .store(in: &profileViewModel.disposeBag)
+                
+                DispatchQueue.main.async {
+                    self.coordinator.present(scene: .profile(viewModel: profileViewModel), from: self, transition: .show)
+                }
+            }
+            .store(in: &disposeBag)
     }
     
 }

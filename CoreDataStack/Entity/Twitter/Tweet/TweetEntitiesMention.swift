@@ -17,6 +17,7 @@ final public class TweetEntitiesMention: NSManagedObject {
     @NSManaged public private(set) var start: NSNumber?
     @NSManaged public private(set) var end: NSNumber?
     @NSManaged public private(set) var username: String?
+    @NSManaged public private(set) var userID: String?
     
     // one-to-one relationship
     @NSManaged public private(set) var entities: TweetEntities?
@@ -42,6 +43,7 @@ extension TweetEntitiesMention {
         mention.start = property.start
         mention.end = property.end
         mention.username = property.username
+        mention.userID = property.userID
         
         mention.user = user
         
@@ -67,11 +69,13 @@ extension TweetEntitiesMention {
         public var start: NSNumber?
         public var end: NSNumber?
         public var username: String?
+        public var userID: String?
     
-        public init(start: Int? = nil, end: Int? = nil, username: String? = nil) {
+        public init(start: Int?, end: Int?, username: String?, userID: String?) {
             self.start = start.flatMap { NSNumber(value: $0) }
             self.end = end.flatMap { NSNumber(value: $0) }
             self.username = username
+            self.userID = userID
         }
     }
 }

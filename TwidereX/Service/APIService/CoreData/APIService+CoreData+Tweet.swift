@@ -185,7 +185,7 @@ extension APIService.CoreData {
                     persistedMentsion.update(user: twitterUser)
                 } else {
                     guard let indices = userMension.indices, indices.count == 2 else { continue }
-                    let property = TweetEntitiesMention.Property(start: indices[0], end: indices[1], username: username)
+                    let property = TweetEntitiesMention.Property(start: indices[0], end: indices[1], username: username, userID: userMension.idStr)
                     let twitterUser: TwitterUser? = {
                         let userRequest = TwitterUser.sortedFetchRequest
                         userRequest.fetchLimit = 1

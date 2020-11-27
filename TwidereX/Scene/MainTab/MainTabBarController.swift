@@ -66,7 +66,12 @@ class MainTabBarController: UITabBarController {
                 let _viewController = ProfileViewController()
                 _viewController.context = context
                 _viewController.coordinator = coordinator
-                _viewController.viewModel = MeProfileViewModel(context: context)
+                let profileViewModel = MeProfileViewModel(activeAuthenticationIndex: context.authenticationService.activeAuthenticationIndex.value)
+                context.authenticationService.activeAuthenticationIndex
+                    .map { $0?.twitterAuthentication?.twitterUser }
+                    .assign(to: \.value, on: profileViewModel.currentTwitterUser)
+                    .store(in: &profileViewModel.disposeBag)
+                _viewController.viewModel = profileViewModel
                 viewController = _viewController
             }
             viewController.title = self.title

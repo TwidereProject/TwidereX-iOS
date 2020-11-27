@@ -18,6 +18,9 @@ extension APIService.CoreData.V2 {
         let tweet: Twitter.Entity.V2.Tweet
         let user: Twitter.Entity.V2.User
         let media: [Twitter.Entity.V2.Media]?
+        
+        // reverse reference
+        weak var dictContent: Twitter.Response.V2.DictContent?
     }
     
     static func createOrMergeTweet(
@@ -100,8 +103,9 @@ extension APIService.CoreData.V2 {
                     return urls
                 }()
                 let mentions: [TweetEntitiesMention] = {
+                    let users = info.dictContent.flatMap { Array($0.userDict.values) } ?? []
                     let properties = info.tweet.entities
-                        .flatMap { TweetEntitiesMention.Property.properties(from: $0, networkDate: networkDate) } ?? []
+                        .flatMap { TweetEntitiesMention.Property.properties(from: $0, users: users, networkDate: networkDate) } ?? []
                     let mentions: [TweetEntitiesMention] = properties.map { property in
                         let twitterUser: TwitterUser? = {
                             guard let username = property.username else { return nil }
@@ -167,6 +171,7 @@ extension APIService.CoreData.V2 {
         if let mentions = info.tweet.entities?.mentions, !mentions.isEmpty {
             let managedObjectContext = tweet.managedObjectContext!
             let persistedMentsions = tweet.entities?.mentions ?? Set()
+            let users = info.dictContent.flatMap { Array($0.userDict.values) } ?? []
             
             for mention in mentions {
                 let username = mention.username
@@ -186,7 +191,8 @@ extension APIService.CoreData.V2 {
                     }()
                     persistedMentsion.update(user: twitterUser)
                 } else {
-                    let property = TweetEntitiesMention.Property(start: mention.start, end: mention.end, username: username)
+                    let userID = users.first(where: { $0.username == username })?.id
+                    let property = TweetEntitiesMention.Property(start: mention.start, end: mention.end, username: username, userID: userID)
                     let twitterUser: TwitterUser? = {
                         let userRequest = TwitterUser.sortedFetchRequest
                         userRequest.fetchLimit = 1
