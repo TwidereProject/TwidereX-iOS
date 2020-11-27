@@ -161,22 +161,45 @@ extension APIService.CoreData {
         }
         
         // update mentions
-        if let mentions = tweet.entities?.mentions {
-            for mention in mentions where mention.user == nil {
-                let managedObjectContext = tweet.managedObjectContext!
-                let twitterUser: TwitterUser? = {
-                    guard let username = mention.username else { return nil }
-                    let userRequest = TwitterUser.sortedFetchRequest
-                    userRequest.fetchLimit = 1
-                    userRequest.predicate = TwitterUser.predicate(username: username)
-                    do {
-                        return try managedObjectContext.fetch(userRequest).first
-                    } catch {
-                        assertionFailure(error.localizedDescription)
-                        return nil
-                    }
-                }()
-                mention.update(user: twitterUser)
+        tweet.setupEntitiesIfNeeds()
+        if let userMentions = entity.entities.userMentions, !userMentions.isEmpty {
+            let managedObjectContext = tweet.managedObjectContext!
+            let persistedMentsions = tweet.entities?.mentions ?? Set()
+            
+            for userMension in userMentions {
+                guard let username = userMension.screenName else { continue }
+                if let persistedMentsion = persistedMentsions.first(where: { $0.username == username }) {
+                    guard persistedMentsion.user == nil else { continue }
+                    let twitterUser: TwitterUser? = {
+                        guard let username = persistedMentsion.username else { return nil }
+                        let userRequest = TwitterUser.sortedFetchRequest
+                        userRequest.fetchLimit = 1
+                        userRequest.predicate = TwitterUser.predicate(username: username)
+                        do {
+                            return try managedObjectContext.fetch(userRequest).first
+                        } catch {
+                            assertionFailure(error.localizedDescription)
+                            return nil
+                        }
+                    }()
+                    persistedMentsion.update(user: twitterUser)
+                } else {
+                    guard let indices = userMension.indices, indices.count == 2 else { continue }
+                    let property = TweetEntitiesMention.Property(start: indices[0], end: indices[1], username: username)
+                    let twitterUser: TwitterUser? = {
+                        let userRequest = TwitterUser.sortedFetchRequest
+                        userRequest.fetchLimit = 1
+                        userRequest.predicate = TwitterUser.predicate(username: username)
+                        do {
+                            return try managedObjectContext.fetch(userRequest).first
+                        } catch {
+                            assertionFailure(error.localizedDescription)
+                            return nil
+                        }
+                    }()
+                    let persistMention = TweetEntitiesMention.insert(into: managedObjectContext, property: property, user: twitterUser)
+                    persistMention.update(entities: tweet.entities)
+                }
             }
         }
         

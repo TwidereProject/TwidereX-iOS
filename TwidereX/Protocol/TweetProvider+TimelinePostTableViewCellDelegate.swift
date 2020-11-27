@@ -319,14 +319,17 @@ extension TimelinePostTableViewCellDelegate where Self: TweetProvider {
         tweet(for: cell)
             .sink { [weak self] tweet in
                 guard let self = self else { return }
-                guard let tweet = tweet else { return }
-                
-//                let managedObjectContext = self.context.managedObjectContext
-//                let request = TwitterUser.sortedFetchRequest
-//                //        request.predicate = TwitterUser.predicate(idStr: <#T##String#>)
-//                request.returnsObjectsAsFaults = false
-//                request.fetchLimit = 1
-                let profileViewModel = ProfileViewModel()
+                guard let tweet = (tweet?.retweet ?? tweet) else { return }
+
+                let profileViewModel: ProfileViewModel = {
+                    let mentionEntity = (tweet.entities?.mentions ?? Set()).first(where: { $0.username == mention })
+                    let twitterUser = mentionEntity?.user
+                    if let twitterUser = twitterUser {
+                        return ProfileViewModel(twitterUser: twitterUser)
+                    } else {
+                        return ProfileViewModel()
+                    }
+                }()
                 self.context.authenticationService.activeAuthenticationIndex
                     .map { $0?.twitterAuthentication?.twitterUser }
                     .assign(to: \.value, on: profileViewModel.currentTwitterUser)

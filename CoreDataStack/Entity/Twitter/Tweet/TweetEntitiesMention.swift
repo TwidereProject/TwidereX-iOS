@@ -48,6 +48,12 @@ extension TweetEntitiesMention {
         return mention
     }
     
+    public func update(entities: TweetEntities?) {
+        if self.entities != entities {
+            self.entities = entities
+        }
+    }
+    
     public func update(user: TwitterUser?) {
         if self.user != user {
             self.user = user
