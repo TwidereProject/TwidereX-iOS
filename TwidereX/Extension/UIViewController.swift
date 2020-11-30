@@ -32,7 +32,7 @@ extension UIViewController {
         // UIPageController
         if let pageViewController = self as? UIPageViewController,
             pageViewController.viewControllers?.count == 1 {
-            return pageViewController.topMost
+            return pageViewController.viewControllers?.first?.topMost ?? self
         }
         
         // child view controller
