@@ -6,6 +6,7 @@
 //  Copyright © 2020 Dimension. All rights reserved.
 //
 
+import os.log
 import UIKit
 import Combine
 import CoreData
@@ -26,6 +27,8 @@ class AppContext: ObservableObject {
     
     let documentStore: DocumentStore
     private var documentStoreSubscription: AnyCancellable!
+    
+    let photoLibraryService = PhotoLibraryService()
 
     let overrideTraitCollection = CurrentValueSubject<UITraitCollection?, Never>(nil)
 

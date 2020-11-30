@@ -143,6 +143,19 @@ extension UserLikeTimelineViewController: UITableViewDelegate {
         let frame = cell.frame
         viewModel.cellFrameCache.setObject(NSValue(cgRect: frame), forKey: NSNumber(value: key))
     }
+    
+    func tableView(_ tableView: UITableView, contextMenuConfigurationForRowAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
+        handleTableView(tableView, contextMenuConfigurationForRowAt: indexPath, point: point)
+    }
+    
+    func tableView(_ tableView: UITableView, previewForHighlightingContextMenuWithConfiguration configuration: UIContextMenuConfiguration) -> UITargetedPreview? {
+        handleTableView(tableView, previewForHighlightingContextMenuWithConfiguration: configuration)
+    }
+    
+    func tableView(_ tableView: UITableView, previewForDismissingContextMenuWithConfiguration configuration: UIContextMenuConfiguration) -> UITargetedPreview? {
+        handleTableView(tableView, previewForDismissingContextMenuWithConfiguration: configuration)
+    }
+    
 }
 
 // MARK: - TimelinePostTableViewCellDelegate

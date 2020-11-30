@@ -8,8 +8,13 @@
 
 import func AVFoundation.AVMakeRect
 import UIKit
+import Combine
 
 final class ContextMenuImagePreviewViewController: UIViewController {
+    
+    var disposeBag = Set<AnyCancellable>()
+    
+    var viewModel: ContextMenuImagePreviewViewModel!
     
     let imageView: UIImageView = {
         let imageView = UIImageView()
@@ -18,8 +23,6 @@ final class ContextMenuImagePreviewViewController: UIViewController {
         return imageView
     }()
     
-    // input
-    var image: UIImage!
 }
 
 extension ContextMenuImagePreviewViewController {
@@ -36,9 +39,24 @@ extension ContextMenuImagePreviewViewController {
             imageView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
         ])
         
-        imageView.image = image
-        let frame = AVMakeRect(aspectRatio: image.size, insideRect: view.bounds)
+        imageView.image = viewModel.thumbnail
+        
+        let frame = AVMakeRect(aspectRatio: viewModel.aspectRatio, insideRect: view.bounds)
         preferredContentSize = frame.size
+        
+        viewModel.url
+            .sink { [weak self] url in
+                guard let self = self else { return }
+                guard let url = url else { return }
+                self.imageView.af.setImage(
+                    withURL: url,
+                    placeholderImage: self.viewModel.thumbnail,
+                    imageTransition: .crossDissolve(0.2),
+                    runImageTransitionIfCached: true,
+                    completion: nil
+                )
+            }
+            .store(in: &disposeBag)
     }
     
 }

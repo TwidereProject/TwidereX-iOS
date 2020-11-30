@@ -638,7 +638,8 @@ extension ComposeTweetViewController: UICollectionViewDelegate {
         case .image(let image):
             return UIContextMenuConfiguration(identifier: nil) { () -> UIViewController? in
                 let previewProvider = ContextMenuImagePreviewViewController()
-                previewProvider.image = image
+                let contextMenuImagePreviewViewModel = ContextMenuImagePreviewViewModel(aspectRatio: image.size, thumbnail: image)
+                previewProvider.viewModel = contextMenuImagePreviewViewModel
                 return previewProvider
             } actionProvider: { _ -> UIMenu? in
                 return UIMenu(

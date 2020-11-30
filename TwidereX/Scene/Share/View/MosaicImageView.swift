@@ -15,8 +15,9 @@ protocol MosaicImageViewDelegate: class {
 
 final class MosaicImageView: UIView {
 
+    static let cornerRadius: CGFloat = 8
+
     weak var delegate: MosaicImageViewDelegate?
-    var cornerRadius: CGFloat = 8
     
     let container = UIStackView()
     var imageViews = [UIImageView]() {
@@ -30,7 +31,6 @@ final class MosaicImageView: UIView {
         }
     }
 
-    //private let photoTapGestureRecognizer = UITapGestureRecognizer.singleTapGestureRecognizer
     private var containerHeightLayoutConstraint: NSLayoutConstraint!
     
     override init(frame: CGRect) {
@@ -61,10 +61,6 @@ extension MosaicImageView {
         
         container.axis = .horizontal
         container.distribution = .fillEqually
-        container.layer.masksToBounds = true
-        
-//        photoTapGestureRecognizer.addTarget(self, action: #selector(MosaicImageView.photoTapGestureRecognizerHandler(_:)))
-//        container.addGestureRecognizer(photoTapGestureRecognizer)
     }
     
 }
@@ -82,9 +78,6 @@ extension MosaicImageView {
         imageViews = []
         
         container.spacing = 1
-        
-        layer.masksToBounds = true
-        layer.cornerRadius = 0
     }
     
     func setupImageView(aspectRatio: CGSize, maxSize: CGSize) -> UIImageView {
@@ -102,7 +95,7 @@ extension MosaicImageView {
         let imageView = UIImageView()
         imageViews.append(imageView)
         imageView.layer.masksToBounds = true
-        imageView.layer.cornerRadius = cornerRadius
+        imageView.layer.cornerRadius = MosaicImageView.cornerRadius
         imageView.contentMode = .scaleAspectFill
         
         imageView.translatesAutoresizingMaskIntoConstraints = false
@@ -145,7 +138,7 @@ extension MosaicImageView {
         self.imageViews.append(contentsOf: imageViews)
         imageViews.forEach { imageView in
             imageView.layer.masksToBounds = true
-            imageView.layer.cornerRadius = cornerRadius
+            imageView.layer.cornerRadius = MosaicImageView.cornerRadius
             imageView.contentMode = .scaleAspectFill
         }
         if count == 2 {
