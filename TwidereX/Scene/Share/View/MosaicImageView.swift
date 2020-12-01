@@ -9,6 +9,10 @@ import os.log
 import func AVFoundation.AVMakeRect
 import UIKit
 
+protocol MosaicImageViewPresentable: class {
+    var mosaicImageView: MosaicImageView { get }
+}
+
 protocol MosaicImageViewDelegate: class {
     func mosaicImageView(_ mosaicImageView: MosaicImageView, didTapImageView imageView: UIImageView, atIndex index: Int)
 }

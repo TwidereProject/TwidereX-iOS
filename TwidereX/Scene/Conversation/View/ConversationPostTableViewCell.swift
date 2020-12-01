@@ -189,6 +189,13 @@ extension ConversationPostTableViewCell: MosaicImageViewDelegate {
     }
 }
 
+extension ConversationPostTableViewCell: DisposeBagCollectable { }
+extension ConversationPostTableViewCell: MosaicImageViewPresentable {
+    var mosaicImageView: MosaicImageView {
+        return conversationPostView.mosaicImageView
+    }
+}
+
 #if DEBUG
 import SwiftUI
 

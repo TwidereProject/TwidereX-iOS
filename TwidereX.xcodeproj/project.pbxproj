@@ -205,6 +205,8 @@
 		DBC8E0042574B37C00401E20 /* ContextMenuImagePreviewViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBC8E0032574B37C00401E20 /* ContextMenuImagePreviewViewModel.swift */; };
 		DBC8E0092574BE3900401E20 /* TimelineTableViewCellContextMenuConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBC8E0082574BE3900401E20 /* TimelineTableViewCellContextMenuConfiguration.swift */; };
 		DBC8E03D2574F7DB00401E20 /* PhotoLibraryService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBC8E03C2574F7DB00401E20 /* PhotoLibraryService.swift */; };
+		DBC8E04B2576337F00401E20 /* DisposeBagCollectable.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBC8E04A2576337F00401E20 /* DisposeBagCollectable.swift */; };
+		DBC8E050257653E100401E20 /* SavePhotoActivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBC8E04F257653E100401E20 /* SavePhotoActivity.swift */; };
 		DBCB402E255B670C00DD8D8F /* AccountListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBCB402D255B670C00DD8D8F /* AccountListViewController.swift */; };
 		DBCB4047255B683B00DD8D8F /* AccountListTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBCB4046255B683B00DD8D8F /* AccountListTableViewCell.swift */; };
 		DBCB4053255B6EB100DD8D8F /* AccountListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBCB4052255B6EB100DD8D8F /* AccountListViewModel.swift */; };
@@ -574,6 +576,8 @@
 		DBC8E0032574B37C00401E20 /* ContextMenuImagePreviewViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContextMenuImagePreviewViewModel.swift; sourceTree = "<group>"; };
 		DBC8E0082574BE3900401E20 /* TimelineTableViewCellContextMenuConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = TimelineTableViewCellContextMenuConfiguration.swift; path = TwidereX/Scene/Share/ViewController/ContextMenu/TimelineTableViewCellContextMenuConfiguration.swift; sourceTree = SOURCE_ROOT; };
 		DBC8E03C2574F7DB00401E20 /* PhotoLibraryService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoLibraryService.swift; sourceTree = "<group>"; };
+		DBC8E04A2576337F00401E20 /* DisposeBagCollectable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisposeBagCollectable.swift; sourceTree = "<group>"; };
+		DBC8E04F257653E100401E20 /* SavePhotoActivity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SavePhotoActivity.swift; sourceTree = "<group>"; };
 		DBCB402D255B670C00DD8D8F /* AccountListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountListViewController.swift; sourceTree = "<group>"; };
 		DBCB4046255B683B00DD8D8F /* AccountListTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountListTableViewCell.swift; sourceTree = "<group>"; };
 		DBCB4052255B6EB100DD8D8F /* AccountListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountListViewModel.swift; sourceTree = "<group>"; };
@@ -1297,6 +1301,7 @@
 			isa = PBXGroup;
 			children = (
 				DBCB4089255D8C2B00DD8D8F /* SafariActivity.swift */,
+				DBC8E04F257653E100401E20 /* SavePhotoActivity.swift */,
 			);
 			path = Activity;
 			sourceTree = "<group>";
@@ -1715,6 +1720,7 @@
 				DBBABA0B255E550D00C1B3D9 /* TweetProvider+UICollectionViewDelegate.swift */,
 				DBBABA1D255E805F00C1B3D9 /* TweetProvider+StatusActionToolbarDelegate.swift */,
 				DB3B5F792562916400C46819 /* TweetProvider+MediaInfoDescriptionViewDelegate.swift */,
+				DBC8E04A2576337F00401E20 /* DisposeBagCollectable.swift */,
 			);
 			path = Protocol;
 			sourceTree = "<group>";
@@ -2315,6 +2321,7 @@
 				DBA5FA192553DCBC00D2E98E /* TransitioningMath.swift in Sources */,
 				DBF69EAC25496C9F00E2A915 /* SearchDetailViewModel.swift in Sources */,
 				DB915470255142A500613473 /* MentionTimelineViewModel+LoadLatestState.swift in Sources */,
+				DBC8E04B2576337F00401E20 /* DisposeBagCollectable.swift in Sources */,
 				DB2924C22546A77B003899A7 /* TwitterMediaService.swift in Sources */,
 				DB8AC1852542BD8700E636BE /* APIService+Tweet.swift in Sources */,
 				DB41C0DB2513368800521562 /* TimelinePostActionToolbar.swift in Sources */,
@@ -2429,6 +2436,7 @@
 				DBBABA16255E786000C1B3D9 /* TweetProvider+ConversationPostTableViewCellDelegate.swift in Sources */,
 				DB9EC532255A87A4005403AA /* SettingListView.swift in Sources */,
 				DB434883251DF18C005B599F /* ProfileBannerInfoActionView.swift in Sources */,
+				DBC8E050257653E100401E20 /* SavePhotoActivity.swift in Sources */,
 				DBA397B4255513AD00A95662 /* MediaPreviewImageView.swift in Sources */,
 				DB91540B254FE4B200613473 /* APIService+Friendship.swift in Sources */,
 				DB747FF4251C47BD000C4BD7 /* UITableView.swift in Sources */,

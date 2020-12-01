@@ -154,6 +154,10 @@ extension TweetConversationViewController: UITableViewDelegate {
         handleTableView(tableView, previewForDismissingContextMenuWithConfiguration: configuration)
     }
     
+    func tableView(_ tableView: UITableView, willPerformPreviewActionForMenuWith configuration: UIContextMenuConfiguration, animator: UIContextMenuInteractionCommitAnimating) {
+        handleTableView(tableView, willPerformPreviewActionForMenuWith: configuration, animator: animator)
+    }
+    
 }
 
 // MARK: - ConversationPostTableViewCellDelegate
