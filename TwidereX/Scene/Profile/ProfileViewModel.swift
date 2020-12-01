@@ -134,7 +134,7 @@ class ProfileViewModel: NSObject {
             .store(in: &disposeBag)
     }
     
-    init(context: AppContext, username: TwitterUser.ID) {
+    init(context: AppContext, username: String) {
         self.twitterUser = CurrentValueSubject(nil)
         self.userID = CurrentValueSubject(nil)
         self.bannerImageURL = CurrentValueSubject(nil)

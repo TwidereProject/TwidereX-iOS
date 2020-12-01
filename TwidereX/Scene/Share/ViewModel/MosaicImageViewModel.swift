@@ -15,8 +15,9 @@ struct MosaicImageViewModel {
     
     init(twitterMedia media: [TwitterMedia]) {
         var metas: [MosaicMeta] = []
+        let mediaSizeKind: TwitterMedia.SizeKind = UIDevice.current.userInterfaceIdiom == .phone ? .small : .medium
         for element in media {
-            guard let (url, size) = element.photoURL(sizeKind: .small) else { continue }
+            guard let (url, size) = element.photoURL(sizeKind: mediaSizeKind) else { continue }
             let meta = MosaicMeta(url: url, size: size)
             metas.append(meta)
         }

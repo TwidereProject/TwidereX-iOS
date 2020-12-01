@@ -48,6 +48,17 @@ extension APIService {
                 .eraseToAnyPublisher()
             }
             .switchToLatest()
+            .handleEvents(receiveCompletion: { [weak self] completion in
+                guard let self = self else { return }
+                switch completion {
+                case .failure(let error):
+                    if case let Twitter.API.APIError.response(code, _) = error, code == 326 {
+                        self.error.value = APIService.APIError.accountTemporarilyLocked
+                    }
+                case .finished:
+                    break
+                }
+            })
             .eraseToAnyPublisher()
     }
     

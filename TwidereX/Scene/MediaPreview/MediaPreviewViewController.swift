@@ -299,7 +299,32 @@ extension MediaPreviewViewController: PageboyViewControllerDelegate {
 }
 
 // MARK: - StatusActionToolbarDelegate
-extension MediaPreviewViewController: StatusActionToolbarDelegate { }
+extension MediaPreviewViewController: StatusActionToolbarDelegate {
+    func statusActionToolbar(_ toolbar: StatusActionToolbar, shareButtonDidPressed sender: UIButton) {
+        let currentIndex = pagingViewConttroller.currentIndex
+        tweet()
+            .sink { [weak self] tweet in
+                guard let tweet = tweet else { return }
+                guard let self = self else { return }
+                var applicationActivities: [UIActivity] = [
+                    SafariActivity(sceneCoordinator: self.coordinator)
+                ]
+                let media = Array(tweet.media ?? Set()).sorted(by: { $0.index.compare($1.index) == .orderedAscending })
+                if let currentIndex = currentIndex, currentIndex < media.count,
+                   let urlString = media[currentIndex].url, let url = URL(string: urlString) {
+                    applicationActivities.append(SavePhotoActivity(context: self.context, url: url))
+                }
+                
+                let activityViewController = UIActivityViewController(
+                    activityItems: tweet.activityItems,
+                    applicationActivities: applicationActivities
+                )
+                activityViewController.popoverPresentationController?.sourceView = sender
+                self.present(activityViewController, animated: true, completion: nil)
+            }
+            .store(in: &disposeBag)
+    }
+}
 
 // MARK: - MediaPreviewingViewController
 extension MediaPreviewViewController: MediaPreviewingViewController {

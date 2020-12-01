@@ -243,6 +243,13 @@ extension TimelinePostTableViewCell: MosaicImageViewDelegate {
     }
 }
 
+extension TimelinePostTableViewCell: DisposeBagCollectable { }
+extension TimelinePostTableViewCell: MosaicImageViewPresentable {
+    var mosaicImageView: MosaicImageView {
+        return timelinePostView.mosaicImageView
+    }
+}
+
 #if DEBUG
 import SwiftUI
 
