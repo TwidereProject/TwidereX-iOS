@@ -50,9 +50,12 @@ extension AboutViewController {
 //                    self.definesPresentationContext = true
                     self.coordinator.present(scene: .safari(url: url), from: nil, transition: .safariPresent(animated: true, completion: nil))
                 case .twitter:
-                    let url = URL(string: "https://twitter.com/TwidereProject")!
-//                    self.definesPresentationContext = true
-                    self.coordinator.present(scene: .safari(url: url), from: self, transition: .safariPresent(animated: true, completion: nil))
+                    let profileViewModel = ProfileViewModel(context: self.context, username: "TwidereProject")
+                    self.context.authenticationService.activeAuthenticationIndex
+                        .map { $0?.twitterAuthentication?.twitterUser }
+                        .assign(to: \.value, on: profileViewModel.currentTwitterUser)
+                        .store(in: &profileViewModel.disposeBag)
+                    self.coordinator.present(scene: .profile(viewModel: profileViewModel), from: self, transition: .show)
                 }
             }
             .store(in: &disposeBag)
