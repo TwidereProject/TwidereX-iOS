@@ -43,7 +43,7 @@ extension FollowActionButton {
         layer.borderWidth = 1
         layer.borderColor = Asset.Colors.hightLight.color.cgColor
         titleLabel?.font = .systemFont(ofSize: 14, weight: .medium)
-        setTitle("Follow", for: .normal)
+        setTitle(L10n.Common.Controls.Friendship.Actions.follow, for: .normal)
         setTitleColor(Asset.Colors.hightLight.color, for: .normal)
         setTitleColor(Asset.Colors.hightLight.color.withAlphaComponent(0.5), for: .highlighted)
     }
@@ -70,17 +70,17 @@ extension FollowActionButton {
         let borderWidth: CGFloat
         switch style {
         case .follow:
-            title = "Follow"
+            title = L10n.Common.Controls.Friendship.Actions.follow
             (titleColor, titleHighlightColor) = (Asset.Colors.hightLight.color, Asset.Colors.hightLight.color.withAlphaComponent(0.5))
             (backgroundImage, backgroundHighlightImage) = (nil, nil)
             borderWidth = 1
         case .pending:
-            title = "Pending"
+            title = L10n.Common.Controls.Friendship.Actions.pending
             (titleColor, titleHighlightColor) = (Asset.Colors.hightLight.color, Asset.Colors.hightLight.color.withAlphaComponent(0.5))
             (backgroundImage, backgroundHighlightImage) = (nil, nil)
             borderWidth = 1
         case .following:
-            title = "Following"
+            title = L10n.Common.Controls.Friendship.Actions.following
             (titleColor, titleHighlightColor) = (.white, .white)
             (backgroundImage, backgroundHighlightImage) = (UIImage.placeholder(color: Asset.Colors.hightLight.color), UIImage.placeholder(color: Asset.Colors.hightLight.color.withAlphaComponent(0.5)))
             borderWidth = 1

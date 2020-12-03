@@ -50,7 +50,7 @@ final class HomeTimelineViewController: UIViewController, NeedsDependency, Drawe
         
         let composeItem: FloatyItem = {
             let item = FloatyItem()
-            item.title = "Compose"
+            item.title = L10n.Scene.Compose.Title.compose
             item.handler = { [weak self] item in
                 guard let self = self else { return }
                 self.composeFloatyButtonPressed(item)

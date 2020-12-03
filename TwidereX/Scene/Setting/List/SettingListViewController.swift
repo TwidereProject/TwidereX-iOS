@@ -25,7 +25,7 @@ extension SettingListViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        title = "Settings"
+        title = L10n.Scene.Settings.title
         
         let hostingViewController = UIHostingController(rootView: settingListView.environmentObject(context))
         addChild(hostingViewController)

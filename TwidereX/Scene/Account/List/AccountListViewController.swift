@@ -13,6 +13,10 @@ import Combine
 import CoreDataStack
 import TwitterAPI
 
+protocol AccountListViewControllerDelegate: class {
+    func signoutTwitterUser(id: TwitterUser.ID)
+}
+
 final class AccountListViewController: UIViewController, NeedsDependency {
     
     weak var context: AppContext! { willSet { precondition(!isViewLoaded) } }
@@ -21,7 +25,7 @@ final class AccountListViewController: UIViewController, NeedsDependency {
     var disposeBag = Set<AnyCancellable>()
     var viewModel: AccountListViewModel!
     
-    let addBarButtonItem = UIBarButtonItem(title: "Add", style: .done, target: self, action: #selector(AccountListViewController.addBarButtonItemPressed(_:)))
+    let addBarButtonItem = UIBarButtonItem(title: L10n.Common.Controls.Actions.add, style: .done, target: self, action: #selector(AccountListViewController.addBarButtonItemPressed(_:)))
     let activityIndicatorBarButtonItem: UIBarButtonItem = {
         let activityIndicatorView = UIActivityIndicatorView(style: .medium)
         let barButtonItem = UIBarButtonItem(customView: activityIndicatorView)
@@ -46,9 +50,9 @@ extension AccountListViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        title = "Accounts"
+        title = L10n.Scene.ManageAccounts.title
         view.backgroundColor = .systemBackground
-        navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Close", style: .plain, target: self, action: #selector(AccountListViewController.closeBarButtonItemPressed(_:)))
+        navigationItem.leftBarButtonItem = UIBarButtonItem(title: L10n.Common.Controls.Actions.cancel, style: .plain, target: self, action: #selector(AccountListViewController.closeBarButtonItemPressed(_:)))
         navigationItem.rightBarButtonItem = addBarButtonItem
         
         tableView.translatesAutoresizingMaskIntoConstraints = false
@@ -62,6 +66,7 @@ extension AccountListViewController {
         
         tableView.delegate = self
         viewModel.accountListTableViewCellDelegate = self
+        viewModel.accountListViewControllerDelegate = self
         viewModel.setupDiffableDataSource(for: tableView)
         
         addBarButtonItem.target = self
@@ -202,11 +207,11 @@ extension AccountListViewController: AccountListTableViewCellDelegate {
          
             DispatchQueue.main.async { [weak self] in
                 let alertController = UIAlertController(title: title, message: nil, preferredStyle: .actionSheet)
-                let signOutAction = UIAlertAction(title: "Sign Out", style: .destructive) { [weak self] _ in
+                let signOutAction = UIAlertAction(title: L10n.Scene.ManageAccounts.deleteAccount.localizedCapitalized, style: .destructive) { [weak self] _ in
                     guard let self = self else { return }
                     self.signoutTwitterUser(id: twitterUser.id)
                 }
-                let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+                let cancelAction = UIAlertAction(title: L10n.Common.Controls.Actions.cancel, style: .cancel, handler: nil)
                 alertController.addAction(signOutAction)
                 alertController.addAction(cancelAction)
                 guard let self = self else { return }
@@ -216,7 +221,12 @@ extension AccountListViewController: AccountListTableViewCellDelegate {
         }
     }
     
-    private func signoutTwitterUser(id: TwitterUser.ID) {
+}
+
+// MARK: - AccountListViewControllerDelegate
+extension AccountListViewController: AccountListViewControllerDelegate {
+    
+    func signoutTwitterUser(id: TwitterUser.ID) {
         let currentAccountCount = viewModel.diffableDataSource.snapshot().itemIdentifiers.count
         context.authenticationService.signOutTwitterUser(id: id)
             .receive(on: DispatchQueue.main)
@@ -224,7 +234,7 @@ extension AccountListViewController: AccountListTableViewCellDelegate {
                 guard let self = self else { return }
                 switch result {
                 case .failure(let error):
-                    break
+                    assertionFailure(error.localizedDescription)
                 case .success(let isSignOut):
                     guard isSignOut else { return }
                     self.dismiss(animated: true) {

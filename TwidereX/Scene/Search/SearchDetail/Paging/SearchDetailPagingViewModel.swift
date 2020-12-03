@@ -28,9 +28,9 @@ final class SearchDetailPagingViewModel: NSObject {
     
     let barItems: [TMBarItemable] = {
         let items = [
-            TMBarItem(title: "Tweets"),
-            TMBarItem(title: "Media"),
-            TMBarItem(title: "Users"),
+            TMBarItem(title: L10n.Scene.Search.Tabs.tweets),
+            TMBarItem(title: L10n.Scene.Search.Tabs.media),
+            TMBarItem(title: L10n.Scene.Search.Tabs.users),
         ]
         return items
     }()

@@ -135,11 +135,11 @@ extension SearchUserViewController: UserBriefInfoTableViewCellDelegate {
             let name = twitterUser.name.trimmingCharacters(in: .whitespacesAndNewlines)
             let message = isPending ? "Cancel following request for \(name)?" : "Unfollow user \(name)?"
             let alertController = UIAlertController(title: nil, message: message, preferredStyle: .actionSheet)
-            let confirmAction = UIAlertAction(title: "Confirm", style: .destructive) { [weak self] _ in
+            let confirmAction = UIAlertAction(title: L10n.Common.Controls.Actions.confirm, style: .destructive) { [weak self] _ in
                 guard let self = self else { return }
                 self.toggleFollowStatue(for: item, twitterAuthenticationBox: twitterAuthenticationBox)
             }
-            let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+            let cancelAction = UIAlertAction(title: L10n.Common.Controls.Actions.cancel, style: .cancel, handler: nil)
             alertController.addAction(confirmAction)
             alertController.addAction(cancelAction)
             alertController.popoverPresentationController?.sourceView = cell

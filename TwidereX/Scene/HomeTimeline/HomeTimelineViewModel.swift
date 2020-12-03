@@ -173,7 +173,7 @@ extension HomeTimelineViewModel {
         // set retweet display
         cell.timelinePostViewTopLayoutConstraint.constant = tweet.retweet == nil ? TimelinePostTableViewCell.verticalMargin : TimelinePostTableViewCell.verticalMarginAlt
         cell.timelinePostView.retweetContainerStackView.isHidden = tweet.retweet == nil
-        cell.timelinePostView.retweetInfoLabel.text = tweet.author.name + " Retweeted"
+        cell.timelinePostView.retweetInfoLabel.text = L10n.Common.Controls.Status.userRetweeted(tweet.author.name)
 
         // set avatar
         if let avatarImageURL = (tweet.retweet?.author ?? tweet.author).avatarImageURL() {

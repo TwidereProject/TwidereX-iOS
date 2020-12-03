@@ -17,6 +17,7 @@ final class AccountListViewModel: NSObject {
     // input
     let context: AppContext
     weak var accountListTableViewCellDelegate: AccountListTableViewCellDelegate?
+    weak var accountListViewControllerDelegate: AccountListViewControllerDelegate?
     
     // output
     var diffableDataSource: UITableViewDiffableDataSource<AccountListSection, Item>!

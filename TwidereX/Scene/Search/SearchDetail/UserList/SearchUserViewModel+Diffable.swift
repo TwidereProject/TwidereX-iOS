@@ -65,7 +65,7 @@ extension SearchUserViewModel {
         
         // set detail
         let followersCount = twitterUser.metrics?.followersCount.flatMap { "\($0)" } ?? "-"
-        cell.userBriefInfoView.detailLabel.text = "Followers: \(followersCount)"
+        cell.userBriefInfoView.detailLabel.text = "\(L10n.Common.Controls.Friendship.followers.capitalized): \(followersCount)"
         
         
         if let requestTwitterUserID = requestTwitterUserID {

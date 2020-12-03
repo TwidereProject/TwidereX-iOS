@@ -48,7 +48,7 @@ final class MentionTimelineViewController: UIViewController, NeedsDependency, Dr
 
         let composeItem: FloatyItem = {
             let item = FloatyItem()
-            item.title = "Compose"
+            item.title = L10n.Scene.Compose.Title.compose
             item.handler = self.composeFloatyButtonPressed
             return item
         }()

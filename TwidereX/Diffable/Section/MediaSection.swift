@@ -23,7 +23,7 @@ extension MediaSection {
     ) -> UICollectionViewDiffableDataSource<MediaSection, Item> {
         UICollectionViewDiffableDataSource(collectionView: collectionView) { collectionView, indexPath, item -> UICollectionViewCell? in
             switch item {
-            case .photoTweet(let objectID, let attribute):
+            case .photoTweet(let objectID, _):
                 let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: SearchMediaCollectionViewCell.self), for: indexPath) as! SearchMediaCollectionViewCell
                 managedObjectContext.performAndWait {
                     let tweet = managedObjectContext.object(with: objectID) as! Tweet

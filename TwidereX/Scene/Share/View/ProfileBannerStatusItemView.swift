@@ -22,7 +22,7 @@ final class ProfileBannerStatusItemView: UIView {
         let label = UILabel()
         label.font = .preferredFont(forTextStyle: .body)
         label.textColor = .secondaryLabel
-        label.text = "Following"
+        label.text = L10n.Common.Controls.ProfileDashboard.following
         label.textAlignment = .center
         return label
     }()

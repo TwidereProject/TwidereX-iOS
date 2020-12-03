@@ -19,13 +19,13 @@ final class DisplayPreferenceViewModel: NSObject {
     
     // output
     let sections: [Section] = [
-        Section(header: "Preview", settings: [.preview]),
-        Section(header: "Text", settings: [
+        Section(header: L10n.Scene.Settings.Display.SectionHeader.preview, settings: [.preview]),
+        Section(header: L10n.Scene.Settings.Display.SectionHeader.text, settings: [
             .useTheSystemFontSizeSwitch,
             .fontSizeSlider,
         ]),
-        Section(header: "Date Format", settings: [.useTheSystemFontSizeSwitch]),
-        Section(header: "Media", settings: [.useTheSystemFontSizeSwitch]),
+        Section(header: L10n.Scene.Settings.Display.SectionHeader.dateFormat, settings: [.useTheSystemFontSizeSwitch]),
+        Section(header: L10n.Scene.Settings.Display.SectionHeader.media, settings: [.useTheSystemFontSizeSwitch]),
     ]
     let fontSizeSlideTableViewCell = SlideTableViewCell()
     
@@ -86,7 +86,7 @@ extension DisplayPreferenceViewModel: UITableViewDataSource {
             cell = _cell
         case .useTheSystemFontSizeSwitch:
             let _cell = tableView.dequeueReusableCell(withIdentifier: String(describing: SwitchTableViewCell.self), for: indexPath) as! SwitchTableViewCell
-            _cell.textLabel?.text = "Use the system font size"
+            _cell.textLabel?.text = L10n.Scene.Settings.Display.Text.useTheSystemFontSize
             UserDefaults.shared.publisher(for: \.useTheSystemFontSize)
                 .receive(on: DispatchQueue.main)
                 .sink(receiveValue: { useTheSystemFontSize in
@@ -126,7 +126,7 @@ extension DisplayPreferenceViewModel {
         cell.timelinePostView.usernameLabel.text = "@TwidereProject"
         cell.timelinePostView.lockImageView.isHidden = true
         cell.timelinePostView.dateLabel.text = "5m"
-        cell.timelinePostView.activeTextLabel.text = "Thanks for using @TwidereProject!"
+        cell.timelinePostView.activeTextLabel.text = L10n.Scene.Settings.Display.Preview.thankForUsingTwidereX
         cell.separatorLine.isHidden = true
     }
     
