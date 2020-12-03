@@ -1,6 +1,7 @@
 # Twidere X
 
 ![CI](https://github.com/TwidereProject/TwidereX-iOS/workflows/CI/badge.svg)
+[![Crowdin](https://badges.crowdin.net/twidere-x/localized.svg)](https://crowdin.com/project/twidere-x)
 
 ## Requirements
 
@@ -39,7 +40,10 @@ open TwidereX.xcworkspace
 After open the project in the Xcode. Choose TwidereX scheme and build and run the app by ⌘R.
 
 Note:  
-the `host_key_public` is preserved by App Store release and not needs for open-source build.
+The `host_key_public` is preserved by App Store release and not needs for the open-source build. And you may needs to change bundle identifier in the Xcode to avoid conflict.
+
+## Translation
+The localization resource files locate in [TwidereX-Localization](https://github.com/TwidereProject/TwidereX-Localization) repo. We are welcome translator use our [Crowdin](https://crowdin.com/project/twidere-x) project contribute.
 
 
 ## Acknowledgements
