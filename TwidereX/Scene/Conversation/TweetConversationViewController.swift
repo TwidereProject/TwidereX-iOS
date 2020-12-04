@@ -25,6 +25,7 @@ final class TweetConversationViewController: UIViewController, NeedsDependency, 
         let tableView = UITableView()
         tableView.register(ConversationPostTableViewCell.self, forCellReuseIdentifier: String(describing: ConversationPostTableViewCell.self))
         tableView.register(TimelinePostTableViewCell.self, forCellReuseIdentifier: String(describing: TimelinePostTableViewCell.self))
+        tableView.register(TimelineTopLoaderTableViewCell.self, forCellReuseIdentifier: String(describing: TimelineTopLoaderTableViewCell.self))
         tableView.register(TimelineBottomLoaderTableViewCell.self, forCellReuseIdentifier: String(describing: TimelineBottomLoaderTableViewCell.self))
         tableView.rowHeight = UITableView.automaticDimension
         tableView.separatorStyle = .none
@@ -64,6 +65,7 @@ extension TweetConversationViewController {
         tableView.dataSource = viewModel.diffableDataSource
         tableView.reloadData()
         
+        viewModel.loadReplyStateMachine.enter(TweetConversationViewModel.LoadReplyState.Prepare.self)
         viewModel.loadConversationStateMachine.enter(TweetConversationViewModel.LoadConversationState.Prepare.self)
     }
     

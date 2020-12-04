@@ -40,6 +40,8 @@ final class ConversationPostTableViewCell: UITableViewCell {
 
     let conversationPostView = ConversationPostView()
     
+    let conversationLinkUpper = UIView.separatorLine
+    
     private let avatarImageViewTapGestureRecognizer = UITapGestureRecognizer.singleTapGestureRecognizer
     private let retweetInfoLabelTapGestureRecognizer = UITapGestureRecognizer.singleTapGestureRecognizer
     private let quoteAvatarImageViewTapGestureRecognizer = UITapGestureRecognizer.singleTapGestureRecognizer
@@ -47,6 +49,7 @@ final class ConversationPostTableViewCell: UITableViewCell {
     
     override func prepareForReuse() {
         super.prepareForReuse()
+        conversationLinkUpper.isHidden = true
         disposeBag.removeAll()
     }
     
@@ -74,6 +77,15 @@ extension ConversationPostTableViewCell {
             conversationPostView.leadingAnchor.constraint(equalTo: contentView.readableContentGuide.leadingAnchor),
             contentView.readableContentGuide.trailingAnchor.constraint(equalTo: conversationPostView.trailingAnchor),
             contentView.bottomAnchor.constraint(equalTo: conversationPostView.bottomAnchor),
+        ])
+        
+        conversationLinkUpper.translatesAutoresizingMaskIntoConstraints = false
+        contentView.addSubview(conversationLinkUpper)
+        NSLayoutConstraint.activate([
+            conversationLinkUpper.topAnchor.constraint(equalTo: contentView.topAnchor),
+            conversationLinkUpper.centerXAnchor.constraint(equalTo: conversationPostView.avatarImageView.centerXAnchor),
+            conversationPostView.avatarImageView.topAnchor.constraint(equalTo: conversationLinkUpper.bottomAnchor, constant: 2),
+            conversationLinkUpper.widthAnchor.constraint(equalToConstant: 1),
         ])
         
         let separatorLine = UIView.separatorLine

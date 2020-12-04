@@ -149,15 +149,26 @@ extension ConversationPostView {
         // retweet container: [retweet icon | retweet info]
         containerStackView.addArrangedSubview(retweetContainerStackView)
         retweetContainerStackView.axis = .horizontal
-        retweetContainerStackView.spacing = 4
+        
+        let retweetContainerContentView = UIView()
+        retweetContainerStackView.addArrangedSubview(retweetContainerContentView)
+        
+        retweetInfoLabel.translatesAutoresizingMaskIntoConstraints = false
+        retweetContainerContentView.addSubview(retweetInfoLabel)
+        NSLayoutConstraint.activate([
+            retweetInfoLabel.topAnchor.constraint(equalTo: retweetContainerContentView.topAnchor),
+            retweetContainerContentView.trailingAnchor.constraint(equalTo: retweetInfoLabel.trailingAnchor),
+            retweetContainerContentView.bottomAnchor.constraint(equalTo: retweetInfoLabel.bottomAnchor),
+        ])
+        retweetInfoLabel.setContentCompressionResistancePriority(.required, for: .vertical)
         
         retweetIconImageView.translatesAutoresizingMaskIntoConstraints = false
-        retweetContainerStackView.addArrangedSubview(retweetIconImageView)
+        retweetContainerContentView.addSubview(retweetIconImageView)
         NSLayoutConstraint.activate([
+            retweetIconImageView.centerYAnchor.constraint(equalTo: retweetInfoLabel.centerYAnchor),
             retweetIconImageView.widthAnchor.constraint(equalToConstant: 12).priority(.required - 1),
             retweetIconImageView.heightAnchor.constraint(equalToConstant: 12).priority(.required - 1),
         ])
-        retweetContainerStackView.addArrangedSubview(retweetInfoLabel)
         
         // user meta container: [user avatar | author]
         let userMetaContainerStackView = UIStackView()
@@ -207,6 +218,13 @@ extension ConversationPostView {
         moreMenuButton.setContentHuggingPriority(.defaultHigh, for: .horizontal)
         
         authorContainerStackView.addArrangedSubview(usernameLabel)
+        
+        // align retweet label leading to name
+        // align retweet icon trailing to avatar
+        NSLayoutConstraint.activate([
+            retweetInfoLabel.leadingAnchor.constraint(equalTo: nameLabel.leadingAnchor),
+            retweetIconImageView.trailingAnchor.constraint(equalTo: avatarImageView.trailingAnchor),
+        ])
     
         // main container: [text | image | quote]
         let mainContainerStackView = UIStackView()
@@ -308,6 +326,7 @@ struct ConversationPostView_Previews: PreviewProvider {
     static var previews: some View {
         UIViewPreview(width: 375) {
             let view = ConversationPostView()
+            view.retweetContainerStackView.isHidden = false
             view.avatarImageView.image = avatarImage
             let images = MosaicImageView_Previews.images.prefix(3)
             let imageViews = view.mosaicImageView.setupImageViews(count: images.count, maxHeight: 162)

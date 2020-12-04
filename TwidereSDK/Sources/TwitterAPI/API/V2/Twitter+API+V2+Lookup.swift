@@ -16,17 +16,12 @@ extension Twitter.API.V2.Lookup {
         guard var components = URLComponents(string: tweetsEndpointURL.absoluteString) else { fatalError() }
         
         let ids = tweetIDs.joined(separator: ",")
-        let tweetFields: [Twitter.Request.TwitterFields] = [
-            .authorID, .conversationID, .created_at
-        ]
         components.queryItems = [
+            Twitter.Request.expansions.queryItem,
+            Twitter.Request.tweetsFields.queryItem,
+            Twitter.Request.userFields.queryItem,
+            Twitter.Request.mediaFields.queryItem,
             URLQueryItem(name: "ids", value: ids),
-            tweetFields.queryItem,
-//            Twitter.Request.UserFields.allCasesQueryItem,
-//            Twitter.Request.Expansions.allCasesQueryItem,
-//            Twitter.Request.MediaFields.allCasesQueryItem,
-//            Twitter.Request.PlaceFields.allCasesQueryItem,
-//            Twitter.Request.PollFields.allCasesQueryItem,
         ]
         
         guard let requestURL = components.url else { fatalError() }
@@ -58,7 +53,7 @@ extension Twitter.API.V2.Lookup {
         public struct Include: Codable {
             public let users: [Twitter.Entity.V2.User]?
             public let tweets: [Twitter.Entity.V2.Tweet]?
-            // public let media: [Twitter.Entity.UserV2]?
+            public let media: [Twitter.Entity.V2.Media]?
         }
     }
 }

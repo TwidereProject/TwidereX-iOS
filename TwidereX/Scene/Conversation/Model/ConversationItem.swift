@@ -12,7 +12,9 @@ import CoreDataStack
 
 enum ConversationItem {
     case root(tweetObjectID: NSManagedObjectID)
+    case reply(tweetObjectID: NSManagedObjectID)
     case leaf(tweetObjectID: NSManagedObjectID, attribute: LeafAttribute)
+    case topLoader
     case bottomLoader
 }
 
@@ -21,8 +23,12 @@ extension ConversationItem: Equatable {
         switch (lhs, rhs) {
         case (.root(let objectIDLeft), .root(let objectIDRight)):
             return objectIDLeft == objectIDRight
+        case (.reply(let objectIDLeft), .reply(let objectIDRight)):
+            return objectIDLeft == objectIDRight
         case (.leaf(let objectIDLeft, _), .leaf(let objectIDRight, _)):
             return objectIDLeft == objectIDRight
+        case (.topLoader, .topLoader):
+            return true
         case (.bottomLoader, .bottomLoader):
             return true
         default:
@@ -36,8 +42,12 @@ extension ConversationItem: Hashable {
         switch self {
         case .root(let objectID):
             hasher.combine(objectID)
+        case .reply(let objectID):
+            hasher.combine(objectID)
         case .leaf(let objectID, _):
             hasher.combine(objectID)
+        case .topLoader:
+            hasher.combine(String(describing: ConversationItem.topLoader.self))
         case .bottomLoader:
             hasher.combine(String(describing: ConversationItem.bottomLoader.self))
         }
