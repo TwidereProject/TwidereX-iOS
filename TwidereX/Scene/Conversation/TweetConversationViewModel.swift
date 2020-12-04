@@ -209,8 +209,12 @@ extension TweetConversationViewModel {
     }
     
     static func configure(cell: ConversationPostTableViewCell, readableLayoutFrame: CGRect? = nil, tweet: Tweet, requestUserID: String) {
+        // set retweet display
+        cell.conversationPostView.retweetContainerStackView.isHidden = tweet.retweet == nil
+        cell.conversationPostView.retweetInfoLabel.text = L10n.Common.Controls.Status.userRetweeted(tweet.author.name)
+        
         // set avatar
-        if let avatarImageURL = tweet.author.avatarImageURL() {
+        if let avatarImageURL = (tweet.retweet ?? tweet).author.avatarImageURL() {
             TweetConversationViewModel.configure(avatarImageView: cell.conversationPostView.avatarImageView, avatarImageURL: avatarImageURL)
         } else {
             assertionFailure()
@@ -220,14 +224,14 @@ extension TweetConversationViewModel {
         cell.conversationPostView.lockImageView.isHidden = !((tweet.retweet ?? tweet).author.protected)
         
         // set name and username
-        cell.conversationPostView.nameLabel.text = tweet.author.name
-        cell.conversationPostView.usernameLabel.text = "@" + tweet.author.username
+        cell.conversationPostView.nameLabel.text = (tweet.retweet ?? tweet).author.name
+        cell.conversationPostView.usernameLabel.text = "@" + (tweet.retweet ?? tweet).author.username
 
         // set text
-        cell.conversationPostView.activeTextLabel.text = tweet.displayText
+        cell.conversationPostView.activeTextLabel.text = (tweet.retweet ?? tweet).displayText
         
         // set image display
-        let media = Array(tweet.media ?? []).sorted { $0.index.compare($1.index) == .orderedAscending }
+        let media = Array((tweet.retweet ?? tweet).media ?? []).sorted { $0.index.compare($1.index) == .orderedAscending }
         let mosiacImageViewModel = MosaicImageViewModel(twitterMedia: media)
 
         let maxSize: CGSize = {
@@ -268,7 +272,7 @@ extension TweetConversationViewModel {
         cell.conversationPostView.mosaicImageView.isHidden = mosiacImageViewModel.metas.isEmpty
         
         // set quote
-        let quote = tweet.quote
+        let quote = (tweet.retweet ?? tweet).quote
         if let quote = quote {
             // set avatar
             if let avatarImageURL = quote.author.avatarImageURL() {
@@ -280,16 +284,6 @@ extension TweetConversationViewModel {
             // set name and username
             cell.conversationPostView.quotePostView.nameLabel.text = quote.author.name
             cell.conversationPostView.quotePostView.usernameLabel.text = "@\(quote.author.username)"
-            
-            // set date
-//            let createdAt = quote.createdAt
-//            cell.quoteView.dateLabel.text = createdAt.shortTimeAgoSinceNow
-//            cell.quoteDateLabelUpdateSubscription = Timer.publish(every: 1, on: .main, in: .default)
-//                .autoconnect()
-//                .sink { _ in
-//                    // do not use core date entity in this run loop
-//                    cell.quoteView.dateLabel.text = createdAt.shortTimeAgoSinceNow
-//                }
             
             // set text
             cell.conversationPostView.quotePostView.activeTextLabel.text = quote.displayText
@@ -305,7 +299,7 @@ extension TweetConversationViewModel {
         cell.conversationPostView.dateLabel.text = TweetConversationViewModel.dateFormatter.string(from: tweet.createdAt)
         
         // set status
-        if let retweetCount = tweet.metrics?.retweetCount.flatMap({ Int(truncating: $0) }), retweetCount > 0 {
+        if let retweetCount = (tweet.retweet ?? tweet).metrics?.retweetCount.flatMap({ Int(truncating: $0) }), retweetCount > 0 {
             cell.conversationPostView.retweetPostStatusView.countLabel.text = String(retweetCount)
             cell.conversationPostView.retweetPostStatusView.statusLabel.text = retweetCount > 1 ? L10n.Common.Countable.Retweet.mutiple : L10n.Common.Countable.Retweet.single
             cell.conversationPostView.retweetPostStatusView.isHidden = false
@@ -314,7 +308,7 @@ extension TweetConversationViewModel {
         }
         // TODO: quote status
         cell.conversationPostView.quotePostStatusView.isHidden = true
-        if let favoriteCount = tweet.metrics?.likeCount.flatMap({ Int(truncating: $0) }), favoriteCount > 0 {
+        if let favoriteCount = (tweet.retweet ?? tweet).metrics?.likeCount.flatMap({ Int(truncating: $0) }), favoriteCount > 0 {
             cell.conversationPostView.likePostStatusView.countLabel.text = String(favoriteCount)
             cell.conversationPostView.likePostStatusView.statusLabel.text = favoriteCount > 1 ? L10n.Common.Countable.Like.multiple : L10n.Common.Countable.Like.single
             cell.conversationPostView.likePostStatusView.isHidden = false
@@ -323,7 +317,7 @@ extension TweetConversationViewModel {
         }
         
         // set source
-        cell.conversationPostView.sourceLabel.text = tweet.source
+        cell.conversationPostView.sourceLabel.text = (tweet.retweet ?? tweet).source
         
         // set action toolbar title
         let isRetweeted = (tweet.retweet ?? tweet).retweetBy.flatMap({ $0.contains(where: { $0.id == requestUserID }) }) ?? false

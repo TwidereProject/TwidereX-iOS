@@ -12,6 +12,23 @@ final class ConversationPostView: UIView {
     
     static let avatarImageViewSize = CGSize(width: 44, height: 44)
 
+    let retweetContainerStackView = UIStackView()
+    
+    let retweetIconImageView: UIImageView = {
+        let imageView = UIImageView()
+        imageView.tintColor = .secondaryLabel
+        imageView.image = Asset.Media.repeat.image.withRenderingMode(.alwaysTemplate)
+        return imageView
+    }()
+    
+    let retweetInfoLabel: UILabel = {
+        let label = UILabel()
+        label.font = .preferredFont(forTextStyle: .footnote)
+        label.textColor = .secondaryLabel
+        label.text = "Bob Retweeted"
+        return label
+    }()
+    
     let avatarImageView: UIImageView = {
         let imageView = UIImageView()
         return imageView
@@ -116,7 +133,7 @@ final class ConversationPostView: UIView {
 extension ConversationPostView {
 
     private func _init() {        
-        // container: [user meta | main | meta | action toolbar]
+        // container: [retweet | user meta | main | meta | action toolbar]
         let containerStackView = UIStackView()
         containerStackView.axis = .vertical
         containerStackView.spacing = 8
@@ -128,6 +145,19 @@ extension ConversationPostView {
             trailingAnchor.constraint(equalTo: containerStackView.trailingAnchor),
             bottomAnchor.constraint(equalTo: containerStackView.bottomAnchor),
         ])
+        
+        // retweet container: [retweet icon | retweet info]
+        containerStackView.addArrangedSubview(retweetContainerStackView)
+        retweetContainerStackView.axis = .horizontal
+        retweetContainerStackView.spacing = 4
+        
+        retweetIconImageView.translatesAutoresizingMaskIntoConstraints = false
+        retweetContainerStackView.addArrangedSubview(retweetIconImageView)
+        NSLayoutConstraint.activate([
+            retweetIconImageView.widthAnchor.constraint(equalToConstant: 12).priority(.required - 1),
+            retweetIconImageView.heightAnchor.constraint(equalToConstant: 12).priority(.required - 1),
+        ])
+        retweetContainerStackView.addArrangedSubview(retweetInfoLabel)
         
         // user meta container: [user avatar | author]
         let userMetaContainerStackView = UIStackView()

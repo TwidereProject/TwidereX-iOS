@@ -16,6 +16,25 @@ import ActiveLabel
 
 extension ConversationPostTableViewCellDelegate where Self: TweetProvider {
     
+    func conversationPostTableViewCell(_ cell: ConversationPostTableViewCell, retweetInfoLabelDidPressed label: UILabel) {
+        tweet(for: cell)
+            .sink { [weak self] tweet in
+                guard let self = self else { return }
+                guard let tweet = tweet else { return }
+                let twitterUser = tweet.author
+                
+                let profileViewModel = ProfileViewModel(twitterUser: twitterUser)
+                self.context.authenticationService.activeAuthenticationIndex
+                    .map { $0?.twitterAuthentication?.twitterUser }
+                    .assign(to: \.value, on: profileViewModel.currentTwitterUser)
+                    .store(in: &profileViewModel.disposeBag)
+                DispatchQueue.main.async {
+                    self.coordinator.present(scene: .profile(viewModel: profileViewModel), from: self, transition: .show)
+                }
+            }
+            .store(in: &disposeBag)
+    }
+    
     func conversationPostTableViewCell(_ cell: ConversationPostTableViewCell, avatarImageViewDidPressed imageView: UIImageView) {
         tweet(for: cell)
             .sink { [weak self] tweet in

@@ -58,10 +58,10 @@ extension TweetConversationViewModel.LoadConversationState {
             var _createdAt: Date?
             viewModel.context.managedObjectContext.perform {
                 let tweet = viewModel.context.managedObjectContext.object(with: tweetObjectID) as! Tweet
-                _tweetID = tweet.id
-                _authorID = tweet.author.id
-                _conversationID = tweet.conversationID
-                _createdAt = tweet.createdAt
+                _tweetID = (tweet.retweet ?? tweet).id
+                _authorID = (tweet.retweet ?? tweet).author.id
+                _conversationID = (tweet.retweet ?? tweet).conversationID
+                _createdAt = (tweet.retweet ?? tweet).createdAt
              
                 DispatchQueue.main.async {
                     guard let tweetID = _tweetID, let authorID = _authorID, let createdAt = _createdAt else {

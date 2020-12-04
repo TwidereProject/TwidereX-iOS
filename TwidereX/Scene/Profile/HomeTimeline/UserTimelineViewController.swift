@@ -115,23 +115,7 @@ extension UserTimelineViewController: UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        os_log("%{public}s[%{public}ld], %{public}s: indexPath %s", ((#file as NSString).lastPathComponent), #line, #function, indexPath.debugDescription)
-        
-        guard let diffableDataSource = viewModel.diffableDataSource else { return }
-        guard let item = diffableDataSource.itemIdentifier(for: indexPath) else { return }
-        
-        switch item {
-        case .tweet(let objectID):
-            let managedObjectContext = self.viewModel.fetchedResultsController.managedObjectContext
-            managedObjectContext.performAndWait {
-                guard let tweet = managedObjectContext.object(with: objectID) as? Tweet else { return }
-                let targetTweet = tweet.retweet ?? tweet
-                let tweetPostViewModel = TweetConversationViewModel(context: self.context, tweetObjectID: targetTweet.objectID)
-                self.coordinator.present(scene: .tweetConversation(viewModel: tweetPostViewModel), from: self, transition: .show)
-            }
-        default:
-            return
-        }
+        handleTableView(tableView, didSelectRowAt: indexPath)
     }
     
     func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {

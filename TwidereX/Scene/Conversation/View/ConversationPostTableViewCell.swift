@@ -11,6 +11,7 @@ import Combine
 import ActiveLabel
 
 protocol ConversationPostTableViewCellDelegate: class {
+    func conversationPostTableViewCell(_ cell: ConversationPostTableViewCell, retweetInfoLabelDidPressed label: UILabel)
     func conversationPostTableViewCell(_ cell: ConversationPostTableViewCell, avatarImageViewDidPressed imageView: UIImageView)
     func conversationPostTableViewCell(_ cell: ConversationPostTableViewCell, quoteAvatarImageViewDidPressed imageView: UIImageView)
     func conversationPostTableViewCell(_ cell: ConversationPostTableViewCell, quotePostViewDidPressed quotePostView: QuotePostView)
@@ -40,6 +41,7 @@ final class ConversationPostTableViewCell: UITableViewCell {
     let conversationPostView = ConversationPostView()
     
     private let avatarImageViewTapGestureRecognizer = UITapGestureRecognizer.singleTapGestureRecognizer
+    private let retweetInfoLabelTapGestureRecognizer = UITapGestureRecognizer.singleTapGestureRecognizer
     private let quoteAvatarImageViewTapGestureRecognizer = UITapGestureRecognizer.singleTapGestureRecognizer
     private let quotePostViewTapGestureRecognizer = UITapGestureRecognizer.singleTapGestureRecognizer
     
@@ -83,6 +85,10 @@ extension ConversationPostTableViewCell {
             separatorLine.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
             separatorLine.heightAnchor.constraint(equalToConstant: UIView.separatorLineHeight(of: separatorLine)),
         ])
+        
+        retweetInfoLabelTapGestureRecognizer.addTarget(self, action: #selector(ConversationPostTableViewCell.retweetInfoLabelTapGestureRecognizerHandler(_:)))
+        conversationPostView.retweetInfoLabel.isUserInteractionEnabled = true
+        conversationPostView.retweetInfoLabel.addGestureRecognizer(retweetInfoLabelTapGestureRecognizer)
         
         avatarImageViewTapGestureRecognizer.addTarget(self, action: #selector(ConversationPostTableViewCell.avatarImageViewTapGestureRecognizerHandler(_:)))
         conversationPostView.avatarImageView.isUserInteractionEnabled = true
@@ -137,6 +143,12 @@ extension ConversationPostTableViewCell {
 }
 
 extension ConversationPostTableViewCell {
+    
+    @objc private func retweetInfoLabelTapGestureRecognizerHandler(_ sender: UITapGestureRecognizer) {
+        os_log("%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
+        guard sender.state == .ended else { return }
+        delegate?.conversationPostTableViewCell(self, retweetInfoLabelDidPressed: conversationPostView.retweetInfoLabel)
+    }
     
     @objc private func avatarImageViewTapGestureRecognizerHandler(_ sender: UITapGestureRecognizer) {
         os_log("%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
