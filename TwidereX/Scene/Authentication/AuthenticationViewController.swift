@@ -7,8 +7,8 @@
 
 import os
 import UIKit
-import Combine
 import AuthenticationServices
+import Combine
 import TwitterAPI
 import CoreDataStack
 
@@ -19,15 +19,42 @@ final class AuthenticationViewController: UIViewController, NeedsDependency {
 
     var disposeBag = Set<AnyCancellable>()
     
+    let logoImageView: UIImageView = {
+        let imageView = UIImageView()
+        imageView.image = Asset.Logo.twidere.image
+        return imageView
+    }()
+    
+    let logoLabel: UILabel = {
+        let label = UILabel()
+        label.font = .systemFont(ofSize: 24)
+        label.text = "Twidere X"
+        label.textColor = UIColor.label.withAlphaComponent(0.6)
+        return label
+    }()
+    
     let signInButton: UIButton = {
         let button = UIButton()
-        button.setTitle("Sign in with Twitter", for: .normal)
-        button.setTitleColor(.systemBlue, for: .normal)
-        button.setTitleColor(.secondaryLabel, for: .disabled)
+        button.setInsets(forContentPadding: UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16), imageTitlePadding: 0)
+        button.setTitle(L10n.Scene.SignIn.signInWithTwitter, for: .normal)
+        button.setTitleColor(.white, for: .normal)
+        button.setBackgroundImage(.placeholder(color: Asset.Colors.hightLight.color), for: .normal)
+        button.layer.masksToBounds = true
+        button.layer.cornerRadius = 48 * 0.5
         return button
     }()
     
-    private var authenticationSession: ASWebAuthenticationSession?
+    let signInActivityIndicatorView: UIActivityIndicatorView = {
+        let activityIndicatorView = UIActivityIndicatorView(style: .medium)
+        activityIndicatorView.startAnimating()
+        activityIndicatorView.hidesWhenStopped = true
+        activityIndicatorView.color = .white
+        return activityIndicatorView
+    }()
+    
+    var isSigning = CurrentValueSubject<Bool, Never>(false)
+    private var twitterAuthenticationController: TwitterAuthenticationController?
+    
 }
 
 extension AuthenticationViewController {
@@ -36,80 +63,142 @@ extension AuthenticationViewController {
         
         title = "Authentication"
         view.backgroundColor = .systemBackground
+        navigationController?.setNavigationBarHidden(true, animated: false)
+        
+        let quarterHeightPadding = UIView()
+        quarterHeightPadding.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(quarterHeightPadding)
+        NSLayoutConstraint.activate([
+            quarterHeightPadding.topAnchor.constraint(equalTo: view.topAnchor),
+            quarterHeightPadding.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            quarterHeightPadding.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            quarterHeightPadding.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 0.25),
+        ])
+        quarterHeightPadding.isHidden = true
+        
+        logoImageView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(logoImageView)
+        NSLayoutConstraint.activate([
+            logoImageView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            logoImageView.centerYAnchor.constraint(equalTo: quarterHeightPadding.bottomAnchor),
+        ])
+        
+        logoLabel.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(logoLabel)
+        NSLayoutConstraint.activate([
+            logoLabel.topAnchor.constraint(equalTo: logoImageView.bottomAnchor, constant: 44),
+            logoLabel.centerXAnchor.constraint(equalTo: logoImageView.centerXAnchor),
+        ])
         
         signInButton.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(signInButton)
         NSLayoutConstraint.activate([
-            signInButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            signInButton.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            signInButton.centerXAnchor.constraint(equalTo: logoImageView.centerXAnchor),
+            view.layoutMarginsGuide.bottomAnchor.constraint(equalTo: signInButton.bottomAnchor, constant: 80),
+            signInButton.heightAnchor.constraint(equalToConstant: 48).priority(.defaultHigh),
+        ])
+        signInButton.setContentHuggingPriority(.defaultHigh, for: .horizontal)
+        
+        signInActivityIndicatorView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(signInActivityIndicatorView)
+        NSLayoutConstraint.activate([
+            signInActivityIndicatorView.centerXAnchor.constraint(equalTo: signInButton.centerXAnchor),
+            signInActivityIndicatorView.centerYAnchor.constraint(equalTo: signInButton.centerYAnchor),
         ])
         
-        signInButton.addTarget(self, action: #selector(AuthenticationViewController.signInButtonPressed(_:)), for: .touchUpInside)
+        isSigning
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] isRequestToken in
+                guard let self = self else { return }
+                self.signInButton.setTitleColor(isRequestToken ? .clear : .white, for: .normal)
+                self.signInButton.isUserInteractionEnabled = !isRequestToken
+                isRequestToken ? self.signInActivityIndicatorView.startAnimating() : self.signInActivityIndicatorView.stopAnimating()
+            }
+            .store(in: &disposeBag)
+        
+        signInButton.addTarget(self, action: #selector(AuthenticationViewController.signInWithTwitterButtonPressed(_:)), for: .touchUpInside)
     }
 }
 
 extension AuthenticationViewController {
-    @objc private func signInButtonPressed(_ sender: UIButton) {
-        context.twitterAPIService.requestToken()
-            .handleEvents(receiveSubscription: { _ in
+    @objc private func signInWithTwitterButtonPressed(_ sender: UIButton) {
+        context.apiService.twitterRequestToken()
+            .handleEvents(receiveSubscription: { [weak self] _ in
                 sender.isEnabled = false
+                self?.isSigning.value = true
             }, receiveCompletion: { completion in
                 sender.isEnabled = true
             })
             .receive(on: DispatchQueue.main)
-            .sink { completion in
-                // TODO: handle error
-            } receiveValue: { [weak self] requestToken in
+            .sink { [weak self] completion in
                 guard let self = self else { return }
-                guard requestToken.oauthCallbackConfirmed else { return }
-                self.authenticate(requestToken: requestToken)
+                switch completion {
+                case .failure(let error):
+                    os_log("%{public}s[%{public}ld], %{public}s: request token error: %{public}s", ((#file as NSString).lastPathComponent), #line, #function, error.localizedDescription)
+
+                    let alertController = UIAlertController.standardAlert(of: error)
+                    self.present(alertController, animated: true) { [weak self] in
+                        self?.isSigning.value = false
+                    }
+                case .finished:
+                    break
+                }
+            } receiveValue: { [weak self] requestTokenExchange in
+                guard let self = self else { return }
+                self.twitterAuthenticate(requestTokenExchange: requestTokenExchange)
             }
             .store(in: &disposeBag)
-
     }
 }
 
 extension AuthenticationViewController {
-    func authenticate(requestToken: TwitterAPI.OAuth.RequestToken) {
-        authenticationSession = ASWebAuthenticationSession(url: TwitterAPI.OAuth.autenticateURL(requestToken: requestToken), callbackURLScheme: "twidere") { [weak self] callback, error in
-            guard let self = self else { return }
-            os_log("%{public}s[%{public}ld], %{public}s: callback: %s, error: %s", ((#file as NSString).lastPathComponent), #line, #function, callback?.debugDescription ?? "<nil>", error.debugDescription)
-
-            if let error = error {
-                // TODO: handle error
-                assertionFailure(error.localizedDescription)
-                return
+    func twitterAuthenticate(requestTokenExchange: Twitter.API.OAuth.OAuthRequestTokenExchange) {
+        let requestToken: String = {
+            switch requestTokenExchange {
+            case .requestTokenResponse(let response):           return response.oauthToken
+            case .customRequestTokenResponse(_, let append):    return append.requestToken
             }
-            guard let callbackURL = callback, let accessToken = TwitterAPI.OAuth.Authentication(callbackURL: callbackURL) else {
-                // TODO: handle error
-                assertionFailure()
-                return
-            }
-            
-            let property = Authentication.Property(userID: accessToken.userID, screenName: accessToken.screenName, consumerKey: accessToken.consumerKey, consumerSecret: accessToken.consumerSecret, accessToken: accessToken.oauthToken, accessTokenSecret: accessToken.oauthTokenSecret)
-            
-            // TODO: check duplicate
-            let managedObjectContext = self.context.managedObjectContext
-            managedObjectContext.performChanges {
-                Authentication.insert(into: managedObjectContext, property: property)
-            }
-            .sink { result in
-                switch result {
-                case .success:
-                    os_log("%{public}s[%{public}ld], %{public}s: insert Authentication for %s, userID: %s", ((#file as NSString).lastPathComponent), #line, #function, property.screenName, property.userID)
-                    self.dismiss(animated: true, completion: nil)
-                case .failure(let error):
-                    os_log("%{public}s[%{public}ld], %{public}s: insert Authentication failed. %s", ((#file as NSString).lastPathComponent), #line, #function, error.localizedDescription)
-                    // TODO: handle error
-                }
-            }
-            .store(in: &self.disposeBag)
-            
-            os_log("%{public}s[%{public}ld], %{public}s: accessToken: %s", ((#file as NSString).lastPathComponent), #line, #function, String(describing: accessToken))
-        }
-        authenticationSession?.presentationContextProvider = self
-        authenticationSession?.start()
+        }()
+        
+        let authenticateURL = Twitter.API.OAuth.autenticateURL(requestToken: requestToken)
+        
+        twitterAuthenticationController = TwitterAuthenticationController(
+            context: context,
+            coordinator: coordinator,
+            authenticateURL: authenticateURL,
+            requestTokenExchange: requestTokenExchange
+        )
+        
+        twitterAuthenticationController?.isAuthenticating
+            .receive(on: DispatchQueue.main)
+            .sink(receiveValue: { [weak self] isAuthenticating in
+                guard let self = self else { return }
+                self.isSigning.value = isAuthenticating
+            })
+            .store(in: &disposeBag)
+        
+        twitterAuthenticationController?.error
+            .receive(on: DispatchQueue.main)
+            .sink(receiveValue: { [weak self] error in
+                guard let self = self else { return }
+                guard let error = error else { return }
+                let alertController = UIAlertController.standardAlert(of: error)
+                self.present(alertController, animated: true)
+            })
+            .store(in: &disposeBag)
+        
+        twitterAuthenticationController?.authenticated
+            .receive(on: DispatchQueue.main)
+            .sink(receiveValue: { [weak self] in
+                self?.dismiss(animated: true, completion: nil)
+            })
+            .store(in: &disposeBag)
+        
+        twitterAuthenticationController?.authenticationSession?.prefersEphemeralWebBrowserSession = true
+        twitterAuthenticationController?.authenticationSession?.presentationContextProvider = self
+        twitterAuthenticationController?.authenticationSession?.start()
     }
+
 }
 
 // MARK: - ASWebAuthenticationPresentationContextProviding
@@ -124,3 +213,5 @@ extension AuthenticationViewController: UIAdaptivePresentationControllerDelegate
         return .fullScreen
     }
 }
+
+

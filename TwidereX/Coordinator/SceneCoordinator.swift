@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import SafariServices
 
 final public class SceneCoordinator {
     
@@ -15,7 +16,6 @@ final public class SceneCoordinator {
     private weak var appContext: AppContext!
     
     let id = UUID().uuidString
-    private var secondaryStackHashValues = Set<Int>()
     
     init(scene: UIScene, sceneDelegate: SceneDelegate, appContext: AppContext) {
         self.scene = scene
@@ -33,38 +33,47 @@ extension SceneCoordinator {
         case modal(animated: Bool, completion: (() -> Void)? = nil)
         case custom(transitioningDelegate: UIViewControllerTransitioningDelegate)
         case customPush
+        case safariPresent(animated: Bool, completion: (() -> Void)? = nil)
     }
     
     enum Scene {
         case authentication
+        case twitterPinBasedAuthentication(viewModel: TwitterPinBasedAuthenticationViewModel)
+        case accountList(viewModel: AccountListViewModel)
+        case composeTweet(viewModel: ComposeTweetViewModel)
+        case tweetConversation(viewModel: TweetConversationViewModel)
+        case searchDetail(viewModel: SearchDetailViewModel)
+        case profile(viewModel: ProfileViewModel)
+        case mediaPreview(viewModel: MediaPreviewViewModel)
+        case drawerSidebar
+        
+        case setting
+        case displayPreference
+        case about
+        
+        case safari(url: URL)
     }
 }
 
 extension SceneCoordinator {
     
     func setup() {
-        let viewController = RootSplitViewController()
-        setupDependency(for: viewController)
-        viewController.delegate = self
+        let viewController = MainTabBarController(context: appContext, coordinator: self)
         sceneDelegate.window?.rootViewController = viewController
     }
     
     @discardableResult
     func present(scene: Scene, from sender: UIViewController?, transition: Transition) -> UIViewController? {
         let viewController = get(scene: scene)
-        guard let presentingViewController = sender ?? sceneDelegate.window?.rootViewController else {
+        guard let presentingViewController = sender ?? sceneDelegate.window?.rootViewController?.topMost else {
             return nil
         }
         
         switch transition {
         case .show:
-            if secondaryStackHashValues.contains(presentingViewController.hashValue) {
-                secondaryStackHashValues.insert(viewController.hashValue)
-            }
             presentingViewController.show(viewController, sender: sender)
             
         case .showDetail:
-            secondaryStackHashValues.insert(viewController.hashValue)
             let navigationController = UINavigationController(rootViewController: viewController)
             presentingViewController.showDetailViewController(navigationController, sender: sender)
             
@@ -81,13 +90,16 @@ extension SceneCoordinator {
             
         case .customPush:
             // set delegate in view controller
+            assert(sender?.navigationController?.delegate != nil)
             sender?.navigationController?.pushViewController(viewController, animated: true)
+            
+        case .safariPresent(let animated, let completion):
+            presentingViewController.present(viewController, animated: animated, completion: completion)
         }
         
         return viewController
     }
-    
-    
+
 }
 
 private extension SceneCoordinator {
@@ -97,6 +109,44 @@ private extension SceneCoordinator {
         switch scene {
         case .authentication:
             viewController = AuthenticationViewController()
+        case .twitterPinBasedAuthentication(let viewModel):
+            let _viewController = TwitterPinBasedAuthenticationViewController()
+            _viewController.viewModel = viewModel
+            viewController = _viewController
+        case .accountList(let viewModel):
+            let _viewController = AccountListViewController()
+            _viewController.viewModel = viewModel
+            viewController = _viewController
+        case .composeTweet(let viewModel):
+            let _viewController = ComposeTweetViewController()
+            _viewController.viewModel = viewModel
+            viewController = _viewController
+        case .tweetConversation(let viewModel):
+            let _viewController = TweetConversationViewController()
+            _viewController.viewModel = viewModel
+            viewController = _viewController
+        case .searchDetail(let viewModel):
+            let _viewController = SearchDetailViewController()
+            _viewController.viewModel = viewModel
+            viewController = _viewController
+        case .profile(let viewModel):
+            let _viewController = ProfileViewController()
+            _viewController.viewModel = viewModel
+            viewController = _viewController
+        case .mediaPreview(let viewModel):
+            let _viewController = MediaPreviewViewController()
+            _viewController.viewModel = viewModel
+            viewController = _viewController
+        case .drawerSidebar:
+            viewController = DrawerSidebarViewController()
+        case .setting:
+            viewController = SettingListViewController()
+        case .displayPreference:
+            viewController = DisplayPreferenceViewController()
+        case .about:
+            viewController = AboutViewController()
+        case .safari(let url):
+            viewController = SFSafariViewController(url: url)
         }
         
         setupDependency(for: viewController as? NeedsDependency)
@@ -107,75 +157,6 @@ private extension SceneCoordinator {
     private func setupDependency(for needs: NeedsDependency?) {
         needs?.context = appContext
         needs?.coordinator = self
-    }
-    
-}
-
-// MARK: - UISplitViewControllerDelegate
-extension SceneCoordinator: UISplitViewControllerDelegate {
-    
-    public func splitViewController(_ splitViewController: UISplitViewController, showDetail vc: UIViewController, sender: Any?) -> Bool {
-        if splitViewController.isCollapsed {
-            let selectedNavigationController = ((splitViewController.viewControllers.first as? UITabBarController)?.selectedViewController as? UINavigationController)
-            if let navigationController = vc as? UINavigationController, let topViewController = navigationController.topViewController {
-                selectedNavigationController?.pushViewController(topViewController, animated: true)
-            } else {
-                selectedNavigationController?.pushViewController(vc, animated: true)
-            }
-            return true
-        } else {
-            return false
-        }
-    }
-    
-    public func splitViewController(_ splitViewController: UISplitViewController, collapseSecondary secondaryViewController: UIViewController, onto primaryViewController: UIViewController) -> Bool {
-        guard let primaeryTabBarController = primaryViewController as? UITabBarController,
-            let selectedNavigationController = primaeryTabBarController.selectedViewController as? UINavigationController else {
-                return false
-        }
-        
-        guard let secondaryNavigationController = secondaryViewController as? UINavigationController else {
-            return false
-        }
-        
-        guard !(secondaryNavigationController.topViewController is PlaceholderDetailViewController) else {
-            // discard collapse operation
-            return true
-        }
-        
-        let secondaryNavigationStack = secondaryNavigationController.viewControllers
-        let collapsedNavigationStack = [selectedNavigationController.viewControllers, secondaryNavigationStack].flatMap { $0 }
-        selectedNavigationController.setViewControllers(collapsedNavigationStack, animated: false)
-        
-        return true
-    }
-    
-    public func splitViewController(_ splitViewController: UISplitViewController, separateSecondaryFrom primaryViewController: UIViewController) -> UIViewController? {
-        guard let primaeryTabBarController = primaryViewController as? UITabBarController,
-            let selectedNavigationController = primaeryTabBarController.selectedViewController as? UINavigationController else {
-                return nil
-        }
-        
-        var primaryViewControllerStack: [UIViewController] = []
-        var secondaryViewControllerStack: [UIViewController] = []
-        for viewController in selectedNavigationController.viewControllers {
-            if secondaryStackHashValues.contains(viewController.hashValue) {
-                secondaryViewControllerStack.append(viewController)
-            } else {
-                primaryViewControllerStack.append(viewController)
-            }
-        }
-        
-        selectedNavigationController.setViewControllers(primaryViewControllerStack, animated: false)
-        
-        let secondaryNavigationController = UINavigationController()
-        if secondaryViewControllerStack.isEmpty {
-            secondaryNavigationController.setViewControllers([PlaceholderDetailViewController()], animated: false)
-        } else {
-            secondaryNavigationController.setViewControllers(secondaryViewControllerStack, animated: false)
-        }
-        
-        return secondaryNavigationController
     }
     
 }

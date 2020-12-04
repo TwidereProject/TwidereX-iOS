@@ -27,27 +27,27 @@ public struct ManagedObjectContextObjectsDidChangeNotification {
 
 extension ManagedObjectContextObjectsDidChangeNotification {
     
-    var insertedObjects: Set<NSManagedObject> {
+    public var insertedObjects: Set<NSManagedObject> {
         return objects(forKey: NSInsertedObjectsKey)
     }
     
-    var updatedObjects: Set<NSManagedObject> {
+    public var updatedObjects: Set<NSManagedObject> {
         return objects(forKey: NSUpdatedObjectsKey)
     }
     
-    var deletedObjects: Set<NSManagedObject> {
+    public var deletedObjects: Set<NSManagedObject> {
         return objects(forKey: NSDeletedObjectsKey)
     }
     
-    var refreshedObjects: Set<NSManagedObject> {
+    public var refreshedObjects: Set<NSManagedObject> {
         return objects(forKey: NSRefreshedObjectsKey)
     }
     
-    var invalidedObjects: Set<NSManagedObject> {
+    public var invalidedObjects: Set<NSManagedObject> {
         return objects(forKey: NSInvalidatedObjectsKey)
     }
     
-    var invalidatedAllObjects: Bool {
+    public var invalidatedAllObjects: Bool {
         return notification.userInfo?[NSInvalidatedAllObjectsKey] != nil
     }
     

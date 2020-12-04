@@ -6,14 +6,30 @@
 //
 
 import UIKit
+import Combine
+import Firebase
+import Floaty
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
+    var disposeBag = Set<AnyCancellable>()
+
     let appContext = AppContext()
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        // Override point for customization after application launch.
+        
+        FirebaseApp.configure()
+        
+        Floaty.global.rtlMode = UIApplication.shared.userInterfaceLayoutDirection == .rightToLeft
+        
+        NotificationCenter.default.publisher(for: UIContentSizeCategory.didChangeNotification)
+            .sink { _ in
+                // only trigger update
+                UserDefaults.shared.useTheSystemFontSize = UserDefaults.shared.useTheSystemFontSize
+            }
+            .store(in: &disposeBag)
+
         return true
     }
 
