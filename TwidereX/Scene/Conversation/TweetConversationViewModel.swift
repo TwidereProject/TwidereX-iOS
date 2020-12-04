@@ -307,7 +307,7 @@ extension TweetConversationViewModel {
         // set status
         if let retweetCount = tweet.metrics?.retweetCount.flatMap({ Int(truncating: $0) }), retweetCount > 0 {
             cell.conversationPostView.retweetPostStatusView.countLabel.text = String(retweetCount)
-            cell.conversationPostView.retweetPostStatusView.statusLabel.text = retweetCount > 1 ? L10n.Scene.Status.Retweet.mutiple(retweetCount) : L10n.Scene.Status.Retweet.single
+            cell.conversationPostView.retweetPostStatusView.statusLabel.text = retweetCount > 1 ? L10n.Common.Countable.Retweet.mutiple : L10n.Common.Countable.Retweet.single
             cell.conversationPostView.retweetPostStatusView.isHidden = false
         } else {
             cell.conversationPostView.retweetPostStatusView.isHidden = true
@@ -316,7 +316,7 @@ extension TweetConversationViewModel {
         cell.conversationPostView.quotePostStatusView.isHidden = true
         if let favoriteCount = tweet.metrics?.likeCount.flatMap({ Int(truncating: $0) }), favoriteCount > 0 {
             cell.conversationPostView.likePostStatusView.countLabel.text = String(favoriteCount)
-            cell.conversationPostView.likePostStatusView.statusLabel.text = favoriteCount > 1 ? L10n.Scene.Status.Like.multiple(favoriteCount) : L10n.Scene.Status.Like.single
+            cell.conversationPostView.likePostStatusView.statusLabel.text = favoriteCount > 1 ? L10n.Common.Countable.Like.multiple : L10n.Common.Countable.Like.single
             cell.conversationPostView.likePostStatusView.isHidden = false
         } else {
             cell.conversationPostView.likePostStatusView.isHidden = true

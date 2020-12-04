@@ -108,6 +108,56 @@ internal enum L10n {
         internal static let loadMore = L10n.tr("Localizable", "Common.Controls.Timeline.LoadMore")
       }
     }
+    internal enum Countable {
+      internal enum Like {
+        /// likes
+        internal static let multiple = L10n.tr("Localizable", "Common.Countable.Like.Multiple")
+        /// like
+        internal static let single = L10n.tr("Localizable", "Common.Countable.Like.Single")
+      }
+      internal enum List {
+        /// lists
+        internal static let multiple = L10n.tr("Localizable", "Common.Countable.List.Multiple")
+        /// list
+        internal static let single = L10n.tr("Localizable", "Common.Countable.List.Single")
+      }
+      internal enum Member {
+        /// members
+        internal static let multiple = L10n.tr("Localizable", "Common.Countable.Member.Multiple")
+        /// member
+        internal static let single = L10n.tr("Localizable", "Common.Countable.Member.Single")
+      }
+      internal enum Photo {
+        /// photos
+        internal static let multiple = L10n.tr("Localizable", "Common.Countable.Photo.Multiple")
+        /// photo
+        internal static let single = L10n.tr("Localizable", "Common.Countable.Photo.Single")
+      }
+      internal enum Quote {
+        /// quotes
+        internal static let mutiple = L10n.tr("Localizable", "Common.Countable.Quote.Mutiple")
+        /// quote
+        internal static let single = L10n.tr("Localizable", "Common.Countable.Quote.Single")
+      }
+      internal enum Reply {
+        /// replies
+        internal static let mutiple = L10n.tr("Localizable", "Common.Countable.Reply.Mutiple")
+        /// reply
+        internal static let single = L10n.tr("Localizable", "Common.Countable.Reply.Single")
+      }
+      internal enum Retweet {
+        /// retweets
+        internal static let mutiple = L10n.tr("Localizable", "Common.Countable.Retweet.Mutiple")
+        /// retweet
+        internal static let single = L10n.tr("Localizable", "Common.Countable.Retweet.Single")
+      }
+      internal enum Tweet {
+        /// tweets
+        internal static let multiple = L10n.tr("Localizable", "Common.Countable.Tweet.Multiple")
+        /// tweet
+        internal static let single = L10n.tr("Localizable", "Common.Countable.Tweet.Single")
+      }
+    }
   }
 
   internal enum Scene {
