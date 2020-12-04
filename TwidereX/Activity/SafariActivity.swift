@@ -23,7 +23,7 @@ final class SafariActivity: UIActivity {
     }
     
     override var activityTitle: String? {
-        return "Open in Safari"
+        return L10n.Common.Controls.Actions.openInSafari
     }
     
     override var activityImage: UIImage? {

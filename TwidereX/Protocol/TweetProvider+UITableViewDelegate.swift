@@ -90,7 +90,7 @@ extension UITableViewDelegate where Self: TweetProvider {
                     image: nil,
                     children: [
                         UIAction(
-                            title: "Save Photo",
+                            title: L10n.Common.Controls.Actions.savePhoto,
                             image: UIImage(systemName: "square.and.arrow.down"),
                             attributes: [],
                             state: .off
