@@ -22,7 +22,7 @@ extension AccountListViewModel {
                 let managedObjectContext = self.context.managedObjectContext
                 managedObjectContext.performAndWait {
                     let twitterUser = managedObjectContext.object(with: objectID) as! TwitterUser
-                    AccountListViewModel.configure(cell: cell, twitterUser: twitterUser)
+                    AccountListViewModel.configure(cell: cell, twitterUser: twitterUser, accountListViewControllerDelegate: self.accountListViewControllerDelegate)
                 }
                 cell.delegate = self.accountListTableViewCellDelegate
                 return cell
@@ -32,7 +32,7 @@ extension AccountListViewModel {
         }
     }
     
-    static func configure(cell: AccountListTableViewCell, twitterUser: TwitterUser) {
+    static func configure(cell: AccountListTableViewCell, twitterUser: TwitterUser, accountListViewControllerDelegate: AccountListViewControllerDelegate?) {
         // set avatar
         if let avatarImageURL = twitterUser.avatarImageURL() {
             let placeholderImage = UIImage
@@ -57,6 +57,40 @@ extension AccountListViewModel {
         cell.userBriefInfoView.usernameLabel.text = ""
         
         cell.userBriefInfoView.detailLabel.text = "@" + twitterUser.username
+        
+        if let accountListViewControllerDelegate = accountListViewControllerDelegate {
+            let menuItems = [
+                UIMenu(
+                    title: L10n.Scene.ManageAccounts.deleteAccount,
+                    options: .destructive,
+                    children: [
+                        UIAction(
+                            title: L10n.Common.Controls.Actions.remove,
+                            image: nil,
+                            attributes: .destructive,
+                            state: .off,
+                            handler: { _ in
+                                accountListViewControllerDelegate.signoutTwitterUser(id: twitterUser.id)
+                            }
+                        ),
+                        UIAction(
+                            title: L10n.Common.Controls.Actions.cancel,
+                            attributes: [],
+                            state: .off,
+                            handler: { _ in
+                                // do nothing
+                            }
+                        )
+                    ]
+                )
+            ]
+            if #available(iOS 14.0, *) {
+                cell.userBriefInfoView.menuButton.menu = UIMenu(title: "", children: menuItems)
+                cell.userBriefInfoView.menuButton.showsMenuAsPrimaryAction = true
+            } else {
+                // do nothing
+            }
+        }
     }
 
 }

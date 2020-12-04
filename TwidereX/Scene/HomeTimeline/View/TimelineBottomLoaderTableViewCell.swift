@@ -15,7 +15,7 @@ final class TimelineBottomLoaderTableViewCell: UITableViewCell {
     let loadMoreButton: UIButton = {
         let button = UIButton()
         button.titleLabel?.font = .preferredFont(forTextStyle: .callout)
-        button.setTitle("Load More…", for: .normal)
+        button.setTitle(L10n.Common.Controls.Timeline.loadMore, for: .normal)
         button.setTitleColor(.systemBlue, for: .normal)
         button.setTitleColor(UIColor.systemBlue.withAlphaComponent(0.5), for: .highlighted)
         return button

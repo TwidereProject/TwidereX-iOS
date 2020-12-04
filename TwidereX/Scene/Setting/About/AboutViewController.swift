@@ -26,7 +26,7 @@ extension AboutViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        title = "About"
+        title = L10n.Scene.Settings.About.title
         
         let hostingViewController = UIHostingController(rootView: aboutView.environmentObject(context))
         addChild(hostingViewController)
@@ -47,7 +47,6 @@ extension AboutViewController {
                 switch entry {
                 case .github:
                     let url = URL(string: "https://github.com/TwidereProject/TwidereX-iOS")!
-//                    self.definesPresentationContext = true
                     self.coordinator.present(scene: .safari(url: url), from: nil, transition: .safariPresent(animated: true, completion: nil))
                 case .twitter:
                     let profileViewModel = ProfileViewModel(context: self.context, username: "TwidereProject")

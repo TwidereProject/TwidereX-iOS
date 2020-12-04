@@ -31,7 +31,7 @@ final class SearchViewController: UIViewController, DrawerSidebarTransitionableV
 
     let searchBar: UISearchBar = {
         let searchBar = HeightFixedSearchBar()
-        searchBar.placeholder = "Search tweets or users"
+        searchBar.placeholder = L10n.Scene.Search.SearchBar.placeholder
         return searchBar
     }()
     let searchBarTapPublisher = PassthroughSubject<Void, Never>()
@@ -50,8 +50,6 @@ extension SearchViewController {
         drawerSidebarTransitionController = DrawerSidebarTransitionController(drawerSidebarTransitionableViewController: self)
         
         searchBarTapPublisher
-//            .receive(on: DispatchQueue.main)
-//            .debounce(for: .seconds(1), scheduler: DispatchQueue.main)
             .sink { [weak self] _ in
                 guard let self = self else { return }
                 let searchDetailViewModel = SearchDetailViewModel()

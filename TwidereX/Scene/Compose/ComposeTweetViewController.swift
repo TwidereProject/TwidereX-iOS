@@ -109,7 +109,7 @@ extension ComposeTweetViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        title = "Compose"
+        title = L10n.Scene.Compose.Title.compose
         view.backgroundColor = .systemBackground
         navigationItem.leftBarButtonItem = UIBarButtonItem(image: Asset.Editing.xmark.image.withRenderingMode(.alwaysTemplate), style: .plain, target: self, action: #selector(ComposeTweetViewController.closeBarButtonItemPressed(_:)))
         navigationItem.leftBarButtonItem?.tintColor = .label
@@ -426,8 +426,8 @@ extension ComposeTweetViewController {
                 config.interactiveHide = true
                 let bannerView = NotifyBannerView()
                 bannerView.configure(for: .error)
-                bannerView.titleLabel.text = "Tweet Fail"
-                bannerView.messageLabel.text = "Please try again"
+                bannerView.titleLabel.text = L10n.Common.Alerts.TweetFail.title
+                bannerView.messageLabel.text = L10n.Common.Alerts.TweetFail.message
                 DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                     SwiftMessages.show(config: config, view: bannerView)
                     feedbackGenerator.notificationOccurred(.error)
@@ -439,7 +439,7 @@ extension ComposeTweetViewController {
                 config.interactiveHide = true
                 let bannerView = NotifyBannerView()
                 bannerView.configure(for: .normal)
-                bannerView.titleLabel.text = "Tweet Sent"
+                bannerView.titleLabel.text = L10n.Common.Alerts.TweetSent.title
                 bannerView.messageLabel.isHidden = true
                 DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                     SwiftMessages.show(config: config, view: bannerView)
@@ -507,16 +507,16 @@ extension ComposeTweetViewController: TweetToolbarViewDelegate {
     func tweetToolbarView(_ tweetToolbarView: TweetToolbarView, cameraButtonDidPressed sender: UIButton) {
         let photoSourcePickAlertController = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
         if UIImagePickerController.isSourceTypeAvailable(.camera) {
-            photoSourcePickAlertController.addAction(UIAlertAction(title: "Take a photo", style: .default, handler: { [weak self] _ in
+            photoSourcePickAlertController.addAction(UIAlertAction(title: L10n.Common.Controls.Actions.takePhoto.localizedCapitalized, style: .default, handler: { [weak self] _ in
                 self?.showImagePicker(sourceType: .camera)
             }))
         }
         if UIImagePickerController.isSourceTypeAvailable(.photoLibrary) {
-            photoSourcePickAlertController.addAction(UIAlertAction(title: "Photo library", style: .default, handler: { [weak self] _ in
+            photoSourcePickAlertController.addAction(UIAlertAction(title: L10n.Common.Controls.Ios.photoLibrary, style: .default, handler: { [weak self] _ in
                 self?.showImagePicker(sourceType: .photoLibrary)
             }))
         }
-        photoSourcePickAlertController.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+        photoSourcePickAlertController.addAction(UIAlertAction(title: L10n.Common.Controls.Actions.cancel, style: .cancel, handler: nil))
         photoSourcePickAlertController.popoverPresentationController?.sourceView = sender
         
         UIView.animate(withDuration: 0.3) {
@@ -646,13 +646,13 @@ extension ComposeTweetViewController: UICollectionViewDelegate {
                     title: "",
                     image: nil,
                     children: [
-                        UIAction(title: "Preview", image: UIImage(systemName: "eye"), identifier: nil, attributes: [], state: .off, handler: { [weak self] _ in
+                        UIAction(title: L10n.Common.Controls.Actions.preview, image: UIImage(systemName: "eye"), identifier: nil, attributes: [], state: .off, handler: { [weak self] _ in
                             guard let self = self else { return }
                             let meta = MediaPreviewViewModel.LocalImagePreviewMeta(image: image)
                             let mediaPreviewViewModel = MediaPreviewViewModel(context: self.context, meta: meta)
                             self.coordinator.present(scene: .mediaPreview(viewModel: mediaPreviewViewModel), from: self, transition: .custom(transitioningDelegate: self.mediaPreviewTransitionController))
                         }),
-                        UIAction(title: "Remove", image: UIImage(systemName: "minus.circle"), identifier: nil, attributes: .destructive, state: .off, handler: { [weak self] _ in
+                        UIAction(title: L10n.Common.Controls.Actions.remove, image: UIImage(systemName: "minus.circle"), identifier: nil, attributes: .destructive, state: .off, handler: { [weak self] _ in
                             guard let self = self else { return }
                             var mediaServices = mediaServices
                             mediaServices.remove(at: indexPath.row)

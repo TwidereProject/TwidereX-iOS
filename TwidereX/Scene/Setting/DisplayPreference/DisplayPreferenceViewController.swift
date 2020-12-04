@@ -38,8 +38,7 @@ extension DisplayPreferenceViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        title = "Display"
-        parent?.title = "Display"
+        title = L10n.Scene.Settings.Display.title
         
         tableView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(tableView)

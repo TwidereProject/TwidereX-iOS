@@ -23,7 +23,7 @@ final class SearchDetailViewController: UIViewController, NeedsDependency {
     
     let searchBar: UISearchBar = {
         let searchBar = HeightFixedSearchBar()
-        searchBar.placeholder = "Search tweets or users"
+        searchBar.placeholder = L10n.Scene.Search.SearchBar.placeholder
         return searchBar
     }()
     

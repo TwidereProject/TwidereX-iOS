@@ -148,7 +148,8 @@ extension JSONDecoder.DateDecodingStrategy {
         let string = try container.decode(String.self)
         
         let formatterV1 = DateFormatter()
-        formatterV1.dateFormat = "EEE MMM dd HH:mm:ss Z yyyy"
+        formatterV1.locale = Locale(identifier: "en")
+        formatterV1.dateFormat = "EEE MMM dd HH:mm:ss ZZZZZ yyyy"
         if let date = formatterV1.date(from: string) {
             return date
         }

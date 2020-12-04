@@ -21,12 +21,12 @@ extension SidebarItem {
     
     var title: String {
         switch self {
-        case .messages:     return "Messages"
-        case .likes:        return "Likes"
-        case .lists:        return "Lists"
-        case .trends:       return "Trends"
-        case .drafts:       return "Drafts"
-        case .settings:     return "Settings"
+        case .messages:     return L10n.Scene.Messages.title
+        case .likes:        return L10n.Scene.Likes.title
+        case .lists:        return L10n.Scene.Lists.title
+        case .trends:       return L10n.Scene.Trends.title
+        case .drafts:       return L10n.Scene.Drafts.title
+        case .settings:     return L10n.Scene.Settings.title
         }
     }
     

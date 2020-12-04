@@ -18,7 +18,7 @@ final class ProfileBannerInfoActionView: UIView {
     
     let followStatusLabel: UILabel = {
         let label = UILabel()
-        label.text = "Follows you"
+        label.text = L10n.Common.Controls.Friendship.followsYou
         label.textColor = .secondaryLabel
         label.textAlignment = .center
         label.font = .systemFont(ofSize: 12, weight: .regular)

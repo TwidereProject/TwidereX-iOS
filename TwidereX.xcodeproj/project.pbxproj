@@ -207,6 +207,8 @@
 		DBC8E03D2574F7DB00401E20 /* PhotoLibraryService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBC8E03C2574F7DB00401E20 /* PhotoLibraryService.swift */; };
 		DBC8E04B2576337F00401E20 /* DisposeBagCollectable.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBC8E04A2576337F00401E20 /* DisposeBagCollectable.swift */; };
 		DBC8E050257653E100401E20 /* SavePhotoActivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBC8E04F257653E100401E20 /* SavePhotoActivity.swift */; };
+		DBC8E1622577B02A00401E20 /* Strings.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBC8E1612577B02A00401E20 /* Strings.swift */; };
+		DBC8E16B2578C64A00401E20 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = DBC8E16D2578C64A00401E20 /* InfoPlist.strings */; };
 		DBCB402E255B670C00DD8D8F /* AccountListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBCB402D255B670C00DD8D8F /* AccountListViewController.swift */; };
 		DBCB4047255B683B00DD8D8F /* AccountListTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBCB4046255B683B00DD8D8F /* AccountListTableViewCell.swift */; };
 		DBCB4053255B6EB100DD8D8F /* AccountListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBCB4052255B6EB100DD8D8F /* AccountListViewModel.swift */; };
@@ -578,6 +580,10 @@
 		DBC8E03C2574F7DB00401E20 /* PhotoLibraryService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoLibraryService.swift; sourceTree = "<group>"; };
 		DBC8E04A2576337F00401E20 /* DisposeBagCollectable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisposeBagCollectable.swift; sourceTree = "<group>"; };
 		DBC8E04F257653E100401E20 /* SavePhotoActivity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SavePhotoActivity.swift; sourceTree = "<group>"; };
+		DBC8E15A2577AF7900401E20 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
+		DBC8E1612577B02A00401E20 /* Strings.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Strings.swift; sourceTree = "<group>"; };
+		DBC8E1712578C64F00401E20 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		DBC8E1752578C65F00401E20 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
 		DBCB402D255B670C00DD8D8F /* AccountListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountListViewController.swift; sourceTree = "<group>"; };
 		DBCB4046255B683B00DD8D8F /* AccountListTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountListTableViewCell.swift; sourceTree = "<group>"; };
 		DBCB4052255B6EB100DD8D8F /* AccountListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountListViewModel.swift; sourceTree = "<group>"; };
@@ -1472,6 +1478,7 @@
 				DBDA8E2A24FCF8A6006750DC /* Assets.xcassets */,
 				DB88AC3B250B26F40009E562 /* Preview Assets.xcassets */,
 				DBDA8EA524FE107E006750DC /* Localizable.strings */,
+				DBC8E16D2578C64A00401E20 /* InfoPlist.strings */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -1480,6 +1487,7 @@
 			isa = PBXGroup;
 			children = (
 				DBDA8E9C24FE0F8B006750DC /* Assets.swift */,
+				DBC8E1612577B02A00401E20 /* Strings.swift */,
 			);
 			path = Generated;
 			sourceTree = "<group>";
@@ -2013,6 +2021,7 @@
 			knownRegions = (
 				en,
 				Base,
+				"zh-Hans",
 			);
 			mainGroup = DBDA8E1524FCF8A3006750DC;
 			packageReferences = (
@@ -2047,6 +2056,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				DBDA8EA324FE107E006750DC /* Localizable.strings in Resources */,
+				DBC8E16B2578C64A00401E20 /* InfoPlist.strings in Resources */,
 				DBDA8E2E24FCF8A6006750DC /* LaunchScreen.storyboard in Resources */,
 				DB88AC3C250B26F40009E562 /* Preview Assets.xcassets in Resources */,
 				DBDA8E2B24FCF8A6006750DC /* Assets.xcassets in Resources */,
@@ -2302,6 +2312,7 @@
 				DB578CD8254C0FB500745336 /* SearchUserViewModel+State.swift in Sources */,
 				DBE76C8924FF941400DEB0FC /* APIService+Autentication.swift in Sources */,
 				DBED96D3253F46CF00C5383A /* TwitterMedia.swift in Sources */,
+				DBC8E1622577B02A00401E20 /* Strings.swift in Sources */,
 				DBEA4F772511DD610007FEC5 /* TweetConversationViewModel.swift in Sources */,
 				DB1A1D6B2559A0A50049DA6D /* TweetProvider.swift in Sources */,
 				DBF69EDA2549701B00E2A915 /* SearchToSearchDetailViewControllerAnimatedTransitioning.swift in Sources */,
@@ -2552,6 +2563,15 @@
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
+		DBC8E16D2578C64A00401E20 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				DBC8E1712578C64F00401E20 /* en */,
+				DBC8E1752578C65F00401E20 /* zh-Hans */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
 		DBDA8E2724FCF8A3006750DC /* Main.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
@@ -2572,6 +2592,7 @@
 			isa = PBXVariantGroup;
 			children = (
 				DBDA8EA424FE107E006750DC /* en */,
+				DBC8E15A2577AF7900401E20 /* zh-Hans */,
 			);
 			name = Localizable.strings;
 			sourceTree = "<group>";
@@ -2599,6 +2620,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -2660,6 +2682,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";

@@ -499,13 +499,13 @@ extension ProfileViewController: ProfileBannerInfoActionViewDelegate {
         
         if isPending || isFollowing {
             let name = twitterUser.name.trimmingCharacters(in: .whitespacesAndNewlines)
-            let message = isPending ? "Cancel following request for \(name)?" : "Unfollow user \(name)?"
+            let message = isPending ? L10n.Common.Alerts.CancelFollowRequest.message(name) : L10n.Common.Alerts.UnfollowUser.message(name)
             let alertController = UIAlertController(title: nil, message: message, preferredStyle: view.traitCollection.userInterfaceIdiom == .phone ? .actionSheet : .alert)
-            let confirmAction = UIAlertAction(title: "Confirm", style: .destructive) { [weak self] _ in
+            let confirmAction = UIAlertAction(title: L10n.Common.Controls.Actions.confirm, style: .destructive) { [weak self] _ in
                 guard let self = self else { return }
                 self.toggleFollowStatue()
             }
-            let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+            let cancelAction = UIAlertAction(title: L10n.Common.Controls.Actions.cancel, style: .cancel, handler: nil)
             alertController.addAction(confirmAction)
             alertController.addAction(cancelAction)
             present(alertController, animated: true, completion: nil)

@@ -61,9 +61,9 @@ extension ProfileBannerStatusView {
             sepratorLine2.heightAnchor.constraint(equalToConstant: 24),
         ])
         
-        followingStatusItemView.statusLabel.text = "Following"
-        followersStatusItemView.statusLabel.text = "Followers"
-        listedStatusItemView.statusLabel.text = "Listed"
+        followingStatusItemView.statusLabel.text = L10n.Common.Controls.ProfileDashboard.following
+        followersStatusItemView.statusLabel.text = L10n.Common.Controls.ProfileDashboard.followers
+        listedStatusItemView.statusLabel.text = L10n.Common.Controls.ProfileDashboard.listed
     }
 }
 

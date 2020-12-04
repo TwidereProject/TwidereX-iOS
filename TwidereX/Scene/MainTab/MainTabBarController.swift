@@ -28,10 +28,10 @@ class MainTabBarController: UITabBarController {
         
         var title: String {
             switch self {
-            case .timeline:     return "Timeline"
-            case .mention:      return "Mention"
-            case .search:       return "Search"
-            case .me:           return "Me"
+            case .timeline:     return L10n.Scene.Timeline.title
+            case .mention:      return L10n.Scene.Mentions.title
+            case .search:       return L10n.Scene.Search.title
+            case .me:           return L10n.Scene.Profile.title
             }
         }
         
@@ -123,8 +123,8 @@ extension MainTabBarController {
                         config.interactiveHide = true
                         let bannerView = NotifyBannerView()
                         bannerView.configure(for: .error)
-                        bannerView.titleLabel.text = "Account Temporarily Locked"
-                        bannerView.messageLabel.text = "Open Twitter to unlock"
+                        bannerView.titleLabel.text = L10n.Common.Alerts.AccountTemporarilyLocked.title
+                        bannerView.messageLabel.text = L10n.Common.Alerts.AccountTemporarilyLocked.message
                         bannerView.actionButtonTapHandler = { [weak self] button in
                             guard let self = self else { return }
                             let url = URL(string: "https://twitter.com/account/access")!

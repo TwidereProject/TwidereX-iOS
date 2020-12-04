@@ -23,7 +23,7 @@ extension TwitterAccountUnlockViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Cancel", style: .plain, target: self, action: #selector(TwitterAccountUnlockViewController.cancelBarButtonItemPressed(_:)))
+        navigationItem.leftBarButtonItem = UIBarButtonItem(title: L10n.Common.Controls.Actions.cancel, style: .plain, target: self, action: #selector(TwitterAccountUnlockViewController.cancelBarButtonItemPressed(_:)))
         
         webView.translatesAutoresizingMaskIntoConstraints = false
         webView.scrollView.contentInsetAdjustmentBehavior = .always
@@ -57,16 +57,10 @@ extension TwitterAccountUnlockViewController: WKNavigationDelegate {
     
     func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, preferences: WKWebpagePreferences, decisionHandler: @escaping (WKNavigationActionPolicy, WKWebpagePreferences) -> Void) {
         preferences.preferredContentMode = .mobile
+        
+        // disable deeplink
         let policy = WKNavigationActionPolicy(rawValue: WKNavigationActionPolicy.allow.rawValue + 2)!
-        
         decisionHandler(policy, preferences)
-        
-        // TODO:
-        #if DEBUG
-//        if (navigationAction.request.url?.absoluteString ?? "").hasPrefix("https://mobile.twitter.com") {
-//            dismiss(animated: true, completion: nil)
-//        }
-        #endif
     }
     
 }

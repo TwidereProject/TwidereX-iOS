@@ -36,7 +36,7 @@ final class AuthenticationViewController: UIViewController, NeedsDependency {
     let signInButton: UIButton = {
         let button = UIButton()
         button.setInsets(forContentPadding: UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16), imageTitlePadding: 0)
-        button.setTitle("Sign in with Twitter", for: .normal)
+        button.setTitle(L10n.Scene.SignIn.signInWithTwitter, for: .normal)
         button.setTitleColor(.white, for: .normal)
         button.setBackgroundImage(.placeholder(color: Asset.Colors.hightLight.color), for: .normal)
         button.layer.masksToBounds = true

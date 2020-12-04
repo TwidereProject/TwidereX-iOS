@@ -40,11 +40,11 @@ enum SettingListEntryType: Hashable {
     
     var title: String {
         switch self {
-        case .appearance:       return "Appearance"
-        case .display:          return "Display"
+        case .appearance:       return L10n.Scene.Settings.Appearance.title
+        case .display:          return L10n.Scene.Settings.Display.title
         case .layout:           return "Layout"
         case .webBrowser:       return "Web Browser"
-        case .about:            return "About"
+        case .about:            return L10n.Scene.Settings.About.title
 
         }
     }
@@ -85,7 +85,7 @@ struct SettingListView: View {
     var body: some View {
         List {
             #if DEBUG
-            Section(header: Text(verbatim: "General")) {
+            Section(header: Text(verbatim: L10n.Scene.Settings.SectionHeader.general)) {
                 ForEach(SettingListView.generalSection) { entry in
                     Button(action: {
                         context.viewStateStore.settingView.presentSettingListEntryPublisher.send(entry)
@@ -97,7 +97,7 @@ struct SettingListView: View {
             }
             .modifier(TextCaseEraseStyle())
             #endif
-            Section(header: Text(verbatim: "About")) {
+            Section(header: Text(verbatim: L10n.Scene.Settings.SectionHeader.about)) {
                 ForEach(SettingListView.aboutSection) { entry in
                     Button(action: {
                         context.viewStateStore.settingView.presentSettingListEntryPublisher.send(entry)
