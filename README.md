@@ -3,10 +3,13 @@
 ![CI](https://github.com/TwidereProject/TwidereX-iOS/workflows/CI/badge.svg)
 [![Crowdin](https://badges.crowdin.net/twidere-x/localized.svg)](https://crowdin.com/project/twidere-x)
 
+Next generation of Twidere for iOS.
+
 ## Requirements
 
 - Xcode 12.2+
 - Swift 5.3+
+- iOS 13+
 
 
 ## Quick Start
