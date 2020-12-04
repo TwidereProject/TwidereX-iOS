@@ -90,7 +90,7 @@ extension APIService {
                 switch completion {
                 case .failure(let error):
                     if case let Twitter.API.APIError.response(code, _) = error, code == 326 {
-                        self.error.value = APIService.APIError.accountTemporarilyLocked
+                        self.error.send(APIService.APIError.accountTemporarilyLocked)
                     }
                 case .finished:
                     break

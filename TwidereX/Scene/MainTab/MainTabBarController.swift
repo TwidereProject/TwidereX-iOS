@@ -114,7 +114,6 @@ extension MainTabBarController {
             .receive(on: DispatchQueue.main)
             .sink { [weak self] error in
                 guard let self = self else { return }
-                guard let error = error else { return }
                 if let error = error as? APIService.APIError {
                     switch error {
                     case .accountTemporarilyLocked:
