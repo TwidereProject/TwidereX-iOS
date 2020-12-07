@@ -53,6 +53,10 @@ extension SettingListViewController {
                     break
                 case .about:
                     self.coordinator.present(scene: .about, from: self, transition: .show)
+                #if DEBUG
+                case .developer:
+                    self.coordinator.present(scene: .developer, from: self, transition: .show)
+                #endif
                 }
             }
             .store(in: &disposeBag)

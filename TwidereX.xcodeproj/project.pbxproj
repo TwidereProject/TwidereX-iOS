@@ -52,6 +52,8 @@
 		DB3402CA2521E4AF009EFADF /* APIService+Account.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB3402C92521E4AF009EFADF /* APIService+Account.swift */; };
 		DB3402CF2521FA77009EFADF /* APIService+CoreData+Tweet.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB3402CE2521FA77009EFADF /* APIService+CoreData+Tweet.swift */; };
 		DB35C35D25146C58003DA0E9 /* ConversationPostStatusView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB35C35C25146C58003DA0E9 /* ConversationPostStatusView.swift */; };
+		DB36F354257DF14E0028F81E /* APIService+Application.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB36F353257DF14E0028F81E /* APIService+Application.swift */; };
+		DB36F359257DF9DE0028F81E /* DeveloperViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB36F358257DF9DE0028F81E /* DeveloperViewModel.swift */; };
 		DB3B5F7A2562916400C46819 /* TweetProvider+MediaInfoDescriptionViewDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB3B5F792562916400C46819 /* TweetProvider+MediaInfoDescriptionViewDelegate.swift */; };
 		DB3FC03125525BFD003A2F8A /* HomeTimelineViewModel+LoadOldestState.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB3FC03025525BFD003A2F8A /* HomeTimelineViewModel+LoadOldestState.swift */; };
 		DB3FC04025527053003A2F8A /* UserMediaTimelineViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB3FC03F25527053003A2F8A /* UserMediaTimelineViewModel.swift */; };
@@ -85,10 +87,10 @@
 		DB5918FC255E918200B20F6F /* UIApplication.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB5918FB255E918200B20F6F /* UIApplication.swift */; };
 		DB5A2288255B9155006CA5B2 /* AccountListViewModel+Diffable.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB5A2287255B9155006CA5B2 /* AccountListViewModel+Diffable.swift */; };
 		DB5A229A255BC82D006CA5B2 /* AuthenticationIndex.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB5A2299255BC82D006CA5B2 /* AuthenticationIndex.swift */; };
+		DB5FAD6B257DD1DD0098B2C8 /* DeveloperViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB5FAD6A257DD1DD0098B2C8 /* DeveloperViewController.swift */; };
 		DB6760F9254AD026006C6798 /* SearchMediaViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB6760F8254AD026006C6798 /* SearchMediaViewModel.swift */; };
 		DB676101254AD12F006C6798 /* SearchMediaCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB676100254AD12F006C6798 /* SearchMediaCollectionViewCell.swift */; };
 		DB67610D254AD681006C6798 /* ActivityIndicatorCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB67610C254AD681006C6798 /* ActivityIndicatorCollectionViewCell.swift */; };
-		DB676113254ADB43006C6798 /* SwiftyJSON in Frameworks */ = {isa = PBXBuildFile; productRef = DB676112254ADB43006C6798 /* SwiftyJSON */; };
 		DB676118254BBF57006C6798 /* SearchMediaViewModel+State.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB676117254BBF57006C6798 /* SearchMediaViewModel+State.swift */; };
 		DB67611D254BC04B006C6798 /* SearchMediaViewModel+Diffable.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB67611C254BC04B006C6798 /* SearchMediaViewModel+Diffable.swift */; };
 		DB676161254BE580006C6798 /* SearchMediaPreviewCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB676160254BE580006C6798 /* SearchMediaPreviewCollectionViewCell.swift */; };
@@ -191,6 +193,7 @@
 		DBA5FA262553ED1000D2E98E /* MediaPreviewViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBA5FA252553ED1000D2E98E /* MediaPreviewViewModel.swift */; };
 		DBA5FA2E2553F06B00D2E98E /* MediaInfoDescriptionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBA5FA2D2553F06B00D2E98E /* MediaInfoDescriptionView.swift */; };
 		DBA61AB62552596A006AC169 /* UserMediaTimelineViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBA61AB52552596A006AC169 /* UserMediaTimelineViewController.swift */; };
+		DBA6667D257DD37300E5F1AA /* DeveloperView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBA6667C257DD37300E5F1AA /* DeveloperView.swift */; };
 		DBA6B1A425340B3F005FB0B4 /* HomeTimelineViewModel+LoadMiddleState.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBA6B1A325340B3F005FB0B4 /* HomeTimelineViewModel+LoadMiddleState.swift */; };
 		DBA6B1B725355C1E005FB0B4 /* UIAlertController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBA6B1B625355C1E005FB0B4 /* UIAlertController.swift */; };
 		DBA6B1BF2535B0BE005FB0B4 /* ControlContainableScrollViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBA6B1BE2535B0BE005FB0B4 /* ControlContainableScrollViews.swift */; };
@@ -434,6 +437,8 @@
 		DB3402C92521E4AF009EFADF /* APIService+Account.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "APIService+Account.swift"; sourceTree = "<group>"; };
 		DB3402CE2521FA77009EFADF /* APIService+CoreData+Tweet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "APIService+CoreData+Tweet.swift"; sourceTree = "<group>"; };
 		DB35C35C25146C58003DA0E9 /* ConversationPostStatusView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationPostStatusView.swift; sourceTree = "<group>"; };
+		DB36F353257DF14E0028F81E /* APIService+Application.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "APIService+Application.swift"; sourceTree = "<group>"; };
+		DB36F358257DF9DE0028F81E /* DeveloperViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeveloperViewModel.swift; sourceTree = "<group>"; };
 		DB3B5F792562916400C46819 /* TweetProvider+MediaInfoDescriptionViewDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TweetProvider+MediaInfoDescriptionViewDelegate.swift"; sourceTree = "<group>"; };
 		DB3FC03025525BFD003A2F8A /* HomeTimelineViewModel+LoadOldestState.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "HomeTimelineViewModel+LoadOldestState.swift"; sourceTree = "<group>"; };
 		DB3FC03F25527053003A2F8A /* UserMediaTimelineViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserMediaTimelineViewModel.swift; sourceTree = "<group>"; };
@@ -465,6 +470,7 @@
 		DB5918FB255E918200B20F6F /* UIApplication.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIApplication.swift; sourceTree = "<group>"; };
 		DB5A2287255B9155006CA5B2 /* AccountListViewModel+Diffable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AccountListViewModel+Diffable.swift"; sourceTree = "<group>"; };
 		DB5A2299255BC82D006CA5B2 /* AuthenticationIndex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationIndex.swift; sourceTree = "<group>"; };
+		DB5FAD6A257DD1DD0098B2C8 /* DeveloperViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeveloperViewController.swift; sourceTree = "<group>"; };
 		DB6760F8254AD026006C6798 /* SearchMediaViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchMediaViewModel.swift; sourceTree = "<group>"; };
 		DB676100254AD12F006C6798 /* SearchMediaCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchMediaCollectionViewCell.swift; sourceTree = "<group>"; };
 		DB67610C254AD681006C6798 /* ActivityIndicatorCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityIndicatorCollectionViewCell.swift; sourceTree = "<group>"; };
@@ -567,6 +573,7 @@
 		DBA5FA252553ED1000D2E98E /* MediaPreviewViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaPreviewViewModel.swift; sourceTree = "<group>"; };
 		DBA5FA2D2553F06B00D2E98E /* MediaInfoDescriptionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaInfoDescriptionView.swift; sourceTree = "<group>"; };
 		DBA61AB52552596A006AC169 /* UserMediaTimelineViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserMediaTimelineViewController.swift; sourceTree = "<group>"; };
+		DBA6667C257DD37300E5F1AA /* DeveloperView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeveloperView.swift; sourceTree = "<group>"; };
 		DBA6B1A325340B3F005FB0B4 /* HomeTimelineViewModel+LoadMiddleState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "HomeTimelineViewModel+LoadMiddleState.swift"; sourceTree = "<group>"; };
 		DBA6B1B625355C1E005FB0B4 /* UIAlertController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIAlertController.swift; sourceTree = "<group>"; };
 		DBA6B1BE2535B0BE005FB0B4 /* ControlContainableScrollViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControlContainableScrollViews.swift; sourceTree = "<group>"; };
@@ -701,7 +708,6 @@
 				DB74A164256E148F00C5F3C9 /* CropViewController in Frameworks */,
 				DB98DC0C25062D4D0087E30F /* ActiveLabel in Frameworks */,
 				DB4323D22514936F004FAAEC /* TwidereSDK in Frameworks */,
-				DB676113254ADB43006C6798 /* SwiftyJSON in Frameworks */,
 				DB2924CB2546B958003899A7 /* Kingfisher in Frameworks */,
 				DBE76D3E2502518D00DEB0FC /* AlamofireImage in Frameworks */,
 				DBD98489251CB88A00ED87A1 /* Tabman in Frameworks */,
@@ -907,6 +913,16 @@
 				DBE196E82570A8AA004E831A /* Withheld */,
 			);
 			path = Twitter;
+			sourceTree = "<group>";
+		};
+		DB5FAD6F257DD1E00098B2C8 /* Developer */ = {
+			isa = PBXGroup;
+			children = (
+				DB5FAD6A257DD1DD0098B2C8 /* DeveloperViewController.swift */,
+				DBA6667C257DD37300E5F1AA /* DeveloperView.swift */,
+				DB36F358257DF9DE0028F81E /* DeveloperViewModel.swift */,
+			);
+			path = Developer;
 			sourceTree = "<group>";
 		};
 		DB676105254AD4B1006C6798 /* View */ = {
@@ -1198,6 +1214,7 @@
 				DB2EBBDD255D345500956CAA /* List */,
 				DB2EBBD9255D344C00956CAA /* About */,
 				DBD245F425660E4400909BEF /* DisplayPreference */,
+				DB5FAD6F257DD1E00098B2C8 /* Developer */,
 			);
 			path = Setting;
 			sourceTree = "<group>";
@@ -1544,6 +1561,7 @@
 				DB2924EB25492006003899A7 /* APIService+Geo.swift */,
 				DB915400254C148400613473 /* APIService+User.swift */,
 				DB91540A254FE4B200613473 /* APIService+Friendship.swift */,
+				DB36F353257DF14E0028F81E /* APIService+Application.swift */,
 			);
 			path = APIService;
 			sourceTree = "<group>";
@@ -1876,7 +1894,6 @@
 				DB2611B6251B2D42004BF309 /* CryptoSwift */,
 				DBD98488251CB88A00ED87A1 /* Tabman */,
 				DB2924CA2546B958003899A7 /* Kingfisher */,
-				DB676112254ADB43006C6798 /* SwiftyJSON */,
 				DB9EC4E0255A6317005403AA /* SwiftMessages */,
 				DB74A163256E148F00C5F3C9 /* CropViewController */,
 			);
@@ -2033,7 +2050,6 @@
 				DB2611B5251B2D42004BF309 /* XCRemoteSwiftPackageReference "CryptoSwift" */,
 				DBD98487251CB88A00ED87A1 /* XCRemoteSwiftPackageReference "Tabman" */,
 				DB2924C92546B958003899A7 /* XCRemoteSwiftPackageReference "Kingfisher" */,
-				DB676111254ADB43006C6798 /* XCRemoteSwiftPackageReference "SwiftyJSON" */,
 				DB9EC4DF255A6317005403AA /* XCRemoteSwiftPackageReference "SwiftMessages" */,
 				DB74A162256E148F00C5F3C9 /* XCRemoteSwiftPackageReference "TOCropViewController" */,
 			);
@@ -2252,6 +2268,7 @@
 				DB6D671F2566221D00B70DC0 /* DisplayPreferenceViewModel.swift in Sources */,
 				DB761E6A255946160050DC01 /* DrawerSidebarViewModel.swift in Sources */,
 				DB2611472518AC13004BF309 /* AppSecret.swift in Sources */,
+				DB36F359257DF9DE0028F81E /* DeveloperViewModel.swift in Sources */,
 				DBE76D212500ED5100DEB0FC /* APIService+HomeTimeline.swift in Sources */,
 				DB1A1D892559AB510049DA6D /* MentionTimelineViewController+TweetProvider.swift in Sources */,
 				DBA6B1CC2535BC6E005FB0B4 /* APIService+Like.swift in Sources */,
@@ -2298,6 +2315,7 @@
 				DB8AC10025401C2700E636BE /* ContentOffsetAdjustableTimelineViewControllerDelegate.swift in Sources */,
 				DB3FC0522552742E003A2F8A /* MediaSection.swift in Sources */,
 				DBA397C925551EB500A95662 /* MediaPreviewImageViewController.swift in Sources */,
+				DBA6667D257DD37300E5F1AA /* DeveloperView.swift in Sources */,
 				DB10B347254AB338002D86F3 /* SearchMediaViewController.swift in Sources */,
 				DBCB4060255CAC0300DD8D8F /* TwitterAuthenticationController.swift in Sources */,
 				DB2924E42547D4C7003899A7 /* ComposeTweetMediaCollectionViewCell.swift in Sources */,
@@ -2312,6 +2330,7 @@
 				DB91546325512F8A00613473 /* MentionTimelineViewModel+Diffable.swift in Sources */,
 				DB91547A25514B8F00613473 /* MentionTimelineViewModel+LoadMiddleState.swift in Sources */,
 				DB578CD8254C0FB500745336 /* SearchUserViewModel+State.swift in Sources */,
+				DB36F354257DF14E0028F81E /* APIService+Application.swift in Sources */,
 				DBE76C8924FF941400DEB0FC /* APIService+Autentication.swift in Sources */,
 				DBED96D3253F46CF00C5383A /* TwitterMedia.swift in Sources */,
 				DBC8E1622577B02A00401E20 /* Strings.swift in Sources */,
@@ -2446,6 +2465,7 @@
 				DBCB4099255D948400DD8D8F /* TweetProvider+UITableViewDelegate.swift in Sources */,
 				DBA5F9E02553CFE800D2E98E /* MediaPreviewViewController.swift in Sources */,
 				DB9EC537255A8CEE005403AA /* ViewStateStore.swift in Sources */,
+				DB5FAD6B257DD1DD0098B2C8 /* DeveloperViewController.swift in Sources */,
 				DB6D6731256637A200B70DC0 /* TableViewSectionTextHeaderView.swift in Sources */,
 				DB925700251C8F29004FEFB5 /* UserTimelineViewController.swift in Sources */,
 				DBBABA16255E786000C1B3D9 /* TweetProvider+ConversationPostTableViewCellDelegate.swift in Sources */,
@@ -3087,14 +3107,6 @@
 				minimumVersion = 5.15.6;
 			};
 		};
-		DB676111254ADB43006C6798 /* XCRemoteSwiftPackageReference "SwiftyJSON" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/SwiftyJSON/SwiftyJSON";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 5.0.0;
-			};
-		};
 		DB74A162256E148F00C5F3C9 /* XCRemoteSwiftPackageReference "TOCropViewController" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/TimOliver/TOCropViewController.git";
@@ -3171,11 +3183,6 @@
 		DB4323D325149374004FAAEC /* TwidereSDK */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = TwidereSDK;
-		};
-		DB676112254ADB43006C6798 /* SwiftyJSON */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = DB676111254ADB43006C6798 /* XCRemoteSwiftPackageReference "SwiftyJSON" */;
-			productName = SwiftyJSON;
 		};
 		DB74A163256E148F00C5F3C9 /* CropViewController */ = {
 			isa = XCSwiftPackageProductDependency;

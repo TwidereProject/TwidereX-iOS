@@ -51,6 +51,10 @@ extension SceneCoordinator {
         case displayPreference
         case about
         
+        #if DEBUG
+        case developer
+        #endif
+        
         case safari(url: URL)
     }
 }
@@ -145,6 +149,10 @@ private extension SceneCoordinator {
             viewController = DisplayPreferenceViewController()
         case .about:
             viewController = AboutViewController()
+        #if DEBUG
+        case .developer:
+            viewController = DeveloperViewController()
+        #endif
         case .safari(let url):
             viewController = SFSafariViewController(url: url)
         }
