@@ -107,7 +107,7 @@ final class TweetConversationViewModel: NSObject {
             newSnapshot.appendItems(conversationItems, toSection: .main)
 
             if let currentState = self.loadConversationStateMachine.currentState,
-               currentState is LoadConversationState.Idle || currentState is LoadConversationState.Loading {
+               currentState is LoadConversationState.Idle || currentState is LoadConversationState.Loading || currentState is LoadConversationState.Prepare {
                 newSnapshot.appendItems([.bottomLoader], toSection: .main)
             }
 
@@ -128,7 +128,11 @@ final class TweetConversationViewModel: NSObject {
                 // set bottom inset. Make root item pin to top.
                 if let index = newSnapshot.indexOfItem(self.rootItem),
                    let cell = tableView.cellForRow(at: IndexPath(row: index, section: 0)) {
-                    tableView.contentInset.bottom = tableView.safeAreaLayoutGuide.layoutFrame.height - cell.frame.height - oldTopMargin
+                    // always set bottom inset due to lazy reply loading
+                    // otherwise tableView will jump when insert replies
+                    let bottomSpacing = tableView.safeAreaLayoutGuide.layoutFrame.height - cell.frame.height - oldTopMargin
+                    let additionalInset = round(tableView.contentSize.height - cell.frame.maxY)
+                    tableView.contentInset.bottom = max(0, bottomSpacing - additionalInset)
                 }
                 // set scroll position
                 tableView.scrollToRow(at: difference.targetIndexPath, at: .top, animated: false)
@@ -159,7 +163,7 @@ final class TweetConversationViewModel: NSObject {
             .store(in: &disposeBag)
         
         // map flat conversation nodes to a two-tier tree
-        // and new conversation nodes append to tail and not break previours tree structure
+        // new conversation nodes append to tail and not break previours tree structure
         conversationNodes
             .receive(on: DispatchQueue.main)
             .compactMap { [weak self] nodes -> [ConversationItem]? in
@@ -432,7 +436,7 @@ extension TweetConversationViewModel {
         cell.conversationPostView.actionToolbar.likeButtonHighlight = isLike
         
         // set upper link
-        if let inReplyToTweetID = (tweet.retweet ?? tweet).inReplyToTweetID {
+        if let _ = (tweet.retweet ?? tweet).inReplyToTweetID {
             cell.conversationLinkUpper.isHidden = false
         } else {
             cell.conversationLinkUpper.isHidden = true
