@@ -81,18 +81,35 @@ extension TweetConversationViewController {
 extension TweetConversationViewController {
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         guard scrollView === tableView else { return }
-        let cells = tableView.visibleCells.compactMap { $0 as? TimelineBottomLoaderTableViewCell }
-        guard let loaderTableViewCell = cells.first else { return }
         
-        if let tabBar = tabBarController?.tabBar, let window = view.window {
-            let loaderTableViewCellFrameInWindow = tableView.convert(loaderTableViewCell.frame, to: nil)
-            let windowHeight = window.frame.height
-            let loaderAppear = (loaderTableViewCellFrameInWindow.origin.y + 0.8 * loaderTableViewCell.frame.height) < (windowHeight - tabBar.frame.height)
-            if loaderAppear {
+        let topLoaderTableViewCell = tableView.visibleCells.compactMap { $0 as? TimelineTopLoaderTableViewCell }.first
+        if let topLoaderTableViewCell = topLoaderTableViewCell,
+           let currentState = viewModel.loadReplyStateMachine.currentState,
+           currentState is TweetConversationViewModel.LoadReplyState.Idle {
+            if let tabBar = tabBarController?.tabBar, let window = view.window {
+                let loaderTableViewCellFrameInWindow = tableView.convert(topLoaderTableViewCell.frame, to: nil)
+                let windowHeight = window.frame.height
+                let loaderAppear = (loaderTableViewCellFrameInWindow.origin.y + 0.8 * topLoaderTableViewCell.frame.height) < (windowHeight - tabBar.frame.height)
+                if loaderAppear {
+                    viewModel.loadReplyStateMachine.enter(TweetConversationViewModel.LoadReplyState.Loading.self)
+                }
+            } else {
+                viewModel.loadReplyStateMachine.enter(TweetConversationViewModel.LoadReplyState.Loading.self)
+            }
+        }
+        
+        let bottomLoaderTableViewCell = tableView.visibleCells.compactMap { $0 as? TimelineBottomLoaderTableViewCell }.first
+        if let bottomLoaderTableViewCell = bottomLoaderTableViewCell {
+            if let tabBar = tabBarController?.tabBar, let window = view.window {
+                let loaderTableViewCellFrameInWindow = tableView.convert(bottomLoaderTableViewCell.frame, to: nil)
+                let windowHeight = window.frame.height
+                let loaderAppear = (loaderTableViewCellFrameInWindow.origin.y + 0.8 * bottomLoaderTableViewCell.frame.height) < (windowHeight - tabBar.frame.height)
+                if loaderAppear {
+                    viewModel.loadConversationStateMachine.enter(TweetConversationViewModel.LoadConversationState.Loading.self)
+                }
+            } else {
                 viewModel.loadConversationStateMachine.enter(TweetConversationViewModel.LoadConversationState.Loading.self)
             }
-        } else {
-            viewModel.loadConversationStateMachine.enter(TweetConversationViewModel.LoadConversationState.Loading.self)
         }
     }
 }
