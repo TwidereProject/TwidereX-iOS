@@ -197,69 +197,77 @@ extension ProfileViewController {
         )
 
         // setup view model
-        viewModel.bannerImageURL
-            .sink { [weak self] url in
-                guard let self = self else { return }
-                let placeholderImage = UIImage.placeholder(color: Asset.Colors.hightLight.color)
-                guard let url = url else {
-                    self.profileHeaderViewController.profileBannerView.profileBannerImageView.image = placeholderImage
-                    return
+        Publishers.CombineLatest(
+            viewModel.bannerImageURL.eraseToAnyPublisher(),
+            viewModel.viewDidAppear.eraseToAnyPublisher()
+        )
+        .receive(on: DispatchQueue.main)
+        .sink { [weak self] url, _ in
+            guard let self = self else { return }
+            let placeholderImage = UIImage.placeholder(color: Asset.Colors.hightLight.color)
+            guard let url = url else {
+                self.profileHeaderViewController.profileBannerView.profileBannerImageView.image = placeholderImage
+                return
+            }
+            self.profileHeaderViewController.profileBannerView.profileBannerImageView.af.setImage(
+                withURL: url,
+                placeholderImage: placeholderImage,
+                imageTransition: .crossDissolve(0.3),
+                runImageTransitionIfCached: false,
+                completion: { [weak self] response in
+                    guard let self = self else { return }
+                    switch response.result {
+                    case .success(let image):
+                        if #available(iOS 14.0, *) {
+                            guard let inversedDominantColor = image.dominantColor?.complementary else { return }
+                            self.refreshControl.tintColor = inversedDominantColor
+                        }
+                    case .failure:
+                        break
+                    }
                 }
-                self.profileHeaderViewController.profileBannerView.profileBannerImageView.af.setImage(
+            )
+        }
+        .store(in: &disposeBag)
+        Publishers.CombineLatest(
+            viewModel.avatarImageURL.eraseToAnyPublisher(),
+            viewModel.viewDidAppear.eraseToAnyPublisher()
+        )
+        .receive(on: DispatchQueue.main)
+        .sink { [weak self] url, _ in
+            guard let self = self else { return }
+            guard let url = url else { return }
+            self.profileHeaderViewController.profileBannerView.profileAvatarImageView.af.cancelImageRequest()
+            self.profileHeaderViewController.profileBannerView.profileAvatarImageView.kf.cancelDownloadTask()
+            
+            let placeholderImage = UIImage
+                .placeholder(size: ProfileBannerView.avatarImageViewSize, color: .systemFill)
+                .af.imageRoundedIntoCircle()
+            if url.pathExtension == "gif" {
+                self.profileHeaderViewController.profileBannerView.profileAvatarImageView.kf.setImage(
+                    with: url,
+                    placeholder: placeholderImage,
+                    options: [
+                        .processor(
+                            CroppingImageProcessor(size: ProfileBannerView.avatarImageViewSize, anchor: CGPoint(x: 0.5, y: 0.5)) |>
+                            RoundCornerImageProcessor(cornerRadius: 0.5 * ProfileBannerView.avatarImageViewSize.width)
+                        ),
+                        .transition(.fade(0.2))
+                    ]
+                )
+            } else {
+                let filter = ScaledToSizeCircleFilter(size: ProfileBannerView.avatarImageViewSize)
+                self.profileHeaderViewController.profileBannerView.profileAvatarImageView.af.setImage(
                     withURL: url,
                     placeholderImage: placeholderImage,
+                    filter: filter,
                     imageTransition: .crossDissolve(0.3),
                     runImageTransitionIfCached: false,
-                    completion: { [weak self] response in
-                        guard let self = self else { return }
-                        switch response.result {
-                        case .success(let image):
-                            if #available(iOS 14.0, *) {
-                                guard let inversedDominantColor = image.dominantColor?.complementary else { return }
-                                self.refreshControl.tintColor = inversedDominantColor
-                            }
-                        case .failure:
-                            break
-                        }
-                    }
+                    completion: nil
                 )
             }
-            .store(in: &disposeBag)
-        viewModel.avatarImageURL
-            .sink { [weak self] url in
-                guard let self = self else { return }
-                guard let url = url else { return }
-                self.profileHeaderViewController.profileBannerView.profileAvatarImageView.af.cancelImageRequest()
-                self.profileHeaderViewController.profileBannerView.profileAvatarImageView.kf.cancelDownloadTask()
-                
-                let placeholderImage = UIImage
-                    .placeholder(size: ProfileBannerView.avatarImageViewSize, color: .systemFill)
-                    .af.imageRoundedIntoCircle()
-                if url.pathExtension == "gif" {
-                    self.profileHeaderViewController.profileBannerView.profileAvatarImageView.kf.setImage(
-                        with: url,
-                        placeholder: placeholderImage,
-                        options: [
-                            .processor(
-                                CroppingImageProcessor(size: ProfileBannerView.avatarImageViewSize, anchor: CGPoint(x: 0.5, y: 0.5)) |>
-                                RoundCornerImageProcessor(cornerRadius: 0.5 * ProfileBannerView.avatarImageViewSize.width)
-                            ),
-                            .transition(.fade(0.2))
-                        ]
-                    )
-                } else {
-                    let filter = ScaledToSizeCircleFilter(size: ProfileBannerView.avatarImageViewSize)
-                    self.profileHeaderViewController.profileBannerView.profileAvatarImageView.af.setImage(
-                        withURL: url,
-                        placeholderImage: placeholderImage,
-                        filter: filter,
-                        imageTransition: .crossDissolve(0.3),
-                        runImageTransitionIfCached: false,
-                        completion: nil
-                    )
-                }
-            }
-            .store(in: &disposeBag)
+        }
+        .store(in: &disposeBag)
         viewModel.protected
             .map { $0 != true }
             .assign(to: \.isHidden, on: profileHeaderViewController.profileBannerView.lockImageView)
@@ -334,25 +342,29 @@ extension ProfileViewController {
             }
             .store(in: &disposeBag)
         
-        viewModel.currentTwitterUser
-            .sink { [weak self] twitterUser in
-                guard let self = self else { return }
-                let placeholderImage = UIImage
-                    .placeholder(size: UIButton.avatarButtonSize, color: .systemFill)
-                    .af.imageRoundedIntoCircle()
-                guard let twitterUser = twitterUser, let avatarImageURL = twitterUser.avatarImageURL() else {
-                    self.avatarButton.setImage(placeholderImage, for: .normal)
-                    return
-                }
-                let filter = ScaledToSizeCircleFilter(size: UIButton.avatarButtonSize)
-                self.avatarButton.af.setImage(
-                    for: .normal,
-                    url: avatarImageURL,
-                    placeholderImage: placeholderImage,
-                    filter: filter
-                )
+        Publishers.CombineLatest(
+            viewModel.currentTwitterUser.eraseToAnyPublisher(),
+            viewModel.viewDidAppear.eraseToAnyPublisher()
+        )
+        .receive(on: DispatchQueue.main)
+        .sink { [weak self] twitterUser, _ in
+            guard let self = self else { return }
+            let placeholderImage = UIImage
+                .placeholder(size: UIButton.avatarButtonSize, color: .systemFill)
+                .af.imageRoundedIntoCircle()
+            guard let twitterUser = twitterUser, let avatarImageURL = twitterUser.avatarImageURL() else {
+                self.avatarButton.setImage(placeholderImage, for: .normal)
+                return
             }
-            .store(in: &disposeBag)
+            let filter = ScaledToSizeCircleFilter(size: UIButton.avatarButtonSize)
+            self.avatarButton.af.setImage(
+                for: .normal,
+                url: avatarImageURL,
+                placeholderImage: placeholderImage,
+                filter: filter
+            )
+        }
+        .store(in: &disposeBag)
 
         context.overrideTraitCollection
             .sink { [weak self] traitCollection in
@@ -378,8 +390,10 @@ extension ProfileViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
+        viewModel.viewDidAppear.send()
+        
         // set overlay scroll view initial content size
-        guard let currentViewController = profileSegmentedViewController.pagingViewController.currentViewController as? CustomScrollViewContainerController else { return }
+        guard let currentViewController = profileSegmentedViewController.pagingViewController.currentViewController as? ScrollViewContainer else { return }
         currentPostTimelineTableViewContentSizeObservation = observeTableViewContentSize(scrollView: currentViewController.scrollView)
         currentViewController.scrollView.panGestureRecognizer.require(toFail: overlayScrollView.panGestureRecognizer)
     }
@@ -440,7 +454,7 @@ extension ProfileViewController: UIScrollViewDelegate {
             contentOffsets.removeAll()
         } else {
             containerScrollView.contentOffset.y = topMaxContentOffsetY
-            if let customScrollViewContainerController = profileSegmentedViewController.pagingViewController.currentViewController as? CustomScrollViewContainerController {
+            if let customScrollViewContainerController = profileSegmentedViewController.pagingViewController.currentViewController as? ScrollViewContainer {
                 let contentOffsetY = scrollView.contentOffset.y - containerScrollView.contentOffset.y
                 customScrollViewContainerController.scrollView.contentOffset.y = contentOffsetY
             }
@@ -464,7 +478,7 @@ extension ProfileViewController: ProfileHeaderViewControllerDelegate {
 // MARK: - ProfilePagingViewControllerDelegate
 extension ProfileViewController: ProfilePagingViewControllerDelegate {
     
-    func profilePagingViewController(_ viewController: ProfilePagingViewController, didScrollToPostCustomScrollViewContainerController postTimelineViewController: CustomScrollViewContainerController, atIndex index: Int) {
+    func profilePagingViewController(_ viewController: ProfilePagingViewController, didScrollToPostCustomScrollViewContainerController postTimelineViewController: ScrollViewContainer, atIndex index: Int) {
         os_log("%{public}s[%{public}ld], %{public}s: select at index: %ld", ((#file as NSString).lastPathComponent), #line, #function, index)
         
         // save content offset
@@ -582,4 +596,10 @@ extension ProfileViewController: ProfileBannerViewDelegate {
         coordinator.present(scene: .safari(url: url), from: nil, transition: .safariPresent(animated: true, completion: nil))
     }
     
+}
+
+
+// MARK: - ScrollViewContainer
+extension ProfileViewController: ScrollViewContainer {
+    var scrollView: UIScrollView { return overlayScrollView }
 }

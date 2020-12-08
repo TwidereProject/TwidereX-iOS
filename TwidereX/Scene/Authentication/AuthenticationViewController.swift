@@ -61,7 +61,7 @@ extension AuthenticationViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        title = "Authentication"
+        title = L10n.Scene.Authentication.title
         view.backgroundColor = .systemBackground
         navigationController?.setNavigationBarHidden(true, animated: false)
         
@@ -108,11 +108,12 @@ extension AuthenticationViewController {
         
         isSigning
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] isRequestToken in
+            .sink { [weak self] isSigning in
                 guard let self = self else { return }
-                self.signInButton.setTitleColor(isRequestToken ? .clear : .white, for: .normal)
-                self.signInButton.isUserInteractionEnabled = !isRequestToken
-                isRequestToken ? self.signInActivityIndicatorView.startAnimating() : self.signInActivityIndicatorView.stopAnimating()
+                self.signInButton.setTitleColor(isSigning ? .clear : .white, for: .normal)
+                self.signInButton.isUserInteractionEnabled = !isSigning
+                self.signInButton.isEnabled = !isSigning
+                isSigning ? self.signInActivityIndicatorView.startAnimating() : self.signInActivityIndicatorView.stopAnimating()
             }
             .store(in: &disposeBag)
         
@@ -124,10 +125,14 @@ extension AuthenticationViewController {
     @objc private func signInWithTwitterButtonPressed(_ sender: UIButton) {
         context.apiService.twitterRequestToken()
             .handleEvents(receiveSubscription: { [weak self] _ in
-                sender.isEnabled = false
                 self?.isSigning.value = true
             }, receiveCompletion: { completion in
-                sender.isEnabled = true
+                switch completion {
+                case .failure(let error):
+                    os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: request token fail: %s", ((#file as NSString).lastPathComponent), #line, #function, error.localizedDescription)
+                case .finished:
+                    break
+                }
             })
             .receive(on: DispatchQueue.main)
             .sink { [weak self] completion in

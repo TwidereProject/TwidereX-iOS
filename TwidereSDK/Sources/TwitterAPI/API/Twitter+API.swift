@@ -26,6 +26,7 @@ extension Twitter.API {
     }()
     
     public enum Account { }
+    public enum Application { }
     public enum Favorites { }
     public enum Friendships { }
     public enum Geo { }

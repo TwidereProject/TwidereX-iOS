@@ -25,6 +25,7 @@ final class TweetConversationViewController: UIViewController, NeedsDependency, 
         let tableView = UITableView()
         tableView.register(ConversationPostTableViewCell.self, forCellReuseIdentifier: String(describing: ConversationPostTableViewCell.self))
         tableView.register(TimelinePostTableViewCell.self, forCellReuseIdentifier: String(describing: TimelinePostTableViewCell.self))
+        tableView.register(TimelineTopLoaderTableViewCell.self, forCellReuseIdentifier: String(describing: TimelineTopLoaderTableViewCell.self))
         tableView.register(TimelineBottomLoaderTableViewCell.self, forCellReuseIdentifier: String(describing: TimelineBottomLoaderTableViewCell.self))
         tableView.rowHeight = UITableView.automaticDimension
         tableView.separatorStyle = .none
@@ -64,6 +65,7 @@ extension TweetConversationViewController {
         tableView.dataSource = viewModel.diffableDataSource
         tableView.reloadData()
         
+        viewModel.loadReplyStateMachine.enter(TweetConversationViewModel.LoadReplyState.Prepare.self)
         viewModel.loadConversationStateMachine.enter(TweetConversationViewModel.LoadConversationState.Prepare.self)
     }
     
@@ -79,18 +81,35 @@ extension TweetConversationViewController {
 extension TweetConversationViewController {
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         guard scrollView === tableView else { return }
-        let cells = tableView.visibleCells.compactMap { $0 as? TimelineBottomLoaderTableViewCell }
-        guard let loaderTableViewCell = cells.first else { return }
         
-        if let tabBar = tabBarController?.tabBar, let window = view.window {
-            let loaderTableViewCellFrameInWindow = tableView.convert(loaderTableViewCell.frame, to: nil)
-            let windowHeight = window.frame.height
-            let loaderAppear = (loaderTableViewCellFrameInWindow.origin.y + 0.8 * loaderTableViewCell.frame.height) < (windowHeight - tabBar.frame.height)
-            if loaderAppear {
+        let topLoaderTableViewCell = tableView.visibleCells.compactMap { $0 as? TimelineTopLoaderTableViewCell }.first
+        if let topLoaderTableViewCell = topLoaderTableViewCell,
+           let currentState = viewModel.loadReplyStateMachine.currentState,
+           currentState is TweetConversationViewModel.LoadReplyState.Idle {
+            if let tabBar = tabBarController?.tabBar, let window = view.window {
+                let loaderTableViewCellFrameInWindow = tableView.convert(topLoaderTableViewCell.frame, to: nil)
+                let windowHeight = window.frame.height
+                let loaderAppear = (loaderTableViewCellFrameInWindow.origin.y + 0.8 * topLoaderTableViewCell.frame.height) < (windowHeight - tabBar.frame.height)
+                if loaderAppear {
+                    viewModel.loadReplyStateMachine.enter(TweetConversationViewModel.LoadReplyState.Loading.self)
+                }
+            } else {
+                viewModel.loadReplyStateMachine.enter(TweetConversationViewModel.LoadReplyState.Loading.self)
+            }
+        }
+        
+        let bottomLoaderTableViewCell = tableView.visibleCells.compactMap { $0 as? TimelineBottomLoaderTableViewCell }.first
+        if let bottomLoaderTableViewCell = bottomLoaderTableViewCell {
+            if let tabBar = tabBarController?.tabBar, let window = view.window {
+                let loaderTableViewCellFrameInWindow = tableView.convert(bottomLoaderTableViewCell.frame, to: nil)
+                let windowHeight = window.frame.height
+                let loaderAppear = (loaderTableViewCellFrameInWindow.origin.y + 0.8 * bottomLoaderTableViewCell.frame.height) < (windowHeight - tabBar.frame.height)
+                if loaderAppear {
+                    viewModel.loadConversationStateMachine.enter(TweetConversationViewModel.LoadConversationState.Loading.self)
+                }
+            } else {
                 viewModel.loadConversationStateMachine.enter(TweetConversationViewModel.LoadConversationState.Loading.self)
             }
-        } else {
-            viewModel.loadConversationStateMachine.enter(TweetConversationViewModel.LoadConversationState.Loading.self)
         }
     }
 }
@@ -112,25 +131,7 @@ extension TweetConversationViewController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         os_log("%{public}s[%{public}ld], %{public}s: indexPath %s", ((#file as NSString).lastPathComponent), #line, #function, indexPath.debugDescription)
-        
-        guard let diffableDataSource = viewModel.diffableDataSource else { return }
-        guard let item = diffableDataSource.itemIdentifier(for: indexPath) else { return }
-        
-        switch item {
-        case .leaf(let objectID, _):
-            let managedObjectContext = context.managedObjectContext
-            managedObjectContext.perform {
-                guard let tweet = managedObjectContext.object(with: objectID) as? Tweet else { return }
-                
-                DispatchQueue.main.async { [weak self] in
-                    guard let self = self else { return }
-                    let tweetPostViewModel = TweetConversationViewModel(context: self.context, tweetObjectID: tweet.objectID)
-                    self.coordinator.present(scene: .tweetConversation(viewModel: tweetPostViewModel), from: self, transition: .show)
-                }
-            }
-        default:
-            return
-        }
+        handleTableView(tableView, didSelectRowAt: indexPath)
     }
     
     func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {

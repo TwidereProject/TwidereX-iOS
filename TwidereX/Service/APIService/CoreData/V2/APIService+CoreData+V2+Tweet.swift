@@ -140,7 +140,11 @@ extension APIService.CoreData.V2 {
                 return nil
             }()
             
-            let tweetProperty = Tweet.Property(entity: info.tweet, replyToTweetID: repliedToInfo?.tweet.id, networkDate: networkDate)
+            let replyToTweetID: Tweet.ID? = repliedToInfo?.tweet.id ?? {
+                guard let replyTo = info.tweet.referencedTweets?.first(where: { $0.type == .repliedTo }) else { return nil }
+                return replyTo.id
+            }()
+            let tweetProperty = Tweet.Property(entity: info.tweet, replyToTweetID: replyToTweetID, networkDate: networkDate)
             let tweet = Tweet.insert(
                 into: managedObjectContext,
                 property: tweetProperty,
@@ -215,6 +219,10 @@ extension APIService.CoreData.V2 {
         info.tweet.publicMetrics.flatMap { tweet.metrics?.update(retweetCount: $0.retweetCount) }
         info.tweet.publicMetrics.flatMap { tweet.metrics?.update(replyCount: $0.replyCount) }
         info.tweet.publicMetrics.flatMap { tweet.metrics?.update(quoteCount: $0.quoteCount) }
+        
+        if let replyTo = info.tweet.referencedTweets?.first(where: { $0.type == .repliedTo }) {
+            tweet.update(inReplyToTweetID: replyTo.id)
+        }
         
         // relationship with requestTwitterUser
 

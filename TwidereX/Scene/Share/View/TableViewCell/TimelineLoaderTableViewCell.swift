@@ -1,14 +1,17 @@
 //
-//  TimelineBottomLoaderTableViewCell.swift
+//  TimelineLoaderTableViewCell.swift
 //  TwidereX
 //
-//  Created by Cirno MainasuK on 2020-9-8.
+//  Created by Cirno MainasuK on 2020-12-4.
+//  Copyright © 2020 Twidere. All rights reserved.
 //
 
 import UIKit
 import Combine
 
-final class TimelineBottomLoaderTableViewCell: UITableViewCell {
+class TimelineLoaderTableViewCell: UITableViewCell {
+    
+    static let cellHeight: CGFloat = 48
     
     var disposeBag = Set<AnyCancellable>()
     
@@ -46,7 +49,7 @@ final class TimelineBottomLoaderTableViewCell: UITableViewCell {
     
 }
 
-extension TimelineBottomLoaderTableViewCell {
+extension TimelineLoaderTableViewCell {
     
     private func _init() {
         loadMoreButton.translatesAutoresizingMaskIntoConstraints = false
@@ -56,6 +59,7 @@ extension TimelineBottomLoaderTableViewCell {
             loadMoreButton.leadingAnchor.constraint(equalTo: contentView.readableContentGuide.leadingAnchor),
             contentView.readableContentGuide.trailingAnchor.constraint(equalTo: loadMoreButton.trailingAnchor),
             contentView.bottomAnchor.constraint(equalTo: loadMoreButton.bottomAnchor, constant: 8),
+            loadMoreButton.heightAnchor.constraint(equalToConstant: TimelineLoaderTableViewCell.cellHeight - 2 * 8).priority(.defaultHigh),
         ])
         
         activityIndicatorView.translatesAutoresizingMaskIntoConstraints = false

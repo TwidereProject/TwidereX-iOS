@@ -34,8 +34,10 @@ final class TwitterAuthenticationController: NeedsDependency {
         self.coordinator = coordinator
         
         switch requestTokenExchange {
+        // default use system AuthenticationServices
         case .customRequestTokenResponse(_, let append):
             authentication(authenticateURL: authenticateURL, append: append)
+        // use custom pin-based OAuth when set callback as "oob"
         case .requestTokenResponse(let requestTokenResponse):
             let twitterPinBasedAuthenticationViewModel = TwitterPinBasedAuthenticationViewModel(authenticateURL: authenticateURL)
             authentication(requestTokenResponse: requestTokenResponse, pinCodePublisher: twitterPinBasedAuthenticationViewModel.pinCodePublisher)
@@ -47,6 +49,7 @@ final class TwitterAuthenticationController: NeedsDependency {
 
 extension TwitterAuthenticationController {
     
+    // create authenticationSession and setup callback account authentication & verify publisher
     func authentication(authenticateURL: URL, append: Twitter.API.OAuth.CustomRequestTokenResponseAppend) {
         authenticationSession = ASWebAuthenticationSession(url: authenticateURL, callbackURLScheme: "twidere") { [weak self] callback, error in
             guard let self = self else { return }
@@ -55,6 +58,7 @@ extension TwitterAuthenticationController {
             if let error = error {
                 if let error = error as? ASWebAuthenticationSessionError {
                     if error.errorCode == ASWebAuthenticationSessionError.canceledLogin.rawValue {
+                        os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: user cancel authentication", ((#file as NSString).lastPathComponent), #line, #function)
                         self.isAuthenticating.value = false
                         return
                     }
@@ -104,6 +108,7 @@ extension TwitterAuthenticationController {
         }
     }
     
+    // setup pin code based account authentication & verify publisher
     func authentication(requestTokenResponse: Twitter.API.OAuth.RequestTokenResponse, pinCodePublisher: PassthroughSubject<String, Never>) {
         pinCodePublisher
             .handleEvents(receiveOutput: { [weak self] _ in
@@ -151,6 +156,7 @@ extension TwitterAuthenticationController {
 
 extension TwitterAuthenticationController {
     
+    // shared
     static func verifyAndSaveAuthentication(context: AppContext, property: TwitterAuthentication.Property, appSecret: AppSecret) -> AnyPublisher<Twitter.Response.Content<Twitter.Entity.User>, Error> {
         Just(property)
             .setFailureType(to: Error.self)

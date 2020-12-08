@@ -161,26 +161,30 @@ extension MentionTimelineViewController {
                 }
             }
             .store(in: &disposeBag)
-        context.authenticationService.activeAuthenticationIndex
-            .sink { [weak self] activeAuthenticationIndex in
-                guard let self = self else { return }
-                let placeholderImage = UIImage
-                    .placeholder(size: UIButton.avatarButtonSize, color: .systemFill)
-                    .af.imageRoundedIntoCircle()
-                guard let twitterUser = activeAuthenticationIndex?.twitterAuthentication?.twitterUser,
-                      let avatarImageURL = twitterUser.avatarImageURL() else {
-                    self.avatarButton.setImage(placeholderImage, for: .normal)
-                    return
-                }
-                let filter = ScaledToSizeCircleFilter(size: UIButton.avatarButtonSize)
-                self.avatarButton.af.setImage(
-                    for: .normal,
-                    url: avatarImageURL,
-                    placeholderImage: placeholderImage,
-                    filter: filter
-                )
+        Publishers.CombineLatest(
+            context.authenticationService.activeAuthenticationIndex.eraseToAnyPublisher(),
+            viewModel.viewDidAppear.eraseToAnyPublisher()
+        )
+        .receive(on: DispatchQueue.main)
+        .sink { [weak self] activeAuthenticationIndex, _ in
+            guard let self = self else { return }
+            let placeholderImage = UIImage
+                .placeholder(size: UIButton.avatarButtonSize, color: .systemFill)
+                .af.imageRoundedIntoCircle()
+            guard let twitterUser = activeAuthenticationIndex?.twitterAuthentication?.twitterUser,
+                  let avatarImageURL = twitterUser.avatarImageURL() else {
+                self.avatarButton.setImage(placeholderImage, for: .normal)
+                return
             }
-            .store(in: &disposeBag)
+            let filter = ScaledToSizeCircleFilter(size: UIButton.avatarButtonSize)
+            self.avatarButton.af.setImage(
+                for: .normal,
+                url: avatarImageURL,
+                placeholderImage: placeholderImage,
+                filter: filter
+            )
+        }
+        .store(in: &disposeBag)
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -191,8 +195,11 @@ extension MentionTimelineViewController {
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+        
+        viewModel.viewDidAppear.send()
 
-        DispatchQueue.once {
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
             if (self.viewModel.fetchedResultsController.fetchedObjects ?? []).count == 0 {
                 self.viewModel.loadLatestStateMachine.enter(MentionTimelineViewModel.LoadLatestState.Loading.self)
             }

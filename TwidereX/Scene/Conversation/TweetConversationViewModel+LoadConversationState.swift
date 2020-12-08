@@ -58,10 +58,10 @@ extension TweetConversationViewModel.LoadConversationState {
             var _createdAt: Date?
             viewModel.context.managedObjectContext.perform {
                 let tweet = viewModel.context.managedObjectContext.object(with: tweetObjectID) as! Tweet
-                _tweetID = tweet.id
-                _authorID = tweet.author.id
-                _conversationID = tweet.conversationID
-                _createdAt = tweet.createdAt
+                _tweetID = (tweet.retweet ?? tweet).id
+                _authorID = (tweet.retweet ?? tweet).author.id
+                _conversationID = (tweet.retweet ?? tweet).conversationID
+                _createdAt = (tweet.retweet ?? tweet).createdAt
              
                 DispatchQueue.main.async {
                     guard let tweetID = _tweetID, let authorID = _authorID, let createdAt = _createdAt else {
@@ -246,13 +246,10 @@ extension TweetConversationViewModel.LoadConversationState {
         
         override func didEnter(from previousState: GKState?) {
             super.didEnter(from: previousState)
-            guard let viewModel = viewModel, let stateMachine = stateMachine else { return }
-            guard let diffableDataSource = viewModel.diffableDataSource else { return }
-            var snapshot = diffableDataSource.snapshot()
-            if snapshot.itemIdentifiers.contains(.bottomLoader) {
-                snapshot.deleteItems([.bottomLoader])
-                diffableDataSource.apply(snapshot, animatingDifferences: false)
-            }
+            guard let viewModel = viewModel else { return }
+            
+            // trigger diffable data source update
+            viewModel.conversationItems.value = viewModel.conversationItems.value
         }
     }
     
@@ -265,12 +262,9 @@ extension TweetConversationViewModel.LoadConversationState {
         override func didEnter(from previousState: GKState?) {
             super.didEnter(from: previousState)
             guard let viewModel = viewModel else { return }
-            guard let diffableDataSource = viewModel.diffableDataSource else { return }
-            var snapshot = diffableDataSource.snapshot()
-            if snapshot.itemIdentifiers.contains(.bottomLoader) {
-                snapshot.deleteItems([.bottomLoader])
-                diffableDataSource.apply(snapshot, animatingDifferences: false)
-            }
+            
+            // trigger diffable data source update
+            viewModel.conversationItems.value = viewModel.conversationItems.value
         }
     }
     

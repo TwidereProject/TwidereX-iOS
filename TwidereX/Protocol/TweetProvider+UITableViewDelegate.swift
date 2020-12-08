@@ -20,7 +20,7 @@ extension UITableViewDelegate where Self: TweetProvider {
         tweet(for: cell)
             .sink { [weak self] tweet in
                 guard let self = self else { return }
-                guard let tweet = (tweet?.retweet ?? tweet) else { return }
+                guard let tweet = tweet else { return }
                 
                 let tweetPostViewModel = TweetConversationViewModel(context: self.context, tweetObjectID: tweet.objectID)
                 DispatchQueue.main.async {
@@ -90,7 +90,7 @@ extension UITableViewDelegate where Self: TweetProvider {
                     image: nil,
                     children: [
                         UIAction(
-                            title: "Save Photo",
+                            title: L10n.Common.Controls.Actions.savePhoto,
                             image: UIImage(systemName: "square.and.arrow.down"),
                             attributes: [],
                             state: .off

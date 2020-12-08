@@ -11,7 +11,7 @@ import Pageboy
 import Tabman
 
 protocol ProfilePagingViewControllerDelegate: class {
-    func profilePagingViewController(_ viewController: ProfilePagingViewController, didScrollToPostCustomScrollViewContainerController customScrollViewContainerController: CustomScrollViewContainerController, atIndex index: Int)
+    func profilePagingViewController(_ viewController: ProfilePagingViewController, didScrollToPostCustomScrollViewContainerController customScrollViewContainerController: ScrollViewContainer, atIndex index: Int)
 }
 
 final class ProfilePagingViewController: TabmanViewController {

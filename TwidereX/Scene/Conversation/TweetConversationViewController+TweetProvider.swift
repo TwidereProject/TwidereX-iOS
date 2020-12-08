@@ -25,6 +25,12 @@ extension TweetConversationViewController: TweetProvider {
             }
             
             switch item {
+            case .reply(let objectID):
+                let managedObjectContext = self.context.managedObjectContext
+                managedObjectContext.perform {
+                    let tweet = managedObjectContext.object(with: objectID) as? Tweet
+                    promise(.success(tweet))
+                }
             case .leaf(let objectID, _):
                 let managedObjectContext = self.context.managedObjectContext
                 managedObjectContext.perform {
