@@ -20,6 +20,8 @@ class MainTabBarController: UITabBarController {
     weak var context: AppContext!
     weak var coordinator: SceneCoordinator!
     
+    let doubleTapGestureRecognizer = UITapGestureRecognizer.doubleTapGestureRecognizer
+    
     enum Tab: Int, CaseIterable {
         case timeline
         case mention
@@ -137,6 +139,10 @@ extension MainTabBarController {
             }
             .store(in: &disposeBag)
         
+        doubleTapGestureRecognizer.addTarget(self, action: #selector(MainTabBarController.doubleTapGestureRecognizerHandler(_:)))
+        doubleTapGestureRecognizer.delaysTouchesEnded = false
+        tabBar.addGestureRecognizer(doubleTapGestureRecognizer)
+        
         #if DEBUG
         // selectedIndex = 1
         #endif
@@ -150,4 +156,17 @@ extension MainTabBarController {
         #endif
     }
         
+}
+
+extension MainTabBarController {
+    @objc private func doubleTapGestureRecognizerHandler(_ sender: UITapGestureRecognizer) {
+        os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
+        switch sender.state {
+        case .ended:
+            guard let scrollViewContainer = selectedViewController?.topMost as? ScrollViewContainer else { return }
+            scrollViewContainer.scrollToTop(animated: true)
+        default:
+            break
+        }
+    }
 }

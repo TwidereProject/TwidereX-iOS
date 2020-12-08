@@ -149,7 +149,7 @@ extension UserTimelineViewController: UITableViewDelegate {
 extension UserTimelineViewController: TimelinePostTableViewCellDelegate { }
 
 // MARK: - CustomScrollViewContainerController
-extension UserTimelineViewController: CustomScrollViewContainerController {
+extension UserTimelineViewController: ScrollViewContainer {
     var scrollView: UIScrollView {
         return tableView
     }

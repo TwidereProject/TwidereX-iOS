@@ -85,7 +85,7 @@ extension UserMediaTimelineViewController {
 extension UserMediaTimelineViewController: UICollectionViewDelegate { }
 
 // MARK: - CustomScrollViewContainerController
-extension UserMediaTimelineViewController: CustomScrollViewContainerController {
+extension UserMediaTimelineViewController: ScrollViewContainer {
     var scrollView: UIScrollView {
         return collectionView
     }

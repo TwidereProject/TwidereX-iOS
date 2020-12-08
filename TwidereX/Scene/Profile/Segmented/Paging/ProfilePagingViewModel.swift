@@ -10,10 +10,6 @@ import UIKit
 import Pageboy
 import Tabman
 
-protocol CustomScrollViewContainerController: UIViewController {
-    var scrollView: UIScrollView { get }
-}
-
 final class ProfilePagingViewModel: NSObject {
     
     let profileTweetPostTimelineViewController = UserTimelineViewController()
@@ -31,7 +27,7 @@ final class ProfilePagingViewModel: NSObject {
         super.init()
     }
     
-    var viewControllers: [CustomScrollViewContainerController] {
+    var viewControllers: [ScrollViewContainer] {
         return [
             profileTweetPostTimelineViewController,
             profileMediaPostTimelineViewController,

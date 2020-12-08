@@ -498,3 +498,8 @@ extension HomeTimelineViewController: TimelineMiddleLoaderTableViewCellDelegate 
 
 // MARK: - TimelinePostTableViewCellDelegate
 extension HomeTimelineViewController: TimelinePostTableViewCellDelegate { }
+
+// MARK: - ScrollViewContainer
+extension HomeTimelineViewController: ScrollViewContainer {
+    var scrollView: UIScrollView { return tableView }
+}

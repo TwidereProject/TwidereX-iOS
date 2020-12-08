@@ -150,7 +150,7 @@ extension UserLikeTimelineViewController: UITableViewDelegate {
 extension UserLikeTimelineViewController: TimelinePostTableViewCellDelegate { }
 
 // MARK: - CustomScrollViewContainerController
-extension UserLikeTimelineViewController: CustomScrollViewContainerController {
+extension UserLikeTimelineViewController: ScrollViewContainer {
     var scrollView: UIScrollView {
         return tableView
     }

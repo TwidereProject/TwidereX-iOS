@@ -379,7 +379,7 @@ extension ProfileViewController {
         super.viewDidAppear(animated)
         
         // set overlay scroll view initial content size
-        guard let currentViewController = profileSegmentedViewController.pagingViewController.currentViewController as? CustomScrollViewContainerController else { return }
+        guard let currentViewController = profileSegmentedViewController.pagingViewController.currentViewController as? ScrollViewContainer else { return }
         currentPostTimelineTableViewContentSizeObservation = observeTableViewContentSize(scrollView: currentViewController.scrollView)
         currentViewController.scrollView.panGestureRecognizer.require(toFail: overlayScrollView.panGestureRecognizer)
     }
@@ -440,7 +440,7 @@ extension ProfileViewController: UIScrollViewDelegate {
             contentOffsets.removeAll()
         } else {
             containerScrollView.contentOffset.y = topMaxContentOffsetY
-            if let customScrollViewContainerController = profileSegmentedViewController.pagingViewController.currentViewController as? CustomScrollViewContainerController {
+            if let customScrollViewContainerController = profileSegmentedViewController.pagingViewController.currentViewController as? ScrollViewContainer {
                 let contentOffsetY = scrollView.contentOffset.y - containerScrollView.contentOffset.y
                 customScrollViewContainerController.scrollView.contentOffset.y = contentOffsetY
             }
@@ -464,7 +464,7 @@ extension ProfileViewController: ProfileHeaderViewControllerDelegate {
 // MARK: - ProfilePagingViewControllerDelegate
 extension ProfileViewController: ProfilePagingViewControllerDelegate {
     
-    func profilePagingViewController(_ viewController: ProfilePagingViewController, didScrollToPostCustomScrollViewContainerController postTimelineViewController: CustomScrollViewContainerController, atIndex index: Int) {
+    func profilePagingViewController(_ viewController: ProfilePagingViewController, didScrollToPostCustomScrollViewContainerController postTimelineViewController: ScrollViewContainer, atIndex index: Int) {
         os_log("%{public}s[%{public}ld], %{public}s: select at index: %ld", ((#file as NSString).lastPathComponent), #line, #function, index)
         
         // save content offset
@@ -582,4 +582,10 @@ extension ProfileViewController: ProfileBannerViewDelegate {
         coordinator.present(scene: .safari(url: url), from: nil, transition: .safariPresent(animated: true, completion: nil))
     }
     
+}
+
+
+// MARK: - ScrollViewContainer
+extension ProfileViewController: ScrollViewContainer {
+    var scrollView: UIScrollView { return overlayScrollView }
 }
