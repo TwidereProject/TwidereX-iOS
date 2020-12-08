@@ -246,13 +246,10 @@ extension TweetConversationViewModel.LoadConversationState {
         
         override func didEnter(from previousState: GKState?) {
             super.didEnter(from: previousState)
-            guard let viewModel = viewModel, let stateMachine = stateMachine else { return }
-            guard let diffableDataSource = viewModel.diffableDataSource else { return }
-            var snapshot = diffableDataSource.snapshot()
-            if snapshot.itemIdentifiers.contains(.bottomLoader) {
-                snapshot.deleteItems([.bottomLoader])
-                diffableDataSource.apply(snapshot, animatingDifferences: false)
-            }
+            guard let viewModel = viewModel else { return }
+            
+            // trigger diffable data source update
+            viewModel.conversationItems.value = viewModel.conversationItems.value
         }
     }
     
@@ -265,12 +262,9 @@ extension TweetConversationViewModel.LoadConversationState {
         override func didEnter(from previousState: GKState?) {
             super.didEnter(from: previousState)
             guard let viewModel = viewModel else { return }
-            guard let diffableDataSource = viewModel.diffableDataSource else { return }
-            var snapshot = diffableDataSource.snapshot()
-            if snapshot.itemIdentifiers.contains(.bottomLoader) {
-                snapshot.deleteItems([.bottomLoader])
-                diffableDataSource.apply(snapshot, animatingDifferences: false)
-            }
+            
+            // trigger diffable data source update
+            viewModel.conversationItems.value = viewModel.conversationItems.value
         }
     }
     

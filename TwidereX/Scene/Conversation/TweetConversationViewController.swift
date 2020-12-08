@@ -131,25 +131,7 @@ extension TweetConversationViewController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         os_log("%{public}s[%{public}ld], %{public}s: indexPath %s", ((#file as NSString).lastPathComponent), #line, #function, indexPath.debugDescription)
-        
-        guard let diffableDataSource = viewModel.diffableDataSource else { return }
-        guard let item = diffableDataSource.itemIdentifier(for: indexPath) else { return }
-        
-        switch item {
-        case .leaf(let objectID, _):
-            let managedObjectContext = context.managedObjectContext
-            managedObjectContext.perform {
-                guard let tweet = managedObjectContext.object(with: objectID) as? Tweet else { return }
-                
-                DispatchQueue.main.async { [weak self] in
-                    guard let self = self else { return }
-                    let tweetPostViewModel = TweetConversationViewModel(context: self.context, tweetObjectID: tweet.objectID)
-                    self.coordinator.present(scene: .tweetConversation(viewModel: tweetPostViewModel), from: self, transition: .show)
-                }
-            }
-        default:
-            return
-        }
+        handleTableView(tableView, didSelectRowAt: indexPath)
     }
     
     func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
