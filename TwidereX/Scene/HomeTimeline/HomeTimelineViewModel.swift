@@ -456,7 +456,8 @@ extension HomeTimelineViewModel: NSFetchedResultsControllerDelegate {
                     return []
                 }
             }()
-            
+
+            // that's will be the most fastest fetch because of upstream just update and no modify needs consider
             let endFetch = CACurrentMediaTime()
             os_log("%{public}s[%{public}ld], %{public}s: fetch timelineIndexes cost %.2fs", ((#file as NSString).lastPathComponent), #line, #function, endFetch - start)
             
