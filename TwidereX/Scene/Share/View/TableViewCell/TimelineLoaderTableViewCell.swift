@@ -11,6 +11,8 @@ import Combine
 
 class TimelineLoaderTableViewCell: UITableViewCell {
     
+    static let cellHeight: CGFloat = 48
+    
     var disposeBag = Set<AnyCancellable>()
     
     let loadMoreButton: UIButton = {
@@ -57,6 +59,7 @@ extension TimelineLoaderTableViewCell {
             loadMoreButton.leadingAnchor.constraint(equalTo: contentView.readableContentGuide.leadingAnchor),
             contentView.readableContentGuide.trailingAnchor.constraint(equalTo: loadMoreButton.trailingAnchor),
             contentView.bottomAnchor.constraint(equalTo: loadMoreButton.bottomAnchor, constant: 8),
+            loadMoreButton.heightAnchor.constraint(equalToConstant: TimelineLoaderTableViewCell.cellHeight - 2 * 8).priority(.defaultHigh),
         ])
         
         activityIndicatorView.translatesAutoresizingMaskIntoConstraints = false

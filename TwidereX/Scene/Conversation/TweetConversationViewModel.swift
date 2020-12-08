@@ -95,13 +95,15 @@ final class TweetConversationViewModel: NSObject {
             var newSnapshot = NSDiffableDataSourceSnapshot<ConversationSection, ConversationItem>()
             newSnapshot.appendSections([.main])
             
+            // reply
             if let currentState = self.loadReplyStateMachine.currentState,
                !(currentState is LoadReplyState.NoMore) {
                 newSnapshot.appendItems([.topLoader], toSection: .main)
             }
-            
-            
+            newSnapshot.appendItems(replyItems, toSection: .main)
+            // root
             newSnapshot.appendItems([self.rootItem], toSection: .main)
+            // conversation
             newSnapshot.appendItems(conversationItems, toSection: .main)
 
             if let currentState = self.loadConversationStateMachine.currentState,
@@ -109,18 +111,52 @@ final class TweetConversationViewModel: NSObject {
                 newSnapshot.appendItems([.bottomLoader], toSection: .main)
             }
 
+            // difference for first visiable item exclude .topLoader
             guard let difference = self.calculateReloadSnapshotDifference(navigationBar: navigationBar, tableView: tableView, oldSnapshot: oldSnapshot, newSnapshot: newSnapshot) else {
                 diffableDataSource.apply(newSnapshot)
                 return
             }
 
+            // addtional margin for .topLoader
+            let oldTopMargin: CGFloat = {
+                guard let index = oldSnapshot.indexOfItem(.topLoader) else { return .zero }
+                guard let cell = tableView.cellForRow(at: IndexPath(row: index, section: 0)) else { return .zero }
+                return cell.frame.height
+            }()
+            
             diffableDataSource.apply(newSnapshot, animatingDifferences: false) {
+                // set bottom inset. Make root item pin to top.
+                if let index = newSnapshot.indexOfItem(self.rootItem),
+                   let cell = tableView.cellForRow(at: IndexPath(row: index, section: 0)) {
+                    tableView.contentInset.bottom = tableView.safeAreaLayoutGuide.layoutFrame.height - cell.frame.height - oldTopMargin
+                }
+                // set scroll position
                 tableView.scrollToRow(at: difference.targetIndexPath, at: .top, animated: false)
-                tableView.contentOffset.y = tableView.contentOffset.y - difference.offset
+                tableView.contentOffset.y = tableView.contentOffset.y - difference.offset + oldTopMargin
             }
         }
         .store(in: &disposeBag)
         
+        replyNodes
+            .receive(on: DispatchQueue.main)
+            .compactMap { [weak self] nodes -> [ConversationItem]? in
+                guard let self = self else { return nil }
+                guard !nodes.isEmpty else { return [] }
+                
+                var items: [ConversationItem] = []
+                for node in nodes {
+                    switch node.status {
+                    case .success(let objectID):
+                        items.append(.reply(tweetObjectID: objectID))
+                    case .notDetermined, .fail:
+                        break
+                    }
+                }
+                
+                return items.reversed()
+            }
+            .assign(to: \.value, on: replyItems)
+            .store(in: &disposeBag)
         
         // map flat conversation nodes to a two-tier tree
         // and new conversation nodes append to tail and not break previours tree structure
@@ -561,26 +597,37 @@ extension TweetConversationViewModel {
         let offset: CGFloat
     }
     
-    private func calculateReloadSnapshotDifference<T: Hashable>(
+    private func calculateReloadSnapshotDifference(
         navigationBar: UINavigationBar,
         tableView: UITableView,
-        oldSnapshot: NSDiffableDataSourceSnapshot<ConversationSection, T>,
-        newSnapshot: NSDiffableDataSourceSnapshot<ConversationSection, T>
-    ) -> Difference<T>? {
+        oldSnapshot: NSDiffableDataSourceSnapshot<ConversationSection, ConversationItem>,
+        newSnapshot: NSDiffableDataSourceSnapshot<ConversationSection, ConversationItem>
+    ) -> Difference<ConversationItem>? {
         guard oldSnapshot.numberOfItems != 0 else { return nil }
+        guard let visibleIndexPaths = tableView.indexPathsForVisibleRows?.sorted() else { return nil }
+    
+        // find index of the first visible item exclude .topLoader
+        var _index: Int?
+        let items = oldSnapshot.itemIdentifiers(inSection: .main)
+        for (i, item) in items.enumerated() {
+            if case .topLoader = item { continue }
+            guard visibleIndexPaths.contains(where: { $0.row == i }) else { continue }
+            
+            _index = i
+            break
+        }
         
-        // old snapshot not empty. set source index path to first item if not match
-        let sourceIndexPath = UIViewController.topVisibleTableViewCellIndexPath(in: tableView, navigationBar: navigationBar) ?? IndexPath(row: 0, section: 0)
-        
+        guard let index = _index else  { return nil }
+        let sourceIndexPath = IndexPath(row: index, section: 0)
         guard sourceIndexPath.row < oldSnapshot.itemIdentifiers(inSection: .main).count else { return nil }
         
-        let timelineItem = oldSnapshot.itemIdentifiers(inSection: .main)[sourceIndexPath.row]
-        guard let itemIndex = newSnapshot.itemIdentifiers(inSection: .main).firstIndex(of: timelineItem) else { return nil }
+        let item = oldSnapshot.itemIdentifiers(inSection: .main)[sourceIndexPath.row]
+        guard let itemIndex = newSnapshot.itemIdentifiers(inSection: .main).firstIndex(of: item) else { return nil }
         let targetIndexPath = IndexPath(row: itemIndex, section: 0)
         
         let offset = UIViewController.tableViewCellOriginOffsetToWindowTop(in: tableView, at: sourceIndexPath, navigationBar: navigationBar)
         return Difference(
-            item: timelineItem,
+            item: item,
             sourceIndexPath: sourceIndexPath,
             targetIndexPath: targetIndexPath,
             offset: offset
