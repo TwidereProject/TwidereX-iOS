@@ -43,7 +43,7 @@ extension TweetConversationViewModel.LoadReplyState {
         var previousResolvedNodeCount: Int? = nil
         
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {
-            return stateClass == Loading.self || stateClass == NoMore.self
+            return stateClass == Loading.self || stateClass == Idle.self || stateClass == NoMore.self
         }
         
         override func didEnter(from previousState: GKState?) {
