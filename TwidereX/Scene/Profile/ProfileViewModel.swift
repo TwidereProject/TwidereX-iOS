@@ -22,6 +22,8 @@ class ProfileViewModel: NSObject {
     // FIXME: multi-platform support
     let twitterUser: CurrentValueSubject<TwitterUser?, Never>
     let currentTwitterUser = CurrentValueSubject<TwitterUser?, Never>(nil)
+    let viewDidAppear = PassthroughSubject<Void, Never>()
+    
         
     // output
     let userID: CurrentValueSubject<String?, Never>

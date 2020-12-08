@@ -24,6 +24,8 @@ final class HomeTimelineViewModel: NSObject {
     let context: AppContext
     let fetchedResultsController: NSFetchedResultsController<TimelineIndex>
     let isFetchingLatestTimeline = CurrentValueSubject<Bool, Never>(false)
+    let viewDidAppear = PassthroughSubject<Void, Never>()
+    
     weak var contentOffsetAdjustableTimelineViewControllerDelegate: ContentOffsetAdjustableTimelineViewControllerDelegate?
     weak var tableView: UITableView?
     weak var timelinePostTableViewCellDelegate: TimelinePostTableViewCellDelegate?
