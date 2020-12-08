@@ -128,6 +128,18 @@ extension Tweet {
         }
     }
     
+    public func update(replyTo: Tweet?) {
+        if self.replyTo != replyTo {
+            self.replyTo = replyTo
+        }
+    }
+    
+    public func update(inReplyToTweetID: Tweet.ID?) {
+        if self.inReplyToTweetID != inReplyToTweetID {
+            self.inReplyToTweetID = inReplyToTweetID
+        }
+    }
+    
     public func setupMetricsIfNeeds() {
         if metrics == nil {
             metrics = TweetMetrics.insert(
