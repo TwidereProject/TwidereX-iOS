@@ -216,7 +216,7 @@ extension HomeTimelineViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
-        DispatchQueue.once { [weak self] in
+        DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
             if (self.viewModel.fetchedResultsController.fetchedObjects ?? []).count == 0 {
                 self.viewModel.loadLatestStateMachine.enter(HomeTimelineViewModel.LoadLatestState.Loading.self)
