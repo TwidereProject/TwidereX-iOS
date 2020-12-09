@@ -27,6 +27,10 @@ enum SettingListEntryType: Hashable {
     case webBrowser
     case about
     
+    #if DEBUG
+    case developer
+    #endif
+    
     var image: Image {
         switch self {
         case .appearance:       return Image(uiImage: Asset.ObjectTools.clothes.image)
@@ -34,7 +38,9 @@ enum SettingListEntryType: Hashable {
         case .layout:           return Image(uiImage: Asset.sidebarLeft.image)
         case .webBrowser:       return Image(uiImage: Asset.window.image)
         case .about:            return Image(uiImage: Asset.Indices.infoCircle.image)
-
+        #if DEBUG
+        case .developer:        return Image(systemName: "hammer")
+        #endif
         }
     }
     
@@ -45,7 +51,9 @@ enum SettingListEntryType: Hashable {
         case .layout:           return "Layout"
         case .webBrowser:       return "Web Browser"
         case .about:            return L10n.Scene.Settings.About.title
-
+        #if DEBUG
+        case .developer:        return "Developer"
+        #endif
         }
     }
 }
@@ -82,6 +90,17 @@ struct SettingListView: View {
         }
     }()
     
+    #if DEBUG
+    static let developerSection: [SettingListEntry] = {
+        let types: [SettingListEntryType]  = [
+            .developer,
+        ]
+        return types.map { type in
+            return SettingListEntry(type: type, image: type.image, title: type.title)
+        }
+    }()
+    #endif
+    
     var body: some View {
         List {
             #if DEBUG
@@ -108,6 +127,19 @@ struct SettingListView: View {
                 }
             }
             .modifier(TextCaseEraseStyle())
+            #if DEBUG
+            Section {
+                ForEach(SettingListView.developerSection) { entry in
+                    Button(action: {
+                        context.viewStateStore.settingView.presentSettingListEntryPublisher.send(entry)
+                    }, label: {
+                        TableViewEntryRow(icon: entry.image, title: entry.title)
+                            .foregroundColor(Color(.label))
+                    })
+                }
+            }
+            .modifier(TextCaseEraseStyle())
+            #endif
         }
         .listStyle(GroupedListStyle())
     }

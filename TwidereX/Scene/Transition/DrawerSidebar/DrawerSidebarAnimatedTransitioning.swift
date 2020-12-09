@@ -46,11 +46,12 @@ extension DrawerSidebarAnimatedTransitioning {
     
     private func pushTransition(using transitionContext: UIViewControllerContextTransitioning, curve: UIView.AnimationCurve = .easeInOut) -> UIViewPropertyAnimator {
         guard let toVC = transitionContext.viewController(forKey: .to) as? DrawerSidebarViewController,
-              let toView = transitionContext.view(forKey: .to) else {
+              let toView = transitionContext.view(forKey: .to),
+              let fromView = transitionContext.view(forKey: .from) else {
             fatalError()
         }
 
-        let toViewStartTransform: CGAffineTransform = {
+        let transform: CGAffineTransform = {
             switch UIApplication.shared.userInterfaceLayoutDirection {
             case .rightToLeft:
                 return CGAffineTransform(translationX: toView.frame.width, y: 0)
@@ -59,24 +60,40 @@ extension DrawerSidebarAnimatedTransitioning {
             }
         }()
         transitionContext.containerView.addSubview(toView)
-        toView.transform = toViewStartTransform
+        toView.transform = transform
+        fromView.transform = .identity
         
         // fix custom presention container cause layout along with animation issue
         UIView.performWithoutAnimation {
             toView.setNeedsLayout()
             toView.layoutIfNeeded()
         }
+        
+        let separatorLine = UIView.separatorLine
+        separatorLine.translatesAutoresizingMaskIntoConstraints = false
+        transitionContext.containerView.addSubview(separatorLine)
+        NSLayoutConstraint.activate([
+            separatorLine.topAnchor.constraint(equalTo: toView.topAnchor),
+            separatorLine.leadingAnchor.constraint(equalTo: toView.trailingAnchor),
+            separatorLine.bottomAnchor.constraint(equalTo: toView.bottomAnchor),
+            separatorLine.widthAnchor.constraint(equalToConstant: UIView.separatorLineHeight(of: transitionContext.containerView)),
+        ])
+        separatorLine.transform = transform
+        separatorLine.isUserInteractionEnabled = false
                 
         let animator = UIViewPropertyAnimator(duration: transitionDuration(using: transitionContext), curve: curve)
         
         animator.addAnimations {
             toView.transform = .identity
+            separatorLine.transform = .identity
+            fromView.transform = transform.inverted()
         }
         
         animator.addCompletion { position in
             if transitionContext.transitionWasCancelled {
                 toView.removeFromSuperview()
             }
+            separatorLine.removeFromSuperview()
             transitionContext.completeTransition(!transitionContext.transitionWasCancelled)
         }
         
@@ -93,33 +110,40 @@ extension DrawerSidebarAnimatedTransitioning {
         transitionContext.containerView.addSubview(toView)
         transitionContext.containerView.bringSubviewToFront(fromView)
 
-        let fromViewStartFrame = fromView.frame
-        let fromViewEndFrame: CGRect = {
+        let transform: CGAffineTransform = {
             switch UIApplication.shared.userInterfaceLayoutDirection {
             case .rightToLeft:
-                return CGRect(x: fromViewStartFrame.origin.x + fromView.bounds.width,
-                              y: fromViewStartFrame.origin.y,
-                              width: fromView.bounds.width,
-                              height: fromView.bounds.height)
+                return CGAffineTransform(translationX: fromView.frame.width, y: 0)
             default:
-                return CGRect(x: fromViewStartFrame.origin.x - fromView.bounds.width,
-                              y: fromViewStartFrame.origin.y,
-                              width: fromView.bounds.width,
-                              height: fromView.bounds.height)
+                return CGAffineTransform(translationX: -fromView.frame.width, y: 0)
             }
         }()
+        fromView.transform = .identity
         
+        let separatorLine = UIView.separatorLine
+        separatorLine.translatesAutoresizingMaskIntoConstraints = false
+        transitionContext.containerView.addSubview(separatorLine)
+        NSLayoutConstraint.activate([
+            separatorLine.topAnchor.constraint(equalTo: fromView.topAnchor),
+            separatorLine.leadingAnchor.constraint(equalTo: fromView.trailingAnchor),
+            separatorLine.bottomAnchor.constraint(equalTo: fromView.bottomAnchor),
+            separatorLine.widthAnchor.constraint(equalToConstant: UIView.separatorLineHeight(of: transitionContext.containerView)),
+        ])
+        separatorLine.isUserInteractionEnabled = false
         
         let animator = UIViewPropertyAnimator(duration: transitionDuration(using: transitionContext), curve: curve)
         
         animator.addAnimations {
-            fromView.frame = fromViewEndFrame
+            fromView.transform = transform
+            separatorLine.transform = transform
+            toView.transform = .identity
         }
         
         animator.addCompletion { position in
             if transitionContext.transitionWasCancelled {
                 toView.removeFromSuperview()
             }
+            separatorLine.removeFromSuperview()
             transitionContext.completeTransition(!transitionContext.transitionWasCancelled)
         }
         

@@ -20,65 +20,11 @@ extension Twitter.API.V2.RecentSearch {
     ) -> AnyPublisher<Twitter.Response.Content<Twitter.API.V2.RecentSearch.Content>, Error> {
         guard var components = URLComponents(string: tweetsSearchRecentEndpointURL.absoluteString) else { fatalError() }
         
-        let expansions: [Twitter.Request.Expansions] = [
-            .attachmentsPollIDs,
-            .attachmentsMediaKeys,
-            .authorID,
-            .entitiesMentionsUsername,
-            .geoPlaceID,
-            .inReplyToUserID,
-            .referencedTweetsID,
-            .referencedTweetsIDAuthorID
-        ]
-        let tweetsFields: [Twitter.Request.TwitterFields] = [
-            .attachments,
-            .authorID,
-            .contextAnnotations,
-            .conversationID,
-            .created_at,
-            .entities,
-            .geo,
-            .id,
-            .inReplyToUserID,
-            .lang,
-            .publicMetrics,
-            .possiblySensitive,
-            .referencedTweets,
-            .source,
-            .text,
-            .withheld,
-        ]
-        let userFields: [Twitter.Request.UserFields] = [
-            .createdAt,
-            .description,
-            .entities,
-            .id,
-            .location,
-            .name,
-            .pinnedTweetID,
-            .profileImageURL,
-            .protected,
-            .publicMetrics,
-            .url,
-            .username,
-            .verified,
-            .withheld
-        ]
-        let mediaFields: [Twitter.Request.MediaFields] = [
-            .durationMS,
-            .height,
-            .mediaKey,
-            .previewImageURL,
-            .type,
-            .url,
-            .width,
-            .publicMetrics,
-        ]
         components.queryItems = [
-            expansions.queryItem,
-            tweetsFields.queryItem,
-            userFields.queryItem,
-            mediaFields.queryItem,
+            Twitter.Request.expansions.queryItem,
+            Twitter.Request.tweetsFields.queryItem,
+            Twitter.Request.userFields.queryItem,
+            Twitter.Request.mediaFields.queryItem,
             URLQueryItem(name: "max_results", value: String(query.maxResults)),
         ]
         query.sinceID.flatMap { components.queryItems?.append(URLQueryItem(name: "since_id", value: $0)) }

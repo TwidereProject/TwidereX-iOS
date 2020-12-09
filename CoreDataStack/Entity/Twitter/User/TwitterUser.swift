@@ -235,7 +235,12 @@ extension TwitterUser {
             self.id = id
             self.name = name
             self.username = username
-            self.bioDescription = bioDescription
+            self.bioDescription = bioDescription?
+                .replacingOccurrences(of: "&amp;", with: "&")
+                .replacingOccurrences(of: "&lt;", with: "<")
+                .replacingOccurrences(of: "&gt;", with: ">")
+                .replacingOccurrences(of: "&quot;", with: "\"")
+                .replacingOccurrences(of: "&apos;", with: "'")
             self.createdAt = createdAt
             self.location = location
             self.pinnedTweetID = pinnedTweetID

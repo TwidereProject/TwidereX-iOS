@@ -27,7 +27,7 @@ extension TwitterPinBasedAuthenticationViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        title = "Authentication"
+        title = L10n.Scene.Authentication.title
         navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(TwitterPinBasedAuthenticationViewController.cancelBarButtonItemPressed(_:)))
         
         webView.translatesAutoresizingMaskIntoConstraints = false

@@ -12,6 +12,23 @@ final class ConversationPostView: UIView {
     
     static let avatarImageViewSize = CGSize(width: 44, height: 44)
 
+    let retweetContainerStackView = UIStackView()
+    
+    let retweetIconImageView: UIImageView = {
+        let imageView = UIImageView()
+        imageView.tintColor = .secondaryLabel
+        imageView.image = Asset.Media.repeat.image.withRenderingMode(.alwaysTemplate)
+        return imageView
+    }()
+    
+    let retweetInfoLabel: UILabel = {
+        let label = UILabel()
+        label.font = .preferredFont(forTextStyle: .footnote)
+        label.textColor = .secondaryLabel
+        label.text = "Bob Retweeted"
+        return label
+    }()
+    
     let avatarImageView: UIImageView = {
         let imageView = UIImageView()
         return imageView
@@ -116,7 +133,7 @@ final class ConversationPostView: UIView {
 extension ConversationPostView {
 
     private func _init() {        
-        // container: [user meta | main | meta | action toolbar]
+        // container: [retweet | user meta | main | meta | action toolbar]
         let containerStackView = UIStackView()
         containerStackView.axis = .vertical
         containerStackView.spacing = 8
@@ -127,6 +144,30 @@ extension ConversationPostView {
             containerStackView.leadingAnchor.constraint(equalTo: leadingAnchor),
             trailingAnchor.constraint(equalTo: containerStackView.trailingAnchor),
             bottomAnchor.constraint(equalTo: containerStackView.bottomAnchor),
+        ])
+        
+        // retweet container: [retweet icon | retweet info]
+        containerStackView.addArrangedSubview(retweetContainerStackView)
+        retweetContainerStackView.axis = .horizontal
+        
+        let retweetContainerContentView = UIView()
+        retweetContainerStackView.addArrangedSubview(retweetContainerContentView)
+        
+        retweetInfoLabel.translatesAutoresizingMaskIntoConstraints = false
+        retweetContainerContentView.addSubview(retweetInfoLabel)
+        NSLayoutConstraint.activate([
+            retweetInfoLabel.topAnchor.constraint(equalTo: retweetContainerContentView.topAnchor),
+            retweetContainerContentView.trailingAnchor.constraint(equalTo: retweetInfoLabel.trailingAnchor),
+            retweetContainerContentView.bottomAnchor.constraint(equalTo: retweetInfoLabel.bottomAnchor),
+        ])
+        retweetInfoLabel.setContentCompressionResistancePriority(.required, for: .vertical)
+        
+        retweetIconImageView.translatesAutoresizingMaskIntoConstraints = false
+        retweetContainerContentView.addSubview(retweetIconImageView)
+        NSLayoutConstraint.activate([
+            retweetIconImageView.centerYAnchor.constraint(equalTo: retweetInfoLabel.centerYAnchor),
+            retweetIconImageView.widthAnchor.constraint(equalToConstant: 12).priority(.required - 1),
+            retweetIconImageView.heightAnchor.constraint(equalToConstant: 12).priority(.required - 1),
         ])
         
         // user meta container: [user avatar | author]
@@ -177,6 +218,13 @@ extension ConversationPostView {
         moreMenuButton.setContentHuggingPriority(.defaultHigh, for: .horizontal)
         
         authorContainerStackView.addArrangedSubview(usernameLabel)
+        
+        // align retweet label leading to name
+        // align retweet icon trailing to avatar
+        NSLayoutConstraint.activate([
+            retweetInfoLabel.leadingAnchor.constraint(equalTo: nameLabel.leadingAnchor),
+            retweetIconImageView.trailingAnchor.constraint(equalTo: avatarImageView.trailingAnchor),
+        ])
     
         // main container: [text | image | quote]
         let mainContainerStackView = UIStackView()
@@ -278,6 +326,7 @@ struct ConversationPostView_Previews: PreviewProvider {
     static var previews: some View {
         UIViewPreview(width: 375) {
             let view = ConversationPostView()
+            view.retweetContainerStackView.isHidden = false
             view.avatarImageView.image = avatarImage
             let images = MosaicImageView_Previews.images.prefix(3)
             let imageViews = view.mosaicImageView.setupImageViews(count: images.count, maxHeight: 162)

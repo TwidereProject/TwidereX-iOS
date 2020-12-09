@@ -104,6 +104,14 @@ extension HomeTimelineViewController {
                             guard let self = self else { return }
                             self.moveToFirstProtectedUser(action)
                         }),
+                        UIAction(title: "Move to First Reply Tweet", image: nil, attributes: [], handler: { [weak self] action in
+                            guard let self = self else { return }
+                            self.moveToFirstReplyTweet(action)
+                        }),
+                        UIAction(title: "Move to First Reply Retweet", image: nil, attributes: [], handler: { [weak self] action in
+                            guard let self = self else { return }
+                            self.moveToFirstReplyRetweet(action)
+                        }),
                         UIAction(title: "Drop Recent 50 Tweets", image: nil, attributes: [], handler: { [weak self] action in
                             guard let self = self else { return }
                             self.dropRecentTweetsAction(action)
@@ -181,26 +189,30 @@ extension HomeTimelineViewController {
                 }
             }
             .store(in: &disposeBag)
-        context.authenticationService.activeAuthenticationIndex
-            .sink { [weak self] activeAuthenticationIndex in
-                guard let self = self else { return }
-                let placeholderImage = UIImage
-                    .placeholder(size: UIButton.avatarButtonSize, color: .systemFill)
-                    .af.imageRoundedIntoCircle()
-                guard let twitterUser = activeAuthenticationIndex?.twitterAuthentication?.twitterUser,
-                      let avatarImageURL = twitterUser.avatarImageURL() else {
-                    self.avatarButton.setImage(placeholderImage, for: .normal)
-                    return
-                }
-                let filter = ScaledToSizeCircleFilter(size: UIButton.avatarButtonSize)
-                self.avatarButton.af.setImage(
-                    for: .normal,
-                    url: avatarImageURL,
-                    placeholderImage: placeholderImage,
-                    filter: filter
-                )
+        Publishers.CombineLatest(
+            context.authenticationService.activeAuthenticationIndex.eraseToAnyPublisher(),
+            viewModel.viewDidAppear.eraseToAnyPublisher()
+        )
+        .receive(on: DispatchQueue.main)
+        .sink { [weak self] activeAuthenticationIndex, _ in
+            guard let self = self else { return }
+            let placeholderImage = UIImage
+                .placeholder(size: UIButton.avatarButtonSize, color: .systemFill)
+                .af.imageRoundedIntoCircle()
+            guard let twitterUser = activeAuthenticationIndex?.twitterAuthentication?.twitterUser,
+                  let avatarImageURL = twitterUser.avatarImageURL() else {
+                self.avatarButton.setImage(placeholderImage, for: .normal)
+                return
             }
-            .store(in: &disposeBag)
+            let filter = ScaledToSizeCircleFilter(size: UIButton.avatarButtonSize)
+            self.avatarButton.af.setImage(
+                for: .normal,
+                url: avatarImageURL,
+                placeholderImage: placeholderImage,
+                filter: filter
+            )
+        }
+        .store(in: &disposeBag)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -211,8 +223,10 @@ extension HomeTimelineViewController {
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+        
+        viewModel.viewDidAppear.send()
 
-        DispatchQueue.once { [weak self] in
+        DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
             if (self.viewModel.fetchedResultsController.fetchedObjects ?? []).count == 0 {
                 self.viewModel.loadLatestStateMachine.enter(HomeTimelineViewModel.LoadLatestState.Loading.self)
@@ -293,6 +307,7 @@ extension HomeTimelineViewController {
         })
         if let targetItem = item, let index = snapshotTransitioning.indexOfItem(targetItem) {
             tableView.scrollToRow(at: IndexPath(row: index, section: 0), at: .middle, animated: true)
+            tableView.blinkRow(at: IndexPath(row: index, section: 0))
         } else {
             print("Not found protected tweet")
         }
@@ -313,8 +328,51 @@ extension HomeTimelineViewController {
         })
         if let targetItem = item, let index = snapshotTransitioning.indexOfItem(targetItem) {
             tableView.scrollToRow(at: IndexPath(row: index, section: 0), at: .middle, animated: true)
+            tableView.blinkRow(at: IndexPath(row: index, section: 0))
         } else {
             print("Not found protected tweet")
+        }
+    }
+    
+    @objc private func moveToFirstReplyTweet(_ sender: UIAction) {
+        guard let diffableDataSource = viewModel.diffableDataSource else { return }
+        let snapshotTransitioning = diffableDataSource.snapshot()
+        let item = snapshotTransitioning.itemIdentifiers.first(where: { item in
+            switch item {
+            case .homeTimelineIndex(let objectID, _):
+                let tweet = viewModel.fetchedResultsController.managedObjectContext.object(with: objectID) as! TimelineIndex
+                guard let targetTweet = (tweet.tweet) else { return false }
+                return targetTweet.inReplyToTweetID != nil
+            default:
+                return false
+            }
+        })
+        if let targetItem = item, let index = snapshotTransitioning.indexOfItem(targetItem) {
+            tableView.scrollToRow(at: IndexPath(row: index, section: 0), at: .middle, animated: true)
+            tableView.blinkRow(at: IndexPath(row: index, section: 0))
+        } else {
+            print("Not found reply tweet")
+        }
+    }
+    
+    @objc private func moveToFirstReplyRetweet(_ sender: UIAction) {
+        guard let diffableDataSource = viewModel.diffableDataSource else { return }
+        let snapshotTransitioning = diffableDataSource.snapshot()
+        let item = snapshotTransitioning.itemIdentifiers.first(where: { item in
+            switch item {
+            case .homeTimelineIndex(let objectID, _):
+                let tweet = viewModel.fetchedResultsController.managedObjectContext.object(with: objectID) as! TimelineIndex
+                guard let targetTweet = (tweet.tweet?.retweet) else { return false }
+                return targetTweet.inReplyToTweetID != nil
+            default:
+                return false
+            }
+        })
+        if let targetItem = item, let index = snapshotTransitioning.indexOfItem(targetItem) {
+            tableView.scrollToRow(at: IndexPath(row: index, section: 0), at: .middle, animated: true)
+            tableView.blinkRow(at: IndexPath(row: index, section: 0))
+        } else {
+            print("Not found reply retweet")
         }
     }
     
@@ -471,3 +529,8 @@ extension HomeTimelineViewController: TimelineMiddleLoaderTableViewCellDelegate 
 
 // MARK: - TimelinePostTableViewCellDelegate
 extension HomeTimelineViewController: TimelinePostTableViewCellDelegate { }
+
+// MARK: - ScrollViewContainer
+extension HomeTimelineViewController: ScrollViewContainer {
+    var scrollView: UIScrollView { return tableView }
+}

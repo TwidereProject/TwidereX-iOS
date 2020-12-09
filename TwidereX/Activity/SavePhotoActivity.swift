@@ -25,7 +25,7 @@ final class SavePhotoActivity: UIActivity {
     }
     
     override var activityTitle: String? {
-        return "Save Photo"
+        return L10n.Common.Controls.Actions.savePhoto
     }
     
     override var activityImage: UIImage? {

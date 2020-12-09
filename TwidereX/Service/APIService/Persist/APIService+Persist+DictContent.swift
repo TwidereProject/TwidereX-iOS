@@ -71,6 +71,8 @@ extension APIService.Persist {
                     dictContent: dictContent
                 )
                 
+                // collect sibling infos from dict
+                // Note: API may only give ID but not return entity. Do not depend on it to judge pointer exist or not
                 var repliedToInfo: APIService.CoreData.V2.TwitterInfo?
                 var retweetedInfo: APIService.CoreData.V2.TwitterInfo?
                 var quotedInfo: APIService.CoreData.V2.TwitterInfo?

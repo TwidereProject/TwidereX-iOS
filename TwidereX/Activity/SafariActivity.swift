@@ -23,7 +23,7 @@ final class SafariActivity: UIActivity {
     }
     
     override var activityTitle: String? {
-        return "Open in Safari"
+        return L10n.Common.Controls.Actions.openInSafari
     }
     
     override var activityImage: UIImage? {
@@ -56,7 +56,7 @@ final class SafariActivity: UIActivity {
             return
         }
         
-        sceneCoordinator?.present(scene: .safari(url: url as URL), from: nil, transition: .show)
+        sceneCoordinator?.present(scene: .safari(url: url as URL), from: nil, transition: .safariPresent(animated: true, completion: nil))
         activityDidFinish(true)
     }
     
