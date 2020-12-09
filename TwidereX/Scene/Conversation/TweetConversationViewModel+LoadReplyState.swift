@@ -55,7 +55,8 @@ extension TweetConversationViewModel.LoadReplyState {
             let managedObjectContext = viewModel.context.managedObjectContext
             managedObjectContext.perform { [weak self] in
                 guard let self = self else { return }
-                guard let tweet = managedObjectContext.object(with: tweetObjectID) as? Tweet else { return }
+                guard let _tweet = managedObjectContext.object(with: tweetObjectID) as? Tweet else { return }
+                let tweet = (_tweet.retweet ?? _tweet)
                 
                 // collect local reply
                 var replyToArray: [Tweet] = []
