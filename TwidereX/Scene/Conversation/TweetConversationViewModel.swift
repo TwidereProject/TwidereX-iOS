@@ -136,7 +136,14 @@ final class TweetConversationViewModel: NSObject {
                 }
                 // set scroll position
                 tableView.scrollToRow(at: difference.targetIndexPath, at: .top, animated: false)
-                tableView.contentOffset.y = tableView.contentOffset.y - difference.offset + oldTopMargin
+                tableView.contentOffset.y = {
+                    var offset: CGFloat = tableView.contentOffset.y - difference.offset
+                    if tableView.contentInset.bottom != 0.0 {
+                        // needs restore top margin if bottom inset adjusted
+                        offset += oldTopMargin
+                    }
+                    return offset
+                }()
             }
         }
         .store(in: &disposeBag)
@@ -305,7 +312,7 @@ extension TweetConversationViewModel {
         snapshot.appendSections([.main])
         if case let .root(tweetObjectID) = rootItem,
            let tweet = context.managedObjectContext.object(with: tweetObjectID) as? Tweet,
-           let _ = tweet.inReplyToTweetID {
+           let _ = (tweet.retweet ?? tweet).inReplyToTweetID {
             // update reply items later in the `Prepare` state
             snapshot.appendItems([.topLoader], toSection: .main)
         } else {

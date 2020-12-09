@@ -25,10 +25,20 @@ internal enum L10n {
           return L10n.tr("Localizable", "Common.Alerts.CancelFollowRequest.Message", String(describing: p1))
         }
       }
+      internal enum PhotoSaveFail {
+        /// Please try again
+        internal static let message = L10n.tr("Localizable", "Common.Alerts.PhotoSaveFail.Message")
+        /// Failed to Save Photo
+        internal static let title = L10n.tr("Localizable", "Common.Alerts.PhotoSaveFail.Title")
+      }
+      internal enum PhotoSaved {
+        /// Photo Saved
+        internal static let title = L10n.tr("Localizable", "Common.Alerts.PhotoSaved.Title")
+      }
       internal enum TweetFail {
         /// Please try again
         internal static let message = L10n.tr("Localizable", "Common.Alerts.TweetFail.Message")
-        /// Tweet Fail
+        /// Failed to Tweet
         internal static let title = L10n.tr("Localizable", "Common.Alerts.TweetFail.Title")
       }
       internal enum TweetSent {

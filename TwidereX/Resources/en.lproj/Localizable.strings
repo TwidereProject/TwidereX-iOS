@@ -1,8 +1,11 @@
 "Common.Alerts.AccountTemporarilyLocked.Message" = "Open Twitter to unlock";
 "Common.Alerts.AccountTemporarilyLocked.Title" = "Account Temporarily Locked";
 "Common.Alerts.CancelFollowRequest.Message" = "Cancel follow request for %@?";
+"Common.Alerts.PhotoSaveFail.Message" = "Please try again";
+"Common.Alerts.PhotoSaveFail.Title" = "Failed to Save Photo";
+"Common.Alerts.PhotoSaved.Title" = "Photo Saved";
 "Common.Alerts.TweetFail.Message" = "Please try again";
-"Common.Alerts.TweetFail.Title" = "Tweet Fail";
+"Common.Alerts.TweetFail.Title" = "Failed to Tweet";
 "Common.Alerts.TweetSent.Title" = "Tweet Sent";
 "Common.Alerts.UnfollowUser.Message" = "Unfollow user %@?";
 "Common.Controls.Actions.Add" = "Add";

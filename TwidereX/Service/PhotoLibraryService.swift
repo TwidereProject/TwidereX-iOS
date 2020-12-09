@@ -36,8 +36,8 @@ extension PhotoLibraryService {
             config.interactiveHide = true
             let bannerView = NotifyBannerView()
             bannerView.configure(for: .warning)
-            bannerView.titleLabel.text = "Save Photo Fail"
-            bannerView.messageLabel.text = "Please try again"
+            bannerView.titleLabel.text = L10n.Common.Alerts.PhotoSaveFail.title
+            bannerView.messageLabel.text = L10n.Common.Alerts.PhotoSaveFail.message
             DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                 SwiftMessages.show(config: config, view: bannerView)
                 feedbackGenerator.notificationOccurred(.error)
@@ -49,7 +49,7 @@ extension PhotoLibraryService {
             config.interactiveHide = true
             let bannerView = NotifyBannerView()
             bannerView.configure(for: .normal)
-            bannerView.titleLabel.text = "Photo Saved"
+            bannerView.titleLabel.text = L10n.Common.Alerts.PhotoSaved.title
             bannerView.messageLabel.isHidden = true
             DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                 SwiftMessages.show(config: config, view: bannerView)

@@ -108,6 +108,10 @@ extension HomeTimelineViewController {
                             guard let self = self else { return }
                             self.moveToFirstReplyTweet(action)
                         }),
+                        UIAction(title: "Move to First Reply Retweet", image: nil, attributes: [], handler: { [weak self] action in
+                            guard let self = self else { return }
+                            self.moveToFirstReplyRetweet(action)
+                        }),
                         UIAction(title: "Drop Recent 50 Tweets", image: nil, attributes: [], handler: { [weak self] action in
                             guard let self = self else { return }
                             self.dropRecentTweetsAction(action)
@@ -347,7 +351,28 @@ extension HomeTimelineViewController {
             tableView.scrollToRow(at: IndexPath(row: index, section: 0), at: .middle, animated: true)
             tableView.blinkRow(at: IndexPath(row: index, section: 0))
         } else {
-            print("Not found protected tweet")
+            print("Not found reply tweet")
+        }
+    }
+    
+    @objc private func moveToFirstReplyRetweet(_ sender: UIAction) {
+        guard let diffableDataSource = viewModel.diffableDataSource else { return }
+        let snapshotTransitioning = diffableDataSource.snapshot()
+        let item = snapshotTransitioning.itemIdentifiers.first(where: { item in
+            switch item {
+            case .homeTimelineIndex(let objectID, _):
+                let tweet = viewModel.fetchedResultsController.managedObjectContext.object(with: objectID) as! TimelineIndex
+                guard let targetTweet = (tweet.tweet?.retweet) else { return false }
+                return targetTweet.inReplyToTweetID != nil
+            default:
+                return false
+            }
+        })
+        if let targetItem = item, let index = snapshotTransitioning.indexOfItem(targetItem) {
+            tableView.scrollToRow(at: IndexPath(row: index, section: 0), at: .middle, animated: true)
+            tableView.blinkRow(at: IndexPath(row: index, section: 0))
+        } else {
+            print("Not found reply retweet")
         }
     }
     
