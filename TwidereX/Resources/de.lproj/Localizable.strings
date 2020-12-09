@@ -1,6 +1,9 @@
 "Common.Alerts.AccountTemporarilyLocked.Message" = "Öffne Twitter zum entsperren";
 "Common.Alerts.AccountTemporarilyLocked.Title" = "Konto vorübergehend gesperrt";
 "Common.Alerts.CancelFollowRequest.Message" = "Follow Anfrage für %@ abbrechen?";
+"Common.Alerts.PhotoSaveFail.Message" = "Bitte versuche es erneut";
+"Common.Alerts.PhotoSaveFail.Title" = "Failed to Save Photo";
+"Common.Alerts.PhotoSaved.Title" = "Photo Saved";
 "Common.Alerts.TweetFail.Message" = "Bitte versuche es erneut";
 "Common.Alerts.TweetFail.Title" = "Tweet fehlgeschlagen";
 "Common.Alerts.TweetSent.Title" = "Tweet gesendet";

@@ -1,6 +1,9 @@
 "Common.Alerts.AccountTemporarilyLocked.Message" = "Abra o Twitter para desbloquear";
 "Common.Alerts.AccountTemporarilyLocked.Title" = "Conta Temporariamente Bloqueada";
 "Common.Alerts.CancelFollowRequest.Message" = "Cancelar pedido para seguir %@?";
+"Common.Alerts.PhotoSaveFail.Message" = "Por favor, tente novamente";
+"Common.Alerts.PhotoSaveFail.Title" = "Failed to Save Photo";
+"Common.Alerts.PhotoSaved.Title" = "Photo Saved";
 "Common.Alerts.TweetFail.Message" = "Por favor, tente novamente";
 "Common.Alerts.TweetFail.Title" = "Tweet Falhou";
 "Common.Alerts.TweetSent.Title" = "Tweet Enviado";

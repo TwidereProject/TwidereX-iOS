@@ -1,6 +1,9 @@
 "Common.Alerts.AccountTemporarilyLocked.Message" = "Twitter を開いてロックを解除する";
 "Common.Alerts.AccountTemporarilyLocked.Title" = "アカウントは一時的にロックされています";
 "Common.Alerts.CancelFollowRequest.Message" = "%@ のフォローリクエストをキャンセルしますか？";
+"Common.Alerts.PhotoSaveFail.Message" = "もう一度やり直してください";
+"Common.Alerts.PhotoSaveFail.Title" = "Failed to Save Photo";
+"Common.Alerts.PhotoSaved.Title" = "Photo Saved";
 "Common.Alerts.TweetFail.Message" = "もう一度やり直してください";
 "Common.Alerts.TweetFail.Title" = "ツイートに失敗しました";
 "Common.Alerts.TweetSent.Title" = "ツイートを送信しました";
