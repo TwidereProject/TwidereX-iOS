@@ -110,6 +110,28 @@ extension TwitterUser {
     }
 }
 
+extension TwitterUser {
+    
+    public enum SizeKind: String {
+        case small
+        case medium
+        case large
+    }
+    
+    public func profileBannerURL(sizeKind: SizeKind) -> URL? {
+        guard let urlString = self.profileBannerURL, let url = URL(string: urlString) else { return nil }
+        let dimension: String = {
+            switch sizeKind {
+            case .small:    return "300x100"
+            case .medium:   return "600x200"
+            case .large:    return "1500x500"
+            }
+        }()
+        return url.appendingPathComponent(dimension)
+    }
+}
+
+
 extension String {
     mutating func deleteSuffix(_ suffix: String) {
         guard hasSuffix(suffix) else { return }
