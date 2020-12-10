@@ -404,3 +404,8 @@ extension MentionTimelineViewController: TimelineMiddleLoaderTableViewCellDelega
 
 // MARK: - TimelinePostTableViewCellDelegate
 extension MentionTimelineViewController: TimelinePostTableViewCellDelegate { }
+
+// MARK: - ScrollViewContainer
+extension MentionTimelineViewController: ScrollViewContainer {
+    var scrollView: UIScrollView { return tableView }
+}
