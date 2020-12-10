@@ -203,6 +203,7 @@
 		DBA7DD74256B96450008A95A /* UIFont.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBA7DD73256B96450008A95A /* UIFont.swift */; };
 		DBAC4A6725552A1E00140B23 /* MediaPreviewImageViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBAC4A6625552A1E00140B23 /* MediaPreviewImageViewModel.swift */; };
 		DBB09D562511BA9700AE260E /* APIService+Lookup.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBB09D552511BA9700AE260E /* APIService+Lookup.swift */; };
+		DBB4B8152581D4AB00C36075 /* AlamofireNetworkActivityIndicator in Frameworks */ = {isa = PBXBuildFile; productRef = DBB4B8142581D4AB00C36075 /* AlamofireNetworkActivityIndicator */; };
 		DBBABA04255E54A000C1B3D9 /* UserMediaTimelineViewController+TweetProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBBABA03255E54A000C1B3D9 /* UserMediaTimelineViewController+TweetProvider.swift */; };
 		DBBABA0C255E550D00C1B3D9 /* TweetProvider+UICollectionViewDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBBABA0B255E550D00C1B3D9 /* TweetProvider+UICollectionViewDelegate.swift */; };
 		DBBABA11255E61C900C1B3D9 /* SearchMediaViewController+TweetProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBBABA10255E61C900C1B3D9 /* SearchMediaViewController+TweetProvider.swift */; };
@@ -725,6 +726,7 @@
 				DBE76CA5250093CA00DEB0FC /* CoreDataStack.framework in Frameworks */,
 				DB9EC4E1255A6317005403AA /* SwiftMessages in Frameworks */,
 				44CCAE5E7B79E0C359E367E5 /* Pods_TwidereX.framework in Frameworks */,
+				DBB4B8152581D4AB00C36075 /* AlamofireNetworkActivityIndicator in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1908,6 +1910,7 @@
 				DB2924CA2546B958003899A7 /* Kingfisher */,
 				DB9EC4E0255A6317005403AA /* SwiftMessages */,
 				DB74A163256E148F00C5F3C9 /* CropViewController */,
+				DBB4B8142581D4AB00C36075 /* AlamofireNetworkActivityIndicator */,
 			);
 			productName = TwidereX;
 			productReference = DBDA8E1E24FCF8A3006750DC /* TwidereX.app */;
@@ -2067,6 +2070,7 @@
 				DB2924C92546B958003899A7 /* XCRemoteSwiftPackageReference "Kingfisher" */,
 				DB9EC4DF255A6317005403AA /* XCRemoteSwiftPackageReference "SwiftMessages" */,
 				DB74A162256E148F00C5F3C9 /* XCRemoteSwiftPackageReference "TOCropViewController" */,
+				DBB4B8132581D4AB00C36075 /* XCRemoteSwiftPackageReference "AlamofireNetworkActivityIndicator" */,
 			);
 			productRefGroup = DBDA8E1F24FCF8A3006750DC /* Products */;
 			projectDirPath = "";
@@ -3154,6 +3158,14 @@
 				minimumVersion = 8.0.3;
 			};
 		};
+		DBB4B8132581D4AB00C36075 /* XCRemoteSwiftPackageReference "AlamofireNetworkActivityIndicator" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Alamofire/AlamofireNetworkActivityIndicator";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 3.1.0;
+			};
+		};
 		DBD98487251CB88A00ED87A1 /* XCRemoteSwiftPackageReference "Tabman" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/uias/Tabman.git";
@@ -3221,6 +3233,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = DB9EC4DF255A6317005403AA /* XCRemoteSwiftPackageReference "SwiftMessages" */;
 			productName = SwiftMessages;
+		};
+		DBB4B8142581D4AB00C36075 /* AlamofireNetworkActivityIndicator */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = DBB4B8132581D4AB00C36075 /* XCRemoteSwiftPackageReference "AlamofireNetworkActivityIndicator" */;
+			productName = AlamofireNetworkActivityIndicator;
 		};
 		DBD98488251CB88A00ED87A1 /* Tabman */ = {
 			isa = XCSwiftPackageProductDependency;

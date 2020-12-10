@@ -66,7 +66,8 @@ public final class CoreDataStack {
                  * The store could not be migrated to the current model version.
                  Check the error message to determine what the actual problem was.
                  */
-                if let reason = error.userInfo["reason"] as? String, reason == "Can't find mapping model for migration" {
+                if let reason = error.userInfo["reason"] as? String,
+                   (reason == "Can't find mapping model for migration" || reason == "Persistent store migration failed, missing mapping model.")  {
                     if let storeDescription = container.persistentStoreDescriptions.first, let url = storeDescription.url {
                         try? container.persistentStoreCoordinator.destroyPersistentStore(at: url, ofType: NSSQLiteStoreType, options: nil)
                         os_log("%{public}s[%{public}ld], %{public}s: cannot migrate model. rebuild database…", ((#file as NSString).lastPathComponent), #line, #function)

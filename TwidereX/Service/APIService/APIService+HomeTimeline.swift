@@ -33,7 +33,7 @@ extension APIService {
         if maxID == nil {
             guard homeTimelineRequestThrottler.available(windowSizeInSec: APIService.homeTimelineRequestWindowInSec) else {
                 return Fail(error: APIError.silent(.requestThrottle))
-                    .delay(for: .milliseconds(Int.random(in: 200..<1000)), scheduler: DispatchQueue.main)
+                    .delay(for: .milliseconds(Int.random(in: 1000..<2000)), scheduler: DispatchQueue.main)
                     .eraseToAnyPublisher()
             }
         }
