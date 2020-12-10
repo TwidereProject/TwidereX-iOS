@@ -66,7 +66,7 @@ class ProfileViewModel: NSObject {
     init(twitterUser: TwitterUser) {
         self.twitterUser = CurrentValueSubject(twitterUser)
         self.userID = CurrentValueSubject(twitterUser.id)
-        self.bannerImageURL = CurrentValueSubject(twitterUser.profileBannerURL.flatMap { URL(string: $0) })
+        self.bannerImageURL = CurrentValueSubject(twitterUser.profileBannerURL(sizeKind: .large))
         self.avatarImageURL = CurrentValueSubject(twitterUser.avatarImageURL(size: .original))
         self.protected = CurrentValueSubject(twitterUser.protected)
         self.verified = CurrentValueSubject(twitterUser.verified)
@@ -261,7 +261,7 @@ extension ProfileViewModel {
     
     private func update(twitterUser: TwitterUser?) {
         self.userID.value = twitterUser?.id
-        self.bannerImageURL.value = twitterUser?.profileBannerURL.flatMap { URL(string: $0) }
+        self.bannerImageURL.value = twitterUser?.profileBannerURL(sizeKind: .large)
         self.avatarImageURL.value = twitterUser?.avatarImageURL(size: .original)
         self.protected.value = twitterUser?.protected
         self.verified.value = twitterUser?.verified
