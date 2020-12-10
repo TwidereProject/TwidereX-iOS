@@ -182,10 +182,14 @@ extension HomeTimelineViewController {
 
         // bind refresh control
         viewModel.isFetchingLatestTimeline
+            .receive(on: DispatchQueue.main)
             .sink { [weak self] isFetching in
                 guard let self = self else { return }
                 if !isFetching {
-                    self.refreshControl.endRefreshing()
+                    UIView.animate(withDuration: 0.5) { [weak self] in
+                        guard let self = self else { return }
+                        self.refreshControl.endRefreshing()
+                    }
                 }
             }
             .store(in: &disposeBag)
@@ -532,5 +536,22 @@ extension HomeTimelineViewController: TimelinePostTableViewCellDelegate { }
 
 // MARK: - ScrollViewContainer
 extension HomeTimelineViewController: ScrollViewContainer {
+    
     var scrollView: UIScrollView { return tableView }
+    
+    func scrollToTop(animated: Bool) {
+        if viewModel.loadLatestStateMachine.canEnterState(HomeTimelineViewModel.LoadLatestState.Loading.self),
+           (scrollView.contentOffset.y + scrollView.adjustedContentInset.top) == 0.0,
+           !refreshControl.isRefreshing {
+            scrollView.scrollRectToVisible(CGRect(origin: CGPoint(x: 0, y: -refreshControl.frame.height), size: CGSize(width: 1, height: 1)), animated: animated)
+            DispatchQueue.main.async { [weak self] in
+                guard let self = self else { return }
+                self.refreshControl.beginRefreshing()
+                self.refreshControl.sendActions(for: .valueChanged)
+            }
+        } else {
+            scrollView.scrollRectToVisible(CGRect(origin: .zero, size: CGSize(width: 1, height: 1)), animated: animated)
+        }
+    }
+    
 }
