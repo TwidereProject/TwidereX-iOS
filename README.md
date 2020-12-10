@@ -55,6 +55,7 @@ Try the beta version on the [TestFlight](https://testflight.apple.com/join/GJIDX
 
 - [ActiveLabel](https://github.com/optonaut/ActiveLabel.swift)
 - [AlamofireImage](https://github.com/Alamofire/AlamofireImage)
+- [AlamofireNetworkActivityIndicator](https://github.com/Alamofire/AlamofireNetworkActivityIndicator)
 - [Alamofire](https://github.com/Alamofire/Alamofire)
 - [cocoapods-keys](https://github.com/orta/cocoapods-keys)
 - [CommonOSLog](https://github.com/mainasuk/CommonOSLog)
