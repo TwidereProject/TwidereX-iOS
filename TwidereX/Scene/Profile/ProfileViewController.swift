@@ -8,9 +8,12 @@
 import os.log
 import UIKit
 import Combine
+import CoreData
+import CoreDataStack
 import Tabman
 import AlamofireImage
 import Kingfisher
+import ActiveLabel
 
 final class ProfileViewController: UIViewController, DrawerSidebarTransitionableViewController, NeedsDependency {
     
@@ -593,6 +596,51 @@ extension ProfileViewController: ProfileBannerViewDelegate {
     
     func profileBannerView(_ profileBannerView: ProfileBannerView, linkButtonDidPressed button: UIButton) {
         guard let urlString = viewModel.url.value, let url = URL(string: urlString) else { return }
+        coordinator.present(scene: .safari(url: url), from: nil, transition: .safariPresent(animated: true, completion: nil))
+    }
+    
+    func profileBannerView(_ profileBannerView: ProfileBannerView, activeLabel: ActiveLabel, didTapMention mention: String) {
+        let profileViewModel: ProfileViewModel = {
+            let targetUsername = mention
+            let targetUser: TwitterUser? = {
+                let userRequest = TwitterUser.sortedFetchRequest
+                userRequest.fetchLimit = 1
+                userRequest.predicate = TwitterUser.predicate(username: targetUsername)
+                do {
+                    return try self.context.managedObjectContext.fetch(userRequest).first
+                } catch {
+                    assertionFailure(error.localizedDescription)
+                    return nil
+                }
+            }()
+            
+            if let targetUser = targetUser {
+                let activeAuthenticationIndex = self.context.authenticationService.activeAuthenticationIndex.value
+                let currentTwitterUser = activeAuthenticationIndex?.twitterAuthentication?.twitterUser
+                if targetUser.id == currentTwitterUser?.id {
+                    return MeProfileViewModel(activeAuthenticationIndex: activeAuthenticationIndex)
+                } else {
+                    return ProfileViewModel(twitterUser: targetUser)
+                }
+            } else {
+                return ProfileViewModel(context: self.context, username: targetUsername)
+            }
+        }()
+        self.context.authenticationService.activeAuthenticationIndex
+            .map { $0?.twitterAuthentication?.twitterUser }
+            .assign(to: \.value, on: profileViewModel.currentTwitterUser)
+            .store(in: &profileViewModel.disposeBag)
+        
+        DispatchQueue.main.async {
+            self.coordinator.present(scene: .profile(viewModel: profileViewModel), from: self, transition: .show)
+        }
+    }
+    
+    func profileBannerView(_ profileBannerView: ProfileBannerView, activeLabel: ActiveLabel, didTapHashtag hashtag: String) {
+        
+    }
+    
+    func profileBannerView(_ profileBannerView: ProfileBannerView, activeLabel: ActiveLabel, didTapURL url: URL) {
         coordinator.present(scene: .safari(url: url), from: nil, transition: .safariPresent(animated: true, completion: nil))
     }
     
