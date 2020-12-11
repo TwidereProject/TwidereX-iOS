@@ -315,28 +315,16 @@ extension TimelinePostTableViewCellDelegate where Self: TweetProvider & MediaPre
 
 extension TimelinePostTableViewCellDelegate where Self: TweetProvider {
 
-    func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, activeLabel: ActiveLabel, didTapMention mention: String) {
-        timelinePostTableViewCell(cell, didTapMention: mention, isQuote: false)
-    }
-    
-    func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, activeLabel: ActiveLabel, didTapHashtag hashtag: String) {
-        
-    }
-    
-    func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, activeLabel: ActiveLabel, didTapURL url: URL) {
-        coordinator.present(scene: .safari(url: url), from: nil, transition: .safariPresent(animated: true, completion: nil))
-    }
-    
-    func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, quoteActiveLabel: ActiveLabel, didTapMention mention: String) {
-        timelinePostTableViewCell(cell, didTapMention: mention, isQuote: true)
-    }
-    
-    func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, quoteActiveLabel: ActiveLabel, didTapHashtag hashtag: String) {
-        
-    }
-    
-    func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, quoteActiveLabel: ActiveLabel, didTapURL url: URL) {
-        
+    func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, activeLabel: ActiveLabel, didTapEntity entity: ActiveEntity) {
+        switch entity.type {
+        case .mention(let text):
+            timelinePostTableViewCell(cell, didTapMention: text, isQuote: false)
+        case .url(let originalURL, _):
+            guard let url = URL(string: originalURL) else { return }
+            coordinator.present(scene: .safari(url: url), from: nil, transition: .safariPresent(animated: true, completion: nil))
+        default:
+            break
+        }
     }
     
     private func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, didTapMention mention: String, isQuote: Bool) {

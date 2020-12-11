@@ -238,7 +238,7 @@ extension ComposeTweetViewModel {
         cell.timelinePostView.usernameLabel.text = "@" + tweet.author.username
         
         // set tweet content text
-        cell.timelinePostView.activeTextLabel.text = tweet.text
+        cell.timelinePostView.activeTextLabel.configure(with: tweet.displayText)
     }
 }
 

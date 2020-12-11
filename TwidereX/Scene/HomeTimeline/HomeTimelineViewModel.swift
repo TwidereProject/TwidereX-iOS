@@ -15,6 +15,7 @@ import CoreDataStack
 import AlamofireImage
 import Kingfisher
 import DateToolsSwift
+import ActiveLabel
 
 final class HomeTimelineViewModel: NSObject {
     
@@ -196,8 +197,8 @@ extension HomeTimelineViewModel {
         cell.timelinePostView.dateLabel.text = createdAt.shortTimeAgoSinceNow
         
         // set text
-        cell.timelinePostView.activeTextLabel.text = (tweet.retweet ?? tweet).displayText
-
+        cell.timelinePostView.activeTextLabel.configure(with: (tweet.retweet ?? tweet).displayText)
+        
         // set action toolbar title
         let isRetweeted = (tweet.retweet ?? tweet).retweetBy.flatMap({ $0.contains(where: { $0.id == requestUserID }) }) ?? false
         let retweetCountTitle: String = {
@@ -283,7 +284,7 @@ extension HomeTimelineViewModel {
             cell.timelinePostView.quotePostView.dateLabel.text = createdAt.shortTimeAgoSinceNow
 
             // set text
-            cell.timelinePostView.quotePostView.activeTextLabel.text = quote.displayText
+            cell.timelinePostView.quotePostView.activeTextLabel.configure(with: quote.displayText)
         }
         cell.timelinePostView.quotePostView.isHidden = quote == nil
         

@@ -11,10 +11,7 @@ import ActiveLabel
 
 protocol ProfileBannerViewDelegate: class {
     func profileBannerView(_ profileBannerView: ProfileBannerView, linkButtonDidPressed button: UIButton)
-    
-    func profileBannerView(_ profileBannerView: ProfileBannerView, activeLabel: ActiveLabel, didTapMention mention: String)
-    func profileBannerView(_ profileBannerView: ProfileBannerView, activeLabel: ActiveLabel, didTapHashtag hashtag: String)
-    func profileBannerView(_ profileBannerView: ProfileBannerView, activeLabel: ActiveLabel, didTapURL url: URL)
+    func profileBannerView(_ profileBannerView: ProfileBannerView, activeLabel: ActiveLabel, didTapEntity entity: ActiveEntity)
 }
 
 final class ProfileBannerView: UIView {
@@ -302,22 +299,7 @@ extension ProfileBannerView {
         profileBannerInfoActionView.followStatusLabel.isHidden = true
         linkButton.addTarget(self, action: #selector(ProfileBannerView.linkButtonDidPressed(_:)), for: .touchUpInside)
         
-        let activeLabel = bioLabel
-        activeLabel.handleMentionTap { [weak self] mention in
-            guard let self = self else { return }
-            os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: handleMentionTap: %s", ((#file as NSString).lastPathComponent), #line, #function, mention)
-            self.delegate?.profileBannerView(self, activeLabel: activeLabel, didTapMention: mention)
-        }
-        activeLabel.handleHashtagTap { [weak self] hashtag in
-            guard let self = self else { return }
-            os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: handleHashtagTap: %s", ((#file as NSString).lastPathComponent), #line, #function, hashtag)
-            self.delegate?.profileBannerView(self, activeLabel: activeLabel, didTapHashtag: hashtag)
-        }
-        activeLabel.handleURLTap { [weak self] url in
-            guard let self = self else { return }
-            os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: handleURLTap: %s", ((#file as NSString).lastPathComponent), #line, #function, url.absoluteString)
-            self.delegate?.profileBannerView(self, activeLabel: activeLabel, didTapURL: url)
-        }
+        bioLabel.delegate = self
         
         bringSubviewToFront(profileAvatarImageView)
         bringSubviewToFront(verifiedBadgeImageView)
@@ -332,6 +314,12 @@ extension ProfileBannerView {
     }
 }
 
+// MARK: - ActiveLabelDelegate
+extension ProfileBannerView: ActiveLabelDelegate {
+    func activeLabel(_ activeLabel: ActiveLabel, didSelectActiveEntity entity: ActiveEntity) {
+        delegate?.profileBannerView(self, activeLabel: activeLabel, didTapEntity: entity)
+    }
+}
 
 #if DEBUG
 import SwiftUI

@@ -343,7 +343,7 @@ extension TweetConversationViewModel {
         cell.conversationPostView.usernameLabel.text = "@" + (tweet.retweet ?? tweet).author.username
 
         // set text
-        cell.conversationPostView.activeTextLabel.text = (tweet.retweet ?? tweet).displayText
+        cell.conversationPostView.activeTextLabel.configure(with: (tweet.retweet ?? tweet).displayText)
         
         // set image display
         let media = Array((tweet.retweet ?? tweet).media ?? []).sorted { $0.index.compare($1.index) == .orderedAscending }
@@ -401,7 +401,7 @@ extension TweetConversationViewModel {
             cell.conversationPostView.quotePostView.usernameLabel.text = "@\(quote.author.username)"
             
             // set text
-            cell.conversationPostView.quotePostView.activeTextLabel.text = quote.displayText
+            cell.conversationPostView.quotePostView.activeTextLabel.configure(with: quote.displayText)
         }
         cell.conversationPostView.quotePostView.isHidden = quote == nil
         

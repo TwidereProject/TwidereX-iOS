@@ -92,7 +92,7 @@ extension TwitterUser {
             var bioDescription = bioDescription
             for url in entities?.urls ?? [] {
                 guard let shortURL = url.url, let expandedURL = url.expandedURL else { continue }
-                bioDescription = bioDescription.replacingOccurrences(of: shortURL, with: " " + expandedURL + " ")
+                bioDescription = bioDescription.replacingOccurrences(of: shortURL, with: expandedURL)
             }
             return bioDescription
         }

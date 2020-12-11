@@ -305,7 +305,10 @@ extension ProfileViewController {
             .store(in: &disposeBag)
         viewModel.bioDescription
             .map { $0 ?? " " }
-            .assign(to: \.text, on: profileHeaderViewController.profileBannerView.bioLabel)
+            .sink(receiveValue: { [weak self] bio in
+                guard let self = self else { return }
+                self.profileHeaderViewController.profileBannerView.bioLabel.configure(with: bio)
+            })
             .store(in: &disposeBag)
         viewModel.url
             .sink { [weak self] url in
@@ -599,49 +602,49 @@ extension ProfileViewController: ProfileBannerViewDelegate {
         coordinator.present(scene: .safari(url: url), from: nil, transition: .safariPresent(animated: true, completion: nil))
     }
     
-    func profileBannerView(_ profileBannerView: ProfileBannerView, activeLabel: ActiveLabel, didTapMention mention: String) {
-        let profileViewModel: ProfileViewModel = {
-            let targetUsername = mention
-            let targetUser: TwitterUser? = {
-                let userRequest = TwitterUser.sortedFetchRequest
-                userRequest.fetchLimit = 1
-                userRequest.predicate = TwitterUser.predicate(username: targetUsername)
-                do {
-                    return try self.context.managedObjectContext.fetch(userRequest).first
-                } catch {
-                    assertionFailure(error.localizedDescription)
-                    return nil
+    func profileBannerView(_ profileBannerView: ProfileBannerView, activeLabel: ActiveLabel, didTapEntity entity: ActiveEntity) {
+        switch entity.type {
+        case .mention(let text):
+            let profileViewModel: ProfileViewModel = {
+                let targetUsername = text
+                let targetUser: TwitterUser? = {
+                    let userRequest = TwitterUser.sortedFetchRequest
+                    userRequest.fetchLimit = 1
+                    userRequest.predicate = TwitterUser.predicate(username: targetUsername)
+                    do {
+                        return try self.context.managedObjectContext.fetch(userRequest).first
+                    } catch {
+                        assertionFailure(error.localizedDescription)
+                        return nil
+                    }
+                }()
+                
+                if let targetUser = targetUser {
+                    let activeAuthenticationIndex = self.context.authenticationService.activeAuthenticationIndex.value
+                    let currentTwitterUser = activeAuthenticationIndex?.twitterAuthentication?.twitterUser
+                    if targetUser.id == currentTwitterUser?.id {
+                        return MeProfileViewModel(activeAuthenticationIndex: activeAuthenticationIndex)
+                    } else {
+                        return ProfileViewModel(twitterUser: targetUser)
+                    }
+                } else {
+                    return ProfileViewModel(context: self.context, username: targetUsername)
                 }
             }()
+            self.context.authenticationService.activeAuthenticationIndex
+                .map { $0?.twitterAuthentication?.twitterUser }
+                .assign(to: \.value, on: profileViewModel.currentTwitterUser)
+                .store(in: &profileViewModel.disposeBag)
             
-            if let targetUser = targetUser {
-                let activeAuthenticationIndex = self.context.authenticationService.activeAuthenticationIndex.value
-                let currentTwitterUser = activeAuthenticationIndex?.twitterAuthentication?.twitterUser
-                if targetUser.id == currentTwitterUser?.id {
-                    return MeProfileViewModel(activeAuthenticationIndex: activeAuthenticationIndex)
-                } else {
-                    return ProfileViewModel(twitterUser: targetUser)
-                }
-            } else {
-                return ProfileViewModel(context: self.context, username: targetUsername)
+            DispatchQueue.main.async {
+                self.coordinator.present(scene: .profile(viewModel: profileViewModel), from: self, transition: .show)
             }
-        }()
-        self.context.authenticationService.activeAuthenticationIndex
-            .map { $0?.twitterAuthentication?.twitterUser }
-            .assign(to: \.value, on: profileViewModel.currentTwitterUser)
-            .store(in: &profileViewModel.disposeBag)
-        
-        DispatchQueue.main.async {
-            self.coordinator.present(scene: .profile(viewModel: profileViewModel), from: self, transition: .show)
+        case .url(let originalURL, _):
+            guard let url = URL(string: originalURL) else { return }
+            coordinator.present(scene: .safari(url: url), from: nil, transition: .safariPresent(animated: true, completion: nil))
+        default:
+            break
         }
-    }
-    
-    func profileBannerView(_ profileBannerView: ProfileBannerView, activeLabel: ActiveLabel, didTapHashtag hashtag: String) {
-        
-    }
-    
-    func profileBannerView(_ profileBannerView: ProfileBannerView, activeLabel: ActiveLabel, didTapURL url: URL) {
-        coordinator.present(scene: .safari(url: url), from: nil, transition: .safariPresent(animated: true, completion: nil))
     }
     
 }

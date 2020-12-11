@@ -3,11 +3,11 @@
     "pins": [
       {
         "package": "ActiveLabel",
-        "repositoryURL": "https://github.com/optonaut/ActiveLabel.swift.git",
+        "repositoryURL": "https://github.com/TwidereProject/ActiveLabel.swift",
         "state": {
           "branch": null,
-          "revision": "dacc4cfbcdf511424985ce8a1a9260345bd8f2d5",
-          "version": "1.1.0"
+          "revision": "58bfd297d926550c1964e9ec11a245439e150b6b",
+          "version": "2.0.0"
         }
       },
       {

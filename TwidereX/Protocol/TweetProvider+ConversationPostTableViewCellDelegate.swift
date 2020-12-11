@@ -315,31 +315,37 @@ extension ConversationPostTableViewCellDelegate where Self: TweetProvider & Medi
 
 extension ConversationPostTableViewCellDelegate where Self: TweetProvider {
     
-    func conversationPostTableViewCell(_ cell: ConversationPostTableViewCell, activeLabel: ActiveLabel, didTapMention mention: String) {
-        conversationPostTableViewCell(cell, didTapMention: mention, isQuote: false)
+    func conversationPostTableViewCell(_ cell: ConversationPostTableViewCell, activeLabel: ActiveLabel, didTapEntity entity: ActiveEntity) {
+        switch entity.type {
+        case .hashtag:
+            break
+        case .mention(let text):
+            let mention = text.hasPrefix("@") ? String(text.dropFirst()) : text
+            conversationPostTableViewCell(cell, didTapMention: mention, isQuote: false)
+        case .url(let original, _):
+            guard let url = URL(string: original) else { return }
+            coordinator.present(scene: .safari(url: url), from: nil, transition: .safariPresent(animated: true, completion: nil))
+        default:
+            break
+        }
     }
     
-    func conversationPostTableViewCell(_ cell: ConversationPostTableViewCell, activeLabel: ActiveLabel, didTapHashtag hashtag: String) {
-        
+    func conversationPostTableViewCell(_ cell: ConversationPostTableViewCell, quoteActiveLabel: ActiveLabel, didTapEntity entity: ActiveEntity) {
+        switch entity.type {
+        case .hashtag:
+            break
+        case .mention(let text):
+            let mention = text.hasPrefix("@") ? String(text.dropFirst()) : text
+            conversationPostTableViewCell(cell, didTapMention: mention, isQuote: true)
+        case .url(let original, _):
+            guard let url = URL(string: original) else { return }
+            coordinator.present(scene: .safari(url: url), from: nil, transition: .safariPresent(animated: true, completion: nil))
+        default:
+            break
+        }
     }
     
-    func conversationPostTableViewCell(_ cell: ConversationPostTableViewCell, activeLabel: ActiveLabel, didTapURL url: URL) {
-        coordinator.present(scene: .safari(url: url), from: nil, transition: .safariPresent(animated: true, completion: nil))
-    }
-    
-    func conversationPostTableViewCell(_ cell: ConversationPostTableViewCell, quoteActiveLabel: ActiveLabel, didTapMention mention: String) {
-        conversationPostTableViewCell(cell, didTapMention: mention, isQuote: true)
-    }
-    
-    func conversationPostTableViewCell(_ cell: ConversationPostTableViewCell, quoteActiveLabel: ActiveLabel, didTapHashtag hashtag: String) {
-        
-    }
-    
-    func conversationPostTableViewCell(_ cell: ConversationPostTableViewCell, quoteActiveLabel: ActiveLabel, didTapURL url: URL) {
-        
-    }
-    
-    func conversationPostTableViewCell(_ cell: ConversationPostTableViewCell, didTapMention mention: String, isQuote: Bool) {
+    private func conversationPostTableViewCell(_ cell: ConversationPostTableViewCell, didTapMention mention: String, isQuote: Bool) {
         tweet(for: cell)
             .sink { [weak self] tweet in
                 guard let self = self else { return }
