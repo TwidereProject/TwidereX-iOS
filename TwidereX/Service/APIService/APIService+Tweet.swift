@@ -24,35 +24,36 @@ extension APIService {
     ) -> AnyPublisher<Twitter.Response.Content<Twitter.Entity.Tweet>, Error> {
         let authorization = twitterAuthenticationBox.twitterAuthorization
         let managedObjectContext = backgroundManagedObjectContext
+        
+        let mediaIDs: String? = mediaIDs?.joined(separator: ",")
         let query = Future<Twitter.API.Statuses.UpdateQuery, Never> { promise in
-            guard let replyToTweetObjectID = replyToTweetObjectID else {
+            if let replyToTweetObjectID = replyToTweetObjectID {
+                managedObjectContext.perform {
+                    let replyTo = managedObjectContext.object(with: replyToTweetObjectID) as! Tweet
+                    let query = Twitter.API.Statuses.UpdateQuery(
+                        status: content,
+                        inReplyToStatusID: replyTo.id,
+                        autoPopulateReplyMetadata: true,
+                        mediaIDs: mediaIDs,
+                        latitude: nil,
+                        longitude: nil,
+                        placeID: placeID
+                    )
+                    DispatchQueue.main.async {
+                        promise(.success(query))
+                    }
+                }
+            } else {
                 let query = Twitter.API.Statuses.UpdateQuery(
                     status: content,
                     inReplyToStatusID: nil,
                     autoPopulateReplyMetadata: false,
-                    mediaIDs: mediaIDs?.joined(separator: ","),
+                    mediaIDs: mediaIDs,
                     latitude: nil,
                     longitude: nil,
                     placeID: placeID
                 )
                 promise(.success(query))
-                return
-            }
-            
-            managedObjectContext.perform {
-                let replyTo = managedObjectContext.object(with: replyToTweetObjectID) as! Tweet
-                let query = Twitter.API.Statuses.UpdateQuery(
-                    status: content,
-                    inReplyToStatusID: replyTo.id,
-                    autoPopulateReplyMetadata: true,
-                    mediaIDs: nil,
-                    latitude: nil,
-                    longitude: nil,
-                    placeID: nil
-                )
-                DispatchQueue.main.async {
-                    promise(.success(query))
-                }
             }
         }
 
