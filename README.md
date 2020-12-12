@@ -72,6 +72,7 @@ Try the beta version on the [TestFlight](https://testflight.apple.com/join/GJIDX
 - [TOCropViewController](https://github.com/TimOliver/TOCropViewController)
 - [twitter-text](https://github.com/twitter/twitter-text)
 - [TwitterProfile](https://github.com/OfTheWolf/TwitterProfile)
+- [ZIPFoundation](https://github.com/weichsel/ZIPFoundation)
 
 ## License
 
