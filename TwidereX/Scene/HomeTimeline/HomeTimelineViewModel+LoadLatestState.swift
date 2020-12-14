@@ -54,14 +54,20 @@ extension HomeTimelineViewModel.LoadLatestState {
 
             managedObjectContext.perform {
                 let start = CACurrentMediaTime()
-                let tweetIDs: [Tweet.ID]
+                let latestTweetIDs: [Tweet.ID]
                 let request = TimelineIndex.sortedFetchRequest
                 request.returnsObjectsAsFaults = false
                 request.predicate = predicate
 
                 do {
                     let timelineIndexes = try managedObjectContext.fetch(request)
-                    tweetIDs = timelineIndexes.compactMap { $0.tweet?.id }
+                    let endFetch = CACurrentMediaTime()
+                    os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: collect timelineIndexes cost: %.2fs", ((#file as NSString).lastPathComponent), #line, #function, endFetch - start)
+                    latestTweetIDs = timelineIndexes
+                        .prefix(200)        // avoid performance issue
+                        .compactMap { timelineIndex in
+                            timelineIndex.value(forKeyPath: #keyPath(TimelineIndex.tweet.id)) as? Tweet.ID
+                        }
                 } catch {
                     stateMachine.enter(Fail.self)
                     return
@@ -77,7 +83,7 @@ extension HomeTimelineViewModel.LoadLatestState {
                         case .failure(let error):
                             // TODO: handle error
                             viewModel.isFetchingLatestTimeline.value = false
-                            os_log("%{public}s[%{public}ld], %{public}s: fetch tweets failed. %s", ((#file as NSString).lastPathComponent), #line, #function, error.localizedDescription)
+                            os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: fetch tweets failed. %s", ((#file as NSString).lastPathComponent), #line, #function, error.localizedDescription)
                         case .finished:
                             // handle isFetchingLatestTimeline in fetch controller delegate
                             break
@@ -88,7 +94,7 @@ extension HomeTimelineViewModel.LoadLatestState {
                     } receiveValue: { response in
                         // stop refresher if no new tweets
                         let tweets = response.value
-                        let newTweets = tweets.filter { !tweetIDs.contains($0.idStr) }
+                        let newTweets = tweets.filter { !latestTweetIDs.contains($0.idStr) }
                         os_log("%{public}s[%{public}ld], %{public}s: load %{public}ld new tweets", ((#file as NSString).lastPathComponent), #line, #function, newTweets.count)
 
                         if newTweets.isEmpty {
