@@ -68,7 +68,9 @@ extension SceneCoordinator {
     
     @discardableResult
     func present(scene: Scene, from sender: UIViewController?, transition: Transition) -> UIViewController? {
-        let viewController = get(scene: scene)
+        guard let viewController = get(scene: scene) else {
+            return nil
+        }
         guard let presentingViewController = sender ?? sceneDelegate.window?.rootViewController?.topMost else {
             return nil
         }
@@ -108,8 +110,8 @@ extension SceneCoordinator {
 
 private extension SceneCoordinator {
     
-    func get(scene: Scene) -> UIViewController {
-        let viewController: UIViewController
+    func get(scene: Scene) -> UIViewController? {
+        let viewController: UIViewController?
         switch scene {
         case .authentication:
             viewController = AuthenticationViewController()
@@ -154,6 +156,10 @@ private extension SceneCoordinator {
             viewController = DeveloperViewController()
         #endif
         case .safari(let url):
+            guard let scheme = url.scheme?.lowercased(),
+                  scheme == "http" || scheme == "https" else {
+                return nil
+            }
             viewController = SFSafariViewController(url: url)
         }
         

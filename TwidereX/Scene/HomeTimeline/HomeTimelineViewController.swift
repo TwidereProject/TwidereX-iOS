@@ -15,6 +15,10 @@ import TwitterAPI
 import Floaty
 import AlamofireImage
 
+#if DEBUG
+import ZIPFoundation
+#endif
+
 final class HomeTimelineViewController: UIViewController, NeedsDependency, DrawerSidebarTransitionableViewController, MediaPreviewableViewController {
     
     weak var context: AppContext! { willSet { precondition(!isViewLoaded) } }
@@ -127,6 +131,10 @@ extension HomeTimelineViewController {
                         UIAction(title: "Show Account unlock alert", image: nil, attributes: [], handler: { [weak self] action in
                             guard let self = self else { return }
                             self.context.apiService.error.send(APIService.APIError.accountTemporarilyLocked)
+                        }),
+                        UIAction(title: "Export Database", image: nil, attributes: [], handler: { [weak self] action in
+                            guard let self = self else { return }
+                            self.exportDatabase(action)
                         })
                     ]
                 )
@@ -182,10 +190,14 @@ extension HomeTimelineViewController {
 
         // bind refresh control
         viewModel.isFetchingLatestTimeline
+            .receive(on: DispatchQueue.main)
             .sink { [weak self] isFetching in
                 guard let self = self else { return }
                 if !isFetching {
-                    self.refreshControl.endRefreshing()
+                    UIView.animate(withDuration: 0.5) { [weak self] in
+                        guard let self = self else { return }
+                        self.refreshControl.endRefreshing()
+                    }
                 }
             }
             .store(in: &disposeBag)
@@ -430,6 +442,33 @@ extension HomeTimelineViewController {
 
     }
     
+    @objc private func exportDatabase(_ sender: UIAction) {
+        let storeURL = URL.storeURL(for: "group.com.twidere.twiderex", databaseName: "shared")
+        let databaseFolderURL = storeURL.deletingLastPathComponent()
+        
+        let temporaryDirectoryURL = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent(UUID().uuidString)
+        let archiveSourceDirectoryURL = temporaryDirectoryURL.appendingPathComponent("Archive")
+        let archiveURL = temporaryDirectoryURL.appendingPathComponent("database.zip")
+        
+        DispatchQueue(label: "com.twidere.twiderex", qos: .userInitiated).async {
+            do {
+                try? FileManager.default.createDirectory(at: temporaryDirectoryURL, withIntermediateDirectories: true, attributes: nil)
+                try FileManager.default.copyItem(at: databaseFolderURL, to: archiveSourceDirectoryURL)
+                // zip under DEBUG mode is pretty slow (may CRC performance issue of ZIPFoundation)
+                try FileManager.default.zipItem(at: archiveSourceDirectoryURL, to: archiveURL, shouldKeepParent: false, compressionMethod: .none)
+                print(temporaryDirectoryURL)
+            } catch {
+                os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: archive database fail: %s", ((#file as NSString).lastPathComponent), #line, #function, error.localizedDescription)
+            }
+            
+            let activityViewController = UIActivityViewController(activityItems: [archiveURL], applicationActivities: nil)
+            DispatchQueue.main.async {
+                self.present(activityViewController, animated: true, completion: nil)                
+            }
+        }
+    }
+    
+    
     #endif
 }
 
@@ -532,5 +571,22 @@ extension HomeTimelineViewController: TimelinePostTableViewCellDelegate { }
 
 // MARK: - ScrollViewContainer
 extension HomeTimelineViewController: ScrollViewContainer {
+    
     var scrollView: UIScrollView { return tableView }
+    
+    func scrollToTop(animated: Bool) {
+        if viewModel.loadLatestStateMachine.canEnterState(HomeTimelineViewModel.LoadLatestState.Loading.self),
+           (scrollView.contentOffset.y + scrollView.adjustedContentInset.top) == 0.0,
+           !refreshControl.isRefreshing {
+            scrollView.scrollRectToVisible(CGRect(origin: CGPoint(x: 0, y: -refreshControl.frame.height), size: CGSize(width: 1, height: 1)), animated: animated)
+            DispatchQueue.main.async { [weak self] in
+                guard let self = self else { return }
+                self.refreshControl.beginRefreshing()
+                self.refreshControl.sendActions(for: .valueChanged)
+            }
+        } else {
+            scrollView.scrollRectToVisible(CGRect(origin: .zero, size: CGSize(width: 1, height: 1)), animated: animated)
+        }
+    }
+    
 }

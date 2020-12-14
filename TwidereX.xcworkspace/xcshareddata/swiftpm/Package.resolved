@@ -3,11 +3,11 @@
     "pins": [
       {
         "package": "ActiveLabel",
-        "repositoryURL": "https://github.com/optonaut/ActiveLabel.swift.git",
+        "repositoryURL": "https://github.com/TwidereProject/ActiveLabel.swift",
         "state": {
           "branch": null,
-          "revision": "dacc4cfbcdf511424985ce8a1a9260345bd8f2d5",
-          "version": "1.1.0"
+          "revision": "58bfd297d926550c1964e9ec11a245439e150b6b",
+          "version": "2.0.0"
         }
       },
       {
@@ -26,6 +26,15 @@
           "branch": null,
           "revision": "3e8edbeb75227f8542aa87f90240cf0424d6362f",
           "version": "4.1.0"
+        }
+      },
+      {
+        "package": "AlamofireNetworkActivityIndicator",
+        "repositoryURL": "https://github.com/Alamofire/AlamofireNetworkActivityIndicator",
+        "state": {
+          "branch": null,
+          "revision": "392bed083e8d193aca16bfa684ee24e4bcff0510",
+          "version": "3.1.0"
         }
       },
       {
@@ -107,6 +116,15 @@
           "branch": null,
           "revision": "182aa17bfb598c7ff6879c985ef85bb21eb51542",
           "version": "2.5.5"
+        }
+      },
+      {
+        "package": "ZIPFoundation",
+        "repositoryURL": "https://github.com/weichsel/ZIPFoundation",
+        "state": {
+          "branch": null,
+          "revision": "ec32d62d412578542c0ffb7a6ce34d3e64b43b94",
+          "version": "0.9.11"
         }
       }
     ]

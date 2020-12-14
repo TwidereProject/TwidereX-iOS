@@ -23,13 +23,8 @@ protocol TimelinePostTableViewCellDelegate: class {
     
     func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, mosaicImageView: MosaicImageView, didTapImageView imageView: UIImageView, atIndex index: Int)
     
-    func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, activeLabel: ActiveLabel, didTapMention mention: String)
-    func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, activeLabel: ActiveLabel, didTapHashtag hashtag: String)
-    func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, activeLabel: ActiveLabel, didTapURL url: URL)
+    func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, activeLabel: ActiveLabel, didTapEntity entity: ActiveEntity)
     
-    func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, quoteActiveLabel: ActiveLabel, didTapMention mention: String)
-    func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, quoteActiveLabel: ActiveLabel, didTapHashtag hashtag: String)
-    func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, quoteActiveLabel: ActiveLabel, didTapURL url: URL)
 }
 
 final class TimelinePostTableViewCell: UITableViewCell {
@@ -145,40 +140,7 @@ extension TimelinePostTableViewCell {
         timelinePostView.quotePostView.isUserInteractionEnabled = true
         timelinePostView.quotePostView.addGestureRecognizer(quotePostViewTapGestureRecognizer)
         
-        let activeLabel = timelinePostView.activeTextLabel
-        activeLabel.handleMentionTap { [weak self] mention in
-            guard let self = self else { return }
-            os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: handleMentionTap: %s", ((#file as NSString).lastPathComponent), #line, #function, mention)
-            self.delegate?.timelinePostTableViewCell(self, activeLabel: activeLabel, didTapMention: mention)
-        }
-        activeLabel.handleHashtagTap { [weak self] hashtag in
-            guard let self = self else { return }
-            os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: handleHashtagTap: %s", ((#file as NSString).lastPathComponent), #line, #function, hashtag)
-            self.delegate?.timelinePostTableViewCell(self, activeLabel: activeLabel, didTapHashtag: hashtag)
-        }
-        activeLabel.handleURLTap { [weak self] url in
-            guard let self = self else { return }
-            os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: handleURLTap: %s", ((#file as NSString).lastPathComponent), #line, #function, url.absoluteString)
-            self.delegate?.timelinePostTableViewCell(self, activeLabel: activeLabel, didTapURL: url)
-        }
-        
-        let quoteActiveLabel = timelinePostView.quotePostView.activeTextLabel
-        quoteActiveLabel.handleMentionTap { [weak self] mention in
-            guard let self = self else { return }
-            os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: handleMentionTap: %s", ((#file as NSString).lastPathComponent), #line, #function, mention)
-            self.delegate?.timelinePostTableViewCell(self, quoteActiveLabel: quoteActiveLabel, didTapMention: mention)
-        }
-        quoteActiveLabel.handleHashtagTap { [weak self] hashtag in
-            guard let self = self else { return }
-            os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: handleHashtagTap: %s", ((#file as NSString).lastPathComponent), #line, #function, hashtag)
-            self.delegate?.timelinePostTableViewCell(self, quoteActiveLabel: quoteActiveLabel, didTapHashtag: hashtag)
-        }
-        quoteActiveLabel.handleURLTap { [weak self] url in
-            guard let self = self else { return }
-            os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: handleURLTap: %s", ((#file as NSString).lastPathComponent), #line, #function, url.absoluteString)
-            self.delegate?.timelinePostTableViewCell(self, quoteActiveLabel: quoteActiveLabel, didTapURL: url)
-        }
-        
+        timelinePostView.activeTextLabel.delegate = self
         timelinePostView.actionToolbar.delegate = self
         timelinePostView.mosaicImageView.delegate = self
         conversationLinkUpper.isHidden = true
@@ -213,6 +175,13 @@ extension TimelinePostTableViewCell {
         delegate?.timelinePostTableViewCell(self, quotePostViewDidPressed: timelinePostView.quotePostView)
     }
     
+}
+
+// MARK: - ActiveLabelDelegate
+extension TimelinePostTableViewCell: ActiveLabelDelegate {
+    func activeLabel(_ activeLabel: ActiveLabel, didSelectActiveEntity entity: ActiveEntity) {
+        delegate?.timelinePostTableViewCell(self, activeLabel: activeLabel, didTapEntity: entity)
+    }
 }
 
 // MARK: - TimelinePostActionToolbarDelegate

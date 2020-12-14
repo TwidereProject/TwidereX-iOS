@@ -13,6 +13,7 @@ import CoreData
 import CoreDataStack
 import TwitterAPI
 import AlamofireImage
+import AlamofireNetworkActivityIndicator
 
 final class APIService {
         
@@ -34,6 +35,11 @@ final class APIService {
         
         // setup cache. 10MB RAM + 50MB Disk
         URLCache.shared = URLCache(memoryCapacity: 10 * 1024 * 1024, diskCapacity: 50 * 1024 * 1024, diskPath: nil)
+        
+        // enable network activity manager for AlamofireImage
+        NetworkActivityIndicatorManager.shared.isEnabled = true
+        NetworkActivityIndicatorManager.shared.startDelay = 0.2
+        NetworkActivityIndicatorManager.shared.completionDelay = 0.5
     }
     
 }

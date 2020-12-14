@@ -126,7 +126,7 @@ extension DisplayPreferenceViewModel {
         cell.timelinePostView.usernameLabel.text = "@TwidereProject"
         cell.timelinePostView.lockImageView.isHidden = true
         cell.timelinePostView.dateLabel.text = "5m"
-        cell.timelinePostView.activeTextLabel.text = L10n.Scene.Settings.Display.Preview.thankForUsingTwidereX
+        cell.timelinePostView.activeTextLabel.configure(with: L10n.Scene.Settings.Display.Preview.thankForUsingTwidereX)
         cell.separatorLine.isHidden = true
     }
     

@@ -11,6 +11,7 @@ import ActiveLabel
 
 protocol ProfileBannerViewDelegate: class {
     func profileBannerView(_ profileBannerView: ProfileBannerView, linkButtonDidPressed button: UIButton)
+    func profileBannerView(_ profileBannerView: ProfileBannerView, activeLabel: ActiveLabel, didTapEntity entity: ActiveEntity)
 }
 
 final class ProfileBannerView: UIView {
@@ -298,6 +299,8 @@ extension ProfileBannerView {
         profileBannerInfoActionView.followStatusLabel.isHidden = true
         linkButton.addTarget(self, action: #selector(ProfileBannerView.linkButtonDidPressed(_:)), for: .touchUpInside)
         
+        bioLabel.delegate = self
+        
         bringSubviewToFront(profileAvatarImageView)
         bringSubviewToFront(verifiedBadgeImageView)
     }
@@ -311,6 +314,12 @@ extension ProfileBannerView {
     }
 }
 
+// MARK: - ActiveLabelDelegate
+extension ProfileBannerView: ActiveLabelDelegate {
+    func activeLabel(_ activeLabel: ActiveLabel, didSelectActiveEntity entity: ActiveEntity) {
+        delegate?.profileBannerView(self, activeLabel: activeLabel, didTapEntity: entity)
+    }
+}
 
 #if DEBUG
 import SwiftUI

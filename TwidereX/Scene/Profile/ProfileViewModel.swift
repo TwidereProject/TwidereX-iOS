@@ -66,7 +66,7 @@ class ProfileViewModel: NSObject {
     init(twitterUser: TwitterUser) {
         self.twitterUser = CurrentValueSubject(twitterUser)
         self.userID = CurrentValueSubject(twitterUser.id)
-        self.bannerImageURL = CurrentValueSubject(twitterUser.profileBannerURL.flatMap { URL(string: $0) })
+        self.bannerImageURL = CurrentValueSubject(twitterUser.profileBannerURL(sizeKind: .large))
         self.avatarImageURL = CurrentValueSubject(twitterUser.avatarImageURL(size: .original))
         self.protected = CurrentValueSubject(twitterUser.protected)
         self.verified = CurrentValueSubject(twitterUser.verified)
@@ -169,12 +169,25 @@ class ProfileViewModel: NSObject {
                 case .finished:
                     os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: user lookup %s success", ((#file as NSString).lastPathComponent), #line, #function, username)
                 }
-            } receiveValue: { [weak self] content in
+            } receiveValue: { [weak self] response in
                 guard let self = self else { return }
+                let dictContent = Twitter.Response.V2.DictContent(
+                    tweets: [],
+                    users: response.value.data ?? [],
+                    media: []
+                )
+                let persistedUser = dictContent.userDict.values.first(where: { user in
+                    user.username.lowercased() == username.lowercased()
+                })
+                guard let user = persistedUser else {
+                    assertionFailure()
+                    return
+                }
+                
                 let managedObjectContext = context.managedObjectContext
                 let request = TwitterUser.sortedFetchRequest
                 request.fetchLimit = 1
-                request.predicate = TwitterUser.predicate(username: username)
+                request.predicate = TwitterUser.predicate(username: user.username)
                 do {
                     guard let twitterUser = try managedObjectContext.fetch(request).first else {
                         assertionFailure()
@@ -261,7 +274,7 @@ extension ProfileViewModel {
     
     private func update(twitterUser: TwitterUser?) {
         self.userID.value = twitterUser?.id
-        self.bannerImageURL.value = twitterUser?.profileBannerURL.flatMap { URL(string: $0) }
+        self.bannerImageURL.value = twitterUser?.profileBannerURL(sizeKind: .large)
         self.avatarImageURL.value = twitterUser?.avatarImageURL(size: .original)
         self.protected.value = twitterUser?.protected
         self.verified.value = twitterUser?.verified
