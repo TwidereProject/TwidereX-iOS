@@ -200,6 +200,11 @@
 		DBA6B1BF2535B0BE005FB0B4 /* ControlContainableScrollViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBA6B1BE2535B0BE005FB0B4 /* ControlContainableScrollViews.swift */; };
 		DBA6B1CC2535BC6E005FB0B4 /* APIService+Like.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBA6B1CB2535BC6E005FB0B4 /* APIService+Like.swift */; };
 		DBA7DD74256B96450008A95A /* UIFont.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBA7DD73256B96450008A95A /* UIFont.swift */; };
+		DBA9B3A625875B6B00EA14ED /* MentionPickViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBA9B3A525875B6B00EA14ED /* MentionPickViewController.swift */; };
+		DBA9B3B525875FAC00EA14ED /* MentionPickTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBA9B3B425875FAC00EA14ED /* MentionPickTableViewCell.swift */; };
+		DBA9B3C12587609200EA14ED /* MentionPickViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBA9B3C02587609200EA14ED /* MentionPickViewModel.swift */; };
+		DBA9B3C62587610C00EA14ED /* MentionPickSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBA9B3C52587610C00EA14ED /* MentionPickSection.swift */; };
+		DBA9B3CB2587615300EA14ED /* MentionPickItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBA9B3CA2587615300EA14ED /* MentionPickItem.swift */; };
 		DBAC4A6725552A1E00140B23 /* MediaPreviewImageViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBAC4A6625552A1E00140B23 /* MediaPreviewImageViewModel.swift */; };
 		DBB09D562511BA9700AE260E /* APIService+Lookup.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBB09D552511BA9700AE260E /* APIService+Lookup.swift */; };
 		DBB4B8152581D4AB00C36075 /* AlamofireNetworkActivityIndicator in Frameworks */ = {isa = PBXBuildFile; productRef = DBB4B8142581D4AB00C36075 /* AlamofireNetworkActivityIndicator */; };
@@ -585,6 +590,11 @@
 		DBA6B1BE2535B0BE005FB0B4 /* ControlContainableScrollViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControlContainableScrollViews.swift; sourceTree = "<group>"; };
 		DBA6B1CB2535BC6E005FB0B4 /* APIService+Like.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "APIService+Like.swift"; sourceTree = "<group>"; };
 		DBA7DD73256B96450008A95A /* UIFont.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIFont.swift; sourceTree = "<group>"; };
+		DBA9B3A525875B6B00EA14ED /* MentionPickViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MentionPickViewController.swift; sourceTree = "<group>"; };
+		DBA9B3B425875FAC00EA14ED /* MentionPickTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MentionPickTableViewCell.swift; sourceTree = "<group>"; };
+		DBA9B3C02587609200EA14ED /* MentionPickViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MentionPickViewModel.swift; sourceTree = "<group>"; };
+		DBA9B3C52587610C00EA14ED /* MentionPickSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MentionPickSection.swift; sourceTree = "<group>"; };
+		DBA9B3CA2587615300EA14ED /* MentionPickItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MentionPickItem.swift; sourceTree = "<group>"; };
 		DBAC4A6625552A1E00140B23 /* MediaPreviewImageViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaPreviewImageViewModel.swift; sourceTree = "<group>"; };
 		DBB09D552511BA9700AE260E /* APIService+Lookup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "APIService+Lookup.swift"; sourceTree = "<group>"; };
 		DBB4B800257F93DD00C36075 /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -903,6 +913,7 @@
 				DB3FC0512552742E003A2F8A /* MediaSection.swift */,
 				DB761E71255946720050DC01 /* SidebarSection.swift */,
 				DBCB4057255B6ECA00DD8D8F /* AccountListSection.swift */,
+				DBA9B3C52587610C00EA14ED /* MentionPickSection.swift */,
 			);
 			path = Section;
 			sourceTree = "<group>";
@@ -999,6 +1010,7 @@
 			children = (
 				DB88AC322508BACD0009E562 /* Items.swift */,
 				DB761E762559471F0050DC01 /* SidebarItem.swift */,
+				DBA9B3CA2587615300EA14ED /* MentionPickItem.swift */,
 			);
 			path = Item;
 			sourceTree = "<group>";
@@ -1086,6 +1098,7 @@
 				DB8AC150254167C100E636BE /* View */,
 				DB8AC10D2540501600E636BE /* ComposeTweetViewController.swift */,
 				DB8AC1462541677900E636BE /* ComposeTweetViewModel.swift */,
+				DBA9B3AA25875B6F00EA14ED /* MentionPick */,
 			);
 			path = Compose;
 			sourceTree = "<group>";
@@ -1295,6 +1308,24 @@
 			children = (
 				DBA5FA2D2553F06B00D2E98E /* MediaInfoDescriptionView.swift */,
 				DB97D1F4256CF7710056F8C2 /* ProgressBarView.swift */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
+		DBA9B3AA25875B6F00EA14ED /* MentionPick */ = {
+			isa = PBXGroup;
+			children = (
+				DBA9B3BC25875FB100EA14ED /* View */,
+				DBA9B3A525875B6B00EA14ED /* MentionPickViewController.swift */,
+				DBA9B3C02587609200EA14ED /* MentionPickViewModel.swift */,
+			);
+			path = MentionPick;
+			sourceTree = "<group>";
+		};
+		DBA9B3BC25875FB100EA14ED /* View */ = {
+			isa = PBXGroup;
+			children = (
+				DBA9B3B425875FAC00EA14ED /* MentionPickTableViewCell.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -2282,6 +2313,7 @@
 				DB3FC045255270D6003A2F8A /* UserMediaTimelineViewModel+State.swift in Sources */,
 				DB7D124C250F875F00999903 /* UIView.swift in Sources */,
 				DB10B32C254A7633002D86F3 /* SearchTimelineViewModel+State.swift in Sources */,
+				DBA9B3CB2587615300EA14ED /* MentionPickItem.swift in Sources */,
 				DBC8E03D2574F7DB00401E20 /* PhotoLibraryService.swift in Sources */,
 				DB2924D02546C6DD003899A7 /* APIService+Media.swift in Sources */,
 				DBEA4F8F251314640007FEC5 /* MosaicImageView.swift in Sources */,
@@ -2320,6 +2352,7 @@
 				DBCB4058255B6ECA00DD8D8F /* AccountListSection.swift in Sources */,
 				DB925749251C9D48004FEFB5 /* ProfilePagingViewModel.swift in Sources */,
 				DB88AC38250B25170009E562 /* UIViewPreview.swift in Sources */,
+				DBA9B3C12587609200EA14ED /* MentionPickViewModel.swift in Sources */,
 				DBFCC46325668B860016698E /* DrawerSidebarPresentationController.swift in Sources */,
 				DB0D3A38255E4341000BB9FA /* UserLikeTimelineViewController+TweetProvider.swift in Sources */,
 				DBE76D232500FF1C00DEB0FC /* AuthenticationService.swift in Sources */,
@@ -2339,6 +2372,7 @@
 				DB8AC10025401C2700E636BE /* ContentOffsetAdjustableTimelineViewControllerDelegate.swift in Sources */,
 				DB3FC0522552742E003A2F8A /* MediaSection.swift in Sources */,
 				DBA397C925551EB500A95662 /* MediaPreviewImageViewController.swift in Sources */,
+				DBA9B3B525875FAC00EA14ED /* MentionPickTableViewCell.swift in Sources */,
 				DBA6667D257DD37300E5F1AA /* DeveloperView.swift in Sources */,
 				DB10B347254AB338002D86F3 /* SearchMediaViewController.swift in Sources */,
 				DBCB4060255CAC0300DD8D8F /* TwitterAuthenticationController.swift in Sources */,
@@ -2433,6 +2467,7 @@
 				DB761E772559471F0050DC01 /* SidebarItem.swift in Sources */,
 				DB925744251C9CD6004FEFB5 /* ProfilePagingViewController.swift in Sources */,
 				DB25B9E325385EFD00A5420F /* TweetConversationViewModel+LoadConversationState.swift in Sources */,
+				DBA9B3C62587610C00EA14ED /* MentionPickSection.swift in Sources */,
 				DBDA8E9D24FE0F8B006750DC /* Assets.swift in Sources */,
 				DBF69EEF25498A4800E2A915 /* SearchDetailPagingViewModel.swift in Sources */,
 				DBDA8E2224FCF8A3006750DC /* AppDelegate.swift in Sources */,
@@ -2457,6 +2492,7 @@
 				DB8AC10E2540501600E636BE /* ComposeTweetViewController.swift in Sources */,
 				DB9154682551389D00613473 /* APIService+MentionTimeline.swift in Sources */,
 				DBEA4F91251331BE0007FEC5 /* QuotePostView.swift in Sources */,
+				DBA9B3A625875B6B00EA14ED /* MentionPickViewController.swift in Sources */,
 				DB67610D254AD681006C6798 /* ActivityIndicatorCollectionViewCell.swift in Sources */,
 				DBA5FA2E2553F06B00D2E98E /* MediaInfoDescriptionView.swift in Sources */,
 				DB5918F7255E81FB00B20F6F /* MediaPreviewViewController+TweetProvider.swift in Sources */,
