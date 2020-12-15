@@ -9,15 +9,14 @@
 import os.log
 import UIKit
 import Combine
+import CoreDataStack
 import Photos
 import TwitterAPI
 import SwiftMessages
 import CropViewController
 
 final class ComposeTweetViewController: UIViewController, NeedsDependency, MediaPreviewableViewController {
-    
-    static let avatarImageViewSize = CGSize(width: 44, height: 44)
-    
+        
     weak var context: AppContext! { willSet { precondition(!isViewLoaded) } }
     weak var coordinator: SceneCoordinator! { willSet { precondition(!isViewLoaded) } }
     
@@ -178,6 +177,8 @@ extension ComposeTweetViewController {
             view.bottomAnchor.constraint(equalTo: tweetToolbarBackgroundView.bottomAnchor),
         ])
         tweetToolbarBackgroundView.backgroundColor = tweetToolbarView.backgroundColor
+        
+        viewModel.composeTweetContentTableViewCellDelegate = self
         
         viewModel.setupDiffableDataSource(for: tableView)
         tableView.delegate = self
@@ -362,10 +363,7 @@ extension ComposeTweetViewController {
         .store(in: &disposeBag)
         
         context.authenticationService.activeAuthenticationIndex
-            .sink { [weak self] activeAuthenticationIndex in
-                guard let self = self else { return }
-                self.viewModel.avatarImageURL.value = activeAuthenticationIndex?.twitterAuthentication?.twitterUser?.avatarImageURL()
-            }
+            .assign(to: \.value, on: viewModel.activeAuthenticationIndex)
             .store(in: &disposeBag)
         
         // TODO:
@@ -403,11 +401,16 @@ extension ComposeTweetViewController {
             return mediaIDs
         }()
         let feedbackGenerator = UINotificationFeedbackGenerator()
+        let excludeReplyUserIDs: [TwitterUser.ID]? = {
+            let ids = viewModel.excludeReplyUserInfos.value.map { $0.0 }
+            return ids.isEmpty ? nil : ids
+        }()
         context.apiService.tweet(
             content: viewModel.composeContent.value,
             mediaIDs: mediaIDs,
             placeID: viewModel.currentPlace.value?.id,
             replyToTweetObjectID: viewModel.repliedTweetObjectID,
+            excludeReplyUserIDs: excludeReplyUserIDs,
             twitterAuthenticationBox: activeTwitterAuthenticationBox
         )
         .receive(on: DispatchQueue.main)
@@ -667,4 +670,41 @@ extension ComposeTweetViewController: UICollectionViewDelegate {
         }
     }
     
+}
+
+// MARK: - ComposeTweetContentTableViewCellDelegate
+extension ComposeTweetViewController: ComposeTweetContentTableViewCellDelegate {
+    func composeTweetContentTableViewCell(_ cell: ComposeTweetContentTableViewCell, mentionPickButtonDidPressed button: UIButton) {
+        guard let primaryItem = viewModel.primaryMentionPickItem else { return }
+
+        guard let authenticationBox = context.authenticationService.activeAuthenticationIndex.value else { return }
+        guard let userID = authenticationBox.twitterAuthentication?.userID,
+              let screenName = authenticationBox.twitterAuthentication?.screenName else { return }
+
+        let secondaryItems = viewModel.secondaryMentionPickItems.filter { item in
+            switch item {
+            case .twitterUser(let username, let attribute):
+                return attribute.userID != userID && username != screenName
+            }
+        }
+        let mentionPickViewModel = MentionPickViewModel(context: context, primaryItem: primaryItem, secondaryItems: secondaryItems)
+        coordinator.present(scene: .mentionPick(viewModel: mentionPickViewModel, delegate: self), from: self, transition: .modal(animated: true, completion: nil))
+    }
+}
+
+// MARK: - MentionPickViewControllerDelegate
+extension ComposeTweetViewController: MentionPickViewControllerDelegate {
+    func mentionPickViewController(_ controller: MentionPickViewController, didUpdateMentionPickItems items: [MentionPickItem]) {
+        os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
+        
+        let excludeReplyUserInfos = items.compactMap { item -> (TwitterUser.ID, String)? in
+            switch item {
+            case .twitterUser(let username, let attribute):
+                guard attribute.state == .finish, !attribute.selected else { return nil }
+                guard let userID = attribute.userID else { return nil }
+                return (userID, username)
+            }
+        }
+        viewModel.excludeReplyUserInfos.value = excludeReplyUserInfos
+    }
 }

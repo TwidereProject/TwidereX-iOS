@@ -41,6 +41,7 @@ extension SceneCoordinator {
         case twitterPinBasedAuthentication(viewModel: TwitterPinBasedAuthenticationViewModel)
         case accountList(viewModel: AccountListViewModel)
         case composeTweet(viewModel: ComposeTweetViewModel)
+        case mentionPick(viewModel: MentionPickViewModel, delegate: MentionPickViewControllerDelegate)
         case tweetConversation(viewModel: TweetConversationViewModel)
         case searchDetail(viewModel: SearchDetailViewModel)
         case profile(viewModel: ProfileViewModel)
@@ -126,6 +127,11 @@ private extension SceneCoordinator {
         case .composeTweet(let viewModel):
             let _viewController = ComposeTweetViewController()
             _viewController.viewModel = viewModel
+            viewController = _viewController
+        case .mentionPick(let viewModel, let delegate):
+            let _viewController = MentionPickViewController()
+            _viewController.viewModel = viewModel
+            _viewController.delegate = delegate
             viewController = _viewController
         case .tweetConversation(let viewModel):
             let _viewController = TweetConversationViewController()
