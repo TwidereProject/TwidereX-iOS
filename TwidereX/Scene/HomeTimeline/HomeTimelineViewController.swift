@@ -116,6 +116,10 @@ extension HomeTimelineViewController {
                             guard let self = self else { return }
                             self.moveToFirstReplyRetweet(action)
                         }),
+                        UIAction(title: "Move to First Video Tweet", image: nil, attributes: [], handler: { [weak self] action in
+                            guard let self = self else { return }
+                            self.moveToFirstVideoTweet(action)
+                        }),
                         UIAction(title: "Drop Recent 50 Tweets", image: nil, attributes: [], handler: { [weak self] action in
                             guard let self = self else { return }
                             self.dropRecentTweetsAction(action)
@@ -385,6 +389,28 @@ extension HomeTimelineViewController {
             tableView.blinkRow(at: IndexPath(row: index, section: 0))
         } else {
             print("Not found reply retweet")
+        }
+    }
+    
+    @objc private func moveToFirstVideoTweet(_ sender: UIAction) {
+        guard let diffableDataSource = viewModel.diffableDataSource else { return }
+        let snapshotTransitioning = diffableDataSource.snapshot()
+        let item = snapshotTransitioning.itemIdentifiers.first(where: { item in
+            switch item {
+            case .homeTimelineIndex(let objectID, _):
+                let tweet = viewModel.fetchedResultsController.managedObjectContext.object(with: objectID) as! TimelineIndex
+                guard let targetTweet = (tweet.tweet?.retweet ?? tweet.tweet) else { return false }
+                guard let type = targetTweet.media?.first?.type else { return false }
+                return type == "animated_gif" || type == "video"
+            default:
+                return false
+            }
+        })
+        if let targetItem = item, let index = snapshotTransitioning.indexOfItem(targetItem) {
+            tableView.scrollToRow(at: IndexPath(row: index, section: 0), at: .middle, animated: true)
+            tableView.blinkRow(at: IndexPath(row: index, section: 0))
+        } else {
+            print("Not found video tweet")
         }
     }
     

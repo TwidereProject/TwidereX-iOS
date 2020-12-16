@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import AVKit
 import ActiveLabel
 
 final class TimelinePostView: UIView {
@@ -84,6 +85,15 @@ final class TimelinePostView: UIView {
     let activeTextLabel = ActiveLabel(style: .default)
 
     let mosaicImageView = MosaicImageView()
+    
+    let playerContainerStackView = UIStackView()
+    let playerViewController: AVPlayerViewController = {
+        let playerViewController = AVPlayerViewController()
+        playerViewController.showsTimecodes = true
+        return playerViewController
+    }()
+    var playerViewControllerAspectRatioLayoutConstraint: NSLayoutConstraint!
+    
     let quotePostView = QuotePostView()
     
     let geoContainerStackView = UIStackView()
@@ -214,17 +224,33 @@ extension TimelinePostView {
             retweetIconImageView.trailingAnchor.constraint(equalTo: avatarImageView.trailingAnchor),
         ])
         
-        // main container: [text | image | quote | geo]
+        // main container: [text | image / video | quote | geo]
         tweetContainerStackView.addArrangedSubview(mainContainerStackView)
         mainContainerStackView.axis = .vertical
         mainContainerStackView.spacing = 8
         activeTextLabel.translatesAutoresizingMaskIntoConstraints = false
         mainContainerStackView.addArrangedSubview(activeTextLabel)
+        playerContainerStackView.translatesAutoresizingMaskIntoConstraints = false
+        mainContainerStackView.addArrangedSubview(playerContainerStackView)
         mosaicImageView.translatesAutoresizingMaskIntoConstraints = false
         mainContainerStackView.addArrangedSubview(mosaicImageView)
         mainContainerStackView.addArrangedSubview(quotePostView)
         mainContainerStackView.addArrangedSubview(geoContainerStackView)
         activeTextLabel.setContentCompressionResistancePriority(.required - 2, for: .vertical)
+        
+        playerContainerStackView.setContentHuggingPriority(.defaultLow, for: .horizontal)
+        playerContainerStackView.setContentHuggingPriority(.defaultLow, for: .vertical)
+
+        playerViewController.view.translatesAutoresizingMaskIntoConstraints = false
+        playerContainerStackView.addArrangedSubview(playerViewController.view)
+        playerViewControllerAspectRatioLayoutConstraint = playerViewController.view.heightAnchor.constraint(equalTo: playerViewController.view.widthAnchor, multiplier: 1.0).priority(.defaultHigh)
+        NSLayoutConstraint.activate([
+            playerViewControllerAspectRatioLayoutConstraint,
+        ])
+        
+        playerContainerStackView.isUserInteractionEnabled = true
+        playerViewController.view.layer.masksToBounds = true
+        playerViewController.view.layer.cornerRadius = 8
         
         // geo container: [geo | (padding)]
         geoContainerStackView.axis = .horizontal
@@ -240,6 +266,7 @@ extension TimelinePostView {
         verifiedBadgeImageView.isHidden = true
         retweetContainerStackView.isHidden = true
         mosaicImageView.isHidden = true
+        playerContainerStackView.isHidden = true
         quotePostView.isHidden = true
         geoContainerStackView.isHidden = true
         
@@ -248,6 +275,16 @@ extension TimelinePostView {
     }
     
 }
+
+extension TimelinePostView {
+    func resetPlayerLayout(aspectRatio: CGSize) {
+        NSLayoutConstraint.deactivate([playerViewControllerAspectRatioLayoutConstraint])
+        let multiplier = aspectRatio.height / aspectRatio.width
+        playerViewControllerAspectRatioLayoutConstraint = playerViewController.view.heightAnchor.constraint(equalTo: playerViewController.view.widthAnchor, multiplier: multiplier).priority(.defaultHigh)
+        NSLayoutConstraint.activate([playerViewControllerAspectRatioLayoutConstraint])
+    }
+}
+
 
 #if DEBUG
 import SwiftUI

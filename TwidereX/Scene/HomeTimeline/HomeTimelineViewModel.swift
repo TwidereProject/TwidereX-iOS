@@ -8,10 +8,11 @@
 import os.log
 import func AVFoundation.AVMakeRect
 import UIKit
-import GameplayKit
+import AVKit
 import Combine
 import CoreData
 import CoreDataStack
+import GameplayKit
 import AlamofireImage
 import Kingfisher
 import DateToolsSwift
@@ -217,10 +218,23 @@ extension HomeTimelineViewModel {
         cell.timelinePostView.actionToolbar.favoriteButton.setTitle(favoriteCountTitle, for: .normal)
         cell.timelinePostView.actionToolbar.likeButtonHighlight = isLike
         
-        // set image display
+        // set media display
         let media = Array((tweet.retweet ?? tweet).media ?? []).sorted { $0.index.compare($1.index) == .orderedAscending }
+        
+        // set video
+        if let media = media.first, let videoPlayerViewModel = VideoPlayerViewModel(twitterMedia: media) {
+            let meta = videoPlayerViewModel.meta
+            cell.timelinePostView.playerViewController.player = AVPlayer(url: meta.url)
+            cell.timelinePostView.resetPlayerLayout(aspectRatio: meta.size)
+            cell.timelinePostView.playerViewController.showsPlaybackControls = meta.kind == .video
+            cell.timelinePostView.playerContainerStackView.isHidden = false
+            if meta.kind == .gif {
+                cell.timelinePostView.playerViewController.player?.play()
+            }
+        }
+        
+        // set image
         let mosiacImageViewModel = MosaicImageViewModel(twitterMedia: media)
-
         let maxSize: CGSize = {
             let maxWidth: CGFloat = {
                 // use timelinePostView width as container width

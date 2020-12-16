@@ -60,8 +60,12 @@ final class TimelinePostTableViewCell: UITableViewCell {
     override func prepareForReuse() {
         super.prepareForReuse()
         
+        timelinePostView.playerViewController.player?.pause()
+        timelinePostView.playerViewController.player = nil
+        
         timelinePostView.mosaicImageView.reset()
         timelinePostView.mosaicImageView.isHidden = true
+        timelinePostView.playerContainerStackView.isHidden = true
         timelinePostView.quotePostView.isHidden = true
         timelinePostView.avatarImageView.af.cancelImageRequest()
         timelinePostView.avatarImageView.kf.cancelDownloadTask()
