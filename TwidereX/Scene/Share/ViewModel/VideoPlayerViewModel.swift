@@ -20,7 +20,7 @@ final class VideoPlayerViewModel {
     let videoSize: CGSize
     let videoKind: Kind
     
-    weak var playerViewController: AVPlayerViewController?
+    let playerViewControllers = NSHashTable<AVPlayerViewController>.weakObjects()
     var isFullScreenPresentationing = false
     var isPlayingWhenEndDisplaying = false
     var updateDate = Date()
@@ -42,6 +42,10 @@ final class VideoPlayerViewModel {
         let player = videoKind == .gif ? AVQueuePlayer(playerItem: playerItem) : AVPlayer(playerItem: playerItem)
         player.isMuted = true
         self.player = player
+        
+        if videoKind == .gif {
+            setupLooper()
+        }
         
         timeControlStatusObservation = player.observe(\.timeControlStatus, options: [.initial, .new]) { [weak self] player, _ in
             guard let self = self else { return }
@@ -81,7 +85,8 @@ extension VideoPlayerViewModel {
         updateDate = Date()
     }
     
-    func willDisplay() {
+    func willDisplay(with playerViewController: AVPlayerViewController) {
+        playerViewControllers.add(playerViewController)
         
         switch videoKind {
         case .gif:
@@ -96,7 +101,8 @@ extension VideoPlayerViewModel {
         updateDate = Date()
     }
     
-    func didEndDisplaying() {
+    func didEndDisplaying(with playerViewController: AVPlayerViewController) {
+        playerViewControllers.remove(playerViewController)
         isPlayingWhenEndDisplaying = timeControlStatus.value != .paused
         player.pause()
         

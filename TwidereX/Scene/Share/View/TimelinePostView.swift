@@ -223,9 +223,7 @@ extension TimelinePostView {
         mainContainerStackView.spacing = 8
         activeTextLabel.translatesAutoresizingMaskIntoConstraints = false
         mainContainerStackView.addArrangedSubview(activeTextLabel)
-        mosaicImageView.translatesAutoresizingMaskIntoConstraints = false
         mainContainerStackView.addArrangedSubview(mosaicImageView)
-        mosaicPlayerView.translatesAutoresizingMaskIntoConstraints = false
         mainContainerStackView.addArrangedSubview(mosaicPlayerView)
         mainContainerStackView.addArrangedSubview(quotePostView)
         mainContainerStackView.addArrangedSubview(geoContainerStackView)

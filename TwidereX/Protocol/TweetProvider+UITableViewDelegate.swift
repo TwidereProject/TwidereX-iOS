@@ -41,7 +41,7 @@ extension UITableViewDelegate where Self: TweetProvider {
                 guard let media = (tweet.media ?? Set()).first else { return }
                 guard let videoPlayerViewModel = self.context.videoPlaybackService.dequeueVideoPlayerViewModel(for: media) else { return }
                 DispatchQueue.main.async {
-                    videoPlayerViewModel.willDisplay()
+                    videoPlayerViewModel.willDisplay(with: cell.timelinePostView.mosaicPlayerView.playerViewController)
                 }
             }
             .store(in: &disposeBag)
@@ -58,7 +58,7 @@ extension UITableViewDelegate where Self: TweetProvider {
                 guard let media = (tweet.media ?? Set()).first else { return }
                 guard let videoPlayerViewModel = self.context.videoPlaybackService.dequeueVideoPlayerViewModel(for: media) else { return }
                 DispatchQueue.main.async {
-                    videoPlayerViewModel.didEndDisplaying()
+                    videoPlayerViewModel.didEndDisplaying(with: cell.timelinePostView.mosaicPlayerView.playerViewController)
                 }
             }
             .store(in: &disposeBag)

@@ -79,7 +79,7 @@ extension VideoPlaybackService {
     
     func playerViewModel(for playerViewController: AVPlayerViewController) -> VideoPlayerViewModel? {
         for viewModel in viewPlayerViewModelDict.values {
-            guard playerViewController === viewModel.playerViewController else { continue }
+            guard viewModel.playerViewControllers.contains(playerViewController) else { continue }
             return viewModel
         }
         

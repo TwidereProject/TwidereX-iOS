@@ -168,9 +168,6 @@ extension TweetConversationViewController: UITableViewDelegate {
     
 }
 
-// MARK: - ConversationPostTableViewCellDelegate
-extension TweetConversationViewController: ConversationPostTableViewCellDelegate { }
-
 // MARK: - ContentOffsetAdjustableTimelineViewControllerDelegate
 extension TweetConversationViewController: ContentOffsetAdjustableTimelineViewControllerDelegate {
     func navigationBar() -> UINavigationBar? {
@@ -191,8 +188,14 @@ extension TweetConversationViewController: AVPlayerViewControllerDelegate {
     
 }
 
-// MARK: - TimelinePostTableViewCellDelegate
-extension TweetConversationViewController: TimelinePostTableViewCellDelegate {
+// MARK: - ConversationPostTableViewCellDelegate & TimelinePostTableViewCellDelegate
+extension TweetConversationViewController {
     weak var playerViewControllerDelegate: AVPlayerViewControllerDelegate? { return self }
     func parent() -> UIViewController { return self }
 }
+
+// MARK: - ConversationPostTableViewCellDelegate
+extension TweetConversationViewController: ConversationPostTableViewCellDelegate { }
+
+// MARK: - TimelinePostTableViewCellDelegate
+extension TweetConversationViewController: TimelinePostTableViewCellDelegate { }

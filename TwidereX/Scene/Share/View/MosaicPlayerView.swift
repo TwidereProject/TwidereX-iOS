@@ -53,8 +53,7 @@ extension MosaicPlayerView {
 extension MosaicPlayerView {
 
     func reset() {
-        playerViewController.player?.pause()
-        playerViewController.player = nil
+        // note: set playerViewController.player pause() and nil in data source configuration process make reloadData not break playing
         
         playerViewController.willMove(toParent: nil)
         playerViewController.view.removeFromSuperview()

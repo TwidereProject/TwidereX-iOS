@@ -7,10 +7,14 @@
 
 import os.log
 import UIKit
+import AVKit
 import Combine
 import ActiveLabel
 
 protocol ConversationPostTableViewCellDelegate: class {
+    var playerViewControllerDelegate: AVPlayerViewControllerDelegate? { get }
+    func parent() -> UIViewController
+    
     func conversationPostTableViewCell(_ cell: ConversationPostTableViewCell, retweetInfoLabelDidPressed label: UILabel)
     func conversationPostTableViewCell(_ cell: ConversationPostTableViewCell, avatarImageViewDidPressed imageView: UIImageView)
     func conversationPostTableViewCell(_ cell: ConversationPostTableViewCell, quoteAvatarImageViewDidPressed imageView: UIImageView)
@@ -44,6 +48,11 @@ final class ConversationPostTableViewCell: UITableViewCell {
     
     override func prepareForReuse() {
         super.prepareForReuse()
+        
+        conversationPostView.mosaicImageView.reset()
+        conversationPostView.mosaicImageView.isHidden = true
+        conversationPostView.mosaicPlayerView.reset()
+        conversationPostView.mosaicPlayerView.isHidden = true
         conversationLinkUpper.isHidden = true
         disposeBag.removeAll()
     }
@@ -109,39 +118,6 @@ extension ConversationPostTableViewCell {
         conversationPostView.quotePostView.isUserInteractionEnabled = true
         conversationPostView.quotePostView.addGestureRecognizer(quotePostViewTapGestureRecognizer)
         
-//        let activeLabel = conversationPostView.activeTextLabel
-//        activeLabel.handleMentionTap { [weak self] mention in
-//            guard let self = self else { return }
-//            os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: handleMentionTap: %s", ((#file as NSString).lastPathComponent), #line, #function, mention)
-//            self.delegate?.conversationPostTableViewCell(self, activeLabel: activeLabel, didTapMention: mention)
-//        }
-//        activeLabel.handleHashtagTap { [weak self] hashtag in
-//            guard let self = self else { return }
-//            os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: handleHashtagTap: %s", ((#file as NSString).lastPathComponent), #line, #function, hashtag)
-//            self.delegate?.conversationPostTableViewCell(self, activeLabel: activeLabel, didTapHashtag: hashtag)
-//        }
-//        activeLabel.handleURLTap { [weak self] url in
-//            guard let self = self else { return }
-//            os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: handleURLTap: %s", ((#file as NSString).lastPathComponent), #line, #function, url.absoluteString)
-//            self.delegate?.conversationPostTableViewCell(self, activeLabel: activeLabel, didTapURL: url)
-//        }
-//
-//        let quoteActiveLabel = conversationPostView.quotePostView.activeTextLabel
-//        quoteActiveLabel.handleMentionTap { [weak self] mention in
-//            guard let self = self else { return }
-//            os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: handleMentionTap: %s", ((#file as NSString).lastPathComponent), #line, #function, mention)
-//            self.delegate?.conversationPostTableViewCell(self, quoteActiveLabel: quoteActiveLabel, didTapMention: mention)
-//        }
-//        quoteActiveLabel.handleHashtagTap { [weak self] hashtag in
-//            guard let self = self else { return }
-//            os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: handleHashtagTap: %s", ((#file as NSString).lastPathComponent), #line, #function, hashtag)
-//            self.delegate?.conversationPostTableViewCell(self, quoteActiveLabel: quoteActiveLabel, didTapHashtag: hashtag)
-//        }
-//        quoteActiveLabel.handleURLTap { [weak self] url in
-//            guard let self = self else { return }
-//            os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: handleURLTap: %s", ((#file as NSString).lastPathComponent), #line, #function, url.absoluteString)
-//            self.delegate?.conversationPostTableViewCell(self, quoteActiveLabel: quoteActiveLabel, didTapURL: url)
-//        }
         conversationPostView.activeTextLabel.delegate = self
         conversationPostView.actionToolbar.delegate = self
         conversationPostView.mosaicImageView.delegate = self

@@ -262,7 +262,7 @@ extension HomeTimelineViewModel {
         }
         cell.timelinePostView.mosaicImageView.isHidden = mosiacImageViewModel.metas.isEmpty
         
-        // set video
+        // set GIF & video
         let playerViewMaxSize: CGSize = {
             let maxWidth: CGFloat = {
                 // use timelinePostView width as container width
@@ -285,15 +285,14 @@ extension HomeTimelineViewModel {
                 parent: parent
             )
             playerViewController.delegate = cell.delegate?.playerViewControllerDelegate
-            videoPlayerViewModel.playerViewController = playerViewController
             
             playerViewController.player = videoPlayerViewModel.player
-            if videoPlayerViewModel.videoKind == .gif {
-                videoPlayerViewModel.setupLooper()
-            }
             playerViewController.showsPlaybackControls = videoPlayerViewModel.videoKind != .gif
             
             mosaicPlayerView.isHidden = false
+        } else {
+            cell.timelinePostView.mosaicPlayerView.playerViewController.player?.pause()
+            cell.timelinePostView.mosaicPlayerView.playerViewController.player = nil
         }
 
         // set quote display
