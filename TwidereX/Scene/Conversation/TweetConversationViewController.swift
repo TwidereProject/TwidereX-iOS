@@ -7,6 +7,7 @@
 
 import os.log
 import UIKit
+import AVKit
 import Combine
 import CoreDataStack
 import TwitterAPI
@@ -73,6 +74,12 @@ extension TweetConversationViewController {
         super.viewWillAppear(animated)
         tableView.reloadData()
         tableView.deselectRow(with: transitionCoordinator, animated: animated)
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        
+        context.videoPlaybackService.viewDidDisappear(from: self)
     }
     
 }
@@ -171,5 +178,21 @@ extension TweetConversationViewController: ContentOffsetAdjustableTimelineViewCo
     }
 }
 
+// MARK: - AVPlayerViewControllerDelegate
+extension TweetConversationViewController: AVPlayerViewControllerDelegate {
+    
+    func playerViewController(_ playerViewController: AVPlayerViewController, willBeginFullScreenPresentationWithAnimationCoordinator coordinator: UIViewControllerTransitionCoordinator) {
+        handlePlayerViewController(playerViewController, willBeginFullScreenPresentationWithAnimationCoordinator: coordinator)
+    }
+    
+    func playerViewController(_ playerViewController: AVPlayerViewController, willEndFullScreenPresentationWithAnimationCoordinator coordinator: UIViewControllerTransitionCoordinator) {
+        handlePlayerViewController(playerViewController, willEndFullScreenPresentationWithAnimationCoordinator: coordinator)
+    }
+    
+}
+
 // MARK: - TimelinePostTableViewCellDelegate
-extension TweetConversationViewController: TimelinePostTableViewCellDelegate { }
+extension TweetConversationViewController: TimelinePostTableViewCellDelegate {
+    weak var playerViewControllerDelegate: AVPlayerViewControllerDelegate? { return self }
+    func parent() -> UIViewController { return self }
+}

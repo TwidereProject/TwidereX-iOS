@@ -273,7 +273,7 @@ extension TweetConversationViewModel {
                 let managedObjectContext = self.context.managedObjectContext
                 managedObjectContext.performAndWait {
                     let tweet = managedObjectContext.object(with: objectID) as! Tweet
-                    HomeTimelineViewModel.configure(cell: cell, readableLayoutFrame: tableView.readableContentGuide.layoutFrame, tweet: tweet, requestUserID: requestUserID)
+                    HomeTimelineViewModel.configure(cell: cell, readableLayoutFrame: tableView.readableContentGuide.layoutFrame, videoPlaybackService: self.context.videoPlaybackService, tweet: tweet, requestUserID: requestUserID)
                     HomeTimelineViewModel.configure(cell: cell, overrideTraitCollection: self.context.overrideTraitCollection.value)
                     cell.conversationLinkUpper.isHidden = tweet.inReplyToTweetID == nil
                     cell.conversationLinkLower.isHidden = false
@@ -288,7 +288,7 @@ extension TweetConversationViewModel {
                 let managedObjectContext = self.context.managedObjectContext
                 managedObjectContext.performAndWait {
                     let tweet = managedObjectContext.object(with: objectID) as! Tweet
-                    HomeTimelineViewModel.configure(cell: cell, readableLayoutFrame: tableView.readableContentGuide.layoutFrame, tweet: tweet, requestUserID: requestUserID)
+                    HomeTimelineViewModel.configure(cell: cell, readableLayoutFrame: tableView.readableContentGuide.layoutFrame, videoPlaybackService: self.context.videoPlaybackService, tweet: tweet, requestUserID: requestUserID)
                     HomeTimelineViewModel.configure(cell: cell, overrideTraitCollection: self.context.overrideTraitCollection.value)
                 }
                 cell.conversationLinkUpper.isHidden = attribute.level == 0

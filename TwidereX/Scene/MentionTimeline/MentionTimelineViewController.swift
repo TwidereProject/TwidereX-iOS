@@ -8,6 +8,7 @@
 
 import os.log
 import UIKit
+import AVKit
 import Combine
 import CoreData
 import CoreDataStack
@@ -208,6 +209,12 @@ extension MentionTimelineViewController {
             }
         }
     }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        
+        context.videoPlaybackService.viewDidDisappear(from: self)
+    }
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
@@ -405,8 +412,24 @@ extension MentionTimelineViewController: TimelineMiddleLoaderTableViewCellDelega
     }
 }
 
+// MARK: - AVPlayerViewControllerDelegate
+extension MentionTimelineViewController: AVPlayerViewControllerDelegate {
+    
+    func playerViewController(_ playerViewController: AVPlayerViewController, willBeginFullScreenPresentationWithAnimationCoordinator coordinator: UIViewControllerTransitionCoordinator) {
+        handlePlayerViewController(playerViewController, willBeginFullScreenPresentationWithAnimationCoordinator: coordinator)
+    }
+    
+    func playerViewController(_ playerViewController: AVPlayerViewController, willEndFullScreenPresentationWithAnimationCoordinator coordinator: UIViewControllerTransitionCoordinator) {
+        handlePlayerViewController(playerViewController, willEndFullScreenPresentationWithAnimationCoordinator: coordinator)
+    }
+    
+}
+
 // MARK: - TimelinePostTableViewCellDelegate
-extension MentionTimelineViewController: TimelinePostTableViewCellDelegate { }
+extension MentionTimelineViewController: TimelinePostTableViewCellDelegate {
+    weak var playerViewControllerDelegate: AVPlayerViewControllerDelegate? { return self }
+    func parent() -> UIViewController { return self }
+}
 
 // MARK: - ScrollViewContainer
 extension MentionTimelineViewController: ScrollViewContainer {

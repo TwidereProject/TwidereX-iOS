@@ -15,10 +15,14 @@ import TwitterAPI
 // MARK: - TweetProvider
 extension SearchTimelineViewController: TweetProvider {
     
-    func tweet(for cell: TimelinePostTableViewCell) -> Future<Tweet?, Never> {
+    func tweet(for cell: TimelinePostTableViewCell, indexPath: IndexPath?) -> Future<Tweet?, Never> {
         return Future { promise in
-            guard let diffableDataSource = self.viewModel.diffableDataSource,
-                  let indexPath = self.tableView.indexPath(for: cell),
+            guard let diffableDataSource = self.viewModel.diffableDataSource else {
+                assertionFailure()
+                promise(.success(nil))
+                return
+            }
+            guard let indexPath = indexPath ?? self.tableView.indexPath(for: cell),
                   let item = diffableDataSource.itemIdentifier(for: indexPath) else {
                 promise(.success(nil))
                 return

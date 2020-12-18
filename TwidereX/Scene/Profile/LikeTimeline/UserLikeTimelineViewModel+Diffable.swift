@@ -28,7 +28,7 @@ extension UserLikeTimelineViewModel {
                 let managedObjectContext = self.fetchedResultsController.managedObjectContext
                 managedObjectContext.performAndWait {
                     let tweet = managedObjectContext.object(with: objectID) as! Tweet
-                    UserLikeTimelineViewModel.configure(cell: cell, readableLayoutFrame: tableView.readableContentGuide.layoutFrame, tweet: tweet, userID: userID, requestUserID: requestTwitterUserID)
+                    UserLikeTimelineViewModel.configure(cell: cell, readableLayoutFrame: tableView.readableContentGuide.layoutFrame, videoPlaybackService: self.context.videoPlaybackService, tweet: tweet, userID: userID, requestUserID: requestTwitterUserID)
                     HomeTimelineViewModel.configure(cell: cell, overrideTraitCollection: self.context.overrideTraitCollection.value)
                 }
                 cell.delegate = self.timelinePostTableViewCellDelegate
@@ -50,8 +50,8 @@ extension UserLikeTimelineViewModel {
 
 extension UserLikeTimelineViewModel {
     
-    private static func configure(cell: TimelinePostTableViewCell, readableLayoutFrame: CGRect? = nil, tweet: Tweet, userID: String, requestUserID: String) {
-        HomeTimelineViewModel.configure(cell: cell, readableLayoutFrame: readableLayoutFrame, tweet: tweet, requestUserID: requestUserID)
+    private static func configure(cell: TimelinePostTableViewCell, readableLayoutFrame: CGRect? = nil, videoPlaybackService: VideoPlaybackService, tweet: Tweet, userID: String, requestUserID: String) {
+        HomeTimelineViewModel.configure(cell: cell, readableLayoutFrame: readableLayoutFrame, videoPlaybackService: videoPlaybackService, tweet: tweet, requestUserID: requestUserID)
         internalConfigure(cell: cell, tweet: tweet, userID: userID)
     }
     

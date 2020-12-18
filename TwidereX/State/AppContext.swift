@@ -29,6 +29,7 @@ class AppContext: ObservableObject {
     private var documentStoreSubscription: AnyCancellable!
     
     let photoLibraryService = PhotoLibraryService()
+    let videoPlaybackService = VideoPlaybackService()
 
     let overrideTraitCollection = CurrentValueSubject<UITraitCollection?, Never>(nil)
 

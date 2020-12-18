@@ -46,6 +46,11 @@
 		DB2EBBEB255D34BE00956CAA /* AboutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB2EBBEA255D34BE00956CAA /* AboutView.swift */; };
 		DB2EBBF0255D368200956CAA /* TableViewEntryRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB2EBBEF255D368200956CAA /* TableViewEntryRow.swift */; };
 		DB2EBBFC255D3B4700956CAA /* MosaicImageViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB2EBBFB255D3B4700956CAA /* MosaicImageViewModel.swift */; };
+		DB2FFF29258B0C2C003DBC19 /* TouchBlockingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB2FFF28258B0C2C003DBC19 /* TouchBlockingView.swift */; };
+		DB2FFF2E258B1077003DBC19 /* MosaicPlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB2FFF2D258B1077003DBC19 /* MosaicPlayerView.swift */; };
+		DB2FFF36258B56E5003DBC19 /* VideoPlaybackService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB2FFF35258B56E5003DBC19 /* VideoPlaybackService.swift */; };
+		DB2FFF3E258B78B0003DBC19 /* AVPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB2FFF3D258B78B0003DBC19 /* AVPlayer.swift */; };
+		DB2FFF61258CB051003DBC19 /* NeedsDependency+AVPlayerViewControllerDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB2FFF60258CB051003DBC19 /* NeedsDependency+AVPlayerViewControllerDelegate.swift */; };
 		DB34028E2521BC06009EFADF /* APIService+UserTimeline.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB34028D2521BC06009EFADF /* APIService+UserTimeline.swift */; };
 		DB34029D2521BE8B009EFADF /* MeProfileViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB34029C2521BE8B009EFADF /* MeProfileViewModel.swift */; };
 		DB3402B72521D389009EFADF /* UserTimelineViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB3402B62521D389009EFADF /* UserTimelineViewModel.swift */; };
@@ -441,6 +446,11 @@
 		DB2EBBEA255D34BE00956CAA /* AboutView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutView.swift; sourceTree = "<group>"; };
 		DB2EBBEF255D368200956CAA /* TableViewEntryRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TableViewEntryRow.swift; sourceTree = "<group>"; };
 		DB2EBBFB255D3B4700956CAA /* MosaicImageViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MosaicImageViewModel.swift; sourceTree = "<group>"; };
+		DB2FFF28258B0C2C003DBC19 /* TouchBlockingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TouchBlockingView.swift; sourceTree = "<group>"; };
+		DB2FFF2D258B1077003DBC19 /* MosaicPlayerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MosaicPlayerView.swift; sourceTree = "<group>"; };
+		DB2FFF35258B56E5003DBC19 /* VideoPlaybackService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoPlaybackService.swift; sourceTree = "<group>"; };
+		DB2FFF3D258B78B0003DBC19 /* AVPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AVPlayer.swift; sourceTree = "<group>"; };
+		DB2FFF60258CB051003DBC19 /* NeedsDependency+AVPlayerViewControllerDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NeedsDependency+AVPlayerViewControllerDelegate.swift"; sourceTree = "<group>"; };
 		DB34028D2521BC06009EFADF /* APIService+UserTimeline.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "APIService+UserTimeline.swift"; sourceTree = "<group>"; };
 		DB34029C2521BE8B009EFADF /* MeProfileViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeProfileViewModel.swift; sourceTree = "<group>"; };
 		DB3402B62521D389009EFADF /* UserTimelineViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserTimelineViewModel.swift; sourceTree = "<group>"; };
@@ -1506,6 +1516,7 @@
 				DBE76D222500FF1C00DEB0FC /* AuthenticationService.swift */,
 				DB8AC1322541662200E636BE /* KeyboardResponderService.swift */,
 				DBC8E03C2574F7DB00401E20 /* PhotoLibraryService.swift */,
+				DB2FFF35258B56E5003DBC19 /* VideoPlaybackService.swift */,
 				DB2924C12546A77B003899A7 /* TwitterMediaService.swift */,
 				DBE76C8A24FF941A00DEB0FC /* APIService */,
 			);
@@ -1715,6 +1726,7 @@
 				DBE76D2F2502146F00DEB0FC /* OSLog.swift */,
 				DB1BF29325663ED000B5F490 /* UserDefaults.swift */,
 				DB74A16D256E50E300C5F3C9 /* UIColor.swift */,
+				DB2FFF3D258B78B0003DBC19 /* AVPlayer.swift */,
 			);
 			path = Extension;
 			sourceTree = "<group>";
@@ -1753,6 +1765,7 @@
 				DBEA4F8C251225610007FEC5 /* TimelinePostView.swift */,
 				DB41C0DA2513368800521562 /* TimelinePostActionToolbar.swift */,
 				DBEA4F8E251314640007FEC5 /* MosaicImageView.swift */,
+				DB2FFF2D258B1077003DBC19 /* MosaicPlayerView.swift */,
 				DBEA4F90251331BE0007FEC5 /* QuotePostView.swift */,
 				DB67610C254AD681006C6798 /* ActivityIndicatorCollectionViewCell.swift */,
 				DB578CCC254C0BDB00745336 /* UserBriefInfoView.swift */,
@@ -1760,6 +1773,7 @@
 				DB434887251DFE2D005B599F /* ProfileBannerStatusView.swift */,
 				DB43488C251DFF0F005B599F /* ProfileBannerStatusItemView.swift */,
 				DB97D1DF256CBA4E0056F8C2 /* NotifyBannerView.swift */,
+				DB2FFF28258B0C2C003DBC19 /* TouchBlockingView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -1797,6 +1811,7 @@
 				DB3B5F792562916400C46819 /* TweetProvider+MediaInfoDescriptionViewDelegate.swift */,
 				DBC8E04A2576337F00401E20 /* DisposeBagCollectable.swift */,
 				DB36F35D257F74C00028F81E /* ScrollViewContainer.swift */,
+				DB2FFF60258CB051003DBC19 /* NeedsDependency+AVPlayerViewControllerDelegate.swift */,
 			);
 			path = Protocol;
 			sourceTree = "<group>";
@@ -2441,6 +2456,7 @@
 				DB2924DF2547CCD6003899A7 /* ComposeTweetMediaItem.swift in Sources */,
 				DBC8DFCE2570BDB800401E20 /* TweetEntitiesURL.swift in Sources */,
 				DB98DC0E2507862D0087E30F /* TimelineMiddleLoaderTableViewCell.swift in Sources */,
+				DB2FFF3E258B78B0003DBC19 /* AVPlayer.swift in Sources */,
 				DB7D1248250B5C6C00999903 /* UIButton+Inset.swift in Sources */,
 				DB25BA10253D7F4D00A5420F /* APIService+CoreData+V2+Tweet.swift in Sources */,
 				DB34028E2521BC06009EFADF /* APIService+UserTimeline.swift in Sources */,
@@ -2484,6 +2500,7 @@
 				DB74A16E256E50E300C5F3C9 /* UIColor.swift in Sources */,
 				DB676161254BE580006C6798 /* SearchMediaPreviewCollectionViewCell.swift in Sources */,
 				DBE76D402502524500DEB0FC /* UIImage.swift in Sources */,
+				DB2FFF29258B0C2C003DBC19 /* TouchBlockingView.swift in Sources */,
 				DBF69EE12549705A00E2A915 /* ViewControllerAnimatedTransitioningDelegate.swift in Sources */,
 				DB3402B72521D389009EFADF /* UserTimelineViewModel.swift in Sources */,
 				DBED96D8253F5D7800C5383A /* NamingState.swift in Sources */,
@@ -2492,12 +2509,14 @@
 				DBA5FA142553DB4300D2E98E /* MediaPreviewingViewController.swift in Sources */,
 				DB8AC16C25419B2E00E636BE /* ComposeTweetSection.swift in Sources */,
 				DBEA4F8D251225610007FEC5 /* TimelinePostView.swift in Sources */,
+				DB2FFF36258B56E5003DBC19 /* VideoPlaybackService.swift in Sources */,
 				DB35C35D25146C58003DA0E9 /* ConversationPostStatusView.swift in Sources */,
 				DB8AC10E2540501600E636BE /* ComposeTweetViewController.swift in Sources */,
 				DB9154682551389D00613473 /* APIService+MentionTimeline.swift in Sources */,
 				DBEA4F91251331BE0007FEC5 /* QuotePostView.swift in Sources */,
 				DBA9B3A625875B6B00EA14ED /* MentionPickViewController.swift in Sources */,
 				DB67610D254AD681006C6798 /* ActivityIndicatorCollectionViewCell.swift in Sources */,
+				DB2FFF61258CB051003DBC19 /* NeedsDependency+AVPlayerViewControllerDelegate.swift in Sources */,
 				DBA5FA2E2553F06B00D2E98E /* MediaInfoDescriptionView.swift in Sources */,
 				DB5918F7255E81FB00B20F6F /* MediaPreviewViewController+TweetProvider.swift in Sources */,
 				DBA6B1B725355C1E005FB0B4 /* UIAlertController.swift in Sources */,
@@ -2528,6 +2547,7 @@
 				DBEA4F812511E7900007FEC5 /* ConversationItem.swift in Sources */,
 				DB92575A251CA3FB004FEFB5 /* StubTableViewCell.swift in Sources */,
 				DBCB4099255D948400DD8D8F /* TweetProvider+UITableViewDelegate.swift in Sources */,
+				DB2FFF2E258B1077003DBC19 /* MosaicPlayerView.swift in Sources */,
 				DBA5F9E02553CFE800D2E98E /* MediaPreviewViewController.swift in Sources */,
 				DB9EC537255A8CEE005403AA /* ViewStateStore.swift in Sources */,
 				DB5FAD6B257DD1DD0098B2C8 /* DeveloperViewController.swift in Sources */,

@@ -8,6 +8,7 @@
 
 import os.log
 import UIKit
+import AVKit
 import Combine
 import CoreDataStack
 
@@ -78,6 +79,12 @@ extension UserLikeTimelineViewController {
         tableView.deselectRow(with: transitionCoordinator, animated: animated)
     }
     
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        
+        context.videoPlaybackService.viewDidDisappear(from: self)
+    }
+    
 }
 
 // MARK: - UIScrollViewDelegate
@@ -146,8 +153,24 @@ extension UserLikeTimelineViewController: UITableViewDelegate {
     
 }
 
+// MARK: - AVPlayerViewControllerDelegate
+extension UserLikeTimelineViewController: AVPlayerViewControllerDelegate {
+    
+    func playerViewController(_ playerViewController: AVPlayerViewController, willBeginFullScreenPresentationWithAnimationCoordinator coordinator: UIViewControllerTransitionCoordinator) {
+        handlePlayerViewController(playerViewController, willBeginFullScreenPresentationWithAnimationCoordinator: coordinator)
+    }
+    
+    func playerViewController(_ playerViewController: AVPlayerViewController, willEndFullScreenPresentationWithAnimationCoordinator coordinator: UIViewControllerTransitionCoordinator) {
+        handlePlayerViewController(playerViewController, willEndFullScreenPresentationWithAnimationCoordinator: coordinator)
+    }
+    
+}
+
 // MARK: - TimelinePostTableViewCellDelegate
-extension UserLikeTimelineViewController: TimelinePostTableViewCellDelegate { }
+extension UserLikeTimelineViewController: TimelinePostTableViewCellDelegate {
+    weak var playerViewControllerDelegate: AVPlayerViewControllerDelegate? { return self }
+    func parent() -> UIViewController { return self }
+}
 
 // MARK: - CustomScrollViewContainerController
 extension UserLikeTimelineViewController: ScrollViewContainer {

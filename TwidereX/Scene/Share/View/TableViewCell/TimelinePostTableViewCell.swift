@@ -7,14 +7,19 @@
 
 import os.log
 import UIKit
+import AVKit
 import Combine
 import ActiveLabel
 
 protocol TimelinePostTableViewCellDelegate: class {
+    var playerViewControllerDelegate: AVPlayerViewControllerDelegate? { get }
+    func parent() -> UIViewController
+    
     func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, retweetInfoLabelDidPressed label: UILabel)
     func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, avatarImageViewDidPressed imageView: UIImageView)
     func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, quoteAvatarImageViewDidPressed imageView: UIImageView)
     func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, quotePostViewDidPressed quotePostView: QuotePostView)
+    func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, playerViewControllerDidPressed playerViewController: AVPlayerViewController)
     
     func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, actionToolbar: TimelinePostActionToolbar, replayButtonDidPressed sender: UIButton)
     func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, actionToolbar: TimelinePostActionToolbar, retweetButtonDidPressed sender: UIButton)
@@ -24,7 +29,13 @@ protocol TimelinePostTableViewCellDelegate: class {
     func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, mosaicImageView: MosaicImageView, didTapImageView imageView: UIImageView, atIndex index: Int)
     
     func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, activeLabel: ActiveLabel, didTapEntity entity: ActiveEntity)
-    
+}
+
+extension TimelinePostTableViewCellDelegate {
+    func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, playerViewControllerDidPressed playerViewController: AVPlayerViewController) {
+        os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
+        playerViewController.showsPlaybackControls.toggle()
+    }
 }
 
 final class TimelinePostTableViewCell: UITableViewCell {
@@ -56,16 +67,15 @@ final class TimelinePostTableViewCell: UITableViewCell {
     private let retweetInfoLabelTapGestureRecognizer = UITapGestureRecognizer.singleTapGestureRecognizer
     private let quoteAvatarImageViewTapGestureRecognizer = UITapGestureRecognizer.singleTapGestureRecognizer
     private let quotePostViewTapGestureRecognizer = UITapGestureRecognizer.singleTapGestureRecognizer
+//    private let playerTapGestureRecognizer = UITapGestureRecognizer.singleTapGestureRecognizer
     
     override func prepareForReuse() {
         super.prepareForReuse()
         
-        timelinePostView.playerViewController.player?.pause()
-        timelinePostView.playerViewController.player = nil
-        
         timelinePostView.mosaicImageView.reset()
         timelinePostView.mosaicImageView.isHidden = true
-        timelinePostView.playerContainerStackView.isHidden = true
+        timelinePostView.mosaicPlayerView.reset()
+        timelinePostView.mosaicPlayerView.isHidden = true
         timelinePostView.quotePostView.isHidden = true
         timelinePostView.avatarImageView.af.cancelImageRequest()
         timelinePostView.avatarImageView.kf.cancelDownloadTask()
@@ -143,7 +153,7 @@ extension TimelinePostTableViewCell {
         quotePostViewTapGestureRecognizer.addTarget(self, action: #selector(TimelinePostTableViewCell.quotePostViewTapGestureRecognizerHandler(_:)))
         timelinePostView.quotePostView.isUserInteractionEnabled = true
         timelinePostView.quotePostView.addGestureRecognizer(quotePostViewTapGestureRecognizer)
-        
+                
         timelinePostView.activeTextLabel.delegate = self
         timelinePostView.actionToolbar.delegate = self
         timelinePostView.mosaicImageView.delegate = self
@@ -178,6 +188,12 @@ extension TimelinePostTableViewCell {
         guard sender.state == .ended else { return }
         delegate?.timelinePostTableViewCell(self, quotePostViewDidPressed: timelinePostView.quotePostView)
     }
+    
+//    @objc private func playerTapGestureRecognizerHandler(_ sender: UITapGestureRecognizer) {
+//        os_log("%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
+//        guard sender.state == .ended else { return }
+//        delegate?.timelinePostTableViewCell(self, playerViewControllerDidPressed: timelinePostView.playerViewController)
+//    }
     
 }
 

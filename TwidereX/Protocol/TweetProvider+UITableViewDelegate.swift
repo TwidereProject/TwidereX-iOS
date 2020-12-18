@@ -17,7 +17,7 @@ extension UITableViewDelegate where Self: TweetProvider {
     func handleTableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         os_log("%{public}s[%{public}ld], %{public}s: indexPath %s", ((#file as NSString).lastPathComponent), #line, #function, indexPath.debugDescription)
         guard let cell = tableView.cellForRow(at: indexPath) as? TimelinePostTableViewCell else { return }
-        tweet(for: cell)
+        tweet(for: cell, indexPath: indexPath)
             .sink { [weak self] tweet in
                 guard let self = self else { return }
                 guard let tweet = tweet else { return }
@@ -25,6 +25,40 @@ extension UITableViewDelegate where Self: TweetProvider {
                 let tweetPostViewModel = TweetConversationViewModel(context: self.context, tweetObjectID: tweet.objectID)
                 DispatchQueue.main.async {
                     self.coordinator.present(scene: .tweetConversation(viewModel: tweetPostViewModel), from: self, transition: .show)
+                }
+            }
+            .store(in: &disposeBag)
+    }
+    
+    func handleTableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        os_log("%{public}s[%{public}ld], %{public}s: indexPath %s", ((#file as NSString).lastPathComponent), #line, #function, indexPath.debugDescription)
+
+        guard let cell = cell as? TimelinePostTableViewCell else { return }
+        tweet(for: cell, indexPath: indexPath)
+            .sink { [weak self] tweet in
+                guard let self = self else { return }
+                guard let tweet = (tweet?.retweet ?? tweet) else { return }
+                guard let media = (tweet.media ?? Set()).first else { return }
+                guard let videoPlayerViewModel = self.context.videoPlaybackService.dequeueVideoPlayerViewModel(for: media) else { return }
+                DispatchQueue.main.async {
+                    videoPlayerViewModel.willDisplay()
+                }
+            }
+            .store(in: &disposeBag)
+    }
+    
+    func handleTableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        os_log("%{public}s[%{public}ld], %{public}s: indexPath %s", ((#file as NSString).lastPathComponent), #line, #function, indexPath.debugDescription)
+        
+        guard let cell = cell as? TimelinePostTableViewCell else { return }
+        tweet(for: cell, indexPath: indexPath)
+            .sink { [weak self] tweet in
+                guard let self = self else { return }
+                guard let tweet = (tweet?.retweet ?? tweet) else { return }
+                guard let media = (tweet.media ?? Set()).first else { return }
+                guard let videoPlayerViewModel = self.context.videoPlaybackService.dequeueVideoPlayerViewModel(for: media) else { return }
+                DispatchQueue.main.async {
+                    videoPlayerViewModel.didEndDisplaying()
                 }
             }
             .store(in: &disposeBag)
@@ -40,7 +74,7 @@ extension UITableViewDelegate where Self: TweetProvider {
     
     private func optionalTweet(for cell: ImagePreviewPresentableCell) -> Future<Tweet?, Never>? {
         if let cell = cell as? TimelinePostTableViewCell {
-            return tweet(for: cell)
+            return tweet(for: cell, indexPath: nil)
         } else if let cell = cell as? ConversationPostTableViewCell {
             return tweet(for: cell)
         } else {

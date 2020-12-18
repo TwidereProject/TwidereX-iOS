@@ -110,7 +110,7 @@ extension HomeTimelineViewModel {
                 let managedObjectContext = self.fetchedResultsController.managedObjectContext
                 assert(Thread.isMainThread)
                 let timelineIndex = managedObjectContext.object(with: objectID) as! TimelineIndex
-                HomeTimelineViewModel.configure(cell: cell, readableLayoutFrame: tableView.readableContentGuide.layoutFrame, timelineIndex: timelineIndex, attribute: attribute)
+                HomeTimelineViewModel.configure(cell: cell, readableLayoutFrame: tableView.readableContentGuide.layoutFrame, videoPlaybackService: self.context.videoPlaybackService, timelineIndex: timelineIndex, attribute: attribute)
                 HomeTimelineViewModel.configure(cell: cell, overrideTraitCollection: self.context.overrideTraitCollection.value)
                 cell.delegate = self.timelinePostTableViewCellDelegate
                 return cell
@@ -166,14 +166,14 @@ extension HomeTimelineViewModel {
         }
     }
     
-    static func configure(cell: TimelinePostTableViewCell, readableLayoutFrame: CGRect? = nil, timelineIndex: TimelineIndex, attribute: Item.Attribute) {
+    static func configure(cell: TimelinePostTableViewCell, readableLayoutFrame: CGRect? = nil, videoPlaybackService: VideoPlaybackService, timelineIndex: TimelineIndex, attribute: Item.Attribute) {
         if let tweet = timelineIndex.tweet {
-            configure(cell: cell, readableLayoutFrame: readableLayoutFrame, tweet: tweet, requestUserID: timelineIndex.userID)
+            configure(cell: cell, readableLayoutFrame: readableLayoutFrame, videoPlaybackService: videoPlaybackService, tweet: tweet, requestUserID: timelineIndex.userID)
             internalConfigure(cell: cell, tweet: tweet, attribute: attribute)
         }
     }
 
-    static func configure(cell: TimelinePostTableViewCell, readableLayoutFrame: CGRect? = nil, tweet: Tweet, requestUserID: String) {
+    static func configure(cell: TimelinePostTableViewCell, readableLayoutFrame: CGRect? = nil, videoPlaybackService: VideoPlaybackService, tweet: Tweet, requestUserID: String) {
         // set retweet display
         cell.timelinePostViewTopLayoutConstraint.constant = tweet.retweet == nil ? TimelinePostTableViewCell.verticalMargin : TimelinePostTableViewCell.verticalMarginAlt
         cell.timelinePostView.retweetContainerStackView.isHidden = tweet.retweet == nil
@@ -220,22 +220,10 @@ extension HomeTimelineViewModel {
         
         // set media display
         let media = Array((tweet.retweet ?? tweet).media ?? []).sorted { $0.index.compare($1.index) == .orderedAscending }
-        
-        // set video
-        if let media = media.first, let videoPlayerViewModel = VideoPlayerViewModel(twitterMedia: media) {
-            let meta = videoPlayerViewModel.meta
-            cell.timelinePostView.playerViewController.player = AVPlayer(url: meta.url)
-            cell.timelinePostView.resetPlayerLayout(aspectRatio: meta.size)
-            cell.timelinePostView.playerViewController.showsPlaybackControls = meta.kind == .video
-            cell.timelinePostView.playerContainerStackView.isHidden = false
-            if meta.kind == .gif {
-                cell.timelinePostView.playerViewController.player?.play()
-            }
-        }
-        
+    
         // set image
         let mosiacImageViewModel = MosaicImageViewModel(twitterMedia: media)
-        let maxSize: CGSize = {
+        let imageViewMaxSize: CGSize = {
             let maxWidth: CGFloat = {
                 // use timelinePostView width as container width
                 // that width follows readable width and keep constant width after rotate
@@ -255,14 +243,14 @@ extension HomeTimelineViewModel {
         }()
         if mosiacImageViewModel.metas.count == 1 {
             let meta = mosiacImageViewModel.metas[0]
-            let imageView = cell.timelinePostView.mosaicImageView.setupImageView(aspectRatio: meta.size, maxSize: maxSize)
+            let imageView = cell.timelinePostView.mosaicImageView.setupImageView(aspectRatio: meta.size, maxSize: imageViewMaxSize)
             imageView.af.setImage(
                 withURL: meta.url,
                 placeholderImage: UIImage.placeholder(color: .systemFill),
                 imageTransition: .crossDissolve(0.2)
             )
         } else {
-            let imageViews = cell.timelinePostView.mosaicImageView.setupImageViews(count: mosiacImageViewModel.metas.count, maxHeight: maxSize.height)
+            let imageViews = cell.timelinePostView.mosaicImageView.setupImageViews(count: mosiacImageViewModel.metas.count, maxHeight: imageViewMaxSize.height)
             for (i, imageView) in imageViews.enumerated() {
                 let meta = mosiacImageViewModel.metas[i]
                 imageView.af.setImage(
@@ -273,6 +261,40 @@ extension HomeTimelineViewModel {
             }
         }
         cell.timelinePostView.mosaicImageView.isHidden = mosiacImageViewModel.metas.isEmpty
+        
+        // set video
+        let playerViewMaxSize: CGSize = {
+            let maxWidth: CGFloat = {
+                // use timelinePostView width as container width
+                // that width follows readable width and keep constant width after rotate
+                let containerFrame = readableLayoutFrame ?? cell.timelinePostView.frame
+                var containerWidth = containerFrame.width
+                containerWidth -= 10
+                containerWidth -= TimelinePostView.avatarImageViewSize.width
+                return containerWidth
+            }()
+            let scale: CGFloat = 1.3
+            return CGSize(width: maxWidth, height: maxWidth * scale)
+        }()
+        if let media = media.first, let videoPlayerViewModel = videoPlaybackService.dequeueVideoPlayerViewModel(for: media) {
+            let parent = cell.delegate?.parent()
+            let mosaicPlayerView = cell.timelinePostView.mosaicPlayerView
+            let playerViewController = mosaicPlayerView.setupPlayer(
+                aspectRatio: videoPlayerViewModel.videoSize,
+                maxSize: playerViewMaxSize,
+                parent: parent
+            )
+            playerViewController.delegate = cell.delegate?.playerViewControllerDelegate
+            videoPlayerViewModel.playerViewController = playerViewController
+            
+            playerViewController.player = videoPlayerViewModel.player
+            if videoPlayerViewModel.videoKind == .gif {
+                videoPlayerViewModel.setupLooper()
+            }
+            playerViewController.showsPlaybackControls = videoPlayerViewModel.videoKind != .gif
+            
+            mosaicPlayerView.isHidden = false
+        }
 
         // set quote display
         let quote = tweet.retweet?.quote ?? tweet.quote

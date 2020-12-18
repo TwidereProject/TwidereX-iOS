@@ -6,39 +6,101 @@
 //  Copyright © 2020 Twidere. All rights reserved.
 //
 
+import os.log
 import UIKit
+import AVKit
 import CoreDataStack
+import Combine
 
-struct VideoPlayerViewModel {
+final class VideoPlayerViewModel {
+
+    // input
+    let previewImageURL: URL?
+    let videoURL: URL
+    let videoSize: CGSize
+    let videoKind: Kind
     
-    let meta: VideoPlayerMeta
+    weak var playerViewController: AVPlayerViewController?
+    var isFullScreenPresentationing = false
+    var isPlayingWhenEndDisplaying = false
+    var updateDate = Date()
     
-    init?(twitterMedia media: TwitterMedia) {
-        guard let height = media.height?.intValue,
-              let width = media.width?.intValue,
-              let previewImageURL = media.previewImageURL.flatMap({ URL(string: $0) }),
-              let url = media.url.flatMap({ URL(string: $0) }),
-              media.type == "animated_gif" || media.type == "video" else
-        { return nil }
-              
-        meta = VideoPlayerMeta(
-            previewImageURL: previewImageURL,
-            url: url,
-            size: CGSize(width: width, height: height),
-            kind: media.type == "animated_gif" ? .gif : .video
-        )
+    // output
+    let player: AVPlayer
+    private(set) var looper: AVPlayerLooper?     // works with AVQueuePlayer (iOS 10+)
+    
+    private var timeControlStatusObservation: NSKeyValueObservation?
+    let timeControlStatus = CurrentValueSubject<AVPlayer.TimeControlStatus, Never>(.paused)
+    
+    init(previewImageURL: URL?, videoURL: URL, videoSize: CGSize, videoKind: VideoPlayerViewModel.Kind) {
+        self.previewImageURL = previewImageURL
+        self.videoURL = videoURL
+        self.videoSize = videoSize
+        self.videoKind = videoKind
+        
+        let playerItem = AVPlayerItem(url: videoURL)
+        let player = videoKind == .gif ? AVQueuePlayer(playerItem: playerItem) : AVPlayer(playerItem: playerItem)
+        player.isMuted = true
+        self.player = player
+        
+        timeControlStatusObservation = player.observe(\.timeControlStatus, options: [.initial, .new]) { [weak self] player, _ in
+            guard let self = self else { return }
+            os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: player state: %s", ((#file as NSString).lastPathComponent), #line, #function, player.timeControlStatus.debugDescription)
+            self.timeControlStatus.value = player.timeControlStatus
+        }
+    }
+    
+    deinit {
+        timeControlStatusObservation = nil
     }
     
 }
 
-struct VideoPlayerMeta {
-    let previewImageURL: URL
-    let url: URL
-    let size: CGSize
-    let kind: Kind
-    
+extension VideoPlayerViewModel {
     enum Kind {
         case gif
         case video
     }
+}
+
+extension VideoPlayerViewModel {
+    
+    func setupLooper() {
+        guard looper == nil, let queuePlayer = player as? AVQueuePlayer else { return }
+        guard let templateItem = queuePlayer.items().first else { return }
+        looper = AVPlayerLooper(player: queuePlayer, templateItem: templateItem)
+    }
+    
+    func play() {
+        player.play()
+        updateDate = Date()
+    }
+    
+    func pause() {
+        player.pause()
+        updateDate = Date()
+    }
+    
+    func willDisplay() {
+        
+        switch videoKind {
+        case .gif:
+            player.play()   // always auto play GIF
+        case .video:
+            guard isPlayingWhenEndDisplaying else { return }
+            // mute before resume 
+            player.isMuted = true
+            player.play()
+        }
+        
+        updateDate = Date()
+    }
+    
+    func didEndDisplaying() {
+        isPlayingWhenEndDisplaying = timeControlStatus.value != .paused
+        player.pause()
+        
+        updateDate = Date()
+    }
+    
 }
