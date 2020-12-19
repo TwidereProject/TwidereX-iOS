@@ -143,6 +143,8 @@ extension MainTabBarController {
         doubleTapGestureRecognizer.delaysTouchesEnded = false
         tabBar.addGestureRecognizer(doubleTapGestureRecognizer)
         
+        delegate = self
+        
         #if DEBUG
         // selectedIndex = 1
         #endif
@@ -168,5 +170,12 @@ extension MainTabBarController {
         default:
             break
         }
+    }
+}
+
+// MARK: - UITabBarControllerDelegate
+extension MainTabBarController: UITabBarControllerDelegate {
+    override func tabBar(_ tabBar: UITabBar, didSelect item: UITabBarItem) {
+        os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: didSelect item: %s", ((#file as NSString).lastPathComponent), #line, #function, item.debugDescription)
     }
 }

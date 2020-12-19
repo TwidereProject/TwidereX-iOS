@@ -31,14 +31,20 @@ extension VideoPlaybackService {
             // do nothing
             return
         case .video:
-            // pause other player
             if playerViewModel.timeControlStatus.value != .paused {
                 latestPlayingVideoPlayerViewModel = playerViewModel
                 
+                // pause other player
                 for viewModel in viewPlayerViewModelDict.values {
                     guard viewModel.timeControlStatus.value != .paused else { continue }
                     guard viewModel !== playerViewModel else { continue }
                     viewModel.pause()
+                }
+            } else {
+                if latestPlayingVideoPlayerViewModel === playerViewModel {
+                    latestPlayingVideoPlayerViewModel = nil
+                    try? AVAudioSession.sharedInstance().setCategory(.soloAmbient, mode: .default)
+                    try? AVAudioSession.sharedInstance().setActive(false)
                 }
             }
         }
@@ -78,12 +84,8 @@ extension VideoPlaybackService {
     }
     
     func playerViewModel(for playerViewController: AVPlayerViewController) -> VideoPlayerViewModel? {
-        for viewModel in viewPlayerViewModelDict.values {
-            guard viewModel.playerViewControllers.contains(playerViewController) else { continue }
-            return viewModel
-        }
-        
-        return nil
+        guard let url = (playerViewController.player?.currentItem?.asset as? AVURLAsset)?.url else { return nil }
+        return viewPlayerViewModelDict[url]
     }
 
     private func setupListener(for viewModel: VideoPlayerViewModel) {
@@ -98,12 +100,27 @@ extension VideoPlaybackService {
 }
 
 extension VideoPlaybackService {
+    func markTransitioning(for tweet: Tweet) {
+        guard let media = (tweet.retweet ?? tweet).media?.first else  { return }
+        guard let viewModel = dequeueVideoPlayerViewModel(for: media) else  { return }
+        viewModel.isTransitioning = true
+    }
+    
     func viewDidDisappear(from viewController: UIViewController?) {
+        os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
+        
         // note: do not retain view controller
-        // pause all player when view disppear exclude full screen player
+        // pause all player when view disppear exclude full screen player and other transitioning scene
         for viewModel in viewPlayerViewModelDict.values {
+            guard !viewModel.isTransitioning else {
+                viewModel.isTransitioning = false
+                continue
+            }
+            guard !viewModel.isFullScreenPresentationing else {
+                os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: isFullScreenPresentationing", ((#file as NSString).lastPathComponent), #line, #function)
+                continue
+            }
             guard viewModel.videoKind == .video else { continue }
-            guard !viewModel.isFullScreenPresentationing else { continue }
             viewModel.pause()
         }
     }

@@ -79,6 +79,7 @@ extension TimelinePostTableViewCellDelegate where Self: TweetProvider {
                 guard let self = self else { return }
                 guard let tweet = (tweet?.retweet ?? tweet)?.quote else { return }
                 
+                self.context.videoPlaybackService.markTransitioning(for: tweet)
                 let tweetPostViewModel = TweetConversationViewModel(context: self.context, tweetObjectID: tweet.objectID)
                 DispatchQueue.main.async {
                     self.coordinator.present(scene: .tweetConversation(viewModel: tweetPostViewModel), from: self, transition: .show)

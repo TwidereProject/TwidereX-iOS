@@ -349,7 +349,9 @@ extension MentionTimelineViewController: UITableViewDelegate {
             managedObjectContext.performAndWait {
                 guard let mentionTimelineIndex = managedObjectContext.object(with: objectID) as? MentionTimelineIndex else { return }
                 guard let tweet = mentionTimelineIndex.tweet?.retweet ?? mentionTimelineIndex.tweet else { return }
-
+                
+                self.context.videoPlaybackService.markTransitioning(for: tweet)
+                
                 let tweetPostViewModel = TweetConversationViewModel(context: self.context, tweetObjectID: tweet.objectID)
                 self.coordinator.present(scene: .tweetConversation(viewModel: tweetPostViewModel), from: self, transition: .show)
             }
@@ -358,7 +360,13 @@ extension MentionTimelineViewController: UITableViewDelegate {
         }
     }
 
+    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        handleTableView(tableView, willDisplay: cell, forRowAt: indexPath)
+    }
+    
     func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        handleTableView(tableView, didEndDisplaying: cell, forRowAt: indexPath)
+
         guard let diffableDataSource = viewModel.diffableDataSource else { return }
         guard let item = diffableDataSource.itemIdentifier(for: indexPath) else { return }
 

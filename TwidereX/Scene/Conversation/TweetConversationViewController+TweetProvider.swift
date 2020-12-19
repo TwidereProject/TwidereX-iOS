@@ -47,10 +47,14 @@ extension TweetConversationViewController: TweetProvider {
         }
     }
     
-    func tweet(for cell: ConversationPostTableViewCell) -> Future<Tweet?, Never> {
+    func tweet(for cell: ConversationPostTableViewCell, indexPath: IndexPath?) -> Future<Tweet?, Never> {
         return Future { promise in
-            guard let diffableDataSource = self.viewModel.diffableDataSource,
-                  let indexPath = self.tableView.indexPath(for: cell),
+            guard let diffableDataSource = self.viewModel.diffableDataSource else {
+                assertionFailure()
+                promise(.success(nil))
+                return
+            }
+            guard let indexPath = indexPath ?? self.tableView.indexPath(for: cell),
                   let item = diffableDataSource.itemIdentifier(for: indexPath) else {
                 promise(.success(nil))
                 return

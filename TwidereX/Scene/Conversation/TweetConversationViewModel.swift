@@ -410,9 +410,12 @@ extension TweetConversationViewModel {
                 parent: parent
             )
             playerViewController.delegate = cell.delegate?.playerViewControllerDelegate
-            
-            playerViewController.player = videoPlayerViewModel.player
             playerViewController.showsPlaybackControls = videoPlayerViewModel.videoKind != .gif
+
+            // FIX HUD flick issue
+            DispatchQueue.main.async {
+                playerViewController.player = videoPlayerViewModel.player
+            }
 
             mosaicPlayerView.isHidden = false
         } else {

@@ -13,17 +13,24 @@ import CoreDataStack
 import Combine
 
 final class VideoPlayerViewModel {
+    
+    var disposeBag = Set<AnyCancellable>()
 
     // input
     let previewImageURL: URL?
     let videoURL: URL
     let videoSize: CGSize
     let videoKind: Kind
-    
-    let playerViewControllers = NSHashTable<AVPlayerViewController>.weakObjects()
+            
+    var isTransitioning = false
     var isFullScreenPresentationing = false
     var isPlayingWhenEndDisplaying = false
-    var updateDate = Date()
+    
+    // prevent player state flick when tableView reload
+    private typealias Play = Bool
+    private let debouncePlayingState = PassthroughSubject<Play, Never>()
+    
+    private var updateDate = Date()
     
     // output
     let player: AVPlayer
@@ -52,6 +59,27 @@ final class VideoPlayerViewModel {
             os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: player state: %s", ((#file as NSString).lastPathComponent), #line, #function, player.timeControlStatus.debugDescription)
             self.timeControlStatus.value = player.timeControlStatus
         }
+        
+        // update audio session category for user interactive event stream
+        timeControlStatus
+            .sink { [weak self] timeControlStatus in
+                guard let _ = self else { return }
+                guard timeControlStatus == .playing else { return }
+                switch videoKind {
+                case .gif:      try? AVAudioSession.sharedInstance().setCategory(.ambient, mode: .default)
+                case .video:    try? AVAudioSession.sharedInstance().setCategory(.soloAmbient, mode: .default)
+                }
+                try? AVAudioSession.sharedInstance().setActive(true)
+            }
+            .store(in: &disposeBag)
+        
+        debouncePlayingState
+            .debounce(for: 0.3, scheduler: DispatchQueue.main)
+            .sink { [weak self] isPlay in
+                guard let self = self else { return }
+                isPlay ? self.play() : self.pause()
+            }
+            .store(in: &disposeBag)
     }
     
     deinit {
@@ -76,6 +104,11 @@ extension VideoPlayerViewModel {
     }
     
     func play() {
+        switch videoKind {
+        case .gif:      try? AVAudioSession.sharedInstance().setCategory(.ambient, mode: .default)
+        case .video:    try? AVAudioSession.sharedInstance().setCategory(.soloAmbient, mode: .default)
+        }
+        try? AVAudioSession.sharedInstance().setActive(true)
         player.play()
         updateDate = Date()
     }
@@ -85,26 +118,29 @@ extension VideoPlayerViewModel {
         updateDate = Date()
     }
     
-    func willDisplay(with playerViewController: AVPlayerViewController) {
-        playerViewControllers.add(playerViewController)
+    func willDisplay() {
+        os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: url: %s", ((#file as NSString).lastPathComponent), #line, #function, videoURL.debugDescription)
         
         switch videoKind {
         case .gif:
-            player.play()   // always auto play GIF
+            play()   // always auto play GIF
         case .video:
             guard isPlayingWhenEndDisplaying else { return }
-            // mute before resume 
-            player.isMuted = true
-            player.play()
+            // mute before resume
+            if updateDate.timeIntervalSinceNow < -3 {
+                player.isMuted = true
+            }
+            debouncePlayingState.send(true)
         }
         
         updateDate = Date()
     }
     
-    func didEndDisplaying(with playerViewController: AVPlayerViewController) {
-        playerViewControllers.remove(playerViewController)
+    func didEndDisplaying() {
+        os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: url: %s", ((#file as NSString).lastPathComponent), #line, #function, videoURL.debugDescription)
+        
         isPlayingWhenEndDisplaying = timeControlStatus.value != .paused
-        player.pause()
+        debouncePlayingState.send(false)
         
         updateDate = Date()
     }
