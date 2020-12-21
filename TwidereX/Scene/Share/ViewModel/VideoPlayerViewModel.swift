@@ -140,7 +140,12 @@ extension VideoPlayerViewModel {
         os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: url: %s", ((#file as NSString).lastPathComponent), #line, #function, videoURL.debugDescription)
         
         isPlayingWhenEndDisplaying = timeControlStatus.value != .paused
-        debouncePlayingState.send(false)
+        switch videoKind {
+        case .gif:
+            pause()     // always pause GIF immediately
+        case .video:
+            debouncePlayingState.send(false)
+        }
         
         updateDate = Date()
     }
