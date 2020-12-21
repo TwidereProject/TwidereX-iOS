@@ -180,9 +180,11 @@ extension UserBriefInfoView {
         
         verifiedBadgeImageView.isHidden = true
         lockImageView.isHidden = true
-        menuButton.isHidden = true
+        
+        activityIndicatorView.isHidden = true
         checkmarkButton.isHidden = true
-        activityIndicatorView.isHidden = false
+        followActionButton.isHidden = true
+        menuButton.isHidden = true
     }
 }
 

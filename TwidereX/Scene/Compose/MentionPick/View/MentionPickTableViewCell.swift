@@ -36,8 +36,6 @@ extension MentionPickTableViewCell {
             contentView.bottomAnchor.constraint(equalTo: userBriefInfoView.bottomAnchor, constant: 16).priority(.defaultHigh),
         ])
         
-        userBriefInfoView.followActionButton.isHidden = true
-        userBriefInfoView.menuButton.isHidden = true
         userBriefInfoView.checkmarkButton.isHidden = false
     }
     
