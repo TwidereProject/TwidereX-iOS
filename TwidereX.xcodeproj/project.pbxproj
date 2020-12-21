@@ -97,11 +97,11 @@
 		DB5A229A255BC82D006CA5B2 /* AuthenticationIndex.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB5A2299255BC82D006CA5B2 /* AuthenticationIndex.swift */; };
 		DB5FAD6B257DD1DD0098B2C8 /* DeveloperViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB5FAD6A257DD1DD0098B2C8 /* DeveloperViewController.swift */; };
 		DB6760F9254AD026006C6798 /* SearchMediaViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB6760F8254AD026006C6798 /* SearchMediaViewModel.swift */; };
-		DB676101254AD12F006C6798 /* SearchMediaCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB676100254AD12F006C6798 /* SearchMediaCollectionViewCell.swift */; };
+		DB676101254AD12F006C6798 /* MediaCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB676100254AD12F006C6798 /* MediaCollectionViewCell.swift */; };
 		DB67610D254AD681006C6798 /* ActivityIndicatorCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB67610C254AD681006C6798 /* ActivityIndicatorCollectionViewCell.swift */; };
 		DB676118254BBF57006C6798 /* SearchMediaViewModel+State.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB676117254BBF57006C6798 /* SearchMediaViewModel+State.swift */; };
 		DB67611D254BC04B006C6798 /* SearchMediaViewModel+Diffable.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB67611C254BC04B006C6798 /* SearchMediaViewModel+Diffable.swift */; };
-		DB676161254BE580006C6798 /* SearchMediaPreviewCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB676160254BE580006C6798 /* SearchMediaPreviewCollectionViewCell.swift */; };
+		DB676161254BE580006C6798 /* MediaPreviewCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB676160254BE580006C6798 /* MediaPreviewCollectionViewCell.swift */; };
 		DB67616C254C021A006C6798 /* SearchUserViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB67616B254C021A006C6798 /* SearchUserViewController.swift */; };
 		DB67617B254C0279006C6798 /* SearchUserViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB67617A254C0279006C6798 /* SearchUserViewModel.swift */; };
 		DB676180254C042C006C6798 /* UserBriefInfoTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB67617F254C042C006C6798 /* UserBriefInfoTableViewCell.swift */; };
@@ -495,11 +495,11 @@
 		DB5A2299255BC82D006CA5B2 /* AuthenticationIndex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationIndex.swift; sourceTree = "<group>"; };
 		DB5FAD6A257DD1DD0098B2C8 /* DeveloperViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeveloperViewController.swift; sourceTree = "<group>"; };
 		DB6760F8254AD026006C6798 /* SearchMediaViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchMediaViewModel.swift; sourceTree = "<group>"; };
-		DB676100254AD12F006C6798 /* SearchMediaCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchMediaCollectionViewCell.swift; sourceTree = "<group>"; };
+		DB676100254AD12F006C6798 /* MediaCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaCollectionViewCell.swift; sourceTree = "<group>"; };
 		DB67610C254AD681006C6798 /* ActivityIndicatorCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityIndicatorCollectionViewCell.swift; sourceTree = "<group>"; };
 		DB676117254BBF57006C6798 /* SearchMediaViewModel+State.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SearchMediaViewModel+State.swift"; sourceTree = "<group>"; };
 		DB67611C254BC04B006C6798 /* SearchMediaViewModel+Diffable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SearchMediaViewModel+Diffable.swift"; sourceTree = "<group>"; };
-		DB676160254BE580006C6798 /* SearchMediaPreviewCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchMediaPreviewCollectionViewCell.swift; sourceTree = "<group>"; };
+		DB676160254BE580006C6798 /* MediaPreviewCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaPreviewCollectionViewCell.swift; sourceTree = "<group>"; };
 		DB67616B254C021A006C6798 /* SearchUserViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchUserViewController.swift; sourceTree = "<group>"; };
 		DB67617A254C0279006C6798 /* SearchUserViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchUserViewModel.swift; sourceTree = "<group>"; };
 		DB67617F254C042C006C6798 /* UserBriefInfoTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserBriefInfoTableViewCell.swift; sourceTree = "<group>"; };
@@ -816,7 +816,6 @@
 		DB10B34B254AB350002D86F3 /* MediaTimeline */ = {
 			isa = PBXGroup;
 			children = (
-				DB676105254AD4B1006C6798 /* View */,
 				DB10B346254AB338002D86F3 /* SearchMediaViewController.swift */,
 				DBBABA10255E61C900C1B3D9 /* SearchMediaViewController+TweetProvider.swift */,
 				DB6760F8254AD026006C6798 /* SearchMediaViewModel.swift */,
@@ -962,13 +961,13 @@
 			path = Developer;
 			sourceTree = "<group>";
 		};
-		DB676105254AD4B1006C6798 /* View */ = {
+		DB676105254AD4B1006C6798 /* CollectionViewCell */ = {
 			isa = PBXGroup;
 			children = (
-				DB676100254AD12F006C6798 /* SearchMediaCollectionViewCell.swift */,
-				DB676160254BE580006C6798 /* SearchMediaPreviewCollectionViewCell.swift */,
+				DB676100254AD12F006C6798 /* MediaCollectionViewCell.swift */,
+				DB676160254BE580006C6798 /* MediaPreviewCollectionViewCell.swift */,
 			);
-			path = View;
+			path = CollectionViewCell;
 			sourceTree = "<group>";
 		};
 		DB676170254C021D006C6798 /* UserList */ = {
@@ -1761,6 +1760,7 @@
 			children = (
 				DB1BF2A4256649DB00B5F490 /* TableView */,
 				DB97D1E7256CBA5D0056F8C2 /* TableViewCell */,
+				DB676105254AD4B1006C6798 /* CollectionViewCell */,
 				DB97D1EB256CBA6F0056F8C2 /* Button */,
 				DBEA4F8C251225610007FEC5 /* TimelinePostView.swift */,
 				DB41C0DA2513368800521562 /* TimelinePostActionToolbar.swift */,
@@ -2498,7 +2498,7 @@
 				DB925705251C8FCB004FEFB5 /* ProfileSegmentedViewController.swift in Sources */,
 				DB8AC14C254167BE00E636BE /* TweetToolbarView.swift in Sources */,
 				DB74A16E256E50E300C5F3C9 /* UIColor.swift in Sources */,
-				DB676161254BE580006C6798 /* SearchMediaPreviewCollectionViewCell.swift in Sources */,
+				DB676161254BE580006C6798 /* MediaPreviewCollectionViewCell.swift in Sources */,
 				DBE76D402502524500DEB0FC /* UIImage.swift in Sources */,
 				DB2FFF29258B0C2C003DBC19 /* TouchBlockingView.swift in Sources */,
 				DBF69EE12549705A00E2A915 /* ViewControllerAnimatedTransitioningDelegate.swift in Sources */,
@@ -2531,7 +2531,7 @@
 				DBF69E8F2549601900E2A915 /* SearchViewController.swift in Sources */,
 				DB2924D72547CCA2003899A7 /* ComposeTweetMediaSection.swift in Sources */,
 				DB1BF2AC25664A0700B5F490 /* SlideTableViewCell.swift in Sources */,
-				DB676101254AD12F006C6798 /* SearchMediaCollectionViewCell.swift in Sources */,
+				DB676101254AD12F006C6798 /* MediaCollectionViewCell.swift in Sources */,
 				DBDA8E2424FCF8A3006750DC /* SceneDelegate.swift in Sources */,
 				DB88AC332508BACD0009E562 /* Items.swift in Sources */,
 				DBA61AB62552596A006AC169 /* UserMediaTimelineViewController.swift in Sources */,

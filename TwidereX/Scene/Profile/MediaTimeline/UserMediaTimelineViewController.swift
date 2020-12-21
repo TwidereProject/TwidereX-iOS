@@ -47,7 +47,7 @@ extension UserMediaTimelineViewController {
         collectionView.backgroundColor = .systemBackground
         
         collectionView.delegate = self
-        viewModel.setupDiffableDataSource(collectionView: collectionView, searchMediaCollectionViewCellDelegate: self)
+        viewModel.setupDiffableDataSource(collectionView: collectionView, mediaCollectionViewCellDelegate: self)
         
         // trigger timeline loading
         viewModel.userID
@@ -91,10 +91,10 @@ extension UserMediaTimelineViewController: ScrollViewContainer {
     }
 }
 
-// MARK: - SearchMediaCollectionViewCellDelegate
-extension UserMediaTimelineViewController: SearchMediaCollectionViewCellDelegate {
+// MARK: - MediaCollectionViewCellDelegate
+extension UserMediaTimelineViewController: MediaCollectionViewCellDelegate {
     
-    func searchMediaCollectionViewCell(_ cell: SearchMediaCollectionViewCell, collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+    func mediaCollectionViewCell(_ cell: SearchMediaCollectionViewCell, collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         // discard nest collectionView and indexPath
         guard let indexPath = self.collectionView.indexPath(for: cell) else { return }
         handleCollectionView(self.collectionView, didSelectItemAt: indexPath)
