@@ -291,15 +291,14 @@ extension ProfileViewController {
             .sink { [weak self] friendship in
                 guard let self = self else { return }
                 let followingButton = self.profileHeaderViewController.profileBannerView.profileBannerInfoActionView.followActionButton
+                followingButton.isHidden = friendship == nil
 
-                guard let friendship = friendship else {
-                    followingButton.isHidden = true
-                    return
-                }
-                switch friendship {
-                case .following:    followingButton.style = .following
-                case .pending:      followingButton.style = .pending
-                case .none:         followingButton.style = .follow
+                if let friendship = friendship {
+                    switch friendship {
+                    case .following:    followingButton.style = .following
+                    case .pending:      followingButton.style = .pending
+                    case .none:         followingButton.style = .follow
+                    }
                 }
             }
             .store(in: &disposeBag)
