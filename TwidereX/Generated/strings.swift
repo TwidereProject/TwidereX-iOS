@@ -262,7 +262,7 @@ internal enum L10n {
         /// Add Member
         internal static let addMember = L10n.tr("Localizable", "Scene.ListsDetails.MenuActions.AddMember")
         /// Edit List
-        internal static let editList = L10n.tr("Localizable", "Scene.ListsDetails.MenuActions.Edit List")
+        internal static let editList = L10n.tr("Localizable", "Scene.ListsDetails.MenuActions.EditList")
       }
       internal enum Tabs {
         /// Members
@@ -410,6 +410,8 @@ internal enum L10n {
       internal static let signInWithTwitter = L10n.tr("Localizable", "Scene.SignIn.SignInWithTwitter")
     }
     internal enum Status {
+      /// Tweet
+      internal static let title = L10n.tr("Localizable", "Scene.Status.Title")
       internal enum Like {
         /// %d Likes
         internal static func multiple(_ p1: Int) -> String {
