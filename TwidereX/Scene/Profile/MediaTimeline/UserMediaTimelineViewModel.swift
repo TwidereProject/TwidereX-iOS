@@ -38,6 +38,7 @@ final class UserMediaTimelineViewModel: NSObject {
     }()
     lazy var stateMachinePublisher = CurrentValueSubject<State, Never>(State.Initial(viewModel: self))
     var diffableDataSource: UICollectionViewDiffableDataSource<MediaSection, Item>!
+    let pagingTweetIDs = CurrentValueSubject<[Twitter.Entity.Tweet.ID], Never>([])      // paging use only. NOT for displaying
     let tweetIDs = CurrentValueSubject<[Twitter.Entity.Tweet.ID], Never>([])
     let items = CurrentValueSubject<[Item], Never>([])
     
@@ -62,35 +63,26 @@ final class UserMediaTimelineViewModel: NSObject {
         
         self.fetchedResultsController.delegate = self
         
-        Publishers.CombineLatest(
-            items.eraseToAnyPublisher(),
-            stateMachinePublisher.eraseToAnyPublisher()
-        )
-        .debounce(for: .seconds(1), scheduler: DispatchQueue.main)
-        .receive(on: DispatchQueue.main)
-        .sink { [weak self] items, state in
-            guard let self = self else { return }
-            os_log("%{public}s[%{public}ld], %{public}s: state did change", ((#file as NSString).lastPathComponent), #line, #function)
+        items.eraseToAnyPublisher()
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] items in
+                guard let self = self else { return }
+                guard let diffableDataSource = self.diffableDataSource else { return }
+                os_log("%{public}s[%{public}ld], %{public}s: items did change", ((#file as NSString).lastPathComponent), #line, #function)
 
-            var snapshot = NSDiffableDataSourceSnapshot<MediaSection, Item>()
-            snapshot.appendSections([.main])
-            snapshot.appendItems(items, toSection: .main)
-            switch self.stateMachine.currentState {
-            case is State.Fail:
-                // TODO:
-                break
-            case is State.Initial, is State.NoMore:
-                break
-            case is State.Idle, is State.Reloading, is State.LoadingMore:
+                var snapshot = NSDiffableDataSourceSnapshot<MediaSection, Item>()
+                snapshot.appendSections([.main])
+                snapshot.appendItems(items, toSection: .main)
                 snapshot.appendSections([.loader])
-                snapshot.appendItems([.bottomLoader], toSection: .loader)
-            default:
-                assertionFailure()
-            }
+                if let currentState = self.stateMachine.currentState,
+                   currentState is State.Idle || currentState is State.Reloading || currentState is State.LoadingMore {
+                    snapshot.appendItems([.bottomLoader], toSection: .loader)
+                }
 
-            self.diffableDataSource?.apply(snapshot, animatingDifferences: true)
-        }
-        .store(in: &disposeBag)
+                // set animatingDifferences to false fix scroll position jumping issue
+                diffableDataSource.apply(snapshot, animatingDifferences: false)
+            }
+            .store(in: &disposeBag)
 
         tweetIDs
             .receive(on: DispatchQueue.main)
@@ -124,7 +116,7 @@ extension UserMediaTimelineViewModel {
             return Fail(error: UserTimelineError.invalidUserID).eraseToAnyPublisher()
         }
         
-        return context.apiService.twitterUserTimeline(count: 200, userID: userID, excludeReplies: true, twitterAuthenticationBox: twitterAuthenticationBox)
+        return context.apiService.twitterUserTimeline(count: 200, userID: userID, excludeReplies: false, twitterAuthenticationBox: twitterAuthenticationBox)
     }
     
     func loadMore() -> AnyPublisher<Twitter.Response.Content<[Twitter.Entity.Tweet]>, Error> {
@@ -134,11 +126,11 @@ extension UserMediaTimelineViewModel {
         guard let userID = self.userID.value, !userID.isEmpty else {
             return Fail(error: UserTimelineError.invalidUserID).eraseToAnyPublisher()
         }
-        guard let maxID = tweetIDs.value.last else {
+        guard let maxID = pagingTweetIDs.value.last else {
             return Fail(error: UserTimelineError.invalidAnchorToLoadMore).eraseToAnyPublisher()
         }
         
-        return context.apiService.twitterUserTimeline(count: 200, userID: userID, maxID: maxID, excludeReplies: true, twitterAuthenticationBox: twitterAuthenticationBox)
+        return context.apiService.twitterUserTimeline(count: 200, userID: userID, maxID: maxID, excludeReplies: false, twitterAuthenticationBox: twitterAuthenticationBox)
     }
     
 }
