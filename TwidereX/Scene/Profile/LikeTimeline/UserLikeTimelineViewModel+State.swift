@@ -51,6 +51,7 @@ extension UserLikeTimelineViewModel.State {
             
             let userID = viewModel.userID.value
             viewModel.fetchLatest()
+                .receive(on: DispatchQueue.main)
                 .sink { completion in
                     switch completion {
                     case .failure(let error):
@@ -94,6 +95,7 @@ extension UserLikeTimelineViewModel.State {
             
             let userID = viewModel.userID.value
             viewModel.loadMore()
+                .receive(on: DispatchQueue.main)
                 .sink { completion in
                     switch completion {
                     case .failure(let error):
@@ -101,31 +103,27 @@ extension UserLikeTimelineViewModel.State {
                         os_log("%{public}s[%{public}ld], %{public}s: load more fail: %s", ((#file as NSString).lastPathComponent), #line, #function, error.localizedDescription)
                         
                     case .finished:
-                        stateMachine.enter(Idle.self)
+                        break
                     }
                 } receiveValue: { response in
                     guard viewModel.userID.value == userID else { return }
                     
-                    let oldTweetIDs = viewModel.tweetIDs.value
-                    let newTweets = response.value.filter { !oldTweetIDs.contains($0.idStr) }
-                    let newTweetIDs = newTweets.map { $0.idStr }
-                    
-                    var tweetIDs: [Twitter.Entity.Tweet.ID] = []
-                    for tweetID in oldTweetIDs {
-                        guard !tweetIDs.contains(tweetID) else { continue }
-                        tweetIDs.append(tweetID)
+                    var hasNewTweets = false
+                    var tweetIDs = viewModel.tweetIDs.value
+                    for tweet in response.value {
+                        if !tweetIDs.contains(tweet.idStr) {
+                            hasNewTweets = true
+                            tweetIDs.append(tweet.idStr)
+                        }
                     }
-                    for tweetID in newTweetIDs {
-                        guard !tweetIDs.contains(tweetID) else { continue }
-                        tweetIDs.append(tweetID)
-                    }
-                    viewModel.tweetIDs.value = tweetIDs
                     
-                    if newTweets.isEmpty {
+                    if !hasNewTweets {
                         stateMachine.enter(NoMore.self)
                     } else {
                         stateMachine.enter(Idle.self)
                     }
+                    
+                    viewModel.tweetIDs.value = tweetIDs
                 }
                 .store(in: &viewModel.disposeBag)
         }
