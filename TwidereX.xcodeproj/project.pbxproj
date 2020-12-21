@@ -813,6 +813,38 @@
 			path = Pods;
 			sourceTree = "<group>";
 		};
+		DB0491FF25904CE400CCD50E /* Toolbar */ = {
+			isa = PBXGroup;
+			children = (
+				DB41C0DA2513368800521562 /* TimelinePostActionToolbar.swift */,
+				DB0849B325137B3E009E0CD7 /* StatusActionToolbar.swift */,
+			);
+			path = Toolbar;
+			sourceTree = "<group>";
+		};
+		DB04920325904CFA00CCD50E /* Container */ = {
+			isa = PBXGroup;
+			children = (
+				DBEA4F8E251314640007FEC5 /* MosaicImageView.swift */,
+				DB2FFF2D258B1077003DBC19 /* MosaicPlayerView.swift */,
+				DB2FFF28258B0C2C003DBC19 /* TouchBlockingView.swift */,
+			);
+			path = Container;
+			sourceTree = "<group>";
+		};
+		DB04920A25904D4900CCD50E /* Content */ = {
+			isa = PBXGroup;
+			children = (
+				DBEA4F8C251225610007FEC5 /* TimelinePostView.swift */,
+				DBEA4F90251331BE0007FEC5 /* QuotePostView.swift */,
+				DB578CCC254C0BDB00745336 /* UserBriefInfoView.swift */,
+				DB434887251DFE2D005B599F /* ProfileBannerStatusView.swift */,
+				DB43488C251DFF0F005B599F /* ProfileBannerStatusItemView.swift */,
+				DB97D1DF256CBA4E0056F8C2 /* NotifyBannerView.swift */,
+			);
+			path = Content;
+			sourceTree = "<group>";
+		};
 		DB10B34B254AB350002D86F3 /* MediaTimeline */ = {
 			isa = PBXGroup;
 			children = (
@@ -966,6 +998,7 @@
 			children = (
 				DB676100254AD12F006C6798 /* MediaCollectionViewCell.swift */,
 				DB676160254BE580006C6798 /* MediaPreviewCollectionViewCell.swift */,
+				DB67610C254AD681006C6798 /* ActivityIndicatorCollectionViewCell.swift */,
 			);
 			path = CollectionViewCell;
 			sourceTree = "<group>";
@@ -1761,19 +1794,10 @@
 				DB1BF2A4256649DB00B5F490 /* TableView */,
 				DB97D1E7256CBA5D0056F8C2 /* TableViewCell */,
 				DB676105254AD4B1006C6798 /* CollectionViewCell */,
+				DB04920A25904D4900CCD50E /* Content */,
+				DB04920325904CFA00CCD50E /* Container */,
+				DB0491FF25904CE400CCD50E /* Toolbar */,
 				DB97D1EB256CBA6F0056F8C2 /* Button */,
-				DBEA4F8C251225610007FEC5 /* TimelinePostView.swift */,
-				DB41C0DA2513368800521562 /* TimelinePostActionToolbar.swift */,
-				DBEA4F8E251314640007FEC5 /* MosaicImageView.swift */,
-				DB2FFF2D258B1077003DBC19 /* MosaicPlayerView.swift */,
-				DBEA4F90251331BE0007FEC5 /* QuotePostView.swift */,
-				DB67610C254AD681006C6798 /* ActivityIndicatorCollectionViewCell.swift */,
-				DB578CCC254C0BDB00745336 /* UserBriefInfoView.swift */,
-				DB0849B325137B3E009E0CD7 /* StatusActionToolbar.swift */,
-				DB434887251DFE2D005B599F /* ProfileBannerStatusView.swift */,
-				DB43488C251DFF0F005B599F /* ProfileBannerStatusItemView.swift */,
-				DB97D1DF256CBA4E0056F8C2 /* NotifyBannerView.swift */,
-				DB2FFF28258B0C2C003DBC19 /* TouchBlockingView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
