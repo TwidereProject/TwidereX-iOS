@@ -17,7 +17,7 @@ import ActiveLabel
 extension TimelinePostTableViewCellDelegate where Self: TweetProvider {
     
     func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, retweetInfoLabelDidPressed label: UILabel) {
-        tweet(for: cell)
+        tweet(for: cell, indexPath: nil)
             .sink { [weak self] tweet in
                 guard let self = self else { return }
                 guard let tweet = tweet else { return }
@@ -36,7 +36,7 @@ extension TimelinePostTableViewCellDelegate where Self: TweetProvider {
     }
     
     func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, avatarImageViewDidPressed imageView: UIImageView) {
-        tweet(for: cell)
+        tweet(for: cell, indexPath: nil)
             .sink { [weak self] tweet in
                 guard let self = self else { return }
                 guard let tweet = tweet?.retweet ?? tweet else { return }
@@ -55,7 +55,7 @@ extension TimelinePostTableViewCellDelegate where Self: TweetProvider {
     }
     
     func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, quoteAvatarImageViewDidPressed imageView: UIImageView) {
-        tweet(for: cell)
+        tweet(for: cell, indexPath: nil)
             .sink { [weak self] tweet in
                 guard let self = self else { return }
                 guard let tweet = tweet?.retweet?.quote ?? tweet?.quote else { return }
@@ -74,11 +74,12 @@ extension TimelinePostTableViewCellDelegate where Self: TweetProvider {
     }
     
     func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, quotePostViewDidPressed quotePostView: QuotePostView) {
-        tweet(for: cell)
+        tweet(for: cell, indexPath: nil)
             .sink { [weak self] tweet in
                 guard let self = self else { return }
                 guard let tweet = (tweet?.retweet ?? tweet)?.quote else { return }
                 
+                self.context.videoPlaybackService.markTransitioning(for: tweet)
                 let tweetPostViewModel = TweetConversationViewModel(context: self.context, tweetObjectID: tweet.objectID)
                 DispatchQueue.main.async {
                     self.coordinator.present(scene: .tweetConversation(viewModel: tweetPostViewModel), from: self, transition: .show)
@@ -90,7 +91,7 @@ extension TimelinePostTableViewCellDelegate where Self: TweetProvider {
     // MARK: - ActionToolbar
     
     func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, actionToolbar: TimelinePostActionToolbar, replayButtonDidPressed sender: UIButton) {
-        tweet(for: cell)
+        tweet(for: cell, indexPath: nil)
             .sink { [weak self] tweet in
                 guard let self = self else { return }
                 guard let tweet = (tweet?.retweet ?? tweet) else { return }
@@ -126,7 +127,7 @@ extension TimelinePostTableViewCellDelegate where Self: TweetProvider {
         let generator = UIImpactFeedbackGenerator(style: .light)
         let responseFeedbackGenerator = UIImpactFeedbackGenerator(style: .medium)
         
-        tweet(for: cell)
+        tweet(for: cell, indexPath: nil)
             .compactMap { tweet -> (NSManagedObjectID, Twitter.API.Statuses.RetweetKind)? in
                 guard let tweet = tweet else { return nil }
                 let retweetKind: Twitter.API.Statuses.RetweetKind = {
@@ -213,7 +214,7 @@ extension TimelinePostTableViewCellDelegate where Self: TweetProvider {
         let generator = UIImpactFeedbackGenerator(style: .light)
         let responseFeedbackGenerator = UIImpactFeedbackGenerator(style: .medium)
 
-        tweet(for: cell)
+        tweet(for: cell, indexPath: nil)
             .compactMap { tweet -> (NSManagedObjectID, Twitter.API.Favorites.FavoriteKind)? in
                 guard let tweet = tweet else { return nil }
                 let favoriteKind: Twitter.API.Favorites.FavoriteKind = {
@@ -278,7 +279,7 @@ extension TimelinePostTableViewCellDelegate where Self: TweetProvider {
     }
     
     func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, actionToolbar: TimelinePostActionToolbar, shareButtonDidPressed sender: UIButton) {
-        tweet(for: cell)
+        tweet(for: cell, indexPath: nil)
             .compactMap { $0?.activityItems }
             .sink { [weak self] activityItems in
                 guard let self = self else { return }
@@ -294,7 +295,7 @@ extension TimelinePostTableViewCellDelegate where Self: TweetProvider {
 extension TimelinePostTableViewCellDelegate where Self: TweetProvider & MediaPreviewableViewController {
     // MARK: - MosaicImageViewDelegate
     func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, mosaicImageView: MosaicImageView, didTapImageView imageView: UIImageView, atIndex index: Int) {
-        tweet(for: cell)
+        tweet(for: cell, indexPath: nil)
             .sink { [weak self] tweet in
                 guard let self = self else { return }
                 guard let tweet = (tweet?.retweet ?? tweet) else { return }
@@ -328,7 +329,7 @@ extension TimelinePostTableViewCellDelegate where Self: TweetProvider {
     }
     
     private func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, didTapMention mention: String, isQuote: Bool) {
-        tweet(for: cell)
+        tweet(for: cell, indexPath: nil)
             .sink { [weak self] tweet in
                 guard let self = self else { return }
                 let _tweet: Tweet? = isQuote ? (tweet?.retweet?.quote ?? tweet?.quote) : (tweet?.retweet ?? tweet)

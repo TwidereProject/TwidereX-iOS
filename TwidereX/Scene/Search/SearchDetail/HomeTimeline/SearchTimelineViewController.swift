@@ -8,6 +8,7 @@
 
 import os.log
 import UIKit
+import AVKit
 import Combine
 import CoreDataStack
 
@@ -68,6 +69,12 @@ extension SearchTimelineViewController {
         
         tableView.deselectRow(with: transitionCoordinator, animated: animated)
     }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        
+        context.videoPlaybackService.viewDidDisappear(from: self)
+    }
 
 }
 
@@ -103,6 +110,14 @@ extension SearchTimelineViewController: UITableViewDelegate {
         handleTableView(tableView, didSelectRowAt: indexPath)
     }
     
+    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        handleTableView(tableView, willDisplay: cell, forRowAt: indexPath)
+    }
+    
+    func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        handleTableView(tableView, didEndDisplaying: cell, forRowAt: indexPath)   
+    }
+    
     func tableView(_ tableView: UITableView, contextMenuConfigurationForRowAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
         handleTableView(tableView, contextMenuConfigurationForRowAt: indexPath, point: point)
     }
@@ -121,6 +136,22 @@ extension SearchTimelineViewController: UITableViewDelegate {
     
 }
 
+// MARK: - AVPlayerViewControllerDelegate
+extension SearchTimelineViewController: AVPlayerViewControllerDelegate {
+    
+    func playerViewController(_ playerViewController: AVPlayerViewController, willBeginFullScreenPresentationWithAnimationCoordinator coordinator: UIViewControllerTransitionCoordinator) {
+        handlePlayerViewController(playerViewController, willBeginFullScreenPresentationWithAnimationCoordinator: coordinator)
+    }
+    
+    func playerViewController(_ playerViewController: AVPlayerViewController, willEndFullScreenPresentationWithAnimationCoordinator coordinator: UIViewControllerTransitionCoordinator) {
+        handlePlayerViewController(playerViewController, willEndFullScreenPresentationWithAnimationCoordinator: coordinator)
+    }
+    
+}
+
 // MARK: - TimelinePostTableViewCellDelegate
-extension SearchTimelineViewController: TimelinePostTableViewCellDelegate { }
+extension SearchTimelineViewController: TimelinePostTableViewCellDelegate {
+    weak var playerViewControllerDelegate: AVPlayerViewControllerDelegate? { return self }
+    func parent() -> UIViewController { return self }
+}
 

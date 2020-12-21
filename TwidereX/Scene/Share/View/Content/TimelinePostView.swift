@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import AVKit
 import ActiveLabel
 
 final class TimelinePostView: UIView {
@@ -84,6 +85,8 @@ final class TimelinePostView: UIView {
     let activeTextLabel = ActiveLabel(style: .default)
 
     let mosaicImageView = MosaicImageView()
+    let mosaicPlayerView = MosaicPlayerView()
+    
     let quotePostView = QuotePostView()
     
     let geoContainerStackView = UIStackView()
@@ -214,18 +217,18 @@ extension TimelinePostView {
             retweetIconImageView.trailingAnchor.constraint(equalTo: avatarImageView.trailingAnchor),
         ])
         
-        // main container: [text | image | quote | geo]
+        // main container: [text | image / video | quote | geo]
         tweetContainerStackView.addArrangedSubview(mainContainerStackView)
         mainContainerStackView.axis = .vertical
         mainContainerStackView.spacing = 8
         activeTextLabel.translatesAutoresizingMaskIntoConstraints = false
         mainContainerStackView.addArrangedSubview(activeTextLabel)
-        mosaicImageView.translatesAutoresizingMaskIntoConstraints = false
         mainContainerStackView.addArrangedSubview(mosaicImageView)
+        mainContainerStackView.addArrangedSubview(mosaicPlayerView)
         mainContainerStackView.addArrangedSubview(quotePostView)
         mainContainerStackView.addArrangedSubview(geoContainerStackView)
         activeTextLabel.setContentCompressionResistancePriority(.required - 2, for: .vertical)
-        
+
         // geo container: [geo | (padding)]
         geoContainerStackView.axis = .horizontal
         geoContainerStackView.distribution = .fill
@@ -240,6 +243,7 @@ extension TimelinePostView {
         verifiedBadgeImageView.isHidden = true
         retweetContainerStackView.isHidden = true
         mosaicImageView.isHidden = true
+        mosaicPlayerView.isHidden = true
         quotePostView.isHidden = true
         geoContainerStackView.isHidden = true
         

@@ -13,8 +13,8 @@ import CoreDataStack
 protocol TweetProvider: NeedsDependency & UIViewController {
     var disposeBag: Set<AnyCancellable> { get set }
     func tweet() -> Future<Tweet?, Never>
-    func tweet(for cell: TimelinePostTableViewCell) -> Future<Tweet?, Never>
-    func tweet(for cell: ConversationPostTableViewCell) -> Future<Tweet?, Never>
+    func tweet(for cell: TimelinePostTableViewCell, indexPath: IndexPath?) -> Future<Tweet?, Never>
+    func tweet(for cell: ConversationPostTableViewCell, indexPath: IndexPath?) -> Future<Tweet?, Never>
     func tweet(for cell: SearchMediaCollectionViewCell) -> Future<Tweet?, Never>
 }
 
@@ -24,11 +24,11 @@ extension TweetProvider {
         return Future { promise in promise(.success(nil)) }
     }
     
-    func tweet(for cell: TimelinePostTableViewCell) -> Future<Tweet?, Never> {
+    func tweet(for cell: TimelinePostTableViewCell, indexPath: IndexPath?) -> Future<Tweet?, Never> {
         return Future { promise in promise(.success(nil)) }
     }
     
-    func tweet(for cell: ConversationPostTableViewCell) -> Future<Tweet?, Never> {
+    func tweet(for cell: ConversationPostTableViewCell, indexPath: IndexPath?) -> Future<Tweet?, Never> {
         return Future { promise in promise(.success(nil)) }
     }
     

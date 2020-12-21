@@ -109,6 +109,7 @@ final class ConversationPostView: UIView {
     
     let activeTextLabel = ActiveLabel(style: .default)
     let mosaicImageView = MosaicImageView()
+    let mosaicPlayerView = MosaicPlayerView()
     let quotePostView = QuotePostView()
     let geoMetaContainerStackView = UIStackView()
     let dateMetaContainer = UIStackView()
@@ -233,8 +234,8 @@ extension ConversationPostView {
         mainContainerStackView.spacing = 8
         activeTextLabel.translatesAutoresizingMaskIntoConstraints = false
         mainContainerStackView.addArrangedSubview(activeTextLabel)
-        mosaicImageView.translatesAutoresizingMaskIntoConstraints = false
         mainContainerStackView.addArrangedSubview(mosaicImageView)
+        mainContainerStackView.addArrangedSubview(mosaicPlayerView)
         mainContainerStackView.addArrangedSubview(quotePostView)
         activeTextLabel.setContentHuggingPriority(.defaultHigh, for: .vertical)
         activeTextLabel.setContentCompressionResistancePriority(.required - 2, for: .vertical)
@@ -301,6 +302,7 @@ extension ConversationPostView {
         verifiedBadgeImageView.isHidden = true
         lockImageView.isHidden = true
         mosaicImageView.isHidden = true
+        mosaicPlayerView.isHidden = true
         quotePostView.isHidden = true
         
         // TODO:

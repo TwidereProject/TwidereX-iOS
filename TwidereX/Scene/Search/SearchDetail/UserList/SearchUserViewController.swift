@@ -23,7 +23,7 @@ final class SearchUserViewController: UIViewController, NeedsDependency {
     
     lazy var tableView: UITableView = {
         let tableView = UITableView()
-        tableView.register(UserBriefInfoTableViewCell.self, forCellReuseIdentifier: String(describing: UserBriefInfoTableViewCell.self))
+        tableView.register(SearchUserTableViewCell.self, forCellReuseIdentifier: String(describing: SearchUserTableViewCell.self))
         tableView.register(TimelineBottomLoaderTableViewCell.self, forCellReuseIdentifier: String(describing: TimelineBottomLoaderTableViewCell.self))
         tableView.rowHeight = UITableView.automaticDimension
         tableView.separatorStyle = .none
@@ -54,7 +54,7 @@ extension SearchUserViewController {
         tableView.delegate = self
         viewModel.setupDiffableDataSource(for: tableView)
         
-        viewModel.userBriefInfoTableViewCellDelegate = self
+        viewModel.searchUserTableViewCellDelegate = self
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -111,9 +111,9 @@ extension SearchUserViewController: UITableViewDelegate {
 }
 
 // MARK: - UserBriefInfoTableViewCellDelegate
-extension SearchUserViewController: UserBriefInfoTableViewCellDelegate {
+extension SearchUserViewController: SearchUserTableViewCellDelegate {
     
-    func userBriefInfoTableViewCell(_ cell: UserBriefInfoTableViewCell, followActionButtonPressed button: FollowActionButton) {
+    func userBriefInfoTableViewCell(_ cell: SearchUserTableViewCell, followActionButtonPressed button: FollowActionButton) {
         // prepare authentication
         guard let twitterAuthenticationBox = context.authenticationService.activeTwitterAuthenticationBox.value else {
             assertionFailure()

@@ -1,5 +1,5 @@
 //
-//  SearchMediaPreviewCollectionViewCell.swift
+//  MediaPreviewCollectionViewCell.swift
 //  TwidereX
 //
 //  Created by Cirno MainasuK on 2020-10-30.
@@ -9,7 +9,7 @@
 import UIKit
 import AlamofireImage
 
-final class SearchMediaPreviewCollectionViewCell: UICollectionViewCell {
+final class MediaPreviewCollectionViewCell: UICollectionViewCell {
     
     let previewImageView: UIImageView = {
         let imageView = UIImageView()
@@ -35,7 +35,7 @@ final class SearchMediaPreviewCollectionViewCell: UICollectionViewCell {
     
 }
 
-extension SearchMediaPreviewCollectionViewCell {
+extension MediaPreviewCollectionViewCell {
     
     private func _init() {
         previewImageView.translatesAutoresizingMaskIntoConstraints = false

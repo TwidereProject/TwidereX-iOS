@@ -19,7 +19,7 @@ extension MediaSection {
     static func collectionViewDiffableDataSource(
         collectionView: UICollectionView,
         managedObjectContext: NSManagedObjectContext,
-        searchMediaCollectionViewCellDelegate: SearchMediaCollectionViewCellDelegate?
+        mediaCollectionViewCellDelegate: MediaCollectionViewCellDelegate?
     ) -> UICollectionViewDiffableDataSource<MediaSection, Item> {
         UICollectionViewDiffableDataSource(collectionView: collectionView) { collectionView, indexPath, item -> UICollectionViewCell? in
             switch item {
@@ -44,7 +44,7 @@ extension MediaSection {
                     }
                 }
                 // TODO: use attribute control preview position
-                cell.delegate = searchMediaCollectionViewCellDelegate
+                cell.delegate = mediaCollectionViewCellDelegate
                 return cell
             case .bottomLoader:
                 let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: ActivityIndicatorCollectionViewCell.self), for: indexPath) as! ActivityIndicatorCollectionViewCell
