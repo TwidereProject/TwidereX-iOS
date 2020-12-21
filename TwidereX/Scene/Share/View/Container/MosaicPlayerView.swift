@@ -19,6 +19,23 @@ final class MosaicPlayerView: UIView {
     
     let playerViewController = AVPlayerViewController()
     
+    let gifIndicatorBackgroundVisualEffectView: UIVisualEffectView = {
+        let visualEffectView = UIVisualEffectView(effect: UIBlurEffect(style: .systemUltraThinMaterial))
+        visualEffectView.alpha = 0.9
+        visualEffectView.layer.masksToBounds = true
+        visualEffectView.layer.cornerRadius = 4
+        return visualEffectView
+    }()
+    let gifIndicatorBackgroundVibrancyEffectView = UIVisualEffectView(effect: UIVibrancyEffect(blurEffect: UIBlurEffect(style: .systemUltraThinMaterial)))
+    
+    let gifIndicatorLabel: UILabel = {
+        let label = UILabel()
+        label.font = .systemFont(ofSize: 12, weight: .medium)
+        label.text = "GIF"
+        label.textColor = .white
+        return label
+    }()
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         _init()
@@ -44,6 +61,18 @@ extension MosaicPlayerView {
             containerHeightLayoutConstraint
         ])
         
+        gifIndicatorBackgroundVibrancyEffectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        gifIndicatorBackgroundVisualEffectView.contentView.addSubview(gifIndicatorBackgroundVibrancyEffectView)
+        
+        gifIndicatorLabel.translatesAutoresizingMaskIntoConstraints = false
+        gifIndicatorBackgroundVibrancyEffectView.contentView.addSubview(gifIndicatorLabel)
+        NSLayoutConstraint.activate([
+            gifIndicatorLabel.topAnchor.constraint(equalTo: gifIndicatorBackgroundVibrancyEffectView.topAnchor, constant: 4),
+            gifIndicatorLabel.leadingAnchor.constraint(equalTo: gifIndicatorBackgroundVibrancyEffectView.layoutMarginsGuide.leadingAnchor),
+            gifIndicatorBackgroundVibrancyEffectView.layoutMarginsGuide.trailingAnchor.constraint(equalTo: gifIndicatorLabel.trailingAnchor),
+            gifIndicatorBackgroundVibrancyEffectView.bottomAnchor.constraint(equalTo: gifIndicatorLabel.bottomAnchor, constant: 4),
+        ])
+        
         // will not influence full-screen playback
         playerViewController.view.layer.masksToBounds = true
         playerViewController.view.layer.cornerRadius = MosaicPlayerView.cornerRadius
@@ -54,6 +83,8 @@ extension MosaicPlayerView {
 
     func reset() {
         // note: set playerViewController.player pause() and nil in data source configuration process make reloadData not break playing
+        
+        gifIndicatorBackgroundVisualEffectView.removeFromSuperview()
         
         playerViewController.willMove(toParent: nil)
         playerViewController.view.removeFromSuperview()
@@ -93,6 +124,13 @@ extension MosaicPlayerView {
         ])
         containerHeightLayoutConstraint.constant = floor(rect.height)
         containerHeightLayoutConstraint.isActive = true
+        
+        gifIndicatorBackgroundVisualEffectView.translatesAutoresizingMaskIntoConstraints = false
+        touchBlockingView.addSubview(gifIndicatorBackgroundVisualEffectView)
+        NSLayoutConstraint.activate([
+            touchBlockingView.trailingAnchor.constraint(equalTo: gifIndicatorBackgroundVisualEffectView.trailingAnchor, constant: 8),
+            touchBlockingView.bottomAnchor.constraint(equalTo: gifIndicatorBackgroundVisualEffectView.bottomAnchor, constant: 8),
+        ])
         
         return playerViewController
     }

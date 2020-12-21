@@ -417,6 +417,7 @@ extension TweetConversationViewModel {
                 playerViewController.player = videoPlayerViewModel.player
             }
 
+            mosaicPlayerView.gifIndicatorBackgroundVisualEffectView.isHidden = videoPlayerViewModel.videoKind != .gif
             mosaicPlayerView.isHidden = false
         } else {
             cell.conversationPostView.mosaicPlayerView.playerViewController.player?.pause()

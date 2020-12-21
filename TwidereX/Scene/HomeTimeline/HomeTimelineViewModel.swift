@@ -285,10 +285,10 @@ extension HomeTimelineViewModel {
                 parent: parent
             )
             playerViewController.delegate = cell.delegate?.playerViewControllerDelegate
-            
             playerViewController.player = videoPlayerViewModel.player
             playerViewController.showsPlaybackControls = videoPlayerViewModel.videoKind != .gif
             
+            mosaicPlayerView.gifIndicatorBackgroundVisualEffectView.isHidden = videoPlayerViewModel.videoKind != .gif
             mosaicPlayerView.isHidden = false
         } else {
             cell.timelinePostView.mosaicPlayerView.playerViewController.player?.pause()
