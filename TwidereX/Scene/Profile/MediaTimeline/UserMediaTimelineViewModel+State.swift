@@ -59,7 +59,9 @@ extension UserMediaTimelineViewModel.State {
                     }
                 } receiveValue: { response in
                     guard viewModel.userID.value == userID else { return }
-                    let tweetIDs = response.value.map { $0.idStr }
+                    let tweetIDs = response.value
+                        .filter { ($0.retweetedStatus ?? $0).user.idStr == userID }
+                        .map { $0.idStr }
                     viewModel.tweetIDs.value = tweetIDs
                 }
                 .store(in: &viewModel.disposeBag)
@@ -101,7 +103,10 @@ extension UserMediaTimelineViewModel.State {
                     guard viewModel.userID.value == userID else { return }
 
                     let oldTweetIDs = viewModel.tweetIDs.value
-                    let newTweets = response.value.filter { !oldTweetIDs.contains($0.idStr) }
+                    let newTweets = response.value
+                        .filter {
+                            ($0.retweetedStatus ?? $0).user.idStr == userID && !oldTweetIDs.contains($0.idStr)
+                        }
                     let newTweetIDs = newTweets.map { $0.idStr }
                     
                     var tweetIDs: [Twitter.Entity.Tweet.ID] = []
