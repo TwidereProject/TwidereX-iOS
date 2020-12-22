@@ -76,7 +76,7 @@
 "Scene.ListsDetails.Descriptions.SingleMember" = "1 名成员";
 "Scene.ListsDetails.Descriptions.SingleSubscriber" = "1 名订阅者";
 "Scene.ListsDetails.MenuActions.AddMember" = "添加成员";
-"Scene.ListsDetails.MenuActions.Edit List" = "编辑列表";
+"Scene.ListsDetails.MenuActions.EditList" = "编辑列表";
 "Scene.ListsDetails.NoMembersFound" = "没有找到成员。";
 "Scene.ListsDetails.Tabs.Members" = "成员";
 "Scene.ListsDetails.Tabs.Subscriber" = "订阅者";
@@ -136,5 +136,6 @@
 "Scene.Status.Reply.Single" = "1 条回复";
 "Scene.Status.Retweet.Mutiple" = "%d 转推";
 "Scene.Status.Retweet.Single" = "1 转推";
+"Scene.Status.Title" = "推文";
 "Scene.Timeline.Title" = "时间线";
 "Scene.Trends.Title" = "趋势";

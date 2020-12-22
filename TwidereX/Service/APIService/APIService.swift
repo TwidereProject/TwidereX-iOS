@@ -27,7 +27,7 @@ final class APIService {
     let backgroundManagedObjectContext: NSManagedObjectContext
 
     // output
-    let error = PassthroughSubject<Error, Never>()
+    let error = PassthroughSubject<APIError, Never>()
     
     init(backgroundManagedObjectContext: NSManagedObjectContext) {
         self.backgroundManagedObjectContext = backgroundManagedObjectContext
@@ -53,14 +53,26 @@ extension APIService {
 
 extension APIService {
     enum APIError: Error {
-        case silent(SilentError)        
-        case accountTemporarilyLocked
-        case authenticationMissing
+        case implicit(ErrorReason)
+        case explicit(ErrorReason)
     }
     
-    enum SilentError {
-        case requestThrottle
+    enum ErrorReason {
+        // application
+        case authenticationMissing
         case badRequest
+        case requestThrottle
+        // API
+        case accountTemporarilyLocked       // code 326
+        case rateLimitExceeded              // code 88 (HTTP 429)
+        
+        var code: Int? {
+            switch self {
+            case .accountTemporarilyLocked:     return 326
+            case .rateLimitExceeded:            return 88
+            default:                            return nil
+            }
+        }
     }
 }
 

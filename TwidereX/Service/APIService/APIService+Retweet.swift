@@ -42,7 +42,7 @@ extension APIService {
             switch result {
             case .success:
                 guard let targetTweetID = _targetTweetID else {
-                    throw APIError.silent(.badRequest)
+                    throw APIError.implicit(.badRequest)
                 }
                 return targetTweetID
                 

@@ -114,6 +114,7 @@ final class ConversationPostView: UIView {
     let geoMetaContainerStackView = UIStackView()
     let dateMetaContainer = UIStackView()
 
+    let replyPostStatusView = ConversationPostStatusView()
     let retweetPostStatusView = ConversationPostStatusView()
     let quotePostStatusView = ConversationPostStatusView()
     let likePostStatusView = ConversationPostStatusView()
@@ -270,7 +271,7 @@ extension ConversationPostView {
         dateMetaContainer.addArrangedSubview(dateLabel)
         dateMetaContainer.addArrangedSubview(sourceLabel)
         
-        // status meta container: [retweet | quote | like]
+        // status meta container: [reply | retweet | quote | like]
         let statusMetaContainer = UIStackView()
         metaContainerStackView.addArrangedSubview(statusMetaContainer)
         statusMetaContainer.axis = .horizontal
@@ -278,16 +279,20 @@ extension ConversationPostView {
         statusMetaContainer.alignment = .center
         statusMetaContainer.spacing = 20
         
+        // reply status
+        replyPostStatusView.statusLabel.text = L10n.Common.Countable.Reply.single
+        statusMetaContainer.addArrangedSubview(replyPostStatusView)
+        
         // retweet status
-        retweetPostStatusView.statusLabel.text = "Retweet"
+        retweetPostStatusView.statusLabel.text = L10n.Common.Countable.Retweet.single
         statusMetaContainer.addArrangedSubview(retweetPostStatusView)
         
         // quote status
-        quotePostStatusView.statusLabel.text = "Quote Tweet"
+        quotePostStatusView.statusLabel.text = L10n.Common.Countable.Quote.single
         statusMetaContainer.addArrangedSubview(quotePostStatusView)
         
         // like status
-        likePostStatusView.statusLabel.text = "Like"
+        likePostStatusView.statusLabel.text = L10n.Common.Countable.Like.single
         statusMetaContainer.addArrangedSubview(likePostStatusView)
         
         // action toolbar

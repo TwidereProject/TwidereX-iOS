@@ -2,8 +2,8 @@
 "Common.Alerts.AccountTemporarilyLocked.Title" = "アカウントは一時的にロックされています";
 "Common.Alerts.CancelFollowRequest.Message" = "%@ のフォローリクエストをキャンセルしますか？";
 "Common.Alerts.PhotoSaveFail.Message" = "もう一度やり直してください";
-"Common.Alerts.PhotoSaveFail.Title" = "Failed to Save Photo";
-"Common.Alerts.PhotoSaved.Title" = "Photo Saved";
+"Common.Alerts.PhotoSaveFail.Title" = "写真の保存に失敗しました";
+"Common.Alerts.PhotoSaved.Title" = "写真を保存しました";
 "Common.Alerts.TweetFail.Message" = "もう一度やり直してください";
 "Common.Alerts.TweetFail.Title" = "ツイートに失敗しました";
 "Common.Alerts.TweetSent.Title" = "ツイートを送信しました";
@@ -76,7 +76,7 @@
 "Scene.ListsDetails.Descriptions.SingleMember" = "1 メンバー";
 "Scene.ListsDetails.Descriptions.SingleSubscriber" = "1 フォロワー";
 "Scene.ListsDetails.MenuActions.AddMember" = "メンバーを追加";
-"Scene.ListsDetails.MenuActions.Edit List" = "リストを編集";
+"Scene.ListsDetails.MenuActions.EditList" = "リストを編集";
 "Scene.ListsDetails.NoMembersFound" = "メンバーが見つかりません。";
 "Scene.ListsDetails.Tabs.Members" = "メンバー";
 "Scene.ListsDetails.Tabs.Subscriber" = "フォロワー";
@@ -136,5 +136,6 @@
 "Scene.Status.Reply.Single" = "1 返信";
 "Scene.Status.Retweet.Mutiple" = "%d リツイート";
 "Scene.Status.Retweet.Single" = "1 リツイート";
+"Scene.Status.Title" = "ツイート";
 "Scene.Timeline.Title" = "タイムライン";
 "Scene.Trends.Title" = "トレンド";

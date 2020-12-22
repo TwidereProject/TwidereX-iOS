@@ -445,7 +445,8 @@ extension MentionTimelineViewController: ScrollViewContainer {
     var scrollView: UIScrollView { return tableView }
     
     func scrollToTop(animated: Bool) {
-        if viewModel.loadLatestStateMachine.canEnterState(MentionTimelineViewModel.LoadLatestState.Loading.self),
+        if scrollView.contentOffset.y < scrollView.frame.height,
+           viewModel.loadLatestStateMachine.canEnterState(HomeTimelineViewModel.LoadLatestState.Loading.self),
            (scrollView.contentOffset.y + scrollView.adjustedContentInset.top) == 0.0,
            !refreshControl.isRefreshing {
             scrollView.scrollRectToVisible(CGRect(origin: CGPoint(x: 0, y: -refreshControl.frame.height), size: CGSize(width: 1, height: 1)), animated: animated)
@@ -455,7 +456,9 @@ extension MentionTimelineViewController: ScrollViewContainer {
                 self.refreshControl.sendActions(for: .valueChanged)
             }
         } else {
-            scrollView.scrollRectToVisible(CGRect(origin: .zero, size: CGSize(width: 1, height: 1)), animated: animated)
+            let indexPath = IndexPath(row: 0, section: 0)
+            guard viewModel.diffableDataSource?.itemIdentifier(for: indexPath) != nil else { return }
+            tableView.scrollToRow(at: indexPath, at: .top, animated: true)
         }
     }
     

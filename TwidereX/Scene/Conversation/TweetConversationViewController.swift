@@ -44,6 +44,7 @@ extension TweetConversationViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        title = L10n.Scene.Status.title
         view.backgroundColor = .systemBackground
         
         viewModel.contentOffsetAdjustableTimelineViewControllerDelegate = self

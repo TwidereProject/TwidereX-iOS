@@ -23,7 +23,6 @@ class ProfileViewModel: NSObject {
     let twitterUser: CurrentValueSubject<TwitterUser?, Never>
     let currentTwitterUser = CurrentValueSubject<TwitterUser?, Never>(nil)
     let viewDidAppear = PassthroughSubject<Void, Never>()
-    
         
     // output
     let userID: CurrentValueSubject<String?, Never>
@@ -208,10 +207,18 @@ class ProfileViewModel: NSObject {
 
 extension ProfileViewModel {
     
-    enum Friendship {
+    enum Friendship: CustomDebugStringConvertible {
         case following
         case pending
         case none
+        
+        var debugDescription: String {
+            switch self {
+            case .following:        return "following"
+            case .pending:          return "pending"
+            case .none:             return "none"
+            }
+        }
     }
     
 }
@@ -222,6 +229,7 @@ extension ProfileViewModel {
             twitterUser.eraseToAnyPublisher(),
             currentTwitterUser.eraseToAnyPublisher()
         )
+        .receive(on: DispatchQueue.main)
         .sink { [weak self] twitterUser, currentTwitterUser in
             guard let self = self else { return }
             self.update(twitterUser: twitterUser)
@@ -303,7 +311,9 @@ extension ProfileViewModel {
         } else {
             let isFollowing = twitterUser.followingFrom.flatMap { $0.contains(currentTwitterUser) } ?? false
             let isPending = twitterUser.followRequestSentFrom.flatMap { $0.contains(currentTwitterUser) } ?? false
-            self.friendship.value = isPending ? .pending : (isFollowing) ? .following : ProfileViewModel.Friendship.none
+            let friendship = isPending ? .pending : (isFollowing) ? .following : ProfileViewModel.Friendship.none
+            self.friendship.value = friendship
+            os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: friendship update: %s", ((#file as NSString).lastPathComponent), #line, #function, friendship.debugDescription)
         }
     }
 }
