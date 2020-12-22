@@ -1,5 +1,5 @@
 //
-//  UserBriefInfoTableViewCell.swift
+//  SearchUserTableViewCell.swift
 //  TwidereX
 //
 //  Created by Cirno MainasuK on 2020-10-30.
@@ -10,15 +10,15 @@ import os.log
 import UIKit
 import Combine
 
-protocol UserBriefInfoTableViewCellDelegate: class {
-    func userBriefInfoTableViewCell(_ cell: UserBriefInfoTableViewCell, followActionButtonPressed button: FollowActionButton)
+protocol SearchUserTableViewCellDelegate: class {
+    func userBriefInfoTableViewCell(_ cell: SearchUserTableViewCell, followActionButtonPressed button: FollowActionButton)
 }
 
-final class UserBriefInfoTableViewCell: UITableViewCell {
+final class SearchUserTableViewCell: UITableViewCell {
     
     var disposeBag = Set<AnyCancellable>()
     
-    weak var delegate: UserBriefInfoTableViewCellDelegate?
+    weak var delegate: SearchUserTableViewCellDelegate?
     let userBriefInfoView = UserBriefInfoView()
     
     override func prepareForReuse() {
@@ -40,7 +40,7 @@ final class UserBriefInfoTableViewCell: UITableViewCell {
     
 }
 
-extension UserBriefInfoTableViewCell {
+extension SearchUserTableViewCell {
     
     private func _init() {
         userBriefInfoView.translatesAutoresizingMaskIntoConstraints = false
@@ -52,12 +52,13 @@ extension UserBriefInfoTableViewCell {
             contentView.bottomAnchor.constraint(equalTo: userBriefInfoView.bottomAnchor, constant: 16),
         ])
         
-        userBriefInfoView.followActionButton.addTarget(self, action: #selector(UserBriefInfoTableViewCell.followActionButtonPressed(_:)), for: .touchUpInside)
+        userBriefInfoView.followActionButton.isHidden = false
+        userBriefInfoView.followActionButton.addTarget(self, action: #selector(SearchUserTableViewCell.followActionButtonPressed(_:)), for: .touchUpInside)
     }
     
 }
 
-extension UserBriefInfoTableViewCell {
+extension SearchUserTableViewCell {
     
     @objc private func followActionButtonPressed(_ sender: FollowActionButton) {
         os_log("%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)

@@ -20,7 +20,7 @@ extension SearchUserViewModel {
             
             switch item {
             case .twitterUser(let objectID):
-                let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: UserBriefInfoTableViewCell.self), for: indexPath) as! UserBriefInfoTableViewCell
+                let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: SearchUserTableViewCell.self), for: indexPath) as! SearchUserTableViewCell
                 let requestTwitterUserID = self.context.authenticationService.activeTwitterAuthenticationBox.value?.twitterUserID
                 
                 // configure cell
@@ -30,7 +30,7 @@ extension SearchUserViewModel {
                     SearchUserViewModel.configure(cell: cell, twitterUser: twitterUser, requestTwitterUserID: requestTwitterUserID)
                     SearchUserViewModel.internalConfigure(cell: cell, twitterUser: twitterUser, requestTwitterUserID: requestTwitterUserID)
                 }
-                cell.delegate = self.userBriefInfoTableViewCellDelegate
+                cell.delegate = self.searchUserTableViewCellDelegate
                 return cell
             case .bottomLoader:
                 let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: TimelineBottomLoaderTableViewCell.self), for: indexPath) as! TimelineBottomLoaderTableViewCell
@@ -48,7 +48,7 @@ extension SearchUserViewModel {
 
 extension SearchUserViewModel {
     
-    static func configure(cell: UserBriefInfoTableViewCell, twitterUser: TwitterUser, requestTwitterUserID: TwitterUser.ID?) {
+    static func configure(cell: SearchUserTableViewCell, twitterUser: TwitterUser, requestTwitterUserID: TwitterUser.ID?) {
         // set avatar
         if let avatarImageURL = twitterUser.avatarImageURL() {
             SearchUserViewModel.configure(avatarImageView: cell.userBriefInfoView.avatarImageView, avatarImageURL: avatarImageURL)
@@ -78,7 +78,7 @@ extension SearchUserViewModel {
         }
     }
     
-    private static func internalConfigure(cell: UserBriefInfoTableViewCell, twitterUser: TwitterUser, requestTwitterUserID: TwitterUser.ID?) {
+    private static func internalConfigure(cell: SearchUserTableViewCell, twitterUser: TwitterUser, requestTwitterUserID: TwitterUser.ID?) {
         ManagedObjectObserver.observe(object: twitterUser)
             .sink { completion in
                 

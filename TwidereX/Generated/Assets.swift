@@ -39,6 +39,7 @@ internal enum Asset {
     internal static let at = ImageAsset(name: "Communication/at")
     internal static let ellipsesBubble = ImageAsset(name: "Communication/ellipses.bubble")
     internal static let mail = ImageAsset(name: "Communication/mail")
+    internal static let textBubbleSmall = ImageAsset(name: "Communication/text.bubble.small")
   }
   internal enum Editing {
     internal static let ellipsis = ImageAsset(name: "Editing/ellipsis")

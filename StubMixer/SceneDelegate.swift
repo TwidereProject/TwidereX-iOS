@@ -10,7 +10,10 @@ import UIKit
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     var window: UIWindow?
-
+    
+    // #if DEBUG
+    // var window: UIWindow? = TestWindow()
+    // #endif
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         // Use this method to optionally configure and attach the UIWindow `window` to the provided UIWindowScene `scene`.
@@ -50,3 +53,17 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
 }
 
+#if DEBUG
+class TestWindow: UIWindow {
+    
+    override func sendEvent(_ event: UIEvent) {
+        event.allTouches?.forEach({ (touch) in
+            let location = touch.location(in: self)
+            let view = hitTest(location, with: event)
+            print(view)
+        })
+        
+        super.sendEvent(event)
+    }
+}
+#endif

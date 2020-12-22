@@ -30,6 +30,7 @@ extension Twitter.API {
     public enum Favorites { }
     public enum Friendships { }
     public enum Geo { }
+    public enum Lookup { }
     public enum Media { }
     public enum OAuth { }
     public enum Statuses { }

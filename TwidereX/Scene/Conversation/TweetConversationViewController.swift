@@ -7,6 +7,7 @@
 
 import os.log
 import UIKit
+import AVKit
 import Combine
 import CoreDataStack
 import TwitterAPI
@@ -43,6 +44,7 @@ extension TweetConversationViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        title = L10n.Scene.Status.title
         view.backgroundColor = .systemBackground
         
         viewModel.contentOffsetAdjustableTimelineViewControllerDelegate = self
@@ -73,6 +75,12 @@ extension TweetConversationViewController {
         super.viewWillAppear(animated)
         tableView.reloadData()
         tableView.deselectRow(with: transitionCoordinator, animated: animated)
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        
+        context.videoPlaybackService.viewDidDisappear(from: self)
     }
     
 }
@@ -134,7 +142,13 @@ extension TweetConversationViewController: UITableViewDelegate {
         handleTableView(tableView, didSelectRowAt: indexPath)
     }
     
+    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        handleTableView(tableView, willDisplay: cell, forRowAt: indexPath)
+    }
+    
     func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        handleTableView(tableView, didEndDisplaying: cell, forRowAt: indexPath)
+
         guard let diffableDataSource = viewModel.diffableDataSource else { return }
         guard let item = diffableDataSource.itemIdentifier(for: indexPath) else { return }
         
@@ -161,15 +175,34 @@ extension TweetConversationViewController: UITableViewDelegate {
     
 }
 
-// MARK: - ConversationPostTableViewCellDelegate
-extension TweetConversationViewController: ConversationPostTableViewCellDelegate { }
-
 // MARK: - ContentOffsetAdjustableTimelineViewControllerDelegate
 extension TweetConversationViewController: ContentOffsetAdjustableTimelineViewControllerDelegate {
     func navigationBar() -> UINavigationBar? {
         return navigationController?.navigationBar
     }
 }
+
+// MARK: - AVPlayerViewControllerDelegate
+extension TweetConversationViewController: AVPlayerViewControllerDelegate {
+    
+    func playerViewController(_ playerViewController: AVPlayerViewController, willBeginFullScreenPresentationWithAnimationCoordinator coordinator: UIViewControllerTransitionCoordinator) {
+        handlePlayerViewController(playerViewController, willBeginFullScreenPresentationWithAnimationCoordinator: coordinator)
+    }
+    
+    func playerViewController(_ playerViewController: AVPlayerViewController, willEndFullScreenPresentationWithAnimationCoordinator coordinator: UIViewControllerTransitionCoordinator) {
+        handlePlayerViewController(playerViewController, willEndFullScreenPresentationWithAnimationCoordinator: coordinator)
+    }
+    
+}
+
+// MARK: - ConversationPostTableViewCellDelegate & TimelinePostTableViewCellDelegate
+extension TweetConversationViewController {
+    weak var playerViewControllerDelegate: AVPlayerViewControllerDelegate? { return self }
+    func parent() -> UIViewController { return self }
+}
+
+// MARK: - ConversationPostTableViewCellDelegate
+extension TweetConversationViewController: ConversationPostTableViewCellDelegate { }
 
 // MARK: - TimelinePostTableViewCellDelegate
 extension TweetConversationViewController: TimelinePostTableViewCellDelegate { }

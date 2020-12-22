@@ -8,6 +8,7 @@
 
 import os.log
 import UIKit
+import AVKit
 import Combine
 import CoreDataStack
 
@@ -78,6 +79,12 @@ extension UserLikeTimelineViewController {
         tableView.deselectRow(with: transitionCoordinator, animated: animated)
     }
     
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        
+        context.videoPlaybackService.viewDidDisappear(from: self)
+    }
+    
 }
 
 // MARK: - UIScrollViewDelegate
@@ -119,7 +126,13 @@ extension UserLikeTimelineViewController: UITableViewDelegate {
         handleTableView(tableView, didSelectRowAt: indexPath)
     }
     
+    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        handleTableView(tableView, willDisplay: cell, forRowAt: indexPath)
+    }
+    
     func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        handleTableView(tableView, didEndDisplaying: cell, forRowAt: indexPath)
+        
         guard let diffableDataSource = viewModel.diffableDataSource else { return }
         guard let item = diffableDataSource.itemIdentifier(for: indexPath) else { return }
         
@@ -146,8 +159,24 @@ extension UserLikeTimelineViewController: UITableViewDelegate {
     
 }
 
+// MARK: - AVPlayerViewControllerDelegate
+extension UserLikeTimelineViewController: AVPlayerViewControllerDelegate {
+    
+    func playerViewController(_ playerViewController: AVPlayerViewController, willBeginFullScreenPresentationWithAnimationCoordinator coordinator: UIViewControllerTransitionCoordinator) {
+        handlePlayerViewController(playerViewController, willBeginFullScreenPresentationWithAnimationCoordinator: coordinator)
+    }
+    
+    func playerViewController(_ playerViewController: AVPlayerViewController, willEndFullScreenPresentationWithAnimationCoordinator coordinator: UIViewControllerTransitionCoordinator) {
+        handlePlayerViewController(playerViewController, willEndFullScreenPresentationWithAnimationCoordinator: coordinator)
+    }
+    
+}
+
 // MARK: - TimelinePostTableViewCellDelegate
-extension UserLikeTimelineViewController: TimelinePostTableViewCellDelegate { }
+extension UserLikeTimelineViewController: TimelinePostTableViewCellDelegate {
+    weak var playerViewControllerDelegate: AVPlayerViewControllerDelegate? { return self }
+    func parent() -> UIViewController { return self }
+}
 
 // MARK: - CustomScrollViewContainerController
 extension UserLikeTimelineViewController: ScrollViewContainer {

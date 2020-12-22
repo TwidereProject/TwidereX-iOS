@@ -12,8 +12,11 @@ import CommonOSLog
 final class DrawerSidebarAnimatedTransitioning: ViewControllerAnimatedTransitioning {
 
     private var animator: UIViewPropertyAnimator?
+    private var presentPanDidBegan = false
+    
     let screenEdgePanGestureRecognizer: UIScreenEdgePanGestureRecognizer
     let panGestureRecognizer: UIPanGestureRecognizer
+    
     
     init(
         operation: UINavigationController.Operation,
@@ -23,9 +26,14 @@ final class DrawerSidebarAnimatedTransitioning: ViewControllerAnimatedTransition
         self.screenEdgePanGestureRecognizer = screenEdgePanGestureRecognizer
         self.panGestureRecognizer = panGestureRecognizer
         super.init(operation: operation)
+        
+        screenEdgePanGestureRecognizer.addTarget(self, action: #selector(DrawerSidebarAnimatedTransitioning.presentPan(_:)))
+        panGestureRecognizer.addTarget(self, action: #selector(DrawerSidebarAnimatedTransitioning.dismisslPan(_:)))
     }
     
     deinit {
+        screenEdgePanGestureRecognizer.removeTarget(self, action: nil)
+        panGestureRecognizer.removeTarget(self, action: nil)
         os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s:", ((#file as NSString).lastPathComponent), #line, #function)
     }
     
@@ -38,13 +46,15 @@ extension DrawerSidebarAnimatedTransitioning {
         super.animateTransition(using: transitionContext)
         
         switch operation {
-        case .push:     pushTransition(using: transitionContext).startAnimation()
-        case .pop:      popTransition(using: transitionContext).startAnimation()
+        case .push:     animator = pushTransition(using: transitionContext)
+        case .pop:      animator = popTransition(using: transitionContext)
         default:        return
         }
+        
+        animator?.startAnimation()
     }
     
-    private func pushTransition(using transitionContext: UIViewControllerContextTransitioning, curve: UIView.AnimationCurve = .easeInOut) -> UIViewPropertyAnimator {
+    private func pushTransition(using transitionContext: UIViewControllerContextTransitioning, timingParameters: UITimingCurveProvider = UISpringTimingParameters()) -> UIViewPropertyAnimator {
         guard let toVC = transitionContext.viewController(forKey: .to) as? DrawerSidebarViewController,
               let toView = transitionContext.view(forKey: .to),
               let fromView = transitionContext.view(forKey: .from) else {
@@ -53,10 +63,8 @@ extension DrawerSidebarAnimatedTransitioning {
 
         let transform: CGAffineTransform = {
             switch UIApplication.shared.userInterfaceLayoutDirection {
-            case .rightToLeft:
-                return CGAffineTransform(translationX: toView.frame.width, y: 0)
-            default:
-                return CGAffineTransform(translationX: -toView.frame.width, y: 0)
+            case .rightToLeft:  return CGAffineTransform(translationX: toView.frame.width, y: 0)
+            default:            return CGAffineTransform(translationX: -toView.frame.width, y: 0)
             }
         }()
         transitionContext.containerView.addSubview(toView)
@@ -74,14 +82,14 @@ extension DrawerSidebarAnimatedTransitioning {
         transitionContext.containerView.addSubview(separatorLine)
         NSLayoutConstraint.activate([
             separatorLine.topAnchor.constraint(equalTo: toView.topAnchor),
-            separatorLine.leadingAnchor.constraint(equalTo: toView.trailingAnchor),
+            separatorLine.trailingAnchor.constraint(equalTo: toView.trailingAnchor),
             separatorLine.bottomAnchor.constraint(equalTo: toView.bottomAnchor),
             separatorLine.widthAnchor.constraint(equalToConstant: UIView.separatorLineHeight(of: transitionContext.containerView)),
         ])
         separatorLine.transform = transform
         separatorLine.isUserInteractionEnabled = false
                 
-        let animator = UIViewPropertyAnimator(duration: transitionDuration(using: transitionContext), curve: curve)
+        let animator = UIViewPropertyAnimator(duration: transitionDuration(using: transitionContext), timingParameters: timingParameters)
         
         animator.addAnimations {
             toView.transform = .identity
@@ -90,17 +98,19 @@ extension DrawerSidebarAnimatedTransitioning {
         }
         
         animator.addCompletion { position in
+            os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: animator completion: %s", ((#file as NSString).lastPathComponent), #line, #function, position.debugDescription)
+            
+            separatorLine.removeFromSuperview()
             if transitionContext.transitionWasCancelled {
                 toView.removeFromSuperview()
             }
-            separatorLine.removeFromSuperview()
             transitionContext.completeTransition(!transitionContext.transitionWasCancelled)
         }
         
         return animator
     }
     
-    private func popTransition(using transitionContext: UIViewControllerContextTransitioning, curve: UIView.AnimationCurve = .easeInOut) -> UIViewPropertyAnimator {
+    private func popTransition(using transitionContext: UIViewControllerContextTransitioning, timingParameters: UITimingCurveProvider = UISpringTimingParameters()) -> UIViewPropertyAnimator {
         guard let fromVC = transitionContext.viewController(forKey: .from) as? DrawerSidebarViewController,
               let fromView = transitionContext.view(forKey: .from),
               let toView = transitionContext.view(forKey: .to) else {
@@ -131,7 +141,7 @@ extension DrawerSidebarAnimatedTransitioning {
         ])
         separatorLine.isUserInteractionEnabled = false
         
-        let animator = UIViewPropertyAnimator(duration: transitionDuration(using: transitionContext), curve: curve)
+        let animator = UIViewPropertyAnimator(duration: transitionDuration(using: transitionContext), timingParameters: timingParameters)
         
         animator.addAnimations {
             fromView.transform = transform
@@ -140,10 +150,10 @@ extension DrawerSidebarAnimatedTransitioning {
         }
         
         animator.addCompletion { position in
+            separatorLine.removeFromSuperview()
             if transitionContext.transitionWasCancelled {
                 toView.removeFromSuperview()
             }
-            separatorLine.removeFromSuperview()
             transitionContext.completeTransition(!transitionContext.transitionWasCancelled)
         }
         
@@ -158,49 +168,58 @@ extension DrawerSidebarAnimatedTransitioning {
     
     override func startInteractiveTransition(_ transitionContext: UIViewControllerContextTransitioning) {
         super.startInteractiveTransition(transitionContext)
+        os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: operation: %s", ((#file as NSString).lastPathComponent), #line, #function, operation.debugDescription)
         
         switch operation {
         case .push:
-            animator = pushTransition(using: transitionContext, curve: .linear)
-            screenEdgePanGestureRecognizer.addTarget(self, action: #selector(DrawerSidebarAnimatedTransitioning.presentPan(_:)))
-            
+            animator = pushTransition(using: transitionContext)
+            // fix setup transition success but no following interactive cause stuck issue
+            // cancel transition when presentPan not trigger in 0.3s
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { [weak self] in
+                guard let self = self else { return }
+                guard !self.presentPanDidBegan else {
+                    return
+                }
+                
+                self.transitionContext.cancelInteractiveTransition()
+                self.animator?.isReversed = true
+                self.animator?.startAnimation()
+            }
         case .pop:
-            animator = popTransition(using: transitionContext, curve: .linear)
-            panGestureRecognizer.addTarget(self, action: #selector(DrawerSidebarAnimatedTransitioning.dismisslPan(_:)))
-            
+            animator = popTransition(using: transitionContext)
         default:
+            assertionFailure()
             return
         }
-        
-        // fix began event not trigger issue
-        animator?.pauseAnimation()
-        transitionContext.pauseInteractiveTransition()
+
     }
     
     @objc private func presentPan(_ sender: UIPanGestureRecognizer) {
         guard let animator = animator else { return }
+        presentPanDidBegan = true
+
         switch sender.state {
-        case .began:
-            animator.pauseAnimation()
-            transitionContext.pauseInteractiveTransition()
-        case .changed:
+        case .began, .changed:
             let translation = sender.translation(in: transitionContext.containerView)
             let width = transitionContext.view(forKey: .to)?.bounds.width ?? transitionContext.containerView.bounds.width
             let direction: CGFloat = UIApplication.shared.userInterfaceLayoutDirection == .leftToRight ? 1.0 : -1.0
-            let percent = animator.fractionComplete + (operation == .push ? 1.0 : -1.0) * direction * translation.x / width
-            animator.fractionComplete = percent
+            let fractionComplete = animator.fractionComplete + (operation == .push ? 1.0 : -1.0) * direction * translation.x / width
+            animator.fractionComplete = fractionComplete
             
-            transitionContext.updateInteractiveTransition(percent)
+            transitionContext.updateInteractiveTransition(fractionComplete)
             sender.setTranslation(.zero, in: transitionContext.containerView)
             
         case .ended, .cancelled:
             let position = completionPosition(for: animator, panGestureRecognizer: sender)
+            os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: position: %s", ((#file as NSString).lastPathComponent), #line, #function, position.debugDescription)
+
             position == .end ? transitionContext.finishInteractiveTransition() : transitionContext.cancelInteractiveTransition()
             
             animator.isReversed = position == .start
             animator.startAnimation()
             
         default:
+            assertionFailure()
             return
         }
     }
@@ -208,10 +227,7 @@ extension DrawerSidebarAnimatedTransitioning {
     @objc private func dismisslPan(_ sender: UIPanGestureRecognizer) {
         guard let animator = animator else { return }
         switch sender.state {
-        case .began:
-            animator.pauseAnimation()
-            transitionContext.pauseInteractiveTransition()
-        case .changed:
+        case .began, .changed:
             let translation = sender.translation(in: transitionContext.containerView)
             let width = transitionContext.view(forKey: .from)?.bounds.width ?? transitionContext.containerView.bounds.width
             let direction: CGFloat = UIApplication.shared.userInterfaceLayoutDirection == .leftToRight ? 1.0 : -1.0

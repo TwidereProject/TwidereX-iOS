@@ -21,7 +21,7 @@ extension UICollectionViewDelegate where Self: TweetProvider & MediaPreviewableV
                 guard let tweet = (tweet?.retweet ?? tweet) else { return }
                 
                 guard let selectIndexPathInNestedCollectionView = cell.previewCollectionView.indexPathsForVisibleItems.first,
-                      let selectCellInNestedCollectionView = cell.previewCollectionView.cellForItem(at: selectIndexPathInNestedCollectionView) as? SearchMediaPreviewCollectionViewCell else { return }
+                      let selectCellInNestedCollectionView = cell.previewCollectionView.cellForItem(at: selectIndexPathInNestedCollectionView) as? MediaPreviewCollectionViewCell else { return }
                 
                 let mediaArray = Array(tweet.media ?? Set()).sorted(by: { $0.index.compare($1.index) == .orderedAscending })
                 let photoMedia = mediaArray.filter { $0.type == "photo" }

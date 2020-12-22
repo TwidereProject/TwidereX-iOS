@@ -32,7 +32,7 @@ extension APIService {
         // throttle latest request for API limit
         if maxID == nil {
             guard homeTimelineRequestThrottler.available(windowSizeInSec: APIService.homeTimelineRequestWindowInSec) else {
-                return Fail(error: APIError.silent(.requestThrottle))
+                return Fail(error: APIError.implicit(.requestThrottle))
                     .delay(for: .milliseconds(Int.random(in: 1000..<2000)), scheduler: DispatchQueue.main)
                     .eraseToAnyPublisher()
             }
@@ -89,8 +89,9 @@ extension APIService {
                 guard let self = self else { return }
                 switch completion {
                 case .failure(let error):
-                    if case let Twitter.API.APIError.response(code, _) = error, code == 326 {
-                        self.error.send(APIService.APIError.accountTemporarilyLocked)
+                    if case let Twitter.API.APIError.response(code, _) = error,
+                       code == ErrorReason.accountTemporarilyLocked.code {
+                        self.error.send(.explicit(.accountTemporarilyLocked))
                     }
                 case .finished:
                     break

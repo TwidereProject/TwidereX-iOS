@@ -35,19 +35,29 @@ final class ComposeTweetViewModel: NSObject {
     let context: AppContext
     let twitterTextParser = TwitterTextParser.defaultParser()
     let repliedTweetObjectID: NSManagedObjectID?
+    let activeAuthenticationIndex = CurrentValueSubject<AuthenticationIndex?, Never>(nil)
     let avatarImageURL = CurrentValueSubject<URL?, Never>(nil)
     let composeContent = CurrentValueSubject<String, Never>("")
     let repliedToCellFrame = CurrentValueSubject<CGRect, Never>(.zero)
-
+    weak var composeTweetContentTableViewCellDelegate: ComposeTweetContentTableViewCellDelegate?
+    
     // output
     var diffableDataSource: UITableViewDiffableDataSource<ComposeTweetSection, ComposeTweetItem>!
     var mediaDiffableDataSource: UICollectionViewDiffableDataSource<ComposeTweetMediaSection, ComposeTweetMediaItem>!
+    
+    // UI
     let tableViewState = CurrentValueSubject<TableViewState, Never>(.fold)
-    let isVerifiedBadgekHidden = CurrentValueSubject<Bool, Never>(true)
+    let isCameraToolbarButtonEnabled = CurrentValueSubject<Bool, Never>(true)
+    // mentions
+    private(set) var primaryMentionPickItem: MentionPickItem?
+    var secondaryMentionPickItems: [MentionPickItem] = []
+    let excludeReplyUserInfos = CurrentValueSubject<[(TwitterUser.ID, String)], Never>([])  // (TwitterUser.ID, username)
+    // text
     let twitterTextParseResults = CurrentValueSubject<TwitterTextParseResults, Never>(.init())
+    // media
     let mediaServices = CurrentValueSubject<[TwitterMediaService], Never>([])
     let isComposeBarButtonEnabled = CurrentValueSubject<Bool, Never>(false)
-    let isCameraToolbarButtonEnabled = CurrentValueSubject<Bool, Never>(true)
+    // geo
     let isRequestLocationMarking = CurrentValueSubject<Bool, Never>(false)
     let isLocationServicesEnabled = CurrentValueSubject<Bool, Never>(false)
     let currentLocation = CurrentValueSubject<CLLocation?, Never>(nil)
@@ -58,6 +68,43 @@ final class ComposeTweetViewModel: NSObject {
         self.context = context
         self.repliedTweetObjectID = repliedTweetObjectID
         super.init()
+        
+        // prepare mention picker
+        if let repliedTweetObjectID = repliedTweetObjectID {
+            let managedObjectContext = context.managedObjectContext
+            managedObjectContext.perform {
+                let repliedTweet = managedObjectContext.object(with: repliedTweetObjectID) as! Tweet
+                
+                self.primaryMentionPickItem = MentionPickItem.twitterUser(
+                    username: repliedTweet.author.username,
+                    attribute: MentionPickItem.Attribute(
+                        disabled: true,
+                        avatarImageURL: repliedTweet.author.avatarImageURL(),
+                        userID: repliedTweet.author.id,
+                        name: repliedTweet.author.name
+                    )
+                )
+                self.secondaryMentionPickItems = {
+                    var items: [MentionPickItem] = []
+                    for mention in repliedTweet.entities?.mentions ?? Set() {
+                        guard let username = mention.username else {
+                            assertionFailure()
+                            continue
+                        }
+                        let item = MentionPickItem.twitterUser(
+                            username: username,
+                            attribute: MentionPickItem.Attribute(
+                                avatarImageURL: mention.user?.avatarImageURL(),
+                                userID: mention.userID,
+                                name: mention.user?.name
+                            )
+                        )
+                        items.append(item)
+                    }
+                    return items
+                }()
+            }
+        }
         
         composeContent
             .map { text in self.twitterTextParser.parseTweet(text) }
@@ -147,28 +194,24 @@ extension ComposeTweetViewModel {
                 return cell
             case .input(let attribute):
                 let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: ComposeTweetContentTableViewCell.self), for: indexPath) as! ComposeTweetContentTableViewCell
-                
-                // set avatar
-                self.avatarImageURL
-                    .receive(on: DispatchQueue.main)
-                    .sink { url in
-                        let placeholderImage = UIImage
-                            .placeholder(size: TimelinePostView.avatarImageViewSize, color: .systemFill)
-                            .af.imageRoundedIntoCircle()
-                        guard let url = url else {
-                            cell.avatarImageView.image = placeholderImage
-                            return
-                        }
-                        let filter = ScaledToSizeCircleFilter(size: ComposeTweetViewController.avatarImageViewSize)
-                        cell.avatarImageView.af.setImage(
-                            withURL: url,
-                            placeholderImage: placeholderImage,
-                            filter: filter,
-                            imageTransition: .crossDissolve(0.2)
+                self.context.managedObjectContext.performAndWait {
+                    if let repliedTweetObjectID = self.repliedTweetObjectID {
+                        let repliedTweet = self.context.managedObjectContext.object(with: repliedTweetObjectID) as! Tweet
+                        let meta = ComposeTweetContentMeta(
+                            activeAuthenticationIndexPublisher: self.activeAuthenticationIndex.eraseToAnyPublisher(),
+                            excludeReplyUserIDsPublisher: self.excludeReplyUserInfos.eraseToAnyPublisher(),
+                            repliedTweet: repliedTweet
                         )
+                        ComposeTweetViewModel.configure(cell: cell, meta: meta)
+                    } else {
+                        let meta = ComposeTweetContentMeta(
+                            activeAuthenticationIndexPublisher: self.activeAuthenticationIndex.eraseToAnyPublisher(),
+                            excludeReplyUserIDsPublisher: self.excludeReplyUserInfos.eraseToAnyPublisher(),
+                            repliedTweet: nil
+                        )
+                        ComposeTweetViewModel.configure(cell: cell, meta: meta)
                     }
-                    .store(in: &cell.disposeBag)
-                self.isVerifiedBadgekHidden.receive(on: DispatchQueue.main).assign(to: \.isHidden, on: cell.verifiedBadgeImageView).store(in: &cell.disposeBag)
+                }
                 
                 cell.conversationLinkUpper.isHidden = !attribute.hasReplyTo
                 
@@ -181,6 +224,7 @@ extension ComposeTweetViewModel {
                     }
                     .store(in: &cell.disposeBag)
                 cell.composeText.assign(to: \.value, on: self.composeContent).store(in: &cell.disposeBag)
+                cell.delegate = self.composeTweetContentTableViewCellDelegate
                 
                 return cell
             case .quote(let objectID):
@@ -219,7 +263,7 @@ extension ComposeTweetViewModel {
             .placeholder(size: TimelinePostView.avatarImageViewSize, color: .systemFill)
             .af.imageRoundedIntoCircle()
         if let avatarImageURL = tweet.author.avatarImageURL() {
-            let filter = ScaledToSizeCircleFilter(size: ComposeTweetViewController.avatarImageViewSize)
+            let filter = ScaledToSizeCircleFilter(size: ComposeTweetContentTableViewCell.avatarImageViewSize)
             cell.timelinePostView.avatarImageView.af.setImage(
                 withURL: avatarImageURL,
                 placeholderImage: placeholderImage,
@@ -239,6 +283,82 @@ extension ComposeTweetViewModel {
         
         // set tweet content text
         cell.timelinePostView.activeTextLabel.configure(with: tweet.displayText)
+    }
+}
+
+extension ComposeTweetViewModel {
+    
+    struct ComposeTweetContentMeta {
+        let activeAuthenticationIndexPublisher: AnyPublisher<AuthenticationIndex?, Never>
+        let excludeReplyUserIDsPublisher: AnyPublisher<[(TwitterUser.ID, String)], Never>
+        let repliedTweet: Tweet?
+    }
+    
+    static func configure(cell: ComposeTweetContentTableViewCell, meta: ComposeTweetContentMeta) {
+        // set avatar
+        meta.activeAuthenticationIndexPublisher
+            .receive(on: DispatchQueue.main)
+            .map { authenticationIndex in
+                authenticationIndex?.twitterAuthentication?.twitterUser?.avatarImageURL()
+            }
+            .sink { url in
+                let placeholderImage = UIImage
+                    .placeholder(size: TimelinePostView.avatarImageViewSize, color: .systemFill)
+                    .af.imageRoundedIntoCircle()
+                guard let url = url else {
+                    cell.avatarImageView.image = placeholderImage
+                    return
+                }
+                let filter = ScaledToSizeCircleFilter(size: ComposeTweetContentTableViewCell.avatarImageViewSize)
+                cell.avatarImageView.af.setImage(
+                    withURL: url,
+                    placeholderImage: placeholderImage,
+                    filter: filter,
+                    imageTransition: .crossDissolve(0.2)
+                )
+            }
+            .store(in: &cell.disposeBag)
+        
+        // set mention pick
+        cell.mentionPickButton.isHidden = meta.repliedTweet == nil
+        
+        let repliedTweetAuthorUsername = meta.repliedTweet?.author.username ?? "-"
+            
+        var mentionedUsernames: [String] = []
+        for mention in meta.repliedTweet?.entities?.mentions ?? Set() {
+            guard let username = mention.username,
+                  !mentionedUsernames.contains(username) else {
+                continue
+            }
+            mentionedUsernames.append(username)
+        }
+        
+        Publishers.CombineLatest(
+            meta.activeAuthenticationIndexPublisher,
+            meta.excludeReplyUserIDsPublisher
+        )
+        .receive(on: DispatchQueue.main)
+        .sink { authenticationIndex, excludeReplyUserInfos in
+            let activeUsername: String? = {
+                return authenticationIndex?.twitterAuthentication?.twitterUser?.username
+            }()
+            
+            var usernames: [String] = []
+            if activeUsername != repliedTweetAuthorUsername {
+                usernames.append(repliedTweetAuthorUsername)
+            }
+            let excludeReplyUsernames = excludeReplyUserInfos.map { $0.1 }
+            for username in mentionedUsernames where activeUsername != username && !excludeReplyUsernames.contains(username) {
+                usernames.append(username)
+            }
+            
+            let title = usernames
+                .map { "@" + $0 }
+                .joined(separator: ", ")
+
+            cell.mentionPickButton.setTitle(title, for: .normal)
+        }
+        .store(in: &cell.disposeBag)
     }
 }
 

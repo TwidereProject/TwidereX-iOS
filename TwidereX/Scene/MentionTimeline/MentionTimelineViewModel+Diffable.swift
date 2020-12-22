@@ -26,7 +26,7 @@ extension MentionTimelineViewModel {
                 let managedObjectContext = self.fetchedResultsController.managedObjectContext
                 managedObjectContext.performAndWait {
                     let mentionTimelineIndex = managedObjectContext.object(with: objectID) as! MentionTimelineIndex
-                    MentionTimelineViewModel.configure(cell: cell, readableLayoutFrame: tableView.readableContentGuide.layoutFrame, mentionTimelineIndex: mentionTimelineIndex, attribute: attribute)
+                    MentionTimelineViewModel.configure(cell: cell, readableLayoutFrame: tableView.readableContentGuide.layoutFrame, videoPlaybackService: self.context.videoPlaybackService, mentionTimelineIndex: mentionTimelineIndex, attribute: attribute)
                     HomeTimelineViewModel.configure(cell: cell, overrideTraitCollection: self.context.overrideTraitCollection.value)
                 }
                 cell.delegate = self.timelinePostTableViewCellDelegate
@@ -83,9 +83,9 @@ extension MentionTimelineViewModel {
         }
     }
     
-    static func configure(cell: TimelinePostTableViewCell, readableLayoutFrame: CGRect? = nil, mentionTimelineIndex: MentionTimelineIndex, attribute: Item.Attribute) {
+    static func configure(cell: TimelinePostTableViewCell, readableLayoutFrame: CGRect? = nil, videoPlaybackService: VideoPlaybackService, mentionTimelineIndex: MentionTimelineIndex, attribute: Item.Attribute) {
         if let tweet = mentionTimelineIndex.tweet {
-            HomeTimelineViewModel.configure(cell: cell, readableLayoutFrame: readableLayoutFrame, tweet: tweet, requestUserID: mentionTimelineIndex.userID)
+            HomeTimelineViewModel.configure(cell: cell, readableLayoutFrame: readableLayoutFrame, videoPlaybackService: videoPlaybackService, tweet: tweet, requestUserID: mentionTimelineIndex.userID)
             internalConfigure(cell: cell, tweet: tweet, attribute: attribute)
         }
     }

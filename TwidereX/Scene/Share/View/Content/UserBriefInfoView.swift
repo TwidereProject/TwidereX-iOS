@@ -64,6 +64,19 @@ final class UserBriefInfoView: UIView {
         button.tintColor = Asset.Colors.hightLight.color
         return button
     }()
+    let checkmarkButton: UIButton = {
+        let button = UIButton()
+        button.setImage(UIImage(systemName: "checkmark.circle.fill"), for: .normal)
+        button.tintColor = Asset.Colors.hightLight.color
+        return button
+    }()
+    
+    let activityIndicatorView: UIActivityIndicatorView = {
+        let activityIndicatorView = UIActivityIndicatorView(style: .medium)
+        activityIndicatorView.hidesWhenStopped = true
+        activityIndicatorView.startAnimating()
+        return activityIndicatorView
+    }()
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -155,8 +168,22 @@ extension UserBriefInfoView {
         menuButton.setContentHuggingPriority(.defaultHigh, for: .horizontal)
         menuButton.setContentCompressionResistancePriority(.required - 1, for: .horizontal)
         
+        checkmarkButton.translatesAutoresizingMaskIntoConstraints = false
+        containerStackView.addArrangedSubview(checkmarkButton)
+        checkmarkButton.setContentHuggingPriority(.defaultHigh, for: .horizontal)
+        checkmarkButton.setContentCompressionResistancePriority(.required - 1, for: .horizontal)
+        
+        activityIndicatorView.translatesAutoresizingMaskIntoConstraints = false
+        containerStackView.addArrangedSubview(activityIndicatorView)
+        activityIndicatorView.setContentHuggingPriority(.defaultHigh, for: .horizontal)
+        activityIndicatorView.setContentCompressionResistancePriority(.required - 1, for: .horizontal)
+        
         verifiedBadgeImageView.isHidden = true
         lockImageView.isHidden = true
+        
+        activityIndicatorView.isHidden = true
+        checkmarkButton.isHidden = true
+        followActionButton.isHidden = true
         menuButton.isHidden = true
     }
 }

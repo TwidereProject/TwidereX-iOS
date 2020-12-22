@@ -1,5 +1,5 @@
 //
-//  SearchMediaCollectionViewCell.swift
+//  MediaCollectionViewCell.swift
 //  TwidereX
 //
 //  Created by Cirno MainasuK on 2020-10-29.
@@ -8,17 +8,17 @@
 
 import UIKit
 
-protocol SearchMediaCollectionViewCellDelegate: class {
-    func searchMediaCollectionViewCell(_ cell: SearchMediaCollectionViewCell, collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath)
+protocol MediaCollectionViewCellDelegate: class {
+    func mediaCollectionViewCell(_ cell: SearchMediaCollectionViewCell, collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath)
 }
 
 final class SearchMediaCollectionViewCell: UICollectionViewCell {
     
-    weak var delegate: SearchMediaCollectionViewCellDelegate?
+    weak var delegate: MediaCollectionViewCellDelegate?
     
     lazy var previewCollectionView: UICollectionView = {
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: createCollectionViewLayout())
-        collectionView.register(SearchMediaPreviewCollectionViewCell.self, forCellWithReuseIdentifier: String(describing: SearchMediaPreviewCollectionViewCell.self))
+        collectionView.register(MediaPreviewCollectionViewCell.self, forCellWithReuseIdentifier: String(describing: MediaPreviewCollectionViewCell.self))
         collectionView.backgroundColor = .systemFill
         collectionView.layer.masksToBounds = true
         collectionView.layer.cornerRadius = 8
@@ -90,7 +90,7 @@ extension SearchMediaCollectionViewCell {
         diffableDataSource = UICollectionViewDiffableDataSource(collectionView: previewCollectionView) { collectionView, indexPath, item -> UICollectionViewCell? in
             switch item {
             case .preview(let url):
-                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: SearchMediaPreviewCollectionViewCell.self), for: indexPath) as! SearchMediaPreviewCollectionViewCell
+                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: MediaPreviewCollectionViewCell.self), for: indexPath) as! MediaPreviewCollectionViewCell
                 let placeholderImage = UIImage.placeholder(color: .systemFill)
                 if let url = url {
                     cell.previewImageView.af.setImage(
@@ -145,7 +145,7 @@ extension SearchMediaCollectionViewCell {
 extension SearchMediaCollectionViewCell: UICollectionViewDelegate {
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        delegate?.searchMediaCollectionViewCell(self, collectionView: collectionView, didSelectItemAt: indexPath)
+        delegate?.mediaCollectionViewCell(self, collectionView: collectionView, didSelectItemAt: indexPath)
     }
     
 }

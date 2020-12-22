@@ -18,7 +18,7 @@ final public class TwitterMedia: NSManagedObject {
     @NSManaged public private(set) var index: NSNumber
     
     @NSManaged public private(set) var id: ID?          // preserved for v1 usage
-    @NSManaged public private(set) var mediaKey: ID
+    @NSManaged public private(set) var mediaKey: ID     // v2
     @NSManaged public private(set) var type: String
     
     /// int64

@@ -45,7 +45,6 @@ extension AccountListTableViewCell {
             contentView.bottomAnchor.constraint(equalTo: userBriefInfoView.bottomAnchor, constant: 16).priority(.defaultHigh),
         ])
         
-        userBriefInfoView.followActionButton.isHidden = true
         userBriefInfoView.menuButton.isHidden = false
         userBriefInfoView.menuButton.addTarget(self, action: #selector(AccountListTableViewCell.menuButtonPressed(_:)), for: .touchUpInside)
     }

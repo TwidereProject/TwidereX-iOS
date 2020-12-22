@@ -8,6 +8,7 @@
 
 import os.log
 import UIKit
+import AVKit
 import Combine
 import CoreData
 import CoreDataStack
@@ -208,6 +209,12 @@ extension MentionTimelineViewController {
             }
         }
     }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        
+        context.videoPlaybackService.viewDidDisappear(from: self)
+    }
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
@@ -342,7 +349,9 @@ extension MentionTimelineViewController: UITableViewDelegate {
             managedObjectContext.performAndWait {
                 guard let mentionTimelineIndex = managedObjectContext.object(with: objectID) as? MentionTimelineIndex else { return }
                 guard let tweet = mentionTimelineIndex.tweet?.retweet ?? mentionTimelineIndex.tweet else { return }
-
+                
+                self.context.videoPlaybackService.markTransitioning(for: tweet)
+                
                 let tweetPostViewModel = TweetConversationViewModel(context: self.context, tweetObjectID: tweet.objectID)
                 self.coordinator.present(scene: .tweetConversation(viewModel: tweetPostViewModel), from: self, transition: .show)
             }
@@ -351,7 +360,13 @@ extension MentionTimelineViewController: UITableViewDelegate {
         }
     }
 
+    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        handleTableView(tableView, willDisplay: cell, forRowAt: indexPath)
+    }
+    
     func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        handleTableView(tableView, didEndDisplaying: cell, forRowAt: indexPath)
+
         guard let diffableDataSource = viewModel.diffableDataSource else { return }
         guard let item = diffableDataSource.itemIdentifier(for: indexPath) else { return }
 
@@ -405,8 +420,24 @@ extension MentionTimelineViewController: TimelineMiddleLoaderTableViewCellDelega
     }
 }
 
+// MARK: - AVPlayerViewControllerDelegate
+extension MentionTimelineViewController: AVPlayerViewControllerDelegate {
+    
+    func playerViewController(_ playerViewController: AVPlayerViewController, willBeginFullScreenPresentationWithAnimationCoordinator coordinator: UIViewControllerTransitionCoordinator) {
+        handlePlayerViewController(playerViewController, willBeginFullScreenPresentationWithAnimationCoordinator: coordinator)
+    }
+    
+    func playerViewController(_ playerViewController: AVPlayerViewController, willEndFullScreenPresentationWithAnimationCoordinator coordinator: UIViewControllerTransitionCoordinator) {
+        handlePlayerViewController(playerViewController, willEndFullScreenPresentationWithAnimationCoordinator: coordinator)
+    }
+    
+}
+
 // MARK: - TimelinePostTableViewCellDelegate
-extension MentionTimelineViewController: TimelinePostTableViewCellDelegate { }
+extension MentionTimelineViewController: TimelinePostTableViewCellDelegate {
+    weak var playerViewControllerDelegate: AVPlayerViewControllerDelegate? { return self }
+    func parent() -> UIViewController { return self }
+}
 
 // MARK: - ScrollViewContainer
 extension MentionTimelineViewController: ScrollViewContainer {
@@ -414,7 +445,8 @@ extension MentionTimelineViewController: ScrollViewContainer {
     var scrollView: UIScrollView { return tableView }
     
     func scrollToTop(animated: Bool) {
-        if viewModel.loadLatestStateMachine.canEnterState(MentionTimelineViewModel.LoadLatestState.Loading.self),
+        if scrollView.contentOffset.y < scrollView.frame.height,
+           viewModel.loadLatestStateMachine.canEnterState(HomeTimelineViewModel.LoadLatestState.Loading.self),
            (scrollView.contentOffset.y + scrollView.adjustedContentInset.top) == 0.0,
            !refreshControl.isRefreshing {
             scrollView.scrollRectToVisible(CGRect(origin: CGPoint(x: 0, y: -refreshControl.frame.height), size: CGSize(width: 1, height: 1)), animated: animated)
@@ -424,7 +456,9 @@ extension MentionTimelineViewController: ScrollViewContainer {
                 self.refreshControl.sendActions(for: .valueChanged)
             }
         } else {
-            scrollView.scrollRectToVisible(CGRect(origin: .zero, size: CGSize(width: 1, height: 1)), animated: animated)
+            let indexPath = IndexPath(row: 0, section: 0)
+            guard viewModel.diffableDataSource?.itemIdentifier(for: indexPath) != nil else { return }
+            tableView.scrollToRow(at: indexPath, at: .top, animated: true)
         }
     }
     

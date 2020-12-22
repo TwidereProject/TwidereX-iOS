@@ -65,7 +65,7 @@ extension APIService.CoreData {
                         return nil
                     }
                     let size = media.sizes?.large
-                    let property = TwitterMedia.Property(index: i, id: idStr, mediaKey: idStr, type: type, height: size?.h, width: size?.w, durationMS: nil, url: media.mediaURLHTTPS, previewImageURL: nil)
+                    let property = TwitterMedia.Property(index: i, id: idStr, mediaKey: idStr, type: type, height: size?.h, width: size?.w, durationMS: nil, url: media.assetURL, previewImageURL: media.previewImageURL)
                     return TwitterMedia.insert(into: managedObjectContext, property: property, metrics: nil)
                 }
                 guard !result.isEmpty else { return nil }
@@ -156,7 +156,7 @@ extension APIService.CoreData {
             for newMedia in entity.extendedEntities?.media ?? [] {
                 guard let id = newMedia.idStr else { continue }
                 guard let targetMedia = media.first(where: { $0.id == id }) else { continue }
-                targetMedia.update(url: newMedia.mediaURLHTTPS)
+                targetMedia.update(url: newMedia.assetURL)
             }
         }
         

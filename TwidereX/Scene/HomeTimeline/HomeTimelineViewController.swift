@@ -8,6 +8,7 @@
 
 import os.log
 import UIKit
+import AVKit
 import Combine
 import CoreData
 import CoreDataStack
@@ -116,6 +117,14 @@ extension HomeTimelineViewController {
                             guard let self = self else { return }
                             self.moveToFirstReplyRetweet(action)
                         }),
+                        UIAction(title: "Move to First Video Tweet", image: nil, attributes: [], handler: { [weak self] action in
+                            guard let self = self else { return }
+                            self.moveToFirstVideoTweet(action)
+                        }),
+                        UIAction(title: "Move to First GIF Tweet", image: nil, attributes: [], handler: { [weak self] action in
+                            guard let self = self else { return }
+                            self.moveToFirstGIFTweet(action)
+                        }),
                         UIAction(title: "Drop Recent 50 Tweets", image: nil, attributes: [], handler: { [weak self] action in
                             guard let self = self else { return }
                             self.dropRecentTweetsAction(action)
@@ -130,7 +139,11 @@ extension HomeTimelineViewController {
                         }),
                         UIAction(title: "Show Account unlock alert", image: nil, attributes: [], handler: { [weak self] action in
                             guard let self = self else { return }
-                            self.context.apiService.error.send(APIService.APIError.accountTemporarilyLocked)
+                            self.context.apiService.error.send(.explicit(.accountTemporarilyLocked))
+                        }),
+                        UIAction(title: "Show Rate Limit alert", image: nil, attributes: [], handler: { [weak self] action in
+                            guard let self = self else { return }
+                            self.context.apiService.error.send(.explicit(.rateLimitExceeded))
                         }),
                         UIAction(title: "Export Database", image: nil, attributes: [], handler: { [weak self] action in
                             guard let self = self else { return }
@@ -244,6 +257,12 @@ extension HomeTimelineViewController {
                 self.viewModel.loadLatestStateMachine.enter(HomeTimelineViewModel.LoadLatestState.Loading.self)
             }
         }
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        
+        context.videoPlaybackService.viewDidDisappear(from: self)
     }
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
@@ -388,6 +407,50 @@ extension HomeTimelineViewController {
         }
     }
     
+    @objc private func moveToFirstVideoTweet(_ sender: UIAction) {
+        guard let diffableDataSource = viewModel.diffableDataSource else { return }
+        let snapshotTransitioning = diffableDataSource.snapshot()
+        let item = snapshotTransitioning.itemIdentifiers.first(where: { item in
+            switch item {
+            case .homeTimelineIndex(let objectID, _):
+                let tweet = viewModel.fetchedResultsController.managedObjectContext.object(with: objectID) as! TimelineIndex
+                guard let targetTweet = (tweet.tweet?.retweet ?? tweet.tweet) else { return false }
+                guard let type = targetTweet.media?.first?.type else { return false }
+                return type == "video"
+            default:
+                return false
+            }
+        })
+        if let targetItem = item, let index = snapshotTransitioning.indexOfItem(targetItem) {
+            tableView.scrollToRow(at: IndexPath(row: index, section: 0), at: .middle, animated: true)
+            tableView.blinkRow(at: IndexPath(row: index, section: 0))
+        } else {
+            print("Not found video tweet")
+        }
+    }
+    
+    @objc private func moveToFirstGIFTweet(_ sender: UIAction) {
+        guard let diffableDataSource = viewModel.diffableDataSource else { return }
+        let snapshotTransitioning = diffableDataSource.snapshot()
+        let item = snapshotTransitioning.itemIdentifiers.first(where: { item in
+            switch item {
+            case .homeTimelineIndex(let objectID, _):
+                let tweet = viewModel.fetchedResultsController.managedObjectContext.object(with: objectID) as! TimelineIndex
+                guard let targetTweet = (tweet.tweet?.retweet ?? tweet.tweet) else { return false }
+                guard let type = targetTweet.media?.first?.type else { return false }
+                return type == "animated_gif"
+            default:
+                return false
+            }
+        })
+        if let targetItem = item, let index = snapshotTransitioning.indexOfItem(targetItem) {
+            tableView.scrollToRow(at: IndexPath(row: index, section: 0), at: .middle, animated: true)
+            tableView.blinkRow(at: IndexPath(row: index, section: 0))
+        } else {
+            print("Not found video tweet")
+        }
+    }
+    
     @objc private func dropRecentTweetsAction(_ sender: UIAction) {
         guard let diffableDataSource = viewModel.diffableDataSource else { return }
         let snapshotTransitioning = diffableDataSource.snapshot()
@@ -511,7 +574,13 @@ extension HomeTimelineViewController: UITableViewDelegate {
         handleTableView(tableView, didSelectRowAt: indexPath)
     }
     
+    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        handleTableView(tableView, willDisplay: cell, forRowAt: indexPath)
+    }
+    
     func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        handleTableView(tableView, didEndDisplaying: cell, forRowAt: indexPath)
+        
         guard let diffableDataSource = viewModel.diffableDataSource else { return }
         guard let item = diffableDataSource.itemIdentifier(for: indexPath) else { return }
         
@@ -566,8 +635,24 @@ extension HomeTimelineViewController: TimelineMiddleLoaderTableViewCellDelegate 
     }
 }
 
+// MARK: - AVPlayerViewControllerDelegate
+extension HomeTimelineViewController: AVPlayerViewControllerDelegate {
+    
+    func playerViewController(_ playerViewController: AVPlayerViewController, willBeginFullScreenPresentationWithAnimationCoordinator coordinator: UIViewControllerTransitionCoordinator) {
+        handlePlayerViewController(playerViewController, willBeginFullScreenPresentationWithAnimationCoordinator: coordinator)
+    }
+    
+    func playerViewController(_ playerViewController: AVPlayerViewController, willEndFullScreenPresentationWithAnimationCoordinator coordinator: UIViewControllerTransitionCoordinator) {
+        handlePlayerViewController(playerViewController, willEndFullScreenPresentationWithAnimationCoordinator: coordinator)
+    }
+    
+}
+
 // MARK: - TimelinePostTableViewCellDelegate
-extension HomeTimelineViewController: TimelinePostTableViewCellDelegate { }
+extension HomeTimelineViewController: TimelinePostTableViewCellDelegate {
+    weak var playerViewControllerDelegate: AVPlayerViewControllerDelegate? { return self }
+    func parent() -> UIViewController { return self }
+}
 
 // MARK: - ScrollViewContainer
 extension HomeTimelineViewController: ScrollViewContainer {
@@ -575,7 +660,8 @@ extension HomeTimelineViewController: ScrollViewContainer {
     var scrollView: UIScrollView { return tableView }
     
     func scrollToTop(animated: Bool) {
-        if viewModel.loadLatestStateMachine.canEnterState(HomeTimelineViewModel.LoadLatestState.Loading.self),
+        if scrollView.contentOffset.y < scrollView.frame.height,
+           viewModel.loadLatestStateMachine.canEnterState(HomeTimelineViewModel.LoadLatestState.Loading.self),
            (scrollView.contentOffset.y + scrollView.adjustedContentInset.top) == 0.0,
            !refreshControl.isRefreshing {
             scrollView.scrollRectToVisible(CGRect(origin: CGPoint(x: 0, y: -refreshControl.frame.height), size: CGSize(width: 1, height: 1)), animated: animated)
@@ -585,7 +671,9 @@ extension HomeTimelineViewController: ScrollViewContainer {
                 self.refreshControl.sendActions(for: .valueChanged)
             }
         } else {
-            scrollView.scrollRectToVisible(CGRect(origin: .zero, size: CGSize(width: 1, height: 1)), animated: animated)
+            let indexPath = IndexPath(row: 0, section: 0)
+            guard viewModel.diffableDataSource?.itemIdentifier(for: indexPath) != nil else { return }
+            tableView.scrollToRow(at: indexPath, at: .top, animated: true)
         }
     }
     

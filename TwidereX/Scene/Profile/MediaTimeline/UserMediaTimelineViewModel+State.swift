@@ -49,6 +49,7 @@ extension UserMediaTimelineViewModel.State {
             
             let userID = viewModel.userID.value
             viewModel.fetchLatest()
+                .receive(on: DispatchQueue.main)
                 .sink { completion in
                     switch completion {
                     case .failure(let error):
@@ -59,7 +60,12 @@ extension UserMediaTimelineViewModel.State {
                     }
                 } receiveValue: { response in
                     guard viewModel.userID.value == userID else { return }
-                    let tweetIDs = response.value.map { $0.idStr }
+                    let pagingTweetIDs = response.value
+                        .map { $0.idStr }
+                    let tweetIDs = response.value
+                        .filter { ($0.retweetedStatus ?? $0).user.idStr == userID }
+                        .map { $0.idStr }
+                    viewModel.pagingTweetIDs.value = pagingTweetIDs
                     viewModel.tweetIDs.value = tweetIDs
                 }
                 .store(in: &viewModel.disposeBag)
@@ -89,6 +95,7 @@ extension UserMediaTimelineViewModel.State {
             
             let userID = viewModel.userID.value
             viewModel.loadMore()
+                .receive(on: DispatchQueue.main)
                 .sink { completion in
                     switch completion {
                     case .failure(let error):
@@ -99,27 +106,30 @@ extension UserMediaTimelineViewModel.State {
                     }
                 } receiveValue: { response in
                     guard viewModel.userID.value == userID else { return }
-
-                    let oldTweetIDs = viewModel.tweetIDs.value
-                    let newTweets = response.value.filter { !oldTweetIDs.contains($0.idStr) }
-                    let newTweetIDs = newTweets.map { $0.idStr }
                     
-                    var tweetIDs: [Twitter.Entity.Tweet.ID] = []
-                    for tweetID in oldTweetIDs {
-                        guard !tweetIDs.contains(tweetID) else { continue }
-                        tweetIDs.append(tweetID)
+                    var pagingTweetIDs = viewModel.pagingTweetIDs.value
+                    var tweetIDs = viewModel.tweetIDs.value
+                    
+                    var hasMedia = false
+                    for tweet in response.value {
+                        guard let media = (tweet.retweetedStatus ?? tweet).extendedEntities?.media,
+                              media.contains(where: { $0.type == "photo" }) else {
+                            continue
+                        }
+                        hasMedia = true
+                        
+                        let tweetID = tweet.idStr
+                        if !pagingTweetIDs.contains(tweetID) && (tweet.retweetedStatus ?? tweet).user.idStr == userID {
+                            pagingTweetIDs.append(tweetID)
+                        }
+                        if !tweetIDs.contains(tweetID) {
+                            tweetIDs.append(tweetID)
+                        }
                     }
-                    for tweetID in newTweetIDs {
-                        guard !tweetIDs.contains(tweetID) else { continue }
-                        tweetIDs.append(tweetID)
-                    }
+                    
+                    viewModel.pagingTweetIDs.value = pagingTweetIDs
                     viewModel.tweetIDs.value = tweetIDs
                     
-                    // TODO: add video & GIF
-                    let hasMedia = newTweets.contains(where: { tweet in
-                        guard let media = tweet.extendedEntities?.media else { return false }
-                        return media.contains(where: { $0.type == "photo" })
-                    })
                     if !hasMedia {
                         stateMachine.enter(NoMore.self)
                     } else {

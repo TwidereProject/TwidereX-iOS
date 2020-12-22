@@ -261,7 +261,7 @@ extension TweetConversationViewModel {
                 let managedObjectContext = self.context.managedObjectContext
                 managedObjectContext.performAndWait {
                     let tweet = managedObjectContext.object(with: objectID) as! Tweet
-                    TweetConversationViewModel.configure(cell: cell, readableLayoutFrame: tableView.readableContentGuide.layoutFrame, tweet: tweet, requestUserID: requestTwitterUserID)
+                    TweetConversationViewModel.configure(cell: cell, readableLayoutFrame: tableView.readableContentGuide.layoutFrame, videoPlaybackService: self.context.videoPlaybackService, tweet: tweet, requestUserID: requestTwitterUserID)
                     TweetConversationViewModel.configure(cell: cell, overrideTraitCollection: self.context.overrideTraitCollection.value)
                 }
                 cell.delegate = self.conversationPostTableViewCellDelegate
@@ -273,7 +273,7 @@ extension TweetConversationViewModel {
                 let managedObjectContext = self.context.managedObjectContext
                 managedObjectContext.performAndWait {
                     let tweet = managedObjectContext.object(with: objectID) as! Tweet
-                    HomeTimelineViewModel.configure(cell: cell, readableLayoutFrame: tableView.readableContentGuide.layoutFrame, tweet: tweet, requestUserID: requestUserID)
+                    HomeTimelineViewModel.configure(cell: cell, readableLayoutFrame: tableView.readableContentGuide.layoutFrame, videoPlaybackService: self.context.videoPlaybackService, tweet: tweet, requestUserID: requestUserID)
                     HomeTimelineViewModel.configure(cell: cell, overrideTraitCollection: self.context.overrideTraitCollection.value)
                     cell.conversationLinkUpper.isHidden = tweet.inReplyToTweetID == nil
                     cell.conversationLinkLower.isHidden = false
@@ -288,7 +288,7 @@ extension TweetConversationViewModel {
                 let managedObjectContext = self.context.managedObjectContext
                 managedObjectContext.performAndWait {
                     let tweet = managedObjectContext.object(with: objectID) as! Tweet
-                    HomeTimelineViewModel.configure(cell: cell, readableLayoutFrame: tableView.readableContentGuide.layoutFrame, tweet: tweet, requestUserID: requestUserID)
+                    HomeTimelineViewModel.configure(cell: cell, readableLayoutFrame: tableView.readableContentGuide.layoutFrame, videoPlaybackService: self.context.videoPlaybackService, tweet: tweet, requestUserID: requestUserID)
                     HomeTimelineViewModel.configure(cell: cell, overrideTraitCollection: self.context.overrideTraitCollection.value)
                 }
                 cell.conversationLinkUpper.isHidden = attribute.level == 0
@@ -323,7 +323,7 @@ extension TweetConversationViewModel {
         diffableDataSource?.apply(snapshot)
     }
     
-    static func configure(cell: ConversationPostTableViewCell, readableLayoutFrame: CGRect? = nil, tweet: Tweet, requestUserID: String) {
+    static func configure(cell: ConversationPostTableViewCell, readableLayoutFrame: CGRect? = nil, videoPlaybackService: VideoPlaybackService, tweet: Tweet, requestUserID: String) {
         // set retweet display
         cell.conversationPostView.retweetContainerStackView.isHidden = tweet.retweet == nil
         cell.conversationPostView.retweetInfoLabel.text = L10n.Common.Controls.Status.userRetweeted(tweet.author.name)
@@ -345,13 +345,14 @@ extension TweetConversationViewModel {
         // set text
         cell.conversationPostView.activeTextLabel.configure(with: (tweet.retweet ?? tweet).displayText)
         
-        // set image display
+        // set media display
         let media = Array((tweet.retweet ?? tweet).media ?? []).sorted { $0.index.compare($1.index) == .orderedAscending }
+        
+        // set image
         let mosiacImageViewModel = MosaicImageViewModel(twitterMedia: media)
-
-        let maxSize: CGSize = {
+        let imageViewMaxSize: CGSize = {
             let maxWidth: CGFloat = {
-                // use timelinePostView width as container width
+                // use conversationPostView width as container width
                 // that width follows readable width and keep constant width after rotate
                 let containerFrame = readableLayoutFrame ?? cell.conversationPostView.frame
                 let containerWidth = containerFrame.width
@@ -367,14 +368,14 @@ extension TweetConversationViewModel {
         }()
         if mosiacImageViewModel.metas.count == 1 {
             let meta = mosiacImageViewModel.metas[0]
-            let imageView = cell.conversationPostView.mosaicImageView.setupImageView(aspectRatio: meta.size, maxSize: maxSize)
+            let imageView = cell.conversationPostView.mosaicImageView.setupImageView(aspectRatio: meta.size, maxSize: imageViewMaxSize)
             imageView.af.setImage(
                 withURL: meta.url,
                 placeholderImage: UIImage.placeholder(color: .systemFill),
                 imageTransition: .crossDissolve(0.2)
             )
         } else {
-            let imageViews = cell.conversationPostView.mosaicImageView.setupImageViews(count: mosiacImageViewModel.metas.count, maxHeight: maxSize.height)
+            let imageViews = cell.conversationPostView.mosaicImageView.setupImageViews(count: mosiacImageViewModel.metas.count, maxHeight: imageViewMaxSize.height)
             for (i, imageView) in imageViews.enumerated() {
                 let meta = mosiacImageViewModel.metas[i]
                 imageView.af.setImage(
@@ -385,6 +386,43 @@ extension TweetConversationViewModel {
             }
         }
         cell.conversationPostView.mosaicImageView.isHidden = mosiacImageViewModel.metas.isEmpty
+        
+        // set GIF & video
+        let playerViewMaxSize: CGSize = {
+            let maxWidth: CGFloat = {
+                // use conversationPostView width as container width
+                // that width follows readable width and keep constant width after rotate
+                let containerFrame = readableLayoutFrame ?? cell.conversationPostView.frame
+                var containerWidth = containerFrame.width
+                containerWidth -= 10
+                containerWidth -= TimelinePostView.avatarImageViewSize.width
+                return containerWidth
+            }()
+            let scale: CGFloat = 1.3
+            return CGSize(width: maxWidth, height: maxWidth * scale)
+        }()
+        if let media = media.first, let videoPlayerViewModel = videoPlaybackService.dequeueVideoPlayerViewModel(for: media) {
+            let parent = cell.delegate?.parent()
+            let mosaicPlayerView = cell.conversationPostView.mosaicPlayerView
+            let playerViewController = mosaicPlayerView.setupPlayer(
+                aspectRatio: videoPlayerViewModel.videoSize,
+                maxSize: playerViewMaxSize,
+                parent: parent
+            )
+            playerViewController.delegate = cell.delegate?.playerViewControllerDelegate
+            playerViewController.showsPlaybackControls = videoPlayerViewModel.videoKind != .gif
+
+            // FIX HUD flick issue
+            DispatchQueue.main.async {
+                playerViewController.player = videoPlayerViewModel.player
+            }
+
+            mosaicPlayerView.gifIndicatorBackgroundVisualEffectView.isHidden = videoPlayerViewModel.videoKind != .gif
+            mosaicPlayerView.isHidden = false
+        } else {
+            cell.conversationPostView.mosaicPlayerView.playerViewController.player?.pause()
+            cell.conversationPostView.mosaicPlayerView.playerViewController.player = nil
+        }
         
         // set quote
         let quote = (tweet.retweet ?? tweet).quote
@@ -414,18 +452,31 @@ extension TweetConversationViewModel {
         cell.conversationPostView.dateLabel.text = TweetConversationViewModel.dateFormatter.string(from: tweet.createdAt)
         
         // set status
+        if let replyCount = (tweet.retweet ?? tweet).metrics?.replyCount.flatMap({ Int(truncating: $0) }), replyCount > 0 {
+            cell.conversationPostView.replyPostStatusView.countLabel.text = String(replyCount)
+            cell.conversationPostView.replyPostStatusView.statusLabel.text = replyCount > 1 ? L10n.Common.Countable.Reply.mutiple.localizedCapitalized : L10n.Common.Countable.Reply.single.localizedCapitalized
+            cell.conversationPostView.replyPostStatusView.isHidden = false
+        } else {
+            cell.conversationPostView.replyPostStatusView.isHidden = true
+        }
         if let retweetCount = (tweet.retweet ?? tweet).metrics?.retweetCount.flatMap({ Int(truncating: $0) }), retweetCount > 0 {
             cell.conversationPostView.retweetPostStatusView.countLabel.text = String(retweetCount)
-            cell.conversationPostView.retweetPostStatusView.statusLabel.text = retweetCount > 1 ? L10n.Common.Countable.Retweet.mutiple : L10n.Common.Countable.Retweet.single
+            cell.conversationPostView.retweetPostStatusView.statusLabel.text = retweetCount > 1 ? L10n.Common.Countable.Retweet.mutiple.localizedCapitalized : L10n.Common.Countable.Retweet.single.localizedCapitalized
             cell.conversationPostView.retweetPostStatusView.isHidden = false
         } else {
             cell.conversationPostView.retweetPostStatusView.isHidden = true
         }
-        // TODO: quote status
-        cell.conversationPostView.quotePostStatusView.isHidden = true
+        if let quoteCount = (tweet.retweet ?? tweet).metrics?.quoteCount.flatMap({ Int(truncating: $0) }), quoteCount > 0 {
+            cell.conversationPostView.quotePostStatusView.countLabel.text = String(quoteCount)
+            cell.conversationPostView.quotePostStatusView.statusLabel.text = quoteCount > 1 ? L10n.Common.Countable.Quote.mutiple.localizedCapitalized : L10n.Common.Countable.Quote.single.localizedCapitalized
+            cell.conversationPostView.quotePostStatusView.isHidden = false
+        } else {
+            cell.conversationPostView.quotePostStatusView.isHidden = true
+        }
+        cell.conversationPostView.quotePostStatusView.isHidden = true   // FIXME:
         if let favoriteCount = (tweet.retweet ?? tweet).metrics?.likeCount.flatMap({ Int(truncating: $0) }), favoriteCount > 0 {
             cell.conversationPostView.likePostStatusView.countLabel.text = String(favoriteCount)
-            cell.conversationPostView.likePostStatusView.statusLabel.text = favoriteCount > 1 ? L10n.Common.Countable.Like.multiple : L10n.Common.Countable.Like.single
+            cell.conversationPostView.likePostStatusView.statusLabel.text = favoriteCount > 1 ? L10n.Common.Countable.Like.multiple.localizedCapitalized : L10n.Common.Countable.Like.single.localizedCapitalized
             cell.conversationPostView.likePostStatusView.isHidden = false
         } else {
             cell.conversationPostView.likePostStatusView.isHidden = true

@@ -65,28 +65,27 @@ class UserLikeTimelineViewModel: NSObject {
         super.init()
         
         self.fetchedResultsController.delegate = self
-        
-        Publishers.CombineLatest(
-            items.eraseToAnyPublisher(),
-            stateMachinePublisher.eraseToAnyPublisher()
-        )
-        .debounce(for: .seconds(1), scheduler: DispatchQueue.main)
-        .receive(on: DispatchQueue.main)
-        .sink { [weak self] _, state in
-            guard let self = self else { return }
-            os_log("%{public}s[%{public}ld], %{public}s: state did change", ((#file as NSString).lastPathComponent), #line, #function)
-            
-            var snapshot = NSDiffableDataSourceSnapshot<TimelineSection, Item>()
-            snapshot.appendSections([.main])
-            let items = (self.fetchedResultsController.fetchedObjects ?? []).map { Item.tweet(objectID: $0.objectID) }
-            snapshot.appendItems(items)
-            if !items.isEmpty, self.stateMachine.canEnterState(State.LoadingMore.self) ||
-                state is State.LoadingMore {
-                snapshot.appendItems([.bottomLoader], toSection: .main)
+
+        items.eraseToAnyPublisher()
+            .debounce(for: .seconds(1), scheduler: DispatchQueue.main)
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] items in
+                guard let self = self else { return }
+                guard let diffableDataSource = self.diffableDataSource else { return }
+                os_log("%{public}s[%{public}ld], %{public}s: state did change", ((#file as NSString).lastPathComponent), #line, #function)
+                                
+                var snapshot = NSDiffableDataSourceSnapshot<TimelineSection, Item>()
+                snapshot.appendSections([.main])
+                snapshot.appendItems(items, toSection: .main)
+                
+                if let currentState = self.stateMachine.currentState,
+                   currentState is State.Idle || currentState is State.Reloading || currentState is State.LoadingMore {
+                    snapshot.appendItems([.bottomLoader], toSection: .main)
+                }
+                
+                diffableDataSource.apply(snapshot, animatingDifferences: false)
             }
-            self.diffableDataSource?.apply(snapshot)
-        }
-        .store(in: &disposeBag)
+            .store(in: &disposeBag)
         
         tweetIDs
             .receive(on: DispatchQueue.main)
@@ -141,7 +140,7 @@ extension UserLikeTimelineViewModel {
             return Fail(error: UserTimelineError.invalidUserID).eraseToAnyPublisher()
         }
         
-        return context.apiService.likeList(count: 50, userID: userID, twitterAuthenticationBox: twitterAuthenticationBox)
+        return context.apiService.likeList(count: 20, userID: userID, twitterAuthenticationBox: twitterAuthenticationBox)
     }
     
     func loadMore() -> AnyPublisher<Twitter.Response.Content<[Twitter.Entity.Tweet]>, Error> {
@@ -155,7 +154,7 @@ extension UserLikeTimelineViewModel {
             return Fail(error: UserTimelineError.invalidAnchorToLoadMore).eraseToAnyPublisher()
         }
         
-        return context.apiService.likeList(count: 50, userID: userID, maxID: maxID, twitterAuthenticationBox: twitterAuthenticationBox)
+        return context.apiService.likeList(count: 20, userID: userID, maxID: maxID, twitterAuthenticationBox: twitterAuthenticationBox)
     }
     
 }

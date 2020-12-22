@@ -116,8 +116,11 @@ extension MainTabBarController {
             .receive(on: DispatchQueue.main)
             .sink { [weak self] error in
                 guard let self = self else { return }
-                if let error = error as? APIService.APIError {
-                    switch error {
+                switch error {
+                case .implicit(let reason):
+                    break
+                case .explicit(let reason):
+                    switch reason {
                     case .accountTemporarilyLocked:
                         var config = SwiftMessages.defaultConfig
                         config.duration = .seconds(seconds: 10)
@@ -132,6 +135,15 @@ extension MainTabBarController {
                             UIApplication.shared.open(url)
                         }
                         SwiftMessages.show(config: config, view: bannerView)
+                    case .rateLimitExceeded:
+                        var config = SwiftMessages.defaultConfig
+                        config.duration = .seconds(seconds: 10)
+                        config.interactiveHide = true
+                        let bannerView = NotifyBannerView()
+                        bannerView.configure(for: .warning)
+                        bannerView.titleLabel.text = "Rate Limit Exceeded"
+                        bannerView.messageLabel.text = "Reached Twitter API usage limit"
+                        SwiftMessages.show(config: config, view: bannerView)
                     default:
                         break
                     }
@@ -142,6 +154,8 @@ extension MainTabBarController {
         doubleTapGestureRecognizer.addTarget(self, action: #selector(MainTabBarController.doubleTapGestureRecognizerHandler(_:)))
         doubleTapGestureRecognizer.delaysTouchesEnded = false
         tabBar.addGestureRecognizer(doubleTapGestureRecognizer)
+        
+        delegate = self
         
         #if DEBUG
         // selectedIndex = 1
@@ -168,5 +182,12 @@ extension MainTabBarController {
         default:
             break
         }
+    }
+}
+
+// MARK: - UITabBarControllerDelegate
+extension MainTabBarController: UITabBarControllerDelegate {
+    override func tabBar(_ tabBar: UITabBar, didSelect item: UITabBarItem) {
+        os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: didSelect item: %s", ((#file as NSString).lastPathComponent), #line, #function, item.debugDescription)
     }
 }

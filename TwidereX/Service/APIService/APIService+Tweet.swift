@@ -20,12 +20,14 @@ extension APIService {
         mediaIDs: [String]?,
         placeID: String?,
         replyToTweetObjectID: NSManagedObjectID?,
+        excludeReplyUserIDs: [TwitterUser.ID]?,
         twitterAuthenticationBox: AuthenticationService.TwitterAuthenticationBox
     ) -> AnyPublisher<Twitter.Response.Content<Twitter.Entity.Tweet>, Error> {
         let authorization = twitterAuthenticationBox.twitterAuthorization
         let managedObjectContext = backgroundManagedObjectContext
         
         let mediaIDs: String? = mediaIDs?.joined(separator: ",")
+        let excludeReplyUserIDs: String? = excludeReplyUserIDs?.joined(separator: ",")
         let query = Future<Twitter.API.Statuses.UpdateQuery, Never> { promise in
             if let replyToTweetObjectID = replyToTweetObjectID {
                 managedObjectContext.perform {
@@ -34,6 +36,7 @@ extension APIService {
                         status: content,
                         inReplyToStatusID: replyTo.id,
                         autoPopulateReplyMetadata: true,
+                        excludeReplyUserIDs: excludeReplyUserIDs,
                         mediaIDs: mediaIDs,
                         latitude: nil,
                         longitude: nil,
@@ -48,6 +51,7 @@ extension APIService {
                     status: content,
                     inReplyToStatusID: nil,
                     autoPopulateReplyMetadata: false,
+                    excludeReplyUserIDs: excludeReplyUserIDs,
                     mediaIDs: mediaIDs,
                     latitude: nil,
                     longitude: nil,

@@ -24,7 +24,7 @@ final class SearchUserViewModel: NSObject {
     let searchTwitterUserIDs = CurrentValueSubject<[Twitter.Entity.V2.User.ID], Never>([])
     let searchText = CurrentValueSubject<String, Never>("")
     let searchActionPublisher = PassthroughSubject<Void, Never>()
-    weak var userBriefInfoTableViewCellDelegate: UserBriefInfoTableViewCellDelegate?
+    weak var searchUserTableViewCellDelegate: SearchUserTableViewCellDelegate?
     
     // output
     private(set) lazy var stateMachine: GKStateMachine = {

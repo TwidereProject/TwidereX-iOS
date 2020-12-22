@@ -51,15 +51,26 @@ extension Twitter.API.Statuses {
         public let status: String
         public let inReplyToStatusID: Twitter.Entity.Tweet.ID?
         public let autoPopulateReplyMetadata: Bool?
+        public let excludeReplyUserIDs: String?
         public let mediaIDs: String?
         public let latitude: Double?
         public let longitude: Double?
         public let placeID: String?
         
-        public init(status: String, inReplyToStatusID: Twitter.Entity.Tweet.ID?, autoPopulateReplyMetadata: Bool?, mediaIDs: String?, latitude: Double?, longitude: Double?, placeID: String?) {
+        public init(
+            status: String,
+            inReplyToStatusID: Twitter.Entity.Tweet.ID?,
+            autoPopulateReplyMetadata: Bool?,
+            excludeReplyUserIDs: String?,
+            mediaIDs: String?,
+            latitude: Double?,
+            longitude: Double?,
+            placeID: String?
+        ) {
             self.status = status
             self.inReplyToStatusID = inReplyToStatusID
             self.autoPopulateReplyMetadata = autoPopulateReplyMetadata
+            self.excludeReplyUserIDs = excludeReplyUserIDs
             self.mediaIDs = mediaIDs
             self.latitude = latitude
             self.longitude = longitude
@@ -70,6 +81,7 @@ extension Twitter.API.Statuses {
             var items: [URLQueryItem] = []
             inReplyToStatusID.flatMap { items.append(URLQueryItem(name: "in_reply_to_status_id", value: $0)) }
             autoPopulateReplyMetadata.flatMap { items.append(URLQueryItem(name: "auto_populate_reply_metadata", value: $0 ? "true" : "false")) }
+            excludeReplyUserIDs.flatMap { items.append(URLQueryItem(name: "exclude_reply_user_ids", value: $0)) }
             mediaIDs.flatMap { items.append(URLQueryItem(name: "media_ids", value: $0)) }
             latitude.flatMap { items.append(URLQueryItem(name: "lat", value: String($0))) }
             longitude.flatMap { items.append(URLQueryItem(name: "long", value: String($0))) }

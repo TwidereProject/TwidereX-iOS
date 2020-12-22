@@ -76,7 +76,7 @@
 "Scene.ListsDetails.Descriptions.SingleMember" = "1 Mitglied";
 "Scene.ListsDetails.Descriptions.SingleSubscriber" = "1 Abonnent";
 "Scene.ListsDetails.MenuActions.AddMember" = "Mitglied hinzufügen";
-"Scene.ListsDetails.MenuActions.Edit List" = "Liste bearbeiten";
+"Scene.ListsDetails.MenuActions.EditList" = "Liste bearbeiten";
 "Scene.ListsDetails.NoMembersFound" = "Keine Mitglieder gefunden.";
 "Scene.ListsDetails.Tabs.Members" = "Mitglieder";
 "Scene.ListsDetails.Tabs.Subscriber" = "Abonnent";
@@ -136,5 +136,6 @@
 "Scene.Status.Reply.Single" = "1 Antwort";
 "Scene.Status.Retweet.Mutiple" = "%d Retweets";
 "Scene.Status.Retweet.Single" = "1 Retweet";
+"Scene.Status.Title" = "Tweet";
 "Scene.Timeline.Title" = "Timeline";
 "Scene.Trends.Title" = "Trends";
