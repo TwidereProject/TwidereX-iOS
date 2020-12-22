@@ -139,7 +139,11 @@ extension HomeTimelineViewController {
                         }),
                         UIAction(title: "Show Account unlock alert", image: nil, attributes: [], handler: { [weak self] action in
                             guard let self = self else { return }
-                            self.context.apiService.error.send(APIService.APIError.accountTemporarilyLocked)
+                            self.context.apiService.error.send(.explicit(.accountTemporarilyLocked))
+                        }),
+                        UIAction(title: "Show Rate Limit alert", image: nil, attributes: [], handler: { [weak self] action in
+                            guard let self = self else { return }
+                            self.context.apiService.error.send(.explicit(.rateLimitExceeded))
                         }),
                         UIAction(title: "Export Database", image: nil, attributes: [], handler: { [weak self] action in
                             guard let self = self else { return }

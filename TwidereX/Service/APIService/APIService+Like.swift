@@ -36,7 +36,7 @@ extension APIService {
             switch result {
             case .success:
                 guard let targetTweetID = _targetTweetID else {
-                    throw APIError.silent(.badRequest)
+                    throw APIError.implicit(.badRequest)
                 }
                 return targetTweetID
                 
@@ -58,22 +58,12 @@ extension APIService {
         let requestTwitterUserID = twitterAuthenticationBox.twitterUserID
         let query = Twitter.API.Favorites.FavoriteQuery(id: tweetID)
         return Twitter.API.Favorites.favorites(session: session, authorization: authorization, favoriteKind: favoriteKind, query: query)
-            .handleEvents(receiveOutput: { [weak self] response in
-                guard let self = self else { return }
-                
+            .map { response -> AnyPublisher<Twitter.Response.Content<Twitter.Entity.Tweet>, Error> in
                 let log = OSLog.api
-                
-                if let date = response.date, let rateLimit = response.rateLimit {
-                    // just print logging
-                    let responseNetworkDate = date
-                    let resetTimeInterval = rateLimit.reset.timeIntervalSince(responseNetworkDate)
-                    let resetTimeIntervalInMin = resetTimeInterval / 60.0
-                    os_log(.info, log: log, "%{public}s[%{public}ld], %{public}s: API rate limit: %{public}ld/%{public}ld, reset at %{public}s, left: %.2fm (%.2fs)", ((#file as NSString).lastPathComponent), #line, #function, rateLimit.remaining, rateLimit.limit, rateLimit.reset.debugDescription, resetTimeIntervalInMin, resetTimeInterval)
-                }
-                
                 let entity = response.value
                 let managedObjectContext = self.backgroundManagedObjectContext
-                managedObjectContext.perform {
+                    
+                return managedObjectContext.performChanges {
                     let _requestTwitterUser: TwitterUser? = {
                         let request = TwitterUser.sortedFetchRequest
                         request.predicate = TwitterUser.predicate(idStr: requestTwitterUserID)
@@ -107,13 +97,35 @@ extension APIService {
                     
                     APIService.CoreData.mergeTweet(for: requestTwitterUser, old: oldTweet, entity: entity, networkDate: response.networkDate)
                     os_log(.info, log: log, "%{public}s[%{public}ld], %{public}s: did update tweet %{public}s like status to: %{public}s. now %ld likes", ((#file as NSString).lastPathComponent), #line, #function, entity.idStr, entity.favorited.flatMap { $0 ? "like" : "unlike" } ?? "<nil>", entity.favoriteCount ?? 0)
-                    
-                    do {
-                        try managedObjectContext.saveOrRollback()
-                    } catch {
-                        assertionFailure(error.localizedDescription)
+                }
+                .setFailureType(to: Error.self)
+                .tryMap { result -> Twitter.Response.Content<Twitter.Entity.Tweet> in
+                    switch result {
+                    case .success:
+                        return response
+                    case .failure(let error):
+                        throw error
                     }
-                    // TODO: broadcast notification
+                }
+                .eraseToAnyPublisher()
+            }
+            .switchToLatest()
+            .handleEvents(receiveCompletion: { [weak self] completion in
+                guard let self = self else { return }
+                switch completion {
+                case .failure(let error):
+                    if case let Twitter.API.APIError.response(code, _) = error {
+                        switch code {
+                        case ErrorReason.accountTemporarilyLocked.code:
+                            self.error.send(.explicit(.accountTemporarilyLocked))
+                        case ErrorReason.rateLimitExceeded.code:
+                            self.error.send(.explicit(.rateLimitExceeded))
+                        default:
+                            break
+                        }
+                    }
+                case .finished:
+                    break
                 }
             })
             .eraseToAnyPublisher()

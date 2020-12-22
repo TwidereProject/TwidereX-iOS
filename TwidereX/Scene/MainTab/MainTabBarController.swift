@@ -116,8 +116,11 @@ extension MainTabBarController {
             .receive(on: DispatchQueue.main)
             .sink { [weak self] error in
                 guard let self = self else { return }
-                if let error = error as? APIService.APIError {
-                    switch error {
+                switch error {
+                case .implicit(let reason):
+                    break
+                case .explicit(let reason):
+                    switch reason {
                     case .accountTemporarilyLocked:
                         var config = SwiftMessages.defaultConfig
                         config.duration = .seconds(seconds: 10)
@@ -131,6 +134,15 @@ extension MainTabBarController {
                             let url = URL(string: "https://twitter.com/account/access")!
                             UIApplication.shared.open(url)
                         }
+                        SwiftMessages.show(config: config, view: bannerView)
+                    case .rateLimitExceeded:
+                        var config = SwiftMessages.defaultConfig
+                        config.duration = .seconds(seconds: 10)
+                        config.interactiveHide = true
+                        let bannerView = NotifyBannerView()
+                        bannerView.configure(for: .warning)
+                        bannerView.titleLabel.text = "Rate Limit Exceeded"
+                        bannerView.messageLabel.text = "Reached Twitter API usage limit"
                         SwiftMessages.show(config: config, view: bannerView)
                     default:
                         break
