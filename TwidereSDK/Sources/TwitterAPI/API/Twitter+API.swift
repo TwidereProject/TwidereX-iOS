@@ -39,6 +39,7 @@ extension Twitter.API {
     
     // V2
     public enum V2 {
+        public enum FollowLookup { }
         public enum Lookup { }
         public enum RecentSearch { }
         public enum UserLookup { } 

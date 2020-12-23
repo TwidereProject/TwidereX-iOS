@@ -99,3 +99,44 @@ extension APIService {
     }
     
 }
+
+extension APIService {
+    func following(
+        userID: Twitter.Entity.V2.User.ID,
+        maxResults: Int,
+        nextToken: String?,
+        twitterAuthenticationBox: AuthenticationService.TwitterAuthenticationBox
+    ) -> AnyPublisher<Twitter.Response.Content<Twitter.API.V2.FollowLookup.Content>, Error> {
+        let authorization = twitterAuthenticationBox.twitterAuthorization
+        let requestTwitterUserID = twitterAuthenticationBox.twitterUserID
+
+        let query = Twitter.API.V2.FollowLookup.Query(
+            userID: userID,
+            maxResults: maxResults,
+            nextToken: nextToken
+        )
+        return Twitter.API.V2.FollowLookup.following(
+            session: session,
+            authorization: authorization,
+            query: query
+        )
+        .map { response -> AnyPublisher<Twitter.Response.Content<Twitter.API.V2.FollowLookup.Content>, Error> in
+            let log = OSLog.api
+            
+            let dictResponse = response.map { response in
+                return Twitter.Response.V2.DictContent(
+                    tweets: response.includes?.tweets ?? [],
+                    users: response.data ?? [],
+                    media: []
+                )
+            }
+            return APIService.Persist.persistDictContent(managedObjectContext: self.backgroundManagedObjectContext, response: dictResponse, requestTwitterUserID: requestTwitterUserID, log: log)
+            .map { _ in return response }
+            .replaceError(with: response)
+            .setFailureType(to: Error.self)
+            .eraseToAnyPublisher()
+        }
+        .switchToLatest()
+        .eraseToAnyPublisher()
+    }
+}

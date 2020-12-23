@@ -17,7 +17,7 @@ import TwitterAPI
 extension APIService.Persist {
     static func persistDictContent(managedObjectContext: NSManagedObjectContext, response: Twitter.Response.Content<Twitter.Response.V2.DictContent>, requestTwitterUserID: TwitterUser.ID, log: OSLog) -> AnyPublisher<Result<Void, Error>, Never> {
         let dictContent = response.value
-        os_log("%{public}s[%{public}ld], %{public}s: persist %{public}ld tweets…", ((#file as NSString).lastPathComponent), #line, #function, dictContent.tweetDict.count)
+        os_log("%{public}s[%{public}ld], %{public}s: persist %{public}ld tweets %{public}ld twitter users…", ((#file as NSString).lastPathComponent), #line, #function, dictContent.tweetDict.count, dictContent.userDict.count)
 
         // switch to background context
         return managedObjectContext.performChanges {
@@ -60,6 +60,7 @@ extension APIService.Persist {
             }()
             os_signpost(.event, log: log, name: "load tweets into cache", signpostID: cacheTaskSignpostID, "cached %{public}ld tweets", _tweetCache.count)
             os_signpost(.end, log: log, name: "load tweets into cache", signpostID: cacheTaskSignpostID)
+            os_log("%{public}s[%{public}ld], %{public}s: preload %ld tweets in the cache", ((#file as NSString).lastPathComponent), #line, #function, _tweetCache.count)
             
             for (tweetID, tweet) in dictContent.tweetDict {
                 guard let authorID = tweet.authorID,
@@ -117,8 +118,6 @@ extension APIService.Persist {
                     log: log
                 )
             }
-            
-            os_log("%{public}s[%{public}ld], %{public}s: preload %ld tweets in the cache", ((#file as NSString).lastPathComponent), #line, #function, _tweetCache.count)
         }
         .eraseToAnyPublisher()
     }
