@@ -20,6 +20,7 @@ final class SearchUserTableViewCell: UITableViewCell {
     
     weak var delegate: SearchUserTableViewCellDelegate?
     let userBriefInfoView = UserBriefInfoView()
+    let separatorLine = UIView.separatorLine
     
     override func prepareForReuse() {
         super.prepareForReuse()
@@ -52,6 +53,16 @@ extension SearchUserTableViewCell {
             contentView.bottomAnchor.constraint(equalTo: userBriefInfoView.bottomAnchor, constant: 16),
         ])
         
+        
+        separatorLine.translatesAutoresizingMaskIntoConstraints = false
+        contentView.addSubview(separatorLine)
+        NSLayoutConstraint.activate([
+            separatorLine.leadingAnchor.constraint(equalTo: userBriefInfoView.nameLabel.leadingAnchor),
+            separatorLine.trailingAnchor.constraint(equalTo: contentView.readableContentGuide.trailingAnchor),
+            separatorLine.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
+            separatorLine.heightAnchor.constraint(equalToConstant: UIView.separatorLineHeight(of: contentView)),
+        ])
+        
         userBriefInfoView.followActionButton.isHidden = false
         userBriefInfoView.followActionButton.addTarget(self, action: #selector(SearchUserTableViewCell.followActionButtonPressed(_:)), for: .touchUpInside)
     }
@@ -62,7 +73,7 @@ extension SearchUserTableViewCell {
     
     @objc private func followActionButtonPressed(_ sender: FollowActionButton) {
         os_log("%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
-
+        
         delegate?.userBriefInfoTableViewCell(self, followActionButtonPressed: sender)
     }
     

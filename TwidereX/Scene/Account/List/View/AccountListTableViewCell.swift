@@ -20,7 +20,8 @@ final class AccountListTableViewCell: UITableViewCell {
     
     weak var delegate: AccountListTableViewCellDelegate?
     let userBriefInfoView = UserBriefInfoView()
-    
+    let separatorLine = UIView.separatorLine
+
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         _init()
@@ -43,6 +44,15 @@ extension AccountListTableViewCell {
             userBriefInfoView.leadingAnchor.constraint(equalTo:  contentView.readableContentGuide.leadingAnchor),
             contentView.readableContentGuide.trailingAnchor.constraint(equalTo: userBriefInfoView.trailingAnchor),
             contentView.bottomAnchor.constraint(equalTo: userBriefInfoView.bottomAnchor, constant: 16).priority(.defaultHigh),
+        ])
+        
+        separatorLine.translatesAutoresizingMaskIntoConstraints = false
+        contentView.addSubview(separatorLine)
+        NSLayoutConstraint.activate([
+            separatorLine.leadingAnchor.constraint(equalTo: userBriefInfoView.nameLabel.leadingAnchor),
+            separatorLine.trailingAnchor.constraint(equalTo: contentView.readableContentGuide.trailingAnchor),
+            separatorLine.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
+            separatorLine.heightAnchor.constraint(equalToConstant: UIView.separatorLineHeight(of: contentView)),
         ])
         
         userBriefInfoView.menuButton.isHidden = false

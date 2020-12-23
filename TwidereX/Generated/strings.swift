@@ -35,6 +35,12 @@ internal enum L10n {
         /// Photo Saved
         internal static let title = L10n.tr("Localizable", "Common.Alerts.PhotoSaved.Title")
       }
+      internal enum RateLimitExceeded {
+        /// Reached Twitter API usage limit
+        internal static let message = L10n.tr("Localizable", "Common.Alerts.RateLimitExceeded.Message")
+        /// Rate Limit Exceeded
+        internal static let title = L10n.tr("Localizable", "Common.Alerts.RateLimitExceeded.Title")
+      }
       internal enum TweetFail {
         /// Please try again
         internal static let message = L10n.tr("Localizable", "Common.Alerts.TweetFail.Message")
@@ -84,6 +90,14 @@ internal enum L10n {
         internal static let followers = L10n.tr("Localizable", "Common.Controls.Friendship.Followers")
         /// Follows you
         internal static let followsYou = L10n.tr("Localizable", "Common.Controls.Friendship.FollowsYou")
+        /// %@ is following you
+        internal static func userIsFollowingYou(_ p1: Any) -> String {
+          return L10n.tr("Localizable", "Common.Controls.Friendship.UserIsFollowingYou", String(describing: p1))
+        }
+        /// %@ is not following you
+        internal static func userIsNotFollowingYou(_ p1: Any) -> String {
+          return L10n.tr("Localizable", "Common.Controls.Friendship.UserIsNotFollowingYou", String(describing: p1))
+        }
         internal enum Actions {
           /// Follow
           internal static let follow = L10n.tr("Localizable", "Common.Controls.Friendship.Actions.Follow")
@@ -223,9 +237,21 @@ internal enum L10n {
       /// Sign in
       internal static let signIn = L10n.tr("Localizable", "Scene.Drawer.SignIn")
     }
+    internal enum Followers {
+      /// Followers
+      internal static let title = L10n.tr("Localizable", "Scene.Followers.Title")
+    }
+    internal enum Following {
+      /// Following
+      internal static let title = L10n.tr("Localizable", "Scene.Following.Title")
+    }
     internal enum Likes {
       /// Likes
       internal static let title = L10n.tr("Localizable", "Scene.Likes.Title")
+    }
+    internal enum Listed {
+      /// Listed
+      internal static let title = L10n.tr("Localizable", "Scene.Listed.Title")
     }
     internal enum Lists {
       /// Lists

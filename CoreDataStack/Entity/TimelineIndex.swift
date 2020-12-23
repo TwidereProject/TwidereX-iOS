@@ -24,6 +24,12 @@ final public class TimelineIndex: NSManagedObject {
 }
 
 extension TimelineIndex {
+
+    
+    
+}
+
+extension TimelineIndex {
     
     public override func awakeFromInsert() {
         super.awakeFromInsert()
