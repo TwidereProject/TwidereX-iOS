@@ -4,6 +4,8 @@
 "Common.Alerts.PhotoSaveFail.Message" = "Please try again";
 "Common.Alerts.PhotoSaveFail.Title" = "Failed to Save Photo";
 "Common.Alerts.PhotoSaved.Title" = "Photo Saved";
+"Common.Alerts.RateLimitExceeded.Message" = "Reached Twitter API usage limit";
+"Common.Alerts.RateLimitExceeded.Title" = "Rate Limit Exceeded";
 "Common.Alerts.TweetFail.Message" = "Please try again";
 "Common.Alerts.TweetFail.Title" = "Failed to Tweet";
 "Common.Alerts.TweetSent.Title" = "Tweet Sent";
@@ -26,6 +28,8 @@
 "Common.Controls.Friendship.Follower" = "follower";
 "Common.Controls.Friendship.Followers" = "followers";
 "Common.Controls.Friendship.FollowsYou" = "Follows you";
+"Common.Controls.Friendship.UserIsFollowingYou" = "%@ is following you";
+"Common.Controls.Friendship.UserIsNotFollowingYou" = "%@ is not following you";
 "Common.Controls.Ios.PhotoLibrary" = "Photo Library";
 "Common.Controls.ProfileDashboard.Followers" = "Followers";
 "Common.Controls.ProfileDashboard.Following" = "Following";
@@ -66,7 +70,10 @@
 "Scene.Drafts.Title" = "Drafts";
 "Scene.Drawer.ManageAccounts" = "Manage accounts";
 "Scene.Drawer.SignIn" = "Sign in";
+"Scene.Followers.Title" = "Followers";
+"Scene.Following.Title" = "Following";
 "Scene.Likes.Title" = "Likes";
+"Scene.Listed.Title" = "Listed";
 "Scene.Lists.Tabs.Created" = "Created";
 "Scene.Lists.Tabs.Subscribed" = "Subscribed";
 "Scene.Lists.Title" = "Lists";

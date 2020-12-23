@@ -4,6 +4,8 @@
 "Common.Alerts.PhotoSaveFail.Message" = "请重试";
 "Common.Alerts.PhotoSaveFail.Title" = "保存照片失败";
 "Common.Alerts.PhotoSaved.Title" = "照片已保存";
+"Common.Alerts.RateLimitExceeded.Message" = "已超过 Twitter API 用量限制";
+"Common.Alerts.RateLimitExceeded.Title" = "超出用量限制";
 "Common.Alerts.TweetFail.Message" = "请重试";
 "Common.Alerts.TweetFail.Title" = "推文发送失败";
 "Common.Alerts.TweetSent.Title" = "推文已发送";
@@ -26,6 +28,8 @@
 "Common.Controls.Friendship.Follower" = "关注者";
 "Common.Controls.Friendship.Followers" = "关注者";
 "Common.Controls.Friendship.FollowsYou" = "关注了你";
+"Common.Controls.Friendship.UserIsFollowingYou" = "%@ 正在关注你";
+"Common.Controls.Friendship.UserIsNotFollowingYou" = "%@ 尚未关注你";
 "Common.Controls.Ios.PhotoLibrary" = "照片库";
 "Common.Controls.ProfileDashboard.Followers" = "关注者";
 "Common.Controls.ProfileDashboard.Following" = "正在关注";
@@ -66,7 +70,10 @@
 "Scene.Drafts.Title" = "草稿";
 "Scene.Drawer.ManageAccounts" = "管理帐号";
 "Scene.Drawer.SignIn" = "登录";
+"Scene.Followers.Title" = "关注者";
+"Scene.Following.Title" = "正在关注";
 "Scene.Likes.Title" = "喜欢";
+"Scene.Listed.Title" = "列表中";
 "Scene.Lists.Tabs.Created" = "已创建";
 "Scene.Lists.Tabs.Subscribed" = "已订阅";
 "Scene.Lists.Title" = "列表";

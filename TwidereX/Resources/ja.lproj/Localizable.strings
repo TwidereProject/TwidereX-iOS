@@ -4,6 +4,8 @@
 "Common.Alerts.PhotoSaveFail.Message" = "もう一度やり直してください";
 "Common.Alerts.PhotoSaveFail.Title" = "写真の保存に失敗しました";
 "Common.Alerts.PhotoSaved.Title" = "写真を保存しました";
+"Common.Alerts.RateLimitExceeded.Message" = "Reached Twitter API usage limit";
+"Common.Alerts.RateLimitExceeded.Title" = "Rate Limit Exceeded";
 "Common.Alerts.TweetFail.Message" = "もう一度やり直してください";
 "Common.Alerts.TweetFail.Title" = "ツイートに失敗しました";
 "Common.Alerts.TweetSent.Title" = "ツイートを送信しました";
@@ -26,6 +28,8 @@
 "Common.Controls.Friendship.Follower" = "フォロワー";
 "Common.Controls.Friendship.Followers" = "フォロワー";
 "Common.Controls.Friendship.FollowsYou" = "あなたをフォロー";
+"Common.Controls.Friendship.UserIsFollowingYou" = "%@ is following you";
+"Common.Controls.Friendship.UserIsNotFollowingYou" = "%@ is not following you";
 "Common.Controls.Ios.PhotoLibrary" = "フォトライブラリ";
 "Common.Controls.ProfileDashboard.Followers" = "フォロワー";
 "Common.Controls.ProfileDashboard.Following" = "フォロー中";
@@ -66,7 +70,10 @@
 "Scene.Drafts.Title" = "下書き";
 "Scene.Drawer.ManageAccounts" = "アカウントを管理";
 "Scene.Drawer.SignIn" = "サインイン";
+"Scene.Followers.Title" = "フォロワー";
+"Scene.Following.Title" = "フォロー中";
 "Scene.Likes.Title" = "いいね";
+"Scene.Listed.Title" = "リスト";
 "Scene.Lists.Tabs.Created" = "作成済み";
 "Scene.Lists.Tabs.Subscribed" = "フォロー済";
 "Scene.Lists.Title" = "リスト";
