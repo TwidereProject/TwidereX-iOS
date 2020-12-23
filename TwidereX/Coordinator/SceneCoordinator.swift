@@ -45,6 +45,7 @@ extension SceneCoordinator {
         case tweetConversation(viewModel: TweetConversationViewModel)
         case searchDetail(viewModel: SearchDetailViewModel)
         case profile(viewModel: ProfileViewModel)
+        case followingList(viewModel: FollowingListViewModel)
         case mediaPreview(viewModel: MediaPreviewViewModel)
         case drawerSidebar
         
@@ -143,6 +144,10 @@ private extension SceneCoordinator {
             viewController = _viewController
         case .profile(let viewModel):
             let _viewController = ProfileViewController()
+            _viewController.viewModel = viewModel
+            viewController = _viewController
+        case .followingList(let viewModel):
+            let _viewController = FollowingListViewController()
             _viewController.viewModel = viewModel
             viewController = _viewController
         case .mediaPreview(let viewModel):

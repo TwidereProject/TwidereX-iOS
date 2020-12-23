@@ -188,6 +188,10 @@ extension UserBriefInfoView {
     }
 }
 
+extension UserBriefInfoView: AvatarConfigurableView {
+    
+}
+
 #if DEBUG
 import SwiftUI
 

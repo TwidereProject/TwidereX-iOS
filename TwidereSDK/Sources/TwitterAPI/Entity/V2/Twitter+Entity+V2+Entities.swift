@@ -26,15 +26,14 @@ extension Twitter.Entity.V2.Entities {
         public let start: Int
         public let end: Int
         public let url: String
-        public let expandedURL: String
-        public let displayURL: String
         
         // optional
+        public let expandedURL: String?
+        public let displayURL: String?
         public let status: Int?
         public let title: String?
         public let description: String?
         public let unwoundURL: String?
-        
         
         public enum CodingKeys: String, CodingKey {
             case start = "start"
