@@ -91,10 +91,10 @@ extension TwitterUser {
         user.metrics = metrics
         
         if let following = following {
-            user.mutableSetValue(forKey: #keyPath(TwitterUser.following)).add(following)
+            user.mutableSetValue(forKey: #keyPath(TwitterUser.followingFrom)).add(following)
         }
         if let followRequestSent = followRequestSent {
-            user.mutableSetValue(forKey: #keyPath(TwitterUser.followRequestSent)).add(followRequestSent)
+            user.mutableSetValue(forKey: #keyPath(TwitterUser.followRequestSentFrom)).add(followRequestSent)
         }
         
         return user
