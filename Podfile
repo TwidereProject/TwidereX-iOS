@@ -14,6 +14,7 @@ target 'TwidereX' do
   pod 'SwiftGen', '~> 6.3.0'
   pod 'DateToolsSwift', '~> 5.0.0'
   pod 'Firebase/Analytics'
+  pod 'Firebase/Crashlytics'
 
   # Twitter
   pod 'twitter-text', '~> 3.1.0'
