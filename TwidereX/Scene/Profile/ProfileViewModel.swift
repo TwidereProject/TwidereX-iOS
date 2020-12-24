@@ -19,7 +19,7 @@ class ProfileViewModel: NSObject {
     private var currentTwitterUserObserver: AnyCancellable?
     
     // input
-    // FIXME: multi-platform support
+    let context: AppContext
     let twitterUser: CurrentValueSubject<TwitterUser?, Never>
     let currentTwitterUser = CurrentValueSubject<TwitterUser?, Never>(nil)
     let viewDidAppear = PassthroughSubject<Void, Never>()
@@ -42,71 +42,55 @@ class ProfileViewModel: NSObject {
     let friendship: CurrentValueSubject<Friendship?, Never>
     let followedBy: CurrentValueSubject<Bool?, Never>
     
-    override init() {
-        self.twitterUser = CurrentValueSubject(nil)
-        self.userID = CurrentValueSubject(nil)
-        self.bannerImageURL = CurrentValueSubject(nil)
-        self.avatarImageURL = CurrentValueSubject(nil)
-        self.protected = CurrentValueSubject(nil)
-        self.verified = CurrentValueSubject(nil)
-        self.name = CurrentValueSubject(nil)
-        self.username = CurrentValueSubject(nil)
-        self.bioDescription = CurrentValueSubject(nil)
-        self.url = CurrentValueSubject(nil)
-        self.location = CurrentValueSubject(nil)
-        self.friendsCount = CurrentValueSubject(nil)
-        self.followersCount = CurrentValueSubject(nil)
-        self.listedCount = CurrentValueSubject(nil)
-        self.friendship = CurrentValueSubject(nil)
-        self.followedBy = CurrentValueSubject(nil)
-        super.init()
-
-        setup()
-    }
-    
-    init(twitterUser: TwitterUser) {
+    // FIXME: multi-platform support
+    init(context: AppContext, optionalTwitterUser twitterUser: TwitterUser?) {
+        self.context = context
         self.twitterUser = CurrentValueSubject(twitterUser)
-        self.userID = CurrentValueSubject(twitterUser.id)
-        self.bannerImageURL = CurrentValueSubject(twitterUser.profileBannerURL(sizeKind: .large))
-        self.avatarImageURL = CurrentValueSubject(twitterUser.avatarImageURL(size: .original))
-        self.protected = CurrentValueSubject(twitterUser.protected)
-        self.verified = CurrentValueSubject(twitterUser.verified)
-        self.name = CurrentValueSubject(twitterUser.name)
-        self.username = CurrentValueSubject(twitterUser.username)
-        self.bioDescription = CurrentValueSubject(twitterUser.displayBioDescription)
-        self.url = CurrentValueSubject(twitterUser.displayURL)
-        self.location = CurrentValueSubject(twitterUser.location)
-        self.friendsCount = CurrentValueSubject(twitterUser.metrics?.followingCount.flatMap { Int(truncating: $0) })
-        self.followersCount = CurrentValueSubject(twitterUser.metrics?.followersCount.flatMap { Int(truncating: $0) })
-        self.listedCount = CurrentValueSubject(twitterUser.metrics?.listedCount.flatMap{ Int(truncating: $0) })
+        self.userID = CurrentValueSubject(twitterUser?.id)
+        self.bannerImageURL = CurrentValueSubject(twitterUser?.profileBannerURL(sizeKind: .large))
+        self.avatarImageURL = CurrentValueSubject(twitterUser?.avatarImageURL(size: .original))
+        self.protected = CurrentValueSubject(twitterUser?.protected)
+        self.verified = CurrentValueSubject(twitterUser?.verified)
+        self.name = CurrentValueSubject(twitterUser?.name)
+        self.username = CurrentValueSubject(twitterUser?.username)
+        self.bioDescription = CurrentValueSubject(twitterUser?.displayBioDescription)
+        self.url = CurrentValueSubject(twitterUser?.displayURL)
+        self.location = CurrentValueSubject(twitterUser?.location)
+        self.friendsCount = CurrentValueSubject(twitterUser?.metrics?.followingCount.flatMap { Int(truncating: $0) })
+        self.followersCount = CurrentValueSubject(twitterUser?.metrics?.followersCount.flatMap { Int(truncating: $0) })
+        self.listedCount = CurrentValueSubject(twitterUser?.metrics?.listedCount.flatMap{ Int(truncating: $0) })
         self.friendship = CurrentValueSubject(nil)
         self.followedBy = CurrentValueSubject(nil)
+
         super.init()
+
+        context.authenticationService.activeAuthenticationIndex
+            .sink { [weak self] activeAuthenticationIndex in
+                guard let self = self else { return }
+                guard let activeAuthenticationIndex = activeAuthenticationIndex,
+                      let platform = activeAuthenticationIndex.platform else {
+                    self.currentTwitterUser.value = nil
+                    return
+                }
+                switch platform {
+                case .twitter:
+                    self.currentTwitterUser.value = activeAuthenticationIndex.twitterAuthentication?.twitterUser
+                case .mastodon:
+                    self.currentTwitterUser.value = nil
+                }
+            }
+            .store(in: &disposeBag)
         
         setup()
     }
     
-    init(context: AppContext, userID: TwitterUser.ID) {
-        self.twitterUser = CurrentValueSubject(nil)
-        self.userID = CurrentValueSubject(nil)
-        self.bannerImageURL = CurrentValueSubject(nil)
-        self.avatarImageURL = CurrentValueSubject(nil)
-        self.protected = CurrentValueSubject(nil)
-        self.verified = CurrentValueSubject(nil)
-        self.name = CurrentValueSubject(nil)
-        self.username = CurrentValueSubject(nil)
-        self.bioDescription = CurrentValueSubject(nil)
-        self.url = CurrentValueSubject(nil)
-        self.location = CurrentValueSubject(nil)
-        self.friendsCount = CurrentValueSubject(nil)
-        self.followersCount = CurrentValueSubject(nil)
-        self.listedCount = CurrentValueSubject(nil)
-        self.friendship = CurrentValueSubject(nil)
-        self.followedBy = CurrentValueSubject(nil)
-        super.init()
+    convenience init(context: AppContext, twitterUser: TwitterUser) {
+        self.init(context: context, optionalTwitterUser: twitterUser)
+    }
+    
+    convenience init(context: AppContext, userID: TwitterUser.ID) {
+        self.init(context: context, optionalTwitterUser: nil)
         
-        setup()
-
         guard let activeTwitterAuthenticationBox = context.authenticationService.activeTwitterAuthenticationBox.value else {
             return
         }
@@ -139,26 +123,8 @@ class ProfileViewModel: NSObject {
             .store(in: &disposeBag)
     }
     
-    init(context: AppContext, username: String) {
-        self.twitterUser = CurrentValueSubject(nil)
-        self.userID = CurrentValueSubject(nil)
-        self.bannerImageURL = CurrentValueSubject(nil)
-        self.avatarImageURL = CurrentValueSubject(nil)
-        self.protected = CurrentValueSubject(nil)
-        self.verified = CurrentValueSubject(nil)
-        self.name = CurrentValueSubject(nil)
-        self.username = CurrentValueSubject(nil)
-        self.bioDescription = CurrentValueSubject(nil)
-        self.url = CurrentValueSubject(nil)
-        self.location = CurrentValueSubject(nil)
-        self.friendsCount = CurrentValueSubject(nil)
-        self.followersCount = CurrentValueSubject(nil)
-        self.listedCount = CurrentValueSubject(nil)
-        self.friendship = CurrentValueSubject(nil)
-        self.followedBy = CurrentValueSubject(nil)
-        super.init()
-        
-        setup()
+    convenience init(context: AppContext, username: String) {
+        self.init(context: context, optionalTwitterUser: nil)
         
         guard let activeTwitterAuthenticationBox = context.authenticationService.activeTwitterAuthenticationBox.value else {
             return
@@ -244,7 +210,12 @@ extension ProfileViewModel {
                 // setup observer
                 self.twitterUserObserver = ManagedObjectObserver.observe(object: twitterUser)
                     .sink { completion in
-                        
+                        switch completion {
+                        case .failure(let error):
+                            assertionFailure(error.localizedDescription)
+                        case .finished:
+                            assertionFailure()
+                        }
                     } receiveValue: { [weak self] change in
                         guard let self = self else { return }
                         guard let changeType = change.changeType else { return }
@@ -264,9 +235,14 @@ extension ProfileViewModel {
             
             if let currentTwitterUser = currentTwitterUser {
                 // setup observer
-                self.twitterUserObserver = ManagedObjectObserver.observe(object: currentTwitterUser)
+                self.currentTwitterUserObserver = ManagedObjectObserver.observe(object: currentTwitterUser)
                     .sink { completion in
-                        
+                        switch completion {
+                        case .failure(let error):
+                            assertionFailure(error.localizedDescription)
+                        case .finished:
+                            assertionFailure()
+                        }
                     } receiveValue: { [weak self] change in
                         guard let self = self else { return }
                         guard let changeType = change.changeType else { return }
@@ -323,4 +299,5 @@ extension ProfileViewModel {
             os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: followedBy update: %s", ((#file as NSString).lastPathComponent), #line, #function, followedBy ? "true" : "false")
         }
     }
+    
 }

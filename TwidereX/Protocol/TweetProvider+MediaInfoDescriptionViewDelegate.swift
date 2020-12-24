@@ -23,11 +23,7 @@ extension MediaInfoDescriptionViewDelegate where Self: TweetProvider {
                 guard let tweet = tweet?.retweet ?? tweet else { return }
                 let twitterUser = tweet.author
                 
-                let profileViewModel = ProfileViewModel(twitterUser: twitterUser)
-                self.context.authenticationService.activeAuthenticationIndex
-                    .map { $0?.twitterAuthentication?.twitterUser }
-                    .assign(to: \.value, on: profileViewModel.currentTwitterUser)
-                    .store(in: &profileViewModel.disposeBag)
+                let profileViewModel = ProfileViewModel(context: self.context, twitterUser: twitterUser)
                 DispatchQueue.main.async {
                     let from: UIViewController? = {
                         guard let tabBarController = self.presentingViewController as? UITabBarController else {

@@ -19,11 +19,7 @@ extension UITableViewDelegate where Self: TwitterUserProvider {
                 guard let self = self else { return }
                 guard let twitterUser = twitterUser else { return }
                 
-                let profileViewModel = ProfileViewModel(twitterUser: twitterUser)
-                self.context.authenticationService.activeAuthenticationIndex
-                    .map { $0?.twitterAuthentication?.twitterUser }
-                    .assign(to: \.value, on: profileViewModel.currentTwitterUser)
-                    .store(in: &profileViewModel.disposeBag)
+                let profileViewModel = ProfileViewModel(context: self.context, twitterUser: twitterUser)
                 DispatchQueue.main.async {
                     self.coordinator.present(scene: .profile(viewModel: profileViewModel), from: self, transition: .show)
                 }

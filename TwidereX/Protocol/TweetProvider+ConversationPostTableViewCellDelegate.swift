@@ -23,11 +23,7 @@ extension ConversationPostTableViewCellDelegate where Self: TweetProvider {
                 guard let tweet = tweet else { return }
                 let twitterUser = tweet.author
                 
-                let profileViewModel = ProfileViewModel(twitterUser: twitterUser)
-                self.context.authenticationService.activeAuthenticationIndex
-                    .map { $0?.twitterAuthentication?.twitterUser }
-                    .assign(to: \.value, on: profileViewModel.currentTwitterUser)
-                    .store(in: &profileViewModel.disposeBag)
+                let profileViewModel = ProfileViewModel(context: self.context, twitterUser: twitterUser)
                 DispatchQueue.main.async {
                     self.coordinator.present(scene: .profile(viewModel: profileViewModel), from: self, transition: .show)
                 }
@@ -42,11 +38,7 @@ extension ConversationPostTableViewCellDelegate where Self: TweetProvider {
                 guard let tweet = tweet?.retweet ?? tweet else { return }
                 let twitterUser = tweet.author
                 
-                let profileViewModel = ProfileViewModel(twitterUser: twitterUser)
-                self.context.authenticationService.activeAuthenticationIndex
-                    .map { $0?.twitterAuthentication?.twitterUser }
-                    .assign(to: \.value, on: profileViewModel.currentTwitterUser)
-                    .store(in: &profileViewModel.disposeBag)
+                let profileViewModel = ProfileViewModel(context: self.context, twitterUser: twitterUser)
                 DispatchQueue.main.async {
                     self.coordinator.present(scene: .profile(viewModel: profileViewModel), from: self, transition: .show)
                 }
@@ -61,11 +53,8 @@ extension ConversationPostTableViewCellDelegate where Self: TweetProvider {
                 guard let tweet = tweet?.retweet?.quote ?? tweet?.quote else { return }
                 let twitterUser = tweet.author
                 
-                let profileViewModel = ProfileViewModel(twitterUser: twitterUser)
-                self.context.authenticationService.activeAuthenticationIndex
-                    .map { $0?.twitterAuthentication?.twitterUser }
-                    .assign(to: \.value, on: profileViewModel.currentTwitterUser)
-                    .store(in: &profileViewModel.disposeBag)
+                let profileViewModel = ProfileViewModel(context: self.context, twitterUser: twitterUser)
+
                 DispatchQueue.main.async {
                     self.coordinator.present(scene: .profile(viewModel: profileViewModel), from: self, transition: .show)
                 }
@@ -391,9 +380,9 @@ extension ConversationPostTableViewCellDelegate where Self: TweetProvider {
                         let activeAuthenticationIndex = self.context.authenticationService.activeAuthenticationIndex.value
                         let currentTwitterUser = activeAuthenticationIndex?.twitterAuthentication?.twitterUser
                         if targetUser.id == currentTwitterUser?.id {
-                            return MeProfileViewModel(activeAuthenticationIndex: activeAuthenticationIndex)
+                            return MeProfileViewModel(context: self.context)
                         } else {
-                            return ProfileViewModel(twitterUser: targetUser)
+                            return ProfileViewModel(context: self.context, twitterUser: targetUser)
                         }
                     } else {
                         if let targetUserID = targetUserID {
@@ -403,10 +392,6 @@ extension ConversationPostTableViewCellDelegate where Self: TweetProvider {
                         }
                     }
                 }()
-                self.context.authenticationService.activeAuthenticationIndex
-                    .map { $0?.twitterAuthentication?.twitterUser }
-                    .assign(to: \.value, on: profileViewModel.currentTwitterUser)
-                    .store(in: &profileViewModel.disposeBag)
                 
                 DispatchQueue.main.async {
                     self.coordinator.present(scene: .profile(viewModel: profileViewModel), from: self, transition: .show)

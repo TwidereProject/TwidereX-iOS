@@ -630,18 +630,14 @@ extension ProfileViewController: ProfileBannerViewDelegate {
                     let activeAuthenticationIndex = self.context.authenticationService.activeAuthenticationIndex.value
                     let currentTwitterUser = activeAuthenticationIndex?.twitterAuthentication?.twitterUser
                     if targetUser.id == currentTwitterUser?.id {
-                        return MeProfileViewModel(activeAuthenticationIndex: activeAuthenticationIndex)
+                        return MeProfileViewModel(context: self.context)
                     } else {
-                        return ProfileViewModel(twitterUser: targetUser)
+                        return ProfileViewModel(context: self.context, twitterUser: targetUser)
                     }
                 } else {
                     return ProfileViewModel(context: self.context, username: targetUsername)
                 }
             }()
-            self.context.authenticationService.activeAuthenticationIndex
-                .map { $0?.twitterAuthentication?.twitterUser }
-                .assign(to: \.value, on: profileViewModel.currentTwitterUser)
-                .store(in: &profileViewModel.disposeBag)
             
             DispatchQueue.main.async {
                 self.coordinator.present(scene: .profile(viewModel: profileViewModel), from: self, transition: .show)

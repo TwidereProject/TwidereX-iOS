@@ -99,11 +99,7 @@ extension SearchUserViewController: UITableViewDelegate {
         guard case let .twitterUser(objectID) = item else { return }
         let twitterUser = viewModel.fetchedResultsController.managedObjectContext.object(with: objectID) as! TwitterUser
         
-        let profileViewModel = ProfileViewModel(twitterUser: twitterUser)
-        context.authenticationService.activeAuthenticationIndex
-            .map { $0?.twitterAuthentication?.twitterUser }
-            .assign(to: \.value, on: profileViewModel.currentTwitterUser)
-            .store(in: &profileViewModel.disposeBag)
+        let profileViewModel = ProfileViewModel(context: context, twitterUser: twitterUser)
         navigationController?.delegate = nil
         coordinator.present(scene: .profile(viewModel: profileViewModel), from: self, transition: .show)
     }
