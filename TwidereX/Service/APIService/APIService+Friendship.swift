@@ -20,11 +20,77 @@ extension APIService {
     func friendship(
         twitterUserObjectID: NSManagedObjectID,
         twitterAuthenticationBox: AuthenticationService.TwitterAuthenticationBox
-    ) -> AnyPublisher<(Twitter.API.Friendships.QueryType, TwitterUser.ID), Error> {
+    ) -> AnyPublisher<Twitter.Response.Content<Twitter.Entity.Relationship>, Error> {
+        let authorization = twitterAuthenticationBox.twitterAuthorization
+        let sourceID = twitterAuthenticationBox.twitterUserID
+        
+        let managedObjectContext = backgroundManagedObjectContext
+        return Future<Twitter.API.Friendships.FriendshipQuery, Error> { promise in
+            managedObjectContext.perform {
+                let targetTwitterUser = managedObjectContext.object(with: twitterUserObjectID) as! TwitterUser
+                let targetTwitterUserID = targetTwitterUser.id
+                let query = Twitter.API.Friendships.FriendshipQuery(sourceID: sourceID, targetID: targetTwitterUserID)
+                promise(.success(query))
+            }
+        }
+        .tryMap { query -> AnyPublisher<Twitter.Response.Content<Twitter.Entity.Relationship>, Error> in
+            guard query.sourceID != query.targetID else {
+                throw APIError.implicit(.badRequest)
+            }
+            
+            return Twitter.API.Friendships.friendship(session: self.session, authorization: authorization, query: query)
+                .map { response -> AnyPublisher<Twitter.Response.Content<Twitter.Entity.Relationship>, Error> in
+                    return managedObjectContext.performChanges {
+                        let relationship = response.value
+                        
+                        let _sourceTwitterUser: TwitterUser? = {
+                            let request = TwitterUser.sortedFetchRequest
+                            request.predicate = TwitterUser.predicate(idStr: sourceID)
+                            request.fetchLimit = 1
+                            request.returnsObjectsAsFaults = false
+                            do {
+                                return try managedObjectContext.fetch(request).first
+                            } catch {
+                                assertionFailure(error.localizedDescription)
+                                return nil
+                            }
+                        }()
+                        
+                        guard let sourceTwitterUser = _sourceTwitterUser else {
+                            assertionFailure()
+                            return
+                        }
+                        
+                        let targetTwitterUser = managedObjectContext.object(with: twitterUserObjectID) as! TwitterUser
+                        targetTwitterUser.update(following: relationship.source.following, from: sourceTwitterUser)
+                        sourceTwitterUser.update(following: relationship.source.followedBy, from: targetTwitterUser)
+                        targetTwitterUser.update(followRequestSent: relationship.source.followingRequested, from: sourceTwitterUser)
+                    }
+                    .setFailureType(to: Error.self)
+                    .tryMap { result -> Twitter.Response.Content<Twitter.Entity.Relationship> in
+                        switch result {
+                        case .success:                  return response
+                        case .failure(let error):       throw error
+                        }
+                    }
+                    .eraseToAnyPublisher()
+                }
+                .switchToLatest()
+                .eraseToAnyPublisher()
+        }
+        .switchToLatest()
+        .eraseToAnyPublisher()
+    }
+    
+    // update database local and return query update type for remote request
+    func friendshipUpdateLocal(
+        twitterUserObjectID: NSManagedObjectID,
+        twitterAuthenticationBox: AuthenticationService.TwitterAuthenticationBox
+    ) -> AnyPublisher<(Twitter.API.Friendships.UpdateQueryType, TwitterUser.ID), Error> {
         let requestTwitterUserID = twitterAuthenticationBox.twitterUserID
         
         var _targetTwitterUserID: TwitterUser.ID?
-        var _queryType: Twitter.API.Friendships.QueryType?
+        var _queryType: Twitter.API.Friendships.UpdateQueryType?
         let managedObjectContext = backgroundManagedObjectContext
         
         return managedObjectContext.performChanges {
@@ -54,16 +120,16 @@ extension APIService {
             
             if isFollowing || isPending {
                 _queryType = .destroy
-                twitterUser.update(following: false, twitterUser: requestTwitterUser)
-                twitterUser.update(followRequestSent: false, twitterUser: requestTwitterUser)
+                twitterUser.update(following: false, from: requestTwitterUser)
+                twitterUser.update(followRequestSent: false, from: requestTwitterUser)
             } else {
                 _queryType = .create
                 if twitterUser.protected {
-                    twitterUser.update(following: false, twitterUser: requestTwitterUser)
-                    twitterUser.update(followRequestSent: true, twitterUser: requestTwitterUser)
+                    twitterUser.update(following: false, from: requestTwitterUser)
+                    twitterUser.update(followRequestSent: true, from: requestTwitterUser)
                 } else {
-                    twitterUser.update(following: true, twitterUser: requestTwitterUser)
-                    twitterUser.update(followRequestSent: false, twitterUser: requestTwitterUser)
+                    twitterUser.update(following: true, from: requestTwitterUser)
+                    twitterUser.update(followRequestSent: false, from: requestTwitterUser)
                 }
             }
         }
@@ -84,13 +150,13 @@ extension APIService {
         .eraseToAnyPublisher()
     }
     
-    func friendship(
-        friendshipQueryType: Twitter.API.Friendships.QueryType,
+    func friendshipUpdateRemote(
+        friendshipQueryType: Twitter.API.Friendships.UpdateQueryType,
         twitterUserID: TwitterUser.ID,
         twitterAuthenticationBox: AuthenticationService.TwitterAuthenticationBox
     ) -> AnyPublisher<Twitter.Response.Content<Twitter.Entity.User>, Error> {
         let authorization = twitterAuthenticationBox.twitterAuthorization
-        let query = Twitter.API.Friendships.Query(
+        let query = Twitter.API.Friendships.FriendshipUpdateQuery(
             userID: twitterUserID
         )
         // API not return latest friendship status. not merge result
@@ -100,7 +166,9 @@ extension APIService {
     
 }
 
+// V2 friendship lookup
 extension APIService {
+        
     func following(
         userID: Twitter.Entity.V2.User.ID,
         maxResults: Int,
@@ -137,6 +205,25 @@ extension APIService {
             .eraseToAnyPublisher()
         }
         .switchToLatest()
+        .handleEvents(receiveCompletion: { [weak self] completion in
+            guard let self = self else { return }
+            switch completion {
+            case .failure(let error):
+                if case let Twitter.API.APIError.response(code, _) = error {
+                    switch code {
+                    case ErrorReason.accountTemporarilyLocked.code:
+                        self.error.send(.explicit(.accountTemporarilyLocked))
+                    case ErrorReason.rateLimitExceeded.code:
+                        self.error.send(.explicit(.rateLimitExceeded))
+                    default:
+                        break
+                    }
+                }
+            case .finished:
+                break
+            }
+        })
         .eraseToAnyPublisher()
     }
+    
 }

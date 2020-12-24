@@ -156,7 +156,7 @@ extension SearchUserViewController: SearchUserTableViewCellDelegate {
 
         let impactFeedbackGenerator = UIImpactFeedbackGenerator(style: .light)
         let notificationFeedbackGenerator = UINotificationFeedbackGenerator()
-        context.apiService.friendship(
+        context.apiService.friendshipUpdateLocal(
             twitterUserObjectID: objectID,
             twitterAuthenticationBox: twitterAuthenticationBox
         )
@@ -183,7 +183,7 @@ extension SearchUserViewController: SearchUserTableViewCellDelegate {
             }
         }
         .map { (friendshipQueryType, targetTwitterUserID) in
-            self.context.apiService.friendship(
+            self.context.apiService.friendshipUpdateRemote(
                 friendshipQueryType: friendshipQueryType,
                 twitterUserID: targetTwitterUserID,
                 twitterAuthenticationBox: twitterAuthenticationBox

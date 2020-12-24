@@ -46,7 +46,7 @@ extension FollowingListViewController {
         tableView.backgroundColor = .systemBackground
         
         tableView.delegate = self
-        viewModel.setupDiffableDataSource(for: tableView, friendshipTableViewCellDelegate: self)
+        viewModel.setupDiffableDataSource(for: tableView)
         viewModel.stateMachine.enter(FollowingListViewModel.State.Loading.self)
     }
     
@@ -55,13 +55,4 @@ extension FollowingListViewController {
 // MARK: - UITableViewDelegate
 extension FollowingListViewController: UITableViewDelegate {
 
-}
-
-// MARK: - FriendshipTableViewCellDelegate
-extension FollowingListViewController: FriendshipTableViewCellDelegate {
-    
-    func friendshipTableViewCell(_ cell: FriendshipTableViewCell, followActionButtonPressed button: FollowActionButton) {
-        // TODO:
-    }
-    
 }

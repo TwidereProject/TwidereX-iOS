@@ -62,12 +62,9 @@ extension AccountListTableViewCell {
 }
 
 extension AccountListTableViewCell {
-    
     @objc private func menuButtonPressed(_ sender: UIButton) {
         os_log("%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
 
         delegate?.accountListTableViewCell(self, menuButtonPressed: sender)
     }
-    
-    
 }

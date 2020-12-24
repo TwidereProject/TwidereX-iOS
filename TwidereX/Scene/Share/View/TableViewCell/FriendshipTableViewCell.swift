@@ -10,15 +10,10 @@ import os.log
 import UIKit
 import Combine
 
-protocol FriendshipTableViewCellDelegate: class {
-    func friendshipTableViewCell(_ cell: FriendshipTableViewCell, followActionButtonPressed button: FollowActionButton)
-}
-
 final class FriendshipTableViewCell: UITableViewCell {
     
     var disposeBag = Set<AnyCancellable>()
     
-    weak var delegate: FriendshipTableViewCellDelegate?
     let userBriefInfoView = UserBriefInfoView()
     let separatorLine = UIView.separatorLine
     
@@ -62,7 +57,9 @@ extension FriendshipTableViewCell {
             separatorLine.heightAnchor.constraint(equalToConstant: UIView.separatorLineHeight(of: contentView)),
         ])
         
-        userBriefInfoView.menuButton.isHidden = false
+        if #available(iOS 14.0, *) {
+            userBriefInfoView.menuButton.isHidden = false
+        }
     }
     
 }

@@ -14,11 +14,11 @@ import AlamofireImage
 import Kingfisher
 
 extension FollowingListViewModel {
-    func setupDiffableDataSource(for tableView: UITableView, friendshipTableViewCellDelegate: FriendshipTableViewCellDelegate) {
+    func setupDiffableDataSource(for tableView: UITableView) {
         diffableDataSource = MediaSection.tableViewDiffableDataSource(
             for: tableView,
-            managedObjectContext: orderedTwitterUserFetchedResultsController.fetchedResultsController.managedObjectContext,
-            friendshipTableViewCellDelegate: friendshipTableViewCellDelegate
+            apiService: context.apiService,
+            managedObjectContext: orderedTwitterUserFetchedResultsController.fetchedResultsController.managedObjectContext
         )
     }
 }

@@ -112,8 +112,8 @@ extension APIService.CoreData {
         
         // relationship with requestTwitterUser
         if let requestTwitterUser = requestTwitterUser {
-            entity.following.flatMap { user.update(following: $0, twitterUser: requestTwitterUser) }
-            entity.followRequestSent.flatMap { user.update(followRequestSent: $0, twitterUser: requestTwitterUser) }
+            entity.following.flatMap { user.update(following: $0, from: requestTwitterUser) }
+            entity.followRequestSent.flatMap { user.update(followRequestSent: $0, from: requestTwitterUser) }
         }
 
         // TODO: merge more fileds

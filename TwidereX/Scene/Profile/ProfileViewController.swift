@@ -545,7 +545,7 @@ extension ProfileViewController: ProfileBannerInfoActionViewDelegate {
         
         let impactFeedbackGenerator = UIImpactFeedbackGenerator(style: .light)
         let notificationFeedbackGenerator = UINotificationFeedbackGenerator()
-        context.apiService.friendship(
+        context.apiService.friendshipUpdateLocal(
             twitterUserObjectID: twitterUser.objectID,
             twitterAuthenticationBox: activeTwitterAuthenticationBox
         )
@@ -566,7 +566,7 @@ extension ProfileViewController: ProfileBannerInfoActionViewDelegate {
             }
         }
         .map { (friendshipQueryType, targetTwitterUserID) in
-            self.context.apiService.friendship(
+            self.context.apiService.friendshipUpdateRemote(
                 friendshipQueryType: friendshipQueryType,
                 twitterUserID: targetTwitterUserID,
                 twitterAuthenticationBox: activeTwitterAuthenticationBox

@@ -17,8 +17,8 @@ enum FriendshipListSection: Equatable, Hashable {
 extension MediaSection {
     static func tableViewDiffableDataSource(
         for tableView: UITableView,
-        managedObjectContext: NSManagedObjectContext,
-        friendshipTableViewCellDelegate: FriendshipTableViewCellDelegate
+        apiService: APIService,
+        managedObjectContext: NSManagedObjectContext
     ) -> UITableViewDiffableDataSource<FriendshipListSection, Item> {
         UITableViewDiffableDataSource(tableView: tableView) { tableView, indexPath, item -> UITableViewCell? in
             switch item {
@@ -26,9 +26,8 @@ extension MediaSection {
                 let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: FriendshipTableViewCell.self), for: indexPath) as! FriendshipTableViewCell
                 managedObjectContext.performAndWait {
                     let twitterUser = managedObjectContext.object(with: objectID) as! TwitterUser
-                    MediaSection.configure(cell: cell, twitterUser: twitterUser)
+                    MediaSection.configure(cell: cell, twitterUser: twitterUser, apiService: apiService)
                 }
-                cell.delegate = friendshipTableViewCellDelegate
                 return cell
             case .bottomLoader:
                 let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: TimelineBottomLoaderTableViewCell.self), for: indexPath) as! TimelineBottomLoaderTableViewCell
@@ -45,7 +44,7 @@ extension MediaSection {
 }
 
 extension MediaSection {
-    static func configure(cell: FriendshipTableViewCell, twitterUser: TwitterUser) {
+    static func configure(cell: FriendshipTableViewCell, twitterUser: TwitterUser, apiService: APIService) {
         cell.userBriefInfoView.configure(avatarImageURL: twitterUser.avatarImageURL(), verified: twitterUser.verified)
         cell.userBriefInfoView.lockImageView.isHidden = !twitterUser.protected
         cell.userBriefInfoView.nameLabel.text = twitterUser.name
@@ -53,5 +52,47 @@ extension MediaSection {
         
         let followersCount = twitterUser.metrics?.followersCount.flatMap { String($0.intValue) } ?? "-"
         cell.userBriefInfoView.detailLabel.text = "\(L10n.Common.Controls.Friendship.followers.capitalized): \(followersCount)"
+        
+        if #available(iOS 14.0, *) {
+            let menuItems = [
+                UIDeferredMenuElement { completion in
+                    let discoverabilityTitle = ""
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                        let followAction = UIAction(title: "Follow", image: nil, identifier: nil, discoverabilityTitle: discoverabilityTitle, attributes: [], state: .off) { _ in
+                            
+                        }
+                        let menu = UIMenu(title: "", image: nil, identifier: nil, options: .displayInline, children: [followAction])
+                        completion([menu])
+                    }
+                }
+//                UIMenu(
+//                    title: L10n.Common.Controls.Friendship.,
+//                    options: .destructive,
+//                    children: [
+//                        UIAction(
+//                            title: L10n.Common.Controls.Actions.remove,
+//                            image: nil,
+//                            attributes: .destructive,
+//                            state: .off,
+//                            handler: { _ in
+//                                accountListViewControllerDelegate.signoutTwitterUser(id: twitterUser.id)
+//                            }
+//                        ),
+//                        UIAction(
+//                            title: L10n.Common.Controls.Actions.cancel,
+//                            attributes: [],
+//                            state: .off,
+//                            handler: { _ in
+//                                // do nothing
+//                            }
+//                        )
+//                    ]
+//                )
+            ]
+            cell.userBriefInfoView.menuButton.menu = UIMenu(title: "", children: menuItems)
+            cell.userBriefInfoView.menuButton.showsMenuAsPrimaryAction = true
+        } else {
+            // Fallback on earlier versions
+        }
     }
 }
