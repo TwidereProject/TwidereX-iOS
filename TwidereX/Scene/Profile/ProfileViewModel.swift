@@ -40,6 +40,7 @@ class ProfileViewModel: NSObject {
     let listedCount: CurrentValueSubject<Int?, Never>
 
     let friendship: CurrentValueSubject<Friendship?, Never>
+    let followedBy: CurrentValueSubject<Bool?, Never>
     
     override init() {
         self.twitterUser = CurrentValueSubject(nil)
@@ -57,6 +58,7 @@ class ProfileViewModel: NSObject {
         self.followersCount = CurrentValueSubject(nil)
         self.listedCount = CurrentValueSubject(nil)
         self.friendship = CurrentValueSubject(nil)
+        self.followedBy = CurrentValueSubject(nil)
         super.init()
 
         setup()
@@ -78,6 +80,7 @@ class ProfileViewModel: NSObject {
         self.followersCount = CurrentValueSubject(twitterUser.metrics?.followersCount.flatMap { Int(truncating: $0) })
         self.listedCount = CurrentValueSubject(twitterUser.metrics?.listedCount.flatMap{ Int(truncating: $0) })
         self.friendship = CurrentValueSubject(nil)
+        self.followedBy = CurrentValueSubject(nil)
         super.init()
         
         setup()
@@ -99,6 +102,7 @@ class ProfileViewModel: NSObject {
         self.followersCount = CurrentValueSubject(nil)
         self.listedCount = CurrentValueSubject(nil)
         self.friendship = CurrentValueSubject(nil)
+        self.followedBy = CurrentValueSubject(nil)
         super.init()
         
         setup()
@@ -151,6 +155,7 @@ class ProfileViewModel: NSObject {
         self.followersCount = CurrentValueSubject(nil)
         self.listedCount = CurrentValueSubject(nil)
         self.friendship = CurrentValueSubject(nil)
+        self.followedBy = CurrentValueSubject(nil)
         super.init()
         
         setup()
@@ -297,23 +302,25 @@ extension ProfileViewModel {
     }
     
     private func update(twitterUser: TwitterUser?, currentTwitterUser: TwitterUser?) {
-        guard let twitterUser = twitterUser else {
+        guard let twitterUser = twitterUser,
+              let currentTwitterUser = currentTwitterUser else {
             self.friendship.value = nil
-            return
-        }
-        
-        guard let currentTwitterUser = currentTwitterUser else {
+            self.followedBy.value = nil
             return
         }
         
         if twitterUser == currentTwitterUser {
             self.friendship.value = nil
+            self.followedBy.value = nil
         } else {
             let isFollowing = twitterUser.followingFrom.flatMap { $0.contains(currentTwitterUser) } ?? false
             let isPending = twitterUser.followRequestSentFrom.flatMap { $0.contains(currentTwitterUser) } ?? false
             let friendship = isPending ? .pending : (isFollowing) ? .following : ProfileViewModel.Friendship.none
             self.friendship.value = friendship
             os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: friendship update: %s", ((#file as NSString).lastPathComponent), #line, #function, friendship.debugDescription)
+            let followedBy = currentTwitterUser.followingFrom.flatMap { $0.contains(twitterUser) } ?? false
+            self.followedBy.value = followedBy
+            os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: followedBy update: %s", ((#file as NSString).lastPathComponent), #line, #function, followedBy ? "true" : "false")
         }
     }
 }

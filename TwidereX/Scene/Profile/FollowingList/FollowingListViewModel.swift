@@ -43,7 +43,6 @@ final class FollowingListViewModel: NSObject {
         super.init()
         
         orderedTwitterUserFetchedResultsController.items
-            .receive(on: DispatchQueue.main)
             .sink { [weak self] items in
                 guard let self = self else { return }
                 guard let diffableDataSource = self.diffableDataSource else { return }
@@ -79,8 +78,3 @@ final class FollowingListViewModel: NSObject {
     }
     
 }
-
-extension FollowingListViewModel {
-    
-}
-

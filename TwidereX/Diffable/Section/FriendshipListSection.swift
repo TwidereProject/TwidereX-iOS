@@ -65,29 +65,6 @@ extension MediaSection {
                         completion([menu])
                     }
                 }
-//                UIMenu(
-//                    title: L10n.Common.Controls.Friendship.,
-//                    options: .destructive,
-//                    children: [
-//                        UIAction(
-//                            title: L10n.Common.Controls.Actions.remove,
-//                            image: nil,
-//                            attributes: .destructive,
-//                            state: .off,
-//                            handler: { _ in
-//                                accountListViewControllerDelegate.signoutTwitterUser(id: twitterUser.id)
-//                            }
-//                        ),
-//                        UIAction(
-//                            title: L10n.Common.Controls.Actions.cancel,
-//                            attributes: [],
-//                            state: .off,
-//                            handler: { _ in
-//                                // do nothing
-//                            }
-//                        )
-//                    ]
-//                )
             ]
             cell.userBriefInfoView.menuButton.menu = UIMenu(title: "", children: menuItems)
             cell.userBriefInfoView.menuButton.showsMenuAsPrimaryAction = true

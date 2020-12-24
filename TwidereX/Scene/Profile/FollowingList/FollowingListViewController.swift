@@ -54,5 +54,8 @@ extension FollowingListViewController {
 
 // MARK: - UITableViewDelegate
 extension FollowingListViewController: UITableViewDelegate {
-
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        handleTableView(tableView, didSelectRowAt: indexPath)
+    }
 }
+

@@ -302,6 +302,14 @@ extension ProfileViewController {
                 }
             }
             .store(in: &disposeBag)
+        viewModel.followedBy
+            .sink { [weak self] followedBy in
+                guard let self = self else { return }
+                let followStatusLabel = self.profileHeaderViewController.profileBannerView.profileBannerInfoActionView.followStatusLabel
+                followStatusLabel.isHidden = followedBy != true
+            }
+            .store(in: &disposeBag)
+            
         viewModel.bioDescription
             .map { $0 ?? " " }
             .sink(receiveValue: { [weak self] bio in
