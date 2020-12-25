@@ -613,6 +613,23 @@ extension ProfileViewController: ProfileBannerViewDelegate {
         }
     }
     
+    func profileBannerView(_ profileBannerView: ProfileBannerView, profileBannerStatusView: ProfileBannerStatusView, followingStatusItemViewDidPressed statusItemView: ProfileBannerStatusItemView) {
+        guard let twitterUserID = viewModel.twitterUser.value?.id else { return }
+        let followingListViewModel = FollowingListViewModel(context: context, userID: twitterUserID)
+        dismiss(animated: true) {
+            self.coordinator.present(scene: .followingList(viewModel: followingListViewModel), from: nil, transition: .show)
+        }
+    }
+    
+    func profileBannerView(_ profileBannerView: ProfileBannerView, profileBannerStatusView: ProfileBannerStatusView, followerStatusItemViewDidPressed statusItemView: ProfileBannerStatusItemView) {
+        // TODO:
+    }
+    
+    func profileBannerView(_ profileBannerView: ProfileBannerView, profileBannerStatusView: ProfileBannerStatusView, listedStatusItemViewDidPressed statusItemView: ProfileBannerStatusItemView) {
+        // TODO:
+    }
+    
+    
 }
 
 

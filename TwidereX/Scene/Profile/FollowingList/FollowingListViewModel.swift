@@ -36,6 +36,7 @@ final class FollowingListViewModel: NSObject {
         stateMachine.enter(State.Initial.self)
         return stateMachine
     }()
+    
     init(context: AppContext, userID: Twitter.Entity.V2.User.ID) {
         self.context = context
         self.userID = userID
