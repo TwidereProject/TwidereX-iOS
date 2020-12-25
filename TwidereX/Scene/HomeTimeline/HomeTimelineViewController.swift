@@ -139,11 +139,19 @@ extension HomeTimelineViewController {
                         }),
                         UIAction(title: "Show Account unlock alert", image: nil, attributes: [], handler: { [weak self] action in
                             guard let self = self else { return }
-                            self.context.apiService.error.send(.explicit(.accountTemporarilyLocked))
+                            let error = Twitter.API.Error.ResponseError(
+                                httpResponseStatus: .forbidden,
+                                twitterAPIError: .accountIsTemporarilyLocked(message: "")
+                            )
+                            self.context.apiService.error.send(.explicit(.twitterResponseError(error)))
                         }),
                         UIAction(title: "Show Rate Limit alert", image: nil, attributes: [], handler: { [weak self] action in
                             guard let self = self else { return }
-                            self.context.apiService.error.send(.explicit(.rateLimitExceeded))
+                            let error = Twitter.API.Error.ResponseError(
+                                httpResponseStatus: .tooManyRequests,
+                                twitterAPIError: .rateLimitExceeded
+                            )
+                            self.context.apiService.error.send(.explicit(.twitterResponseError(error)))
                         }),
                         UIAction(title: "Export Database", image: nil, attributes: [], handler: { [weak self] action in
                             guard let self = self else { return }

@@ -252,6 +252,8 @@ extension APIService {
         .map { response -> AnyPublisher<Twitter.Response.Content<Twitter.API.V2.FollowLookup.Content>, Error> in
             let log = OSLog.api
             
+            APIService.logRateLimit(for: response, log: log)
+            
             let dictResponse = response.map { response in
                 return Twitter.Response.V2.DictContent(
                     tweets: response.includes?.tweets ?? [],
@@ -270,12 +272,10 @@ extension APIService {
             guard let self = self else { return }
             switch completion {
             case .failure(let error):
-                if case let Twitter.API.APIError.response(code, _) = error {
-                    switch code {
-                    case ErrorReason.accountTemporarilyLocked.code:
-                        self.error.send(.explicit(.accountTemporarilyLocked))
-                    case ErrorReason.rateLimitExceeded.code:
-                        self.error.send(.explicit(.rateLimitExceeded))
+                if let responseError = error as? Twitter.API.Error.ResponseError {
+                    switch responseError.twitterAPIError {
+                    case .accountIsTemporarilyLocked, .rateLimitExceeded:
+                        self.error.send(.explicit(.twitterResponseError(responseError)))
                     default:
                         break
                     }

@@ -65,6 +65,7 @@ Try the beta version on the [TestFlight](https://testflight.apple.com/join/GJIDX
 - [Kanna](https://github.com/tid-kijyun/Kanna)
 - [Kingfisher](https://github.com/onevcat/Kingfisher)
 - [PageBoy](https://github.com/uias/Pageboy)
+- [swift-nio](https://github.com/apple/swift-nio)
 - [SwiftGen](https://github.com/SwiftGen/SwiftGen)
 - [SwiftMessages](https://github.com/SwiftKickMobile/SwiftMessages)
 - [SwiftyJSON](https://github.com/SwiftyJSON/SwiftyJSON)

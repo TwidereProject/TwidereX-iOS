@@ -116,30 +116,38 @@ extension MainTabBarController {
                 case .implicit(let reason):
                     break
                 case .explicit(let reason):
+                    // FIXME:
                     switch reason {
-                    case .accountTemporarilyLocked:
-                        var config = SwiftMessages.defaultConfig
-                        config.duration = .seconds(seconds: 10)
-                        config.interactiveHide = true
-                        let bannerView = NotifyBannerView()
-                        bannerView.configure(for: .error)
-                        bannerView.titleLabel.text = L10n.Common.Alerts.AccountTemporarilyLocked.title
-                        bannerView.messageLabel.text = L10n.Common.Alerts.AccountTemporarilyLocked.message
-                        bannerView.actionButtonTapHandler = { [weak self] button in
-                            guard let self = self else { return }
-                            let url = URL(string: "https://twitter.com/account/access")!
-                            UIApplication.shared.open(url)
+                    case .twitterResponseError(let responseError):
+                        switch responseError.twitterAPIError {
+                        case .accountIsTemporarilyLocked:
+                            var config = SwiftMessages.defaultConfig
+                            config.duration = .seconds(seconds: 10)
+                            config.interactiveHide = true
+                            let bannerView = NotifyBannerView()
+                            bannerView.configure(for: .error)
+                            bannerView.titleLabel.text = L10n.Common.Alerts.AccountTemporarilyLocked.title
+                            bannerView.messageLabel.text = L10n.Common.Alerts.AccountTemporarilyLocked.message
+                            bannerView.actionButtonTapHandler = { [weak self] button in
+                                guard let self = self else { return }
+                                let url = URL(string: "https://twitter.com/account/access")!
+                                UIApplication.shared.open(url)
+                            }
+                            SwiftMessages.show(config: config, view: bannerView)
+                        case .rateLimitExceeded:
+                            var config = SwiftMessages.defaultConfig
+                            config.duration = .seconds(seconds: 10)
+                            config.interactiveHide = true
+                            let bannerView = NotifyBannerView()
+                            bannerView.configure(for: .warning)
+                            bannerView.titleLabel.text = "Rate Limit Exceeded"
+                            bannerView.messageLabel.text = "Reached Twitter API usage limit"
+                            SwiftMessages.show(config: config, view: bannerView)
+                        case .custom:
+                            break
+                        case .none:
+                            break
                         }
-                        SwiftMessages.show(config: config, view: bannerView)
-                    case .rateLimitExceeded:
-                        var config = SwiftMessages.defaultConfig
-                        config.duration = .seconds(seconds: 10)
-                        config.interactiveHide = true
-                        let bannerView = NotifyBannerView()
-                        bannerView.configure(for: .warning)
-                        bannerView.titleLabel.text = "Rate Limit Exceeded"
-                        bannerView.messageLabel.text = "Reached Twitter API usage limit"
-                        SwiftMessages.show(config: config, view: bannerView)
                     default:
                         break
                     }
