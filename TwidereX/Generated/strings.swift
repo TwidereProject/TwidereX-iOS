@@ -25,6 +25,32 @@ internal enum L10n {
           return L10n.tr("Localizable", "Common.Alerts.CancelFollowRequest.Message", String(describing: p1))
         }
       }
+      internal enum FailedToFollowing {
+        /// Please try again
+        internal static let message = L10n.tr("Localizable", "Common.Alerts.FailedToFollowing.Message")
+        /// Failed to Following
+        internal static let title = L10n.tr("Localizable", "Common.Alerts.FailedToFollowing.Title")
+      }
+      internal enum FailedToLoad {
+        /// Please try again
+        internal static let message = L10n.tr("Localizable", "Common.Alerts.FailedToLoad.Message")
+        /// Failed to Load
+        internal static let title = L10n.tr("Localizable", "Common.Alerts.FailedToLoad.Title")
+      }
+      internal enum FailedToUnfollowing {
+        /// Please try again
+        internal static let message = L10n.tr("Localizable", "Common.Alerts.FailedToUnfollowing.Message")
+        /// Failed to Unfollowing
+        internal static let title = L10n.tr("Localizable", "Common.Alerts.FailedToUnfollowing.Title")
+      }
+      internal enum FollowingRequestSent {
+        /// Following Request Sent
+        internal static let title = L10n.tr("Localizable", "Common.Alerts.FollowingRequestSent.Title")
+      }
+      internal enum FollowingSuccess {
+        /// Following Succeeded
+        internal static let title = L10n.tr("Localizable", "Common.Alerts.FollowingSuccess.Title")
+      }
       internal enum PhotoSaveFail {
         /// Please try again
         internal static let message = L10n.tr("Localizable", "Common.Alerts.PhotoSaveFail.Message")
@@ -56,6 +82,10 @@ internal enum L10n {
         internal static func message(_ p1: Any) -> String {
           return L10n.tr("Localizable", "Common.Alerts.UnfollowUser.Message", String(describing: p1))
         }
+      }
+      internal enum UnfollowingSuccess {
+        /// Unfollowing Succeeded
+        internal static let title = L10n.tr("Localizable", "Common.Alerts.UnfollowingSuccess.Title")
       }
     }
     internal enum Controls {

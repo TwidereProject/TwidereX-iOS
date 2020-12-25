@@ -1,6 +1,14 @@
 "Common.Alerts.AccountTemporarilyLocked.Message" = "Open Twitter to unlock";
 "Common.Alerts.AccountTemporarilyLocked.Title" = "Account Temporarily Locked";
 "Common.Alerts.CancelFollowRequest.Message" = "Cancel follow request for %@?";
+"Common.Alerts.FailedToFollowing.Message" = "Please try again";
+"Common.Alerts.FailedToFollowing.Title" = "Failed to Following";
+"Common.Alerts.FailedToLoad.Message" = "Please try again";
+"Common.Alerts.FailedToLoad.Title" = "Failed to Load";
+"Common.Alerts.FailedToUnfollowing.Message" = "Please try again";
+"Common.Alerts.FailedToUnfollowing.Title" = "Failed to Unfollowing";
+"Common.Alerts.FollowingRequestSent.Title" = "Following Request Sent";
+"Common.Alerts.FollowingSuccess.Title" = "Following Succeeded";
 "Common.Alerts.PhotoSaveFail.Message" = "Please try again";
 "Common.Alerts.PhotoSaveFail.Title" = "Failed to Save Photo";
 "Common.Alerts.PhotoSaved.Title" = "Photo Saved";
@@ -10,6 +18,7 @@
 "Common.Alerts.TweetFail.Title" = "Failed to Tweet";
 "Common.Alerts.TweetSent.Title" = "Tweet Sent";
 "Common.Alerts.UnfollowUser.Message" = "Unfollow user %@?";
+"Common.Alerts.UnfollowingSuccess.Title" = "Unfollowing Succeeded";
 "Common.Controls.Actions.Add" = "Add";
 "Common.Controls.Actions.Cancel" = "Cancel";
 "Common.Controls.Actions.Confirm" = "Confirm";
