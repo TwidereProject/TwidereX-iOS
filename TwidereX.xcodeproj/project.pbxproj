@@ -79,6 +79,7 @@
 		DB434888251DFE2D005B599F /* ProfileBannerStatusView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB434887251DFE2D005B599F /* ProfileBannerStatusView.swift */; };
 		DB43488D251DFF0F005B599F /* ProfileBannerStatusItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB43488C251DFF0F005B599F /* ProfileBannerStatusItemView.swift */; };
 		DB434892251E09A8005B599F /* CALayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB434891251E09A8005B599F /* CALayer.swift */; };
+		DB43CBDD2595CE2100D47607 /* LoadMoreConfigurableViewContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB43CBDC2595CE2100D47607 /* LoadMoreConfigurableViewContainer.swift */; };
 		DB491609253ECD8E008755C3 /* TweetEntities.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB491608253ECD8E008755C3 /* TweetEntities.swift */; };
 		DB49160E253ECE78008755C3 /* TweetEntitiesAnnotation.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB49160D253ECE78008755C3 /* TweetEntitiesAnnotation.swift */; };
 		DB491613253ECF25008755C3 /* TweetEntitiesCashtag.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB491612253ECF25008755C3 /* TweetEntitiesCashtag.swift */; };
@@ -490,6 +491,7 @@
 		DB434887251DFE2D005B599F /* ProfileBannerStatusView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileBannerStatusView.swift; sourceTree = "<group>"; };
 		DB43488C251DFF0F005B599F /* ProfileBannerStatusItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileBannerStatusItemView.swift; sourceTree = "<group>"; };
 		DB434891251E09A8005B599F /* CALayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CALayer.swift; sourceTree = "<group>"; };
+		DB43CBDC2595CE2100D47607 /* LoadMoreConfigurableViewContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadMoreConfigurableViewContainer.swift; sourceTree = "<group>"; };
 		DB491608253ECD8E008755C3 /* TweetEntities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TweetEntities.swift; sourceTree = "<group>"; };
 		DB49160D253ECE78008755C3 /* TweetEntitiesAnnotation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TweetEntitiesAnnotation.swift; sourceTree = "<group>"; };
 		DB491612253ECF25008755C3 /* TweetEntitiesCashtag.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TweetEntitiesCashtag.swift; sourceTree = "<group>"; };
@@ -1899,6 +1901,7 @@
 				DB36F35D257F74C00028F81E /* ScrollViewContainer.swift */,
 				DB2FFF60258CB051003DBC19 /* NeedsDependency+AVPlayerViewControllerDelegate.swift */,
 				DBCE2EE22593319000926D09 /* AvatarConfigurableView.swift */,
+				DB43CBDC2595CE2100D47607 /* LoadMoreConfigurableViewContainer.swift */,
 			);
 			path = Protocol;
 			sourceTree = "<group>";
@@ -2468,6 +2471,7 @@
 				DB761E4E255935380050DC01 /* DrawerSidebarHeaderView.swift in Sources */,
 				DBCB402E255B670C00DD8D8F /* AccountListViewController.swift in Sources */,
 				DB969A3925305EEF0053CB31 /* HomeTimelineViewModel+LoadLatestState.swift in Sources */,
+				DB43CBDD2595CE2100D47607 /* LoadMoreConfigurableViewContainer.swift in Sources */,
 				DBDA8E9824FE075E006750DC /* MainTabBarController.swift in Sources */,
 				DB261195251B213A004BF309 /* TwitterAuthentication.swift in Sources */,
 				DBCB408A255D8C2B00DD8D8F /* SafariActivity.swift in Sources */,

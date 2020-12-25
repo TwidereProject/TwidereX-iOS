@@ -27,7 +27,7 @@ extension Twitter.API.V2.FollowLookup {
             // [Twitter.Request.Expansions.pinnedTweetID].queryItem,        // not query pinned tweet could save API useage
             URLQueryItem(name: "max_results", value: String(query.maxResults)),
         ]
-        query.nextToken.flatMap { components.queryItems?.append(URLQueryItem(name: "next_token", value: $0)) }
+        query.paginationToken.flatMap { components.queryItems?.append(URLQueryItem(name: "pagination_token", value: $0)) }
         
         guard let requestURL = components.url else { fatalError() }
         var request = URLRequest(
@@ -61,12 +61,12 @@ extension Twitter.API.V2.FollowLookup {
     public struct Query {
         public let userID: Twitter.Entity.V2.User.ID
         public let maxResults: Int
-        public let nextToken: String?
+        public let paginationToken: String?
         
-        public init(userID: Twitter.Entity.V2.User.ID, maxResults: Int, nextToken: String?) {
+        public init(userID: Twitter.Entity.V2.User.ID, maxResults: Int, paginationToken: String?) {
             self.userID = userID
             self.maxResults = min(1000, max(10, maxResults))
-            self.nextToken = nextToken
+            self.paginationToken = paginationToken
         }
     }
     

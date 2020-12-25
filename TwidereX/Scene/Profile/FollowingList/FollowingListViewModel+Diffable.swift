@@ -17,7 +17,7 @@ extension FollowingListViewModel {
     func setupDiffableDataSource(for tableView: UITableView) {
         diffableDataSource = MediaSection.tableViewDiffableDataSource(
             for: tableView,
-            apiService: context.apiService,
+            context: context,
             managedObjectContext: orderedTwitterUserFetchedResultsController.fetchedResultsController.managedObjectContext
         )
     }

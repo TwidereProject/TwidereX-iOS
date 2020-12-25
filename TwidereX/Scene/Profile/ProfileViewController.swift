@@ -530,75 +530,38 @@ extension ProfileViewController: ProfileBannerInfoActionViewDelegate {
             let alertController = UIAlertController(title: nil, message: message, preferredStyle: view.traitCollection.userInterfaceIdiom == .phone ? .actionSheet : .alert)
             let confirmAction = UIAlertAction(title: L10n.Common.Controls.Actions.confirm, style: .destructive) { [weak self] _ in
                 guard let self = self else { return }
-                self.toggleFollowStatue()
+                self.toggleFriendship()
             }
             let cancelAction = UIAlertAction(title: L10n.Common.Controls.Actions.cancel, style: .cancel, handler: nil)
             alertController.addAction(confirmAction)
             alertController.addAction(cancelAction)
             present(alertController, animated: true, completion: nil)
         } else {
-            toggleFollowStatue()
+            toggleFriendship()
         }
         
     }
-    
-    private func toggleFollowStatue() {
-        guard let twitterUser = viewModel.twitterUser.value else {
-            return
-        }
+
+}
+
+extension ProfileViewController {
+    private func toggleFriendship() {
+        guard let twitterUser = viewModel.twitterUser.value else { return }
         guard let activeTwitterAuthenticationBox = context.authenticationService.activeTwitterAuthenticationBox.value else {
             assertionFailure()
             return
         }
-        
-        let impactFeedbackGenerator = UIImpactFeedbackGenerator(style: .light)
-        let notificationFeedbackGenerator = UINotificationFeedbackGenerator()
-        context.apiService.friendshipUpdateLocal(
-            twitterUserObjectID: twitterUser.objectID,
-            twitterAuthenticationBox: activeTwitterAuthenticationBox
+        context.apiService.toggleFriendship(
+            for: twitterUser,
+            activeTwitterAuthenticationBox: activeTwitterAuthenticationBox
         )
-        .receive(on: DispatchQueue.main)
-        .handleEvents { _ in
-            notificationFeedbackGenerator.prepare()
-            impactFeedbackGenerator.prepare()
-        } receiveOutput: { _ in
-            impactFeedbackGenerator.impactOccurred()
-        } receiveCompletion: { completion in
-            switch completion {
-            case .failure(let error):
-                // TODO: handle error
-                break
-            case .finished:
-                // auto-reload item
-                break
-            }
-        }
-        .map { (friendshipQueryType, targetTwitterUserID) in
-            self.context.apiService.friendshipUpdateRemote(
-                friendshipQueryType: friendshipQueryType,
-                twitterUserID: targetTwitterUserID,
-                twitterAuthenticationBox: activeTwitterAuthenticationBox
-            )
-        }
-        .switchToLatest()
-        .receive(on: DispatchQueue.main)
-        .sink { [weak self] completion in
-            guard let self = self else { return }
-            if self.view.window != nil {
-                notificationFeedbackGenerator.notificationOccurred(.success)
-            }
-            switch completion {
-            case .failure(let error):
-                os_log("%{public}s[%{public}ld], %{public}s: [Friendship] remote friendship query fail: %{public}s", ((#file as NSString).lastPathComponent), #line, #function, error.localizedDescription)
-            case .finished:
-                os_log("%{public}s[%{public}ld], %{public}s: [Friendship] remote friendship query success", ((#file as NSString).lastPathComponent), #line, #function)
-            }
+        .sink { completion in
+            // TODO: handle error
         } receiveValue: { response in
-            
+            // TODO: handle success
         }
-        .store(in: &disposeBag)
+        .store(in: &context.disposeBag)
     }
-    
 }
 
 // MARK: - ProfileBannerViewDelegate

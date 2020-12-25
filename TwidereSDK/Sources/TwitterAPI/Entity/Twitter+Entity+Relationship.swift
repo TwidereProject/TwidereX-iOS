@@ -8,9 +8,33 @@
 import Foundation
 
 extension Twitter.Entity {
+    
     public struct Relationship: Codable {
         public let source: RelationshipSource
         public let target: RelationshipTarget
+        
+        enum CodingKeys: String, CodingKey {
+            case relationship
+        }
+        
+        enum RelationshipKeys: String, CodingKey {
+            case source
+            case target
+        }
+        
+        public init(from decoder: Decoder) throws {
+            let values = try decoder.container(keyedBy: CodingKeys.self)
+            let relationshipValues = try values.nestedContainer(keyedBy: RelationshipKeys.self, forKey: .relationship)
+            source = try relationshipValues.decode(RelationshipSource.self, forKey: .source)
+            target = try relationshipValues.decode(RelationshipTarget.self, forKey: .target)
+        }
+        
+        public func encode(to encoder: Encoder) throws {
+            var container = encoder.container(keyedBy: CodingKeys.self)
+            var relationshipContainer = container.nestedContainer(keyedBy: RelationshipKeys.self, forKey: .relationship)
+            try relationshipContainer.encode(source, forKey: .source)
+            try relationshipContainer.encode(target, forKey: .target)
+        }
     }
     
     public struct RelationshipSource: Codable {

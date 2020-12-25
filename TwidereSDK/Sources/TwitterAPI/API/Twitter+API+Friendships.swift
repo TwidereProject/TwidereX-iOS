@@ -19,8 +19,13 @@ extension Twitter.API.Friendships {
         let request = Twitter.API.request(url: showEndpointURL, httpMethod: "GET", authorization: authorization, queryItems: query.queryItems)
         return session.dataTaskPublisher(for: request)
             .tryMap { data, response in
-                let value = try Twitter.API.decode(type: Twitter.Entity.Relationship.self, from: data, response: response)
-                return Twitter.Response.Content(value: value, response: response)
+                do {
+                    let value = try Twitter.API.decode(type: Twitter.Entity.Relationship.self, from: data, response: response)
+                    return Twitter.Response.Content(value: value, response: response)
+                } catch {
+                    debugPrint(error)
+                    throw error
+                }
             }
             .eraseToAnyPublisher()
     }

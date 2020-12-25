@@ -17,11 +17,15 @@ final class FriendshipTableViewCell: UITableViewCell {
     let userBriefInfoView = UserBriefInfoView()
     let separatorLine = UIView.separatorLine
     
+    let menuButtonDidPressedPublisher = PassthroughSubject<Void, Never>()
+    
     override func prepareForReuse() {
         super.prepareForReuse()
         
         userBriefInfoView.avatarImageView.af.cancelImageRequest()
         userBriefInfoView.avatarImageView.kf.cancelDownloadTask()
+        
+        disposeBag.removeAll()
     }
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
@@ -60,6 +64,17 @@ extension FriendshipTableViewCell {
         if #available(iOS 14.0, *) {
             userBriefInfoView.menuButton.isHidden = false
         }
+        let menuButtonTapGestureRecognizer = UITapGestureRecognizer.singleTapGestureRecognizer
+        menuButtonTapGestureRecognizer.cancelsTouchesInView = false
+        menuButtonTapGestureRecognizer.addTarget(self, action: #selector(FriendshipTableViewCell.menuButtonTapGestureRecoginzerHandler(_:)))
+        userBriefInfoView.menuButton.addGestureRecognizer(menuButtonTapGestureRecognizer)
     }
     
+}
+
+extension FriendshipTableViewCell {
+    @objc private func menuButtonTapGestureRecoginzerHandler(_ sender: UITapGestureRecognizer) {
+        os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
+        menuButtonDidPressedPublisher.send()
+    }
 }

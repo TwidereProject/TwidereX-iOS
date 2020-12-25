@@ -6,9 +6,11 @@
 //  Copyright © 2020 Twidere. All rights reserved.
 //
 
+import os.log
 import UIKit
 import CoreData
 import CoreDataStack
+import SwiftMessages
 
 enum FriendshipListSection: Equatable, Hashable {
     case main
@@ -17,7 +19,7 @@ enum FriendshipListSection: Equatable, Hashable {
 extension MediaSection {
     static func tableViewDiffableDataSource(
         for tableView: UITableView,
-        apiService: APIService,
+        context: AppContext,
         managedObjectContext: NSManagedObjectContext
     ) -> UITableViewDiffableDataSource<FriendshipListSection, Item> {
         UITableViewDiffableDataSource(tableView: tableView) { tableView, indexPath, item -> UITableViewCell? in
@@ -26,7 +28,13 @@ extension MediaSection {
                 let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: FriendshipTableViewCell.self), for: indexPath) as! FriendshipTableViewCell
                 managedObjectContext.performAndWait {
                     let twitterUser = managedObjectContext.object(with: objectID) as! TwitterUser
-                    MediaSection.configure(cell: cell, twitterUser: twitterUser, apiService: apiService)
+                    MediaSection.configure(cell: cell, twitterUser: twitterUser, context: context)
+                    cell.menuButtonDidPressedPublisher
+                        .sink { [weak cell] in
+                            guard let cell = cell else { return }
+                            MediaSection.configureMenu(cell: cell, for: twitterUser, context: context)
+                        }
+                        .store(in: &cell.disposeBag)
                 }
                 return cell
             case .bottomLoader:
@@ -44,7 +52,7 @@ extension MediaSection {
 }
 
 extension MediaSection {
-    static func configure(cell: FriendshipTableViewCell, twitterUser: TwitterUser, apiService: APIService) {
+    static func configure(cell: FriendshipTableViewCell, twitterUser: TwitterUser, context: AppContext) {
         cell.userBriefInfoView.configure(avatarImageURL: twitterUser.avatarImageURL(), verified: twitterUser.verified)
         cell.userBriefInfoView.lockImageView.isHidden = !twitterUser.protected
         cell.userBriefInfoView.nameLabel.text = twitterUser.name
@@ -53,23 +61,144 @@ extension MediaSection {
         let followersCount = twitterUser.metrics?.followersCount.flatMap { String($0.intValue) } ?? "-"
         cell.userBriefInfoView.detailLabel.text = "\(L10n.Common.Controls.Friendship.followers.capitalized): \(followersCount)"
         
+        configureMenu(cell: cell, for: twitterUser, context: context)
+    }
+}
+
+extension MediaSection {
+    
+    static func configureMenu(cell: FriendshipTableViewCell, for twitterUser: TwitterUser, context: AppContext) {
+        // not display menu button for self
+        guard let activeTwitterAuthenticationBox = context.authenticationService.activeTwitterAuthenticationBox.value,
+              twitterUser.id != activeTwitterAuthenticationBox.twitterUserID else {
+            cell.userBriefInfoView.menuButton.isHidden = true
+            return
+        }
+        
         if #available(iOS 14.0, *) {
-            let menuItems = [
-                UIDeferredMenuElement { completion in
-                    let discoverabilityTitle = ""
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                        let followAction = UIAction(title: "Follow", image: nil, identifier: nil, discoverabilityTitle: discoverabilityTitle, attributes: [], state: .off) { _ in
-                            
-                        }
-                        let menu = UIMenu(title: "", image: nil, identifier: nil, options: .displayInline, children: [followAction])
-                        completion([menu])
-                    }
-                }
-            ]
-            cell.userBriefInfoView.menuButton.menu = UIMenu(title: "", children: menuItems)
+            let deferredFriendshipMenuItem = MediaSection.deferredFriendshipMenuItem(of: cell.userBriefInfoView.menuButton, for: twitterUser, context: context)
+            cell.userBriefInfoView.menuButton.menu = UIMenu(title: "", options: .displayInline, children: [deferredFriendshipMenuItem])
             cell.userBriefInfoView.menuButton.showsMenuAsPrimaryAction = true
+            cell.userBriefInfoView.menuButton.isHidden = false
         } else {
-            // Fallback on earlier versions
+            // no menu support for earlier versions
+            cell.userBriefInfoView.menuButton.isHidden = true
         }
     }
+    
+    @available(iOS 14.0, *)
+    static func deferredFriendshipMenuItem(of button: UIButton, for twitterUser: TwitterUser, context: AppContext) -> UIDeferredMenuElement {
+        UIDeferredMenuElement { [weak button] elementProvider in
+            let errorAction = UIAction(title: L10n.Common.Alerts.FailedToLoad.title, image: nil, identifier: nil, discoverabilityTitle: L10n.Common.Alerts.FailedToLoad.message, attributes: .disabled, state: .off) { _ in }
+            guard let activeTwitterAuthenticationBox = context.authenticationService.activeTwitterAuthenticationBox.value else {
+                elementProvider([errorAction])
+                return
+            }
+            
+            // TODO: handle blocked_by
+            context.apiService.friendship(twitterUserObjectID: twitterUser.objectID, twitterAuthenticationBox: activeTwitterAuthenticationBox)
+                .receive(on: DispatchQueue.main)
+                .sink { friendshipCompletion in
+                    switch friendshipCompletion {
+                    case .failure(let error):
+                        os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: fetch friendship for user %s fail: %s", ((#file as NSString).lastPathComponent), #line, #function, twitterUser.id, error.localizedDescription)
+                        elementProvider([errorAction])
+                    case .finished:
+                        os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: fetch friendship for user %s success", ((#file as NSString).lastPathComponent), #line, #function, twitterUser.id)
+                    }
+                } receiveValue: { response in
+                    let relationship = response.value
+                    let menuTitle = relationship.source.followedBy ? L10n.Common.Controls.Friendship.userIsFollowingYou(twitterUser.name) : L10n.Common.Controls.Friendship.userIsNotFollowingYou(twitterUser.name)
+                    let unfollowConfirmAction = UIAction(title: L10n.Common.Controls.Actions.confirm, image: nil, identifier: nil, discoverabilityTitle: nil, attributes: .destructive, state: .off, handler: { _ in
+                        let configuration = FriendshipBannerConfiguration(
+                            successInfo: FriendshipBannerConfiguration.Info(title: L10n.Common.Alerts.UnfollowingSuccess.title, message: ""),
+                            failureInfo: FriendshipBannerConfiguration.Info(title: L10n.Common.Alerts.FailedToUnfollowing.title, message: L10n.Common.Alerts.FailedToUnfollowing.message)
+                        )
+                        MediaSection.toggleFriendship(for: twitterUser, friendshipBannerConfiguration: configuration, context: context)
+                    })
+                    if relationship.source.followingRequested {
+                        let cancelFollowRequestMenu = UIMenu(title: L10n.Common.Alerts.CancelFollowRequest.message(twitterUser.name), image: nil, identifier: nil, options: .destructive, children: [unfollowConfirmAction])
+                        elementProvider([cancelFollowRequestMenu])
+                    } else {
+                        if relationship.source.following {
+                            let unfollowMenu = UIMenu(title: L10n.Common.Controls.Friendship.Actions.unfollow, image: UIImage(systemName: "person.crop.circle.badge.minus"), identifier: nil, options: .destructive, children: [unfollowConfirmAction])
+                            let menu = UIMenu(title: menuTitle, image: nil, identifier: nil, options: .displayInline, children: [unfollowMenu])
+                            elementProvider([menu])
+                            button?.menu = menu
+                        } else {
+                            let followingAction = UIAction(title: L10n.Common.Controls.Friendship.Actions.follow, image: nil, identifier: nil, discoverabilityTitle: menuTitle, attributes: [], state: .off) { _ in
+                                let configuration = FriendshipBannerConfiguration(
+                                    successInfo: FriendshipBannerConfiguration.Info(title: L10n.Common.Alerts.FollowingSuccess.title, message: ""),
+                                    failureInfo: FriendshipBannerConfiguration.Info(title: L10n.Common.Alerts.FailedToFollowing.title, message: L10n.Common.Alerts.FailedToFollowing.message)
+                                )
+                                MediaSection.toggleFriendship(for: twitterUser, friendshipBannerConfiguration: configuration, context: context)
+                            }
+                            elementProvider([followingAction])
+                        }
+                    }
+                }
+                .store(in: &context.disposeBag)
+        }
+    }
+    
+}
+
+extension MediaSection {
+
+    private struct FriendshipBannerConfiguration {
+        let successInfo: Info
+        let failureInfo: Info
+        
+        struct Info {
+            let title: String
+            let message: String
+        }
+    }
+    
+    private static func toggleFriendship(for twitterUser: TwitterUser, friendshipBannerConfiguration: FriendshipBannerConfiguration, context: AppContext) {
+        guard let activeTwitterAuthenticationBox = context.authenticationService.activeTwitterAuthenticationBox.value else {
+            assertionFailure()
+            return
+        }
+        
+        context.apiService.toggleFriendship(
+            for: twitterUser,
+            activeTwitterAuthenticationBox: activeTwitterAuthenticationBox
+        )
+        .sink { completion in
+            let feedbackGenerator = UINotificationFeedbackGenerator()
+            feedbackGenerator.prepare()
+            
+            switch completion {
+            case .failure:
+                var config = SwiftMessages.defaultConfig
+                config.duration = .seconds(seconds: 3)
+                config.interactiveHide = true
+                let bannerView = NotifyBannerView()
+                bannerView.configure(for: .warning)
+                bannerView.titleLabel.text = friendshipBannerConfiguration.failureInfo.title
+                bannerView.messageLabel.text = friendshipBannerConfiguration.failureInfo.message
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                    SwiftMessages.show(config: config, view: bannerView)
+                    feedbackGenerator.notificationOccurred(.error)
+                }
+            case .finished:
+                var config = SwiftMessages.defaultConfig
+                config.duration = .seconds(seconds: 3)
+                config.interactiveHide = true
+                let bannerView = NotifyBannerView()
+                bannerView.configure(for: .normal)
+                bannerView.titleLabel.text = friendshipBannerConfiguration.successInfo.title
+                bannerView.messageLabel.isHidden = true
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                    SwiftMessages.show(config: config, view: bannerView)
+                    feedbackGenerator.notificationOccurred(.success)
+                }
+            }
+        } receiveValue: { response in
+            // TODO: handle success
+        }
+        .store(in: &context.disposeBag)
+    }
+
 }

@@ -188,9 +188,7 @@ extension UserBriefInfoView {
     }
 }
 
-extension UserBriefInfoView: AvatarConfigurableView {
-    
-}
+extension UserBriefInfoView: AvatarConfigurableView { }
 
 #if DEBUG
 import SwiftUI

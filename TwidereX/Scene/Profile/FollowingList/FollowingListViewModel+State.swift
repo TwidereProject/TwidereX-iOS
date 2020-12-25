@@ -54,12 +54,14 @@ extension FollowingListViewModel.State {
             }
             
             // trigger data source update
-            viewModel.orderedTwitterUserFetchedResultsController.userIDs.value = []
+            if previousState is Initial {
+                viewModel.orderedTwitterUserFetchedResultsController.userIDs.value = []
+            }
             
             viewModel.context.apiService.following(
                 userID: viewModel.userID,
                 maxResults: nextToken == nil ? 200 : 1000,      // small batch at the first time fetching
-                nextToken: nextToken,
+                paginationToken: nextToken,
                 twitterAuthenticationBox: twitterAuthenticationBox
             )
             .receive(on: DispatchQueue.main)
@@ -67,11 +69,8 @@ extension FollowingListViewModel.State {
                 guard let self = self else { return }
                 switch completion {
                 case .failure(let error):
-                    break
-//                    os_log("%{public}s[%{public}ld], %{public}s: search %s fail: %s", ((#file as NSString).lastPathComponent), #line, #function, searchText, error.localizedDescription)
-//                    debugPrint(error)
-//                    self.error = error
-//                    stateMachine.enter(Fail.self)
+                    os_log("%{public}s[%{public}ld], %{public}s: fetch following listfail: %s", ((#file as NSString).lastPathComponent), #line, #function, error.localizedDescription)
+                    stateMachine.enter(Fail.self)
                 case .finished:
                     break
                 }

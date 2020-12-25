@@ -8,12 +8,73 @@
 
 
 import os.log
-import Foundation
+import UIKit
 import Combine
 import TwitterAPI
 import CoreData
 import CoreDataStack
 import CommonOSLog
+
+extension APIService {
+    
+    
+    /// Toggle friendship between twitterUser and activeTwitterUser
+    ///
+    /// Following / Following pending <-> Unfollow
+    ///
+    /// - Parameters:
+    ///   - twitterUser: target twitterUser
+    ///   - activeTwitterAuthenticationBox: activeTwitterUser's auth box
+    /// - Returns: publisher for twitterUser final state
+    func toggleFriendship(
+        for twitterUser: TwitterUser,
+        activeTwitterAuthenticationBox: AuthenticationService.TwitterAuthenticationBox
+    ) -> AnyPublisher<Twitter.Response.Content<Twitter.Entity.User>, Error> {
+        let impactFeedbackGenerator = UIImpactFeedbackGenerator(style: .light)
+        let notificationFeedbackGenerator = UINotificationFeedbackGenerator()
+        
+        return friendshipUpdateLocal(
+            twitterUserObjectID: twitterUser.objectID,
+            twitterAuthenticationBox: activeTwitterAuthenticationBox
+        )
+        .receive(on: DispatchQueue.main)
+        .handleEvents { _ in
+            notificationFeedbackGenerator.prepare()
+            impactFeedbackGenerator.prepare()
+        } receiveOutput: { _ in
+            impactFeedbackGenerator.impactOccurred()
+        } receiveCompletion: { completion in
+            switch completion {
+            case .failure(let error):
+                // TODO: handle error
+                os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: local friendship update fail", ((#file as NSString).lastPathComponent), #line, #function, error.localizedDescription)
+                assertionFailure(error.localizedDescription)
+            case .finished:
+                os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: local friendship update success", ((#file as NSString).lastPathComponent), #line, #function)
+            }
+        }
+        .map { friendshipQueryType, targetTwitterUserID in
+            self.friendshipUpdateRemote(
+                friendshipQueryType: friendshipQueryType,
+                twitterUserID: targetTwitterUserID,
+                twitterAuthenticationBox: activeTwitterAuthenticationBox
+            )
+        }
+        .switchToLatest()
+        .receive(on: DispatchQueue.main)
+        .handleEvents(receiveCompletion: { completion in
+            // TODO: rollback local change
+            switch completion {
+            case .failure(let error):
+                os_log("%{public}s[%{public}ld], %{public}s: [Friendship] remote friendship update fail: %{public}s", ((#file as NSString).lastPathComponent), #line, #function, error.localizedDescription)
+            case .finished:
+                notificationFeedbackGenerator.notificationOccurred(.success)
+                os_log("%{public}s[%{public}ld], %{public}s: [Friendship] remote friendship update success", ((#file as NSString).lastPathComponent), #line, #function)
+            }
+        })
+        .eraseToAnyPublisher()
+    }
+}
 
 extension APIService {
     
@@ -172,7 +233,7 @@ extension APIService {
     func following(
         userID: Twitter.Entity.V2.User.ID,
         maxResults: Int,
-        nextToken: String?,
+        paginationToken: String?,
         twitterAuthenticationBox: AuthenticationService.TwitterAuthenticationBox
     ) -> AnyPublisher<Twitter.Response.Content<Twitter.API.V2.FollowLookup.Content>, Error> {
         let authorization = twitterAuthenticationBox.twitterAuthorization
@@ -181,7 +242,7 @@ extension APIService {
         let query = Twitter.API.V2.FollowLookup.Query(
             userID: userID,
             maxResults: maxResults,
-            nextToken: nextToken
+            paginationToken: paginationToken
         )
         return Twitter.API.V2.FollowLookup.following(
             session: session,

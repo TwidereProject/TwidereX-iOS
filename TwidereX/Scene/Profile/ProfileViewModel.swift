@@ -82,6 +82,34 @@ class ProfileViewModel: NSObject {
             .store(in: &disposeBag)
         
         setup()
+        
+        Publishers.CombineLatest(
+            self.twitterUser.eraseToAnyPublisher(),
+            context.authenticationService.activeTwitterAuthenticationBox.eraseToAnyPublisher()
+        )
+        .compactMap { twitterUser, activeTwitterAuthenticationBox -> (TwitterUser, AuthenticationService.TwitterAuthenticationBox)? in
+            guard let twitterUser = twitterUser, let activeTwitterAuthenticationBox = activeTwitterAuthenticationBox else { return nil }
+            return (twitterUser, activeTwitterAuthenticationBox)
+        }
+        .setFailureType(to: Error.self)
+        .map { twitterUser, activeTwitterAuthenticationBox -> AnyPublisher<Twitter.Response.Content<Twitter.Entity.Relationship>, Error> in
+            self.context.apiService.friendship(twitterUserObjectID: twitterUser.objectID, twitterAuthenticationBox: activeTwitterAuthenticationBox)
+                .retry(3)
+                .eraseToAnyPublisher()
+        }
+        .switchToLatest()
+        .sink { completion in
+            switch completion {
+            case .failure(let error):
+                os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: fetch friendship fail: %s", ((#file as NSString).lastPathComponent), #line, #function, error.localizedDescription)
+            case .finished:
+                break
+            }
+        } receiveValue: { response in
+            os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: fetch friendship success", ((#file as NSString).lastPathComponent), #line, #function)
+            // friend will update via ManagedObjectObserver
+        }
+        .store(in: &disposeBag)
     }
     
     convenience init(context: AppContext, twitterUser: TwitterUser) {

@@ -54,7 +54,7 @@ extension APIService {
         .eraseToAnyPublisher()
     }
     
-    // send favorite request to remote
+    // send retweet request to remote
     func retweet(
         tweetID: Twitter.Entity.Tweet.ID,
         retweetKind: Twitter.API.Statuses.RetweetKind,
@@ -102,7 +102,7 @@ extension APIService {
                     os_log(.info, log: log, "%{public}s[%{public}ld], %{public}s: did update tweet %{public}s retweet status to: %{public}s. now %ld retweets", ((#file as NSString).lastPathComponent), #line, #function, entity.idStr, (entity.retweetedStatus ?? entity).retweeted.flatMap { $0 ? "retweeted" : "unretweeted" } ?? "<nil>", (entity.retweetedStatus ?? entity).retweetCount ?? 0)
                     
                     // manually update due to API still return retweeted: true
-                    tweet.update(retweeted: false, twitterUser: requestTwitterUser)
+                    tweet.update(retweeted: retweetKind == .retweet, twitterUser: requestTwitterUser)
                     do {
                         try managedObjectContext.saveOrRollback()
                     } catch {

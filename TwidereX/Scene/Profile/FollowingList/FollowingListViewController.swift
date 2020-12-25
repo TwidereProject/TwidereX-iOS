@@ -8,6 +8,7 @@
 
 import UIKit
 import Combine
+import GameplayKit
 
 final class FollowingListViewController: UIViewController, NeedsDependency {
     
@@ -50,6 +51,20 @@ extension FollowingListViewController {
         viewModel.stateMachine.enter(FollowingListViewModel.State.Loading.self)
     }
     
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        tableView.deselectRow(with: transitionCoordinator, animated: animated)
+    }
+    
+}
+
+// MARK: - UIScrollViewDelegate
+extension FollowingListViewController {
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        handleScrollViewDidScroll(scrollView)
+    }
 }
 
 // MARK: - UITableViewDelegate
@@ -59,3 +74,13 @@ extension FollowingListViewController: UITableViewDelegate {
     }
 }
 
+// MARK: - LoadMoreConfigurableTableViewContainer
+extension FollowingListViewController: LoadMoreConfigurableTableViewContainer {
+    
+    typealias BottomLoaderTableViewCell = TimelineBottomLoaderTableViewCell
+    typealias LoadingState = FollowingListViewModel.State.Loading
+    
+    var loadMoreConfigurableTableView: UITableView { return tableView }
+    var loadMoreConfigurableStateMachine: GKStateMachine { return viewModel.stateMachine }
+    
+}
