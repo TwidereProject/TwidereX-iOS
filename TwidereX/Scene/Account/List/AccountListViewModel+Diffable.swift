@@ -59,36 +59,36 @@ extension AccountListViewModel {
         cell.userBriefInfoView.detailLabel.text = "@" + twitterUser.username
         
         if let accountListViewControllerDelegate = accountListViewControllerDelegate {
-            let menuItems = [
-                UIMenu(
-                    title: L10n.Scene.ManageAccounts.deleteAccount,
-                    options: .destructive,
-                    children: [
-                        UIAction(
-                            title: L10n.Common.Controls.Actions.remove,
-                            image: nil,
-                            attributes: .destructive,
-                            state: .off,
-                            handler: { _ in
-                                accountListViewControllerDelegate.signoutTwitterUser(id: twitterUser.id)
-                            }
-                        ),
-                        UIAction(
-                            title: L10n.Common.Controls.Actions.cancel,
-                            attributes: [],
-                            state: .off,
-                            handler: { _ in
-                                // do nothing
-                            }
-                        )
-                    ]
-                )
-            ]
             if #available(iOS 14.0, *) {
+                let menuItems = [
+                    UIMenu(
+                        title: L10n.Scene.ManageAccounts.deleteAccount,
+                        options: .destructive,
+                        children: [
+                            UIAction(
+                                title: L10n.Common.Controls.Actions.remove,
+                                image: nil,
+                                attributes: .destructive,
+                                state: .off,
+                                handler: { _ in
+                                    accountListViewControllerDelegate.signoutTwitterUser(id: twitterUser.id)
+                                }
+                            ),
+                            UIAction(
+                                title: L10n.Common.Controls.Actions.cancel,
+                                attributes: [],
+                                state: .off,
+                                handler: { _ in
+                                    // do nothing
+                                }
+                            )
+                        ]
+                    )
+                ]
                 cell.userBriefInfoView.menuButton.menu = UIMenu(title: "", children: menuItems)
                 cell.userBriefInfoView.menuButton.showsMenuAsPrimaryAction = true
             } else {
-                // do nothing
+                // delegate handle the button
             }
         }
     }

@@ -12,6 +12,10 @@ import UIKit
 protocol DrawerSidebarHeaderViewDelegate: class {
     func drawerSidebarHeaderView(_ headerView: DrawerSidebarHeaderView, menuButtonDidPressed button: UIButton)
     func drawerSidebarHeaderView(_ headerView: DrawerSidebarHeaderView, closeButtonDidPressed button: UIButton)
+    
+    func drawerSidebarHeaderView(_ headerView: DrawerSidebarHeaderView, profileBannerStatusView: ProfileBannerStatusView, followingStatusItemViewDidPressed statusItemView: ProfileBannerStatusItemView)
+    func drawerSidebarHeaderView(_ headerView: DrawerSidebarHeaderView, profileBannerStatusView: ProfileBannerStatusView, followerStatusItemViewDidPressed statusItemView: ProfileBannerStatusItemView)
+    func drawerSidebarHeaderView(_ headerView: DrawerSidebarHeaderView, profileBannerStatusView: ProfileBannerStatusView, listedStatusItemViewDidPressed statusItemView: ProfileBannerStatusItemView)
 }
 
 final class DrawerSidebarHeaderView: UIView {
@@ -130,6 +134,8 @@ extension DrawerSidebarHeaderView {
         
         menuButton.addTarget(self, action: #selector(DrawerSidebarHeaderView.menuButtonPressed(_:)), for: .touchUpInside)
         closeButton.addTarget(self, action: #selector(DrawerSidebarHeaderView.closeButtonPressed(_:)), for: .touchUpInside)
+        
+        profileBannerStatusView.delegate = self
     }
     
 }
@@ -146,6 +152,23 @@ extension DrawerSidebarHeaderView {
         delegate?.drawerSidebarHeaderView(self, closeButtonDidPressed: sender)
     }
     
+}
+
+// MARK: - ProfileBannerStatusViewDelegate
+extension DrawerSidebarHeaderView: ProfileBannerStatusViewDelegate {
+    
+    func profileBannerStatusView(_ view: ProfileBannerStatusView, followingStatusItemViewDidPressed statusItemView: ProfileBannerStatusItemView) {
+        delegate?.drawerSidebarHeaderView(self, profileBannerStatusView: view, followingStatusItemViewDidPressed: statusItemView)
+    }
+    
+    func profileBannerStatusView(_ view: ProfileBannerStatusView, followersStatusItemViewDidPressed statusItemView: ProfileBannerStatusItemView) {
+        delegate?.drawerSidebarHeaderView(self, profileBannerStatusView: view, followerStatusItemViewDidPressed: statusItemView)
+    }
+    
+    func profileBannerStatusView(_ view: ProfileBannerStatusView, listedStatusItemViewDidPressed statusItemView: ProfileBannerStatusItemView) {
+        delegate?.drawerSidebarHeaderView(self, profileBannerStatusView: view, listedStatusItemViewDidPressed: statusItemView)
+    }
+
 }
 
 #if DEBUG

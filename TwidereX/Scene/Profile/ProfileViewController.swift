@@ -302,6 +302,14 @@ extension ProfileViewController {
                 }
             }
             .store(in: &disposeBag)
+        viewModel.followedBy
+            .sink { [weak self] followedBy in
+                guard let self = self else { return }
+                let followStatusLabel = self.profileHeaderViewController.profileBannerView.profileBannerInfoActionView.followStatusLabel
+                followStatusLabel.isHidden = followedBy != true
+            }
+            .store(in: &disposeBag)
+            
         viewModel.bioDescription
             .map { $0 ?? " " }
             .sink(receiveValue: { [weak self] bio in
@@ -522,75 +530,38 @@ extension ProfileViewController: ProfileBannerInfoActionViewDelegate {
             let alertController = UIAlertController(title: nil, message: message, preferredStyle: view.traitCollection.userInterfaceIdiom == .phone ? .actionSheet : .alert)
             let confirmAction = UIAlertAction(title: L10n.Common.Controls.Actions.confirm, style: .destructive) { [weak self] _ in
                 guard let self = self else { return }
-                self.toggleFollowStatue()
+                self.toggleFriendship()
             }
             let cancelAction = UIAlertAction(title: L10n.Common.Controls.Actions.cancel, style: .cancel, handler: nil)
             alertController.addAction(confirmAction)
             alertController.addAction(cancelAction)
             present(alertController, animated: true, completion: nil)
         } else {
-            toggleFollowStatue()
+            toggleFriendship()
         }
         
     }
-    
-    private func toggleFollowStatue() {
-        guard let twitterUser = viewModel.twitterUser.value else {
-            return
-        }
+
+}
+
+extension ProfileViewController {
+    private func toggleFriendship() {
+        guard let twitterUser = viewModel.twitterUser.value else { return }
         guard let activeTwitterAuthenticationBox = context.authenticationService.activeTwitterAuthenticationBox.value else {
             assertionFailure()
             return
         }
-        
-        let impactFeedbackGenerator = UIImpactFeedbackGenerator(style: .light)
-        let notificationFeedbackGenerator = UINotificationFeedbackGenerator()
-        context.apiService.friendship(
-            twitterUserObjectID: twitterUser.objectID,
-            twitterAuthenticationBox: activeTwitterAuthenticationBox
+        context.apiService.toggleFriendship(
+            for: twitterUser,
+            activeTwitterAuthenticationBox: activeTwitterAuthenticationBox
         )
-        .receive(on: DispatchQueue.main)
-        .handleEvents { _ in
-            notificationFeedbackGenerator.prepare()
-            impactFeedbackGenerator.prepare()
-        } receiveOutput: { _ in
-            impactFeedbackGenerator.impactOccurred()
-        } receiveCompletion: { completion in
-            switch completion {
-            case .failure(let error):
-                // TODO: handle error
-                break
-            case .finished:
-                // auto-reload item
-                break
-            }
-        }
-        .map { (friendshipQueryType, targetTwitterUserID) in
-            self.context.apiService.friendship(
-                friendshipQueryType: friendshipQueryType,
-                twitterUserID: targetTwitterUserID,
-                twitterAuthenticationBox: activeTwitterAuthenticationBox
-            )
-        }
-        .switchToLatest()
-        .receive(on: DispatchQueue.main)
-        .sink { [weak self] completion in
-            guard let self = self else { return }
-            if self.view.window != nil {
-                notificationFeedbackGenerator.notificationOccurred(.success)
-            }
-            switch completion {
-            case .failure(let error):
-                os_log("%{public}s[%{public}ld], %{public}s: [Friendship] remote friendship query fail: %{public}s", ((#file as NSString).lastPathComponent), #line, #function, error.localizedDescription)
-            case .finished:
-                os_log("%{public}s[%{public}ld], %{public}s: [Friendship] remote friendship query success", ((#file as NSString).lastPathComponent), #line, #function)
-            }
+        .sink { completion in
+            // TODO: handle error
         } receiveValue: { response in
-            
+            // TODO: handle success
         }
-        .store(in: &disposeBag)
+        .store(in: &context.disposeBag)
     }
-    
 }
 
 // MARK: - ProfileBannerViewDelegate
@@ -622,18 +593,14 @@ extension ProfileViewController: ProfileBannerViewDelegate {
                     let activeAuthenticationIndex = self.context.authenticationService.activeAuthenticationIndex.value
                     let currentTwitterUser = activeAuthenticationIndex?.twitterAuthentication?.twitterUser
                     if targetUser.id == currentTwitterUser?.id {
-                        return MeProfileViewModel(activeAuthenticationIndex: activeAuthenticationIndex)
+                        return MeProfileViewModel(context: self.context)
                     } else {
-                        return ProfileViewModel(twitterUser: targetUser)
+                        return ProfileViewModel(context: self.context, twitterUser: targetUser)
                     }
                 } else {
                     return ProfileViewModel(context: self.context, username: targetUsername)
                 }
             }()
-            self.context.authenticationService.activeAuthenticationIndex
-                .map { $0?.twitterAuthentication?.twitterUser }
-                .assign(to: \.value, on: profileViewModel.currentTwitterUser)
-                .store(in: &profileViewModel.disposeBag)
             
             DispatchQueue.main.async {
                 self.coordinator.present(scene: .profile(viewModel: profileViewModel), from: self, transition: .show)
@@ -645,6 +612,23 @@ extension ProfileViewController: ProfileBannerViewDelegate {
             break
         }
     }
+    
+    func profileBannerView(_ profileBannerView: ProfileBannerView, profileBannerStatusView: ProfileBannerStatusView, followingStatusItemViewDidPressed statusItemView: ProfileBannerStatusItemView) {
+        guard let twitterUserID = viewModel.twitterUser.value?.id else { return }
+        let followingListViewModel = FriendshipListViewModel(context: context, userID: twitterUserID, friendshipLookupKind: .following)
+        self.coordinator.present(scene: .friendshipList(viewModel: followingListViewModel), from: nil, transition: .show)
+    }
+    
+    func profileBannerView(_ profileBannerView: ProfileBannerView, profileBannerStatusView: ProfileBannerStatusView, followerStatusItemViewDidPressed statusItemView: ProfileBannerStatusItemView) {
+        guard let twitterUserID = viewModel.twitterUser.value?.id else { return }
+        let followingListViewModel = FriendshipListViewModel(context: context, userID: twitterUserID, friendshipLookupKind: .followers)
+        self.coordinator.present(scene: .friendshipList(viewModel: followingListViewModel), from: nil, transition: .show)
+    }
+    
+    func profileBannerView(_ profileBannerView: ProfileBannerView, profileBannerStatusView: ProfileBannerStatusView, listedStatusItemViewDidPressed statusItemView: ProfileBannerStatusItemView) {
+        // TODO:
+    }
+    
     
 }
 

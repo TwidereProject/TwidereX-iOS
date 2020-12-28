@@ -19,6 +19,13 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let window = UIWindow(windowScene: windowScene)
         self.window = window
         
+        #if DEBUG
+        guard !SceneDelegate.isXcodeUnitTest else {
+            window.rootViewController = UIViewController()
+            return
+        }
+        #endif
+        
         let appContext = AppContext.shared
         let sceneCoordinator = SceneCoordinator(scene: scene, sceneDelegate: self, appContext: appContext)
         self.coordinator = sceneCoordinator
@@ -70,3 +77,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
 }
 
+#if DEBUG
+extension SceneDelegate {
+    static var isXcodeUnitTest: Bool {
+        return ProcessInfo().environment["XCInjectBundleInto"] != nil
+    }
+}
+#endif

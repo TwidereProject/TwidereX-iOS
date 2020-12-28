@@ -31,7 +31,7 @@ extension Twitter.API.OAuth {
                     guard let body = String(data: data, encoding: .utf8),
                           let components = URLComponents(string: templateURLString + "?" + body),
                           let requestTokenResponse = RequestTokenResponse(queryItems: components.queryItems ?? []) else {
-                        throw Twitter.API.APIError.internal(message: "process requestToken response fail")
+                        throw Twitter.API.Error.InternalError(message: "process requestToken response fail")
                     }
                     return .requestTokenResponse(requestTokenResponse)
                 }
@@ -65,7 +65,7 @@ extension Twitter.API.OAuth {
                               let sharedSecret = try? clientEphemeralPrivateKey.sharedSecretFromKeyAgreement(with: exchangePublicKey),
                               let combinedData = Data(base64Encoded: response.requestTokenBox) else
                         {
-                            throw Twitter.API.APIError.internal(message: "invalid requestToken response")
+                            throw Twitter.API.Error.InternalError(message: "invalid requestToken response")
                         }
                         do {
                             let salt = exchangePublicKey.rawRepresentation + sharedSecret.withUnsafeBytes { Data($0) }
@@ -73,7 +73,7 @@ extension Twitter.API.OAuth {
                             let sealedbox = try ChaChaPoly.SealedBox(combined: combinedData)
                             let requestTokenData = try ChaChaPoly.open(sealedbox, using: wrapKey)
                             guard let requestToken = String(data: requestTokenData, encoding: .utf8) else {
-                                throw Twitter.API.APIError.internal(message: "invalid requestToken response")
+                                throw Twitter.API.Error.InternalError(message: "invalid requestToken response")
                             }
                             let append = CustomRequestTokenResponseAppend(
                                 requestToken: requestToken,
@@ -83,7 +83,7 @@ extension Twitter.API.OAuth {
                             return .customRequestTokenResponse(response, append: append)
                         } catch {
                             assertionFailure(error.localizedDescription)
-                            throw Twitter.API.APIError.internal(message: "process requestToken response fail")
+                            throw Twitter.API.Error.InternalError(message: "process requestToken response fail")
                         }
                     }
                     .eraseToAnyPublisher()
@@ -137,7 +137,7 @@ extension Twitter.API.OAuth {
             .tryMap { data, response -> AccessTokenResponse in
                 guard let body = String(data: data, encoding: .utf8),
                       let accessTokenResponse = AccessTokenResponse(urlEncodedForm: body) else {
-                    throw Twitter.API.APIError.internal(message: "process requestToken response fail")
+                    throw Twitter.API.Error.InternalError(message: "process requestToken response fail")
                 }
                 return accessTokenResponse
             }
@@ -270,7 +270,7 @@ extension Twitter.API.OAuth {
             do {
                 guard let exchangePublicKeyData = Data(base64Encoded: exchangePublicKey),
                       let sealedBoxData = Data(base64Encoded: authenticationBox) else {
-                    throw Twitter.API.APIError.internal(message: "invalid callback")
+                    throw Twitter.API.Error.InternalError(message: "invalid callback")
                 }
                 let exchangePublicKey = try Curve25519.KeyAgreement.PublicKey(rawRepresentation: exchangePublicKeyData)
                 let sharedSecret = try privateKey.sharedSecretFromKeyAgreement(with: exchangePublicKey)
@@ -283,10 +283,10 @@ extension Twitter.API.OAuth {
                 return authentication
                 
             } catch {
-                if let error = error as? Twitter.API.APIError {
+                if let error = error as? Twitter.API.Error.ResponseError {
                     throw error
                 } else {
-                    throw Twitter.API.APIError.internal(message: error.localizedDescription)
+                    throw Twitter.API.Error.InternalError(message: error.localizedDescription)
                 }
             }
         }

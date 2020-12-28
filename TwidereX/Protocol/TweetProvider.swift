@@ -10,8 +10,7 @@ import UIKit
 import Combine
 import CoreDataStack
 
-protocol TweetProvider: NeedsDependency & UIViewController {
-    var disposeBag: Set<AnyCancellable> { get set }
+protocol TweetProvider: NeedsDependency & DisposeBagCollectable & UIViewController {
     func tweet() -> Future<Tweet?, Never>
     func tweet(for cell: TimelinePostTableViewCell, indexPath: IndexPath?) -> Future<Tweet?, Never>
     func tweet(for cell: ConversationPostTableViewCell, indexPath: IndexPath?) -> Future<Tweet?, Never>

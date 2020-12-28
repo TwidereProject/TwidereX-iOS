@@ -23,6 +23,12 @@ final public class AuthenticationIndex: NSManagedObject {
 }
 
 extension AuthenticationIndex {
+    public var platform: Platform? {
+        return Platform(rawValue: platformRaw)
+    }
+}
+
+extension AuthenticationIndex {
     
     public override func awakeFromInsert() {
         super.awakeFromInsert()

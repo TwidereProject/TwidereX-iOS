@@ -14,19 +14,9 @@ import TwitterAPI
 
 final class MeProfileViewModel: ProfileViewModel {
     
-    init(activeAuthenticationIndex: AuthenticationIndex?) {
-        if let activeAuthenticationIndex = activeAuthenticationIndex {
-            if let twitterAuthentication = activeAuthenticationIndex.twitterAuthentication,
-               let twitterUser = twitterAuthentication.twitterUser {
-                super.init(twitterUser: twitterUser)
-            } else {
-                super.init()
-            }
-        } else {
-            super.init()
-        }
+    init(context: AppContext) {
+        super.init(context: context, optionalTwitterUser: context.authenticationService.activeAuthenticationIndex.value?.twitterAuthentication?.twitterUser)
         
-        // FIXME: multi-platform support
         self.currentTwitterUser
             .sink { [weak self] currentTwitterUser in
                 os_log("%{public}s[%{public}ld], %{public}s: current active twitter user: %s", ((#file as NSString).lastPathComponent), #line, #function, currentTwitterUser?.username ?? "<nil>")

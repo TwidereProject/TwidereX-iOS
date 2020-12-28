@@ -58,22 +58,32 @@ extension APIService {
     }
     
     enum ErrorReason {
-        // application
+        // application internal error
+        case twitterInternalError(Twitter.API.Error.InternalError)
         case authenticationMissing
         case badRequest
         case requestThrottle
-        // API
-        case accountTemporarilyLocked       // code 326
-        case rateLimitExceeded              // code 88 (HTTP 429)
         
-        var code: Int? {
-            switch self {
-            case .accountTemporarilyLocked:     return 326
-            case .rateLimitExceeded:            return 88
-            default:                            return nil
-            }
+        // Twitter API error
+        case twitterResponseError(Twitter.API.Error.ResponseError)
+    }
+}
+
+extension APIService {
+
+    static func logRateLimit<T>(for response: Twitter.Response.Content<T>, log: OSLog, file: String = #file, line: Int = #line, function: String = #function) {
+        if let responseTime = response.responseTime {
+            os_log(.info, log: log, "%{public}s[%{public}ld], %{public}s: response cost %{public}ldms", ((file as NSString).lastPathComponent), line, function, responseTime)
+        }
+        if let date = response.date, let rateLimit = response.rateLimit {
+            let responseNetworkDate = date
+            let resetTimeInterval = rateLimit.reset.timeIntervalSince(responseNetworkDate)
+            
+            let resetTimeIntervalInMin = resetTimeInterval / 60.0
+            os_log(.info, log: log, "%{public}s[%{public}ld], %{public}s: API rate limit: %{public}ld/%{public}ld, reset at %{public}s, left: %.2fm (%.2fs)", ((file as NSString).lastPathComponent), line, function, rateLimit.remaining, rateLimit.limit, rateLimit.reset.debugDescription, resetTimeIntervalInMin, resetTimeInterval)
         }
     }
+    
 }
 
 extension APIService {

@@ -92,12 +92,9 @@ extension APIService {
                 guard let self = self else { return }
                 switch completion {
                 case .failure(let error):
-                    if case let Twitter.API.APIError.response(code, _) = error {
-                        switch code {
-                        case ErrorReason.rateLimitExceeded.code:
-                            self.error.send(.explicit(.rateLimitExceeded))
-                        default:
-                            break
+                    if let responseError = error as? Twitter.API.Error.ResponseError {
+                        if case .rateLimitExceeded = responseError.twitterAPIError {
+                            self.error.send(.explicit(.twitterResponseError(responseError)))
                         }
                     }
                 case .finished:
