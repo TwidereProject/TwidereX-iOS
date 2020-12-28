@@ -246,7 +246,7 @@
 		DBCE2E912591A06300926D09 /* UINavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBCE2E902591A06300926D09 /* UINavigationController.swift */; };
 		DBCE2E992591A44000926D09 /* UIViewAnimatingPosition.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBCE2E982591A44000926D09 /* UIViewAnimatingPosition.swift */; };
 		DBCE2EA92591F23B00926D09 /* FollowingListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBCE2EA82591F23B00926D09 /* FollowingListViewController.swift */; };
-		DBCE2EB22591F38100926D09 /* FollowingListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBCE2EB12591F38100926D09 /* FollowingListViewModel.swift */; };
+		DBCE2EB22591F38100926D09 /* FriendshipListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBCE2EB12591F38100926D09 /* FriendshipListViewModel.swift */; };
 		DBCE2EC82591F74300926D09 /* FollowingListViewModel+Diffable.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBCE2EC72591F74300926D09 /* FollowingListViewModel+Diffable.swift */; };
 		DBCE2ECD2591FAA800926D09 /* FriendshipListSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBCE2ECC2591FAA800926D09 /* FriendshipListSection.swift */; };
 		DBCE2ED22591FB8D00926D09 /* OrderedTwitterUserFetchedResultsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBCE2ED12591FB8D00926D09 /* OrderedTwitterUserFetchedResultsController.swift */; };
@@ -254,6 +254,8 @@
 		DBCE2EE32593319000926D09 /* AvatarConfigurableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBCE2EE22593319000926D09 /* AvatarConfigurableView.swift */; };
 		DBCE2EE825933B1600926D09 /* SearchUserTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBCE2EE725933B1600926D09 /* SearchUserTableViewCell.swift */; };
 		DBD40B852599B9C2006E4ABC /* CombineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBD40B842599B9C2006E4ABC /* CombineTests.swift */; };
+		DBD40BEF2599CB89006E4ABC /* FollowerListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBD40BEE2599CB89006E4ABC /* FollowerListViewController.swift */; };
+		DBD40C0D2599CD9D006E4ABC /* FollowerListViewController+TwitterUserProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBD40C0C2599CD9D006E4ABC /* FollowerListViewController+TwitterUserProvider.swift */; };
 		DBD98489251CB88A00ED87A1 /* Tabman in Frameworks */ = {isa = PBXBuildFile; productRef = DBD98488251CB88A00ED87A1 /* Tabman */; };
 		DBDA8E2224FCF8A3006750DC /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBDA8E2124FCF8A3006750DC /* AppDelegate.swift */; };
 		DBDA8E2424FCF8A3006750DC /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBDA8E2324FCF8A3006750DC /* SceneDelegate.swift */; };
@@ -669,7 +671,7 @@
 		DBCE2E902591A06300926D09 /* UINavigationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UINavigationController.swift; sourceTree = "<group>"; };
 		DBCE2E982591A44000926D09 /* UIViewAnimatingPosition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIViewAnimatingPosition.swift; sourceTree = "<group>"; };
 		DBCE2EA82591F23B00926D09 /* FollowingListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FollowingListViewController.swift; sourceTree = "<group>"; };
-		DBCE2EB12591F38100926D09 /* FollowingListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FollowingListViewModel.swift; sourceTree = "<group>"; };
+		DBCE2EB12591F38100926D09 /* FriendshipListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendshipListViewModel.swift; sourceTree = "<group>"; };
 		DBCE2EC72591F74300926D09 /* FollowingListViewModel+Diffable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FollowingListViewModel+Diffable.swift"; sourceTree = "<group>"; };
 		DBCE2ECC2591FAA800926D09 /* FriendshipListSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendshipListSection.swift; sourceTree = "<group>"; };
 		DBCE2ED12591FB8D00926D09 /* OrderedTwitterUserFetchedResultsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderedTwitterUserFetchedResultsController.swift; sourceTree = "<group>"; };
@@ -679,6 +681,8 @@
 		DBD40B402599AD92006E4ABC /* TwidereX.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; name = TwidereX.xctestplan; path = /Users/MainasuK/Developer/Swift/SujiTech/TwidereX/TwidereX/TwidereX.xctestplan; sourceTree = "<absolute>"; };
 		DBD40B412599AD93006E4ABC /* TwidereX-Performance.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; name = "TwidereX-Performance.xctestplan"; path = "/Users/MainasuK/Developer/Swift/SujiTech/TwidereX/TwidereX/TwidereX-Performance.xctestplan"; sourceTree = "<absolute>"; };
 		DBD40B842599B9C2006E4ABC /* CombineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CombineTests.swift; sourceTree = "<group>"; };
+		DBD40BEE2599CB89006E4ABC /* FollowerListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FollowerListViewController.swift; sourceTree = "<group>"; };
+		DBD40C0C2599CD9D006E4ABC /* FollowerListViewController+TwitterUserProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FollowerListViewController+TwitterUserProvider.swift"; sourceTree = "<group>"; };
 		DBDA8E1E24FCF8A3006750DC /* TwidereX.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TwidereX.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		DBDA8E2124FCF8A3006750DC /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		DBDA8E2324FCF8A3006750DC /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -1066,7 +1070,7 @@
 				DB92573B251C9C31004FEFB5 /* HomeTimeline */,
 				DB3FC03825526D6B003A2F8A /* MediaTimeline */,
 				DB7E22F42552A3D800551314 /* LikeTimeline */,
-				DBCE2EAD2591F37400926D09 /* FollowingList */,
+				DBD40C1A2599D7F6006E4ABC /* FriendshipList */,
 			);
 			path = Profile;
 			sourceTree = "<group>";
@@ -1478,9 +1482,6 @@
 			children = (
 				DBCE2EA82591F23B00926D09 /* FollowingListViewController.swift */,
 				DB0D0AC725944FF2007A23C8 /* FollowingListViewController+TwitterUserProvider.swift */,
-				DBCE2EB12591F38100926D09 /* FollowingListViewModel.swift */,
-				DBCE2EC72591F74300926D09 /* FollowingListViewModel+Diffable.swift */,
-				DBCE2ED72591FDF000926D09 /* FollowingListViewModel+State.swift */,
 			);
 			path = FollowingList;
 			sourceTree = "<group>";
@@ -1508,6 +1509,27 @@
 				DB6D671E2566221D00B70DC0 /* DisplayPreferenceViewModel.swift */,
 			);
 			path = DisplayPreference;
+			sourceTree = "<group>";
+		};
+		DBD40BF62599CB93006E4ABC /* FollowerList */ = {
+			isa = PBXGroup;
+			children = (
+				DBD40BEE2599CB89006E4ABC /* FollowerListViewController.swift */,
+				DBD40C0C2599CD9D006E4ABC /* FollowerListViewController+TwitterUserProvider.swift */,
+			);
+			path = FollowerList;
+			sourceTree = "<group>";
+		};
+		DBD40C1A2599D7F6006E4ABC /* FriendshipList */ = {
+			isa = PBXGroup;
+			children = (
+				DBCE2EB12591F38100926D09 /* FriendshipListViewModel.swift */,
+				DBCE2EC72591F74300926D09 /* FollowingListViewModel+Diffable.swift */,
+				DBCE2ED72591FDF000926D09 /* FollowingListViewModel+State.swift */,
+				DBCE2EAD2591F37400926D09 /* FollowingList */,
+				DBD40BF62599CB93006E4ABC /* FollowerList */,
+			);
+			path = FriendshipList;
 			sourceTree = "<group>";
 		};
 		DBDA8E1524FCF8A3006750DC = {
@@ -2644,7 +2666,7 @@
 				DB67611D254BC04B006C6798 /* SearchMediaViewModel+Diffable.swift in Sources */,
 				DBA5FA142553DB4300D2E98E /* MediaPreviewingViewController.swift in Sources */,
 				DB8AC16C25419B2E00E636BE /* ComposeTweetSection.swift in Sources */,
-				DBCE2EB22591F38100926D09 /* FollowingListViewModel.swift in Sources */,
+				DBCE2EB22591F38100926D09 /* FriendshipListViewModel.swift in Sources */,
 				DBEA4F8D251225610007FEC5 /* TimelinePostView.swift in Sources */,
 				DB2FFF36258B56E5003DBC19 /* VideoPlaybackService.swift in Sources */,
 				DB35C35D25146C58003DA0E9 /* ConversationPostStatusView.swift in Sources */,
@@ -2654,6 +2676,7 @@
 				DBA9B3A625875B6B00EA14ED /* MentionPickViewController.swift in Sources */,
 				DB67610D254AD681006C6798 /* ActivityIndicatorCollectionViewCell.swift in Sources */,
 				DB2FFF61258CB051003DBC19 /* NeedsDependency+AVPlayerViewControllerDelegate.swift in Sources */,
+				DBD40C0D2599CD9D006E4ABC /* FollowerListViewController+TwitterUserProvider.swift in Sources */,
 				DBA5FA2E2553F06B00D2E98E /* MediaInfoDescriptionView.swift in Sources */,
 				DB5918F7255E81FB00B20F6F /* MediaPreviewViewController+TweetProvider.swift in Sources */,
 				DBA6B1B725355C1E005FB0B4 /* UIAlertController.swift in Sources */,
@@ -2699,6 +2722,7 @@
 				DBCE2ECD2591FAA800926D09 /* FriendshipListSection.swift in Sources */,
 				DB91540B254FE4B200613473 /* APIService+Friendship.swift in Sources */,
 				DB747FF4251C47BD000C4BD7 /* UITableView.swift in Sources */,
+				DBD40BEF2599CB89006E4ABC /* FollowerListViewController.swift in Sources */,
 				DBA5FA0A2553D1FD00D2E98E /* MediaHostToMediaPreviewViewControllerAnimatedTransitioning.swift in Sources */,
 				DB8AC1332541662200E636BE /* KeyboardResponderService.swift in Sources */,
 				DB676118254BBF57006C6798 /* SearchMediaViewModel+State.swift in Sources */,

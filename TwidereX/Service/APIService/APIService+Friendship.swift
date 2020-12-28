@@ -229,8 +229,9 @@ extension APIService {
 
 // V2 friendship lookup
 extension APIService {
-        
-    func following(
+    
+    func friendshipList(
+        kind: FriendshipListKind,
         userID: Twitter.Entity.V2.User.ID,
         maxResults: Int,
         paginationToken: String?,
@@ -238,53 +239,62 @@ extension APIService {
     ) -> AnyPublisher<Twitter.Response.Content<Twitter.API.V2.FollowLookup.Content>, Error> {
         let authorization = twitterAuthenticationBox.twitterAuthorization
         let requestTwitterUserID = twitterAuthenticationBox.twitterUserID
-
+        
         let query = Twitter.API.V2.FollowLookup.Query(
             userID: userID,
             maxResults: maxResults,
             paginationToken: paginationToken
         )
-        return Twitter.API.V2.FollowLookup.following(
-            session: session,
-            authorization: authorization,
-            query: query
-        )
-        .map { response -> AnyPublisher<Twitter.Response.Content<Twitter.API.V2.FollowLookup.Content>, Error> in
-            let log = OSLog.api
-            
-            APIService.logRateLimit(for: response, log: log)
-            
-            let dictResponse = response.map { response in
-                return Twitter.Response.V2.DictContent(
-                    tweets: response.includes?.tweets ?? [],
-                    users: response.data ?? [],
-                    media: []
-                )
+        
+        let lookup: AnyPublisher<Twitter.Response.Content<Twitter.API.V2.FollowLookup.Content>, Error> = {
+            switch kind {
+            case .following:    return Twitter.API.V2.FollowLookup.following(session: session, authorization: authorization, query: query)
+            case .followers:    return Twitter.API.V2.FollowLookup.followers(session: session, authorization: authorization, query: query)
             }
-            return APIService.Persist.persistDictContent(managedObjectContext: self.backgroundManagedObjectContext, response: dictResponse, requestTwitterUserID: requestTwitterUserID, log: log)
-            .map { _ in return response }
-            .replaceError(with: response)
-            .setFailureType(to: Error.self)
-            .eraseToAnyPublisher()
-        }
-        .switchToLatest()
-        .handleEvents(receiveCompletion: { [weak self] completion in
-            guard let self = self else { return }
-            switch completion {
-            case .failure(let error):
-                if let responseError = error as? Twitter.API.Error.ResponseError {
-                    switch responseError.twitterAPIError {
-                    case .accountIsTemporarilyLocked, .rateLimitExceeded:
-                        self.error.send(.explicit(.twitterResponseError(responseError)))
-                    default:
-                        break
-                    }
+        }()
+        
+        return lookup
+            .map { response -> AnyPublisher<Twitter.Response.Content<Twitter.API.V2.FollowLookup.Content>, Error> in
+                let log = OSLog.api
+                
+                APIService.logRateLimit(for: response, log: log)
+                
+                let dictResponse = response.map { response in
+                    return Twitter.Response.V2.DictContent(
+                        tweets: response.includes?.tweets ?? [],
+                        users: response.data ?? [],
+                        media: []
+                    )
                 }
-            case .finished:
-                break
+                return APIService.Persist.persistDictContent(managedObjectContext: self.backgroundManagedObjectContext, response: dictResponse, requestTwitterUserID: requestTwitterUserID, log: log)
+                    .map { _ in return response }
+                    .replaceError(with: response)
+                    .setFailureType(to: Error.self)
+                    .eraseToAnyPublisher()
             }
-        })
-        .eraseToAnyPublisher()
+            .switchToLatest()
+            .handleEvents(receiveCompletion: { [weak self] completion in
+                guard let self = self else { return }
+                switch completion {
+                case .failure(let error):
+                    if let responseError = error as? Twitter.API.Error.ResponseError {
+                        switch responseError.twitterAPIError {
+                        case .accountIsTemporarilyLocked, .rateLimitExceeded:
+                            self.error.send(.explicit(.twitterResponseError(responseError)))
+                        default:
+                            break
+                        }
+                    }
+                case .finished:
+                    break
+                }
+            })
+            .eraseToAnyPublisher()
+    }
+    
+    enum FriendshipListKind {
+        case following
+        case followers
     }
     
 }

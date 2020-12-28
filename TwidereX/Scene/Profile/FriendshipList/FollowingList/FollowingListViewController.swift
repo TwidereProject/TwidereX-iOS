@@ -16,7 +16,7 @@ final class FollowingListViewController: UIViewController, NeedsDependency {
     weak var coordinator: SceneCoordinator! { willSet { precondition(!isViewLoaded) } }
     
     var disposeBag = Set<AnyCancellable>()
-    var viewModel: FollowingListViewModel!
+    var viewModel: FriendshipListViewModel!
     
     let tableView: UITableView = {
         let tableView = ControlContainableTableView()
@@ -48,7 +48,7 @@ extension FollowingListViewController {
         
         tableView.delegate = self
         viewModel.setupDiffableDataSource(for: tableView)
-        viewModel.stateMachine.enter(FollowingListViewModel.State.Loading.self)
+        viewModel.stateMachine.enter(FriendshipListViewModel.State.Loading.self)
     }
     
     
@@ -78,7 +78,7 @@ extension FollowingListViewController: UITableViewDelegate {
 extension FollowingListViewController: LoadMoreConfigurableTableViewContainer {
     
     typealias BottomLoaderTableViewCell = TimelineBottomLoaderTableViewCell
-    typealias LoadingState = FollowingListViewModel.State.Loading
+    typealias LoadingState = FriendshipListViewModel.State.Loading
     
     var loadMoreConfigurableTableView: UITableView { return tableView }
     var loadMoreConfigurableStateMachine: GKStateMachine { return viewModel.stateMachine }

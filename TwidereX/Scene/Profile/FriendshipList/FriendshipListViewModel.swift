@@ -1,5 +1,5 @@
 //
-//  FollowingListViewModel.swift
+//  FriendshipListViewModel.swift
 //  TwidereX
 //
 //  Created by Cirno MainasuK on 2020-12-22.
@@ -14,13 +14,14 @@ import CoreDataStack
 import GameplayKit
 import TwitterAPI
 
-final class FollowingListViewModel: NSObject {
+final class FriendshipListViewModel: NSObject {
     
     var disposeBag = Set<AnyCancellable>()
     
     // input
     let context: AppContext
     let userID: Twitter.Entity.V2.User.ID
+    let friendshipLookupKind: APIService.FriendshipListKind
     let orderedTwitterUserFetchedResultsController: OrderedTwitterUserFetchedResultsController
     
     // output
@@ -37,9 +38,10 @@ final class FollowingListViewModel: NSObject {
         return stateMachine
     }()
     
-    init(context: AppContext, userID: Twitter.Entity.V2.User.ID) {
+    init(context: AppContext, userID: Twitter.Entity.V2.User.ID, friendshipLookupKind: APIService.FriendshipListKind) {
         self.context = context
         self.userID = userID
+        self.friendshipLookupKind = friendshipLookupKind
         self.orderedTwitterUserFetchedResultsController = OrderedTwitterUserFetchedResultsController(managedObjectContext: context.managedObjectContext)
         super.init()
         
@@ -63,7 +65,7 @@ final class FollowingListViewModel: NSObject {
     }
     
     // convenience init for current active user
-    convenience init?(context: AppContext) {
+    convenience init?(context: AppContext, friendshipLookupKind: APIService.FriendshipListKind) {
         guard let activeAuthenticationIndex = context.authenticationService.activeAuthenticationIndex.value else {
             return nil
         }
@@ -72,7 +74,7 @@ final class FollowingListViewModel: NSObject {
             guard let userID = activeAuthenticationIndex.twitterAuthentication?.userID else {
                 return nil
             }
-            self.init(context: context, userID: userID)
+            self.init(context: context, userID: userID, friendshipLookupKind: friendshipLookupKind)
         default:
             return nil
         }

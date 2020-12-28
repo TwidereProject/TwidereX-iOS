@@ -1,5 +1,5 @@
 //
-//  FollowingListViewModel+Diffable.swift
+//  FriendshipListViewModel+Diffable.swift
 //  TwidereX
 //
 //  Created by Cirno MainasuK on 2020-12-22.
@@ -13,7 +13,7 @@ import CoreDataStack
 import AlamofireImage
 import Kingfisher
 
-extension FollowingListViewModel {
+extension FriendshipListViewModel {
     func setupDiffableDataSource(for tableView: UITableView) {
         diffableDataSource = MediaSection.tableViewDiffableDataSource(
             for: tableView,

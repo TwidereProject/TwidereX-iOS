@@ -156,14 +156,17 @@ extension DrawerSidebarViewController: DrawerSidebarHeaderViewDelegate {
     }
     
     func drawerSidebarHeaderView(_ headerView: DrawerSidebarHeaderView, profileBannerStatusView: ProfileBannerStatusView, followingStatusItemViewDidPressed statusItemView: ProfileBannerStatusItemView) {
-        guard let followingListViewModel = FollowingListViewModel(context: context) else { return }
+        guard let followingListViewModel = FriendshipListViewModel(context: context, friendshipLookupKind: .following) else { return }
         dismiss(animated: true) {
-            self.coordinator.present(scene: .followingList(viewModel: followingListViewModel), from: nil, transition: .show)
+            self.coordinator.present(scene: .friendshipList(viewModel: followingListViewModel), from: nil, transition: .show)
         }
     }
     
     func drawerSidebarHeaderView(_ headerView: DrawerSidebarHeaderView, profileBannerStatusView: ProfileBannerStatusView, followerStatusItemViewDidPressed statusItemView: ProfileBannerStatusItemView) {
-        
+        guard let followingListViewModel = FriendshipListViewModel(context: context, friendshipLookupKind: .followers) else { return }
+        dismiss(animated: true) {
+            self.coordinator.present(scene: .friendshipList(viewModel: followingListViewModel), from: nil, transition: .show)
+        }
     }
     
     func drawerSidebarHeaderView(_ headerView: DrawerSidebarHeaderView, profileBannerStatusView: ProfileBannerStatusView, listedStatusItemViewDidPressed statusItemView: ProfileBannerStatusItemView) {

@@ -1,5 +1,5 @@
 //
-//  FollowingListViewModel+State.swift
+//  FriendshipListViewModel+State.swift
 //  TwidereX
 //
 //  Created by Cirno MainasuK on 2020-12-22.
@@ -11,11 +11,11 @@ import Foundation
 import GameplayKit
 import TwitterAPI
 
-extension FollowingListViewModel {
+extension FriendshipListViewModel {
     class State: GKState {
-        weak var viewModel: FollowingListViewModel?
+        weak var viewModel: FriendshipListViewModel?
         
-        init(viewModel: FollowingListViewModel) {
+        init(viewModel: FriendshipListViewModel) {
             self.viewModel = viewModel
         }
         
@@ -25,20 +25,20 @@ extension FollowingListViewModel {
     }
 }
 
-extension FollowingListViewModel.State {
-    class Initial: FollowingListViewModel.State {
+extension FriendshipListViewModel.State {
+    class Initial: FriendshipListViewModel.State {
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {
             return stateClass == Idle.self || stateClass == Loading.self
         }
     }
     
-    class Idle: FollowingListViewModel.State {
+    class Idle: FriendshipListViewModel.State {
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {
             return stateClass == Loading.self
         }
     }
     
-    class Loading: FollowingListViewModel.State {
+    class Loading: FriendshipListViewModel.State {
         var nextToken: String?
         
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {
@@ -58,7 +58,8 @@ extension FollowingListViewModel.State {
                 viewModel.orderedTwitterUserFetchedResultsController.userIDs.value = []
             }
             
-            viewModel.context.apiService.following(
+            viewModel.context.apiService.friendshipList(
+                kind: viewModel.friendshipLookupKind,
                 userID: viewModel.userID,
                 maxResults: nextToken == nil ? 200 : 1000,      // small batch at the first time fetching
                 paginationToken: nextToken,
@@ -98,13 +99,13 @@ extension FollowingListViewModel.State {
         }
     }
     
-    class Fail: FollowingListViewModel.State {
+    class Fail: FriendshipListViewModel.State {
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {
             return stateClass == Loading.self
         }
     }
     
-    class NoMore: FollowingListViewModel.State {
+    class NoMore: FriendshipListViewModel.State {
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {
             return false
         }
