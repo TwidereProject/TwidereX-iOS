@@ -253,6 +253,7 @@
 		DBCE2ED82591FDF000926D09 /* FollowingListViewModel+State.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBCE2ED72591FDF000926D09 /* FollowingListViewModel+State.swift */; };
 		DBCE2EE32593319000926D09 /* AvatarConfigurableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBCE2EE22593319000926D09 /* AvatarConfigurableView.swift */; };
 		DBCE2EE825933B1600926D09 /* SearchUserTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBCE2EE725933B1600926D09 /* SearchUserTableViewCell.swift */; };
+		DBD40B852599B9C2006E4ABC /* CombineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBD40B842599B9C2006E4ABC /* CombineTests.swift */; };
 		DBD98489251CB88A00ED87A1 /* Tabman in Frameworks */ = {isa = PBXBuildFile; productRef = DBD98488251CB88A00ED87A1 /* Tabman */; };
 		DBDA8E2224FCF8A3006750DC /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBDA8E2124FCF8A3006750DC /* AppDelegate.swift */; };
 		DBDA8E2424FCF8A3006750DC /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBDA8E2324FCF8A3006750DC /* SceneDelegate.swift */; };
@@ -339,6 +340,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		DBD40BC32599BDB6006E4ABC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = DBDA8E1624FCF8A3006750DC /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = DBE76CE72500B29300DEB0FC;
+			remoteInfo = StubMixer;
+		};
 		DBDA8E3524FCF8A7006750DC /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = DBDA8E1624FCF8A3006750DC /* Project object */;
@@ -668,6 +676,9 @@
 		DBCE2ED72591FDF000926D09 /* FollowingListViewModel+State.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FollowingListViewModel+State.swift"; sourceTree = "<group>"; };
 		DBCE2EE22593319000926D09 /* AvatarConfigurableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvatarConfigurableView.swift; sourceTree = "<group>"; };
 		DBCE2EE725933B1600926D09 /* SearchUserTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchUserTableViewCell.swift; sourceTree = "<group>"; };
+		DBD40B402599AD92006E4ABC /* TwidereX.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; name = TwidereX.xctestplan; path = /Users/MainasuK/Developer/Swift/SujiTech/TwidereX/TwidereX/TwidereX.xctestplan; sourceTree = "<absolute>"; };
+		DBD40B412599AD93006E4ABC /* TwidereX-Performance.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; name = "TwidereX-Performance.xctestplan"; path = "/Users/MainasuK/Developer/Swift/SujiTech/TwidereX/TwidereX/TwidereX-Performance.xctestplan"; sourceTree = "<absolute>"; };
+		DBD40B842599B9C2006E4ABC /* CombineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CombineTests.swift; sourceTree = "<group>"; };
 		DBDA8E1E24FCF8A3006750DC /* TwidereX.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TwidereX.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		DBDA8E2124FCF8A3006750DC /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		DBDA8E2324FCF8A3006750DC /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -1533,6 +1544,8 @@
 			children = (
 				DBDA8E2F24FCF8A6006750DC /* Info.plist */,
 				DBE76CD2250095D900DEB0FC /* TwidereX.entitlements */,
+				DBD40B402599AD92006E4ABC /* TwidereX.xctestplan */,
+				DBD40B412599AD93006E4ABC /* TwidereX-Performance.xctestplan */,
 				DBA122CA256C13B000928671 /* GoogleService-Info.plist */,
 				DBCB408E255D8C2E00DD8D8F /* Activity */,
 				DB88AC312508BA950009E562 /* Diffable */,
@@ -1556,6 +1569,7 @@
 			children = (
 				DBDA8E3824FCF8A7006750DC /* TwidereXTests.swift */,
 				DBDA8E3A24FCF8A7006750DC /* Info.plist */,
+				DBD40B842599B9C2006E4ABC /* CombineTests.swift */,
 			);
 			path = TwidereXTests;
 			sourceTree = "<group>";
@@ -2072,6 +2086,7 @@
 			);
 			dependencies = (
 				DBDA8E3624FCF8A7006750DC /* PBXTargetDependency */,
+				DBD40BC42599BDB6006E4ABC /* PBXTargetDependency */,
 			);
 			name = TwidereXTests;
 			productName = TwidereXTests;
@@ -2696,6 +2711,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				DBDA8E3924FCF8A7006750DC /* TwidereXTests.swift in Sources */,
+				DBD40B852599B9C2006E4ABC /* CombineTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2768,6 +2784,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		DBD40BC42599BDB6006E4ABC /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = DBE76CE72500B29300DEB0FC /* StubMixer */;
+			targetProxy = DBD40BC32599BDB6006E4ABC /* PBXContainerItemProxy */;
+		};
 		DBDA8E3624FCF8A7006750DC /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = DBDA8E1D24FCF8A3006750DC /* TwidereX */;

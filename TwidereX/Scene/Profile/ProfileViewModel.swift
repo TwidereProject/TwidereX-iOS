@@ -93,9 +93,16 @@ class ProfileViewModel: NSObject {
         }
         .setFailureType(to: Error.self)
         .map { twitterUser, activeTwitterAuthenticationBox -> AnyPublisher<Twitter.Response.Content<Twitter.Entity.Relationship>, Error> in
-            self.context.apiService.friendship(twitterUserObjectID: twitterUser.objectID, twitterAuthenticationBox: activeTwitterAuthenticationBox)
-                .retry(3)
-                .eraseToAnyPublisher()
+            // Fix crash issue on the iOS 14.1
+            // seealso: CombineTests.swift
+            if #available(iOS 14.2, *) {
+                return self.context.apiService.friendship(twitterUserObjectID: twitterUser.objectID, twitterAuthenticationBox: activeTwitterAuthenticationBox)
+                    .retry(3)
+                    .eraseToAnyPublisher()
+            } else {
+                return self.context.apiService.friendship(twitterUserObjectID: twitterUser.objectID, twitterAuthenticationBox: activeTwitterAuthenticationBox)
+                    .eraseToAnyPublisher()
+            }
         }
         .switchToLatest()
         .sink { completion in
