@@ -120,7 +120,6 @@ extension Twitter.API {
             }
             
             debugPrint(decodeError)
-            assertionFailure(decodeError.localizedDescription)
             throw Error.ResponseError(httpResponseStatus: httpResponseStatus, twitterAPIError: nil)
         }
     }
