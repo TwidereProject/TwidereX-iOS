@@ -34,14 +34,14 @@ class UserTimelineViewModel: NSObject {
             State.Fail(viewModel: self),
             State.Idle(viewModel: self),
             State.LoadingMore(viewModel: self),
+            State.PermissionDenied(viewModel: self),
             State.NoMore(viewModel: self),
         ])
         stateMachine.enter(State.Initial.self)
         return stateMachine
     }()
-    lazy var stateMachinePublisher = CurrentValueSubject<State, Never>(State.Initial(viewModel: self))
-    let userTimelineTweetIDs = CurrentValueSubject<[Twitter.Entity.Tweet.ID], Never>([])
-    let timelineItems = CurrentValueSubject<[Item], Never>([])
+    let tweetIDs = CurrentValueSubject<[Twitter.Entity.Tweet.ID], Never>([])
+    let items = CurrentValueSubject<[Item], Never>([])
     var cellFrameCache = NSCache<NSNumber, NSValue>()
     
     init(context: AppContext, userID: String?) {
@@ -65,29 +65,33 @@ class UserTimelineViewModel: NSObject {
         
         self.fetchedResultsController.delegate = self
         
-        Publishers.CombineLatest(
-            timelineItems.eraseToAnyPublisher(),
-            stateMachinePublisher.eraseToAnyPublisher()
-        )
-        .debounce(for: .seconds(1), scheduler: DispatchQueue.main)
-        .receive(on: DispatchQueue.main)
-        .sink { [weak self] _, state in
-            guard let self = self else { return }
-            os_log("%{public}s[%{public}ld], %{public}s: state did change", ((#file as NSString).lastPathComponent), #line, #function)
+        items
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] items in
+                guard let self = self else { return }
+                guard let diffableDataSource = self.diffableDataSource else { return }
+                os_log("%{public}s[%{public}ld], %{public}s: items did change", ((#file as NSString).lastPathComponent), #line, #function)
 
-            var snapshot = NSDiffableDataSourceSnapshot<TimelineSection, Item>()
-            snapshot.appendSections([.main])
-            let items = (self.fetchedResultsController.fetchedObjects ?? []).map { Item.tweet(objectID: $0.objectID) }
-            snapshot.appendItems(items)
-            if !items.isEmpty, self.stateMachine.canEnterState(State.LoadingMore.self) ||
-                state is State.LoadingMore {
-                snapshot.appendItems([.bottomLoader], toSection: .main)
+                var snapshot = NSDiffableDataSourceSnapshot<TimelineSection, Item>()
+                snapshot.appendSections([.main])
+                snapshot.appendItems(items)
+                
+                if let currentState = self.stateMachine.currentState {
+                    switch currentState {
+                    case is State.Reloading, is State.Idle, is State.LoadingMore, is State.Fail:
+                        snapshot.appendItems([.bottomLoader], toSection: .main)
+                    case is State.PermissionDenied:
+                        snapshot.appendItems([.permissionDenied], toSection: .main)
+                    default:
+                        break
+                    }
+                }
+                
+                diffableDataSource.apply(snapshot, animatingDifferences: !items.isEmpty)
             }
-            self.diffableDataSource?.apply(snapshot)
-        }
-        .store(in: &disposeBag)
+            .store(in: &disposeBag)
         
-        userTimelineTweetIDs
+        tweetIDs
             .receive(on: DispatchQueue.main)
             .sink { [weak self] ids in
                 guard let self = self else { return }
@@ -200,11 +204,18 @@ extension UserTimelineViewModel {
 extension UserTimelineViewModel: NSFetchedResultsControllerDelegate {
     func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChangeContentWith snapshot: NSDiffableDataSourceSnapshotReference) {
         os_log("%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
-
-        let snapshot = snapshot as NSDiffableDataSourceSnapshot<String, NSManagedObjectID>
-        guard snapshot.numberOfItems == userTimelineTweetIDs.value.count else { return }
-        let items = snapshot.itemIdentifiers.map { Item.tweet(objectID: $0) }
-        timelineItems.value = items
+        
+        let indexes = tweetIDs.value
+        let tweets = fetchedResultsController.fetchedObjects ?? []
+        guard tweets.count == indexes.count else { return }
+        
+        let items: [Item] = tweets
+            .compactMap { tweet in
+                indexes.firstIndex(of: tweet.id).map { index in (index, tweet) }
+            }
+            .sorted { $0.0 < $1.0 }
+            .map { Item.tweet(objectID: $0.1.objectID) }
+        self.items.value = items
     }
     
 }
@@ -235,11 +246,11 @@ extension UserTimelineViewModel {
         guard let userID = self.userID.value, !userID.isEmpty else {
             return Fail(error: UserTimelineError.invalidUserID).eraseToAnyPublisher()
         }
-        guard let oldestTweet = fetchedResultsController.fetchedObjects?.last else {
+        guard let oldestTweetID = tweetIDs.value.last else {
             return Fail(error: UserTimelineError.invalidAnchorToLoadMore).eraseToAnyPublisher()
         }
         
-        let maxID = oldestTweet.id
+        let maxID = oldestTweetID
         return context.apiService.twitterUserTimeline(count: 20, userID: userID, maxID: maxID, twitterAuthenticationBox: activeTwitterAuthenticationBox)
     }
     

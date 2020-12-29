@@ -72,7 +72,7 @@ class UserLikeTimelineViewModel: NSObject {
             .sink { [weak self] items in
                 guard let self = self else { return }
                 guard let diffableDataSource = self.diffableDataSource else { return }
-                os_log("%{public}s[%{public}ld], %{public}s: state did change", ((#file as NSString).lastPathComponent), #line, #function)
+                os_log("%{public}s[%{public}ld], %{public}s: items did change", ((#file as NSString).lastPathComponent), #line, #function)
                                 
                 var snapshot = NSDiffableDataSourceSnapshot<TimelineSection, Item>()
                 snapshot.appendSections([.main])
@@ -83,7 +83,7 @@ class UserLikeTimelineViewModel: NSObject {
                     snapshot.appendItems([.bottomLoader], toSection: .main)
                 }
                 
-                diffableDataSource.apply(snapshot, animatingDifferences: false)
+                diffableDataSource.apply(snapshot, animatingDifferences: !items.isEmpty)
             }
             .store(in: &disposeBag)
         
