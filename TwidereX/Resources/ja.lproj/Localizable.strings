@@ -9,6 +9,8 @@
 "Common.Alerts.FailedToUnfollowing.Title" = "フォロー解除に失敗しました";
 "Common.Alerts.FollowingRequestSent.Title" = "フォローリクエストが送信されました";
 "Common.Alerts.FollowingSuccess.Title" = "フォローに成功しました";
+"Common.Alerts.PermissionDenied.Message" = "Sorry, you are not authorized";
+"Common.Alerts.PermissionDenied.Title" = "権限がありません";
 "Common.Alerts.PhotoSaveFail.Message" = "もう一度やり直してください";
 "Common.Alerts.PhotoSaveFail.Title" = "写真の保存に失敗しました";
 "Common.Alerts.PhotoSaved.Title" = "写真を保存しました";

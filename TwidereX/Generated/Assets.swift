@@ -55,6 +55,7 @@ internal enum Asset {
     internal static let heartLarge = ImageAsset(name: "Health/heart.large")
   }
   internal enum Human {
+    internal static let eyeSlash = ImageAsset(name: "Human/eye.slash")
     internal static let person = ImageAsset(name: "Human/person")
   }
   internal enum Indices {
