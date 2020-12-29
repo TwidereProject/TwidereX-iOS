@@ -27,6 +27,7 @@ final class UserLikeTimelineViewController: UIViewController, MediaPreviewableVi
         let tableView = UITableView()
         tableView.register(TimelinePostTableViewCell.self, forCellReuseIdentifier: String(describing: TimelinePostTableViewCell.self))
         tableView.register(TimelineBottomLoaderTableViewCell.self, forCellReuseIdentifier: String(describing: TimelineBottomLoaderTableViewCell.self))
+        tableView.register(TimelinePermissionDeniedTableViewCell.self, forCellReuseIdentifier: String(describing: TimelinePermissionDeniedTableViewCell.self))
         tableView.rowHeight = UITableView.automaticDimension
         tableView.separatorStyle = .none
         return tableView
