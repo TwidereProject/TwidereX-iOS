@@ -63,6 +63,8 @@ extension PermissionDeniedHeaderView {
             titleLabel.leadingAnchor.constraint(equalTo: eyeSlashImageView.trailingAnchor, constant: 8),
             trailingAnchor.constraint(equalTo: titleLabel.trailingAnchor),
         ])
+        titleLabel.setContentHuggingPriority(.defaultHigh, for: .vertical)
+        titleLabel.setContentCompressionResistancePriority(.required - 1, for: .vertical)
         
         messageLabel.translatesAutoresizingMaskIntoConstraints = false
         addSubview(messageLabel)
@@ -72,6 +74,8 @@ extension PermissionDeniedHeaderView {
             messageLabel.trailingAnchor.constraint(equalTo: titleLabel.trailingAnchor),
             bottomAnchor.constraint(equalTo: messageLabel.bottomAnchor),
         ])
+        messageLabel.setContentHuggingPriority(.defaultHigh - 1, for: .vertical)
+        messageLabel.setContentCompressionResistancePriority(.required - 2, for: .vertical)
     }
 }
 

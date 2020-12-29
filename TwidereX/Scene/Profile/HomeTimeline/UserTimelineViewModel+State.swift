@@ -57,11 +57,13 @@ extension UserTimelineViewModel.State {
                             stateMachine.enter(Fail.self)
                         }
                     case .finished:
-                        stateMachine.enter(Idle.self)
+                        break
                     }
                 } receiveValue: { response in
                     guard viewModel.userID.value == userID else { return }
                     let tweetIDs = response.value.map { $0.idStr }
+                    
+                    stateMachine.enter(Idle.self)
                     viewModel.tweetIDs.value = tweetIDs
                 }
                 .store(in: &viewModel.disposeBag)

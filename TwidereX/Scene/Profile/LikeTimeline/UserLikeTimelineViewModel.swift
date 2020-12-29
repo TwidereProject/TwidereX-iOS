@@ -34,6 +34,7 @@ class UserLikeTimelineViewModel: NSObject {
             State.Fail(viewModel: self),
             State.Idle(viewModel: self),
             State.LoadingMore(viewModel: self),
+            State.PermissionDenied(viewModel: self),
             State.NoMore(viewModel: self),
         ])
         stateMachine.enter(State.Initial.self)
@@ -66,7 +67,6 @@ class UserLikeTimelineViewModel: NSObject {
         self.fetchedResultsController.delegate = self
 
         items.eraseToAnyPublisher()
-            .debounce(for: .seconds(1), scheduler: DispatchQueue.main)
             .receive(on: DispatchQueue.main)
             .sink { [weak self] items in
                 guard let self = self else { return }
@@ -77,9 +77,15 @@ class UserLikeTimelineViewModel: NSObject {
                 snapshot.appendSections([.main])
                 snapshot.appendItems(items, toSection: .main)
                 
-                if let currentState = self.stateMachine.currentState,
-                   currentState is State.Idle || currentState is State.Reloading || currentState is State.LoadingMore {
-                    snapshot.appendItems([.bottomLoader], toSection: .main)
+                if let currentState = self.stateMachine.currentState {
+                    switch currentState {
+                    case is State.Reloading, is State.Idle, is State.LoadingMore, is State.Fail:
+                        snapshot.appendItems([.bottomLoader], toSection: .main)
+                    case is State.PermissionDenied:
+                        snapshot.appendItems([.permissionDenied], toSection: .main)
+                    default:
+                        break
+                    }
                 }
                 
                 diffableDataSource.apply(snapshot, animatingDifferences: !items.isEmpty)

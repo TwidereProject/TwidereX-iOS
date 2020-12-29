@@ -12,7 +12,7 @@ import CoreDataStack
 
 enum MediaSection: Int {
     case main
-    case loader
+    case footer
 }
 
 extension MediaSection {
@@ -49,6 +49,9 @@ extension MediaSection {
             case .bottomLoader:
                 let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: ActivityIndicatorCollectionViewCell.self), for: indexPath) as! ActivityIndicatorCollectionViewCell
                 cell.activityIndicatorView.startAnimating()
+                return cell
+            case .permissionDenied:
+                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: PermissionDeniedCollectionViewCell.self), for: indexPath) as! PermissionDeniedCollectionViewCell
                 return cell
             default:
                 assertionFailure()

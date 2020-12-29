@@ -80,14 +80,14 @@ extension SearchMediaViewController {
                     section.contentInsets.trailing = 16
                 }
                 return section
-            case MediaSection.loader.rawValue:
+            case MediaSection.footer.rawValue:
                 let item = NSCollectionLayoutItem(
                     layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0),
-                                                       heightDimension: .fractionalHeight(1.0)))
-                let group = NSCollectionLayoutGroup.vertical(
+                                                       heightDimension: .estimated(60)))
+                let group = NSCollectionLayoutGroup.horizontal(     // <- horizontal for self size
                     layoutSize: NSCollectionLayoutSize(
                         widthDimension: .fractionalWidth(1.0),
-                        heightDimension: .absolute(44.0)),
+                        heightDimension: .estimated(60)),
                     subitem: item,
                     count: 1
                 )

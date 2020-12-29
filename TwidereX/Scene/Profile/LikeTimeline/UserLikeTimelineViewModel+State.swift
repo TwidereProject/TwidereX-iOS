@@ -67,10 +67,9 @@ extension UserLikeTimelineViewModel.State {
                 } receiveValue: { response in
                     guard viewModel.userID.value == userID else { return }
                     let tweetIDs = response.value.map { $0.idStr }
-                    viewModel.tweetIDs.value = tweetIDs
-                    
-                    stateMachine.enter(Idle.self)
 
+                    stateMachine.enter(Idle.self)
+                    viewModel.tweetIDs.value = tweetIDs
                 }
                 .store(in: &viewModel.disposeBag)
         }

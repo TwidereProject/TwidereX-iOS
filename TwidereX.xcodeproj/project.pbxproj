@@ -330,6 +330,7 @@
 		DBEFDC92255920060086F268 /* DrawerSidebarTransitionController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBEFDC91255920060086F268 /* DrawerSidebarTransitionController.swift */; };
 		DBF639EA259B11F6009E12C8 /* UserTimelineViewModel+Diffable.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBF639E9259B11F6009E12C8 /* UserTimelineViewModel+Diffable.swift */; };
 		DBF639F2259B13BB009E12C8 /* PermissionDeniedHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBF639F1259B13BB009E12C8 /* PermissionDeniedHeaderView.swift */; };
+		DBF639F7259B1728009E12C8 /* PermissionDeniedCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBF639F6259B1728009E12C8 /* PermissionDeniedCollectionViewCell.swift */; };
 		DBF69E8F2549601900E2A915 /* SearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBF69E8E2549601900E2A915 /* SearchViewController.swift */; };
 		DBF69E9C25496BB100E2A915 /* SearchDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBF69E9B25496BB100E2A915 /* SearchDetailViewController.swift */; };
 		DBF69EAC25496C9F00E2A915 /* SearchDetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBF69EAB25496C9F00E2A915 /* SearchDetailViewModel.swift */; };
@@ -767,6 +768,7 @@
 		DBEFDC91255920060086F268 /* DrawerSidebarTransitionController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawerSidebarTransitionController.swift; sourceTree = "<group>"; };
 		DBF639E9259B11F6009E12C8 /* UserTimelineViewModel+Diffable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UserTimelineViewModel+Diffable.swift"; sourceTree = "<group>"; };
 		DBF639F1259B13BB009E12C8 /* PermissionDeniedHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PermissionDeniedHeaderView.swift; sourceTree = "<group>"; };
+		DBF639F6259B1728009E12C8 /* PermissionDeniedCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PermissionDeniedCollectionViewCell.swift; sourceTree = "<group>"; };
 		DBF69E8E2549601900E2A915 /* SearchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewController.swift; sourceTree = "<group>"; };
 		DBF69E9B25496BB100E2A915 /* SearchDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchDetailViewController.swift; sourceTree = "<group>"; };
 		DBF69EAB25496C9F00E2A915 /* SearchDetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchDetailViewModel.swift; sourceTree = "<group>"; };
@@ -1052,6 +1054,7 @@
 				DB676100254AD12F006C6798 /* MediaCollectionViewCell.swift */,
 				DB676160254BE580006C6798 /* MediaPreviewCollectionViewCell.swift */,
 				DB67610C254AD681006C6798 /* ActivityIndicatorCollectionViewCell.swift */,
+				DBF639F6259B1728009E12C8 /* PermissionDeniedCollectionViewCell.swift */,
 			);
 			path = CollectionViewCell;
 			sourceTree = "<group>";
@@ -2718,6 +2721,7 @@
 				DBCB40A9255DA58000DD8D8F /* UserTimelineViewController+TweetProvider.swift in Sources */,
 				DBC8E0092574BE3900401E20 /* TimelineTableViewCellContextMenuConfiguration.swift in Sources */,
 				DB7E23032552A6D100551314 /* UserLikeTimelineViewModel+Diffable.swift in Sources */,
+				DBF639F7259B1728009E12C8 /* PermissionDeniedCollectionViewCell.swift in Sources */,
 				DB97D1E0256CBA4E0056F8C2 /* NotifyBannerView.swift in Sources */,
 				DBEA4F812511E7900007FEC5 /* ConversationItem.swift in Sources */,
 				DB92575A251CA3FB004FEFB5 /* StubTableViewCell.swift in Sources */,

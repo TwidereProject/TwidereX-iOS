@@ -37,7 +37,7 @@ extension UserMediaTimelineViewModel.State {
     
     class Reloading: UserMediaTimelineViewModel.State {
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {
-            return stateClass == Fail.self || stateClass == Idle.self
+            return stateClass == Fail.self || stateClass == Idle.self || stateClass == PermissionDenied.self
         }
         
         override func didEnter(from previousState: GKState?) {
@@ -54,9 +54,13 @@ extension UserMediaTimelineViewModel.State {
                     switch completion {
                     case .failure(let error):
                         os_log("%{public}s[%{public}ld], %{public}s: fetch user timeline latest response error: %s", ((#file as NSString).lastPathComponent), #line, #function, error.localizedDescription)
-                        stateMachine.enter(Fail.self)
+                        if PermissionDenied.canEnter(for: error) {
+                            stateMachine.enter(PermissionDenied.self)
+                        } else {
+                            stateMachine.enter(Fail.self)
+                        }
                     case .finished:
-                        stateMachine.enter(Idle.self)
+                        break
                     }
                 } receiveValue: { response in
                     guard viewModel.userID.value == userID else { return }
@@ -65,6 +69,8 @@ extension UserMediaTimelineViewModel.State {
                     let tweetIDs = response.value
                         .filter { ($0.retweetedStatus ?? $0).user.idStr == userID }
                         .map { $0.idStr }
+                    
+                    stateMachine.enter(Idle.self)
                     viewModel.pagingTweetIDs.value = pagingTweetIDs
                     viewModel.tweetIDs.value = tweetIDs
                 }
@@ -110,33 +116,67 @@ extension UserMediaTimelineViewModel.State {
                     var pagingTweetIDs = viewModel.pagingTweetIDs.value
                     var tweetIDs = viewModel.tweetIDs.value
                     
-                    var hasMedia = false
+                    var hasNewMedia = false
                     for tweet in response.value {
-                        guard let media = (tweet.retweetedStatus ?? tweet).extendedEntities?.media,
+                        let tweetID = tweet.idStr
+                        
+                        if !pagingTweetIDs.contains(tweetID) {
+                            pagingTweetIDs.append(tweetID)
+                        }
+                        
+                        // skip retweet
+                        guard tweet.retweetedStatus == nil else {
+                            continue
+                        }
+                        
+                        
+                        // skip no media (now require photo)
+                        guard let media = tweet.extendedEntities?.media,
                               media.contains(where: { $0.type == "photo" }) else {
                             continue
                         }
-                        hasMedia = true
+                        hasNewMedia = true
                         
-                        let tweetID = tweet.idStr
-                        if !pagingTweetIDs.contains(tweetID) && (tweet.retweetedStatus ?? tweet).user.idStr == userID {
-                            pagingTweetIDs.append(tweetID)
-                        }
                         if !tweetIDs.contains(tweetID) {
                             tweetIDs.append(tweetID)
                         }
                     }
                     
-                    viewModel.pagingTweetIDs.value = pagingTweetIDs
-                    viewModel.tweetIDs.value = tweetIDs
-                    
-                    if !hasMedia {
+                    if !hasNewMedia {
                         stateMachine.enter(NoMore.self)
                     } else {
                         stateMachine.enter(Idle.self)
                     }
+                    
+                    viewModel.pagingTweetIDs.value = pagingTweetIDs
+                    viewModel.tweetIDs.value = tweetIDs
                 }
                 .store(in: &viewModel.disposeBag)
+        }
+    }
+    
+    class PermissionDenied: UserMediaTimelineViewModel.State {
+        static func canEnter(for error: Error) -> Bool {
+            if let responseError = error as? Twitter.API.Error.ResponseError,
+               let twitterAPIError = responseError.twitterAPIError,
+               case .notAuthorizedToSeeThisStatus = twitterAPIError {
+                return true
+            }
+            
+            return false
+        }
+        
+        override func isValidNextState(_ stateClass: AnyClass) -> Bool {
+            return stateClass == Reloading.self
+        }
+        
+        override func didEnter(from previousState: GKState?) {
+            super.didEnter(from: previousState)
+            guard let viewModel = viewModel else { return }
+            
+            // trigger items update
+            viewModel.pagingTweetIDs.value = []
+            viewModel.tweetIDs.value = []
         }
     }
     

@@ -1,19 +1,19 @@
 //
-//  TimelinePermissionDeniedTableViewCell.swift
+//  PermissionDeniedCollectionViewCell.swift
 //  TwidereX
 //
-//  Created by Cirno MainasuK on 2020-12-28.
+//  Created by Cirno MainasuK on 2020-12-29.
 //  Copyright © 2020 Twidere. All rights reserved.
 //
 
 import UIKit
 
-final class TimelinePermissionDeniedTableViewCell: UITableViewCell {
+final class PermissionDeniedCollectionViewCell: UICollectionViewCell {
     
     let permissionDeniedHeaderView = PermissionDeniedHeaderView()
     
-    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(style: style, reuseIdentifier: reuseIdentifier)
+    override init(frame: CGRect) {
+        super.init(frame: frame)
         _init()
     }
     
@@ -24,11 +24,9 @@ final class TimelinePermissionDeniedTableViewCell: UITableViewCell {
     
 }
 
-extension TimelinePermissionDeniedTableViewCell {
+extension PermissionDeniedCollectionViewCell {
     
     private func _init() {
-        selectionStyle = .none
-        
         permissionDeniedHeaderView.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(permissionDeniedHeaderView)
         NSLayoutConstraint.activate([
@@ -40,3 +38,4 @@ extension TimelinePermissionDeniedTableViewCell {
     }
     
 }
+
