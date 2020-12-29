@@ -331,6 +331,7 @@
 		DBF639EA259B11F6009E12C8 /* UserTimelineViewModel+Diffable.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBF639E9259B11F6009E12C8 /* UserTimelineViewModel+Diffable.swift */; };
 		DBF639F2259B13BB009E12C8 /* PermissionDeniedHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBF639F1259B13BB009E12C8 /* PermissionDeniedHeaderView.swift */; };
 		DBF639F7259B1728009E12C8 /* PermissionDeniedCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBF639F6259B1728009E12C8 /* PermissionDeniedCollectionViewCell.swift */; };
+		DBF639FC259B333A009E12C8 /* EmptyStateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBF639FB259B333A009E12C8 /* EmptyStateView.swift */; };
 		DBF69E8F2549601900E2A915 /* SearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBF69E8E2549601900E2A915 /* SearchViewController.swift */; };
 		DBF69E9C25496BB100E2A915 /* SearchDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBF69E9B25496BB100E2A915 /* SearchDetailViewController.swift */; };
 		DBF69EAC25496C9F00E2A915 /* SearchDetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBF69EAB25496C9F00E2A915 /* SearchDetailViewModel.swift */; };
@@ -769,6 +770,7 @@
 		DBF639E9259B11F6009E12C8 /* UserTimelineViewModel+Diffable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UserTimelineViewModel+Diffable.swift"; sourceTree = "<group>"; };
 		DBF639F1259B13BB009E12C8 /* PermissionDeniedHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PermissionDeniedHeaderView.swift; sourceTree = "<group>"; };
 		DBF639F6259B1728009E12C8 /* PermissionDeniedCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PermissionDeniedCollectionViewCell.swift; sourceTree = "<group>"; };
+		DBF639FB259B333A009E12C8 /* EmptyStateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyStateView.swift; sourceTree = "<group>"; };
 		DBF69E8E2549601900E2A915 /* SearchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewController.swift; sourceTree = "<group>"; };
 		DBF69E9B25496BB100E2A915 /* SearchDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchDetailViewController.swift; sourceTree = "<group>"; };
 		DBF69EAB25496C9F00E2A915 /* SearchDetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchDetailViewModel.swift; sourceTree = "<group>"; };
@@ -881,6 +883,7 @@
 				DBEA4F8E251314640007FEC5 /* MosaicImageView.swift */,
 				DB2FFF2D258B1077003DBC19 /* MosaicPlayerView.swift */,
 				DB2FFF28258B0C2C003DBC19 /* TouchBlockingView.swift */,
+				DBF639FB259B333A009E12C8 /* EmptyStateView.swift */,
 			);
 			path = Container;
 			sourceTree = "<group>";
@@ -2634,6 +2637,7 @@
 				DB3402CA2521E4AF009EFADF /* APIService+Account.swift in Sources */,
 				DBCB4047255B683B00DD8D8F /* AccountListTableViewCell.swift in Sources */,
 				DB9154522551210000613473 /* MentionTimelineViewController.swift in Sources */,
+				DBF639FC259B333A009E12C8 /* EmptyStateView.swift in Sources */,
 				DBE76D36250221D700DEB0FC /* TwitterUser.swift in Sources */,
 				DBA397BD25551C0900A95662 /* MediaPreviewPagingViewController.swift in Sources */,
 				DBFCC44725667C620016698E /* UILabel.swift in Sources */,

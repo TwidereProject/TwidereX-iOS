@@ -92,6 +92,11 @@ extension SearchMediaViewController {
                     count: 1
                 )
                 let section = NSCollectionLayoutSection(group: group)
+                if #available(iOS 14.0, *) {
+                    section.contentInsetsReference = .readableContent
+                } else {
+                    // Fallback on earlier versions
+                }
                 return section
             default:
                 assertionFailure()

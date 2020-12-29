@@ -67,35 +67,42 @@ extension Twitter.API {
         let error: String
     }
     
-//    public struct ErrorResponseV2: Codable {
-//        public let errors: [ErrorDescription]
-//        public let title: String?
-//        public let detail: String?
-//        public let type: String?
-//
-//        public struct ErrorDescription: Codable {
-//            public let parameters: ErrorDescriptionParameters
-//            public let message: String
-//        }
-//
-//        public struct ErrorDescriptionParameters: Codable {
-//            public let expansions: [String]?
-//            public let mediaFields: [String]?
-//            public let placeFields: [String]?
-//            public let poolFields: [String]?
-//            public let userFields: [String]?
-//            public let tweetFields: [String]?
-//
-//            public enum CodingKeys: String, CodingKey {
-//                case expansions
-//                case mediaFields = "media.fields"
-//                case placeFields = "place.fields"
-//                case poolFields = "pool.fields"
-//                case userFields = "user.fields"
-//                case tweetFields = "tweet.fields"
-//            }
-//        }
-//    }
+    public struct ErrorResponseV2: Codable {
+        public let errors: [ErrorDescription]
+        public let title: String?
+        public let detail: String?
+        public let type: String?
+
+        public struct ErrorDescription: Codable {
+            public let parameter: String?
+            public let parameters: ErrorDescriptionParameters?
+            
+            public let value: String?
+            public let message: String?
+            
+            public let title: String?
+            public let detail: String?
+            public let type: String?
+        }
+
+        public struct ErrorDescriptionParameters: Codable {
+            public let expansions: [String]?
+            public let mediaFields: [String]?
+            public let placeFields: [String]?
+            public let poolFields: [String]?
+            public let userFields: [String]?
+            public let tweetFields: [String]?
+
+            public enum CodingKeys: String, CodingKey {
+                case expansions
+                case mediaFields = "media.fields"
+                case placeFields = "place.fields"
+                case poolFields = "pool.fields"
+                case userFields = "user.fields"
+                case tweetFields = "tweet.fields"
+            }
+        }
+    }
 }
 
 extension Twitter.API {
@@ -120,10 +127,10 @@ extension Twitter.API {
                 throw Error.ResponseError(httpResponseStatus: httpResponseStatus, twitterAPIError: twitterAPIError)
             }
             
-            // FIXME: remove it
-            // if let errorResponse = try? Twitter.API.decoder.decode(ErrorResponseV2.self, from: data) {
-            //     throw ResponseError.responseV2(title: errorResponse.title, detail: errorResponse.detail)
-            // }
+            if let errorResponseV2 = try? Twitter.API.decoder.decode(ErrorResponseV2.self, from: data),
+               let twitterAPIError = Error.TwitterAPIError(errorResponseV2: errorResponseV2) {
+                throw Error.ResponseError(httpResponseStatus: httpResponseStatus, twitterAPIError: twitterAPIError)
+            }
             
             // Twitter not return error code described in the document. Convert manually
             if httpURLResponse.statusCode == 429 {

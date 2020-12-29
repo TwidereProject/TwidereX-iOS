@@ -40,6 +40,19 @@ extension Twitter.API.Error {
             self.init(code: error.code, message: error.message)
         }
         
+        init?(errorResponseV2: Twitter.API.ErrorResponseV2) {
+            guard let error = errorResponseV2.errors.first else {
+                return nil
+            }
+            
+            if let title = error.title, title == "Authorization Error" {
+                self = .notAuthorizedToSeeThisStatus
+                return
+            }
+            
+            return nil
+        }
+        
         init?(errorRequestResponse: Twitter.API.ErrorRequestResponse) {
             switch (errorRequestResponse.request, errorRequestResponse.error) {
             case (_, "Not authorized."):

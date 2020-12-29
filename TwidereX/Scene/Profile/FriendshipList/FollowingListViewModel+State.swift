@@ -42,7 +42,7 @@ extension FriendshipListViewModel.State {
         var nextToken: String?
         
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {
-            return stateClass == Fail.self || stateClass == Idle.self || stateClass == NoMore.self
+            return stateClass == Fail.self || stateClass == Idle.self || stateClass == NoMore.self || stateClass == PermissionDenied.self
         }
         
         override func didEnter(from previousState: GKState?) {
@@ -71,7 +71,11 @@ extension FriendshipListViewModel.State {
                 switch completion {
                 case .failure(let error):
                     os_log("%{public}s[%{public}ld], %{public}s: fetch following listfail: %s", ((#file as NSString).lastPathComponent), #line, #function, error.localizedDescription)
-                    stateMachine.enter(Fail.self)
+                    if PermissionDenied.canEnter(for: error) {
+                        stateMachine.enter(PermissionDenied.self)
+                    } else {
+                        stateMachine.enter(Fail.self)
+                    }
                 case .finished:
                     break
                 }
@@ -102,6 +106,30 @@ extension FriendshipListViewModel.State {
     class Fail: FriendshipListViewModel.State {
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {
             return stateClass == Loading.self
+        }
+    }
+    
+    class PermissionDenied: FriendshipListViewModel.State {
+        static func canEnter(for error: Error) -> Bool {
+            if let responseError = error as? Twitter.API.Error.ResponseError,
+               let twitterAPIError = responseError.twitterAPIError,
+               case .notAuthorizedToSeeThisStatus = twitterAPIError {
+                return true
+            }
+            
+            return false
+        }
+        
+        override func isValidNextState(_ stateClass: AnyClass) -> Bool {
+            return false
+        }
+        
+        override func didEnter(from previousState: GKState?) {
+            super.didEnter(from: previousState)
+            guard let viewModel = viewModel else { return }
+            
+            // trigger items update
+            viewModel.orderedTwitterUserFetchedResultsController.userIDs.value = []
         }
     }
     
