@@ -53,9 +53,8 @@ extension UserTimelineViewController {
             tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
         ])
         
-        viewModel.timelinePostTableViewCellDelegate = self
         viewModel.tableView = tableView
-        viewModel.setupDiffableDataSource(for: tableView)
+        viewModel.setupDiffableDataSource(for: tableView, timelinePostTableViewCellDelegate: self)
         do {
             try viewModel.fetchedResultsController.performFetch()
         } catch {
@@ -169,9 +168,7 @@ extension UserTimelineViewController: TimelinePostTableViewCellDelegate {
 
 // MARK: - CustomScrollViewContainerController
 extension UserTimelineViewController: ScrollViewContainer {
-    var scrollView: UIScrollView {
-        return tableView
-    }
+    var scrollView: UIScrollView { return tableView }
 }
 
 // MARK: - LoadMoreConfigurableTableViewContainer

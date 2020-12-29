@@ -25,7 +25,6 @@ class UserLikeTimelineViewModel: NSObject {
     var diffableDataSource: UITableViewDiffableDataSource<TimelineSection, Item>?
     let userID: CurrentValueSubject<String?, Never>
     weak var tableView: UITableView?
-    weak var timelinePostTableViewCellDelegate: TimelinePostTableViewCellDelegate?
     
     // output
     private(set) lazy var stateMachine: GKStateMachine = {
@@ -99,15 +98,6 @@ class UserLikeTimelineViewModel: NSObject {
                 }
             }
             .store(in: &disposeBag)
-        
-        Timer.publish(every: 1.0, on: .main, in: .common)
-            .autoconnect()
-            .sink { [weak self] _ in
-                guard let self = self else { return }
-                let userInfo: [AnyHashable : Any] = ["userID": self.userID.value ?? ""]
-                NotificationCenter.default.post(name: UserLikeTimelineViewModel.secondStepTimerTriggered, object: nil, userInfo: userInfo)
-            }
-            .store(in: &disposeBag)
     }
     
     deinit {
@@ -157,8 +147,4 @@ extension UserLikeTimelineViewModel {
         return context.apiService.likeList(count: 20, userID: userID, maxID: maxID, twitterAuthenticationBox: twitterAuthenticationBox)
     }
     
-}
-
-extension UserLikeTimelineViewModel {
-    static let secondStepTimerTriggered = Notification.Name("com.twidere.twiderex.user-like-timeline.second-step-timer-triggered")
 }

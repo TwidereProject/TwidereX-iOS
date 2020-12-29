@@ -61,6 +61,12 @@ extension Twitter.API {
         }
     }
     
+    // Alternative Error Response when request V1 endpoint
+    struct ErrorRequestResponse: Codable {
+        let request: String
+        let error: String
+    }
+    
 //    public struct ErrorResponseV2: Codable {
 //        public let errors: [ErrorDescription]
 //        public let title: String?
@@ -106,6 +112,11 @@ extension Twitter.API {
             
             if let errorResponse = try? Twitter.API.decoder.decode(ErrorResponse.self, from: data),
                let twitterAPIError = Error.TwitterAPIError(errorResponse: errorResponse) {
+                throw Error.ResponseError(httpResponseStatus: httpResponseStatus, twitterAPIError: twitterAPIError)
+            }
+            
+            if let errorRequestResponse = try? Twitter.API.decoder.decode(ErrorRequestResponse.self, from: data),
+               let twitterAPIError = Error.TwitterAPIError(errorRequestResponse: errorRequestResponse) {
                 throw Error.ResponseError(httpResponseStatus: httpResponseStatus, twitterAPIError: twitterAPIError)
             }
             

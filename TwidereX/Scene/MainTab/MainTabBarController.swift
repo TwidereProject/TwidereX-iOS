@@ -143,9 +143,7 @@ extension MainTabBarController {
                             bannerView.titleLabel.text = "Rate Limit Exceeded"
                             bannerView.messageLabel.text = "Reached Twitter API usage limit"
                             SwiftMessages.show(config: config, view: bannerView)
-                        case .custom:
-                            break
-                        case .none:
+                        default:
                             break
                         }
                     default:

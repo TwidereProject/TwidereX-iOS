@@ -8,6 +8,7 @@
 import os.log
 import Foundation
 import GameplayKit
+import TwitterAPI
 
 extension UserTimelineViewModel {
     class State: GKState {
@@ -34,7 +35,7 @@ extension UserTimelineViewModel.State {
     
     class Reloading: UserTimelineViewModel.State {
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {
-            return stateClass == Fail.self || stateClass == Idle.self
+            return stateClass == Fail.self || stateClass == Idle.self || stateClass == PermissionDenied.self
         }
         
         override func didEnter(from previousState: GKState?) {
@@ -50,7 +51,11 @@ extension UserTimelineViewModel.State {
                     switch completion {
                     case .failure(let error):
                         os_log("%{public}s[%{public}ld], %{public}s: fetch user timeline latest response error: %s", ((#file as NSString).lastPathComponent), #line, #function, error.localizedDescription)
-                        stateMachine.enter(Fail.self)
+                        if PermissionDenied.canEnter(for: error) {
+                            stateMachine.enter(PermissionDenied.self)
+                        } else {
+                            stateMachine.enter(Fail.self)
+                        }
                     case .finished:
                         stateMachine.enter(Idle.self)
                     }
@@ -119,6 +124,16 @@ extension UserTimelineViewModel.State {
     }
     
     class PermissionDenied: UserTimelineViewModel.State {
+        static func canEnter(for error: Error) -> Bool {
+            if let responseError = error as? Twitter.API.Error.ResponseError,
+               let twitterAPIError = responseError.twitterAPIError,
+               case .notAuthorizedToSeeThisStatus = twitterAPIError {
+                return true
+            }
+            
+            return false
+        }
+        
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {
             return stateClass == Reloading.self
         }
@@ -127,7 +142,8 @@ extension UserTimelineViewModel.State {
             super.didEnter(from: previousState)
             guard let viewModel = viewModel else { return }
 
-            viewModel.items.value = []
+            // trigger items update
+            viewModel.tweetIDs.value = []
         }
     }
     

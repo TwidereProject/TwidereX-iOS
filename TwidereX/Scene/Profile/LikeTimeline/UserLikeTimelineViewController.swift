@@ -53,9 +53,8 @@ extension UserLikeTimelineViewController {
             tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
         ])
         
-        viewModel.timelinePostTableViewCellDelegate = self
         viewModel.tableView = tableView
-        viewModel.setupDiffableDataSource(for: tableView)
+        viewModel.setupDiffableDataSource(for: tableView, timelinePostTableViewCellDelegate: self)
         do {
             try viewModel.fetchedResultsController.performFetch()
         } catch {
