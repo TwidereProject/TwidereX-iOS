@@ -1,0 +1,43 @@
+{
+  "configurations" : [
+    {
+      "id" : "7A818166-64A3-41A5-ADBE-3D14A547B049",
+      "name" : "Configuration 1",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "codeCoverage" : false,
+    "targetForVariableExpansion" : {
+      "containerPath" : "container:TwidereX.xcodeproj",
+      "identifier" : "DBDA8E1D24FCF8A3006750DC",
+      "name" : "TwidereX"
+    }
+  },
+  "testTargets" : [
+    {
+      "target" : {
+        "containerPath" : "container:TwidereX.xcodeproj",
+        "identifier" : "DBDA8E3324FCF8A7006750DC",
+        "name" : "TwidereXTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:TwidereX.xcodeproj",
+        "identifier" : "DBDA8E3E24FCF8A7006750DC",
+        "name" : "TwidereXUITests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:TwidereX.xcodeproj",
+        "identifier" : "DBE76C97250093CA00DEB0FC",
+        "name" : "CoreDataStackTests"
+      }
+    }
+  ],
+  "version" : 1
+}

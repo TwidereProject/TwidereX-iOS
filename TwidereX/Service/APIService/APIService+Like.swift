@@ -114,12 +114,10 @@ extension APIService {
                 guard let self = self else { return }
                 switch completion {
                 case .failure(let error):
-                    if case let Twitter.API.APIError.response(code, _) = error {
-                        switch code {
-                        case ErrorReason.accountTemporarilyLocked.code:
-                            self.error.send(.explicit(.accountTemporarilyLocked))
-                        case ErrorReason.rateLimitExceeded.code:
-                            self.error.send(.explicit(.rateLimitExceeded))
+                    if let responseError = error as? Twitter.API.Error.ResponseError {
+                        switch responseError.twitterAPIError {
+                        case .accountIsTemporarilyLocked, .rateLimitExceeded:
+                            self.error.send(.explicit(.twitterResponseError(responseError)))
                         default:
                             break
                         }

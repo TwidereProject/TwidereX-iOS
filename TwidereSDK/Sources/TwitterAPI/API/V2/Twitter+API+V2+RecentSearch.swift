@@ -68,6 +68,7 @@ extension Twitter.API.V2.RecentSearch {
 }
 
 extension Twitter.API.V2.RecentSearch {
+    
     public struct Query {
         public let query: String
         public let maxResults: Int
@@ -109,4 +110,5 @@ extension Twitter.API.V2.RecentSearch {
             }
         }
     }
+    
 }

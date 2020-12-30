@@ -12,6 +12,10 @@ import ActiveLabel
 protocol ProfileBannerViewDelegate: class {
     func profileBannerView(_ profileBannerView: ProfileBannerView, linkButtonDidPressed button: UIButton)
     func profileBannerView(_ profileBannerView: ProfileBannerView, activeLabel: ActiveLabel, didTapEntity entity: ActiveEntity)
+    
+    func profileBannerView(_ profileBannerView: ProfileBannerView, profileBannerStatusView: ProfileBannerStatusView, followingStatusItemViewDidPressed statusItemView: ProfileBannerStatusItemView)
+    func profileBannerView(_ profileBannerView: ProfileBannerView, profileBannerStatusView: ProfileBannerStatusView, followerStatusItemViewDidPressed statusItemView: ProfileBannerStatusItemView)
+    func profileBannerView(_ profileBannerView: ProfileBannerView, profileBannerStatusView: ProfileBannerStatusView, listedStatusItemViewDidPressed statusItemView: ProfileBannerStatusItemView)
 }
 
 final class ProfileBannerView: UIView {
@@ -300,6 +304,7 @@ extension ProfileBannerView {
         linkButton.addTarget(self, action: #selector(ProfileBannerView.linkButtonDidPressed(_:)), for: .touchUpInside)
         
         bioLabel.delegate = self
+        profileBannerStatusView.delegate = self
         
         bringSubviewToFront(profileAvatarImageView)
         bringSubviewToFront(verifiedBadgeImageView)
@@ -320,6 +325,24 @@ extension ProfileBannerView: ActiveLabelDelegate {
         delegate?.profileBannerView(self, activeLabel: activeLabel, didTapEntity: entity)
     }
 }
+
+// MARK: - ProfileBannerStatusViewDelegate
+extension ProfileBannerView: ProfileBannerStatusViewDelegate {
+    
+    func profileBannerStatusView(_ view: ProfileBannerStatusView, followingStatusItemViewDidPressed statusItemView: ProfileBannerStatusItemView) {
+        delegate?.profileBannerView(self, profileBannerStatusView: view, followingStatusItemViewDidPressed: statusItemView)
+    }
+    
+    func profileBannerStatusView(_ view: ProfileBannerStatusView, followersStatusItemViewDidPressed statusItemView: ProfileBannerStatusItemView) {
+        delegate?.profileBannerView(self, profileBannerStatusView: view, followerStatusItemViewDidPressed: statusItemView)
+    }
+    
+    func profileBannerStatusView(_ view: ProfileBannerStatusView, listedStatusItemViewDidPressed statusItemView: ProfileBannerStatusItemView) {
+        delegate?.profileBannerView(self, profileBannerStatusView: view, listedStatusItemViewDidPressed: statusItemView)
+    }
+    
+}
+
 
 #if DEBUG
 import SwiftUI

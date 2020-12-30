@@ -21,7 +21,20 @@ struct TableViewEntryRow: View {
             Text(title)
             Spacer()
             Image(systemName: "chevron.right")
+                .foregroundColor(Color(.secondaryLabel))
         }
     }
     
 }
+
+#if canImport(SwiftUI) && DEBUG
+import SwiftUI
+
+struct TableViewEntryRow_Previews: PreviewProvider {
+    static var previews: some View {
+        TableViewEntryRow(icon: Image(systemName: "human"), title: "Human")
+    }
+}
+
+#endif
+

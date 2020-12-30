@@ -45,6 +45,7 @@ extension SceneCoordinator {
         case tweetConversation(viewModel: TweetConversationViewModel)
         case searchDetail(viewModel: SearchDetailViewModel)
         case profile(viewModel: ProfileViewModel)
+        case friendshipList(viewModel: FriendshipListViewModel)
         case mediaPreview(viewModel: MediaPreviewViewModel)
         case drawerSidebar
         
@@ -72,8 +73,14 @@ extension SceneCoordinator {
         guard let viewController = get(scene: scene) else {
             return nil
         }
-        guard let presentingViewController = sender ?? sceneDelegate.window?.rootViewController?.topMost else {
+        guard var presentingViewController = sender ?? sceneDelegate.window?.rootViewController?.topMost else {
             return nil
+        }
+        
+        if let mainTabBarController = presentingViewController as? MainTabBarController,
+           let navigationController = mainTabBarController.selectedViewController as? UINavigationController,
+           let topViewController = navigationController.topViewController {
+            presentingViewController = topViewController
         }
         
         switch transition {
@@ -145,6 +152,17 @@ private extension SceneCoordinator {
             let _viewController = ProfileViewController()
             _viewController.viewModel = viewModel
             viewController = _viewController
+        case .friendshipList(let viewModel):
+            switch viewModel.friendshipLookupKind {
+            case .following:
+                let _viewController = FollowingListViewController()
+                _viewController.viewModel = viewModel
+                viewController = _viewController
+            case .followers:
+                let _viewController = FollowerListViewController()
+                _viewController.viewModel = viewModel
+                viewController = _viewController
+            }
         case .mediaPreview(let viewModel):
             let _viewController = MediaPreviewViewController()
             _viewController.viewModel = viewModel

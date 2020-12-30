@@ -68,11 +68,7 @@ class MainTabBarController: UITabBarController {
                 let _viewController = ProfileViewController()
                 _viewController.context = context
                 _viewController.coordinator = coordinator
-                let profileViewModel = MeProfileViewModel(activeAuthenticationIndex: context.authenticationService.activeAuthenticationIndex.value)
-                context.authenticationService.activeAuthenticationIndex
-                    .map { $0?.twitterAuthentication?.twitterUser }
-                    .assign(to: \.value, on: profileViewModel.currentTwitterUser)
-                    .store(in: &profileViewModel.disposeBag)
+                let profileViewModel = MeProfileViewModel(context: context)
                 _viewController.viewModel = profileViewModel
                 viewController = _viewController
             }
@@ -101,49 +97,58 @@ extension MainTabBarController {
         view.backgroundColor = .systemBackground
         
         let tabs = Tab.allCases
-        
         let viewControllers: [UIViewController] = tabs.map { tab in
             let viewController = tab.viewController(context: context, coordinator: coordinator)
-            viewController.tabBarItem.title = nil // set text to nil for image only style
+            viewController.tabBarItem.title = "" // set text to empty string for image only style (SDK failed to layout when set to nil)
             viewController.tabBarItem.image = tab.image
-            viewController.tabBarItem.imageInsets = UIEdgeInsets(top: 5, left: 0, bottom: -5, right: 0)
             return viewController
         }
         setViewControllers(viewControllers, animated: false)
         selectedIndex = 0
+        
+        // TODO: custom accent color
+        let tabBarAppearance = UITabBarAppearance()
+        tabBarAppearance.configureWithDefaultBackground()
+        tabBar.standardAppearance = tabBarAppearance
         
         context.apiService.error
             .receive(on: DispatchQueue.main)
             .sink { [weak self] error in
                 guard let self = self else { return }
                 switch error {
-                case .implicit(let reason):
+                case .implicit:
                     break
                 case .explicit(let reason):
+                    // FIXME:
                     switch reason {
-                    case .accountTemporarilyLocked:
-                        var config = SwiftMessages.defaultConfig
-                        config.duration = .seconds(seconds: 10)
-                        config.interactiveHide = true
-                        let bannerView = NotifyBannerView()
-                        bannerView.configure(for: .error)
-                        bannerView.titleLabel.text = L10n.Common.Alerts.AccountTemporarilyLocked.title
-                        bannerView.messageLabel.text = L10n.Common.Alerts.AccountTemporarilyLocked.message
-                        bannerView.actionButtonTapHandler = { [weak self] button in
-                            guard let self = self else { return }
-                            let url = URL(string: "https://twitter.com/account/access")!
-                            UIApplication.shared.open(url)
+                    case .twitterResponseError(let responseError):
+                        switch responseError.twitterAPIError {
+                        case .accountIsTemporarilyLocked:
+                            var config = SwiftMessages.defaultConfig
+                            config.duration = .seconds(seconds: 10)
+                            config.interactiveHide = true
+                            let bannerView = NotifyBannerView()
+                            bannerView.configure(for: .error)
+                            bannerView.titleLabel.text = L10n.Common.Alerts.AccountTemporarilyLocked.title
+                            bannerView.messageLabel.text = L10n.Common.Alerts.AccountTemporarilyLocked.message
+                            bannerView.actionButtonTapHandler = { [weak self] button in
+                                guard let _ = self else { return }
+                                let url = URL(string: "https://twitter.com/account/access")!
+                                UIApplication.shared.open(url)
+                            }
+                            SwiftMessages.show(config: config, view: bannerView)
+                        case .rateLimitExceeded:
+                            var config = SwiftMessages.defaultConfig
+                            config.duration = .seconds(seconds: 10)
+                            config.interactiveHide = true
+                            let bannerView = NotifyBannerView()
+                            bannerView.configure(for: .warning)
+                            bannerView.titleLabel.text = "Rate Limit Exceeded"
+                            bannerView.messageLabel.text = "Reached Twitter API usage limit"
+                            SwiftMessages.show(config: config, view: bannerView)
+                        default:
+                            break
                         }
-                        SwiftMessages.show(config: config, view: bannerView)
-                    case .rateLimitExceeded:
-                        var config = SwiftMessages.defaultConfig
-                        config.duration = .seconds(seconds: 10)
-                        config.interactiveHide = true
-                        let bannerView = NotifyBannerView()
-                        bannerView.configure(for: .warning)
-                        bannerView.titleLabel.text = "Rate Limit Exceeded"
-                        bannerView.messageLabel.text = "Reached Twitter API usage limit"
-                        SwiftMessages.show(config: config, view: bannerView)
                     default:
                         break
                     }

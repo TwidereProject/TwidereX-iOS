@@ -10,8 +10,16 @@ import os.log
 import UIKit
 
 protocol DrawerSidebarHeaderViewDelegate: class {
+    func drawerSidebarHeaderView(_ headerView: DrawerSidebarHeaderView, avatarButtonDidPressed button: UIButton)
+    func drawerSidebarHeaderView(_ headerView: DrawerSidebarHeaderView, nameButtonDidPressed button: UIButton)
+    func drawerSidebarHeaderView(_ headerView: DrawerSidebarHeaderView, usernameButtonDidPressed button: UIButton)
+
     func drawerSidebarHeaderView(_ headerView: DrawerSidebarHeaderView, menuButtonDidPressed button: UIButton)
     func drawerSidebarHeaderView(_ headerView: DrawerSidebarHeaderView, closeButtonDidPressed button: UIButton)
+    
+    func drawerSidebarHeaderView(_ headerView: DrawerSidebarHeaderView, profileBannerStatusView: ProfileBannerStatusView, followingStatusItemViewDidPressed statusItemView: ProfileBannerStatusItemView)
+    func drawerSidebarHeaderView(_ headerView: DrawerSidebarHeaderView, profileBannerStatusView: ProfileBannerStatusView, followerStatusItemViewDidPressed statusItemView: ProfileBannerStatusItemView)
+    func drawerSidebarHeaderView(_ headerView: DrawerSidebarHeaderView, profileBannerStatusView: ProfileBannerStatusView, listedStatusItemViewDidPressed statusItemView: ProfileBannerStatusItemView)
 }
 
 final class DrawerSidebarHeaderView: UIView {
@@ -20,28 +28,39 @@ final class DrawerSidebarHeaderView: UIView {
     
     weak var delegate: DrawerSidebarHeaderViewDelegate?
     
-    let avatarImageView: UIImageView = {
-        let imageView = UIImageView()
+    let avatarButton: UIButton = {
+        let button = UIButton()
         let placeholderImage = UIImage
             .placeholder(size: DrawerSidebarHeaderView.avatarImageViewSize, color: .systemFill)
             .af.imageRoundedIntoCircle()
-        imageView.image = placeholderImage
+        button.setImage(placeholderImage, for: .normal)
+        return button
+    }()
+    
+    let nameButton: UIButton = {
+        let button = UIButton()
+        button.titleLabel?.font = .preferredFont(withTextStyle: .headline, maxSize: 20)
+        button.setTitleColor(.label, for: .normal)
+        button.setTitleColor(UIColor.label.withAlphaComponent(0.5), for: .highlighted)
+        button.setTitle("Alice", for: .normal)
+        return button
+    }()
+    
+    let lockImageView: UIImageView = {
+        let imageView = UIImageView()
+        imageView.tintColor = .secondaryLabel
+        imageView.contentMode = .center
+        imageView.image = Asset.ObjectTools.lockMini.image.withRenderingMode(.alwaysTemplate)
         return imageView
     }()
     
-    let nameLabel: UILabel = {
-        let label = UILabel()
-        label.font = .preferredFont(withTextStyle: .headline, maxSize: 20)
-        label.text = "Alice"
-        return label
-    }()
-    
-    let usernameLabel: UILabel = {
-        let label = UILabel()
-        label.font = .preferredFont(withTextStyle: .subheadline, maxSize: 13)
-        label.text = "@alice"
-        label.textColor = .secondaryLabel
-        return label
+    let usernameButton: UIButton = {
+        let button = UIButton()
+        button.titleLabel?.font = .preferredFont(withTextStyle: .subheadline, maxSize: 13)
+        button.setTitleColor(.secondaryLabel, for: .normal)
+        button.setTitleColor(UIColor.secondaryLabel.withAlphaComponent(0.5), for: .highlighted)
+        button.setTitle("@alice", for: .normal)
+        return button
     }()
     
     let menuButton: UIButton = {
@@ -94,20 +113,39 @@ extension DrawerSidebarHeaderView {
         let infoStackView = UIStackView()
         containerStackView.addArrangedSubview(infoStackView)
         infoStackView.axis = .horizontal
-        infoStackView.spacing = 16
+        infoStackView.spacing = 14
         
-        avatarImageView.translatesAutoresizingMaskIntoConstraints = false
-        infoStackView.addArrangedSubview(avatarImageView)
+        avatarButton.translatesAutoresizingMaskIntoConstraints = false
+        infoStackView.addArrangedSubview(avatarButton)
         NSLayoutConstraint.activate([
-            avatarImageView.widthAnchor.constraint(equalToConstant: 40).priority(.required - 1),
-            avatarImageView.heightAnchor.constraint(equalToConstant: 40).priority(.required - 1),
+            avatarButton.widthAnchor.constraint(equalToConstant: 40).priority(.required - 1),
+            avatarButton.heightAnchor.constraint(equalToConstant: 40).priority(.required - 1),
         ])
         
         let nameStackView = UIStackView()
         infoStackView.addArrangedSubview(nameStackView)
         nameStackView.axis = .vertical
-        nameStackView.addArrangedSubview(nameLabel)
-        nameStackView.addArrangedSubview(usernameLabel)
+        nameStackView.alignment = .leading
+        nameStackView.distribution = .fillProportionally
+        
+        let nameAndLockContainerView = UIView()
+        nameButton.translatesAutoresizingMaskIntoConstraints = false
+        nameAndLockContainerView.addSubview(nameButton)
+        NSLayoutConstraint.activate([
+            nameButton.topAnchor.constraint(equalTo: nameAndLockContainerView.topAnchor),
+            nameButton.leadingAnchor.constraint(equalTo: nameAndLockContainerView.leadingAnchor),
+            nameButton.bottomAnchor.constraint(equalTo: nameAndLockContainerView.bottomAnchor),
+        ])
+        lockImageView.translatesAutoresizingMaskIntoConstraints = false
+        nameAndLockContainerView.addSubview(lockImageView)
+        NSLayoutConstraint.activate([
+            lockImageView.centerYAnchor.constraint(equalTo: nameButton.centerYAnchor),
+            lockImageView.leadingAnchor.constraint(equalTo: nameButton.trailingAnchor, constant: 4),
+            lockImageView.trailingAnchor.constraint(equalTo: nameAndLockContainerView.trailingAnchor),
+        ])
+        
+        nameStackView.addArrangedSubview(nameAndLockContainerView)
+        nameStackView.addArrangedSubview(usernameButton)
         
         infoStackView.addArrangedSubview(menuButton)
         
@@ -128,13 +166,34 @@ extension DrawerSidebarHeaderView {
             separatorLine.heightAnchor.constraint(equalToConstant: UIView.separatorLineHeight(of: self))
         ])
         
+        avatarButton.addTarget(self, action: #selector(DrawerSidebarHeaderView.avatarButtonDidPressed(_:)), for: .touchUpInside)
+        nameButton.addTarget(self, action: #selector(DrawerSidebarHeaderView.nameButtonDidPressed(_:)), for: .touchUpInside)
+        usernameButton.addTarget(self, action: #selector(DrawerSidebarHeaderView.usernameButtonDidPressed(_:)), for: .touchUpInside)
+        
         menuButton.addTarget(self, action: #selector(DrawerSidebarHeaderView.menuButtonPressed(_:)), for: .touchUpInside)
         closeButton.addTarget(self, action: #selector(DrawerSidebarHeaderView.closeButtonPressed(_:)), for: .touchUpInside)
+        
+        profileBannerStatusView.delegate = self
     }
     
 }
 
 extension DrawerSidebarHeaderView {
+    
+    @objc private func avatarButtonDidPressed(_ sender: UIButton) {
+        os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
+        delegate?.drawerSidebarHeaderView(self, avatarButtonDidPressed: sender)
+    }
+    
+    @objc private func nameButtonDidPressed(_ sender: UIButton) {
+        os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
+        delegate?.drawerSidebarHeaderView(self, nameButtonDidPressed: sender)
+    }
+    
+    @objc private func usernameButtonDidPressed(_ sender: UIButton) {
+        os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
+        delegate?.drawerSidebarHeaderView(self, usernameButtonDidPressed: sender)
+    }
     
     @objc private func menuButtonPressed(_ sender: UIButton) {
         os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
@@ -146,6 +205,31 @@ extension DrawerSidebarHeaderView {
         delegate?.drawerSidebarHeaderView(self, closeButtonDidPressed: sender)
     }
     
+}
+
+// MARK: - ProfileBannerStatusViewDelegate
+extension DrawerSidebarHeaderView: ProfileBannerStatusViewDelegate {
+    
+    func profileBannerStatusView(_ view: ProfileBannerStatusView, followingStatusItemViewDidPressed statusItemView: ProfileBannerStatusItemView) {
+        delegate?.drawerSidebarHeaderView(self, profileBannerStatusView: view, followingStatusItemViewDidPressed: statusItemView)
+    }
+    
+    func profileBannerStatusView(_ view: ProfileBannerStatusView, followersStatusItemViewDidPressed statusItemView: ProfileBannerStatusItemView) {
+        delegate?.drawerSidebarHeaderView(self, profileBannerStatusView: view, followerStatusItemViewDidPressed: statusItemView)
+    }
+    
+    func profileBannerStatusView(_ view: ProfileBannerStatusView, listedStatusItemViewDidPressed statusItemView: ProfileBannerStatusItemView) {
+        delegate?.drawerSidebarHeaderView(self, profileBannerStatusView: view, listedStatusItemViewDidPressed: statusItemView)
+    }
+
+}
+
+// MARK: - AvatarConfigurableView
+extension DrawerSidebarHeaderView: AvatarConfigurableView {
+    static var configurableAvatarImageViewSize: CGSize { return avatarImageViewSize }
+    var configurableAvatarImageView: UIImageView? { return nil }
+    var configurableAvatarButton: UIButton? { return avatarButton }
+    var configurableVerifiedBadgeImageView: UIImageView? { return nil }
 }
 
 #if DEBUG
@@ -161,7 +245,7 @@ struct DrawerSidebarHeaderView_Previews: PreviewProvider {
     static var previews: some View {
         UIViewPreview(width: 375) {
             let headerLabel = DrawerSidebarHeaderView()
-            headerLabel.avatarImageView.image = avatarImage
+            headerLabel.avatarButton.setImage(avatarImage, for: .normal)
             return headerLabel
         }
         .previewLayout(.fixed(width: 375, height: 140))

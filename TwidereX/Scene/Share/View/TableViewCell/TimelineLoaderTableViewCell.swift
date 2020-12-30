@@ -52,6 +52,8 @@ class TimelineLoaderTableViewCell: UITableViewCell {
 extension TimelineLoaderTableViewCell {
     
     private func _init() {
+        selectionStyle = .none
+        
         loadMoreButton.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(loadMoreButton)
         NSLayoutConstraint.activate([

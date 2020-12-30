@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import NIOHTTP1
 
 extension Twitter.API {
     
@@ -25,6 +26,8 @@ extension Twitter.API {
         return formatter
     }()
     
+    public enum Error { }
+    
     public enum Account { }
     public enum Application { }
     public enum Favorites { }
@@ -39,6 +42,7 @@ extension Twitter.API {
     
     // V2
     public enum V2 {
+        public enum FollowLookup { }
         public enum Lookup { }
         public enum RecentSearch { }
         public enum UserLookup { } 
@@ -47,30 +51,20 @@ extension Twitter.API {
 }
 
 extension Twitter.API {
-    public enum APIError: Error, LocalizedError {
-        case `internal`(message: String)
-        case response(code: Int, reason: String)
-        case responseV2(title: String?, detail: String?)        // v2
+    // Error Response when request V1 endpoint
+    struct ErrorResponse: Codable {
+        let errors: [ErrorDescription]
         
-        public var errorDescription: String? {
-            switch self {
-            case .internal(let message):
-                return "Internal error: \(message)"
-            case .response(let code, let reason):
-                return "\(code) - \(reason)"
-            case .responseV2(let title, let detail):
-                return [title, detail].compactMap { $0 }.joined(separator: " - ")
-            }
-        }
-    }
-    
-    public struct ErrorResponse: Codable {
-        public let errors: [ErrorDescription]
-        
-        public struct ErrorDescription: Codable {
+        struct ErrorDescription: Codable {
             public let code: Int
             public let message: String
         }
+    }
+    
+    // Alternative Error Response when request V1 endpoint
+    struct ErrorRequestResponse: Codable {
+        let request: String
+        let error: String
     }
     
     public struct ErrorResponseV2: Codable {
@@ -78,12 +72,19 @@ extension Twitter.API {
         public let title: String?
         public let detail: String?
         public let type: String?
-        
+
         public struct ErrorDescription: Codable {
-            public let parameters: ErrorDescriptionParameters
-            public let message: String
+            public let parameter: String?
+            public let parameters: ErrorDescriptionParameters?
+            
+            public let value: String?
+            public let message: String?
+            
+            public let title: String?
+            public let detail: String?
+            public let type: String?
         }
-        
+
         public struct ErrorDescriptionParameters: Codable {
             public let expansions: [String]?
             public let mediaFields: [String]?
@@ -91,7 +92,7 @@ extension Twitter.API {
             public let poolFields: [String]?
             public let userFields: [String]?
             public let tweetFields: [String]?
-            
+
             public enum CodingKeys: String, CodingKey {
                 case expansions
                 case mediaFields = "media.fields"
@@ -101,7 +102,6 @@ extension Twitter.API {
                 case tweetFields = "tweet.fields"
             }
         }
-        
     }
 }
 
@@ -111,16 +111,34 @@ extension Twitter.API {
         do {
             return try Twitter.API.decoder.decode(type, from: data)
         } catch let decodeError {
+            guard let httpURLResponse = response as? HTTPURLResponse else {
+                assertionFailure()
+                throw decodeError
+            }
+            let httpResponseStatus = HTTPResponseStatus(statusCode: httpURLResponse.statusCode)
+            
             if let errorResponse = try? Twitter.API.decoder.decode(ErrorResponse.self, from: data),
-               let error = errorResponse.errors.first {
-                throw APIError.response(code: error.code, reason: error.message)
+               let twitterAPIError = Error.TwitterAPIError(errorResponse: errorResponse) {
+                throw Error.ResponseError(httpResponseStatus: httpResponseStatus, twitterAPIError: twitterAPIError)
             }
             
-            if let errorResponse = try? Twitter.API.decoder.decode(ErrorResponseV2.self, from: data) {
-                throw APIError.responseV2(title: errorResponse.title, detail: errorResponse.detail)
+            if let errorRequestResponse = try? Twitter.API.decoder.decode(ErrorRequestResponse.self, from: data),
+               let twitterAPIError = Error.TwitterAPIError(errorRequestResponse: errorRequestResponse) {
+                throw Error.ResponseError(httpResponseStatus: httpResponseStatus, twitterAPIError: twitterAPIError)
             }
             
-            throw decodeError
+            if let errorResponseV2 = try? Twitter.API.decoder.decode(ErrorResponseV2.self, from: data),
+               let twitterAPIError = Error.TwitterAPIError(errorResponseV2: errorResponseV2) {
+                throw Error.ResponseError(httpResponseStatus: httpResponseStatus, twitterAPIError: twitterAPIError)
+            }
+            
+            // Twitter not return error code described in the document. Convert manually
+            if httpURLResponse.statusCode == 429 {
+                throw Error.ResponseError(httpResponseStatus: httpResponseStatus, twitterAPIError: .rateLimitExceeded)
+            }
+            
+            debugPrint(decodeError)
+            throw Error.ResponseError(httpResponseStatus: httpResponseStatus, twitterAPIError: nil)
         }
     }
     

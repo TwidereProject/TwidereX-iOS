@@ -5,13 +5,22 @@
 //  Created by Cirno MainasuK on 2020-9-25.
 //
 
+import os.log
 import UIKit
+
+protocol ProfileBannerStatusViewDelegate: class {
+    func profileBannerStatusView(_ view: ProfileBannerStatusView, followingStatusItemViewDidPressed statusItemView: ProfileBannerStatusItemView)
+    func profileBannerStatusView(_ view: ProfileBannerStatusView, followersStatusItemViewDidPressed statusItemView: ProfileBannerStatusItemView)
+    func profileBannerStatusView(_ view: ProfileBannerStatusView, listedStatusItemViewDidPressed statusItemView: ProfileBannerStatusItemView)
+}
 
 final class ProfileBannerStatusView: UIView {
     
     let followingStatusItemView = ProfileBannerStatusItemView()
     let followersStatusItemView = ProfileBannerStatusItemView()
     let listedStatusItemView = ProfileBannerStatusItemView()
+        
+    weak var delegate: ProfileBannerStatusViewDelegate?
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -64,6 +73,29 @@ extension ProfileBannerStatusView {
         followingStatusItemView.statusLabel.text = L10n.Common.Controls.ProfileDashboard.following
         followersStatusItemView.statusLabel.text = L10n.Common.Controls.ProfileDashboard.followers
         listedStatusItemView.statusLabel.text = L10n.Common.Controls.ProfileDashboard.listed
+        
+        [followingStatusItemView, followersStatusItemView, listedStatusItemView].forEach { statusItemView in
+            let tapGestureRecognizer = UITapGestureRecognizer.singleTapGestureRecognizer
+            tapGestureRecognizer.addTarget(self, action: #selector(ProfileBannerStatusView.tapGestureRecognizerHandler(_:)))
+            statusItemView.addGestureRecognizer(tapGestureRecognizer)
+        }
+    }
+}
+
+extension ProfileBannerStatusView {
+    @objc private func tapGestureRecognizerHandler(_ sender: UITapGestureRecognizer) {
+        os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
+        guard let sourceView = sender.view as? ProfileBannerStatusItemView else {
+            assertionFailure()
+            return
+        }
+        if sourceView === followingStatusItemView {
+            delegate?.profileBannerStatusView(self, followingStatusItemViewDidPressed: sourceView)
+        } else if sourceView === followersStatusItemView {
+            delegate?.profileBannerStatusView(self, followersStatusItemViewDidPressed: sourceView)
+        } else if sourceView === listedStatusItemView {
+            delegate?.profileBannerStatusView(self, listedStatusItemViewDidPressed: sourceView)
+        }
     }
 }
 

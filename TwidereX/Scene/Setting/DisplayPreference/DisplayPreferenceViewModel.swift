@@ -20,12 +20,14 @@ final class DisplayPreferenceViewModel: NSObject {
     // output
     let sections: [Section] = [
         Section(header: L10n.Scene.Settings.Display.SectionHeader.preview, settings: [.preview]),
-        Section(header: L10n.Scene.Settings.Display.SectionHeader.text, settings: [
-            .useTheSystemFontSizeSwitch,
-            .fontSizeSlider,
+        // Section(header: L10n.Scene.Settings.Display.SectionHeader.text, settings: [
+        //     .useTheSystemFontSizeSwitch,
+        //     .fontSizeSlider,
+        // ]),
+        Section(header: "", settings: [
+            .avatarStyle,
+            .dateFormat
         ]),
-        Section(header: L10n.Scene.Settings.Display.SectionHeader.dateFormat, settings: [.useTheSystemFontSizeSwitch]),
-        Section(header: L10n.Scene.Settings.Display.SectionHeader.media, settings: [.useTheSystemFontSizeSwitch]),
     ]
     let fontSizeSlideTableViewCell = SlideTableViewCell()
     
@@ -54,7 +56,9 @@ extension DisplayPreferenceViewModel {
         
         case useTheSystemFontSizeSwitch
         case fontSizeSlider
-        //case
+        
+        case avatarStyle
+        case dateFormat
     }
     
     struct Section {
@@ -104,7 +108,16 @@ extension DisplayPreferenceViewModel: UITableViewDataSource {
             _cell.disposeBag.removeAll()
             DisplayPreferenceViewModel.configureFontSizeSlider(cell: _cell)
             cell = _cell
-            print(cell)
+        case .avatarStyle:
+            let _cell = tableView.dequeueReusableCell(withIdentifier: String(describing: ListEntryTableViewCell.self), for: indexPath) as! ListEntryTableViewCell
+            _cell.iconImageView.isHidden = true
+            _cell.titleLabel.text = L10n.Scene.Settings.Display.Text.avatarStyle
+            cell = _cell
+        case .dateFormat:
+            let _cell = tableView.dequeueReusableCell(withIdentifier: String(describing: ListEntryTableViewCell.self), for: indexPath) as! ListEntryTableViewCell
+            _cell.iconImageView.isHidden = true
+            _cell.titleLabel.text = L10n.Scene.Settings.Display.SectionHeader.dateFormat
+            cell = _cell
         }
         return cell
     }

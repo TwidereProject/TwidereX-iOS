@@ -52,9 +52,6 @@ final public class TwitterUser: NSManagedObject {
     
     @NSManaged public private(set) var followRequestSent: Set<TwitterUser>?
     @NSManaged public private(set) var followRequestSentFrom: Set<TwitterUser>?
-    
-    @NSManaged public private(set) var followedBy: Set<TwitterUser>?
-    @NSManaged public private(set) var followedByFrom: Set<TwitterUser>?
 
 }
 
@@ -94,10 +91,10 @@ extension TwitterUser {
         user.metrics = metrics
         
         if let following = following {
-            user.mutableSetValue(forKey: #keyPath(TwitterUser.following)).add(following)
+            user.mutableSetValue(forKey: #keyPath(TwitterUser.followingFrom)).add(following)
         }
         if let followRequestSent = followRequestSent {
-            user.mutableSetValue(forKey: #keyPath(TwitterUser.followRequestSent)).add(followRequestSent)
+            user.mutableSetValue(forKey: #keyPath(TwitterUser.followRequestSentFrom)).add(followRequestSent)
         }
         
         return user
@@ -183,26 +180,26 @@ extension TwitterUser {
         }
     }
     
-    public func update(following: Bool, twitterUser: TwitterUser) {
+    public func update(following: Bool, from: TwitterUser) {
         if following {
-            if !(self.followingFrom ?? Set()).contains(twitterUser) {
-                self.mutableSetValue(forKey: #keyPath(TwitterUser.followingFrom)).add(twitterUser)
+            if !(self.followingFrom ?? Set()).contains(from) {
+                self.mutableSetValue(forKey: #keyPath(TwitterUser.followingFrom)).add(from)
             }
         } else {
-            if (self.followingFrom ?? Set()).contains(twitterUser) {
-                self.mutableSetValue(forKey: #keyPath(TwitterUser.followingFrom)).remove(twitterUser)
+            if (self.followingFrom ?? Set()).contains(from) {
+                self.mutableSetValue(forKey: #keyPath(TwitterUser.followingFrom)).remove(from)
             }
         }
     }
     
-    public func update(followRequestSent: Bool, twitterUser: TwitterUser) {
+    public func update(followRequestSent: Bool, from: TwitterUser) {
         if followRequestSent {
-            if !(self.followRequestSentFrom ?? Set()).contains(twitterUser) {
-                self.mutableSetValue(forKey: #keyPath(TwitterUser.followRequestSentFrom)).add(twitterUser)
+            if !(self.followRequestSentFrom ?? Set()).contains(from) {
+                self.mutableSetValue(forKey: #keyPath(TwitterUser.followRequestSentFrom)).add(from)
             }
         } else {
-            if (self.followRequestSentFrom ?? Set()).contains(twitterUser) {
-                self.mutableSetValue(forKey: #keyPath(TwitterUser.followRequestSentFrom)).remove(twitterUser)
+            if (self.followRequestSentFrom ?? Set()).contains(from) {
+                self.mutableSetValue(forKey: #keyPath(TwitterUser.followRequestSentFrom)).remove(from)
             }
         }
     }

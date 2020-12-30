@@ -24,6 +24,8 @@ enum Item {
     // loader
     case middleLoader(upperTimelineIndexAnchorObjectID: NSManagedObjectID)
     case bottomLoader
+    
+    case permissionDenied
 }
 
 extension Item {
@@ -80,6 +82,8 @@ extension Item: Equatable {
             return upperLeft == upperRight
         case (.bottomLoader, .bottomLoader):
             return true
+        case (.permissionDenied, .permissionDenied):
+            return true
         default:
             return false
         }
@@ -104,6 +108,8 @@ extension Item: Hashable {
             hasher.combine(upper)
         case .bottomLoader:
             hasher.combine(String(describing: Item.bottomLoader.self))
+        case .permissionDenied:
+            hasher.combine(String(describing: Item.permissionDenied.self))
         }
     }
 }

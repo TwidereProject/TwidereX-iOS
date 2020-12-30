@@ -89,10 +89,12 @@ extension APIService {
                 guard let self = self else { return }
                 switch completion {
                 case .failure(let error):
-                    if case let Twitter.API.APIError.response(code, _) = error,
-                       code == ErrorReason.accountTemporarilyLocked.code {
-                        self.error.send(.explicit(.accountTemporarilyLocked))
+                    if let responseError = error as? Twitter.API.Error.ResponseError {
+                        if case .accountIsTemporarilyLocked = responseError.twitterAPIError {
+                            self.error.send(.explicit(.twitterResponseError(responseError)))
+                        }
                     }
+                    
                 case .finished:
                     break
                 }
