@@ -175,7 +175,6 @@
 		DB92570A251C8FE0004FEFB5 /* ProfileHeaderViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB925709251C8FE0004FEFB5 /* ProfileHeaderViewController.swift */; };
 		DB925744251C9CD6004FEFB5 /* ProfilePagingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB925743251C9CD6004FEFB5 /* ProfilePagingViewController.swift */; };
 		DB925749251C9D48004FEFB5 /* ProfilePagingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB925748251C9D47004FEFB5 /* ProfilePagingViewModel.swift */; };
-		DB92575A251CA3FB004FEFB5 /* StubTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB925759251CA3FB004FEFB5 /* StubTableViewCell.swift */; };
 		DB94887D2599F70600C3E111 /* TimelinePermissionDeniedTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB94887C2599F70600C3E111 /* TimelinePermissionDeniedTableViewCell.swift */; };
 		DB969A0C252475F00053CB31 /* APIService+Persist+Timeline.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB969A0B252475F00053CB31 /* APIService+Persist+Timeline.swift */; };
 		DB969A2F252490090053CB31 /* UserTimelineViewModel+State.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB969A2E252490090053CB31 /* UserTimelineViewModel+State.swift */; };
@@ -333,6 +332,7 @@
 		DBF639F7259B1728009E12C8 /* PermissionDeniedCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBF639F6259B1728009E12C8 /* PermissionDeniedCollectionViewCell.swift */; };
 		DBF639FC259B333A009E12C8 /* EmptyStateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBF639FB259B333A009E12C8 /* EmptyStateView.swift */; };
 		DBF63A04259B4811009E12C8 /* TouchBlockingCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBF63A03259B4811009E12C8 /* TouchBlockingCollectionView.swift */; };
+		DBF63A13259C36D8009E12C8 /* ListEntryTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBF63A12259C36D8009E12C8 /* ListEntryTableViewCell.swift */; };
 		DBF69E8F2549601900E2A915 /* SearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBF69E8E2549601900E2A915 /* SearchViewController.swift */; };
 		DBF69E9C25496BB100E2A915 /* SearchDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBF69E9B25496BB100E2A915 /* SearchDetailViewController.swift */; };
 		DBF69EAC25496C9F00E2A915 /* SearchDetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBF69EAB25496C9F00E2A915 /* SearchDetailViewModel.swift */; };
@@ -603,7 +603,6 @@
 		DB925709251C8FE0004FEFB5 /* ProfileHeaderViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileHeaderViewController.swift; sourceTree = "<group>"; };
 		DB925743251C9CD6004FEFB5 /* ProfilePagingViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfilePagingViewController.swift; sourceTree = "<group>"; };
 		DB925748251C9D47004FEFB5 /* ProfilePagingViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfilePagingViewModel.swift; sourceTree = "<group>"; };
-		DB925759251CA3FB004FEFB5 /* StubTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StubTableViewCell.swift; sourceTree = "<group>"; };
 		DB94887C2599F70600C3E111 /* TimelinePermissionDeniedTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimelinePermissionDeniedTableViewCell.swift; sourceTree = "<group>"; };
 		DB969A0B252475F00053CB31 /* APIService+Persist+Timeline.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "APIService+Persist+Timeline.swift"; sourceTree = "<group>"; };
 		DB969A2E252490090053CB31 /* UserTimelineViewModel+State.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UserTimelineViewModel+State.swift"; sourceTree = "<group>"; };
@@ -773,6 +772,7 @@
 		DBF639F6259B1728009E12C8 /* PermissionDeniedCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PermissionDeniedCollectionViewCell.swift; sourceTree = "<group>"; };
 		DBF639FB259B333A009E12C8 /* EmptyStateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyStateView.swift; sourceTree = "<group>"; };
 		DBF63A03259B4811009E12C8 /* TouchBlockingCollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TouchBlockingCollectionView.swift; sourceTree = "<group>"; };
+		DBF63A12259C36D8009E12C8 /* ListEntryTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListEntryTableViewCell.swift; sourceTree = "<group>"; };
 		DBF69E8E2549601900E2A915 /* SearchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewController.swift; sourceTree = "<group>"; };
 		DBF69E9B25496BB100E2A915 /* SearchDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchDetailViewController.swift; sourceTree = "<group>"; };
 		DBF69EAB25496C9F00E2A915 /* SearchDetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchDetailViewModel.swift; sourceTree = "<group>"; };
@@ -1324,7 +1324,7 @@
 				DBE76D1B2500E5E000DEB0FC /* TimelinePostTableViewCell.swift */,
 				DB94887C2599F70600C3E111 /* TimelinePermissionDeniedTableViewCell.swift */,
 				DB67617F254C042C006C6798 /* FriendshipTableViewCell.swift */,
-				DB925759251CA3FB004FEFB5 /* StubTableViewCell.swift */,
+				DBF63A12259C36D8009E12C8 /* ListEntryTableViewCell.swift */,
 			);
 			path = TableViewCell;
 			sourceTree = "<group>";
@@ -2740,7 +2740,6 @@
 				DBF639F7259B1728009E12C8 /* PermissionDeniedCollectionViewCell.swift in Sources */,
 				DB97D1E0256CBA4E0056F8C2 /* NotifyBannerView.swift in Sources */,
 				DBEA4F812511E7900007FEC5 /* ConversationItem.swift in Sources */,
-				DB92575A251CA3FB004FEFB5 /* StubTableViewCell.swift in Sources */,
 				DBCB4099255D948400DD8D8F /* TweetProvider+UITableViewDelegate.swift in Sources */,
 				DB2FFF2E258B1077003DBC19 /* MosaicPlayerView.swift in Sources */,
 				DBA5F9E02553CFE800D2E98E /* MediaPreviewViewController.swift in Sources */,
@@ -2753,6 +2752,7 @@
 				DB9EC532255A87A4005403AA /* SettingListView.swift in Sources */,
 				DB434883251DF18C005B599F /* ProfileBannerInfoActionView.swift in Sources */,
 				DBC8E050257653E100401E20 /* SavePhotoActivity.swift in Sources */,
+				DBF63A13259C36D8009E12C8 /* ListEntryTableViewCell.swift in Sources */,
 				DBCE2ED22591FB8D00926D09 /* OrderedTwitterUserFetchedResultsController.swift in Sources */,
 				DBA397B4255513AD00A95662 /* MediaPreviewImageView.swift in Sources */,
 				DBCE2ECD2591FAA800926D09 /* FriendshipListSection.swift in Sources */,
