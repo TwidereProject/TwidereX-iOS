@@ -31,6 +31,7 @@ final class UserMediaTimelineViewModel: NSObject {
             State.Idle(viewModel: self),
             State.Fail(viewModel: self),
             State.LoadingMore(viewModel: self),
+            State.PermissionDenied(viewModel: self),
             State.NoMore(viewModel: self),
         ])
         stateMachine.enter(State.Initial.self)
@@ -64,21 +65,26 @@ final class UserMediaTimelineViewModel: NSObject {
         self.fetchedResultsController.delegate = self
         
         items.eraseToAnyPublisher()
-            .receive(on: DispatchQueue.main)
+            .debounce(for: .seconds(0.3), scheduler: DispatchQueue.main)      // fix scroll position jumping issue
             .sink { [weak self] items in
                 guard let self = self else { return }
                 guard let diffableDataSource = self.diffableDataSource else { return }
                 os_log("%{public}s[%{public}ld], %{public}s: items did change", ((#file as NSString).lastPathComponent), #line, #function)
 
                 var snapshot = NSDiffableDataSourceSnapshot<MediaSection, Item>()
-                snapshot.appendSections([.main])
+                snapshot.appendSections([.main, .footer])
                 snapshot.appendItems(items, toSection: .main)
-                snapshot.appendSections([.loader])
-                if let currentState = self.stateMachine.currentState,
-                   currentState is State.Idle || currentState is State.Reloading || currentState is State.LoadingMore {
-                    snapshot.appendItems([.bottomLoader], toSection: .loader)
+                if let currentState = self.stateMachine.currentState {
+                    switch currentState {
+                    case is State.Reloading, is State.Idle, is State.LoadingMore, is State.Fail:
+                        snapshot.appendItems([.bottomLoader], toSection: .footer)
+                    case is State.PermissionDenied:
+                        snapshot.appendItems([.permissionDenied], toSection: .footer)
+                    default:
+                        break
+                    }
                 }
-
+                
                 // set animatingDifferences to false fix scroll position jumping issue
                 diffableDataSource.apply(snapshot, animatingDifferences: false)
             }
@@ -88,6 +94,9 @@ final class UserMediaTimelineViewModel: NSObject {
             .receive(on: DispatchQueue.main)
             .sink { [weak self] ids in
                 guard let self = self else { return }
+                os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
+                
+
                 self.fetchedResultsController.fetchRequest.predicate = Tweet.predicate(idStrs: ids)
                 do {
                     try self.fetchedResultsController.performFetch()

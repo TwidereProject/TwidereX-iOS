@@ -11,6 +11,7 @@ import UIKit
 import AVKit
 import Combine
 import CoreDataStack
+import GameplayKit
 
 final class UserLikeTimelineViewController: UIViewController, MediaPreviewableViewController, NeedsDependency {
     
@@ -26,6 +27,7 @@ final class UserLikeTimelineViewController: UIViewController, MediaPreviewableVi
         let tableView = UITableView()
         tableView.register(TimelinePostTableViewCell.self, forCellReuseIdentifier: String(describing: TimelinePostTableViewCell.self))
         tableView.register(TimelineBottomLoaderTableViewCell.self, forCellReuseIdentifier: String(describing: TimelineBottomLoaderTableViewCell.self))
+        tableView.register(TimelinePermissionDeniedTableViewCell.self, forCellReuseIdentifier: String(describing: TimelinePermissionDeniedTableViewCell.self))
         tableView.rowHeight = UITableView.automaticDimension
         tableView.separatorStyle = .none
         return tableView
@@ -52,9 +54,8 @@ extension UserLikeTimelineViewController {
             tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
         ])
         
-        viewModel.timelinePostTableViewCellDelegate = self
         viewModel.tableView = tableView
-        viewModel.setupDiffableDataSource(for: tableView)
+        viewModel.setupDiffableDataSource(for: tableView, timelinePostTableViewCellDelegate: self)
         do {
             try viewModel.fetchedResultsController.performFetch()
         } catch {
@@ -90,20 +91,7 @@ extension UserLikeTimelineViewController {
 // MARK: - UIScrollViewDelegate
 extension UserLikeTimelineViewController {
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        guard scrollView === tableView else { return }
-        let cells = tableView.visibleCells.compactMap { $0 as? TimelineBottomLoaderTableViewCell }
-        guard let loaderTableViewCell = cells.first else { return }
-        
-        if let tabBar = tabBarController?.tabBar, let window = view.window {
-            let loaderTableViewCellFrameInWindow = tableView.convert(loaderTableViewCell.frame, to: nil)
-            let windowHeight = window.frame.height
-            let loaderAppear = (loaderTableViewCellFrameInWindow.origin.y + 0.8 * loaderTableViewCell.frame.height) < (windowHeight - tabBar.frame.height)
-            if loaderAppear {
-                viewModel.stateMachine.enter(UserLikeTimelineViewModel.State.LoadingMore.self)
-            }
-        } else {
-            viewModel.stateMachine.enter(UserLikeTimelineViewModel.State.LoadingMore.self)
-        }
+        handleScrollViewDidScroll(scrollView)
     }
 }
 
@@ -183,4 +171,13 @@ extension UserLikeTimelineViewController: ScrollViewContainer {
     var scrollView: UIScrollView {
         return tableView
     }
+}
+
+// MARK: - LoadMoreConfigurableTableViewContainer
+extension UserLikeTimelineViewController: LoadMoreConfigurableTableViewContainer {
+    typealias BottomLoaderTableViewCell = TimelineBottomLoaderTableViewCell
+    typealias LoadingState = UserLikeTimelineViewModel.State.LoadingMore
+    
+    var loadMoreConfigurableTableView: UITableView { return tableView }
+    var loadMoreConfigurableStateMachine: GKStateMachine { return viewModel.stateMachine }
 }

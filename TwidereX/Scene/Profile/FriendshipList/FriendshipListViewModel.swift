@@ -32,11 +32,13 @@ final class FriendshipListViewModel: NSObject {
             State.Fail(viewModel: self),
             State.Idle(viewModel: self),
             State.Loading(viewModel: self),
+            State.PermissionDenied(viewModel: self),
             State.NoMore(viewModel: self),
         ])
         stateMachine.enter(State.Initial.self)
         return stateMachine
     }()
+    let isPermissionDenied = CurrentValueSubject<Bool, Never>(false)
     
     init(context: AppContext, userID: Twitter.Entity.V2.User.ID, friendshipLookupKind: APIService.FriendshipListKind) {
         self.context = context
@@ -50,16 +52,27 @@ final class FriendshipListViewModel: NSObject {
                 guard let self = self else { return }
                 guard let diffableDataSource = self.diffableDataSource else { return }
                 
+                var isPermissionDenied = false
+                
                 var snapshot = NSDiffableDataSourceSnapshot<FriendshipListSection, Item>()
                 snapshot.appendSections([.main])
                 snapshot.appendItems(items, toSection: .main)
-                if let currentState = self.stateMachine.currentState,
-                   currentState is State.Loading || currentState is State.Idle || currentState is State.Fail {
-                    snapshot.appendItems([.bottomLoader], toSection: .main)
+                if let currentState = self.stateMachine.currentState {
+                    switch currentState {
+                    case is State.Loading, is State.Idle, is State.Fail:
+                        snapshot.appendItems([.bottomLoader], toSection: .main)
+                    case is State.PermissionDenied:
+                        isPermissionDenied = true
+                    default:
+                        break
+                    }
                 }
-                
+
                 // not animate when empty items fix loader first appear layout issue 
-                diffableDataSource.apply(snapshot, animatingDifferences: !items.isEmpty, completion: nil)
+                diffableDataSource.apply(snapshot, animatingDifferences: !items.isEmpty) { [weak self] in
+                    guard let self = self else { return }
+                    self.isPermissionDenied.value = isPermissionDenied
+                }
             }
             .store(in: &disposeBag)
     }

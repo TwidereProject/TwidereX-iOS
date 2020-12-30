@@ -25,7 +25,6 @@ class UserLikeTimelineViewModel: NSObject {
     var diffableDataSource: UITableViewDiffableDataSource<TimelineSection, Item>?
     let userID: CurrentValueSubject<String?, Never>
     weak var tableView: UITableView?
-    weak var timelinePostTableViewCellDelegate: TimelinePostTableViewCellDelegate?
     
     // output
     private(set) lazy var stateMachine: GKStateMachine = {
@@ -35,6 +34,7 @@ class UserLikeTimelineViewModel: NSObject {
             State.Fail(viewModel: self),
             State.Idle(viewModel: self),
             State.LoadingMore(viewModel: self),
+            State.PermissionDenied(viewModel: self),
             State.NoMore(viewModel: self),
         ])
         stateMachine.enter(State.Initial.self)
@@ -67,23 +67,28 @@ class UserLikeTimelineViewModel: NSObject {
         self.fetchedResultsController.delegate = self
 
         items.eraseToAnyPublisher()
-            .debounce(for: .seconds(1), scheduler: DispatchQueue.main)
             .receive(on: DispatchQueue.main)
             .sink { [weak self] items in
                 guard let self = self else { return }
                 guard let diffableDataSource = self.diffableDataSource else { return }
-                os_log("%{public}s[%{public}ld], %{public}s: state did change", ((#file as NSString).lastPathComponent), #line, #function)
+                os_log("%{public}s[%{public}ld], %{public}s: items did change", ((#file as NSString).lastPathComponent), #line, #function)
                                 
                 var snapshot = NSDiffableDataSourceSnapshot<TimelineSection, Item>()
                 snapshot.appendSections([.main])
                 snapshot.appendItems(items, toSection: .main)
                 
-                if let currentState = self.stateMachine.currentState,
-                   currentState is State.Idle || currentState is State.Reloading || currentState is State.LoadingMore {
-                    snapshot.appendItems([.bottomLoader], toSection: .main)
+                if let currentState = self.stateMachine.currentState {
+                    switch currentState {
+                    case is State.Reloading, is State.Idle, is State.LoadingMore, is State.Fail:
+                        snapshot.appendItems([.bottomLoader], toSection: .main)
+                    case is State.PermissionDenied:
+                        snapshot.appendItems([.permissionDenied], toSection: .main)
+                    default:
+                        break
+                    }
                 }
                 
-                diffableDataSource.apply(snapshot, animatingDifferences: false)
+                diffableDataSource.apply(snapshot, animatingDifferences: !items.isEmpty)
             }
             .store(in: &disposeBag)
         
@@ -97,15 +102,6 @@ class UserLikeTimelineViewModel: NSObject {
                 } catch {
                     assertionFailure(error.localizedDescription)
                 }
-            }
-            .store(in: &disposeBag)
-        
-        Timer.publish(every: 1.0, on: .main, in: .common)
-            .autoconnect()
-            .sink { [weak self] _ in
-                guard let self = self else { return }
-                let userInfo: [AnyHashable : Any] = ["userID": self.userID.value ?? ""]
-                NotificationCenter.default.post(name: UserLikeTimelineViewModel.secondStepTimerTriggered, object: nil, userInfo: userInfo)
             }
             .store(in: &disposeBag)
     }
@@ -157,8 +153,4 @@ extension UserLikeTimelineViewModel {
         return context.apiService.likeList(count: 20, userID: userID, maxID: maxID, twitterAuthenticationBox: twitterAuthenticationBox)
     }
     
-}
-
-extension UserLikeTimelineViewModel {
-    static let secondStepTimerTriggered = Notification.Name("com.twidere.twiderex.user-like-timeline.second-step-timer-triggered")
 }

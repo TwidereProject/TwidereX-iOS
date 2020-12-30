@@ -8,6 +8,7 @@
 import os.log
 import Foundation
 import GameplayKit
+import TwitterAPI
 
 extension UserTimelineViewModel {
     class State: GKState {
@@ -19,7 +20,6 @@ extension UserTimelineViewModel {
         
         override func didEnter(from previousState: GKState?) {
             os_log("%{public}s[%{public}ld], %{public}s: enter %s, previous: %s", ((#file as NSString).lastPathComponent), #line, #function, self.debugDescription, previousState.debugDescription)
-            viewModel?.stateMachinePublisher.send(self)
         }
     }
 }
@@ -35,32 +35,36 @@ extension UserTimelineViewModel.State {
     
     class Reloading: UserTimelineViewModel.State {
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {
-            return stateClass == Fail.self || stateClass == Idle.self
+            return stateClass == Fail.self || stateClass == Idle.self || stateClass == PermissionDenied.self
         }
         
         override func didEnter(from previousState: GKState?) {
             super.didEnter(from: previousState)
             guard let viewModel = viewModel, let stateMachine = stateMachine else { return }
             
-            var snapshot = NSDiffableDataSourceSnapshot<TimelineSection, Item>()
-            snapshot.appendSections([.main])
-            snapshot.appendItems([.bottomLoader], toSection: .main)
-            viewModel.diffableDataSource?.apply(snapshot)
+            viewModel.tweetIDs.value = []
             
             let userID = viewModel.userID.value
             viewModel.fetchLatest()
+                .receive(on: DispatchQueue.main)
                 .sink { completion in
                     switch completion {
                     case .failure(let error):
                         os_log("%{public}s[%{public}ld], %{public}s: fetch user timeline latest response error: %s", ((#file as NSString).lastPathComponent), #line, #function, error.localizedDescription)
-                        stateMachine.enter(Fail.self)
+                        if PermissionDenied.canEnter(for: error) {
+                            stateMachine.enter(PermissionDenied.self)
+                        } else {
+                            stateMachine.enter(Fail.self)
+                        }
                     case .finished:
-                        stateMachine.enter(Idle.self)
+                        break
                     }
                 } receiveValue: { response in
                     guard viewModel.userID.value == userID else { return }
                     let tweetIDs = response.value.map { $0.idStr }
-                    viewModel.userTimelineTweetIDs.value = tweetIDs
+                    
+                    stateMachine.enter(Idle.self)
+                    viewModel.tweetIDs.value = tweetIDs
                 }
                 .store(in: &viewModel.disposeBag)
         }
@@ -94,17 +98,54 @@ extension UserTimelineViewModel.State {
                     case .failure(let error):
                         stateMachine.enter(Fail.self)
                         os_log("%{public}s[%{public}ld], %{public}s: load more fail: %s", ((#file as NSString).lastPathComponent), #line, #function, error.localizedDescription)
-
                     case .finished:
-                        stateMachine.enter(Idle.self)
+                        break
                     }
                 } receiveValue: { response in
                     guard viewModel.userID.value == userID else { return }
-                    let newTweetIds = response.value.map { $0.idStr }
-                    let idSet = Set(viewModel.userTimelineTweetIDs.value).union(newTweetIds)
-                    viewModel.userTimelineTweetIDs.value = Array(idSet)
+                    
+                    var hasNewTweets = false
+                    var tweetIDs = viewModel.tweetIDs.value
+                    for tweet in response.value {
+                        if !tweetIDs.contains(tweet.idStr) {
+                            hasNewTweets = true
+                            tweetIDs.append(tweet.idStr)
+                        }
+                    }
+                    
+                    if !hasNewTweets {
+                        stateMachine.enter(NoMore.self)
+                    } else {
+                        stateMachine.enter(Idle.self)
+                    }
+
+                    viewModel.tweetIDs.value = tweetIDs
                 }
                 .store(in: &viewModel.disposeBag)
+        }
+    }
+    
+    class PermissionDenied: UserTimelineViewModel.State {
+        static func canEnter(for error: Error) -> Bool {
+            if let responseError = error as? Twitter.API.Error.ResponseError,
+               let twitterAPIError = responseError.twitterAPIError,
+               case .notAuthorizedToSeeThisStatus = twitterAPIError {
+                return true
+            }
+            
+            return false
+        }
+        
+        override func isValidNextState(_ stateClass: AnyClass) -> Bool {
+            return stateClass == Reloading.self
+        }
+        
+        override func didEnter(from previousState: GKState?) {
+            super.didEnter(from: previousState)
+            guard let viewModel = viewModel else { return }
+
+            // trigger items update
+            viewModel.tweetIDs.value = []
         }
     }
     

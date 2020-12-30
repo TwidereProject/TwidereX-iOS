@@ -37,7 +37,7 @@ extension UserLikeTimelineViewModel.State {
     
     class Reloading: UserLikeTimelineViewModel.State {
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {
-            return stateClass == Fail.self || stateClass == Idle.self
+            return stateClass == Fail.self || stateClass == Idle.self || stateClass == PermissionDenied.self
         }
         
         override func didEnter(from previousState: GKState?) {
@@ -56,17 +56,20 @@ extension UserLikeTimelineViewModel.State {
                     switch completion {
                     case .failure(let error):
                         os_log("%{public}s[%{public}ld], %{public}s: fetch user timeline latest response error: %s", ((#file as NSString).lastPathComponent), #line, #function, error.localizedDescription)
-                        stateMachine.enter(Fail.self)
+                        if PermissionDenied.canEnter(for: error) {
+                            stateMachine.enter(PermissionDenied.self)
+                        } else {
+                            stateMachine.enter(Fail.self)
+                        }
                     case .finished:
                         break
                     }
                 } receiveValue: { response in
                     guard viewModel.userID.value == userID else { return }
                     let tweetIDs = response.value.map { $0.idStr }
-                    viewModel.tweetIDs.value = tweetIDs
-                    
-                    stateMachine.enter(Idle.self)
 
+                    stateMachine.enter(Idle.self)
+                    viewModel.tweetIDs.value = tweetIDs
                 }
                 .store(in: &viewModel.disposeBag)
         }
@@ -126,6 +129,30 @@ extension UserLikeTimelineViewModel.State {
                     viewModel.tweetIDs.value = tweetIDs
                 }
                 .store(in: &viewModel.disposeBag)
+        }
+    }
+    
+    class PermissionDenied: UserLikeTimelineViewModel.State {
+        static func canEnter(for error: Error) -> Bool {
+            if let responseError = error as? Twitter.API.Error.ResponseError,
+               let twitterAPIError = responseError.twitterAPIError,
+               case .notAuthorizedToSeeThisStatus = twitterAPIError {
+                return true
+            }
+            
+            return false
+        }
+        
+        override func isValidNextState(_ stateClass: AnyClass) -> Bool {
+            return stateClass == Reloading.self
+        }
+        
+        override func didEnter(from previousState: GKState?) {
+            super.didEnter(from: previousState)
+            guard let viewModel = viewModel else { return }
+            
+            // trigger items update
+            viewModel.tweetIDs.value = []
         }
     }
     

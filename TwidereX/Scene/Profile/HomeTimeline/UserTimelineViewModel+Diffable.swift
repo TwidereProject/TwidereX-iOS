@@ -1,8 +1,8 @@
 //
-//  UserLikeTimelineViewModel+Diffable.swift
+//  UserTimelineViewModel+Diffable.swift
 //  TwidereX
 //
-//  Created by Cirno MainasuK on 2020-11-4.
+//  Created by Cirno MainasuK on 2020-12-29.
 //  Copyright © 2020 Twidere. All rights reserved.
 //
 
@@ -11,7 +11,7 @@ import UIKit
 import CoreData
 import CoreDataStack
 
-extension UserLikeTimelineViewModel {
+extension UserTimelineViewModel {
     func setupDiffableDataSource(
         for tableView: UITableView,
         timelinePostTableViewCellDelegate: TimelinePostTableViewCellDelegate
@@ -32,7 +32,7 @@ extension UserLikeTimelineViewModel {
 }
 
 // MARK: - NSFetchedResultsControllerDelegate
-extension UserLikeTimelineViewModel: NSFetchedResultsControllerDelegate {
+extension UserTimelineViewModel: NSFetchedResultsControllerDelegate {
     func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChangeContentWith snapshot: NSDiffableDataSourceSnapshotReference) {
         os_log("%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
         
@@ -48,4 +48,5 @@ extension UserLikeTimelineViewModel: NSFetchedResultsControllerDelegate {
             .map { Item.tweet(objectID: $0.1.objectID) }
         self.items.value = items
     }
+    
 }

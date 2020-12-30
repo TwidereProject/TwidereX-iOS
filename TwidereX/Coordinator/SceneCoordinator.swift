@@ -73,8 +73,14 @@ extension SceneCoordinator {
         guard let viewController = get(scene: scene) else {
             return nil
         }
-        guard let presentingViewController = sender ?? sceneDelegate.window?.rootViewController?.topMost else {
+        guard var presentingViewController = sender ?? sceneDelegate.window?.rootViewController?.topMost else {
             return nil
+        }
+        
+        if let mainTabBarController = presentingViewController as? MainTabBarController,
+           let navigationController = mainTabBarController.selectedViewController as? UINavigationController,
+           let topViewController = navigationController.topViewController {
+            presentingViewController = topViewController
         }
         
         switch transition {

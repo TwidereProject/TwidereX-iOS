@@ -81,8 +81,8 @@ final class SearchMediaViewModel: NSObject {
             case is State.Initial, is State.NoMore:
                 break
             case is State.Idle, is State.Loading:
-                snapshot.appendSections([.loader])
-                snapshot.appendItems([.bottomLoader], toSection: .loader)
+                snapshot.appendSections([.footer])
+                snapshot.appendItems([.bottomLoader], toSection: .footer)
             default:
                 assertionFailure()
             }

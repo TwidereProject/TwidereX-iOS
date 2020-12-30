@@ -51,6 +51,12 @@ internal enum L10n {
         /// Following Succeeded
         internal static let title = L10n.tr("Localizable", "Common.Alerts.FollowingSuccess.Title")
       }
+      internal enum PermissionDenied {
+        /// Sorry, you are not authorized
+        internal static let message = L10n.tr("Localizable", "Common.Alerts.PermissionDenied.Message")
+        /// Permission Denied
+        internal static let title = L10n.tr("Localizable", "Common.Alerts.PermissionDenied.Title")
+      }
       internal enum PhotoSaveFail {
         /// Please try again
         internal static let message = L10n.tr("Localizable", "Common.Alerts.PhotoSaveFail.Message")

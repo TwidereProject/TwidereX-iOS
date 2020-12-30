@@ -116,6 +116,7 @@ extension MediaSection {
                         )
                         MediaSection.toggleFriendship(for: twitterUser, friendshipBannerConfiguration: configuration, context: context)
                     })
+                    
                     if relationship.source.followingRequested {
                         let cancelFollowRequestMenu = UIMenu(title: L10n.Common.Alerts.CancelFollowRequest.message(twitterUser.name), image: nil, identifier: nil, options: .destructive, children: [unfollowConfirmAction])
                         elementProvider([cancelFollowRequestMenu])
@@ -126,14 +127,16 @@ extension MediaSection {
                             elementProvider([menu])
                             button?.menu = menu
                         } else {
-                            let followingAction = UIAction(title: L10n.Common.Controls.Friendship.Actions.follow, image: nil, identifier: nil, discoverabilityTitle: menuTitle, attributes: [], state: .off) { _ in
+                            let followingAction = UIAction(title: L10n.Common.Controls.Friendship.Actions.follow, image: nil, identifier: nil, discoverabilityTitle: nil, attributes: [], state: .off) { _ in
                                 let configuration = FriendshipBannerConfiguration(
                                     successInfo: FriendshipBannerConfiguration.Info(title: L10n.Common.Alerts.FollowingSuccess.title, message: ""),
                                     failureInfo: FriendshipBannerConfiguration.Info(title: L10n.Common.Alerts.FailedToFollowing.title, message: L10n.Common.Alerts.FailedToFollowing.message)
                                 )
                                 MediaSection.toggleFriendship(for: twitterUser, friendshipBannerConfiguration: configuration, context: context)
                             }
-                            elementProvider([followingAction])
+                            let menu = UIMenu(title: menuTitle, image: nil, identifier: nil, options: .displayInline, children: [followingAction])
+                            elementProvider([menu])
+                            button?.menu = menu
                         }
                     }
                 }

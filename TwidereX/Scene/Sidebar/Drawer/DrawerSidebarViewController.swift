@@ -97,25 +97,11 @@ extension DrawerSidebarViewController {
                 guard let self = self else { return }
                 let twitterUser = activeAuthenticationIndex?.twitterAuthentication?.twitterUser
                 // bind avatar
-                let placeholderImage = UIImage
-                    .placeholder(size: DrawerSidebarHeaderView.avatarImageViewSize, color: .systemFill)
-                    .af.imageRoundedIntoCircle()
-                if let twitterUser = twitterUser, let avatarImageURL = twitterUser.avatarImageURL() {
-                    let filter = ScaledToSizeCircleFilter(size: DrawerSidebarHeaderView.avatarImageViewSize)
-                    self.headerView.avatarImageView.af.setImage(
-                        withURL: avatarImageURL,
-                        placeholderImage: placeholderImage,
-                        filter: filter,
-                        imageTransition: .crossDissolve(0.3)
-                    )
-                } else {
-                    self.headerView.avatarImageView.af.cancelImageRequest()
-                    self.headerView.avatarImageView.image = placeholderImage
-                }
+                self.headerView.configure(avatarImageURL: twitterUser?.avatarImageURL())
                 
                 // bind name
-                self.headerView.nameLabel.text = twitterUser?.name ?? "-"
-                self.headerView.usernameLabel.text = twitterUser.flatMap { "@" + $0.username } ?? "-"
+                self.headerView.nameButton.setTitle(twitterUser?.name ?? "-", for: .normal)
+                self.headerView.usernameButton.setTitle(twitterUser.flatMap { "@" + $0.username } ?? "-", for: .normal) 
                 
                 // bind status
                 self.headerView.profileBannerStatusView.followingStatusItemView.countLabel.text = twitterUser?.metrics?.followingCount.flatMap { "\($0.intValue)" } ?? "-"
@@ -144,6 +130,24 @@ extension DrawerSidebarViewController {
 // MARK: - DrawerSidebarHeaderViewDelegate
 extension DrawerSidebarViewController: DrawerSidebarHeaderViewDelegate {
     
+    private func presentMeProfile() {
+        let profileViewModel = MeProfileViewModel(context: self.context)
+        coordinator.present(scene: .profile(viewModel: profileViewModel), from: presentingViewController, transition: .show)
+        dismiss(animated: true)
+    }
+    
+    func drawerSidebarHeaderView(_ headerView: DrawerSidebarHeaderView, avatarButtonDidPressed button: UIButton) {
+        presentMeProfile()
+    }
+    
+    func drawerSidebarHeaderView(_ headerView: DrawerSidebarHeaderView, nameButtonDidPressed button: UIButton) {
+        presentMeProfile()
+    }
+    
+    func drawerSidebarHeaderView(_ headerView: DrawerSidebarHeaderView, usernameButtonDidPressed button: UIButton) {
+        presentMeProfile()
+    }
+    
     func drawerSidebarHeaderView(_ headerView: DrawerSidebarHeaderView, menuButtonDidPressed button: UIButton) {
         dismiss(animated: true) {
             let accountListViewModel = AccountListViewModel(context: self.context)
@@ -157,16 +161,14 @@ extension DrawerSidebarViewController: DrawerSidebarHeaderViewDelegate {
     
     func drawerSidebarHeaderView(_ headerView: DrawerSidebarHeaderView, profileBannerStatusView: ProfileBannerStatusView, followingStatusItemViewDidPressed statusItemView: ProfileBannerStatusItemView) {
         guard let followingListViewModel = FriendshipListViewModel(context: context, friendshipLookupKind: .following) else { return }
-        dismiss(animated: true) {
-            self.coordinator.present(scene: .friendshipList(viewModel: followingListViewModel), from: nil, transition: .show)
-        }
+        coordinator.present(scene: .friendshipList(viewModel: followingListViewModel), from: presentingViewController, transition: .show)
+        dismiss(animated: true)
     }
     
     func drawerSidebarHeaderView(_ headerView: DrawerSidebarHeaderView, profileBannerStatusView: ProfileBannerStatusView, followerStatusItemViewDidPressed statusItemView: ProfileBannerStatusItemView) {
         guard let followingListViewModel = FriendshipListViewModel(context: context, friendshipLookupKind: .followers) else { return }
-        dismiss(animated: true) {
-            self.coordinator.present(scene: .friendshipList(viewModel: followingListViewModel), from: nil, transition: .show)
-        }
+        coordinator.present(scene: .friendshipList(viewModel: followingListViewModel), from: presentingViewController, transition: .show)
+        dismiss(animated: true)
     }
     
     func drawerSidebarHeaderView(_ headerView: DrawerSidebarHeaderView, profileBannerStatusView: ProfileBannerStatusView, listedStatusItemViewDidPressed statusItemView: ProfileBannerStatusItemView) {

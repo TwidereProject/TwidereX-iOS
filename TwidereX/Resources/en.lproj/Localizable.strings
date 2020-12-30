@@ -9,6 +9,8 @@
 "Common.Alerts.FailedToUnfollowing.Title" = "Failed to Unfollowing";
 "Common.Alerts.FollowingRequestSent.Title" = "Following Request Sent";
 "Common.Alerts.FollowingSuccess.Title" = "Following Succeeded";
+"Common.Alerts.PermissionDenied.Message" = "Sorry, you are not authorized";
+"Common.Alerts.PermissionDenied.Title" = "Permission Denied";
 "Common.Alerts.PhotoSaveFail.Message" = "Please try again";
 "Common.Alerts.PhotoSaveFail.Title" = "Failed to Save Photo";
 "Common.Alerts.PhotoSaved.Title" = "Photo Saved";
