@@ -97,23 +97,26 @@ extension MainTabBarController {
         view.backgroundColor = .systemBackground
         
         let tabs = Tab.allCases
-        
         let viewControllers: [UIViewController] = tabs.map { tab in
             let viewController = tab.viewController(context: context, coordinator: coordinator)
-            viewController.tabBarItem.title = nil // set text to nil for image only style
+            viewController.tabBarItem.title = "" // set text to empty string for image only style (SDK failed to layout when set to nil)
             viewController.tabBarItem.image = tab.image
-            viewController.tabBarItem.imageInsets = UIEdgeInsets(top: 5, left: 0, bottom: -5, right: 0)
             return viewController
         }
         setViewControllers(viewControllers, animated: false)
         selectedIndex = 0
+        
+        // TODO: custom accent color
+        let tabBarAppearance = UITabBarAppearance()
+        tabBarAppearance.configureWithDefaultBackground()
+        tabBar.standardAppearance = tabBarAppearance
         
         context.apiService.error
             .receive(on: DispatchQueue.main)
             .sink { [weak self] error in
                 guard let self = self else { return }
                 switch error {
-                case .implicit(let reason):
+                case .implicit:
                     break
                 case .explicit(let reason):
                     // FIXME:
@@ -129,7 +132,7 @@ extension MainTabBarController {
                             bannerView.titleLabel.text = L10n.Common.Alerts.AccountTemporarilyLocked.title
                             bannerView.messageLabel.text = L10n.Common.Alerts.AccountTemporarilyLocked.message
                             bannerView.actionButtonTapHandler = { [weak self] button in
-                                guard let self = self else { return }
+                                guard let _ = self else { return }
                                 let url = URL(string: "https://twitter.com/account/access")!
                                 UIApplication.shared.open(url)
                             }

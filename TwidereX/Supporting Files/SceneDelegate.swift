@@ -16,6 +16,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         guard let windowScene = scene as? UIWindowScene else { return }
         
+        // #if DEBUG
+        // let window = TestWindow(windowScene: windowScene)
+        // #endif
+
         let window = UIWindow(windowScene: windowScene)
         self.window = window
         
@@ -81,6 +85,21 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 extension SceneDelegate {
     static var isXcodeUnitTest: Bool {
         return ProcessInfo().environment["XCInjectBundleInto"] != nil
+    }
+}
+#endif
+
+#if DEBUG
+class TestWindow: UIWindow {
+    override func sendEvent(_ event: UIEvent) {
+        event.allTouches?.forEach({ (touch) in
+            let location = touch.location(in: self)
+            if let view = hitTest(location, with: event) {
+                print(view)
+            }
+        })
+        
+        super.sendEvent(event)
     }
 }
 #endif
