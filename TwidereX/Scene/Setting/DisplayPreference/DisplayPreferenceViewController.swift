@@ -24,6 +24,7 @@ final class DisplayPreferenceViewController: UIViewController, NeedsDependency {
         tableView.register(SwitchTableViewCell.self, forCellReuseIdentifier: String(describing: SwitchTableViewCell.self))
         tableView.register(SlideTableViewCell.self, forCellReuseIdentifier: String(describing: SlideTableViewCell.self))
         tableView.register(ListEntryTableViewCell.self, forCellReuseIdentifier: String(describing: ListEntryTableViewCell.self))
+        tableView.register(ListCheckmarkTableViewCell.self, forCellReuseIdentifier: String(describing: ListCheckmarkTableViewCell.self))
         tableView.tableHeaderView = UIView(frame: CGRect(x: 0, y: 0, width: 100, height: 16))
         tableView.rowHeight = UITableView.automaticDimension
         return tableView
@@ -81,8 +82,9 @@ extension DisplayPreferenceViewController: UITableViewDelegate {
         let setting = section.settings[indexPath.row]
         
         switch setting {
-        case .avatarStyle:
-            coordinator.present(scene: .avatarStylePreference, from: self, transition: .show)
+        case .avatarStyle(let avatarStyle):
+            UserDefaults.shared.avatarStyle = avatarStyle
+            tableView.deselectRow(at: indexPath, animated: true)
         default:
             break
         }

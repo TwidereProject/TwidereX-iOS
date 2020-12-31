@@ -24,9 +24,9 @@ final class DisplayPreferenceViewModel: NSObject {
         //     .useTheSystemFontSizeSwitch,
         //     .fontSizeSlider,
         // ]),
-        Section(header: "", settings: [
-            .avatarStyle,
-            .dateFormat
+        Section(header: L10n.Scene.Settings.Display.Text.avatarStyle, settings: [
+            .avatarStyle(.circle),
+            .avatarStyle(.roundedSquare),
         ]),
     ]
     let fontSizeSlideTableViewCell = SlideTableViewCell()
@@ -51,13 +51,15 @@ final class DisplayPreferenceViewModel: NSObject {
 
 extension DisplayPreferenceViewModel {
     
-    enum Setting: CaseIterable {
+    enum Setting {
         case preview
         
         case useTheSystemFontSizeSwitch
         case fontSizeSlider
         
-        case avatarStyle
+        // Avatar Style
+        case avatarStyle(UserDefaults.AvatarStyle)
+            
         case dateFormat
     }
     
@@ -108,13 +110,12 @@ extension DisplayPreferenceViewModel: UITableViewDataSource {
             _cell.disposeBag.removeAll()
             DisplayPreferenceViewModel.configureFontSizeSlider(cell: _cell)
             cell = _cell
-        case .avatarStyle:
-            let _cell = tableView.dequeueReusableCell(withIdentifier: String(describing: ListEntryTableViewCell.self), for: indexPath) as! ListEntryTableViewCell
-            _cell.iconImageView.isHidden = true
-            _cell.titleLabel.text = L10n.Scene.Settings.Display.Text.avatarStyle
+        case .avatarStyle(let avatarStyle):
+            let _cell = tableView.dequeueReusableCell(withIdentifier: String(describing: ListCheckmarkTableViewCell.self), for: indexPath) as! ListCheckmarkTableViewCell
+            _cell.titleLabel.text = avatarStyle.text
             UserDefaults.shared
                 .observe(\.avatarStyle, options: [.initial, .new]) { defaults, _ in
-                    _cell.secondaryTextLabel.text = defaults.avatarStyle.text
+                    _cell.accessoryType = avatarStyle == defaults.avatarStyle ? .checkmark : .none
                 }
                 .store(in: &_cell.observations)
             cell = _cell
