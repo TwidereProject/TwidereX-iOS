@@ -15,6 +15,7 @@ import TwitterAPI
 class ProfileViewModel: NSObject {
     
     var disposeBag = Set<AnyCancellable>()
+    var observations = Set<NSKeyValueObservation>()
     private var twitterUserObserver: AnyCancellable?
     private var currentTwitterUserObserver: AnyCancellable?
     
@@ -29,7 +30,7 @@ class ProfileViewModel: NSObject {
     let bannerImageURL: CurrentValueSubject<URL?, Never>
     let avatarImageURL: CurrentValueSubject<URL?, Never>
     let protected: CurrentValueSubject<Bool?, Never>
-    let verified: CurrentValueSubject<Bool?, Never>
+    let verified: CurrentValueSubject<Bool, Never>
     let name: CurrentValueSubject<String?, Never>
     let username: CurrentValueSubject<String?, Never>
     let bioDescription: CurrentValueSubject<String?, Never>
@@ -42,6 +43,8 @@ class ProfileViewModel: NSObject {
     let friendship: CurrentValueSubject<Friendship?, Never>
     let followedBy: CurrentValueSubject<Bool?, Never>
     
+    let avatarStyle = CurrentValueSubject<UserDefaults.AvatarStyle, Never>(UserDefaults.shared.avatarStyle)
+    
     // FIXME: multi-platform support
     init(context: AppContext, optionalTwitterUser twitterUser: TwitterUser?) {
         self.context = context
@@ -50,7 +53,7 @@ class ProfileViewModel: NSObject {
         self.bannerImageURL = CurrentValueSubject(twitterUser?.profileBannerURL(sizeKind: .large))
         self.avatarImageURL = CurrentValueSubject(twitterUser?.avatarImageURL(size: .original))
         self.protected = CurrentValueSubject(twitterUser?.protected)
-        self.verified = CurrentValueSubject(twitterUser?.verified)
+        self.verified = CurrentValueSubject(twitterUser?.verified ?? false)
         self.name = CurrentValueSubject(twitterUser?.name)
         self.username = CurrentValueSubject(twitterUser?.username)
         self.bioDescription = CurrentValueSubject(twitterUser?.displayBioDescription)
@@ -80,6 +83,13 @@ class ProfileViewModel: NSObject {
                 }
             }
             .store(in: &disposeBag)
+        
+        UserDefaults.shared
+            .observe(\.avatarStyle) { [weak self] defaults, _ in
+                guard let self = self else { return }
+                self.avatarStyle.value = defaults.avatarStyle
+            }
+            .store(in: &observations)
         
         setup()
         
@@ -301,7 +311,7 @@ extension ProfileViewModel {
         self.bannerImageURL.value = twitterUser?.profileBannerURL(sizeKind: .large)
         self.avatarImageURL.value = twitterUser?.avatarImageURL(size: .original)
         self.protected.value = twitterUser?.protected
-        self.verified.value = twitterUser?.verified
+        self.verified.value = twitterUser?.verified ?? false
         self.name.value = twitterUser?.name
         self.username.value = twitterUser?.username
         self.bioDescription.value = twitterUser?.displayBioDescription

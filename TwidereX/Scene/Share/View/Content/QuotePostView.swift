@@ -78,6 +78,7 @@ extension QuotePostView {
     func _init() {
         layer.masksToBounds = true
         layer.cornerRadius = 8
+        layer.cornerCurve = .continuous
         layer.borderWidth = 3 * UIView.separatorLineHeight(of: self)    // 3px
         layer.borderColor = UIColor.secondarySystemBackground.cgColor
         
@@ -147,6 +148,14 @@ extension QuotePostView {
         layer.borderColor = UIColor.secondarySystemBackground.cgColor
     }
     
+}
+
+// MARK: - AvatarConfigurableView
+extension QuotePostView: AvatarConfigurableView {
+    static var configurableAvatarImageViewSize: CGSize { return avatarImageViewSize }
+    var configurableAvatarImageView: UIImageView? { return avatarImageView }
+    var configurableAvatarButton: UIButton? { return nil }
+    var configurableVerifiedBadgeImageView: UIImageView? { return verifiedBadgeImageView }
 }
 
 #if DEBUG

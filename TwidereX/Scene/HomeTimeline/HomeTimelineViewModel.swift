@@ -21,6 +21,7 @@ import ActiveLabel
 final class HomeTimelineViewModel: NSObject {
     
     var disposeBag = Set<AnyCancellable>()
+    var observations = Set<NSKeyValueObservation>()
     
     // input
     let context: AppContext
@@ -65,6 +66,7 @@ final class HomeTimelineViewModel: NSObject {
     let loadMiddleSateMachineList = CurrentValueSubject<[NSManagedObjectID: GKStateMachine], Never>([:])    // TimelineIndex.objectID : middle loading state machine
     var diffableDataSource: UITableViewDiffableDataSource<TimelineSection, Item>?
     var cellFrameCache = NSCache<NSNumber, NSValue>()
+    let avatarStyle = CurrentValueSubject<UserDefaults.AvatarStyle, Never>(UserDefaults.shared.avatarStyle)
     
     init(context: AppContext) {
         self.context  = context
@@ -92,6 +94,13 @@ final class HomeTimelineViewModel: NSObject {
                 NotificationCenter.default.post(name: HomeTimelineViewModel.secondStepTimerTriggered, object: nil)
             }
             .store(in: &disposeBag)
+        
+        UserDefaults.shared
+            .observe(\.avatarStyle) { [weak self] defaults, _ in
+                guard let self = self else { return }
+                self.avatarStyle.value = defaults.avatarStyle
+            }
+            .store(in: &observations)
     }
     
 }
@@ -180,13 +189,14 @@ extension HomeTimelineViewModel {
         cell.timelinePostView.retweetInfoLabel.text = L10n.Common.Controls.Status.userRetweeted(tweet.author.name)
 
         // set avatar
-        if let avatarImageURL = (tweet.retweet?.author ?? tweet.author).avatarImageURL() {
-            HomeTimelineViewModel.configure(avatarImageView: cell.timelinePostView.avatarImageView, avatarImageURL: avatarImageURL)
-        } else {
-            assertionFailure()
-        }
+        let avatarImageURL = (tweet.retweet?.author ?? tweet.author).avatarImageURL()
+        let verified = (tweet.retweet?.author ?? tweet.author).verified
+        UserDefaults.shared
+            .observe(\.avatarStyle, options: [.initial, .new]) { defaults, _ in
+                cell.timelinePostView.configure(avatarImageURL: avatarImageURL, verified: verified)
+            }
+            .store(in: &cell.observations)
         
-        cell.timelinePostView.verifiedBadgeImageView.isHidden = !((tweet.retweet?.author ?? tweet.author).verified)
         cell.timelinePostView.lockImageView.isHidden = !((tweet.retweet?.author ?? tweet.author).protected)
 
         // set name and username
@@ -299,13 +309,13 @@ extension HomeTimelineViewModel {
         let quote = tweet.retweet?.quote ?? tweet.quote
         if let quote = quote {
             // set avatar
-            if let avatarImageURL = quote.author.avatarImageURL() {
-                HomeTimelineViewModel.configure(avatarImageView: cell.timelinePostView.quotePostView.avatarImageView, avatarImageURL: avatarImageURL)
-            } else {
-                assertionFailure()
-            }
-            cell.timelinePostView.quotePostView.verifiedBadgeImageView.isHidden = !quote.author.verified
-            cell.timelinePostView.quotePostView.lockImageView.isHidden = !quote.author.protected
+            let avatarImageURL = quote.author.avatarImageURL()
+            let verified = quote.author.verified
+            UserDefaults.shared
+                .observe(\.avatarStyle, options: [.initial, .new]) { defaults, _ in
+                    cell.timelinePostView.quotePostView.configure(avatarImageURL: avatarImageURL, verified: verified)
+                }
+                .store(in: &cell.observations)
             
             // Note: cannot quote protected user
             cell.timelinePostView.quotePostView.lockImageView.isHidden = !quote.author.protected
@@ -415,34 +425,6 @@ extension HomeTimelineViewModel {
             cell.separatorLineIndentLeadingLayoutConstraint.isActive = false
             cell.separatorLineNormalLeadingLayoutConstraint.isActive = true
             cell.separatorLineNormalTrailingLayoutConstraint.isActive = true
-        }
-    }
-    
-    static func configure(avatarImageView: UIImageView, avatarImageURL: URL) {
-        let placeholderImage = UIImage
-            .placeholder(size: TimelinePostView.avatarImageViewSize, color: .systemFill)
-            .af.imageRoundedIntoCircle()
-        
-        if avatarImageURL.pathExtension == "gif" {
-            avatarImageView.kf.setImage(
-                with: avatarImageURL,
-                placeholder: placeholderImage,
-                options: [
-                    .processor(
-                        CroppingImageProcessor(size: TimelinePostView.avatarImageViewSize, anchor: CGPoint(x: 0.5, y: 0.5)) |>
-                        RoundCornerImageProcessor(cornerRadius: 0.5 * TimelinePostView.avatarImageViewSize.width)
-                    ),
-                    .transition(.fade(0.2))
-                ]
-            )
-        } else {
-            let filter = ScaledToSizeCircleFilter(size: TimelinePostView.avatarImageViewSize)
-            avatarImageView.af.setImage(
-                withURL: avatarImageURL,
-                placeholderImage: placeholderImage,
-                filter: filter,
-                imageTransition: .crossDissolve(0.2)
-            )
         }
     }
 

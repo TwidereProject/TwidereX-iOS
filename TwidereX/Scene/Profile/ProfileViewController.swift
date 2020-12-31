@@ -25,7 +25,7 @@ final class ProfileViewController: UIViewController, DrawerSidebarTransitionable
     
     private(set) var drawerSidebarTransitionController: DrawerSidebarTransitionController!
     
-    let avatarButton = UIButton.avatarButton
+    let avatarBarButtonItem = AvatarBarButtonItem()
     
     let refreshControl: UIRefreshControl = {
         let refreshControl = UIRefreshControl()
@@ -101,9 +101,9 @@ extension ProfileViewController {
         
         view.backgroundColor = .systemBackground
         if navigationController?.viewControllers.first == self {
-            navigationItem.leftBarButtonItem = UIBarButtonItem(customView: avatarButton)
+            navigationItem.leftBarButtonItem = avatarBarButtonItem
         }
-        avatarButton.addTarget(self, action: #selector(ProfileViewController.avatarButtonPressed(_:)), for: .touchUpInside)
+        avatarBarButtonItem.avatarButton.addTarget(self, action: #selector(ProfileViewController.avatarButtonPressed(_:)), for: .touchUpInside)
         
         overlayScrollView.refreshControl = refreshControl
         refreshControl.addTarget(self, action: #selector(ProfileViewController.refreshControlValueChanged(_:)), for: .valueChanged)
@@ -232,52 +232,21 @@ extension ProfileViewController {
             )
         }
         .store(in: &disposeBag)
-        Publishers.CombineLatest(
+        Publishers.CombineLatest4(
             viewModel.avatarImageURL.eraseToAnyPublisher(),
+            viewModel.verified.eraseToAnyPublisher(),
+            viewModel.avatarStyle.eraseToAnyPublisher(),
             viewModel.viewDidAppear.eraseToAnyPublisher()
         )
         .receive(on: DispatchQueue.main)
-        .sink { [weak self] url, _ in
+        .sink { [weak self] avatarImageURL, verified, _, _ in
             guard let self = self else { return }
-            guard let url = url else { return }
-            self.profileHeaderViewController.profileBannerView.profileAvatarImageView.af.cancelImageRequest()
-            self.profileHeaderViewController.profileBannerView.profileAvatarImageView.kf.cancelDownloadTask()
-            
-            let placeholderImage = UIImage
-                .placeholder(size: ProfileBannerView.avatarImageViewSize, color: .systemFill)
-                .af.imageRoundedIntoCircle()
-            if url.pathExtension == "gif" {
-                self.profileHeaderViewController.profileBannerView.profileAvatarImageView.kf.setImage(
-                    with: url,
-                    placeholder: placeholderImage,
-                    options: [
-                        .processor(
-                            CroppingImageProcessor(size: ProfileBannerView.avatarImageViewSize, anchor: CGPoint(x: 0.5, y: 0.5)) |>
-                            RoundCornerImageProcessor(cornerRadius: 0.5 * ProfileBannerView.avatarImageViewSize.width)
-                        ),
-                        .transition(.fade(0.2))
-                    ]
-                )
-            } else {
-                let filter = ScaledToSizeCircleFilter(size: ProfileBannerView.avatarImageViewSize)
-                self.profileHeaderViewController.profileBannerView.profileAvatarImageView.af.setImage(
-                    withURL: url,
-                    placeholderImage: placeholderImage,
-                    filter: filter,
-                    imageTransition: .crossDissolve(0.3),
-                    runImageTransitionIfCached: false,
-                    completion: nil
-                )
-            }
+            self.profileHeaderViewController.profileBannerView.configure(avatarImageURL: avatarImageURL, verified: verified)
         }
         .store(in: &disposeBag)
         viewModel.protected
             .map { $0 != true }
             .assign(to: \.isHidden, on: profileHeaderViewController.profileBannerView.lockImageView)
-            .store(in: &disposeBag)
-        viewModel.verified
-            .map { $0 != true }
-            .assign(to: \.isHidden, on: profileHeaderViewController.profileBannerView.verifiedBadgeImageView)
             .store(in: &disposeBag)
         viewModel.name
             .map { $0 ?? " " }
@@ -355,27 +324,20 @@ extension ProfileViewController {
             }
             .store(in: &disposeBag)
         
-        Publishers.CombineLatest(
-            viewModel.currentTwitterUser.eraseToAnyPublisher(),
+        Publishers.CombineLatest3(
+            context.authenticationService.activeAuthenticationIndex.eraseToAnyPublisher(),
+            viewModel.avatarStyle.eraseToAnyPublisher(),
             viewModel.viewDidAppear.eraseToAnyPublisher()
         )
         .receive(on: DispatchQueue.main)
-        .sink { [weak self] twitterUser, _ in
+        .sink { [weak self] activeAuthenticationIndex, _, _ in
             guard let self = self else { return }
-            let placeholderImage = UIImage
-                .placeholder(size: UIButton.avatarButtonSize, color: .systemFill)
-                .af.imageRoundedIntoCircle()
-            guard let twitterUser = twitterUser, let avatarImageURL = twitterUser.avatarImageURL() else {
-                self.avatarButton.setImage(placeholderImage, for: .normal)
+            guard let twitterUser = activeAuthenticationIndex?.twitterAuthentication?.twitterUser,
+                  let avatarImageURL = twitterUser.avatarImageURL() else {
+                self.avatarBarButtonItem.configure(avatarImageURL: nil)
                 return
             }
-            let filter = ScaledToSizeCircleFilter(size: UIButton.avatarButtonSize)
-            self.avatarButton.af.setImage(
-                for: .normal,
-                url: avatarImageURL,
-                placeholderImage: placeholderImage,
-                filter: filter
-            )
+            self.avatarBarButtonItem.configure(avatarImageURL: avatarImageURL)
         }
         .store(in: &disposeBag)
 

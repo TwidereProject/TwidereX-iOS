@@ -329,13 +329,14 @@ extension TweetConversationViewModel {
         cell.conversationPostView.retweetInfoLabel.text = L10n.Common.Controls.Status.userRetweeted(tweet.author.name)
         
         // set avatar
-        if let avatarImageURL = (tweet.retweet ?? tweet).author.avatarImageURL() {
-            TweetConversationViewModel.configure(avatarImageView: cell.conversationPostView.avatarImageView, avatarImageURL: avatarImageURL)
-        } else {
-            assertionFailure()
-        }
+        let avatarImageURL = (tweet.retweet ?? tweet).author.avatarImageURL()
+        let verified = (tweet.retweet ?? tweet).author.verified
+        UserDefaults.shared
+            .observe(\.avatarStyle, options: [.initial, .new]) { defaults, _ in
+                cell.conversationPostView.configure(avatarImageURL: avatarImageURL, verified: verified)
+            }
+            .store(in: &cell.observations)
         
-        cell.conversationPostView.verifiedBadgeImageView.isHidden = !((tweet.retweet ?? tweet).author.verified)
         cell.conversationPostView.lockImageView.isHidden = !((tweet.retweet ?? tweet).author.protected)
         
         // set name and username
@@ -428,11 +429,13 @@ extension TweetConversationViewModel {
         let quote = (tweet.retweet ?? tweet).quote
         if let quote = quote {
             // set avatar
-            if let avatarImageURL = quote.author.avatarImageURL() {
-                TweetConversationViewModel.configure(avatarImageView: cell.conversationPostView.quotePostView.avatarImageView, avatarImageURL: avatarImageURL)
-            } else {
-                assertionFailure()
-            }
+            let avatarImageURL = quote.author.avatarImageURL()
+            let verified = quote.author.verified
+            UserDefaults.shared
+                .observe(\.avatarStyle, options: [.initial, .new]) { defaults, _ in
+                    cell.conversationPostView.quotePostView.configure(avatarImageURL: avatarImageURL, verified: verified)
+                }
+                .store(in: &cell.observations)
             
             // set name and username
             cell.conversationPostView.quotePostView.nameLabel.text = quote.author.name
@@ -538,34 +541,6 @@ extension TweetConversationViewModel {
         cell.conversationPostView.quotePostStatusView.statusLabel.font = .preferredFont(forTextStyle: .callout, compatibleWith: traitCollection)
         cell.conversationPostView.likePostStatusView.countLabel.font = .preferredFont(forTextStyle: .callout, compatibleWith: traitCollection)
         cell.conversationPostView.likePostStatusView.statusLabel.font = .preferredFont(forTextStyle: .callout, compatibleWith: traitCollection)
-    }
-    
-    static func configure(avatarImageView: UIImageView, avatarImageURL: URL) {
-        let placeholderImage = UIImage
-            .placeholder(size: ConversationPostView.avatarImageViewSize, color: .systemFill)
-            .af.imageRoundedIntoCircle()
-        
-        if avatarImageURL.pathExtension == "gif" {
-            avatarImageView.kf.setImage(
-                with: avatarImageURL,
-                placeholder: placeholderImage,
-                options: [
-                    .processor(
-                        CroppingImageProcessor(size: ConversationPostView.avatarImageViewSize, anchor: CGPoint(x: 0.5, y: 0.5)) |>
-                        RoundCornerImageProcessor(cornerRadius: 0.5 * ConversationPostView.avatarImageViewSize.width)
-                    ),
-                    .transition(.fade(0.2))
-                ]
-            )
-        } else {
-            let filter = ScaledToSizeCircleFilter(size: ConversationPostView.avatarImageViewSize)
-            avatarImageView.af.setImage(
-                withURL: avatarImageURL,
-                placeholderImage: placeholderImage,
-                filter: filter,
-                imageTransition: .crossDissolve(0.2)
-            )
-        }
     }
 
 }

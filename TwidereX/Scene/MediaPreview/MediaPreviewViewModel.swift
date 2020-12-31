@@ -14,6 +14,8 @@ import Pageboy
 
 final class MediaPreviewViewModel: NSObject {
     
+    var observations = Set<NSKeyValueObservation>()
+    
     // input
     let context: AppContext
     let rootItem: PreviewItem
@@ -21,6 +23,7 @@ final class MediaPreviewViewModel: NSObject {
     
     // output
     let viewControllers: [UIViewController]
+    let avatarStyle = CurrentValueSubject<UserDefaults.AvatarStyle, Never>(UserDefaults.shared.avatarStyle)
 
     // description view
     let avatarImageURL = CurrentValueSubject<URL?, Never>(nil)
@@ -72,6 +75,13 @@ final class MediaPreviewViewModel: NSObject {
                 .replacingOccurrences(of: "\n", with: " ")
             self.content.value = text
         }
+        
+        UserDefaults.shared
+            .observe(\.avatarStyle) { [weak self] defaults, _ in
+                guard let self = self else { return }
+                self.avatarStyle.value = defaults.avatarStyle
+            }
+            .store(in: &observations)
     }
     
     init(context: AppContext, meta: LocalImagePreviewMeta) {

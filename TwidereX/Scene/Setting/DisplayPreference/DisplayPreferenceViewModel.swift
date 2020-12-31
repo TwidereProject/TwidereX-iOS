@@ -24,9 +24,9 @@ final class DisplayPreferenceViewModel: NSObject {
         //     .useTheSystemFontSizeSwitch,
         //     .fontSizeSlider,
         // ]),
-        Section(header: "", settings: [
-            .avatarStyle,
-            .dateFormat
+        Section(header: L10n.Scene.Settings.Display.Text.avatarStyle, settings: [
+            .avatarStyle(.circle),
+            .avatarStyle(.roundedSquare),
         ]),
     ]
     let fontSizeSlideTableViewCell = SlideTableViewCell()
@@ -51,13 +51,15 @@ final class DisplayPreferenceViewModel: NSObject {
 
 extension DisplayPreferenceViewModel {
     
-    enum Setting: CaseIterable {
+    enum Setting {
         case preview
         
         case useTheSystemFontSizeSwitch
         case fontSizeSlider
         
-        case avatarStyle
+        // Avatar Style
+        case avatarStyle(UserDefaults.AvatarStyle)
+            
         case dateFormat
     }
     
@@ -108,10 +110,14 @@ extension DisplayPreferenceViewModel: UITableViewDataSource {
             _cell.disposeBag.removeAll()
             DisplayPreferenceViewModel.configureFontSizeSlider(cell: _cell)
             cell = _cell
-        case .avatarStyle:
-            let _cell = tableView.dequeueReusableCell(withIdentifier: String(describing: ListEntryTableViewCell.self), for: indexPath) as! ListEntryTableViewCell
-            _cell.iconImageView.isHidden = true
-            _cell.titleLabel.text = L10n.Scene.Settings.Display.Text.avatarStyle
+        case .avatarStyle(let avatarStyle):
+            let _cell = tableView.dequeueReusableCell(withIdentifier: String(describing: ListCheckmarkTableViewCell.self), for: indexPath) as! ListCheckmarkTableViewCell
+            _cell.titleLabel.text = avatarStyle.text
+            UserDefaults.shared
+                .observe(\.avatarStyle, options: [.initial, .new]) { defaults, _ in
+                    _cell.accessoryType = avatarStyle == defaults.avatarStyle ? .checkmark : .none
+                }
+                .store(in: &_cell.observations)
             cell = _cell
         case .dateFormat:
             let _cell = tableView.dequeueReusableCell(withIdentifier: String(describing: ListEntryTableViewCell.self), for: indexPath) as! ListEntryTableViewCell
@@ -128,12 +134,24 @@ extension DisplayPreferenceViewModel {
     
     static func configure(cell: TimelinePostTableViewCell) {
         cell.selectionStyle = .none
-        
+        // set avatar
         cell.timelinePostView.avatarImageView.image = Asset.Logo.twidereAvatar.image
-        cell.timelinePostView.avatarImageView.layer.masksToBounds = true
-        cell.timelinePostView.avatarImageView.layer.cornerRadius = 0.5 * TimelinePostView.avatarImageViewSize.width
-        cell.timelinePostView.avatarImageView.layer.borderWidth = 1
-        cell.timelinePostView.avatarImageView.layer.borderColor = UIColor.systemFill.cgColor
+        UserDefaults.shared
+            .observe(\.avatarStyle, options: [.initial, .new]) { defaults, _ in
+                let avatarStyle = defaults.avatarStyle
+                let animator = UIViewPropertyAnimator(duration: 0.3, timingParameters: UISpringTimingParameters())
+                animator.addAnimations { [weak cell] in
+                    guard let cell = cell else { return }
+                    cell.timelinePostView.avatarImageView.layer.masksToBounds = true
+                    cell.timelinePostView.avatarImageView.layer.cornerRadius = AvatarConfigurableViewConfiguration.cornerRadius(for: TimelinePostView.avatarImageViewSize, avatarStyle: avatarStyle)
+                    switch avatarStyle {
+                    case .circle:               cell.timelinePostView.avatarImageView.layer.cornerCurve = .circular
+                    case .roundedSquare:        cell.timelinePostView.avatarImageView.layer.cornerCurve = .continuous
+                    }
+                }
+                animator.startAnimation()
+            }
+            .store(in: &cell.observations)
         
         cell.timelinePostView.nameLabel.text = "Twidere"
         cell.timelinePostView.usernameLabel.text = "@TwidereProject"
