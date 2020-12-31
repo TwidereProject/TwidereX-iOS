@@ -134,11 +134,22 @@ extension DisplayPreferenceViewModel {
     
     static func configure(cell: TimelinePostTableViewCell) {
         cell.selectionStyle = .none
-        
         // set avatar
+        cell.timelinePostView.avatarImageView.image = Asset.Logo.twidereAvatar.image
         UserDefaults.shared
             .observe(\.avatarStyle, options: [.initial, .new]) { defaults, _ in
-                cell.timelinePostView.configure(avatarImageURL: nil, placeholderImage: Asset.Logo.twidereAvatar.image)
+                let avatarStyle = defaults.avatarStyle
+                let animator = UIViewPropertyAnimator(duration: 0.3, timingParameters: UISpringTimingParameters())
+                animator.addAnimations { [weak cell] in
+                    guard let cell = cell else { return }
+                    cell.timelinePostView.avatarImageView.layer.masksToBounds = true
+                    cell.timelinePostView.avatarImageView.layer.cornerRadius = AvatarConfigurableViewConfiguration.cornerRadius(for: TimelinePostView.avatarImageViewSize, avatarStyle: avatarStyle)
+                    switch avatarStyle {
+                    case .circle:               cell.timelinePostView.avatarImageView.layer.cornerCurve = .circular
+                    case .roundedSquare:        cell.timelinePostView.avatarImageView.layer.cornerCurve = .continuous
+                    }
+                }
+                animator.startAnimation()
             }
             .store(in: &cell.observations)
         

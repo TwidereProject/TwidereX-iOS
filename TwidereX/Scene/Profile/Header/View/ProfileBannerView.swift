@@ -356,7 +356,7 @@ extension ProfileBannerView: AvatarConfigurableView {
     var configurableVerifiedBadgeImageView: UIImageView? { return verifiedBadgeImageView }
     
     func avatarConfigurableView(_ avatarConfigurableView: AvatarConfigurableView, didFinishConfiguration configuration: AvatarConfigurableViewConfiguration) {
-        profileAvatarImageViewBackground.layer.cornerRadius = Self.cornerRadius(for: ProfileBannerView.avatarImageViewBackgroundSize)
+        profileAvatarImageViewBackground.layer.cornerRadius = AvatarConfigurableViewConfiguration.cornerRadius(for: ProfileBannerView.avatarImageViewBackgroundSize, avatarStyle: UserDefaults.shared.avatarStyle)
     }
     
 }

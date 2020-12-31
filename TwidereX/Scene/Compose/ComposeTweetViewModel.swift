@@ -19,6 +19,8 @@ import twitter_text
 final class ComposeTweetViewModel: NSObject {
     
     var disposeBag = Set<AnyCancellable>()
+    var observations = Set<NSKeyValueObservation>()
+    
     var mediaServicesUploadStatusStatesDisposeBag = Set<AnyCancellable>()
     let locationManager: CLLocationManager = {
         let locationManager = CLLocationManager()
@@ -48,6 +50,8 @@ final class ComposeTweetViewModel: NSObject {
     // UI
     let tableViewState = CurrentValueSubject<TableViewState, Never>(.fold)
     let isCameraToolbarButtonEnabled = CurrentValueSubject<Bool, Never>(true)
+    // avatar
+    let avatarStyle = CurrentValueSubject<UserDefaults.AvatarStyle, Never>(UserDefaults.shared.avatarStyle)
     // mentions
     private(set) var primaryMentionPickItem: MentionPickItem?
     var secondaryMentionPickItems: [MentionPickItem] = []
@@ -68,6 +72,13 @@ final class ComposeTweetViewModel: NSObject {
         self.context = context
         self.repliedTweetObjectID = repliedTweetObjectID
         super.init()
+        
+        UserDefaults.shared
+            .observe(\.avatarStyle) { [weak self] defaults, _ in
+                guard let self = self else { return }
+                self.avatarStyle.value = defaults.avatarStyle
+            }
+            .store(in: &observations)
         
         // prepare mention picker
         if let repliedTweetObjectID = repliedTweetObjectID {
@@ -200,6 +211,7 @@ extension ComposeTweetViewModel {
                         let meta = ComposeTweetContentMeta(
                             activeAuthenticationIndexPublisher: self.activeAuthenticationIndex.eraseToAnyPublisher(),
                             excludeReplyUserIDsPublisher: self.excludeReplyUserInfos.eraseToAnyPublisher(),
+                            avatarStyle: self.avatarStyle.eraseToAnyPublisher(),
                             repliedTweet: repliedTweet
                         )
                         ComposeTweetViewModel.configure(cell: cell, meta: meta)
@@ -207,6 +219,7 @@ extension ComposeTweetViewModel {
                         let meta = ComposeTweetContentMeta(
                             activeAuthenticationIndexPublisher: self.activeAuthenticationIndex.eraseToAnyPublisher(),
                             excludeReplyUserIDsPublisher: self.excludeReplyUserInfos.eraseToAnyPublisher(),
+                            avatarStyle: self.avatarStyle.eraseToAnyPublisher(),
                             repliedTweet: nil
                         )
                         ComposeTweetViewModel.configure(cell: cell, meta: meta)
@@ -259,20 +272,13 @@ extension ComposeTweetViewModel {
 extension ComposeTweetViewModel {
     static func configure(cell: RepliedToTweetContentTableViewCell, tweet: Tweet) {
         // set avatar
-        let placeholderImage = UIImage
-            .placeholder(size: TimelinePostView.avatarImageViewSize, color: .systemFill)
-            .af.imageRoundedIntoCircle()
-        if let avatarImageURL = tweet.author.avatarImageURL() {
-            let filter = ScaledToSizeCircleFilter(size: ComposeTweetContentTableViewCell.avatarImageViewSize)
-            cell.timelinePostView.avatarImageView.af.setImage(
-                withURL: avatarImageURL,
-                placeholderImage: placeholderImage,
-                filter: filter,
-                imageTransition: .crossDissolve(0.2)
-            )
-        } else {
-            cell.timelinePostView.avatarImageView.image = placeholderImage
-        }
+        let avatarImageURL = tweet.author.avatarImageURL()
+        let verified = tweet.author.verified
+        UserDefaults.shared
+            .observe(\.avatarStyle, options: [.initial, .new]) { defaults, _ in
+                cell.timelinePostView.configure(avatarImageURL: avatarImageURL, verified: verified)
+            }
+            .store(in: &cell.observations)
     
         // set protect locker
         cell.timelinePostView.lockImageView.isHidden = !tweet.author.protected
@@ -291,33 +297,24 @@ extension ComposeTweetViewModel {
     struct ComposeTweetContentMeta {
         let activeAuthenticationIndexPublisher: AnyPublisher<AuthenticationIndex?, Never>
         let excludeReplyUserIDsPublisher: AnyPublisher<[(TwitterUser.ID, String)], Never>
+        let avatarStyle: AnyPublisher<UserDefaults.AvatarStyle, Never>
         let repliedTweet: Tweet?
     }
     
     static func configure(cell: ComposeTweetContentTableViewCell, meta: ComposeTweetContentMeta) {
         // set avatar
-        meta.activeAuthenticationIndexPublisher
-            .receive(on: DispatchQueue.main)
-            .map { authenticationIndex in
-                authenticationIndex?.twitterAuthentication?.twitterUser?.avatarImageURL()
-            }
-            .sink { url in
-                let placeholderImage = UIImage
-                    .placeholder(size: TimelinePostView.avatarImageViewSize, color: .systemFill)
-                    .af.imageRoundedIntoCircle()
-                guard let url = url else {
-                    cell.avatarImageView.image = placeholderImage
-                    return
-                }
-                let filter = ScaledToSizeCircleFilter(size: ComposeTweetContentTableViewCell.avatarImageViewSize)
-                cell.avatarImageView.af.setImage(
-                    withURL: url,
-                    placeholderImage: placeholderImage,
-                    filter: filter,
-                    imageTransition: .crossDissolve(0.2)
-                )
-            }
-            .store(in: &cell.disposeBag)
+        Publishers.CombineLatest(
+            meta.activeAuthenticationIndexPublisher,
+            meta.avatarStyle
+        )
+        .receive(on: DispatchQueue.main)
+        .sink { authenticationIndex, _ in
+            let twitterUser = authenticationIndex?.twitterAuthentication?.twitterUser
+            let avatarImageURL = twitterUser?.avatarImageURL()
+            let verified = twitterUser?.verified ?? false
+            cell.configure(avatarImageURL: avatarImageURL, verified: verified)
+        }
+        .store(in: &cell.disposeBag)
         
         // set mention pick
         cell.mentionPickButton.isHidden = meta.repliedTweet == nil

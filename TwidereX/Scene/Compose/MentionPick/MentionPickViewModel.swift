@@ -58,20 +58,12 @@ extension MentionPickViewModel {
     static func configure(cell: MentionPickTableViewCell, item: MentionPickItem) {
         switch item {
         case .twitterUser(let username, let attribute):
-            let placeholderImage = UIImage
-                .placeholder(size: UserBriefInfoView.avatarImageViewSize, color: .systemFill)
-                .af.imageRoundedIntoCircle()
-            if let avatarImageURL = attribute.avatarImageURL {
-                let filter = ScaledToSizeCircleFilter(size: TimelinePostView.avatarImageViewSize)
-                cell.userBriefInfoView.avatarImageView.af.setImage(
-                    withURL: avatarImageURL,
-                    placeholderImage: placeholderImage,
-                    filter: filter,
-                    imageTransition: .crossDissolve(0.2)
-                )
-            } else {
-                cell.userBriefInfoView.avatarImageView.image = placeholderImage
-            }
+            let avatarImageURL = attribute.avatarImageURL
+            UserDefaults.shared
+                .observe(\.avatarStyle, options: [.initial, .new]) { defaults, _ in
+                    cell.userBriefInfoView.configure(avatarImageURL: avatarImageURL)
+                }
+                .store(in: &cell.observations)
             
             cell.userBriefInfoView.nameLabel.text = attribute.name ?? "-"
             cell.userBriefInfoView.usernameLabel.text = " "

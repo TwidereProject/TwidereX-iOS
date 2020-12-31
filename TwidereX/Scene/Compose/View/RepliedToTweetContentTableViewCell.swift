@@ -14,6 +14,7 @@ final class RepliedToTweetContentTableViewCell: UITableViewCell {
     static let avatarImageViewSize = CGSize(width: 44, height: 44)
     
     var disposeBag = Set<AnyCancellable>()
+    var observations = Set<NSKeyValueObservation>()
     
     let timelinePostView = TimelinePostView()
     let conversationLinkUpper = UIView.separatorLine
@@ -30,6 +31,7 @@ final class RepliedToTweetContentTableViewCell: UITableViewCell {
         conversationLinkUpper.isHidden = true
         conversationLinkLower.isHidden = true
         disposeBag.removeAll()
+        observations.removeAll()
     }
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
