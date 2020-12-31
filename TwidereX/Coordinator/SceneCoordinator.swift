@@ -51,6 +51,7 @@ extension SceneCoordinator {
         
         case setting
         case displayPreference
+        case avatarStylePreference
         case about
         
         #if DEBUG
@@ -173,6 +174,8 @@ private extension SceneCoordinator {
             viewController = SettingListViewController()
         case .displayPreference:
             viewController = DisplayPreferenceViewController()
+        case .avatarStylePreference:
+            viewController = AvatarStylePreferenceTableViewController(style: .grouped)
         case .about:
             viewController = AboutViewController()
         #if DEBUG

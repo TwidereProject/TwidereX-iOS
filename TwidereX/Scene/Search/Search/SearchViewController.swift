@@ -28,7 +28,7 @@ final class SearchViewController: UIViewController, DrawerSidebarTransitionableV
     var disposeBag = Set<AnyCancellable>()
     let viewModel = SearchViewModel()
     
-    let avatarButton = UIButton.avatarButton
+    let avatarBarButtonItem = AvatarBarButtonItem()
 
     let searchBar: UISearchBar = {
         let searchBar = HeightFixedSearchBar()
@@ -44,9 +44,9 @@ extension SearchViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        navigationItem.leftBarButtonItem = UIBarButtonItem(customView: avatarButton)
+        navigationItem.leftBarButtonItem = avatarBarButtonItem
         setupSearchBar()
-        avatarButton.addTarget(self, action: #selector(SearchViewController.avatarButtonPressed(_:)), for: .touchUpInside)
+        avatarBarButtonItem.avatarButton.addTarget(self, action: #selector(SearchViewController.avatarButtonPressed(_:)), for: .touchUpInside)
         
         drawerSidebarTransitionController = DrawerSidebarTransitionController(drawerSidebarTransitionableViewController: self)
         
@@ -59,28 +59,20 @@ extension SearchViewController {
                 self.coordinator.present(scene: .searchDetail(viewModel: searchDetailViewModel), from: self, transition: .customPush)
             }
             .store(in: &disposeBag)
-        Publishers.CombineLatest(
+        Publishers.CombineLatest3(
             context.authenticationService.activeAuthenticationIndex.eraseToAnyPublisher(),
+            viewModel.avatarStyle.eraseToAnyPublisher(),
             viewModel.viewDidAppear.eraseToAnyPublisher()
         )
         .receive(on: DispatchQueue.main)
-        .sink { [weak self] activeAuthenticationIndex, _ in
+        .sink { [weak self] activeAuthenticationIndex, _, _ in
             guard let self = self else { return }
-            let placeholderImage = UIImage
-                .placeholder(size: UIButton.avatarButtonSize, color: .systemFill)
-                .af.imageRoundedIntoCircle()
             guard let twitterUser = activeAuthenticationIndex?.twitterAuthentication?.twitterUser,
                   let avatarImageURL = twitterUser.avatarImageURL() else {
-                self.avatarButton.setImage(placeholderImage, for: .normal)
+                self.avatarBarButtonItem.configure(avatarImageURL: nil)
                 return
             }
-            let filter = ScaledToSizeCircleFilter(size: UIButton.avatarButtonSize)
-            self.avatarButton.af.setImage(
-                for: .normal,
-                url: avatarImageURL,
-                placeholderImage: placeholderImage,
-                filter: filter
-            )
+            self.avatarBarButtonItem.configure(avatarImageURL: avatarImageURL)
         }
         .store(in: &disposeBag)
     }

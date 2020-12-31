@@ -17,6 +17,7 @@ protocol SearchUserTableViewCellDelegate: class {
 final class SearchUserTableViewCell: UITableViewCell {
     
     var disposeBag = Set<AnyCancellable>()
+    var observations = Set<NSKeyValueObservation>()
     
     weak var delegate: SearchUserTableViewCellDelegate?
     let userBriefInfoView = UserBriefInfoView()
@@ -27,6 +28,9 @@ final class SearchUserTableViewCell: UITableViewCell {
         
         userBriefInfoView.avatarImageView.af.cancelImageRequest()
         userBriefInfoView.avatarImageView.kf.cancelDownloadTask()
+        
+        disposeBag.removeAll()
+        observations.removeAll()
     }
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {

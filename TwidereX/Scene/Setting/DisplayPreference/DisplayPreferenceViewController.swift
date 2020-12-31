@@ -57,6 +57,12 @@ extension DisplayPreferenceViewController {
         textFontSizeSliderPanGestureRecognizer.delegate = self
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        tableView.deselectRow(with: transitionCoordinator, animated: animated)
+    }
+    
 }
 
 // MARK: - UITableViewDelegate
@@ -68,6 +74,18 @@ extension DisplayPreferenceViewController: UITableViewDelegate {
         let headerView = TableViewSectionTextHeaderView()
         headerView.headerLabel.text = header
         return headerView
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let section = viewModel.sections[indexPath.section]
+        let setting = section.settings[indexPath.row]
+        
+        switch setting {
+        case .avatarStyle:
+            coordinator.present(scene: .avatarStylePreference, from: self, transition: .show)
+        default:
+            break
+        }
     }
     
 }

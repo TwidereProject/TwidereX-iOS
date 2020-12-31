@@ -19,7 +19,8 @@ import DateToolsSwift
 final class MentionTimelineViewModel: NSObject {
     
     var disposeBag = Set<AnyCancellable>()
-    
+    var observations = Set<NSKeyValueObservation>()
+
     // input
     let context: AppContext
     let fetchedResultsController: NSFetchedResultsController<MentionTimelineIndex>
@@ -63,7 +64,8 @@ final class MentionTimelineViewModel: NSObject {
     let loadMiddleSateMachineList = CurrentValueSubject<[NSManagedObjectID: GKStateMachine], Never>([:])    // MentionTimelineIndex.objectID : middle loading state machine
     var diffableDataSource: UITableViewDiffableDataSource<TimelineSection, Item>?
     var cellFrameCache = NSCache<NSNumber, NSValue>()
-    
+    let avatarStyle = CurrentValueSubject<UserDefaults.AvatarStyle, Never>(UserDefaults.shared.avatarStyle)
+
     init(context: AppContext) {
         self.context  = context
         self.fetchedResultsController = {
@@ -90,6 +92,13 @@ final class MentionTimelineViewModel: NSObject {
                 NotificationCenter.default.post(name: MentionTimelineViewModel.secondStepTimerTriggered, object: nil)
             }
             .store(in: &disposeBag)
+        
+        UserDefaults.shared
+            .observe(\.avatarStyle) { [weak self] defaults, _ in
+                guard let self = self else { return }
+                self.avatarStyle.value = defaults.avatarStyle
+            }
+            .store(in: &observations)
     }
     
 }

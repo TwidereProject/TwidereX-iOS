@@ -112,6 +112,11 @@ extension DisplayPreferenceViewModel: UITableViewDataSource {
             let _cell = tableView.dequeueReusableCell(withIdentifier: String(describing: ListEntryTableViewCell.self), for: indexPath) as! ListEntryTableViewCell
             _cell.iconImageView.isHidden = true
             _cell.titleLabel.text = L10n.Scene.Settings.Display.Text.avatarStyle
+            UserDefaults.shared
+                .observe(\.avatarStyle, options: [.initial, .new]) { defaults, _ in
+                    _cell.secondaryTextLabel.text = defaults.avatarStyle.text
+                }
+                .store(in: &_cell.observations)
             cell = _cell
         case .dateFormat:
             let _cell = tableView.dequeueReusableCell(withIdentifier: String(describing: ListEntryTableViewCell.self), for: indexPath) as! ListEntryTableViewCell
@@ -129,11 +134,12 @@ extension DisplayPreferenceViewModel {
     static func configure(cell: TimelinePostTableViewCell) {
         cell.selectionStyle = .none
         
-        cell.timelinePostView.avatarImageView.image = Asset.Logo.twidereAvatar.image
-        cell.timelinePostView.avatarImageView.layer.masksToBounds = true
-        cell.timelinePostView.avatarImageView.layer.cornerRadius = 0.5 * TimelinePostView.avatarImageViewSize.width
-        cell.timelinePostView.avatarImageView.layer.borderWidth = 1
-        cell.timelinePostView.avatarImageView.layer.borderColor = UIColor.systemFill.cgColor
+        // set avatar
+        UserDefaults.shared
+            .observe(\.avatarStyle, options: [.initial, .new]) { defaults, _ in
+                cell.timelinePostView.configure(avatarImageURL: nil, placeholderImage: Asset.Logo.twidereAvatar.image)
+            }
+            .store(in: &cell.observations)
         
         cell.timelinePostView.nameLabel.text = "Twidere"
         cell.timelinePostView.usernameLabel.text = "@TwidereProject"

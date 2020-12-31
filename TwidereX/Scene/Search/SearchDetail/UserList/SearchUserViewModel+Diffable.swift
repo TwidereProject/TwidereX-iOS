@@ -50,13 +50,15 @@ extension SearchUserViewModel {
     
     static func configure(cell: SearchUserTableViewCell, twitterUser: TwitterUser, requestTwitterUserID: TwitterUser.ID?) {
         // set avatar
-        if let avatarImageURL = twitterUser.avatarImageURL() {
-            SearchUserViewModel.configure(avatarImageView: cell.userBriefInfoView.avatarImageView, avatarImageURL: avatarImageURL)
-        } else {
-            assertionFailure()
-        }
+        let avatarImageURL = twitterUser.avatarImageURL()
+        let verified = twitterUser.verified
+        UserDefaults.shared
+            .observe(\.avatarStyle, options: [.initial, .new]) { defaults, _ in
+                cell.userBriefInfoView.configure(avatarImageURL: avatarImageURL, verified: verified)
+            }
+            .store(in: &cell.observations)
+        cell.userBriefInfoView.configure(avatarImageURL: avatarImageURL, verified: verified)
         
-        cell.userBriefInfoView.verifiedBadgeImageView.isHidden = !twitterUser.verified
         cell.userBriefInfoView.lockImageView.isHidden = !twitterUser.protected
         
         // set name and username
@@ -66,7 +68,6 @@ extension SearchUserViewModel {
         // set detail
         let followersCount = twitterUser.metrics?.followersCount.flatMap { "\($0)" } ?? "-"
         cell.userBriefInfoView.detailLabel.text = "\(L10n.Common.Controls.Friendship.followers.capitalized): \(followersCount)"
-        
         
         if let requestTwitterUserID = requestTwitterUserID {
             cell.userBriefInfoView.followActionButton.isHidden = twitterUser.id == requestTwitterUserID
@@ -92,34 +93,6 @@ extension SearchUserViewModel {
                 }
             }
             .store(in: &cell.disposeBag)
-    }
-    
-    static func configure(avatarImageView: UIImageView, avatarImageURL: URL) {
-        let placeholderImage = UIImage
-            .placeholder(size: UserBriefInfoView.avatarImageViewSize, color: .systemFill)
-            .af.imageRoundedIntoCircle()
-        
-        if avatarImageURL.pathExtension == "gif" {
-            avatarImageView.kf.setImage(
-                with: avatarImageURL,
-                placeholder: placeholderImage,
-                options: [
-                    .processor(
-                        CroppingImageProcessor(size: UserBriefInfoView.avatarImageViewSize, anchor: CGPoint(x: 0.5, y: 0.5)) |>
-                        RoundCornerImageProcessor(cornerRadius: 0.5 * UserBriefInfoView.avatarImageViewSize.width)
-                    ),
-                    .transition(.fade(0.2))
-                ]
-            )
-        } else {
-            let filter = ScaledToSizeCircleFilter(size: UserBriefInfoView.avatarImageViewSize)
-            avatarImageView.af.setImage(
-                withURL: avatarImageURL,
-                placeholderImage: placeholderImage,
-                filter: filter,
-                imageTransition: .crossDissolve(0.2)
-            )
-        }
     }
     
 }
