@@ -46,6 +46,7 @@ final class TimelinePostTableViewCell: UITableViewCell {
     weak var delegate: TimelinePostTableViewCellDelegate?
     
     var disposeBag = Set<AnyCancellable>()
+    var observations = Set<NSKeyValueObservation>()
     var dateLabelUpdateSubscription: AnyCancellable?
     var quoteDateLabelUpdateSubscription: AnyCancellable?
     
@@ -82,6 +83,7 @@ final class TimelinePostTableViewCell: UITableViewCell {
         conversationLinkUpper.isHidden = true
         conversationLinkLower.isHidden = true
         disposeBag.removeAll()
+        observations.removeAll()
     }
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
@@ -188,12 +190,6 @@ extension TimelinePostTableViewCell {
         guard sender.state == .ended else { return }
         delegate?.timelinePostTableViewCell(self, quotePostViewDidPressed: timelinePostView.quotePostView)
     }
-    
-//    @objc private func playerTapGestureRecognizerHandler(_ sender: UITapGestureRecognizer) {
-//        os_log("%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
-//        guard sender.state == .ended else { return }
-//        delegate?.timelinePostTableViewCell(self, playerViewControllerDidPressed: timelinePostView.playerViewController)
-//    }
     
 }
 

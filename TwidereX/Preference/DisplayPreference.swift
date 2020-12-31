@@ -45,3 +45,31 @@ extension UserDefaults {
     }
     
 }
+
+extension UserDefaults {
+    
+    @objc enum AvatarStyle: Int, CaseIterable {
+        case circle
+        case roundedSquare
+        
+        var text: String {
+            switch self {
+            case .circle:           return L10n.Scene.Settings.Display.Text.circle
+            case .roundedSquare:    return L10n.Scene.Settings.Display.Text.roundedSquare
+            }
+        }
+    }
+    
+    @objc dynamic var avatarStyle: AvatarStyle {
+        get {
+            guard let rawValue: Int = UserDefaults.shared[#function] else {
+                return .circle
+            }
+            return AvatarStyle(rawValue: rawValue) ?? .circle
+        }
+        set {
+            UserDefaults.shared[#function] = newValue.rawValue
+        }
+    }
+
+}

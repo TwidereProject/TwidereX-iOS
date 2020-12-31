@@ -11,7 +11,7 @@ import UIKit
 
 protocol DrawerSidebarTransitionableViewController: UIViewController & NeedsDependency {
     var drawerSidebarTransitionController: DrawerSidebarTransitionController! { get }
-    var avatarButton: UIButton { get }
+    var avatarBarButtonItem: AvatarBarButtonItem { get }
 }
 
 final class DrawerSidebarTransitionController: NSObject {

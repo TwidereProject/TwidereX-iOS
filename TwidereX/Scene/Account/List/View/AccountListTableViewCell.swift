@@ -17,10 +17,18 @@ protocol AccountListTableViewCellDelegate: class {
 final class AccountListTableViewCell: UITableViewCell {
     
     var disposeBag = Set<AnyCancellable>()
+    var observations = Set<NSKeyValueObservation>()
     
     weak var delegate: AccountListTableViewCellDelegate?
     let userBriefInfoView = UserBriefInfoView()
     let separatorLine = UIView.separatorLine
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        
+        disposeBag.removeAll()
+        observations.removeAll()
+    }
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)

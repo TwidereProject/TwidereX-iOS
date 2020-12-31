@@ -1,8 +1,19 @@
 {
   "images" : [
     {
-      "filename" : "twidere.avatar.pdf",
-      "idiom" : "universal"
+      "filename" : "square avatar 44.png",
+      "idiom" : "universal",
+      "scale" : "1x"
+    },
+    {
+      "filename" : "square avatar 44@2x.png",
+      "idiom" : "universal",
+      "scale" : "2x"
+    },
+    {
+      "filename" : "square avatar 44@3x.png",
+      "idiom" : "universal",
+      "scale" : "3x"
     }
   ],
   "info" : {

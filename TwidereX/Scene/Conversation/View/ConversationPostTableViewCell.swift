@@ -35,6 +35,8 @@ protocol ConversationPostTableViewCellDelegate: class {
 final class ConversationPostTableViewCell: UITableViewCell {
     
     var disposeBag = Set<AnyCancellable>()
+    var observations = Set<NSKeyValueObservation>()
+        
     weak var delegate: ConversationPostTableViewCellDelegate?
 
     let conversationPostView = ConversationPostView()
@@ -55,6 +57,7 @@ final class ConversationPostTableViewCell: UITableViewCell {
         conversationPostView.mosaicPlayerView.isHidden = true
         conversationLinkUpper.isHidden = true
         disposeBag.removeAll()
+        observations.removeAll()
     }
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {

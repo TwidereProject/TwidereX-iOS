@@ -40,6 +40,7 @@ final class ProfileBannerView: UIView {
         view.backgroundColor = .systemBackground
         view.layer.masksToBounds = true
         view.layer.cornerRadius = 0.5 * ProfileBannerView.avatarImageViewBackgroundSize.width
+        view.layer.cornerCurve = .continuous
         return view
     }()
     
@@ -308,6 +309,9 @@ extension ProfileBannerView {
         
         bringSubviewToFront(profileAvatarImageView)
         bringSubviewToFront(verifiedBadgeImageView)
+        
+        // update layout
+        configure(avatarImageURL: nil, verified: false)
     }
 
 }
@@ -339,6 +343,20 @@ extension ProfileBannerView: ProfileBannerStatusViewDelegate {
     
     func profileBannerStatusView(_ view: ProfileBannerStatusView, listedStatusItemViewDidPressed statusItemView: ProfileBannerStatusItemView) {
         delegate?.profileBannerView(self, profileBannerStatusView: view, listedStatusItemViewDidPressed: statusItemView)
+    }
+    
+}
+
+// MARK: - AvatarConfigurableView
+extension ProfileBannerView: AvatarConfigurableView {
+    
+    static var configurableAvatarImageViewSize: CGSize { return avatarImageViewSize }
+    var configurableAvatarImageView: UIImageView? { return profileAvatarImageView }
+    var configurableAvatarButton: UIButton? { return nil }
+    var configurableVerifiedBadgeImageView: UIImageView? { return verifiedBadgeImageView }
+    
+    func avatarConfigurableView(_ avatarConfigurableView: AvatarConfigurableView, didFinishConfiguration configuration: AvatarConfigurableViewConfiguration) {
+        profileAvatarImageViewBackground.layer.cornerRadius = Self.cornerRadius(for: ProfileBannerView.avatarImageViewBackgroundSize)
     }
     
 }

@@ -98,6 +98,7 @@ extension DrawerSidebarViewController {
                 let twitterUser = activeAuthenticationIndex?.twitterAuthentication?.twitterUser
                 // bind avatar
                 self.headerView.configure(avatarImageURL: twitterUser?.avatarImageURL())
+                self.headerView.lockImageView.isHidden = twitterUser.flatMap { !$0.protected } ?? true
                 
                 // bind name
                 self.headerView.nameButton.setTitle(twitterUser?.name ?? "-", for: .normal)

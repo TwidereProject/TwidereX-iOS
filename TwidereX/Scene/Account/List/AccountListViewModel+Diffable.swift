@@ -34,22 +34,14 @@ extension AccountListViewModel {
     
     static func configure(cell: AccountListTableViewCell, twitterUser: TwitterUser, accountListViewControllerDelegate: AccountListViewControllerDelegate?) {
         // set avatar
-        if let avatarImageURL = twitterUser.avatarImageURL() {
-            let placeholderImage = UIImage
-                .placeholder(size: UserBriefInfoView.avatarImageViewSize, color: .systemFill)
-                .af.imageRoundedIntoCircle()
-            let filter = ScaledToSizeCircleFilter(size: TimelinePostView.avatarImageViewSize)
-            cell.userBriefInfoView.avatarImageView.af.setImage(
-                withURL: avatarImageURL,
-                placeholderImage: placeholderImage,
-                filter: filter,
-                imageTransition: .crossDissolve(0.2)
-            )
-        } else {
-            assertionFailure()
-        }
+        let avatarImageURL = twitterUser.avatarImageURL()
+        let verified = twitterUser.verified
+        UserDefaults.shared
+            .observe(\.avatarStyle, options: [.initial, .new]) { defaults, _ in
+                cell.userBriefInfoView.configure(avatarImageURL: avatarImageURL, verified: verified)
+            }
+            .store(in: &cell.observations)
         
-        cell.userBriefInfoView.verifiedBadgeImageView.isHidden = !twitterUser.verified
         cell.userBriefInfoView.lockImageView.isHidden = !twitterUser.protected
         
         // set name and username

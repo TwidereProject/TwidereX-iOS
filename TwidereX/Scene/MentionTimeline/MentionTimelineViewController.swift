@@ -27,7 +27,7 @@ final class MentionTimelineViewController: UIViewController, NeedsDependency, Dr
     private(set) var drawerSidebarTransitionController: DrawerSidebarTransitionController!
     let mediaPreviewTransitionController = MediaPreviewTransitionController()
     
-    let avatarButton = UIButton.avatarButton
+    let avatarBarButtonItem = AvatarBarButtonItem()
 
     lazy var tableView: UITableView = {
         let tableView = ControlContainableTableView()
@@ -70,8 +70,8 @@ extension MentionTimelineViewController {
         super.viewDidLoad()
 
         view.backgroundColor = .systemBackground
-        navigationItem.leftBarButtonItem = UIBarButtonItem(customView: avatarButton)
-        avatarButton.addTarget(self, action: #selector(MentionTimelineViewController.avatarButtonPressed(_:)), for: .touchUpInside)
+        navigationItem.leftBarButtonItem = avatarBarButtonItem
+        avatarBarButtonItem.avatarButton.addTarget(self, action: #selector(MentionTimelineViewController.avatarButtonPressed(_:)), for: .touchUpInside)
 
         drawerSidebarTransitionController = DrawerSidebarTransitionController(drawerSidebarTransitionableViewController: self)
         tableView.refreshControl = refreshControl
@@ -165,28 +165,20 @@ extension MentionTimelineViewController {
                 }
             }
             .store(in: &disposeBag)
-        Publishers.CombineLatest(
+        Publishers.CombineLatest3(
             context.authenticationService.activeAuthenticationIndex.eraseToAnyPublisher(),
+            viewModel.avatarStyle.eraseToAnyPublisher(),
             viewModel.viewDidAppear.eraseToAnyPublisher()
         )
         .receive(on: DispatchQueue.main)
-        .sink { [weak self] activeAuthenticationIndex, _ in
+        .sink { [weak self] activeAuthenticationIndex, _, _ in
             guard let self = self else { return }
-            let placeholderImage = UIImage
-                .placeholder(size: UIButton.avatarButtonSize, color: .systemFill)
-                .af.imageRoundedIntoCircle()
             guard let twitterUser = activeAuthenticationIndex?.twitterAuthentication?.twitterUser,
                   let avatarImageURL = twitterUser.avatarImageURL() else {
-                self.avatarButton.setImage(placeholderImage, for: .normal)
+                self.avatarBarButtonItem.configure(avatarImageURL: nil)
                 return
             }
-            let filter = ScaledToSizeCircleFilter(size: UIButton.avatarButtonSize)
-            self.avatarButton.af.setImage(
-                for: .normal,
-                url: avatarImageURL,
-                placeholderImage: placeholderImage,
-                filter: filter
-            )
+            self.avatarBarButtonItem.configure(avatarImageURL: avatarImageURL)
         }
         .store(in: &disposeBag)
     }

@@ -134,6 +134,14 @@ extension MediaInfoDescriptionView {
 
 }
 
+// MARK: - AvatarConfigurableView
+extension MediaInfoDescriptionView: AvatarConfigurableView {
+    static var configurableAvatarImageViewSize: CGSize { return avatarImageViewSize }
+    var configurableAvatarImageView: UIImageView? { return avatarImageView }
+    var configurableAvatarButton: UIButton? { return nil }
+    var configurableVerifiedBadgeImageView: UIImageView? { return verifiedBadgeImageView }
+}
+
 #if DEBUG
 import SwiftUI
 

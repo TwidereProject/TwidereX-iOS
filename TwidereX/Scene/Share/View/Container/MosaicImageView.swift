@@ -143,6 +143,7 @@ extension MosaicImageView {
         imageViews.forEach { imageView in
             imageView.layer.masksToBounds = true
             imageView.layer.cornerRadius = MosaicImageView.cornerRadius
+            imageView.layer.cornerCurve = .continuous
             imageView.contentMode = .scaleAspectFill
         }
         if count == 2 {
