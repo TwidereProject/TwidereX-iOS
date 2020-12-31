@@ -369,12 +369,13 @@ extension ComposeTweetViewModel {
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: ComposeTweetMediaCollectionViewCell.self), for: indexPath) as! ComposeTweetMediaCollectionViewCell
             let scale = collectionView.window?.screen.scale ?? UIScreen.main.scale
             let size = CGSize(width: 56 * scale, height: 56 * scale)
+            let cornerRadius: CGFloat = 8.0
             if case let .media(service) = item {
                 switch service.payload {
                 case .image(let image):
                     let imageFilter = AspectScaledToFillSizeWithRoundedCornersFilter(
                         size: size,
-                        radius: 8.0 * scale,
+                        radius: cornerRadius * scale,
                         divideRadiusByImageScale: false
                     )
                     let filteredImage = imageFilter.filter(image)
@@ -386,7 +387,8 @@ extension ComposeTweetViewModel {
                 }
                 
                 cell.overlayBlurVisualEffectView.layer.masksToBounds = true
-                cell.overlayBlurVisualEffectView.layer.cornerRadius = 8.0
+                cell.overlayBlurVisualEffectView.layer.cornerRadius = cornerRadius
+                cell.overlayBlurVisualEffectView.layer.cornerCurve = .continuous        // match UIBezierPath roundedRect
                 
                 service.uploadStateMachineSubject
                     .receive(on: DispatchQueue.main)

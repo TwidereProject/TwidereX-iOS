@@ -24,6 +24,7 @@ final class MosaicPlayerView: UIView {
         visualEffectView.alpha = 0.9
         visualEffectView.layer.masksToBounds = true
         visualEffectView.layer.cornerRadius = 4
+        visualEffectView.layer.cornerCurve = .continuous
         return visualEffectView
     }()
     let gifIndicatorBackgroundVibrancyEffectView = UIVisualEffectView(effect: UIVibrancyEffect(blurEffect: UIBlurEffect(style: .systemUltraThinMaterial)))
@@ -76,6 +77,7 @@ extension MosaicPlayerView {
         // will not influence full-screen playback
         playerViewController.view.layer.masksToBounds = true
         playerViewController.view.layer.cornerRadius = MosaicPlayerView.cornerRadius
+        playerViewController.view.layer.cornerCurve = .continuous
     }
 }
 

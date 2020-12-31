@@ -78,6 +78,7 @@ extension QuotePostView {
     func _init() {
         layer.masksToBounds = true
         layer.cornerRadius = 8
+        layer.cornerCurve = .continuous
         layer.borderWidth = 3 * UIView.separatorLineHeight(of: self)    // 3px
         layer.borderColor = UIColor.secondarySystemBackground.cgColor
         
