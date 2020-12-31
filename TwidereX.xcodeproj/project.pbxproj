@@ -333,6 +333,7 @@
 		DBF639FC259B333A009E12C8 /* EmptyStateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBF639FB259B333A009E12C8 /* EmptyStateView.swift */; };
 		DBF63A04259B4811009E12C8 /* TouchBlockingCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBF63A03259B4811009E12C8 /* TouchBlockingCollectionView.swift */; };
 		DBF63A13259C36D8009E12C8 /* ListEntryTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBF63A12259C36D8009E12C8 /* ListEntryTableViewCell.swift */; };
+		DBF63A38259D7CCB009E12C8 /* CornerSmoothPreviewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBF63A37259D7CCB009E12C8 /* CornerSmoothPreviewViewController.swift */; };
 		DBF69E8F2549601900E2A915 /* SearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBF69E8E2549601900E2A915 /* SearchViewController.swift */; };
 		DBF69E9C25496BB100E2A915 /* SearchDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBF69E9B25496BB100E2A915 /* SearchDetailViewController.swift */; };
 		DBF69EAC25496C9F00E2A915 /* SearchDetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBF69EAB25496C9F00E2A915 /* SearchDetailViewModel.swift */; };
@@ -773,6 +774,7 @@
 		DBF639FB259B333A009E12C8 /* EmptyStateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyStateView.swift; sourceTree = "<group>"; };
 		DBF63A03259B4811009E12C8 /* TouchBlockingCollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TouchBlockingCollectionView.swift; sourceTree = "<group>"; };
 		DBF63A12259C36D8009E12C8 /* ListEntryTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListEntryTableViewCell.swift; sourceTree = "<group>"; };
+		DBF63A37259D7CCB009E12C8 /* CornerSmoothPreviewViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CornerSmoothPreviewViewController.swift; sourceTree = "<group>"; };
 		DBF69E8E2549601900E2A915 /* SearchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewController.swift; sourceTree = "<group>"; };
 		DBF69E9B25496BB100E2A915 /* SearchDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchDetailViewController.swift; sourceTree = "<group>"; };
 		DBF69EAB25496C9F00E2A915 /* SearchDetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchDetailViewModel.swift; sourceTree = "<group>"; };
@@ -1445,6 +1447,7 @@
 			isa = PBXGroup;
 			children = (
 				DBC8DFFF2574B35300401E20 /* ContextMenu */,
+				DBF63A37259D7CCB009E12C8 /* CornerSmoothPreviewViewController.swift */,
 			);
 			path = ViewController;
 			sourceTree = "<group>";
@@ -2619,6 +2622,7 @@
 				DB2924C22546A77B003899A7 /* TwitterMediaService.swift in Sources */,
 				DB8AC1852542BD8700E636BE /* APIService+Tweet.swift in Sources */,
 				DB41C0DB2513368800521562 /* TimelinePostActionToolbar.swift in Sources */,
+				DBF63A38259D7CCB009E12C8 /* CornerSmoothPreviewViewController.swift in Sources */,
 				DBA5FA0F2553D59E00D2E98E /* MediaPreviewTransitionItem.swift in Sources */,
 				DB969A2F252490090053CB31 /* UserTimelineViewModel+State.swift in Sources */,
 				DBB2513E2599DBAB0064A876 /* HomeTimelineViewController+DebugAction.swift in Sources */,

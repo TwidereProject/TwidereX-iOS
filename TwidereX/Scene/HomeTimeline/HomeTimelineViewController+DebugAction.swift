@@ -86,6 +86,10 @@ extension HomeTimelineViewController {
                     UIAction(title: "Import Database", image: nil, attributes: [], handler: { [weak self] action in
                         guard let self = self else { return }
                         self.importDatabase(action)
+                    }),
+                    UIAction(title: "Corner Smooth Preview", attributes: [], state: .off, handler: { [weak self] action in
+                        guard let self = self else { return }
+                        self.cornerSmoothPreview(action)
                     })
                 ]
             )
@@ -342,6 +346,12 @@ extension HomeTimelineViewController {
 //            }
 //        }
     }
+    
+    @objc private func cornerSmoothPreview(_ sender: UIAction) {
+        let cornerSmoothPreviewViewController = CornerSmoothPreviewViewController()
+        present(cornerSmoothPreviewViewController, animated: true, completion: nil)
+    }
+
     
 }
 
