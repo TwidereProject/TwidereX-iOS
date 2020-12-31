@@ -10,7 +10,15 @@ import UIKit
 
 final class MentionPickTableViewCell: UITableViewCell {
     
+    var observations = Set<NSKeyValueObservation>()
+    
     let userBriefInfoView = UserBriefInfoView()
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        
+        observations.removeAll()
+    }
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)

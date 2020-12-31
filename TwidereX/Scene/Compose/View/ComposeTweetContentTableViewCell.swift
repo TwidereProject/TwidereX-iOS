@@ -149,3 +149,11 @@ extension ComposeTweetContentTableViewCell: UITextViewDelegate {
         composeText.send(composeTextView.text ?? "")
     }
 }
+
+// MARK: - AvatarConfigurableView
+extension ComposeTweetContentTableViewCell: AvatarConfigurableView {
+    static var configurableAvatarImageViewSize: CGSize { return avatarImageViewSize }
+    var configurableAvatarImageView: UIImageView? { return avatarImageView }
+    var configurableAvatarButton: UIButton? { return nil }
+    var configurableVerifiedBadgeImageView: UIImageView? { return nil }
+}
