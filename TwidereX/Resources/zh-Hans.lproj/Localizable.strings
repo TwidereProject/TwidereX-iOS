@@ -9,8 +9,11 @@
 "Common.Alerts.FailedToUnfollowing.Title" = "取消关注失败";
 "Common.Alerts.FollowingRequestSent.Title" = "已发送关注请求";
 "Common.Alerts.FollowingSuccess.Title" = "关注成功";
-"Common.Alerts.PermissionDenied.Message" = "对不起，您没有被授权";
-"Common.Alerts.PermissionDenied.Title" = "权限已被拒绝";
+"Common.Alerts.NoTweetsFound.Title" = "未找到推文";
+"Common.Alerts.PermissionDeniedFriendshipBlocked.Message" = "您已被阻止关注此帐户";
+"Common.Alerts.PermissionDeniedFriendshipBlocked.Title" = "权限已被拒绝";
+"Common.Alerts.PermissionDeniedNotAuthorized.Message" = "对不起，您没有被授权";
+"Common.Alerts.PermissionDeniedNotAuthorized.Title" = "权限已被拒绝";
 "Common.Alerts.PhotoSaveFail.Message" = "请重试";
 "Common.Alerts.PhotoSaveFail.Title" = "保存照片失败";
 "Common.Alerts.PhotoSaved.Title" = "照片已保存";
@@ -104,8 +107,8 @@
 "Scene.Mentions.Title" = "提及";
 "Scene.Messages.Title" = "私信";
 "Scene.Profile.HideReply" = "隐藏回复";
-"Scene.Profile.PermissionDenied.Message" = "您已被阻止查看此用户的个人资料。";
-"Scene.Profile.PermissionDenied.Title" = "权限已被拒绝";
+"Scene.Profile.PermissionDeniedProfileBlocked.Message" = "您已被阻止查看此用户的个人资料。";
+"Scene.Profile.PermissionDeniedProfileBlocked.Title" = "权限已被拒绝";
 "Scene.Profile.Title" = "我的";
 "Scene.Search.SavedSearch" = "已保存的搜索";
 "Scene.Search.SearchBar.Placeholder" = "搜索推文或用户";

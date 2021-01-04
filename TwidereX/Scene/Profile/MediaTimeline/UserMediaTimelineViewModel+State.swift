@@ -37,7 +37,7 @@ extension UserMediaTimelineViewModel.State {
     
     class Reloading: UserMediaTimelineViewModel.State {
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {
-            return stateClass == Fail.self || stateClass == Idle.self || stateClass == PermissionDenied.self
+            return stateClass == Fail.self || stateClass == Idle.self || stateClass == NoMore.self || stateClass == PermissionDenied.self
         }
         
         override func didEnter(from previousState: GKState?) {
@@ -70,7 +70,12 @@ extension UserMediaTimelineViewModel.State {
                         .filter { ($0.retweetedStatus ?? $0).user.idStr == userID }
                         .map { $0.idStr }
                     
-                    stateMachine.enter(Idle.self)
+                    if pagingTweetIDs.isEmpty {
+                        stateMachine.enter(NoMore.self)
+                    } else {
+                        stateMachine.enter(Idle.self)
+                    }
+                    
                     viewModel.pagingTweetIDs.value = pagingTweetIDs
                     viewModel.tweetIDs.value = tweetIDs
                 }

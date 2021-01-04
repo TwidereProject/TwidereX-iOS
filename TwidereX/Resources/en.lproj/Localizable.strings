@@ -9,8 +9,11 @@
 "Common.Alerts.FailedToUnfollowing.Title" = "Failed to Unfollowing";
 "Common.Alerts.FollowingRequestSent.Title" = "Following Request Sent";
 "Common.Alerts.FollowingSuccess.Title" = "Following Succeeded";
-"Common.Alerts.PermissionDenied.Message" = "Sorry, you are not authorized";
-"Common.Alerts.PermissionDenied.Title" = "Permission Denied";
+"Common.Alerts.NoTweetsFound.Title" = "No Tweets Found";
+"Common.Alerts.PermissionDeniedFriendshipBlocked.Message" = "You have been blocked from following this account at the request of the user";
+"Common.Alerts.PermissionDeniedFriendshipBlocked.Title" = "Permission Denied";
+"Common.Alerts.PermissionDeniedNotAuthorized.Message" = "Sorry, you are not authorized";
+"Common.Alerts.PermissionDeniedNotAuthorized.Title" = "Permission Denied";
 "Common.Alerts.PhotoSaveFail.Message" = "Please try again";
 "Common.Alerts.PhotoSaveFail.Title" = "Failed to Save Photo";
 "Common.Alerts.PhotoSaved.Title" = "Photo Saved";
@@ -104,8 +107,8 @@
 "Scene.Mentions.Title" = "Mentions";
 "Scene.Messages.Title" = "Messages";
 "Scene.Profile.HideReply" = "Hide reply";
-"Scene.Profile.PermissionDenied.Message" = "You have been blocked from viewing this user’s profile.";
-"Scene.Profile.PermissionDenied.Title" = "Permission Denied";
+"Scene.Profile.PermissionDeniedProfileBlocked.Message" = "You have been blocked from viewing this user’s profile.";
+"Scene.Profile.PermissionDeniedProfileBlocked.Title" = "Permission Denied";
 "Scene.Profile.Title" = "Me";
 "Scene.Search.SavedSearch" = "Saved Search";
 "Scene.Search.SearchBar.Placeholder" = "Search tweets or users";

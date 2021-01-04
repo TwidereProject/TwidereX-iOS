@@ -216,17 +216,17 @@ extension HomeTimelineViewModel {
             let count = (tweet.retweet ?? tweet).metrics?.retweetCount.flatMap { Int(truncating: $0) }
             return HomeTimelineViewModel.formattedNumberTitleForActionButton(count)
         }()
-        cell.timelinePostView.actionToolbar.retweetButton.setTitle(retweetCountTitle, for: .normal)
-        cell.timelinePostView.actionToolbar.retweetButton.isEnabled = !(tweet.retweet ?? tweet).author.protected
-        cell.timelinePostView.actionToolbar.retweetButtonHighligh = isRetweeted
+        cell.timelinePostView.actionToolbarContainer.retweetButton.setTitle(retweetCountTitle, for: .normal)
+        cell.timelinePostView.actionToolbarContainer.retweetButton.isEnabled = !(tweet.retweet ?? tweet).author.protected
+        cell.timelinePostView.actionToolbarContainer.isRetweetButtonHighligh = isRetweeted
 
         let isLike = (tweet.retweet ?? tweet).likeBy.flatMap({ $0.contains(where: { $0.id == requestUserID }) }) ?? false
         let favoriteCountTitle: String = {
             let count = (tweet.retweet ?? tweet).metrics?.likeCount.flatMap { Int(truncating: $0) }
             return HomeTimelineViewModel.formattedNumberTitleForActionButton(count)
         }()
-        cell.timelinePostView.actionToolbar.favoriteButton.setTitle(favoriteCountTitle, for: .normal)
-        cell.timelinePostView.actionToolbar.likeButtonHighlight = isLike
+        cell.timelinePostView.actionToolbarContainer.likeButton.setTitle(favoriteCountTitle, for: .normal)
+        cell.timelinePostView.actionToolbarContainer.isLikeButtonHighlight = isLike
         
         // set media display
         let media = Array((tweet.retweet ?? tweet).media ?? []).sorted { $0.index.compare($1.index) == .orderedAscending }
@@ -354,15 +354,15 @@ extension HomeTimelineViewModel {
                 let isRetweeted = targetTweet.retweetBy.flatMap({ $0.contains(where: { $0.id == requestUserID }) }) ?? false
                 let retweetCount = targetTweet.metrics?.retweetCount.flatMap { Int(truncating: $0) }
                 let retweetCountTitle = HomeTimelineViewModel.formattedNumberTitleForActionButton(retweetCount)
-                cell.timelinePostView.actionToolbar.retweetButton.setTitle(retweetCountTitle, for: .normal)
-                cell.timelinePostView.actionToolbar.retweetButtonHighligh = isRetweeted
+                cell.timelinePostView.actionToolbarContainer.retweetButton.setTitle(retweetCountTitle, for: .normal)
+                cell.timelinePostView.actionToolbarContainer.isRetweetButtonHighligh = isRetweeted
                 os_log("%{public}s[%{public}ld], %{public}s: retweet count label for tweet %s did update: %ld", ((#file as NSString).lastPathComponent), #line, #function, targetTweet.id, retweetCount ?? 0)
                 
                 let isLike = targetTweet.likeBy.flatMap({ $0.contains(where: { $0.id == requestUserID }) }) ?? false
                 let favoriteCount = targetTweet.metrics?.likeCount.flatMap { Int(truncating: $0) }
                 let favoriteCountTitle = HomeTimelineViewModel.formattedNumberTitleForActionButton(favoriteCount)
-                cell.timelinePostView.actionToolbar.favoriteButton.setTitle(favoriteCountTitle, for: .normal)
-                cell.timelinePostView.actionToolbar.likeButtonHighlight = isLike
+                cell.timelinePostView.actionToolbarContainer.likeButton.setTitle(favoriteCountTitle, for: .normal)
+                cell.timelinePostView.actionToolbarContainer.isLikeButtonHighlight = isLike
                 os_log("%{public}s[%{public}ld], %{public}s: like count label for tweet %s did update: %ld", ((#file as NSString).lastPathComponent), #line, #function, targetTweet.id, favoriteCount ?? 0)
             }
             .store(in: &cell.disposeBag)

@@ -38,7 +38,7 @@ final class StatusActionToolbar: UIView {
         let button = UIButton(type: .custom)
         button.tintColor = .secondaryLabel
         button.titleLabel?.font = .monospacedDigitSystemFont(ofSize: 12, weight: .regular)
-        button.setImage(Asset.Arrows.arrowTurnUpLeftLarge.image.withRenderingMode(.alwaysTemplate), for: .normal)
+        button.setImage(Asset.Arrows.arrowTurnUpLeft.image.withRenderingMode(.alwaysTemplate), for: .normal)
         button.setTitle("", for: .normal)
         button.setTitleColor(.secondaryLabel, for: .normal)
         button.setInsets(forContentPadding: .zero, imageTitlePadding: TimelinePostActionToolbar.buttonTitleImagePadding)
@@ -49,7 +49,7 @@ final class StatusActionToolbar: UIView {
         let button = UIButton(type: .custom)
         button.tintColor = .secondaryLabel
         button.titleLabel?.font = .monospacedDigitSystemFont(ofSize: 12, weight: .regular)
-        button.setImage(Asset.Media.repeatLarge.image.withRenderingMode(.alwaysTemplate), for: .normal)
+        button.setImage(Asset.Media.repeat.image.withRenderingMode(.alwaysTemplate), for: .normal)
         button.setTitle("", for: .normal)
         button.setTitleColor(.secondaryLabel, for: .normal)
         button.setInsets(forContentPadding: .zero, imageTitlePadding: TimelinePostActionToolbar.buttonTitleImagePadding)
@@ -60,7 +60,7 @@ final class StatusActionToolbar: UIView {
         let button = UIButton(type: .custom)
         button.tintColor = .secondaryLabel
         button.titleLabel?.font = .monospacedDigitSystemFont(ofSize: 12, weight: .regular)
-        button.setImage(Asset.Health.heartLarge.image.withRenderingMode(.alwaysTemplate), for: .normal)
+        button.setImage(Asset.Health.heart.image.withRenderingMode(.alwaysTemplate), for: .normal)
         button.setTitle("", for: .normal)
         button.setTitleColor(.secondaryLabel, for: .normal)
         button.setInsets(forContentPadding: .zero, imageTitlePadding: TimelinePostActionToolbar.buttonTitleImagePadding)
@@ -147,8 +147,8 @@ extension StatusActionToolbar {
     
     private func likeButtonHighlightStateDidChange(to isHighlight: Bool) {
         let tintColor = isHighlight ? Asset.Colors.heartPink.color : .secondaryLabel
-        let buttonImage = isHighlight ? Asset.Health.heartFillLarge.image.withRenderingMode(.alwaysTemplate) :
-            Asset.Health.heartLarge.image.withRenderingMode(.alwaysTemplate)
+        let buttonImage = isHighlight ? Asset.Health.heartFill.image.withRenderingMode(.alwaysTemplate) :
+            Asset.Health.heart.image.withRenderingMode(.alwaysTemplate)
         favoriteButton.tintColor = tintColor
         favoriteButton.setImage(buttonImage, for: .normal)
     }

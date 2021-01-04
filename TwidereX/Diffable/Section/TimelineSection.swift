@@ -42,8 +42,9 @@ extension TimelineSection {
                 cell.activityIndicatorView.startAnimating()
                 cell.loadMoreButton.isHidden = true
                 return cell
-            case .permissionDenied:
-                let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: TimelinePermissionDeniedTableViewCell.self), for: indexPath) as! TimelinePermissionDeniedTableViewCell
+            case .emptyStateHeader(let attribute):
+                let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: TimelineHeaderTableViewCell.self), for: indexPath) as! TimelineHeaderTableViewCell
+                TimelineHeaderView.configure(timelineHeaderView: cell.timelineHeaderView, attribute: attribute)
                 return cell
             default:
                 assertionFailure()

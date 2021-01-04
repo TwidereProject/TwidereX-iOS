@@ -35,7 +35,7 @@ extension UserTimelineViewModel.State {
     
     class Reloading: UserTimelineViewModel.State {
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {
-            return stateClass == Fail.self || stateClass == Idle.self || stateClass == PermissionDenied.self
+            return stateClass == Fail.self || stateClass == Idle.self || stateClass == NoMore.self || stateClass == NotAuthorized.self
         }
         
         override func didEnter(from previousState: GKState?) {
@@ -51,8 +51,8 @@ extension UserTimelineViewModel.State {
                     switch completion {
                     case .failure(let error):
                         os_log("%{public}s[%{public}ld], %{public}s: fetch user timeline latest response error: %s", ((#file as NSString).lastPathComponent), #line, #function, error.localizedDescription)
-                        if PermissionDenied.canEnter(for: error) {
-                            stateMachine.enter(PermissionDenied.self)
+                        if NotAuthorized.canEnter(for: error) {
+                            stateMachine.enter(NotAuthorized.self)
                         } else {
                             stateMachine.enter(Fail.self)
                         }
@@ -63,7 +63,11 @@ extension UserTimelineViewModel.State {
                     guard viewModel.userID.value == userID else { return }
                     let tweetIDs = response.value.map { $0.idStr }
                     
-                    stateMachine.enter(Idle.self)
+                    if tweetIDs.isEmpty {
+                        stateMachine.enter(NoMore.self)
+                    } else {
+                        stateMachine.enter(Idle.self)
+                    }
                     viewModel.tweetIDs.value = tweetIDs
                 }
                 .store(in: &viewModel.disposeBag)
@@ -125,7 +129,7 @@ extension UserTimelineViewModel.State {
         }
     }
     
-    class PermissionDenied: UserTimelineViewModel.State {
+    class NotAuthorized: UserTimelineViewModel.State {
         static func canEnter(for error: Error) -> Bool {
             if let responseError = error as? Twitter.API.Error.ResponseError,
                let twitterAPIError = responseError.twitterAPIError,
@@ -144,6 +148,30 @@ extension UserTimelineViewModel.State {
             super.didEnter(from: previousState)
             guard let viewModel = viewModel else { return }
 
+            // trigger items update
+            viewModel.tweetIDs.value = []
+        }
+    }
+    
+    class Blocked: UserTimelineViewModel.State {
+        static func canEnter(for error: Error) -> Bool {
+            if let responseError = error as? Twitter.API.Error.ResponseError,
+               let twitterAPIError = responseError.twitterAPIError,
+               case .notAuthorizedToSeeThisStatus = twitterAPIError {
+                return true
+            }
+            
+            return false
+        }
+        
+        override func isValidNextState(_ stateClass: AnyClass) -> Bool {
+            return stateClass == Reloading.self
+        }
+        
+        override func didEnter(from previousState: GKState?) {
+            super.didEnter(from: previousState)
+            guard let viewModel = viewModel else { return }
+            
             // trigger items update
             viewModel.tweetIDs.value = []
         }

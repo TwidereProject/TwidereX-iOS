@@ -25,7 +25,7 @@ internal enum Asset {
   internal enum Arrows {
     internal static let arrowLeft = ImageAsset(name: "Arrows/arrow.left")
     internal static let arrowTurnUpLeft = ImageAsset(name: "Arrows/arrow.turn.up.left")
-    internal static let arrowTurnUpLeftLarge = ImageAsset(name: "Arrows/arrow.turn.up.left.large")
+    internal static let arrowTurnUpLeftMini = ImageAsset(name: "Arrows/arrow.turn.up.left.mini")
     internal static let squareAndArrowUp = ImageAsset(name: "Arrows/square.and.arrow.up")
     internal static let squareAndArrowUpMini = ImageAsset(name: "Arrows/square.and.arrow.up.mini")
     internal static let tablerChevronDown = ImageAsset(name: "Arrows/tabler.chevron.down")
@@ -43,6 +43,7 @@ internal enum Asset {
   }
   internal enum Editing {
     internal static let ellipsis = ImageAsset(name: "Editing/ellipsis")
+    internal static let ellipsisMini = ImageAsset(name: "Editing/ellipsis.mini")
     internal static let featherPen = ImageAsset(name: "Editing/feather.pen")
     internal static let sliderHorizontal3 = ImageAsset(name: "Editing/slider.horizontal.3")
     internal static let xmark = ImageAsset(name: "Editing/xmark")
@@ -50,9 +51,9 @@ internal enum Asset {
   }
   internal enum Health {
     internal static let heartFill = ImageAsset(name: "Health/heart.fill")
-    internal static let heartFillLarge = ImageAsset(name: "Health/heart.fill.large")
+    internal static let heartFillMini = ImageAsset(name: "Health/heart.fill.mini")
     internal static let heart = ImageAsset(name: "Health/heart")
-    internal static let heartLarge = ImageAsset(name: "Health/heart.large")
+    internal static let heartMini = ImageAsset(name: "Health/heart.mini")
   }
   internal enum Human {
     internal static let eyeSlash = ImageAsset(name: "Human/eye.slash")
@@ -70,7 +71,7 @@ internal enum Asset {
   }
   internal enum Media {
     internal static let `repeat` = ImageAsset(name: "Media/repeat")
-    internal static let repeatLarge = ImageAsset(name: "Media/repeat.large")
+    internal static let repeatMini = ImageAsset(name: "Media/repeat.mini")
   }
   internal enum ObjectTools {
     internal static let bookmarks = ImageAsset(name: "Object&Tools/bookmarks")

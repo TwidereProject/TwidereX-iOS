@@ -101,7 +101,11 @@ final class TimelinePostView: UIView {
         return button
     }()
     
-    let actionToolbar = TimelinePostActionToolbar()
+    let actionToolbarContainer: ActionToolbarContainer = {
+        let actionToolbarContainer = ActionToolbarContainer()
+        actionToolbarContainer.configure(for: .inline)
+        return actionToolbarContainer
+    }()
         
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -236,9 +240,9 @@ extension TimelinePostView {
         geoContainerStackView.addArrangedSubview(UIView())
         
         // action toolbar
-        actionToolbar.translatesAutoresizingMaskIntoConstraints = false
-        tweetContainerStackView.addArrangedSubview(actionToolbar)
-        actionToolbar.setContentCompressionResistancePriority(.defaultLow, for: .vertical)
+        actionToolbarContainer.translatesAutoresizingMaskIntoConstraints = false
+        tweetContainerStackView.addArrangedSubview(actionToolbarContainer)
+        actionToolbarContainer.setContentCompressionResistancePriority(.defaultLow, for: .vertical)
         
         verifiedBadgeImageView.isHidden = true
         retweetContainerStackView.isHidden = true

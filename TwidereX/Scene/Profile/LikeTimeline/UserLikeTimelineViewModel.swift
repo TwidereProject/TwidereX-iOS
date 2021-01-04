@@ -82,7 +82,11 @@ class UserLikeTimelineViewModel: NSObject {
                     case is State.Reloading, is State.Idle, is State.LoadingMore, is State.Fail:
                         snapshot.appendItems([.bottomLoader], toSection: .main)
                     case is State.PermissionDenied:
-                        snapshot.appendItems([.permissionDenied], toSection: .main)
+                        snapshot.appendItems([.emptyStateHeader(attribute: .init(reason: .notAuthorized))], toSection: .main)
+                    case is State.NoMore:
+                        if items.isEmpty {
+                            snapshot.appendItems([.emptyStateHeader(attribute: .init(reason: .noTweetsFound))], toSection: .main)
+                        }
                     default:
                         break
                     }

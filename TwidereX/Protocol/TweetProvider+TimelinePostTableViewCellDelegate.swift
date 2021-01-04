@@ -76,9 +76,12 @@ extension TimelinePostTableViewCellDelegate where Self: TweetProvider {
             .store(in: &disposeBag)
     }
     
-    // MARK: - ActionToolbar
+}
     
-    func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, actionToolbar: TimelinePostActionToolbar, replayButtonDidPressed sender: UIButton) {
+// MARK: - ActionToolbarContainerDelegate
+extension TimelinePostTableViewCellDelegate where Self: TweetProvider {
+
+    func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, actionToolbarContainer: ActionToolbarContainer, replayButtonDidPressed sender: UIButton) {
         tweet(for: cell, indexPath: nil)
             .sink { [weak self] tweet in
                 guard let self = self else { return }
@@ -93,7 +96,7 @@ extension TimelinePostTableViewCellDelegate where Self: TweetProvider {
             .store(in: &disposeBag)
     }
     
-    func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, actionToolbar: TimelinePostActionToolbar, retweetButtonDidPressed sender: UIButton) {
+    func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, actionToolbarContainer: ActionToolbarContainer, retweetButtonDidPressed sender: UIButton) {
         // prepare authentication
         guard let activeTwitterAuthenticationBox = context.authenticationService.activeTwitterAuthenticationBox.value else {
             assertionFailure()
@@ -180,7 +183,7 @@ extension TimelinePostTableViewCellDelegate where Self: TweetProvider {
             .store(in: &disposeBag)
     }
     
-    func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, actionToolbar: TimelinePostActionToolbar, favoriteButtonDidPressed sender: UIButton) {
+    func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, actionToolbarContainer: ActionToolbarContainer, likeButtonDidPressed sender: UIButton) {
         // prepare authentication
         guard let activeTwitterAuthenticationBox = context.authenticationService.activeTwitterAuthenticationBox.value else {
             assertionFailure()
@@ -201,7 +204,7 @@ extension TimelinePostTableViewCellDelegate where Self: TweetProvider {
         // haptic feedback generator
         let generator = UIImpactFeedbackGenerator(style: .light)
         let responseFeedbackGenerator = UIImpactFeedbackGenerator(style: .medium)
-
+        
         tweet(for: cell, indexPath: nil)
             .compactMap { tweet -> (NSManagedObjectID, Twitter.API.Favorites.FavoriteKind)? in
                 guard let tweet = tweet else { return nil }
@@ -266,7 +269,7 @@ extension TimelinePostTableViewCellDelegate where Self: TweetProvider {
             .store(in: &disposeBag)
     }
     
-    func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, actionToolbar: TimelinePostActionToolbar, shareButtonDidPressed sender: UIButton) {
+    func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, actionToolbarContainer: ActionToolbarContainer, menuButtonDidPressed sender: UIButton) {
         tweet(for: cell, indexPath: nil)
             .compactMap { $0?.activityItems }
             .sink { [weak self] activityItems in
@@ -280,8 +283,8 @@ extension TimelinePostTableViewCellDelegate where Self: TweetProvider {
     
 }
 
+// MARK: - MosaicImageViewDelegate
 extension TimelinePostTableViewCellDelegate where Self: TweetProvider & MediaPreviewableViewController {
-    // MARK: - MosaicImageViewDelegate
     func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, mosaicImageView: MosaicImageView, didTapImageView imageView: UIImageView, atIndex index: Int) {
         tweet(for: cell, indexPath: nil)
             .sink { [weak self] tweet in

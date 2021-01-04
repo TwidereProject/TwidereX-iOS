@@ -50,8 +50,9 @@ extension MediaSection {
                 let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: ActivityIndicatorCollectionViewCell.self), for: indexPath) as! ActivityIndicatorCollectionViewCell
                 cell.activityIndicatorView.startAnimating()
                 return cell
-            case .permissionDenied:
-                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: PermissionDeniedCollectionViewCell.self), for: indexPath) as! PermissionDeniedCollectionViewCell
+            case .emptyStateHeader(let attribute):
+                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: TimelineHeaderCollectionViewCell.self), for: indexPath) as! TimelineHeaderCollectionViewCell
+                TimelineHeaderView.configure(timelineHeaderView: cell.timelineHeaderView, attribute: attribute)
                 return cell
             default:
                 assertionFailure()

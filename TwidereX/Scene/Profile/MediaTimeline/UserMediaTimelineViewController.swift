@@ -26,7 +26,7 @@ final class UserMediaTimelineViewController: UIViewController, MediaPreviewableV
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: SearchMediaViewController.createCollectionViewLayout())
         collectionView.register(SearchMediaCollectionViewCell.self, forCellWithReuseIdentifier: String(describing: SearchMediaCollectionViewCell.self))
         collectionView.register(ActivityIndicatorCollectionViewCell.self, forCellWithReuseIdentifier: String(describing: ActivityIndicatorCollectionViewCell.self))
-        collectionView.register(PermissionDeniedCollectionViewCell.self, forCellWithReuseIdentifier: String(describing: PermissionDeniedCollectionViewCell.self))
+        collectionView.register(TimelineHeaderCollectionViewCell.self, forCellWithReuseIdentifier: String(describing: TimelineHeaderCollectionViewCell.self))
         return collectionView
     }()
     

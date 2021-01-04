@@ -67,8 +67,8 @@ extension FollowingListViewController {
             .sink { [weak self] isPermissionDenied in
                 guard let self = self else { return }
                 self.emptyStateView.iconImageView.image = Asset.Human.eyeSlashLarge.image.withRenderingMode(.alwaysTemplate)
-                self.emptyStateView.titleLabel.text = L10n.Common.Alerts.PermissionDenied.title
-                self.emptyStateView.messageLabel.text = L10n.Common.Alerts.PermissionDenied.message
+                self.emptyStateView.titleLabel.text = L10n.Common.Alerts.PermissionDeniedNotAuthorized.title
+                self.emptyStateView.messageLabel.text = L10n.Common.Alerts.PermissionDeniedNotAuthorized.message
                 self.emptyStateView.isHidden = !isPermissionDenied
             }
             .store(in: &disposeBag)

@@ -9,8 +9,11 @@
 "Common.Alerts.FailedToUnfollowing.Title" = "フォロー解除に失敗しました";
 "Common.Alerts.FollowingRequestSent.Title" = "フォローリクエストが送信されました";
 "Common.Alerts.FollowingSuccess.Title" = "フォローに成功しました";
-"Common.Alerts.PermissionDenied.Message" = "Sorry, you are not authorized";
-"Common.Alerts.PermissionDenied.Title" = "権限がありません";
+"Common.Alerts.NoTweetsFound.Title" = "No Tweets Found";
+"Common.Alerts.PermissionDeniedFriendshipBlocked.Message" = "You have been blocked from following this account at the request of the user";
+"Common.Alerts.PermissionDeniedFriendshipBlocked.Title" = "権限がありません";
+"Common.Alerts.PermissionDeniedNotAuthorized.Message" = "Sorry, you are not authorized";
+"Common.Alerts.PermissionDeniedNotAuthorized.Title" = "権限がありません";
 "Common.Alerts.PhotoSaveFail.Message" = "もう一度やり直してください";
 "Common.Alerts.PhotoSaveFail.Title" = "写真の保存に失敗しました";
 "Common.Alerts.PhotoSaved.Title" = "写真を保存しました";
@@ -104,8 +107,8 @@
 "Scene.Mentions.Title" = "メンション";
 "Scene.Messages.Title" = "メッセージ";
 "Scene.Profile.HideReply" = "返信を非表示";
-"Scene.Profile.PermissionDenied.Message" = "このユーザーのプロフィールの閲覧をブロックされています。";
-"Scene.Profile.PermissionDenied.Title" = "権限がありません";
+"Scene.Profile.PermissionDeniedProfileBlocked.Message" = "このユーザーのプロフィールの閲覧をブロックされています。";
+"Scene.Profile.PermissionDeniedProfileBlocked.Title" = "権限がありません";
 "Scene.Profile.Title" = "私";
 "Scene.Search.SavedSearch" = "保存した検索";
 "Scene.Search.SearchBar.Placeholder" = "ツイートまたはユーザーを検索";

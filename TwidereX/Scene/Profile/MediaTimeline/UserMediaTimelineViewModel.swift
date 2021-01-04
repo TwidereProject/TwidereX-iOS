@@ -79,7 +79,11 @@ final class UserMediaTimelineViewModel: NSObject {
                     case is State.Reloading, is State.Idle, is State.LoadingMore, is State.Fail:
                         snapshot.appendItems([.bottomLoader], toSection: .footer)
                     case is State.PermissionDenied:
-                        snapshot.appendItems([.permissionDenied], toSection: .footer)
+                        snapshot.appendItems([.emptyStateHeader(attribute: .init(reason: .notAuthorized))], toSection: .footer)
+                    case is State.NoMore:
+                        if items.isEmpty {
+                            snapshot.appendItems([.emptyStateHeader(attribute: .init(reason: .noTweetsFound))], toSection: .footer)
+                        }
                     default:
                         break
                     }

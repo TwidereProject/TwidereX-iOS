@@ -8,12 +8,12 @@
 
 import UIKit
 
-final class PermissionDeniedHeaderView: UIView {
+final class TimelineHeaderView: UIView {
     
-    let eyeSlashImageView: UIImageView = {
+    let iconImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.tintColor = .secondaryLabel
-        imageView.image = Asset.Human.eyeSlash.image.withRenderingMode(.alwaysTemplate)
+        imageView.image = Asset.Indices.infoCircle.image.withRenderingMode(.alwaysTemplate)
         return imageView
     }()
     
@@ -21,7 +21,7 @@ final class PermissionDeniedHeaderView: UIView {
         let label = UILabel()
         label.font = .preferredFont(forTextStyle: .headline)
         label.textColor = .secondaryLabel
-        label.text = L10n.Common.Alerts.PermissionDenied.title
+        label.text = "Title"
         return label
     }()
     
@@ -29,7 +29,7 @@ final class PermissionDeniedHeaderView: UIView {
         let label = UILabel()
         label.font = .preferredFont(forTextStyle: .footnote)
         label.textColor = .secondaryLabel
-        label.text = L10n.Common.Alerts.PermissionDenied.message
+        label.text = "Message"
         return label
     }()
     
@@ -45,22 +45,22 @@ final class PermissionDeniedHeaderView: UIView {
     
 }
 
-extension PermissionDeniedHeaderView {
+extension TimelineHeaderView {
     private func _init() {
-        eyeSlashImageView.translatesAutoresizingMaskIntoConstraints = false
-        addSubview(eyeSlashImageView)
+        iconImageView.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(iconImageView)
         NSLayoutConstraint.activate([
-            eyeSlashImageView.topAnchor.constraint(equalTo: topAnchor, constant: 16),
-            eyeSlashImageView.leadingAnchor.constraint(equalTo: leadingAnchor),
-            eyeSlashImageView.widthAnchor.constraint(equalToConstant: 24).priority(.defaultHigh),
-            eyeSlashImageView.heightAnchor.constraint(equalToConstant: 24).priority(.defaultHigh),
+            iconImageView.topAnchor.constraint(equalTo: topAnchor, constant: 16),
+            iconImageView.leadingAnchor.constraint(equalTo: leadingAnchor),
+            iconImageView.widthAnchor.constraint(equalToConstant: 24).priority(.defaultHigh),
+            iconImageView.heightAnchor.constraint(equalToConstant: 24).priority(.defaultHigh),
         ])
         
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
         addSubview(titleLabel)
         NSLayoutConstraint.activate([
-            titleLabel.topAnchor.constraint(equalTo: eyeSlashImageView.topAnchor),
-            titleLabel.leadingAnchor.constraint(equalTo: eyeSlashImageView.trailingAnchor, constant: 8),
+            titleLabel.topAnchor.constraint(equalTo: iconImageView.topAnchor),
+            titleLabel.leadingAnchor.constraint(equalTo: iconImageView.trailingAnchor, constant: 8),
             trailingAnchor.constraint(equalTo: titleLabel.trailingAnchor),
         ])
         titleLabel.setContentHuggingPriority(.defaultHigh, for: .vertical)
@@ -85,9 +85,9 @@ import SwiftUI
 struct PermissionDeniedHeaderView_Previews: PreviewProvider {
     static var previews: some View {
         UIViewPreview {
-            PermissionDeniedHeaderView()
+            TimelineHeaderView()
         }
-        .previewLayout(.fixed(width: 375, height: 200))
+        .previewLayout(.fixed(width: 375, height: 80))
     }
 }
 
