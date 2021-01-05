@@ -13,21 +13,5 @@ import CoreDataStack
 protocol StatusProvider: NeedsDependency & DisposeBagCollectable & UIViewController {
     func tweet() -> Future<Tweet?, Never>
     func tweet(for cell: UITableViewCell, indexPath: IndexPath?) -> Future<Tweet?, Never>
-    func tweet(for cell: SearchMediaCollectionViewCell) -> Future<Tweet?, Never>
-}
-
-extension StatusProvider {
-    
-    func tweet() -> Future<Tweet?, Never> {
-        return Future { promise in promise(.success(nil)) }
-    }
-    
-    func tweet(for cell: UITableViewCell, indexPath: IndexPath?) -> Future<Tweet?, Never> {
-        return Future { promise in promise(.success(nil)) }
-    }
-    
-    func tweet(for cell: SearchMediaCollectionViewCell) -> Future<Tweet?, Never> {
-        return Future { promise in promise(.success(nil)) }
-    }
-    
+    func tweet(for cell: UICollectionViewCell) -> Future<Tweet?, Never>
 }

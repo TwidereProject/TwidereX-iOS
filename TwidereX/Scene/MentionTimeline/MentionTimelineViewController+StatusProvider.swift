@@ -14,6 +14,11 @@ import TwitterAPI
 
 // MARK: - StatusProvider
 extension MentionTimelineViewController: StatusProvider {
+    
+    func tweet() -> Future<Tweet?, Never> {
+        return Future { promise in promise(.success(nil)) }
+    }
+    
     func tweet(for cell: UITableViewCell, indexPath: IndexPath?) -> Future<Tweet?, Never> {
         return Future { promise in
             guard let diffableDataSource = self.viewModel.diffableDataSource else {
@@ -39,4 +44,9 @@ extension MentionTimelineViewController: StatusProvider {
             }
         }
     }
+    
+    func tweet(for cell: UICollectionViewCell) -> Future<Tweet?, Never> {
+        return Future { promise in promise(.success(nil)) }
+    }
+    
 }

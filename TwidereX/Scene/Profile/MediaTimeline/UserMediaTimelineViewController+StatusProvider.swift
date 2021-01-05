@@ -15,7 +15,15 @@ import TwitterAPI
 // MARK: - StatusProvider
 extension UserMediaTimelineViewController: StatusProvider {
     
-    func tweet(for cell: SearchMediaCollectionViewCell) -> Future<Tweet?, Never> {
+    func tweet() -> Future<Tweet?, Never> {
+        return Future { promise in promise(.success(nil)) }
+    }
+    
+    func tweet(for cell: UITableViewCell, indexPath: IndexPath?) -> Future<Tweet?, Never> {
+        return Future { promise in promise(.success(nil)) }
+    }
+    
+    func tweet(for cell: UICollectionViewCell) -> Future<Tweet?, Never> {
         return Future { promise in
             guard let diffableDataSource = self.viewModel.diffableDataSource,
                   let indexPath = self.collectionView.indexPath(for: cell),
@@ -36,5 +44,5 @@ extension UserMediaTimelineViewController: StatusProvider {
             }
         }
     }
-    
+
 }
