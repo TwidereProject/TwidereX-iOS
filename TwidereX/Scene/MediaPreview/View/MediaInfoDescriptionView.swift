@@ -43,7 +43,11 @@ final class MediaInfoDescriptionView: UIView {
         return activeLabel
     }()
     
-    let statusActionToolbar = StatusActionToolbar()
+    let actionToolbarContainer: ActionToolbarContainer = {
+        let actionToolbarContainer = ActionToolbarContainer()
+        actionToolbarContainer.configure(for: .plain)
+        return actionToolbarContainer
+    }()
     
     let avatarImageViewTapGestureRecognizer = UITapGestureRecognizer.singleTapGestureRecognizer
     let activelabelTapGestureRecognizer = UITapGestureRecognizer.singleTapGestureRecognizer
@@ -104,10 +108,10 @@ extension MediaInfoDescriptionView {
         ])
         
         bottomContainerStackView.addArrangedSubview(nameLabel)
-        statusActionToolbar.translatesAutoresizingMaskIntoConstraints = false
-        bottomContainerStackView.addArrangedSubview(statusActionToolbar)
+        actionToolbarContainer.translatesAutoresizingMaskIntoConstraints = false
+        bottomContainerStackView.addArrangedSubview(actionToolbarContainer)
         NSLayoutConstraint.activate([
-            statusActionToolbar.widthAnchor.constraint(equalToConstant: 180).priority(.defaultHigh),
+            actionToolbarContainer.widthAnchor.constraint(equalToConstant: 180).priority(.defaultHigh),
         ])
         
         avatarImageViewTapGestureRecognizer.addTarget(self, action: #selector(MediaInfoDescriptionView.avatarImageViewTapGestureRecognizerHandler(_:)))

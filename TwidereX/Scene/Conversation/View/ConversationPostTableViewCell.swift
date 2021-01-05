@@ -20,10 +20,10 @@ protocol ConversationPostTableViewCellDelegate: class {
     func conversationPostTableViewCell(_ cell: ConversationPostTableViewCell, quoteAvatarImageViewDidPressed imageView: UIImageView)
     func conversationPostTableViewCell(_ cell: ConversationPostTableViewCell, quotePostViewDidPressed quotePostView: QuotePostView)
 
-    func conversationPostTableViewCell(_ cell: ConversationPostTableViewCell, actionToolbar: StatusActionToolbar, replayButtonDidPressed sender: UIButton)
-    func conversationPostTableViewCell(_ cell: ConversationPostTableViewCell, actionToolbar: StatusActionToolbar, retweetButtonDidPressed sender: UIButton)
-    func conversationPostTableViewCell(_ cell: ConversationPostTableViewCell, actionToolbar: StatusActionToolbar, favoriteButtonDidPressed sender: UIButton)
-    func conversationPostTableViewCell(_ cell: ConversationPostTableViewCell, actionToolbar: StatusActionToolbar, shareButtonDidPressed sender: UIButton)
+    func conversationPostTableViewCell(_ cell: ConversationPostTableViewCell, actionToolbarContainer: ActionToolbarContainer, replayButtonDidPressed sender: UIButton)
+    func conversationPostTableViewCell(_ cell: ConversationPostTableViewCell, actionToolbarContainer: ActionToolbarContainer, retweetButtonDidPressed sender: UIButton)
+    func conversationPostTableViewCell(_ cell: ConversationPostTableViewCell, actionToolbarContainer: ActionToolbarContainer, favoriteButtonDidPressed sender: UIButton)
+    func conversationPostTableViewCell(_ cell: ConversationPostTableViewCell, actionToolbarContainer: ActionToolbarContainer, shareButtonDidPressed sender: UIButton)
     
     func conversationPostTableViewCell(_ cell: ConversationPostTableViewCell, mosaicImageView: MosaicImageView, didTapImageView imageView: UIImageView, atIndex index: Int)
     
@@ -120,7 +120,7 @@ extension ConversationPostTableViewCell {
         conversationPostView.quotePostView.addGestureRecognizer(quotePostViewTapGestureRecognizer)
         
         conversationPostView.activeTextLabel.delegate = self
-        conversationPostView.actionToolbar.delegate = self
+        conversationPostView.actionToolbarContainer.delegate = self
         conversationPostView.mosaicImageView.delegate = self
     }
     
@@ -166,25 +166,25 @@ extension ConversationPostTableViewCell: ActiveLabelDelegate {
     }
 }
 
-// MARK: - TimelinePostActionToolbarDelegate
-extension ConversationPostTableViewCell: StatusActionToolbarDelegate {
+// MARK: - ActionToolbarContainerDelegate
+extension ConversationPostTableViewCell: ActionToolbarContainerDelegate {
     
-    func statusActionToolbar(_ toolbar: StatusActionToolbar, replayButtonDidPressed sender: UIButton) {
-        delegate?.conversationPostTableViewCell(self, actionToolbar: toolbar, replayButtonDidPressed: sender)
+    func actionToolbarContainer(_ actionToolbarContainer: ActionToolbarContainer, replayButtonDidPressed sender: UIButton) {
+        delegate?.conversationPostTableViewCell(self, actionToolbarContainer: actionToolbarContainer, replayButtonDidPressed: sender)
     }
     
-    func statusActionToolbar(_ toolbar: StatusActionToolbar, retweetButtonDidPressed sender: UIButton) {
-        delegate?.conversationPostTableViewCell(self, actionToolbar: toolbar, retweetButtonDidPressed: sender)
+    func actionToolbarContainer(_ actionToolbarContainer: ActionToolbarContainer, retweetButtonDidPressed sender: UIButton) {
+        delegate?.conversationPostTableViewCell(self, actionToolbarContainer: actionToolbarContainer, retweetButtonDidPressed: sender)
     }
     
-    func statusActionToolbar(_ toolbar: StatusActionToolbar, favoriteButtonDidPressed sender: UIButton) {
-        delegate?.conversationPostTableViewCell(self, actionToolbar: toolbar, favoriteButtonDidPressed: sender)
+    func actionToolbarContainer(_ actionToolbarContainer: ActionToolbarContainer, likeButtonDidPressed sender: UIButton) {
+        delegate?.conversationPostTableViewCell(self, actionToolbarContainer: actionToolbarContainer, favoriteButtonDidPressed: sender)
     }
     
-    func statusActionToolbar(_ toolbar: StatusActionToolbar, shareButtonDidPressed sender: UIButton) {
-        delegate?.conversationPostTableViewCell(self, actionToolbar: toolbar, shareButtonDidPressed: sender)
+    func actionToolbarContainer(_ actionToolbarContainer: ActionToolbarContainer, menuButtonDidPressed sender: UIButton) {
+        delegate?.conversationPostTableViewCell(self, actionToolbarContainer: actionToolbarContainer, shareButtonDidPressed: sender)
     }
-    
+
 }
 
 // MARK: - MosaicImageViewDelegate

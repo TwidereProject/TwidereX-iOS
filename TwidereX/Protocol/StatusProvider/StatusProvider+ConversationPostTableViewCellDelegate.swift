@@ -37,19 +37,19 @@ extension ConversationPostTableViewCellDelegate where Self: StatusProvider {
 // MARK: - ActionToolbarContainerDelegate
 extension ConversationPostTableViewCellDelegate where Self: StatusProvider {
 
-    func conversationPostTableViewCell(_ cell: ConversationPostTableViewCell, actionToolbar: StatusActionToolbar, replayButtonDidPressed sender: UIButton) {
+    func conversationPostTableViewCell(_ cell: ConversationPostTableViewCell, actionToolbarContainer: ActionToolbarContainer, replayButtonDidPressed sender: UIButton) {
         StatusProviderFacade.coordinateToStatusReplyScene(provider: self, cell: cell)
     }
     
-    func conversationPostTableViewCell(_ cell: ConversationPostTableViewCell, actionToolbar: StatusActionToolbar, retweetButtonDidPressed sender: UIButton) {
+    func conversationPostTableViewCell(_ cell: ConversationPostTableViewCell, actionToolbarContainer: ActionToolbarContainer, retweetButtonDidPressed sender: UIButton) {
         StatusProviderFacade.responseToStatusRetweetAction(provider: self, cell: cell)
     }
     
-    func conversationPostTableViewCell(_ cell: ConversationPostTableViewCell, actionToolbar: StatusActionToolbar, favoriteButtonDidPressed sender: UIButton) {
+    func conversationPostTableViewCell(_ cell: ConversationPostTableViewCell, actionToolbarContainer: ActionToolbarContainer, favoriteButtonDidPressed sender: UIButton) {
         StatusProviderFacade.responseToStatusLikeAction(provider: self, cell: cell)
     }
     
-    func conversationPostTableViewCell(_ cell: ConversationPostTableViewCell, actionToolbar: StatusActionToolbar, shareButtonDidPressed sender: UIButton) {
+    func conversationPostTableViewCell(_ cell: ConversationPostTableViewCell, actionToolbarContainer: ActionToolbarContainer, shareButtonDidPressed sender: UIButton) {
         StatusProviderFacade.responseToStatusMenuAction(provider: self, cell: cell, sender: sender)
     }
     

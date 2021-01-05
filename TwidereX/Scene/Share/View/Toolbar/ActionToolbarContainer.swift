@@ -18,7 +18,7 @@ protocol ActionToolbarContainerDelegate: class {
 
 
 final class ActionToolbarContainer: UIView {
-    
+        
     let replyButton     = HitTestExpandedButton()
     let retweetButton   = HitTestExpandedButton()
     let likeButton      = HitTestExpandedButton()
@@ -100,7 +100,7 @@ extension ActionToolbarContainer {
             button.titleLabel?.font = .monospacedDigitSystemFont(ofSize: 12, weight: .regular)
             button.setTitle("", for: .normal)
             button.setTitleColor(.secondaryLabel, for: .normal)
-            button.setInsets(forContentPadding: .zero, imageTitlePadding: TimelinePostActionToolbar.buttonTitleImagePadding)
+            button.setInsets(forContentPadding: .zero, imageTitlePadding: style.buttonTitleImagePadding)
         }
         
         switch style {

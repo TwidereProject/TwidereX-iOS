@@ -490,11 +490,11 @@ extension TweetConversationViewModel {
         
         // set action toolbar title
         let isRetweeted = (tweet.retweet ?? tweet).retweetBy.flatMap({ $0.contains(where: { $0.id == requestUserID }) }) ?? false
-        cell.conversationPostView.actionToolbar.retweetButton.isEnabled = !(tweet.retweet ?? tweet).author.protected
-        cell.conversationPostView.actionToolbar.retweetButtonHighligh = isRetweeted
+        cell.conversationPostView.actionToolbarContainer.retweetButton.isEnabled = !(tweet.retweet ?? tweet).author.protected
+        cell.conversationPostView.actionToolbarContainer.isRetweetButtonHighligh = isRetweeted
 
         let isLike = (tweet.retweet ?? tweet).likeBy.flatMap({ $0.contains(where: { $0.id == requestUserID }) }) ?? false
-        cell.conversationPostView.actionToolbar.likeButtonHighlight = isLike
+        cell.conversationPostView.actionToolbarContainer.isLikeButtonHighlight = isLike
         
         // set upper link
         if let _ = (tweet.retweet ?? tweet).inReplyToTweetID {
@@ -514,10 +514,10 @@ extension TweetConversationViewModel {
                 let targetTweet = newTweet.retweet ?? newTweet
                 
                 let isRetweeted = targetTweet.retweetBy.flatMap({ $0.contains(where: { $0.id == requestUserID }) }) ?? false
-                cell.conversationPostView.actionToolbar.retweetButtonHighligh = isRetweeted
+                cell.conversationPostView.actionToolbarContainer.isRetweetButtonHighligh = isRetweeted
 
                 let isLike = targetTweet.likeBy.flatMap({ $0.contains(where: { $0.id == requestUserID }) }) ?? false
-                cell.conversationPostView.actionToolbar.likeButtonHighlight = isLike
+                cell.conversationPostView.actionToolbarContainer.isLikeButtonHighlight = isLike
             }
             .store(in: &cell.disposeBag)
     }
