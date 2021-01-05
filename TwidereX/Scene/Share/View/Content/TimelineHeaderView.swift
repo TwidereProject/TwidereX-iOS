@@ -30,6 +30,7 @@ final class TimelineHeaderView: UIView {
         label.font = .preferredFont(forTextStyle: .footnote)
         label.textColor = .secondaryLabel
         label.text = "Message"
+        label.numberOfLines = 0
         return label
     }()
     

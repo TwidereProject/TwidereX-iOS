@@ -464,12 +464,32 @@ extension ProfileViewController: ProfilePagingViewControllerDelegate {
         postTimelineViewController.scrollView.panGestureRecognizer.require(toFail: overlayScrollView.panGestureRecognizer)
         
         
-        if let userMediaTimelineViewController = postTimelineViewController as? UserMediaTimelineViewController, userMediaTimelineViewController.viewModel.items.value.isEmpty {
-            userMediaTimelineViewController.viewModel.stateMachine.enter(UserMediaTimelineViewModel.State.Reloading.self)
+        if let userMediaTimelineViewController = postTimelineViewController as? UserMediaTimelineViewController,
+           let currentState = userMediaTimelineViewController.viewModel.stateMachine.currentState {
+            switch currentState {
+            case is UserMediaTimelineViewModel.State.NoMore,
+                 is UserMediaTimelineViewModel.State.NotAuthorized,
+                 is UserMediaTimelineViewModel.State.Blocked:
+                break
+            default:
+                if userMediaTimelineViewController.viewModel.items.value.isEmpty {
+                    userMediaTimelineViewController.viewModel.stateMachine.enter(UserMediaTimelineViewModel.State.Reloading.self)
+                }
+            }
         }
         
-        if let userLikeTimelineViewController = postTimelineViewController as? UserLikeTimelineViewController, userLikeTimelineViewController.viewModel.items.value.isEmpty {
-            userLikeTimelineViewController.viewModel.stateMachine.enter(UserLikeTimelineViewModel.State.Reloading.self)
+        if let userLikeTimelineViewController = postTimelineViewController as? UserLikeTimelineViewController,
+           let currentState = userLikeTimelineViewController.viewModel.stateMachine.currentState {
+            switch currentState {
+            case is UserLikeTimelineViewModel.State.NoMore,
+                 is UserLikeTimelineViewModel.State.NotAuthorized,
+                 is UserLikeTimelineViewModel.State.Blocked:
+                break
+            default:
+                if userLikeTimelineViewController.viewModel.items.value.isEmpty {
+                    userLikeTimelineViewController.viewModel.stateMachine.enter(UserLikeTimelineViewModel.State.Reloading.self)
+                }
+            }
         }
     }
     
