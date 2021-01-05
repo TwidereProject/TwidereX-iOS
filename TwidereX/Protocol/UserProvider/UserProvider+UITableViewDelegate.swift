@@ -1,5 +1,5 @@
 //
-//  TwitterUserProvider+UITableViewDelegate.swift
+//  UserProvider+UITableViewDelegate.swift
 //  TwidereX
 //
 //  Created by Cirno MainasuK on 2020-12-24.
@@ -9,7 +9,7 @@
 import os.log
 import UIKit
 
-extension UITableViewDelegate where Self: TwitterUserProvider {
+extension UITableViewDelegate where Self: UserProvider {
     
     func handleTableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         os_log("%{public}s[%{public}ld], %{public}s: indexPath %s", ((#file as NSString).lastPathComponent), #line, #function, indexPath.debugDescription)

@@ -1,18 +1,18 @@
 //
-//  FollowerListViewController+TwitterUserProvider.swift
+//  FollowerListViewController+UserProvider.swift
 //  TwidereX
 //
 //  Created by Cirno MainasuK on 2020-12-28.
 //  Copyright © 2020 Twidere. All rights reserved.
 //
 
-import Foundation
+import UIKit
 import Combine
 import CoreData
 import CoreDataStack
 
-extension FollowerListViewController: TwitterUserProvider {
-    func twitterUser(for cell: FriendshipTableViewCell, indexPath: IndexPath?) -> Future<TwitterUser?, Never> {
+extension FollowerListViewController: UserProvider {
+    func twitterUser(for cell: UITableViewCell, indexPath: IndexPath?) -> Future<TwitterUser?, Never> {
         return Future { promise in
             guard let diffableDataSource = self.viewModel.diffableDataSource else {
                 assertionFailure()

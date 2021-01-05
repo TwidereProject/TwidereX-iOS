@@ -20,6 +20,9 @@ extension Twitter.API.Error {
         // 136 - <No Document>
         case blockedFromViewingThisUserProfile
         
+        // 162 - <No Document>
+        case blockedFromRequestFollowingThisUser
+        
         // 179 - Sorry, you are not authorized to see this status
         case notAuthorizedToSeeThisStatus
 
@@ -30,6 +33,7 @@ extension Twitter.API.Error {
             switch code {
             case 88:        self = .rateLimitExceeded
             case 136:       self = .blockedFromViewingThisUserProfile
+            case 162:       self = .blockedFromRequestFollowingThisUser
             case 179:       self = .notAuthorizedToSeeThisStatus
             case 326:       self = .accountIsTemporarilyLocked(message: message)
             default:        self = .custom(code: code, message: message)

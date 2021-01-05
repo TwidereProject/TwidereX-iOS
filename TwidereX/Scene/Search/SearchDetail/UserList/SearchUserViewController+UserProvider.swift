@@ -1,18 +1,18 @@
 //
-//  FollowingListViewController+TwitterUserProvider.swift
+//  SearchUserViewController+UserProvider.swift
 //  TwidereX
 //
-//  Created by Cirno MainasuK on 2020-12-24.
-//  Copyright © 2020 Twidere. All rights reserved.
+//  Created by Cirno MainasuK on 2021-1-5.
+//  Copyright © 2021 Twidere. All rights reserved.
 //
 
-import Foundation
+import UIKit
 import Combine
 import CoreData
 import CoreDataStack
 
-extension FollowingListViewController: TwitterUserProvider {
-    func twitterUser(for cell: FriendshipTableViewCell, indexPath: IndexPath?) -> Future<TwitterUser?, Never> {
+extension SearchUserViewController: UserProvider {
+    func twitterUser(for cell: UITableViewCell, indexPath: IndexPath?) -> Future<TwitterUser?, Never> {
         return Future { promise in
             guard let diffableDataSource = self.viewModel.diffableDataSource else {
                 assertionFailure()
@@ -28,7 +28,7 @@ extension FollowingListViewController: TwitterUserProvider {
             
             switch item {
             case .twitterUser(let objectID):
-                let managedObjectContext = self.viewModel.orderedTwitterUserFetchedResultsController.fetchedResultsController.managedObjectContext
+                let managedObjectContext = self.viewModel.fetchedResultsController.managedObjectContext
                 managedObjectContext.perform {
                     let twitterUser = managedObjectContext.object(with: objectID) as? TwitterUser
                     promise(.success(twitterUser))
