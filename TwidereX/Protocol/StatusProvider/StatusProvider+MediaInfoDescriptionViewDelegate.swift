@@ -1,5 +1,5 @@
 //
-//  TweetProvider+MediaInfoDescriptionViewDelegate.swift
+//  StatusProvider+MediaInfoDescriptionViewDelegate.swift
 //  TwidereX
 //
 //  Created by Cirno MainasuK on 2020-11-16.
@@ -14,7 +14,7 @@ import CoreDataStack
 import ActiveLabel
 import TwitterAPI
 
-extension MediaInfoDescriptionViewDelegate where Self: TweetProvider {
+extension MediaInfoDescriptionViewDelegate where Self: StatusProvider {
     
     func mediaInfoDescriptionView(_ mediaInfoDescriptionView: MediaInfoDescriptionView, avatarImageViewDidPressed imageView: UIImageView) {
         tweet()

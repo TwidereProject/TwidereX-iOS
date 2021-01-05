@@ -1,5 +1,5 @@
 //
-//  TweetConversationViewController+TweetProvider.swift
+//  TweetConversationViewController+StatusProvider.swift
 //  TwidereX
 //
 //  Created by Cirno MainasuK on 2020/11/10.
@@ -12,42 +12,10 @@ import Combine
 import CoreDataStack
 import TwitterAPI
 
-// MARK: - TweetProvider
-extension TweetConversationViewController: TweetProvider {
+// MARK: - StatusProvider
+extension TweetConversationViewController: StatusProvider {
     
-    func tweet(for cell: TimelinePostTableViewCell, indexPath: IndexPath?) -> Future<Tweet?, Never> {
-        return Future { promise in
-            guard let diffableDataSource = self.viewModel.diffableDataSource else {
-                assertionFailure()
-                promise(.success(nil))
-                return
-            }
-            guard let indexPath = indexPath ?? self.tableView.indexPath(for: cell),
-                  let item = diffableDataSource.itemIdentifier(for: indexPath) else {
-                promise(.success(nil))
-                return
-            }
-            
-            switch item {
-            case .reply(let objectID):
-                let managedObjectContext = self.context.managedObjectContext
-                managedObjectContext.perform {
-                    let tweet = managedObjectContext.object(with: objectID) as? Tweet
-                    promise(.success(tweet))
-                }
-            case .leaf(let objectID, _):
-                let managedObjectContext = self.context.managedObjectContext
-                managedObjectContext.perform {
-                    let tweet = managedObjectContext.object(with: objectID) as? Tweet
-                    promise(.success(tweet))
-                }
-            default:
-                promise(.success(nil))
-            }
-        }
-    }
-    
-    func tweet(for cell: ConversationPostTableViewCell, indexPath: IndexPath?) -> Future<Tweet?, Never> {
+    func tweet(for cell: UITableViewCell, indexPath: IndexPath?) -> Future<Tweet?, Never> {
         return Future { promise in
             guard let diffableDataSource = self.viewModel.diffableDataSource else {
                 assertionFailure()
@@ -62,6 +30,18 @@ extension TweetConversationViewController: TweetProvider {
             
             switch item {
             case .root(let objectID):
+                let managedObjectContext = self.context.managedObjectContext
+                managedObjectContext.perform {
+                    let tweet = managedObjectContext.object(with: objectID) as? Tweet
+                    promise(.success(tweet))
+                }
+            case .reply(let objectID):
+                let managedObjectContext = self.context.managedObjectContext
+                managedObjectContext.perform {
+                    let tweet = managedObjectContext.object(with: objectID) as? Tweet
+                    promise(.success(tweet))
+                }
+            case .leaf(let objectID, _):
                 let managedObjectContext = self.context.managedObjectContext
                 managedObjectContext.perform {
                     let tweet = managedObjectContext.object(with: objectID) as? Tweet

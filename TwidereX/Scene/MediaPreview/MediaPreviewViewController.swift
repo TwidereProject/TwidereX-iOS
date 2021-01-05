@@ -40,6 +40,7 @@ final class MediaPreviewViewController: UIViewController, NeedsDependency {
         backgroundView.alpha = 0.9
         backgroundView.layer.masksToBounds = true
         backgroundView.layer.cornerRadius = 8
+        backgroundView.layer.cornerCurve = .continuous
         return backgroundView
     }()
     

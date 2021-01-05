@@ -28,8 +28,6 @@ protocol ConversationPostTableViewCellDelegate: class {
     func conversationPostTableViewCell(_ cell: ConversationPostTableViewCell, mosaicImageView: MosaicImageView, didTapImageView imageView: UIImageView, atIndex index: Int)
     
     func conversationPostTableViewCell(_ cell: ConversationPostTableViewCell, activeLabel: ActiveLabel, didTapEntity entity: ActiveEntity)
-    func conversationPostTableViewCell(_ cell: ConversationPostTableViewCell, quoteActiveLabel: ActiveLabel, didTapEntity entity: ActiveEntity)
-
 }
 
 final class ConversationPostTableViewCell: UITableViewCell {

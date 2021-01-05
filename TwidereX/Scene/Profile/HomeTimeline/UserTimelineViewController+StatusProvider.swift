@@ -1,8 +1,8 @@
 //
-//  MentionTimelineViewController+TweetProvider.swift
+//  UserTimelineViewController+StatusProvider.swift
 //  TwidereX
 //
-//  Created by Cirno MainasuK on 2020/11/10.
+//  Created by Cirno MainasuK on 2020/11/13.
 //  Copyright © 2020 Twidere. All rights reserved.
 //
 
@@ -12,9 +12,10 @@ import Combine
 import CoreDataStack
 import TwitterAPI
 
-// MARK: - TweetProvider
-extension MentionTimelineViewController: TweetProvider {
-    func tweet(for cell: TimelinePostTableViewCell, indexPath: IndexPath?) -> Future<Tweet?, Never> {
+// MARK: - StatusProvider
+extension UserTimelineViewController: StatusProvider {
+    
+    func tweet(for cell: UITableViewCell, indexPath: IndexPath?) -> Future<Tweet?, Never> {
         return Future { promise in
             guard let diffableDataSource = self.viewModel.diffableDataSource else {
                 assertionFailure()
@@ -28,15 +29,16 @@ extension MentionTimelineViewController: TweetProvider {
             }
             
             switch item {
-            case .mentionTimelineIndex(let objectID, _):
+            case .tweet(let objectID):
                 let managedObjectContext = self.viewModel.fetchedResultsController.managedObjectContext
                 managedObjectContext.perform {
-                    let timelineIndex = managedObjectContext.object(with: objectID) as? MentionTimelineIndex
-                    promise(.success(timelineIndex?.tweet))
+                    let tweet = managedObjectContext.object(with: objectID) as? Tweet
+                    promise(.success(tweet))
                 }
             default:
                 promise(.success(nil))
             }
         }
     }
+    
 }

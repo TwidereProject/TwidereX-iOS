@@ -1,9 +1,9 @@
 //
-//  TweetProvider+ConversationPostTableViewCellDelegate.swift
+//  StatusProviderFacade.swift
 //  TwidereX
 //
-//  Created by Cirno MainasuK on 2020-11-13.
-//  Copyright © 2020 Twidere. All rights reserved.
+//  Created by Cirno MainasuK on 2021-1-5.
+//  Copyright © 2021 Twidere. All rights reserved.
 //
 
 import os.log
@@ -14,95 +14,80 @@ import CoreDataStack
 import TwitterAPI
 import ActiveLabel
 
-extension ConversationPostTableViewCellDelegate where Self: TweetProvider {
+enum StatusProviderFacade {
     
-    func conversationPostTableViewCell(_ cell: ConversationPostTableViewCell, retweetInfoLabelDidPressed label: UILabel) {
-        tweet(for: cell, indexPath: nil)
-            .sink { [weak self] tweet in
-                guard let self = self else { return }
-                guard let tweet = tweet else { return }
-                let twitterUser = tweet.author
+    static func coordinateToStatusAuthorProfileScene(for target: Target, provider: StatusProvider, cell: UITableViewCell) {
+        provider.tweet(for: cell, indexPath: nil)
+            .sink { [weak provider] tweet in
+                guard let provider = provider else { return }
+                let _tweet: Tweet? = {
+                    switch target {
+                    case .tweet:    return tweet?.retweet ?? tweet
+                    case .retweet:  return tweet
+                    case .quote:    return tweet?.retweet?.quote ?? tweet?.quote
+                    }
+                }()
+                guard let tweet = _tweet else { return }
                 
-                let profileViewModel = ProfileViewModel(context: self.context, twitterUser: twitterUser)
+                let twitterUser = tweet.author
+                let profileViewModel = ProfileViewModel(context: provider.context, twitterUser: twitterUser)
                 DispatchQueue.main.async {
-                    self.coordinator.present(scene: .profile(viewModel: profileViewModel), from: self, transition: .show)
+                    provider.coordinator.present(scene: .profile(viewModel: profileViewModel), from: provider, transition: .show)
                 }
             }
-            .store(in: &disposeBag)
+            .store(in: &provider.disposeBag)
     }
     
-    func conversationPostTableViewCell(_ cell: ConversationPostTableViewCell, avatarImageViewDidPressed imageView: UIImageView) {
-        tweet(for: cell, indexPath: nil)
-            .sink { [weak self] tweet in
-                guard let self = self else { return }
-                guard let tweet = tweet?.retweet ?? tweet else { return }
-                let twitterUser = tweet.author
+    static func coordinateToStatusConversationScene(for target: Target, provider: StatusProvider, cell: UITableViewCell) {
+        provider.tweet(for: cell, indexPath: nil)
+            .sink { [weak provider] tweet in
+                guard let provider = provider else { return }
+                let _tweet: Tweet? = {
+                    switch target {
+                    case .tweet:    return tweet?.retweet ?? tweet
+                    case .retweet:  return tweet
+                    case .quote:    return tweet?.retweet?.quote ?? tweet?.quote
+                    }
+                }()
+                guard let tweet = _tweet else { return }
                 
-                let profileViewModel = ProfileViewModel(context: self.context, twitterUser: twitterUser)
+                provider.context.videoPlaybackService.markTransitioning(for: tweet)
+                let tweetPostViewModel = TweetConversationViewModel(context: provider.context, tweetObjectID: tweet.objectID)
                 DispatchQueue.main.async {
-                    self.coordinator.present(scene: .profile(viewModel: profileViewModel), from: self, transition: .show)
+                    provider.coordinator.present(scene: .tweetConversation(viewModel: tweetPostViewModel), from: provider, transition: .show)
                 }
             }
-            .store(in: &disposeBag)
+            .store(in: &provider.disposeBag)
     }
     
-    func conversationPostTableViewCell(_ cell: ConversationPostTableViewCell, quoteAvatarImageViewDidPressed imageView: UIImageView) {
-        tweet(for: cell, indexPath: nil)
-            .sink { [weak self] tweet in
-                guard let self = self else { return }
-                guard let tweet = tweet?.retweet?.quote ?? tweet?.quote else { return }
-                let twitterUser = tweet.author
-                
-                let profileViewModel = ProfileViewModel(context: self.context, twitterUser: twitterUser)
+}
 
-                DispatchQueue.main.async {
-                    self.coordinator.present(scene: .profile(viewModel: profileViewModel), from: self, transition: .show)
-                }
-            }
-            .store(in: &disposeBag)
-    }
+extension StatusProviderFacade {
     
-    func conversationPostTableViewCell(_ cell: ConversationPostTableViewCell, quotePostViewDidPressed quotePostView: QuotePostView) {
-        tweet(for: cell, indexPath: nil)
-            .sink { [weak self] tweet in
-                guard let self = self else { return }
-                guard let tweet = (tweet?.retweet ?? tweet)?.quote else { return }
-                
-                self.context.videoPlaybackService.markTransitioning(for: tweet)
-                let tweetPostViewModel = TweetConversationViewModel(context: self.context, tweetObjectID: tweet.objectID)
-                DispatchQueue.main.async {
-                    self.coordinator.present(scene: .tweetConversation(viewModel: tweetPostViewModel), from: self, transition: .show)
-                }
-            }
-            .store(in: &disposeBag)
-    }
-    
-    // MARK: - ActionToolbar
-
-    func conversationPostTableViewCell(_ cell: ConversationPostTableViewCell, actionToolbar: StatusActionToolbar, replayButtonDidPressed sender: UIButton) {
-        tweet(for: cell, indexPath: nil)
-            .sink { [weak self] tweet in
-                guard let self = self else { return }
+    static func coordinateToStatusReplyScene(provider: StatusProvider, cell: UITableViewCell) {
+        provider.tweet(for: cell, indexPath: nil)
+            .sink { [weak provider] tweet in
+                guard let provider = provider else { return }
                 guard let tweet = (tweet?.retweet ?? tweet) else { return }
-                let tweetObjectID = tweet.objectID
                 
-                let composeTweetViewModel = ComposeTweetViewModel(context: self.context, repliedTweetObjectID: tweetObjectID)
+                let tweetObjectID = tweet.objectID
+                let composeTweetViewModel = ComposeTweetViewModel(context: provider.context, repliedTweetObjectID: tweetObjectID)
                 DispatchQueue.main.async {
-                    self.coordinator.present(scene: .composeTweet(viewModel: composeTweetViewModel), from: self, transition: .modal(animated: true, completion: nil))
+                    provider.coordinator.present(scene: .composeTweet(viewModel: composeTweetViewModel), from: provider, transition: .modal(animated: true, completion: nil))
                 }
             }
-            .store(in: &disposeBag)
+            .store(in: &provider.disposeBag)
     }
     
-    func conversationPostTableViewCell(_ cell: ConversationPostTableViewCell, actionToolbar: StatusActionToolbar, retweetButtonDidPressed sender: UIButton) {
+    static func responseToStatusRetweetAction(provider: StatusProvider, cell: UITableViewCell) {
         // prepare authentication
-        guard let activeTwitterAuthenticationBox = context.authenticationService.activeTwitterAuthenticationBox.value else {
+        guard let activeTwitterAuthenticationBox = provider.context.authenticationService.activeTwitterAuthenticationBox.value else {
             assertionFailure()
             return
         }
         
         // prepare current user infos
-        guard let _currentTwitterUser = context.authenticationService.activeAuthenticationIndex.value?.twitterAuthentication?.twitterUser else {
+        guard let _currentTwitterUser = provider.context.authenticationService.activeAuthenticationIndex.value?.twitterAuthentication?.twitterUser else {
             assertionFailure()
             return
         }
@@ -110,13 +95,13 @@ extension ConversationPostTableViewCellDelegate where Self: TweetProvider {
         assert(_currentTwitterUser.id == twitterUserID)
         let twitterUserObjectID = _currentTwitterUser.objectID
         
-        guard let context = self.context else { return }
+        guard let context = provider.context else { return }
         
         // haptic feedback generator
         let generator = UIImpactFeedbackGenerator(style: .light)
         let responseFeedbackGenerator = UIImpactFeedbackGenerator(style: .medium)
         
-        tweet(for: cell, indexPath: nil)
+        provider.tweet(for: cell, indexPath: nil)
             .compactMap { tweet -> (NSManagedObjectID, Twitter.API.Statuses.RetweetKind)? in
                 guard let tweet = tweet else { return nil }
                 let retweetKind: Twitter.API.Statuses.RetweetKind = {
@@ -164,9 +149,9 @@ extension ConversationPostTableViewCellDelegate where Self: TweetProvider {
             }
             .switchToLatest()
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] completion in
-                guard let self = self else { return }
-                if self.view.window != nil {
+            .sink { [weak provider] completion in
+                guard let provider = provider else { return }
+                if provider.view.window != nil {
                     responseFeedbackGenerator.impactOccurred()
                 }
                 switch completion {
@@ -178,18 +163,18 @@ extension ConversationPostTableViewCellDelegate where Self: TweetProvider {
             } receiveValue: { response in
                 // do nothing
             }
-            .store(in: &disposeBag)
+            .store(in: &provider.disposeBag)
     }
     
-    func conversationPostTableViewCell(_ cell: ConversationPostTableViewCell, actionToolbar: StatusActionToolbar, favoriteButtonDidPressed sender: UIButton) {
+    static func responseToStatusLikeAction(provider: StatusProvider, cell: UITableViewCell) {
         // prepare authentication
-        guard let activeTwitterAuthenticationBox = context.authenticationService.activeTwitterAuthenticationBox.value else {
+        guard let activeTwitterAuthenticationBox = provider.context.authenticationService.activeTwitterAuthenticationBox.value else {
             assertionFailure()
             return
         }
         
         // prepare current user infos
-        guard let _currentTwitterUser = context.authenticationService.activeAuthenticationIndex.value?.twitterAuthentication?.twitterUser else {
+        guard let _currentTwitterUser = provider.context.authenticationService.activeAuthenticationIndex.value?.twitterAuthentication?.twitterUser else {
             assertionFailure()
             return
         }
@@ -197,13 +182,13 @@ extension ConversationPostTableViewCellDelegate where Self: TweetProvider {
         assert(_currentTwitterUser.id == twitterUserID)
         let twitterUserObjectID = _currentTwitterUser.objectID
         
-        guard let context = self.context else { return }
+        guard let context = provider.context else { return }
         
         // haptic feedback generator
         let generator = UIImpactFeedbackGenerator(style: .light)
         let responseFeedbackGenerator = UIImpactFeedbackGenerator(style: .medium)
-
-        tweet(for: cell, indexPath: nil)
+        
+        provider.tweet(for: cell, indexPath: nil)
             .compactMap { tweet -> (NSManagedObjectID, Twitter.API.Favorites.FavoriteKind)? in
                 guard let tweet = tweet else { return nil }
                 let favoriteKind: Twitter.API.Favorites.FavoriteKind = {
@@ -250,9 +235,9 @@ extension ConversationPostTableViewCellDelegate where Self: TweetProvider {
             }
             .switchToLatest()
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] completion in
-                guard let self = self else { return }
-                if self.view.window != nil {
+            .sink { [weak provider] completion in
+                guard let provider = provider else { return }
+                if provider.view.window != nil {
                     responseFeedbackGenerator.impactOccurred()
                 }
                 switch completion {
@@ -264,29 +249,33 @@ extension ConversationPostTableViewCellDelegate where Self: TweetProvider {
             } receiveValue: { response in
                 // do nothing
             }
-            .store(in: &disposeBag)
+            .store(in: &provider.disposeBag)
     }
     
-    func conversationPostTableViewCell(_ cell: ConversationPostTableViewCell, actionToolbar: StatusActionToolbar, shareButtonDidPressed sender: UIButton) {
-        tweet(for: cell, indexPath: nil)
+    static func responseToStatusMenuAction(provider: StatusProvider, cell: UITableViewCell, sender: UIButton) {
+        provider.tweet(for: cell, indexPath: nil)
             .compactMap { $0?.activityItems }
-            .sink { [weak self] activityItems in
-                guard let self = self else { return }
-                let activityViewController = UIActivityViewController(activityItems: activityItems, applicationActivities: [SafariActivity(sceneCoordinator: self.coordinator)])
+            .sink { [weak provider] activityItems in
+                guard let provider = provider else { return }
+                let activityViewController = UIActivityViewController(
+                    activityItems: activityItems,
+                    applicationActivities: [SafariActivity(sceneCoordinator: provider.coordinator)]
+                )
                 activityViewController.popoverPresentationController?.sourceView = sender
-                self.present(activityViewController, animated: true, completion: nil)
+                DispatchQueue.main.async {
+                    provider.present(activityViewController, animated: true, completion: nil)
+                }
             }
-            .store(in: &disposeBag)
+            .store(in: &provider.disposeBag)
     }
     
 }
 
-extension ConversationPostTableViewCellDelegate where Self: TweetProvider & MediaPreviewableViewController {
-    // MARK: - MosaicImageViewDelegate
-    func conversationPostTableViewCell(_ cell: ConversationPostTableViewCell, mosaicImageView: MosaicImageView, didTapImageView imageView: UIImageView, atIndex index: Int) {
-        tweet(for: cell, indexPath: nil)
-            .sink { [weak self] tweet in
-                guard let self = self else { return }
+extension StatusProviderFacade {
+    static func coordinateToStatusMediaPreviewScene(provider: StatusProvider & MediaPreviewableViewController, cell: UITableViewCell, mosaicImageView: MosaicImageView, didTapImageView imageView: UIImageView, atIndex index: Int) {
+        provider.tweet(for: cell, indexPath: nil)
+            .sink { [weak provider] tweet in
+                guard let provider = provider else { return }
                 guard let tweet = (tweet?.retweet ?? tweet) else { return }
                 
                 let root = MediaPreviewViewModel.TweetImagePreviewMeta(
@@ -294,52 +283,40 @@ extension ConversationPostTableViewCellDelegate where Self: TweetProvider & Medi
                     initialIndex: index,
                     preloadThumbnailImages: mosaicImageView.imageViews.map { $0.image }
                 )
-                let mediaPreviewViewModel = MediaPreviewViewModel(context: self.context, meta: root)
+                let mediaPreviewViewModel = MediaPreviewViewModel(context: provider.context, meta: root)
                 DispatchQueue.main.async {
-                    self.coordinator.present(scene: .mediaPreview(viewModel: mediaPreviewViewModel), from: self, transition: .custom(transitioningDelegate: self.mediaPreviewTransitionController))
+                    provider.coordinator.present(scene: .mediaPreview(viewModel: mediaPreviewViewModel), from: provider, transition: .custom(transitioningDelegate: provider.mediaPreviewTransitionController))
                 }
             }
-            .store(in: &disposeBag)
+            .store(in: &provider.disposeBag)
     }
 }
 
-extension ConversationPostTableViewCellDelegate where Self: TweetProvider {
-    
-    func conversationPostTableViewCell(_ cell: ConversationPostTableViewCell, activeLabel: ActiveLabel, didTapEntity entity: ActiveEntity) {
+extension StatusProviderFacade {
+
+    static func responseToStatusActiveLabelAction(provider: StatusProvider, cell: UITableViewCell, activeLabel: ActiveLabel, didTapEntity entity: ActiveEntity) {
         switch entity.type {
-        case .hashtag:
-            break
         case .mention(let text):
-            let mention = text.hasPrefix("@") ? String(text.dropFirst()) : text
-            conversationPostTableViewCell(cell, didTapMention: mention, isQuote: false)
-        case .url(let original, _):
-            guard let url = URL(string: original) else { return }
-            coordinator.present(scene: .safari(url: url), from: nil, transition: .safariPresent(animated: true, completion: nil))
+            coordinateToStatusMentionProfileScene(for: .tweet, provider: provider, cell: cell, mention: text)
+        case .url(let originalURL, _):
+            guard let url = URL(string: originalURL) else { return }
+            provider.coordinator.present(scene: .safari(url: url), from: nil, transition: .safariPresent(animated: true, completion: nil))
         default:
             break
         }
     }
     
-    func conversationPostTableViewCell(_ cell: ConversationPostTableViewCell, quoteActiveLabel: ActiveLabel, didTapEntity entity: ActiveEntity) {
-        switch entity.type {
-        case .hashtag:
-            break
-        case .mention(let text):
-            let mention = text.hasPrefix("@") ? String(text.dropFirst()) : text
-            conversationPostTableViewCell(cell, didTapMention: mention, isQuote: true)
-        case .url(let original, _):
-            guard let url = URL(string: original) else { return }
-            coordinator.present(scene: .safari(url: url), from: nil, transition: .safariPresent(animated: true, completion: nil))
-        default:
-            break
-        }
-    }
-    
-    private func conversationPostTableViewCell(_ cell: ConversationPostTableViewCell, didTapMention mention: String, isQuote: Bool) {
-        tweet(for: cell, indexPath: nil)
-            .sink { [weak self] tweet in
-                guard let self = self else { return }
-                let _tweet: Tweet? = isQuote ? (tweet?.retweet?.quote ?? tweet?.quote) : (tweet?.retweet ?? tweet)
+    private static func coordinateToStatusMentionProfileScene(for target: Target, provider: StatusProvider, cell: UITableViewCell, mention: String) {
+        provider.tweet(for: cell, indexPath: nil)
+            .sink { [weak provider] tweet in
+                guard let provider = provider else { return }
+                let _tweet: Tweet? = {
+                    switch target {
+                    case .tweet:    return tweet?.retweet ?? tweet
+                    case .retweet:  return tweet
+                    case .quote:    return tweet?.retweet?.quote ?? tweet?.quote
+                    }
+                }()
                 guard let tweet = _tweet else { return }
                 
                 let profileViewModel: ProfileViewModel = {
@@ -368,7 +345,7 @@ extension ConversationPostTableViewCellDelegate where Self: TweetProvider {
                                 }
                             }()
                             do {
-                                return try self.context.managedObjectContext.fetch(userRequest).first
+                                return try provider.context.managedObjectContext.fetch(userRequest).first
                             } catch {
                                 assertionFailure(error.localizedDescription)
                                 return nil
@@ -377,27 +354,35 @@ extension ConversationPostTableViewCellDelegate where Self: TweetProvider {
                     }
                     
                     if let targetUser = targetUser {
-                        let activeAuthenticationIndex = self.context.authenticationService.activeAuthenticationIndex.value
+                        let activeAuthenticationIndex = provider.context.authenticationService.activeAuthenticationIndex.value
                         let currentTwitterUser = activeAuthenticationIndex?.twitterAuthentication?.twitterUser
                         if targetUser.id == currentTwitterUser?.id {
-                            return MeProfileViewModel(context: self.context)
+                            return MeProfileViewModel(context: provider.context)
                         } else {
-                            return ProfileViewModel(context: self.context, twitterUser: targetUser)
+                            return ProfileViewModel(context: provider.context, twitterUser: targetUser)
                         }
                     } else {
                         if let targetUserID = targetUserID {
-                            return ProfileViewModel(context: self.context, userID: targetUserID)
+                            return ProfileViewModel(context: provider.context, userID: targetUserID)
                         } else {
-                            return ProfileViewModel(context: self.context, username: targetUsername)
+                            return ProfileViewModel(context: provider.context, username: targetUsername)
                         }
                     }
                 }()
                 
                 DispatchQueue.main.async {
-                    self.coordinator.present(scene: .profile(viewModel: profileViewModel), from: self, transition: .show)
+                    provider.coordinator.present(scene: .profile(viewModel: profileViewModel), from: provider, transition: .show)
                 }
             }
-            .store(in: &disposeBag)
+            .store(in: &provider.disposeBag)
     }
-    
+
+}
+
+extension StatusProviderFacade {
+    enum Target {
+        case tweet
+        case retweet
+        case quote
+    }
 }

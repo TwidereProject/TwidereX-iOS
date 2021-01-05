@@ -1,8 +1,8 @@
 //
-//  UserTimelineViewController+TweetProvider.swift
+//  UserLikeTimelineViewController+StatusProvider.swift
 //  TwidereX
 //
-//  Created by Cirno MainasuK on 2020/11/13.
+//  Created by Cirno MainasuK on 2020-11-13.
 //  Copyright © 2020 Twidere. All rights reserved.
 //
 
@@ -12,8 +12,8 @@ import Combine
 import CoreDataStack
 import TwitterAPI
 
-// MARK: - TweetProvider
-extension UserTimelineViewController: TweetProvider {
+// MARK: - StatusProvider
+extension UserLikeTimelineViewController: StatusProvider {
     
     func tweet(for cell: TimelinePostTableViewCell, indexPath: IndexPath?) -> Future<Tweet?, Never> {
         return Future { promise in
@@ -40,5 +40,4 @@ extension UserTimelineViewController: TweetProvider {
             }
         }
     }
-    
 }

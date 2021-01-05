@@ -1,5 +1,5 @@
 //
-//  MediaPreviewViewController+TweetProvider.swift
+//  MediaPreviewViewController+StatusProvider.swift
 //  TwidereX
 //
 //  Created by Cirno MainasuK on 2020-11-13.
@@ -10,8 +10,8 @@ import UIKit
 import Combine
 import CoreDataStack
 
-// MARK: - TweetProvider
-extension MediaPreviewViewController: TweetProvider {
+// MARK: - StatusProvider
+extension MediaPreviewViewController: StatusProvider {
     
     func tweet() -> Future<Tweet?, Never> {
         return Future { promise in

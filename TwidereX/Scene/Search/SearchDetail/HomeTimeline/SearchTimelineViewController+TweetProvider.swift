@@ -1,5 +1,5 @@
 //
-//  SearchTimelineViewController+TweetProvider.swift
+//  SearchTimelineViewController+StatusProvider.swift
 //  TwidereX
 //
 //  Created by Cirno MainasuK on 2020/11/13.
@@ -12,8 +12,8 @@ import Combine
 import CoreDataStack
 import TwitterAPI
 
-// MARK: - TweetProvider
-extension SearchTimelineViewController: TweetProvider {
+// MARK: - StatusProvider
+extension SearchTimelineViewController: StatusProvider {
     
     func tweet(for cell: TimelinePostTableViewCell, indexPath: IndexPath?) -> Future<Tweet?, Never> {
         return Future { promise in

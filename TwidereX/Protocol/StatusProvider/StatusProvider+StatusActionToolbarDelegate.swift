@@ -1,8 +1,8 @@
 //
-//  EntityProvider+TimelinePostTableViewCellDelegate.swift
+//  StatusProvider+StatusActionToolbarDelegate.swift
 //  TwidereX
 //
-//  Created by Cirno MainasuK on 2020/11/10.
+//  Created by Cirno MainasuK on 2020-11-13.
 //  Copyright © 2020 Twidere. All rights reserved.
 //
 
@@ -12,77 +12,11 @@ import Combine
 import CoreData
 import CoreDataStack
 import TwitterAPI
-import ActiveLabel
 
-extension TimelinePostTableViewCellDelegate where Self: TweetProvider {
+extension StatusActionToolbarDelegate where Self: StatusProvider {
     
-    func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, retweetInfoLabelDidPressed label: UILabel) {
-        tweet(for: cell, indexPath: nil)
-            .sink { [weak self] tweet in
-                guard let self = self else { return }
-                guard let tweet = tweet else { return }
-                let twitterUser = tweet.author
-                
-                let profileViewModel = ProfileViewModel(context: self.context, twitterUser: twitterUser)
-                DispatchQueue.main.async {
-                    self.coordinator.present(scene: .profile(viewModel: profileViewModel), from: self, transition: .show)
-                }
-            }
-            .store(in: &disposeBag)
-    }
-    
-    func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, avatarImageViewDidPressed imageView: UIImageView) {
-        tweet(for: cell, indexPath: nil)
-            .sink { [weak self] tweet in
-                guard let self = self else { return }
-                guard let tweet = tweet?.retweet ?? tweet else { return }
-                let twitterUser = tweet.author
-                
-                let profileViewModel = ProfileViewModel(context: self.context, twitterUser: twitterUser)
-                DispatchQueue.main.async {
-                    self.coordinator.present(scene: .profile(viewModel: profileViewModel), from: self, transition: .show)
-                }
-            }
-            .store(in: &disposeBag)
-    }
-    
-    func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, quoteAvatarImageViewDidPressed imageView: UIImageView) {
-        tweet(for: cell, indexPath: nil)
-            .sink { [weak self] tweet in
-                guard let self = self else { return }
-                guard let tweet = tweet?.retweet?.quote ?? tweet?.quote else { return }
-                let twitterUser = tweet.author
-                
-                let profileViewModel = ProfileViewModel(context: self.context, twitterUser: twitterUser)
-                DispatchQueue.main.async {
-                    self.coordinator.present(scene: .profile(viewModel: profileViewModel), from: self, transition: .show)
-                }
-            }
-            .store(in: &disposeBag)
-    }
-    
-    func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, quotePostViewDidPressed quotePostView: QuotePostView) {
-        tweet(for: cell, indexPath: nil)
-            .sink { [weak self] tweet in
-                guard let self = self else { return }
-                guard let tweet = (tweet?.retweet ?? tweet)?.quote else { return }
-                
-                self.context.videoPlaybackService.markTransitioning(for: tweet)
-                let tweetPostViewModel = TweetConversationViewModel(context: self.context, tweetObjectID: tweet.objectID)
-                DispatchQueue.main.async {
-                    self.coordinator.present(scene: .tweetConversation(viewModel: tweetPostViewModel), from: self, transition: .show)
-                }
-            }
-            .store(in: &disposeBag)
-    }
-    
-}
-    
-// MARK: - ActionToolbarContainerDelegate
-extension TimelinePostTableViewCellDelegate where Self: TweetProvider {
-
-    func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, actionToolbarContainer: ActionToolbarContainer, replayButtonDidPressed sender: UIButton) {
-        tweet(for: cell, indexPath: nil)
+    func statusActionToolbar(_ toolbar: StatusActionToolbar, replayButtonDidPressed sender: UIButton) {
+        tweet()
             .sink { [weak self] tweet in
                 guard let self = self else { return }
                 guard let tweet = (tweet?.retweet ?? tweet) else { return }
@@ -96,7 +30,7 @@ extension TimelinePostTableViewCellDelegate where Self: TweetProvider {
             .store(in: &disposeBag)
     }
     
-    func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, actionToolbarContainer: ActionToolbarContainer, retweetButtonDidPressed sender: UIButton) {
+    func statusActionToolbar(_ toolbar: StatusActionToolbar, retweetButtonDidPressed sender: UIButton) {
         // prepare authentication
         guard let activeTwitterAuthenticationBox = context.authenticationService.activeTwitterAuthenticationBox.value else {
             assertionFailure()
@@ -118,7 +52,7 @@ extension TimelinePostTableViewCellDelegate where Self: TweetProvider {
         let generator = UIImpactFeedbackGenerator(style: .light)
         let responseFeedbackGenerator = UIImpactFeedbackGenerator(style: .medium)
         
-        tweet(for: cell, indexPath: nil)
+        tweet()
             .compactMap { tweet -> (NSManagedObjectID, Twitter.API.Statuses.RetweetKind)? in
                 guard let tweet = tweet else { return nil }
                 let retweetKind: Twitter.API.Statuses.RetweetKind = {
@@ -183,7 +117,7 @@ extension TimelinePostTableViewCellDelegate where Self: TweetProvider {
             .store(in: &disposeBag)
     }
     
-    func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, actionToolbarContainer: ActionToolbarContainer, likeButtonDidPressed sender: UIButton) {
+    func statusActionToolbar(_ toolbar: StatusActionToolbar, favoriteButtonDidPressed sender: UIButton) {
         // prepare authentication
         guard let activeTwitterAuthenticationBox = context.authenticationService.activeTwitterAuthenticationBox.value else {
             assertionFailure()
@@ -204,8 +138,8 @@ extension TimelinePostTableViewCellDelegate where Self: TweetProvider {
         // haptic feedback generator
         let generator = UIImpactFeedbackGenerator(style: .light)
         let responseFeedbackGenerator = UIImpactFeedbackGenerator(style: .medium)
-        
-        tweet(for: cell, indexPath: nil)
+
+        tweet()
             .compactMap { tweet -> (NSManagedObjectID, Twitter.API.Favorites.FavoriteKind)? in
                 guard let tweet = tweet else { return nil }
                 let favoriteKind: Twitter.API.Favorites.FavoriteKind = {
@@ -269,8 +203,8 @@ extension TimelinePostTableViewCellDelegate where Self: TweetProvider {
             .store(in: &disposeBag)
     }
     
-    func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, actionToolbarContainer: ActionToolbarContainer, menuButtonDidPressed sender: UIButton) {
-        tweet(for: cell, indexPath: nil)
+    func statusActionToolbar(_ toolbar: StatusActionToolbar, shareButtonDidPressed sender: UIButton) {
+        tweet()
             .compactMap { $0?.activityItems }
             .sink { [weak self] activityItems in
                 guard let self = self else { return }
@@ -281,107 +215,4 @@ extension TimelinePostTableViewCellDelegate where Self: TweetProvider {
             .store(in: &disposeBag)
     }
     
-}
-
-// MARK: - MosaicImageViewDelegate
-extension TimelinePostTableViewCellDelegate where Self: TweetProvider & MediaPreviewableViewController {
-    func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, mosaicImageView: MosaicImageView, didTapImageView imageView: UIImageView, atIndex index: Int) {
-        tweet(for: cell, indexPath: nil)
-            .sink { [weak self] tweet in
-                guard let self = self else { return }
-                guard let tweet = (tweet?.retweet ?? tweet) else { return }
-                
-                let root = MediaPreviewViewModel.TweetImagePreviewMeta(
-                    tweetObjectID: tweet.objectID,
-                    initialIndex: index,
-                    preloadThumbnailImages: mosaicImageView.imageViews.map { $0.image }
-                )
-                let mediaPreviewViewModel = MediaPreviewViewModel(context: self.context, meta: root)
-                DispatchQueue.main.async {
-                    self.coordinator.present(scene: .mediaPreview(viewModel: mediaPreviewViewModel), from: self, transition: .custom(transitioningDelegate: self.mediaPreviewTransitionController))
-                }
-            }
-            .store(in: &disposeBag)
-    }
-}
-
-extension TimelinePostTableViewCellDelegate where Self: TweetProvider {
-
-    func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, activeLabel: ActiveLabel, didTapEntity entity: ActiveEntity) {
-        switch entity.type {
-        case .mention(let text):
-            timelinePostTableViewCell(cell, didTapMention: text, isQuote: false)
-        case .url(let originalURL, _):
-            guard let url = URL(string: originalURL) else { return }
-            coordinator.present(scene: .safari(url: url), from: nil, transition: .safariPresent(animated: true, completion: nil))
-        default:
-            break
-        }
-    }
-    
-    private func timelinePostTableViewCell(_ cell: TimelinePostTableViewCell, didTapMention mention: String, isQuote: Bool) {
-        tweet(for: cell, indexPath: nil)
-            .sink { [weak self] tweet in
-                guard let self = self else { return }
-                let _tweet: Tweet? = isQuote ? (tweet?.retweet?.quote ?? tweet?.quote) : (tweet?.retweet ?? tweet)
-                guard let tweet = _tweet else { return }
-                
-                let profileViewModel: ProfileViewModel = {
-                    let targetUsername: String
-                    var targetUserID: TwitterUser.ID?
-                    var targetUser: TwitterUser?
-                    if let mentionEntity = (tweet.entities?.mentions ?? Set()).first(where: { $0.username == mention }) {
-                        targetUsername = mentionEntity.username ?? mention
-                        targetUserID = mentionEntity.userID
-                        targetUser = mentionEntity.user
-                    } else {
-                        targetUsername = mention
-                        targetUserID = nil
-                        targetUser = nil
-                    }
-                    
-                    if targetUser == nil {
-                        targetUser = {
-                            let userRequest = TwitterUser.sortedFetchRequest
-                            userRequest.fetchLimit = 1
-                            userRequest.predicate = {
-                                if let targetUserID = targetUserID {
-                                    return TwitterUser.predicate(idStr: targetUserID)
-                                } else {
-                                    return TwitterUser.predicate(username: targetUsername)
-                                }
-                            }()
-                            do {
-                                return try self.context.managedObjectContext.fetch(userRequest).first
-                            } catch {
-                                assertionFailure(error.localizedDescription)
-                                return nil
-                            }
-                        }()
-                    }
-                    
-                    if let targetUser = targetUser {
-                        let activeAuthenticationIndex = self.context.authenticationService.activeAuthenticationIndex.value
-                        let currentTwitterUser = activeAuthenticationIndex?.twitterAuthentication?.twitterUser
-                        if targetUser.id == currentTwitterUser?.id {
-                            return MeProfileViewModel(context: self.context)
-                        } else {
-                            return ProfileViewModel(context: self.context, twitterUser: targetUser)
-                        }
-                    } else {
-                        if let targetUserID = targetUserID {
-                            return ProfileViewModel(context: self.context, userID: targetUserID)
-                        } else {
-                            return ProfileViewModel(context: self.context, username: targetUsername)
-                        }
-                    }
-                }()
-                
-                DispatchQueue.main.async {
-                    self.coordinator.present(scene: .profile(viewModel: profileViewModel), from: self, transition: .show)
-                }
-            }
-            .store(in: &disposeBag)
-    }
-
 }

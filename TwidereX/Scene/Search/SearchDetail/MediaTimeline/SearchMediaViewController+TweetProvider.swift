@@ -1,5 +1,5 @@
 //
-//  SearchMediaViewController+TweetProvider.swift
+//  SearchMediaViewController+StatusProvider.swift
 //  TwidereX
 //
 //  Created by Cirno MainasuK on 2020-11-13.
@@ -12,8 +12,8 @@ import Combine
 import CoreDataStack
 import TwitterAPI
 
-// MARK: - TweetProvider
-extension SearchMediaViewController: TweetProvider {
+// MARK: - StatusProvider
+extension SearchMediaViewController: StatusProvider {
     
     func tweet(for cell: SearchMediaCollectionViewCell) -> Future<Tweet?, Never> {
         return Future { promise in

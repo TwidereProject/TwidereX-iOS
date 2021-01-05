@@ -1,5 +1,5 @@
 //
-//  TweetProvider+UICollectionViewDelegate.swift
+//  StatusProvider+UICollectionViewDelegate.swift
 //  TwidereX
 //
 //  Created by Cirno MainasuK on 2020-11-13.
@@ -9,7 +9,7 @@
 import os.log
 import UIKit
 
-extension UICollectionViewDelegate where Self: TweetProvider & MediaPreviewableViewController {
+extension UICollectionViewDelegate where Self: StatusProvider & MediaPreviewableViewController {
     
     // manually dispath for collectionView(_:didSelectItemAt:)
     func handleCollectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {

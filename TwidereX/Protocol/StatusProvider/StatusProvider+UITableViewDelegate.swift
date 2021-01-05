@@ -1,5 +1,5 @@
 //
-//  TweetProvider+UITableViewDelegate.swift
+//  StatusProvider+UITableViewDelegate.swift
 //  TwidereX
 //
 //  Created by Cirno MainasuK on 2020/11/13.
@@ -13,40 +13,18 @@ import Combine
 import CoreDataStack
 import AlamofireImage
 
-extension UITableViewDelegate where Self: TweetProvider {
+extension UITableViewDelegate where Self: StatusProvider {
     
     func handleTableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         os_log("%{public}s[%{public}ld], %{public}s: indexPath %s", ((#file as NSString).lastPathComponent), #line, #function, indexPath.debugDescription)
         guard let cell = tableView.cellForRow(at: indexPath) as? TimelinePostTableViewCell else { return }
-        tweet(for: cell, indexPath: indexPath)
-            .sink { [weak self] tweet in
-                guard let self = self else { return }
-                guard let tweet = tweet else { return }
-                
-                self.context.videoPlaybackService.markTransitioning(for: tweet)
-                let tweetPostViewModel = TweetConversationViewModel(context: self.context, tweetObjectID: tweet.objectID)
-                DispatchQueue.main.async {
-                    self.coordinator.present(scene: .tweetConversation(viewModel: tweetPostViewModel), from: self, transition: .show)
-                }
-            }
-            .store(in: &disposeBag)
+        StatusProviderFacade.coordinateToStatusConversationScene(for: .retweet, provider: self, cell: cell)
     }
     
     func handleTableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         // os_log("%{public}s[%{public}ld], %{public}s: indexPath %s", ((#file as NSString).lastPathComponent), #line, #function, indexPath.debugDescription)
-
-        var _tweet: Future<Tweet?, Never>?
         
-        if let cell = cell as? TimelinePostTableViewCell {
-            _tweet = tweet(for: cell, indexPath: indexPath)
-        }
-        if let cell = cell as? ConversationPostTableViewCell {
-            _tweet = tweet(for: cell, indexPath: indexPath)
-        }
-        
-        guard let tweet = _tweet else { return }
-        
-        tweet
+        tweet(for: cell, indexPath: indexPath)
             .sink { [weak self] tweet in
                 guard let self = self else { return }
                 guard let tweet = (tweet?.retweet ?? tweet) else { return }
@@ -63,18 +41,7 @@ extension UITableViewDelegate where Self: TweetProvider {
     func handleTableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         // os_log("%{public}s[%{public}ld], %{public}s: indexPath %s", ((#file as NSString).lastPathComponent), #line, #function, indexPath.debugDescription)
         
-        var _tweet: Future<Tweet?, Never>?
-        
-        if let cell = cell as? TimelinePostTableViewCell {
-            _tweet = tweet(for: cell, indexPath: indexPath)
-        }
-        if let cell = cell as? ConversationPostTableViewCell {
-            _tweet = tweet(for: cell, indexPath: indexPath)
-        }
-        
-        guard let tweet = _tweet else { return }
-        
-        tweet
+        tweet(for: cell, indexPath: indexPath)
             .sink { [weak self] tweet in
                 guard let self = self else { return }
                 guard let tweet = (tweet?.retweet ?? tweet) else { return }
@@ -90,8 +57,8 @@ extension UITableViewDelegate where Self: TweetProvider {
 }
 
 
-// context menu
-extension UITableViewDelegate where Self: TweetProvider {
+// MAKR: - Context Menu
+extension UITableViewDelegate where Self: StatusProvider {
 
     private typealias ImagePreviewPresentableCell = UITableViewCell & DisposeBagCollectable & MosaicImageViewPresentable
     
@@ -222,7 +189,7 @@ extension UITableViewDelegate where Self: TweetProvider {
     
 }
 
-extension UITableViewDelegate where Self: TweetProvider & MediaPreviewableViewController {
+extension UITableViewDelegate where Self: StatusProvider & MediaPreviewableViewController {
     func handleTableView(_ tableView: UITableView, willPerformPreviewActionForMenuWith configuration: UIContextMenuConfiguration, animator: UIContextMenuInteractionCommitAnimating) {
         guard let configuration = configuration as? TimelineTableViewCellContextMenuConfiguration else { return }
         guard let indexPath = configuration.indexPath, let index = configuration.index else { return }

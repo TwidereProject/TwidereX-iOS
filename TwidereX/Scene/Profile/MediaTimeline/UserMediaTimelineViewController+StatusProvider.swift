@@ -1,5 +1,5 @@
 //
-//  UserMediaTimelineViewController+TweetProvider.swift
+//  UserMediaTimelineViewController+StatusProvider.swift
 //  TwidereX
 //
 //  Created by Cirno MainasuK on 2020-11-13.
@@ -12,8 +12,8 @@ import Combine
 import CoreDataStack
 import TwitterAPI
 
-// MARK: - TweetProvider
-extension UserMediaTimelineViewController: TweetProvider {
+// MARK: - StatusProvider
+extension UserMediaTimelineViewController: StatusProvider {
     
     func tweet(for cell: SearchMediaCollectionViewCell) -> Future<Tweet?, Never> {
         return Future { promise in
