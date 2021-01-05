@@ -131,7 +131,7 @@ extension APIService {
             let available = current > requestStop
             if !available {
                 let waitInterval = requestStop - current
-                os_log("%{public}s[%{public}ld], %{public}s: request throttle. Please wait %.2fs", ((#file as NSString).lastPathComponent), #line, #function, waitInterval)
+                os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: [API RateLimit] request throttle. Please wait %.2fs", ((#file as NSString).lastPathComponent), #line, #function, waitInterval)
             }
             
             return available
