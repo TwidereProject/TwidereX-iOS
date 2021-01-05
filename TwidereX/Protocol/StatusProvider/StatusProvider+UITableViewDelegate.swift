@@ -18,7 +18,7 @@ extension UITableViewDelegate where Self: StatusProvider {
     func handleTableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         os_log("%{public}s[%{public}ld], %{public}s: indexPath %s", ((#file as NSString).lastPathComponent), #line, #function, indexPath.debugDescription)
         guard let cell = tableView.cellForRow(at: indexPath) as? TimelinePostTableViewCell else { return }
-        StatusProviderFacade.coordinateToStatusConversationScene(for: .retweet, provider: self, cell: cell)
+        StatusProviderFacade.coordinateToStatusConversationScene(for: .retweet, provider: self, cell: cell, indexPath: indexPath)
     }
     
     func handleTableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {

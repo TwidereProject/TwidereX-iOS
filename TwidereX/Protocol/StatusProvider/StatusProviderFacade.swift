@@ -16,8 +16,24 @@ import ActiveLabel
 
 enum StatusProviderFacade {
     
+    static func coordinateToStatusAuthorProfileScene(for target: Target, provider: StatusProvider) {
+        _coordinateToStatusAuthorProfileScene(
+            for: target,
+            provider: provider,
+            tweet: provider.tweet()
+        )
+    }
+    
     static func coordinateToStatusAuthorProfileScene(for target: Target, provider: StatusProvider, cell: UITableViewCell) {
-        provider.tweet(for: cell, indexPath: nil)
+        _coordinateToStatusAuthorProfileScene(
+            for: target,
+            provider: provider,
+            tweet: provider.tweet(for: cell, indexPath: nil)
+        )
+    }
+    
+    private static func _coordinateToStatusAuthorProfileScene(for target: Target, provider: StatusProvider, tweet: Future<Tweet?, Never>) {
+        tweet
             .sink { [weak provider] tweet in
                 guard let provider = provider else { return }
                 let _tweet: Tweet? = {
@@ -32,14 +48,37 @@ enum StatusProviderFacade {
                 let twitterUser = tweet.author
                 let profileViewModel = ProfileViewModel(context: provider.context, twitterUser: twitterUser)
                 DispatchQueue.main.async {
-                    provider.coordinator.present(scene: .profile(viewModel: profileViewModel), from: provider, transition: .show)
+                    let from = provider.presentingViewController ?? provider
+                    if provider.navigationController == nil {
+                        provider.dismiss(animated: true) {
+                            provider.coordinator.present(scene: .profile(viewModel: profileViewModel), from: from, transition: .show)
+                        }
+                    } else {
+                        provider.coordinator.present(scene: .profile(viewModel: profileViewModel), from: from, transition: .show)
+                    }
                 }
             }
             .store(in: &provider.disposeBag)
     }
+
+    static func coordinateToStatusConversationScene(for target: Target, provider: StatusProvider) {
+        _coordinateToStatusConversationScene(
+            for: target,
+            provider: provider,
+            tweet: provider.tweet()
+        )
+    }
     
-    static func coordinateToStatusConversationScene(for target: Target, provider: StatusProvider, cell: UITableViewCell) {
-        provider.tweet(for: cell, indexPath: nil)
+    static func coordinateToStatusConversationScene(for target: Target, provider: StatusProvider, cell: UITableViewCell, indexPath: IndexPath? = nil) {
+        _coordinateToStatusConversationScene(
+            for: target,
+            provider: provider,
+            tweet: provider.tweet(for: cell, indexPath: indexPath)
+        )
+    }
+    
+    private static func _coordinateToStatusConversationScene(for target: Target, provider: StatusProvider, tweet: Future<Tweet?, Never>) {
+        tweet
             .sink { [weak provider] tweet in
                 guard let provider = provider else { return }
                 let _tweet: Tweet? = {
@@ -54,18 +93,38 @@ enum StatusProviderFacade {
                 provider.context.videoPlaybackService.markTransitioning(for: tweet)
                 let tweetPostViewModel = TweetConversationViewModel(context: provider.context, tweetObjectID: tweet.objectID)
                 DispatchQueue.main.async {
-                    provider.coordinator.present(scene: .tweetConversation(viewModel: tweetPostViewModel), from: provider, transition: .show)
+                    let from = provider.presentingViewController ?? provider
+                    if provider.navigationController == nil {
+                        provider.dismiss(animated: true) {
+                            provider.coordinator.present(scene: .tweetConversation(viewModel: tweetPostViewModel), from: from, transition: .show)
+                        }
+                    } else {
+                        provider.coordinator.present(scene: .tweetConversation(viewModel: tweetPostViewModel), from: from, transition: .show)
+                    }
                 }
             }
             .store(in: &provider.disposeBag)
     }
-    
 }
 
 extension StatusProviderFacade {
     
+    static func coordinateToStatusReplyScene(provider: StatusProvider) {
+        _coordinateToStatusReplyScene(
+            provider: provider,
+            tweet: provider.tweet()
+        )
+    }
+    
     static func coordinateToStatusReplyScene(provider: StatusProvider, cell: UITableViewCell) {
-        provider.tweet(for: cell, indexPath: nil)
+        _coordinateToStatusReplyScene(
+            provider: provider,
+            tweet: provider.tweet(for: cell, indexPath: nil)
+        )
+    }
+    
+    private static func _coordinateToStatusReplyScene(provider: StatusProvider, tweet: Future<Tweet?, Never>) {
+        tweet
             .sink { [weak provider] tweet in
                 guard let provider = provider else { return }
                 guard let tweet = (tweet?.retweet ?? tweet) else { return }
@@ -79,7 +138,21 @@ extension StatusProviderFacade {
             .store(in: &provider.disposeBag)
     }
     
+    static func responseToStatusRetweetAction(provider: StatusProvider) {
+        _responseToStatusRetweetAction(
+            provider: provider,
+            tweet: provider.tweet()
+        )
+    }
+    
     static func responseToStatusRetweetAction(provider: StatusProvider, cell: UITableViewCell) {
+        _responseToStatusRetweetAction(
+            provider: provider,
+            tweet: provider.tweet(for: cell, indexPath: nil)
+        )
+    }
+    
+    private static func _responseToStatusRetweetAction(provider: StatusProvider, tweet: Future<Tweet?, Never>) {
         // prepare authentication
         guard let activeTwitterAuthenticationBox = provider.context.authenticationService.activeTwitterAuthenticationBox.value else {
             assertionFailure()
@@ -101,7 +174,7 @@ extension StatusProviderFacade {
         let generator = UIImpactFeedbackGenerator(style: .light)
         let responseFeedbackGenerator = UIImpactFeedbackGenerator(style: .medium)
         
-        provider.tweet(for: cell, indexPath: nil)
+        tweet
             .compactMap { tweet -> (NSManagedObjectID, Twitter.API.Statuses.RetweetKind)? in
                 guard let tweet = tweet else { return nil }
                 let retweetKind: Twitter.API.Statuses.RetweetKind = {
@@ -166,7 +239,21 @@ extension StatusProviderFacade {
             .store(in: &provider.disposeBag)
     }
     
+    static func responseToStatusLikeAction(provider: StatusProvider) {
+        _responseToStatusLikeAction(
+            provider: provider,
+            tweet: provider.tweet()
+        )
+    }
+    
     static func responseToStatusLikeAction(provider: StatusProvider, cell: UITableViewCell) {
+        _responseToStatusLikeAction(
+            provider: provider,
+            tweet: provider.tweet(for: cell, indexPath: nil)
+        )
+    }
+    
+    private static func _responseToStatusLikeAction(provider: StatusProvider, tweet: Future<Tweet?, Never>) {
         // prepare authentication
         guard let activeTwitterAuthenticationBox = provider.context.authenticationService.activeTwitterAuthenticationBox.value else {
             assertionFailure()
@@ -188,7 +275,7 @@ extension StatusProviderFacade {
         let generator = UIImpactFeedbackGenerator(style: .light)
         let responseFeedbackGenerator = UIImpactFeedbackGenerator(style: .medium)
         
-        provider.tweet(for: cell, indexPath: nil)
+        tweet
             .compactMap { tweet -> (NSManagedObjectID, Twitter.API.Favorites.FavoriteKind)? in
                 guard let tweet = tweet else { return nil }
                 let favoriteKind: Twitter.API.Favorites.FavoriteKind = {
@@ -252,8 +339,24 @@ extension StatusProviderFacade {
             .store(in: &provider.disposeBag)
     }
     
+    static func responseToStatusMenuAction(provider: StatusProvider, sender: UIButton) {
+        _responseToStatusMenuAction(
+            provider: provider,
+            tweet: provider.tweet(),
+            sender: sender
+        )
+    }
+    
     static func responseToStatusMenuAction(provider: StatusProvider, cell: UITableViewCell, sender: UIButton) {
-        provider.tweet(for: cell, indexPath: nil)
+        _responseToStatusMenuAction(
+            provider: provider,
+            tweet: provider.tweet(for: cell, indexPath: nil),
+            sender: sender
+        )
+    }
+    
+    private static func _responseToStatusMenuAction(provider: StatusProvider, tweet: Future<Tweet?, Never>, sender: UIButton) {
+        tweet
             .compactMap { $0?.activityItems }
             .sink { [weak provider] activityItems in
                 guard let provider = provider else { return }
