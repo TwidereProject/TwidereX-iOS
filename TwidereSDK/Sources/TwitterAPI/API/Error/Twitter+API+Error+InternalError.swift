@@ -10,5 +10,13 @@ import Foundation
 extension Twitter.API.Error {
     public struct InternalError: Error, LocalizedError {
         let message: String
+        
+        public var errorDescription: String? {
+            return "Internal Error"
+        }
+        
+        public var failureReason: String? {
+            return message
+        }
     }
 }
