@@ -12,6 +12,7 @@ import AVKit
 import Combine
 import CoreData
 import CoreDataStack
+import GameplayKit
 import TwitterAPI
 import Floaty
 import AlamofireImage
@@ -121,9 +122,11 @@ extension MentionTimelineViewController {
 
         viewModel.contentOffsetAdjustableTimelineViewControllerDelegate = self
         viewModel.tableView = tableView
-        viewModel.timelinePostTableViewCellDelegate = self
-        viewModel.timelineMiddleLoaderTableViewCellDelegate = self
-        viewModel.setupDiffableDataSource(for: tableView)
+        tableView.delegate = self
+        viewModel.setupDiffableDataSource(
+            for: tableView, timelinePostTableViewCellDelegate: self,
+            timelineMiddleLoaderTableViewCellDelegate: self
+        )
         context.authenticationService.activeAuthenticationIndex
             .sink { [weak self] activeAuthenticationIndex in
                 guard let self = self else { return }
@@ -150,8 +153,6 @@ extension MentionTimelineViewController {
                 }
             }
             .store(in: &disposeBag)
-        tableView.delegate = self
-        tableView.dataSource = viewModel.diffableDataSource
 
         // bind refresh control
         viewModel.isFetchingLatestTimeline
@@ -394,6 +395,49 @@ extension MentionTimelineViewController: ContentOffsetAdjustableTimelineViewCont
 
 // MARK: - TimelineMiddleLoaderTableViewCellDelegate
 extension MentionTimelineViewController: TimelineMiddleLoaderTableViewCellDelegate {
+    
+    func configure(cell: TimelineMiddleLoaderTableViewCell, upperTimelineIndexObjectID: NSManagedObjectID) {
+        viewModel.loadMiddleSateMachineList
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] ids in
+                guard let _ = self else { return }
+                if let stateMachine = ids[upperTimelineIndexObjectID] {
+                    guard let state = stateMachine.currentState else {
+                        assertionFailure()
+                        return
+                    }
+
+                    // make success state same as loading due to snapshot updating delay
+                    let isLoading = state is MentionTimelineViewModel.LoadMiddleState.Loading || state is MentionTimelineViewModel.LoadMiddleState.Success
+                    cell.loadMoreButton.isHidden = isLoading
+                    if isLoading {
+                        cell.activityIndicatorView.startAnimating()
+                    } else {
+                        cell.activityIndicatorView.stopAnimating()
+                    }
+                } else {
+                    cell.loadMoreButton.isHidden = false
+                    cell.activityIndicatorView.stopAnimating()
+                }
+            }
+            .store(in: &cell.disposeBag)
+        
+        var dict = viewModel.loadMiddleSateMachineList.value
+        if let _ = dict[upperTimelineIndexObjectID] {
+            // do nothing
+        } else {
+            let stateMachine = GKStateMachine(states: [
+                MentionTimelineViewModel.LoadMiddleState.Initial(viewModel: viewModel, upperTimelineIndexObjectID: upperTimelineIndexObjectID),
+                MentionTimelineViewModel.LoadMiddleState.Loading(viewModel: viewModel, upperTimelineIndexObjectID: upperTimelineIndexObjectID),
+                MentionTimelineViewModel.LoadMiddleState.Fail(viewModel: viewModel, upperTimelineIndexObjectID: upperTimelineIndexObjectID),
+                MentionTimelineViewModel.LoadMiddleState.Success(viewModel: viewModel, upperTimelineIndexObjectID: upperTimelineIndexObjectID),
+            ])
+            stateMachine.enter(MentionTimelineViewModel.LoadMiddleState.Initial.self)
+            dict[upperTimelineIndexObjectID] = stateMachine
+            viewModel.loadMiddleSateMachineList.value = dict
+        }
+    }
+    
     func timelineMiddleLoaderTableViewCell(_ cell: TimelineMiddleLoaderTableViewCell, loadMoreButtonDidPressed button: UIButton) {
         guard let diffableDataSource = viewModel.diffableDataSource else { return }
         guard let indexPath = tableView.indexPath(for: cell) else { return }
@@ -438,7 +482,7 @@ extension MentionTimelineViewController: ScrollViewContainer {
     
     func scrollToTop(animated: Bool) {
         if scrollView.contentOffset.y < scrollView.frame.height,
-           viewModel.loadLatestStateMachine.canEnterState(HomeTimelineViewModel.LoadLatestState.Loading.self),
+           viewModel.loadLatestStateMachine.canEnterState(MentionTimelineViewModel.LoadLatestState.Loading.self),
            (scrollView.contentOffset.y + scrollView.adjustedContentInset.top) == 0.0,
            !refreshControl.isRefreshing {
             scrollView.scrollRectToVisible(CGRect(origin: CGPoint(x: 0, y: -refreshControl.frame.height), size: CGSize(width: 1, height: 1)), animated: animated)

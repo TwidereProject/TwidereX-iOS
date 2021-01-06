@@ -355,6 +355,7 @@
 		DBFA4A1125A5641000D51703 /* ProfileViewController+UserProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBFA4A1025A5640E00D51703 /* ProfileViewController+UserProvider.swift */; };
 		DBFA4A1625A580C100D51703 /* APIService+RateLimit.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBFA4A1525A580C100D51703 /* APIService+RateLimit.swift */; };
 		DBFA4A1B25A580FA00D51703 /* APIService+APIError.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBFA4A1A25A580FA00D51703 /* APIService+APIError.swift */; };
+		DBFA4A2025A5924C00D51703 /* HomeTimelineViewModel+Diffable.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBFA4A1F25A5924C00D51703 /* HomeTimelineViewModel+Diffable.swift */; };
 		DBFCC44725667C620016698E /* UILabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBFCC44625667C620016698E /* UILabel.swift */; };
 		DBFCC46325668B860016698E /* DrawerSidebarPresentationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBFCC46225668B860016698E /* DrawerSidebarPresentationController.swift */; };
 /* End PBXBuildFile section */
@@ -806,6 +807,7 @@
 		DBFA4A1025A5640E00D51703 /* ProfileViewController+UserProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ProfileViewController+UserProvider.swift"; sourceTree = "<group>"; };
 		DBFA4A1525A580C100D51703 /* APIService+RateLimit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "APIService+RateLimit.swift"; sourceTree = "<group>"; };
 		DBFA4A1A25A580FA00D51703 /* APIService+APIError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "APIService+APIError.swift"; sourceTree = "<group>"; };
+		DBFA4A1F25A5924C00D51703 /* HomeTimelineViewModel+Diffable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "HomeTimelineViewModel+Diffable.swift"; sourceTree = "<group>"; };
 		DBFCC44625667C620016698E /* UILabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UILabel.swift; sourceTree = "<group>"; };
 		DBFCC46225668B860016698E /* DrawerSidebarPresentationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawerSidebarPresentationController.swift; sourceTree = "<group>"; };
 		F58BC0DB264850C274FDE699 /* Pods-TwidereX.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TwidereX.debug.xcconfig"; path = "Target Support Files/Pods-TwidereX/Pods-TwidereX.debug.xcconfig"; sourceTree = "<group>"; };
@@ -1776,6 +1778,7 @@
 				DBB2513D2599DBAB0064A876 /* HomeTimelineViewController+DebugAction.swift */,
 				DB1A1D832559AAFD0049DA6D /* HomeTimelineViewController+StatusProvider.swift */,
 				DBE76D1D2500E65D00DEB0FC /* HomeTimelineViewModel.swift */,
+				DBFA4A1F25A5924C00D51703 /* HomeTimelineViewModel+Diffable.swift */,
 				DB969A3825305EEE0053CB31 /* HomeTimelineViewModel+LoadLatestState.swift */,
 				DBA6B1A325340B3F005FB0B4 /* HomeTimelineViewModel+LoadMiddleState.swift */,
 				DB3FC03025525BFD003A2F8A /* HomeTimelineViewModel+LoadOldestState.swift */,
@@ -2595,6 +2598,7 @@
 				DBCB408A255D8C2B00DD8D8F /* SafariActivity.swift in Sources */,
 				DBE76D382502228900DEB0FC /* Tweet.swift in Sources */,
 				DB434874251DEB77005B599F /* ProfileBannerView.swift in Sources */,
+				DBFA4A2025A5924C00D51703 /* HomeTimelineViewModel+Diffable.swift in Sources */,
 				DB88AC2F2508BA8C0009E562 /* TimelineSection.swift in Sources */,
 				DBCB4058255B6ECA00DD8D8F /* AccountListSection.swift in Sources */,
 				DB925749251C9D48004FEFB5 /* ProfilePagingViewModel.swift in Sources */,

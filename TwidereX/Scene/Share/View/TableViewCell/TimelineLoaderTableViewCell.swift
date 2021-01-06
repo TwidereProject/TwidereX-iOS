@@ -16,11 +16,12 @@ class TimelineLoaderTableViewCell: UITableViewCell {
     var disposeBag = Set<AnyCancellable>()
     
     let loadMoreButton: UIButton = {
-        let button = UIButton()
+        let button = UIButton(type: .system)
+        button.tintColor = Asset.Colors.hightLight.color
         button.titleLabel?.font = .preferredFont(forTextStyle: .callout)
         button.setTitle(L10n.Common.Controls.Timeline.loadMore, for: .normal)
-        button.setTitleColor(.systemBlue, for: .normal)
-        button.setTitleColor(UIColor.systemBlue.withAlphaComponent(0.5), for: .highlighted)
+        button.setTitleColor(Asset.Colors.hightLight.color, for: .normal)
+        button.setTitleColor(Asset.Colors.hightLight.color.withAlphaComponent(0.5), for: .highlighted)
         return button
     }()
     
@@ -28,7 +29,6 @@ class TimelineLoaderTableViewCell: UITableViewCell {
         let activityIndicatorView = UIActivityIndicatorView(style: .medium)
         activityIndicatorView.tintColor = .systemFill
         activityIndicatorView.hidesWhenStopped = true
-        activityIndicatorView.startAnimating()
         return activityIndicatorView
     }()
     
@@ -47,11 +47,7 @@ class TimelineLoaderTableViewCell: UITableViewCell {
         _init()
     }
     
-}
-
-extension TimelineLoaderTableViewCell {
-    
-    private func _init() {
+    func _init() {
         selectionStyle = .none
         
         loadMoreButton.translatesAutoresizingMaskIntoConstraints = false
@@ -72,6 +68,7 @@ extension TimelineLoaderTableViewCell {
         ])
         
         loadMoreButton.isHidden = true
+        activityIndicatorView.isHidden = true
     }
     
 }

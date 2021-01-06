@@ -26,7 +26,8 @@ extension UserLikeTimelineViewModel {
             context: context,
             managedObjectContext: fetchedResultsController.managedObjectContext,
             timestampUpdatePublisher: timestampUpdatePublisher,
-            timelinePostTableViewCellDelegate: timelinePostTableViewCellDelegate
+            timelinePostTableViewCellDelegate: timelinePostTableViewCellDelegate,
+            timelineMiddleLoaderTableViewCellDelegate: nil
         )
     }
 }

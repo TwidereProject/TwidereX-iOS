@@ -143,8 +143,8 @@ extension SearchTimelineViewModel {
 
 extension SearchTimelineViewModel {
     
-    private static func configure(cell: TimelinePostTableViewCell, videoPlaybackService: VideoPlaybackService, tweet: Tweet, identifier: UUID, requestUserID: String) {
-        HomeTimelineViewModel.configure(cell: cell, videoPlaybackService: videoPlaybackService, tweet: tweet, requestUserID: requestUserID)
+    private static func configure(cell: TimelinePostTableViewCell, readableLayoutFrame: CGRect?, videoPlaybackService: VideoPlaybackService, tweet: Tweet, identifier: UUID, requestUserID: String) {
+        TimelineSection.configure(cell: cell, readableLayoutFrame: readableLayoutFrame, videoPlaybackService: videoPlaybackService, tweet: tweet, requestUserID: requestUserID)
         internalConfigure(cell: cell, tweet: tweet, identifier: identifier)
     }
 
@@ -190,8 +190,8 @@ extension SearchTimelineViewModel {
                 let managedObjectContext = self.fetchedResultsController.managedObjectContext
                 managedObjectContext.performAndWait {
                     let tweet = managedObjectContext.object(with: objectID) as! Tweet
-                    SearchTimelineViewModel.configure(cell: cell, videoPlaybackService: self.context.videoPlaybackService, tweet: tweet, identifier: self.identifier, requestUserID: requestUserID)
-                    HomeTimelineViewModel.configure(cell: cell, overrideTraitCollection: self.context.overrideTraitCollection.value)
+                    SearchTimelineViewModel.configure(cell: cell, readableLayoutFrame: tableView.readableContentGuide.layoutFrame, videoPlaybackService: self.context.videoPlaybackService, tweet: tweet, identifier: self.identifier, requestUserID: requestUserID)
+                    TimelineSection.configure(cell: cell, overrideTraitCollection: self.context.overrideTraitCollection.value)
                 }
                 cell.delegate = self.timelinePostTableViewCellDelegate
                 return cell

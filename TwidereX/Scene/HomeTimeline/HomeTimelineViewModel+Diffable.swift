@@ -1,18 +1,17 @@
 //
-//  MentionTimelineViewModel+Diffable.swift
+//  HomeTimelineViewModel+Diffable.swift
 //  TwidereX
 //
-//  Created by Cirno MainasuK on 2020-11-3.
-//  Copyright © 2020 Twidere. All rights reserved.
+//  Created by Cirno MainasuK on 2021-1-6.
+//  Copyright © 2021 Twidere. All rights reserved.
 //
 
 import os.log
 import UIKit
 import CoreData
 import CoreDataStack
-import GameplayKit
 
-extension MentionTimelineViewModel {
+extension HomeTimelineViewModel {
     
     func setupDiffableDataSource(
         for tableView: UITableView,
@@ -37,7 +36,7 @@ extension MentionTimelineViewModel {
 }
 
 // MARK: - NSFetchedResultsControllerDelegate
-extension MentionTimelineViewModel: NSFetchedResultsControllerDelegate {
+extension HomeTimelineViewModel: NSFetchedResultsControllerDelegate {
     
     func controllerWillChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
         os_log("%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
@@ -45,7 +44,7 @@ extension MentionTimelineViewModel: NSFetchedResultsControllerDelegate {
     
     func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChangeContentWith snapshot: NSDiffableDataSourceSnapshotReference) {
         os_log("%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
-
+        
         guard let tableView = self.tableView else { return }
         guard let navigationBar = self.contentOffsetAdjustableTimelineViewControllerDelegate?.navigationBar() else { return }
         
@@ -61,8 +60,8 @@ extension MentionTimelineViewModel: NSFetchedResultsControllerDelegate {
             let start = CACurrentMediaTime()
             var shouldAddBottomLoader = false
             
-            let mentionTimelineIndexes: [MentionTimelineIndex] = {
-                let request = MentionTimelineIndex.sortedFetchRequest
+            let timelineIndexes: [TimelineIndex] = {
+                let request = TimelineIndex.sortedFetchRequest
                 request.returnsObjectsAsFaults = false
                 request.predicate = predicate
                 do {
@@ -73,32 +72,33 @@ extension MentionTimelineViewModel: NSFetchedResultsControllerDelegate {
                 }
             }()
             
+            // that's will be the most fastest fetch because of upstream just update and no modify needs consider
             let endFetch = CACurrentMediaTime()
-            os_log("%{public}s[%{public}ld], %{public}s: fetch mentionTimelineIndexes cost %.2fs", ((#file as NSString).lastPathComponent), #line, #function, endFetch - start)
+            os_log("%{public}s[%{public}ld], %{public}s: fetch timelineIndexes cost %.2fs", ((#file as NSString).lastPathComponent), #line, #function, endFetch - start)
             
             var oldSnapshotAttributeDict: [NSManagedObjectID : Item.Attribute] = [:]
+            
             for item in oldSnapshot.itemIdentifiers {
-                guard case let .mentionTimelineIndex(objectID, attribute) = item else { continue }
+                guard case let .homeTimelineIndex(objectID, attribute) = item else { continue }
                 oldSnapshotAttributeDict[objectID] = attribute
             }
             let endPrepareCache = CACurrentMediaTime()
             
             var newTimelineItems: [Item] = []
-            
             os_log("%{public}s[%{public}ld], %{public}s: prepare timelineIndex cache cost %.2fs", ((#file as NSString).lastPathComponent), #line, #function, endPrepareCache - endFetch)
-            for (i, mentionTimelineIndex) in mentionTimelineIndexes.enumerated() {
-                let attribute = oldSnapshotAttributeDict[mentionTimelineIndex.objectID] ?? Item.Attribute()
+            for (i, timelineIndex) in timelineIndexes.enumerated() {
+                let attribute = oldSnapshotAttributeDict[timelineIndex.objectID] ?? Item.Attribute()
                 
                 // append new item into snapshot
-                newTimelineItems.append(.mentionTimelineIndex(objectID: mentionTimelineIndex.objectID, attribute: attribute))
+                newTimelineItems.append(.homeTimelineIndex(objectID: timelineIndex.objectID, attribute: attribute))
                 
-                let isLast = i == mentionTimelineIndexes.count - 1
-                switch (isLast, mentionTimelineIndex.hasMore) {
+                let isLast = i == timelineIndexes.count - 1
+                switch (isLast, timelineIndex.hasMore) {
                 case (true, false):
                     attribute.separatorLineStyle = .normal
                 case (false, true):
                     attribute.separatorLineStyle = .expand
-                    newTimelineItems.append(.middleLoader(upperTimelineIndexAnchorObjectID: mentionTimelineIndex.objectID))
+                    newTimelineItems.append(.middleLoader(upperTimelineIndexAnchorObjectID: timelineIndex.objectID))
                 case (true, true):
                     attribute.separatorLineStyle = .normal
                     shouldAddBottomLoader = true
@@ -113,7 +113,7 @@ extension MentionTimelineViewModel: NSFetchedResultsControllerDelegate {
             
             let endSnapshot = CACurrentMediaTime()
             let count = max(1, newSnapshot.itemIdentifiers.count)
-            os_log("%{public}s[%{public}ld], %{public}s: calculate mention timeline snapshot with %ld items cost %.2fs. avg %.5fs per item", ((#file as NSString).lastPathComponent), #line, #function, newSnapshot.itemIdentifiers.count, endSnapshot - endPrepareCache, (endSnapshot - endPrepareCache) / Double(count))
+            os_log("%{public}s[%{public}ld], %{public}s: calculate home timeline snapshot with %ld items cost %.2fs. avg %.5fs per item", ((#file as NSString).lastPathComponent), #line, #function, newSnapshot.itemIdentifiers.count, endSnapshot - endPrepareCache, (endSnapshot - endPrepareCache) / Double(count))
             
             DispatchQueue.main.async {
                 if shouldAddBottomLoader, !(self.loadoldestStateMachine.currentState is LoadOldestState.NoMore) {
