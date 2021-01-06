@@ -14,6 +14,25 @@ import TwitterAPI
 
 enum UserProviderFacade {
     
+    static func toggleUserFriendship(context: AppContext, twitterUser: TwitterUser) -> AnyPublisher<Twitter.Response.Content<Twitter.Entity.User>, Error> {
+        // prepare authentication
+        guard let activeTwitterAuthenticationBox = context.authenticationService.activeTwitterAuthenticationBox.value else {
+            assertionFailure()
+            return Fail(error: APIService.APIError.implicit(.authenticationMissing)).eraseToAnyPublisher()
+        }
+        
+        let twitterUser = Future<TwitterUser?, Error> { promise in
+            promise(.success(twitterUser))
+        }
+        .eraseToAnyPublisher()
+        
+        return _toggleUserFriendship(
+            context: context,
+            activeTwitterAuthenticationBox: activeTwitterAuthenticationBox,
+            twitterUser: twitterUser
+        )
+    }
+    
     static func toggleUserFriendship(provider: UserProvider, sender: UIButton) -> AnyPublisher<Twitter.Response.Content<Twitter.Entity.User>, Error> {
         // prepare authentication
         guard let activeTwitterAuthenticationBox = provider.context.authenticationService.activeTwitterAuthenticationBox.value else {
@@ -106,13 +125,25 @@ enum UserProviderFacade {
         activeTwitterAuthenticationBox: AuthenticationService.TwitterAuthenticationBox,
         twitterUser: AnyPublisher<TwitterUser?, Error>
     ) -> AnyPublisher<Twitter.Response.Content<Twitter.Entity.User>, Error> {
+        return _toggleUserFriendship(
+            context: provider.context,
+            activeTwitterAuthenticationBox: activeTwitterAuthenticationBox,
+            twitterUser: twitterUser
+        )
+    }
+    
+    private static func _toggleUserFriendship(
+        context: AppContext,
+        activeTwitterAuthenticationBox: AuthenticationService.TwitterAuthenticationBox,
+        twitterUser: AnyPublisher<TwitterUser?, Error>
+    ) -> AnyPublisher<Twitter.Response.Content<Twitter.Entity.User>, Error> {
         twitterUser
             .compactMap { twitterUser -> AnyPublisher<Twitter.Response.Content<Twitter.Entity.User>, Error>? in
                 guard let twitterUser = twitterUser else {
                     return nil
                 }
-
-                return provider.context.apiService.toggleFriendship(
+                
+                return context.apiService.toggleFriendship(
                     for: twitterUser,
                     activeTwitterAuthenticationBox: activeTwitterAuthenticationBox
                 )
