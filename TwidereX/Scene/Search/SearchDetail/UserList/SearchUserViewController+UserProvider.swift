@@ -12,6 +12,11 @@ import CoreData
 import CoreDataStack
 
 extension SearchUserViewController: UserProvider {
+    
+    func twitterUser() -> Future<TwitterUser?, Never> {
+        return Future { promise in promise(.success(nil)) }
+    }
+    
     func twitterUser(for cell: UITableViewCell, indexPath: IndexPath?) -> Future<TwitterUser?, Never> {
         return Future { promise in
             guard let diffableDataSource = self.viewModel.diffableDataSource else {
@@ -38,4 +43,5 @@ extension SearchUserViewController: UserProvider {
             }
         }
     }
+    
 }

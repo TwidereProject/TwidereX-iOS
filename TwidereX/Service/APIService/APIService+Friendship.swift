@@ -38,7 +38,6 @@ extension APIService {
         )
         .receive(on: DispatchQueue.main)
         .handleEvents { _ in
-            notificationFeedbackGenerator.prepare()
             impactFeedbackGenerator.prepare()
         } receiveOutput: { _ in
             impactFeedbackGenerator.impactOccurred()
@@ -66,6 +65,16 @@ extension APIService {
             switch completion {
             case .failure(let error):
                 os_log("%{public}s[%{public}ld], %{public}s: [Friendship] remote friendship update fail: %{public}s", ((#file as NSString).lastPathComponent), #line, #function, error.localizedDescription)
+                
+                if let responseError = error as? Twitter.API.Error.ResponseError,
+                   let twitterAPIError = responseError.twitterAPIError {
+                    switch twitterAPIError {
+                    case .accountIsTemporarilyLocked, .rateLimitExceeded, .blockedFromRequestFollowingThisUser:
+                        self.error.send(.explicit(.twitterResponseError(responseError)))
+                    default:
+                        break
+                    }
+                }
                 
                 // rollback
                 self.friendshipUpdateLocal(

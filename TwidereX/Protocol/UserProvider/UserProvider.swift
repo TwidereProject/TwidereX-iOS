@@ -11,5 +11,6 @@ import Combine
 import CoreDataStack
 
 protocol UserProvider: NeedsDependency & DisposeBagCollectable & UIViewController {
+    func twitterUser() -> Future<TwitterUser?, Never>
     func twitterUser(for cell: UITableViewCell, indexPath: IndexPath?) -> Future<TwitterUser?, Never>
 }
