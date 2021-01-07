@@ -173,6 +173,13 @@ extension Tweet {
         }
     }
     
+    public func update(media: [TwitterMedia]?) {
+        if let media = media, !media.isEmpty {
+            self.mutableSetValue(forKey: #keyPath(Tweet.media)).removeAllObjects()
+            self.mutableSetValue(forKey: #keyPath(Tweet.media)).addObjects(from: media)
+        }
+    }
+    
     public func didUpdate(at networkDate: Date) {
         self.updatedAt = networkDate
     }

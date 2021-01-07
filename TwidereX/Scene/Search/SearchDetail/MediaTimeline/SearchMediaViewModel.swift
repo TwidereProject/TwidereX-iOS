@@ -65,7 +65,7 @@ final class SearchMediaViewModel: NSObject {
             items.eraseToAnyPublisher(),
             stateMachinePublisher.eraseToAnyPublisher()
         )
-        .throttle(for: .seconds(1), scheduler: DispatchQueue.main, latest: true)
+        .throttle(for: .milliseconds(300), scheduler: DispatchQueue.main, latest: true)
         .receive(on: DispatchQueue.main)
         .sink { [weak self] items, state in
             guard let self = self else { return }

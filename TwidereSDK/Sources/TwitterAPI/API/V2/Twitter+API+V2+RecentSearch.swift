@@ -21,10 +21,11 @@ extension Twitter.API.V2.RecentSearch {
         guard var components = URLComponents(string: tweetsSearchRecentEndpointURL.absoluteString) else { fatalError() }
         
         components.queryItems = [
-            Twitter.Request.expansions.queryItem,
+            Twitter.API.V2.RecentSearch.expansions.queryItem,
             Twitter.Request.tweetsFields.queryItem,
             Twitter.Request.userFields.queryItem,
             Twitter.Request.mediaFields.queryItem,
+            Twitter.Request.placeFields.queryItem,
             URLQueryItem(name: "max_results", value: String(query.maxResults)),
         ]
         query.sinceID.flatMap { components.queryItems?.append(URLQueryItem(name: "since_id", value: $0)) }
@@ -69,6 +70,19 @@ extension Twitter.API.V2.RecentSearch {
 
 extension Twitter.API.V2.RecentSearch {
     
+    static var expansions: [Twitter.Request.Expansions] {
+        return [
+            .attachmentsPollIDs,
+            .attachmentsMediaKeys,
+            .authorID,
+            .entitiesMentionsUsername,
+            .geoPlaceID,
+            .inReplyToUserID,
+            .referencedTweetsID,
+            .referencedTweetsIDAuthorID
+        ]
+    }
+    
     public struct Query {
         public let query: String
         public let maxResults: Int
@@ -94,6 +108,7 @@ extension Twitter.API.V2.RecentSearch {
             public let users: [Twitter.Entity.V2.User]?
             public let tweets: [Twitter.Entity.V2.Tweet]?
             public let media: [Twitter.Entity.V2.Media]?
+            public let places: [Twitter.Entity.V2.Place]?
         }
         
         public struct Meta: Codable {

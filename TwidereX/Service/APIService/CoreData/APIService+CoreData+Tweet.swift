@@ -151,12 +151,31 @@ extension APIService.CoreData {
             tweet.update(place: TwitterPlace.insert(into: managedObjectContext, property: placeProperty))
         }
         
-        // media URL may change
         if let media = tweet.media {
+            // update media URL
             for newMedia in entity.extendedEntities?.media ?? [] {
                 guard let id = newMedia.idStr else { continue }
                 guard let targetMedia = media.first(where: { $0.id == id }) else { continue }
                 targetMedia.update(url: newMedia.assetURL)
+            }
+            
+            // persist missing media
+            if media.isEmpty, let managedObjectContext = tweet.managedObjectContext {
+                let media: [TwitterMedia]? = {
+                    guard let media = entity.extendedEntities?.media else { return nil }
+                    let result = media.enumerated().compactMap { i, media -> TwitterMedia? in
+                        guard let idStr = media.idStr, let type = media.type else {
+                            assertionFailure()
+                            return nil
+                        }
+                        let size = media.sizes?.large
+                        let property = TwitterMedia.Property(index: i, id: idStr, mediaKey: idStr, type: type, height: size?.h, width: size?.w, durationMS: nil, url: media.assetURL, previewImageURL: media.previewImageURL)
+                        return TwitterMedia.insert(into: managedObjectContext, property: property, metrics: nil)
+                    }
+                    guard !result.isEmpty else { return nil }
+                    return result
+                }()
+                tweet.update(media: media)
             }
         }
         

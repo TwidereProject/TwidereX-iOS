@@ -12,21 +12,25 @@ extension Twitter.Response.V2 {
         public let tweetDict: [Twitter.Entity.V2.Tweet.ID: Twitter.Entity.V2.Tweet]
         public let userDict: [Twitter.Entity.V2.User.ID: Twitter.Entity.V2.User]
         public let mediaDict: [Twitter.Entity.V2.Media.ID: Twitter.Entity.V2.Media]
+        public let placeDict: [Twitter.Entity.V2.Place.ID: Twitter.Entity.V2.Place]
         
         public init(
             tweetDict: [Twitter.Entity.V2.Tweet.ID: Twitter.Entity.V2.Tweet],
             userDict: [Twitter.Entity.V2.User.ID: Twitter.Entity.V2.User],
-            mediaDict: [Twitter.Entity.V2.Media.ID: Twitter.Entity.V2.Media]
+            mediaDict: [Twitter.Entity.V2.Media.ID: Twitter.Entity.V2.Media],
+            placeDict: [Twitter.Entity.V2.Place.ID: Twitter.Entity.V2.Place]
         ) {
             self.tweetDict = tweetDict
             self.userDict = userDict
             self.mediaDict = mediaDict
+            self.placeDict = placeDict
         }
         
         public convenience init(
             tweets: [Twitter.Entity.V2.Tweet],
             users: [Twitter.Entity.V2.User],
-            media: [Twitter.Entity.V2.Media]
+            media: [Twitter.Entity.V2.Media],
+            places: [Twitter.Entity.V2.Place]
         ) {
             var tweetDict: [Twitter.Entity.V2.Tweet.ID: Twitter.Entity.V2.Tweet] = [:]
             for tweet in tweets {
@@ -52,12 +56,26 @@ extension Twitter.Response.V2 {
                 mediaDict[media.mediaKey] = media
             }
             
-            self.init(tweetDict: tweetDict, userDict: userDict, mediaDict: mediaDict)
+            var placeDict: [Twitter.Entity.V2.Place.ID: Twitter.Entity.V2.Place] = [:]
+            for place in places {
+                guard placeDict[place.id] == nil else {
+                    continue
+                }
+                placeDict[place.id] = place
+            }
+            
+            self.init(
+                tweetDict: tweetDict,
+                userDict: userDict,
+                mediaDict: mediaDict,
+                placeDict: placeDict
+            )
         }
     }
 }
 
 extension Twitter.Response.V2.DictContent {
+    
     public func media(for tweet: Twitter.Entity.V2.Tweet) -> [Twitter.Entity.V2.Media]? {
         guard let mediaKeys = tweet.attachments?.mediaKeys else { return nil }
         var array: [Twitter.Entity.V2.Media] = []
@@ -68,4 +86,10 @@ extension Twitter.Response.V2.DictContent {
         guard !array.isEmpty else { return nil }
         return array
     }
+    
+    public func place(for tweet: Twitter.Entity.V2.Tweet) -> Twitter.Entity.V2.Place? {
+        guard let placeID = tweet.geo?.placeID else { return nil }
+        return placeDict[placeID]
+    }
+    
 }

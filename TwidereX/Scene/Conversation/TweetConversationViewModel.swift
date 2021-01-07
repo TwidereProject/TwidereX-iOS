@@ -585,7 +585,8 @@ extension TweetConversationViewModel {
             let dictContent = Twitter.Response.V2.DictContent(
                 tweets: tweets,
                 users: content.includes?.users ?? [],
-                media: content.includes?.media ?? []
+                media: content.includes?.media ?? [],
+                places: content.includes?.places ?? []
             )
             
             var replyToMappingDict: [Twitter.Entity.V2.Tweet.ID: Set<Twitter.Entity.V2.Tweet.ID>] = [:]

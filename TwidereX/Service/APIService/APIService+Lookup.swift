@@ -83,7 +83,8 @@ extension APIService {
                     return Twitter.Response.V2.DictContent(
                         tweets: [response.data, response.includes?.tweets].compactMap { $0 }.flatMap { $0 },
                         users: response.includes?.users ?? [],
-                        media: response.includes?.media ?? []
+                        media: response.includes?.media ?? [],
+                        places: response.includes?.places ?? []
                     )
                 }
                 

@@ -189,7 +189,8 @@ class ProfileViewModel: NSObject {
                 let dictContent = Twitter.Response.V2.DictContent(
                     tweets: [],
                     users: response.value.data ?? [],
-                    media: []
+                    media: [],
+                    places: []
                 )
                 let persistedUser = dictContent.userDict.values.first(where: { user in
                     user.username.lowercased() == username.lowercased()

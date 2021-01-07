@@ -303,7 +303,8 @@ extension APIService {
                     return Twitter.Response.V2.DictContent(
                         tweets: response.includes?.tweets ?? [],
                         users: response.data ?? [],
-                        media: []
+                        media: [],
+                        places: []
                     )
                 }
                 return APIService.Persist.persistDictContent(managedObjectContext: self.backgroundManagedObjectContext, response: dictResponse, requestTwitterUserID: requestTwitterUserID, log: log)

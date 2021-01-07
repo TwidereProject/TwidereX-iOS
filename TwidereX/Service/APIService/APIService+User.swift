@@ -82,7 +82,8 @@ extension APIService {
                     return Twitter.Response.V2.DictContent(
                         tweets: [],
                         users: response.data ?? [],
-                        media: []
+                        media: [],
+                        places: []
                     )
                 }
                 
@@ -110,7 +111,8 @@ extension APIService {
                     return Twitter.Response.V2.DictContent(
                         tweets: [],
                         users: response.data ?? [],
-                        media: []
+                        media: [],
+                        places: []
                     )
                 }
                 
