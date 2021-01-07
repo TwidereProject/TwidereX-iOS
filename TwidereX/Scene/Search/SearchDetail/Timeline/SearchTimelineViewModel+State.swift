@@ -65,8 +65,8 @@ extension SearchTimelineViewModel.State {
             if searchText != previoursSearchText {
                 nextToken = nil
                 previoursSearchText = searchText
-                viewModel.searchTimelineTweetIDs.value = []
-                viewModel.timelineItems.value = []
+                viewModel.tweetIDs.value = []
+                viewModel.items.value = []
             }
             
             viewModel.context.apiService.tweetsRecentSearch(
@@ -89,8 +89,9 @@ extension SearchTimelineViewModel.State {
             } receiveValue: { [weak self] response in
                 guard let self = self else { return }
                 let content = response.value
-                self.nextToken = content.meta.nextToken
                 os_log("%{public}s[%{public}ld], %{public}s: search %s success. results count %ld", ((#file as NSString).lastPathComponent), #line, #function, searchText, content.meta.resultCount)
+
+                self.nextToken = content.meta.nextToken
                 
                 guard content.meta.resultCount > 0 else {
                     stateMachine.enter(NoMore.self)
@@ -98,19 +99,14 @@ extension SearchTimelineViewModel.State {
                 }
                 
                 let newTweets = content.data?.compactMap { $0 } ?? []
-                let oldTweetIDs = viewModel.searchTimelineTweetIDs.value
                 
-                var tweetIDs: [Twitter.Entity.Tweet.ID] = []
-                for tweetID in oldTweetIDs {
-                    guard !tweetIDs.contains(tweetID) else { continue }
-                    tweetIDs.append(tweetID)
-                }
+                var tweetIDs: [Twitter.Entity.Tweet.ID] = viewModel.tweetIDs.value
                 for tweet in newTweets {
                     guard !tweetIDs.contains(tweet.id) else { continue }
                     tweetIDs.append(tweet.id)
                 }
                 
-                viewModel.searchTimelineTweetIDs.value = tweetIDs
+                viewModel.tweetIDs.value = tweetIDs
                 stateMachine.enter(Idle.self)
             }
             .store(in: &viewModel.disposeBag)
@@ -126,17 +122,6 @@ extension SearchTimelineViewModel.State {
     class NoMore: SearchTimelineViewModel.State {
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {
             return stateClass == Loading.self
-        }
-        
-        override func didEnter(from previousState: GKState?) {
-            super.didEnter(from: previousState)
-            guard let viewModel = viewModel else { return }
-            guard let diffableDataSource = viewModel.diffableDataSource else { return }
-            var snapshot = diffableDataSource.snapshot()
-            if snapshot.itemIdentifiers.contains(.bottomLoader) {
-                snapshot.deleteItems([.bottomLoader])
-                diffableDataSource.apply(snapshot, animatingDifferences: false)
-            }
         }
     }
 }

@@ -41,6 +41,8 @@ extension SearchTimelineViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        view.backgroundColor = .systemBackground
                 
         tableView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(tableView)
@@ -50,18 +52,18 @@ extension SearchTimelineViewController {
             tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
         ])
-        tableView.backgroundColor = .systemBackground
         
-        viewModel.timelinePostTableViewCellDelegate = self
         viewModel.tableView = tableView
-        viewModel.setupDiffableDataSource(for: tableView)
+        tableView.delegate = self
+        viewModel.setupDiffableDataSource(
+            for: tableView,
+            timelinePostTableViewCellDelegate: self
+        )
         do {
             try viewModel.fetchedResultsController.performFetch()
         } catch {
             assertionFailure(error.localizedDescription)
         }
-        tableView.delegate = self
-        tableView.dataSource = viewModel.diffableDataSource
     }
     
     override func viewWillAppear(_ animated: Bool) {

@@ -356,6 +356,7 @@
 		DBFA4A1625A580C100D51703 /* APIService+RateLimit.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBFA4A1525A580C100D51703 /* APIService+RateLimit.swift */; };
 		DBFA4A1B25A580FA00D51703 /* APIService+APIError.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBFA4A1A25A580FA00D51703 /* APIService+APIError.swift */; };
 		DBFA4A2025A5924C00D51703 /* HomeTimelineViewModel+Diffable.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBFA4A1F25A5924C00D51703 /* HomeTimelineViewModel+Diffable.swift */; };
+		DBFA4A2B25A5A69100D51703 /* SearchTimelineViewModel+Diffable.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBFA4A2A25A5A69100D51703 /* SearchTimelineViewModel+Diffable.swift */; };
 		DBFCC44725667C620016698E /* UILabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBFCC44625667C620016698E /* UILabel.swift */; };
 		DBFCC46325668B860016698E /* DrawerSidebarPresentationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBFCC46225668B860016698E /* DrawerSidebarPresentationController.swift */; };
 /* End PBXBuildFile section */
@@ -808,6 +809,7 @@
 		DBFA4A1525A580C100D51703 /* APIService+RateLimit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "APIService+RateLimit.swift"; sourceTree = "<group>"; };
 		DBFA4A1A25A580FA00D51703 /* APIService+APIError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "APIService+APIError.swift"; sourceTree = "<group>"; };
 		DBFA4A1F25A5924C00D51703 /* HomeTimelineViewModel+Diffable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "HomeTimelineViewModel+Diffable.swift"; sourceTree = "<group>"; };
+		DBFA4A2A25A5A69100D51703 /* SearchTimelineViewModel+Diffable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SearchTimelineViewModel+Diffable.swift"; sourceTree = "<group>"; };
 		DBFCC44625667C620016698E /* UILabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UILabel.swift; sourceTree = "<group>"; };
 		DBFCC46225668B860016698E /* DrawerSidebarPresentationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawerSidebarPresentationController.swift; sourceTree = "<group>"; };
 		F58BC0DB264850C274FDE699 /* Pods-TwidereX.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TwidereX.debug.xcconfig"; path = "Target Support Files/Pods-TwidereX/Pods-TwidereX.debug.xcconfig"; sourceTree = "<group>"; };
@@ -2054,7 +2056,7 @@
 				DBF69E9B25496BB100E2A915 /* SearchDetailViewController.swift */,
 				DBF69EAB25496C9F00E2A915 /* SearchDetailViewModel.swift */,
 				DBF69EEA25498A3A00E2A915 /* Paging */,
-				DBF69EF825498AE400E2A915 /* HomeTimeline */,
+				DBF69EF825498AE400E2A915 /* Timeline */,
 				DB10B34B254AB350002D86F3 /* MediaTimeline */,
 				DB676170254C021D006C6798 /* UserList */,
 			);
@@ -2091,15 +2093,16 @@
 			path = Paging;
 			sourceTree = "<group>";
 		};
-		DBF69EF825498AE400E2A915 /* HomeTimeline */ = {
+		DBF69EF825498AE400E2A915 /* Timeline */ = {
 			isa = PBXGroup;
 			children = (
 				DBF69EF325498ADC00E2A915 /* SearchTimelineViewController.swift */,
 				DBCB40A3255D9AC200DD8D8F /* SearchTimelineViewController+StatusProvider.swift */,
 				DBF69EF925498B1500E2A915 /* SearchTimelineViewModel.swift */,
+				DBFA4A2A25A5A69100D51703 /* SearchTimelineViewModel+Diffable.swift */,
 				DB10B32B254A7633002D86F3 /* SearchTimelineViewModel+State.swift */,
 			);
-			path = HomeTimeline;
+			path = Timeline;
 			sourceTree = "<group>";
 		};
 		DBFA49FD25A45DD900D51703 /* UserProvider */ = {
@@ -2778,6 +2781,7 @@
 				DBFA4A0725A4621C00D51703 /* UserProvider+SearchUserTableViewCellDelegate.swift in Sources */,
 				DBBABA11255E61C900C1B3D9 /* SearchMediaViewController+StatusProvider.swift in Sources */,
 				DB25B9E82539897B00A5420F /* APIService+RecentSearch.swift in Sources */,
+				DBFA4A2B25A5A69100D51703 /* SearchTimelineViewModel+Diffable.swift in Sources */,
 				DBBABA0C255E550D00C1B3D9 /* StatusProvider+UICollectionViewDelegate.swift in Sources */,
 				DB8AC16225417D1300E636BE /* CycleCounterView.swift in Sources */,
 				DB1BF29925663EFA00B5F490 /* DisplayPreference.swift in Sources */,
