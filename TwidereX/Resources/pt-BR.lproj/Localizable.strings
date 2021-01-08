@@ -1,6 +1,8 @@
 "Common.Alerts.AccountTemporarilyLocked.Message" = "Abra o Twitter para desbloquear";
 "Common.Alerts.AccountTemporarilyLocked.Title" = "Conta Temporariamente Bloqueada";
 "Common.Alerts.CancelFollowRequest.Message" = "Cancelar pedido para seguir %@?";
+"Common.Alerts.FailedToDeleteTweet.Message" = "Por favor, tente novamente";
+"Common.Alerts.FailedToDeleteTweet.Title" = "Failed to Delete Tweet";
 "Common.Alerts.FailedToFollowing.Message" = "Por favor, tente novamente";
 "Common.Alerts.FailedToFollowing.Title" = "Falha ao Seguir";
 "Common.Alerts.FailedToLoad.Message" = "Por favor, tente novamente";
@@ -19,7 +21,8 @@
 "Common.Alerts.PhotoSaved.Title" = "Foto Salva";
 "Common.Alerts.RateLimitExceeded.Message" = "Atingiu o limite de uso da API do Twitter";
 "Common.Alerts.RateLimitExceeded.Title" = "Limite de Taxa Excedido";
-"Common.Alerts.TooManyRequests.Title" = "";
+"Common.Alerts.TooManyRequests.Title" = "Too many requests";
+"Common.Alerts.TweetDeleted.Title" = "Tweet Deleted";
 "Common.Alerts.TweetFail.Message" = "Por favor, tente novamente";
 "Common.Alerts.TweetFail.Title" = "Tweet Falhou";
 "Common.Alerts.TweetSent.Title" = "Tweet Enviado";
@@ -49,9 +52,11 @@
 "Common.Controls.ProfileDashboard.Followers" = "Seguidores";
 "Common.Controls.ProfileDashboard.Following" = "Seguindo";
 "Common.Controls.ProfileDashboard.Listed" = "Listado";
-"Common.Controls.Status.Actions.CopyLink" = "";
-"Common.Controls.Status.Actions.CopyText" = "";
-"Common.Controls.Status.Actions.ShareLink" = "";
+"Common.Controls.Status.Actions.CopyLink" = "Copy link";
+"Common.Controls.Status.Actions.CopyText" = "Copy text";
+"Common.Controls.Status.Actions.DeleteTweet" = "Delete tweet";
+"Common.Controls.Status.Actions.ShareLink" = "Share link";
+"Common.Controls.Status.Media" = "Mídia";
 "Common.Controls.Status.UserRetweeted" = "%@ retuitado";
 "Common.Controls.Timeline.LoadMore" = "Carregar Mais";
 "Common.Countable.Like.Multiple" = "curtidas";

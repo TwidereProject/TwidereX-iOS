@@ -43,8 +43,9 @@ extension UserTimelineViewModel: NSFetchedResultsControllerDelegate {
         guard tweets.count == indexes.count else { return }
         
         let items: [Item] = tweets
-            .compactMap { tweet in
-                indexes.firstIndex(of: tweet.id).map { index in (index, tweet) }
+            .compactMap { tweet -> (Int, Tweet)? in
+                guard tweet.deletedAt == nil else { return nil }
+                return indexes.firstIndex(of: tweet.id).map { index in (index, tweet) }
             }
             .sorted { $0.0 < $1.0 }
             .map { Item.tweet(objectID: $0.1.objectID) }

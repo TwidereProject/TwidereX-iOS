@@ -25,6 +25,12 @@ internal enum L10n {
           return L10n.tr("Localizable", "Common.Alerts.CancelFollowRequest.Message", String(describing: p1))
         }
       }
+      internal enum FailedToDeleteTweet {
+        /// Please try again
+        internal static let message = L10n.tr("Localizable", "Common.Alerts.FailedToDeleteTweet.Message")
+        /// Failed to Delete Tweet
+        internal static let title = L10n.tr("Localizable", "Common.Alerts.FailedToDeleteTweet.Title")
+      }
       internal enum FailedToFollowing {
         /// Please try again
         internal static let message = L10n.tr("Localizable", "Common.Alerts.FailedToFollowing.Message")
@@ -86,6 +92,10 @@ internal enum L10n {
       internal enum TooManyRequests {
         /// Too many requests
         internal static let title = L10n.tr("Localizable", "Common.Alerts.TooManyRequests.Title")
+      }
+      internal enum TweetDeleted {
+        /// Tweet Deleted
+        internal static let title = L10n.tr("Localizable", "Common.Alerts.TweetDeleted.Title")
       }
       internal enum TweetFail {
         /// Please try again
@@ -172,16 +182,20 @@ internal enum L10n {
         internal static let listed = L10n.tr("Localizable", "Common.Controls.ProfileDashboard.Listed")
       }
       internal enum Status {
+        /// Media
+        internal static let media = L10n.tr("Localizable", "Common.Controls.Status.Media")
         /// %@ retweeted
         internal static func userRetweeted(_ p1: Any) -> String {
           return L10n.tr("Localizable", "Common.Controls.Status.UserRetweeted", String(describing: p1))
         }
         internal enum Actions {
-          /// Copy Link
+          /// Copy link
           internal static let copyLink = L10n.tr("Localizable", "Common.Controls.Status.Actions.CopyLink")
           /// Copy text
           internal static let copyText = L10n.tr("Localizable", "Common.Controls.Status.Actions.CopyText")
-          /// Share Link
+          /// Delete tweet
+          internal static let deleteTweet = L10n.tr("Localizable", "Common.Controls.Status.Actions.DeleteTweet")
+          /// Share link
           internal static let shareLink = L10n.tr("Localizable", "Common.Controls.Status.Actions.ShareLink")
         }
       }

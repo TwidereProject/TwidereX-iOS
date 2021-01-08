@@ -406,9 +406,21 @@ extension StatusProviderFacade {
         if let activeTwitterAuthenticationBox = dependency.context.authenticationService.activeTwitterAuthenticationBox.value {
             let activeTwitterUserID = activeTwitterAuthenticationBox.twitterUserID
             if tweet.author.id == activeTwitterUserID || tweet.retweet?.id == activeTwitterUserID {
-                let deleteTweetAction = UIAction(title: "Delete Tweet", image: UIImage(systemName: "trash"), identifier: nil, discoverabilityTitle: nil, attributes: .destructive, state: .off) { [weak dependency] _ in
+                let deleteTweetAction = UIAction(title: L10n.Common.Controls.Status.Actions.deleteTweet.capitalized, image: UIImage(systemName: "trash"), identifier: nil, discoverabilityTitle: nil, attributes: .destructive, state: .off) { [weak dependency] _ in
                     guard let dependency = dependency else { return }
-                    StatusProviderFacade.softDeleteTweet(context: dependency.context, tweet: tweet)
+                    guard let activeTwitterAuthenticationBox = dependency.context.authenticationService.activeTwitterAuthenticationBox.value else {
+                        return
+                    }
+                    dependency.context.apiService.delete(
+                        tweetObjectID: tweet.objectID,
+                        twitterAuthenticationBox: activeTwitterAuthenticationBox
+                    )
+                    .sink { completion in
+                        
+                    } receiveValue: { response in
+                        
+                    }
+                    .store(in: &dependency.context.disposeBag)
                 }
                 children.append(deleteTweetAction)
             }
@@ -541,16 +553,6 @@ extension StatusProviderFacade {
             .store(in: &provider.disposeBag)
     }
 
-}
-
-extension StatusProviderFacade {
-    private static func softDeleteTweet(context: AppContext, tweet: Tweet) {
-        let managedObjectContext = context.backgroundManagedObjectContext
-        managedObjectContext.performChanges {
-            let tweet = managedObjectContext.object(with: tweet.objectID) as! Tweet
-            tweet.softDelete()
-        }
-    }
 }
 
 extension StatusProviderFacade {
