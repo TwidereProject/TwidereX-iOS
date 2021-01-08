@@ -35,7 +35,7 @@ final class TimelineMiddleLoaderTableViewCell: TimelineLoaderTableViewCell {
         ])
         
         loadMoreButton.isHidden = false
-        loadMoreButton.setImage(Asset.ObjectTools.icRoundRefresh.image.withRenderingMode(.alwaysTemplate), for: .normal)
+        loadMoreButton.setImage(Asset.Arrows.arrowTriangle2Circlepath.image.withRenderingMode(.alwaysTemplate), for: .normal)
         loadMoreButton.setInsets(forContentPadding: .zero, imageTitlePadding: 4)
         loadMoreButton.addTarget(self, action: #selector(TimelineMiddleLoaderTableViewCell.loadMoreButtonDidPressed(_:)), for: .touchUpInside)
     }

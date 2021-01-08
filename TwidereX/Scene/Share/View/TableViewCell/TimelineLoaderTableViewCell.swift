@@ -18,10 +18,10 @@ class TimelineLoaderTableViewCell: UITableViewCell {
     let loadMoreButton: UIButton = {
         let button = UIButton(type: .system)
         button.tintColor = Asset.Colors.hightLight.color
-        button.titleLabel?.font = .preferredFont(forTextStyle: .callout)
+        button.titleLabel?.font = .preferredFont(forTextStyle: .headline)
         button.setTitle(L10n.Common.Controls.Timeline.loadMore, for: .normal)
         button.setTitleColor(Asset.Colors.hightLight.color, for: .normal)
-        button.setTitleColor(Asset.Colors.hightLight.color.withAlphaComponent(0.5), for: .highlighted)
+        button.setTitleColor(Asset.Colors.hightLight.color.withAlphaComponent(0.8), for: .highlighted)
         return button
     }()
     
