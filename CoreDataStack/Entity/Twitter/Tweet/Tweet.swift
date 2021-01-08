@@ -181,6 +181,37 @@ extension Tweet {
         }
     }
     
+    // remove relationship and also soft delete related entities
+    public func softDelete() {
+        // remote retweet relationship if this tweet is retweet
+        retweet = nil
+        
+        // remove quote relationship if this tweet contains quote
+        quote = nil
+
+        // remove quote from relationship if this tweet is other tweets' quote
+        // FIXME: the otherside tweet will become plain tweet/retweet
+        //        should add quote removed mark
+        mutableSetValue(forKey: #keyPath(Tweet.quoteFrom)).removeAllObjects()
+        
+        // soft delete timelineIndex
+        for timelineIndex in timelineIndexes ?? Set() {
+            timelineIndex.softDelete()
+        }
+        
+        // soft delete mentionTimelineIndex
+        for mentionTimelineIndex in mentionTimelineIndexes ?? Set() {
+            mentionTimelineIndex.softDelete()
+        }
+        
+        // soft delete retweetFrom if this tweet is other tweets' retweet
+        for tweet in retweetFrom ?? Set() {
+            tweet.softDelete()
+        }
+        
+        deletedAt = Date()
+    }
+    
     public func didUpdate(at networkDate: Date) {
         self.updatedAt = networkDate
     }

@@ -121,6 +121,7 @@ extension HomeTimelineViewController {
                     predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [
                         TimelineIndex.predicate(platform: .twitter),
                         TimelineIndex.predicate(userID: userID),
+                        TimelineIndex.notDeleted()
                     ])
                 } else {
                     // use invalid predicate

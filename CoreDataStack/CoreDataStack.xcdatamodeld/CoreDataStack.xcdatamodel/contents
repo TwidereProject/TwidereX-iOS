@@ -57,7 +57,7 @@
         <relationship name="place" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="TwitterPlace" inverseName="tweet" inverseEntity="TwitterPlace"/>
         <relationship name="poll" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="TwitterPoll" inverseName="tweet" inverseEntity="TwitterPoll"/>
         <relationship name="quote" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Tweet" inverseName="quoteFrom" inverseEntity="Tweet"/>
-        <relationship name="quoteFrom" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Tweet" inverseName="quote" inverseEntity="Tweet"/>
+        <relationship name="quoteFrom" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Tweet" inverseName="quote" inverseEntity="Tweet"/>
         <relationship name="replyFrom" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Tweet" inverseName="replyTo" inverseEntity="Tweet"/>
         <relationship name="replyTo" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Tweet" inverseName="replyFrom" inverseEntity="Tweet"/>
         <relationship name="retweet" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Tweet" inverseName="retweetFrom" inverseEntity="Tweet"/>

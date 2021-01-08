@@ -402,6 +402,18 @@ extension StatusProviderFacade {
                 }
             }
         ]
+        
+        if let activeTwitterAuthenticationBox = dependency.context.authenticationService.activeTwitterAuthenticationBox.value {
+            let activeTwitterUserID = activeTwitterAuthenticationBox.twitterUserID
+            if tweet.author.id == activeTwitterUserID || tweet.retweet?.id == activeTwitterUserID {
+                let deleteTweetAction = UIAction(title: "Delete Tweet", image: UIImage(systemName: "trash"), identifier: nil, discoverabilityTitle: nil, attributes: .destructive, state: .off) { [weak dependency] _ in
+                    guard let dependency = dependency else { return }
+                    StatusProviderFacade.softDeleteTweet(context: dependency.context, tweet: tweet)
+                }
+                children.append(deleteTweetAction)
+            }
+        }
+        
         return UIMenu(title: "", options: [], children: children)
     }
     
@@ -532,9 +544,20 @@ extension StatusProviderFacade {
 }
 
 extension StatusProviderFacade {
+    private static func softDeleteTweet(context: AppContext, tweet: Tweet) {
+        let managedObjectContext = context.backgroundManagedObjectContext
+        managedObjectContext.performChanges {
+            let tweet = managedObjectContext.object(with: tweet.objectID) as! Tweet
+            tweet.softDelete()
+        }
+    }
+}
+
+extension StatusProviderFacade {
     enum Target {
         case tweet
         case retweet
         case quote
     }
 }
+ 

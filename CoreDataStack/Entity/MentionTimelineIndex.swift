@@ -48,6 +48,11 @@ extension MentionTimelineIndex {
         }
     }
     
+    // internal method for Tweet call
+    func softDelete() {
+        deletedAt = Date()
+    }
+    
 }
 
 extension MentionTimelineIndex {
