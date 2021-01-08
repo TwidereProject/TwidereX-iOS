@@ -14,6 +14,7 @@ import CoreDataStack
 extension SearchTimelineViewModel {
     func setupDiffableDataSource(
         for tableView: UITableView,
+        dependency: NeedsDependency,
         timelinePostTableViewCellDelegate: TimelinePostTableViewCellDelegate
     ) {
         let timestampUpdatePublisher = Timer.publish(every: 1.0, on: .main, in: .common)
@@ -23,7 +24,7 @@ extension SearchTimelineViewModel {
         
         diffableDataSource = TimelineSection.tableViewDiffableDataSource(
             for: tableView,
-            context: context,
+            dependency: dependency,
             managedObjectContext: fetchedResultsController.managedObjectContext,
             timestampUpdatePublisher: timestampUpdatePublisher,
             timelinePostTableViewCellDelegate: timelinePostTableViewCellDelegate,

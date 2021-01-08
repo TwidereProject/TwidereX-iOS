@@ -248,10 +248,11 @@ extension TweetConversationViewModel {
 
 extension TweetConversationViewModel {
     
-    func setupDiffableDataSource(for tableView: UITableView) {
+    func setupDiffableDataSource(for tableView: UITableView, dependency: NeedsDependency) {
         assert(Thread.isMainThread)
-        diffableDataSource = UITableViewDiffableDataSource(tableView: tableView) { [weak self] tableView, indexPath, item -> UITableViewCell? in
+        diffableDataSource = UITableViewDiffableDataSource(tableView: tableView) { [weak self, weak dependency] tableView, indexPath, item -> UITableViewCell? in
             guard let self = self else { return nil }
+            guard let dependency = dependency else { return nil }
             
             switch item {
             case .root(let objectID):
@@ -273,7 +274,7 @@ extension TweetConversationViewModel {
                 let managedObjectContext = self.context.managedObjectContext
                 managedObjectContext.performAndWait {
                     let tweet = managedObjectContext.object(with: objectID) as! Tweet
-                    TimelineSection.configure(cell: cell, readableLayoutFrame: tableView.readableContentGuide.layoutFrame, videoPlaybackService: self.context.videoPlaybackService, tweet: tweet, requestUserID: requestUserID)
+                    TimelineSection.configure(cell: cell, readableLayoutFrame: tableView.readableContentGuide.layoutFrame, dependency: dependency, tweet: tweet, requestUserID: requestUserID)
                     TimelineSection.configure(cell: cell, overrideTraitCollection: self.context.overrideTraitCollection.value)
                     cell.conversationLinkUpper.isHidden = tweet.inReplyToTweetID == nil
                     cell.conversationLinkLower.isHidden = false
@@ -288,7 +289,7 @@ extension TweetConversationViewModel {
                 let managedObjectContext = self.context.managedObjectContext
                 managedObjectContext.performAndWait {
                     let tweet = managedObjectContext.object(with: objectID) as! Tweet
-                    TimelineSection.configure(cell: cell, readableLayoutFrame: tableView.readableContentGuide.layoutFrame, videoPlaybackService: self.context.videoPlaybackService, tweet: tweet, requestUserID: requestUserID)
+                    TimelineSection.configure(cell: cell, readableLayoutFrame: tableView.readableContentGuide.layoutFrame, dependency: dependency, tweet: tweet, requestUserID: requestUserID)
                     TimelineSection.configure(cell: cell, overrideTraitCollection: self.context.overrideTraitCollection.value)
                 }
                 cell.conversationLinkUpper.isHidden = attribute.level == 0

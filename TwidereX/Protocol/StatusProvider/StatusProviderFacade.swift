@@ -354,22 +354,64 @@ extension StatusProviderFacade {
             sender: sender
         )
     }
-    
+
     private static func _responseToStatusMenuAction(provider: StatusProvider, tweet: Future<Tweet?, Never>, sender: UIButton) {
         tweet
-            .compactMap { $0?.activityItems }
-            .sink { [weak provider] activityItems in
+            .sink { [weak provider] tweet in
+                guard let tweet = tweet else { return }
                 guard let provider = provider else { return }
-                let activityViewController = UIActivityViewController(
-                    activityItems: activityItems,
-                    applicationActivities: [SafariActivity(sceneCoordinator: provider.coordinator)]
-                )
-                activityViewController.popoverPresentationController?.sourceView = sender
+                let activityViewController = createActivityViewControllerForStatus(tweet: tweet, dependency: provider)
                 DispatchQueue.main.async {
-                    provider.present(activityViewController, animated: true, completion: nil)
+                    provider.coordinator.present(
+                        scene: .activityViewController(activityViewController: activityViewController, sourceView: sender),
+                        from: provider,
+                        transition: .activityViewControllerPresent(animated: true, completion: nil)
+                    )
                 }
             }
             .store(in: &provider.disposeBag)
+    }
+    
+}
+
+extension StatusProviderFacade {
+    
+    static func createMenuForStatus(tweet: Tweet, sender: UIButton, dependency: NeedsDependency) -> UIMenu {
+        var children: [UIMenuElement] = [
+            UIAction(title: L10n.Common.Controls.Status.Actions.copyText.capitalized, image: UIImage(systemName: "doc.on.doc"), identifier: nil, discoverabilityTitle: nil, attributes: [], state: .off) { _ in
+                UIPasteboard.general.string = (tweet.retweet ?? tweet).displayText
+            },
+            UIAction(title: L10n.Common.Controls.Status.Actions.copyLink.capitalized, image: UIImage(systemName: "link"), identifier: nil, discoverabilityTitle: nil, attributes: [], state: .off) { _ in
+                UIPasteboard.general.string = tweet.tweetURL.absoluteString
+            },
+            UIAction(title: L10n.Common.Controls.Status.Actions.shareLink.capitalized, image: UIImage(systemName: "square.and.arrow.up"), identifier: nil, discoverabilityTitle: nil, attributes: [], state: .off) { _ in
+                let activityViewController = StatusProviderFacade.createActivityViewControllerForStatus(tweet: tweet, dependency: dependency)
+                DispatchQueue.main.async {
+                    dependency.coordinator.present(
+                        scene: .activityViewController(activityViewController: activityViewController, sourceView: sender),
+                        from: nil,
+                        transition: .activityViewControllerPresent(animated: true, completion: nil)
+                    )
+                }
+            }
+        ]
+        return UIMenu(title: "", options: [], children: children)
+    }
+    
+    static func createActivityViewControllerForStatus(tweet: Tweet, dependency: NeedsDependency) -> UIActivityViewController {
+        let activityItems: [Any] = {
+            if #available(iOS 14, *) {
+                // only share tweet link due to context menu contains text copy option
+                return [tweet.tweetURL]
+            } else {
+                return tweet.activityItems
+            }
+        }()
+        let activityViewController = UIActivityViewController(
+            activityItems: activityItems,
+            applicationActivities: [SafariActivity(sceneCoordinator: dependency.coordinator)]
+        )
+        return activityViewController
     }
     
 }

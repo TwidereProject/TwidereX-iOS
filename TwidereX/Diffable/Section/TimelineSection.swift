@@ -18,13 +18,14 @@ enum TimelineSection: Equatable, Hashable {
 extension TimelineSection {
     static func tableViewDiffableDataSource(
         for tableView: UITableView,
-        context: AppContext,
+        dependency: NeedsDependency,
         managedObjectContext: NSManagedObjectContext,
         timestampUpdatePublisher: AnyPublisher<Date, Never>,
         timelinePostTableViewCellDelegate: TimelinePostTableViewCellDelegate,
         timelineMiddleLoaderTableViewCellDelegate: TimelineMiddleLoaderTableViewCellDelegate?
     ) -> UITableViewDiffableDataSource<TimelineSection, Item> {
-        UITableViewDiffableDataSource(tableView: tableView) { tableView, indexPath, item -> UITableViewCell? in
+        UITableViewDiffableDataSource(tableView: tableView) { [weak dependency] tableView, indexPath, item -> UITableViewCell? in
+            guard let dependency = dependency else { return nil }
             switch item {
             case .homeTimelineIndex(let objectID, let attribute):
                 let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: TimelinePostTableViewCell.self), for: indexPath) as! TimelinePostTableViewCell
@@ -32,8 +33,8 @@ extension TimelineSection {
                 // configure cell
                 managedObjectContext.performAndWait {
                     let timelineIndex = managedObjectContext.object(with: objectID) as! TimelineIndex
-                    TimelineSection.configure(cell: cell, readableLayoutFrame: tableView.readableContentGuide.layoutFrame, videoPlaybackService: context.videoPlaybackService, timelineIndex: timelineIndex)
-                    TimelineSection.configure(cell: cell, overrideTraitCollection: context.overrideTraitCollection.value)
+                    TimelineSection.configure(cell: cell, readableLayoutFrame: tableView.readableContentGuide.layoutFrame, dependency: dependency, timelineIndex: timelineIndex)
+                    TimelineSection.configure(cell: cell, overrideTraitCollection: dependency.context.overrideTraitCollection.value)
                     TimelineSection.configure(cell: cell, timelineIndex: timelineIndex, timestampUpdatePublisher: timestampUpdatePublisher)
                     TimelineSection.configure(cell: cell, attribute: attribute)
                 }
@@ -45,8 +46,8 @@ extension TimelineSection {
                 // configure cell
                 managedObjectContext.performAndWait {
                     let mentionTimelineIndex = managedObjectContext.object(with: objectID) as! MentionTimelineIndex
-                    TimelineSection.configure(cell: cell, readableLayoutFrame: tableView.readableContentGuide.layoutFrame, videoPlaybackService: context.videoPlaybackService, mentionTimelineIndex: mentionTimelineIndex)
-                    TimelineSection.configure(cell: cell, overrideTraitCollection: context.overrideTraitCollection.value)
+                    TimelineSection.configure(cell: cell, readableLayoutFrame: tableView.readableContentGuide.layoutFrame, dependency: dependency, mentionTimelineIndex: mentionTimelineIndex)
+                    TimelineSection.configure(cell: cell, overrideTraitCollection: dependency.context.overrideTraitCollection.value)
                     TimelineSection.configure(cell: cell, mentionTimelineIndex: mentionTimelineIndex, timestampUpdatePublisher: timestampUpdatePublisher)
                     TimelineSection.configure(cell: cell, attribute: attribute)
                 }
@@ -54,12 +55,12 @@ extension TimelineSection {
                 return cell
             case .tweet(let objectID):
                 let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: TimelinePostTableViewCell.self), for: indexPath) as! TimelinePostTableViewCell
-                let activeTwitterAuthenticationBox = context.authenticationService.activeTwitterAuthenticationBox.value
+                let activeTwitterAuthenticationBox = dependency.context.authenticationService.activeTwitterAuthenticationBox.value
                 let requestTwitterUserID = activeTwitterAuthenticationBox?.twitterUserID ?? ""
                 // configure cell
                 managedObjectContext.performAndWait {
                     let tweet = managedObjectContext.object(with: objectID) as! Tweet
-                    TimelineSection.configure(cell: cell, readableLayoutFrame: tableView.readableContentGuide.layoutFrame, videoPlaybackService: context.videoPlaybackService, tweet: tweet, requestUserID: requestTwitterUserID)
+                    TimelineSection.configure(cell: cell, readableLayoutFrame: tableView.readableContentGuide.layoutFrame, dependency: dependency, tweet: tweet, requestUserID: requestTwitterUserID)
                     TimelineSection.configure(cell: cell, tweet: tweet, timestampUpdatePublisher: timestampUpdatePublisher)
                 }
                 cell.delegate = timelinePostTableViewCellDelegate
@@ -90,14 +91,14 @@ extension TimelineSection {
     static func configure(
         cell: TimelinePostTableViewCell,
         readableLayoutFrame: CGRect? = nil,
-        videoPlaybackService: VideoPlaybackService,
+        dependency: NeedsDependency,
         timelineIndex: TimelineIndex
     ) {
         if let tweet = timelineIndex.tweet {
             configure(
                 cell: cell,
                 readableLayoutFrame: readableLayoutFrame,
-                videoPlaybackService: videoPlaybackService,
+                dependency: dependency,
                 tweet: tweet,
                 requestUserID: timelineIndex.userID
             )
@@ -107,14 +108,14 @@ extension TimelineSection {
     static func configure(
         cell: TimelinePostTableViewCell,
         readableLayoutFrame: CGRect? = nil,
-        videoPlaybackService: VideoPlaybackService,
+        dependency: NeedsDependency,
         mentionTimelineIndex: MentionTimelineIndex
     ) {
         if let tweet = mentionTimelineIndex.tweet {
             configure(
                 cell: cell,
                 readableLayoutFrame: readableLayoutFrame,
-                videoPlaybackService: videoPlaybackService,
+                dependency: dependency,
                 tweet: tweet,
                 requestUserID: mentionTimelineIndex.userID
             )
@@ -124,7 +125,7 @@ extension TimelineSection {
     static func configure(
         cell: TimelinePostTableViewCell,
         readableLayoutFrame: CGRect?,
-        videoPlaybackService: VideoPlaybackService,
+        dependency: NeedsDependency,
         tweet: Tweet,
         requestUserID: String
     ) {
@@ -231,7 +232,7 @@ extension TimelineSection {
             let scale: CGFloat = 1.3
             return CGSize(width: maxWidth, height: maxWidth * scale)
         }()
-        if let media = media.first, let videoPlayerViewModel = videoPlaybackService.dequeueVideoPlayerViewModel(for: media) {
+        if let media = media.first, let videoPlayerViewModel = dependency.context.videoPlaybackService.dequeueVideoPlayerViewModel(for: media) {
             let parent = cell.delegate?.parent()
             let mosaicPlayerView = cell.timelinePostView.mosaicPlayerView
             let playerViewController = mosaicPlayerView.setupPlayer(
@@ -284,6 +285,19 @@ extension TimelineSection {
             cell.timelinePostView.geoContainerStackView.isHidden = false
         } else {
             cell.timelinePostView.geoContainerStackView.isHidden = true
+        }
+        
+        // set menu button
+        if #available(iOS 14.0, *) {
+            let menu = StatusProviderFacade.createMenuForStatus(
+                tweet: (tweet.retweet ?? tweet),
+                sender: cell.timelinePostView.actionToolbarContainer.menuButton,
+                dependency: dependency
+            )
+            cell.timelinePostView.actionToolbarContainer.menuButton.menu = menu
+            cell.timelinePostView.actionToolbarContainer.menuButton.showsMenuAsPrimaryAction = true
+        } else {
+            // no menu supports. handle by `StatusProvider`
         }
         
         // observe model change

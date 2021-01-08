@@ -15,6 +15,7 @@ extension HomeTimelineViewModel {
     
     func setupDiffableDataSource(
         for tableView: UITableView,
+        dependency: NeedsDependency,
         timelinePostTableViewCellDelegate: TimelinePostTableViewCellDelegate,
         timelineMiddleLoaderTableViewCellDelegate: TimelineMiddleLoaderTableViewCellDelegate
     ) {
@@ -25,7 +26,7 @@ extension HomeTimelineViewModel {
         
         diffableDataSource = TimelineSection.tableViewDiffableDataSource(
             for: tableView,
-            context: context,
+            dependency: dependency,
             managedObjectContext: fetchedResultsController.managedObjectContext,
             timestampUpdatePublisher: timestampUpdatePublisher,
             timelinePostTableViewCellDelegate: timelinePostTableViewCellDelegate,

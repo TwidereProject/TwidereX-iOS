@@ -19,6 +19,7 @@
 "Common.Alerts.PhotoSaved.Title" = "Photo Saved";
 "Common.Alerts.RateLimitExceeded.Message" = "Reached Twitter API usage limit";
 "Common.Alerts.RateLimitExceeded.Title" = "Rate Limit Exceeded";
+"Common.Alerts.TooManyRequests.Title" = "Too many requests";
 "Common.Alerts.TweetFail.Message" = "Please try again";
 "Common.Alerts.TweetFail.Title" = "Failed to Tweet";
 "Common.Alerts.TweetSent.Title" = "Tweet Sent";
@@ -48,6 +49,9 @@
 "Common.Controls.ProfileDashboard.Followers" = "Followers";
 "Common.Controls.ProfileDashboard.Following" = "Following";
 "Common.Controls.ProfileDashboard.Listed" = "Listed";
+"Common.Controls.Status.Actions.CopyLink" = "Copy Link";
+"Common.Controls.Status.Actions.CopyText" = "Copy text";
+"Common.Controls.Status.Actions.ShareLink" = "Share Link";
 "Common.Controls.Status.UserRetweeted" = "%@ retweeted";
 "Common.Controls.Timeline.LoadMore" = "Load More";
 "Common.Countable.Like.Multiple" = "likes";

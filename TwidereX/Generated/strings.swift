@@ -83,6 +83,10 @@ internal enum L10n {
         /// Rate Limit Exceeded
         internal static let title = L10n.tr("Localizable", "Common.Alerts.RateLimitExceeded.Title")
       }
+      internal enum TooManyRequests {
+        /// Too many requests
+        internal static let title = L10n.tr("Localizable", "Common.Alerts.TooManyRequests.Title")
+      }
       internal enum TweetFail {
         /// Please try again
         internal static let message = L10n.tr("Localizable", "Common.Alerts.TweetFail.Message")
@@ -171,6 +175,14 @@ internal enum L10n {
         /// %@ retweeted
         internal static func userRetweeted(_ p1: Any) -> String {
           return L10n.tr("Localizable", "Common.Controls.Status.UserRetweeted", String(describing: p1))
+        }
+        internal enum Actions {
+          /// Copy Link
+          internal static let copyLink = L10n.tr("Localizable", "Common.Controls.Status.Actions.CopyLink")
+          /// Copy text
+          internal static let copyText = L10n.tr("Localizable", "Common.Controls.Status.Actions.CopyText")
+          /// Share Link
+          internal static let shareLink = L10n.tr("Localizable", "Common.Controls.Status.Actions.ShareLink")
         }
       }
       internal enum Timeline {

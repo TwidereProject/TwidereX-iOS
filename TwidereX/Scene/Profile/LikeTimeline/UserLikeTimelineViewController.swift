@@ -55,14 +55,17 @@ extension UserLikeTimelineViewController {
         ])
         
         viewModel.tableView = tableView
-        viewModel.setupDiffableDataSource(for: tableView, timelinePostTableViewCellDelegate: self)
+        tableView.delegate = self
+        viewModel.setupDiffableDataSource(
+            for: tableView,
+            dependency: self,
+            timelinePostTableViewCellDelegate: self
+        )
         do {
             try viewModel.fetchedResultsController.performFetch()
         } catch {
             assertionFailure(error.localizedDescription)
         }
-        tableView.delegate = self
-        tableView.dataSource = viewModel.diffableDataSource
         
         // trigger timeline loading
         viewModel.userID

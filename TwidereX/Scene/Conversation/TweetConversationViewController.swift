@@ -62,9 +62,8 @@ extension TweetConversationViewController {
         
         viewModel.conversationPostTableViewCellDelegate = self
         viewModel.timelinePostTableViewCellDelegate = self
-        viewModel.setupDiffableDataSource(for: tableView)
         tableView.delegate = self
-        tableView.dataSource = viewModel.diffableDataSource
+        viewModel.setupDiffableDataSource(for: tableView, dependency: self)
         tableView.reloadData()
         
         viewModel.loadReplyStateMachine.enter(TweetConversationViewModel.LoadReplyState.Prepare.self)

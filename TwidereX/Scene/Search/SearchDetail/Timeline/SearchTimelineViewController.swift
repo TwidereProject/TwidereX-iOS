@@ -57,6 +57,7 @@ extension SearchTimelineViewController {
         tableView.delegate = self
         viewModel.setupDiffableDataSource(
             for: tableView,
+            dependency: self,
             timelinePostTableViewCellDelegate: self
         )
         do {

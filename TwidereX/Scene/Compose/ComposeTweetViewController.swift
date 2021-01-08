@@ -569,7 +569,10 @@ extension ComposeTweetViewController: UIImagePickerControllerDelegate & UINaviga
         let picker = UIImagePickerController()
         picker.sourceType = sourceType
         picker.delegate = self
-        present(picker, animated: true)
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            self.present(picker, animated: true)
+        }
     }
     
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {

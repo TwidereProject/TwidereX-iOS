@@ -124,7 +124,9 @@ extension MentionTimelineViewController {
         viewModel.tableView = tableView
         tableView.delegate = self
         viewModel.setupDiffableDataSource(
-            for: tableView, timelinePostTableViewCellDelegate: self,
+            for: tableView,
+            dependency: self,
+            timelinePostTableViewCellDelegate: self,
             timelineMiddleLoaderTableViewCellDelegate: self
         )
         context.authenticationService.activeAuthenticationIndex
