@@ -19,6 +19,8 @@ final public class MentionTimelineIndex: NSManagedObject {
     
     @NSManaged public private(set) var hasMore: Bool
     
+    @NSManaged public private(set) var deletedAt: Date?
+    
     // one-to-one relationship
     @NSManaged public private(set) var tweet: Tweet?
     @NSManaged public private(set) var toots: Toots?

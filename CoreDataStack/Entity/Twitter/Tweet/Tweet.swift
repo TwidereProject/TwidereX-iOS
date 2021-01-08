@@ -27,6 +27,7 @@ final public class Tweet: NSManagedObject {
     @NSManaged public private(set) var source: String?
     
     @NSManaged public private(set) var updatedAt: Date
+    @NSManaged public private(set) var deletedAt: Date?
     
     // one-to-one relationship
     @NSManaged public private(set) var entities: TweetEntities?
