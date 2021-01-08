@@ -357,9 +357,11 @@ extension StatusProviderFacade {
 
     private static func _responseToStatusMenuAction(provider: StatusProvider, tweet: Future<Tweet?, Never>, sender: UIButton) {
         tweet
-            .sink { [weak provider] tweet in
+            .sink { [weak provider, weak sender] tweet in
                 guard let tweet = tweet else { return }
                 guard let provider = provider else { return }
+                guard let sender = sender else { return }
+                
                 let activityViewController = createActivityViewControllerForStatus(tweet: tweet, dependency: provider)
                 DispatchQueue.main.async {
                     provider.coordinator.present(
@@ -377,14 +379,19 @@ extension StatusProviderFacade {
 extension StatusProviderFacade {
     
     static func createMenuForStatus(tweet: Tweet, sender: UIButton, dependency: NeedsDependency) -> UIMenu {
+        let copiedText = (tweet.retweet ?? tweet).displayText
+        let copiedLink = tweet.tweetURL.absoluteString
+        
         var children: [UIMenuElement] = [
             UIAction(title: L10n.Common.Controls.Status.Actions.copyText.capitalized, image: UIImage(systemName: "doc.on.doc"), identifier: nil, discoverabilityTitle: nil, attributes: [], state: .off) { _ in
-                UIPasteboard.general.string = (tweet.retweet ?? tweet).displayText
+                UIPasteboard.general.string = copiedText
             },
             UIAction(title: L10n.Common.Controls.Status.Actions.copyLink.capitalized, image: UIImage(systemName: "link"), identifier: nil, discoverabilityTitle: nil, attributes: [], state: .off) { _ in
-                UIPasteboard.general.string = tweet.tweetURL.absoluteString
+                UIPasteboard.general.string = copiedLink
             },
-            UIAction(title: L10n.Common.Controls.Status.Actions.shareLink.capitalized, image: UIImage(systemName: "square.and.arrow.up"), identifier: nil, discoverabilityTitle: nil, attributes: [], state: .off) { _ in
+            UIAction(title: L10n.Common.Controls.Status.Actions.shareLink.capitalized, image: UIImage(systemName: "square.and.arrow.up"), identifier: nil, discoverabilityTitle: nil, attributes: [], state: .off) { [weak sender, weak dependency] _ in
+                guard let sender = sender else { return }
+                guard let dependency = dependency else { return }
                 let activityViewController = StatusProviderFacade.createActivityViewControllerForStatus(tweet: tweet, dependency: dependency)
                 DispatchQueue.main.async {
                     dependency.coordinator.present(
