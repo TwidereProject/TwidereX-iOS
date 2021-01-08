@@ -138,6 +138,7 @@ extension MentionTimelineViewController {
                     predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [
                         MentionTimelineIndex.predicate(platform: .twitter),
                         MentionTimelineIndex.predicate(userID: userID),
+                        MentionTimelineIndex.notDeleted(),
                     ])
                 } else {
                     // use invalid predicate

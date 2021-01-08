@@ -90,4 +90,8 @@ extension MentionTimelineIndex {
         return NSPredicate(format: "%K == %@", #keyPath(MentionTimelineIndex.platformRaw), platform.rawValue)
     }
     
+    public static func notDeleted() -> NSPredicate {
+        return NSPredicate(format: "%K == nil", #keyPath(MentionTimelineIndex.deletedAt))
+    }
+    
 }

@@ -292,7 +292,7 @@ extension TimelineSection {
         // set menu button
         if #available(iOS 14.0, *) {
             let menu = StatusProviderFacade.createMenuForStatus(
-                tweet: (tweet.retweet ?? tweet),
+                tweet: tweet,
                 sender: cell.timelinePostView.actionToolbarContainer.menuButton,
                 dependency: dependency
             )

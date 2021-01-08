@@ -58,7 +58,7 @@ extension Tweet {
         
         items.append(tweetURL)
         
-        if !text.isEmpty {
+        if !((retweet ?? self).text).isEmpty {
             items.append(displayText)
         }
         

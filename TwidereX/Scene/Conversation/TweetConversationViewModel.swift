@@ -26,6 +26,7 @@ final class TweetConversationViewModel: NSObject {
     }()
     
     var disposeBag = Set<AnyCancellable>()
+    var rootItemObservation: AnyCancellable?
     
     // input
     let context: AppContext
@@ -72,6 +73,7 @@ final class TweetConversationViewModel: NSObject {
     var conversationItems = CurrentValueSubject<[ConversationItem], Never>([])
     var cellFrameCache = NSCache<NSNumber, NSValue>()
     
+    // TODO: support loading from ID/URL
     init(context: AppContext, tweetObjectID: NSManagedObjectID) {
         self.context = context
         self.rootItem = .root(tweetObjectID: tweetObjectID)
@@ -248,6 +250,7 @@ extension TweetConversationViewModel {
 
 extension TweetConversationViewModel {
     
+    // FIXME: refactor into Diffable section
     func setupDiffableDataSource(for tableView: UITableView, dependency: NeedsDependency) {
         assert(Thread.isMainThread)
         diffableDataSource = UITableViewDiffableDataSource(tableView: tableView) { [weak self, weak dependency] tableView, indexPath, item -> UITableViewCell? in
@@ -262,7 +265,7 @@ extension TweetConversationViewModel {
                 let managedObjectContext = self.context.managedObjectContext
                 managedObjectContext.performAndWait {
                     let tweet = managedObjectContext.object(with: objectID) as! Tweet
-                    TweetConversationViewModel.configure(cell: cell, readableLayoutFrame: tableView.readableContentGuide.layoutFrame, videoPlaybackService: self.context.videoPlaybackService, tweet: tweet, requestUserID: requestTwitterUserID)
+                    TweetConversationViewModel.configure(cell: cell, readableLayoutFrame: tableView.readableContentGuide.layoutFrame, dependency: dependency, tweet: tweet, requestUserID: requestTwitterUserID)
                     TweetConversationViewModel.configure(cell: cell, overrideTraitCollection: self.context.overrideTraitCollection.value)
                 }
                 cell.delegate = self.conversationPostTableViewCellDelegate
@@ -324,7 +327,13 @@ extension TweetConversationViewModel {
         diffableDataSource?.apply(snapshot)
     }
     
-    static func configure(cell: ConversationPostTableViewCell, readableLayoutFrame: CGRect? = nil, videoPlaybackService: VideoPlaybackService, tweet: Tweet, requestUserID: String) {
+    static func configure(
+        cell: ConversationPostTableViewCell,
+        readableLayoutFrame: CGRect? = nil,
+        dependency: NeedsDependency,
+        tweet: Tweet,
+        requestUserID: String
+    ) {
         // set retweet display
         cell.conversationPostView.retweetContainerStackView.isHidden = tweet.retweet == nil
         cell.conversationPostView.retweetInfoLabel.text = L10n.Common.Controls.Status.userRetweeted(tweet.author.name)
@@ -403,7 +412,7 @@ extension TweetConversationViewModel {
             let scale: CGFloat = 1.3
             return CGSize(width: maxWidth, height: maxWidth * scale)
         }()
-        if let media = media.first, let videoPlayerViewModel = videoPlaybackService.dequeueVideoPlayerViewModel(for: media) {
+        if let media = media.first, let videoPlayerViewModel = dependency.context.videoPlaybackService.dequeueVideoPlayerViewModel(for: media) {
             let parent = cell.delegate?.parent()
             let mosaicPlayerView = cell.conversationPostView.mosaicPlayerView
             let playerViewController = mosaicPlayerView.setupPlayer(
@@ -502,6 +511,19 @@ extension TweetConversationViewModel {
             cell.conversationLinkUpper.isHidden = false
         } else {
             cell.conversationLinkUpper.isHidden = true
+        }
+        
+        // set menu button
+        if #available(iOS 14.0, *) {
+            let menu = StatusProviderFacade.createMenuForStatus(
+                tweet: tweet,
+                sender: cell.conversationPostView.actionToolbarContainer.menuButton,
+                dependency: dependency
+            )
+            cell.conversationPostView.actionToolbarContainer.menuButton.menu = menu
+            cell.conversationPostView.actionToolbarContainer.menuButton.showsMenuAsPrimaryAction = true
+        } else {
+            // no menu supports. handle by `StatusProvider`
         }
         
         // observe model change

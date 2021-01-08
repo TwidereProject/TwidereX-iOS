@@ -405,8 +405,8 @@ extension StatusProviderFacade {
         
         if let activeTwitterAuthenticationBox = dependency.context.authenticationService.activeTwitterAuthenticationBox.value {
             let activeTwitterUserID = activeTwitterAuthenticationBox.twitterUserID
-            if tweet.author.id == activeTwitterUserID || tweet.retweet?.id == activeTwitterUserID {
-                let deleteTweetAction = UIAction(title: L10n.Common.Controls.Status.Actions.deleteTweet.capitalized, image: UIImage(systemName: "trash"), identifier: nil, discoverabilityTitle: nil, attributes: .destructive, state: .off) { [weak dependency] _ in
+            if tweet.author.id == activeTwitterUserID || tweet.retweet?.author.id == activeTwitterUserID {
+                let deleteTweetAction = UIAction(title: L10n.Common.Controls.Actions.confirm, image: nil, identifier: nil, discoverabilityTitle: nil, attributes: .destructive, state: .off) { [weak dependency] _ in
                     guard let dependency = dependency else { return }
                     guard let activeTwitterAuthenticationBox = dependency.context.authenticationService.activeTwitterAuthenticationBox.value else {
                         return
@@ -422,7 +422,8 @@ extension StatusProviderFacade {
                     }
                     .store(in: &dependency.context.disposeBag)
                 }
-                children.append(deleteTweetAction)
+                let deleteTweetMenu = UIMenu(title: L10n.Common.Controls.Status.Actions.deleteTweet.capitalized, image: UIImage(systemName: "trash"), identifier: nil, options: .destructive, children: [deleteTweetAction])
+                children.append(deleteTweetMenu)
             }
         }
         

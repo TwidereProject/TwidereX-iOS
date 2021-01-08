@@ -40,6 +40,7 @@ extension UserMediaTimelineViewModel: NSFetchedResultsControllerDelegate {
 
         var items: [Item] = []
         for tweet in tweets {
+            guard tweet.deletedAt == nil else { continue }
             let mediaArray = Array(tweet.media ?? Set())
             let photoMedia = mediaArray.filter { $0.type == "photo" }
             guard !photoMedia.isEmpty else { continue }

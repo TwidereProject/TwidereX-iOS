@@ -68,6 +68,31 @@ extension TweetConversationViewController {
         
         viewModel.loadReplyStateMachine.enter(TweetConversationViewModel.LoadReplyState.Prepare.self)
         viewModel.loadConversationStateMachine.enter(TweetConversationViewModel.LoadConversationState.Prepare.self)
+        
+        // if case let .root(tweetObjectID) = viewModel.rootItem {
+        //     context.managedObjectContext.perform { [weak self] in
+        //         guard let self = self else { return }
+        //         let tweet = self.context.managedObjectContext.object(with: tweetObjectID) as! Tweet
+        //         self.viewModel.rootItemObservation = ManagedObjectObserver.observe(object: tweet)
+        //             .receive(on: DispatchQueue.main)
+        //             .sink { _ in
+        //                 // do nothing
+        //             } receiveValue: { [weak self] change in
+        //                 guard let self = self else { return }
+        //                 switch change.changeType {
+        //                 case .update(let object):
+        //                     guard let tweet = object as? Tweet else { return }
+        //                     if tweet.deletedAt != nil { fallthrough }
+        //                 case .delete:
+        //                     // FIXME: update view state. DO NOT pop navigation stack
+        //                     self.navigationController?.popViewController(animated: true)
+        //                 default:
+        //                     break
+        //                 }
+        //             }
+        //     }
+        //
+        // }
     }
     
     override func viewWillAppear(_ animated: Bool) {
