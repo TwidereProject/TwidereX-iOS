@@ -6,6 +6,7 @@
 //  Copyright © 2020 Twidere. All rights reserved.
 //
 
+import os.log
 import UIKit
 import Combine
 import GameplayKit
@@ -29,6 +30,9 @@ final class FollowerListViewController: UIViewController, NeedsDependency {
         return tableView
     }()
     
+    deinit {
+        os_log("%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
+    }
 }
 
 extension FollowerListViewController {

@@ -29,6 +29,9 @@ final class SearchMediaViewController: UIViewController, MediaPreviewableViewCon
         return collectionView
     }()
     
+    deinit {
+        os_log("%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
+    }
 }
 
 extension SearchMediaViewController {
