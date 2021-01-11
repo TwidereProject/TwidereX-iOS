@@ -28,7 +28,8 @@ extension SearchTimelineViewModel {
             managedObjectContext: fetchedResultsController.managedObjectContext,
             timestampUpdatePublisher: timestampUpdatePublisher,
             timelinePostTableViewCellDelegate: timelinePostTableViewCellDelegate,
-            timelineMiddleLoaderTableViewCellDelegate: nil
+            timelineMiddleLoaderTableViewCellDelegate: nil,
+            timelineHeaderTableViewCellDelegate: nil
         )
     }
 }

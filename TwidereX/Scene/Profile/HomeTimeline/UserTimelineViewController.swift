@@ -58,7 +58,8 @@ extension UserTimelineViewController {
         viewModel.setupDiffableDataSource(
             for: tableView,
             dependency: self,
-            timelinePostTableViewCellDelegate: self
+            timelinePostTableViewCellDelegate: self,
+            timelineHeaderTableViewCellDelegate: self
         )
 
         // trigger user timeline loading
@@ -163,6 +164,10 @@ extension UserTimelineViewController: TimelinePostTableViewCellDelegate {
     weak var playerViewControllerDelegate: AVPlayerViewControllerDelegate? { return self }
     func parent() -> UIViewController { return self }
 }
+
+// MARK: - TimelineHeaderTableViewCellDelegate
+extension UserTimelineViewController: TimelineHeaderTableViewCellDelegate { }
+
 
 // MARK: - CustomScrollViewContainerController
 extension UserTimelineViewController: ScrollViewContainer {

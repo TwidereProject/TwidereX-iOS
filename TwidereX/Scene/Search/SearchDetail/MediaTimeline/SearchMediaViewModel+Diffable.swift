@@ -12,11 +12,15 @@ import CoreData
 import CoreDataStack
 
 extension SearchMediaViewModel {
-    func setupDiffableDataSource(collectionView: UICollectionView, mediaCollectionViewCellDelegate: MediaCollectionViewCellDelegate?) {
+    func setupDiffableDataSource(
+        collectionView: UICollectionView,
+        mediaCollectionViewCellDelegate: MediaCollectionViewCellDelegate?
+    ) {
         diffableDataSource = MediaSection.collectionViewDiffableDataSource(
             collectionView: collectionView,
             managedObjectContext: fetchedResultsController.managedObjectContext,
-            mediaCollectionViewCellDelegate: mediaCollectionViewCellDelegate
+            mediaCollectionViewCellDelegate: mediaCollectionViewCellDelegate,
+            timelineHeaderCollectionViewCellDelegate: nil
         )
     }
 }

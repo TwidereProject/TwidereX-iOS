@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import ActiveLabel
 
 extension Item.EmptyStateHeaderAttribute {
     
@@ -45,6 +46,22 @@ extension TimelineHeaderView {
     static func configure(timelineHeaderView: TimelineHeaderView, attribute: Item.EmptyStateHeaderAttribute) {
         timelineHeaderView.iconImageView.image = attribute.iconImage
         timelineHeaderView.titleLabel.text = attribute.title
-        timelineHeaderView.messageLabel.text = attribute.message
+
+        let message = attribute.message
+        timelineHeaderView.messageLabel.activeEntities.removeAll()
+        timelineHeaderView.messageLabel.text = message
+        switch attribute.reason {
+        case .suspended:
+            let twitterRules = L10n.Common.Alerts.AccountSuspended.twitterRules
+            let twitterRulesURL = URL(string: "https://support.twitter.com/articles/18311")!
+            if let range = message.range(of: twitterRules) {
+                let activeEntities: [ActiveEntity] = [
+                    ActiveEntity(range: NSRange(range, in: message), type: .url(original: twitterRulesURL.absoluteString, trimmed: twitterRulesURL.absoluteString))
+                ]
+                timelineHeaderView.messageLabel.activeEntities = activeEntities
+            }
+        default:
+            break
+        }
     }
 }

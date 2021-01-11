@@ -19,7 +19,8 @@ extension MediaSection {
     static func collectionViewDiffableDataSource(
         collectionView: UICollectionView,
         managedObjectContext: NSManagedObjectContext,
-        mediaCollectionViewCellDelegate: MediaCollectionViewCellDelegate?
+        mediaCollectionViewCellDelegate: MediaCollectionViewCellDelegate?,
+        timelineHeaderCollectionViewCellDelegate: TimelineHeaderCollectionViewCellDelegate?
     ) -> UICollectionViewDiffableDataSource<MediaSection, Item> {
         UICollectionViewDiffableDataSource(collectionView: collectionView) { [weak mediaCollectionViewCellDelegate] collectionView, indexPath, item -> UICollectionViewCell? in
             guard let mediaCollectionViewCellDelegate = mediaCollectionViewCellDelegate else { return nil }
@@ -55,6 +56,7 @@ extension MediaSection {
             case .emptyStateHeader(let attribute):
                 let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: TimelineHeaderCollectionViewCell.self), for: indexPath) as! TimelineHeaderCollectionViewCell
                 TimelineHeaderView.configure(timelineHeaderView: cell.timelineHeaderView, attribute: attribute)
+                cell.delegate = timelineHeaderCollectionViewCellDelegate
                 return cell
             default:
                 assertionFailure()

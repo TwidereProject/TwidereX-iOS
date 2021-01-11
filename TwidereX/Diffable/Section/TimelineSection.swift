@@ -22,7 +22,8 @@ extension TimelineSection {
         managedObjectContext: NSManagedObjectContext,
         timestampUpdatePublisher: AnyPublisher<Date, Never>,
         timelinePostTableViewCellDelegate: TimelinePostTableViewCellDelegate,
-        timelineMiddleLoaderTableViewCellDelegate: TimelineMiddleLoaderTableViewCellDelegate?
+        timelineMiddleLoaderTableViewCellDelegate: TimelineMiddleLoaderTableViewCellDelegate?,
+        timelineHeaderTableViewCellDelegate: TimelineHeaderTableViewCellDelegate?
     ) -> UITableViewDiffableDataSource<TimelineSection, Item> {
         UITableViewDiffableDataSource(tableView: tableView) { [weak dependency, weak timelinePostTableViewCellDelegate, weak timelineMiddleLoaderTableViewCellDelegate] tableView, indexPath, item -> UITableViewCell? in
             guard let dependency = dependency else { return UITableViewCell() }
@@ -79,6 +80,7 @@ extension TimelineSection {
             case .emptyStateHeader(let attribute):
                 let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: TimelineHeaderTableViewCell.self), for: indexPath) as! TimelineHeaderTableViewCell
                 TimelineHeaderView.configure(timelineHeaderView: cell.timelineHeaderView, attribute: attribute)
+                cell.delegate = timelineHeaderTableViewCellDelegate
                 return cell
             default:
                 assertionFailure()
