@@ -151,6 +151,7 @@ class ProfileViewModel: NSObject {
                 }
             } receiveValue: { [weak self] content in
                 guard let self = self else { return }
+                
                 let managedObjectContext = context.managedObjectContext
                 let request = TwitterUser.sortedFetchRequest
                 request.fetchLimit = 1

@@ -27,7 +27,7 @@ final class TwitterAuthenticationController: NeedsDependency {
     // output
     let isAuthenticating = CurrentValueSubject<Bool, Never>(false)
     let error = CurrentValueSubject<Error?, Never>(nil)
-    let authenticated = PassthroughSubject<Void, Never>()
+    let authenticated = PassthroughSubject<Twitter.Entity.User, Never>()
 
     init(context: AppContext, coordinator: SceneCoordinator, authenticateURL: URL, requestTokenExchange: Twitter.API.OAuth.OAuthRequestTokenExchange) {
         self.context = context
@@ -102,7 +102,7 @@ extension TwitterAuthenticationController {
                 } receiveValue: { response in
                     let user = response.value
                     os_log("%{public}s[%{public}ld], %{public}s: user @%s verified", ((#file as NSString).lastPathComponent), #line, #function, user.screenName)
-                    self.authenticated.send()
+                    self.authenticated.send(user)
                 }
                 .store(in: &self.disposeBag)
         }
@@ -147,7 +147,7 @@ extension TwitterAuthenticationController {
             } receiveValue: { response in
                 let user = response.value
                 os_log("%{public}s[%{public}ld], %{public}s: user @%s verified", ((#file as NSString).lastPathComponent), #line, #function, user.screenName)
-                self.authenticated.send()
+                self.authenticated.send(user)
             }
             .store(in: &self.disposeBag)
     }
