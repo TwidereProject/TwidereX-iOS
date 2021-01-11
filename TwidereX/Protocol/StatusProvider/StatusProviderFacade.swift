@@ -540,7 +540,7 @@ extension StatusProviderFacade {
                         }
                     } else {
                         if let targetUserID = targetUserID {
-                            return ProfileViewModel(context: provider.context, userID: targetUserID)
+                            return ProfileViewModel(context: provider.context, userID: targetUserID, username: targetUsername)
                         } else {
                             return ProfileViewModel(context: provider.context, username: targetUsername)
                         }

@@ -30,8 +30,14 @@ extension UserMediaTimelineViewModel.State {
     class Initial: UserMediaTimelineViewModel.State {
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {
             guard let viewModel = viewModel else { return false }
-            guard viewModel.userID.value != nil else { return false }
-            return stateClass == Reloading.self
+            switch stateClass {
+            case is Reloading.Type:
+                return viewModel.userID.value != nil
+            case is Suspended.Type:
+                return true
+            default:
+                return false
+            }
         }
     }
     
@@ -210,6 +216,22 @@ extension UserMediaTimelineViewModel.State {
             // trigger items update
             viewModel.pagingTweetIDs.value = []
             viewModel.tweetIDs.value = []
+        }
+    }
+    
+    class Suspended: UserMediaTimelineViewModel.State {
+        override func isValidNextState(_ stateClass: AnyClass) -> Bool {
+            return false
+        }
+        
+        override func didEnter(from previousState: GKState?) {
+            super.didEnter(from: previousState)
+            guard let viewModel = viewModel else { return }
+            
+            // trigger items update
+            viewModel.pagingTweetIDs.value = []
+            viewModel.tweetIDs.value = []
+            viewModel.items.value = []
         }
     }
     

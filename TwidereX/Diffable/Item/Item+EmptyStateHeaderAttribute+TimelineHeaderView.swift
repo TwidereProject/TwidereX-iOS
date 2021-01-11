@@ -15,6 +15,7 @@ extension Item.EmptyStateHeaderAttribute {
         case .noTweetsFound:        return Asset.Indices.infoCircle.image.withRenderingMode(.alwaysTemplate)
         case .notAuthorized:        return Asset.Human.eyeSlash.image.withRenderingMode(.alwaysTemplate)
         case .blocked:              return Asset.Human.eyeSlash.image.withRenderingMode(.alwaysTemplate)
+        case .suspended:            return Asset.Human.eyeSlash.image.withRenderingMode(.alwaysTemplate)
         }
     }
     
@@ -23,6 +24,7 @@ extension Item.EmptyStateHeaderAttribute {
         case .noTweetsFound:        return L10n.Common.Alerts.NoTweetsFound.title
         case .notAuthorized:        return L10n.Common.Alerts.PermissionDeniedNotAuthorized.title
         case .blocked:              return L10n.Common.Alerts.PermissionDeniedFriendshipBlocked.title
+        case .suspended:            return L10n.Common.Alerts.AccountSuspended.title
         }
     }
     
@@ -31,6 +33,9 @@ extension Item.EmptyStateHeaderAttribute {
         case .noTweetsFound:        return " "
         case .notAuthorized:        return L10n.Common.Alerts.PermissionDeniedNotAuthorized.message
         case .blocked:              return L10n.Common.Alerts.PermissionDeniedFriendshipBlocked.message
+        case .suspended:
+            let twitterRules = L10n.Common.Alerts.AccountSuspended.twitterRules
+            return L10n.Common.Alerts.AccountSuspended.message(twitterRules)
         }
     }
     

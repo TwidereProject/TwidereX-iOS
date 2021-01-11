@@ -43,6 +43,8 @@ class ProfileViewModel: NSObject {
     let friendship: CurrentValueSubject<Friendship?, Never>
     let followedBy: CurrentValueSubject<Bool?, Never>
     
+    let suspended = CurrentValueSubject<Bool, Never>(false)
+    
     let avatarStyle = CurrentValueSubject<UserDefaults.AvatarStyle, Never>(UserDefaults.shared.avatarStyle)
     
     // FIXME: multi-platform support
@@ -133,7 +135,7 @@ class ProfileViewModel: NSObject {
         self.init(context: context, optionalTwitterUser: twitterUser)
     }
     
-    convenience init(context: AppContext, userID: TwitterUser.ID) {
+    convenience init(context: AppContext, userID: TwitterUser.ID, username: String) {
         self.init(context: context, optionalTwitterUser: nil)
         
         guard let activeTwitterAuthenticationBox = context.authenticationService.activeTwitterAuthenticationBox.value else {
@@ -149,8 +151,9 @@ class ProfileViewModel: NSObject {
                 case .finished:
                     os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: user lookup %s success", ((#file as NSString).lastPathComponent), #line, #function, userID)
                 }
-            } receiveValue: { [weak self] content in
+            } receiveValue: { [weak self] response in
                 guard let self = self else { return }
+                self.updateAccountSuspendedState(content: response.value, username: username)
                 
                 let managedObjectContext = context.managedObjectContext
                 let request = TwitterUser.sortedFetchRequest
@@ -158,7 +161,6 @@ class ProfileViewModel: NSObject {
                 request.predicate = TwitterUser.predicate(idStr: userID)
                 do {
                     guard let twitterUser = try managedObjectContext.fetch(request).first else {
-                        assertionFailure()
                         return
                     }
                     self.twitterUser.value = twitterUser
@@ -171,6 +173,7 @@ class ProfileViewModel: NSObject {
     
     convenience init(context: AppContext, username: String) {
         self.init(context: context, optionalTwitterUser: nil)
+        self.username.value = username
         
         guard let activeTwitterAuthenticationBox = context.authenticationService.activeTwitterAuthenticationBox.value else {
             return
@@ -187,6 +190,8 @@ class ProfileViewModel: NSObject {
                 }
             } receiveValue: { [weak self] response in
                 guard let self = self else { return }
+                self.updateAccountSuspendedState(content: response.value, username: username)
+                
                 let dictContent = Twitter.Response.V2.DictContent(
                     tweets: [],
                     users: response.value.data ?? [],
@@ -207,7 +212,6 @@ class ProfileViewModel: NSObject {
                 request.predicate = TwitterUser.predicate(username: user.username)
                 do {
                     guard let twitterUser = try managedObjectContext.fetch(request).first else {
-                        assertionFailure()
                         return
                     }
                     self.twitterUser.value = twitterUser
@@ -344,6 +348,20 @@ extension ProfileViewModel {
             let followedBy = currentTwitterUser.followingFrom.flatMap { $0.contains(twitterUser) } ?? false
             self.followedBy.value = followedBy
             os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: followedBy update: %s", ((#file as NSString).lastPathComponent), #line, #function, followedBy ? "true" : "false")
+        }
+    }
+    
+    private func updateAccountSuspendedState(content: Twitter.API.V2.UserLookup.Content, username: String) {
+        guard let twitterAPIError = content.errors?.first.flatMap({ Twitter.API.Error.TwitterAPIError(responseContentError: $0) }) else {
+            return
+        }
+        
+        switch twitterAPIError {
+        case .userHasBeenSuspended:
+            self.suspended.value = true
+            self.username.value = username
+        default:
+            break
         }
     }
     

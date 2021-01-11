@@ -200,13 +200,18 @@ extension ProfileViewController {
         )
 
         // setup view model
-        Publishers.CombineLatest(
+        Publishers.CombineLatest3(
             viewModel.bannerImageURL.eraseToAnyPublisher(),
+            viewModel.suspended.eraseToAnyPublisher(),
             viewModel.viewDidAppear.eraseToAnyPublisher()
         )
         .receive(on: DispatchQueue.main)
-        .sink { [weak self] url, _ in
+        .sink { [weak self] url, isSuspended, _ in
             guard let self = self else { return }
+            guard !isSuspended else {
+                self.profileHeaderViewController.profileBannerView.profileBannerImageView.image = UIImage.placeholder(color: .systemGray)
+                return
+            }
             let placeholderImage = UIImage.placeholder(color: Asset.Colors.hightLight.color)
             guard let url = url else {
                 self.profileHeaderViewController.profileBannerView.profileBannerImageView.image = placeholderImage
@@ -321,6 +326,31 @@ extension ProfileViewController {
             .sink { [weak self] count in
                 guard let self = self else { return }
                 self.profileHeaderViewController.profileBannerView.profileBannerStatusView.listedStatusItemView.countLabel.text = count.flatMap { "\($0)" } ?? "-"
+            }
+            .store(in: &disposeBag)
+        viewModel.suspended
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] isSuspended in
+                guard let self = self else { return }
+                self.profileHeaderViewController.profileBannerView.profileBannerStatusView.isHidden = isSuspended
+                self.profileHeaderViewController.profileBannerView.bioLabel.isHidden = isSuspended
+                if isSuspended {
+                    self.profileSegmentedViewController
+                        .pagingViewController.viewModel
+                        .profileTweetPostTimelineViewController.viewModel
+                        .stateMachine
+                        .enter(UserTimelineViewModel.State.Suspended.self)
+                    self.profileSegmentedViewController
+                        .pagingViewController.viewModel
+                        .profileMediaPostTimelineViewController.viewModel
+                        .stateMachine
+                        .enter(UserMediaTimelineViewModel.State.Suspended.self)
+                    self.profileSegmentedViewController
+                        .pagingViewController.viewModel
+                        .profileLikesPostTimelineViewController.viewModel
+                        .stateMachine
+                        .enter(UserLikeTimelineViewModel.State.Suspended.self)
+                }
             }
             .store(in: &disposeBag)
         

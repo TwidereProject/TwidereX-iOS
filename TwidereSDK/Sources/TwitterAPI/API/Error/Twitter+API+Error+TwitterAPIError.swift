@@ -73,5 +73,14 @@ extension Twitter.API.Error {
                 return nil
             }
         }
+        
+        public init?(responseContentError error: Twitter.Response.V2.ContentError) {
+            switch (error.title, error.detail) {
+            case ("Forbidden", let detail) where detail.hasPrefix("User has been suspended"):
+                self = .userHasBeenSuspended
+            default:
+                return nil
+            }
+        }
     }
 }

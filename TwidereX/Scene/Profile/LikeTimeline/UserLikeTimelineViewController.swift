@@ -61,11 +61,6 @@ extension UserLikeTimelineViewController {
             dependency: self,
             timelinePostTableViewCellDelegate: self
         )
-        do {
-            try viewModel.fetchedResultsController.performFetch()
-        } catch {
-            assertionFailure(error.localizedDescription)
-        }
         
         // trigger timeline loading
         viewModel.userID

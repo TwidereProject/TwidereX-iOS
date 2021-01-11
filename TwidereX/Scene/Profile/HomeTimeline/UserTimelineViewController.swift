@@ -60,12 +60,7 @@ extension UserTimelineViewController {
             dependency: self,
             timelinePostTableViewCellDelegate: self
         )
-        do {
-            try viewModel.fetchedResultsController.performFetch()
-        } catch {
-            assertionFailure(error.localizedDescription)
-        }
-        
+
         // trigger user timeline loading
         viewModel.userID
             .removeDuplicates()

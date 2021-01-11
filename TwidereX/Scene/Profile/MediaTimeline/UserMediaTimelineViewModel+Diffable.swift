@@ -18,6 +18,7 @@ extension UserMediaTimelineViewModel {
             managedObjectContext: fetchedResultsController.managedObjectContext,
             mediaCollectionViewCellDelegate: mediaCollectionViewCellDelegate
         )
+        items.value = []
     }
 }
 

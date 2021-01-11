@@ -30,6 +30,7 @@ extension UserTimelineViewModel {
             timelinePostTableViewCellDelegate: timelinePostTableViewCellDelegate,
             timelineMiddleLoaderTableViewCellDelegate: nil
         )
+        items.value = []
     }
 }
 
