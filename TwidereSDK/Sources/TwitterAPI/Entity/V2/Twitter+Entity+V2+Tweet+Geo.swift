@@ -9,7 +9,7 @@ import Foundation
 
 extension Twitter.Entity.V2.Tweet {
     public struct Geo: Codable {
-        public let placeID: String?
+        public let placeID: Twitter.Entity.V2.Place.ID?
         public let coordinates: Coordinate?
         
         public enum CodingKeys: String, CodingKey {

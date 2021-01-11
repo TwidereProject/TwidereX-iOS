@@ -37,6 +37,10 @@ final class SearchViewController: UIViewController, DrawerSidebarTransitionableV
     }()
     let searchBarTapPublisher = PassthroughSubject<Void, Never>()
     
+    deinit {
+        os_log("%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
+    }
+    
 }
 
 extension SearchViewController {

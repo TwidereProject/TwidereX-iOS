@@ -43,6 +43,10 @@ final class AccountListViewController: UIViewController, NeedsDependency {
     
     private var twitterAuthenticationController: TwitterAuthenticationController?
     
+    deinit {
+        os_log("%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
+    }
+    
 }
 
 extension AccountListViewController {
@@ -65,9 +69,12 @@ extension AccountListViewController {
         ])
         
         tableView.delegate = self
-        viewModel.accountListTableViewCellDelegate = self
-        viewModel.accountListViewControllerDelegate = self
-        viewModel.setupDiffableDataSource(for: tableView)
+        viewModel.setupDiffableDataSource(
+            for: tableView,
+            dependency: self,
+            accountListTableViewCellDelegate: self,
+            accountListViewControllerDelegate: self
+        )
         
         addBarButtonItem.target = self
         addBarButtonItem.action = #selector(AccountListViewController.addBarButtonItemPressed(_:))

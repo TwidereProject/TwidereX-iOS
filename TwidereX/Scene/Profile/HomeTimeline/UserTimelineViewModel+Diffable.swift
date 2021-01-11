@@ -14,6 +14,7 @@ import CoreDataStack
 extension UserTimelineViewModel {
     func setupDiffableDataSource(
         for tableView: UITableView,
+        dependency: NeedsDependency,
         timelinePostTableViewCellDelegate: TimelinePostTableViewCellDelegate
     ) {
         let timestampUpdatePublisher = Timer.publish(every: 1.0, on: .main, in: .common)
@@ -23,10 +24,11 @@ extension UserTimelineViewModel {
         
         diffableDataSource = TimelineSection.tableViewDiffableDataSource(
             for: tableView,
-            context: context,
+            dependency: dependency,
             managedObjectContext: fetchedResultsController.managedObjectContext,
             timestampUpdatePublisher: timestampUpdatePublisher,
-            timelinePostTableViewCellDelegate: timelinePostTableViewCellDelegate
+            timelinePostTableViewCellDelegate: timelinePostTableViewCellDelegate,
+            timelineMiddleLoaderTableViewCellDelegate: nil
         )
     }
 }
@@ -41,8 +43,9 @@ extension UserTimelineViewModel: NSFetchedResultsControllerDelegate {
         guard tweets.count == indexes.count else { return }
         
         let items: [Item] = tweets
-            .compactMap { tweet in
-                indexes.firstIndex(of: tweet.id).map { index in (index, tweet) }
+            .compactMap { tweet -> (Int, Tweet)? in
+                guard tweet.deletedAt == nil else { return nil }
+                return indexes.firstIndex(of: tweet.id).map { index in (index, tweet) }
             }
             .sorted { $0.0 < $1.0 }
             .map { Item.tweet(objectID: $0.1.objectID) }

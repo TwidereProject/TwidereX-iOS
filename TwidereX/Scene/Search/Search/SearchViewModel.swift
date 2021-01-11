@@ -6,6 +6,7 @@
 //  Copyright © 2020 Twidere. All rights reserved.
 //
 
+import os.log
 import Foundation
 import Combine
 
@@ -26,6 +27,10 @@ final class SearchViewModel {
                 self.avatarStyle.value = defaults.avatarStyle
             }
             .store(in: &observations)
+    }
+    
+    deinit {
+        os_log("%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
     }
     
 }

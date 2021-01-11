@@ -27,6 +27,7 @@ final public class Tweet: NSManagedObject {
     @NSManaged public private(set) var source: String?
     
     @NSManaged public private(set) var updatedAt: Date
+    @NSManaged public private(set) var deletedAt: Date?
     
     // one-to-one relationship
     @NSManaged public private(set) var entities: TweetEntities?
@@ -171,6 +172,44 @@ extension Tweet {
                 self.mutableSetValue(forKey: #keyPath(Tweet.retweetBy)).remove(twitterUser)
             }
         }
+    }
+    
+    public func update(media: [TwitterMedia]?) {
+        if let media = media, !media.isEmpty {
+            self.mutableSetValue(forKey: #keyPath(Tweet.media)).removeAllObjects()
+            self.mutableSetValue(forKey: #keyPath(Tweet.media)).addObjects(from: media)
+        }
+    }
+    
+    // remove relationship and also soft delete related entities
+    public func softDelete() {
+        // remote retweet relationship if this tweet is retweet
+        retweet = nil
+        
+        // remove quote relationship if this tweet contains quote
+        quote = nil
+
+        // remove quote from relationship if this tweet is other tweets' quote
+        // FIXME: the otherside tweet will become plain tweet/retweet
+        //        should add quote removed mark
+        mutableSetValue(forKey: #keyPath(Tweet.quoteFrom)).removeAllObjects()
+        
+        // soft delete timelineIndex
+        for timelineIndex in timelineIndexes ?? Set() {
+            timelineIndex.softDelete()
+        }
+        
+        // soft delete mentionTimelineIndex
+        for mentionTimelineIndex in mentionTimelineIndexes ?? Set() {
+            mentionTimelineIndex.softDelete()
+        }
+        
+        // soft delete retweetFrom if this tweet is other tweets' retweet
+        for tweet in retweetFrom ?? Set() {
+            tweet.softDelete()
+        }
+        
+        deletedAt = Date()
     }
     
     public func didUpdate(at networkDate: Date) {

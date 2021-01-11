@@ -21,7 +21,9 @@ extension MediaSection {
         managedObjectContext: NSManagedObjectContext,
         mediaCollectionViewCellDelegate: MediaCollectionViewCellDelegate?
     ) -> UICollectionViewDiffableDataSource<MediaSection, Item> {
-        UICollectionViewDiffableDataSource(collectionView: collectionView) { collectionView, indexPath, item -> UICollectionViewCell? in
+        UICollectionViewDiffableDataSource(collectionView: collectionView) { [weak mediaCollectionViewCellDelegate] collectionView, indexPath, item -> UICollectionViewCell? in
+            guard let mediaCollectionViewCellDelegate = mediaCollectionViewCellDelegate else { return nil }
+            
             switch item {
             case .photoTweet(let objectID, _):
                 let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: SearchMediaCollectionViewCell.self), for: indexPath) as! SearchMediaCollectionViewCell
@@ -50,8 +52,9 @@ extension MediaSection {
                 let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: ActivityIndicatorCollectionViewCell.self), for: indexPath) as! ActivityIndicatorCollectionViewCell
                 cell.activityIndicatorView.startAnimating()
                 return cell
-            case .permissionDenied:
-                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: PermissionDeniedCollectionViewCell.self), for: indexPath) as! PermissionDeniedCollectionViewCell
+            case .emptyStateHeader(let attribute):
+                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: TimelineHeaderCollectionViewCell.self), for: indexPath) as! TimelineHeaderCollectionViewCell
+                TimelineHeaderView.configure(timelineHeaderView: cell.timelineHeaderView, attribute: attribute)
                 return cell
             default:
                 assertionFailure()

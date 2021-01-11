@@ -66,7 +66,7 @@ final class SearchUserViewModel: NSObject {
             items.eraseToAnyPublisher(),
             stateMachinePublisher.eraseToAnyPublisher()
         )
-        .throttle(for: .seconds(1), scheduler: DispatchQueue.main, latest: true)
+        .throttle(for: .milliseconds(300), scheduler: DispatchQueue.main, latest: true)
         .receive(on: DispatchQueue.main)
         .sink { [weak self] items, state in
             guard let self = self else { return }
@@ -111,6 +111,10 @@ final class SearchUserViewModel: NSObject {
                 self.stateMachine.enter(State.Loading.self)
             }
             .store(in: &disposeBag)
+    }
+    
+    deinit {
+        os_log("%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
     }
     
 }

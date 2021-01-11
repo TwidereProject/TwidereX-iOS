@@ -17,7 +17,6 @@ import CommonOSLog
 
 extension APIService {
     
-    
     /// Toggle friendship between twitterUser and activeTwitterUser
     ///
     /// Following / Following pending <-> Unfollow
@@ -39,7 +38,6 @@ extension APIService {
         )
         .receive(on: DispatchQueue.main)
         .handleEvents { _ in
-            notificationFeedbackGenerator.prepare()
             impactFeedbackGenerator.prepare()
         } receiveOutput: { _ in
             impactFeedbackGenerator.impactOccurred()
@@ -62,11 +60,37 @@ extension APIService {
         }
         .switchToLatest()
         .receive(on: DispatchQueue.main)
-        .handleEvents(receiveCompletion: { completion in
-            // TODO: rollback local change
+        .handleEvents(receiveCompletion: { [weak self] completion in
+            guard let self = self else { return }
             switch completion {
             case .failure(let error):
                 os_log("%{public}s[%{public}ld], %{public}s: [Friendship] remote friendship update fail: %{public}s", ((#file as NSString).lastPathComponent), #line, #function, error.localizedDescription)
+                
+                if let responseError = error as? Twitter.API.Error.ResponseError,
+                   let twitterAPIError = responseError.twitterAPIError {
+                    switch twitterAPIError {
+                    case .accountIsTemporarilyLocked, .rateLimitExceeded, .blockedFromRequestFollowingThisUser:
+                        self.error.send(.explicit(.twitterResponseError(responseError)))
+                    default:
+                        break
+                    }
+                }
+                
+                // rollback
+                self.friendshipUpdateLocal(
+                    twitterUserObjectID: twitterUser.objectID,
+                    twitterAuthenticationBox: activeTwitterAuthenticationBox
+                )
+                .sink { completion in
+                    os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: [Friendship] rollback finish", ((#file as NSString).lastPathComponent), #line, #function)
+                } receiveValue: { _ in
+                    // do nothing
+                    notificationFeedbackGenerator.prepare()
+                    notificationFeedbackGenerator.notificationOccurred(.error)
+                }
+                .store(in: &self.disposeBag)
+
+                
             case .finished:
                 notificationFeedbackGenerator.notificationOccurred(.success)
                 os_log("%{public}s[%{public}ld], %{public}s: [Friendship] remote friendship update success", ((#file as NSString).lastPathComponent), #line, #function)
@@ -222,6 +246,22 @@ extension APIService {
         )
         // API not return latest friendship status. not merge result
         return Twitter.API.Friendships.friendships(session: session, authorization: authorization, queryKind: friendshipQueryType, query: query)
+            .handleEvents(receiveCompletion: { [weak self] completion in
+                guard let self = self else { return }
+                switch completion {
+                case .failure(let error):
+                    if let responseError = error as? Twitter.API.Error.ResponseError {
+                        switch responseError.twitterAPIError {
+                        case .accountIsTemporarilyLocked, .rateLimitExceeded, .blockedFromRequestFollowingThisUser:
+                            self.error.send(.explicit(.twitterResponseError(responseError)))
+                        default:
+                            break
+                        }
+                    }
+                case .finished:
+                    break
+                }
+            })
             .eraseToAnyPublisher()
     }
     
@@ -263,7 +303,8 @@ extension APIService {
                     return Twitter.Response.V2.DictContent(
                         tweets: response.includes?.tweets ?? [],
                         users: response.data ?? [],
-                        media: []
+                        media: [],
+                        places: []
                     )
                 }
                 return APIService.Persist.persistDictContent(managedObjectContext: self.backgroundManagedObjectContext, response: dictResponse, requestTwitterUserID: requestTwitterUserID, log: log)

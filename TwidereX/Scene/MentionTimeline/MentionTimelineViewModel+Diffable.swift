@@ -14,129 +14,28 @@ import GameplayKit
 
 extension MentionTimelineViewModel {
     
-    func setupDiffableDataSource(for tableView: UITableView) {
-        diffableDataSource = UITableViewDiffableDataSource<TimelineSection, Item>(tableView: tableView) { [weak self] tableView, indexPath, item -> UITableViewCell? in
-            guard let self = self else { return nil }
-            
-            switch item {
-            case .mentionTimelineIndex(let objectID, let attribute):
-                let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: TimelinePostTableViewCell.self), for: indexPath) as! TimelinePostTableViewCell
-                
-                // configure cell
-                let managedObjectContext = self.fetchedResultsController.managedObjectContext
-                managedObjectContext.performAndWait {
-                    let mentionTimelineIndex = managedObjectContext.object(with: objectID) as! MentionTimelineIndex
-                    MentionTimelineViewModel.configure(cell: cell, readableLayoutFrame: tableView.readableContentGuide.layoutFrame, videoPlaybackService: self.context.videoPlaybackService, mentionTimelineIndex: mentionTimelineIndex, attribute: attribute)
-                    HomeTimelineViewModel.configure(cell: cell, overrideTraitCollection: self.context.overrideTraitCollection.value)
-                }
-                cell.delegate = self.timelinePostTableViewCellDelegate
-                return cell
-            case .middleLoader(let upperTimelineIndexObjectID):
-                let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: TimelineMiddleLoaderTableViewCell.self), for: indexPath) as! TimelineMiddleLoaderTableViewCell
-                self.loadMiddleSateMachineList
-                    .receive(on: DispatchQueue.main)
-                    .sink { ids in
-                        if let stateMachine = ids[upperTimelineIndexObjectID] {
-                            guard let state = stateMachine.currentState else {
-                                assertionFailure()
-                                return
-                            }
-
-                            // make success state same as loading due to snapshot updating delay
-                            let isLoading = state is LoadMiddleState.Loading || state is LoadMiddleState.Success
-                            cell.loadMoreButton.isHidden = isLoading
-                            if isLoading {
-                                cell.activityIndicatorView.startAnimating()
-                            } else {
-                                cell.activityIndicatorView.stopAnimating()
-                            }
-                        } else {
-                            cell.loadMoreButton.isHidden = false
-                            cell.activityIndicatorView.stopAnimating()
-                        }
-                    }
-                    .store(in: &cell.disposeBag)
-                var dict = self.loadMiddleSateMachineList.value
-                if let _ = dict[upperTimelineIndexObjectID] {
-                    // do nothing
-                } else {
-                    let stateMachine = GKStateMachine(states: [
-                        LoadMiddleState.Initial(viewModel: self, upperTimelineIndexObjectID: upperTimelineIndexObjectID),
-                        LoadMiddleState.Loading(viewModel: self, upperTimelineIndexObjectID: upperTimelineIndexObjectID),
-                        LoadMiddleState.Fail(viewModel: self, upperTimelineIndexObjectID: upperTimelineIndexObjectID),
-                        LoadMiddleState.Success(viewModel: self, upperTimelineIndexObjectID: upperTimelineIndexObjectID),
-                    ])
-                    stateMachine.enter(LoadMiddleState.Initial.self)
-                    dict[upperTimelineIndexObjectID] = stateMachine
-                    self.loadMiddleSateMachineList.value = dict
-                }
-                cell.delegate = self.timelineMiddleLoaderTableViewCellDelegate
-                return cell
-            case .bottomLoader:
-                let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: TimelineBottomLoaderTableViewCell.self), for: indexPath) as! TimelineBottomLoaderTableViewCell
-                cell.activityIndicatorView.isHidden = false
-                cell.activityIndicatorView.startAnimating()
-                return cell
-            default:
-                return nil
-            }
-        }
-    }
-    
-    static func configure(cell: TimelinePostTableViewCell, readableLayoutFrame: CGRect? = nil, videoPlaybackService: VideoPlaybackService, mentionTimelineIndex: MentionTimelineIndex, attribute: Item.Attribute) {
-        if let tweet = mentionTimelineIndex.tweet {
-            HomeTimelineViewModel.configure(cell: cell, readableLayoutFrame: readableLayoutFrame, videoPlaybackService: videoPlaybackService, tweet: tweet, requestUserID: mentionTimelineIndex.userID)
-            internalConfigure(cell: cell, tweet: tweet, attribute: attribute)
-        }
-    }
- 
-    private static func internalConfigure(cell: TimelinePostTableViewCell, tweet: Tweet, attribute: Item.Attribute) {
-        // tweet date updater
-        let createdAt = (tweet.retweet ?? tweet).createdAt
-        NotificationCenter.default.publisher(for: MentionTimelineViewModel.secondStepTimerTriggered, object: nil)
-            .sink { _ in
-                cell.timelinePostView.dateLabel.text = createdAt.shortTimeAgoSinceNow
-            }
-            .store(in: &cell.disposeBag)
+    func setupDiffableDataSource(
+        for tableView: UITableView,
+        dependency: NeedsDependency,
+        timelinePostTableViewCellDelegate: TimelinePostTableViewCellDelegate,
+        timelineMiddleLoaderTableViewCellDelegate: TimelineMiddleLoaderTableViewCellDelegate
+    ) {
+        let timestampUpdatePublisher = Timer.publish(every: 1.0, on: .main, in: .common)
+            .autoconnect()
+            .share()
+            .eraseToAnyPublisher()
         
-        // quote date updater
-        let quote = tweet.retweet?.quote ?? tweet.quote
-        if let quote = quote {
-            let createdAt = quote.createdAt
-            cell.timelinePostView.quotePostView.dateLabel.text = createdAt.shortTimeAgoSinceNow
-            NotificationCenter.default.publisher(for: MentionTimelineViewModel.secondStepTimerTriggered, object: nil)
-                .sink { _ in
-                    cell.timelinePostView.quotePostView.dateLabel.text = createdAt.shortTimeAgoSinceNow
-                }
-                .store(in: &cell.disposeBag)
-        }
-        
-        
-        // set separator line indent in non-conflict order
-        switch attribute.separatorLineStyle {
-        case .indent:
-            cell.separatorLineExpandLeadingLayoutConstraint.isActive = false
-            cell.separatorLineNormalLeadingLayoutConstraint.isActive = false
-            cell.separatorLineExpandTrailingLayoutConstraint.isActive = false
-            cell.separatorLineIndentLeadingLayoutConstraint.isActive = true
-            cell.separatorLineNormalTrailingLayoutConstraint.isActive = true
-        case .expand:
-            cell.separatorLineNormalLeadingLayoutConstraint.isActive = false
-            cell.separatorLineIndentLeadingLayoutConstraint.isActive = false
-            cell.separatorLineNormalTrailingLayoutConstraint.isActive = false
-            cell.separatorLineExpandLeadingLayoutConstraint.isActive = true
-            cell.separatorLineExpandTrailingLayoutConstraint.isActive = true
-        case .normal:
-            cell.separatorLineExpandLeadingLayoutConstraint.isActive = false
-            cell.separatorLineExpandTrailingLayoutConstraint.isActive = false
-            cell.separatorLineIndentLeadingLayoutConstraint.isActive = false
-            cell.separatorLineNormalLeadingLayoutConstraint.isActive = true
-            cell.separatorLineNormalTrailingLayoutConstraint.isActive = true
-        }
+        diffableDataSource = TimelineSection.tableViewDiffableDataSource(
+            for: tableView,
+            dependency: dependency,
+            managedObjectContext: fetchedResultsController.managedObjectContext,
+            timestampUpdatePublisher: timestampUpdatePublisher,
+            timelinePostTableViewCellDelegate: timelinePostTableViewCellDelegate,
+            timelineMiddleLoaderTableViewCellDelegate: timelineMiddleLoaderTableViewCellDelegate
+        )
     }
     
 }
-
 
 // MARK: - NSFetchedResultsControllerDelegate
 extension MentionTimelineViewModel: NSFetchedResultsControllerDelegate {

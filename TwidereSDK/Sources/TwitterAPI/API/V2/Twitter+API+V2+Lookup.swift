@@ -17,10 +17,11 @@ extension Twitter.API.V2.Lookup {
         
         let ids = tweetIDs.joined(separator: ",")
         components.queryItems = [
-            Twitter.Request.expansions.queryItem,
+            Twitter.API.V2.Lookup.expansions.queryItem,
             Twitter.Request.tweetsFields.queryItem,
             Twitter.Request.userFields.queryItem,
             Twitter.Request.mediaFields.queryItem,
+            Twitter.Request.placeFields.queryItem,
             URLQueryItem(name: "ids", value: ids),
         ]
         
@@ -46,6 +47,20 @@ extension Twitter.API.V2.Lookup {
 }
 
 extension Twitter.API.V2.Lookup {
+    
+    static var expansions: [Twitter.Request.Expansions] {
+        return [
+            .attachmentsPollIDs,
+            .attachmentsMediaKeys,
+            .authorID,
+            .entitiesMentionsUsername,
+            .geoPlaceID,
+            .inReplyToUserID,
+            .referencedTweetsID,
+            .referencedTweetsIDAuthorID
+        ]
+    }
+    
     public struct Content: Codable {
         public let data: [Twitter.Entity.V2.Tweet]?
         public let includes: Include?
@@ -54,6 +69,8 @@ extension Twitter.API.V2.Lookup {
             public let users: [Twitter.Entity.V2.User]?
             public let tweets: [Twitter.Entity.V2.Tweet]?
             public let media: [Twitter.Entity.V2.Media]?
+            public let places: [Twitter.Entity.V2.Place]?
         }
     }
+    
 }

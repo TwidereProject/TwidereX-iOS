@@ -69,6 +69,7 @@ extension APIService.Persist {
                     tweet: tweet,
                     user: user,
                     media: dictContent.media(for: tweet),
+                    place: dictContent.place(for: tweet),
                     dictContent: dictContent
                 )
                 
@@ -88,6 +89,7 @@ extension APIService.Persist {
                         tweet: targetReferencedTweet,
                         user: targetReferencedTweetAuthor,
                         media: dictContent.media(for: targetReferencedTweet),
+                        place: dictContent.place(for: targetReferencedTweet),
                         dictContent: dictContent
                     )
                     switch referencedType {

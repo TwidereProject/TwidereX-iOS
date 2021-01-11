@@ -25,6 +25,12 @@ internal enum L10n {
           return L10n.tr("Localizable", "Common.Alerts.CancelFollowRequest.Message", String(describing: p1))
         }
       }
+      internal enum FailedToDeleteTweet {
+        /// Please try again
+        internal static let message = L10n.tr("Localizable", "Common.Alerts.FailedToDeleteTweet.Message")
+        /// Failed to Delete Tweet
+        internal static let title = L10n.tr("Localizable", "Common.Alerts.FailedToDeleteTweet.Title")
+      }
       internal enum FailedToFollowing {
         /// Please try again
         internal static let message = L10n.tr("Localizable", "Common.Alerts.FailedToFollowing.Message")
@@ -51,11 +57,21 @@ internal enum L10n {
         /// Following Succeeded
         internal static let title = L10n.tr("Localizable", "Common.Alerts.FollowingSuccess.Title")
       }
-      internal enum PermissionDenied {
-        /// Sorry, you are not authorized
-        internal static let message = L10n.tr("Localizable", "Common.Alerts.PermissionDenied.Message")
+      internal enum NoTweetsFound {
+        /// No Tweets Found
+        internal static let title = L10n.tr("Localizable", "Common.Alerts.NoTweetsFound.Title")
+      }
+      internal enum PermissionDeniedFriendshipBlocked {
+        /// You have been blocked from following this account at the request of the user
+        internal static let message = L10n.tr("Localizable", "Common.Alerts.PermissionDeniedFriendshipBlocked.Message")
         /// Permission Denied
-        internal static let title = L10n.tr("Localizable", "Common.Alerts.PermissionDenied.Title")
+        internal static let title = L10n.tr("Localizable", "Common.Alerts.PermissionDeniedFriendshipBlocked.Title")
+      }
+      internal enum PermissionDeniedNotAuthorized {
+        /// Sorry, you are not authorized
+        internal static let message = L10n.tr("Localizable", "Common.Alerts.PermissionDeniedNotAuthorized.Message")
+        /// Permission Denied
+        internal static let title = L10n.tr("Localizable", "Common.Alerts.PermissionDeniedNotAuthorized.Title")
       }
       internal enum PhotoSaveFail {
         /// Please try again
@@ -72,6 +88,14 @@ internal enum L10n {
         internal static let message = L10n.tr("Localizable", "Common.Alerts.RateLimitExceeded.Message")
         /// Rate Limit Exceeded
         internal static let title = L10n.tr("Localizable", "Common.Alerts.RateLimitExceeded.Title")
+      }
+      internal enum TooManyRequests {
+        /// Too many requests
+        internal static let title = L10n.tr("Localizable", "Common.Alerts.TooManyRequests.Title")
+      }
+      internal enum TweetDeleted {
+        /// Tweet Deleted
+        internal static let title = L10n.tr("Localizable", "Common.Alerts.TweetDeleted.Title")
       }
       internal enum TweetFail {
         /// Please try again
@@ -158,9 +182,21 @@ internal enum L10n {
         internal static let listed = L10n.tr("Localizable", "Common.Controls.ProfileDashboard.Listed")
       }
       internal enum Status {
+        /// Media
+        internal static let media = L10n.tr("Localizable", "Common.Controls.Status.Media")
         /// %@ retweeted
         internal static func userRetweeted(_ p1: Any) -> String {
           return L10n.tr("Localizable", "Common.Controls.Status.UserRetweeted", String(describing: p1))
+        }
+        internal enum Actions {
+          /// Copy link
+          internal static let copyLink = L10n.tr("Localizable", "Common.Controls.Status.Actions.CopyLink")
+          /// Copy text
+          internal static let copyText = L10n.tr("Localizable", "Common.Controls.Status.Actions.CopyText")
+          /// Delete tweet
+          internal static let deleteTweet = L10n.tr("Localizable", "Common.Controls.Status.Actions.DeleteTweet")
+          /// Share link
+          internal static let shareLink = L10n.tr("Localizable", "Common.Controls.Status.Actions.ShareLink")
         }
       }
       internal enum Timeline {
@@ -352,11 +388,11 @@ internal enum L10n {
       internal static let hideReply = L10n.tr("Localizable", "Scene.Profile.HideReply")
       /// Me
       internal static let title = L10n.tr("Localizable", "Scene.Profile.Title")
-      internal enum PermissionDenied {
+      internal enum PermissionDeniedProfileBlocked {
         /// You have been blocked from viewing this user’s profile.
-        internal static let message = L10n.tr("Localizable", "Scene.Profile.PermissionDenied.Message")
+        internal static let message = L10n.tr("Localizable", "Scene.Profile.PermissionDeniedProfileBlocked.Message")
         /// Permission Denied
-        internal static let title = L10n.tr("Localizable", "Scene.Profile.PermissionDenied.Title")
+        internal static let title = L10n.tr("Localizable", "Scene.Profile.PermissionDeniedProfileBlocked.Title")
       }
     }
     internal enum Search {

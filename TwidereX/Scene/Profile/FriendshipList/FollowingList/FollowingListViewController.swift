@@ -6,6 +6,7 @@
 //  Copyright © 2020 Twidere. All rights reserved.
 //
 
+import os.log
 import UIKit
 import Combine
 import GameplayKit
@@ -28,6 +29,10 @@ final class FollowingListViewController: UIViewController, NeedsDependency {
         tableView.separatorStyle = .none
         return tableView
     }()
+    
+    deinit {
+        os_log("%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
+    }
     
 }
 
@@ -67,8 +72,8 @@ extension FollowingListViewController {
             .sink { [weak self] isPermissionDenied in
                 guard let self = self else { return }
                 self.emptyStateView.iconImageView.image = Asset.Human.eyeSlashLarge.image.withRenderingMode(.alwaysTemplate)
-                self.emptyStateView.titleLabel.text = L10n.Common.Alerts.PermissionDenied.title
-                self.emptyStateView.messageLabel.text = L10n.Common.Alerts.PermissionDenied.message
+                self.emptyStateView.titleLabel.text = L10n.Common.Alerts.PermissionDeniedNotAuthorized.title
+                self.emptyStateView.messageLabel.text = L10n.Common.Alerts.PermissionDeniedNotAuthorized.message
                 self.emptyStateView.isHidden = !isPermissionDenied
             }
             .store(in: &disposeBag)

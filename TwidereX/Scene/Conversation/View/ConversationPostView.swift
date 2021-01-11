@@ -118,7 +118,11 @@ final class ConversationPostView: UIView {
     let retweetPostStatusView = ConversationPostStatusView()
     let quotePostStatusView = ConversationPostStatusView()
     let likePostStatusView = ConversationPostStatusView()
-    let actionToolbar = StatusActionToolbar()
+    let actionToolbarContainer: ActionToolbarContainer = {
+        let actionToolbarContainer = ActionToolbarContainer()
+        actionToolbarContainer.configure(for: .plain)
+        return actionToolbarContainer
+    }()
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -296,13 +300,13 @@ extension ConversationPostView {
         statusMetaContainer.addArrangedSubview(likePostStatusView)
         
         // action toolbar
-        actionToolbar.translatesAutoresizingMaskIntoConstraints = false
-        actionToolbar.translatesAutoresizingMaskIntoConstraints = false
-        containerStackView.addArrangedSubview(actionToolbar)
+        actionToolbarContainer.translatesAutoresizingMaskIntoConstraints = false
+        actionToolbarContainer.translatesAutoresizingMaskIntoConstraints = false
+        containerStackView.addArrangedSubview(actionToolbarContainer)
         NSLayoutConstraint.activate([
-            actionToolbar.heightAnchor.constraint(equalToConstant: 48).priority(.defaultHigh),
+            actionToolbarContainer.heightAnchor.constraint(equalToConstant: 48).priority(.defaultHigh),
         ])
-        actionToolbar.setContentCompressionResistancePriority(.defaultLow, for: .vertical)
+        actionToolbarContainer.setContentCompressionResistancePriority(.defaultLow, for: .vertical)
                 
         verifiedBadgeImageView.isHidden = true
         lockImageView.isHidden = true

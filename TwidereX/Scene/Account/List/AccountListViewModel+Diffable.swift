@@ -13,18 +13,24 @@ import AlamofireImage
 
 extension AccountListViewModel {
     
-    func setupDiffableDataSource(for tableView: UITableView) {
-        diffableDataSource = UITableViewDiffableDataSource(tableView: tableView) { [weak self] tableView, indexPath, item -> UITableViewCell? in
-            guard let self = self else { return nil }
+    func setupDiffableDataSource(
+        for tableView: UITableView,
+        dependency: NeedsDependency,
+        accountListTableViewCellDelegate: AccountListTableViewCellDelegate,
+        accountListViewControllerDelegate: AccountListViewControllerDelegate
+    ) {
+        diffableDataSource = UITableViewDiffableDataSource(tableView: tableView) { [weak dependency, weak accountListTableViewCellDelegate, weak accountListViewControllerDelegate] tableView, indexPath, item -> UITableViewCell? in
+            guard let dependency = dependency else { return nil }
+            guard let accountListViewControllerDelegate = accountListViewControllerDelegate else { return nil }
             switch item {
             case .twitterUser(let objectID):
                 let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: AccountListTableViewCell.self), for: indexPath) as! AccountListTableViewCell
-                let managedObjectContext = self.context.managedObjectContext
+                let managedObjectContext = dependency.context.managedObjectContext
                 managedObjectContext.performAndWait {
                     let twitterUser = managedObjectContext.object(with: objectID) as! TwitterUser
-                    AccountListViewModel.configure(cell: cell, twitterUser: twitterUser, accountListViewControllerDelegate: self.accountListViewControllerDelegate)
+                    AccountListViewModel.configure(cell: cell, twitterUser: twitterUser, accountListViewControllerDelegate: accountListViewControllerDelegate)
                 }
-                cell.delegate = self.accountListTableViewCellDelegate
+                cell.delegate = accountListTableViewCellDelegate
                 return cell
             default:
                 return nil
@@ -62,8 +68,8 @@ extension AccountListViewModel {
                                 image: nil,
                                 attributes: .destructive,
                                 state: .off,
-                                handler: { _ in
-                                    accountListViewControllerDelegate.signoutTwitterUser(id: twitterUser.id)
+                                handler: { [weak accountListViewControllerDelegate] _ in
+                                    accountListViewControllerDelegate?.signoutTwitterUser(id: twitterUser.id)
                                 }
                             ),
                             UIAction(

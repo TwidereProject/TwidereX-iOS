@@ -28,8 +28,6 @@ final class MentionTimelineViewModel: NSObject {
 
     weak var contentOffsetAdjustableTimelineViewControllerDelegate: ContentOffsetAdjustableTimelineViewControllerDelegate?
     weak var tableView: UITableView?
-    weak var timelinePostTableViewCellDelegate: TimelinePostTableViewCellDelegate?
-    weak var timelineMiddleLoaderTableViewCellDelegate: TimelineMiddleLoaderTableViewCellDelegate?
     
     // output
     // top loader
@@ -86,13 +84,6 @@ final class MentionTimelineViewModel: NSObject {
         
         fetchedResultsController.delegate = self
         
-        Timer.publish(every: 1.0, on: .main, in: .common)
-            .autoconnect()
-            .sink { _ in
-                NotificationCenter.default.post(name: MentionTimelineViewModel.secondStepTimerTriggered, object: nil)
-            }
-            .store(in: &disposeBag)
-        
         UserDefaults.shared
             .observe(\.avatarStyle) { [weak self] defaults, _ in
                 guard let self = self else { return }
@@ -102,8 +93,3 @@ final class MentionTimelineViewModel: NSObject {
     }
     
 }
-
-extension MentionTimelineViewModel {
-    static let secondStepTimerTriggered = Notification.Name("com.twidere.twiderex.mention-timeline.second-step-timer-triggered")
-}
-

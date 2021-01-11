@@ -464,12 +464,32 @@ extension ProfileViewController: ProfilePagingViewControllerDelegate {
         postTimelineViewController.scrollView.panGestureRecognizer.require(toFail: overlayScrollView.panGestureRecognizer)
         
         
-        if let userMediaTimelineViewController = postTimelineViewController as? UserMediaTimelineViewController, userMediaTimelineViewController.viewModel.items.value.isEmpty {
-            userMediaTimelineViewController.viewModel.stateMachine.enter(UserMediaTimelineViewModel.State.Reloading.self)
+        if let userMediaTimelineViewController = postTimelineViewController as? UserMediaTimelineViewController,
+           let currentState = userMediaTimelineViewController.viewModel.stateMachine.currentState {
+            switch currentState {
+            case is UserMediaTimelineViewModel.State.NoMore,
+                 is UserMediaTimelineViewModel.State.NotAuthorized,
+                 is UserMediaTimelineViewModel.State.Blocked:
+                break
+            default:
+                if userMediaTimelineViewController.viewModel.items.value.isEmpty {
+                    userMediaTimelineViewController.viewModel.stateMachine.enter(UserMediaTimelineViewModel.State.Reloading.self)
+                }
+            }
         }
         
-        if let userLikeTimelineViewController = postTimelineViewController as? UserLikeTimelineViewController, userLikeTimelineViewController.viewModel.items.value.isEmpty {
-            userLikeTimelineViewController.viewModel.stateMachine.enter(UserLikeTimelineViewModel.State.Reloading.self)
+        if let userLikeTimelineViewController = postTimelineViewController as? UserLikeTimelineViewController,
+           let currentState = userLikeTimelineViewController.viewModel.stateMachine.currentState {
+            switch currentState {
+            case is UserLikeTimelineViewModel.State.NoMore,
+                 is UserLikeTimelineViewModel.State.NotAuthorized,
+                 is UserLikeTimelineViewModel.State.Blocked:
+                break
+            default:
+                if userLikeTimelineViewController.viewModel.items.value.isEmpty {
+                    userLikeTimelineViewController.viewModel.stateMachine.enter(UserLikeTimelineViewModel.State.Reloading.self)
+                }
+            }
         }
     }
     
@@ -479,51 +499,16 @@ extension ProfileViewController: ProfilePagingViewControllerDelegate {
 extension ProfileViewController: ProfileBannerInfoActionViewDelegate {
     
     func profileBannerInfoActionView(_ profileBannerInfoActionView: ProfileBannerInfoActionView, followActionButtonPressed button: FollowActionButton) {
-        guard let twitterUser = viewModel.twitterUser.value,
-              let currentTwitterUser = viewModel.currentTwitterUser.value else { return }
-        let requestTwitterUserID = currentTwitterUser.id
-        
-        let isPending = (twitterUser.followRequestSentFrom ?? Set()).contains(where: { $0.id == requestTwitterUserID })
-        let isFollowing = (twitterUser.followingFrom ?? Set()).contains(where: { $0.id == requestTwitterUserID })
-        
-        if isPending || isFollowing {
-            let name = twitterUser.name.trimmingCharacters(in: .whitespacesAndNewlines)
-            let message = isPending ? L10n.Common.Alerts.CancelFollowRequest.message(name) : L10n.Common.Alerts.UnfollowUser.message(name)
-            let alertController = UIAlertController(title: nil, message: message, preferredStyle: view.traitCollection.userInterfaceIdiom == .phone ? .actionSheet : .alert)
-            let confirmAction = UIAlertAction(title: L10n.Common.Controls.Actions.confirm, style: .destructive) { [weak self] _ in
-                guard let self = self else { return }
-                self.toggleFriendship()
+        UserProviderFacade
+            .toggleUserFriendship(provider: self, sender: button)
+            .sink { _ in
+                // do nothing
+            } receiveValue: { _ in
+                // do nothing
             }
-            let cancelAction = UIAlertAction(title: L10n.Common.Controls.Actions.cancel, style: .cancel, handler: nil)
-            alertController.addAction(confirmAction)
-            alertController.addAction(cancelAction)
-            present(alertController, animated: true, completion: nil)
-        } else {
-            toggleFriendship()
-        }
-        
+            .store(in: &disposeBag)
     }
 
-}
-
-extension ProfileViewController {
-    private func toggleFriendship() {
-        guard let twitterUser = viewModel.twitterUser.value else { return }
-        guard let activeTwitterAuthenticationBox = context.authenticationService.activeTwitterAuthenticationBox.value else {
-            assertionFailure()
-            return
-        }
-        context.apiService.toggleFriendship(
-            for: twitterUser,
-            activeTwitterAuthenticationBox: activeTwitterAuthenticationBox
-        )
-        .sink { completion in
-            // TODO: handle error
-        } receiveValue: { response in
-            // TODO: handle success
-        }
-        .store(in: &context.disposeBag)
-    }
 }
 
 // MARK: - ProfileBannerViewDelegate

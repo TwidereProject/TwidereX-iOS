@@ -34,6 +34,7 @@ extension SceneCoordinator {
         case custom(transitioningDelegate: UIViewControllerTransitioningDelegate)
         case customPush
         case safariPresent(animated: Bool, completion: (() -> Void)? = nil)
+        case activityViewControllerPresent(animated: Bool, completion: (() -> Void)? = nil)
     }
     
     enum Scene {
@@ -58,6 +59,7 @@ extension SceneCoordinator {
         #endif
         
         case safari(url: URL)
+        case activityViewController(activityViewController: UIActivityViewController, sourceView: UIView)
     }
 }
 
@@ -108,6 +110,8 @@ extension SceneCoordinator {
             sender?.navigationController?.pushViewController(viewController, animated: true)
             
         case .safariPresent(let animated, let completion):
+            presentingViewController.present(viewController, animated: animated, completion: completion)
+        case .activityViewControllerPresent(let animated, let completion):
             presentingViewController.present(viewController, animated: animated, completion: completion)
         }
         
@@ -185,6 +189,9 @@ private extension SceneCoordinator {
                 return nil
             }
             viewController = SFSafariViewController(url: url)
+        case .activityViewController(let activityViewController, let sourceView):
+            activityViewController.popoverPresentationController?.sourceView = sourceView
+            viewController = activityViewController
         }
         
         setupDependency(for: viewController as? NeedsDependency)
