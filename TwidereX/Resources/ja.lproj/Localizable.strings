@@ -1,3 +1,6 @@
+"Common.Alerts.AccountSuspended.Message" = "Twitter suspends accounts which violate the %@";
+"Common.Alerts.AccountSuspended.Title" = "Account Suspended";
+"Common.Alerts.AccountSuspended.TwitterRules" = "Twitter Rules";
 "Common.Alerts.AccountTemporarilyLocked.Message" = "Twitter を開いてロックを解除する";
 "Common.Alerts.AccountTemporarilyLocked.Title" = "アカウントは一時的にロックされています";
 "Common.Alerts.CancelFollowRequest.Message" = "%@ のフォローリクエストをキャンセルしますか？";
@@ -52,10 +55,10 @@
 "Common.Controls.ProfileDashboard.Followers" = "フォロワー";
 "Common.Controls.ProfileDashboard.Following" = "フォロー中";
 "Common.Controls.ProfileDashboard.Listed" = "リスト";
-"Common.Controls.Status.Actions.CopyLink" = "Copy link";
-"Common.Controls.Status.Actions.CopyText" = "Copy text";
+"Common.Controls.Status.Actions.CopyLink" = "リンクをコピー";
+"Common.Controls.Status.Actions.CopyText" = "テキストをコピー";
 "Common.Controls.Status.Actions.DeleteTweet" = "Delete tweet";
-"Common.Controls.Status.Actions.ShareLink" = "Share link";
+"Common.Controls.Status.Actions.ShareLink" = "リンクを共有";
 "Common.Controls.Status.Media" = "メディア";
 "Common.Controls.Status.UserRetweeted" = "%@ がリツイート";
 "Common.Controls.Timeline.LoadMore" = "さらに読み込む";

@@ -13,6 +13,16 @@ internal enum L10n {
 
   internal enum Common {
     internal enum Alerts {
+      internal enum AccountSuspended {
+        /// Twitter suspends accounts which violate the %@
+        internal static func message(_ p1: Any) -> String {
+          return L10n.tr("Localizable", "Common.Alerts.AccountSuspended.Message", String(describing: p1))
+        }
+        /// Account Suspended
+        internal static let title = L10n.tr("Localizable", "Common.Alerts.AccountSuspended.Title")
+        /// Twitter Rules
+        internal static let twitterRules = L10n.tr("Localizable", "Common.Alerts.AccountSuspended.TwitterRules")
+      }
       internal enum AccountTemporarilyLocked {
         /// Open Twitter to unlock
         internal static let message = L10n.tr("Localizable", "Common.Alerts.AccountTemporarilyLocked.Message")

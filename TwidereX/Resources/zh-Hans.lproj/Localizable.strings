@@ -1,3 +1,6 @@
+"Common.Alerts.AccountSuspended.Message" = "Twitter 会冻结违反 %@ 的账号";
+"Common.Alerts.AccountSuspended.Title" = "账号已被冻结";
+"Common.Alerts.AccountSuspended.TwitterRules" = "Twitter 规则";
 "Common.Alerts.AccountTemporarilyLocked.Message" = "打开 Twitter 以解锁";
 "Common.Alerts.AccountTemporarilyLocked.Title" = "帐户临时锁定";
 "Common.Alerts.CancelFollowRequest.Message" = "取消关注 %@ 的请求？";

@@ -1,3 +1,6 @@
+"Common.Alerts.AccountSuspended.Message" = "Twitter suspends accounts which violate the %@";
+"Common.Alerts.AccountSuspended.Title" = "Account Suspended";
+"Common.Alerts.AccountSuspended.TwitterRules" = "Twitter Rules";
 "Common.Alerts.AccountTemporarilyLocked.Message" = "Öffne Twitter zum entsperren";
 "Common.Alerts.AccountTemporarilyLocked.Title" = "Konto vorübergehend gesperrt";
 "Common.Alerts.CancelFollowRequest.Message" = "Follow Anfrage für %@ abbrechen?";
