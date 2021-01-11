@@ -25,8 +25,8 @@ extension TimelineSection {
         timelineMiddleLoaderTableViewCellDelegate: TimelineMiddleLoaderTableViewCellDelegate?
     ) -> UITableViewDiffableDataSource<TimelineSection, Item> {
         UITableViewDiffableDataSource(tableView: tableView) { [weak dependency, weak timelinePostTableViewCellDelegate, weak timelineMiddleLoaderTableViewCellDelegate] tableView, indexPath, item -> UITableViewCell? in
-            guard let dependency = dependency else { return nil }
-            guard let timelinePostTableViewCellDelegate = timelinePostTableViewCellDelegate else { return nil }
+            guard let dependency = dependency else { return UITableViewCell() }
+            guard let timelinePostTableViewCellDelegate = timelinePostTableViewCellDelegate else { return UITableViewCell() }
             
             switch item {
             case .homeTimelineIndex(let objectID, let attribute):

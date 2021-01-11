@@ -25,6 +25,7 @@ final class HomeTimelineViewModel: NSObject {
     
     // input
     let context: AppContext
+    let timelinePredicate = CurrentValueSubject<NSPredicate?, Never>(nil)
     let fetchedResultsController: NSFetchedResultsController<TimelineIndex>
     let isFetchingLatestTimeline = CurrentValueSubject<Bool, Never>(false)
     let viewDidAppear = PassthroughSubject<Void, Never>()
@@ -87,12 +88,60 @@ final class HomeTimelineViewModel: NSObject {
         
         fetchedResultsController.delegate = self
         
+        timelinePredicate
+            .receive(on: DispatchQueue.main)
+            .compactMap { $0 }
+            .first()    // set once
+            .sink { [weak self] predicate in
+                guard let self = self else { return }
+                self.fetchedResultsController.fetchRequest.predicate = predicate
+                do {
+                    self.diffableDataSource?.defaultRowAnimation = .fade
+                    try self.fetchedResultsController.performFetch()
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 3) { [weak self] in
+                        guard let self = self else { return }
+                        self.diffableDataSource?.defaultRowAnimation = .automatic
+                    }
+                } catch {
+                    assertionFailure(error.localizedDescription)
+                }
+            }
+            .store(in: &disposeBag)
+        
+        context.authenticationService.activeAuthenticationIndex
+            .sink { [weak self] activeAuthenticationIndex in
+                guard let self = self else { return }
+                guard let activeAuthenticationIndex = activeAuthenticationIndex else { return }
+                    switch activeAuthenticationIndex.platform {
+                    case .twitter:
+                        guard let twitterAuthentication = activeAuthenticationIndex.twitterAuthentication else { return }
+                        let activeTwitterUserID = twitterAuthentication.userID
+                        let predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [
+                            TimelineIndex.predicate(platform: .twitter),
+                            TimelineIndex.predicate(userID: activeTwitterUserID),
+                            TimelineIndex.notDeleted()
+                        ])
+                        self.timelinePredicate.value = predicate
+                    case .mastodon:
+                        // TODO:
+                        break
+                    case .none:
+                        // do nothing
+                        break
+                    }
+            }
+            .store(in: &disposeBag)
+        
         UserDefaults.shared
             .observe(\.avatarStyle) { [weak self] defaults, _ in
                 guard let self = self else { return }
                 self.avatarStyle.value = defaults.avatarStyle
             }
             .store(in: &observations)
+    }
+    
+    deinit {
+        os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s:", ((#file as NSString).lastPathComponent), #line, #function)
     }
     
 }

@@ -112,33 +112,6 @@ extension HomeTimelineViewController {
             timelinePostTableViewCellDelegate: self,
             timelineMiddleLoaderTableViewCellDelegate: self
         )
-        context.authenticationService.activeAuthenticationIndex
-            .sink { [weak self] activeAuthenticationIndex in
-                guard let self = self else { return }
-                let predicate: NSPredicate
-                if let activeAuthenticationIndex = activeAuthenticationIndex {
-                    let userID = activeAuthenticationIndex.twitterAuthentication?.twitterUser?.id ?? ""
-                    predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [
-                        TimelineIndex.predicate(platform: .twitter),
-                        TimelineIndex.predicate(userID: userID),
-                        TimelineIndex.notDeleted()
-                    ])
-                } else {
-                    // use invalid predicate
-                    predicate = TimelineIndex.predicate(userID: "")
-                }
-                self.viewModel.fetchedResultsController.fetchRequest.predicate = predicate
-                do {
-                    self.viewModel.diffableDataSource?.defaultRowAnimation = .fade
-                    try self.viewModel.fetchedResultsController.performFetch()
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
-                        self.viewModel.diffableDataSource?.defaultRowAnimation = .automatic
-                    }
-                } catch {
-                    assertionFailure(error.localizedDescription)
-                }
-            }
-            .store(in: &disposeBag)
 
         // bind refresh control
         viewModel.isFetchingLatestTimeline
