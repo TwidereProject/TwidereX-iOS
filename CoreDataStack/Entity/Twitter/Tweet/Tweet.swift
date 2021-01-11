@@ -270,4 +270,12 @@ extension Tweet {
         return NSPredicate(format: "%K IN %@", #keyPath(Tweet.id), idStrs)
     }
     
+    public static func notDeleted() -> NSPredicate {
+        return NSPredicate(format: "%K == nil", #keyPath(Tweet.deletedAt))
+    }
+    
+    public static func deleted() -> NSPredicate {
+        return NSPredicate(format: "%K != nil", #keyPath(Tweet.deletedAt))
+    }
+    
 }

@@ -46,7 +46,7 @@ extension TweetConversationViewModel.LoadConversationState {
             super.didEnter(from: previousState)
             
             guard let viewModel = viewModel, let stateMachine = stateMachine else { return }
-            guard case let .root(tweetObjectID)  = viewModel.rootItem else {
+            guard case let .root(tweetObjectID)  = viewModel.rootItem.value else {
                 assertionFailure()
                 stateMachine.enter(PrepareFail.self)
                 return
