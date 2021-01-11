@@ -44,7 +44,6 @@ final class SearchMediaCollectionViewCell: UICollectionViewCell {
         super.prepareForReuse()
         
         multiplePhotosIndicatorBackgroundVisualEffectView.isHidden = true
-        diffableDataSource.apply(NSDiffableDataSourceSnapshot(), animatingDifferences: false)
     }
     
     override init(frame: CGRect) {

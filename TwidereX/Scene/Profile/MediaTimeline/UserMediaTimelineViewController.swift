@@ -87,7 +87,13 @@ extension UserMediaTimelineViewController {
 }
 
 // MARK: - UICollectionViewDelegate
-extension UserMediaTimelineViewController: UICollectionViewDelegate { }
+extension UserMediaTimelineViewController: UICollectionViewDelegate {
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: %s", ((#file as NSString).lastPathComponent), #line, #function, indexPath.debugDescription)
+    }
+    
+}
 
 // MARK: - CustomScrollViewContainerController
 extension UserMediaTimelineViewController: ScrollViewContainer {
