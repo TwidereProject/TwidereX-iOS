@@ -65,8 +65,8 @@ extension SearchTimelineViewModel.State {
             if searchText != previoursSearchText {
                 nextToken = nil
                 previoursSearchText = searchText
-                viewModel.tweetIDs.value = []
-                viewModel.items.value = []
+                viewModel.tweetFetchedResultsController.tweetIDs.value = []
+                viewModel.tweetFetchedResultsController.items.value = []
             }
             
             viewModel.context.apiService.tweetsRecentSearch(
@@ -93,21 +93,21 @@ extension SearchTimelineViewModel.State {
 
                 self.nextToken = content.meta.nextToken
                 
-                guard content.meta.resultCount > 0 else {
-                    stateMachine.enter(NoMore.self)
-                    return
-                }
-                
+                var hasNewTweetAppend = false
                 let newTweets = content.data?.compactMap { $0 } ?? []
-                
-                var tweetIDs: [Twitter.Entity.Tweet.ID] = viewModel.tweetIDs.value
+                var tweetIDs: [Twitter.Entity.Tweet.ID] = viewModel.tweetFetchedResultsController.tweetIDs.value
                 for tweet in newTweets {
                     guard !tweetIDs.contains(tweet.id) else { continue }
                     tweetIDs.append(tweet.id)
+                    hasNewTweetAppend = true
                 }
-                
-                viewModel.tweetIDs.value = tweetIDs
-                stateMachine.enter(Idle.self)
+
+                if hasNewTweetAppend {
+                    stateMachine.enter(Idle.self)
+                } else {
+                    stateMachine.enter(NoMore.self)
+                }
+                viewModel.tweetFetchedResultsController.tweetIDs.value = tweetIDs
             }
             .store(in: &viewModel.disposeBag)
         }

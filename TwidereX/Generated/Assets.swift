@@ -99,6 +99,7 @@ internal enum Asset {
   }
   internal enum TextFormatting {
     internal static let capitalFloatLeft = ImageAsset(name: "TextFormatting/capital.float.left")
+    internal static let capitalFloatLeftLarge = ImageAsset(name: "TextFormatting/capital.float.left.large")
     internal static let listBullet = ImageAsset(name: "TextFormatting/list.bullet")
     internal static let textHeaderRedaction = ImageAsset(name: "TextFormatting/text.header.redaction")
   }

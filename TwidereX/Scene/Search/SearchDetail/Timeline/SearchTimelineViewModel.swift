@@ -23,6 +23,7 @@ class SearchTimelineViewModel: NSObject {
     let context: AppContext
     let searchText = CurrentValueSubject<String, Never>("")
     let searchActionPublisher = PassthroughSubject<Void, Never>()
+    let tweetFetchedResultsController: TweetFetchedResultsController
 
     weak var tableView: UITableView?
     
@@ -40,33 +41,16 @@ class SearchTimelineViewModel: NSObject {
     }()
     lazy var stateMachinePublisher = CurrentValueSubject<State, Never>(State.Initial(viewModel: self))
     var diffableDataSource: UITableViewDiffableDataSource<TimelineSection, Item>?
-    let fetchedResultsController: NSFetchedResultsController<Tweet>
-    let tweetIDs = CurrentValueSubject<[Twitter.Entity.Tweet.ID], Never>([])
-    let items = CurrentValueSubject<[Item], Never>([])
     // var cellFrameCache = NSCache<NSNumber, NSValue>()
     
     init(context: AppContext) {
         self.context = context
-        self.fetchedResultsController = {
-            let fetchRequest = Tweet.sortedFetchRequest
-            fetchRequest.predicate = Tweet.predicate(idStrs: [])
-            fetchRequest.returnsObjectsAsFaults = false
-            fetchRequest.fetchBatchSize = 20
-            let controller = NSFetchedResultsController(
-                fetchRequest: fetchRequest,
-                managedObjectContext: context.managedObjectContext,
-                sectionNameKeyPath: nil,
-                cacheName: nil
-            )
-            
-            return controller
-        }()
+        self.tweetFetchedResultsController = TweetFetchedResultsController(managedObjectContext: context.managedObjectContext, additionalTweetPredicate: Tweet.notDeleted())
+
         super.init()
         
-        self.fetchedResultsController.delegate = self
-
         Publishers.CombineLatest(
-            items.eraseToAnyPublisher(),
+            tweetFetchedResultsController.items.eraseToAnyPublisher(),
             stateMachinePublisher.eraseToAnyPublisher()
         )
         .throttle(for: .milliseconds(300), scheduler: DispatchQueue.main, latest: true)
@@ -93,19 +77,6 @@ class SearchTimelineViewModel: NSObject {
             self.diffableDataSource?.apply(snapshot, animatingDifferences: true)
         }
         .store(in: &disposeBag)
-
-        tweetIDs
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] ids in
-                guard let self = self else { return }
-                self.fetchedResultsController.fetchRequest.predicate = Tweet.predicate(idStrs: ids)
-                do {
-                    try self.fetchedResultsController.performFetch()
-                } catch {
-                    assertionFailure(error.localizedDescription)
-                }
-            }
-            .store(in: &disposeBag)
         
         searchActionPublisher
             .receive(on: DispatchQueue.main)

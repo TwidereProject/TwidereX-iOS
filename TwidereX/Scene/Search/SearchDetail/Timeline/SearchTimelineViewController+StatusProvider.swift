@@ -34,7 +34,7 @@ extension SearchTimelineViewController: StatusProvider {
             
             switch item {
             case .tweet(let objectID):
-                let managedObjectContext = self.viewModel.fetchedResultsController.managedObjectContext
+                let managedObjectContext = self.viewModel.tweetFetchedResultsController.fetchedResultsController.managedObjectContext
                 managedObjectContext.perform {
                     let tweet = managedObjectContext.object(with: objectID) as? Tweet
                     promise(.success(tweet))

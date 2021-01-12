@@ -13,7 +13,7 @@ import CoreData
 import CoreDataStack
 import TwitterAPI
 
-final class DeletedTweetFetchedResultsController: NSObject {
+final class TweetFetchedResultsController: NSObject {
 
     var disposeBag = Set<AnyCancellable>()
 
@@ -25,7 +25,7 @@ final class DeletedTweetFetchedResultsController: NSObject {
     // output
     let items = CurrentValueSubject<[Item], Never>([])
     
-    init(managedObjectContext: NSManagedObjectContext) {
+    init(managedObjectContext: NSManagedObjectContext, additionalTweetPredicate: NSPredicate) {
         self.fetchedResultsController = {
             let fetchRequest = Tweet.sortedFetchRequest
             fetchRequest.predicate = Tweet.predicate(idStrs: [])
@@ -51,7 +51,7 @@ final class DeletedTweetFetchedResultsController: NSObject {
                 guard let self = self else { return }
                 self.fetchedResultsController.fetchRequest.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [
                     Tweet.predicate(idStrs: ids),
-                    Tweet.deleted()
+                    additionalTweetPredicate
                 ])
                 do {
                     try self.fetchedResultsController.performFetch()
@@ -65,7 +65,7 @@ final class DeletedTweetFetchedResultsController: NSObject {
 }
 
 // MARK: - NSFetchedResultsControllerDelegate
-extension DeletedTweetFetchedResultsController: NSFetchedResultsControllerDelegate {
+extension TweetFetchedResultsController: NSFetchedResultsControllerDelegate {
     func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChangeContentWith snapshot: NSDiffableDataSourceSnapshotReference) {
         os_log("%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
         

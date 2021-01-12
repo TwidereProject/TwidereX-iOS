@@ -215,21 +215,22 @@ extension TweetConversationViewModel.LoadConversationState {
                 let content = response.value
                 os_log("%{public}s[%{public}ld], %{public}s: fetch conversation %s success. results count %ld", ((#file as NSString).lastPathComponent), #line, #function, conversationMeta.conversationID, content.meta.resultCount)
 
-                guard content.meta.resultCount > 0 else {
-                    stateMachine.enter(NoMore.self)
-                    return
+                var hasMore = content.meta.resultCount != 0
+                if let nextToken = content.meta.nextToken {
+                    self.nextToken = nextToken
+                } else {
+                    hasMore = false
                 }
                 
                 let leafs = TweetConversationViewModel.ConversationNode.leafs(for: conversationMeta.tweetID, from: content)
                 let nodes = viewModel.conversationNodes.value
-                viewModel.conversationNodes.value = nodes + leafs
                 
-                guard let nextToken = content.meta.nextToken else {
+                if hasMore {
+                    stateMachine.enter(Idle.self)
+                } else {
                     stateMachine.enter(NoMore.self)
-                    return
                 }
-                self.nextToken = nextToken
-                stateMachine.enter(Idle.self)
+                viewModel.conversationNodes.value = nodes + leafs
 
             }
             .store(in: &viewModel.disposeBag)

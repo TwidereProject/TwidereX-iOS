@@ -32,7 +32,7 @@ final class TweetConversationViewModel: NSObject {
     let context: AppContext
     let rootItem: CurrentValueSubject<ConversationItem, Never>
     let conversationMeta = CurrentValueSubject<ConversationMeta?, Never>(nil)
-    let deletedTweetFetchedResultsController: DeletedTweetFetchedResultsController
+    let deletedTweetFetchedResultsController: TweetFetchedResultsController
     weak var contentOffsetAdjustableTimelineViewControllerDelegate: ContentOffsetAdjustableTimelineViewControllerDelegate?
     weak var tableView: UITableView?
     weak var conversationPostTableViewCellDelegate: ConversationPostTableViewCellDelegate?
@@ -72,14 +72,29 @@ final class TweetConversationViewModel: NSObject {
     var conversationNodes = CurrentValueSubject<[ConversationNode], Never>([])
     var replyItems = CurrentValueSubject<[ConversationItem], Never>([])
     var conversationItems = CurrentValueSubject<[ConversationItem], Never>([])
+    var snapshotPublisher = PassthroughSubject<NSDiffableDataSourceSnapshot<ConversationSection, ConversationItem>, Never>()
     var cellFrameCache = NSCache<NSNumber, NSValue>()
     
     // TODO: support loading from ID/URL
     init(context: AppContext, tweetObjectID: NSManagedObjectID) {
         self.context = context
         self.rootItem = CurrentValueSubject(.root(tweetObjectID: tweetObjectID))
-        self.deletedTweetFetchedResultsController = DeletedTweetFetchedResultsController(managedObjectContext: context.managedObjectContext)
+        self.deletedTweetFetchedResultsController = TweetFetchedResultsController(managedObjectContext: context.managedObjectContext, additionalTweetPredicate: Tweet.deleted())
         super.init()
+        
+        Publishers.CombineLatest3(
+            rootItem.eraseToAnyPublisher(),
+            replyItems.eraseToAnyPublisher(),
+            conversationItems.eraseToAnyPublisher()
+        )
+        .receive(on: DispatchQueue.main)
+        .sink { [weak self] rootItem, replyItems, conversationItems in
+            guard let self = self else { return }
+            let items: [ConversationItem] = [rootItem] + replyItems + conversationItems
+            self.updateDeletedTweet(for: items)
+        }
+        .store(in: &disposeBag)
+            
         
         Publishers.CombineLatest4(
             rootItem.eraseToAnyPublisher(),
@@ -120,7 +135,7 @@ final class TweetConversationViewModel: NSObject {
             }
             // conversation
             let conversationItems = conversationItems.filter { item in
-                guard case let .reply(tweetObjectID) = item else { return false }
+                guard case let .leaf(tweetObjectID, _) = item else { return false }
                 return !deletedItems.contains(Item.tweet(objectID: tweetObjectID))
             }
             newSnapshot.appendItems(conversationItems, toSection: .main)
@@ -129,6 +144,8 @@ final class TweetConversationViewModel: NSObject {
                currentState is LoadConversationState.Idle || currentState is LoadConversationState.Loading || currentState is LoadConversationState.Prepare {
                 newSnapshot.appendItems([.bottomLoader], toSection: .main)
             }
+            
+            self.snapshotPublisher.send(newSnapshot)
 
             // difference for first visiable item exclude .topLoader
             guard let difference = self.calculateReloadSnapshotDifference(navigationBar: navigationBar, tableView: tableView, oldSnapshot: oldSnapshot, newSnapshot: newSnapshot) else {
@@ -144,10 +161,6 @@ final class TweetConversationViewModel: NSObject {
             }()
             
             diffableDataSource.apply(newSnapshot, animatingDifferences: false) {
-                defer {
-                    self.updateDeletedTweet(for: newSnapshot)
-                }
-                
                 // set bottom inset. Make root item pin to top.
                 if let index = newSnapshot.indexOfItem(rootItem),
                    let cell = tableView.cellForRow(at: IndexPath(row: index, section: 0)) {
@@ -214,7 +227,7 @@ final class TweetConversationViewModel: NSObject {
                 }
                 let currentLeafTweetIDs = currentLeafAttributes.map { $0.tweetID }
                 
-                let leafIDs = nodes.map { [$0.tweet.id, $0.children.first?.tweet.id].compactMap { $0} }.flatMap { $0 }
+                let leafIDs = nodes.map { [$0.tweet.id, $0.children.first?.tweet.id].compactMap { $0 } }.flatMap { $0 }
                 let request = Tweet.sortedFetchRequest
                 request.predicate = Tweet.predicate(idStrs: leafIDs)
                 var tweetDict: [Tweet.ID: Tweet] = [:]
@@ -719,13 +732,12 @@ extension TweetConversationViewModel {
 }
 
 extension TweetConversationViewModel {
-    private func updateDeletedTweet(for snapshot: NSDiffableDataSourceSnapshot<ConversationSection, ConversationItem>) {
+    private func updateDeletedTweet(for items: [ConversationItem]) {
         let parentManagedObjectContext = context.managedObjectContext
         let managedObjectContext = NSManagedObjectContext(concurrencyType: .privateQueueConcurrencyType)
         managedObjectContext.parent = parentManagedObjectContext
         managedObjectContext.perform {
             var tweetIDs: [Twitter.Entity.V2.Tweet.ID] = []
-            let items = snapshot.itemIdentifiers
             for item in items {
                 switch item {
                 case .root(let tweetObjectID):

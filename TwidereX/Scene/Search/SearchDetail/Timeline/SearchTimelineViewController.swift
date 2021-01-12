@@ -60,11 +60,7 @@ extension SearchTimelineViewController {
             dependency: self,
             timelinePostTableViewCellDelegate: self
         )
-        do {
-            try viewModel.fetchedResultsController.performFetch()
-        } catch {
-            assertionFailure(error.localizedDescription)
-        }
+        viewModel.tweetFetchedResultsController.tweetIDs.value = []
     }
     
     override func viewWillAppear(_ animated: Bool) {
