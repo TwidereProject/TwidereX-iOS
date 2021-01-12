@@ -69,6 +69,7 @@ class ProfileViewModel: NSObject {
 
         super.init()
 
+        // bind active authentication
         context.authenticationService.activeAuthenticationIndex
             .sink { [weak self] activeAuthenticationIndex in
                 guard let self = self else { return }
@@ -86,6 +87,7 @@ class ProfileViewModel: NSObject {
             }
             .store(in: &disposeBag)
         
+        // bind avatar style
         UserDefaults.shared
             .observe(\.avatarStyle) { [weak self] defaults, _ in
                 guard let self = self else { return }
@@ -95,6 +97,11 @@ class ProfileViewModel: NSObject {
         
         setup()
         
+        
+        
+        
+        
+        // query latest friendship
         Publishers.CombineLatest(
             self.twitterUser.eraseToAnyPublisher(),
             context.authenticationService.activeTwitterAuthenticationBox.eraseToAnyPublisher()
@@ -133,6 +140,27 @@ class ProfileViewModel: NSObject {
     
     convenience init(context: AppContext, twitterUser: TwitterUser) {
         self.init(context: context, optionalTwitterUser: twitterUser)
+        
+        guard let activeTwitterAuthenticationBox = context.authenticationService.activeTwitterAuthenticationBox.value else {
+            return
+        }
+        let userID = twitterUser.id
+        let username = twitterUser.username
+        context.apiService.users(userIDs: [userID], twitterAuthenticationBox: activeTwitterAuthenticationBox)
+            .retry(3)
+            .receive(on: DispatchQueue.main)
+            .sink { completion in
+                switch completion {
+                case .failure(let error):
+                    os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: user lookup %s fail: %s", ((#file as NSString).lastPathComponent), #line, #function, userID, error.localizedDescription)
+                case .finished:
+                    os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: user lookup %s success", ((#file as NSString).lastPathComponent), #line, #function, userID)
+                }
+            } receiveValue: { [weak self] response in
+                guard let self = self else { return }
+                self.updateAccountSuspendedState(content: response.value, username: username)
+            }
+            .store(in: &disposeBag)
     }
     
     convenience init(context: AppContext, userID: TwitterUser.ID, username: String) {
@@ -173,7 +201,6 @@ class ProfileViewModel: NSObject {
     
     convenience init(context: AppContext, username: String) {
         self.init(context: context, optionalTwitterUser: nil)
-        self.username.value = username
         
         guard let activeTwitterAuthenticationBox = context.authenticationService.activeTwitterAuthenticationBox.value else {
             return

@@ -284,32 +284,43 @@ extension ProfileViewController {
             }
             .store(in: &disposeBag)
             
-        viewModel.bioDescription
-            .map { $0 ?? " " }
-            .sink(receiveValue: { [weak self] bio in
-                guard let self = self else { return }
-                self.profileHeaderViewController.profileBannerView.bioLabel.configure(with: bio)
-            })
-            .store(in: &disposeBag)
-        viewModel.url
-            .sink { [weak self] url in
-                guard let self = self else { return }
-                let url = url.flatMap { $0.trimmingCharacters(in: .whitespacesAndNewlines) } ?? " "
-                self.profileHeaderViewController.profileBannerView.linkButton.setTitle(url, for: .normal)
-                let isEmpty = url.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
-                self.profileHeaderViewController.profileBannerView.linkContainer.isHidden = isEmpty
-            }
-            .store(in: &disposeBag)
-        
-        viewModel.location
-            .sink { [weak self] location in
-                guard let self = self else { return }
-                let location = location.flatMap { $0.trimmingCharacters(in: .whitespacesAndNewlines) } ?? " "
-                self.profileHeaderViewController.profileBannerView.geoButton.setTitle(location, for: .normal)
-                let isEmpty = location.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
-                self.profileHeaderViewController.profileBannerView.geoContainer.isHidden = isEmpty
-            }
-            .store(in: &disposeBag)
+        Publishers.CombineLatest(
+            viewModel.bioDescription.eraseToAnyPublisher(),
+            viewModel.suspended.eraseToAnyPublisher()
+        )
+        .receive(on: DispatchQueue.main)
+        .sink(receiveValue: { [weak self] bio, isSuspended in
+            guard let self = self else { return }
+            self.profileHeaderViewController.profileBannerView.bioLabel.configure(with: bio ?? " ")
+            self.profileHeaderViewController.profileBannerView.bioLabel.isHidden = isSuspended
+        })
+        .store(in: &disposeBag)
+        Publishers.CombineLatest(
+            viewModel.url.eraseToAnyPublisher(),
+            viewModel.suspended.eraseToAnyPublisher()
+        )
+        .receive(on: DispatchQueue.main)
+        .sink { [weak self] url, isSuspended in
+            guard let self = self else { return }
+            let url = url.flatMap { $0.trimmingCharacters(in: .whitespacesAndNewlines) } ?? " "
+            self.profileHeaderViewController.profileBannerView.linkButton.setTitle(url, for: .normal)
+            let isEmpty = url.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+            self.profileHeaderViewController.profileBannerView.linkContainer.isHidden = isEmpty || isSuspended
+        }
+        .store(in: &disposeBag)
+        Publishers.CombineLatest(
+            viewModel.location.eraseToAnyPublisher(),
+            viewModel.suspended.eraseToAnyPublisher()
+        )
+        .receive(on: DispatchQueue.main)
+        .sink { [weak self] location, isSuspended in
+            guard let self = self else { return }
+            let location = location.flatMap { $0.trimmingCharacters(in: .whitespacesAndNewlines) } ?? " "
+            self.profileHeaderViewController.profileBannerView.geoButton.setTitle(location, for: .normal)
+            let isEmpty = location.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+            self.profileHeaderViewController.profileBannerView.geoContainer.isHidden = isEmpty || isSuspended
+        }
+        .store(in: &disposeBag)
         viewModel.friendsCount
             .sink { [weak self] count in
                 guard let self = self else { return }
@@ -333,7 +344,7 @@ extension ProfileViewController {
             .sink { [weak self] isSuspended in
                 guard let self = self else { return }
                 self.profileHeaderViewController.profileBannerView.profileBannerStatusView.isHidden = isSuspended
-                self.profileHeaderViewController.profileBannerView.bioLabel.isHidden = isSuspended
+                self.profileHeaderViewController.profileBannerView.profileBannerInfoActionView.isHidden = isSuspended
                 if isSuspended {
                     self.profileSegmentedViewController
                         .pagingViewController.viewModel

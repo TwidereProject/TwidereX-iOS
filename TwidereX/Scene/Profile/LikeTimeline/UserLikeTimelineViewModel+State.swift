@@ -43,8 +43,20 @@ extension UserLikeTimelineViewModel.State {
     
     class Reloading: UserLikeTimelineViewModel.State {
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {
-            return stateClass == Fail.self || stateClass == Idle.self || stateClass == NoMore.self ||
-                stateClass == NotAuthorized.self || stateClass == Blocked.self
+            switch stateClass {
+            case is Fail.Type:
+                return true
+            case is Idle.Type:
+                return true
+            case is NoMore.Type:
+                return true
+            case is NotAuthorized.Type, is Blocked.Type:
+                return true
+            case is Suspended.Type:
+                return true
+            default:
+                return false
+            }
         }
         
         override func didEnter(from previousState: GKState?) {
@@ -90,19 +102,46 @@ extension UserLikeTimelineViewModel.State {
     
     class Fail: UserLikeTimelineViewModel.State {
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {
-            return stateClass == Reloading.self || stateClass == LoadingMore.self
+            switch stateClass {
+            case is Reloading.Type, is LoadingMore.Type:
+                return true
+            case is Suspended.Type:
+                return true
+            default:
+                return false
+            }
         }
     }
     
     class Idle: UserLikeTimelineViewModel.State {
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {
-            return stateClass == Reloading.self || stateClass == LoadingMore.self
+            switch stateClass {
+            case is Reloading.Type, is LoadingMore.Type:
+                return true
+            case is Suspended.Type:
+                return true
+            default:
+                return false
+            }
         }
     }
     
     class LoadingMore: UserLikeTimelineViewModel.State {
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {
-            return stateClass == Fail.self || stateClass == Idle.self || stateClass == NoMore.self
+            switch stateClass {
+            case is Fail.Type:
+                return true
+            case is Idle.Type:
+                return true
+            case is NoMore.Type:
+                return true
+            case is NotAuthorized.Type, is Blocked.Type:
+                return true
+            case is Suspended.Type:
+                return true
+            default:
+                return false
+            }
         }
         
         override func didEnter(from previousState: GKState?) {
@@ -157,7 +196,14 @@ extension UserLikeTimelineViewModel.State {
         }
         
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {
-            return stateClass == Reloading.self
+            switch stateClass {
+            case is Reloading.Type:
+                return true
+            case is Suspended.Type:
+                return true
+            default:
+                return false
+            }
         }
         
         override func didEnter(from previousState: GKState?) {
@@ -181,7 +227,14 @@ extension UserLikeTimelineViewModel.State {
         }
         
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {
-            return stateClass == Reloading.self
+            switch stateClass {
+            case is Reloading.Type:
+                return true
+            case is Suspended.Type:
+                return true
+            default:
+                return false
+            }
         }
         
         override func didEnter(from previousState: GKState?) {
@@ -209,7 +262,16 @@ extension UserLikeTimelineViewModel.State {
     
     class NoMore: UserLikeTimelineViewModel.State {
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {
-            return stateClass == Reloading.self
+            switch stateClass {
+            case is Reloading.Type:
+                return true
+            case is NotAuthorized.Type, is Blocked.Type:
+                return true
+            case is Suspended.Type:
+                return true
+            default:
+                return false
+            }
         }
     }
 }

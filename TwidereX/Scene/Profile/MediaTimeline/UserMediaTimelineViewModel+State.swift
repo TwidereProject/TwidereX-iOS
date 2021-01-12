@@ -43,8 +43,20 @@ extension UserMediaTimelineViewModel.State {
     
     class Reloading: UserMediaTimelineViewModel.State {
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {
-            return stateClass == Fail.self || stateClass == Idle.self || stateClass == NoMore.self ||
-                stateClass == NotAuthorized.self || stateClass == Blocked.self
+            switch stateClass {
+            case is Fail.Type:
+                return true
+            case is Idle.Type:
+                return true
+            case is NoMore.Type:
+                return true
+            case is NotAuthorized.Type, is Blocked.Type:
+                return true
+            case is Suspended.Type:
+                return true
+            default:
+                return false
+            }
         }
         
         override func didEnter(from previousState: GKState?) {
@@ -94,19 +106,46 @@ extension UserMediaTimelineViewModel.State {
     
     class Fail: UserMediaTimelineViewModel.State {
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {
-            return stateClass == Reloading.self || stateClass == LoadingMore.self
+            switch stateClass {
+            case is Reloading.Type, is LoadingMore.Type:
+                return true
+            case is Suspended.Type:
+                return true
+            default:
+                return false
+            }
         }
     }
     
     class Idle: UserMediaTimelineViewModel.State {
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {
-            return stateClass == Reloading.self || stateClass == LoadingMore.self
+            switch stateClass {
+            case is Reloading.Type, is LoadingMore.Type:
+                return true
+            case is Suspended.Type:
+                return true
+            default:
+                return false
+            }
         }
     }
     
     class LoadingMore: UserMediaTimelineViewModel.State {
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {
-            return stateClass == Fail.self || stateClass == Idle.self || stateClass == NoMore.self
+            switch stateClass {
+            case is Fail.Type:
+                return true
+            case is Idle.Type:
+                return true
+            case is NoMore.Type:
+                return true
+            case is NotAuthorized.Type, is Blocked.Type:
+                return true
+            case is Suspended.Type:
+                return true
+            default:
+                return false
+            }
         }
         
         override func didEnter(from previousState: GKState?) {
@@ -181,7 +220,14 @@ extension UserMediaTimelineViewModel.State {
         }
         
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {
-            return stateClass == Reloading.self
+            switch stateClass {
+            case is Reloading.Type:
+                return true
+            case is Suspended.Type:
+                return true
+            default:
+                return false
+            }
         }
         
         override func didEnter(from previousState: GKState?) {
@@ -206,7 +252,14 @@ extension UserMediaTimelineViewModel.State {
         }
         
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {
-            return stateClass == Reloading.self
+            switch stateClass {
+            case is Reloading.Type:
+                return true
+            case is Suspended.Type:
+                return true
+            default:
+                return false
+            }
         }
         
         override func didEnter(from previousState: GKState?) {
@@ -237,7 +290,16 @@ extension UserMediaTimelineViewModel.State {
     
     class NoMore: UserMediaTimelineViewModel.State {
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {
-            return stateClass == Reloading.self
+            switch stateClass {
+            case is Reloading.Type:
+                return true
+            case is NotAuthorized.Type, is Blocked.Type:
+                return true
+            case is Suspended.Type:
+                return true
+            default:
+                return false
+            }
         }
     }
     
