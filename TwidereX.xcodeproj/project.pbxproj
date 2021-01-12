@@ -101,6 +101,7 @@
 		DB5A229A255BC82D006CA5B2 /* AuthenticationIndex.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB5A2299255BC82D006CA5B2 /* AuthenticationIndex.swift */; };
 		DB5FAD6B257DD1DD0098B2C8 /* DeveloperViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB5FAD6A257DD1DD0098B2C8 /* DeveloperViewController.swift */; };
 		DB657A7325AC4DF6001339B6 /* TweetFetchedResultsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB657A7225AC4DF6001339B6 /* TweetFetchedResultsController.swift */; };
+		DB657A7B25AD574D001339B6 /* UIBarButtonItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB657A7A25AD574D001339B6 /* UIBarButtonItem.swift */; };
 		DB6760F9254AD026006C6798 /* SearchMediaViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB6760F8254AD026006C6798 /* SearchMediaViewModel.swift */; };
 		DB676101254AD12F006C6798 /* MediaCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB676100254AD12F006C6798 /* MediaCollectionViewCell.swift */; };
 		DB67610D254AD681006C6798 /* ActivityIndicatorCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB67610C254AD681006C6798 /* ActivityIndicatorCollectionViewCell.swift */; };
@@ -544,6 +545,7 @@
 		DB5A2299255BC82D006CA5B2 /* AuthenticationIndex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationIndex.swift; sourceTree = "<group>"; };
 		DB5FAD6A257DD1DD0098B2C8 /* DeveloperViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeveloperViewController.swift; sourceTree = "<group>"; };
 		DB657A7225AC4DF6001339B6 /* TweetFetchedResultsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TweetFetchedResultsController.swift; sourceTree = "<group>"; };
+		DB657A7A25AD574D001339B6 /* UIBarButtonItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIBarButtonItem.swift; sourceTree = "<group>"; };
 		DB6760F8254AD026006C6798 /* SearchMediaViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchMediaViewModel.swift; sourceTree = "<group>"; };
 		DB676100254AD12F006C6798 /* MediaCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaCollectionViewCell.swift; sourceTree = "<group>"; };
 		DB67610C254AD681006C6798 /* ActivityIndicatorCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityIndicatorCollectionViewCell.swift; sourceTree = "<group>"; };
@@ -1930,6 +1932,7 @@
 				DB1BF29325663ED000B5F490 /* UserDefaults.swift */,
 				DB74A16D256E50E300C5F3C9 /* UIColor.swift */,
 				DB2FFF3D258B78B0003DBC19 /* AVPlayer.swift */,
+				DB657A7A25AD574D001339B6 /* UIBarButtonItem.swift */,
 			);
 			path = Extension;
 			sourceTree = "<group>";
@@ -2773,6 +2776,7 @@
 				DB2FFF36258B56E5003DBC19 /* VideoPlaybackService.swift in Sources */,
 				DB35C35D25146C58003DA0E9 /* ConversationPostStatusView.swift in Sources */,
 				DB8AC10E2540501600E636BE /* ComposeTweetViewController.swift in Sources */,
+				DB657A7B25AD574D001339B6 /* UIBarButtonItem.swift in Sources */,
 				DB9154682551389D00613473 /* APIService+MentionTimeline.swift in Sources */,
 				DBEA4F91251331BE0007FEC5 /* QuotePostView.swift in Sources */,
 				DBA9B3A625875B6B00EA14ED /* MentionPickViewController.swift in Sources */,

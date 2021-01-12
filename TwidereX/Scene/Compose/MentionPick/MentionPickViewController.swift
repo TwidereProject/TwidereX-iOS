@@ -36,8 +36,7 @@ extension MentionPickViewController {
         super.viewDidLoad()
         
         title = L10n.Scene.Compose.replyingTo
-        navigationItem.leftBarButtonItem = UIBarButtonItem(image: Asset.Editing.xmark.image.withRenderingMode(.alwaysTemplate), style: .plain, target: self, action: #selector(MentionPickViewController.closeBarButtonItemPressed(_:)))
-        navigationItem.leftBarButtonItem?.tintColor = .label
+        navigationItem.leftBarButtonItem = .closeBarButtonItem(target: self, action: #selector(MentionPickViewController.closeBarButtonItemPressed(_:)))
         
         tableView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(tableView)
