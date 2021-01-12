@@ -473,6 +473,9 @@ extension StatusProviderFacade {
 
     static func responseToStatusActiveLabelAction(provider: StatusProvider, cell: UITableViewCell, activeLabel: ActiveLabel, didTapEntity entity: ActiveEntity) {
         switch entity.type {
+        case .hashtag(let text):
+            let searchDetailViewModel = SearchDetailViewModel(initialSearchText: "#" + text)
+            provider.coordinator.present(scene: .searchDetail(viewModel: searchDetailViewModel), from: provider, transition: .show)
         case .mention(let text):
             coordinateToStatusMentionProfileScene(for: .tweet, provider: provider, cell: cell, mention: text)
         case .url(let originalURL, _):

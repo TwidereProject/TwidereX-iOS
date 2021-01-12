@@ -562,6 +562,9 @@ extension ProfileViewController: ProfileBannerViewDelegate {
     
     func profileBannerView(_ profileBannerView: ProfileBannerView, activeLabel: ActiveLabel, didTapEntity entity: ActiveEntity) {
         switch entity.type {
+        case .hashtag(let text):
+            let searchDetailViewModel = SearchDetailViewModel(initialSearchText: "#" + text)
+            coordinator.present(scene: .searchDetail(viewModel: searchDetailViewModel), from: self, transition: .show)
         case .mention(let text):
             let profileViewModel: ProfileViewModel = {
                 let targetUsername = text
