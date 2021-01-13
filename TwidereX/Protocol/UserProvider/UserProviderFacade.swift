@@ -153,3 +153,31 @@ enum UserProviderFacade {
     }
     
 }
+
+extension UserProviderFacade {
+
+    static func createMenuForUser(twitterUser: TwitterUser, sender: UIBarButtonItem, dependency: NeedsDependency) -> UIMenu {
+        let children: [UIMenuElement] = [
+            UIMenu(title: "Mute", image: UIImage(systemName: "speaker.slash"), identifier: nil, options: [], children: [
+                UIAction(title: "Confirm", image: UIImage(systemName: "speaker.slash"), identifier: nil, discoverabilityTitle: "Mute @username", attributes: .destructive, state: .off) { _ in
+                    
+                }
+            ]),
+            UIMenu(title: "Block", image: UIImage(systemName: "nosign"), identifier: nil, options: [], children: [
+                UIAction(title: "Confirm", image: UIImage(systemName: "nosign"), identifier: nil, discoverabilityTitle: "Block @username", attributes: .destructive, state: .off) { _ in
+                    
+                }
+            ]),
+            UIMenu(title: "Report", image: UIImage(systemName: "flag"), identifier: nil, options: .destructive, children: [
+                UIAction(title: "Report", image: UIImage(systemName: "flag"), identifier: nil, discoverabilityTitle: nil, attributes: .destructive, state: .off) { _ in
+                    
+                },
+                UIAction(title: "Report and Block", image: UIImage(systemName: "flag.badge.ellipsis"), identifier: nil, discoverabilityTitle: nil, attributes: .destructive, state: .off) { _ in
+                    
+                }
+            ])
+        ]
+        return UIMenu(title: "", options: [], children: children)
+    }
+    
+}

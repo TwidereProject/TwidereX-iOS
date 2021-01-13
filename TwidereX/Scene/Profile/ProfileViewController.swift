@@ -26,6 +26,11 @@ final class ProfileViewController: UIViewController, DrawerSidebarTransitionable
     private(set) var drawerSidebarTransitionController: DrawerSidebarTransitionController!
     
     let avatarBarButtonItem = AvatarBarButtonItem()
+    let moreMenuBarButtonItem: UIBarButtonItem = {
+        let barButtonItem = UIBarButtonItem(image: Asset.Editing.ellipsis.image.withRenderingMode(.alwaysTemplate), style: .plain, target: nil, action: nil)
+        barButtonItem.tintColor = Asset.Colors.hightLight.color
+        return barButtonItem
+    }()
     
     let refreshControl: UIRefreshControl = {
         let refreshControl = UIRefreshControl()
@@ -104,6 +109,33 @@ extension ProfileViewController {
             navigationItem.leftBarButtonItem = avatarBarButtonItem
         }
         avatarBarButtonItem.avatarButton.addTarget(self, action: #selector(ProfileViewController.avatarButtonPressed(_:)), for: .touchUpInside)
+        
+        if #available(iOS 14.0, *) {
+            Publishers.CombineLatest(
+                viewModel.twitterUser.eraseToAnyPublisher(),
+                context.authenticationService.activeTwitterAuthenticationBox.eraseToAnyPublisher()
+            )
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] twitterUser, activeTwitterAuthenticationBox in
+                guard let self = self else { return }
+                guard let twitterUser = twitterUser,
+                      let activeTwitterAuthenticationBox = activeTwitterAuthenticationBox,
+                      twitterUser.id != activeTwitterAuthenticationBox.twitterUserID else {
+                    self.moreMenuBarButtonItem.menu = nil
+                    self.navigationItem.rightBarButtonItem = nil
+                    return
+                }
+                
+                self.moreMenuBarButtonItem.menu = UserProviderFacade.createMenuForUser(twitterUser: twitterUser, sender: self.moreMenuBarButtonItem, dependency: self)
+                self.navigationItem.rightBarButtonItem = self.moreMenuBarButtonItem
+                
+            }
+            .store(in: &disposeBag)
+        } else {
+            // no menu supports for early version
+            moreMenuBarButtonItem.target = self
+            moreMenuBarButtonItem.action = #selector(ProfileViewController.moreMenuBarButtonItemPressed(_:))
+        }
         
         overlayScrollView.refreshControl = refreshControl
         refreshControl.addTarget(self, action: #selector(ProfileViewController.refreshControlValueChanged(_:)), for: .valueChanged)
@@ -199,7 +231,7 @@ extension ProfileViewController {
             })
         )
 
-        // setup view model
+        // bind view model
         Publishers.CombineLatest3(
             viewModel.bannerImageURL.eraseToAnyPublisher(),
             viewModel.suspended.eraseToAnyPublisher(),
@@ -443,6 +475,11 @@ extension ProfileViewController {
     @objc private func avatarButtonPressed(_ sender: UIButton) {
         os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
         coordinator.present(scene: .drawerSidebar, from: self, transition: .custom(transitioningDelegate: drawerSidebarTransitionController))
+    }
+    
+    @objc private func moreMenuBarButtonItemPressed(_ sender: UIBarButtonItem) {
+        os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
+    
     }
     
 }
