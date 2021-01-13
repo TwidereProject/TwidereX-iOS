@@ -77,6 +77,7 @@ internal enum Asset {
     internal static let repeatMini = ImageAsset(name: "Media/repeat.mini")
   }
   internal enum ObjectTools {
+    internal static let blockedBadge = ImageAsset(name: "Object&Tools/blocked.badge")
     internal static let bookmarks = ImageAsset(name: "Object&Tools/bookmarks")
     internal static let camera = ImageAsset(name: "Object&Tools/camera")
     internal static let clothes = ImageAsset(name: "Object&Tools/clothes")
@@ -92,6 +93,7 @@ internal enum Asset {
     internal static let paperplane = ImageAsset(name: "Object&Tools/paperplane")
     internal static let photo = ImageAsset(name: "Object&Tools/photo")
     internal static let photos = ImageAsset(name: "Object&Tools/photos")
+    internal static let speakerXmark = ImageAsset(name: "Object&Tools/speaker.xmark")
     internal static let verifiedBadge = ImageAsset(name: "Object&Tools/verified.badge")
     internal static let verifiedBadgeMini = ImageAsset(name: "Object&Tools/verified.badge.mini")
     internal static let verifiedBadgeSmall = ImageAsset(name: "Object&Tools/verified.badge.small")

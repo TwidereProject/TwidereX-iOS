@@ -97,7 +97,7 @@ extension DrawerSidebarViewController {
                 guard let self = self else { return }
                 let twitterUser = activeAuthenticationIndex?.twitterAuthentication?.twitterUser
                 // bind avatar
-                self.headerView.configure(avatarImageURL: twitterUser?.avatarImageURL())
+                self.headerView.configure(withConfigurationInput: AvatarConfigurableViewConfiguration.Input(avatarImageURL: twitterUser?.avatarImageURL()))
                 self.headerView.lockImageView.isHidden = twitterUser.flatMap { !$0.protected } ?? true
                 
                 // bind name

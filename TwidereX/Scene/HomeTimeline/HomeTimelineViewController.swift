@@ -136,10 +136,10 @@ extension HomeTimelineViewController {
             guard let self = self else { return }
             guard let twitterUser = activeAuthenticationIndex?.twitterAuthentication?.twitterUser,
                   let avatarImageURL = twitterUser.avatarImageURL() else {
-                self.avatarBarButtonItem.configure(avatarImageURL: nil)
+                self.avatarBarButtonItem.configure(withConfigurationInput: AvatarConfigurableViewConfiguration.Input(avatarImageURL: nil))
                 return
             }
-            self.avatarBarButtonItem.configure(avatarImageURL: avatarImageURL)
+            self.avatarBarButtonItem.configure(withConfigurationInput: AvatarConfigurableViewConfiguration.Input(avatarImageURL: avatarImageURL))
         }
         .store(in: &disposeBag)
     }

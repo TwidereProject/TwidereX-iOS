@@ -11,6 +11,7 @@ import Combine
 import CoreData
 import CoreDataStack
 import TwitterAPI
+import SwiftMessages
 
 enum UserProviderFacade {
     
@@ -159,27 +160,174 @@ extension UserProviderFacade {
     @available(iOS 14.0, *)
     static func createMenuForUser(twitterUser: TwitterUser, muted: Bool, blocked: Bool, dependency: NeedsDependency) -> UIMenu {
         let username = "@" + twitterUser.username
-        let muteMenu = UIMenu(title: L10n.Common.Controls.Friendship.Actions.mute, image: UIImage(systemName: "speaker.slash"), identifier: nil, options: [], children: [
-            UIAction(title: L10n.Common.Controls.Actions.confirm, image: UIImage(systemName: "speaker.slash"), identifier: nil, discoverabilityTitle: L10n.Common.Controls.Friendship.muteUser(username), attributes: .destructive, state: .off) { _ in
-                
+        let userID = twitterUser.id
+        var children: [UIMenuElement] = []
+        
+        let muteAction = UIAction(
+            title: muted ? L10n.Common.Controls.Friendship.Actions.unmute : L10n.Common.Controls.Actions.confirm,
+            image: muted ? UIImage(systemName: "speaker") : UIImage(systemName: "speaker.slash"),
+            discoverabilityTitle: muted ? nil : L10n.Common.Controls.Friendship.muteUser(username),
+            attributes: muted ? [] : .destructive,
+            state: .off
+        ) { [weak dependency] _ in
+            guard let dependency = dependency else { return }
+            guard let activeTwitterAuthenticationBox = dependency.context.authenticationService.activeTwitterAuthenticationBox.value else { return }
+            dependency.context.apiService.toggleMute(
+                for: twitterUser,
+                activeTwitterAuthenticationBox: activeTwitterAuthenticationBox
+            )
+            .sink { completion in
+                switch completion {
+                case .failure:
+                    DispatchQueue.main.async {
+                        var config = SwiftMessages.defaultConfig
+                        config.duration = .seconds(seconds: 3)
+                        config.interactiveHide = true
+                        let bannerView = NotifyBannerView()
+                        bannerView.configure(for: .warning)
+                        let title = muted ? L10n.Common.Alerts.FailedToUnmuteUser.title(username) : L10n.Common.Alerts.FailedToMuteUser.title(username)
+                        bannerView.titleLabel.text = title
+                        let message = muted ? L10n.Common.Alerts.FailedToUnmuteUser.message : L10n.Common.Alerts.FailedToMuteUser.message
+                        bannerView.messageLabel.text = message
+                        SwiftMessages.show(config: config, view: bannerView)
+                    }
+                case .finished:
+                    DispatchQueue.main.async {
+                        var config = SwiftMessages.defaultConfig
+                        config.duration = .seconds(seconds: 3)
+                        config.interactiveHide = true
+                        let bannerView = NotifyBannerView()
+                        bannerView.configure(for: .normal)
+                        let title = muted ? L10n.Common.Alerts.UnmuteUserSuccess.title(username) : L10n.Common.Alerts.MuteUserSuccess.title(username)
+                        bannerView.titleLabel.text = title
+                        bannerView.messageLabel.isHidden = true
+                        SwiftMessages.show(config: config, view: bannerView)
+                    }
+                }
+            } receiveValue: { response in
+                // do nothing
             }
-        ])
-        let blockMenu = UIMenu(title: L10n.Common.Controls.Friendship.Actions.block, image: UIImage(systemName: "nosign"), identifier: nil, options: [], children: [
-            UIAction(title: L10n.Common.Controls.Actions.confirm, image: UIImage(systemName: "nosign"), identifier: nil, discoverabilityTitle: L10n.Common.Controls.Friendship.blockUser(username), attributes: .destructive, state: .off) { _ in
-                
+            .store(in: &dependency.context.disposeBag)
+        }
+        if muted {
+            children.append(muteAction)
+        } else {
+            let muteMenu = UIMenu(title: L10n.Common.Controls.Friendship.Actions.mute, image: UIImage(systemName: "speaker.slash"), options: [], children: [muteAction])
+            children.append(muteMenu)
+        }
+        
+        let blockAction = UIAction(
+            title: blocked ? L10n.Common.Controls.Friendship.Actions.unblock : L10n.Common.Controls.Actions.confirm,
+            image: blocked ? UIImage(systemName: "circle") : UIImage(systemName: "nosign"),
+            discoverabilityTitle: blocked ? nil : L10n.Common.Controls.Friendship.blockUser(username),
+            attributes: blocked ? [] : .destructive,
+            state: .off
+        ) { [weak dependency] _ in
+            guard let dependency = dependency else { return }
+            guard let activeTwitterAuthenticationBox = dependency.context.authenticationService.activeTwitterAuthenticationBox.value else { return }
+            dependency.context.apiService.toggleBlock(
+                for: twitterUser,
+                activeTwitterAuthenticationBox: activeTwitterAuthenticationBox
+            )
+            .sink { completion in
+                switch completion {
+                case .failure:
+                    DispatchQueue.main.async {
+                        var config = SwiftMessages.defaultConfig
+                        config.duration = .seconds(seconds: 3)
+                        config.interactiveHide = true
+                        let bannerView = NotifyBannerView()
+                        bannerView.configure(for: .warning)
+                        let title = blocked ? L10n.Common.Alerts.FailedToUnblockUser.title(username) : L10n.Common.Alerts.FailedToBlockUser.title(username)
+                        bannerView.titleLabel.text = title
+                        let message = muted ? L10n.Common.Alerts.FailedToUnblockUser.message : L10n.Common.Alerts.FailedToBlockUser.message
+                        bannerView.messageLabel.text = message
+                        SwiftMessages.show(config: config, view: bannerView)
+                    }
+                case .finished:
+                    DispatchQueue.main.async {
+                        var config = SwiftMessages.defaultConfig
+                        config.duration = .seconds(seconds: 3)
+                        config.interactiveHide = true
+                        let bannerView = NotifyBannerView()
+                        bannerView.configure(for: .normal)
+                        let title = blocked ? L10n.Common.Alerts.UnblockUserSuccess.title(username) : L10n.Common.Alerts.BlockUserSuccess.title(username)
+                        bannerView.titleLabel.text = title
+                        bannerView.messageLabel.isHidden = true
+                        SwiftMessages.show(config: config, view: bannerView)
+                    }
+                }
+            } receiveValue: { response in
+                // do nothing
             }
-        ])
+            .store(in: &dependency.context.disposeBag)
+        }
+        if blocked {
+            children.append(blockAction)
+        } else {
+            let blockMenu = UIMenu(title: L10n.Common.Controls.Friendship.Actions.block, image: UIImage(systemName: "nosign"), identifier: nil, options: [], children: [blockAction])
+            children.append(blockMenu)
+            
+        }
+        
         let reportMenu = UIMenu(title: L10n.Common.Controls.Friendship.Actions.report, image: UIImage(systemName: "flag"), identifier: nil, options: .destructive, children: [
-            UIAction(title: L10n.Common.Controls.Friendship.Actions.report, image: UIImage(systemName: "flag"), identifier: nil, discoverabilityTitle: nil, attributes: .destructive, state: .off) { _ in
-                
-            },
-            UIAction(title: L10n.Common.Controls.Friendship.Actions.reportAndBlock, image: UIImage(systemName: "flag.badge.ellipsis"), identifier: nil, discoverabilityTitle: nil, attributes: .destructive, state: .off) { _ in
-                
+            // TODO: L10n.Common.Controls.Friendship.Actions.report
+            UIAction(title: L10n.Common.Controls.Actions.confirm, image: UIImage(systemName: "flag"), identifier: nil, discoverabilityTitle: nil, attributes: .destructive, state: .off) { [weak dependency] _ in
+                guard let dependency = dependency else { return }
+                guard let activeTwitterAuthenticationBox = dependency.context.authenticationService.activeTwitterAuthenticationBox.value else { return }
+                dependency.context.apiService.userReportForSpam(
+                    userID: userID,
+                    performBlock: false,
+                    twitterAuthenticationBox: activeTwitterAuthenticationBox
+                )
+                .sink { completion in
+                    switch completion {
+                    case .failure:
+                        DispatchQueue.main.async {
+                            var config = SwiftMessages.defaultConfig
+                            config.duration = .seconds(seconds: 3)
+                            config.interactiveHide = true
+                            let bannerView = NotifyBannerView()
+                            bannerView.configure(for: .warning)
+                            bannerView.titleLabel.text = L10n.Common.Alerts.FailedToReportUser.title(username)
+                            bannerView.messageLabel.text = L10n.Common.Alerts.FailedToReportUser.message
+                            SwiftMessages.show(config: config, view: bannerView)
+                        }
+                    case .finished:
+                        DispatchQueue.main.async {
+                            var config = SwiftMessages.defaultConfig
+                            config.duration = .seconds(seconds: 3)
+                            config.interactiveHide = true
+                            let bannerView = NotifyBannerView()
+                            bannerView.configure(for: .normal)
+                            bannerView.titleLabel.text = L10n.Common.Alerts.ReportUserSuccess.title(username)
+                            bannerView.messageLabel.isHidden = true
+                            SwiftMessages.show(config: config, view: bannerView)
+                        }
+                    }
+                } receiveValue: { response in
+                    
+                }
+                .store(in: &dependency.context.disposeBag)
             }
+//            UIAction(title: L10n.Common.Controls.Friendship.Actions.reportAndBlock, image: UIImage(systemName: "flag.badge.ellipsis"), identifier: nil, discoverabilityTitle: nil, attributes: .destructive, state: .off) { [weak dependency] _ in
+//                guard let dependency = dependency else { return }
+//                guard let activeTwitterAuthenticationBox = dependency.context.authenticationService.activeTwitterAuthenticationBox.value else { return }
+//                dependency.context.apiService.userReportForSpam(
+//                    userID: userID,
+//                    performBlock: true,
+//                    twitterAuthenticationBox: activeTwitterAuthenticationBox
+//                )
+//                .sink { completion in
+//
+//                } receiveValue: { response in
+//
+//                }
+//                .store(in: &dependency.context.disposeBag)
+//            }
         ])
-        var children: [UIMenuElement] = [
-            muteMenu
-        ]
+        children.append(reportMenu)
+
         return UIMenu(title: "", options: [], children: children)
     }
     

@@ -54,11 +54,10 @@ extension SearchUserViewModel {
         let verified = twitterUser.verified
         UserDefaults.shared
             .observe(\.avatarStyle, options: [.initial, .new]) { defaults, _ in
-                cell.userBriefInfoView.configure(avatarImageURL: avatarImageURL, verified: verified)
+                cell.userBriefInfoView.configure(withConfigurationInput: AvatarConfigurableViewConfiguration.Input(avatarImageURL: avatarImageURL, verified: verified))
             }
             .store(in: &cell.observations)
-        cell.userBriefInfoView.configure(avatarImageURL: avatarImageURL, verified: verified)
-        
+
         cell.userBriefInfoView.lockImageView.isHidden = !twitterUser.protected
         
         // set name and username

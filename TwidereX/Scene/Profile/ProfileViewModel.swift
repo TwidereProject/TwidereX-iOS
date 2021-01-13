@@ -42,9 +42,9 @@ class ProfileViewModel: NSObject {
 
     let friendship: CurrentValueSubject<Friendship?, Never>
     let followedBy: CurrentValueSubject<Bool?, Never>
+    let muted: CurrentValueSubject<Bool, Never>
+    let blocked: CurrentValueSubject<Bool, Never>
     
-    let muted = CurrentValueSubject<Bool, Never>(false)
-    let blocked = CurrentValueSubject<Bool, Never>(false)
     let suspended = CurrentValueSubject<Bool, Never>(false)
     
     let avatarStyle = CurrentValueSubject<UserDefaults.AvatarStyle, Never>(UserDefaults.shared.avatarStyle)
@@ -68,7 +68,8 @@ class ProfileViewModel: NSObject {
         self.listedCount = CurrentValueSubject(twitterUser?.metrics?.listedCount.flatMap{ Int(truncating: $0) })
         self.friendship = CurrentValueSubject(nil)
         self.followedBy = CurrentValueSubject(nil)
-
+        self.muted = CurrentValueSubject(false)
+        self.blocked = CurrentValueSubject(false)
         super.init()
 
         // bind active authentication
@@ -132,12 +133,7 @@ class ProfileViewModel: NSObject {
         } receiveValue: { [weak self] response in
             guard let self = self else { return }
             os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: fetch friendship success", ((#file as NSString).lastPathComponent), #line, #function)
-            
-            let relationship = response.value
-            self.muted.value = relationship.source.muting
-            self.blocked.value = relationship.source.blocking
-            
-            // following state will update via ManagedObjectObserver
+            // friendship state will update via ManagedObjectObserver
         }
         .store(in: &disposeBag)
     }
@@ -376,9 +372,18 @@ extension ProfileViewModel {
             let friendship = isPending ? .pending : (isFollowing) ? .following : ProfileViewModel.Friendship.none
             self.friendship.value = friendship
             os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: friendship update: %s", ((#file as NSString).lastPathComponent), #line, #function, friendship.debugDescription)
+            
             let followedBy = currentTwitterUser.followingBy.flatMap { $0.contains(twitterUser) } ?? false
             self.followedBy.value = followedBy
             os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: followedBy update: %s", ((#file as NSString).lastPathComponent), #line, #function, followedBy ? "true" : "false")
+            
+            let muted = twitterUser.mutingBy.flatMap { $0.contains(currentTwitterUser) } ?? false
+            self.muted.value = muted
+            os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: muted update: %s", ((#file as NSString).lastPathComponent), #line, #function, muted ? "true" : "false")
+            
+            let blocked = twitterUser.blockingBy.flatMap { $0.contains(currentTwitterUser) } ?? false
+            self.blocked.value = blocked
+            os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: blocked update: %s", ((#file as NSString).lastPathComponent), #line, #function, blocked ? "true" : "false")
         }
     }
     

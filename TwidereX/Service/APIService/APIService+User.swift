@@ -63,6 +63,40 @@ extension APIService {
             .eraseToAnyPublisher()
     }
     
+    func userReportForSpam(
+        userID: Twitter.Entity.User.ID,
+        performBlock: Bool,
+        twitterAuthenticationBox: AuthenticationService.TwitterAuthenticationBox
+    ) -> AnyPublisher<Twitter.Response.Content<Twitter.Entity.User>, Error> {
+        let authorization = twitterAuthenticationBox.twitterAuthorization
+        let query = Twitter.API.Users.ReportSpamQuery(
+            userID: userID,
+            performBlock: performBlock
+        )
+        return Twitter.API.Users.reportSpam(
+            session: session,
+            authorization: authorization,
+            query: query
+        )
+        .handleEvents(receiveCompletion: { [weak self] completion in
+            guard let self = self else { return }
+            switch completion {
+            case .failure(let error):
+                if let responseError = error as? Twitter.API.Error.ResponseError {
+                    switch responseError.twitterAPIError {
+                    case .accountIsTemporarilyLocked, .rateLimitExceeded:
+                        self.error.send(.explicit(.twitterResponseError(responseError)))
+                    default:
+                        break
+                    }
+                }
+            case .finished:
+                break
+            }
+        })
+        .eraseToAnyPublisher()
+    }
+    
 }
 
 // V2

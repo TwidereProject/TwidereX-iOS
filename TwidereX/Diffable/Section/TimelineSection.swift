@@ -143,7 +143,7 @@ extension TimelineSection {
         let verified = (tweet.retweet?.author ?? tweet.author).verified
         UserDefaults.shared
             .observe(\.avatarStyle, options: [.initial, .new]) { defaults, _ in
-                cell.timelinePostView.configure(avatarImageURL: avatarImageURL, verified: verified)
+                cell.timelinePostView.configure(withConfigurationInput: AvatarConfigurableViewConfiguration.Input(avatarImageURL: avatarImageURL, verified: verified))
             }
             .store(in: &cell.observations)
         
@@ -263,7 +263,7 @@ extension TimelineSection {
             let verified = quote.author.verified
             UserDefaults.shared
                 .observe(\.avatarStyle, options: [.initial, .new]) { defaults, _ in
-                    cell.timelinePostView.quotePostView.configure(avatarImageURL: avatarImageURL, verified: verified)
+                    cell.timelinePostView.quotePostView.configure(withConfigurationInput: AvatarConfigurableViewConfiguration.Input(avatarImageURL: avatarImageURL, verified: verified))
                 }
                 .store(in: &cell.observations)
             

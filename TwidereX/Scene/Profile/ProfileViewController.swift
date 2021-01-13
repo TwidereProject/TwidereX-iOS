@@ -26,6 +26,11 @@ final class ProfileViewController: UIViewController, DrawerSidebarTransitionable
     private(set) var drawerSidebarTransitionController: DrawerSidebarTransitionController!
     
     let avatarBarButtonItem = AvatarBarButtonItem()
+    let unmuteMenuBarButtonItem: UIBarButtonItem = {
+        let barButtonItem = UIBarButtonItem(image: Asset.ObjectTools.speakerXmark.image.withRenderingMode(.alwaysTemplate), style: .plain, target: nil, action: nil)
+        barButtonItem.tintColor = .systemRed
+        return barButtonItem
+    }()
     let moreMenuBarButtonItem: UIBarButtonItem = {
         let barButtonItem = UIBarButtonItem(image: Asset.Editing.ellipsis.image.withRenderingMode(.alwaysTemplate), style: .plain, target: nil, action: nil)
         barButtonItem.tintColor = Asset.Colors.hightLight.color
@@ -110,36 +115,50 @@ extension ProfileViewController {
         }
         avatarBarButtonItem.avatarButton.addTarget(self, action: #selector(ProfileViewController.avatarButtonPressed(_:)), for: .touchUpInside)
         
-        if #available(iOS 14.0, *) {
-            Publishers.CombineLatest4(
-                viewModel.muted.eraseToAnyPublisher(),
-                viewModel.blocked.eraseToAnyPublisher(),
-                viewModel.twitterUser.eraseToAnyPublisher(),
-                context.authenticationService.activeTwitterAuthenticationBox.eraseToAnyPublisher()
-            )
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] muted, blocked, twitterUser, activeTwitterAuthenticationBox in
-                guard let self = self else { return }
-                guard let twitterUser = twitterUser,
-                      let activeTwitterAuthenticationBox = activeTwitterAuthenticationBox,
-                      twitterUser.id != activeTwitterAuthenticationBox.twitterUserID else {
+        Publishers.CombineLatest4(
+            viewModel.muted.eraseToAnyPublisher(),
+            viewModel.blocked.eraseToAnyPublisher(),
+            viewModel.twitterUser.eraseToAnyPublisher(),
+            context.authenticationService.activeTwitterAuthenticationBox.eraseToAnyPublisher()
+        )
+        .receive(on: DispatchQueue.main)
+        .sink { [weak self] muted, blocked, twitterUser, activeTwitterAuthenticationBox in
+            guard let self = self else { return }
+            guard let twitterUser = twitterUser,
+                  let activeTwitterAuthenticationBox = activeTwitterAuthenticationBox,
+                  twitterUser.id != activeTwitterAuthenticationBox.twitterUserID else {
+                if #available(iOS 14.0, *) {
                     self.moreMenuBarButtonItem.menu = nil
-                    self.navigationItem.rightBarButtonItem = nil
-                    return
                 }
-                
+                return
+            }
+            
+            if #available(iOS 14.0, *) {
                 self.moreMenuBarButtonItem.menu = UserProviderFacade.createMenuForUser(
                     twitterUser: twitterUser,
                     muted: muted,
                     blocked: blocked,
                     dependency: self
                 )
-                self.navigationItem.rightBarButtonItem = self.moreMenuBarButtonItem
-                
             }
-            .store(in: &disposeBag)
+            
+            var rightBarButtonItems: [UIBarButtonItem] = [self.moreMenuBarButtonItem]
+            // FIXME:
+            //if muted {
+            //    rightBarButtonItems.append(self.unmuteMenuBarButtonItem)
+            //}
+            
+            self.navigationItem.rightBarButtonItems = rightBarButtonItems
+        }
+        .store(in: &disposeBag)
+        
+        if #available(iOS 14.0, *) {
+            // do nothing
         } else {
             // no menu supports for early version
+            unmuteMenuBarButtonItem.target = self
+            unmuteMenuBarButtonItem.action = #selector(ProfileViewController.unmuteBarButtonItemPressed(_:))
+            
             moreMenuBarButtonItem.target = self
             moreMenuBarButtonItem.action = #selector(ProfileViewController.moreMenuBarButtonItemPressed(_:))
         }
@@ -276,16 +295,21 @@ extension ProfileViewController {
             )
         }
         .store(in: &disposeBag)
+        let verifiedAndBlocked = Publishers.CombineLatest(
+            viewModel.verified.eraseToAnyPublisher(),
+            viewModel.blocked.eraseToAnyPublisher()
+        )
         Publishers.CombineLatest4(
             viewModel.avatarImageURL.eraseToAnyPublisher(),
-            viewModel.verified.eraseToAnyPublisher(),
+            verifiedAndBlocked.eraseToAnyPublisher(),
             viewModel.avatarStyle.eraseToAnyPublisher(),
             viewModel.viewDidAppear.eraseToAnyPublisher()
         )
         .receive(on: DispatchQueue.main)
-        .sink { [weak self] avatarImageURL, verified, _, _ in
+        .sink { [weak self] avatarImageURL, verifiedAndblocked, _, _ in
             guard let self = self else { return }
-            self.profileHeaderViewController.profileBannerView.configure(avatarImageURL: avatarImageURL, verified: verified)
+            let (verified, blocked) = verifiedAndblocked
+            self.profileHeaderViewController.profileBannerView.configure(withConfigurationInput: AvatarConfigurableViewConfiguration.Input(avatarImageURL: avatarImageURL, blocked: blocked, verified: verified))
         }
         .store(in: &disposeBag)
         viewModel.protected
@@ -414,10 +438,10 @@ extension ProfileViewController {
             guard let self = self else { return }
             guard let twitterUser = activeAuthenticationIndex?.twitterAuthentication?.twitterUser,
                   let avatarImageURL = twitterUser.avatarImageURL() else {
-                self.avatarBarButtonItem.configure(avatarImageURL: nil)
+                self.avatarBarButtonItem.configure(withConfigurationInput: AvatarConfigurableViewConfiguration.Input(avatarImageURL: nil))
                 return
             }
-            self.avatarBarButtonItem.configure(avatarImageURL: avatarImageURL)
+            self.avatarBarButtonItem.configure(withConfigurationInput: AvatarConfigurableViewConfiguration.Input(avatarImageURL: avatarImageURL))
         }
         .store(in: &disposeBag)
 
@@ -482,6 +506,11 @@ extension ProfileViewController {
     @objc private func avatarButtonPressed(_ sender: UIButton) {
         os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
         coordinator.present(scene: .drawerSidebar, from: self, transition: .custom(transitioningDelegate: drawerSidebarTransitionController))
+    }
+    
+    @objc private func unmuteBarButtonItemPressed(_ sender: UIBarButtonItem) {
+        os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
+        
     }
     
     @objc private func moreMenuBarButtonItemPressed(_ sender: UIBarButtonItem) {

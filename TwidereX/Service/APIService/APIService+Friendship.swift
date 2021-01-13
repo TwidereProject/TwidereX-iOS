@@ -6,7 +6,6 @@
 //  Copyright © 2020 Twidere. All rights reserved.
 //
 
-
 import os.log
 import UIKit
 import Combine
@@ -98,6 +97,7 @@ extension APIService {
         })
         .eraseToAnyPublisher()
     }
+    
 }
 
 extension APIService {
@@ -150,6 +150,9 @@ extension APIService {
                         targetTwitterUser.update(following: relationship.source.following, by: sourceTwitterUser)
                         sourceTwitterUser.update(following: relationship.source.followedBy, by: targetTwitterUser)
                         targetTwitterUser.update(followRequestSent: relationship.source.followingRequested, from: sourceTwitterUser)
+                        targetTwitterUser.update(muting: relationship.source.muting, by: sourceTwitterUser)
+                        targetTwitterUser.update(blocking: relationship.source.blocking, by: sourceTwitterUser)
+                        sourceTwitterUser.update(blocking: relationship.source.blockedBy, by: targetTwitterUser)
                     }
                     .setFailureType(to: Error.self)
                     .tryMap { result -> Twitter.Response.Content<Twitter.Entity.Relationship> in

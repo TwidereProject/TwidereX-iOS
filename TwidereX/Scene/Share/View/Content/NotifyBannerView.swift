@@ -19,6 +19,8 @@ final class NotifyBannerView: UIView {
         label.text = "Message Title"
         label.textColor = .white
         label.font = .systemFont(ofSize: 17, weight: .semibold)
+        label.adjustsFontSizeToFitWidth = true
+        label.minimumScaleFactor = 0.7
         return label
     }()
     let messageLabel: UILabel = {

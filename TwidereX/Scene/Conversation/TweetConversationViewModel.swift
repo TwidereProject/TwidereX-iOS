@@ -378,7 +378,7 @@ extension TweetConversationViewModel {
         let verified = (tweet.retweet ?? tweet).author.verified
         UserDefaults.shared
             .observe(\.avatarStyle, options: [.initial, .new]) { defaults, _ in
-                cell.conversationPostView.configure(avatarImageURL: avatarImageURL, verified: verified)
+                cell.conversationPostView.configure(withConfigurationInput: AvatarConfigurableViewConfiguration.Input(avatarImageURL: avatarImageURL, verified: verified))
             }
             .store(in: &cell.observations)
         
@@ -478,7 +478,7 @@ extension TweetConversationViewModel {
             let verified = quote.author.verified
             UserDefaults.shared
                 .observe(\.avatarStyle, options: [.initial, .new]) { defaults, _ in
-                    cell.conversationPostView.quotePostView.configure(avatarImageURL: avatarImageURL, verified: verified)
+                    cell.conversationPostView.quotePostView.configure(withConfigurationInput: AvatarConfigurableViewConfiguration.Input(avatarImageURL: avatarImageURL, verified: verified))
                 }
                 .store(in: &cell.observations)
             

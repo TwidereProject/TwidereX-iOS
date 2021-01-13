@@ -210,6 +210,30 @@ extension TwitterUser {
         }
     }
     
+    public func update(muting: Bool, by: TwitterUser) {
+        if muting {
+            if !(self.mutingBy ?? Set()).contains(by) {
+                self.mutableSetValue(forKey: #keyPath(TwitterUser.mutingBy)).add(by)
+            }
+        } else {
+            if (self.mutingBy ?? Set()).contains(by) {
+                self.mutableSetValue(forKey: #keyPath(TwitterUser.mutingBy)).remove(by)
+            }
+        }
+    }
+    
+    public func update(blocking: Bool, by: TwitterUser) {
+        if blocking {
+            if !(self.blockingBy ?? Set()).contains(by) {
+                self.mutableSetValue(forKey: #keyPath(TwitterUser.blockingBy)).add(by)
+            }
+        } else {
+            if (self.blockingBy ?? Set()).contains(by) {
+                self.mutableSetValue(forKey: #keyPath(TwitterUser.blockingBy)).remove(by)
+            }
+        }
+    }
+    
     public func didUpdate(at networkDate: Date) {
         self.updatedAt = networkDate
     }
