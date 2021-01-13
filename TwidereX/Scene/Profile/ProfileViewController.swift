@@ -134,20 +134,20 @@ extension ProfileViewController {
                 return
             }
             
-//            if #available(iOS 14.0, *) {
-//                self.moreMenuBarButtonItem.target = nil
-//                self.moreMenuBarButtonItem.action = nil
-//                self.moreMenuBarButtonItem.menu = UserProviderFacade.createMenuForUser(
-//                    twitterUser: twitterUser,
-//                    muted: muted,
-//                    blocked: blocked,
-//                    dependency: self
-//                )
-//            } else {
-//                // no menu supports for early version
+            if #available(iOS 14.0, *) {
+                self.moreMenuBarButtonItem.target = nil
+                self.moreMenuBarButtonItem.action = nil
+                self.moreMenuBarButtonItem.menu = UserProviderFacade.createMenuForUser(
+                    twitterUser: twitterUser,
+                    muted: muted,
+                    blocked: blocked,
+                    dependency: self
+                )
+            } else {
+                // no menu supports for early version
                 self.moreMenuBarButtonItem.target = self
                 self.moreMenuBarButtonItem.action = #selector(ProfileViewController.moreMenuBarButtonItemPressed(_:))
-//            }
+            }
             
             var rightBarButtonItems: [UIBarButtonItem] = [self.moreMenuBarButtonItem]
             if muted {
