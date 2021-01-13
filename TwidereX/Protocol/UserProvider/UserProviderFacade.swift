@@ -76,7 +76,13 @@ enum UserProviderFacade {
         )
     }
     
-    // Present Alert Controller to confirm cancel following action
+    /// Present Alert Controller to confirm cancel following action
+    /// - Parameters:
+    ///   - provider: UserProvider
+    ///   - activeTwitterAuthenticationBox: AuthenticationService.TwitterAuthenticationBox
+    ///   - twitterUser: TwitterUser from provider
+    ///   - sourceView: alert controller popover's anchor
+    /// - Returns: return TwitterUser when confirm action and nil when user cancel action
     private static func _toggleUserFriendshipAlertControllerConfirmPublisher(
         provider: UserProvider,
         activeTwitterAuthenticationBox: AuthenticationService.TwitterAuthenticationBox,
@@ -156,11 +162,14 @@ enum UserProviderFacade {
 }
 
 extension UserProviderFacade {
+    
+    // TODO:
+    // enum TwitterUserMoreMenuAction: ContextMenuAction { }
 
     @available(iOS 14.0, *)
     static func createMenuForUser(twitterUser: TwitterUser, muted: Bool, blocked: Bool, dependency: NeedsDependency) -> UIMenu {
         let username = "@" + twitterUser.username
-        let userID = twitterUser.id
+        let twitterUserID = twitterUser.id
         var children: [UIMenuElement] = []
         
         let muteAction = UIAction(
@@ -171,40 +180,16 @@ extension UserProviderFacade {
             state: .off
         ) { [weak dependency] _ in
             guard let dependency = dependency else { return }
-            guard let activeTwitterAuthenticationBox = dependency.context.authenticationService.activeTwitterAuthenticationBox.value else { return }
-            dependency.context.apiService.toggleMute(
-                for: twitterUser,
-                activeTwitterAuthenticationBox: activeTwitterAuthenticationBox
+            let notifyBannerViewConfiguration = UserProviderFacade.toggleMuteUserNotifyBannerViewConfiguration(muted: muted, username: username)
+
+            UserProviderFacade.toggleMuteUser(
+                context: dependency.context,
+                twitterUser: twitterUser,
+                notifyBannerViewConfiguration: notifyBannerViewConfiguration
             )
-            .sink { completion in
-                switch completion {
-                case .failure:
-                    DispatchQueue.main.async {
-                        var config = SwiftMessages.defaultConfig
-                        config.duration = .seconds(seconds: 3)
-                        config.interactiveHide = true
-                        let bannerView = NotifyBannerView()
-                        bannerView.configure(for: .warning)
-                        let title = muted ? L10n.Common.Alerts.FailedToUnmuteUser.title(username) : L10n.Common.Alerts.FailedToMuteUser.title(username)
-                        bannerView.titleLabel.text = title
-                        let message = muted ? L10n.Common.Alerts.FailedToUnmuteUser.message : L10n.Common.Alerts.FailedToMuteUser.message
-                        bannerView.messageLabel.text = message
-                        SwiftMessages.show(config: config, view: bannerView)
-                    }
-                case .finished:
-                    DispatchQueue.main.async {
-                        var config = SwiftMessages.defaultConfig
-                        config.duration = .seconds(seconds: 3)
-                        config.interactiveHide = true
-                        let bannerView = NotifyBannerView()
-                        bannerView.configure(for: .normal)
-                        let title = muted ? L10n.Common.Alerts.UnmuteUserSuccess.title(username) : L10n.Common.Alerts.MuteUserSuccess.title(username)
-                        bannerView.titleLabel.text = title
-                        bannerView.messageLabel.isHidden = true
-                        SwiftMessages.show(config: config, view: bannerView)
-                    }
-                }
-            } receiveValue: { response in
+            .sink { _ in
+                // do nothing
+            } receiveValue: { _ in
                 // do nothing
             }
             .store(in: &dependency.context.disposeBag)
@@ -224,40 +209,16 @@ extension UserProviderFacade {
             state: .off
         ) { [weak dependency] _ in
             guard let dependency = dependency else { return }
-            guard let activeTwitterAuthenticationBox = dependency.context.authenticationService.activeTwitterAuthenticationBox.value else { return }
-            dependency.context.apiService.toggleBlock(
-                for: twitterUser,
-                activeTwitterAuthenticationBox: activeTwitterAuthenticationBox
+            let notifyBannerViewConfiguration = UserProviderFacade.toggleBlockUserNotifyBannerViewConfiguration(blocked: blocked, username: username)
+
+            UserProviderFacade.toggleBlockUser(
+                context: dependency.context,
+                twitterUser: twitterUser,
+                notifyBannerViewConfiguration: notifyBannerViewConfiguration
             )
-            .sink { completion in
-                switch completion {
-                case .failure:
-                    DispatchQueue.main.async {
-                        var config = SwiftMessages.defaultConfig
-                        config.duration = .seconds(seconds: 3)
-                        config.interactiveHide = true
-                        let bannerView = NotifyBannerView()
-                        bannerView.configure(for: .warning)
-                        let title = blocked ? L10n.Common.Alerts.FailedToUnblockUser.title(username) : L10n.Common.Alerts.FailedToBlockUser.title(username)
-                        bannerView.titleLabel.text = title
-                        let message = muted ? L10n.Common.Alerts.FailedToUnblockUser.message : L10n.Common.Alerts.FailedToBlockUser.message
-                        bannerView.messageLabel.text = message
-                        SwiftMessages.show(config: config, view: bannerView)
-                    }
-                case .finished:
-                    DispatchQueue.main.async {
-                        var config = SwiftMessages.defaultConfig
-                        config.duration = .seconds(seconds: 3)
-                        config.interactiveHide = true
-                        let bannerView = NotifyBannerView()
-                        bannerView.configure(for: .normal)
-                        let title = blocked ? L10n.Common.Alerts.UnblockUserSuccess.title(username) : L10n.Common.Alerts.BlockUserSuccess.title(username)
-                        bannerView.titleLabel.text = title
-                        bannerView.messageLabel.isHidden = true
-                        SwiftMessages.show(config: config, view: bannerView)
-                    }
-                }
-            } receiveValue: { response in
+            .sink { _ in
+                // do nothing
+            } receiveValue: { _ in
                 // do nothing
             }
             .store(in: &dependency.context.disposeBag)
@@ -271,64 +232,372 @@ extension UserProviderFacade {
         }
         
         let reportMenu = UIMenu(title: L10n.Common.Controls.Friendship.Actions.report, image: UIImage(systemName: "flag"), identifier: nil, options: .destructive, children: [
-            // TODO: L10n.Common.Controls.Friendship.Actions.report
-            UIAction(title: L10n.Common.Controls.Actions.confirm, image: UIImage(systemName: "flag"), identifier: nil, discoverabilityTitle: nil, attributes: .destructive, state: .off) { [weak dependency] _ in
+            UIAction(title: L10n.Common.Controls.Friendship.Actions.report, image: UIImage(systemName: "flag"), identifier: nil, discoverabilityTitle: nil, attributes: .destructive, state: .off) { [weak dependency] _ in
                 guard let dependency = dependency else { return }
-                guard let activeTwitterAuthenticationBox = dependency.context.authenticationService.activeTwitterAuthenticationBox.value else { return }
-                dependency.context.apiService.userReportForSpam(
-                    userID: userID,
+                let notifyBannerViewConfiguration = UserProviderFacade.reportUserForSpamNotifyBannerViewConfiguration(performBlock: false, username: username)
+
+                UserProviderFacade.reportUserForSpam(
+                    context: dependency.context,
+                    twitterUserID: twitterUserID,
                     performBlock: false,
-                    twitterAuthenticationBox: activeTwitterAuthenticationBox
+                    notifyBannerViewConfiguration: notifyBannerViewConfiguration
                 )
-                .sink { completion in
-                    switch completion {
-                    case .failure:
-                        DispatchQueue.main.async {
-                            var config = SwiftMessages.defaultConfig
-                            config.duration = .seconds(seconds: 3)
-                            config.interactiveHide = true
-                            let bannerView = NotifyBannerView()
-                            bannerView.configure(for: .warning)
-                            bannerView.titleLabel.text = L10n.Common.Alerts.FailedToReportUser.title(username)
-                            bannerView.messageLabel.text = L10n.Common.Alerts.FailedToReportUser.message
-                            SwiftMessages.show(config: config, view: bannerView)
-                        }
-                    case .finished:
-                        DispatchQueue.main.async {
-                            var config = SwiftMessages.defaultConfig
-                            config.duration = .seconds(seconds: 3)
-                            config.interactiveHide = true
-                            let bannerView = NotifyBannerView()
-                            bannerView.configure(for: .normal)
-                            bannerView.titleLabel.text = L10n.Common.Alerts.ReportUserSuccess.title(username)
-                            bannerView.messageLabel.isHidden = true
-                            SwiftMessages.show(config: config, view: bannerView)
-                        }
-                    }
-                } receiveValue: { response in
-                    
+                .sink { _ in
+                    // do nothing
+                } receiveValue: { _ in
+                    // do nothing
+                }
+                .store(in: &dependency.context.disposeBag)
+            },
+            UIAction(title: L10n.Common.Controls.Friendship.Actions.reportAndBlock, image: UIImage(systemName: "flag.badge.ellipsis"), identifier: nil, discoverabilityTitle: nil, attributes: .destructive, state: .off) { [weak dependency] _ in
+                guard let dependency = dependency else { return }
+                let notifyBannerViewConfiguration = UserProviderFacade.reportUserForSpamNotifyBannerViewConfiguration(performBlock: true, username: username)
+
+                UserProviderFacade.reportUserForSpam(
+                    context: dependency.context,
+                    twitterUserID: twitterUserID,
+                    performBlock: true,
+                    notifyBannerViewConfiguration: notifyBannerViewConfiguration
+                )
+                .sink { _ in
+                    // do nothing
+                } receiveValue: { _ in
+                    // do nothing
                 }
                 .store(in: &dependency.context.disposeBag)
             }
-//            UIAction(title: L10n.Common.Controls.Friendship.Actions.reportAndBlock, image: UIImage(systemName: "flag.badge.ellipsis"), identifier: nil, discoverabilityTitle: nil, attributes: .destructive, state: .off) { [weak dependency] _ in
-//                guard let dependency = dependency else { return }
-//                guard let activeTwitterAuthenticationBox = dependency.context.authenticationService.activeTwitterAuthenticationBox.value else { return }
-//                dependency.context.apiService.userReportForSpam(
-//                    userID: userID,
-//                    performBlock: true,
-//                    twitterAuthenticationBox: activeTwitterAuthenticationBox
-//                )
-//                .sink { completion in
-//
-//                } receiveValue: { response in
-//
-//                }
-//                .store(in: &dependency.context.disposeBag)
-//            }
         ])
         children.append(reportMenu)
 
         return UIMenu(title: "", options: [], children: children)
     }
     
+    static func createMoreMenuAlertControllerForUser(twitterUser: TwitterUser, muted: Bool, blocked: Bool, sender: UIBarButtonItem, dependency: NeedsDependency) -> UIAlertController {
+        let twitterUserID = twitterUser.id
+        let username = "@" + twitterUser.username
+        
+        let alertController = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
+        
+        let muteAction = UIAlertAction(
+            title: muted ? L10n.Common.Controls.Friendship.Actions.unmute : L10n.Common.Controls.Friendship.Actions.mute,
+            style: .default
+        ) { [weak dependency, weak sender] _ in
+            guard let dependency = dependency else { return }
+            guard let sender = sender else { return }
+            let notifyBannerViewConfiguration = UserProviderFacade.toggleMuteUserNotifyBannerViewConfiguration(muted: muted, username: username)
+
+            if muted {
+                UserProviderFacade.toggleMuteUser(
+                    context: dependency.context,
+                    twitterUser: twitterUser,
+                    notifyBannerViewConfiguration: notifyBannerViewConfiguration
+                )
+                .sink { _ in
+                    // do nothing
+                } receiveValue: { _ in
+                    // do nothing
+                }
+                .store(in: &dependency.context.disposeBag)
+            } else {
+                let confirmAlertController = UIAlertController(title: L10n.Common.Controls.Friendship.muteUser(username), message: nil, preferredStyle: .actionSheet)
+                let confirmAction = UIAlertAction(title: L10n.Common.Controls.Actions.confirm, style: .destructive) { _ in
+                    UserProviderFacade.toggleMuteUser(
+                        context: dependency.context,
+                        twitterUser: twitterUser,
+                        notifyBannerViewConfiguration: notifyBannerViewConfiguration
+                    )
+                    .sink { _ in
+                        // do nothing
+                    } receiveValue: { _ in
+                        // do nothing
+                    }
+                    .store(in: &dependency.context.disposeBag)
+                }
+                confirmAlertController.addAction(confirmAction)
+                let cancelAction = UIAlertAction(title: L10n.Common.Controls.Actions.cancel, style: .cancel, handler: nil)
+                confirmAlertController.addAction(cancelAction)
+                confirmAlertController.popoverPresentationController?.barButtonItem = sender
+                dependency.coordinator.present(scene: .alertController(alertController: confirmAlertController), from: nil, transition: .alertController(animated: true, completion: nil))
+            }
+        }
+        alertController.addAction(muteAction)
+        
+        let blockAction = UIAlertAction(
+            title: blocked ? L10n.Common.Controls.Friendship.Actions.unblock : L10n.Common.Controls.Friendship.Actions.block,
+            style: .default
+        ) { [weak dependency, weak sender] _ in
+            guard let dependency = dependency else { return }
+            guard let sender = sender else { return }
+            let notifyBannerViewConfiguration = UserProviderFacade.toggleBlockUserNotifyBannerViewConfiguration(blocked: blocked, username: username)
+            
+            if blocked {
+                UserProviderFacade.toggleBlockUser(
+                    context: dependency.context,
+                    twitterUser: twitterUser,
+                    notifyBannerViewConfiguration: notifyBannerViewConfiguration
+                )
+                .sink { _ in
+                    // do nothing
+                } receiveValue: { _ in
+                    // do nothing
+                }
+                .store(in: &dependency.context.disposeBag)
+            } else {
+                let confirmAlertController = UIAlertController(title: L10n.Common.Controls.Friendship.blockUser(username), message: nil, preferredStyle: .actionSheet)
+                let confirmAction = UIAlertAction(title: L10n.Common.Controls.Actions.confirm, style: .destructive) { _ in
+                    UserProviderFacade.toggleBlockUser(
+                        context: dependency.context,
+                        twitterUser: twitterUser,
+                        notifyBannerViewConfiguration: notifyBannerViewConfiguration
+                    )
+                    .sink { _ in
+                        // do nothing
+                    } receiveValue: { _ in
+                        // do nothing
+                    }
+                    .store(in: &dependency.context.disposeBag)
+                }
+                confirmAlertController.addAction(confirmAction)
+                let cancelAction = UIAlertAction(title: L10n.Common.Controls.Actions.cancel, style: .cancel, handler: nil)
+                confirmAlertController.addAction(cancelAction)
+                confirmAlertController.popoverPresentationController?.barButtonItem = sender
+                dependency.coordinator.present(scene: .alertController(alertController: confirmAlertController), from: nil, transition: .alertController(animated: true, completion: nil))
+            }
+        }
+        alertController.addAction(blockAction)
+        
+        let reportAction = UIAlertAction(
+            title: L10n.Common.Controls.Friendship.Actions.report,
+            style: .destructive
+        ) { [weak dependency, weak sender] _ in
+            guard let dependency = dependency else { return }
+            guard let sender = sender else { return }
+            
+            let reportOptionsAlertController = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
+            let reportWithoutBlockAction = UIAlertAction(title: L10n.Common.Controls.Friendship.Actions.report, style: .destructive) { _ in
+                let notifyBannerViewConfiguration = UserProviderFacade.reportUserForSpamNotifyBannerViewConfiguration(performBlock: false, username: username)
+                UserProviderFacade.reportUserForSpam(
+                    context: dependency.context,
+                    twitterUserID: twitterUserID,
+                    performBlock: false,
+                    notifyBannerViewConfiguration: notifyBannerViewConfiguration
+                )
+                .sink { _ in
+                    // do nothing
+                } receiveValue: { _ in
+                    // do nothing
+                }
+                .store(in: &dependency.context.disposeBag)
+            }
+            reportOptionsAlertController.addAction(reportWithoutBlockAction)
+            let reportAndBlockAction = UIAlertAction(title: L10n.Common.Controls.Friendship.Actions.reportAndBlock, style: .destructive) { _ in
+                let notifyBannerViewConfiguration = UserProviderFacade.reportUserForSpamNotifyBannerViewConfiguration(performBlock: true, username: username)
+                UserProviderFacade.reportUserForSpam(
+                    context: dependency.context,
+                    twitterUserID: twitterUserID,
+                    performBlock: true,
+                    notifyBannerViewConfiguration: notifyBannerViewConfiguration
+                )
+                .sink { _ in
+                    // do nothing
+                } receiveValue: { _ in
+                    // do nothing
+                }
+                .store(in: &dependency.context.disposeBag)
+            }
+            reportOptionsAlertController.addAction(reportAndBlockAction)
+            let cancelAction = UIAlertAction(title: L10n.Common.Controls.Actions.cancel, style: .cancel, handler: nil)
+            reportOptionsAlertController.addAction(cancelAction)
+            reportOptionsAlertController.popoverPresentationController?.barButtonItem = sender
+            dependency.coordinator.present(scene: .alertController(alertController: reportOptionsAlertController), from: nil, transition: .alertController(animated: true, completion: nil))
+        }
+        alertController.addAction(reportAction)
+        
+        let cancelAction = UIAlertAction(title: L10n.Common.Controls.Actions.cancel, style: .cancel, handler: nil)
+        alertController.addAction(cancelAction)
+        
+        alertController.popoverPresentationController?.barButtonItem = sender
+        
+        return alertController
+    }
+    
+    static func toggleMuteUser(
+        context: AppContext,
+        twitterUser: TwitterUser,
+        muted: Bool
+    ) -> AnyPublisher<Twitter.Response.Content<Twitter.Entity.User>, Error> {
+        let notifyBannerViewConfiguration = toggleMuteUserNotifyBannerViewConfiguration(muted: muted, username: twitterUser.username)
+        return toggleMuteUser(
+            context: context,
+            twitterUser: twitterUser,
+            notifyBannerViewConfiguration: notifyBannerViewConfiguration
+        )
+    }
+    
+    static func toggleMuteUser(
+        context: AppContext,
+        twitterUser: TwitterUser,
+        notifyBannerViewConfiguration: NotifyBannerViewConfiguration
+    ) -> AnyPublisher<Twitter.Response.Content<Twitter.Entity.User>, Error> {
+        // prepare authentication
+        guard let activeTwitterAuthenticationBox = context.authenticationService.activeTwitterAuthenticationBox.value else {
+            assertionFailure()
+            return Fail(error: APIService.APIError.implicit(.authenticationMissing)).eraseToAnyPublisher()
+        }
+        
+        return context.apiService.toggleMute(
+            for: twitterUser,
+            activeTwitterAuthenticationBox: activeTwitterAuthenticationBox
+        )
+        .handleEvents(receiveCompletion: { completion in
+            switch completion {
+            case .failure:
+                DispatchQueue.main.async {
+                    var config = SwiftMessages.defaultConfig
+                    config.duration = .seconds(seconds: 3)
+                    config.interactiveHide = true
+                    let bannerView = NotifyBannerView()
+                    bannerView.configure(for: .warning)
+                    bannerView.configure(with: notifyBannerViewConfiguration.failureInfo)
+                    SwiftMessages.show(config: config, view: bannerView)
+                }
+            case .finished:
+                DispatchQueue.main.async {
+                    var config = SwiftMessages.defaultConfig
+                    config.duration = .seconds(seconds: 3)
+                    config.interactiveHide = true
+                    let bannerView = NotifyBannerView()
+                    bannerView.configure(for: .normal)
+                    bannerView.configure(with: notifyBannerViewConfiguration.successInfo)
+                    SwiftMessages.show(config: config, view: bannerView)
+                }
+            }
+        })
+        .eraseToAnyPublisher()
+    }
+    
+    static func toggleBlockUser(
+        context: AppContext,
+        twitterUser: TwitterUser,
+        notifyBannerViewConfiguration: NotifyBannerViewConfiguration
+    ) -> AnyPublisher<Twitter.Response.Content<Twitter.Entity.User>, Error> {
+        // prepare authentication
+        guard let activeTwitterAuthenticationBox = context.authenticationService.activeTwitterAuthenticationBox.value else {
+            assertionFailure()
+            return Fail(error: APIService.APIError.implicit(.authenticationMissing)).eraseToAnyPublisher()
+        }
+        
+        return context.apiService.toggleBlock(
+            for: twitterUser,
+            activeTwitterAuthenticationBox: activeTwitterAuthenticationBox
+        )
+        .handleEvents(receiveCompletion: { completion in
+            switch completion {
+            case .failure:
+                DispatchQueue.main.async {
+                    var config = SwiftMessages.defaultConfig
+                    config.duration = .seconds(seconds: 3)
+                    config.interactiveHide = true
+                    let bannerView = NotifyBannerView()
+                    bannerView.configure(for: .warning)
+                    bannerView.configure(with: notifyBannerViewConfiguration.failureInfo)
+                    SwiftMessages.show(config: config, view: bannerView)
+                }
+            case .finished:
+                DispatchQueue.main.async {
+                    var config = SwiftMessages.defaultConfig
+                    config.duration = .seconds(seconds: 3)
+                    config.interactiveHide = true
+                    let bannerView = NotifyBannerView()
+                    bannerView.configure(for: .normal)
+                    bannerView.configure(with: notifyBannerViewConfiguration.successInfo)
+                    SwiftMessages.show(config: config, view: bannerView)
+                }
+            }
+        })
+        .eraseToAnyPublisher()
+    }
+    
+    static func reportUserForSpam(
+        context: AppContext,
+        twitterUserID: Twitter.Entity.User.ID,
+        performBlock: Bool,
+        notifyBannerViewConfiguration: NotifyBannerViewConfiguration
+    ) -> AnyPublisher<Twitter.Response.Content<Twitter.Entity.User>, Error> {
+        // prepare authentication
+        guard let activeTwitterAuthenticationBox = context.authenticationService.activeTwitterAuthenticationBox.value else {
+            assertionFailure()
+            return Fail(error: APIService.APIError.implicit(.authenticationMissing)).eraseToAnyPublisher()
+        }
+        
+        return context.apiService.userReportForSpam(
+            twitterUserID: twitterUserID,
+            performBlock: performBlock,
+            twitterAuthenticationBox: activeTwitterAuthenticationBox
+        )
+        .handleEvents(receiveCompletion: { completion in
+            switch completion {
+            case .failure:
+                DispatchQueue.main.async {
+                    var config = SwiftMessages.defaultConfig
+                    config.duration = .seconds(seconds: 3)
+                    config.interactiveHide = true
+                    let bannerView = NotifyBannerView()
+                    bannerView.configure(for: .warning)
+                    bannerView.configure(with: notifyBannerViewConfiguration.failureInfo)
+                    SwiftMessages.show(config: config, view: bannerView)
+                }
+            case .finished:
+                DispatchQueue.main.async {
+                    var config = SwiftMessages.defaultConfig
+                    config.duration = .seconds(seconds: 3)
+                    config.interactiveHide = true
+                    let bannerView = NotifyBannerView()
+                    bannerView.configure(for: .normal)
+                    bannerView.configure(with: notifyBannerViewConfiguration.successInfo)
+                    SwiftMessages.show(config: config, view: bannerView)
+                }
+            }
+        })
+        .eraseToAnyPublisher()
+    }
+
+
+    private static func toggleMuteUserNotifyBannerViewConfiguration(muted: Bool, username: String) -> NotifyBannerViewConfiguration {
+        return NotifyBannerViewConfiguration(
+            successInfo: NotifyBannerViewConfiguration.Info(
+                title: muted ? L10n.Common.Alerts.UnmuteUserSuccess.title(username) : L10n.Common.Alerts.MuteUserSuccess.title(username),
+                message: nil
+            ), failureInfo: NotifyBannerViewConfiguration.Info(
+                title: muted ? L10n.Common.Alerts.FailedToUnmuteUser.title(username) : L10n.Common.Alerts.FailedToMuteUser.title(username),
+                message: muted ? L10n.Common.Alerts.FailedToUnmuteUser.message : L10n.Common.Alerts.FailedToMuteUser.message
+            )
+        )
+    }
+    
+    private static func toggleBlockUserNotifyBannerViewConfiguration(blocked: Bool, username: String) -> NotifyBannerViewConfiguration {
+        return NotifyBannerViewConfiguration(
+            successInfo: NotifyBannerViewConfiguration.Info(
+                title: blocked ? L10n.Common.Alerts.UnblockUserSuccess.title(username) : L10n.Common.Alerts.BlockUserSuccess.title(username),
+                message: nil
+            ), failureInfo: NotifyBannerViewConfiguration.Info(
+                title: blocked ? L10n.Common.Alerts.FailedToUnblockUser.title(username) : L10n.Common.Alerts.FailedToBlockUser.title(username),
+                message: blocked ? L10n.Common.Alerts.FailedToUnblockUser.message : L10n.Common.Alerts.FailedToBlockUser.message
+            )
+        )
+    }
+    
+    private static func reportUserForSpamNotifyBannerViewConfiguration(performBlock: Bool, username: String) -> NotifyBannerViewConfiguration {
+        return NotifyBannerViewConfiguration(
+            successInfo: NotifyBannerViewConfiguration.Info(
+                title: performBlock ? L10n.Common.Alerts.ReportAndBlockUserSuccess.title(username) : L10n.Common.Alerts.ReportUserSuccess.title(username),
+                message: nil
+            ), failureInfo: NotifyBannerViewConfiguration.Info(
+                title: performBlock ? L10n.Common.Alerts.FailedToReportAndBlockUser.title(username) : L10n.Common.Alerts.FailedToReportUser.title(username),
+                message: performBlock ? L10n.Common.Alerts.FailedToReportAndBlockUser.message : L10n.Common.Alerts.FailedToReportUser.message
+            )
+        )
+    }
+    
 }
+

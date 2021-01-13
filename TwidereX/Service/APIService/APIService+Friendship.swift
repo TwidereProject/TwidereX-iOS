@@ -243,6 +243,7 @@ extension APIService {
         twitterUserID: TwitterUser.ID,
         twitterAuthenticationBox: AuthenticationService.TwitterAuthenticationBox
     ) -> AnyPublisher<Twitter.Response.Content<Twitter.Entity.User>, Error> {
+        let requestTwitterUserID = twitterAuthenticationBox.twitterUserID
         let authorization = twitterAuthenticationBox.twitterAuthorization
         let query = Twitter.API.Friendships.FriendshipUpdateQuery(
             userID: twitterUserID
@@ -262,7 +263,55 @@ extension APIService {
                         }
                     }
                 case .finished:
-                    break
+                    switch friendshipQueryType {
+                    case .create:
+                        // destroy blocking friendship
+                        let managedObjectContext = self.backgroundManagedObjectContext
+                        managedObjectContext.performChanges {
+                            let _requestTwitterUser: TwitterUser? = {
+                                let request = TwitterUser.sortedFetchRequest
+                                request.predicate = TwitterUser.predicate(idStr: requestTwitterUserID)
+                                request.fetchLimit = 1
+                                request.returnsObjectsAsFaults = false
+                                do {
+                                    return try managedObjectContext.fetch(request).first
+                                } catch {
+                                    assertionFailure(error.localizedDescription)
+                                    return nil
+                                }
+                            }()
+                            
+                            guard let requestTwitterUser = _requestTwitterUser else {
+                                assertionFailure()
+                                return
+                            }
+                            
+                            let _twitterUser: TwitterUser? = {
+                                let request = TwitterUser.sortedFetchRequest
+                                request.predicate = TwitterUser.predicate(idStr: twitterUserID)
+                                request.fetchLimit = 1
+                                request.returnsObjectsAsFaults = false
+                                do {
+                                    return try managedObjectContext.fetch(request).first
+                                } catch {
+                                    assertionFailure(error.localizedDescription)
+                                    return nil
+                                }
+                            }()
+                            
+                            guard let twitterUser = _twitterUser else {
+                                assertionFailure()
+                                return
+                            }
+                            twitterUser.update(blocking: false, by: requestTwitterUser)
+                        }
+                        .sink { _ in
+                            // do nothing
+                        }
+                        .store(in: &self.disposeBag)
+                    case .destroy, .update:
+                        break
+                    }
                 }
             })
             .eraseToAnyPublisher()

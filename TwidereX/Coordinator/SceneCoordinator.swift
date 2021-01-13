@@ -35,6 +35,7 @@ extension SceneCoordinator {
         case customPush
         case safariPresent(animated: Bool, completion: (() -> Void)? = nil)
         case activityViewControllerPresent(animated: Bool, completion: (() -> Void)? = nil)
+        case alertController(animated: Bool, completion: (() -> Void)? = nil)
     }
     
     enum Scene {
@@ -60,6 +61,7 @@ extension SceneCoordinator {
         
         case safari(url: URL)
         case activityViewController(activityViewController: UIActivityViewController, sourceView: UIView)
+        case alertController(alertController: UIAlertController)
     }
 }
 
@@ -99,6 +101,7 @@ extension SceneCoordinator {
                 modalNavigationController.presentationController?.delegate = adaptivePresentationControllerDelegate
             }
             presentingViewController.present(modalNavigationController, animated: animated, completion: completion)
+            
         case .custom(let transitioningDelegate):
             viewController.modalPresentationStyle = .custom
             viewController.transitioningDelegate = transitioningDelegate
@@ -111,7 +114,11 @@ extension SceneCoordinator {
             
         case .safariPresent(let animated, let completion):
             presentingViewController.present(viewController, animated: animated, completion: completion)
+            
         case .activityViewControllerPresent(let animated, let completion):
+            presentingViewController.present(viewController, animated: animated, completion: completion)
+            
+        case .alertController(let animated, let completion):
             presentingViewController.present(viewController, animated: animated, completion: completion)
         }
         
@@ -192,6 +199,11 @@ private extension SceneCoordinator {
         case .activityViewController(let activityViewController, let sourceView):
             activityViewController.popoverPresentationController?.sourceView = sourceView
             viewController = activityViewController
+        case .alertController(let alertController):
+            if let popoverPresentationController = alertController.popoverPresentationController {
+                assert(popoverPresentationController.sourceView != nil || popoverPresentationController.sourceRect != .zero || popoverPresentationController.barButtonItem != nil)
+            }
+            viewController = alertController
         }
         
         setupDependency(for: viewController as? NeedsDependency)

@@ -115,6 +115,9 @@ extension ProfileViewController {
         }
         avatarBarButtonItem.avatarButton.addTarget(self, action: #selector(ProfileViewController.avatarButtonPressed(_:)), for: .touchUpInside)
         
+        unmuteMenuBarButtonItem.target = self
+        unmuteMenuBarButtonItem.action = #selector(ProfileViewController.unmuteBarButtonItemPressed(_:))
+        
         Publishers.CombineLatest4(
             viewModel.muted.eraseToAnyPublisher(),
             viewModel.blocked.eraseToAnyPublisher(),
@@ -127,41 +130,33 @@ extension ProfileViewController {
             guard let twitterUser = twitterUser,
                   let activeTwitterAuthenticationBox = activeTwitterAuthenticationBox,
                   twitterUser.id != activeTwitterAuthenticationBox.twitterUserID else {
-                if #available(iOS 14.0, *) {
-                    self.moreMenuBarButtonItem.menu = nil
-                }
+                self.navigationItem.rightBarButtonItems = []
                 return
             }
             
-            if #available(iOS 14.0, *) {
-                self.moreMenuBarButtonItem.menu = UserProviderFacade.createMenuForUser(
-                    twitterUser: twitterUser,
-                    muted: muted,
-                    blocked: blocked,
-                    dependency: self
-                )
-            }
+//            if #available(iOS 14.0, *) {
+//                self.moreMenuBarButtonItem.target = nil
+//                self.moreMenuBarButtonItem.action = nil
+//                self.moreMenuBarButtonItem.menu = UserProviderFacade.createMenuForUser(
+//                    twitterUser: twitterUser,
+//                    muted: muted,
+//                    blocked: blocked,
+//                    dependency: self
+//                )
+//            } else {
+//                // no menu supports for early version
+                self.moreMenuBarButtonItem.target = self
+                self.moreMenuBarButtonItem.action = #selector(ProfileViewController.moreMenuBarButtonItemPressed(_:))
+//            }
             
             var rightBarButtonItems: [UIBarButtonItem] = [self.moreMenuBarButtonItem]
-            // FIXME:
-            //if muted {
-            //    rightBarButtonItems.append(self.unmuteMenuBarButtonItem)
-            //}
+            if muted {
+                rightBarButtonItems.append(self.unmuteMenuBarButtonItem)
+            }
             
             self.navigationItem.rightBarButtonItems = rightBarButtonItems
         }
         .store(in: &disposeBag)
-        
-        if #available(iOS 14.0, *) {
-            // do nothing
-        } else {
-            // no menu supports for early version
-            unmuteMenuBarButtonItem.target = self
-            unmuteMenuBarButtonItem.action = #selector(ProfileViewController.unmuteBarButtonItemPressed(_:))
-            
-            moreMenuBarButtonItem.target = self
-            moreMenuBarButtonItem.action = #selector(ProfileViewController.moreMenuBarButtonItemPressed(_:))
-        }
         
         overlayScrollView.refreshControl = refreshControl
         refreshControl.addTarget(self, action: #selector(ProfileViewController.refreshControlValueChanged(_:)), for: .valueChanged)
@@ -510,12 +505,39 @@ extension ProfileViewController {
     
     @objc private func unmuteBarButtonItemPressed(_ sender: UIBarButtonItem) {
         os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
-        
+        guard let twitterUser = viewModel.twitterUser.value else {
+            assertionFailure()
+            return
+        }
+            
+        UserProviderFacade.toggleMuteUser(
+            context: context,
+            twitterUser: twitterUser,
+            muted: viewModel.muted.value
+        )
+        .sink { _ in
+            // do nothing
+        } receiveValue: { _ in
+            // do nothing
+        }
+        .store(in: &disposeBag)
     }
     
     @objc private func moreMenuBarButtonItemPressed(_ sender: UIBarButtonItem) {
         os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
-    
+        guard let twitterUser = viewModel.twitterUser.value else {
+            assertionFailure()
+            return
+        }
+        
+        let moreMenuAlertController = UserProviderFacade.createMoreMenuAlertControllerForUser(
+            twitterUser: twitterUser,
+            muted: viewModel.muted.value,
+            blocked: viewModel.blocked.value,
+            sender: sender,
+            dependency: self
+        )
+        present(moreMenuAlertController, animated: true, completion: nil)
     }
     
 }

@@ -64,13 +64,14 @@ extension APIService {
     }
     
     func userReportForSpam(
-        userID: Twitter.Entity.User.ID,
+        twitterUserID: Twitter.Entity.User.ID,
         performBlock: Bool,
         twitterAuthenticationBox: AuthenticationService.TwitterAuthenticationBox
     ) -> AnyPublisher<Twitter.Response.Content<Twitter.Entity.User>, Error> {
+        let requestTwitterUserID = twitterAuthenticationBox.twitterUserID
         let authorization = twitterAuthenticationBox.twitterAuthorization
         let query = Twitter.API.Users.ReportSpamQuery(
-            userID: userID,
+            userID: twitterUserID,
             performBlock: performBlock
         )
         return Twitter.API.Users.reportSpam(
@@ -91,7 +92,55 @@ extension APIService {
                     }
                 }
             case .finished:
-                break
+                if performBlock {
+                    // set blocking and remove following friendship
+                    // see: APIService+Block
+                    let managedObjectContext = self.backgroundManagedObjectContext
+                    managedObjectContext.performChanges {
+                        let _requestTwitterUser: TwitterUser? = {
+                            let request = TwitterUser.sortedFetchRequest
+                            request.predicate = TwitterUser.predicate(idStr: requestTwitterUserID)
+                            request.fetchLimit = 1
+                            request.returnsObjectsAsFaults = false
+                            do {
+                                return try managedObjectContext.fetch(request).first
+                            } catch {
+                                assertionFailure(error.localizedDescription)
+                                return nil
+                            }
+                        }()
+                        
+                        guard let requestTwitterUser = _requestTwitterUser else {
+                            assertionFailure()
+                            return
+                        }
+                        
+                        let _twitterUser: TwitterUser? = {
+                            let request = TwitterUser.sortedFetchRequest
+                            request.predicate = TwitterUser.predicate(idStr: twitterUserID)
+                            request.fetchLimit = 1
+                            request.returnsObjectsAsFaults = false
+                            do {
+                                return try managedObjectContext.fetch(request).first
+                            } catch {
+                                assertionFailure(error.localizedDescription)
+                                return nil
+                            }
+                        }()
+                        
+                        guard let twitterUser = _twitterUser else {
+                            assertionFailure()
+                            return
+                        }
+                        twitterUser.update(blocking: true, by: requestTwitterUser)
+                        twitterUser.update(following: false, by: requestTwitterUser)
+                        twitterUser.update(followRequestSent: false, from: requestTwitterUser)
+                    }
+                    .sink { _ in
+                        // do nothing
+                    }
+                    .store(in: &self.disposeBag)
+                }
             }
         })
         .eraseToAnyPublisher()
