@@ -113,6 +113,8 @@
 		DB67616C254C021A006C6798 /* SearchUserViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB67616B254C021A006C6798 /* SearchUserViewController.swift */; };
 		DB67617B254C0279006C6798 /* SearchUserViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB67617A254C0279006C6798 /* SearchUserViewModel.swift */; };
 		DB676180254C042C006C6798 /* FriendshipTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB67617F254C042C006C6798 /* FriendshipTableViewCell.swift */; };
+		DB6B8B2E25AF235F00F20FD5 /* TwidereX.xctestplan in Resources */ = {isa = PBXBuildFile; fileRef = DB6B8B2C25AF235F00F20FD5 /* TwidereX.xctestplan */; };
+		DB6B8B2F25AF235F00F20FD5 /* TwidereX-Performance.xctestplan in Resources */ = {isa = PBXBuildFile; fileRef = DB6B8B2D25AF235F00F20FD5 /* TwidereX-Performance.xctestplan */; };
 		DB6D671F2566221D00B70DC0 /* DisplayPreferenceViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB6D671E2566221D00B70DC0 /* DisplayPreferenceViewModel.swift */; };
 		DB6D672C2566349600B70DC0 /* SwitchTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB6D672B2566349600B70DC0 /* SwitchTableViewCell.swift */; };
 		DB6D6731256637A200B70DC0 /* TableViewSectionTextHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB6D6730256637A200B70DC0 /* TableViewSectionTextHeaderView.swift */; };
@@ -560,6 +562,8 @@
 		DB67616B254C021A006C6798 /* SearchUserViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchUserViewController.swift; sourceTree = "<group>"; };
 		DB67617A254C0279006C6798 /* SearchUserViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchUserViewModel.swift; sourceTree = "<group>"; };
 		DB67617F254C042C006C6798 /* FriendshipTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendshipTableViewCell.swift; sourceTree = "<group>"; };
+		DB6B8B2C25AF235F00F20FD5 /* TwidereX.xctestplan */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = TwidereX.xctestplan; sourceTree = "<group>"; };
+		DB6B8B2D25AF235F00F20FD5 /* TwidereX-Performance.xctestplan */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "TwidereX-Performance.xctestplan"; sourceTree = "<group>"; };
 		DB6D671E2566221D00B70DC0 /* DisplayPreferenceViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisplayPreferenceViewModel.swift; sourceTree = "<group>"; };
 		DB6D672B2566349600B70DC0 /* SwitchTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwitchTableViewCell.swift; sourceTree = "<group>"; };
 		DB6D6730256637A200B70DC0 /* TableViewSectionTextHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TableViewSectionTextHeaderView.swift; sourceTree = "<group>"; };
@@ -713,8 +717,6 @@
 		DBCE2ED72591FDF000926D09 /* FollowingListViewModel+State.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FollowingListViewModel+State.swift"; sourceTree = "<group>"; };
 		DBCE2EE22593319000926D09 /* AvatarConfigurableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvatarConfigurableView.swift; sourceTree = "<group>"; };
 		DBCE2EE725933B1600926D09 /* SearchUserTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchUserTableViewCell.swift; sourceTree = "<group>"; };
-		DBD40B402599AD92006E4ABC /* TwidereX.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; name = TwidereX.xctestplan; path = /Users/MainasuK/Developer/Swift/SujiTech/TwidereX/TwidereX/TwidereX.xctestplan; sourceTree = "<absolute>"; };
-		DBD40B412599AD93006E4ABC /* TwidereX-Performance.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; name = "TwidereX-Performance.xctestplan"; path = "/Users/MainasuK/Developer/Swift/SujiTech/TwidereX/TwidereX/TwidereX-Performance.xctestplan"; sourceTree = "<absolute>"; };
 		DBD40B842599B9C2006E4ABC /* CombineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CombineTests.swift; sourceTree = "<group>"; };
 		DBD40BEE2599CB89006E4ABC /* FollowerListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FollowerListViewController.swift; sourceTree = "<group>"; };
 		DBD40C0C2599CD9D006E4ABC /* FollowerListViewController+UserProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FollowerListViewController+UserProvider.swift"; sourceTree = "<group>"; };
@@ -1642,8 +1644,8 @@
 			children = (
 				DBDA8E2F24FCF8A6006750DC /* Info.plist */,
 				DBE76CD2250095D900DEB0FC /* TwidereX.entitlements */,
-				DBD40B402599AD92006E4ABC /* TwidereX.xctestplan */,
-				DBD40B412599AD93006E4ABC /* TwidereX-Performance.xctestplan */,
+				DB6B8B2C25AF235F00F20FD5 /* TwidereX.xctestplan */,
+				DB6B8B2D25AF235F00F20FD5 /* TwidereX-Performance.xctestplan */,
 				DBA122CA256C13B000928671 /* GoogleService-Info.plist */,
 				DBCB408E255D8C2E00DD8D8F /* Activity */,
 				DB88AC312508BA950009E562 /* Diffable */,
@@ -2372,7 +2374,9 @@
 				DBDA8EA324FE107E006750DC /* Localizable.strings in Resources */,
 				DBC8E16B2578C64A00401E20 /* InfoPlist.strings in Resources */,
 				DBDA8E2E24FCF8A6006750DC /* LaunchScreen.storyboard in Resources */,
+				DB6B8B2E25AF235F00F20FD5 /* TwidereX.xctestplan in Resources */,
 				DB88AC3C250B26F40009E562 /* Preview Assets.xcassets in Resources */,
+				DB6B8B2F25AF235F00F20FD5 /* TwidereX-Performance.xctestplan in Resources */,
 				DBDA8E2B24FCF8A6006750DC /* Assets.xcassets in Resources */,
 				DBDA8E2924FCF8A3006750DC /* Main.storyboard in Resources */,
 				DBA122CB256C13B000928671 /* GoogleService-Info.plist in Resources */,
