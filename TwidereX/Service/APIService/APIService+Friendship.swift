@@ -147,8 +147,8 @@ extension APIService {
                         }
                         
                         let targetTwitterUser = managedObjectContext.object(with: twitterUserObjectID) as! TwitterUser
-                        targetTwitterUser.update(following: relationship.source.following, from: sourceTwitterUser)
-                        sourceTwitterUser.update(following: relationship.source.followedBy, from: targetTwitterUser)
+                        targetTwitterUser.update(following: relationship.source.following, by: sourceTwitterUser)
+                        sourceTwitterUser.update(following: relationship.source.followedBy, by: targetTwitterUser)
                         targetTwitterUser.update(followRequestSent: relationship.source.followingRequested, from: sourceTwitterUser)
                     }
                     .setFailureType(to: Error.self)
@@ -201,19 +201,19 @@ extension APIService {
             _targetTwitterUserID = twitterUser.id
             
             let isPending = (twitterUser.followRequestSentFrom ?? Set()).contains(where: { $0.id == requestTwitterUserID })
-            let isFollowing = (twitterUser.followingFrom ?? Set()).contains(where: { $0.id == requestTwitterUserID })
+            let isFollowing = (twitterUser.followingBy ?? Set()).contains(where: { $0.id == requestTwitterUserID })
             
             if isFollowing || isPending {
                 _queryType = .destroy
-                twitterUser.update(following: false, from: requestTwitterUser)
+                twitterUser.update(following: false, by: requestTwitterUser)
                 twitterUser.update(followRequestSent: false, from: requestTwitterUser)
             } else {
                 _queryType = .create
                 if twitterUser.protected {
-                    twitterUser.update(following: false, from: requestTwitterUser)
+                    twitterUser.update(following: false, by: requestTwitterUser)
                     twitterUser.update(followRequestSent: true, from: requestTwitterUser)
                 } else {
-                    twitterUser.update(following: true, from: requestTwitterUser)
+                    twitterUser.update(following: true, by: requestTwitterUser)
                     twitterUser.update(followRequestSent: false, from: requestTwitterUser)
                 }
             }

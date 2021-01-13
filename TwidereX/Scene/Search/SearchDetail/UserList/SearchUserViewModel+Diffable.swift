@@ -72,7 +72,7 @@ extension SearchUserViewModel {
         if let requestTwitterUserID = requestTwitterUserID {
             cell.userBriefInfoView.followActionButton.isHidden = twitterUser.id == requestTwitterUserID
             let isPending = (twitterUser.followRequestSentFrom ?? Set()).contains(where: { $0.id == requestTwitterUserID })
-            let isFollowing = (twitterUser.followingFrom ?? Set()).contains(where: { $0.id == requestTwitterUserID })
+            let isFollowing = (twitterUser.followingBy ?? Set()).contains(where: { $0.id == requestTwitterUserID })
             cell.userBriefInfoView.followActionButton.style = isPending ? .pending : (isFollowing ? .following : .follow)
         } else {
             assertionFailure()

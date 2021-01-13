@@ -43,6 +43,8 @@ class ProfileViewModel: NSObject {
     let friendship: CurrentValueSubject<Friendship?, Never>
     let followedBy: CurrentValueSubject<Bool?, Never>
     
+    let muted = CurrentValueSubject<Bool, Never>(false)
+    let blocked = CurrentValueSubject<Bool, Never>(false)
     let suspended = CurrentValueSubject<Bool, Never>(false)
     
     let avatarStyle = CurrentValueSubject<UserDefaults.AvatarStyle, Never>(UserDefaults.shared.avatarStyle)
@@ -97,10 +99,6 @@ class ProfileViewModel: NSObject {
         
         setup()
         
-        
-        
-        
-        
         // query latest friendship
         Publishers.CombineLatest(
             self.twitterUser.eraseToAnyPublisher(),
@@ -131,9 +129,15 @@ class ProfileViewModel: NSObject {
             case .finished:
                 break
             }
-        } receiveValue: { response in
+        } receiveValue: { [weak self] response in
+            guard let self = self else { return }
             os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: fetch friendship success", ((#file as NSString).lastPathComponent), #line, #function)
-            // friend will update via ManagedObjectObserver
+            
+            let relationship = response.value
+            self.muted.value = relationship.source.muting
+            self.blocked.value = relationship.source.blocking
+            
+            // following state will update via ManagedObjectObserver
         }
         .store(in: &disposeBag)
     }
@@ -367,12 +371,12 @@ extension ProfileViewModel {
             self.friendship.value = nil
             self.followedBy.value = nil
         } else {
-            let isFollowing = twitterUser.followingFrom.flatMap { $0.contains(currentTwitterUser) } ?? false
+            let isFollowing = twitterUser.followingBy.flatMap { $0.contains(currentTwitterUser) } ?? false
             let isPending = twitterUser.followRequestSentFrom.flatMap { $0.contains(currentTwitterUser) } ?? false
             let friendship = isPending ? .pending : (isFollowing) ? .following : ProfileViewModel.Friendship.none
             self.friendship.value = friendship
             os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: friendship update: %s", ((#file as NSString).lastPathComponent), #line, #function, friendship.debugDescription)
-            let followedBy = currentTwitterUser.followingFrom.flatMap { $0.contains(twitterUser) } ?? false
+            let followedBy = currentTwitterUser.followingBy.flatMap { $0.contains(twitterUser) } ?? false
             self.followedBy.value = followedBy
             os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: followedBy update: %s", ((#file as NSString).lastPathComponent), #line, #function, followedBy ? "true" : "false")
         }

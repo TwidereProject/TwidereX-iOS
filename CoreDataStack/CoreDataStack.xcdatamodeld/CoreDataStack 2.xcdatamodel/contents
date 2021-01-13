@@ -201,14 +201,18 @@
         <attribute name="url" optional="YES" attributeType="String"/>
         <attribute name="username" attributeType="String"/>
         <attribute name="verified" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
+        <relationship name="blocking" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="TwitterUser" inverseName="blockingBy" inverseEntity="TwitterUser"/>
+        <relationship name="blockingBy" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="TwitterUser" inverseName="blocking" inverseEntity="TwitterUser"/>
         <relationship name="entities" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="TwitterUserEntities" inverseName="user" inverseEntity="TwitterUserEntities"/>
         <relationship name="following" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="TwitterUser" inverseName="followingBy" inverseEntity="TwitterUser"/>
-        <relationship name="followingBy" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="TwitterUser" inverseName="following" inverseEntity="TwitterUser"/>
+        <relationship name="followingBy" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="TwitterUser" inverseName="following" inverseEntity="TwitterUser" elementID="followingFrom"/>
         <relationship name="followRequestSent" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="TwitterUser" inverseName="followRequestSentFrom" inverseEntity="TwitterUser"/>
         <relationship name="followRequestSentFrom" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="TwitterUser" inverseName="followRequestSent" inverseEntity="TwitterUser"/>
         <relationship name="like" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Tweet" inverseName="likeBy" inverseEntity="Tweet"/>
         <relationship name="mentionIn" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="TweetEntitiesMention" inverseName="user" inverseEntity="TweetEntitiesMention"/>
         <relationship name="metrics" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="TwitterUserMetrics" inverseName="user" inverseEntity="TwitterUserMetrics"/>
+        <relationship name="muting" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="TwitterUser" inverseName="mutingBy" inverseEntity="TwitterUser"/>
+        <relationship name="mutingBy" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="TwitterUser" inverseName="muting" inverseEntity="TwitterUser"/>
         <relationship name="pinnedTweet" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Tweet" inverseName="pinnedBy" inverseEntity="Tweet"/>
         <relationship name="retweets" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Tweet" inverseName="retweetBy" inverseEntity="Tweet"/>
         <relationship name="tweets" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Tweet" inverseName="author" inverseEntity="Tweet"/>
@@ -264,7 +268,7 @@
         <element name="TwitterPlace" positionX="1146.6953125" positionY="350.890625" width="128" height="178"/>
         <element name="TwitterPoll" positionX="-54" positionY="-36" width="128" height="148"/>
         <element name="TwitterPollOption" positionX="-45" positionY="-27" width="128" height="28"/>
-        <element name="TwitterUser" positionX="281.5234375" positionY="201.703125" width="128" height="434"/>
+        <element name="TwitterUser" positionX="281.5234375" positionY="201.703125" width="128" height="494"/>
         <element name="TwitterUserEntities" positionX="-72" positionY="-171" width="128" height="88"/>
         <element name="TwitterUserEntitiesURL" positionX="-63" positionY="-162" width="128" height="148"/>
         <element name="TwitterUserMetrics" positionX="-45" positionY="-180" width="128" height="133"/>

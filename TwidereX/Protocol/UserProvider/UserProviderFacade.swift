@@ -93,7 +93,7 @@ enum UserProviderFacade {
                     
                     let requestTwitterUserID = activeTwitterAuthenticationBox.twitterUserID
                     let isPending = (twitterUser.followRequestSentFrom ?? Set()).contains(where: { $0.id == requestTwitterUserID })
-                    let isFollowing = (twitterUser.followingFrom ?? Set()).contains(where: { $0.id == requestTwitterUserID })
+                    let isFollowing = (twitterUser.followingBy ?? Set()).contains(where: { $0.id == requestTwitterUserID })
                     
                     if isPending || isFollowing {
                         let name = twitterUser.name.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -156,26 +156,29 @@ enum UserProviderFacade {
 
 extension UserProviderFacade {
 
-    static func createMenuForUser(twitterUser: TwitterUser, sender: UIBarButtonItem, dependency: NeedsDependency) -> UIMenu {
-        let children: [UIMenuElement] = [
-            UIMenu(title: "Mute", image: UIImage(systemName: "speaker.slash"), identifier: nil, options: [], children: [
-                UIAction(title: "Confirm", image: UIImage(systemName: "speaker.slash"), identifier: nil, discoverabilityTitle: "Mute @username", attributes: .destructive, state: .off) { _ in
-                    
-                }
-            ]),
-            UIMenu(title: "Block", image: UIImage(systemName: "nosign"), identifier: nil, options: [], children: [
-                UIAction(title: "Confirm", image: UIImage(systemName: "nosign"), identifier: nil, discoverabilityTitle: "Block @username", attributes: .destructive, state: .off) { _ in
-                    
-                }
-            ]),
-            UIMenu(title: "Report", image: UIImage(systemName: "flag"), identifier: nil, options: .destructive, children: [
-                UIAction(title: "Report", image: UIImage(systemName: "flag"), identifier: nil, discoverabilityTitle: nil, attributes: .destructive, state: .off) { _ in
-                    
-                },
-                UIAction(title: "Report and Block", image: UIImage(systemName: "flag.badge.ellipsis"), identifier: nil, discoverabilityTitle: nil, attributes: .destructive, state: .off) { _ in
-                    
-                }
-            ])
+    @available(iOS 14.0, *)
+    static func createMenuForUser(twitterUser: TwitterUser, muted: Bool, blocked: Bool, dependency: NeedsDependency) -> UIMenu {
+        let username = "@" + twitterUser.username
+        let muteMenu = UIMenu(title: L10n.Common.Controls.Friendship.Actions.mute, image: UIImage(systemName: "speaker.slash"), identifier: nil, options: [], children: [
+            UIAction(title: L10n.Common.Controls.Actions.confirm, image: UIImage(systemName: "speaker.slash"), identifier: nil, discoverabilityTitle: L10n.Common.Controls.Friendship.muteUser(username), attributes: .destructive, state: .off) { _ in
+                
+            }
+        ])
+        let blockMenu = UIMenu(title: L10n.Common.Controls.Friendship.Actions.block, image: UIImage(systemName: "nosign"), identifier: nil, options: [], children: [
+            UIAction(title: L10n.Common.Controls.Actions.confirm, image: UIImage(systemName: "nosign"), identifier: nil, discoverabilityTitle: L10n.Common.Controls.Friendship.blockUser(username), attributes: .destructive, state: .off) { _ in
+                
+            }
+        ])
+        let reportMenu = UIMenu(title: L10n.Common.Controls.Friendship.Actions.report, image: UIImage(systemName: "flag"), identifier: nil, options: .destructive, children: [
+            UIAction(title: L10n.Common.Controls.Friendship.Actions.report, image: UIImage(systemName: "flag"), identifier: nil, discoverabilityTitle: nil, attributes: .destructive, state: .off) { _ in
+                
+            },
+            UIAction(title: L10n.Common.Controls.Friendship.Actions.reportAndBlock, image: UIImage(systemName: "flag.badge.ellipsis"), identifier: nil, discoverabilityTitle: nil, attributes: .destructive, state: .off) { _ in
+                
+            }
+        ])
+        var children: [UIMenuElement] = [
+            muteMenu
         ]
         return UIMenu(title: "", options: [], children: children)
     }

@@ -111,12 +111,14 @@ extension ProfileViewController {
         avatarBarButtonItem.avatarButton.addTarget(self, action: #selector(ProfileViewController.avatarButtonPressed(_:)), for: .touchUpInside)
         
         if #available(iOS 14.0, *) {
-            Publishers.CombineLatest(
+            Publishers.CombineLatest4(
+                viewModel.muted.eraseToAnyPublisher(),
+                viewModel.blocked.eraseToAnyPublisher(),
                 viewModel.twitterUser.eraseToAnyPublisher(),
                 context.authenticationService.activeTwitterAuthenticationBox.eraseToAnyPublisher()
             )
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] twitterUser, activeTwitterAuthenticationBox in
+            .sink { [weak self] muted, blocked, twitterUser, activeTwitterAuthenticationBox in
                 guard let self = self else { return }
                 guard let twitterUser = twitterUser,
                       let activeTwitterAuthenticationBox = activeTwitterAuthenticationBox,
@@ -126,7 +128,12 @@ extension ProfileViewController {
                     return
                 }
                 
-                self.moreMenuBarButtonItem.menu = UserProviderFacade.createMenuForUser(twitterUser: twitterUser, sender: self.moreMenuBarButtonItem, dependency: self)
+                self.moreMenuBarButtonItem.menu = UserProviderFacade.createMenuForUser(
+                    twitterUser: twitterUser,
+                    muted: muted,
+                    blocked: blocked,
+                    dependency: self
+                )
                 self.navigationItem.rightBarButtonItem = self.moreMenuBarButtonItem
                 
             }
