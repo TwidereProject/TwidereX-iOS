@@ -7,9 +7,10 @@
 //
 
 import UIKit
+import ActiveLabel
 
 final class TimelineHeaderView: UIView {
-    
+        
     let iconImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.tintColor = .secondaryLabel
@@ -25,14 +26,7 @@ final class TimelineHeaderView: UIView {
         return label
     }()
     
-    let messageLabel: UILabel = {
-        let label = UILabel()
-        label.font = .preferredFont(forTextStyle: .footnote)
-        label.textColor = .secondaryLabel
-        label.text = "Message"
-        label.numberOfLines = 0
-        return label
-    }()
+    let messageLabel = ActiveLabel(style: .timelineHeaderView)
     
     override init(frame: CGRect) {
         super.init(frame: frame)

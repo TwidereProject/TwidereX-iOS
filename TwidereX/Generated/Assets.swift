@@ -67,14 +67,17 @@ internal enum Asset {
     internal static let infoCircle = ImageAsset(name: "Indices/info.circle")
   }
   internal enum Logo {
+    internal static let github = ImageAsset(name: "Logo/github")
     internal static let twidereAvatar = ImageAsset(name: "Logo/twidere.avatar")
     internal static let twidere = ImageAsset(name: "Logo/twidere")
+    internal static let twitter = ImageAsset(name: "Logo/twitter")
   }
   internal enum Media {
     internal static let `repeat` = ImageAsset(name: "Media/repeat")
     internal static let repeatMini = ImageAsset(name: "Media/repeat.mini")
   }
   internal enum ObjectTools {
+    internal static let blockedBadge = ImageAsset(name: "Object&Tools/blocked.badge")
     internal static let bookmarks = ImageAsset(name: "Object&Tools/bookmarks")
     internal static let camera = ImageAsset(name: "Object&Tools/camera")
     internal static let clothes = ImageAsset(name: "Object&Tools/clothes")
@@ -90,6 +93,7 @@ internal enum Asset {
     internal static let paperplane = ImageAsset(name: "Object&Tools/paperplane")
     internal static let photo = ImageAsset(name: "Object&Tools/photo")
     internal static let photos = ImageAsset(name: "Object&Tools/photos")
+    internal static let speakerXmark = ImageAsset(name: "Object&Tools/speaker.xmark")
     internal static let verifiedBadge = ImageAsset(name: "Object&Tools/verified.badge")
     internal static let verifiedBadgeMini = ImageAsset(name: "Object&Tools/verified.badge.mini")
     internal static let verifiedBadgeSmall = ImageAsset(name: "Object&Tools/verified.badge.small")
@@ -99,6 +103,7 @@ internal enum Asset {
   }
   internal enum TextFormatting {
     internal static let capitalFloatLeft = ImageAsset(name: "TextFormatting/capital.float.left")
+    internal static let capitalFloatLeftLarge = ImageAsset(name: "TextFormatting/capital.float.left.large")
     internal static let listBullet = ImageAsset(name: "TextFormatting/list.bullet")
     internal static let textHeaderRedaction = ImageAsset(name: "TextFormatting/text.header.redaction")
   }

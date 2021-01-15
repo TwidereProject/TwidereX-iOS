@@ -53,7 +53,7 @@ final class ProfileBannerView: UIView {
         return imageView
     }()
     
-    let verifiedBadgeImageView: UIImageView = {
+    let badgeImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.tintColor = .white
         imageView.contentMode = .scaleAspectFill
@@ -189,13 +189,13 @@ extension ProfileBannerView {
             profileAvatarImageView.heightAnchor.constraint(equalToConstant: ProfileBannerView.avatarImageViewSize.height),
         ])
         
-        verifiedBadgeImageView.translatesAutoresizingMaskIntoConstraints = false
-        addSubview(verifiedBadgeImageView)
+        badgeImageView.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(badgeImageView)
         NSLayoutConstraint.activate([
-            verifiedBadgeImageView.trailingAnchor.constraint(equalTo: profileAvatarImageView.trailingAnchor),
-            verifiedBadgeImageView.bottomAnchor.constraint(equalTo: profileAvatarImageView.bottomAnchor),
-            verifiedBadgeImageView.widthAnchor.constraint(equalToConstant: 24),
-            verifiedBadgeImageView.heightAnchor.constraint(equalToConstant: 24),
+            badgeImageView.trailingAnchor.constraint(equalTo: profileAvatarImageView.trailingAnchor),
+            badgeImageView.bottomAnchor.constraint(equalTo: profileAvatarImageView.bottomAnchor),
+            badgeImageView.widthAnchor.constraint(equalToConstant: 24),
+            badgeImageView.heightAnchor.constraint(equalToConstant: 24),
         ])
         
         // container: [info | bio | link | geo | status]
@@ -299,7 +299,7 @@ extension ProfileBannerView {
         // status
         containerStackView.addArrangedSubview(profileBannerStatusView)
         
-        verifiedBadgeImageView.isHidden = true
+        badgeImageView.isHidden = true
         lockImageView.isHidden = true
         profileBannerInfoActionView.followStatusLabel.isHidden = true
         linkButton.addTarget(self, action: #selector(ProfileBannerView.linkButtonDidPressed(_:)), for: .touchUpInside)
@@ -308,10 +308,10 @@ extension ProfileBannerView {
         profileBannerStatusView.delegate = self
         
         bringSubviewToFront(profileAvatarImageView)
-        bringSubviewToFront(verifiedBadgeImageView)
+        bringSubviewToFront(badgeImageView)
         
         // update layout
-        configure(avatarImageURL: nil, verified: false)
+        configure(withConfigurationInput: AvatarConfigurableViewConfiguration.Input(avatarImageURL: nil))
     }
 
 }
@@ -351,9 +351,10 @@ extension ProfileBannerView: ProfileBannerStatusViewDelegate {
 extension ProfileBannerView: AvatarConfigurableView {
     
     static var configurableAvatarImageViewSize: CGSize { return avatarImageViewSize }
+    static var configurableAvatarImageViewBadgeAppearanceStyle: AvatarConfigurableViewConfiguration.BadgeAppearanceStyle { return .normal }
     var configurableAvatarImageView: UIImageView? { return profileAvatarImageView }
     var configurableAvatarButton: UIButton? { return nil }
-    var configurableVerifiedBadgeImageView: UIImageView? { return verifiedBadgeImageView }
+    var configurableVerifiedBadgeImageView: UIImageView? { return badgeImageView }
     
     func avatarConfigurableView(_ avatarConfigurableView: AvatarConfigurableView, didFinishConfiguration configuration: AvatarConfigurableViewConfiguration) {
         profileAvatarImageViewBackground.layer.cornerRadius = AvatarConfigurableViewConfiguration.cornerRadius(for: ProfileBannerView.avatarImageViewBackgroundSize, avatarStyle: UserDefaults.shared.avatarStyle)

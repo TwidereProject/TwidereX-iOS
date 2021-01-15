@@ -22,11 +22,12 @@ extension TimelineSection {
         managedObjectContext: NSManagedObjectContext,
         timestampUpdatePublisher: AnyPublisher<Date, Never>,
         timelinePostTableViewCellDelegate: TimelinePostTableViewCellDelegate,
-        timelineMiddleLoaderTableViewCellDelegate: TimelineMiddleLoaderTableViewCellDelegate?
+        timelineMiddleLoaderTableViewCellDelegate: TimelineMiddleLoaderTableViewCellDelegate?,
+        timelineHeaderTableViewCellDelegate: TimelineHeaderTableViewCellDelegate?
     ) -> UITableViewDiffableDataSource<TimelineSection, Item> {
         UITableViewDiffableDataSource(tableView: tableView) { [weak dependency, weak timelinePostTableViewCellDelegate, weak timelineMiddleLoaderTableViewCellDelegate] tableView, indexPath, item -> UITableViewCell? in
-            guard let dependency = dependency else { return nil }
-            guard let timelinePostTableViewCellDelegate = timelinePostTableViewCellDelegate else { return nil }
+            guard let dependency = dependency else { return UITableViewCell() }
+            guard let timelinePostTableViewCellDelegate = timelinePostTableViewCellDelegate else { return UITableViewCell() }
             
             switch item {
             case .homeTimelineIndex(let objectID, let attribute):
@@ -79,6 +80,7 @@ extension TimelineSection {
             case .emptyStateHeader(let attribute):
                 let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: TimelineHeaderTableViewCell.self), for: indexPath) as! TimelineHeaderTableViewCell
                 TimelineHeaderView.configure(timelineHeaderView: cell.timelineHeaderView, attribute: attribute)
+                cell.delegate = timelineHeaderTableViewCellDelegate
                 return cell
             default:
                 assertionFailure()
@@ -141,7 +143,7 @@ extension TimelineSection {
         let verified = (tweet.retweet?.author ?? tweet.author).verified
         UserDefaults.shared
             .observe(\.avatarStyle, options: [.initial, .new]) { defaults, _ in
-                cell.timelinePostView.configure(avatarImageURL: avatarImageURL, verified: verified)
+                cell.timelinePostView.configure(withConfigurationInput: AvatarConfigurableViewConfiguration.Input(avatarImageURL: avatarImageURL, verified: verified))
             }
             .store(in: &cell.observations)
         
@@ -261,7 +263,7 @@ extension TimelineSection {
             let verified = quote.author.verified
             UserDefaults.shared
                 .observe(\.avatarStyle, options: [.initial, .new]) { defaults, _ in
-                    cell.timelinePostView.quotePostView.configure(avatarImageURL: avatarImageURL, verified: verified)
+                    cell.timelinePostView.quotePostView.configure(withConfigurationInput: AvatarConfigurableViewConfiguration.Input(avatarImageURL: avatarImageURL, verified: verified))
                 }
                 .store(in: &cell.observations)
             

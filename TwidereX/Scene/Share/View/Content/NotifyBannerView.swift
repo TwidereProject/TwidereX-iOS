@@ -9,6 +9,16 @@
 import os.log
 import UIKit
 
+struct NotifyBannerViewConfiguration {
+    let successInfo: Info
+    let failureInfo: Info
+    
+    struct Info {
+        let title: String
+        let message: String?
+    }
+}
+
 final class NotifyBannerView: UIView {
     
     let containerView = UIView()
@@ -19,6 +29,8 @@ final class NotifyBannerView: UIView {
         label.text = "Message Title"
         label.textColor = .white
         label.font = .systemFont(ofSize: 17, weight: .semibold)
+        label.adjustsFontSizeToFitWidth = true
+        label.minimumScaleFactor = 0.7
         return label
     }()
     let messageLabel: UILabel = {
@@ -143,6 +155,19 @@ extension NotifyBannerView {
         }
     }
 
+}
+
+extension NotifyBannerView {
+
+    func configure(with configurationInfo: NotifyBannerViewConfiguration.Info) {
+        let isMessageLabelHidden = configurationInfo.message.flatMap { $0.isEmpty } ?? true
+
+        titleLabel.text = configurationInfo.title
+        titleLabel.numberOfLines = isMessageLabelHidden ? 2 : 1
+        messageLabel.text = configurationInfo.message
+        messageLabel.isHidden = isMessageLabelHidden
+    }
+    
 }
 
 

@@ -13,9 +13,14 @@ final class SearchDetailViewModel {
     
     // input
     var needsBecomeFirstResponder = false
-    
+    let viewDidAppear = PassthroughSubject<Void, Never>()
+
     // output
-    let searchText = CurrentValueSubject<String, Never>("")
+    let searchText: CurrentValueSubject<String, Never>
     let searchActionPublisher = PassthroughSubject<Void, Never>()
+    
+    init(initialSearchText: String = "") {
+        self.searchText = CurrentValueSubject(initialSearchText)
+    }
     
 }

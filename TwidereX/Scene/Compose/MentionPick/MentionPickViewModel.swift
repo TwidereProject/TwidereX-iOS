@@ -61,7 +61,7 @@ extension MentionPickViewModel {
             let avatarImageURL = attribute.avatarImageURL
             UserDefaults.shared
                 .observe(\.avatarStyle, options: [.initial, .new]) { defaults, _ in
-                    cell.userBriefInfoView.configure(avatarImageURL: avatarImageURL)
+                    cell.userBriefInfoView.configure(withConfigurationInput: AvatarConfigurableViewConfiguration.Input(avatarImageURL: avatarImageURL))
                 }
                 .store(in: &cell.observations)
             

@@ -12,18 +12,41 @@ import Kingfisher
 
 protocol AvatarConfigurableView {
     static var configurableAvatarImageViewSize: CGSize { get }
+    static var configurableAvatarImageViewBadgeAppearanceStyle: AvatarConfigurableViewConfiguration.BadgeAppearanceStyle { get }
     var configurableAvatarImageView: UIImageView? { get }
     var configurableAvatarButton: UIButton? { get }
     var configurableVerifiedBadgeImageView: UIImageView? { get }
-    func configure(avatarImageURL: URL?, verified: Bool, placeholderImage: UIImage?)
+    func configure(withConfigurationInput input: AvatarConfigurableViewConfiguration.Input)
     func avatarConfigurableView(_ avatarConfigurableView: AvatarConfigurableView, didFinishConfiguration configuration: AvatarConfigurableViewConfiguration)
 }
 
 extension AvatarConfigurableView {
     
-    public func configure(avatarImageURL: URL?, verified: Bool = false, placeholderImage: UIImage? = nil) {
-        // set verified
-        configurableVerifiedBadgeImageView?.isHidden = !verified
+    static var configurableAvatarImageViewBadgeAppearanceStyle: AvatarConfigurableViewConfiguration.BadgeAppearanceStyle { return .mini }
+    
+    public func configure(withConfigurationInput input: AvatarConfigurableViewConfiguration.Input) {
+        // set badge
+        switch (input.verified, input.blocked) {
+        case (_, true):
+            configurableVerifiedBadgeImageView?.isHidden = false
+            switch Self.configurableAvatarImageViewBadgeAppearanceStyle {
+            case .mini:
+                assertionFailure()
+                configurableVerifiedBadgeImageView?.image = Asset.ObjectTools.blockedBadge.image.withRenderingMode(.alwaysOriginal)
+            case .normal:
+                configurableVerifiedBadgeImageView?.image = Asset.ObjectTools.blockedBadge.image.withRenderingMode(.alwaysOriginal)
+            }
+        case (true, false):
+            configurableVerifiedBadgeImageView?.isHidden = false
+            switch Self.configurableAvatarImageViewBadgeAppearanceStyle {
+            case .mini:
+                configurableVerifiedBadgeImageView?.image = Asset.ObjectTools.verifiedBadgeMini.image.withRenderingMode(.alwaysOriginal)
+            case .normal:
+                configurableVerifiedBadgeImageView?.image = Asset.ObjectTools.verifiedBadge.image.withRenderingMode(.alwaysOriginal)
+            }
+        default:
+            configurableVerifiedBadgeImageView?.isHidden = true
+        }
         
         let avatarStyle = UserDefaults.shared.avatarStyle
         let roundedSquareCornerRadius = AvatarConfigurableViewConfiguration.roundedSquareCornerRadius(for: Self.configurableAvatarImageViewSize)
@@ -31,7 +54,7 @@ extension AvatarConfigurableView {
         let scale = (configurableAvatarImageView ?? configurableAvatarButton)?.window?.screen.scale ?? UIScreen.main.scale
 
         let placeholderImage: UIImage = {
-            let placeholderImage = placeholderImage ?? UIImage.placeholder(size: Self.configurableAvatarImageViewSize, color: .systemFill)
+            let placeholderImage = input.placeholderImage ?? UIImage.placeholder(size: Self.configurableAvatarImageViewSize, color: .systemFill)
             switch avatarStyle {
             case .circle:           return placeholderImage.af.imageRoundedIntoCircle()
             case .roundedSquare:    return placeholderImage.af.imageRounded(withCornerRadius: roundedSquareCornerRadius * placeholderImage.scale, divideRadiusByImageScale: true)
@@ -56,15 +79,14 @@ extension AvatarConfigurableView {
         
         defer {
             let configuration = AvatarConfigurableViewConfiguration(
-                avatarImageURL: avatarImageURL,
-                verified: verified,
-                cornerRadius: cornerRadius
+                input: input,
+                output: AvatarConfigurableViewConfiguration.Output(cornerRadius: cornerRadius)
             )
             avatarConfigurableView(self, didFinishConfiguration: configuration)
         }
         
         // set placeholder if no asset
-        guard let avatarImageURL = avatarImageURL else {
+        guard let avatarImageURL = input.avatarImageURL else {
             configurableAvatarImageView?.image = placeholderImage
             configurableAvatarButton?.setImage(placeholderImage, for: .normal)
             return
@@ -147,9 +169,31 @@ extension AvatarConfigurableView {
 
 struct AvatarConfigurableViewConfiguration {
     
-    let avatarImageURL: URL?
-    let verified: Bool
-    let cornerRadius: CGFloat
+    enum BadgeAppearanceStyle {
+        case mini
+        case normal
+    }
+    
+    struct Input {
+        let avatarImageURL: URL?
+        let placeholderImage: UIImage?
+        let blocked: Bool
+        let verified: Bool
+        
+        init(avatarImageURL: URL?, placeholderImage: UIImage? = nil, blocked: Bool = false, verified: Bool = false) {
+            self.avatarImageURL = avatarImageURL
+            self.placeholderImage = placeholderImage
+            self.blocked = blocked
+            self.verified = verified
+        }
+    }
+    
+    struct Output {
+        let cornerRadius: CGFloat
+    }
+    
+    let input: Input
+    let output: Output
     
     static func roundedSquareCornerRadius(for imageSize: CGSize) -> CGFloat {
         return CGFloat(Int(imageSize.width) / 8 * 2)  // even number from quoter of width

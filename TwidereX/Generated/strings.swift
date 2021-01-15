@@ -13,16 +13,40 @@ internal enum L10n {
 
   internal enum Common {
     internal enum Alerts {
+      internal enum AccountSuspended {
+        /// Twitter suspends accounts which violate the %@
+        internal static func message(_ p1: Any) -> String {
+          return L10n.tr("Localizable", "Common.Alerts.AccountSuspended.Message", String(describing: p1))
+        }
+        /// Account Suspended
+        internal static let title = L10n.tr("Localizable", "Common.Alerts.AccountSuspended.Title")
+        /// Twitter Rules
+        internal static let twitterRules = L10n.tr("Localizable", "Common.Alerts.AccountSuspended.TwitterRules")
+      }
       internal enum AccountTemporarilyLocked {
         /// Open Twitter to unlock
         internal static let message = L10n.tr("Localizable", "Common.Alerts.AccountTemporarilyLocked.Message")
         /// Account Temporarily Locked
         internal static let title = L10n.tr("Localizable", "Common.Alerts.AccountTemporarilyLocked.Title")
       }
+      internal enum BlockUserSuccess {
+        /// %@ has been blocked
+        internal static func title(_ p1: Any) -> String {
+          return L10n.tr("Localizable", "Common.Alerts.BlockUserSuccess.Title", String(describing: p1))
+        }
+      }
       internal enum CancelFollowRequest {
         /// Cancel follow request for %@?
         internal static func message(_ p1: Any) -> String {
           return L10n.tr("Localizable", "Common.Alerts.CancelFollowRequest.Message", String(describing: p1))
+        }
+      }
+      internal enum FailedToBlockUser {
+        /// Please try again
+        internal static let message = L10n.tr("Localizable", "Common.Alerts.FailedToBlockUser.Message")
+        /// Failed to block %@
+        internal static func title(_ p1: Any) -> String {
+          return L10n.tr("Localizable", "Common.Alerts.FailedToBlockUser.Title", String(describing: p1))
         }
       }
       internal enum FailedToDeleteTweet {
@@ -43,11 +67,51 @@ internal enum L10n {
         /// Failed to Load
         internal static let title = L10n.tr("Localizable", "Common.Alerts.FailedToLoad.Title")
       }
+      internal enum FailedToMuteUser {
+        /// Please try again
+        internal static let message = L10n.tr("Localizable", "Common.Alerts.FailedToMuteUser.Message")
+        /// Failed to mute %@
+        internal static func title(_ p1: Any) -> String {
+          return L10n.tr("Localizable", "Common.Alerts.FailedToMuteUser.Title", String(describing: p1))
+        }
+      }
+      internal enum FailedToReportAndBlockUser {
+        /// Please try again
+        internal static let message = L10n.tr("Localizable", "Common.Alerts.FailedToReportAndBlockUser.Message")
+        /// Failed to report and block %@
+        internal static func title(_ p1: Any) -> String {
+          return L10n.tr("Localizable", "Common.Alerts.FailedToReportAndBlockUser.Title", String(describing: p1))
+        }
+      }
+      internal enum FailedToReportUser {
+        /// Please try again
+        internal static let message = L10n.tr("Localizable", "Common.Alerts.FailedToReportUser.Message")
+        /// Failed to report %@
+        internal static func title(_ p1: Any) -> String {
+          return L10n.tr("Localizable", "Common.Alerts.FailedToReportUser.Title", String(describing: p1))
+        }
+      }
+      internal enum FailedToUnblockUser {
+        /// Please try again
+        internal static let message = L10n.tr("Localizable", "Common.Alerts.FailedToUnblockUser.Message")
+        /// Failed to unblock %@
+        internal static func title(_ p1: Any) -> String {
+          return L10n.tr("Localizable", "Common.Alerts.FailedToUnblockUser.Title", String(describing: p1))
+        }
+      }
       internal enum FailedToUnfollowing {
         /// Please try again
         internal static let message = L10n.tr("Localizable", "Common.Alerts.FailedToUnfollowing.Message")
         /// Failed to Unfollowing
         internal static let title = L10n.tr("Localizable", "Common.Alerts.FailedToUnfollowing.Title")
+      }
+      internal enum FailedToUnmuteUser {
+        /// Please try again
+        internal static let message = L10n.tr("Localizable", "Common.Alerts.FailedToUnmuteUser.Message")
+        /// Failed to unmute %@
+        internal static func title(_ p1: Any) -> String {
+          return L10n.tr("Localizable", "Common.Alerts.FailedToUnmuteUser.Title", String(describing: p1))
+        }
       }
       internal enum FollowingRequestSent {
         /// Following Request Sent
@@ -56,6 +120,12 @@ internal enum L10n {
       internal enum FollowingSuccess {
         /// Following Succeeded
         internal static let title = L10n.tr("Localizable", "Common.Alerts.FollowingSuccess.Title")
+      }
+      internal enum MuteUserSuccess {
+        /// %@ has been muted
+        internal static func title(_ p1: Any) -> String {
+          return L10n.tr("Localizable", "Common.Alerts.MuteUserSuccess.Title", String(describing: p1))
+        }
       }
       internal enum NoTweetsFound {
         /// No Tweets Found
@@ -89,6 +159,18 @@ internal enum L10n {
         /// Rate Limit Exceeded
         internal static let title = L10n.tr("Localizable", "Common.Alerts.RateLimitExceeded.Title")
       }
+      internal enum ReportAndBlockUserSuccess {
+        /// %@ has been reported for spam and blocked
+        internal static func title(_ p1: Any) -> String {
+          return L10n.tr("Localizable", "Common.Alerts.ReportAndBlockUserSuccess.Title", String(describing: p1))
+        }
+      }
+      internal enum ReportUserSuccess {
+        /// %@ has been reported for spam
+        internal static func title(_ p1: Any) -> String {
+          return L10n.tr("Localizable", "Common.Alerts.ReportUserSuccess.Title", String(describing: p1))
+        }
+      }
       internal enum TooManyRequests {
         /// Too many requests
         internal static let title = L10n.tr("Localizable", "Common.Alerts.TooManyRequests.Title")
@@ -107,6 +189,12 @@ internal enum L10n {
         /// Tweet Sent
         internal static let title = L10n.tr("Localizable", "Common.Alerts.TweetSent.Title")
       }
+      internal enum UnblockUserSuccess {
+        /// %@ has been unblocked
+        internal static func title(_ p1: Any) -> String {
+          return L10n.tr("Localizable", "Common.Alerts.UnblockUserSuccess.Title", String(describing: p1))
+        }
+      }
       internal enum UnfollowUser {
         /// Unfollow user %@?
         internal static func message(_ p1: Any) -> String {
@@ -116,6 +204,12 @@ internal enum L10n {
       internal enum UnfollowingSuccess {
         /// Unfollowing Succeeded
         internal static let title = L10n.tr("Localizable", "Common.Alerts.UnfollowingSuccess.Title")
+      }
+      internal enum UnmuteUserSuccess {
+        /// %@ has been unmuted
+        internal static func title(_ p1: Any) -> String {
+          return L10n.tr("Localizable", "Common.Alerts.UnmuteUserSuccess.Title", String(describing: p1))
+        }
       }
     }
     internal enum Controls {
@@ -144,12 +238,20 @@ internal enum L10n {
         internal static let takePhoto = L10n.tr("Localizable", "Common.Controls.Actions.TakePhoto")
       }
       internal enum Friendship {
+        /// Block %@
+        internal static func blockUser(_ p1: Any) -> String {
+          return L10n.tr("Localizable", "Common.Controls.Friendship.BlockUser", String(describing: p1))
+        }
         /// follower
         internal static let follower = L10n.tr("Localizable", "Common.Controls.Friendship.Follower")
         /// followers
         internal static let followers = L10n.tr("Localizable", "Common.Controls.Friendship.Followers")
         /// Follows you
         internal static let followsYou = L10n.tr("Localizable", "Common.Controls.Friendship.FollowsYou")
+        /// Mute %@
+        internal static func muteUser(_ p1: Any) -> String {
+          return L10n.tr("Localizable", "Common.Controls.Friendship.MuteUser", String(describing: p1))
+        }
         /// %@ is following you
         internal static func userIsFollowingYou(_ p1: Any) -> String {
           return L10n.tr("Localizable", "Common.Controls.Friendship.UserIsFollowingYou", String(describing: p1))
@@ -159,14 +261,26 @@ internal enum L10n {
           return L10n.tr("Localizable", "Common.Controls.Friendship.UserIsNotFollowingYou", String(describing: p1))
         }
         internal enum Actions {
+          /// Block
+          internal static let block = L10n.tr("Localizable", "Common.Controls.Friendship.Actions.Block")
           /// Follow
           internal static let follow = L10n.tr("Localizable", "Common.Controls.Friendship.Actions.Follow")
           /// Following
           internal static let following = L10n.tr("Localizable", "Common.Controls.Friendship.Actions.Following")
+          /// Mute
+          internal static let mute = L10n.tr("Localizable", "Common.Controls.Friendship.Actions.Mute")
           /// Pending
           internal static let pending = L10n.tr("Localizable", "Common.Controls.Friendship.Actions.Pending")
+          /// Report
+          internal static let report = L10n.tr("Localizable", "Common.Controls.Friendship.Actions.Report")
+          /// Report and Block
+          internal static let reportAndBlock = L10n.tr("Localizable", "Common.Controls.Friendship.Actions.ReportAndBlock")
+          /// Unblock
+          internal static let unblock = L10n.tr("Localizable", "Common.Controls.Friendship.Actions.Unblock")
           /// Unfollow
           internal static let unfollow = L10n.tr("Localizable", "Common.Controls.Friendship.Actions.Unfollow")
+          /// Unmute
+          internal static let unmute = L10n.tr("Localizable", "Common.Controls.Friendship.Actions.Unmute")
         }
       }
       internal enum Ios {

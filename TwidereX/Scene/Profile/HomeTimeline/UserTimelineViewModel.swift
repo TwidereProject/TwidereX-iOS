@@ -35,6 +35,7 @@ class UserTimelineViewModel: NSObject {
             State.LoadingMore(viewModel: self),
             State.NotAuthorized(viewModel: self),
             State.Blocked(viewModel: self),
+            State.Suspended(viewModel: self),
             State.NoMore(viewModel: self),
         ])
         stateMachine.enter(State.Initial.self)
@@ -85,6 +86,8 @@ class UserTimelineViewModel: NSObject {
                         snapshot.appendItems([.emptyStateHeader(attribute: .init(reason: .notAuthorized))], toSection: .main)
                     case is State.Blocked:
                         snapshot.appendItems([.emptyStateHeader(attribute: .init(reason: .blocked))], toSection: .main)
+                    case is State.Suspended:
+                        snapshot.appendItems([.emptyStateHeader(attribute: .init(reason: .suspended))], toSection: .main)
                     case is State.NoMore:
                         if items.isEmpty {
                             snapshot.appendItems([.emptyStateHeader(attribute: .init(reason: .noTweetsFound))], toSection: .main)

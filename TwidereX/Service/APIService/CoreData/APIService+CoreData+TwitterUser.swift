@@ -64,8 +64,8 @@ extension APIService.CoreData {
                 property: twitterUserProperty,
                 entities: entities,
                 metrics: metrics,
-                following: (entity.following ?? false) ? requestTwitterUser : nil,
-                followRequestSent: (entity.followRequestSent ?? false) ? requestTwitterUser : nil
+                followingBy: (entity.following ?? false) ? requestTwitterUser : nil,
+                followRequestSentFrom: (entity.followRequestSent ?? false) ? requestTwitterUser : nil
             )
             
             // update tweet mentions
@@ -112,7 +112,7 @@ extension APIService.CoreData {
         
         // relationship with requestTwitterUser
         if let requestTwitterUser = requestTwitterUser {
-            entity.following.flatMap { user.update(following: $0, from: requestTwitterUser) }
+            entity.following.flatMap { user.update(following: $0, by: requestTwitterUser) }
             entity.followRequestSent.flatMap { user.update(followRequestSent: $0, from: requestTwitterUser) }
         }
 

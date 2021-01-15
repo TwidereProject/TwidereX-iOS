@@ -54,11 +54,10 @@ extension SearchUserViewModel {
         let verified = twitterUser.verified
         UserDefaults.shared
             .observe(\.avatarStyle, options: [.initial, .new]) { defaults, _ in
-                cell.userBriefInfoView.configure(avatarImageURL: avatarImageURL, verified: verified)
+                cell.userBriefInfoView.configure(withConfigurationInput: AvatarConfigurableViewConfiguration.Input(avatarImageURL: avatarImageURL, verified: verified))
             }
             .store(in: &cell.observations)
-        cell.userBriefInfoView.configure(avatarImageURL: avatarImageURL, verified: verified)
-        
+
         cell.userBriefInfoView.lockImageView.isHidden = !twitterUser.protected
         
         // set name and username
@@ -72,7 +71,7 @@ extension SearchUserViewModel {
         if let requestTwitterUserID = requestTwitterUserID {
             cell.userBriefInfoView.followActionButton.isHidden = twitterUser.id == requestTwitterUserID
             let isPending = (twitterUser.followRequestSentFrom ?? Set()).contains(where: { $0.id == requestTwitterUserID })
-            let isFollowing = (twitterUser.followingFrom ?? Set()).contains(where: { $0.id == requestTwitterUserID })
+            let isFollowing = (twitterUser.followingBy ?? Set()).contains(where: { $0.id == requestTwitterUserID })
             cell.userBriefInfoView.followActionButton.style = isPending ? .pending : (isFollowing ? .following : .follow)
         } else {
             assertionFailure()

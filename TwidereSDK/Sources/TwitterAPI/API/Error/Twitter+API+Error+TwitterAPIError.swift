@@ -14,6 +14,9 @@ extension Twitter.API.Error {
         
         case custom(code: Int, message: String)
         
+        // 63 - User has been suspended. Corresponds with HTTP 403 The user account has been suspended and information cannot be retrieved.
+        case userHasBeenSuspended
+        
         // 88 - Corresponds with HTTP 429. The request limit for this resource has been reached for the current rate limit window.
         case rateLimitExceeded
         
@@ -31,6 +34,7 @@ extension Twitter.API.Error {
         
         init(code: Int, message: String = "") {
             switch code {
+            case 63:        self = .userHasBeenSuspended
             case 88:        self = .rateLimitExceeded
             case 136:       self = .blockedFromViewingThisUserProfile
             case 162:       self = .blockedFromRequestFollowingThisUser
@@ -65,6 +69,15 @@ extension Twitter.API.Error {
             switch (errorRequestResponse.request, errorRequestResponse.error) {
             case (_, "Not authorized."):
                 self = .notAuthorizedToSeeThisStatus
+            default:
+                return nil
+            }
+        }
+        
+        public init?(responseContentError error: Twitter.Response.V2.ContentError) {
+            switch (error.title, error.detail) {
+            case ("Forbidden", let detail) where detail.hasPrefix("User has been suspended"):
+                self = .userHasBeenSuspended
             default:
                 return nil
             }

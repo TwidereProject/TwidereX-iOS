@@ -48,6 +48,8 @@ extension APIService.APIError.ErrorReason: LocalizedError {
             }
             
             switch twitterAPIError {
+            case .userHasBeenSuspended:
+                return L10n.Common.Alerts.AccountSuspended.title
             case .rateLimitExceeded:
                 return L10n.Common.Alerts.RateLimitExceeded.title
             case .blockedFromViewingThisUserProfile:
@@ -80,6 +82,9 @@ extension APIService.APIError.ErrorReason: LocalizedError {
             }
             
             switch twitterAPIError {
+            case .userHasBeenSuspended:
+                let twitterRules = L10n.Common.Alerts.AccountSuspended.twitterRules
+                return L10n.Common.Alerts.AccountSuspended.message(twitterRules)
             case .rateLimitExceeded:
                 return L10n.Common.Alerts.RateLimitExceeded.message
             case .blockedFromViewingThisUserProfile:
@@ -115,6 +120,8 @@ extension APIService.APIError.ErrorReason {
             config.duration = .seconds(seconds: 5)
         case .twitterResponseError(let error):
             switch error.twitterAPIError {
+            case .userHasBeenSuspended:
+                config.duration = .seconds(seconds: 5)
             case .rateLimitExceeded:
                 config.duration = .seconds(seconds: 5)
             case .blockedFromViewingThisUserProfile:
@@ -151,6 +158,8 @@ extension APIService.APIError.ErrorReason {
             bannerView.configure(for: .warning)
         case .twitterResponseError(let error):
             switch error.twitterAPIError {
+            case .userHasBeenSuspended:
+                bannerView.configure(for: .warning)
             case .rateLimitExceeded:
                 bannerView.configure(for: .warning)
             case .blockedFromViewingThisUserProfile:

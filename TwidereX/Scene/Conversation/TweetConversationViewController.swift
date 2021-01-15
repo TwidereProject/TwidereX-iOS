@@ -22,6 +22,7 @@ final class TweetConversationViewController: UIViewController, NeedsDependency, 
     
     let mediaPreviewTransitionController = MediaPreviewTransitionController()
     
+    let emptyStateView = EmptyStateView()
     lazy var tableView: UITableView = {
         let tableView = UITableView()
         tableView.register(ConversationPostTableViewCell.self, forCellReuseIdentifier: String(describing: ConversationPostTableViewCell.self))
@@ -30,6 +31,7 @@ final class TweetConversationViewController: UIViewController, NeedsDependency, 
         tableView.register(TimelineBottomLoaderTableViewCell.self, forCellReuseIdentifier: String(describing: TimelineBottomLoaderTableViewCell.self))
         tableView.rowHeight = UITableView.automaticDimension
         tableView.separatorStyle = .none
+        tableView.backgroundColor = .clear
         return tableView
     }()
     
@@ -47,12 +49,18 @@ extension TweetConversationViewController {
         title = L10n.Scene.Status.title
         view.backgroundColor = .systemBackground
         
-        viewModel.contentOffsetAdjustableTimelineViewControllerDelegate = self
-        viewModel.tableView = tableView
+        emptyStateView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(emptyStateView)
+        NSLayoutConstraint.activate([
+            emptyStateView.topAnchor.constraint(equalTo: view.topAnchor),
+            emptyStateView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            emptyStateView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            emptyStateView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+        ])
+        emptyStateView.isHidden = true
         
         tableView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(tableView)
-        tableView.backgroundColor = .systemBackground
         NSLayoutConstraint.activate([
             tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
@@ -60,8 +68,10 @@ extension TweetConversationViewController {
             tableView.topAnchor.constraint(equalTo: view.topAnchor)
         ])
         
+        viewModel.contentOffsetAdjustableTimelineViewControllerDelegate = self
         viewModel.conversationPostTableViewCellDelegate = self
         viewModel.timelinePostTableViewCellDelegate = self
+        viewModel.tableView = tableView
         tableView.delegate = self
         viewModel.setupDiffableDataSource(for: tableView, dependency: self)
         tableView.reloadData()
@@ -69,30 +79,16 @@ extension TweetConversationViewController {
         viewModel.loadReplyStateMachine.enter(TweetConversationViewModel.LoadReplyState.Prepare.self)
         viewModel.loadConversationStateMachine.enter(TweetConversationViewModel.LoadConversationState.Prepare.self)
         
-        // if case let .root(tweetObjectID) = viewModel.rootItem {
-        //     context.managedObjectContext.perform { [weak self] in
-        //         guard let self = self else { return }
-        //         let tweet = self.context.managedObjectContext.object(with: tweetObjectID) as! Tweet
-        //         self.viewModel.rootItemObservation = ManagedObjectObserver.observe(object: tweet)
-        //             .receive(on: DispatchQueue.main)
-        //             .sink { _ in
-        //                 // do nothing
-        //             } receiveValue: { [weak self] change in
-        //                 guard let self = self else { return }
-        //                 switch change.changeType {
-        //                 case .update(let object):
-        //                     guard let tweet = object as? Tweet else { return }
-        //                     if tweet.deletedAt != nil { fallthrough }
-        //                 case .delete:
-        //                     // FIXME: update view state. DO NOT pop navigation stack
-        //                     self.navigationController?.popViewController(animated: true)
-        //                 default:
-        //                     break
-        //                 }
-        //             }
-        //     }
-        //
-        // }
+        viewModel.snapshotPublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] snapshot in
+                guard let self = self else { return }
+                self.emptyStateView.iconImageView.image = Asset.TextFormatting.capitalFloatLeftLarge.image.withRenderingMode(.alwaysTemplate)
+                self.emptyStateView.titleLabel.text = L10n.Common.Alerts.NoTweetsFound.title
+                self.emptyStateView.messageLabel.text = " "
+                self.emptyStateView.isHidden = !snapshot.itemIdentifiers.isEmpty
+            }
+            .store(in: &disposeBag)
     }
     
     override func viewWillAppear(_ animated: Bool) {

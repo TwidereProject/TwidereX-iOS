@@ -15,7 +15,8 @@ extension UserTimelineViewModel {
     func setupDiffableDataSource(
         for tableView: UITableView,
         dependency: NeedsDependency,
-        timelinePostTableViewCellDelegate: TimelinePostTableViewCellDelegate
+        timelinePostTableViewCellDelegate: TimelinePostTableViewCellDelegate,
+        timelineHeaderTableViewCellDelegate: TimelineHeaderTableViewCellDelegate
     ) {
         let timestampUpdatePublisher = Timer.publish(every: 1.0, on: .main, in: .common)
             .autoconnect()
@@ -28,8 +29,10 @@ extension UserTimelineViewModel {
             managedObjectContext: fetchedResultsController.managedObjectContext,
             timestampUpdatePublisher: timestampUpdatePublisher,
             timelinePostTableViewCellDelegate: timelinePostTableViewCellDelegate,
-            timelineMiddleLoaderTableViewCellDelegate: nil
+            timelineMiddleLoaderTableViewCellDelegate: nil,
+            timelineHeaderTableViewCellDelegate: timelineHeaderTableViewCellDelegate
         )
+        items.value = []
     }
 }
 

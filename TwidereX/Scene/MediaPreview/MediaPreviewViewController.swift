@@ -139,7 +139,7 @@ extension MediaPreviewViewController {
         .receive(on: DispatchQueue.main)
             .sink { [weak self] avatarImageURL, isVerified, _ in
                 guard let self = self else { return }
-                self.mediaInfoDescriptionView.configure(avatarImageURL: avatarImageURL, verified: isVerified)
+                self.mediaInfoDescriptionView.configure(withConfigurationInput: AvatarConfigurableViewConfiguration.Input(avatarImageURL: avatarImageURL, verified: isVerified))
             }
             .store(in: &disposeBag)
         viewModel.name

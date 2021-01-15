@@ -12,12 +12,17 @@ import CoreData
 import CoreDataStack
 
 extension UserMediaTimelineViewModel {
-    func setupDiffableDataSource(collectionView: UICollectionView, mediaCollectionViewCellDelegate: MediaCollectionViewCellDelegate?) {
+    func setupDiffableDataSource(
+        collectionView: UICollectionView,
+        mediaCollectionViewCellDelegate: MediaCollectionViewCellDelegate,
+        timelineHeaderCollectionViewCellDelegate: TimelineHeaderCollectionViewCellDelegate
+    ) {
         diffableDataSource = MediaSection.collectionViewDiffableDataSource(
             collectionView: collectionView,
             managedObjectContext: fetchedResultsController.managedObjectContext,
-            mediaCollectionViewCellDelegate: mediaCollectionViewCellDelegate
+            mediaCollectionViewCellDelegate: mediaCollectionViewCellDelegate, timelineHeaderCollectionViewCellDelegate: timelineHeaderCollectionViewCellDelegate
         )
+        items.value = []
     }
 }
 

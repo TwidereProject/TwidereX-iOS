@@ -26,6 +26,16 @@ final class ProfileViewController: UIViewController, DrawerSidebarTransitionable
     private(set) var drawerSidebarTransitionController: DrawerSidebarTransitionController!
     
     let avatarBarButtonItem = AvatarBarButtonItem()
+    let unmuteMenuBarButtonItem: UIBarButtonItem = {
+        let barButtonItem = UIBarButtonItem(image: Asset.ObjectTools.speakerXmark.image.withRenderingMode(.alwaysTemplate), style: .plain, target: nil, action: nil)
+        barButtonItem.tintColor = .systemRed
+        return barButtonItem
+    }()
+    let moreMenuBarButtonItem: UIBarButtonItem = {
+        let barButtonItem = UIBarButtonItem(image: Asset.Editing.ellipsis.image.withRenderingMode(.alwaysTemplate), style: .plain, target: nil, action: nil)
+        barButtonItem.tintColor = Asset.Colors.hightLight.color
+        return barButtonItem
+    }()
     
     let refreshControl: UIRefreshControl = {
         let refreshControl = UIRefreshControl()
@@ -104,6 +114,49 @@ extension ProfileViewController {
             navigationItem.leftBarButtonItem = avatarBarButtonItem
         }
         avatarBarButtonItem.avatarButton.addTarget(self, action: #selector(ProfileViewController.avatarButtonPressed(_:)), for: .touchUpInside)
+        
+        unmuteMenuBarButtonItem.target = self
+        unmuteMenuBarButtonItem.action = #selector(ProfileViewController.unmuteBarButtonItemPressed(_:))
+        
+        Publishers.CombineLatest4(
+            viewModel.muted.eraseToAnyPublisher(),
+            viewModel.blocked.eraseToAnyPublisher(),
+            viewModel.twitterUser.eraseToAnyPublisher(),
+            context.authenticationService.activeTwitterAuthenticationBox.eraseToAnyPublisher()
+        )
+        .receive(on: DispatchQueue.main)
+        .sink { [weak self] muted, blocked, twitterUser, activeTwitterAuthenticationBox in
+            guard let self = self else { return }
+            guard let twitterUser = twitterUser,
+                  let activeTwitterAuthenticationBox = activeTwitterAuthenticationBox,
+                  twitterUser.id != activeTwitterAuthenticationBox.twitterUserID else {
+                self.navigationItem.rightBarButtonItems = []
+                return
+            }
+            
+            if #available(iOS 14.0, *) {
+                self.moreMenuBarButtonItem.target = nil
+                self.moreMenuBarButtonItem.action = nil
+                self.moreMenuBarButtonItem.menu = UserProviderFacade.createMenuForUser(
+                    twitterUser: twitterUser,
+                    muted: muted,
+                    blocked: blocked,
+                    dependency: self
+                )
+            } else {
+                // no menu supports for early version
+                self.moreMenuBarButtonItem.target = self
+                self.moreMenuBarButtonItem.action = #selector(ProfileViewController.moreMenuBarButtonItemPressed(_:))
+            }
+            
+            var rightBarButtonItems: [UIBarButtonItem] = [self.moreMenuBarButtonItem]
+            if muted {
+                rightBarButtonItems.append(self.unmuteMenuBarButtonItem)
+            }
+            
+            self.navigationItem.rightBarButtonItems = rightBarButtonItems
+        }
+        .store(in: &disposeBag)
         
         overlayScrollView.refreshControl = refreshControl
         refreshControl.addTarget(self, action: #selector(ProfileViewController.refreshControlValueChanged(_:)), for: .valueChanged)
@@ -199,14 +252,19 @@ extension ProfileViewController {
             })
         )
 
-        // setup view model
-        Publishers.CombineLatest(
+        // bind view model
+        Publishers.CombineLatest3(
             viewModel.bannerImageURL.eraseToAnyPublisher(),
+            viewModel.suspended.eraseToAnyPublisher(),
             viewModel.viewDidAppear.eraseToAnyPublisher()
         )
         .receive(on: DispatchQueue.main)
-        .sink { [weak self] url, _ in
+        .sink { [weak self] url, isSuspended, _ in
             guard let self = self else { return }
+            guard !isSuspended else {
+                self.profileHeaderViewController.profileBannerView.profileBannerImageView.image = UIImage.placeholder(color: .systemGray)
+                return
+            }
             let placeholderImage = UIImage.placeholder(color: Asset.Colors.hightLight.color)
             guard let url = url else {
                 self.profileHeaderViewController.profileBannerView.profileBannerImageView.image = placeholderImage
@@ -232,16 +290,21 @@ extension ProfileViewController {
             )
         }
         .store(in: &disposeBag)
+        let verifiedAndBlocked = Publishers.CombineLatest(
+            viewModel.verified.eraseToAnyPublisher(),
+            viewModel.blocked.eraseToAnyPublisher()
+        )
         Publishers.CombineLatest4(
             viewModel.avatarImageURL.eraseToAnyPublisher(),
-            viewModel.verified.eraseToAnyPublisher(),
+            verifiedAndBlocked.eraseToAnyPublisher(),
             viewModel.avatarStyle.eraseToAnyPublisher(),
             viewModel.viewDidAppear.eraseToAnyPublisher()
         )
         .receive(on: DispatchQueue.main)
-        .sink { [weak self] avatarImageURL, verified, _, _ in
+        .sink { [weak self] avatarImageURL, verifiedAndblocked, _, _ in
             guard let self = self else { return }
-            self.profileHeaderViewController.profileBannerView.configure(avatarImageURL: avatarImageURL, verified: verified)
+            let (verified, blocked) = verifiedAndblocked
+            self.profileHeaderViewController.profileBannerView.configure(withConfigurationInput: AvatarConfigurableViewConfiguration.Input(avatarImageURL: avatarImageURL, blocked: blocked, verified: verified))
         }
         .store(in: &disposeBag)
         viewModel.protected
@@ -279,32 +342,43 @@ extension ProfileViewController {
             }
             .store(in: &disposeBag)
             
-        viewModel.bioDescription
-            .map { $0 ?? " " }
-            .sink(receiveValue: { [weak self] bio in
-                guard let self = self else { return }
-                self.profileHeaderViewController.profileBannerView.bioLabel.configure(with: bio)
-            })
-            .store(in: &disposeBag)
-        viewModel.url
-            .sink { [weak self] url in
-                guard let self = self else { return }
-                let url = url.flatMap { $0.trimmingCharacters(in: .whitespacesAndNewlines) } ?? " "
-                self.profileHeaderViewController.profileBannerView.linkButton.setTitle(url, for: .normal)
-                let isEmpty = url.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
-                self.profileHeaderViewController.profileBannerView.linkContainer.isHidden = isEmpty
-            }
-            .store(in: &disposeBag)
-        
-        viewModel.location
-            .sink { [weak self] location in
-                guard let self = self else { return }
-                let location = location.flatMap { $0.trimmingCharacters(in: .whitespacesAndNewlines) } ?? " "
-                self.profileHeaderViewController.profileBannerView.geoButton.setTitle(location, for: .normal)
-                let isEmpty = location.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
-                self.profileHeaderViewController.profileBannerView.geoContainer.isHidden = isEmpty
-            }
-            .store(in: &disposeBag)
+        Publishers.CombineLatest(
+            viewModel.bioDescription.eraseToAnyPublisher(),
+            viewModel.suspended.eraseToAnyPublisher()
+        )
+        .receive(on: DispatchQueue.main)
+        .sink(receiveValue: { [weak self] bio, isSuspended in
+            guard let self = self else { return }
+            self.profileHeaderViewController.profileBannerView.bioLabel.configure(with: bio ?? " ")
+            self.profileHeaderViewController.profileBannerView.bioLabel.isHidden = isSuspended
+        })
+        .store(in: &disposeBag)
+        Publishers.CombineLatest(
+            viewModel.url.eraseToAnyPublisher(),
+            viewModel.suspended.eraseToAnyPublisher()
+        )
+        .receive(on: DispatchQueue.main)
+        .sink { [weak self] url, isSuspended in
+            guard let self = self else { return }
+            let url = url.flatMap { $0.trimmingCharacters(in: .whitespacesAndNewlines) } ?? " "
+            self.profileHeaderViewController.profileBannerView.linkButton.setTitle(url, for: .normal)
+            let isEmpty = url.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+            self.profileHeaderViewController.profileBannerView.linkContainer.isHidden = isEmpty || isSuspended
+        }
+        .store(in: &disposeBag)
+        Publishers.CombineLatest(
+            viewModel.location.eraseToAnyPublisher(),
+            viewModel.suspended.eraseToAnyPublisher()
+        )
+        .receive(on: DispatchQueue.main)
+        .sink { [weak self] location, isSuspended in
+            guard let self = self else { return }
+            let location = location.flatMap { $0.trimmingCharacters(in: .whitespacesAndNewlines) } ?? " "
+            self.profileHeaderViewController.profileBannerView.geoButton.setTitle(location, for: .normal)
+            let isEmpty = location.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+            self.profileHeaderViewController.profileBannerView.geoContainer.isHidden = isEmpty || isSuspended
+        }
+        .store(in: &disposeBag)
         viewModel.friendsCount
             .sink { [weak self] count in
                 guard let self = self else { return }
@@ -323,6 +397,31 @@ extension ProfileViewController {
                 self.profileHeaderViewController.profileBannerView.profileBannerStatusView.listedStatusItemView.countLabel.text = count.flatMap { "\($0)" } ?? "-"
             }
             .store(in: &disposeBag)
+        viewModel.suspended
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] isSuspended in
+                guard let self = self else { return }
+                self.profileHeaderViewController.profileBannerView.profileBannerStatusView.isHidden = isSuspended
+                self.profileHeaderViewController.profileBannerView.profileBannerInfoActionView.isHidden = isSuspended
+                if isSuspended {
+                    self.profileSegmentedViewController
+                        .pagingViewController.viewModel
+                        .profileTweetPostTimelineViewController.viewModel
+                        .stateMachine
+                        .enter(UserTimelineViewModel.State.Suspended.self)
+                    self.profileSegmentedViewController
+                        .pagingViewController.viewModel
+                        .profileMediaPostTimelineViewController.viewModel
+                        .stateMachine
+                        .enter(UserMediaTimelineViewModel.State.Suspended.self)
+                    self.profileSegmentedViewController
+                        .pagingViewController.viewModel
+                        .profileLikesPostTimelineViewController.viewModel
+                        .stateMachine
+                        .enter(UserLikeTimelineViewModel.State.Suspended.self)
+                }
+            }
+            .store(in: &disposeBag)
         
         Publishers.CombineLatest3(
             context.authenticationService.activeAuthenticationIndex.eraseToAnyPublisher(),
@@ -334,10 +433,10 @@ extension ProfileViewController {
             guard let self = self else { return }
             guard let twitterUser = activeAuthenticationIndex?.twitterAuthentication?.twitterUser,
                   let avatarImageURL = twitterUser.avatarImageURL() else {
-                self.avatarBarButtonItem.configure(avatarImageURL: nil)
+                self.avatarBarButtonItem.configure(withConfigurationInput: AvatarConfigurableViewConfiguration.Input(avatarImageURL: nil))
                 return
             }
-            self.avatarBarButtonItem.configure(avatarImageURL: avatarImageURL)
+            self.avatarBarButtonItem.configure(withConfigurationInput: AvatarConfigurableViewConfiguration.Input(avatarImageURL: avatarImageURL))
         }
         .store(in: &disposeBag)
 
@@ -402,6 +501,43 @@ extension ProfileViewController {
     @objc private func avatarButtonPressed(_ sender: UIButton) {
         os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
         coordinator.present(scene: .drawerSidebar, from: self, transition: .custom(transitioningDelegate: drawerSidebarTransitionController))
+    }
+    
+    @objc private func unmuteBarButtonItemPressed(_ sender: UIBarButtonItem) {
+        os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
+        guard let twitterUser = viewModel.twitterUser.value else {
+            assertionFailure()
+            return
+        }
+            
+        UserProviderFacade.toggleMuteUser(
+            context: context,
+            twitterUser: twitterUser,
+            muted: viewModel.muted.value
+        )
+        .sink { _ in
+            // do nothing
+        } receiveValue: { _ in
+            // do nothing
+        }
+        .store(in: &disposeBag)
+    }
+    
+    @objc private func moreMenuBarButtonItemPressed(_ sender: UIBarButtonItem) {
+        os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
+        guard let twitterUser = viewModel.twitterUser.value else {
+            assertionFailure()
+            return
+        }
+        
+        let moreMenuAlertController = UserProviderFacade.createMoreMenuAlertControllerForUser(
+            twitterUser: twitterUser,
+            muted: viewModel.muted.value,
+            blocked: viewModel.blocked.value,
+            sender: sender,
+            dependency: self
+        )
+        present(moreMenuAlertController, animated: true, completion: nil)
     }
     
 }
@@ -521,6 +657,9 @@ extension ProfileViewController: ProfileBannerViewDelegate {
     
     func profileBannerView(_ profileBannerView: ProfileBannerView, activeLabel: ActiveLabel, didTapEntity entity: ActiveEntity) {
         switch entity.type {
+        case .hashtag(let text):
+            let searchDetailViewModel = SearchDetailViewModel(initialSearchText: "#" + text)
+            coordinator.present(scene: .searchDetail(viewModel: searchDetailViewModel), from: self, transition: .show)
         case .mention(let text):
             let profileViewModel: ProfileViewModel = {
                 let targetUsername = text

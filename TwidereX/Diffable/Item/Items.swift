@@ -73,6 +73,7 @@ extension Item {
             case noTweetsFound
             case notAuthorized
             case blocked
+            case suspended
         }
         
         init(reason: Reason) {

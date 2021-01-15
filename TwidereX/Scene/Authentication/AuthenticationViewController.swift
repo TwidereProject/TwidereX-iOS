@@ -194,7 +194,7 @@ extension AuthenticationViewController {
         
         twitterAuthenticationController?.authenticated
             .receive(on: DispatchQueue.main)
-            .sink(receiveValue: { [weak self] in
+            .sink(receiveValue: { [weak self] _ in
                 self?.dismiss(animated: true, completion: nil)
             })
             .store(in: &disposeBag)

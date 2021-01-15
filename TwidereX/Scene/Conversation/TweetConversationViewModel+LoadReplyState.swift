@@ -50,7 +50,7 @@ extension TweetConversationViewModel.LoadReplyState {
             super.didEnter(from: previousState)
             
             guard let viewModel = viewModel, let stateMachine = stateMachine else { return }
-            guard case let .root(tweetObjectID) = viewModel.rootItem else { return }
+            guard case let .root(tweetObjectID) = viewModel.rootItem.value else { return }
             
             let managedObjectContext = viewModel.context.managedObjectContext
             managedObjectContext.perform { [weak self] in
@@ -67,7 +67,7 @@ extension TweetConversationViewModel.LoadReplyState {
                 }
                 
                 var replyNodes: [TweetConversationViewModel.ReplyNode] = []
-                for replyTo in replyToArray {
+                for replyTo in replyToArray where replyTo.deletedAt == nil {
                     let node = TweetConversationViewModel.ReplyNode(tweetID: replyTo.id, inReplyToTweetID: replyTo.inReplyToTweetID, status: .success(replyTo.objectID))
                     replyNodes.append(node)
                 }

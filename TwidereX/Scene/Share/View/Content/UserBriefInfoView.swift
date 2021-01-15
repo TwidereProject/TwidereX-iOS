@@ -59,7 +59,7 @@ final class UserBriefInfoView: UIView {
     
     let followActionButton = FollowActionButton()
     let menuButton: UIButton = {
-        let button = UIButton()
+        let button = HitTestExpandedButton()
         button.setImage(UIImage(systemName: "ellipsis.circle"), for: .normal)
         button.tintColor = Asset.Colors.hightLight.color
         return button

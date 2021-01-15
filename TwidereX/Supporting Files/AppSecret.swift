@@ -13,10 +13,12 @@ import Keys
 
 class AppSecret {
     
+    private(set) lazy var oauthSecret = OAuthSecret()
+
     // MARK: - Singleton
     public static let shared = AppSecret()
-
-    lazy var oauthSecret = OAuthSecret()
+    
+    private init() { }
     
 }
 

@@ -90,6 +90,30 @@ extension SearchDetailViewController {
         ])
         pagingViewController.didMove(toParent: self)
         
+        // set UI
+        viewModel.searchText
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] initialSearchText in
+                guard let self = self else { return }
+                guard !initialSearchText.isEmpty else { return }
+                self.searchBar.text = initialSearchText
+            }
+            .store(in: &disposeBag)
+
+        // trigger loading after view appear
+        Publishers.CombineLatest(
+            viewModel.searchText.eraseToAnyPublisher(),
+            viewModel.viewDidAppear.eraseToAnyPublisher()
+        )
+        .receive(on: DispatchQueue.main)
+        .first()
+        .sink { [weak self] initialSearchText, _ in
+            guard let self = self else { return }
+            guard !initialSearchText.isEmpty else { return }
+            self.viewModel.searchActionPublisher.send()
+        }
+        .store(in: &disposeBag)
+        
         viewModel.searchText
             .assign(to: \.value, on: pagingViewController.viewModel.searchText)
             .store(in: &disposeBag)
@@ -107,6 +131,12 @@ extension SearchDetailViewController {
             searchBar.becomeFirstResponder()
             viewModel.needsBecomeFirstResponder = false
         }
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        viewModel.viewDidAppear.send()
     }
     
     override func viewDidLayoutSubviews() {

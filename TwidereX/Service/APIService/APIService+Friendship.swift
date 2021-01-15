@@ -6,7 +6,6 @@
 //  Copyright © 2020 Twidere. All rights reserved.
 //
 
-
 import os.log
 import UIKit
 import Combine
@@ -98,6 +97,7 @@ extension APIService {
         })
         .eraseToAnyPublisher()
     }
+    
 }
 
 extension APIService {
@@ -147,9 +147,12 @@ extension APIService {
                         }
                         
                         let targetTwitterUser = managedObjectContext.object(with: twitterUserObjectID) as! TwitterUser
-                        targetTwitterUser.update(following: relationship.source.following, from: sourceTwitterUser)
-                        sourceTwitterUser.update(following: relationship.source.followedBy, from: targetTwitterUser)
+                        targetTwitterUser.update(following: relationship.source.following, by: sourceTwitterUser)
+                        sourceTwitterUser.update(following: relationship.source.followedBy, by: targetTwitterUser)
                         targetTwitterUser.update(followRequestSent: relationship.source.followingRequested, from: sourceTwitterUser)
+                        targetTwitterUser.update(muting: relationship.source.muting, by: sourceTwitterUser)
+                        targetTwitterUser.update(blocking: relationship.source.blocking, by: sourceTwitterUser)
+                        sourceTwitterUser.update(blocking: relationship.source.blockedBy, by: targetTwitterUser)
                     }
                     .setFailureType(to: Error.self)
                     .tryMap { result -> Twitter.Response.Content<Twitter.Entity.Relationship> in
@@ -201,19 +204,19 @@ extension APIService {
             _targetTwitterUserID = twitterUser.id
             
             let isPending = (twitterUser.followRequestSentFrom ?? Set()).contains(where: { $0.id == requestTwitterUserID })
-            let isFollowing = (twitterUser.followingFrom ?? Set()).contains(where: { $0.id == requestTwitterUserID })
+            let isFollowing = (twitterUser.followingBy ?? Set()).contains(where: { $0.id == requestTwitterUserID })
             
             if isFollowing || isPending {
                 _queryType = .destroy
-                twitterUser.update(following: false, from: requestTwitterUser)
+                twitterUser.update(following: false, by: requestTwitterUser)
                 twitterUser.update(followRequestSent: false, from: requestTwitterUser)
             } else {
                 _queryType = .create
                 if twitterUser.protected {
-                    twitterUser.update(following: false, from: requestTwitterUser)
+                    twitterUser.update(following: false, by: requestTwitterUser)
                     twitterUser.update(followRequestSent: true, from: requestTwitterUser)
                 } else {
-                    twitterUser.update(following: true, from: requestTwitterUser)
+                    twitterUser.update(following: true, by: requestTwitterUser)
                     twitterUser.update(followRequestSent: false, from: requestTwitterUser)
                 }
             }
@@ -240,6 +243,7 @@ extension APIService {
         twitterUserID: TwitterUser.ID,
         twitterAuthenticationBox: AuthenticationService.TwitterAuthenticationBox
     ) -> AnyPublisher<Twitter.Response.Content<Twitter.Entity.User>, Error> {
+        let requestTwitterUserID = twitterAuthenticationBox.twitterUserID
         let authorization = twitterAuthenticationBox.twitterAuthorization
         let query = Twitter.API.Friendships.FriendshipUpdateQuery(
             userID: twitterUserID
@@ -259,7 +263,55 @@ extension APIService {
                         }
                     }
                 case .finished:
-                    break
+                    switch friendshipQueryType {
+                    case .create:
+                        // destroy blocking friendship
+                        let managedObjectContext = self.backgroundManagedObjectContext
+                        managedObjectContext.performChanges {
+                            let _requestTwitterUser: TwitterUser? = {
+                                let request = TwitterUser.sortedFetchRequest
+                                request.predicate = TwitterUser.predicate(idStr: requestTwitterUserID)
+                                request.fetchLimit = 1
+                                request.returnsObjectsAsFaults = false
+                                do {
+                                    return try managedObjectContext.fetch(request).first
+                                } catch {
+                                    assertionFailure(error.localizedDescription)
+                                    return nil
+                                }
+                            }()
+                            
+                            guard let requestTwitterUser = _requestTwitterUser else {
+                                assertionFailure()
+                                return
+                            }
+                            
+                            let _twitterUser: TwitterUser? = {
+                                let request = TwitterUser.sortedFetchRequest
+                                request.predicate = TwitterUser.predicate(idStr: twitterUserID)
+                                request.fetchLimit = 1
+                                request.returnsObjectsAsFaults = false
+                                do {
+                                    return try managedObjectContext.fetch(request).first
+                                } catch {
+                                    assertionFailure(error.localizedDescription)
+                                    return nil
+                                }
+                            }()
+                            
+                            guard let twitterUser = _twitterUser else {
+                                assertionFailure()
+                                return
+                            }
+                            twitterUser.update(blocking: false, by: requestTwitterUser)
+                        }
+                        .sink { _ in
+                            // do nothing
+                        }
+                        .store(in: &self.disposeBag)
+                    case .destroy, .update:
+                        break
+                    }
                 }
             })
             .eraseToAnyPublisher()

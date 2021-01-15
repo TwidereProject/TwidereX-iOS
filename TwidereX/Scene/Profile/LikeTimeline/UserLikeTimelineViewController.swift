@@ -59,13 +59,9 @@ extension UserLikeTimelineViewController {
         viewModel.setupDiffableDataSource(
             for: tableView,
             dependency: self,
-            timelinePostTableViewCellDelegate: self
+            timelinePostTableViewCellDelegate: self,
+            timelineHeaderTableViewCellDelegate: self
         )
-        do {
-            try viewModel.fetchedResultsController.performFetch()
-        } catch {
-            assertionFailure(error.localizedDescription)
-        }
         
         // trigger timeline loading
         viewModel.userID
@@ -168,6 +164,9 @@ extension UserLikeTimelineViewController: TimelinePostTableViewCellDelegate {
     weak var playerViewControllerDelegate: AVPlayerViewControllerDelegate? { return self }
     func parent() -> UIViewController { return self }
 }
+
+// MARK: - TimelineHeaderTableViewCellDelegate
+extension UserLikeTimelineViewController: TimelineHeaderTableViewCellDelegate { }
 
 // MARK: - CustomScrollViewContainerController
 extension UserLikeTimelineViewController: ScrollViewContainer {

@@ -12,7 +12,7 @@ import TwitterAPI
 extension APIService {
     
     func twitterRequestToken() -> AnyPublisher<Twitter.API.OAuth.OAuthRequestTokenExchange, Error> {
-        let oauthExchangeProvider = AppSecret()
+        let oauthExchangeProvider = AppSecret.shared
         return Twitter.API.OAuth.requestToken(session: session, oauthExchangeProvider: oauthExchangeProvider)
             .receive(on: DispatchQueue.main)
             .eraseToAnyPublisher()

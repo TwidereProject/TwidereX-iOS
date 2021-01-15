@@ -82,8 +82,8 @@ extension APIService.CoreData.V2 {
                 property: twitterUserProperty,
                 entities: entities,
                 metrics: metrics,
-                following: nil,
-                followRequestSent: nil
+                followingBy: nil,
+                followRequestSentFrom: nil
             )
             
             // update tweet mentions

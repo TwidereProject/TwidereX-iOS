@@ -42,6 +42,10 @@ class ProfileViewModel: NSObject {
 
     let friendship: CurrentValueSubject<Friendship?, Never>
     let followedBy: CurrentValueSubject<Bool?, Never>
+    let muted: CurrentValueSubject<Bool, Never>
+    let blocked: CurrentValueSubject<Bool, Never>
+    
+    let suspended = CurrentValueSubject<Bool, Never>(false)
     
     let avatarStyle = CurrentValueSubject<UserDefaults.AvatarStyle, Never>(UserDefaults.shared.avatarStyle)
     
@@ -64,9 +68,11 @@ class ProfileViewModel: NSObject {
         self.listedCount = CurrentValueSubject(twitterUser?.metrics?.listedCount.flatMap{ Int(truncating: $0) })
         self.friendship = CurrentValueSubject(nil)
         self.followedBy = CurrentValueSubject(nil)
-
+        self.muted = CurrentValueSubject(false)
+        self.blocked = CurrentValueSubject(false)
         super.init()
 
+        // bind active authentication
         context.authenticationService.activeAuthenticationIndex
             .sink { [weak self] activeAuthenticationIndex in
                 guard let self = self else { return }
@@ -84,6 +90,7 @@ class ProfileViewModel: NSObject {
             }
             .store(in: &disposeBag)
         
+        // bind avatar style
         UserDefaults.shared
             .observe(\.avatarStyle) { [weak self] defaults, _ in
                 guard let self = self else { return }
@@ -93,6 +100,7 @@ class ProfileViewModel: NSObject {
         
         setup()
         
+        // query latest friendship
         Publishers.CombineLatest(
             self.twitterUser.eraseToAnyPublisher(),
             context.authenticationService.activeTwitterAuthenticationBox.eraseToAnyPublisher()
@@ -122,18 +130,40 @@ class ProfileViewModel: NSObject {
             case .finished:
                 break
             }
-        } receiveValue: { response in
+        } receiveValue: { [weak self] response in
+            guard let self = self else { return }
             os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: fetch friendship success", ((#file as NSString).lastPathComponent), #line, #function)
-            // friend will update via ManagedObjectObserver
+            // friendship state will update via ManagedObjectObserver
         }
         .store(in: &disposeBag)
     }
     
     convenience init(context: AppContext, twitterUser: TwitterUser) {
         self.init(context: context, optionalTwitterUser: twitterUser)
+        
+        guard let activeTwitterAuthenticationBox = context.authenticationService.activeTwitterAuthenticationBox.value else {
+            return
+        }
+        let userID = twitterUser.id
+        let username = twitterUser.username
+        context.apiService.users(userIDs: [userID], twitterAuthenticationBox: activeTwitterAuthenticationBox)
+            .retry(3)
+            .receive(on: DispatchQueue.main)
+            .sink { completion in
+                switch completion {
+                case .failure(let error):
+                    os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: user lookup %s fail: %s", ((#file as NSString).lastPathComponent), #line, #function, userID, error.localizedDescription)
+                case .finished:
+                    os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: user lookup %s success", ((#file as NSString).lastPathComponent), #line, #function, userID)
+                }
+            } receiveValue: { [weak self] response in
+                guard let self = self else { return }
+                self.updateAccountSuspendedState(content: response.value, username: username)
+            }
+            .store(in: &disposeBag)
     }
     
-    convenience init(context: AppContext, userID: TwitterUser.ID) {
+    convenience init(context: AppContext, userID: TwitterUser.ID, username: String) {
         self.init(context: context, optionalTwitterUser: nil)
         
         guard let activeTwitterAuthenticationBox = context.authenticationService.activeTwitterAuthenticationBox.value else {
@@ -149,15 +179,16 @@ class ProfileViewModel: NSObject {
                 case .finished:
                     os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: user lookup %s success", ((#file as NSString).lastPathComponent), #line, #function, userID)
                 }
-            } receiveValue: { [weak self] content in
+            } receiveValue: { [weak self] response in
                 guard let self = self else { return }
+                self.updateAccountSuspendedState(content: response.value, username: username)
+                
                 let managedObjectContext = context.managedObjectContext
                 let request = TwitterUser.sortedFetchRequest
                 request.fetchLimit = 1
                 request.predicate = TwitterUser.predicate(idStr: userID)
                 do {
                     guard let twitterUser = try managedObjectContext.fetch(request).first else {
-                        assertionFailure()
                         return
                     }
                     self.twitterUser.value = twitterUser
@@ -186,6 +217,8 @@ class ProfileViewModel: NSObject {
                 }
             } receiveValue: { [weak self] response in
                 guard let self = self else { return }
+                self.updateAccountSuspendedState(content: response.value, username: username)
+                
                 let dictContent = Twitter.Response.V2.DictContent(
                     tweets: [],
                     users: response.value.data ?? [],
@@ -206,7 +239,6 @@ class ProfileViewModel: NSObject {
                 request.predicate = TwitterUser.predicate(username: user.username)
                 do {
                     guard let twitterUser = try managedObjectContext.fetch(request).first else {
-                        assertionFailure()
                         return
                     }
                     self.twitterUser.value = twitterUser
@@ -335,14 +367,37 @@ extension ProfileViewModel {
             self.friendship.value = nil
             self.followedBy.value = nil
         } else {
-            let isFollowing = twitterUser.followingFrom.flatMap { $0.contains(currentTwitterUser) } ?? false
+            let isFollowing = twitterUser.followingBy.flatMap { $0.contains(currentTwitterUser) } ?? false
             let isPending = twitterUser.followRequestSentFrom.flatMap { $0.contains(currentTwitterUser) } ?? false
             let friendship = isPending ? .pending : (isFollowing) ? .following : ProfileViewModel.Friendship.none
             self.friendship.value = friendship
             os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: friendship update: %s", ((#file as NSString).lastPathComponent), #line, #function, friendship.debugDescription)
-            let followedBy = currentTwitterUser.followingFrom.flatMap { $0.contains(twitterUser) } ?? false
+            
+            let followedBy = currentTwitterUser.followingBy.flatMap { $0.contains(twitterUser) } ?? false
             self.followedBy.value = followedBy
             os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: followedBy update: %s", ((#file as NSString).lastPathComponent), #line, #function, followedBy ? "true" : "false")
+            
+            let muted = twitterUser.mutingBy.flatMap { $0.contains(currentTwitterUser) } ?? false
+            self.muted.value = muted
+            os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: muted update: %s", ((#file as NSString).lastPathComponent), #line, #function, muted ? "true" : "false")
+            
+            let blocked = twitterUser.blockingBy.flatMap { $0.contains(currentTwitterUser) } ?? false
+            self.blocked.value = blocked
+            os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: blocked update: %s", ((#file as NSString).lastPathComponent), #line, #function, blocked ? "true" : "false")
+        }
+    }
+    
+    private func updateAccountSuspendedState(content: Twitter.API.V2.UserLookup.Content, username: String) {
+        guard let twitterAPIError = content.errors?.first.flatMap({ Twitter.API.Error.TwitterAPIError(responseContentError: $0) }) else {
+            return
+        }
+        
+        switch twitterAPIError {
+        case .userHasBeenSuspended:
+            self.suspended.value = true
+            self.username.value = username
+        default:
+            break
         }
     }
     

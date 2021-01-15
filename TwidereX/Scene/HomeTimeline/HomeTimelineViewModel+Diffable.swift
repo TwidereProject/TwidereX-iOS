@@ -30,7 +30,8 @@ extension HomeTimelineViewModel {
             managedObjectContext: fetchedResultsController.managedObjectContext,
             timestampUpdatePublisher: timestampUpdatePublisher,
             timelinePostTableViewCellDelegate: timelinePostTableViewCellDelegate,
-            timelineMiddleLoaderTableViewCellDelegate: timelineMiddleLoaderTableViewCellDelegate
+            timelineMiddleLoaderTableViewCellDelegate: timelineMiddleLoaderTableViewCellDelegate,
+            timelineHeaderTableViewCellDelegate: nil
         )
     }
     
