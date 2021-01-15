@@ -25,10 +25,11 @@ enum Item {
     case middleLoader(upperTimelineIndexAnchorObjectID: NSManagedObjectID)
     case bottomLoader
     
-    case permissionDenied
+    case emptyStateHeader(attribute: EmptyStateHeaderAttribute)
 }
 
 extension Item {
+    
     class Attribute: Hashable {
         var separatorLineStyle: SeparatorLineStyle = .indent
         
@@ -51,7 +52,7 @@ extension Item {
         let id = UUID()
         let index: Int
         
-        public init(index: Int) {
+        init(index: Int) {
             self.index = index
         }
         
@@ -63,6 +64,31 @@ extension Item {
             hasher.combine(id)
         }
     }
+    
+    class EmptyStateHeaderAttribute: Hashable {
+        let id = UUID()
+        let reason: Reason
+        
+        enum Reason {
+            case noTweetsFound
+            case notAuthorized
+            case blocked
+            case suspended
+        }
+        
+        init(reason: Reason) {
+            self.reason = reason
+        }
+        
+        static func == (lhs: Item.EmptyStateHeaderAttribute, rhs: Item.EmptyStateHeaderAttribute) -> Bool {
+            return lhs.reason == rhs.reason
+        }
+        
+        func hash(into hasher: inout Hasher) {
+            hasher.combine(id)
+        }
+    }
+    
 }
 
 extension Item: Equatable {
@@ -82,8 +108,8 @@ extension Item: Equatable {
             return upperLeft == upperRight
         case (.bottomLoader, .bottomLoader):
             return true
-        case (.permissionDenied, .permissionDenied):
-            return true
+        case (.emptyStateHeader(let attributeLeft), .emptyStateHeader(let attributeRight)):
+            return attributeLeft == attributeRight
         default:
             return false
         }
@@ -108,8 +134,8 @@ extension Item: Hashable {
             hasher.combine(upper)
         case .bottomLoader:
             hasher.combine(String(describing: Item.bottomLoader.self))
-        case .permissionDenied:
-            hasher.combine(String(describing: Item.permissionDenied.self))
+        case .emptyStateHeader(let attribute):
+            hasher.combine(attribute)
         }
     }
 }

@@ -26,11 +26,13 @@ final class TweetConversationViewModel: NSObject {
     }()
     
     var disposeBag = Set<AnyCancellable>()
+    var rootItemObservation: AnyCancellable?
     
     // input
     let context: AppContext
-    let rootItem: ConversationItem
+    let rootItem: CurrentValueSubject<ConversationItem, Never>
     let conversationMeta = CurrentValueSubject<ConversationMeta?, Never>(nil)
+    let deletedTweetFetchedResultsController: TweetFetchedResultsController
     weak var contentOffsetAdjustableTimelineViewControllerDelegate: ContentOffsetAdjustableTimelineViewControllerDelegate?
     weak var tableView: UITableView?
     weak var conversationPostTableViewCellDelegate: ConversationPostTableViewCellDelegate?
@@ -70,19 +72,38 @@ final class TweetConversationViewModel: NSObject {
     var conversationNodes = CurrentValueSubject<[ConversationNode], Never>([])
     var replyItems = CurrentValueSubject<[ConversationItem], Never>([])
     var conversationItems = CurrentValueSubject<[ConversationItem], Never>([])
+    var snapshotPublisher = PassthroughSubject<NSDiffableDataSourceSnapshot<ConversationSection, ConversationItem>, Never>()
     var cellFrameCache = NSCache<NSNumber, NSValue>()
     
+    // TODO: support loading from ID/URL
     init(context: AppContext, tweetObjectID: NSManagedObjectID) {
         self.context = context
-        self.rootItem = .root(tweetObjectID: tweetObjectID)
+        self.rootItem = CurrentValueSubject(.root(tweetObjectID: tweetObjectID))
+        self.deletedTweetFetchedResultsController = TweetFetchedResultsController(managedObjectContext: context.managedObjectContext, additionalTweetPredicate: Tweet.deleted())
         super.init()
         
-        Publishers.CombineLatest(
+        Publishers.CombineLatest3(
+            rootItem.eraseToAnyPublisher(),
             replyItems.eraseToAnyPublisher(),
             conversationItems.eraseToAnyPublisher()
         )
         .receive(on: DispatchQueue.main)
-        .sink { [weak self] replyItems, conversationItems in
+        .sink { [weak self] rootItem, replyItems, conversationItems in
+            guard let self = self else { return }
+            let items: [ConversationItem] = [rootItem] + replyItems + conversationItems
+            self.updateDeletedTweet(for: items)
+        }
+        .store(in: &disposeBag)
+            
+        
+        Publishers.CombineLatest4(
+            rootItem.eraseToAnyPublisher(),
+            replyItems.eraseToAnyPublisher(),
+            conversationItems.eraseToAnyPublisher(),
+            deletedTweetFetchedResultsController.items.eraseToAnyPublisher()
+        )
+        .receive(on: DispatchQueue.main)
+        .sink { [weak self] rootItem, replyItems, conversationItems, deletedItems in
             guard let self = self else { return }
             guard let tableView = self.tableView,
                   let navigationBar = self.contentOffsetAdjustableTimelineViewControllerDelegate?.navigationBar()
@@ -100,16 +121,31 @@ final class TweetConversationViewModel: NSObject {
                !(currentState is LoadReplyState.NoMore) {
                 newSnapshot.appendItems([.topLoader], toSection: .main)
             }
+            let replyItems = replyItems.filter { item in
+                guard case let .reply(tweetObjectID) = item else { return false }
+                return !deletedItems.contains(Item.tweet(objectID: tweetObjectID))
+            }
             newSnapshot.appendItems(replyItems, toSection: .main)
             // root
-            newSnapshot.appendItems([self.rootItem], toSection: .main)
+            switch rootItem {
+            case .root(let tweetObjectID) where !deletedItems.contains(Item.tweet(objectID: tweetObjectID)):
+                newSnapshot.appendItems([rootItem], toSection: .main)
+            default:
+                break
+            }
             // conversation
+            let conversationItems = conversationItems.filter { item in
+                guard case let .leaf(tweetObjectID, _) = item else { return false }
+                return !deletedItems.contains(Item.tweet(objectID: tweetObjectID))
+            }
             newSnapshot.appendItems(conversationItems, toSection: .main)
 
             if let currentState = self.loadConversationStateMachine.currentState,
                currentState is LoadConversationState.Idle || currentState is LoadConversationState.Loading || currentState is LoadConversationState.Prepare {
                 newSnapshot.appendItems([.bottomLoader], toSection: .main)
             }
+            
+            self.snapshotPublisher.send(newSnapshot)
 
             // difference for first visiable item exclude .topLoader
             guard let difference = self.calculateReloadSnapshotDifference(navigationBar: navigationBar, tableView: tableView, oldSnapshot: oldSnapshot, newSnapshot: newSnapshot) else {
@@ -126,7 +162,7 @@ final class TweetConversationViewModel: NSObject {
             
             diffableDataSource.apply(newSnapshot, animatingDifferences: false) {
                 // set bottom inset. Make root item pin to top.
-                if let index = newSnapshot.indexOfItem(self.rootItem),
+                if let index = newSnapshot.indexOfItem(rootItem),
                    let cell = tableView.cellForRow(at: IndexPath(row: index, section: 0)) {
                     // always set bottom inset due to lazy reply loading
                     // otherwise tableView will jump when insert replies
@@ -191,7 +227,7 @@ final class TweetConversationViewModel: NSObject {
                 }
                 let currentLeafTweetIDs = currentLeafAttributes.map { $0.tweetID }
                 
-                let leafIDs = nodes.map { [$0.tweet.id, $0.children.first?.tweet.id].compactMap { $0} }.flatMap { $0 }
+                let leafIDs = nodes.map { [$0.tweet.id, $0.children.first?.tweet.id].compactMap { $0 } }.flatMap { $0 }
                 let request = Tweet.sortedFetchRequest
                 request.predicate = Tweet.predicate(idStrs: leafIDs)
                 var tweetDict: [Tweet.ID: Tweet] = [:]
@@ -248,10 +284,12 @@ extension TweetConversationViewModel {
 
 extension TweetConversationViewModel {
     
-    func setupDiffableDataSource(for tableView: UITableView) {
+    // FIXME: refactor into Diffable section
+    func setupDiffableDataSource(for tableView: UITableView, dependency: NeedsDependency) {
         assert(Thread.isMainThread)
-        diffableDataSource = UITableViewDiffableDataSource(tableView: tableView) { [weak self] tableView, indexPath, item -> UITableViewCell? in
+        diffableDataSource = UITableViewDiffableDataSource(tableView: tableView) { [weak self, weak dependency] tableView, indexPath, item -> UITableViewCell? in
             guard let self = self else { return nil }
+            guard let dependency = dependency else { return nil }
             
             switch item {
             case .root(let objectID):
@@ -261,7 +299,7 @@ extension TweetConversationViewModel {
                 let managedObjectContext = self.context.managedObjectContext
                 managedObjectContext.performAndWait {
                     let tweet = managedObjectContext.object(with: objectID) as! Tweet
-                    TweetConversationViewModel.configure(cell: cell, readableLayoutFrame: tableView.readableContentGuide.layoutFrame, videoPlaybackService: self.context.videoPlaybackService, tweet: tweet, requestUserID: requestTwitterUserID)
+                    TweetConversationViewModel.configure(cell: cell, readableLayoutFrame: tableView.readableContentGuide.layoutFrame, dependency: dependency, tweet: tweet, requestUserID: requestTwitterUserID)
                     TweetConversationViewModel.configure(cell: cell, overrideTraitCollection: self.context.overrideTraitCollection.value)
                 }
                 cell.delegate = self.conversationPostTableViewCellDelegate
@@ -273,8 +311,8 @@ extension TweetConversationViewModel {
                 let managedObjectContext = self.context.managedObjectContext
                 managedObjectContext.performAndWait {
                     let tweet = managedObjectContext.object(with: objectID) as! Tweet
-                    HomeTimelineViewModel.configure(cell: cell, readableLayoutFrame: tableView.readableContentGuide.layoutFrame, videoPlaybackService: self.context.videoPlaybackService, tweet: tweet, requestUserID: requestUserID)
-                    HomeTimelineViewModel.configure(cell: cell, overrideTraitCollection: self.context.overrideTraitCollection.value)
+                    TimelineSection.configure(cell: cell, readableLayoutFrame: tableView.readableContentGuide.layoutFrame, dependency: dependency, tweet: tweet, requestUserID: requestUserID)
+                    TimelineSection.configure(cell: cell, overrideTraitCollection: self.context.overrideTraitCollection.value)
                     cell.conversationLinkUpper.isHidden = tweet.inReplyToTweetID == nil
                     cell.conversationLinkLower.isHidden = false
                 }
@@ -288,8 +326,8 @@ extension TweetConversationViewModel {
                 let managedObjectContext = self.context.managedObjectContext
                 managedObjectContext.performAndWait {
                     let tweet = managedObjectContext.object(with: objectID) as! Tweet
-                    HomeTimelineViewModel.configure(cell: cell, readableLayoutFrame: tableView.readableContentGuide.layoutFrame, videoPlaybackService: self.context.videoPlaybackService, tweet: tweet, requestUserID: requestUserID)
-                    HomeTimelineViewModel.configure(cell: cell, overrideTraitCollection: self.context.overrideTraitCollection.value)
+                    TimelineSection.configure(cell: cell, readableLayoutFrame: tableView.readableContentGuide.layoutFrame, dependency: dependency, tweet: tweet, requestUserID: requestUserID)
+                    TimelineSection.configure(cell: cell, overrideTraitCollection: self.context.overrideTraitCollection.value)
                 }
                 cell.conversationLinkUpper.isHidden = attribute.level == 0
                 cell.conversationLinkLower.isHidden = !attribute.hasReply || attribute.level != 0
@@ -310,6 +348,7 @@ extension TweetConversationViewModel {
         
         var snapshot = NSDiffableDataSourceSnapshot<ConversationSection, ConversationItem>()
         snapshot.appendSections([.main])
+        let rootItem = self.rootItem.value
         if case let .root(tweetObjectID) = rootItem,
            let tweet = context.managedObjectContext.object(with: tweetObjectID) as? Tweet,
            let _ = (tweet.retweet ?? tweet).inReplyToTweetID {
@@ -323,7 +362,13 @@ extension TweetConversationViewModel {
         diffableDataSource?.apply(snapshot)
     }
     
-    static func configure(cell: ConversationPostTableViewCell, readableLayoutFrame: CGRect? = nil, videoPlaybackService: VideoPlaybackService, tweet: Tweet, requestUserID: String) {
+    static func configure(
+        cell: ConversationPostTableViewCell,
+        readableLayoutFrame: CGRect? = nil,
+        dependency: NeedsDependency,
+        tweet: Tweet,
+        requestUserID: String
+    ) {
         // set retweet display
         cell.conversationPostView.retweetContainerStackView.isHidden = tweet.retweet == nil
         cell.conversationPostView.retweetInfoLabel.text = L10n.Common.Controls.Status.userRetweeted(tweet.author.name)
@@ -333,7 +378,7 @@ extension TweetConversationViewModel {
         let verified = (tweet.retweet ?? tweet).author.verified
         UserDefaults.shared
             .observe(\.avatarStyle, options: [.initial, .new]) { defaults, _ in
-                cell.conversationPostView.configure(avatarImageURL: avatarImageURL, verified: verified)
+                cell.conversationPostView.configure(withConfigurationInput: AvatarConfigurableViewConfiguration.Input(avatarImageURL: avatarImageURL, verified: verified))
             }
             .store(in: &cell.observations)
         
@@ -402,7 +447,7 @@ extension TweetConversationViewModel {
             let scale: CGFloat = 1.3
             return CGSize(width: maxWidth, height: maxWidth * scale)
         }()
-        if let media = media.first, let videoPlayerViewModel = videoPlaybackService.dequeueVideoPlayerViewModel(for: media) {
+        if let media = media.first, let videoPlayerViewModel = dependency.context.videoPlaybackService.dequeueVideoPlayerViewModel(for: media) {
             let parent = cell.delegate?.parent()
             let mosaicPlayerView = cell.conversationPostView.mosaicPlayerView
             let playerViewController = mosaicPlayerView.setupPlayer(
@@ -433,7 +478,7 @@ extension TweetConversationViewModel {
             let verified = quote.author.verified
             UserDefaults.shared
                 .observe(\.avatarStyle, options: [.initial, .new]) { defaults, _ in
-                    cell.conversationPostView.quotePostView.configure(avatarImageURL: avatarImageURL, verified: verified)
+                    cell.conversationPostView.quotePostView.configure(withConfigurationInput: AvatarConfigurableViewConfiguration.Input(avatarImageURL: avatarImageURL, verified: verified))
                 }
                 .store(in: &cell.observations)
             
@@ -490,17 +535,30 @@ extension TweetConversationViewModel {
         
         // set action toolbar title
         let isRetweeted = (tweet.retweet ?? tweet).retweetBy.flatMap({ $0.contains(where: { $0.id == requestUserID }) }) ?? false
-        cell.conversationPostView.actionToolbar.retweetButton.isEnabled = !(tweet.retweet ?? tweet).author.protected
-        cell.conversationPostView.actionToolbar.retweetButtonHighligh = isRetweeted
+        cell.conversationPostView.actionToolbarContainer.retweetButton.isEnabled = !(tweet.retweet ?? tweet).author.protected
+        cell.conversationPostView.actionToolbarContainer.isRetweetButtonHighligh = isRetweeted
 
         let isLike = (tweet.retweet ?? tweet).likeBy.flatMap({ $0.contains(where: { $0.id == requestUserID }) }) ?? false
-        cell.conversationPostView.actionToolbar.likeButtonHighlight = isLike
+        cell.conversationPostView.actionToolbarContainer.isLikeButtonHighlight = isLike
         
         // set upper link
         if let _ = (tweet.retweet ?? tweet).inReplyToTweetID {
             cell.conversationLinkUpper.isHidden = false
         } else {
             cell.conversationLinkUpper.isHidden = true
+        }
+        
+        // set menu button
+        if #available(iOS 14.0, *) {
+            let menu = StatusProviderFacade.createMenuForStatus(
+                tweet: tweet,
+                sender: cell.conversationPostView.actionToolbarContainer.menuButton,
+                dependency: dependency
+            )
+            cell.conversationPostView.actionToolbarContainer.menuButton.menu = menu
+            cell.conversationPostView.actionToolbarContainer.menuButton.showsMenuAsPrimaryAction = true
+        } else {
+            // no menu supports. handle by `StatusProvider`
         }
         
         // observe model change
@@ -514,10 +572,10 @@ extension TweetConversationViewModel {
                 let targetTweet = newTweet.retweet ?? newTweet
                 
                 let isRetweeted = targetTweet.retweetBy.flatMap({ $0.contains(where: { $0.id == requestUserID }) }) ?? false
-                cell.conversationPostView.actionToolbar.retweetButtonHighligh = isRetweeted
+                cell.conversationPostView.actionToolbarContainer.isRetweetButtonHighligh = isRetweeted
 
                 let isLike = targetTweet.likeBy.flatMap({ $0.contains(where: { $0.id == requestUserID }) }) ?? false
-                cell.conversationPostView.actionToolbar.likeButtonHighlight = isLike
+                cell.conversationPostView.actionToolbarContainer.isLikeButtonHighlight = isLike
             }
             .store(in: &cell.disposeBag)
     }
@@ -585,7 +643,8 @@ extension TweetConversationViewModel {
             let dictContent = Twitter.Response.V2.DictContent(
                 tweets: tweets,
                 users: content.includes?.users ?? [],
-                media: content.includes?.media ?? []
+                media: content.includes?.media ?? [],
+                places: content.includes?.places ?? []
             )
             
             var replyToMappingDict: [Twitter.Entity.V2.Tweet.ID: Set<Twitter.Entity.V2.Tweet.ID>] = [:]
@@ -669,5 +728,35 @@ extension TweetConversationViewModel {
             targetIndexPath: targetIndexPath,
             offset: offset
         )
+    }
+}
+
+extension TweetConversationViewModel {
+    private func updateDeletedTweet(for items: [ConversationItem]) {
+        let parentManagedObjectContext = context.managedObjectContext
+        let managedObjectContext = NSManagedObjectContext(concurrencyType: .privateQueueConcurrencyType)
+        managedObjectContext.parent = parentManagedObjectContext
+        managedObjectContext.perform {
+            var tweetIDs: [Twitter.Entity.V2.Tweet.ID] = []
+            for item in items {
+                switch item {
+                case .root(let tweetObjectID):
+                    guard let tweet = managedObjectContext.object(with: tweetObjectID) as? Tweet else { continue }
+                    tweetIDs.append(tweet.id)
+                case .reply(let tweetObjectID):
+                    guard let tweet = managedObjectContext.object(with: tweetObjectID) as? Tweet else { continue }
+                    tweetIDs.append(tweet.id)
+                case .leaf(let tweetObjectID, _):
+                    guard let tweet = managedObjectContext.object(with: tweetObjectID) as? Tweet else { continue }
+                    tweetIDs.append(tweet.id)
+                default:
+                    continue
+                }
+            }
+            DispatchQueue.main.async { [weak self] in
+                guard let self = self else { return }
+                self.deletedTweetFetchedResultsController.tweetIDs.value = tweetIDs
+            }
+        }
     }
 }

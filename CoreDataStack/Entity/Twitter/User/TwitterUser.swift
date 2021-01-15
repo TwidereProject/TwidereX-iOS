@@ -48,10 +48,16 @@ final public class TwitterUser: NSManagedObject {
     @NSManaged public private(set) var retweets: Set<Tweet>?
     
     @NSManaged public private(set) var following: Set<TwitterUser>?
-    @NSManaged public private(set) var followingFrom: Set<TwitterUser>?
+    @NSManaged public private(set) var followingBy: Set<TwitterUser>?
     
     @NSManaged public private(set) var followRequestSent: Set<TwitterUser>?
     @NSManaged public private(set) var followRequestSentFrom: Set<TwitterUser>?
+    
+    @NSManaged public private(set) var muting: Set<TwitterUser>?
+    @NSManaged public private(set) var mutingBy: Set<TwitterUser>?
+    
+    @NSManaged public private(set) var blocking: Set<TwitterUser>?
+    @NSManaged public private(set) var blockingBy: Set<TwitterUser>?
 
 }
 
@@ -68,8 +74,8 @@ extension TwitterUser {
         property: Property,
         entities: TwitterUserEntities?,
         metrics: TwitterUserMetrics,
-        following: TwitterUser?,
-        followRequestSent: TwitterUser?
+        followingBy: TwitterUser?,
+        followRequestSentFrom: TwitterUser?
     ) -> TwitterUser {
         let user: TwitterUser = context.insertObject()
         user.updatedAt = property.networkDate
@@ -90,11 +96,11 @@ extension TwitterUser {
         user.entities = entities
         user.metrics = metrics
         
-        if let following = following {
-            user.mutableSetValue(forKey: #keyPath(TwitterUser.followingFrom)).add(following)
+        if let followingBy = followingBy {
+            user.mutableSetValue(forKey: #keyPath(TwitterUser.followingBy)).add(followingBy)
         }
-        if let followRequestSent = followRequestSent {
-            user.mutableSetValue(forKey: #keyPath(TwitterUser.followRequestSentFrom)).add(followRequestSent)
+        if let followRequestSentFrom = followRequestSentFrom {
+            user.mutableSetValue(forKey: #keyPath(TwitterUser.followRequestSentFrom)).add(followRequestSentFrom)
         }
         
         return user
@@ -180,14 +186,14 @@ extension TwitterUser {
         }
     }
     
-    public func update(following: Bool, from: TwitterUser) {
+    public func update(following: Bool, by: TwitterUser) {
         if following {
-            if !(self.followingFrom ?? Set()).contains(from) {
-                self.mutableSetValue(forKey: #keyPath(TwitterUser.followingFrom)).add(from)
+            if !(self.followingBy ?? Set()).contains(by) {
+                self.mutableSetValue(forKey: #keyPath(TwitterUser.followingBy)).add(by)
             }
         } else {
-            if (self.followingFrom ?? Set()).contains(from) {
-                self.mutableSetValue(forKey: #keyPath(TwitterUser.followingFrom)).remove(from)
+            if (self.followingBy ?? Set()).contains(by) {
+                self.mutableSetValue(forKey: #keyPath(TwitterUser.followingBy)).remove(by)
             }
         }
     }
@@ -200,6 +206,30 @@ extension TwitterUser {
         } else {
             if (self.followRequestSentFrom ?? Set()).contains(from) {
                 self.mutableSetValue(forKey: #keyPath(TwitterUser.followRequestSentFrom)).remove(from)
+            }
+        }
+    }
+    
+    public func update(muting: Bool, by: TwitterUser) {
+        if muting {
+            if !(self.mutingBy ?? Set()).contains(by) {
+                self.mutableSetValue(forKey: #keyPath(TwitterUser.mutingBy)).add(by)
+            }
+        } else {
+            if (self.mutingBy ?? Set()).contains(by) {
+                self.mutableSetValue(forKey: #keyPath(TwitterUser.mutingBy)).remove(by)
+            }
+        }
+    }
+    
+    public func update(blocking: Bool, by: TwitterUser) {
+        if blocking {
+            if !(self.blockingBy ?? Set()).contains(by) {
+                self.mutableSetValue(forKey: #keyPath(TwitterUser.blockingBy)).add(by)
+            }
+        } else {
+            if (self.blockingBy ?? Set()).contains(by) {
+                self.mutableSetValue(forKey: #keyPath(TwitterUser.blockingBy)).remove(by)
             }
         }
     }

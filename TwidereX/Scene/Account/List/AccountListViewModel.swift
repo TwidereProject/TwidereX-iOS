@@ -6,6 +6,7 @@
 //  Copyright © 2020 Twidere. All rights reserved.
 //
 
+import os.log
 import UIKit
 import Combine
 import CoreDataStack
@@ -16,8 +17,6 @@ final class AccountListViewModel: NSObject {
     
     // input
     let context: AppContext
-    weak var accountListTableViewCellDelegate: AccountListTableViewCellDelegate?
-    weak var accountListViewControllerDelegate: AccountListViewControllerDelegate?
     
     // output
     var diffableDataSource: UITableViewDiffableDataSource<AccountListSection, Item>!
@@ -45,6 +44,10 @@ final class AccountListViewModel: NSObject {
                 diffableDataSource.apply(snapshot)
             }
             .store(in: &disposeBag)
+    }
+    
+    deinit {
+        os_log("%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
     }
     
 }

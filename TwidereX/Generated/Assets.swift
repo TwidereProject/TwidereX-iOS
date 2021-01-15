@@ -24,8 +24,9 @@ internal enum Asset {
   internal static let accentColor = ColorAsset(name: "AccentColor")
   internal enum Arrows {
     internal static let arrowLeft = ImageAsset(name: "Arrows/arrow.left")
+    internal static let arrowTriangle2Circlepath = ImageAsset(name: "Arrows/arrow.triangle.2.circlepath")
     internal static let arrowTurnUpLeft = ImageAsset(name: "Arrows/arrow.turn.up.left")
-    internal static let arrowTurnUpLeftLarge = ImageAsset(name: "Arrows/arrow.turn.up.left.large")
+    internal static let arrowTurnUpLeftMini = ImageAsset(name: "Arrows/arrow.turn.up.left.mini")
     internal static let squareAndArrowUp = ImageAsset(name: "Arrows/square.and.arrow.up")
     internal static let squareAndArrowUpMini = ImageAsset(name: "Arrows/square.and.arrow.up.mini")
     internal static let tablerChevronDown = ImageAsset(name: "Arrows/tabler.chevron.down")
@@ -43,6 +44,7 @@ internal enum Asset {
   }
   internal enum Editing {
     internal static let ellipsis = ImageAsset(name: "Editing/ellipsis")
+    internal static let ellipsisMini = ImageAsset(name: "Editing/ellipsis.mini")
     internal static let featherPen = ImageAsset(name: "Editing/feather.pen")
     internal static let sliderHorizontal3 = ImageAsset(name: "Editing/slider.horizontal.3")
     internal static let xmark = ImageAsset(name: "Editing/xmark")
@@ -50,9 +52,9 @@ internal enum Asset {
   }
   internal enum Health {
     internal static let heartFill = ImageAsset(name: "Health/heart.fill")
-    internal static let heartFillLarge = ImageAsset(name: "Health/heart.fill.large")
+    internal static let heartFillMini = ImageAsset(name: "Health/heart.fill.mini")
     internal static let heart = ImageAsset(name: "Health/heart")
-    internal static let heartLarge = ImageAsset(name: "Health/heart.large")
+    internal static let heartMini = ImageAsset(name: "Health/heart.mini")
   }
   internal enum Human {
     internal static let eyeSlash = ImageAsset(name: "Human/eye.slash")
@@ -65,14 +67,17 @@ internal enum Asset {
     internal static let infoCircle = ImageAsset(name: "Indices/info.circle")
   }
   internal enum Logo {
+    internal static let github = ImageAsset(name: "Logo/github")
     internal static let twidereAvatar = ImageAsset(name: "Logo/twidere.avatar")
     internal static let twidere = ImageAsset(name: "Logo/twidere")
+    internal static let twitter = ImageAsset(name: "Logo/twitter")
   }
   internal enum Media {
     internal static let `repeat` = ImageAsset(name: "Media/repeat")
-    internal static let repeatLarge = ImageAsset(name: "Media/repeat.large")
+    internal static let repeatMini = ImageAsset(name: "Media/repeat.mini")
   }
   internal enum ObjectTools {
+    internal static let blockedBadge = ImageAsset(name: "Object&Tools/blocked.badge")
     internal static let bookmarks = ImageAsset(name: "Object&Tools/bookmarks")
     internal static let camera = ImageAsset(name: "Object&Tools/camera")
     internal static let clothes = ImageAsset(name: "Object&Tools/clothes")
@@ -88,6 +93,7 @@ internal enum Asset {
     internal static let paperplane = ImageAsset(name: "Object&Tools/paperplane")
     internal static let photo = ImageAsset(name: "Object&Tools/photo")
     internal static let photos = ImageAsset(name: "Object&Tools/photos")
+    internal static let speakerXmark = ImageAsset(name: "Object&Tools/speaker.xmark")
     internal static let verifiedBadge = ImageAsset(name: "Object&Tools/verified.badge")
     internal static let verifiedBadgeMini = ImageAsset(name: "Object&Tools/verified.badge.mini")
     internal static let verifiedBadgeSmall = ImageAsset(name: "Object&Tools/verified.badge.small")
@@ -97,6 +103,7 @@ internal enum Asset {
   }
   internal enum TextFormatting {
     internal static let capitalFloatLeft = ImageAsset(name: "TextFormatting/capital.float.left")
+    internal static let capitalFloatLeftLarge = ImageAsset(name: "TextFormatting/capital.float.left.large")
     internal static let listBullet = ImageAsset(name: "TextFormatting/list.bullet")
     internal static let textHeaderRedaction = ImageAsset(name: "TextFormatting/text.header.redaction")
   }

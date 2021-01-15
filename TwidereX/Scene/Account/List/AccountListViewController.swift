@@ -43,6 +43,10 @@ final class AccountListViewController: UIViewController, NeedsDependency {
     
     private var twitterAuthenticationController: TwitterAuthenticationController?
     
+    deinit {
+        os_log("%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
+    }
+    
 }
 
 extension AccountListViewController {
@@ -65,9 +69,12 @@ extension AccountListViewController {
         ])
         
         tableView.delegate = self
-        viewModel.accountListTableViewCellDelegate = self
-        viewModel.accountListViewControllerDelegate = self
-        viewModel.setupDiffableDataSource(for: tableView)
+        viewModel.setupDiffableDataSource(
+            for: tableView,
+            dependency: self,
+            accountListTableViewCellDelegate: self,
+            accountListViewControllerDelegate: self
+        )
         
         addBarButtonItem.target = self
         addBarButtonItem.action = #selector(AccountListViewController.addBarButtonItemPressed(_:))
@@ -147,6 +154,26 @@ extension AccountListViewController {
             })
             .store(in: &disposeBag)
         
+        twitterAuthenticationController?.authenticated
+            .receive(on: DispatchQueue.main)
+            .sink(receiveValue: { [weak self] twitterUser in
+                guard let self = self else { return }
+                self.context.authenticationService.activeTwitterUser(id: twitterUser.idStr)
+                    .receive(on: DispatchQueue.main)
+                    .sink { [weak self] result in
+                        guard let self = self else { return }
+                        switch result {
+                        case .failure(let error):
+                            assertionFailure(error.localizedDescription)
+                        case .success(let isActived):
+                            assert(isActived)
+                            self.coordinator.setup()
+                        }
+                    }
+                    .store(in: &self.disposeBag)
+            })
+            .store(in: &disposeBag)
+        
         twitterAuthenticationController?.authenticationSession?.prefersEphemeralWebBrowserSession = true
         twitterAuthenticationController?.authenticationSession?.presentationContextProvider = self
         twitterAuthenticationController?.authenticationSession?.start()
@@ -182,7 +209,6 @@ extension AccountListViewController: UITableViewDelegate {
                     case .success(let isActived):
                         assert(isActived)
                         self.coordinator.setup()
-                        // self.dismiss(animated: true, completion: nil)
                     }
                 }
                 .store(in: &self.disposeBag)

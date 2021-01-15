@@ -54,8 +54,10 @@ class ListTableViewCell: UITableViewCell {
         container.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(container)
         NSLayoutConstraint.activate([
+            container.topAnchor.constraint(equalTo: contentView.topAnchor),
             container.leadingAnchor.constraint(equalTo: contentView.layoutMarginsGuide.leadingAnchor),
             container.trailingAnchor.constraint(equalTo: contentView.layoutMarginsGuide.trailingAnchor),
+            container.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
             container.heightAnchor.constraint(greaterThanOrEqualToConstant: 44)
         ])
         

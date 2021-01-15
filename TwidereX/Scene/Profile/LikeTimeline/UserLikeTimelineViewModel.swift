@@ -34,7 +34,9 @@ class UserLikeTimelineViewModel: NSObject {
             State.Fail(viewModel: self),
             State.Idle(viewModel: self),
             State.LoadingMore(viewModel: self),
-            State.PermissionDenied(viewModel: self),
+            State.NotAuthorized(viewModel: self),
+            State.Blocked(viewModel: self),
+            State.Suspended(viewModel: self),
             State.NoMore(viewModel: self),
         ])
         stateMachine.enter(State.Initial.self)
@@ -68,6 +70,7 @@ class UserLikeTimelineViewModel: NSObject {
 
         items.eraseToAnyPublisher()
             .receive(on: DispatchQueue.main)
+            .debounce(for: .milliseconds(300), scheduler: DispatchQueue.main)
             .sink { [weak self] items in
                 guard let self = self else { return }
                 guard let diffableDataSource = self.diffableDataSource else { return }
@@ -81,8 +84,16 @@ class UserLikeTimelineViewModel: NSObject {
                     switch currentState {
                     case is State.Reloading, is State.Idle, is State.LoadingMore, is State.Fail:
                         snapshot.appendItems([.bottomLoader], toSection: .main)
-                    case is State.PermissionDenied:
-                        snapshot.appendItems([.permissionDenied], toSection: .main)
+                    case is State.NotAuthorized:
+                        snapshot.appendItems([.emptyStateHeader(attribute: .init(reason: .notAuthorized))], toSection: .main)
+                    case is State.Blocked:
+                        snapshot.appendItems([.emptyStateHeader(attribute: .init(reason: .blocked))], toSection: .main)
+                    case is State.Suspended:
+                        snapshot.appendItems([.emptyStateHeader(attribute: .init(reason: .suspended))], toSection: .main)
+                    case is State.NoMore:
+                        if items.isEmpty {
+                            snapshot.appendItems([.emptyStateHeader(attribute: .init(reason: .noTweetsFound))], toSection: .main)
+                        }
                     default:
                         break
                     }

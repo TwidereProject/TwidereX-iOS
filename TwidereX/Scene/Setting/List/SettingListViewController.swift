@@ -26,6 +26,8 @@ extension SettingListViewController {
         super.viewDidLoad()
         
         title = L10n.Scene.Settings.title
+        navigationItem.leftBarButtonItem = .closeBarButtonItem(target: self, action: #selector(SettingListViewController.closeBarButtonItemPressed(_:)))
+        navigationItem.leftBarButtonItem?.tintColor = .label
         
         let hostingViewController = UIHostingController(rootView: settingListView.environmentObject(context))
         addChild(hostingViewController)
@@ -60,6 +62,14 @@ extension SettingListViewController {
                 }
             }
             .store(in: &disposeBag)
+    }
+    
+}
+
+extension SettingListViewController {
+
+    @objc private func closeBarButtonItemPressed(_ sender: UIBarButtonItem) {
+        dismiss(animated: true, completion: nil)
     }
     
 }

@@ -30,14 +30,33 @@ extension UserLikeTimelineViewModel.State {
     class Initial: UserLikeTimelineViewModel.State {
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {
             guard let viewModel = viewModel else { return false }
-            guard viewModel.userID.value != nil else { return false }
-            return stateClass == Reloading.self
+            switch stateClass {
+            case is Reloading.Type:
+                return viewModel.userID.value != nil
+            case is Suspended.Type:
+                return true
+            default:
+                return false
+            }
         }
     }
     
     class Reloading: UserLikeTimelineViewModel.State {
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {
-            return stateClass == Fail.self || stateClass == Idle.self || stateClass == PermissionDenied.self
+            switch stateClass {
+            case is Fail.Type:
+                return true
+            case is Idle.Type:
+                return true
+            case is NoMore.Type:
+                return true
+            case is NotAuthorized.Type, is Blocked.Type:
+                return true
+            case is Suspended.Type:
+                return true
+            default:
+                return false
+            }
         }
         
         override func didEnter(from previousState: GKState?) {
@@ -56,8 +75,10 @@ extension UserLikeTimelineViewModel.State {
                     switch completion {
                     case .failure(let error):
                         os_log("%{public}s[%{public}ld], %{public}s: fetch user timeline latest response error: %s", ((#file as NSString).lastPathComponent), #line, #function, error.localizedDescription)
-                        if PermissionDenied.canEnter(for: error) {
-                            stateMachine.enter(PermissionDenied.self)
+                        if NotAuthorized.canEnter(for: error) {
+                            stateMachine.enter(NotAuthorized.self)
+                        } else if Blocked.canEnter(for: error) {
+                            stateMachine.enter(Blocked.self)
                         } else {
                             stateMachine.enter(Fail.self)
                         }
@@ -68,7 +89,11 @@ extension UserLikeTimelineViewModel.State {
                     guard viewModel.userID.value == userID else { return }
                     let tweetIDs = response.value.map { $0.idStr }
 
-                    stateMachine.enter(Idle.self)
+                    if tweetIDs.isEmpty {
+                        stateMachine.enter(NoMore.self)
+                    } else {
+                        stateMachine.enter(Idle.self)
+                    }
                     viewModel.tweetIDs.value = tweetIDs
                 }
                 .store(in: &viewModel.disposeBag)
@@ -77,19 +102,46 @@ extension UserLikeTimelineViewModel.State {
     
     class Fail: UserLikeTimelineViewModel.State {
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {
-            return stateClass == Reloading.self || stateClass == LoadingMore.self
+            switch stateClass {
+            case is Reloading.Type, is LoadingMore.Type:
+                return true
+            case is Suspended.Type:
+                return true
+            default:
+                return false
+            }
         }
     }
     
     class Idle: UserLikeTimelineViewModel.State {
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {
-            return stateClass == Reloading.self || stateClass == LoadingMore.self
+            switch stateClass {
+            case is Reloading.Type, is LoadingMore.Type:
+                return true
+            case is Suspended.Type:
+                return true
+            default:
+                return false
+            }
         }
     }
     
     class LoadingMore: UserLikeTimelineViewModel.State {
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {
-            return stateClass == Fail.self || stateClass == Idle.self || stateClass == NoMore.self
+            switch stateClass {
+            case is Fail.Type:
+                return true
+            case is Idle.Type:
+                return true
+            case is NoMore.Type:
+                return true
+            case is NotAuthorized.Type, is Blocked.Type:
+                return true
+            case is Suspended.Type:
+                return true
+            default:
+                return false
+            }
         }
         
         override func didEnter(from previousState: GKState?) {
@@ -132,7 +184,7 @@ extension UserLikeTimelineViewModel.State {
         }
     }
     
-    class PermissionDenied: UserLikeTimelineViewModel.State {
+    class NotAuthorized: UserLikeTimelineViewModel.State {
         static func canEnter(for error: Error) -> Bool {
             if let responseError = error as? Twitter.API.Error.ResponseError,
                let twitterAPIError = responseError.twitterAPIError,
@@ -144,7 +196,59 @@ extension UserLikeTimelineViewModel.State {
         }
         
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {
-            return stateClass == Reloading.self
+            switch stateClass {
+            case is Reloading.Type:
+                return true
+            case is Suspended.Type:
+                return true
+            default:
+                return false
+            }
+        }
+        
+        override func didEnter(from previousState: GKState?) {
+            super.didEnter(from: previousState)
+            guard let viewModel = viewModel else { return }
+            
+            // trigger items update
+            viewModel.tweetIDs.value = []
+        }
+    }
+    
+    class Blocked: UserLikeTimelineViewModel.State {
+        static func canEnter(for error: Error) -> Bool {
+            if let responseError = error as? Twitter.API.Error.ResponseError,
+               let twitterAPIError = responseError.twitterAPIError,
+               case .blockedFromViewingThisUserProfile = twitterAPIError {
+                return true
+            }
+            
+            return false
+        }
+        
+        override func isValidNextState(_ stateClass: AnyClass) -> Bool {
+            switch stateClass {
+            case is Reloading.Type:
+                return true
+            case is Suspended.Type:
+                return true
+            default:
+                return false
+            }
+        }
+        
+        override func didEnter(from previousState: GKState?) {
+            super.didEnter(from: previousState)
+            guard let viewModel = viewModel else { return }
+            
+            // trigger items update
+            viewModel.tweetIDs.value = []
+        }
+    }
+    
+    class Suspended: UserLikeTimelineViewModel.State {
+        override func isValidNextState(_ stateClass: AnyClass) -> Bool {
+            return false
         }
         
         override func didEnter(from previousState: GKState?) {
@@ -158,7 +262,16 @@ extension UserLikeTimelineViewModel.State {
     
     class NoMore: UserLikeTimelineViewModel.State {
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {
-            return stateClass == Reloading.self
+            switch stateClass {
+            case is Reloading.Type:
+                return true
+            case is NotAuthorized.Type, is Blocked.Type:
+                return true
+            case is Suspended.Type:
+                return true
+            default:
+                return false
+            }
         }
     }
 }

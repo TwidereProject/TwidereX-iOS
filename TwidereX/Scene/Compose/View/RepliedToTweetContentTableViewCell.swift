@@ -53,7 +53,6 @@ final class RepliedToTweetContentTableViewCell: UITableViewCell {
 
 extension RepliedToTweetContentTableViewCell {
     
-    
     private func _init() {
         selectionStyle = .none
         
@@ -82,7 +81,7 @@ extension RepliedToTweetContentTableViewCell {
         ])
         
         timelinePostView.moreMenuButton.isHidden = true
-        timelinePostView.actionToolbar.isHidden = true
+        timelinePostView.actionToolbarContainer.isHidden = true
         conversationLinkUpper.isHidden = true
         conversationLinkLower.isHidden = true
     }

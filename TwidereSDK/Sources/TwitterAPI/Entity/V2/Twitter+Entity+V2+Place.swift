@@ -9,15 +9,15 @@ import Foundation
 
 extension Twitter.Entity.V2 {
     public struct Place: Codable {
-        public let id: String
+        public typealias ID = String
+        
+        public let id: ID
         public let fullName: String
         
         public let country: String?
         public let countryCode: String?
         public let name: String?
         public let placeType: String?
-        // public let url: String?
-        // public let geo
         
         enum CodingKeys: String, CodingKey {
             case id = "id"
@@ -27,7 +27,6 @@ extension Twitter.Entity.V2 {
             case countryCode = "country_code"
             case name = "name"
             case placeType = "place_type"
-            //case url = "url"
         }
     }
 }

@@ -12,6 +12,7 @@ import AVKit
 import Combine
 import CoreData
 import CoreDataStack
+import GameplayKit
 import TwitterAPI
 import Floaty
 import AlamofireImage
@@ -102,39 +103,15 @@ extension HomeTimelineViewController {
 
         view.addSubview(floatyButton)
 
-        viewModel.contentOffsetAdjustableTimelineViewControllerDelegate = self
         viewModel.tableView = tableView
-        viewModel.timelinePostTableViewCellDelegate = self
-        viewModel.timelineMiddleLoaderTableViewCellDelegate = self
-        viewModel.setupDiffableDataSource(for: tableView)
-        context.authenticationService.activeAuthenticationIndex
-            .sink { [weak self] activeAuthenticationIndex in
-                guard let self = self else { return }
-                let predicate: NSPredicate
-                if let activeAuthenticationIndex = activeAuthenticationIndex {
-                    let userID = activeAuthenticationIndex.twitterAuthentication?.twitterUser?.id ?? ""
-                    predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [
-                        TimelineIndex.predicate(platform: .twitter),
-                        TimelineIndex.predicate(userID: userID),
-                    ])
-                } else {
-                    // use invalid predicate
-                    predicate = TimelineIndex.predicate(userID: "")
-                }
-                self.viewModel.fetchedResultsController.fetchRequest.predicate = predicate
-                do {
-                    self.viewModel.diffableDataSource?.defaultRowAnimation = .fade
-                    try self.viewModel.fetchedResultsController.performFetch()
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
-                        self.viewModel.diffableDataSource?.defaultRowAnimation = .automatic
-                    }
-                } catch {
-                    assertionFailure(error.localizedDescription)
-                }
-            }
-            .store(in: &disposeBag)
+        viewModel.contentOffsetAdjustableTimelineViewControllerDelegate = self
         tableView.delegate = self
-        tableView.dataSource = viewModel.diffableDataSource
+        viewModel.setupDiffableDataSource(
+            for: tableView,
+            dependency: self,
+            timelinePostTableViewCellDelegate: self,
+            timelineMiddleLoaderTableViewCellDelegate: self
+        )
 
         // bind refresh control
         viewModel.isFetchingLatestTimeline
@@ -159,10 +136,10 @@ extension HomeTimelineViewController {
             guard let self = self else { return }
             guard let twitterUser = activeAuthenticationIndex?.twitterAuthentication?.twitterUser,
                   let avatarImageURL = twitterUser.avatarImageURL() else {
-                self.avatarBarButtonItem.configure(avatarImageURL: nil)
+                self.avatarBarButtonItem.configure(withConfigurationInput: AvatarConfigurableViewConfiguration.Input(avatarImageURL: nil))
                 return
             }
-            self.avatarBarButtonItem.configure(avatarImageURL: avatarImageURL)
+            self.avatarBarButtonItem.configure(withConfigurationInput: AvatarConfigurableViewConfiguration.Input(avatarImageURL: avatarImageURL))
         }
         .store(in: &disposeBag)
     }
@@ -319,6 +296,49 @@ extension HomeTimelineViewController: ContentOffsetAdjustableTimelineViewControl
 
 // MARK: - TimelineMiddleLoaderTableViewCellDelegate
 extension HomeTimelineViewController: TimelineMiddleLoaderTableViewCellDelegate {
+    
+    func configure(cell: TimelineMiddleLoaderTableViewCell, upperTimelineIndexObjectID: NSManagedObjectID) {
+        viewModel.loadMiddleSateMachineList
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] ids in
+                guard let self = self else { return }
+                if let stateMachine = ids[upperTimelineIndexObjectID] {
+                    guard let state = stateMachine.currentState else {
+                        assertionFailure()
+                        return
+                    }
+
+                    // make success state same as loading due to snapshot updating delay
+                    let isLoading = state is HomeTimelineViewModel.LoadMiddleState.Loading || state is HomeTimelineViewModel.LoadMiddleState.Success
+                    cell.loadMoreButton.isHidden = isLoading
+                    if isLoading {
+                        cell.activityIndicatorView.startAnimating()
+                    } else {
+                        cell.activityIndicatorView.stopAnimating()
+                    }
+                } else {
+                    cell.loadMoreButton.isHidden = false
+                    cell.activityIndicatorView.stopAnimating()
+                }
+            }
+            .store(in: &cell.disposeBag)
+        
+        var dict = viewModel.loadMiddleSateMachineList.value
+        if let _ = dict[upperTimelineIndexObjectID] {
+            // do nothing
+        } else {
+            let stateMachine = GKStateMachine(states: [
+                HomeTimelineViewModel.LoadMiddleState.Initial(viewModel: viewModel, upperTimelineIndexObjectID: upperTimelineIndexObjectID),
+                HomeTimelineViewModel.LoadMiddleState.Loading(viewModel: viewModel, upperTimelineIndexObjectID: upperTimelineIndexObjectID),
+                HomeTimelineViewModel.LoadMiddleState.Fail(viewModel: viewModel, upperTimelineIndexObjectID: upperTimelineIndexObjectID),
+                HomeTimelineViewModel.LoadMiddleState.Success(viewModel: viewModel, upperTimelineIndexObjectID: upperTimelineIndexObjectID),
+            ])
+            stateMachine.enter(HomeTimelineViewModel.LoadMiddleState.Initial.self)
+            dict[upperTimelineIndexObjectID] = stateMachine
+            viewModel.loadMiddleSateMachineList.value = dict
+        }
+    }
+    
     func timelineMiddleLoaderTableViewCell(_ cell: TimelineMiddleLoaderTableViewCell, loadMoreButtonDidPressed button: UIButton) {
         guard let diffableDataSource = viewModel.diffableDataSource else { return }
         guard let indexPath = tableView.indexPath(for: cell) else { return }

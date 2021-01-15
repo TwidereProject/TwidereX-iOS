@@ -8,4 +8,11 @@
 import UIKit
 import Combine
 
-final class TimelineBottomLoaderTableViewCell: TimelineLoaderTableViewCell { }
+final class TimelineBottomLoaderTableViewCell: TimelineLoaderTableViewCell {
+    override func _init() {
+        super._init()
+        
+        activityIndicatorView.isHidden = false
+        activityIndicatorView.startAnimating()
+    }
+}

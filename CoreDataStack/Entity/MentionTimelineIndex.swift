@@ -19,6 +19,8 @@ final public class MentionTimelineIndex: NSManagedObject {
     
     @NSManaged public private(set) var hasMore: Bool
     
+    @NSManaged public private(set) var deletedAt: Date?
+    
     // one-to-one relationship
     @NSManaged public private(set) var tweet: Tweet?
     @NSManaged public private(set) var toots: Toots?
@@ -44,6 +46,11 @@ extension MentionTimelineIndex {
         if self.hasMore != hasMore {
             self.hasMore = hasMore
         }
+    }
+    
+    // internal method for Tweet call
+    func softDelete() {
+        deletedAt = Date()
     }
     
 }
@@ -81,6 +88,10 @@ extension MentionTimelineIndex {
     
     public static func predicate(platform: Platform) -> NSPredicate {
         return NSPredicate(format: "%K == %@", #keyPath(MentionTimelineIndex.platformRaw), platform.rawValue)
+    }
+    
+    public static func notDeleted() -> NSPredicate {
+        return NSPredicate(format: "%K == nil", #keyPath(MentionTimelineIndex.deletedAt))
     }
     
 }

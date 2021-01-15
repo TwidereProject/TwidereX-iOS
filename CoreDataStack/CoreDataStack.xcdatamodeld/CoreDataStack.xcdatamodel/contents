@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="17511" systemVersion="19H114" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="17511" systemVersion="20C69" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
     <entity name="AuthenticationIndex" representedClassName=".AuthenticationIndex" syncable="YES">
         <attribute name="activedAt" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="createdAt" attributeType="Date" usesScalarValueType="NO"/>
@@ -9,6 +9,7 @@
     </entity>
     <entity name="MentionTimelineIndex" representedClassName=".MentionTimelineIndex" syncable="YES">
         <attribute name="createdAt" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="deletedAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="hasMore" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
         <attribute name="identifier" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="platformRaw" attributeType="String"/>
@@ -18,6 +19,7 @@
     </entity>
     <entity name="TimelineIndex" representedClassName=".TimelineIndex" syncable="YES">
         <attribute name="createdAt" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="deletedAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="hasMore" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
         <attribute name="identifier" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="platformRaw" attributeType="String"/>
@@ -35,6 +37,7 @@
     <entity name="Tweet" representedClassName=".Tweet" syncable="YES">
         <attribute name="conversationID" optional="YES" attributeType="String"/>
         <attribute name="createdAt" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="deletedAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="id" attributeType="String"/>
         <attribute name="identifier" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="inReplyToTweetID" optional="YES" attributeType="String"/>
@@ -54,7 +57,7 @@
         <relationship name="place" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="TwitterPlace" inverseName="tweet" inverseEntity="TwitterPlace"/>
         <relationship name="poll" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="TwitterPoll" inverseName="tweet" inverseEntity="TwitterPoll"/>
         <relationship name="quote" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Tweet" inverseName="quoteFrom" inverseEntity="Tweet"/>
-        <relationship name="quoteFrom" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Tweet" inverseName="quote" inverseEntity="Tweet"/>
+        <relationship name="quoteFrom" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Tweet" inverseName="quote" inverseEntity="Tweet"/>
         <relationship name="replyFrom" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Tweet" inverseName="replyTo" inverseEntity="Tweet"/>
         <relationship name="replyTo" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Tweet" inverseName="replyFrom" inverseEntity="Tweet"/>
         <relationship name="retweet" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Tweet" inverseName="retweetFrom" inverseEntity="Tweet"/>
@@ -199,8 +202,8 @@
         <attribute name="username" attributeType="String"/>
         <attribute name="verified" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
         <relationship name="entities" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="TwitterUserEntities" inverseName="user" inverseEntity="TwitterUserEntities"/>
-        <relationship name="following" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="TwitterUser" inverseName="followingFrom" inverseEntity="TwitterUser"/>
-        <relationship name="followingFrom" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="TwitterUser" inverseName="following" inverseEntity="TwitterUser"/>
+        <relationship name="following" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="TwitterUser" inverseName="followingBy" inverseEntity="TwitterUser"/>
+        <relationship name="followingBy" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="TwitterUser" inverseName="following" inverseEntity="TwitterUser"/>
         <relationship name="followRequestSent" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="TwitterUser" inverseName="followRequestSentFrom" inverseEntity="TwitterUser"/>
         <relationship name="followRequestSentFrom" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="TwitterUser" inverseName="followRequestSent" inverseEntity="TwitterUser"/>
         <relationship name="like" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Tweet" inverseName="likeBy" inverseEntity="Tweet"/>
@@ -244,10 +247,10 @@
     </entity>
     <elements>
         <element name="AuthenticationIndex" positionX="-63" positionY="-153" width="128" height="118"/>
-        <element name="MentionTimelineIndex" positionX="-63" positionY="-162" width="128" height="148"/>
-        <element name="TimelineIndex" positionX="748.46875" positionY="302.9921875" width="128" height="148"/>
+        <element name="MentionTimelineIndex" positionX="-63" positionY="-162" width="128" height="163"/>
+        <element name="TimelineIndex" positionX="748.46875" positionY="302.9921875" width="128" height="163"/>
         <element name="Toots" positionX="-267.625" positionY="-3.98828125" width="128" height="118"/>
-        <element name="Tweet" positionX="526.87890625" positionY="-317.48828125" width="128" height="478"/>
+        <element name="Tweet" positionX="526.87890625" positionY="-317.48828125" width="128" height="493"/>
         <element name="TweetEntities" positionX="-63" positionY="-45" width="128" height="148"/>
         <element name="TweetEntitiesAnnotation" positionX="-63" positionY="-45" width="128" height="28"/>
         <element name="TweetEntitiesCashtag" positionX="-27" positionY="-9" width="128" height="118"/>
@@ -261,7 +264,7 @@
         <element name="TwitterPlace" positionX="1146.6953125" positionY="350.890625" width="128" height="178"/>
         <element name="TwitterPoll" positionX="-54" positionY="-36" width="128" height="148"/>
         <element name="TwitterPollOption" positionX="-45" positionY="-27" width="128" height="28"/>
-        <element name="TwitterUser" positionX="281.5234375" positionY="201.703125" width="128" height="448"/>
+        <element name="TwitterUser" positionX="281.5234375" positionY="201.703125" width="128" height="434"/>
         <element name="TwitterUserEntities" positionX="-72" positionY="-171" width="128" height="88"/>
         <element name="TwitterUserEntitiesURL" positionX="-63" positionY="-162" width="128" height="148"/>
         <element name="TwitterUserMetrics" positionX="-45" positionY="-180" width="128" height="133"/>

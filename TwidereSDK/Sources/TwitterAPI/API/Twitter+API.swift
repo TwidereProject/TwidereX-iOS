@@ -30,11 +30,13 @@ extension Twitter.API {
     
     public enum Account { }
     public enum Application { }
+    public enum Block { }
     public enum Favorites { }
     public enum Friendships { }
     public enum Geo { }
     public enum Lookup { }
     public enum Media { }
+    public enum Mute { }
     public enum OAuth { }
     public enum Statuses { }
     public enum Timeline { }

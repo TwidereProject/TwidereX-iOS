@@ -30,14 +30,33 @@ extension UserMediaTimelineViewModel.State {
     class Initial: UserMediaTimelineViewModel.State {
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {
             guard let viewModel = viewModel else { return false }
-            guard viewModel.userID.value != nil else { return false }
-            return stateClass == Reloading.self
+            switch stateClass {
+            case is Reloading.Type:
+                return viewModel.userID.value != nil
+            case is Suspended.Type:
+                return true
+            default:
+                return false
+            }
         }
     }
     
     class Reloading: UserMediaTimelineViewModel.State {
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {
-            return stateClass == Fail.self || stateClass == Idle.self || stateClass == PermissionDenied.self
+            switch stateClass {
+            case is Fail.Type:
+                return true
+            case is Idle.Type:
+                return true
+            case is NoMore.Type:
+                return true
+            case is NotAuthorized.Type, is Blocked.Type:
+                return true
+            case is Suspended.Type:
+                return true
+            default:
+                return false
+            }
         }
         
         override func didEnter(from previousState: GKState?) {
@@ -54,8 +73,10 @@ extension UserMediaTimelineViewModel.State {
                     switch completion {
                     case .failure(let error):
                         os_log("%{public}s[%{public}ld], %{public}s: fetch user timeline latest response error: %s", ((#file as NSString).lastPathComponent), #line, #function, error.localizedDescription)
-                        if PermissionDenied.canEnter(for: error) {
-                            stateMachine.enter(PermissionDenied.self)
+                        if NotAuthorized.canEnter(for: error) {
+                            stateMachine.enter(NotAuthorized.self)
+                        } else if Blocked.canEnter(for: error) {
+                            stateMachine.enter(Blocked.self)
                         } else {
                             stateMachine.enter(Fail.self)
                         }
@@ -70,7 +91,12 @@ extension UserMediaTimelineViewModel.State {
                         .filter { ($0.retweetedStatus ?? $0).user.idStr == userID }
                         .map { $0.idStr }
                     
-                    stateMachine.enter(Idle.self)
+                    if pagingTweetIDs.isEmpty {
+                        stateMachine.enter(NoMore.self)
+                    } else {
+                        stateMachine.enter(Idle.self)
+                    }
+                    
                     viewModel.pagingTweetIDs.value = pagingTweetIDs
                     viewModel.tweetIDs.value = tweetIDs
                 }
@@ -80,19 +106,46 @@ extension UserMediaTimelineViewModel.State {
     
     class Fail: UserMediaTimelineViewModel.State {
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {
-            return stateClass == Reloading.self || stateClass == LoadingMore.self
+            switch stateClass {
+            case is Reloading.Type, is LoadingMore.Type:
+                return true
+            case is Suspended.Type:
+                return true
+            default:
+                return false
+            }
         }
     }
     
     class Idle: UserMediaTimelineViewModel.State {
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {
-            return stateClass == Reloading.self || stateClass == LoadingMore.self
+            switch stateClass {
+            case is Reloading.Type, is LoadingMore.Type:
+                return true
+            case is Suspended.Type:
+                return true
+            default:
+                return false
+            }
         }
     }
     
     class LoadingMore: UserMediaTimelineViewModel.State {
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {
-            return stateClass == Fail.self || stateClass == Idle.self || stateClass == NoMore.self
+            switch stateClass {
+            case is Fail.Type:
+                return true
+            case is Idle.Type:
+                return true
+            case is NoMore.Type:
+                return true
+            case is NotAuthorized.Type, is Blocked.Type:
+                return true
+            case is Suspended.Type:
+                return true
+            default:
+                return false
+            }
         }
         
         override func didEnter(from previousState: GKState?) {
@@ -155,7 +208,7 @@ extension UserMediaTimelineViewModel.State {
         }
     }
     
-    class PermissionDenied: UserMediaTimelineViewModel.State {
+    class NotAuthorized: UserMediaTimelineViewModel.State {
         static func canEnter(for error: Error) -> Bool {
             if let responseError = error as? Twitter.API.Error.ResponseError,
                let twitterAPIError = responseError.twitterAPIError,
@@ -167,7 +220,14 @@ extension UserMediaTimelineViewModel.State {
         }
         
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {
-            return stateClass == Reloading.self
+            switch stateClass {
+            case is Reloading.Type:
+                return true
+            case is Suspended.Type:
+                return true
+            default:
+                return false
+            }
         }
         
         override func didEnter(from previousState: GKState?) {
@@ -180,9 +240,66 @@ extension UserMediaTimelineViewModel.State {
         }
     }
     
+    class Blocked: UserMediaTimelineViewModel.State {
+        static func canEnter(for error: Error) -> Bool {
+            if let responseError = error as? Twitter.API.Error.ResponseError,
+               let twitterAPIError = responseError.twitterAPIError,
+               case .blockedFromViewingThisUserProfile = twitterAPIError {
+                return true
+            }
+            
+            return false
+        }
+        
+        override func isValidNextState(_ stateClass: AnyClass) -> Bool {
+            switch stateClass {
+            case is Reloading.Type:
+                return true
+            case is Suspended.Type:
+                return true
+            default:
+                return false
+            }
+        }
+        
+        override func didEnter(from previousState: GKState?) {
+            super.didEnter(from: previousState)
+            guard let viewModel = viewModel else { return }
+            
+            // trigger items update
+            viewModel.pagingTweetIDs.value = []
+            viewModel.tweetIDs.value = []
+        }
+    }
+    
+    class Suspended: UserMediaTimelineViewModel.State {
+        override func isValidNextState(_ stateClass: AnyClass) -> Bool {
+            return false
+        }
+        
+        override func didEnter(from previousState: GKState?) {
+            super.didEnter(from: previousState)
+            guard let viewModel = viewModel else { return }
+            
+            // trigger items update
+            viewModel.pagingTweetIDs.value = []
+            viewModel.tweetIDs.value = []
+            viewModel.items.value = []
+        }
+    }
+    
     class NoMore: UserMediaTimelineViewModel.State {
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {
-            return stateClass == Reloading.self
+            switch stateClass {
+            case is Reloading.Type:
+                return true
+            case is NotAuthorized.Type, is Blocked.Type:
+                return true
+            case is Suspended.Type:
+                return true
+            default:
+                return false
+            }
         }
     }
     

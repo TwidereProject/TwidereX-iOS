@@ -18,6 +18,7 @@ extension APIService.CoreData.V2 {
         let tweet: Twitter.Entity.V2.Tweet
         let user: Twitter.Entity.V2.User
         let media: [Twitter.Entity.V2.Media]?
+        let place: Twitter.Entity.V2.Place?
         
         // reverse reference
         weak var dictContent: Twitter.Response.V2.DictContent?
@@ -135,9 +136,9 @@ extension APIService.CoreData.V2 {
                 return metrics
             }()
             let place: TwitterPlace? = {
-                // guard let place = info.place else { return nil }
-                // let placeProperty = TwitterPlace
-                return nil
+                guard let place = info.place else { return nil }
+                let placeProperty = TwitterPlace.Property(id: place.id, fullname: place.fullName, county: place.country, countyCode: place.countryCode, name: place.name, placeType: place.placeType)
+                return TwitterPlace.insert(into: managedObjectContext, property: placeProperty)
             }()
             
             let replyToTweetID: Tweet.ID? = repliedToInfo?.tweet.id ?? {

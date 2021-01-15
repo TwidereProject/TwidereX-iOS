@@ -31,7 +31,9 @@ final class UserMediaTimelineViewModel: NSObject {
             State.Idle(viewModel: self),
             State.Fail(viewModel: self),
             State.LoadingMore(viewModel: self),
-            State.PermissionDenied(viewModel: self),
+            State.NotAuthorized(viewModel: self),
+            State.Blocked(viewModel: self),
+            State.Suspended(viewModel: self),
             State.NoMore(viewModel: self),
         ])
         stateMachine.enter(State.Initial.self)
@@ -78,8 +80,16 @@ final class UserMediaTimelineViewModel: NSObject {
                     switch currentState {
                     case is State.Reloading, is State.Idle, is State.LoadingMore, is State.Fail:
                         snapshot.appendItems([.bottomLoader], toSection: .footer)
-                    case is State.PermissionDenied:
-                        snapshot.appendItems([.permissionDenied], toSection: .footer)
+                    case is State.NotAuthorized:
+                        snapshot.appendItems([.emptyStateHeader(attribute: .init(reason: .notAuthorized))], toSection: .footer)
+                    case is State.Blocked:
+                        snapshot.appendItems([.emptyStateHeader(attribute: .init(reason: .blocked))], toSection: .footer)
+                    case is State.Suspended:
+                        snapshot.appendItems([.emptyStateHeader(attribute: .init(reason: .suspended))], toSection: .footer)
+                    case is State.NoMore:
+                        if items.isEmpty {
+                            snapshot.appendItems([.emptyStateHeader(attribute: .init(reason: .noTweetsFound))], toSection: .footer)
+                        }
                     default:
                         break
                     }
@@ -105,6 +115,10 @@ final class UserMediaTimelineViewModel: NSObject {
                 }
             }
             .store(in: &disposeBag)
+    }
+    
+    deinit {
+        os_log("%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
     }
     
 }

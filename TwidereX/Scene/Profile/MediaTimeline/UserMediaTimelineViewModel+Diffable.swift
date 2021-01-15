@@ -12,12 +12,17 @@ import CoreData
 import CoreDataStack
 
 extension UserMediaTimelineViewModel {
-    func setupDiffableDataSource(collectionView: UICollectionView, mediaCollectionViewCellDelegate: MediaCollectionViewCellDelegate?) {
+    func setupDiffableDataSource(
+        collectionView: UICollectionView,
+        mediaCollectionViewCellDelegate: MediaCollectionViewCellDelegate,
+        timelineHeaderCollectionViewCellDelegate: TimelineHeaderCollectionViewCellDelegate
+    ) {
         diffableDataSource = MediaSection.collectionViewDiffableDataSource(
             collectionView: collectionView,
             managedObjectContext: fetchedResultsController.managedObjectContext,
-            mediaCollectionViewCellDelegate: mediaCollectionViewCellDelegate
+            mediaCollectionViewCellDelegate: mediaCollectionViewCellDelegate, timelineHeaderCollectionViewCellDelegate: timelineHeaderCollectionViewCellDelegate
         )
+        items.value = []
     }
 }
 
@@ -40,6 +45,7 @@ extension UserMediaTimelineViewModel: NSFetchedResultsControllerDelegate {
 
         var items: [Item] = []
         for tweet in tweets {
+            guard tweet.deletedAt == nil else { continue }
             let mediaArray = Array(tweet.media ?? Set())
             let photoMedia = mediaArray.filter { $0.type == "photo" }
             guard !photoMedia.isEmpty else { continue }

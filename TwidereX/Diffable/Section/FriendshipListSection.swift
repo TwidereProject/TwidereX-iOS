@@ -53,7 +53,7 @@ extension MediaSection {
 
 extension MediaSection {
     static func configure(cell: FriendshipTableViewCell, twitterUser: TwitterUser, context: AppContext) {
-        cell.userBriefInfoView.configure(avatarImageURL: twitterUser.avatarImageURL(), verified: twitterUser.verified)
+        cell.userBriefInfoView.configure(withConfigurationInput: AvatarConfigurableViewConfiguration.Input(avatarImageURL: twitterUser.avatarImageURL(), verified: twitterUser.verified))
         cell.userBriefInfoView.lockImageView.isHidden = !twitterUser.protected
         cell.userBriefInfoView.nameLabel.text = twitterUser.name
         cell.userBriefInfoView.usernameLabel.text = "@" + twitterUser.username
@@ -114,7 +114,11 @@ extension MediaSection {
                             successInfo: FriendshipBannerConfiguration.Info(title: L10n.Common.Alerts.UnfollowingSuccess.title, message: ""),
                             failureInfo: FriendshipBannerConfiguration.Info(title: L10n.Common.Alerts.FailedToUnfollowing.title, message: L10n.Common.Alerts.FailedToUnfollowing.message)
                         )
-                        MediaSection.toggleFriendship(for: twitterUser, friendshipBannerConfiguration: configuration, context: context)
+                        MediaSection.toggleFriendship(
+                            context: context,
+                            twitterUser: twitterUser,
+                            friendshipBannerConfiguration: configuration
+                        )
                     })
                     
                     if relationship.source.followingRequested {
@@ -132,7 +136,11 @@ extension MediaSection {
                                     successInfo: FriendshipBannerConfiguration.Info(title: L10n.Common.Alerts.FollowingSuccess.title, message: ""),
                                     failureInfo: FriendshipBannerConfiguration.Info(title: L10n.Common.Alerts.FailedToFollowing.title, message: L10n.Common.Alerts.FailedToFollowing.message)
                                 )
-                                MediaSection.toggleFriendship(for: twitterUser, friendshipBannerConfiguration: configuration, context: context)
+                                MediaSection.toggleFriendship(
+                                    context: context,
+                                    twitterUser: twitterUser,
+                                    friendshipBannerConfiguration: configuration
+                                )
                             }
                             let menu = UIMenu(title: menuTitle, image: nil, identifier: nil, options: .displayInline, children: [followingAction])
                             elementProvider([menu])
@@ -158,50 +166,42 @@ extension MediaSection {
         }
     }
     
-    private static func toggleFriendship(for twitterUser: TwitterUser, friendshipBannerConfiguration: FriendshipBannerConfiguration, context: AppContext) {
-        guard let activeTwitterAuthenticationBox = context.authenticationService.activeTwitterAuthenticationBox.value else {
-            assertionFailure()
-            return
-        }
-        
-        context.apiService.toggleFriendship(
-            for: twitterUser,
-            activeTwitterAuthenticationBox: activeTwitterAuthenticationBox
-        )
-        .sink { completion in
-            let feedbackGenerator = UINotificationFeedbackGenerator()
-            feedbackGenerator.prepare()
-            
-            switch completion {
-            case .failure:
-                var config = SwiftMessages.defaultConfig
-                config.duration = .seconds(seconds: 3)
-                config.interactiveHide = true
-                let bannerView = NotifyBannerView()
-                bannerView.configure(for: .warning)
-                bannerView.titleLabel.text = friendshipBannerConfiguration.failureInfo.title
-                bannerView.messageLabel.text = friendshipBannerConfiguration.failureInfo.message
-                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                    SwiftMessages.show(config: config, view: bannerView)
-                    feedbackGenerator.notificationOccurred(.error)
+    private static func toggleFriendship(
+        context: AppContext,
+        twitterUser: TwitterUser,
+        friendshipBannerConfiguration: FriendshipBannerConfiguration
+    ) {
+        UserProviderFacade
+            .toggleUserFriendship(context: context, twitterUser: twitterUser)
+            .sink { completion in
+                switch completion {
+                case .failure:
+                    var config = SwiftMessages.defaultConfig
+                    config.duration = .seconds(seconds: 3)
+                    config.interactiveHide = true
+                    let bannerView = NotifyBannerView()
+                    bannerView.configure(for: .warning)
+                    bannerView.titleLabel.text = friendshipBannerConfiguration.failureInfo.title
+                    bannerView.messageLabel.text = friendshipBannerConfiguration.failureInfo.message
+                    DispatchQueue.main.async {
+                        SwiftMessages.show(config: config, view: bannerView)
+                    }
+                case .finished:
+                    var config = SwiftMessages.defaultConfig
+                    config.duration = .seconds(seconds: 3)
+                    config.interactiveHide = true
+                    let bannerView = NotifyBannerView()
+                    bannerView.configure(for: .normal)
+                    bannerView.titleLabel.text = friendshipBannerConfiguration.successInfo.title
+                    bannerView.messageLabel.isHidden = true
+                    DispatchQueue.main.async {
+                        SwiftMessages.show(config: config, view: bannerView)
+                    }
                 }
-            case .finished:
-                var config = SwiftMessages.defaultConfig
-                config.duration = .seconds(seconds: 3)
-                config.interactiveHide = true
-                let bannerView = NotifyBannerView()
-                bannerView.configure(for: .normal)
-                bannerView.titleLabel.text = friendshipBannerConfiguration.successInfo.title
-                bannerView.messageLabel.isHidden = true
-                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                    SwiftMessages.show(config: config, view: bannerView)
-                    feedbackGenerator.notificationOccurred(.success)
-                }
+            } receiveValue: { response in
+                // do nothing
             }
-        } receiveValue: { response in
-            // TODO: handle success
-        }
-        .store(in: &context.disposeBag)
+            .store(in: &context.disposeBag)
     }
 
 }

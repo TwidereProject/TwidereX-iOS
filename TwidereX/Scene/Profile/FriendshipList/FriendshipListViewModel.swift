@@ -93,4 +93,8 @@ final class FriendshipListViewModel: NSObject {
         }
     }
     
+    deinit {
+        os_log("%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
+    }
+    
 }

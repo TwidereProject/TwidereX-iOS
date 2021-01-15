@@ -55,6 +55,12 @@ extension AboutViewController {
                         .assign(to: \.value, on: profileViewModel.currentTwitterUser)
                         .store(in: &profileViewModel.disposeBag)
                     self.coordinator.present(scene: .profile(viewModel: profileViewModel), from: self, transition: .show)
+                case .license:
+                    let url = URL(string: "https://github.com/TwidereProject/TwidereX-iOS/blob/master/LICENSE")!
+                    self.coordinator.present(scene: .safari(url: url), from: nil, transition: .safariPresent(animated: true, completion: nil))
+                case .privacyyPolicy:
+                    let url = URL(string: "https://github.com/TwidereProject/TwidereX-iOS/wiki/Privacy-Policy")!
+                    self.coordinator.present(scene: .safari(url: url), from: nil, transition: .safariPresent(animated: true, completion: nil))
                 }
             }
             .store(in: &disposeBag)

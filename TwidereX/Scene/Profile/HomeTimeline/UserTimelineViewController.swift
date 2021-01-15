@@ -26,7 +26,7 @@ final class UserTimelineViewController: UIViewController, MediaPreviewableViewCo
         let tableView = UITableView()
         tableView.register(TimelinePostTableViewCell.self, forCellReuseIdentifier: String(describing: TimelinePostTableViewCell.self))
         tableView.register(TimelineBottomLoaderTableViewCell.self, forCellReuseIdentifier: String(describing: TimelineBottomLoaderTableViewCell.self))
-        tableView.register(TimelinePermissionDeniedTableViewCell.self, forCellReuseIdentifier: String(describing: TimelinePermissionDeniedTableViewCell.self))
+        tableView.register(TimelineHeaderTableViewCell.self, forCellReuseIdentifier: String(describing: TimelineHeaderTableViewCell.self))
         tableView.rowHeight = UITableView.automaticDimension
         tableView.separatorStyle = .none
         return tableView
@@ -54,15 +54,14 @@ extension UserTimelineViewController {
         ])
         
         viewModel.tableView = tableView
-        viewModel.setupDiffableDataSource(for: tableView, timelinePostTableViewCellDelegate: self)
-        do {
-            try viewModel.fetchedResultsController.performFetch()
-        } catch {
-            assertionFailure(error.localizedDescription)
-        }
         tableView.delegate = self
-        tableView.dataSource = viewModel.diffableDataSource
-        
+        viewModel.setupDiffableDataSource(
+            for: tableView,
+            dependency: self,
+            timelinePostTableViewCellDelegate: self,
+            timelineHeaderTableViewCellDelegate: self
+        )
+
         // trigger user timeline loading
         viewModel.userID
             .removeDuplicates()
@@ -165,6 +164,10 @@ extension UserTimelineViewController: TimelinePostTableViewCellDelegate {
     weak var playerViewControllerDelegate: AVPlayerViewControllerDelegate? { return self }
     func parent() -> UIViewController { return self }
 }
+
+// MARK: - TimelineHeaderTableViewCellDelegate
+extension UserTimelineViewController: TimelineHeaderTableViewCellDelegate { }
+
 
 // MARK: - CustomScrollViewContainerController
 extension UserTimelineViewController: ScrollViewContainer {

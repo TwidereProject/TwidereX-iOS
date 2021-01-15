@@ -6,7 +6,6 @@
 //  Copyright © 2020 Twidere. All rights reserved.
 //
 
-
 import os.log
 import UIKit
 import Combine
@@ -16,7 +15,6 @@ import CoreDataStack
 import CommonOSLog
 
 extension APIService {
-    
     
     /// Toggle friendship between twitterUser and activeTwitterUser
     ///
@@ -39,7 +37,6 @@ extension APIService {
         )
         .receive(on: DispatchQueue.main)
         .handleEvents { _ in
-            notificationFeedbackGenerator.prepare()
             impactFeedbackGenerator.prepare()
         } receiveOutput: { _ in
             impactFeedbackGenerator.impactOccurred()
@@ -62,11 +59,37 @@ extension APIService {
         }
         .switchToLatest()
         .receive(on: DispatchQueue.main)
-        .handleEvents(receiveCompletion: { completion in
-            // TODO: rollback local change
+        .handleEvents(receiveCompletion: { [weak self] completion in
+            guard let self = self else { return }
             switch completion {
             case .failure(let error):
                 os_log("%{public}s[%{public}ld], %{public}s: [Friendship] remote friendship update fail: %{public}s", ((#file as NSString).lastPathComponent), #line, #function, error.localizedDescription)
+                
+                if let responseError = error as? Twitter.API.Error.ResponseError,
+                   let twitterAPIError = responseError.twitterAPIError {
+                    switch twitterAPIError {
+                    case .accountIsTemporarilyLocked, .rateLimitExceeded, .blockedFromRequestFollowingThisUser:
+                        self.error.send(.explicit(.twitterResponseError(responseError)))
+                    default:
+                        break
+                    }
+                }
+                
+                // rollback
+                self.friendshipUpdateLocal(
+                    twitterUserObjectID: twitterUser.objectID,
+                    twitterAuthenticationBox: activeTwitterAuthenticationBox
+                )
+                .sink { completion in
+                    os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: [Friendship] rollback finish", ((#file as NSString).lastPathComponent), #line, #function)
+                } receiveValue: { _ in
+                    // do nothing
+                    notificationFeedbackGenerator.prepare()
+                    notificationFeedbackGenerator.notificationOccurred(.error)
+                }
+                .store(in: &self.disposeBag)
+
+                
             case .finished:
                 notificationFeedbackGenerator.notificationOccurred(.success)
                 os_log("%{public}s[%{public}ld], %{public}s: [Friendship] remote friendship update success", ((#file as NSString).lastPathComponent), #line, #function)
@@ -74,6 +97,7 @@ extension APIService {
         })
         .eraseToAnyPublisher()
     }
+    
 }
 
 extension APIService {
@@ -123,9 +147,12 @@ extension APIService {
                         }
                         
                         let targetTwitterUser = managedObjectContext.object(with: twitterUserObjectID) as! TwitterUser
-                        targetTwitterUser.update(following: relationship.source.following, from: sourceTwitterUser)
-                        sourceTwitterUser.update(following: relationship.source.followedBy, from: targetTwitterUser)
+                        targetTwitterUser.update(following: relationship.source.following, by: sourceTwitterUser)
+                        sourceTwitterUser.update(following: relationship.source.followedBy, by: targetTwitterUser)
                         targetTwitterUser.update(followRequestSent: relationship.source.followingRequested, from: sourceTwitterUser)
+                        targetTwitterUser.update(muting: relationship.source.muting, by: sourceTwitterUser)
+                        targetTwitterUser.update(blocking: relationship.source.blocking, by: sourceTwitterUser)
+                        sourceTwitterUser.update(blocking: relationship.source.blockedBy, by: targetTwitterUser)
                     }
                     .setFailureType(to: Error.self)
                     .tryMap { result -> Twitter.Response.Content<Twitter.Entity.Relationship> in
@@ -177,19 +204,19 @@ extension APIService {
             _targetTwitterUserID = twitterUser.id
             
             let isPending = (twitterUser.followRequestSentFrom ?? Set()).contains(where: { $0.id == requestTwitterUserID })
-            let isFollowing = (twitterUser.followingFrom ?? Set()).contains(where: { $0.id == requestTwitterUserID })
+            let isFollowing = (twitterUser.followingBy ?? Set()).contains(where: { $0.id == requestTwitterUserID })
             
             if isFollowing || isPending {
                 _queryType = .destroy
-                twitterUser.update(following: false, from: requestTwitterUser)
+                twitterUser.update(following: false, by: requestTwitterUser)
                 twitterUser.update(followRequestSent: false, from: requestTwitterUser)
             } else {
                 _queryType = .create
                 if twitterUser.protected {
-                    twitterUser.update(following: false, from: requestTwitterUser)
+                    twitterUser.update(following: false, by: requestTwitterUser)
                     twitterUser.update(followRequestSent: true, from: requestTwitterUser)
                 } else {
-                    twitterUser.update(following: true, from: requestTwitterUser)
+                    twitterUser.update(following: true, by: requestTwitterUser)
                     twitterUser.update(followRequestSent: false, from: requestTwitterUser)
                 }
             }
@@ -216,12 +243,77 @@ extension APIService {
         twitterUserID: TwitterUser.ID,
         twitterAuthenticationBox: AuthenticationService.TwitterAuthenticationBox
     ) -> AnyPublisher<Twitter.Response.Content<Twitter.Entity.User>, Error> {
+        let requestTwitterUserID = twitterAuthenticationBox.twitterUserID
         let authorization = twitterAuthenticationBox.twitterAuthorization
         let query = Twitter.API.Friendships.FriendshipUpdateQuery(
             userID: twitterUserID
         )
         // API not return latest friendship status. not merge result
         return Twitter.API.Friendships.friendships(session: session, authorization: authorization, queryKind: friendshipQueryType, query: query)
+            .handleEvents(receiveCompletion: { [weak self] completion in
+                guard let self = self else { return }
+                switch completion {
+                case .failure(let error):
+                    if let responseError = error as? Twitter.API.Error.ResponseError {
+                        switch responseError.twitterAPIError {
+                        case .accountIsTemporarilyLocked, .rateLimitExceeded, .blockedFromRequestFollowingThisUser:
+                            self.error.send(.explicit(.twitterResponseError(responseError)))
+                        default:
+                            break
+                        }
+                    }
+                case .finished:
+                    switch friendshipQueryType {
+                    case .create:
+                        // destroy blocking friendship
+                        let managedObjectContext = self.backgroundManagedObjectContext
+                        managedObjectContext.performChanges {
+                            let _requestTwitterUser: TwitterUser? = {
+                                let request = TwitterUser.sortedFetchRequest
+                                request.predicate = TwitterUser.predicate(idStr: requestTwitterUserID)
+                                request.fetchLimit = 1
+                                request.returnsObjectsAsFaults = false
+                                do {
+                                    return try managedObjectContext.fetch(request).first
+                                } catch {
+                                    assertionFailure(error.localizedDescription)
+                                    return nil
+                                }
+                            }()
+                            
+                            guard let requestTwitterUser = _requestTwitterUser else {
+                                assertionFailure()
+                                return
+                            }
+                            
+                            let _twitterUser: TwitterUser? = {
+                                let request = TwitterUser.sortedFetchRequest
+                                request.predicate = TwitterUser.predicate(idStr: twitterUserID)
+                                request.fetchLimit = 1
+                                request.returnsObjectsAsFaults = false
+                                do {
+                                    return try managedObjectContext.fetch(request).first
+                                } catch {
+                                    assertionFailure(error.localizedDescription)
+                                    return nil
+                                }
+                            }()
+                            
+                            guard let twitterUser = _twitterUser else {
+                                assertionFailure()
+                                return
+                            }
+                            twitterUser.update(blocking: false, by: requestTwitterUser)
+                        }
+                        .sink { _ in
+                            // do nothing
+                        }
+                        .store(in: &self.disposeBag)
+                    case .destroy, .update:
+                        break
+                    }
+                }
+            })
             .eraseToAnyPublisher()
     }
     
@@ -263,7 +355,8 @@ extension APIService {
                     return Twitter.Response.V2.DictContent(
                         tweets: response.includes?.tweets ?? [],
                         users: response.data ?? [],
-                        media: []
+                        media: [],
+                        places: []
                     )
                 }
                 return APIService.Persist.persistDictContent(managedObjectContext: self.backgroundManagedObjectContext, response: dictResponse, requestTwitterUserID: requestTwitterUserID, log: log)

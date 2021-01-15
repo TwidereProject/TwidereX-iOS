@@ -25,7 +25,7 @@ final class ComposeTweetViewController: UIViewController, NeedsDependency, Media
     
     let mediaPreviewTransitionController = MediaPreviewTransitionController()
     
-    lazy var composeBarButtonItem = UIBarButtonItem(image: Asset.ObjectTools.paperplane.image.withRenderingMode(.alwaysTemplate), style: .plain, target: self, action: #selector(ComposeTweetViewController.composeBarButtonItemPressed(_:)))
+    lazy var composeBarButtonItem: UIBarButtonItem = .composeBarButtonItem(target: self, action: #selector(ComposeTweetViewController.composeBarButtonItemPressed(_:)))
     
     let tableView: UITableView = {
         let tableView = ControlContainableTableView()
@@ -110,10 +110,8 @@ extension ComposeTweetViewController {
         
         title = L10n.Scene.Compose.Title.compose
         view.backgroundColor = .systemBackground
-        navigationItem.leftBarButtonItem = UIBarButtonItem(image: Asset.Editing.xmark.image.withRenderingMode(.alwaysTemplate), style: .plain, target: self, action: #selector(ComposeTweetViewController.closeBarButtonItemPressed(_:)))
-        navigationItem.leftBarButtonItem?.tintColor = .label
+        navigationItem.leftBarButtonItem = .closeBarButtonItem(target: self, action: #selector(ComposeTweetViewController.closeBarButtonItemPressed(_:)))
         navigationItem.rightBarButtonItem = composeBarButtonItem
-        navigationItem.rightBarButtonItem?.tintColor = Asset.Colors.hightLight.color
         
         tableView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(tableView)
@@ -569,7 +567,10 @@ extension ComposeTweetViewController: UIImagePickerControllerDelegate & UINaviga
         let picker = UIImagePickerController()
         picker.sourceType = sourceType
         picker.delegate = self
-        present(picker, animated: true)
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            self.present(picker, animated: true)
+        }
     }
     
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {

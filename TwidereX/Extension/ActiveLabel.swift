@@ -14,19 +14,27 @@ extension ActiveLabel {
     
     enum Style {
         case `default`
+        case timelineHeaderView
     }
     
     convenience init(style: Style) {
         self.init()
+    
+        switch style {
+        case .default:
+            urlMaximumLength = 30
+            font = .preferredFont(forTextStyle: .body)
+            textColor = UIColor.label.withAlphaComponent(0.8)
+        case .timelineHeaderView:
+            font = .preferredFont(forTextStyle: .footnote)
+            textColor = .secondaryLabel
+        }
         
         numberOfLines = 0
         mentionColor = Asset.Colors.hightLight.color
         hashtagColor = Asset.Colors.hightLight.color
         URLColor = Asset.Colors.hightLight.color
-        textColor = UIColor.label.withAlphaComponent(0.8)
-        font = .preferredFont(forTextStyle: .body)
         text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
-        urlMaximumLength = 30
     }
     
 }

@@ -40,6 +40,7 @@ final class MediaPreviewViewController: UIViewController, NeedsDependency {
         backgroundView.alpha = 0.9
         backgroundView.layer.masksToBounds = true
         backgroundView.layer.cornerRadius = 8
+        backgroundView.layer.cornerCurve = .continuous
         return backgroundView
     }()
     
@@ -138,7 +139,7 @@ extension MediaPreviewViewController {
         .receive(on: DispatchQueue.main)
             .sink { [weak self] avatarImageURL, isVerified, _ in
                 guard let self = self else { return }
-                self.mediaInfoDescriptionView.configure(avatarImageURL: avatarImageURL, verified: isVerified)
+                self.mediaInfoDescriptionView.configure(withConfigurationInput: AvatarConfigurableViewConfiguration.Input(avatarImageURL: avatarImageURL, verified: isVerified))
             }
             .store(in: &disposeBag)
         viewModel.name
@@ -168,14 +169,14 @@ extension MediaPreviewViewController {
                 pageControl.currentPage = meta.initialIndex
             }
             pageControl.isHidden = viewModel.viewControllers.count == 1
-            mediaInfoDescriptionView.statusActionToolbar.delegate = self
+            mediaInfoDescriptionView.actionToolbarContainer.delegate = self
             let managedObjectContext = self.context.managedObjectContext
             managedObjectContext.perform {
                 let tweet = managedObjectContext.object(with: meta.tweetObjectID) as! Tweet
                 let targetTweet = tweet.retweet ?? tweet
                 let activeTwitterAuthenticationBox = self.context.authenticationService.activeTwitterAuthenticationBox.value
                 let requestTwitterUserID = activeTwitterAuthenticationBox?.twitterUserID ?? ""
-                MediaPreviewViewController.configure(statusActionToolbar: self.mediaInfoDescriptionView.statusActionToolbar, tweet: targetTweet, requestTwitterUserID: requestTwitterUserID)
+                MediaPreviewViewController.configure(actionToolbarContainer: self.mediaInfoDescriptionView.actionToolbarContainer, tweet: targetTweet, requestTwitterUserID: requestTwitterUserID)
                 
                 // observe model change
                 ManagedObjectObserver.observe(object: tweet.retweet ?? tweet)
@@ -190,7 +191,7 @@ extension MediaPreviewViewController {
                         let activeTwitterAuthenticationBox = self.context.authenticationService.activeTwitterAuthenticationBox.value
                         let requestTwitterUserID = activeTwitterAuthenticationBox?.twitterUserID ?? ""
                         
-                        MediaPreviewViewController.configure(statusActionToolbar: self.mediaInfoDescriptionView.statusActionToolbar, tweet: targetTweet, requestTwitterUserID: requestTwitterUserID)
+                        MediaPreviewViewController.configure(actionToolbarContainer: self.mediaInfoDescriptionView.actionToolbarContainer, tweet: targetTweet, requestTwitterUserID: requestTwitterUserID)
                     }
                     .store(in: &self.disposeBag)
             }
@@ -209,12 +210,12 @@ extension MediaPreviewViewController {
 }
 
 extension MediaPreviewViewController {
-    static func configure(statusActionToolbar: StatusActionToolbar, tweet: Tweet, requestTwitterUserID: TwitterUser.ID) {
+    private static func configure(actionToolbarContainer: ActionToolbarContainer, tweet: Tweet, requestTwitterUserID: TwitterUser.ID) {
         let isRetweeted = tweet.retweetBy.flatMap({ $0.contains(where: { $0.id == requestTwitterUserID }) }) ?? false
-        statusActionToolbar.retweetButtonHighligh = isRetweeted
+        actionToolbarContainer.isRetweetButtonHighligh = isRetweeted
         
         let isLike = tweet.likeBy.flatMap({ $0.contains(where: { $0.id == requestTwitterUserID }) }) ?? false
-        statusActionToolbar.likeButtonHighlight = isLike
+        actionToolbarContainer.isLikeButtonHighlight = isLike
     }
 }
 
@@ -267,9 +268,9 @@ extension MediaPreviewViewController: PageboyViewControllerDelegate {
 
 }
 
-// MARK: - StatusActionToolbarDelegate
-extension MediaPreviewViewController: StatusActionToolbarDelegate {
-    func statusActionToolbar(_ toolbar: StatusActionToolbar, shareButtonDidPressed sender: UIButton) {
+// MARK: - ActionToolbarContainerDelegate
+extension MediaPreviewViewController: ActionToolbarContainerDelegate {
+    func actionToolbarContainer(_ actionToolbarContainer: ActionToolbarContainer, menuButtonDidPressed sender: UIButton) {
         let currentIndex = pagingViewConttroller.currentIndex
         tweet()
             .sink { [weak self] tweet in

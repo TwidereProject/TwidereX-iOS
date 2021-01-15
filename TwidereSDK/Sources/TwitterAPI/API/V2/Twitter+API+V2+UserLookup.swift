@@ -148,5 +148,6 @@ extension Twitter.API.V2.UserLookup {
 extension Twitter.API.V2.UserLookup {
     public struct Content: Codable {
         public let data: [Twitter.Entity.V2.User]?
+        public let errors: [Twitter.Response.V2.ContentError]?
     }
 }

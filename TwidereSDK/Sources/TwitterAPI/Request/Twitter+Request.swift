@@ -67,4 +67,14 @@ extension Twitter.Request {
         .width,
         .publicMetrics,
     ]
+    static let placeFields: [Twitter.Request.PlaceFields] = [
+        .containedWithin,
+        .country,
+        .countryCode,
+        .fullName,
+        .geo,
+        .id,
+        .name,
+        .placeType,
+    ]
 }
