@@ -13,43 +13,61 @@ import Keys
 
 class AppSecret {
     
-    private(set) lazy var oauthSecret = OAuthSecret()
+    let appSecret: String
+    let oauthSecret: OAuthSecret
 
-    // MARK: - Singleton
-    public static let shared = AppSecret()
+    static let `default`: AppSecret = {
+        let keys = TwidereXKeys()
+        let hostPublicKey: Curve25519.KeyAgreement.PublicKey? = {
+            let keyString = keys.host_key_public
+            guard let keyData = Data(base64Encoded: keyString),
+                  let key = try? Curve25519.KeyAgreement.PublicKey(rawRepresentation: keyData) else {
+                return nil
+            }
+            
+            return key
+        }()
+        #if DEBUG
+        let oauthEndpoint = keys.oauth_endpoint_debug
+        #else
+        let oauthEndpoint = keys.oauth_endpoint
+        #endif
+        
+        let oauthSecret = AppSecret.OAuthSecret(
+            consumerKey: keys.consumer_key,
+            consumerKeySecret: keys.consumer_key_secret,
+            hostPublicKey: hostPublicKey,
+            oauthEndpoint: oauthEndpoint
+        )
+        let appSecret = AppSecret(oauthSecret: oauthSecret)
+        return appSecret
+    }()
     
-    private init() { }
+    init(oauthSecret: OAuthSecret) {
+        let keys = TwidereXKeys()
+        self.appSecret = keys.app_secret
+        self.oauthSecret = oauthSecret
+    }
     
 }
 
 extension AppSecret {
     struct OAuthSecret {
-        let appSecret: String
         let consumerKey: String
         let consumerKeySecret: String
         let hostPublicKey: Curve25519.KeyAgreement.PublicKey?
         let oauthEndpoint: String
         
-        init() {
-            let keys = TwidereXKeys()
-            self.appSecret = keys.app_secret
-            self.consumerKey = keys.consumer_key
-            self.consumerKeySecret = keys.consumer_key_secret
-            
-            hostPublicKey = {
-                let keyString = keys.host_key_public
-                guard let keyData = Data(base64Encoded: keyString),
-                      let key = try? Curve25519.KeyAgreement.PublicKey(rawRepresentation: keyData) else {
-                    return nil
-                }
-                    
-                return key
-            }()
-            #if DEBUG
-            self.oauthEndpoint = keys.oauth_endpoint_debug
-            #else
-            self.oauthEndpoint = keys.oauth_endpoint
-            #endif
+        init(
+            consumerKey: String,
+            consumerKeySecret: String,
+            hostPublicKey: Curve25519.KeyAgreement.PublicKey?,
+            oauthEndpoint: String
+        ) {
+            self.consumerKey = consumerKey
+            self.consumerKeySecret = consumerKeySecret
+            self.hostPublicKey = hostPublicKey
+            self.oauthEndpoint = oauthEndpoint
         }
     }
 }

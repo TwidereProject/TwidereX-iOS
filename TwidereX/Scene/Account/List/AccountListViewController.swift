@@ -26,12 +26,6 @@ final class AccountListViewController: UIViewController, NeedsDependency {
     var viewModel: AccountListViewModel!
     
     let addBarButtonItem = UIBarButtonItem(title: L10n.Common.Controls.Actions.add, style: .done, target: self, action: #selector(AccountListViewController.addBarButtonItemPressed(_:)))
-    let activityIndicatorBarButtonItem: UIBarButtonItem = {
-        let activityIndicatorView = UIActivityIndicatorView(style: .medium)
-        let barButtonItem = UIBarButtonItem(customView: activityIndicatorView)
-        activityIndicatorView.startAnimating()
-        return barButtonItem
-    }()
     
     lazy var tableView: UITableView = {
         let tableView = ControlContainableTableView()
@@ -40,9 +34,7 @@ final class AccountListViewController: UIViewController, NeedsDependency {
         tableView.separatorStyle = .none
         return tableView
     }()
-    
-    private var twitterAuthenticationController: TwitterAuthenticationController?
-    
+        
     deinit {
         os_log("%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
     }
@@ -91,101 +83,10 @@ extension AccountListViewController {
     
     @objc private func addBarButtonItemPressed(_ sender: UIBarButtonItem) {
         os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
-        context.apiService.twitterRequestToken()
-            .receive(on: DispatchQueue.main)
-            .handleEvents(receiveSubscription: { [weak self] _ in
-                guard let self = self else { return }
-                self.navigationItem.rightBarButtonItem = self.activityIndicatorBarButtonItem
-            })
-            .sink { [weak self] completion in
-                guard let self = self else { return }
-                switch completion {
-                case .failure(let error):
-                    os_log("%{public}s[%{public}ld], %{public}s: request token error: %{public}s", ((#file as NSString).lastPathComponent), #line, #function, error.localizedDescription)
-                    self.navigationItem.rightBarButtonItem = self.addBarButtonItem
-                    let alertController = UIAlertController.standardAlert(of: error)
-                    self.present(alertController, animated: true)
-                case .finished:
-                    break
-                }
-            } receiveValue: { [weak self] requestTokenExchange in
-                guard let self = self else { return }
-                self.twitterAuthenticate(requestTokenExchange: requestTokenExchange)
-            }
-            .store(in: &disposeBag)
+        let authenticationViewModel = AuthenticationViewModel()
+        coordinator.present(scene: .authentication(viewModel: authenticationViewModel), from: self, transition: .modal(animated: true, completion: nil))
     }
     
-}
-
-extension AccountListViewController {
-    func twitterAuthenticate(requestTokenExchange: Twitter.API.OAuth.OAuthRequestTokenExchange) {
-        let requestToken: String = {
-            switch requestTokenExchange {
-            case .requestTokenResponse(let response):           return response.oauthToken
-            case .customRequestTokenResponse(_, let append):    return append.requestToken
-            }
-        }()
-        let authenticateURL = Twitter.API.OAuth.autenticateURL(requestToken: requestToken)
-        
-        twitterAuthenticationController = TwitterAuthenticationController(
-            context: context,
-            coordinator: coordinator,
-            authenticateURL: authenticateURL,
-            requestTokenExchange: requestTokenExchange
-        )
-        
-        twitterAuthenticationController?.isAuthenticating
-            .receive(on: DispatchQueue.main)
-            .sink(receiveValue: { [weak self] isAuthenticating in
-                guard let self = self else { return }
-                if !isAuthenticating {
-                    self.navigationItem.rightBarButtonItem = self.addBarButtonItem
-                }
-            })
-            .store(in: &disposeBag)
-        
-        twitterAuthenticationController?.error
-            .receive(on: DispatchQueue.main)
-            .sink(receiveValue: { [weak self] error in
-                guard let self = self else { return }
-                guard let error = error else { return }
-                let alertController = UIAlertController.standardAlert(of: error)
-                self.present(alertController, animated: true)
-            })
-            .store(in: &disposeBag)
-        
-        twitterAuthenticationController?.authenticated
-            .receive(on: DispatchQueue.main)
-            .sink(receiveValue: { [weak self] twitterUser in
-                guard let self = self else { return }
-                self.context.authenticationService.activeTwitterUser(id: twitterUser.idStr)
-                    .receive(on: DispatchQueue.main)
-                    .sink { [weak self] result in
-                        guard let self = self else { return }
-                        switch result {
-                        case .failure(let error):
-                            assertionFailure(error.localizedDescription)
-                        case .success(let isActived):
-                            assert(isActived)
-                            self.coordinator.setup()
-                        }
-                    }
-                    .store(in: &self.disposeBag)
-            })
-            .store(in: &disposeBag)
-        
-        twitterAuthenticationController?.authenticationSession?.prefersEphemeralWebBrowserSession = true
-        twitterAuthenticationController?.authenticationSession?.presentationContextProvider = self
-        twitterAuthenticationController?.authenticationSession?.start()
-    }
-
-}
-
-// MARK: - ASWebAuthenticationPresentationContextProviding
-extension AccountListViewController: ASWebAuthenticationPresentationContextProviding {
-    func presentationAnchor(for session: ASWebAuthenticationSession) -> ASPresentationAnchor {
-        return view.window!
-    }
 }
 
 // MARK: - UITableViewDelegate

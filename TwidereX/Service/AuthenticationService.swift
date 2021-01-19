@@ -59,7 +59,7 @@ class AuthenticationService: NSObject {
                       let activeAuthenticationIndex = activeAuthenticationIndex,
                       let apiService = self.apiService,
                       let twitterAuthentication = activeAuthenticationIndex.twitterAuthentication,
-                      let authorization = try? twitterAuthentication.authorization(appSecret: AppSecret.shared) else {
+                      let authorization = try? twitterAuthentication.authorization(appSecret: AppSecret.default) else {
                     return Just(Result.success(nil)).eraseToAnyPublisher()
                 }
                 
@@ -96,7 +96,7 @@ class AuthenticationService: NSObject {
             .map { activeAuthenticationIndex -> AuthenticationService.TwitterAuthenticationBox? in
                 guard let activeAuthenticationIndex = activeAuthenticationIndex else  { return nil }
                 guard let twitterAuthentication = activeAuthenticationIndex.twitterAuthentication else { return nil }
-                guard let authorization = try? twitterAuthentication.authorization(appSecret: .shared) else { return nil }
+                guard let authorization = try? twitterAuthentication.authorization(appSecret: .default) else { return nil }
                 return AuthenticationService.TwitterAuthenticationBox(
                     authenticationIndexObjectID: activeAuthenticationIndex.objectID,
                     twitterUserID: twitterAuthentication.userID,

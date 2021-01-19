@@ -260,6 +260,7 @@ extension AuthenticationViewController {
         twitterAuthenticationController = TwitterAuthenticationController(
             context: context,
             coordinator: coordinator,
+            appSecret: .default,
             authenticateURL: authenticateURL,
             requestTokenExchange: requestTokenExchange
         )
