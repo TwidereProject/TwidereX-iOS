@@ -10,6 +10,16 @@ import UIKit
 
 extension UIBarButtonItem {
     
+    static func cancelBarButtonItem(target: Any?, action: Selector?) -> UIBarButtonItem {
+        let barButtonItem = UIBarButtonItem(
+            title: L10n.Common.Controls.Actions.cancel,
+            style: .plain,
+            target: target,
+            action: action
+        )
+        return barButtonItem
+    }
+    
     static func closeBarButtonItem(target: Any?, action: Selector?) -> UIBarButtonItem {
         let barButtonItem = UIBarButtonItem(
             image: Asset.Editing.xmark.image.withRenderingMode(.alwaysTemplate),

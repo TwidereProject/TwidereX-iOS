@@ -265,7 +265,8 @@ extension AccountListViewController: AccountListViewControllerDelegate {
                     guard isSignOut else { return }
                     self.dismiss(animated: true) {
                         if currentAccountCount == 1 {
-                            self.coordinator.present(scene: .authentication, from: nil, transition: .modal(animated: true, completion: nil))
+                            let authenticationViewModel = AuthenticationViewModel()
+                            self.coordinator.present(scene: .authentication(viewModel: authenticationViewModel), from: nil, transition: .modal(animated: true, completion: nil))
                         }
                     }
                 }

@@ -40,7 +40,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             let request = AuthenticationIndex.sortedFetchRequest
             if try appContext.managedObjectContext.fetch(request).isEmpty {
                 DispatchQueue.main.async {
-                    sceneCoordinator.present(scene: .authentication, from: nil, transition: .modal(animated: false, completion: nil))
+                    let authenticationViewModel = AuthenticationViewModel(isCloseBarButtonItemHidden: true)
+                    sceneCoordinator.present(scene: .authentication(viewModel: authenticationViewModel), from: nil, transition: .modal(animated: false, completion: nil))
                 }
             }
         } catch {

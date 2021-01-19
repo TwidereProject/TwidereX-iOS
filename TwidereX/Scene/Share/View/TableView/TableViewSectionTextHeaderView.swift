@@ -37,7 +37,7 @@ extension TableViewSectionTextHeaderView {
         headerLabel.translatesAutoresizingMaskIntoConstraints = false
         addSubview(headerLabel)
         NSLayoutConstraint.activate([
-            headerLabel.topAnchor.constraint(equalTo: topAnchor),
+            headerLabel.topAnchor.constraint(greaterThanOrEqualTo: topAnchor, constant: 8),
             headerLabel.leadingAnchor.constraint(equalTo: layoutMarginsGuide.leadingAnchor),
             headerLabel.trailingAnchor.constraint(equalTo: layoutMarginsGuide.trailingAnchor),
             bottomAnchor.constraint(equalTo: headerLabel.bottomAnchor, constant: 8),

@@ -59,6 +59,7 @@
 "Common.Controls.Actions.Remove" = "削除";
 "Common.Controls.Actions.Save" = "保存";
 "Common.Controls.Actions.SavePhoto" = "写真を保存";
+"Common.Controls.Actions.SignIn" = "サインイン";
 "Common.Controls.Actions.TakePhoto" = "写真を撮影";
 "Common.Controls.Friendship.Actions.Block" = "Block";
 "Common.Controls.Friendship.Actions.Follow" = "フォロー";
@@ -186,7 +187,12 @@
 "Scene.Settings.SectionHeader.About" = "情報";
 "Scene.Settings.SectionHeader.General" = "一般";
 "Scene.Settings.Title" = "設定";
+"Scene.SignIn.HelloSignInToGetStarted" = "Hello!
+Sign in to Get Started.";
+"Scene.SignIn.SignInWithMastodon" = "Sign in with Mastodon";
 "Scene.SignIn.SignInWithTwitter" = "Twitter でサインイン";
+"Scene.SignIn.TwitterOptions.SignInWithCustomTwitterKey" = "Sign in with Custom Twitter Key";
+"Scene.SignIn.TwitterOptions.TwitterApiV2AccessIsRequired" = "Twitter API v2 access is required.";
 "Scene.Status.Like.Multiple" = "%d いいね";
 "Scene.Status.Like.Single" = "1 いいね";
 "Scene.Status.Quote.Mutiple" = "%d 引用";
