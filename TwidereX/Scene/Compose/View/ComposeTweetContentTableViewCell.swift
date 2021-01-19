@@ -144,7 +144,7 @@ extension ComposeTweetContentTableViewCell {
 
 // MARK: - UITextViewDelegate
 extension ComposeTweetContentTableViewCell: UITextViewDelegate {
-    func textViewDidChangeSelection(_ textView: UITextView) {
+    func textViewDidChange(_ textView: UITextView) {
         guard textView === composeTextView else { return }
         composeText.send(composeTextView.text ?? "")
     }
