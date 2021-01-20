@@ -805,6 +805,8 @@
 		DBEA4F8C251225610007FEC5 /* TimelinePostView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimelinePostView.swift; sourceTree = "<group>"; };
 		DBEA4F8E251314640007FEC5 /* MosaicImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MosaicImageView.swift; sourceTree = "<group>"; };
 		DBEA4F90251331BE0007FEC5 /* QuotePostView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuotePostView.swift; sourceTree = "<group>"; };
+		DBED2A7025B8006400BE6941 /* ar */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ar; path = ar.lproj/Localizable.strings; sourceTree = "<group>"; };
+		DBED2A7125B8006400BE6941 /* ar */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ar; path = ar.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		DBED96D2253F46CF00C5383A /* TwitterMedia.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwitterMedia.swift; sourceTree = "<group>"; };
 		DBED96D7253F5D7800C5383A /* NamingState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NamingState.swift; sourceTree = "<group>"; };
 		DBEFDC8725591F5C0086F268 /* DrawerSidebarViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawerSidebarViewController.swift; sourceTree = "<group>"; };
@@ -2374,6 +2376,7 @@
 				ja,
 				de,
 				"pt-BR",
+				ar,
 			);
 			mainGroup = DBDA8E1524FCF8A3006750DC;
 			packageReferences = (
@@ -3018,6 +3021,7 @@
 				DBB4B801257F93DD00C36075 /* ja */,
 				DBB4B803257F941100C36075 /* de */,
 				DBB4B805257F944D00C36075 /* pt-BR */,
+				DBED2A7125B8006400BE6941 /* ar */,
 			);
 			name = InfoPlist.strings;
 			sourceTree = "<group>";
@@ -3046,6 +3050,7 @@
 				DBB4B800257F93DD00C36075 /* ja */,
 				DBB4B802257F941100C36075 /* de */,
 				DBB4B804257F944D00C36075 /* pt-BR */,
+				DBED2A7025B8006400BE6941 /* ar */,
 			);
 			name = Localizable.strings;
 			sourceTree = "<group>";

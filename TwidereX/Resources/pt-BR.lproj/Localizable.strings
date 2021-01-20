@@ -187,12 +187,12 @@
 "Scene.Settings.SectionHeader.About" = "Sobre";
 "Scene.Settings.SectionHeader.General" = "Geral";
 "Scene.Settings.Title" = "Confirgurações";
-"Scene.SignIn.HelloSignInToGetStarted" = "Hello!
-Sign in to Get Started.";
-"Scene.SignIn.SignInWithMastodon" = "Sign in with Mastodon";
+"Scene.SignIn.HelloSignInToGetStarted" = "Olá!
+Faça Login para Começar.";
+"Scene.SignIn.SignInWithMastodon" = "Fazer Login com Mastodon";
 "Scene.SignIn.SignInWithTwitter" = "Entrar com o Twitter";
-"Scene.SignIn.TwitterOptions.SignInWithCustomTwitterKey" = "Sign in with Custom Twitter Key";
-"Scene.SignIn.TwitterOptions.TwitterApiV2AccessIsRequired" = "Twitter API v2 access is required.";
+"Scene.SignIn.TwitterOptions.SignInWithCustomTwitterKey" = "Fazer Login com uma Chave Personalizada do Twitter";
+"Scene.SignIn.TwitterOptions.TwitterApiV2AccessIsRequired" = "O acesso à API v2 do Twitter é necessário.";
 "Scene.Status.Like.Multiple" = "%d Curtidas";
 "Scene.Status.Like.Single" = "1 Curtida";
 "Scene.Status.Quote.Mutiple" = "%d Citações";
