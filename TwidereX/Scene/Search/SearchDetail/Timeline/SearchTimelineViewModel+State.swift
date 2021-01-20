@@ -42,7 +42,7 @@ extension SearchTimelineViewModel.State {
     class Loading: SearchTimelineViewModel.State {
         var error: Error?
         
-        var needsFallback = true
+        var needsFallback = false
         var previoursSearchText = ""
         
         var maxID: String?          // v1
@@ -98,6 +98,7 @@ extension SearchTimelineViewModel.State {
                     if let responseError = error as? Twitter.API.Error.ResponseError,
                        case .rateLimitExceeded = responseError.twitterAPIError {
                         self.needsFallback = true
+                        stateMachine.enter(Idle.self)
                         stateMachine.enter(Loading.self)
                     } else {
                         stateMachine.enter(Fail.self)
