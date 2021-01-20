@@ -34,7 +34,7 @@
 		DB1D7B6725B6C2E000397DCD /* TwitterAuthenticationOption.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB1D7B6625B6C2E000397DCD /* TwitterAuthenticationOption.swift */; };
 		DB25B9D1253828AA00A5420F /* APIService+Retweet.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB25B9D0253828AA00A5420F /* APIService+Retweet.swift */; };
 		DB25B9E325385EFD00A5420F /* TweetConversationViewModel+LoadConversationState.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB25B9E225385EFD00A5420F /* TweetConversationViewModel+LoadConversationState.swift */; };
-		DB25B9E82539897B00A5420F /* APIService+RecentSearch.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB25B9E72539897B00A5420F /* APIService+RecentSearch.swift */; };
+		DB25B9E82539897B00A5420F /* APIService+Tweet+Search.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB25B9E72539897B00A5420F /* APIService+Tweet+Search.swift */; };
 		DB25B9F42539A9CE00A5420F /* APIService+CoreData+TwitterUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB25B9F32539A9CE00A5420F /* APIService+CoreData+TwitterUser.swift */; };
 		DB25BA08253D7D6E00A5420F /* APIService+Persist+DictContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB25BA07253D7D6E00A5420F /* APIService+Persist+DictContent.swift */; };
 		DB25BA10253D7F4D00A5420F /* APIService+CoreData+V2+Tweet.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB25BA0F253D7F4D00A5420F /* APIService+CoreData+V2+Tweet.swift */; };
@@ -493,7 +493,7 @@
 		DB1D7B6625B6C2E000397DCD /* TwitterAuthenticationOption.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwitterAuthenticationOption.swift; sourceTree = "<group>"; };
 		DB25B9D0253828AA00A5420F /* APIService+Retweet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "APIService+Retweet.swift"; sourceTree = "<group>"; };
 		DB25B9E225385EFD00A5420F /* TweetConversationViewModel+LoadConversationState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TweetConversationViewModel+LoadConversationState.swift"; sourceTree = "<group>"; };
-		DB25B9E72539897B00A5420F /* APIService+RecentSearch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "APIService+RecentSearch.swift"; sourceTree = "<group>"; };
+		DB25B9E72539897B00A5420F /* APIService+Tweet+Search.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "APIService+Tweet+Search.swift"; sourceTree = "<group>"; };
 		DB25B9F32539A9CE00A5420F /* APIService+CoreData+TwitterUser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "APIService+CoreData+TwitterUser.swift"; sourceTree = "<group>"; };
 		DB25BA07253D7D6E00A5420F /* APIService+Persist+DictContent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "APIService+Persist+DictContent.swift"; sourceTree = "<group>"; };
 		DB25BA0F253D7F4D00A5420F /* APIService+CoreData+V2+Tweet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "APIService+CoreData+V2+Tweet.swift"; sourceTree = "<group>"; };
@@ -1862,7 +1862,7 @@
 				DBA6B1CB2535BC6E005FB0B4 /* APIService+Like.swift */,
 				DBB09D552511BA9700AE260E /* APIService+Lookup.swift */,
 				DB25B9D0253828AA00A5420F /* APIService+Retweet.swift */,
-				DB25B9E72539897B00A5420F /* APIService+RecentSearch.swift */,
+				DB25B9E72539897B00A5420F /* APIService+Tweet+Search.swift */,
 				DB8AC1842542BD8600E636BE /* APIService+Tweet.swift */,
 				DB2924CF2546C6DD003899A7 /* APIService+Media.swift */,
 				DB2924EB25492006003899A7 /* APIService+Geo.swift */,
@@ -2845,7 +2845,7 @@
 				DBA6B1B725355C1E005FB0B4 /* UIAlertController.swift in Sources */,
 				DBFA4A0725A4621C00D51703 /* UserProvider+SearchUserTableViewCellDelegate.swift in Sources */,
 				DBBABA11255E61C900C1B3D9 /* SearchMediaViewController+StatusProvider.swift in Sources */,
-				DB25B9E82539897B00A5420F /* APIService+RecentSearch.swift in Sources */,
+				DB25B9E82539897B00A5420F /* APIService+Tweet+Search.swift in Sources */,
 				DBFA4A2B25A5A69100D51703 /* SearchTimelineViewModel+Diffable.swift in Sources */,
 				DBBABA0C255E550D00C1B3D9 /* StatusProvider+UICollectionViewDelegate.swift in Sources */,
 				DB8AC16225417D1300E636BE /* CycleCounterView.swift in Sources */,

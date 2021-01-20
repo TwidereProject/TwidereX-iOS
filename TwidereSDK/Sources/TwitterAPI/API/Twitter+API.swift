@@ -38,6 +38,7 @@ extension Twitter.API {
     public enum Media { }
     public enum Mute { }
     public enum OAuth { }
+    public enum Search { }
     public enum Statuses { }
     public enum Timeline { }
     public enum Users { }
@@ -160,6 +161,7 @@ extension Twitter.API {
             authorization.authorizationHeader(requestURL: requestURL, requestFormQueryItems: formQueryItems, httpMethod: httpMethod),
             forHTTPHeaderField: Twitter.API.OAuth.authorizationField
         )
+        request.httpMethod = httpMethod
         return request
     }
 }

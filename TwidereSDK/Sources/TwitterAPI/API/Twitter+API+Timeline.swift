@@ -80,16 +80,21 @@ extension Twitter.API.Timeline {
         public let maxID: String?
         public let excludeReplies: Bool?
         
+        // search
+        public let query: String?
+        
         public init(
             count: Int? = nil,
             userID: String? = nil,
             maxID: String? = nil,
-            excludeReplies: Bool? = nil
+            excludeReplies: Bool? = nil,
+            query: String? = nil
         ) {
             self.count = count
             self.userID = userID
             self.maxID = maxID
             self.excludeReplies = excludeReplies
+            self.query = query
         }
         
         var queryItems: [URLQueryItem]? {
@@ -109,6 +114,15 @@ extension Twitter.API.Timeline {
             items.append(URLQueryItem(name: "include_ext_alt_text", value: "true"))
             items.append(URLQueryItem(name: "tweet_mode", value: "extended"))
             
+            guard !items.isEmpty else { return nil }
+            return items
+        }
+        
+        var encodedQueryItems: [URLQueryItem]? {
+            var items: [URLQueryItem] = []
+            if let query = query {
+                items.append(URLQueryItem(name: "q", value: query.urlEncoded))
+            }
             guard !items.isEmpty else { return nil }
             return items
         }

@@ -158,26 +158,48 @@ extension TweetConversationViewModel.LoadConversationState {
     }
     
     class Loading: TweetConversationViewModel.LoadConversationState {
-        
-        var nextToken: String?
         override var name: String { "Loading" }
         
+        var nextToken: String?
+        var needsFallback = false
+        
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {
-            return stateClass == Idle.self || stateClass == Fail.self || stateClass == NoMore.self
+            switch stateClass {
+            case is Idle.Type, is NoMore.Type:
+                return true
+            case is Fail.Type:
+                return true
+            default:
+                return false
+            }
         }
         
         override func didEnter(from previousState: GKState?) {
             super.didEnter(from: previousState)
             
             guard let viewModel = viewModel, let stateMachine = stateMachine else { return }
-            guard let conversationMeta = viewModel.conversationMeta.value else {
+            guard let activeTwitterAuthenticationBox = viewModel.context.authenticationService.activeTwitterAuthenticationBox.value else
+            {
                 assertionFailure()
                 stateMachine.enter(Fail.self)
                 return
             }
             
-            guard let activeTwitterAuthenticationBox = viewModel.context.authenticationService.activeTwitterAuthenticationBox.value else
-            {
+            if !needsFallback {
+                loadingConversation(viewModel: viewModel, twitterAuthenticationBox: activeTwitterAuthenticationBox, stateMachine: stateMachine)
+            } else {
+                
+            }
+            
+
+        }
+        
+        func loadingConversation(
+            viewModel: TweetConversationViewModel,
+            twitterAuthenticationBox: AuthenticationService.TwitterAuthenticationBox,
+            stateMachine: GKStateMachine
+        ) {
+            guard let conversationMeta = viewModel.conversationMeta.value else {
                 assertionFailure()
                 stateMachine.enter(Fail.self)
                 return
@@ -198,7 +220,7 @@ extension TweetConversationViewModel.LoadConversationState {
                 sinceID: sinceID,
                 startTime: startTime,
                 nextToken: self.nextToken,
-                twitterAuthenticationBox: activeTwitterAuthenticationBox
+                twitterAuthenticationBox: twitterAuthenticationBox
             )
             .receive(on: DispatchQueue.main)
             .sink { completion in
@@ -214,7 +236,7 @@ extension TweetConversationViewModel.LoadConversationState {
                 guard let self = self else { return }
                 let content = response.value
                 os_log("%{public}s[%{public}ld], %{public}s: fetch conversation %s success. results count %ld", ((#file as NSString).lastPathComponent), #line, #function, conversationMeta.conversationID, content.meta.resultCount)
-
+                
                 var hasMore = content.meta.resultCount != 0
                 if let nextToken = content.meta.nextToken {
                     self.nextToken = nextToken
@@ -231,10 +253,19 @@ extension TweetConversationViewModel.LoadConversationState {
                     stateMachine.enter(NoMore.self)
                 }
                 viewModel.conversationNodes.value = nodes + leafs
-
+                
             }
             .store(in: &viewModel.disposeBag)
-
+        }
+        
+        // Fetch conversation via Twitter v1 API
+        func loadingConversationFallback(
+            viewModel: TweetConversationViewModel,
+            activeTwitterAuthenticationBox: AuthenticationService.TwitterAuthenticationBox,
+            stateMachine: GKStateMachine
+        ) {
+            
+            
         }
     }
     
