@@ -25,7 +25,7 @@ final class DisplayPreferenceViewController: UIViewController, NeedsDependency {
         tableView.register(SlideTableViewCell.self, forCellReuseIdentifier: String(describing: SlideTableViewCell.self))
         tableView.register(ListEntryTableViewCell.self, forCellReuseIdentifier: String(describing: ListEntryTableViewCell.self))
         tableView.register(ListCheckmarkTableViewCell.self, forCellReuseIdentifier: String(describing: ListCheckmarkTableViewCell.self))
-        tableView.tableHeaderView = UIView(frame: CGRect(x: 0, y: 0, width: 100, height: 16))
+        tableView.tableHeaderView = UITableView.groupedTableViewPaddingHeaderView
         tableView.rowHeight = UITableView.automaticDimension
         return tableView
     }()
@@ -44,10 +44,10 @@ extension DisplayPreferenceViewController {
         tableView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(tableView)
         NSLayoutConstraint.activate([
+            tableView.topAnchor.constraint(equalTo: view.topAnchor),
             tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-            tableView.topAnchor.constraint(equalTo: view.topAnchor)
         ])
         
         tableView.delegate = self
