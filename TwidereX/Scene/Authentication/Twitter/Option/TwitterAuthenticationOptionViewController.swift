@@ -156,6 +156,7 @@ extension TwitterAuthenticationOptionViewController {
             .receive(on: DispatchQueue.main)
             .sink(receiveValue: { [weak self] twitterUser in
                 guard let self = self else { return }
+                // make authenticated user active and always reset view hierarchy
                 self.context.authenticationService.activeTwitterUser(id: twitterUser.idStr)
                     .receive(on: DispatchQueue.main)
                     .sink { [weak self] result in

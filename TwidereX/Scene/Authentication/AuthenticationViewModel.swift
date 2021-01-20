@@ -11,10 +11,17 @@ import Foundation
 final class AuthenticationViewModel {
     
     // input
-    let isCloseBarButtonItemHidden: Bool
+    let isAuthenticationIndexExist: Bool
     
-    init(isCloseBarButtonItemHidden: Bool = false) {
-        self.isCloseBarButtonItemHidden = isCloseBarButtonItemHidden
+    // output
+    let closeBarButtonItemShouldHidden: Bool
+    let viewHierarchyShouldReset: Bool
+    
+    init(isAuthenticationIndexExist: Bool) {
+        self.isAuthenticationIndexExist = isAuthenticationIndexExist
+        
+        self.closeBarButtonItemShouldHidden = !isAuthenticationIndexExist
+        self.viewHierarchyShouldReset = isAuthenticationIndexExist
     }
 
 }

@@ -42,10 +42,10 @@ final class TwitterAuthenticationController: NeedsDependency {
         self.appSecret = appSecret
         
         switch requestTokenExchange {
-        // default use system AuthenticationServices
+        // use standard OAuth via system AuthenticationServices
         case .customRequestTokenResponse(_, let append):
             authentication(authenticateURL: authenticateURL, append: append)
-        // use custom pin-based OAuth when set callback as "oob"
+        // use PIN-based OAuth via WKWebView (when set callback as "oob")
         case .requestTokenResponse(let requestTokenResponse):
             let twitterPinBasedAuthenticationViewModel = TwitterPinBasedAuthenticationViewModel(authenticateURL: authenticateURL)
             authentication(requestTokenResponse: requestTokenResponse, appSecret: appSecret, pinCodePublisher: twitterPinBasedAuthenticationViewModel.pinCodePublisher)

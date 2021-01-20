@@ -86,7 +86,7 @@ extension AuthenticationViewController {
         
         title = "" // L10n.Scene.Authentication.title
         view.backgroundColor = .systemBackground
-        if !viewModel.isCloseBarButtonItemHidden {
+        if !viewModel.closeBarButtonItemShouldHidden {
             navigationItem.leftBarButtonItem = closeBarButtonItem
         }
         
@@ -285,8 +285,26 @@ extension AuthenticationViewController {
         
         twitterAuthenticationController?.authenticated
             .receive(on: DispatchQueue.main)
-            .sink(receiveValue: { [weak self] _ in
-                self?.dismiss(animated: true, completion: nil)
+            .sink(receiveValue: { [weak self] twitterUser in
+                guard let self = self else { return }
+                // reset view hierarchy only if needs
+                if self.viewModel.viewHierarchyShouldReset {
+                    self.context.authenticationService.activeTwitterUser(id: twitterUser.idStr)
+                        .receive(on: DispatchQueue.main)
+                        .sink { [weak self] result in
+                            guard let self = self else { return }
+                            switch result {
+                            case .failure(let error):
+                                assertionFailure(error.localizedDescription)
+                            case .success(let isActived):
+                                assert(isActived)
+                                self.coordinator.setup()
+                            }
+                        }
+                        .store(in: &self.disposeBag)
+                } else {
+                    self.dismiss(animated: true, completion: nil)
+                }
             })
             .store(in: &disposeBag)
         

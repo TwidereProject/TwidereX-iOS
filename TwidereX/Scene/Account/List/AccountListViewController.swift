@@ -83,7 +83,7 @@ extension AccountListViewController {
     
     @objc private func addBarButtonItemPressed(_ sender: UIBarButtonItem) {
         os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
-        let authenticationViewModel = AuthenticationViewModel()
+        let authenticationViewModel = AuthenticationViewModel(isAuthenticationIndexExist: true)
         coordinator.present(scene: .authentication(viewModel: authenticationViewModel), from: self, transition: .modal(animated: true, completion: nil))
     }
     
@@ -166,7 +166,8 @@ extension AccountListViewController: AccountListViewControllerDelegate {
                     guard isSignOut else { return }
                     self.dismiss(animated: true) {
                         if currentAccountCount == 1 {
-                            let authenticationViewModel = AuthenticationViewModel()
+                            // No active user. Present Authentication scene
+                            let authenticationViewModel = AuthenticationViewModel(isAuthenticationIndexExist: false)
                             self.coordinator.present(scene: .authentication(viewModel: authenticationViewModel), from: nil, transition: .modal(animated: true, completion: nil))
                         }
                     }
