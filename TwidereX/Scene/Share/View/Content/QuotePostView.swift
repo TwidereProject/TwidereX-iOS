@@ -51,7 +51,7 @@ final class QuotePostView: UIView {
     
     let dateLabel: UILabel = {
         let label = UILabel()
-        label.font = .preferredFont(forTextStyle: .callout)
+        label.font = .preferredMonospacedFont(withTextStyle: .callout)
         label.textAlignment = UIApplication.shared.userInterfaceLayoutDirection == .rightToLeft ? .left : .right
         label.textColor = .secondaryLabel
         label.text = "1d"
