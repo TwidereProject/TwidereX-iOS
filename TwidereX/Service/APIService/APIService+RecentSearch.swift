@@ -53,6 +53,20 @@ extension APIService {
                     .eraseToAnyPublisher()
             }
             .switchToLatest()
+            .handleEvents(receiveCompletion: { [weak self] completion in
+                guard let self = self else { return }
+                switch completion {
+                case .failure(let error):
+                    if let responseError = error as? Twitter.API.Error.ResponseError {
+                        if case .rateLimitExceeded = responseError.twitterAPIError {
+                            self.error.send(.explicit(.twitterResponseError(responseError)))
+                        }
+                    }
+                case .finished:
+                    break
+                }
+                
+            })
             .eraseToAnyPublisher()
     }
     

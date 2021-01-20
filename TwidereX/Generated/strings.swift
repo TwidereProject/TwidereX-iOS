@@ -172,7 +172,7 @@ internal enum L10n {
         }
       }
       internal enum TooManyRequests {
-        /// Too many requests
+        /// Too Many Requests
         internal static let title = L10n.tr("Localizable", "Common.Alerts.TooManyRequests.Title")
       }
       internal enum TweetDeleted {
@@ -234,6 +234,8 @@ internal enum L10n {
         internal static let save = L10n.tr("Localizable", "Common.Controls.Actions.Save")
         /// Save photo
         internal static let savePhoto = L10n.tr("Localizable", "Common.Controls.Actions.SavePhoto")
+        /// Sign in
+        internal static let signIn = L10n.tr("Localizable", "Common.Controls.Actions.SignIn")
         /// Take photo
         internal static let takePhoto = L10n.tr("Localizable", "Common.Controls.Actions.TakePhoto")
       }
@@ -618,8 +620,18 @@ internal enum L10n {
       }
     }
     internal enum SignIn {
+      /// Hello!\nSign in to Get Started.
+      internal static let helloSignInToGetStarted = L10n.tr("Localizable", "Scene.SignIn.HelloSignInToGetStarted")
+      /// Sign in with Mastodon
+      internal static let signInWithMastodon = L10n.tr("Localizable", "Scene.SignIn.SignInWithMastodon")
       /// Sign in with Twitter
       internal static let signInWithTwitter = L10n.tr("Localizable", "Scene.SignIn.SignInWithTwitter")
+      internal enum TwitterOptions {
+        /// Sign in with Custom Twitter Key
+        internal static let signInWithCustomTwitterKey = L10n.tr("Localizable", "Scene.SignIn.TwitterOptions.SignInWithCustomTwitterKey")
+        /// Twitter API v2 access is required.
+        internal static let twitterApiV2AccessIsRequired = L10n.tr("Localizable", "Scene.SignIn.TwitterOptions.TwitterApiV2AccessIsRequired")
+      }
     }
     internal enum Status {
       /// Tweet

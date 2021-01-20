@@ -40,7 +40,7 @@
 "Common.Alerts.RateLimitExceeded.Title" = "Rate Limit Exceeded";
 "Common.Alerts.ReportAndBlockUserSuccess.Title" = "%@ has been reported for spam and blocked";
 "Common.Alerts.ReportUserSuccess.Title" = "%@ has been reported for spam";
-"Common.Alerts.TooManyRequests.Title" = "Too many requests";
+"Common.Alerts.TooManyRequests.Title" = "Too Many Requests";
 "Common.Alerts.TweetDeleted.Title" = "Tweet Deleted";
 "Common.Alerts.TweetFail.Message" = "Please try again";
 "Common.Alerts.TweetFail.Title" = "Failed to Tweet";
@@ -59,6 +59,7 @@
 "Common.Controls.Actions.Remove" = "Remove";
 "Common.Controls.Actions.Save" = "Save";
 "Common.Controls.Actions.SavePhoto" = "Save photo";
+"Common.Controls.Actions.SignIn" = "Sign in";
 "Common.Controls.Actions.TakePhoto" = "Take photo";
 "Common.Controls.Friendship.Actions.Block" = "Block";
 "Common.Controls.Friendship.Actions.Follow" = "Follow";
@@ -186,7 +187,12 @@
 "Scene.Settings.SectionHeader.About" = "About";
 "Scene.Settings.SectionHeader.General" = "General";
 "Scene.Settings.Title" = "Settings";
+"Scene.SignIn.HelloSignInToGetStarted" = "Hello!
+Sign in to Get Started.";
+"Scene.SignIn.SignInWithMastodon" = "Sign in with Mastodon";
 "Scene.SignIn.SignInWithTwitter" = "Sign in with Twitter";
+"Scene.SignIn.TwitterOptions.SignInWithCustomTwitterKey" = "Sign in with Custom Twitter Key";
+"Scene.SignIn.TwitterOptions.TwitterApiV2AccessIsRequired" = "Twitter API v2 access is required.";
 "Scene.Status.Like.Multiple" = "%d Likes";
 "Scene.Status.Like.Single" = "1 Like";
 "Scene.Status.Quote.Mutiple" = "%d Quotes";

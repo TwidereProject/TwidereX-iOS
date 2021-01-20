@@ -35,6 +35,7 @@ internal enum Asset {
   internal enum Colors {
     internal static let heartPink = ColorAsset(name: "Colors/heart.pink")
     internal static let hightLight = ColorAsset(name: "Colors/hight.light")
+    internal static let twitterBlue = ColorAsset(name: "Colors/twitter.blue")
   }
   internal enum Communication {
     internal static let at = ImageAsset(name: "Communication/at")
@@ -67,10 +68,12 @@ internal enum Asset {
     internal static let infoCircle = ImageAsset(name: "Indices/info.circle")
   }
   internal enum Logo {
-    internal static let github = ImageAsset(name: "Logo/github")
+    internal static let githubCircle = ImageAsset(name: "Logo/github.circle")
+    internal static let mastodonMedium = ImageAsset(name: "Logo/mastodon.medium")
     internal static let twidereAvatar = ImageAsset(name: "Logo/twidere.avatar")
     internal static let twidere = ImageAsset(name: "Logo/twidere")
-    internal static let twitter = ImageAsset(name: "Logo/twitter")
+    internal static let twitterCircle = ImageAsset(name: "Logo/twitter.circle")
+    internal static let twitterMedium = ImageAsset(name: "Logo/twitter.medium")
   }
   internal enum Media {
     internal static let `repeat` = ImageAsset(name: "Media/repeat")

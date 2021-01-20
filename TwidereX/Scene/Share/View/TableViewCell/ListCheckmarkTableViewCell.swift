@@ -17,3 +17,21 @@ final class ListCheckmarkTableViewCell: ListTableViewCell {
     }
     
 }
+
+#if canImport(SwiftUI) && DEBUG
+import SwiftUI
+
+struct ListCheckmarkTableViewCell_Previews: PreviewProvider {
+    
+    static var previews: some View {
+        UIViewPreview {
+            let cell = ListCheckmarkTableViewCell()
+            cell.titleLabel.text = "Title"
+            return cell
+        }
+        .previewLayout(.fixed(width: 500, height: 100))
+    }
+    
+}
+
+#endif

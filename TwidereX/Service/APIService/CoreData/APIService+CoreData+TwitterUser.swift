@@ -88,15 +88,17 @@ extension APIService.CoreData {
     
     static func mergeTwitterUser(for requestTwitterUser: TwitterUser?, old user: TwitterUser, entity: Twitter.Entity.User, networkDate: Date) {
         guard networkDate > user.updatedAt else { return }
+        let property = TwitterUser.Property(entity: entity, networkDate: networkDate)
+        
         // only fulfill API supported fields
-        user.update(name: entity.name)
-        user.update(username: entity.screenName)
-        entity.userDescription.flatMap { user.update(bioDescription: $0) }
-        entity.url.flatMap { user.update(url: $0) }
-        entity.location.flatMap { user.update(location: $0) }
-        entity.protected.flatMap { user.update(protected: $0) }
-        entity.profileBannerURL.flatMap { user.update(profileBannerURL: $0) }
-        entity.profileImageURLHTTPS.flatMap { user.update(profileImageURL: $0) }
+        user.update(name: property.name)
+        user.update(username: property.username)
+        user.update(protected: property.protected)
+        property.bioDescription.flatMap { user.update(bioDescription: $0) }
+        property.url.flatMap { user.update(url: $0) }
+        property.location.flatMap { user.update(location: $0) }
+        property.profileBannerURL.flatMap { user.update(profileBannerURL: $0) }
+        property.profileImageURL.flatMap { user.update(profileImageURL: $0) }
         
         // update entities
         user.setupEntitiesIfNeeds()

@@ -48,13 +48,13 @@ enum StatusProviderFacade {
                 let twitterUser = tweet.author
                 let profileViewModel = ProfileViewModel(context: provider.context, twitterUser: twitterUser)
                 DispatchQueue.main.async {
-                    let from = provider.presentingViewController ?? provider
                     if provider.navigationController == nil {
+                        let from = provider.presentingViewController ?? provider
                         provider.dismiss(animated: true) {
                             provider.coordinator.present(scene: .profile(viewModel: profileViewModel), from: from, transition: .show)
                         }
                     } else {
-                        provider.coordinator.present(scene: .profile(viewModel: profileViewModel), from: from, transition: .show)
+                        provider.coordinator.present(scene: .profile(viewModel: profileViewModel), from: provider, transition: .show)
                     }
                 }
             }
@@ -93,13 +93,13 @@ enum StatusProviderFacade {
                 provider.context.videoPlaybackService.markTransitioning(for: tweet)
                 let tweetPostViewModel = TweetConversationViewModel(context: provider.context, tweetObjectID: tweet.objectID)
                 DispatchQueue.main.async {
-                    let from = provider.presentingViewController ?? provider
                     if provider.navigationController == nil {
+                        let from = provider.presentingViewController ?? provider
                         provider.dismiss(animated: true) {
                             provider.coordinator.present(scene: .tweetConversation(viewModel: tweetPostViewModel), from: from, transition: .show)
                         }
                     } else {
-                        provider.coordinator.present(scene: .tweetConversation(viewModel: tweetPostViewModel), from: from, transition: .show)
+                        provider.coordinator.present(scene: .tweetConversation(viewModel: tweetPostViewModel), from: provider, transition: .show)
                     }
                 }
             }

@@ -10,6 +10,16 @@ import UIKit
 
 extension UIBarButtonItem {
     
+    static func cancelBarButtonItem(target: Any?, action: Selector?) -> UIBarButtonItem {
+        let barButtonItem = UIBarButtonItem(
+            title: L10n.Common.Controls.Actions.cancel,
+            style: .plain,
+            target: target,
+            action: action
+        )
+        return barButtonItem
+    }
+    
     static func closeBarButtonItem(target: Any?, action: Selector?) -> UIBarButtonItem {
         let barButtonItem = UIBarButtonItem(
             image: Asset.Editing.xmark.image.withRenderingMode(.alwaysTemplate),
@@ -29,6 +39,17 @@ extension UIBarButtonItem {
             action: action
         )
         barButtonItem.tintColor = Asset.Colors.hightLight.color
+        return barButtonItem
+    }
+    
+}
+
+extension UIBarButtonItem {
+
+    static var activityIndicatorBarButtonItem: UIBarButtonItem {
+        let activityIndicatorView = UIActivityIndicatorView(style: .medium)
+        let barButtonItem = UIBarButtonItem(customView: activityIndicatorView)
+        activityIndicatorView.startAnimating()
         return barButtonItem
     }
     

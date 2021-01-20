@@ -14,7 +14,7 @@ extension TwitterAuthentication.Property {
     
     func seal(appSecret: AppSecret) throws -> TwitterAuthentication.Property {
         let nonce = UUID().uuidString
-        let appSecret = appSecret.oauthSecret.appSecret
+        let appSecret = appSecret.appSecret
 
         let consumerKey = try TwitterAuthentication.Property.sealFieldValue(appSecret: appSecret, nonce: nonce, field: "consumerKey", value: self.consumerKey)
         let consumerSecret = try TwitterAuthentication.Property.sealFieldValue(appSecret: appSecret, nonce: nonce, field: "consumerSecret", value: self.consumerSecret)
@@ -51,7 +51,7 @@ extension TwitterAuthentication {
                 accessTokenSecret: self.accessTokenSecret
             )
         }
-        let appSecret = appSecret.oauthSecret.appSecret
+        let appSecret = appSecret.appSecret
         let nonce = self.nonce
         
         let consumerKey = try TwitterAuthentication.openFieldValue(appSecret: appSecret, nonce: nonce, field: "consumerKey", ciphertext: self.consumerKey)

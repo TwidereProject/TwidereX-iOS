@@ -344,7 +344,7 @@ extension TimelineSection {
         
         cell.timelinePostView.quotePostView.nameLabel.font = .preferredFont(forTextStyle: .headline, compatibleWith: traitCollection)
         cell.timelinePostView.quotePostView.usernameLabel.font = .preferredFont(forTextStyle: .subheadline, compatibleWith: traitCollection)
-        cell.timelinePostView.quotePostView.dateLabel.font = .preferredFont(forTextStyle: .callout, compatibleWith: traitCollection)
+        cell.timelinePostView.quotePostView.dateLabel.font = .preferredMonospacedFont(withTextStyle: .callout, compatibleWith: traitCollection)
         cell.timelinePostView.quotePostView.activeTextLabel.font = .preferredFont(forTextStyle: .body, compatibleWith: traitCollection)
     }
     

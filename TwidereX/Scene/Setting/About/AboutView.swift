@@ -51,13 +51,13 @@ struct AboutView: View {
                 Button(action: {
                     context.viewStateStore.aboutView.aboutEntryPublisher.send(.twitter)
                 }, label: {
-                    Image(uiImage: Asset.Logo.twitter.image.withRenderingMode(.alwaysTemplate))
+                    Image(uiImage: Asset.Logo.twitterCircle.image.withRenderingMode(.alwaysTemplate))
                         .foregroundColor(.secondary)
                 })
                 Button(action: {
                     context.viewStateStore.aboutView.aboutEntryPublisher.send(.github)
                 }, label: {
-                    Image(uiImage: Asset.Logo.github.image.withRenderingMode(.alwaysTemplate))
+                    Image(uiImage: Asset.Logo.githubCircle.image.withRenderingMode(.alwaysTemplate))
                         .foregroundColor(.secondary)
                 })
             }
