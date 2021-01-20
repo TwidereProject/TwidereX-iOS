@@ -80,7 +80,6 @@ extension RepliedToTweetContentTableViewCell {
             conversationLinkLower.widthAnchor.constraint(equalToConstant: 1),
         ])
         
-        timelinePostView.moreMenuButton.isHidden = true
         timelinePostView.actionToolbarContainer.isHidden = true
         conversationLinkUpper.isHidden = true
         conversationLinkLower.isHidden = true

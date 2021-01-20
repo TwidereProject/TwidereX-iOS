@@ -67,18 +67,11 @@ final class TimelinePostView: UIView {
     
     let dateLabel: UILabel = {
         let label = UILabel()
-        label.font = .preferredFont(forTextStyle: .callout)
+        label.font = .preferredMonospacedFont(withTextStyle: .callout)
         label.textAlignment = UIApplication.shared.userInterfaceLayoutDirection == .rightToLeft ? .left : .right
         label.textColor = .secondaryLabel
         label.text = "1d"
         return label
-    }()
-    
-    let moreMenuButton: UIButton = {
-        let button = UIButton()
-        button.setImage(Asset.Arrows.tablerChevronDown.image.withRenderingMode(.alwaysTemplate), for: .normal)
-        button.imageView?.tintColor = .secondaryLabel
-        return button
     }()
     
     let mainContainerStackView = UIStackView()
@@ -199,12 +192,6 @@ extension TimelinePostView {
         userMetaContainerStackView.addArrangedSubview(lockImageView)
         userMetaContainerStackView.addArrangedSubview(usernameLabel)
         userMetaContainerStackView.addArrangedSubview(dateLabel)
-        moreMenuButton.translatesAutoresizingMaskIntoConstraints = false
-        userMetaContainerStackView.addArrangedSubview(moreMenuButton)
-        NSLayoutConstraint.activate([
-            moreMenuButton.widthAnchor.constraint(equalToConstant: 16),
-            moreMenuButton.heightAnchor.constraint(equalToConstant: 16).priority(.defaultHigh),
-        ])
         nameLabel.setContentHuggingPriority(.defaultHigh + 10, for: .horizontal)
         nameLabel.setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
         lockImageView.setContentHuggingPriority(.defaultHigh + 5, for: .horizontal)
@@ -212,7 +199,6 @@ extension TimelinePostView {
         usernameLabel.setContentCompressionResistancePriority(.defaultHigh - 1, for: .horizontal)
         dateLabel.setContentHuggingPriority(.defaultLow, for: .horizontal)
         dateLabel.setContentCompressionResistancePriority(.required - 2, for: .horizontal)
-        moreMenuButton.setContentCompressionResistancePriority(.required - 1, for: .horizontal)
         
         // align retweet label leading to name
         // align retweet icon trailing to avatar
@@ -250,9 +236,6 @@ extension TimelinePostView {
         mosaicPlayerView.isHidden = true
         quotePostView.isHidden = true
         geoContainerStackView.isHidden = true
-        
-        // TODO:
-        moreMenuButton.isHidden = true
     }
     
 }

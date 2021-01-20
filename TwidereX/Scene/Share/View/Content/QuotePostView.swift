@@ -37,7 +37,6 @@ final class QuotePostView: UIView {
         let label = UILabel()
         label.font = .preferredFont(forTextStyle: .headline)
         label.textColor = .label
-        label.textColor = Asset.Colors.hightLight.color
         label.text = "Alice"
         return label
     }()
@@ -52,7 +51,7 @@ final class QuotePostView: UIView {
     
     let dateLabel: UILabel = {
         let label = UILabel()
-        label.font = .preferredFont(forTextStyle: .callout)
+        label.font = .preferredMonospacedFont(withTextStyle: .callout)
         label.textAlignment = UIApplication.shared.userInterfaceLayoutDirection == .rightToLeft ? .left : .right
         label.textColor = .secondaryLabel
         label.text = "1d"

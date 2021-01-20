@@ -90,9 +90,10 @@ extension SearchDetailViewController {
         ])
         pagingViewController.didMove(toParent: self)
         
-        // set UI
+        // set search text if has initialSearchText
         viewModel.searchText
             .receive(on: DispatchQueue.main)
+            .first()
             .sink { [weak self] initialSearchText in
                 guard let self = self else { return }
                 guard !initialSearchText.isEmpty else { return }
@@ -100,7 +101,7 @@ extension SearchDetailViewController {
             }
             .store(in: &disposeBag)
 
-        // trigger loading after view appear
+        // trigger loading after view appear if has initialSearchText
         Publishers.CombineLatest(
             viewModel.searchText.eraseToAnyPublisher(),
             viewModel.viewDidAppear.eraseToAnyPublisher()
@@ -114,6 +115,7 @@ extension SearchDetailViewController {
         }
         .store(in: &disposeBag)
         
+        // bind search text to children
         viewModel.searchText
             .assign(to: \.value, on: pagingViewController.viewModel.searchText)
             .store(in: &disposeBag)
