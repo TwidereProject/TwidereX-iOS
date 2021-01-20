@@ -34,13 +34,15 @@ final class HomeTimelineViewController: UIViewController, NeedsDependency, Drawe
     
     let avatarBarButtonItem = AvatarBarButtonItem()
     
-    lazy var tableView: UITableView = {
+    let tableView: UITableView = {
         let tableView = ControlContainableTableView()
         tableView.register(TimelinePostTableViewCell.self, forCellReuseIdentifier: String(describing: TimelinePostTableViewCell.self))
         tableView.register(TimelineMiddleLoaderTableViewCell.self, forCellReuseIdentifier: String(describing: TimelineMiddleLoaderTableViewCell.self))
         tableView.register(TimelineBottomLoaderTableViewCell.self, forCellReuseIdentifier: String(describing: TimelineBottomLoaderTableViewCell.self))
         tableView.rowHeight = UITableView.automaticDimension
         tableView.separatorStyle = .none
+        tableView.backgroundColor = .clear
+        
         return tableView
     }()
     
@@ -93,12 +95,11 @@ extension HomeTimelineViewController {
 
         tableView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(tableView)
-        tableView.backgroundColor = .systemBackground
         NSLayoutConstraint.activate([
+            tableView.topAnchor.constraint(equalTo: view.topAnchor),
             tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-            tableView.topAnchor.constraint(equalTo: view.topAnchor)
         ])
 
         view.addSubview(floatyButton)

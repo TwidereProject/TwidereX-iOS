@@ -59,6 +59,7 @@
 "Common.Controls.Actions.Remove" = "删除";
 "Common.Controls.Actions.Save" = "保存";
 "Common.Controls.Actions.SavePhoto" = "保存照片";
+"Common.Controls.Actions.SignIn" = "登录";
 "Common.Controls.Actions.TakePhoto" = "拍摄照片";
 "Common.Controls.Friendship.Actions.Block" = "屏蔽";
 "Common.Controls.Friendship.Actions.Follow" = "关注";
@@ -186,7 +187,12 @@
 "Scene.Settings.SectionHeader.About" = "关于";
 "Scene.Settings.SectionHeader.General" = "通用";
 "Scene.Settings.Title" = "设置";
+"Scene.SignIn.HelloSignInToGetStarted" = "你好！
+登录后即可开始使用。";
+"Scene.SignIn.SignInWithMastodon" = "使用 Mastodon 登录";
 "Scene.SignIn.SignInWithTwitter" = "使用 Twitter 登录";
+"Scene.SignIn.TwitterOptions.SignInWithCustomTwitterKey" = "使用自定义 Twitter 口令登录";
+"Scene.SignIn.TwitterOptions.TwitterApiV2AccessIsRequired" = "需要开启 Twitter API v2 访问权限。";
 "Scene.Status.Like.Multiple" = "%d 喜欢";
 "Scene.Status.Like.Single" = "1 喜欢";
 "Scene.Status.Quote.Mutiple" = "%d 引用";

@@ -39,7 +39,8 @@ extension SceneCoordinator {
     }
     
     enum Scene {
-        case authentication
+        case authentication(viewModel: AuthenticationViewModel)
+        case twitterAuthenticationOption(viewModel: TwitterAuthenticationOptionViewModel)
         case twitterPinBasedAuthentication(viewModel: TwitterPinBasedAuthenticationViewModel)
         case accountList(viewModel: AccountListViewModel)
         case composeTweet(viewModel: ComposeTweetViewModel)
@@ -132,8 +133,14 @@ private extension SceneCoordinator {
     func get(scene: Scene) -> UIViewController? {
         let viewController: UIViewController?
         switch scene {
-        case .authentication:
-            viewController = AuthenticationViewController()
+        case .authentication(let viewModel):
+            let _viewController = AuthenticationViewController()
+            _viewController.viewModel = viewModel
+            viewController = _viewController
+        case .twitterAuthenticationOption(let viewModel):
+            let _viewController = TwitterAuthenticationOptionViewController()
+            _viewController.viewModel = viewModel
+            viewController = _viewController
         case .twitterPinBasedAuthentication(let viewModel):
             let _viewController = TwitterPinBasedAuthenticationViewController()
             _viewController.viewModel = viewModel

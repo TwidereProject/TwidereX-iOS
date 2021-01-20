@@ -39,7 +39,6 @@ extension TwitterPinBasedAuthenticationViewController {
             webView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
         ])
         
-        
         var request = URLRequest(url: viewModel.authenticateURL)
         request.httpShouldHandleCookies = false
         webView.navigationDelegate = self

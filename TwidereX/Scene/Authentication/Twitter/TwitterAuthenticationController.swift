@@ -21,6 +21,7 @@ final class TwitterAuthenticationController: NeedsDependency {
     // input
     var context: AppContext!
     var coordinator: SceneCoordinator!
+    let appSecret: AppSecret
     var authenticationSession: ASWebAuthenticationSession?
     var twitterPinBasedAuthenticationViewController: UIViewController?
     
@@ -29,18 +30,25 @@ final class TwitterAuthenticationController: NeedsDependency {
     let error = CurrentValueSubject<Error?, Never>(nil)
     let authenticated = PassthroughSubject<Twitter.Entity.User, Never>()
 
-    init(context: AppContext, coordinator: SceneCoordinator, authenticateURL: URL, requestTokenExchange: Twitter.API.OAuth.OAuthRequestTokenExchange) {
+    init(
+        context: AppContext,
+        coordinator: SceneCoordinator,
+        appSecret: AppSecret,
+        authenticateURL: URL,
+        requestTokenExchange: Twitter.API.OAuth.OAuthRequestTokenExchange
+    ) {
         self.context = context
         self.coordinator = coordinator
+        self.appSecret = appSecret
         
         switch requestTokenExchange {
-        // default use system AuthenticationServices
+        // use standard OAuth via system AuthenticationServices
         case .customRequestTokenResponse(_, let append):
             authentication(authenticateURL: authenticateURL, append: append)
-        // use custom pin-based OAuth when set callback as "oob"
+        // use PIN-based OAuth via WKWebView (when set callback as "oob")
         case .requestTokenResponse(let requestTokenResponse):
             let twitterPinBasedAuthenticationViewModel = TwitterPinBasedAuthenticationViewModel(authenticateURL: authenticateURL)
-            authentication(requestTokenResponse: requestTokenResponse, pinCodePublisher: twitterPinBasedAuthenticationViewModel.pinCodePublisher)
+            authentication(requestTokenResponse: requestTokenResponse, appSecret: appSecret, pinCodePublisher: twitterPinBasedAuthenticationViewModel.pinCodePublisher)
             twitterPinBasedAuthenticationViewController = coordinator.present(scene: .twitterPinBasedAuthentication(viewModel: twitterPinBasedAuthenticationViewModel), from: nil, transition: .modal(animated: true, completion: nil))
         }
     }
@@ -88,7 +96,8 @@ extension TwitterAuthenticationController {
                 accessToken: authentication.accessToken,
                 accessTokenSecret: authentication.accessTokenSecret
             )
-            TwitterAuthenticationController.verifyAndSaveAuthentication(context: self.context, property: property, appSecret: .shared)
+            // Non-custom twitter API token. Use .default AppSecret here
+            TwitterAuthenticationController.verifyAndSaveAuthentication(context: self.context, property: property, appSecret: .default)
                 .receive(on: DispatchQueue.main)
                 .sink { [weak self] completion in
                     guard let self = self else { return }
@@ -109,7 +118,11 @@ extension TwitterAuthenticationController {
     }
     
     // setup pin code based account authentication & verify publisher
-    func authentication(requestTokenResponse: Twitter.API.OAuth.RequestTokenResponse, pinCodePublisher: PassthroughSubject<String, Never>) {
+    func authentication(
+        requestTokenResponse: Twitter.API.OAuth.RequestTokenResponse,
+        appSecret: AppSecret,
+        pinCodePublisher: PassthroughSubject<String, Never>
+    ) {
         pinCodePublisher
             .handleEvents(receiveOutput: { [weak self] _ in
                 guard let self = self else { return }
@@ -119,11 +132,15 @@ extension TwitterAuthenticationController {
             })
             .setFailureType(to: Error.self)
             .flatMap { pinCode in
-                self.context.apiService.twitterAccessToken(requestToken: requestTokenResponse.oauthToken, pinCode: pinCode)
-                    .retry(3)
+                self.context.apiService.twitterAccessToken(
+                    requestToken: requestTokenResponse.oauthToken,
+                    pinCode: pinCode,
+                    oauthSecret: appSecret.oauthSecret
+                )
+                .retry(3)
             }
             .flatMap { accessTokenResponse -> AnyPublisher<Twitter.Response.Content<Twitter.Entity.User>, Error> in
-                let oauthSecret = AppSecret.shared.oauthSecret
+                let oauthSecret = appSecret.oauthSecret
                 let property = TwitterAuthentication.Property(
                     userID: accessTokenResponse.userID,
                     screenName: accessTokenResponse.screenName,
@@ -132,7 +149,7 @@ extension TwitterAuthenticationController {
                     accessToken: accessTokenResponse.oauthToken,
                     accessTokenSecret: accessTokenResponse.oauthTokenSecret
                 )
-                return TwitterAuthenticationController.verifyAndSaveAuthentication(context: self.context, property: property, appSecret: .shared)
+                return TwitterAuthenticationController.verifyAndSaveAuthentication(context: self.context, property: property, appSecret: appSecret)
             }
             .receive(on: DispatchQueue.main)
             .sink { [weak self] completion in
