@@ -37,7 +37,6 @@ final class QuotePostView: UIView {
         let label = UILabel()
         label.font = .preferredFont(forTextStyle: .headline)
         label.textColor = .label
-        label.textColor = Asset.Colors.hightLight.color
         label.text = "Alice"
         return label
     }()
