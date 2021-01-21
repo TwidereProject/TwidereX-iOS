@@ -25,8 +25,13 @@ final class MentionPickViewController: UIViewController, NeedsDependency {
     let tableView: UITableView = {
         let tableView = UITableView(frame: .zero, style: .grouped)
         tableView.register(MentionPickTableViewCell.self, forCellReuseIdentifier: String(describing: MentionPickTableViewCell.self))
+        tableView.tableHeaderView = UITableView.groupedTableViewPaddingHeaderView
         return tableView
     }()
+    
+    deinit {
+        os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
+    }
     
 }
 

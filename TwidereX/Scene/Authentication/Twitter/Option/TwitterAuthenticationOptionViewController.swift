@@ -26,6 +26,7 @@ final class TwitterAuthenticationOptionViewController: UIViewController, NeedsDe
     let tableView: UITableView = {
         let tableView = UITableView(frame: .zero, style: .grouped)
         tableView.register(ListTextFieldTableViewCell.self, forCellReuseIdentifier: String(describing: ListTextFieldTableViewCell.self))
+        tableView.tableHeaderView = UITableView.groupedTableViewPaddingHeaderView
         return tableView
     }()
     
@@ -199,10 +200,6 @@ extension TwitterAuthenticationOptionViewController: UITableViewDelegate {
         let headerView = TableViewSectionTextHeaderView()
         headerView.headerLabel.text = header
         return headerView
-    }
-    
-    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        return 44
     }
     
     func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {

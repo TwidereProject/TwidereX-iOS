@@ -53,6 +53,10 @@ final class TwitterAuthenticationController: NeedsDependency {
         }
     }
     
+    deinit {
+        os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
+    }
+    
 }
 
 extension TwitterAuthenticationController {
@@ -108,7 +112,8 @@ extension TwitterAuthenticationController {
                     case .finished:
                         break
                     }
-                } receiveValue: { response in
+                } receiveValue: { [weak self] response in
+                    guard let self = self else { return }
                     let user = response.value
                     os_log("%{public}s[%{public}ld], %{public}s: user @%s verified", ((#file as NSString).lastPathComponent), #line, #function, user.screenName)
                     self.authenticated.send(user)
@@ -123,6 +128,8 @@ extension TwitterAuthenticationController {
         appSecret: AppSecret,
         pinCodePublisher: PassthroughSubject<String, Never>
     ) {
+        guard let context = self.context else { return }
+        
         pinCodePublisher
             .handleEvents(receiveOutput: { [weak self] _ in
                 guard let self = self else { return }
@@ -132,7 +139,7 @@ extension TwitterAuthenticationController {
             })
             .setFailureType(to: Error.self)
             .flatMap { pinCode in
-                self.context.apiService.twitterAccessToken(
+                context.apiService.twitterAccessToken(
                     requestToken: requestTokenResponse.oauthToken,
                     pinCode: pinCode,
                     oauthSecret: appSecret.oauthSecret
@@ -149,7 +156,7 @@ extension TwitterAuthenticationController {
                     accessToken: accessTokenResponse.oauthToken,
                     accessTokenSecret: accessTokenResponse.oauthTokenSecret
                 )
-                return TwitterAuthenticationController.verifyAndSaveAuthentication(context: self.context, property: property, appSecret: appSecret)
+                return TwitterAuthenticationController.verifyAndSaveAuthentication(context: context, property: property, appSecret: appSecret)
             }
             .receive(on: DispatchQueue.main)
             .sink { [weak self] completion in
@@ -161,7 +168,8 @@ extension TwitterAuthenticationController {
                 case .finished:
                     break
                 }
-            } receiveValue: { response in
+            } receiveValue: { [weak self] response in
+                guard let self = self else { return }
                 let user = response.value
                 os_log("%{public}s[%{public}ld], %{public}s: user @%s verified", ((#file as NSString).lastPathComponent), #line, #function, user.screenName)
                 self.authenticated.send(user)

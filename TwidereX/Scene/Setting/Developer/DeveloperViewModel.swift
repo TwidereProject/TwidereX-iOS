@@ -6,6 +6,7 @@
 //  Copyright © 2020 Twidere. All rights reserved.
 //
 
+import os.log
 import Foundation
 import SwiftUI
 import Combine
@@ -52,8 +53,18 @@ final class DeveloperViewModel: ObservableObject {
             
             return sections
         }
-        .assign(to: \.sections, on: self)
+        .sink(receiveValue: { [weak self] sections in
+            // assign(to:on:) has memory leaking issue. Use sink instead.
+            // Ref: https://forums.swift.org/t/does-assign-to-produce-memory-leaks/29546
+            guard let self = self else { return }
+            self.sections = sections
+        })
+        // .assign(to: \.sections, on: self)
         .store(in: &disposeBag)
+    }
+    
+    deinit {
+        os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
     }
     
 }

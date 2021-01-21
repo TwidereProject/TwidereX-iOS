@@ -42,6 +42,7 @@ final class ComposeTweetContentTableViewCell: UITableViewCell {
         let button = UIButton(type: .custom)
         button.contentHorizontalAlignment = .leading
         button.titleLabel?.font = .preferredFont(forTextStyle: .footnote)
+        button.titleLabel?.lineBreakMode = .byTruncatingTail
         button.setImage(Asset.Communication.textBubbleSmall.image.withRenderingMode(.alwaysTemplate), for: .normal)
         button.setTitleColor(Asset.Colors.hightLight.color, for: .normal)
         return button

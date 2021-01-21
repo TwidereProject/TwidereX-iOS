@@ -6,6 +6,7 @@
 //  Copyright © 2020 Twidere. All rights reserved.
 //
 
+import os.log
 import UIKit
 import Combine
 
@@ -21,6 +22,10 @@ final class SearchDetailViewModel {
     
     init(initialSearchText: String = "") {
         self.searchText = CurrentValueSubject(initialSearchText)
+    }
+    
+    deinit {
+        os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
     }
     
 }
