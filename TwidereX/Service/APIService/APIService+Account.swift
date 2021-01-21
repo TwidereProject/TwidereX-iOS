@@ -15,7 +15,7 @@ extension APIService {
     
     public func verifyCredentials(authorization: Twitter.API.OAuth.Authorization) -> AnyPublisher<Twitter.Response.Content<Twitter.Entity.User>, Error> {
         return Twitter.API.Account.verifyCredentials(session: session, authorization: authorization)
-            .map { response -> AnyPublisher<Twitter.Response.Content<Twitter.Entity.User>, Error> in
+            .flatMap { response -> AnyPublisher<Twitter.Response.Content<Twitter.Entity.User>, Error> in
                 let log = OSLog.api
                 let entity = response.value
                 
@@ -28,7 +28,6 @@ extension APIService {
                 .map { _ in return response }
                 .eraseToAnyPublisher()
             }
-            .switchToLatest()
             .eraseToAnyPublisher()
     }
     
