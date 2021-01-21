@@ -344,6 +344,7 @@
 		DBED96D8253F5D7800C5383A /* NamingState.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBED96D7253F5D7800C5383A /* NamingState.swift */; };
 		DBEFDC8825591F5C0086F268 /* DrawerSidebarViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBEFDC8725591F5C0086F268 /* DrawerSidebarViewController.swift */; };
 		DBEFDC92255920060086F268 /* DrawerSidebarTransitionController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBEFDC91255920060086F268 /* DrawerSidebarTransitionController.swift */; };
+		DBF3309125B96E0B00A678FB /* WKNavigationDelegateShim.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBF3309025B96E0B00A678FB /* WKNavigationDelegateShim.swift */; };
 		DBF639EA259B11F6009E12C8 /* UserTimelineViewModel+Diffable.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBF639E9259B11F6009E12C8 /* UserTimelineViewModel+Diffable.swift */; };
 		DBF639F2259B13BB009E12C8 /* TimelineHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBF639F1259B13BB009E12C8 /* TimelineHeaderView.swift */; };
 		DBF639F7259B1728009E12C8 /* TimelineHeaderCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBF639F6259B1728009E12C8 /* TimelineHeaderCollectionViewCell.swift */; };
@@ -811,6 +812,7 @@
 		DBED96D7253F5D7800C5383A /* NamingState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NamingState.swift; sourceTree = "<group>"; };
 		DBEFDC8725591F5C0086F268 /* DrawerSidebarViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawerSidebarViewController.swift; sourceTree = "<group>"; };
 		DBEFDC91255920060086F268 /* DrawerSidebarTransitionController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawerSidebarTransitionController.swift; sourceTree = "<group>"; };
+		DBF3309025B96E0B00A678FB /* WKNavigationDelegateShim.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WKNavigationDelegateShim.swift; sourceTree = "<group>"; };
 		DBF639E9259B11F6009E12C8 /* UserTimelineViewModel+Diffable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UserTimelineViewModel+Diffable.swift"; sourceTree = "<group>"; };
 		DBF639F1259B13BB009E12C8 /* TimelineHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimelineHeaderView.swift; sourceTree = "<group>"; };
 		DBF639F6259B1728009E12C8 /* TimelineHeaderCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimelineHeaderCollectionViewCell.swift; sourceTree = "<group>"; };
@@ -1327,6 +1329,7 @@
 			children = (
 				DB8E4FD82563CD6900459DA2 /* TwitterPinBasedAuthenticationViewController.swift */,
 				DB8E4FEB2563D42800459DA2 /* TwitterPinBasedAuthenticationViewModel.swift */,
+				DBF3309025B96E0B00A678FB /* WKNavigationDelegateShim.swift */,
 			);
 			path = PinBased;
 			sourceTree = "<group>";
@@ -2818,6 +2821,7 @@
 				DB74A16E256E50E300C5F3C9 /* UIColor.swift in Sources */,
 				DB676161254BE580006C6798 /* MediaPreviewCollectionViewCell.swift in Sources */,
 				DBE76D402502524500DEB0FC /* UIImage.swift in Sources */,
+				DBF3309125B96E0B00A678FB /* WKNavigationDelegateShim.swift in Sources */,
 				DBC747D4259DA03B00787EEF /* ListCheckmarkTableViewCell.swift in Sources */,
 				DB2FFF29258B0C2C003DBC19 /* TouchBlockingView.swift in Sources */,
 				DBF69EE12549705A00E2A915 /* ViewControllerAnimatedTransitioningDelegate.swift in Sources */,
