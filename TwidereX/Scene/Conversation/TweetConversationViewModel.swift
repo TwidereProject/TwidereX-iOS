@@ -227,9 +227,9 @@ final class TweetConversationViewModel: NSObject {
                 }
                 let currentLeafTweetIDs = currentLeafAttributes.map { $0.tweetID }
                 
-                let leafIDs = nodes.map { [$0.tweet.id, $0.children.first?.tweet.id].compactMap { $0 } }.flatMap { $0 }
+                let childrenIDs = nodes.map { [$0.tweet.id, $0.children.first?.tweet.id].compactMap { $0 } }.flatMap { $0 }
                 let request = Tweet.sortedFetchRequest
-                request.predicate = Tweet.predicate(idStrs: leafIDs)
+                request.predicate = Tweet.predicate(idStrs: childrenIDs)
                 var tweetDict: [Tweet.ID: Tweet] = [:]
                 do {
                     let tweets = try self.context.managedObjectContext.fetch(request)
@@ -277,6 +277,7 @@ extension TweetConversationViewModel {
     struct ConversationMeta {
         let tweetID: Twitter.Entity.V2.Tweet.ID
         let authorID: Twitter.Entity.User.ID
+        let authorUsrename: String
         let conversationID: Twitter.Entity.V2.Tweet.ConversationID
         let createdAt: Date
     }
@@ -628,17 +629,74 @@ extension TweetConversationViewModel {
     }
 }
 
+protocol ConvsersationTweet {
+    var id: Twitter.Entity.V2.Tweet.ID { get }
+}
+
+extension Twitter.Entity.Tweet: ConvsersationTweet {
+    var id: Twitter.Entity.V2.Tweet.ID { return idStr }
+}
+
+extension Twitter.Entity.V2.Tweet: ConvsersationTweet { }
+
 extension TweetConversationViewModel {
     public class ConversationNode {
-        let tweet: Twitter.Entity.V2.Tweet
+        let tweet: ConvsersationTweet
         let children: [ConversationNode]
         
-        init(tweet: Twitter.Entity.V2.Tweet, children: [ConversationNode]) {
+        init(tweet: ConvsersationTweet, children: [ConversationNode]) {
             self.tweet = tweet
             self.children = children
         }
+         
+        /// Construct convsersation children nodes for given tweetID
+        /// - Parameters:
+        ///   - tweetID: the ID of children's parent tweet
+        ///   - content: the material for construct tree (v1)
+        /// - Returns: Array of children nodes (node may has children) for given tweet as root
+        static func children(
+            for tweetID: Twitter.Entity.Tweet.ID,
+            from content: Twitter.API.Search.Content
+        ) -> [ConversationNode] {
+            let tweets = content.statuses ?? []
+            var tweetDict: [Twitter.Entity.Tweet.ID: Twitter.Entity.Tweet] = [:]
+            var replyToMappingDict: [Twitter.Entity.V2.Tweet.ID: Set<Twitter.Entity.V2.Tweet.ID>] = [:]
+            
+            for tweet in tweets {
+                tweetDict[tweet.idStr] = tweet
+                
+                guard let replyToID = tweet.inReplyToStatusIDStr else {
+                    continue
+                }
+                if var mapping = replyToMappingDict[replyToID] {
+                    mapping.insert(tweet.idStr)
+                    replyToMappingDict[replyToID] = mapping
+                } else {
+                    replyToMappingDict[replyToID] = Set([tweet.idStr])
+                }
+            }
+            
+            var children: [ConversationNode] = []
+            let replies = Array(replyToMappingDict[tweetID] ?? Set())
+                .compactMap { tweetDict[$0] }
+                .sorted(by: { $0.createdAt > $1.createdAt })
+            for reply in replies {
+                let child = node(of: reply, from: tweetDict, replyToMappingDict: replyToMappingDict)
+                children.append(child)
+            }
+            
+            return children
+        }
         
-        static func leafs(for tweetID: Twitter.Entity.V2.Tweet.ID, from content: Twitter.API.V2.RecentSearch.Content) -> [ConversationNode] {
+        /// Construct convsersation children nodes for given tweetID
+        /// - Parameters:
+        ///   - tweetID: the ID of children's parent tweet
+        ///   - content: the material for construct tree (v2)
+        /// - Returns: Array of children nodes (node may has children) for given tweet as root
+        static func children(
+            for tweetID: Twitter.Entity.V2.Tweet.ID,
+            from content: Twitter.API.V2.RecentSearch.Content
+        ) -> [ConversationNode] {
             let tweets = [content.data, content.includes?.tweets].compactMap { $0 }.flatMap { $0 }
             let dictContent = Twitter.Response.V2.DictContent(
                 tweets: tweets,
@@ -662,19 +720,48 @@ extension TweetConversationViewModel {
                 }
             }
             
-            var leafs: [ConversationNode] = []
+            var children: [ConversationNode] = []
             let replies = Array(replyToMappingDict[tweetID] ?? Set())
                 .compactMap { dictContent.tweetDict[$0] }
                 .sorted(by: { $0.createdAt > $1.createdAt })
             for reply in replies {
-                let leaf = node(of: reply, from: dictContent, replyToMappingDict: replyToMappingDict)
-                leafs.append(leaf)
+                let child = node(of: reply, from: dictContent, replyToMappingDict: replyToMappingDict)
+                children.append(child)
             }
             
-            return leafs
+            return children
         }
         
-        static func node(of tweet: Twitter.Entity.V2.Tweet, from dictContent: Twitter.Response.V2.DictContent, replyToMappingDict: [Twitter.Entity.V2.Tweet.ID: Set<Twitter.Entity.V2.Tweet.ID>]) -> ConversationNode {
+        /// Construct a tree node of give tweet
+        /// - Parameters:
+        ///   - tweet: the tweet which node will be represented
+        ///   - dictContent: the material for construct tree node (v1)
+        ///   - replyToMappingDict: the relationship material for construct tree node
+        /// - Returns: Node represented given tweet (may has children)
+        static func node(
+            of tweet: Twitter.Entity.Tweet,
+            from tweetDict: [Twitter.Entity.Tweet.ID: Twitter.Entity.Tweet],
+            replyToMappingDict: [Twitter.Entity.V2.Tweet.ID: Set<Twitter.Entity.V2.Tweet.ID>]
+        ) -> ConversationNode {
+            let childrenIDs = replyToMappingDict[tweet.idStr] ?? []
+            let children = Array(childrenIDs)
+                .compactMap { id in tweetDict[id] }
+                .sorted(by: { $0.createdAt > $1.createdAt })
+                .map { tweet in node(of: tweet, from: tweetDict, replyToMappingDict: replyToMappingDict) }
+            return ConversationNode(tweet: tweet, children: children)
+        }
+        
+        /// Construct a tree node of give tweet
+        /// - Parameters:
+        ///   - tweet: the tweet which node will be represented
+        ///   - dictContent: the material for construct tree node (v2)
+        ///   - replyToMappingDict: the relationship material for construct tree node
+        /// - Returns: Node represented given tweet (may has children)
+        static func node(
+            of tweet: Twitter.Entity.V2.Tweet,
+            from dictContent: Twitter.Response.V2.DictContent,
+            replyToMappingDict: [Twitter.Entity.V2.Tweet.ID: Set<Twitter.Entity.V2.Tweet.ID>]
+        ) -> ConversationNode {
             let childrenIDs = replyToMappingDict[tweet.id] ?? []
             let children = Array(childrenIDs)
                 .compactMap { id in dictContent.tweetDict[id] }
@@ -682,6 +769,7 @@ extension TweetConversationViewModel {
                 .map { tweet in node(of: tweet, from: dictContent, replyToMappingDict: replyToMappingDict) }
             return ConversationNode(tweet: tweet, children: children)
         }
+        
     }
 }
 

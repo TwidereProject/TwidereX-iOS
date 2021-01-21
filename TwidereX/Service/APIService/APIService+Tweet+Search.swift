@@ -14,13 +14,36 @@ import CommonOSLog
 
 extension APIService {
     
+    static let defaultSearchCount = 20
+    static let conversationSearchCount = 50
+    
+    // convsersation tweet search
+    func tweetsSearch(
+        conversationRootTweetID: Twitter.Entity.Tweet.ID,
+        authorUsername: String,
+        maxID: String?,
+        twitterAuthenticationBox: AuthenticationService.TwitterAuthenticationBox
+    ) -> AnyPublisher<Twitter.Response.Content<Twitter.API.Search.Content>, Error> {
+        let query = Twitter.API.Timeline.Query(
+            count: APIService.conversationSearchCount,
+            maxID: maxID,
+            sinceID: conversationRootTweetID,
+            query: "to:\(authorUsername) OR from:\(authorUsername) -filter:retweets"
+        )
+        return _tweetsSearch(
+            query: query,
+            twitterAuthenticationBox: twitterAuthenticationBox
+        )
+    }
+    
+    // global tweet search
     func tweetsSearch(
         searchText: String,
         maxID: String?,
         twitterAuthenticationBox: AuthenticationService.TwitterAuthenticationBox
-    ) -> AnyPublisher<Twitter.Response.Content<Twitter.Entity.Search>, Error> {
+    ) -> AnyPublisher<Twitter.Response.Content<Twitter.API.Search.Content>, Error> {
         let query = Twitter.API.Timeline.Query(
-            count: 20,
+            count: APIService.defaultSearchCount,
             maxID: maxID,
             query: searchText
         )
@@ -33,7 +56,7 @@ extension APIService {
     private func _tweetsSearch(
         query: Twitter.API.Timeline.Query,
         twitterAuthenticationBox: AuthenticationService.TwitterAuthenticationBox
-    ) -> AnyPublisher<Twitter.Response.Content<Twitter.Entity.Search>, Error> {
+    ) -> AnyPublisher<Twitter.Response.Content<Twitter.API.Search.Content>, Error> {
         let requestTwitterUserID = twitterAuthenticationBox.twitterUserID
         let authorization = twitterAuthenticationBox.twitterAuthorization
         
@@ -42,7 +65,7 @@ extension APIService {
             authorization: authorization,
             query: query
         )
-        .map { response -> AnyPublisher<Twitter.Response.Content<Twitter.Entity.Search>, Error> in
+        .map { response -> AnyPublisher<Twitter.Response.Content<Twitter.API.Search.Content>, Error> in
             let log = OSLog.api
             let persistResponse = response.map { $0.statuses ?? [] }
             return APIService.Persist.persistTimeline(
@@ -54,7 +77,7 @@ extension APIService {
                 log: log
             )
             .setFailureType(to: Error.self)
-            .tryMap { result -> Twitter.Response.Content<Twitter.Entity.Search> in
+            .tryMap { result -> Twitter.Response.Content<Twitter.API.Search.Content> in
                 switch result {
                 case .success:
                     return response
@@ -86,7 +109,7 @@ extension APIService {
         
         let query = Twitter.API.V2.RecentSearch.Query(
             query: "conversation_id:\(conversationID) (to:\(authorID) OR from:\(authorID))",
-            maxResults: 100,
+            maxResults: APIService.conversationSearchCount,
             sinceID: sinceID,
             startTime: startTime,
             nextToken: nextToken
@@ -106,7 +129,7 @@ extension APIService {
 
         let query = Twitter.API.V2.RecentSearch.Query(
             query: searchText,
-            maxResults: 20,
+            maxResults: APIService.defaultSearchCount,
             sinceID: nil,
             startTime: nil,
             nextToken: nextToken

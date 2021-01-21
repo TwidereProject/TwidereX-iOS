@@ -74,25 +74,28 @@ extension Twitter.API.Timeline {
     public struct Query {
         // share
         public let count: Int?
+        public let maxID: Twitter.Entity.Tweet.ID?
+        public let sinceID: Twitter.Entity.Tweet.ID?
+        public let excludeReplies: Bool?
         
         // user timeline
-        public let userID: String?
-        public let maxID: String?
-        public let excludeReplies: Bool?
+        public let userID: Twitter.Entity.User.ID?
         
         // search
         public let query: String?
         
         public init(
             count: Int? = nil,
-            userID: String? = nil,
-            maxID: String? = nil,
+            userID: Twitter.Entity.User.ID? = nil,
+            maxID: Twitter.Entity.Tweet.ID? = nil,
+            sinceID: Twitter.Entity.Tweet.ID? = nil,
             excludeReplies: Bool? = nil,
             query: String? = nil
         ) {
             self.count = count
             self.userID = userID
             self.maxID = maxID
+            self.sinceID = sinceID
             self.excludeReplies = excludeReplies
             self.query = query
         }
@@ -107,6 +110,9 @@ extension Twitter.API.Timeline {
             }
             if let maxID = self.maxID {
                 items.append(URLQueryItem(name: "max_id", value: maxID))
+            }
+            if let sinceID = self.sinceID {
+                items.append(URLQueryItem(name: "since_id", value: sinceID))
             }
             if let excludeReplies = self.excludeReplies {
                 items.append(URLQueryItem(name: "exclude_replies", value: excludeReplies ? "true" : "false"))
