@@ -15,8 +15,9 @@ final public class TwitterPoll: NSManagedObject {
     public typealias ID = String
     
     @NSManaged public private(set) var identifier: UUID
-    
+    @NSManaged public private(set) var createdAt: Date
     @NSManaged public private(set) var id: ID
+    
     /// Int64
     @NSManaged public private(set) var durationMinutes: NSNumber?
     @NSManaged public private(set) var endDatetime: Date?
@@ -33,6 +34,7 @@ extension TwitterPoll {
     public override func awakeFromInsert() {
         super.awakeFromInsert()
         identifier = UUID()
+        createdAt = Date()
     }
     
 }
@@ -43,6 +45,6 @@ extension TwitterPoll {
 
 extension TwitterPoll: Managed {
     public static var defaultSortDescriptors: [NSSortDescriptor] {
-        return [NSSortDescriptor(keyPath: \TwitteWithheld.identifier, ascending: false)]
+        return [NSSortDescriptor(keyPath: \TwitterPoll.createdAt, ascending: false)]
     }
 }

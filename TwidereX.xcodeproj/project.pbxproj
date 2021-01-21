@@ -464,6 +464,7 @@
 		3CFF05E953F47DC2B0B5AC95 /* Pods-TwidereXTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TwidereXTests.debug.xcconfig"; path = "Target Support Files/Pods-TwidereXTests/Pods-TwidereXTests.debug.xcconfig"; sourceTree = "<group>"; };
 		4423B1DC6D103908A7B752AF /* Pods-TwidereX.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TwidereX.release.xcconfig"; path = "Target Support Files/Pods-TwidereX/Pods-TwidereX.release.xcconfig"; sourceTree = "<group>"; };
 		44D01BA9E21B7F374DBDA38A /* Pods-TwidereX-TwidereXUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TwidereX-TwidereXUITests.release.xcconfig"; path = "Target Support Files/Pods-TwidereX-TwidereXUITests/Pods-TwidereX-TwidereXUITests.release.xcconfig"; sourceTree = "<group>"; };
+		5DAC343225B9987000109C6E /* CoreDataStack 3.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "CoreDataStack 3.xcdatamodel"; sourceTree = "<group>"; };
 		62DC6A6809A00EA057395C07 /* Pods_TwidereXTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_TwidereXTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		7252E908942B535D4A05450E /* Pods_TwitterAPI.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_TwitterAPI.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		8564534D30DC2640CEB8344E /* Pods_TwidereX.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_TwidereX.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -3689,10 +3690,11 @@
 		DBE76CBF250093E200DEB0FC /* CoreDataStack.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
+				5DAC343225B9987000109C6E /* CoreDataStack 3.xcdatamodel */,
 				DB53999825AED8420064586D /* CoreDataStack 2.xcdatamodel */,
 				DBE76CC0250093E200DEB0FC /* CoreDataStack.xcdatamodel */,
 			);
-			currentVersion = DB53999825AED8420064586D /* CoreDataStack 2.xcdatamodel */;
+			currentVersion = 5DAC343225B9987000109C6E /* CoreDataStack 3.xcdatamodel */;
 			path = CoreDataStack.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;
