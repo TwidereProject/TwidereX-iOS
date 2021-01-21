@@ -45,7 +45,7 @@ extension SearchTimelineViewModel.State {
         var needsFallback = false
         var previoursSearchText = ""
         
-        var maxID: String?          // v1
+        var maxID: String?          // v1 fallback
         var nextToken: String?      // v2
         
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {
@@ -65,7 +65,6 @@ extension SearchTimelineViewModel.State {
             } else {
                 loadingFallback(viewModel: viewModel, twitterAuthenticationBox: activeTwitterAuthenticationBox, stateMachine: stateMachine)
             }
-            
         }
         
         func loading(
@@ -157,6 +156,14 @@ extension SearchTimelineViewModel.State {
             .receive(on: DispatchQueue.main)
             .sink { [weak self] completion in
                 guard let self = self else { return }
+                switch completion {
+                case .failure(let error):
+                    os_log("%{public}s[%{public}ld], %{public}s: search %s fail: %s", ((#file as NSString).lastPathComponent), #line, #function, searchText, error.localizedDescription)
+                    self.error = error
+                    stateMachine.enter(Fail.self)
+                case .finished:
+                    break
+                }
             } receiveValue: { [weak self] response in
                 guard let self = self else { return }
                 
@@ -185,11 +192,13 @@ extension SearchTimelineViewModel.State {
         }
         
         func reset(searchText: String) {
+            maxID = nil
             nextToken = nil
             previoursSearchText = searchText
             viewModel?.tweetFetchedResultsController.tweetIDs.value = []
             viewModel?.tweetFetchedResultsController.items.value = []
         }
+        
     }
     
     class Fail: SearchTimelineViewModel.State {
