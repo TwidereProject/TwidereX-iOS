@@ -29,6 +29,10 @@ final class MentionPickViewController: UIViewController, NeedsDependency {
         return tableView
     }()
     
+    deinit {
+        os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
+    }
+    
 }
 
 extension MentionPickViewController {

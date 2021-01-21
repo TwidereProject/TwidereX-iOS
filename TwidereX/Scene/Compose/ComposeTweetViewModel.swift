@@ -118,10 +118,10 @@ final class ComposeTweetViewModel: NSObject {
         }
         
         composeContent
-            .map { text in self.twitterTextParser.parseTweet(text) }
+            .compactMap { [weak self] text in return self?.twitterTextParser.parseTweet(text) }
             .assign(to: \.value, on: twitterTextParseResults)
             .store(in: &disposeBag)
-        
+
         let isTweetContentEmpty = twitterTextParseResults
             .map { parseResult in parseResult.weightedLength == 0 }
         let isTweetContentValid = twitterTextParseResults
@@ -145,14 +145,14 @@ final class ComposeTweetViewModel: NSObject {
         }
         .assign(to: \.value, on: isComposeBarButtonEnabled)
         .store(in: &disposeBag)
-        
+
         mediaServices
             .map { services -> Bool in
                 return services.count < 4
             }
             .assign(to: \.value, on: isCameraToolbarButtonEnabled)
             .store(in: &disposeBag)
-        
+
         locationManager.delegate = self
         isLocationServicesEnabled.value = CLLocationManager.locationServicesEnabled()
         isRequestLocationMarking
@@ -167,7 +167,12 @@ final class ComposeTweetViewModel: NSObject {
             .store(in: &disposeBag)
 
         #if DEBUG
-        twitterTextParseResults.print().sink { _ in }.store(in: &disposeBag)
+        twitterTextParseResults
+            .receive(on: DispatchQueue.main)
+            .sink { results in
+                os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: parse results %s", ((#file as NSString).lastPathComponent), #line, #function, results.debugDescription)
+            }
+            .store(in: &disposeBag)
         #endif
     }
     
