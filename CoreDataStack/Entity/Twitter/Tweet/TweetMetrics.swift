@@ -13,6 +13,7 @@ import TwitterAPI
 final public class TweetMetrics: NSManagedObject {
     
     @NSManaged public private(set) var identifier: UUID
+    @NSManaged public private(set) var createdAt: Date
     
     /// Int64
     @NSManaged public private(set) var likeCount: NSNumber?
@@ -33,6 +34,7 @@ extension TweetMetrics {
     public override func awakeFromInsert() {
         super.awakeFromInsert()
         identifier = UUID()
+        createdAt = Date()
     }
     
     @discardableResult
@@ -89,6 +91,6 @@ extension TweetMetrics {
 
 extension TweetMetrics: Managed {
     public static var defaultSortDescriptors: [NSSortDescriptor] {
-        return [NSSortDescriptor(keyPath: \TweetEntities.identifier, ascending: false)]
+        return [NSSortDescriptor(keyPath: \TweetEntities.createdAt, ascending: false)]
     }
 }

@@ -13,6 +13,7 @@ import TwitterAPI
 final public class TwitterMediaMetrics: NSManagedObject {
         
     @NSManaged public private(set) var identifier: UUID
+    @NSManaged public private(set) var createdAt: Date
     
     /// int64
     @NSManaged public private(set) var viewCount: NSNumber?
@@ -27,6 +28,7 @@ extension TwitterMediaMetrics {
     public override func awakeFromInsert() {
         super.awakeFromInsert()
         identifier = UUID()
+        createdAt = Date()
     }
     
     @discardableResult
@@ -53,6 +55,6 @@ extension TwitterMediaMetrics {
 
 extension TwitterMediaMetrics: Managed {
     public static var defaultSortDescriptors: [NSSortDescriptor] {
-        return [NSSortDescriptor(keyPath: \TwitterMediaMetrics.identifier, ascending: false)]
+        return [NSSortDescriptor(keyPath: \TwitterMediaMetrics.createdAt, ascending: false)]
     }
 }

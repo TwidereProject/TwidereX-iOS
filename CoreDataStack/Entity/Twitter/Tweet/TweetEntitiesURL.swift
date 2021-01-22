@@ -13,6 +13,7 @@ import TwitterAPI
 final public class TweetEntitiesURL: NSManagedObject {
         
     @NSManaged public private(set) var identifier: UUID
+    @NSManaged public private(set) var createdAt: Date
     
     @NSManaged public private(set) var start: NSNumber?
     @NSManaged public private(set) var end: NSNumber?
@@ -31,6 +32,7 @@ extension TweetEntitiesURL {
     public override func awakeFromInsert() {
         super.awakeFromInsert()
         identifier = UUID()
+        createdAt = Date()
     }
     
     @discardableResult
@@ -78,6 +80,6 @@ extension TweetEntitiesURL {
 
 extension TweetEntitiesURL: Managed {
     public static var defaultSortDescriptors: [NSSortDescriptor] {
-        return [NSSortDescriptor(keyPath: \TweetEntitiesURL.identifier, ascending: false)]
+        return [NSSortDescriptor(keyPath: \TweetEntitiesURL.createdAt, ascending: false)]
     }
 }

@@ -13,6 +13,7 @@ import TwitterAPI
 final public class TweetEntitiesMention: NSManagedObject {
         
     @NSManaged public private(set) var identifier: UUID
+    @NSManaged public private(set) var createdAt: Date
     
     @NSManaged public private(set) var start: NSNumber?
     @NSManaged public private(set) var end: NSNumber?
@@ -30,6 +31,7 @@ extension TweetEntitiesMention {
     public override func awakeFromInsert() {
         super.awakeFromInsert()
         identifier = UUID()
+        createdAt = Date()
     }
     
     @discardableResult
@@ -82,7 +84,7 @@ extension TweetEntitiesMention {
 
 extension TweetEntitiesMention: Managed {
     public static var defaultSortDescriptors: [NSSortDescriptor] {
-        return [NSSortDescriptor(keyPath: \TweetEntitiesMention.identifier, ascending: false)]
+        return [NSSortDescriptor(keyPath: \TweetEntitiesMention.createdAt, ascending: false)]
     }
 }
 
