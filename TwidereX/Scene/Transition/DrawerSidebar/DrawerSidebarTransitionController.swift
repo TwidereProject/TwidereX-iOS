@@ -68,6 +68,12 @@ extension DrawerSidebarTransitionController {
 extension DrawerSidebarTransitionController: UIViewControllerTransitioningDelegate {
     
     func animationController(forPresented presented: UIViewController, presenting: UIViewController, source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+        if #available(iOS 14.0, *) {
+            guard !UIAccessibility.prefersCrossFadeTransitions else { return nil }
+        } else {
+            // do nothing
+        }
+        
         guard let drawerSidebarViewController = presented as? DrawerSidebarViewController else {
             assertionFailure()
             return nil
@@ -97,6 +103,12 @@ extension DrawerSidebarTransitionController: UIViewControllerTransitioningDelega
     }
     
     func animationController(forDismissed dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+        if #available(iOS 14.0, *) {
+            guard !UIAccessibility.prefersCrossFadeTransitions else { return nil }
+        } else {
+            // do nothing
+        }
+        
         return DrawerSidebarAnimatedTransitioning(
             operation: .pop,
             screenEdgePanGestureRecognizer: screenEdgePanGestureRecognizer,
