@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="17709" systemVersion="20C69" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="17511" systemVersion="20C69" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
     <entity name="AuthenticationIndex" representedClassName=".AuthenticationIndex" syncable="YES">
         <attribute name="activedAt" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="createdAt" attributeType="Date" usesScalarValueType="NO"/>
@@ -163,7 +163,7 @@
         <relationship name="tweet" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Tweet" inverseName="media" inverseEntity="Tweet"/>
     </entity>
     <entity name="TwitterMediaMetrics" representedClassName=".TwitterMediaMetrics" syncable="YES">
-        <attribute name="createAt" attributeType="Date" defaultDateTimeInterval="631123200" usesScalarValueType="NO"/>
+        <attribute name="createdAt" attributeType="Date" defaultDateTimeInterval="631123200" usesScalarValueType="NO"/>
         <attribute name="identifier" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="viewCount" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <relationship name="media" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="TwitterMedia" inverseName="metrics" inverseEntity="TwitterMedia"/>
