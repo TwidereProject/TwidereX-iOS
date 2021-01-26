@@ -13,6 +13,7 @@ import TwitterAPI
 final public class TwitterUserMetrics: NSManagedObject {
     
     @NSManaged public private(set) var identifier: UUID
+    @NSManaged public private(set) var createdAt: Date
     
     /// Int64
     @NSManaged public private(set) var followersCount: NSNumber?
@@ -33,6 +34,7 @@ extension TwitterUserMetrics {
     public override func awakeFromInsert() {
         super.awakeFromInsert()
         identifier = UUID()
+        createdAt = Date()
     }
     
     @discardableResult
@@ -68,6 +70,7 @@ extension TwitterUserMetrics {
             self.tweetCount = tweetCount.flatMap { NSNumber(value: $0) }
         }
     }
+    
 }
 
 extension TwitterUserMetrics {
@@ -88,6 +91,6 @@ extension TwitterUserMetrics {
 
 extension TwitterUserMetrics: Managed {
     public static var defaultSortDescriptors: [NSSortDescriptor] {
-        return [NSSortDescriptor(keyPath: \TwitterUserMetrics.identifier, ascending: false)]
+        return [NSSortDescriptor(keyPath: \TwitterUserMetrics.createdAt, ascending: false)]
     }
 }

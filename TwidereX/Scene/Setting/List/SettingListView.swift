@@ -103,7 +103,9 @@ struct SettingListView: View {
     
     var body: some View {
         List {
-            Section(header: Text(verbatim: L10n.Scene.Settings.SectionHeader.general)) {
+            Section(
+                header: Text(verbatim: L10n.Scene.Settings.SectionHeader.general).padding(.top, UITableView.groupedTableViewPaddingHeaderViewHeight)
+            ) {
                 ForEach(SettingListView.generalSection) { entry in
                     Button(action: {
                         context.viewStateStore.settingView.presentSettingListEntryPublisher.send(entry)

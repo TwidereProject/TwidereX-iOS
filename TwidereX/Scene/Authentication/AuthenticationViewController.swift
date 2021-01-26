@@ -5,7 +5,7 @@
 //  Created by Cirno MainasuK on 2020-9-1.
 //
 
-import os
+import os.log
 import UIKit
 import AuthenticationServices
 import Combine
@@ -76,6 +76,10 @@ final class AuthenticationViewController: UIViewController, NeedsDependency {
     
     let isSigning = CurrentValueSubject<Bool, Never>(false)
     private var twitterAuthenticationController: TwitterAuthenticationController?
+    
+    deinit {
+        os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
+    }
     
 }
 

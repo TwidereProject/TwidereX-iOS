@@ -30,13 +30,16 @@ final class MentionPickViewModel {
         self.secondaryItems = secondaryItems
     }
     
+    deinit {
+        os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
+    }
+    
 }
 
 extension MentionPickViewModel {
     
     func setupDiffableTableViewDataSource(for tableView: UITableView) {
-        diffableDataSource = UITableViewDiffableDataSource(tableView: tableView) { [weak self] tableView, indexPath, item -> UITableViewCell? in
-            guard let self = self else { return nil }
+        diffableDataSource = UITableViewDiffableDataSource(tableView: tableView) { tableView, indexPath, item -> UITableViewCell? in
             let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: MentionPickTableViewCell.self), for: indexPath) as! MentionPickTableViewCell
             MentionPickViewModel.configure(cell: cell, item: item)
             return cell

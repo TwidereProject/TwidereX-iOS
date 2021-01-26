@@ -23,6 +23,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         FirebaseApp.configure()
         #endif
         
+        // Update app version info. See: `Settings.bundle`
+        UserDefaults.standard.setValue(UIApplication.appVersion(), forKey: "TwidereX.appVersion")
+        UserDefaults.standard.setValue(UIApplication.appBuild(), forKey: "TwidereX.appBundle")
+        
         Floaty.global.rtlMode = UIApplication.shared.userInterfaceLayoutDirection == .rightToLeft
         
         NotificationCenter.default.publisher(for: UIContentSizeCategory.didChangeNotification)

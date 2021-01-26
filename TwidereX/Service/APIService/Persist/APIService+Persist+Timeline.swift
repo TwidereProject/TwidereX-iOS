@@ -16,12 +16,12 @@ import TwitterAPI
 
 extension APIService.Persist {
     
-    
     enum PersistTimelineType {
         case homeTimeline
         case mentionTimeline
         case userTimeline
         case likeList
+        case searchList
     }
     
     static func persistTimeline(
@@ -96,6 +96,7 @@ extension APIService.Persist {
                 case .mentionTimeline:  return .mentionTimeline
                 case .userTimeline:     return .userTimeline
                 case .likeList:         return .likeList
+                case .searchList:       return .searchList
                 }
             }()
 
@@ -298,6 +299,7 @@ extension APIService.Persist {
             case mentionTimeline
             case userTimeline
             case likeList
+            case searchList
             
             case retweet
             case quote
@@ -308,6 +310,7 @@ extension APIService.Persist {
                 case .mentionTimeline:  return "M"
                 case .userTimeline:     return "U"
                 case .likeList:         return "L"
+                case .searchList:       return "S"
                 case .retweet:          return "R"
                 case .quote:            return "Q"
                 }

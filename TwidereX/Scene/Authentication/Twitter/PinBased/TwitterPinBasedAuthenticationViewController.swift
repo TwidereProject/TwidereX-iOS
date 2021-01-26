@@ -20,6 +20,11 @@ final class TwitterPinBasedAuthenticationViewController: UIViewController, Needs
     var viewModel: TwitterPinBasedAuthenticationViewModel!
     
     let webView = WKWebView()
+    
+    deinit {
+        os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
+    }
+    
 }
 
 extension TwitterPinBasedAuthenticationViewController {
@@ -41,7 +46,7 @@ extension TwitterPinBasedAuthenticationViewController {
         
         var request = URLRequest(url: viewModel.authenticateURL)
         request.httpShouldHandleCookies = false
-        webView.navigationDelegate = self
+        webView.navigationDelegate = viewModel.navigationDelegate
         webView.load(request)
         os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: authenticate via: %s", ((#file as NSString).lastPathComponent), #line, #function, viewModel.authenticateURL.debugDescription)
     }
@@ -52,21 +57,6 @@ extension TwitterPinBasedAuthenticationViewController {
     
     @objc private func cancelBarButtonItemPressed(_ sender: UIBarButtonItem) {
         dismiss(animated: true, completion: nil)
-    }
-    
-}
-
-// MARK: - WKNavigationDelegate
-extension TwitterPinBasedAuthenticationViewController: WKNavigationDelegate {
-
-    func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
-        os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
-        webView.evaluateJavaScript("document.querySelector('#oauth_pin code').textContent", completionHandler: { [weak self] (any, error) in
-            guard let self = self else { return }
-            guard error == nil else { return }
-            guard let pinCode = any as? String else { return }
-            self.viewModel.pinCodePublisher.send(pinCode)
-        })
     }
     
 }

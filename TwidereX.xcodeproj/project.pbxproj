@@ -34,7 +34,7 @@
 		DB1D7B6725B6C2E000397DCD /* TwitterAuthenticationOption.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB1D7B6625B6C2E000397DCD /* TwitterAuthenticationOption.swift */; };
 		DB25B9D1253828AA00A5420F /* APIService+Retweet.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB25B9D0253828AA00A5420F /* APIService+Retweet.swift */; };
 		DB25B9E325385EFD00A5420F /* TweetConversationViewModel+LoadConversationState.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB25B9E225385EFD00A5420F /* TweetConversationViewModel+LoadConversationState.swift */; };
-		DB25B9E82539897B00A5420F /* APIService+RecentSearch.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB25B9E72539897B00A5420F /* APIService+RecentSearch.swift */; };
+		DB25B9E82539897B00A5420F /* APIService+Tweet+Search.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB25B9E72539897B00A5420F /* APIService+Tweet+Search.swift */; };
 		DB25B9F42539A9CE00A5420F /* APIService+CoreData+TwitterUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB25B9F32539A9CE00A5420F /* APIService+CoreData+TwitterUser.swift */; };
 		DB25BA08253D7D6E00A5420F /* APIService+Persist+DictContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB25BA07253D7D6E00A5420F /* APIService+Persist+DictContent.swift */; };
 		DB25BA10253D7F4D00A5420F /* APIService+CoreData+V2+Tweet.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB25BA0F253D7F4D00A5420F /* APIService+CoreData+V2+Tweet.swift */; };
@@ -344,6 +344,8 @@
 		DBED96D8253F5D7800C5383A /* NamingState.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBED96D7253F5D7800C5383A /* NamingState.swift */; };
 		DBEFDC8825591F5C0086F268 /* DrawerSidebarViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBEFDC8725591F5C0086F268 /* DrawerSidebarViewController.swift */; };
 		DBEFDC92255920060086F268 /* DrawerSidebarTransitionController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBEFDC91255920060086F268 /* DrawerSidebarTransitionController.swift */; };
+		DBF3309125B96E0B00A678FB /* WKNavigationDelegateShim.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBF3309025B96E0B00A678FB /* WKNavigationDelegateShim.swift */; };
+		DBF3309925B988A500A678FB /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = DBF3309825B988A500A678FB /* Settings.bundle */; };
 		DBF639EA259B11F6009E12C8 /* UserTimelineViewModel+Diffable.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBF639E9259B11F6009E12C8 /* UserTimelineViewModel+Diffable.swift */; };
 		DBF639F2259B13BB009E12C8 /* TimelineHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBF639F1259B13BB009E12C8 /* TimelineHeaderView.swift */; };
 		DBF639F7259B1728009E12C8 /* TimelineHeaderCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBF639F6259B1728009E12C8 /* TimelineHeaderCollectionViewCell.swift */; };
@@ -463,6 +465,7 @@
 		3CFF05E953F47DC2B0B5AC95 /* Pods-TwidereXTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TwidereXTests.debug.xcconfig"; path = "Target Support Files/Pods-TwidereXTests/Pods-TwidereXTests.debug.xcconfig"; sourceTree = "<group>"; };
 		4423B1DC6D103908A7B752AF /* Pods-TwidereX.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TwidereX.release.xcconfig"; path = "Target Support Files/Pods-TwidereX/Pods-TwidereX.release.xcconfig"; sourceTree = "<group>"; };
 		44D01BA9E21B7F374DBDA38A /* Pods-TwidereX-TwidereXUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TwidereX-TwidereXUITests.release.xcconfig"; path = "Target Support Files/Pods-TwidereX-TwidereXUITests/Pods-TwidereX-TwidereXUITests.release.xcconfig"; sourceTree = "<group>"; };
+		5DAC343225B9987000109C6E /* CoreDataStack 3.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "CoreDataStack 3.xcdatamodel"; sourceTree = "<group>"; };
 		62DC6A6809A00EA057395C07 /* Pods_TwidereXTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_TwidereXTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		7252E908942B535D4A05450E /* Pods_TwitterAPI.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_TwitterAPI.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		8564534D30DC2640CEB8344E /* Pods_TwidereX.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_TwidereX.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -493,7 +496,7 @@
 		DB1D7B6625B6C2E000397DCD /* TwitterAuthenticationOption.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwitterAuthenticationOption.swift; sourceTree = "<group>"; };
 		DB25B9D0253828AA00A5420F /* APIService+Retweet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "APIService+Retweet.swift"; sourceTree = "<group>"; };
 		DB25B9E225385EFD00A5420F /* TweetConversationViewModel+LoadConversationState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TweetConversationViewModel+LoadConversationState.swift"; sourceTree = "<group>"; };
-		DB25B9E72539897B00A5420F /* APIService+RecentSearch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "APIService+RecentSearch.swift"; sourceTree = "<group>"; };
+		DB25B9E72539897B00A5420F /* APIService+Tweet+Search.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "APIService+Tweet+Search.swift"; sourceTree = "<group>"; };
 		DB25B9F32539A9CE00A5420F /* APIService+CoreData+TwitterUser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "APIService+CoreData+TwitterUser.swift"; sourceTree = "<group>"; };
 		DB25BA07253D7D6E00A5420F /* APIService+Persist+DictContent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "APIService+Persist+DictContent.swift"; sourceTree = "<group>"; };
 		DB25BA0F253D7F4D00A5420F /* APIService+CoreData+V2+Tweet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "APIService+CoreData+V2+Tweet.swift"; sourceTree = "<group>"; };
@@ -805,10 +808,14 @@
 		DBEA4F8C251225610007FEC5 /* TimelinePostView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimelinePostView.swift; sourceTree = "<group>"; };
 		DBEA4F8E251314640007FEC5 /* MosaicImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MosaicImageView.swift; sourceTree = "<group>"; };
 		DBEA4F90251331BE0007FEC5 /* QuotePostView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuotePostView.swift; sourceTree = "<group>"; };
+		DBED2A7025B8006400BE6941 /* ar */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ar; path = ar.lproj/Localizable.strings; sourceTree = "<group>"; };
+		DBED2A7125B8006400BE6941 /* ar */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ar; path = ar.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		DBED96D2253F46CF00C5383A /* TwitterMedia.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwitterMedia.swift; sourceTree = "<group>"; };
 		DBED96D7253F5D7800C5383A /* NamingState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NamingState.swift; sourceTree = "<group>"; };
 		DBEFDC8725591F5C0086F268 /* DrawerSidebarViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawerSidebarViewController.swift; sourceTree = "<group>"; };
 		DBEFDC91255920060086F268 /* DrawerSidebarTransitionController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawerSidebarTransitionController.swift; sourceTree = "<group>"; };
+		DBF3309025B96E0B00A678FB /* WKNavigationDelegateShim.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WKNavigationDelegateShim.swift; sourceTree = "<group>"; };
+		DBF3309825B988A500A678FB /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Settings.bundle; sourceTree = "<group>"; };
 		DBF639E9259B11F6009E12C8 /* UserTimelineViewModel+Diffable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UserTimelineViewModel+Diffable.swift"; sourceTree = "<group>"; };
 		DBF639F1259B13BB009E12C8 /* TimelineHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimelineHeaderView.swift; sourceTree = "<group>"; };
 		DBF639F6259B1728009E12C8 /* TimelineHeaderCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimelineHeaderCollectionViewCell.swift; sourceTree = "<group>"; };
@@ -1325,6 +1332,7 @@
 			children = (
 				DB8E4FD82563CD6900459DA2 /* TwitterPinBasedAuthenticationViewController.swift */,
 				DB8E4FEB2563D42800459DA2 /* TwitterPinBasedAuthenticationViewModel.swift */,
+				DBF3309025B96E0B00A678FB /* WKNavigationDelegateShim.swift */,
 			);
 			path = PinBased;
 			sourceTree = "<group>";
@@ -1725,6 +1733,7 @@
 				DBDA8E2324FCF8A3006750DC /* SceneDelegate.swift */,
 				DBDA8E2724FCF8A3006750DC /* Main.storyboard */,
 				DBDA8E2C24FCF8A6006750DC /* LaunchScreen.storyboard */,
+				DBF3309825B988A500A678FB /* Settings.bundle */,
 			);
 			path = "Supporting Files";
 			sourceTree = "<group>";
@@ -1860,7 +1869,7 @@
 				DBA6B1CB2535BC6E005FB0B4 /* APIService+Like.swift */,
 				DBB09D552511BA9700AE260E /* APIService+Lookup.swift */,
 				DB25B9D0253828AA00A5420F /* APIService+Retweet.swift */,
-				DB25B9E72539897B00A5420F /* APIService+RecentSearch.swift */,
+				DB25B9E72539897B00A5420F /* APIService+Tweet+Search.swift */,
 				DB8AC1842542BD8600E636BE /* APIService+Tweet.swift */,
 				DB2924CF2546C6DD003899A7 /* APIService+Media.swift */,
 				DB2924EB25492006003899A7 /* APIService+Geo.swift */,
@@ -2374,6 +2383,7 @@
 				ja,
 				de,
 				"pt-BR",
+				ar,
 			);
 			mainGroup = DBDA8E1524FCF8A3006750DC;
 			packageReferences = (
@@ -2410,6 +2420,7 @@
 			files = (
 				DBDA8EA324FE107E006750DC /* Localizable.strings in Resources */,
 				DBC8E16B2578C64A00401E20 /* InfoPlist.strings in Resources */,
+				DBF3309925B988A500A678FB /* Settings.bundle in Resources */,
 				DBDA8E2E24FCF8A6006750DC /* LaunchScreen.storyboard in Resources */,
 				DB6B8B2E25AF235F00F20FD5 /* TwidereX.xctestplan in Resources */,
 				DB88AC3C250B26F40009E562 /* Preview Assets.xcassets in Resources */,
@@ -2815,6 +2826,7 @@
 				DB74A16E256E50E300C5F3C9 /* UIColor.swift in Sources */,
 				DB676161254BE580006C6798 /* MediaPreviewCollectionViewCell.swift in Sources */,
 				DBE76D402502524500DEB0FC /* UIImage.swift in Sources */,
+				DBF3309125B96E0B00A678FB /* WKNavigationDelegateShim.swift in Sources */,
 				DBC747D4259DA03B00787EEF /* ListCheckmarkTableViewCell.swift in Sources */,
 				DB2FFF29258B0C2C003DBC19 /* TouchBlockingView.swift in Sources */,
 				DBF69EE12549705A00E2A915 /* ViewControllerAnimatedTransitioningDelegate.swift in Sources */,
@@ -2842,7 +2854,7 @@
 				DBA6B1B725355C1E005FB0B4 /* UIAlertController.swift in Sources */,
 				DBFA4A0725A4621C00D51703 /* UserProvider+SearchUserTableViewCellDelegate.swift in Sources */,
 				DBBABA11255E61C900C1B3D9 /* SearchMediaViewController+StatusProvider.swift in Sources */,
-				DB25B9E82539897B00A5420F /* APIService+RecentSearch.swift in Sources */,
+				DB25B9E82539897B00A5420F /* APIService+Tweet+Search.swift in Sources */,
 				DBFA4A2B25A5A69100D51703 /* SearchTimelineViewModel+Diffable.swift in Sources */,
 				DBBABA0C255E550D00C1B3D9 /* StatusProvider+UICollectionViewDelegate.swift in Sources */,
 				DB8AC16225417D1300E636BE /* CycleCounterView.swift in Sources */,
@@ -3018,6 +3030,7 @@
 				DBB4B801257F93DD00C36075 /* ja */,
 				DBB4B803257F941100C36075 /* de */,
 				DBB4B805257F944D00C36075 /* pt-BR */,
+				DBED2A7125B8006400BE6941 /* ar */,
 			);
 			name = InfoPlist.strings;
 			sourceTree = "<group>";
@@ -3046,6 +3059,7 @@
 				DBB4B800257F93DD00C36075 /* ja */,
 				DBB4B802257F941100C36075 /* de */,
 				DBB4B804257F944D00C36075 /* pt-BR */,
+				DBED2A7025B8006400BE6941 /* ar */,
 			);
 			name = Localizable.strings;
 			sourceTree = "<group>";
@@ -3195,7 +3209,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = TwidereX/TwidereX.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 55;
+				CURRENT_PROJECT_VERSION = 57;
 				DEVELOPMENT_ASSET_PATHS = "TwidereX/Resources/Preview\\ Assets.xcassets";
 				DEVELOPMENT_TEAM = 7LFDZ96332;
 				INFOPLIST_FILE = TwidereX/Info.plist;
@@ -3203,7 +3217,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.1.0;
+				MARKETING_VERSION = 1.1.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.twidere.TwidereX;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
@@ -3219,7 +3233,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = TwidereX/TwidereX.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 55;
+				CURRENT_PROJECT_VERSION = 57;
 				DEVELOPMENT_ASSET_PATHS = "TwidereX/Resources/Preview\\ Assets.xcassets";
 				DEVELOPMENT_TEAM = 7LFDZ96332;
 				INFOPLIST_FILE = TwidereX/Info.plist;
@@ -3227,7 +3241,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.1.0;
+				MARKETING_VERSION = 1.1.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.twidere.TwidereX;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
@@ -3680,10 +3694,11 @@
 		DBE76CBF250093E200DEB0FC /* CoreDataStack.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
+				5DAC343225B9987000109C6E /* CoreDataStack 3.xcdatamodel */,
 				DB53999825AED8420064586D /* CoreDataStack 2.xcdatamodel */,
 				DBE76CC0250093E200DEB0FC /* CoreDataStack.xcdatamodel */,
 			);
-			currentVersion = DB53999825AED8420064586D /* CoreDataStack 2.xcdatamodel */;
+			currentVersion = 5DAC343225B9987000109C6E /* CoreDataStack 3.xcdatamodel */;
 			path = CoreDataStack.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;

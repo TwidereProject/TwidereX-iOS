@@ -13,6 +13,7 @@ import TwitterAPI
 final public class TwitterUserEntities: NSManagedObject {
     
     @NSManaged public private(set) var identifier: UUID
+    @NSManaged public private(set) var createdAt: Date
     
     // one-to-one relationship
     @NSManaged public private(set) var user: TwitterUser?
@@ -27,6 +28,7 @@ extension TwitterUserEntities {
     public override func awakeFromInsert() {
         super.awakeFromInsert()
         identifier = UUID()
+        createdAt = Date()
     }
     
     @discardableResult
@@ -47,6 +49,6 @@ extension TwitterUserEntities {
 
 extension TwitterUserEntities: Managed {
     public static var defaultSortDescriptors: [NSSortDescriptor] {
-        return [NSSortDescriptor(keyPath: \TwitterUserEntities.identifier, ascending: false)]
+        return [NSSortDescriptor(keyPath: \TwitterUserEntities.createdAt, ascending: false)]
     }
 }

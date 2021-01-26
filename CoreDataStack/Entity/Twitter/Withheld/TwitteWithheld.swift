@@ -13,6 +13,7 @@ import TwitterAPI
 final public class TwitteWithheld: NSManagedObject {
     
     @NSManaged public private(set) var identifier: UUID
+    @NSManaged public private(set) var createdAt: Date
     
     @NSManaged public private(set) var copyright: Bool
     @NSManaged public private(set) var countryCodes: [String]?
@@ -29,6 +30,7 @@ extension TwitteWithheld {
     public override func awakeFromInsert() {
         super.awakeFromInsert()
         identifier = UUID()
+        createdAt = Date()
     }
     
 }
@@ -39,6 +41,6 @@ extension TwitteWithheld {
 
 extension TwitteWithheld: Managed {
     public static var defaultSortDescriptors: [NSSortDescriptor] {
-        return [NSSortDescriptor(keyPath: \TwitteWithheld.identifier, ascending: false)]
+        return [NSSortDescriptor(keyPath: \TwitteWithheld.createdAt, ascending: false)]
     }
 }

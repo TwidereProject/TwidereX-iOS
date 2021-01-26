@@ -15,6 +15,7 @@ final public class TwitterPlace: NSManagedObject {
     public typealias ID = String
     
     @NSManaged public private(set) var identifier: UUID
+    @NSManaged public private(set) var createdAt: Date
     
     @NSManaged public private(set) var id: ID
     @NSManaged public private(set) var fullname: String
@@ -39,6 +40,7 @@ extension TwitterPlace {
     public override func awakeFromInsert() {
         super.awakeFromInsert()
         identifier = UUID()
+        createdAt = Date()
     }
     
     @discardableResult
@@ -86,6 +88,6 @@ extension TwitterPlace {
 
 extension TwitterPlace: Managed {
     public static var defaultSortDescriptors: [NSSortDescriptor] {
-        return [NSSortDescriptor(keyPath: \TwitterPlace.identifier, ascending: false)]
+        return [NSSortDescriptor(keyPath: \TwitterPlace.createdAt, ascending: false)]
     }
 }

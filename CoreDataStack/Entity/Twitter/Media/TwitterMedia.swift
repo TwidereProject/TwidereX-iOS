@@ -15,6 +15,7 @@ final public class TwitterMedia: NSManagedObject {
     public typealias ID = String
     
     @NSManaged public private(set) var identifier: UUID
+    @NSManaged public private(set) var createdAt: Date
     @NSManaged public private(set) var index: NSNumber
     
     @NSManaged public private(set) var id: ID?          // preserved for v1 usage
@@ -41,6 +42,7 @@ extension TwitterMedia {
     public override func awakeFromInsert() {
         super.awakeFromInsert()
         identifier = UUID()
+        createdAt = Date()
     }
     
     @discardableResult
@@ -103,6 +105,6 @@ extension TwitterMedia {
 
 extension TwitterMedia: Managed {
     public static var defaultSortDescriptors: [NSSortDescriptor] {
-        return [NSSortDescriptor(keyPath: \TwitterMedia.identifier, ascending: false)]
+        return [NSSortDescriptor(keyPath: \TwitterMedia.createdAt, ascending: false)]
     }
 }
