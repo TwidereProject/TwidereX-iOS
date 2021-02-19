@@ -233,7 +233,6 @@
 		DBB09D562511BA9700AE260E /* APIService+Lookup.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBB09D552511BA9700AE260E /* APIService+Lookup.swift */; };
 		DBB2513E2599DBAB0064A876 /* HomeTimelineViewController+DebugAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBB2513D2599DBAB0064A876 /* HomeTimelineViewController+DebugAction.swift */; };
 		DBB4B8152581D4AB00C36075 /* AlamofireNetworkActivityIndicator in Frameworks */ = {isa = PBXBuildFile; productRef = DBB4B8142581D4AB00C36075 /* AlamofireNetworkActivityIndicator */; };
-		DBB53DC62584A28400B27855 /* ZIPFoundation in Frameworks */ = {isa = PBXBuildFile; productRef = DBB53DC52584A28400B27855 /* ZIPFoundation */; };
 		DBBABA04255E54A000C1B3D9 /* UserMediaTimelineViewController+StatusProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBBABA03255E54A000C1B3D9 /* UserMediaTimelineViewController+StatusProvider.swift */; };
 		DBBABA0C255E550D00C1B3D9 /* StatusProvider+UICollectionViewDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBBABA0B255E550D00C1B3D9 /* StatusProvider+UICollectionViewDelegate.swift */; };
 		DBBABA11255E61C900C1B3D9 /* SearchMediaViewController+StatusProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBBABA10255E61C900C1B3D9 /* SearchMediaViewController+StatusProvider.swift */; };
@@ -865,7 +864,6 @@
 				44CCAE5E7B79E0C359E367E5 /* Pods_TwidereX.framework in Frameworks */,
 				DBB4B8152581D4AB00C36075 /* AlamofireNetworkActivityIndicator in Frameworks */,
 				DBBC3F3525835B8B005CF99E /* ActiveLabel in Frameworks */,
-				DBB53DC62584A28400B27855 /* ZIPFoundation in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2234,7 +2232,6 @@
 				DB74A163256E148F00C5F3C9 /* CropViewController */,
 				DBB4B8142581D4AB00C36075 /* AlamofireNetworkActivityIndicator */,
 				DBBC3F3425835B8B005CF99E /* ActiveLabel */,
-				DBB53DC52584A28400B27855 /* ZIPFoundation */,
 			);
 			productName = TwidereX;
 			productReference = DBDA8E1E24FCF8A3006750DC /* TwidereX.app */;
@@ -2397,7 +2394,6 @@
 				DB74A162256E148F00C5F3C9 /* XCRemoteSwiftPackageReference "TOCropViewController" */,
 				DBB4B8132581D4AB00C36075 /* XCRemoteSwiftPackageReference "AlamofireNetworkActivityIndicator" */,
 				DBBC3F3325835B8B005CF99E /* XCRemoteSwiftPackageReference "ActiveLabel" */,
-				DBB53DC42584A28400B27855 /* XCRemoteSwiftPackageReference "ZIPFoundation" */,
 			);
 			productRefGroup = DBDA8E1F24FCF8A3006750DC /* Products */;
 			projectDirPath = "";
@@ -3574,14 +3570,6 @@
 				minimumVersion = 3.1.0;
 			};
 		};
-		DBB53DC42584A28400B27855 /* XCRemoteSwiftPackageReference "ZIPFoundation" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/weichsel/ZIPFoundation";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 0.9.11;
-			};
-		};
 		DBBC3F3325835B8B005CF99E /* XCRemoteSwiftPackageReference "ActiveLabel" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/TwidereProject/ActiveLabel.swift";
@@ -3657,11 +3645,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = DBB4B8132581D4AB00C36075 /* XCRemoteSwiftPackageReference "AlamofireNetworkActivityIndicator" */;
 			productName = AlamofireNetworkActivityIndicator;
-		};
-		DBB53DC52584A28400B27855 /* ZIPFoundation */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = DBB53DC42584A28400B27855 /* XCRemoteSwiftPackageReference "ZIPFoundation" */;
-			productName = ZIPFoundation;
 		};
 		DBBC3F3425835B8B005CF99E /* ActiveLabel */ = {
 			isa = XCSwiftPackageProductDependency;

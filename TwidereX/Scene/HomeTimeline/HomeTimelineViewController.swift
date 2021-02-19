@@ -17,10 +17,6 @@ import TwitterAPI
 import Floaty
 import AlamofireImage
 
-#if DEBUG
-import ZIPFoundation
-#endif
-
 final class HomeTimelineViewController: UIViewController, NeedsDependency, DrawerSidebarTransitionableViewController, MediaPreviewableViewController {
     
     weak var context: AppContext! { willSet { precondition(!isViewLoaded) } }
