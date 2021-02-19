@@ -72,9 +72,10 @@ final class HomeTimelineViewModel: NSObject {
         self.context  = context
         self.fetchedResultsController = {
             let fetchRequest = TimelineIndex.sortedFetchRequest
-            fetchRequest.fetchBatchSize = 20
+            fetchRequest.fetchBatchSize = 12        // 8 (row-per-screen) * 1.5 (magic batch scale)
             fetchRequest.returnsObjectsAsFaults = false
-            fetchRequest.relationshipKeyPathsForPrefetching = [#keyPath(TimelineIndex.tweet)]
+            // not Prefetching relationship save lots time cost (save ~2s when 30K entries)
+            // fetchRequest.relationshipKeyPathsForPrefetching = [#keyPath(TimelineIndex.tweet)]
             let controller = NSFetchedResultsController(
                 fetchRequest: fetchRequest,
                 managedObjectContext: context.managedObjectContext,
@@ -97,7 +98,11 @@ final class HomeTimelineViewModel: NSObject {
                 self.fetchedResultsController.fetchRequest.predicate = predicate
                 do {
                     self.diffableDataSource?.defaultRowAnimation = .fade
+                    let start = CACurrentMediaTime()
                     try self.fetchedResultsController.performFetch()
+                    let end = CACurrentMediaTime()
+                    os_log("%{public}s[%{public}ld], %{public}s: fetch initial timeline cost %.2fs", ((#file as NSString).lastPathComponent), #line, #function, end - start)
+
                     DispatchQueue.main.asyncAfter(deadline: .now() + 3) { [weak self] in
                         guard let self = self else { return }
                         self.diffableDataSource?.defaultRowAnimation = .automatic
@@ -117,8 +122,8 @@ final class HomeTimelineViewModel: NSObject {
                         guard let twitterAuthentication = activeAuthenticationIndex.twitterAuthentication else { return }
                         let activeTwitterUserID = twitterAuthentication.userID
                         let predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [
-                            TimelineIndex.predicate(platform: .twitter),
                             TimelineIndex.predicate(userID: activeTwitterUserID),
+                            TimelineIndex.predicate(platform: .twitter),
                             TimelineIndex.notDeleted()
                         ])
                         self.timelinePredicate.value = predicate
