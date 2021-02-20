@@ -15,7 +15,12 @@ import CommonOSLog
 import TwitterAPI
 
 extension APIService.Persist {
-    static func persistDictContent(managedObjectContext: NSManagedObjectContext, response: Twitter.Response.Content<Twitter.Response.V2.DictContent>, requestTwitterUserID: TwitterUser.ID, log: OSLog) -> AnyPublisher<Result<Void, Error>, Never> {
+    static func persistDictContent(
+        managedObjectContext: NSManagedObjectContext,
+        response: Twitter.Response.Content<Twitter.Response.V2.DictContent>,
+        requestTwitterUserID: TwitterUser.ID,
+        log: OSLog
+    ) -> AnyPublisher<Result<Void, Error>, Never> {
         let dictContent = response.value
         os_log("%{public}s[%{public}ld], %{public}s: persist %{public}ld tweets %{public}ld twitter users…", ((#file as NSString).lastPathComponent), #line, #function, dictContent.tweetDict.count, dictContent.userDict.count)
 

@@ -38,10 +38,7 @@ extension HomeTimelineViewController {
                     self.showFLEXAction(action)
                 }),
                 moveMenu,
-                UIAction(title: "Drop Recent 50 Tweets", image: nil, attributes: [], handler: { [weak self] action in
-                    guard let self = self else { return }
-                    self.dropRecentTweetsAction(action)
-                }),
+                dropMenu,
                 UIAction(title: "Enable Bottom Fetcher", image: nil, attributes: [], handler: { [weak self] action in
                     guard let self = self else { return }
                     self.enableBottomFetcher(action)
@@ -114,6 +111,21 @@ extension HomeTimelineViewController {
                     self.moveToFirstGIFTweet(action)
                 }),
             ]
+        )
+    }
+    
+    var dropMenu: UIMenu {
+        return UIMenu(
+            title: "Drop…",
+            image: UIImage(systemName: "minus.circle"),
+            identifier: nil,
+            options: [],
+            children: [50, 100, 150, 200, 250, 300].map { count in
+                UIAction(title: "Drop Recent \(count) Tweets", image: nil, attributes: [], handler: { [weak self] action in
+                    guard let self = self else { return }
+                    self.dropRecentTweetsAction(action, count: count)
+                })
+            }
         )
     }
     
@@ -267,11 +279,11 @@ extension HomeTimelineViewController {
         }
     }
     
-    @objc private func dropRecentTweetsAction(_ sender: UIAction) {
+    @objc private func dropRecentTweetsAction(_ sender: UIAction, count: Int) {
         guard let diffableDataSource = viewModel.diffableDataSource else { return }
         let snapshotTransitioning = diffableDataSource.snapshot()
         
-        let droppingObjectIDs = snapshotTransitioning.itemIdentifiers.prefix(50).compactMap { item -> NSManagedObjectID? in
+        let droppingObjectIDs = snapshotTransitioning.itemIdentifiers.prefix(count).compactMap { item -> NSManagedObjectID? in
             switch item {
             case .homeTimelineIndex(let objectID, _):   return objectID
             default:                                    return nil

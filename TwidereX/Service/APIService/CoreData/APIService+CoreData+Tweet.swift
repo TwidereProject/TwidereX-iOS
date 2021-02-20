@@ -17,6 +17,8 @@ extension APIService.CoreData {
         into managedObjectContext: NSManagedObjectContext,
         for requestTwitterUser: TwitterUser?,
         entity: Twitter.Entity.Tweet,
+        tweetCache: APIService.Persist.PersistCache<Tweet>?,
+        userCache: APIService.Persist.PersistCache<TwitterUser>?,
         networkDate: Date,
         log: OSLog
     ) -> (tweet: Tweet, isTweetCreated: Bool, isTwitterUserCreated: Bool) {
@@ -28,24 +30,44 @@ extension APIService.CoreData {
         
         // build tree
         let retweet = entity.retweetedStatus.flatMap { entity -> Tweet in
-            let (tweet, _, _) = createOrMergeTweet(into: managedObjectContext, for: requestTwitterUser, entity: entity, networkDate: networkDate, log: log)
+            let (tweet, _, _) = createOrMergeTweet(
+                into: managedObjectContext,
+                for: requestTwitterUser,
+                entity: entity,
+                tweetCache: tweetCache,
+                userCache: userCache,
+                networkDate: networkDate,
+                log: log
+            )
             return tweet
         }
         let quote = entity.quotedStatus.flatMap { entity -> Tweet in
-            let (tweet, _, _) = createOrMergeTweet(into: managedObjectContext, for: requestTwitterUser, entity: entity, networkDate: networkDate, log: log)
+            let (tweet, _, _) = createOrMergeTweet(
+                into: managedObjectContext,
+                for: requestTwitterUser,
+                entity: entity,
+                tweetCache: tweetCache,
+                userCache: userCache,
+                networkDate: networkDate,
+                log: log
+            )
             return tweet
         }
         
         // fetch old tweet
         let oldTweet: Tweet? = {
-            let request = Tweet.sortedFetchRequest
-            request.predicate = Tweet.predicate(idStr: entity.idStr)
-            request.returnsObjectsAsFaults = false
-            do {
-                return try managedObjectContext.fetch(request).first
-            } catch {
-                assertionFailure(error.localizedDescription)
-                return nil
+            if let tweetCache = tweetCache {
+                return tweetCache.dictionary[entity.idStr]
+            } else {
+                let request = Tweet.sortedFetchRequest
+                request.predicate = Tweet.predicate(idStr: entity.idStr)
+                request.returnsObjectsAsFaults = false
+                do {
+                    return try managedObjectContext.fetch(request).first
+                } catch {
+                    assertionFailure(error.localizedDescription)
+                    return nil
+                }
             }
         }()
         
@@ -55,7 +77,7 @@ extension APIService.CoreData {
             os_signpost(.event, log: log, name: "update database - process entity: createOrMergeTweet", signpostID: processEntityTaskSignpostID, "find old tweet %{public}s", entity.idStr)
             return (oldTweet, false, false)
         } else {
-            let (twitterUser, isTwitterUserCreated) = createOrMergeTwitterUser(into: managedObjectContext, for: requestTwitterUser, entity: entity.user, networkDate: networkDate, log: log)
+            let (twitterUser, isTwitterUserCreated) = createOrMergeTwitterUser(into: managedObjectContext, for: requestTwitterUser, entity: entity.user, userCache: userCache, networkDate: networkDate, log: log)
             
             let media: [TwitterMedia]? = {
                 guard let media = entity.extendedEntities?.media else { return nil }
@@ -133,6 +155,7 @@ extension APIService.CoreData {
                 likeBy: (entity.favorited ?? false) ? requestTwitterUser : nil,
                 retweetBy: (entity.retweeted ?? false) ? requestTwitterUser : nil
             )
+            tweetCache?.dictionary[entity.idStr] = tweet
             os_signpost(.event, log: log, name: "update database - process entity: createOrMergeTweet", signpostID: processEntityTaskSignpostID, "did insert new tweet %{public}s: %s", twitterUser.identifier.uuidString, entity.idStr)
             return (tweet, true, isTwitterUserCreated)
         }

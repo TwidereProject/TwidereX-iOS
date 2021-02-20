@@ -18,6 +18,7 @@ extension APIService.CoreData {
         into managedObjectContext: NSManagedObjectContext,
         for requestTwitterUser: TwitterUser?,
         entity: Twitter.Entity.User,
+        userCache: APIService.Persist.PersistCache<TwitterUser>?,
         networkDate: Date,
         log: OSLog
     ) -> (user: TwitterUser, isCreated: Bool) {
@@ -29,14 +30,18 @@ extension APIService.CoreData {
         
         // fetch old twitter user
         let oldTwitterUser: TwitterUser? = {
-            let request = TwitterUser.sortedFetchRequest
-            request.predicate = TwitterUser.predicate(idStr: entity.idStr)
-            request.returnsObjectsAsFaults = false
-            do {
-                return try managedObjectContext.fetch(request).first
-            } catch {
-                assertionFailure(error.localizedDescription)
-                return nil
+            if let userCache = userCache {
+                return userCache.dictionary[entity.idStr]
+            } else {
+                let request = TwitterUser.sortedFetchRequest
+                request.predicate = TwitterUser.predicate(idStr: entity.idStr)
+                request.returnsObjectsAsFaults = false
+                do {
+                    return try managedObjectContext.fetch(request).first
+                } catch {
+                    assertionFailure(error.localizedDescription)
+                    return nil
+                }
             }
         }()
         
