@@ -25,32 +25,8 @@ extension APIService {
         return Twitter.API.Lookup.tweets(session: session, authorization: authorization, query: query)
             .map { response -> AnyPublisher<Twitter.Response.Content<[Twitter.Entity.Tweet]>, Error> in
                 let log = OSLog.api
-                
-//                let entities = response.value
+
                 let managedObjectContext = self.backgroundManagedObjectContext
-//
-//                return managedObjectContext.performChanges {
-//                    let _requestTwitterUser: TwitterUser? = {
-//                        let request = TwitterUser.sortedFetchRequest
-//                        request.predicate = TwitterUser.predicate(idStr: requestTwitterUserID)
-//                        request.fetchLimit = 1
-//                        request.returnsObjectsAsFaults = false
-//                        do {
-//                            return try managedObjectContext.fetch(request).first
-//                        } catch {
-//                            assertionFailure(error.localizedDescription)
-//                            return nil
-//                        }
-//                    }()
-//
-//                    guard let requestTwitterUser = _requestTwitterUser else {
-//                        assertionFailure()
-//                        return
-//                    }
-//
-//                }
-//                .eraseToAnyPublisher()
-//            }
                 return APIService.Persist.persistTweets(
                     managedObjectContext: managedObjectContext,
                     query: nil,
@@ -73,7 +49,6 @@ extension APIService {
             .switchToLatest()
             .eraseToAnyPublisher()
     }
-    
 
     // V2
     func tweets(
