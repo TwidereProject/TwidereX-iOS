@@ -85,7 +85,7 @@ extension APIService.CoreData {
             } catch {
                 assertionFailure(error.localizedDescription)
             }
-            
+            userCache?.dictionary[entity.idStr] = twitterUser
             os_signpost(.event, log: log, name: "update database - process entity: createOrMergeTwitterUser", signpostID: processEntityTaskSignpostID, "did insert new twitter user %{public}s: name %s", twitterUser.identifier.uuidString, twitterUserProperty.name)
             return (twitterUser, true)
         }
