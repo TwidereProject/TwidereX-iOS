@@ -20,7 +20,7 @@ extension APIService {
                 let entity = response.value
                 
                 return self.backgroundManagedObjectContext.performChanges {
-                    let (twitterUser, isCreated) = APIService.CoreData.createOrMergeTwitterUser(into: self.backgroundManagedObjectContext, for: nil, entity: entity, networkDate: response.networkDate, log: log)
+                    let (twitterUser, isCreated) = APIService.CoreData.createOrMergeTwitterUser(into: self.backgroundManagedObjectContext, for: nil, entity: entity, userCache: nil, networkDate: response.networkDate, log: log)
                     let flag = isCreated ? "+" : "-"
                     os_log(.info, log: log, "%{public}s[%{public}ld], %{public}s: twetter user [%s](%s)%s verifed", ((#file as NSString).lastPathComponent), #line, #function, flag, twitterUser.id, twitterUser.username)
                 }

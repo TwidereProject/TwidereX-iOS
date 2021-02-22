@@ -18,6 +18,10 @@ target 'TwidereX' do
 
   # Twitter
   pod 'twitter-text', '~> 3.1.0'
+
+  # Debug
+  pod 'FLEX', '~> 4.4.0', :configurations => ['Debug']
+  pod 'ZIPFoundation', '~> 0.9.11', :configurations => ['Debug']
   
   target 'TwidereXTests' do
     inherit! :search_paths

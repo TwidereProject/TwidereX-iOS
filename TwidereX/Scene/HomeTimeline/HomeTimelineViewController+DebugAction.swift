@@ -13,92 +13,129 @@ import CoreDataStack
 import TwitterAPI
 
 #if DEBUG
+import ZIPFoundation
+import FLEX
+#endif
+
+#if DEBUG
+@available(iOS 14.0, *)
 extension HomeTimelineViewController {
     
-    @available(iOS 14.0, *)
     var debugActionBarButtonItem: UIBarButtonItem {
-        UIBarButtonItem(
-            title: "More",
-            image: UIImage(systemName: "ellipsis.circle"),
-            primaryAction: nil,
-            menu: UIMenu(
-                title: "Debug Tools",
-                image: nil,
-                identifier: nil,
-                options: .displayInline,
-                children: [
-                    UIAction(title: "Move to First Gap", image: nil, attributes: [], handler: { [weak self] action in
-                        guard let self = self else { return }
-                        self.moveToTopGapAction(action)
-                    }),
-                    UIAction(title: "Move to First Protected Tweet", image: nil, attributes: [], handler: { [weak self] action in
-                        guard let self = self else { return }
-                        self.moveToFirstProtectedTweet(action)
-                    }),
-                    UIAction(title: "Move to First Protected User", image: nil, attributes: [], handler: { [weak self] action in
-                        guard let self = self else { return }
-                        self.moveToFirstProtectedUser(action)
-                    }),
-                    UIAction(title: "Move to First Reply Tweet", image: nil, attributes: [], handler: { [weak self] action in
-                        guard let self = self else { return }
-                        self.moveToFirstReplyTweet(action)
-                    }),
-                    UIAction(title: "Move to First Reply Retweet", image: nil, attributes: [], handler: { [weak self] action in
-                        guard let self = self else { return }
-                        self.moveToFirstReplyRetweet(action)
-                    }),
-                    UIAction(title: "Move to First Video Tweet", image: nil, attributes: [], handler: { [weak self] action in
-                        guard let self = self else { return }
-                        self.moveToFirstVideoTweet(action)
-                    }),
-                    UIAction(title: "Move to First GIF Tweet", image: nil, attributes: [], handler: { [weak self] action in
-                        guard let self = self else { return }
-                        self.moveToFirstGIFTweet(action)
-                    }),
-                    UIAction(title: "Drop Recent 50 Tweets", image: nil, attributes: [], handler: { [weak self] action in
-                        guard let self = self else { return }
-                        self.dropRecentTweetsAction(action)
-                    }),
-                    UIAction(title: "Enable Bottom Fetcher", image: nil, attributes: [], handler: { [weak self] action in
-                        guard let self = self else { return }
-                        self.enableBottomFetcher(action)
-                    }),
-                    UIAction(title: "Show Account unlock alert", image: nil, attributes: [], handler: { [weak self] action in
-                        guard let self = self else { return }
-                        let error = Twitter.API.Error.ResponseError(
-                            httpResponseStatus: .forbidden,
-                            twitterAPIError: .accountIsTemporarilyLocked(message: "")
-                        )
-                        self.context.apiService.error.send(.explicit(.twitterResponseError(error)))
-                    }),
-                    UIAction(title: "Show Rate Limit alert", image: nil, attributes: [], handler: { [weak self] action in
-                        guard let self = self else { return }
-                        let error = Twitter.API.Error.ResponseError(
-                            httpResponseStatus: .tooManyRequests,
-                            twitterAPIError: .rateLimitExceeded
-                        )
-                        self.context.apiService.error.send(.explicit(.twitterResponseError(error)))
-                    }),
-                    UIAction(title: "Export Database", image: nil, attributes: [], handler: { [weak self] action in
-                        guard let self = self else { return }
-                        self.exportDatabase(action)
-                    }),
-                    UIAction(title: "Import Database", image: nil, attributes: [], handler: { [weak self] action in
-                        guard let self = self else { return }
-                        self.importDatabase(action)
-                    }),
-                    UIAction(title: "Corner Smooth Preview", attributes: [], state: .off, handler: { [weak self] action in
-                        guard let self = self else { return }
-                        self.cornerSmoothPreview(action)
-                    })
-                ]
-            )
+        let barButtonItem = UIBarButtonItem(title: "More", image: UIImage(systemName: "ellipsis.circle"), primaryAction: nil, menu: moreMenu)
+        return barButtonItem
+    }
+    
+    var moreMenu: UIMenu {
+        return UIMenu(
+            title: "Debug Tools",
+            image: nil,
+            identifier: nil,
+            options: .displayInline,
+            children: [
+                UIAction(title: "Show FLEX", image: nil, attributes: [], handler: { [weak self] action in
+                    guard let self = self else { return }
+                    self.showFLEXAction(action)
+                }),
+                moveMenu,
+                dropMenu,
+                UIAction(title: "Enable Bottom Fetcher", image: nil, attributes: [], handler: { [weak self] action in
+                    guard let self = self else { return }
+                    self.enableBottomFetcher(action)
+                }),
+                UIAction(title: "Show Account unlock alert", image: nil, attributes: [], handler: { [weak self] action in
+                    guard let self = self else { return }
+                    let error = Twitter.API.Error.ResponseError(
+                        httpResponseStatus: .forbidden,
+                        twitterAPIError: .accountIsTemporarilyLocked(message: "")
+                    )
+                    self.context.apiService.error.send(.explicit(.twitterResponseError(error)))
+                }),
+                UIAction(title: "Show Rate Limit alert", image: nil, attributes: [], handler: { [weak self] action in
+                    guard let self = self else { return }
+                    let error = Twitter.API.Error.ResponseError(
+                        httpResponseStatus: .tooManyRequests,
+                        twitterAPIError: .rateLimitExceeded
+                    )
+                    self.context.apiService.error.send(.explicit(.twitterResponseError(error)))
+                }),
+                UIAction(title: "Export Database", image: nil, attributes: [], handler: { [weak self] action in
+                    guard let self = self else { return }
+                    self.exportDatabase(action)
+                }),
+                UIAction(title: "Import Database", image: nil, attributes: [], handler: { [weak self] action in
+                    guard let self = self else { return }
+                    self.importDatabase(action)
+                }),
+                UIAction(title: "Corner Smooth Preview", attributes: [], state: .off, handler: { [weak self] action in
+                    guard let self = self else { return }
+                    self.cornerSmoothPreview(action)
+                })
+            ]
+        )
+    }
+    
+    var moveMenu: UIMenu {
+        return UIMenu(
+            title: "Move to…",
+            image: UIImage(systemName: "arrow.forward.circle"),
+            identifier: nil,
+            options: [],
+            children: [
+                UIAction(title: "First Gap", image: nil, attributes: [], handler: { [weak self] action in
+                    guard let self = self else { return }
+                    self.moveToTopGapAction(action)
+                }),
+                UIAction(title: "First Protected Tweet", image: nil, attributes: [], handler: { [weak self] action in
+                    guard let self = self else { return }
+                    self.moveToFirstProtectedTweet(action)
+                }),
+                UIAction(title: "First Protected User", image: nil, attributes: [], handler: { [weak self] action in
+                    guard let self = self else { return }
+                    self.moveToFirstProtectedUser(action)
+                }),
+                UIAction(title: "First Reply Tweet", image: nil, attributes: [], handler: { [weak self] action in
+                    guard let self = self else { return }
+                    self.moveToFirstReplyTweet(action)
+                }),
+                UIAction(title: "First Reply Retweet", image: nil, attributes: [], handler: { [weak self] action in
+                    guard let self = self else { return }
+                    self.moveToFirstReplyRetweet(action)
+                }),
+                UIAction(title: "First Video Tweet", image: nil, attributes: [], handler: { [weak self] action in
+                    guard let self = self else { return }
+                    self.moveToFirstVideoTweet(action)
+                }),
+                UIAction(title: "First GIF Tweet", image: nil, attributes: [], handler: { [weak self] action in
+                    guard let self = self else { return }
+                    self.moveToFirstGIFTweet(action)
+                }),
+            ]
+        )
+    }
+    
+    var dropMenu: UIMenu {
+        return UIMenu(
+            title: "Drop…",
+            image: UIImage(systemName: "minus.circle"),
+            identifier: nil,
+            options: [],
+            children: [50, 100, 150, 200, 250, 300].map { count in
+                UIAction(title: "Drop Recent \(count) Tweets", image: nil, attributes: [], handler: { [weak self] action in
+                    guard let self = self else { return }
+                    self.dropRecentTweetsAction(action, count: count)
+                })
+            }
         )
     }
     
 }
 
 extension HomeTimelineViewController {
+    
+    @objc private func showFLEXAction(_ sender: UIAction) {
+        FLEXManager.shared.showExplorer()
+    }
     
     @objc private func moveToTopGapAction(_ sender: UIAction) {
         guard let diffableDataSource = viewModel.diffableDataSource else { return }
@@ -242,11 +279,11 @@ extension HomeTimelineViewController {
         }
     }
     
-    @objc private func dropRecentTweetsAction(_ sender: UIAction) {
+    @objc private func dropRecentTweetsAction(_ sender: UIAction, count: Int) {
         guard let diffableDataSource = viewModel.diffableDataSource else { return }
         let snapshotTransitioning = diffableDataSource.snapshot()
         
-        let droppingObjectIDs = snapshotTransitioning.itemIdentifiers.prefix(50).compactMap { item -> NSManagedObjectID? in
+        let droppingObjectIDs = snapshotTransitioning.itemIdentifiers.prefix(count).compactMap { item -> NSManagedObjectID? in
             switch item {
             case .homeTimelineIndex(let objectID, _):   return objectID
             default:                                    return nil

@@ -17,10 +17,6 @@ import TwitterAPI
 import Floaty
 import AlamofireImage
 
-#if DEBUG
-import ZIPFoundation
-#endif
-
 final class HomeTimelineViewController: UIViewController, NeedsDependency, DrawerSidebarTransitionableViewController, MediaPreviewableViewController {
     
     weak var context: AppContext! { willSet { precondition(!isViewLoaded) } }
@@ -218,20 +214,7 @@ extension HomeTimelineViewController {
 // MARK: - UIScrollViewDelegate
 extension HomeTimelineViewController {
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        guard scrollView === tableView else { return }
-        let cells = tableView.visibleCells.compactMap { $0 as? TimelineBottomLoaderTableViewCell }
-        guard let loaderTableViewCell = cells.first else { return }
-        
-        if let tabBar = tabBarController?.tabBar, let window = view.window {
-            let loaderTableViewCellFrameInWindow = tableView.convert(loaderTableViewCell.frame, to: nil)
-            let windowHeight = window.frame.height
-            let loaderAppear = (loaderTableViewCellFrameInWindow.origin.y + 0.8 * loaderTableViewCell.frame.height) < (windowHeight - tabBar.frame.height)
-            if loaderAppear {
-                viewModel.loadoldestStateMachine.enter(HomeTimelineViewModel.LoadOldestState.Loading.self)
-            }
-        } else {
-            viewModel.loadoldestStateMachine.enter(HomeTimelineViewModel.LoadOldestState.Loading.self)
-        }
+        handleScrollViewDidScroll(scrollView)
     }
 }
 
@@ -400,4 +383,12 @@ extension HomeTimelineViewController: ScrollViewContainer {
         }
     }
     
+}
+
+// MARK: - LoadMoreConfigurableTableViewContainer
+extension HomeTimelineViewController: LoadMoreConfigurableTableViewContainer {
+    typealias BottomLoaderTableViewCell = TimelineBottomLoaderTableViewCell
+    typealias LoadingState = HomeTimelineViewModel.LoadOldestState.Loading
+    var loadMoreConfigurableTableView: UITableView { return tableView }
+    var loadMoreConfigurableStateMachine: GKStateMachine { return viewModel.loadoldestStateMachine }
 }

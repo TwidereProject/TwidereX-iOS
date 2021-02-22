@@ -65,7 +65,7 @@ extension APIService {
                 }
                 
                 // update database
-                return APIService.Persist.persistTimeline(
+                return APIService.Persist.persistTweets(
                     managedObjectContext: self.backgroundManagedObjectContext,
                     query: query,
                     response: response,

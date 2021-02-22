@@ -68,7 +68,7 @@ extension APIService {
         .map { response -> AnyPublisher<Twitter.Response.Content<Twitter.API.Search.Content>, Error> in
             let log = OSLog.api
             let persistResponse = response.map { $0.statuses ?? [] }
-            return APIService.Persist.persistTimeline(
+            return APIService.Persist.persistTweets(
                 managedObjectContext: self.backgroundManagedObjectContext,
                 query: query,
                 response: persistResponse,

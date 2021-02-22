@@ -25,48 +25,30 @@ extension APIService {
         return Twitter.API.Lookup.tweets(session: session, authorization: authorization, query: query)
             .map { response -> AnyPublisher<Twitter.Response.Content<[Twitter.Entity.Tweet]>, Error> in
                 let log = OSLog.api
-                
-                let entities = response.value
+
                 let managedObjectContext = self.backgroundManagedObjectContext
-                
-                return managedObjectContext.performChanges {
-                    let _requestTwitterUser: TwitterUser? = {
-                        let request = TwitterUser.sortedFetchRequest
-                        request.predicate = TwitterUser.predicate(idStr: requestTwitterUserID)
-                        request.fetchLimit = 1
-                        request.returnsObjectsAsFaults = false
-                        do {
-                            return try managedObjectContext.fetch(request).first
-                        } catch {
-                            assertionFailure(error.localizedDescription)
-                            return nil
-                        }
-                    }()
-                    
-                    guard let requestTwitterUser = _requestTwitterUser else {
-                        assertionFailure()
-                        return
-                    }
-                    
-                    for entity in entities {
-                        _ = APIService.CoreData.createOrMergeTweet(
-                            into: managedObjectContext,
-                            for: requestTwitterUser,
-                            entity: entity,
-                            networkDate: response.networkDate,
-                            log: log
-                        )
+                return APIService.Persist.persistTweets(
+                    managedObjectContext: managedObjectContext,
+                    query: nil,
+                    response: response,
+                    persistType: .lookUp,
+                    requestTwitterUserID: requestTwitterUserID,
+                    log: log
+                )
+                .setFailureType(to: Error.self)
+                .tryMap { result -> Twitter.Response.Content<[Twitter.Entity.Tweet]> in
+                    switch result {
+                    case .success:
+                        return response
+                    case .failure(let error):
+                        throw error
                     }
                 }
-                .map { _ in return response }
-                .replaceError(with: response)
-                .setFailureType(to: Error.self)
                 .eraseToAnyPublisher()
             }
             .switchToLatest()
             .eraseToAnyPublisher()
     }
-    
 
     // V2
     func tweets(

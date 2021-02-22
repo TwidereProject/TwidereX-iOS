@@ -39,6 +39,7 @@ PODS:
     - GoogleUtilities/Environment (~> 7.0)
     - GoogleUtilities/UserDefaults (~> 7.0)
     - PromisesObjC (~> 1.2)
+  - FLEX (4.4.0)
   - Floaty (4.2.0)
   - GoogleAppMeasurement (7.3.0):
     - GoogleUtilities/AppDelegateSwizzler (~> 7.0)
@@ -76,15 +77,18 @@ PODS:
   - PromisesObjC (1.2.12)
   - SwiftGen (6.3.0)
   - twitter-text (3.1.0)
+  - ZIPFoundation (0.9.11)
 
 DEPENDENCIES:
   - DateToolsSwift (~> 5.0.0)
   - Firebase/Analytics (~> 7.3.0)
   - Firebase/Crashlytics (~> 7.3.0)
+  - FLEX (~> 4.4.0)
   - Floaty (~> 4.2.0)
   - Keys (from `Pods/CocoaPodsKeys`)
   - SwiftGen (~> 6.3.0)
   - twitter-text (~> 3.1.0)
+  - ZIPFoundation (~> 0.9.11)
 
 SPEC REPOS:
   trunk:
@@ -95,6 +99,7 @@ SPEC REPOS:
     - FirebaseCoreDiagnostics
     - FirebaseCrashlytics
     - FirebaseInstallations
+    - FLEX
     - Floaty
     - GoogleAppMeasurement
     - GoogleDataTransport
@@ -103,6 +108,7 @@ SPEC REPOS:
     - PromisesObjC
     - SwiftGen
     - twitter-text
+    - ZIPFoundation
 
 EXTERNAL SOURCES:
   Keys:
@@ -116,6 +122,7 @@ SPEC CHECKSUMS:
   FirebaseCoreDiagnostics: d50e11039e5984d92c8a512be2395f13df747350
   FirebaseCrashlytics: d31325312c92e2cb2f0386d589b9aa44e303d99b
   FirebaseInstallations: 971df89b48ae5ee4cc2bf6935f3857a525d28550
+  FLEX: 0592c011c6dfbfdb94a5e24f2d4a9dbff0c6026d
   Floaty: e2bd5a0f6f7f70899e26ff2da31081c8bee8d1b0
   GoogleAppMeasurement: 8d3c0aeede16ab7764144b5a4ca8e1d4323841b7
   GoogleDataTransport: 116c84c4bdeb76be2a7a46de51244368f9794eab
@@ -125,7 +132,8 @@ SPEC CHECKSUMS:
   PromisesObjC: 3113f7f76903778cf4a0586bd1ab89329a0b7b97
   SwiftGen: 3d5024a47ea79e408cded20763d7a17d18a4548c
   twitter-text: 3a0d73ca52955439dc8b208ca7e123ea0abd6a51
+  ZIPFoundation: b1f0de4eed33e74a676f76e12559ab6b75990197
 
-PODFILE CHECKSUM: 07e746e1e671bd13d20cf8518b9ce89f599899e2
+PODFILE CHECKSUM: cf5108949f1547623007cb3e0842fdd072473333
 
-COCOAPODS: 1.10.0
+COCOAPODS: 1.10.1

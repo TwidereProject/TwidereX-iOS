@@ -55,7 +55,7 @@ Try the beta version on the [TestFlight](https://testflight.apple.com/join/GJIDX
 
 ## Acknowledgements
 
-- [ActiveLabel](https://github.com/optonaut/ActiveLabel.swift)
+- [ActiveLabel](https://github.com/TwidereProject/ActiveLabel.swift)
 - [AlamofireImage](https://github.com/Alamofire/AlamofireImage)
 - [AlamofireNetworkActivityIndicator](https://github.com/Alamofire/AlamofireNetworkActivityIndicator)
 - [Alamofire](https://github.com/Alamofire/Alamofire)
