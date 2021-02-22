@@ -11,6 +11,113 @@ import Foundation
 // swiftlint:disable nesting type_body_length type_name vertical_whitespace_opening_braces
 internal enum L10n {
 
+  internal enum Accessibility {
+    internal enum Common {
+      /// Back
+      internal static let back = L10n.tr("Localizable", "Accessibility.Common.Back")
+      /// Close
+      internal static let close = L10n.tr("Localizable", "Accessibility.Common.Close")
+      /// Done
+      internal static let done = L10n.tr("Localizable", "Accessibility.Common.Done")
+      /// More
+      internal static let more = L10n.tr("Localizable", "Accessibility.Common.More")
+      /// Network Image
+      internal static let networkImage = L10n.tr("Localizable", "Accessibility.Common.NetworkImage")
+      internal enum Logo {
+        /// Github Logo
+        internal static let github = L10n.tr("Localizable", "Accessibility.Common.Logo.Github")
+        /// Mastodon Logo
+        internal static let mastodon = L10n.tr("Localizable", "Accessibility.Common.Logo.Mastodon")
+        /// Twidere X logo
+        internal static let twidere = L10n.tr("Localizable", "Accessibility.Common.Logo.Twidere")
+        /// Twitter Logo
+        internal static let twitter = L10n.tr("Localizable", "Accessibility.Common.Logo.Twitter")
+      }
+      internal enum Status {
+        /// Location
+        internal static let location = L10n.tr("Localizable", "Accessibility.Common.Status.Location")
+        /// Media
+        internal static let media = L10n.tr("Localizable", "Accessibility.Common.Status.Media")
+        /// Retweeted
+        internal static let retweeted = L10n.tr("Localizable", "Accessibility.Common.Status.Retweeted")
+        internal enum Actions {
+          /// Like
+          internal static let like = L10n.tr("Localizable", "Accessibility.Common.Status.Actions.Like")
+          /// Reply
+          internal static let reply = L10n.tr("Localizable", "Accessibility.Common.Status.Actions.Reply")
+          /// Retweet
+          internal static let retweet = L10n.tr("Localizable", "Accessibility.Common.Status.Actions.Retweet")
+        }
+      }
+      internal enum Video {
+        /// Play video
+        internal static let play = L10n.tr("Localizable", "Accessibility.Common.Video.Play")
+      }
+    }
+    internal enum Scene {
+      internal enum Compose {
+        /// At
+        internal static let at = L10n.tr("Localizable", "Accessibility.Scene.Compose.At")
+        /// Open draft
+        internal static let draft = L10n.tr("Localizable", "Accessibility.Scene.Compose.Draft")
+        /// Add image
+        internal static let image = L10n.tr("Localizable", "Accessibility.Scene.Compose.Image")
+        /// Send
+        internal static let send = L10n.tr("Localizable", "Accessibility.Scene.Compose.Send")
+        internal enum Location {
+          /// Disable location
+          internal static let disable = L10n.tr("Localizable", "Accessibility.Scene.Compose.Location.Disable")
+          /// Enable Location
+          internal static let enable = L10n.tr("Localizable", "Accessibility.Scene.Compose.Location.Enable")
+        }
+      }
+      internal enum Home {
+        /// Compose
+        internal static let compose = L10n.tr("Localizable", "Accessibility.Scene.Home.Compose")
+        /// Menu
+        internal static let menu = L10n.tr("Localizable", "Accessibility.Scene.Home.Menu")
+        internal enum Drawer {
+          /// Account DropDown
+          internal static let accountDropdown = L10n.tr("Localizable", "Accessibility.Scene.Home.Drawer.AccountDropdown")
+        }
+      }
+      internal enum ManageAccounts {
+        /// Add
+        internal static let add = L10n.tr("Localizable", "Accessibility.Scene.ManageAccounts.Add")
+      }
+      internal enum Search {
+        /// History
+        internal static let history = L10n.tr("Localizable", "Accessibility.Scene.Search.History")
+        /// Save
+        internal static let save = L10n.tr("Localizable", "Accessibility.Scene.Search.Save")
+      }
+      internal enum Settings {
+        internal enum Display {
+          /// Font Size
+          internal static let fontSize = L10n.tr("Localizable", "Accessibility.Scene.Settings.Display.FontSize")
+        }
+      }
+      internal enum Timeline {
+        /// Load
+        internal static let loadGap = L10n.tr("Localizable", "Accessibility.Scene.Timeline.LoadGap")
+      }
+      internal enum User {
+        /// Location
+        internal static let location = L10n.tr("Localizable", "Accessibility.Scene.User.Location")
+        /// Website
+        internal static let website = L10n.tr("Localizable", "Accessibility.Scene.User.Website")
+        internal enum Tab {
+          /// Favourite
+          internal static let favourite = L10n.tr("Localizable", "Accessibility.Scene.User.Tab.Favourite")
+          /// Media
+          internal static let media = L10n.tr("Localizable", "Accessibility.Scene.User.Tab.Media")
+          /// Statuses
+          internal static let status = L10n.tr("Localizable", "Accessibility.Scene.User.Tab.Status")
+        }
+      }
+    }
+  }
+
   internal enum Common {
     internal enum Alerts {
       internal enum AccountSuspended {
@@ -311,6 +418,10 @@ internal enum L10n {
           internal static let copyText = L10n.tr("Localizable", "Common.Controls.Status.Actions.CopyText")
           /// Delete tweet
           internal static let deleteTweet = L10n.tr("Localizable", "Common.Controls.Status.Actions.DeleteTweet")
+          /// Quote
+          internal static let quote = L10n.tr("Localizable", "Common.Controls.Status.Actions.Quote")
+          /// Retweet
+          internal static let retweet = L10n.tr("Localizable", "Common.Controls.Status.Actions.Retweet")
           /// Share link
           internal static let shareLink = L10n.tr("Localizable", "Common.Controls.Status.Actions.ShareLink")
         }
@@ -560,9 +671,9 @@ internal enum L10n {
         internal enum Theme {
           /// Auto
           internal static let auto = L10n.tr("Localizable", "Scene.Settings.Appearance.Theme.Auto")
-          /// dark
+          /// Dark
           internal static let dark = L10n.tr("Localizable", "Scene.Settings.Appearance.Theme.Dark")
-          /// light
+          /// Light
           internal static let light = L10n.tr("Localizable", "Scene.Settings.Appearance.Theme.Light")
         }
       }
