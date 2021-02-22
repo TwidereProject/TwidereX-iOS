@@ -50,9 +50,6 @@ The `host_key_public` is preserved by App Store release and not needs for the op
 ## Translation
 The localization resource files locate in [TwidereX-Localization](https://github.com/TwidereProject/TwidereX-Localization) repo. We are welcome translator use our [Crowdin](https://crowdin.com/project/twidere-x) project contribute.
 
-## Public Beta
-Try the beta version on the [TestFlight](https://testflight.apple.com/join/GJIDXvW7).
-
 ## Acknowledgements
 
 - [ActiveLabel](https://github.com/TwidereProject/ActiveLabel.swift)
