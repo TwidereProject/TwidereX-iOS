@@ -742,6 +742,12 @@
 		DBD40B842599B9C2006E4ABC /* CombineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CombineTests.swift; sourceTree = "<group>"; };
 		DBD40BEE2599CB89006E4ABC /* FollowerListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FollowerListViewController.swift; sourceTree = "<group>"; };
 		DBD40C0C2599CD9D006E4ABC /* FollowerListViewController+UserProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FollowerListViewController+UserProvider.swift"; sourceTree = "<group>"; };
+		DBD8B53C25E3C3C5006299ED /* ca */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ca; path = ca.lproj/Localizable.strings; sourceTree = "<group>"; };
+		DBD8B53D25E3C3C5006299ED /* ca */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ca; path = ca.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		DBD8B53E25E3C40B006299ED /* ko */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ko; path = ko.lproj/Localizable.strings; sourceTree = "<group>"; };
+		DBD8B53F25E3C40C006299ED /* ko */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ko; path = ko.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		DBD8B54025E3C474006299ED /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/Localizable.strings; sourceTree = "<group>"; };
+		DBD8B54125E3C474006299ED /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		DBDA8E1E24FCF8A3006750DC /* TwidereX.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TwidereX.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		DBDA8E2124FCF8A3006750DC /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		DBDA8E2324FCF8A3006750DC /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -2390,6 +2396,9 @@
 				de,
 				"pt-BR",
 				ar,
+				ca,
+				ko,
+				es,
 			);
 			mainGroup = DBDA8E1524FCF8A3006750DC;
 			packageReferences = (
@@ -3039,6 +3048,9 @@
 				DBB4B803257F941100C36075 /* de */,
 				DBB4B805257F944D00C36075 /* pt-BR */,
 				DBED2A7125B8006400BE6941 /* ar */,
+				DBD8B53D25E3C3C5006299ED /* ca */,
+				DBD8B53F25E3C40C006299ED /* ko */,
+				DBD8B54125E3C474006299ED /* es */,
 			);
 			name = InfoPlist.strings;
 			sourceTree = "<group>";
@@ -3068,6 +3080,9 @@
 				DBB4B802257F941100C36075 /* de */,
 				DBB4B804257F944D00C36075 /* pt-BR */,
 				DBED2A7025B8006400BE6941 /* ar */,
+				DBD8B53C25E3C3C5006299ED /* ca */,
+				DBD8B53E25E3C40B006299ED /* ko */,
+				DBD8B54025E3C474006299ED /* es */,
 			);
 			name = Localizable.strings;
 			sourceTree = "<group>";
@@ -3217,7 +3232,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = TwidereX/TwidereX.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 58;
+				CURRENT_PROJECT_VERSION = 59;
 				DEVELOPMENT_ASSET_PATHS = "TwidereX/Resources/Preview\\ Assets.xcassets";
 				DEVELOPMENT_TEAM = 7LFDZ96332;
 				INFOPLIST_FILE = TwidereX/Info.plist;
@@ -3241,7 +3256,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = TwidereX/TwidereX.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 58;
+				CURRENT_PROJECT_VERSION = 59;
 				DEVELOPMENT_ASSET_PATHS = "TwidereX/Resources/Preview\\ Assets.xcassets";
 				DEVELOPMENT_TEAM = 7LFDZ96332;
 				INFOPLIST_FILE = TwidereX/Info.plist;
