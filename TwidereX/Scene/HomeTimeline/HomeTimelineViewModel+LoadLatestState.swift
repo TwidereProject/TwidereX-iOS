@@ -64,7 +64,7 @@ extension HomeTimelineViewModel.LoadLatestState {
                     let endFetch = CACurrentMediaTime()
                     os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: collect timelineIndexes cost: %.2fs", ((#file as NSString).lastPathComponent), #line, #function, endFetch - start)
                     latestTweetIDs = timelineIndexes
-                        .prefix(200)        // avoid performance issue
+                        .prefix(APIService.homeTimelineRequestFetchLimit)        // only grab working items to avoid performance issue
                         .compactMap { timelineIndex in
                             timelineIndex.value(forKeyPath: #keyPath(TimelineIndex.tweet.id)) as? Tweet.ID
                         }
@@ -76,7 +76,7 @@ extension HomeTimelineViewModel.LoadLatestState {
                 os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: collect tweets id cost: %.2fs", ((#file as NSString).lastPathComponent), #line, #function, end - start)
                 
                 // TODO: only set large count when using Wi-Fi
-                viewModel.context.apiService.twitterHomeTimeline(count: 200, twitterAuthenticationBox: twitterAuthenticationBox)
+                viewModel.context.apiService.twitterHomeTimeline(twitterAuthenticationBox: twitterAuthenticationBox)
                     .receive(on: DispatchQueue.main)
                     .sink { completion in
                         switch completion {
