@@ -70,8 +70,16 @@ extension Twitter.API.Timeline {
     
 }
 
+public protocol TimelineQueryType {
+    var maxID: Twitter.Entity.Tweet.ID? { get }
+    var sinceID: Twitter.Entity.Tweet.ID? { get }
+}
+
 extension Twitter.API.Timeline {
-    public struct Query {
+    
+    public typealias TimelineQuery = TimelineQueryType
+    
+    public struct Query: TimelineQuery {
         // share
         public let count: Int?
         public let maxID: Twitter.Entity.Tweet.ID?

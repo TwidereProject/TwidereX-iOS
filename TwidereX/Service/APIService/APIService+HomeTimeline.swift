@@ -16,13 +16,14 @@ import TwitterAPI
 extension APIService {
     
     static let homeTimelineRequestWindowInSec: TimeInterval = 15 * 60
+    static let homeTimelineRequestFetchLimit: Int = 100
     
     // incoming tweet - retweet relationship could be:
     // A1. incoming tweet NOT in local timeline, retweet NOT  in local (never see tweet and retweet)
     // A2. incoming tweet NOT in local timeline, retweet      in local (never see tweet but saw retweet before)
     // A3. incoming tweet     in local timeline, retweet MUST in local (saw tweet before)
     func twitterHomeTimeline(
-        count: Int = 200,
+        count: Int = APIService.homeTimelineRequestFetchLimit,
         maxID: String? = nil,
         twitterAuthenticationBox: AuthenticationService.TwitterAuthenticationBox
     ) -> AnyPublisher<Twitter.Response.Content<[Twitter.Entity.Tweet]>, Error> {
@@ -65,7 +66,7 @@ extension APIService {
                 }
                 
                 // update database
-                return APIService.Persist.persistTimeline(
+                return APIService.Persist.persistTweets(
                     managedObjectContext: self.backgroundManagedObjectContext,
                     query: query,
                     response: response,

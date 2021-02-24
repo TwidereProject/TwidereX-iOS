@@ -98,6 +98,9 @@
 		DB491636253ED329008755C3 /* TwitterPlace.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB491635253ED329008755C3 /* TwitterPlace.swift */; };
 		DB49163B253ED443008755C3 /* TwitteWithheld.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB49163A253ED443008755C3 /* TwitteWithheld.swift */; };
 		DB491640253EDA7D008755C3 /* TwitterUserMetrics.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB49163F253EDA7D008755C3 /* TwitterUserMetrics.swift */; };
+		DB4B599425DFB4D60012F495 /* APIService+Persist+PersistMemo.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB4B599325DFB4D60012F495 /* APIService+Persist+PersistMemo.swift */; };
+		DB4B59B525DFBDB80012F495 /* APIService+Persist.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB4B59B425DFBDB80012F495 /* APIService+Persist.swift */; };
+		DB4B59C025DFCC4F0012F495 /* APIService+Persist+PersistCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB4B59BF25DFCC4F0012F495 /* APIService+Persist+PersistCache.swift */; };
 		DB5399A025AEF75D0064586D /* APIService+Mute.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB53999F25AEF75D0064586D /* APIService+Mute.swift */; };
 		DB5399A825AF0A790064586D /* APIService+Block.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB5399A725AF0A790064586D /* APIService+Block.swift */; };
 		DB544B9D2589D09E00331B3D /* VideoPlayerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB544B9C2589D09E00331B3D /* VideoPlayerViewModel.swift */; };
@@ -189,7 +192,7 @@
 		DB925744251C9CD6004FEFB5 /* ProfilePagingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB925743251C9CD6004FEFB5 /* ProfilePagingViewController.swift */; };
 		DB925749251C9D48004FEFB5 /* ProfilePagingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB925748251C9D47004FEFB5 /* ProfilePagingViewModel.swift */; };
 		DB94887D2599F70600C3E111 /* TimelineHeaderTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB94887C2599F70600C3E111 /* TimelineHeaderTableViewCell.swift */; };
-		DB969A0C252475F00053CB31 /* APIService+Persist+Timeline.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB969A0B252475F00053CB31 /* APIService+Persist+Timeline.swift */; };
+		DB969A0C252475F00053CB31 /* APIService+Persist+Tweets.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB969A0B252475F00053CB31 /* APIService+Persist+Tweets.swift */; };
 		DB969A2F252490090053CB31 /* UserTimelineViewModel+State.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB969A2E252490090053CB31 /* UserTimelineViewModel+State.swift */; };
 		DB969A3925305EEF0053CB31 /* HomeTimelineViewModel+LoadLatestState.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB969A3825305EEE0053CB31 /* HomeTimelineViewModel+LoadLatestState.swift */; };
 		DB969A66253064FE0053CB31 /* DispatchQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB969A65253064FE0053CB31 /* DispatchQueue.swift */; };
@@ -233,7 +236,6 @@
 		DBB09D562511BA9700AE260E /* APIService+Lookup.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBB09D552511BA9700AE260E /* APIService+Lookup.swift */; };
 		DBB2513E2599DBAB0064A876 /* HomeTimelineViewController+DebugAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBB2513D2599DBAB0064A876 /* HomeTimelineViewController+DebugAction.swift */; };
 		DBB4B8152581D4AB00C36075 /* AlamofireNetworkActivityIndicator in Frameworks */ = {isa = PBXBuildFile; productRef = DBB4B8142581D4AB00C36075 /* AlamofireNetworkActivityIndicator */; };
-		DBB53DC62584A28400B27855 /* ZIPFoundation in Frameworks */ = {isa = PBXBuildFile; productRef = DBB53DC52584A28400B27855 /* ZIPFoundation */; };
 		DBBABA04255E54A000C1B3D9 /* UserMediaTimelineViewController+StatusProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBBABA03255E54A000C1B3D9 /* UserMediaTimelineViewController+StatusProvider.swift */; };
 		DBBABA0C255E550D00C1B3D9 /* StatusProvider+UICollectionViewDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBBABA0B255E550D00C1B3D9 /* StatusProvider+UICollectionViewDelegate.swift */; };
 		DBBABA11255E61C900C1B3D9 /* SearchMediaViewController+StatusProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBBABA10255E61C900C1B3D9 /* SearchMediaViewController+StatusProvider.swift */; };
@@ -556,6 +558,9 @@
 		DB491635253ED329008755C3 /* TwitterPlace.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwitterPlace.swift; sourceTree = "<group>"; };
 		DB49163A253ED443008755C3 /* TwitteWithheld.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwitteWithheld.swift; sourceTree = "<group>"; };
 		DB49163F253EDA7D008755C3 /* TwitterUserMetrics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwitterUserMetrics.swift; sourceTree = "<group>"; };
+		DB4B599325DFB4D60012F495 /* APIService+Persist+PersistMemo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "APIService+Persist+PersistMemo.swift"; sourceTree = "<group>"; };
+		DB4B59B425DFBDB80012F495 /* APIService+Persist.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "APIService+Persist.swift"; sourceTree = "<group>"; };
+		DB4B59BF25DFCC4F0012F495 /* APIService+Persist+PersistCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "APIService+Persist+PersistCache.swift"; sourceTree = "<group>"; };
 		DB53999825AED8420064586D /* CoreDataStack 2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "CoreDataStack 2.xcdatamodel"; sourceTree = "<group>"; };
 		DB53999F25AEF75D0064586D /* APIService+Mute.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "APIService+Mute.swift"; sourceTree = "<group>"; };
 		DB5399A725AF0A790064586D /* APIService+Block.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "APIService+Block.swift"; sourceTree = "<group>"; };
@@ -647,7 +652,7 @@
 		DB925743251C9CD6004FEFB5 /* ProfilePagingViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfilePagingViewController.swift; sourceTree = "<group>"; };
 		DB925748251C9D47004FEFB5 /* ProfilePagingViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfilePagingViewModel.swift; sourceTree = "<group>"; };
 		DB94887C2599F70600C3E111 /* TimelineHeaderTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimelineHeaderTableViewCell.swift; sourceTree = "<group>"; };
-		DB969A0B252475F00053CB31 /* APIService+Persist+Timeline.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "APIService+Persist+Timeline.swift"; sourceTree = "<group>"; };
+		DB969A0B252475F00053CB31 /* APIService+Persist+Tweets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "APIService+Persist+Tweets.swift"; sourceTree = "<group>"; };
 		DB969A2E252490090053CB31 /* UserTimelineViewModel+State.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UserTimelineViewModel+State.swift"; sourceTree = "<group>"; };
 		DB969A3825305EEE0053CB31 /* HomeTimelineViewModel+LoadLatestState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "HomeTimelineViewModel+LoadLatestState.swift"; sourceTree = "<group>"; };
 		DB969A65253064FE0053CB31 /* DispatchQueue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DispatchQueue.swift; sourceTree = "<group>"; };
@@ -737,6 +742,12 @@
 		DBD40B842599B9C2006E4ABC /* CombineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CombineTests.swift; sourceTree = "<group>"; };
 		DBD40BEE2599CB89006E4ABC /* FollowerListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FollowerListViewController.swift; sourceTree = "<group>"; };
 		DBD40C0C2599CD9D006E4ABC /* FollowerListViewController+UserProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FollowerListViewController+UserProvider.swift"; sourceTree = "<group>"; };
+		DBD8B53C25E3C3C5006299ED /* ca */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ca; path = ca.lproj/Localizable.strings; sourceTree = "<group>"; };
+		DBD8B53D25E3C3C5006299ED /* ca */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ca; path = ca.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		DBD8B53E25E3C40B006299ED /* ko */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ko; path = ko.lproj/Localizable.strings; sourceTree = "<group>"; };
+		DBD8B53F25E3C40C006299ED /* ko */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ko; path = ko.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		DBD8B54025E3C474006299ED /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/Localizable.strings; sourceTree = "<group>"; };
+		DBD8B54125E3C474006299ED /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		DBDA8E1E24FCF8A3006750DC /* TwidereX.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TwidereX.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		DBDA8E2124FCF8A3006750DC /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		DBDA8E2324FCF8A3006750DC /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -865,7 +876,6 @@
 				44CCAE5E7B79E0C359E367E5 /* Pods_TwidereX.framework in Frameworks */,
 				DBB4B8152581D4AB00C36075 /* AlamofireNetworkActivityIndicator in Frameworks */,
 				DBBC3F3525835B8B005CF99E /* ActiveLabel in Frameworks */,
-				DBB53DC62584A28400B27855 /* ZIPFoundation in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1022,8 +1032,11 @@
 		DB25BA03253D7D4800A5420F /* Persist */ = {
 			isa = PBXGroup;
 			children = (
-				DB969A0B252475F00053CB31 /* APIService+Persist+Timeline.swift */,
+				DB4B59B425DFBDB80012F495 /* APIService+Persist.swift */,
+				DB969A0B252475F00053CB31 /* APIService+Persist+Tweets.swift */,
 				DB25BA07253D7D6E00A5420F /* APIService+Persist+DictContent.swift */,
+				DB4B599325DFB4D60012F495 /* APIService+Persist+PersistMemo.swift */,
+				DB4B59BF25DFCC4F0012F495 /* APIService+Persist+PersistCache.swift */,
 			);
 			path = Persist;
 			sourceTree = "<group>";
@@ -1856,11 +1869,11 @@
 		DBE76C8A24FF941A00DEB0FC /* APIService */ = {
 			isa = PBXGroup;
 			children = (
+				DB25BA03253D7D4800A5420F /* Persist */,
+				DB25B9EC2539A9BA00A5420F /* CoreData */,
 				DBDA8E5724FE0371006750DC /* APIService.swift */,
 				DBFA4A1A25A580FA00D51703 /* APIService+APIError.swift */,
 				DBFA4A1525A580C100D51703 /* APIService+RateLimit.swift */,
-				DB25BA03253D7D4800A5420F /* Persist */,
-				DB25B9EC2539A9BA00A5420F /* CoreData */,
 				DBE76C8824FF941400DEB0FC /* APIService+Autentication.swift */,
 				DB3402C92521E4AF009EFADF /* APIService+Account.swift */,
 				DBE76D202500ED5100DEB0FC /* APIService+HomeTimeline.swift */,
@@ -2234,7 +2247,6 @@
 				DB74A163256E148F00C5F3C9 /* CropViewController */,
 				DBB4B8142581D4AB00C36075 /* AlamofireNetworkActivityIndicator */,
 				DBBC3F3425835B8B005CF99E /* ActiveLabel */,
-				DBB53DC52584A28400B27855 /* ZIPFoundation */,
 			);
 			productName = TwidereX;
 			productReference = DBDA8E1E24FCF8A3006750DC /* TwidereX.app */;
@@ -2384,6 +2396,9 @@
 				de,
 				"pt-BR",
 				ar,
+				ca,
+				ko,
+				es,
 			);
 			mainGroup = DBDA8E1524FCF8A3006750DC;
 			packageReferences = (
@@ -2397,7 +2412,6 @@
 				DB74A162256E148F00C5F3C9 /* XCRemoteSwiftPackageReference "TOCropViewController" */,
 				DBB4B8132581D4AB00C36075 /* XCRemoteSwiftPackageReference "AlamofireNetworkActivityIndicator" */,
 				DBBC3F3325835B8B005CF99E /* XCRemoteSwiftPackageReference "ActiveLabel" */,
-				DBB53DC42584A28400B27855 /* XCRemoteSwiftPackageReference "ZIPFoundation" */,
 			);
 			productRefGroup = DBDA8E1F24FCF8A3006750DC /* Products */;
 			projectDirPath = "";
@@ -2672,6 +2686,7 @@
 				DBFA4A2025A5924C00D51703 /* HomeTimelineViewModel+Diffable.swift in Sources */,
 				DB88AC2F2508BA8C0009E562 /* TimelineSection.swift in Sources */,
 				DBCB4058255B6ECA00DD8D8F /* AccountListSection.swift in Sources */,
+				DB4B59C025DFCC4F0012F495 /* APIService+Persist+PersistCache.swift in Sources */,
 				DB925749251C9D48004FEFB5 /* ProfilePagingViewModel.swift in Sources */,
 				DB88AC38250B25170009E562 /* UIViewPreview.swift in Sources */,
 				DBA9B3C12587609200EA14ED /* MentionPickViewModel.swift in Sources */,
@@ -2779,6 +2794,7 @@
 				DB34028E2521BC06009EFADF /* APIService+UserTimeline.swift in Sources */,
 				DB8AC180254275C600E636BE /* RepliedToTweetContentTableViewCell.swift in Sources */,
 				DB3402CA2521E4AF009EFADF /* APIService+Account.swift in Sources */,
+				DB4B59B525DFBDB80012F495 /* APIService+Persist.swift in Sources */,
 				DBCB4047255B683B00DD8D8F /* AccountListTableViewCell.swift in Sources */,
 				DB9154522551210000613473 /* MentionTimelineViewController.swift in Sources */,
 				DBF639FC259B333A009E12C8 /* EmptyStateView.swift in Sources */,
@@ -2806,7 +2822,7 @@
 				DBF63A04259B4811009E12C8 /* TouchBlockingCollectionView.swift in Sources */,
 				DB0D0ACD25945075007A23C8 /* UserProvider+UITableViewDelegate.swift in Sources */,
 				DB3FC04A2552711C003A2F8A /* UserMediaTimelineViewModel+Diffable.swift in Sources */,
-				DB969A0C252475F00053CB31 /* APIService+Persist+Timeline.swift in Sources */,
+				DB969A0C252475F00053CB31 /* APIService+Persist+Tweets.swift in Sources */,
 				DB761E772559471F0050DC01 /* SidebarItem.swift in Sources */,
 				DB925744251C9CD6004FEFB5 /* ProfilePagingViewController.swift in Sources */,
 				DB544B9D2589D09E00331B3D /* VideoPlayerViewModel.swift in Sources */,
@@ -2903,6 +2919,7 @@
 				DBCE2ECD2591FAA800926D09 /* FriendshipListSection.swift in Sources */,
 				DB91540B254FE4B200613473 /* APIService+Friendship.swift in Sources */,
 				DB747FF4251C47BD000C4BD7 /* UITableView.swift in Sources */,
+				DB4B599425DFB4D60012F495 /* APIService+Persist+PersistMemo.swift in Sources */,
 				DBD40BEF2599CB89006E4ABC /* FollowerListViewController.swift in Sources */,
 				DBA5FA0A2553D1FD00D2E98E /* MediaHostToMediaPreviewViewControllerAnimatedTransitioning.swift in Sources */,
 				DB8AC1332541662200E636BE /* KeyboardResponderService.swift in Sources */,
@@ -3031,6 +3048,9 @@
 				DBB4B803257F941100C36075 /* de */,
 				DBB4B805257F944D00C36075 /* pt-BR */,
 				DBED2A7125B8006400BE6941 /* ar */,
+				DBD8B53D25E3C3C5006299ED /* ca */,
+				DBD8B53F25E3C40C006299ED /* ko */,
+				DBD8B54125E3C474006299ED /* es */,
 			);
 			name = InfoPlist.strings;
 			sourceTree = "<group>";
@@ -3060,6 +3080,9 @@
 				DBB4B802257F941100C36075 /* de */,
 				DBB4B804257F944D00C36075 /* pt-BR */,
 				DBED2A7025B8006400BE6941 /* ar */,
+				DBD8B53C25E3C3C5006299ED /* ca */,
+				DBD8B53E25E3C40B006299ED /* ko */,
+				DBD8B54025E3C474006299ED /* es */,
 			);
 			name = Localizable.strings;
 			sourceTree = "<group>";
@@ -3209,7 +3232,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = TwidereX/TwidereX.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 57;
+				CURRENT_PROJECT_VERSION = 59;
 				DEVELOPMENT_ASSET_PATHS = "TwidereX/Resources/Preview\\ Assets.xcassets";
 				DEVELOPMENT_TEAM = 7LFDZ96332;
 				INFOPLIST_FILE = TwidereX/Info.plist;
@@ -3217,7 +3240,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.1.1;
+				MARKETING_VERSION = 1.1.2;
 				PRODUCT_BUNDLE_IDENTIFIER = com.twidere.TwidereX;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
@@ -3233,7 +3256,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = TwidereX/TwidereX.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 57;
+				CURRENT_PROJECT_VERSION = 59;
 				DEVELOPMENT_ASSET_PATHS = "TwidereX/Resources/Preview\\ Assets.xcassets";
 				DEVELOPMENT_TEAM = 7LFDZ96332;
 				INFOPLIST_FILE = TwidereX/Info.plist;
@@ -3241,7 +3264,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.1.1;
+				MARKETING_VERSION = 1.1.2;
 				PRODUCT_BUNDLE_IDENTIFIER = com.twidere.TwidereX;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
@@ -3574,14 +3597,6 @@
 				minimumVersion = 3.1.0;
 			};
 		};
-		DBB53DC42584A28400B27855 /* XCRemoteSwiftPackageReference "ZIPFoundation" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/weichsel/ZIPFoundation";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 0.9.11;
-			};
-		};
 		DBBC3F3325835B8B005CF99E /* XCRemoteSwiftPackageReference "ActiveLabel" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/TwidereProject/ActiveLabel.swift";
@@ -3657,11 +3672,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = DBB4B8132581D4AB00C36075 /* XCRemoteSwiftPackageReference "AlamofireNetworkActivityIndicator" */;
 			productName = AlamofireNetworkActivityIndicator;
-		};
-		DBB53DC52584A28400B27855 /* ZIPFoundation */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = DBB53DC42584A28400B27855 /* XCRemoteSwiftPackageReference "ZIPFoundation" */;
-			productName = ZIPFoundation;
 		};
 		DBBC3F3425835B8B005CF99E /* ActiveLabel */ = {
 			isa = XCSwiftPackageProductDependency;

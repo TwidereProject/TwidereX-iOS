@@ -51,7 +51,7 @@ extension APIService {
                     }
                     
                     for entity in entities {
-                        _ = APIService.CoreData.createOrMergeTwitterUser(into: managedObjectContext, for: requestTwitterUser, entity: entity, networkDate: response.networkDate, log: log)
+                        _ = APIService.CoreData.createOrMergeTwitterUser(into: managedObjectContext, for: requestTwitterUser, entity: entity, userCache: nil, networkDate: response.networkDate, log: log)
                     }
                 }
                 .map { _ in return response }

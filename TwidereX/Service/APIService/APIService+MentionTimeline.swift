@@ -27,7 +27,7 @@ extension APIService {
         return Twitter.API.Timeline.mentionTimeline(session: session, authorization: authorization, query: query)
             .map { response -> AnyPublisher<Twitter.Response.Content<[Twitter.Entity.Tweet]>, Error> in
                 let log = OSLog.api
-                return APIService.Persist.persistTimeline(
+                return APIService.Persist.persistTweets(
                     managedObjectContext: self.backgroundManagedObjectContext,
                     query: query,
                     response: response,

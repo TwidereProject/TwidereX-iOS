@@ -1,0 +1,3 @@
+"NSCameraUsageDescription" = "트윗에 올릴 사진을 찍기 위해 쓰임";
+"NSLocationWhenInUseUsageDescription" = "위치 기록 트윗에 쓰임";
+"NSPhotoLibraryAddUsageDescription" = "갤러리에 사진을 저장하기 위해 쓰임";
