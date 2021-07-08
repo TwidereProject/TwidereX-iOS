@@ -12,6 +12,7 @@ import Combine
 import TwitterAPI
 import SafariServices
 //import SwiftMessages
+import SwiftUI
 
 class MainTabBarController: UITabBarController {
     
@@ -23,6 +24,7 @@ class MainTabBarController: UITabBarController {
     let doubleTapGestureRecognizer = UITapGestureRecognizer.doubleTapGestureRecognizer
     
     enum Tab: Int, CaseIterable {
+        case home
         case timeline
         case mention
         case search
@@ -30,6 +32,7 @@ class MainTabBarController: UITabBarController {
         
         var title: String {
             switch self {
+            case .home:         return L10n.Scene.Timeline.title
             case .timeline:     return L10n.Scene.Timeline.title
             case .mention:      return L10n.Scene.Mentions.title
             case .search:       return L10n.Scene.Search.title
@@ -39,6 +42,7 @@ class MainTabBarController: UITabBarController {
         
         var image: UIImage {
             switch self {
+            case .home:     return Asset.ObjectTools.house.image.withRenderingMode(.alwaysTemplate)
             case .timeline:     return Asset.ObjectTools.house.image.withRenderingMode(.alwaysTemplate)
             case .mention:      return Asset.Communication.ellipsesBubble.image.withRenderingMode(.alwaysTemplate)
             case .search:       return Asset.ObjectTools.magnifyingglass.image.withRenderingMode(.alwaysTemplate)
@@ -49,6 +53,10 @@ class MainTabBarController: UITabBarController {
         func viewController(context: AppContext, coordinator: SceneCoordinator) -> UIViewController {
             let viewController: UIViewController
             switch self {
+            case .home:
+                let rootView = HomeTimelineView().environment(\.managedObjectContext, context.managedObjectContext)
+                let _viewController = UIHostingController(rootView: rootView)
+                viewController = _viewController
             case .timeline:
                 let _viewController = HomeTimelineViewController()
                 _viewController.context = context

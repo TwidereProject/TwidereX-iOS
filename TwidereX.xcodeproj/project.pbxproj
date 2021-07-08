@@ -126,6 +126,7 @@
 		DB6B8B2F25AF235F00F20FD5 /* TwidereX-Performance.xctestplan in Resources */ = {isa = PBXBuildFile; fileRef = DB6B8B2D25AF235F00F20FD5 /* TwidereX-Performance.xctestplan */; };
 		DB6B8B5F25AF30B900F20FD5 /* ContextMenuAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB6B8B5E25AF30B900F20FD5 /* ContextMenuAction.swift */; };
 		DB6CF1BF26970A21001DE069 /* HomeTimelineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB6CF1BE26970A21001DE069 /* HomeTimelineView.swift */; };
+		DB6CF1C126970DAA001DE069 /* HomeTimelineStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB6CF1C026970DAA001DE069 /* HomeTimelineStore.swift */; };
 		DB6D671F2566221D00B70DC0 /* DisplayPreferenceViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB6D671E2566221D00B70DC0 /* DisplayPreferenceViewModel.swift */; };
 		DB6D672C2566349600B70DC0 /* SwitchTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB6D672B2566349600B70DC0 /* SwitchTableViewCell.swift */; };
 		DB6D6731256637A200B70DC0 /* TableViewSectionTextHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB6D6730256637A200B70DC0 /* TableViewSectionTextHeaderView.swift */; };
@@ -587,6 +588,7 @@
 		DB6B8B2D25AF235F00F20FD5 /* TwidereX-Performance.xctestplan */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "TwidereX-Performance.xctestplan"; sourceTree = "<group>"; };
 		DB6B8B5E25AF30B900F20FD5 /* ContextMenuAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContextMenuAction.swift; sourceTree = "<group>"; };
 		DB6CF1BE26970A21001DE069 /* HomeTimelineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeTimelineView.swift; sourceTree = "<group>"; };
+		DB6CF1C026970DAA001DE069 /* HomeTimelineStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeTimelineStore.swift; sourceTree = "<group>"; };
 		DB6D671E2566221D00B70DC0 /* DisplayPreferenceViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisplayPreferenceViewModel.swift; sourceTree = "<group>"; };
 		DB6D672B2566349600B70DC0 /* SwitchTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwitchTableViewCell.swift; sourceTree = "<group>"; };
 		DB6D6730256637A200B70DC0 /* TableViewSectionTextHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TableViewSectionTextHeaderView.swift; sourceTree = "<group>"; };
@@ -1855,6 +1857,7 @@
 				DBA6B1A325340B3F005FB0B4 /* HomeTimelineViewModel+LoadMiddleState.swift */,
 				DB3FC03025525BFD003A2F8A /* HomeTimelineViewModel+LoadOldestState.swift */,
 				DB6CF1BE26970A21001DE069 /* HomeTimelineView.swift */,
+				DB6CF1C026970DAA001DE069 /* HomeTimelineStore.swift */,
 			);
 			path = HomeTimeline;
 			sourceTree = "<group>";
@@ -2684,6 +2687,7 @@
 				DBE76D382502228900DEB0FC /* Tweet.swift in Sources */,
 				DB434874251DEB77005B599F /* ProfileBannerView.swift in Sources */,
 				DBFA4A2025A5924C00D51703 /* HomeTimelineViewModel+Diffable.swift in Sources */,
+				DB6CF1C126970DAA001DE069 /* HomeTimelineStore.swift in Sources */,
 				DB88AC2F2508BA8C0009E562 /* TimelineSection.swift in Sources */,
 				DBCB4058255B6ECA00DD8D8F /* AccountListSection.swift in Sources */,
 				DB4B59C025DFCC4F0012F495 /* APIService+Persist+PersistCache.swift in Sources */,

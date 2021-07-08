@@ -6,11 +6,25 @@
 //  Copyright © 2021 Twidere. All rights reserved.
 //
 
+import Foundation
+import CoreDataStack
 import SwiftUI
 
 struct HomeTimelineView: View {
+
+    @FetchRequest(
+        sortDescriptors: TimelineIndex.defaultSortDescriptors,
+        predicate: nil,
+        animation: nil
+    )
+    var indexes: FetchedResults<TimelineIndex>
+
     var body: some View {
-        Text("Hello, World!")
+        List {
+            ForEach(indexes, id: \.self) { index in
+                Text("\(index.identifier)")
+            }
+        }
     }
 }
 

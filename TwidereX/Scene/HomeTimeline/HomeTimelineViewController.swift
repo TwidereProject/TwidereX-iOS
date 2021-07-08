@@ -76,80 +76,70 @@ extension HomeTimelineViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-//        view.backgroundColor = .systemBackground
-//        navigationItem.leftBarButtonItem = avatarBarButtonItem
-//        avatarBarButtonItem.avatarButton.addTarget(self, action: #selector(HomeTimelineViewController.avatarButtonPressed(_:)), for: .touchUpInside)
-//
-//        drawerSidebarTransitionController = DrawerSidebarTransitionController(drawerSidebarTransitionableViewController: self)
-//        tableView.refreshControl = refreshControl
-//        refreshControl.addTarget(self, action: #selector(HomeTimelineViewController.refreshControlValueChanged(_:)), for: .valueChanged)
+        view.backgroundColor = .systemBackground
+        navigationItem.leftBarButtonItem = avatarBarButtonItem
+        avatarBarButtonItem.avatarButton.addTarget(self, action: #selector(HomeTimelineViewController.avatarButtonPressed(_:)), for: .touchUpInside)
 
-        let homeTimelineViewHostingController = UIHostingController(rootView: HomeTimelineView())
-        homeTimelineViewHostingController.view.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(homeTimelineViewHostingController.view)
+        drawerSidebarTransitionController = DrawerSidebarTransitionController(drawerSidebarTransitionableViewController: self)
+        tableView.refreshControl = refreshControl
+        refreshControl.addTarget(self, action: #selector(HomeTimelineViewController.refreshControlValueChanged(_:)), for: .valueChanged)
+
+        #if DEBUG
+        if #available(iOS 14.0, *) {
+            navigationItem.rightBarButtonItem = debugActionBarButtonItem
+        }
+        #endif
+
+        tableView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(tableView)
         NSLayoutConstraint.activate([
-            homeTimelineViewHostingController.view.topAnchor.constraint(equalTo: view.topAnchor),
-            homeTimelineViewHostingController.view.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            homeTimelineViewHostingController.view.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            homeTimelineViewHostingController.view.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            tableView.topAnchor.constraint(equalTo: view.topAnchor),
+            tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
         ])
 
-//        #if DEBUG
-//        if #available(iOS 14.0, *) {
-//            navigationItem.rightBarButtonItem = debugActionBarButtonItem
-//        }
-//        #endif
-//
-//        tableView.translatesAutoresizingMaskIntoConstraints = false
-//        view.addSubview(tableView)
-//        NSLayoutConstraint.activate([
-//            tableView.topAnchor.constraint(equalTo: view.topAnchor),
-//            tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-//            tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-//            tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-//        ])
-//
 //        view.addSubview(floatyButton)
-//
-//        viewModel.tableView = tableView
-//        viewModel.contentOffsetAdjustableTimelineViewControllerDelegate = self
-//        tableView.delegate = self
-//        viewModel.setupDiffableDataSource(
-//            for: tableView,
-//            dependency: self,
-//            timelinePostTableViewCellDelegate: self,
-//            timelineMiddleLoaderTableViewCellDelegate: self
-//        )
-//
-//        // bind refresh control
-//        viewModel.isFetchingLatestTimeline
-//            .receive(on: DispatchQueue.main)
-//            .sink { [weak self] isFetching in
-//                guard let self = self else { return }
-//                if !isFetching {
-//                    UIView.animate(withDuration: 0.5) { [weak self] in
-//                        guard let self = self else { return }
-//                        self.refreshControl.endRefreshing()
-//                    }
-//                }
-//            }
-//            .store(in: &disposeBag)
-//        Publishers.CombineLatest3(
-//            context.authenticationService.activeAuthenticationIndex.eraseToAnyPublisher(),
-//            viewModel.avatarStyle.eraseToAnyPublisher(),
-//            viewModel.viewDidAppear.eraseToAnyPublisher()
-//        )
-//        .receive(on: DispatchQueue.main)
-//        .sink { [weak self] activeAuthenticationIndex, _, _ in
-//            guard let self = self else { return }
-//            guard let twitterUser = activeAuthenticationIndex?.twitterAuthentication?.twitterUser,
-//                  let avatarImageURL = twitterUser.avatarImageURL() else {
-//                self.avatarBarButtonItem.configure(withConfigurationInput: AvatarConfigurableViewConfiguration.Input(avatarImageURL: nil))
-//                return
-//            }
-//            self.avatarBarButtonItem.configure(withConfigurationInput: AvatarConfigurableViewConfiguration.Input(avatarImageURL: avatarImageURL))
-//        }
-//        .store(in: &disposeBag)
+
+        viewModel.tableView = tableView
+        viewModel.contentOffsetAdjustableTimelineViewControllerDelegate = self
+        tableView.delegate = self
+        viewModel.setupDiffableDataSource(
+            for: tableView,
+            dependency: self,
+            timelinePostTableViewCellDelegate: self,
+            timelineMiddleLoaderTableViewCellDelegate: self
+        )
+
+        // bind refresh control
+        viewModel.isFetchingLatestTimeline
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] isFetching in
+                guard let self = self else { return }
+                if !isFetching {
+                    UIView.animate(withDuration: 0.5) { [weak self] in
+                        guard let self = self else { return }
+                        self.refreshControl.endRefreshing()
+                    }
+                }
+            }
+            .store(in: &disposeBag)
+        Publishers.CombineLatest3(
+            context.authenticationService.activeAuthenticationIndex.eraseToAnyPublisher(),
+            viewModel.avatarStyle.eraseToAnyPublisher(),
+            viewModel.viewDidAppear.eraseToAnyPublisher()
+        )
+        .receive(on: DispatchQueue.main)
+        .sink { [weak self] activeAuthenticationIndex, _, _ in
+            guard let self = self else { return }
+            guard let twitterUser = activeAuthenticationIndex?.twitterAuthentication?.twitterUser,
+                  let avatarImageURL = twitterUser.avatarImageURL() else {
+                self.avatarBarButtonItem.configure(withConfigurationInput: AvatarConfigurableViewConfiguration.Input(avatarImageURL: nil))
+                return
+            }
+            self.avatarBarButtonItem.configure(withConfigurationInput: AvatarConfigurableViewConfiguration.Input(avatarImageURL: avatarImageURL))
+        }
+        .store(in: &disposeBag)
     }
     
     override func viewWillAppear(_ animated: Bool) {
