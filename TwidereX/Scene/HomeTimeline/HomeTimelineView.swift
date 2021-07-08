@@ -9,8 +9,11 @@
 import Foundation
 import CoreDataStack
 import SwiftUI
+import Kingfisher
 
 struct HomeTimelineView: View {
+
+    @ScaledMetric(relativeTo: .headline) var avatarSize: CGFloat = 44
 
     @FetchRequest(
         sortDescriptors: TimelineIndex.defaultSortDescriptors,
@@ -22,9 +25,38 @@ struct HomeTimelineView: View {
     var body: some View {
         List {
             ForEach(indexes, id: \.self) { index in
-                Text("\(index.identifier)")
+                HStack {
+                    AsyncImage(url: index.tweet?.author.avatarImageURL()) { phase in
+                        switch phase {
+                        case .success(let image):
+                            image
+                                .resizable()
+                                .scaledToFill()
+                                .transition(.opacity)
+                        case .failure, .empty:
+                            Color.gray
+                        @unknown default:
+                            Color.gray
+                        }
+                    }
+                    .clipShape(Circle())
+                    .frame(width: avatarSize, height: avatarSize)
+                    Spacer(minLength: 10)
+                    KFImage(index.tweet?.author.avatarImageURL())
+                        .placeholder {
+                            Color.gray
+                        }
+                        .cacheOriginalImage()
+                        .fade(duration: 0.2)
+                        .forceTransition()
+                        .resizable()
+                        .frame(width: avatarSize, height: avatarSize)
+                        .clipShape(Circle())
+                    Spacer()
+                }
             }
         }
+        .listStyle(PlainListStyle())
     }
 }
 

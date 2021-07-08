@@ -7,11 +7,16 @@
 
 import UIKit
 import CoreDataStack
+import FPSIndicator
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     var window: UIWindow?
     var coordinator: SceneCoordinator?
+
+    #if DEBUG
+    var fpsIndicator: FPSIndicator?
+    #endif
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         guard let windowScene = scene as? UIWindowScene else { return }
@@ -49,6 +54,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         }
         
         window.makeKeyAndVisible()
+
+        #if DEBUG
+        fpsIndicator = FPSIndicator(windowScene: windowScene)
+        #endif
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {

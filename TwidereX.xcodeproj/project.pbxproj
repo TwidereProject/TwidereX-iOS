@@ -127,6 +127,7 @@
 		DB6B8B5F25AF30B900F20FD5 /* ContextMenuAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB6B8B5E25AF30B900F20FD5 /* ContextMenuAction.swift */; };
 		DB6CF1BF26970A21001DE069 /* HomeTimelineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB6CF1BE26970A21001DE069 /* HomeTimelineView.swift */; };
 		DB6CF1C126970DAA001DE069 /* HomeTimelineStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB6CF1C026970DAA001DE069 /* HomeTimelineStore.swift */; };
+		DB6CF1C4269715CD001DE069 /* FPSIndicator in Frameworks */ = {isa = PBXBuildFile; productRef = DB6CF1C3269715CD001DE069 /* FPSIndicator */; };
 		DB6D671F2566221D00B70DC0 /* DisplayPreferenceViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB6D671E2566221D00B70DC0 /* DisplayPreferenceViewModel.swift */; };
 		DB6D672C2566349600B70DC0 /* SwitchTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB6D672B2566349600B70DC0 /* SwitchTableViewCell.swift */; };
 		DB6D6731256637A200B70DC0 /* TableViewSectionTextHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB6D6730256637A200B70DC0 /* TableViewSectionTextHeaderView.swift */; };
@@ -870,6 +871,7 @@
 				DB2611B7251B2D42004BF309 /* CryptoSwift in Frameworks */,
 				DB74A164256E148F00C5F3C9 /* CropViewController in Frameworks */,
 				DB4323D22514936F004FAAEC /* TwidereSDK in Frameworks */,
+				DB6CF1C4269715CD001DE069 /* FPSIndicator in Frameworks */,
 				DB2924CB2546B958003899A7 /* Kingfisher in Frameworks */,
 				DBE76D3E2502518D00DEB0FC /* AlamofireImage in Frameworks */,
 				DBD98489251CB88A00ED87A1 /* Tabman in Frameworks */,
@@ -2250,6 +2252,7 @@
 				DB74A163256E148F00C5F3C9 /* CropViewController */,
 				DBB4B8142581D4AB00C36075 /* AlamofireNetworkActivityIndicator */,
 				DBBC3F3425835B8B005CF99E /* ActiveLabel */,
+				DB6CF1C3269715CD001DE069 /* FPSIndicator */,
 			);
 			productName = TwidereX;
 			productReference = DBDA8E1E24FCF8A3006750DC /* TwidereX.app */;
@@ -2415,6 +2418,7 @@
 				DB74A162256E148F00C5F3C9 /* XCRemoteSwiftPackageReference "TOCropViewController" */,
 				DBB4B8132581D4AB00C36075 /* XCRemoteSwiftPackageReference "AlamofireNetworkActivityIndicator" */,
 				DBBC3F3325835B8B005CF99E /* XCRemoteSwiftPackageReference "ActiveLabel" */,
+				DB6CF1C2269715CD001DE069 /* XCRemoteSwiftPackageReference "FPSIndicator" */,
 			);
 			productRefGroup = DBDA8E1F24FCF8A3006750DC /* Products */;
 			projectDirPath = "";
@@ -3575,7 +3579,15 @@
 			repositoryURL = "https://github.com/onevcat/Kingfisher.git";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 5.15.6;
+				minimumVersion = 6.3.0;
+			};
+		};
+		DB6CF1C2269715CD001DE069 /* XCRemoteSwiftPackageReference "FPSIndicator" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/MainasuK/FPSIndicator.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.0;
 			};
 		};
 		DB74A162256E148F00C5F3C9 /* XCRemoteSwiftPackageReference "TOCropViewController" */ = {
@@ -3662,6 +3674,11 @@
 		DB4323D325149374004FAAEC /* TwidereSDK */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = TwidereSDK;
+		};
+		DB6CF1C3269715CD001DE069 /* FPSIndicator */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = DB6CF1C2269715CD001DE069 /* XCRemoteSwiftPackageReference "FPSIndicator" */;
+			productName = FPSIndicator;
 		};
 		DB74A163256E148F00C5F3C9 /* CropViewController */ = {
 			isa = XCSwiftPackageProductDependency;
