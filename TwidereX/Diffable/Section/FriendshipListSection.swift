@@ -10,7 +10,7 @@ import os.log
 import UIKit
 import CoreData
 import CoreDataStack
-import SwiftMessages
+//import SwiftMessages
 
 enum FriendshipListSection: Equatable, Hashable {
     case main
@@ -176,27 +176,31 @@ extension MediaSection {
             .sink { completion in
                 switch completion {
                 case .failure:
-                    var config = SwiftMessages.defaultConfig
-                    config.duration = .seconds(seconds: 3)
-                    config.interactiveHide = true
-                    let bannerView = NotifyBannerView()
-                    bannerView.configure(for: .warning)
-                    bannerView.titleLabel.text = friendshipBannerConfiguration.failureInfo.title
-                    bannerView.messageLabel.text = friendshipBannerConfiguration.failureInfo.message
-                    DispatchQueue.main.async {
-                        SwiftMessages.show(config: config, view: bannerView)
-                    }
+                    break
+                    // FIXME:
+//                    var config = SwiftMessages.defaultConfig
+//                    config.duration = .seconds(seconds: 3)
+//                    config.interactiveHide = true
+//                    let bannerView = NotifyBannerView()
+//                    bannerView.configure(for: .warning)
+//                    bannerView.titleLabel.text = friendshipBannerConfiguration.failureInfo.title
+//                    bannerView.messageLabel.text = friendshipBannerConfiguration.failureInfo.message
+//                    DispatchQueue.main.async {
+//                        SwiftMessages.show(config: config, view: bannerView)
+//                    }
                 case .finished:
-                    var config = SwiftMessages.defaultConfig
-                    config.duration = .seconds(seconds: 3)
-                    config.interactiveHide = true
-                    let bannerView = NotifyBannerView()
-                    bannerView.configure(for: .normal)
-                    bannerView.titleLabel.text = friendshipBannerConfiguration.successInfo.title
-                    bannerView.messageLabel.isHidden = true
-                    DispatchQueue.main.async {
-                        SwiftMessages.show(config: config, view: bannerView)
-                    }
+                    break
+                    // FIXME:
+//                    var config = SwiftMessages.defaultConfig
+//                    config.duration = .seconds(seconds: 3)
+//                    config.interactiveHide = true
+//                    let bannerView = NotifyBannerView()
+//                    bannerView.configure(for: .normal)
+//                    bannerView.titleLabel.text = friendshipBannerConfiguration.successInfo.title
+//                    bannerView.messageLabel.isHidden = true
+//                    DispatchQueue.main.async {
+//                        SwiftMessages.show(config: config, view: bannerView)
+//                    }
                 }
             } receiveValue: { response in
                 // do nothing

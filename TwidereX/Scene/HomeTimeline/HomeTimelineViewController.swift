@@ -14,8 +14,9 @@ import CoreData
 import CoreDataStack
 import GameplayKit
 import TwitterAPI
-import Floaty
+//import Floaty
 import AlamofireImage
+import SwiftUI
 
 final class HomeTimelineViewController: UIViewController, NeedsDependency, DrawerSidebarTransitionableViewController, MediaPreviewableViewController {
     
@@ -44,26 +45,26 @@ final class HomeTimelineViewController: UIViewController, NeedsDependency, Drawe
     
     let refreshControl = UIRefreshControl()
     
-    private lazy var floatyButton: Floaty = {
-        let button = Floaty()
-        button.plusColor = .white
-        button.buttonColor = Asset.Colors.hightLight.color
-        button.buttonImage = Asset.Editing.featherPen.image
-        button.handleFirstItemDirectly = true
-        
-        let composeItem: FloatyItem = {
-            let item = FloatyItem()
-            item.title = L10n.Scene.Compose.Title.compose
-            item.handler = { [weak self] item in
-                guard let self = self else { return }
-                self.composeFloatyButtonPressed(item)
-            }
-            return item
-        }()
-        button.addItem(item: composeItem)
-        
-        return button
-    }()
+//    private lazy var floatyButton: Floaty = {
+//        let button = Floaty()
+//        button.plusColor = .white
+//        button.buttonColor = Asset.Colors.hightLight.color
+//        button.buttonImage = Asset.Editing.featherPen.image
+//        button.handleFirstItemDirectly = true
+//        
+//        let composeItem: FloatyItem = {
+//            let item = FloatyItem()
+//            item.title = L10n.Scene.Compose.Title.compose
+//            item.handler = { [weak self] item in
+//                guard let self = self else { return }
+//                self.composeFloatyButtonPressed(item)
+//            }
+//            return item
+//        }()
+//        button.addItem(item: composeItem)
+//        
+//        return button
+//    }()
 
     deinit {
         os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s:", ((#file as NSString).lastPathComponent), #line, #function)
@@ -75,70 +76,80 @@ extension HomeTimelineViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        view.backgroundColor = .systemBackground
-        navigationItem.leftBarButtonItem = avatarBarButtonItem
-        avatarBarButtonItem.avatarButton.addTarget(self, action: #selector(HomeTimelineViewController.avatarButtonPressed(_:)), for: .touchUpInside)
+//        view.backgroundColor = .systemBackground
+//        navigationItem.leftBarButtonItem = avatarBarButtonItem
+//        avatarBarButtonItem.avatarButton.addTarget(self, action: #selector(HomeTimelineViewController.avatarButtonPressed(_:)), for: .touchUpInside)
+//
+//        drawerSidebarTransitionController = DrawerSidebarTransitionController(drawerSidebarTransitionableViewController: self)
+//        tableView.refreshControl = refreshControl
+//        refreshControl.addTarget(self, action: #selector(HomeTimelineViewController.refreshControlValueChanged(_:)), for: .valueChanged)
 
-        drawerSidebarTransitionController = DrawerSidebarTransitionController(drawerSidebarTransitionableViewController: self)
-        tableView.refreshControl = refreshControl
-        refreshControl.addTarget(self, action: #selector(HomeTimelineViewController.refreshControlValueChanged(_:)), for: .valueChanged)
-
-        #if DEBUG
-        if #available(iOS 14.0, *) {
-            navigationItem.rightBarButtonItem = debugActionBarButtonItem
-        }
-        #endif
-
-        tableView.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(tableView)
+        let homeTimelineViewHostingController = UIHostingController(rootView: HomeTimelineView())
+        homeTimelineViewHostingController.view.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(homeTimelineViewHostingController.view)
         NSLayoutConstraint.activate([
-            tableView.topAnchor.constraint(equalTo: view.topAnchor),
-            tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            homeTimelineViewHostingController.view.topAnchor.constraint(equalTo: view.topAnchor),
+            homeTimelineViewHostingController.view.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            homeTimelineViewHostingController.view.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            homeTimelineViewHostingController.view.bottomAnchor.constraint(equalTo: view.bottomAnchor),
         ])
 
-        view.addSubview(floatyButton)
-
-        viewModel.tableView = tableView
-        viewModel.contentOffsetAdjustableTimelineViewControllerDelegate = self
-        tableView.delegate = self
-        viewModel.setupDiffableDataSource(
-            for: tableView,
-            dependency: self,
-            timelinePostTableViewCellDelegate: self,
-            timelineMiddleLoaderTableViewCellDelegate: self
-        )
-
-        // bind refresh control
-        viewModel.isFetchingLatestTimeline
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] isFetching in
-                guard let self = self else { return }
-                if !isFetching {
-                    UIView.animate(withDuration: 0.5) { [weak self] in
-                        guard let self = self else { return }
-                        self.refreshControl.endRefreshing()
-                    }
-                }
-            }
-            .store(in: &disposeBag)
-        Publishers.CombineLatest3(
-            context.authenticationService.activeAuthenticationIndex.eraseToAnyPublisher(),
-            viewModel.avatarStyle.eraseToAnyPublisher(),
-            viewModel.viewDidAppear.eraseToAnyPublisher()
-        )
-        .receive(on: DispatchQueue.main)
-        .sink { [weak self] activeAuthenticationIndex, _, _ in
-            guard let self = self else { return }
-            guard let twitterUser = activeAuthenticationIndex?.twitterAuthentication?.twitterUser,
-                  let avatarImageURL = twitterUser.avatarImageURL() else {
-                self.avatarBarButtonItem.configure(withConfigurationInput: AvatarConfigurableViewConfiguration.Input(avatarImageURL: nil))
-                return
-            }
-            self.avatarBarButtonItem.configure(withConfigurationInput: AvatarConfigurableViewConfiguration.Input(avatarImageURL: avatarImageURL))
-        }
-        .store(in: &disposeBag)
+//        #if DEBUG
+//        if #available(iOS 14.0, *) {
+//            navigationItem.rightBarButtonItem = debugActionBarButtonItem
+//        }
+//        #endif
+//
+//        tableView.translatesAutoresizingMaskIntoConstraints = false
+//        view.addSubview(tableView)
+//        NSLayoutConstraint.activate([
+//            tableView.topAnchor.constraint(equalTo: view.topAnchor),
+//            tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+//            tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+//            tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+//        ])
+//
+//        view.addSubview(floatyButton)
+//
+//        viewModel.tableView = tableView
+//        viewModel.contentOffsetAdjustableTimelineViewControllerDelegate = self
+//        tableView.delegate = self
+//        viewModel.setupDiffableDataSource(
+//            for: tableView,
+//            dependency: self,
+//            timelinePostTableViewCellDelegate: self,
+//            timelineMiddleLoaderTableViewCellDelegate: self
+//        )
+//
+//        // bind refresh control
+//        viewModel.isFetchingLatestTimeline
+//            .receive(on: DispatchQueue.main)
+//            .sink { [weak self] isFetching in
+//                guard let self = self else { return }
+//                if !isFetching {
+//                    UIView.animate(withDuration: 0.5) { [weak self] in
+//                        guard let self = self else { return }
+//                        self.refreshControl.endRefreshing()
+//                    }
+//                }
+//            }
+//            .store(in: &disposeBag)
+//        Publishers.CombineLatest3(
+//            context.authenticationService.activeAuthenticationIndex.eraseToAnyPublisher(),
+//            viewModel.avatarStyle.eraseToAnyPublisher(),
+//            viewModel.viewDidAppear.eraseToAnyPublisher()
+//        )
+//        .receive(on: DispatchQueue.main)
+//        .sink { [weak self] activeAuthenticationIndex, _, _ in
+//            guard let self = self else { return }
+//            guard let twitterUser = activeAuthenticationIndex?.twitterAuthentication?.twitterUser,
+//                  let avatarImageURL = twitterUser.avatarImageURL() else {
+//                self.avatarBarButtonItem.configure(withConfigurationInput: AvatarConfigurableViewConfiguration.Input(avatarImageURL: nil))
+//                return
+//            }
+//            self.avatarBarButtonItem.configure(withConfigurationInput: AvatarConfigurableViewConfiguration.Input(avatarImageURL: avatarImageURL))
+//        }
+//        .store(in: &disposeBag)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -181,10 +192,10 @@ extension HomeTimelineViewController {
     override func viewSafeAreaInsetsDidChange() {
         super.viewSafeAreaInsetsDidChange()
         
-        DispatchQueue.main.async { [weak self] in
-            guard let self = self else { return }
-            self.floatyButton.paddingY = self.view.safeAreaInsets.bottom + UIView.floatyButtonBottomMargin
-        }
+//        DispatchQueue.main.async { [weak self] in
+//            guard let self = self else { return }
+//            self.floatyButton.paddingY = self.view.safeAreaInsets.bottom + UIView.floatyButtonBottomMargin
+//        }
     }
 
 }
@@ -203,11 +214,11 @@ extension HomeTimelineViewController {
         }
     }
     
-    @objc private func composeFloatyButtonPressed(_ sender: FloatyItem) {
-        os_log("%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
-        let composeTweetViewModel = ComposeTweetViewModel(context: context, repliedTweetObjectID: nil)
-        coordinator.present(scene: .composeTweet(viewModel: composeTweetViewModel), from: self, transition: .modal(animated: true, completion: nil))
-    }
+//    @objc private func composeFloatyButtonPressed(_ sender: FloatyItem) {
+//        os_log("%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
+//        let composeTweetViewModel = ComposeTweetViewModel(context: context, repliedTweetObjectID: nil)
+//        coordinator.present(scene: .composeTweet(viewModel: composeTweetViewModel), from: self, transition: .modal(animated: true, completion: nil))
+//    }
 
 }
 

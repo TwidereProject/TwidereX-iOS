@@ -12,7 +12,7 @@ import Combine
 import CoreDataStack
 import Photos
 import TwitterAPI
-import SwiftMessages
+//import SwiftMessages
 import CropViewController
 
 final class ComposeTweetViewController: UIViewController, NeedsDependency, MediaPreviewableViewController {
@@ -422,30 +422,32 @@ extension ComposeTweetViewController {
             switch completion {
             case .failure(let error):
                 os_log("%{public}s[%{public}ld], %{public}s: tweet fail: %s", ((#file as NSString).lastPathComponent), #line, #function, error.localizedDescription)
-                var config = SwiftMessages.defaultConfig
-                config.duration = .seconds(seconds: 3)
-                config.interactiveHide = true
-                let bannerView = NotifyBannerView()
-                bannerView.configure(for: .error)
-                bannerView.titleLabel.text = L10n.Common.Alerts.TweetFail.title
-                bannerView.messageLabel.text = L10n.Common.Alerts.TweetFail.message
-                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                    SwiftMessages.show(config: config, view: bannerView)
+                // FIXME:
+//                var config = SwiftMessages.defaultConfig
+//                config.duration = .seconds(seconds: 3)
+//                config.interactiveHide = true
+//                let bannerView = NotifyBannerView()
+//                bannerView.configure(for: .error)
+//                bannerView.titleLabel.text = L10n.Common.Alerts.TweetFail.title
+//                bannerView.messageLabel.text = L10n.Common.Alerts.TweetFail.message
+//                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+//                    SwiftMessages.show(config: config, view: bannerView)
                     feedbackGenerator.notificationOccurred(.error)
-                }
+//                }
             case .finished:
                 os_log("%{public}s[%{public}ld], %{public}s: tweet success", ((#file as NSString).lastPathComponent), #line, #function)
-                var config = SwiftMessages.defaultConfig
-                config.duration = .seconds(seconds: 3)
-                config.interactiveHide = true
-                let bannerView = NotifyBannerView()
-                bannerView.configure(for: .normal)
-                bannerView.titleLabel.text = L10n.Common.Alerts.TweetSent.title
-                bannerView.messageLabel.isHidden = true
-                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                    SwiftMessages.show(config: config, view: bannerView)
+                // FIXME:
+//                var config = SwiftMessages.defaultConfig
+//                config.duration = .seconds(seconds: 3)
+//                config.interactiveHide = true
+//                let bannerView = NotifyBannerView()
+//                bannerView.configure(for: .normal)
+//                bannerView.titleLabel.text = L10n.Common.Alerts.TweetSent.title
+//                bannerView.messageLabel.isHidden = true
+//                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+//                    SwiftMessages.show(config: config, view: bannerView)
                     feedbackGenerator.notificationOccurred(.success)
-                }
+//                }
             }
         } receiveValue: { response in
             // do nothing

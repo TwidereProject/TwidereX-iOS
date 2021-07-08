@@ -125,6 +125,7 @@
 		DB6B8B2E25AF235F00F20FD5 /* TwidereX.xctestplan in Resources */ = {isa = PBXBuildFile; fileRef = DB6B8B2C25AF235F00F20FD5 /* TwidereX.xctestplan */; };
 		DB6B8B2F25AF235F00F20FD5 /* TwidereX-Performance.xctestplan in Resources */ = {isa = PBXBuildFile; fileRef = DB6B8B2D25AF235F00F20FD5 /* TwidereX-Performance.xctestplan */; };
 		DB6B8B5F25AF30B900F20FD5 /* ContextMenuAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB6B8B5E25AF30B900F20FD5 /* ContextMenuAction.swift */; };
+		DB6CF1BF26970A21001DE069 /* HomeTimelineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB6CF1BE26970A21001DE069 /* HomeTimelineView.swift */; };
 		DB6D671F2566221D00B70DC0 /* DisplayPreferenceViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB6D671E2566221D00B70DC0 /* DisplayPreferenceViewModel.swift */; };
 		DB6D672C2566349600B70DC0 /* SwitchTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB6D672B2566349600B70DC0 /* SwitchTableViewCell.swift */; };
 		DB6D6731256637A200B70DC0 /* TableViewSectionTextHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB6D6730256637A200B70DC0 /* TableViewSectionTextHeaderView.swift */; };
@@ -200,7 +201,6 @@
 		DB97D1F5256CF7710056F8C2 /* ProgressBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB97D1F4256CF7710056F8C2 /* ProgressBarView.swift */; };
 		DB98DC0E2507862D0087E30F /* TimelineMiddleLoaderTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB98DC0D2507862D0087E30F /* TimelineMiddleLoaderTableViewCell.swift */; };
 		DB98DC10250787420087E30F /* TimelineBottomLoaderTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB98DC0F250787420087E30F /* TimelineBottomLoaderTableViewCell.swift */; };
-		DB9EC4E1255A6317005403AA /* SwiftMessages in Frameworks */ = {isa = PBXBuildFile; productRef = DB9EC4E0255A6317005403AA /* SwiftMessages */; };
 		DB9EC4EA255A6BC7005403AA /* TwitterAccountUnlockViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB9EC4E9255A6BC7005403AA /* TwitterAccountUnlockViewController.swift */; };
 		DB9EC519255A8285005403AA /* SettingListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB9EC518255A8285005403AA /* SettingListViewController.swift */; };
 		DB9EC532255A87A4005403AA /* SettingListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB9EC531255A87A4005403AA /* SettingListView.swift */; };
@@ -586,6 +586,7 @@
 		DB6B8B2C25AF235F00F20FD5 /* TwidereX.xctestplan */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = TwidereX.xctestplan; sourceTree = "<group>"; };
 		DB6B8B2D25AF235F00F20FD5 /* TwidereX-Performance.xctestplan */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "TwidereX-Performance.xctestplan"; sourceTree = "<group>"; };
 		DB6B8B5E25AF30B900F20FD5 /* ContextMenuAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContextMenuAction.swift; sourceTree = "<group>"; };
+		DB6CF1BE26970A21001DE069 /* HomeTimelineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeTimelineView.swift; sourceTree = "<group>"; };
 		DB6D671E2566221D00B70DC0 /* DisplayPreferenceViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisplayPreferenceViewModel.swift; sourceTree = "<group>"; };
 		DB6D672B2566349600B70DC0 /* SwitchTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwitchTableViewCell.swift; sourceTree = "<group>"; };
 		DB6D6730256637A200B70DC0 /* TableViewSectionTextHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TableViewSectionTextHeaderView.swift; sourceTree = "<group>"; };
@@ -872,7 +873,6 @@
 				DBD98489251CB88A00ED87A1 /* Tabman in Frameworks */,
 				DBEA4F842511F7460007FEC5 /* Kanna in Frameworks */,
 				DBE76CA5250093CA00DEB0FC /* CoreDataStack.framework in Frameworks */,
-				DB9EC4E1255A6317005403AA /* SwiftMessages in Frameworks */,
 				44CCAE5E7B79E0C359E367E5 /* Pods_TwidereX.framework in Frameworks */,
 				DBB4B8152581D4AB00C36075 /* AlamofireNetworkActivityIndicator in Frameworks */,
 				DBBC3F3525835B8B005CF99E /* ActiveLabel in Frameworks */,
@@ -1854,6 +1854,7 @@
 				DB969A3825305EEE0053CB31 /* HomeTimelineViewModel+LoadLatestState.swift */,
 				DBA6B1A325340B3F005FB0B4 /* HomeTimelineViewModel+LoadMiddleState.swift */,
 				DB3FC03025525BFD003A2F8A /* HomeTimelineViewModel+LoadOldestState.swift */,
+				DB6CF1BE26970A21001DE069 /* HomeTimelineView.swift */,
 			);
 			path = HomeTimeline;
 			sourceTree = "<group>";
@@ -2243,7 +2244,6 @@
 				DB2611B6251B2D42004BF309 /* CryptoSwift */,
 				DBD98488251CB88A00ED87A1 /* Tabman */,
 				DB2924CA2546B958003899A7 /* Kingfisher */,
-				DB9EC4E0255A6317005403AA /* SwiftMessages */,
 				DB74A163256E148F00C5F3C9 /* CropViewController */,
 				DBB4B8142581D4AB00C36075 /* AlamofireNetworkActivityIndicator */,
 				DBBC3F3425835B8B005CF99E /* ActiveLabel */,
@@ -2813,6 +2813,7 @@
 				DBDA8E8F24FE068C006750DC /* SceneCoordinator.swift in Sources */,
 				DB74A169256E392F00C5F3C9 /* ContextMenuImagePreviewViewController.swift in Sources */,
 				DB8AC1902542DA9500E636BE /* ActiveLabel.swift in Sources */,
+				DB6CF1BF26970A21001DE069 /* HomeTimelineView.swift in Sources */,
 				DBA5B1A82510BA330077FDD5 /* TweetConversationViewController.swift in Sources */,
 				DBCE2EC82591F74300926D09 /* FollowingListViewModel+Diffable.swift in Sources */,
 				DB657A7325AC4DF6001339B6 /* TweetFetchedResultsController.swift in Sources */,
@@ -3158,7 +3159,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -3214,7 +3215,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
@@ -3586,7 +3587,7 @@
 			repositoryURL = "https://github.com/SwiftKickMobile/SwiftMessages";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 8.0.3;
+				minimumVersion = 9.0.0;
 			};
 		};
 		DBB4B8132581D4AB00C36075 /* XCRemoteSwiftPackageReference "AlamofireNetworkActivityIndicator" */ = {
@@ -3662,11 +3663,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = DB74A162256E148F00C5F3C9 /* XCRemoteSwiftPackageReference "TOCropViewController" */;
 			productName = CropViewController;
-		};
-		DB9EC4E0255A6317005403AA /* SwiftMessages */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = DB9EC4DF255A6317005403AA /* XCRemoteSwiftPackageReference "SwiftMessages" */;
-			productName = SwiftMessages;
 		};
 		DBB4B8142581D4AB00C36075 /* AlamofireNetworkActivityIndicator */ = {
 			isa = XCSwiftPackageProductDependency;

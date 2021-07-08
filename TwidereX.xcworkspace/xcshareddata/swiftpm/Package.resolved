@@ -2,7 +2,7 @@
   "object": {
     "pins": [
       {
-        "package": "ActiveLabel",
+        "package": "ActiveLabel.swift",
         "repositoryURL": "https://github.com/TwidereProject/ActiveLabel.swift",
         "state": {
           "branch": null,
@@ -15,8 +15,8 @@
         "repositoryURL": "https://github.com/Alamofire/Alamofire.git",
         "state": {
           "branch": null,
-          "revision": "becd9a729a37bdbef5bc39dc3c702b99f9e3d046",
-          "version": "5.2.2"
+          "revision": "f96b619bcb2383b43d898402283924b80e2c4bae",
+          "version": "5.4.3"
         }
       },
       {
@@ -24,8 +24,8 @@
         "repositoryURL": "https://github.com/Alamofire/AlamofireImage",
         "state": {
           "branch": null,
-          "revision": "3e8edbeb75227f8542aa87f90240cf0424d6362f",
-          "version": "4.1.0"
+          "revision": "98cbb00ce0ec5fc8e52a5b50a6bfc08d3e5aee10",
+          "version": "4.2.0"
         }
       },
       {
@@ -51,8 +51,8 @@
         "repositoryURL": "https://github.com/krzyzanowskim/CryptoSwift.git",
         "state": {
           "branch": null,
-          "revision": "af1b58fc569bfde777462349b9f7314b61762be0",
-          "version": "1.3.2"
+          "revision": "4e31051c63cc0ddf10a25cf5318856c510cf77f4",
+          "version": "1.4.0"
         }
       },
       {
@@ -60,8 +60,8 @@
         "repositoryURL": "https://github.com/tid-kijyun/Kanna.git",
         "state": {
           "branch": null,
-          "revision": "609367a2cd84827a33383cf7923cb4fe8f69ee0a",
-          "version": "5.2.2"
+          "revision": "c657fb9f5827ef138068215c76ad0bb62bbc92da",
+          "version": "5.2.4"
         }
       },
       {
@@ -69,8 +69,8 @@
         "repositoryURL": "https://github.com/onevcat/Kingfisher.git",
         "state": {
           "branch": null,
-          "revision": "1aa9889e5f7d9d92acda014eea9cdc7338d3d7d6",
-          "version": "5.15.6"
+          "revision": "1a0c2df04b31ed7aa318354f3583faea24f006fc",
+          "version": "5.15.8"
         }
       },
       {
@@ -78,8 +78,8 @@
         "repositoryURL": "https://github.com/uias/Pageboy",
         "state": {
           "branch": null,
-          "revision": "fcaaab06e634de68d2929883083683ec8cf5dade",
-          "version": "3.6.1"
+          "revision": "34ecb6e7c4e0e07494960ab2f7cc9a02293915a6",
+          "version": "3.6.2"
         }
       },
       {
@@ -105,8 +105,8 @@
         "repositoryURL": "https://github.com/SwiftKickMobile/SwiftMessages",
         "state": {
           "branch": null,
-          "revision": "0d1068917cc7cb4de0d50de736aa3ed50b227bf0",
-          "version": "8.0.3"
+          "revision": "349fec7674f588d7c32b2aa0c55dfe46eb9f071b",
+          "version": "9.0.3"
         }
       },
       {
@@ -114,8 +114,8 @@
         "repositoryURL": "https://github.com/SwiftyJSON/SwiftyJSON.git",
         "state": {
           "branch": null,
-          "revision": "2b6054efa051565954e1d2b9da831680026cd768",
-          "version": "5.0.0"
+          "revision": "b3dcd7dbd0d488e1a7077cb33b00f2083e382f07",
+          "version": "5.0.1"
         }
       },
       {
@@ -123,8 +123,8 @@
         "repositoryURL": "https://github.com/uias/Tabman.git",
         "state": {
           "branch": null,
-          "revision": "28bcd3d3fca0a5b7c8767d19c91d57fbd04bf60d",
-          "version": "2.9.1"
+          "revision": "f43489cdd743ba7ad86a422ebb5fcbf34e333df4",
+          "version": "2.11.1"
         }
       },
       {
@@ -132,8 +132,8 @@
         "repositoryURL": "https://github.com/TimOliver/TOCropViewController.git",
         "state": {
           "branch": null,
-          "revision": "182aa17bfb598c7ff6879c985ef85bb21eb51542",
-          "version": "2.5.5"
+          "revision": "dad97167bf1be16aeecd109130900995dd01c515",
+          "version": "2.6.0"
         }
       }
     ]

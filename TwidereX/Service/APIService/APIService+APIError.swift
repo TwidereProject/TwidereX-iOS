@@ -8,7 +8,7 @@
 
 import UIKit
 import TwitterAPI
-import SwiftMessages
+// import SwiftMessages
 
 extension APIService {
     enum APIError: Error {
@@ -105,42 +105,42 @@ extension APIService.APIError.ErrorReason: LocalizedError {
 
 extension APIService.APIError.ErrorReason {
     
-    var messageConfig: SwiftMessages.Config {
-        var config = SwiftMessages.defaultConfig
-        config.interactiveHide = true
-        
-        switch self {
-        case .twitterInternalError:
-            config.duration = .seconds(seconds: 5)
-        case .authenticationMissing:
-            config.duration = .seconds(seconds: 5)
-        case .badRequest:
-            config.duration = .seconds(seconds: 5)
-        case .requestThrottle:
-            config.duration = .seconds(seconds: 5)
-        case .twitterResponseError(let error):
-            switch error.twitterAPIError {
-            case .userHasBeenSuspended:
-                config.duration = .seconds(seconds: 5)
-            case .rateLimitExceeded:
-                config.duration = .seconds(seconds: 5)
-            case .blockedFromViewingThisUserProfile:
-                config.duration = .seconds(seconds: 5)
-            case .blockedFromRequestFollowingThisUser:
-                config.duration = .seconds(seconds: 5)
-            case .notAuthorizedToSeeThisStatus:
-                config.duration = .seconds(seconds: 5)
-            case .accountIsTemporarilyLocked:
-                config.duration = .seconds(seconds: 10)
-            case .custom:
-                config.duration = .seconds(seconds: 5)
-            case .none:
-                config.duration = .seconds(seconds: 5)
-            }
-        }
-        
-        return config
-    }
+//    var messageConfig: SwiftMessages.Config {
+//        var config = SwiftMessages.defaultConfig
+//        config.interactiveHide = true
+//        
+//        switch self {
+//        case .twitterInternalError:
+//            config.duration = .seconds(seconds: 5)
+//        case .authenticationMissing:
+//            config.duration = .seconds(seconds: 5)
+//        case .badRequest:
+//            config.duration = .seconds(seconds: 5)
+//        case .requestThrottle:
+//            config.duration = .seconds(seconds: 5)
+//        case .twitterResponseError(let error):
+//            switch error.twitterAPIError {
+//            case .userHasBeenSuspended:
+//                config.duration = .seconds(seconds: 5)
+//            case .rateLimitExceeded:
+//                config.duration = .seconds(seconds: 5)
+//            case .blockedFromViewingThisUserProfile:
+//                config.duration = .seconds(seconds: 5)
+//            case .blockedFromRequestFollowingThisUser:
+//                config.duration = .seconds(seconds: 5)
+//            case .notAuthorizedToSeeThisStatus:
+//                config.duration = .seconds(seconds: 5)
+//            case .accountIsTemporarilyLocked:
+//                config.duration = .seconds(seconds: 10)
+//            case .custom:
+//                config.duration = .seconds(seconds: 5)
+//            case .none:
+//                config.duration = .seconds(seconds: 5)
+//            }
+//        }
+//        
+//        return config
+//    }
 
     var notifyBannerView: NotifyBannerView {
         let bannerView = NotifyBannerView()

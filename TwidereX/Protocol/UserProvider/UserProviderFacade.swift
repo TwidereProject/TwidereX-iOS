@@ -11,7 +11,7 @@ import Combine
 import CoreData
 import CoreDataStack
 import TwitterAPI
-import SwiftMessages
+//import SwiftMessages
 
 enum UserProviderFacade {
     
@@ -452,25 +452,29 @@ extension UserProviderFacade {
         .handleEvents(receiveCompletion: { completion in
             switch completion {
             case .failure:
-                DispatchQueue.main.async {
-                    var config = SwiftMessages.defaultConfig
-                    config.duration = .seconds(seconds: 3)
-                    config.interactiveHide = true
-                    let bannerView = NotifyBannerView()
-                    bannerView.configure(for: .warning)
-                    bannerView.configure(with: notifyBannerViewConfiguration.failureInfo)
-                    SwiftMessages.show(config: config, view: bannerView)
-                }
+                break
+                // FIXME:
+//                DispatchQueue.main.async {
+//                    var config = SwiftMessages.defaultConfig
+//                    config.duration = .seconds(seconds: 3)
+//                    config.interactiveHide = true
+//                    let bannerView = NotifyBannerView()
+//                    bannerView.configure(for: .warning)
+//                    bannerView.configure(with: notifyBannerViewConfiguration.failureInfo)
+//                    SwiftMessages.show(config: config, view: bannerView)
+//                }
             case .finished:
-                DispatchQueue.main.async {
-                    var config = SwiftMessages.defaultConfig
-                    config.duration = .seconds(seconds: 3)
-                    config.interactiveHide = true
-                    let bannerView = NotifyBannerView()
-                    bannerView.configure(for: .normal)
-                    bannerView.configure(with: notifyBannerViewConfiguration.successInfo)
-                    SwiftMessages.show(config: config, view: bannerView)
-                }
+                break
+                // FIXME:
+//                DispatchQueue.main.async {
+//                    var config = SwiftMessages.defaultConfig
+//                    config.duration = .seconds(seconds: 3)
+//                    config.interactiveHide = true
+//                    let bannerView = NotifyBannerView()
+//                    bannerView.configure(for: .normal)
+//                    bannerView.configure(with: notifyBannerViewConfiguration.successInfo)
+//                    SwiftMessages.show(config: config, view: bannerView)
+//                }
             }
         })
         .eraseToAnyPublisher()
@@ -494,25 +498,29 @@ extension UserProviderFacade {
         .handleEvents(receiveCompletion: { completion in
             switch completion {
             case .failure:
-                DispatchQueue.main.async {
-                    var config = SwiftMessages.defaultConfig
-                    config.duration = .seconds(seconds: 3)
-                    config.interactiveHide = true
-                    let bannerView = NotifyBannerView()
-                    bannerView.configure(for: .warning)
-                    bannerView.configure(with: notifyBannerViewConfiguration.failureInfo)
-                    SwiftMessages.show(config: config, view: bannerView)
-                }
+                break
+                // FIXME:
+//                DispatchQueue.main.async {
+//                    var config = SwiftMessages.defaultConfig
+//                    config.duration = .seconds(seconds: 3)
+//                    config.interactiveHide = true
+//                    let bannerView = NotifyBannerView()
+//                    bannerView.configure(for: .warning)
+//                    bannerView.configure(with: notifyBannerViewConfiguration.failureInfo)
+//                    SwiftMessages.show(config: config, view: bannerView)
+//                }
             case .finished:
-                DispatchQueue.main.async {
-                    var config = SwiftMessages.defaultConfig
-                    config.duration = .seconds(seconds: 3)
-                    config.interactiveHide = true
-                    let bannerView = NotifyBannerView()
-                    bannerView.configure(for: .normal)
-                    bannerView.configure(with: notifyBannerViewConfiguration.successInfo)
-                    SwiftMessages.show(config: config, view: bannerView)
-                }
+                break
+                // FIXME:
+//                DispatchQueue.main.async {
+//                    var config = SwiftMessages.defaultConfig
+//                    config.duration = .seconds(seconds: 3)
+//                    config.interactiveHide = true
+//                    let bannerView = NotifyBannerView()
+//                    bannerView.configure(for: .normal)
+//                    bannerView.configure(with: notifyBannerViewConfiguration.successInfo)
+//                    SwiftMessages.show(config: config, view: bannerView)
+//                }
             }
         })
         .eraseToAnyPublisher()
@@ -538,25 +546,29 @@ extension UserProviderFacade {
         .handleEvents(receiveCompletion: { completion in
             switch completion {
             case .failure:
-                DispatchQueue.main.async {
-                    var config = SwiftMessages.defaultConfig
-                    config.duration = .seconds(seconds: 3)
-                    config.interactiveHide = true
-                    let bannerView = NotifyBannerView()
-                    bannerView.configure(for: .warning)
-                    bannerView.configure(with: notifyBannerViewConfiguration.failureInfo)
-                    SwiftMessages.show(config: config, view: bannerView)
-                }
+                break
+                // FIXME:
+//                DispatchQueue.main.async {
+//                    var config = SwiftMessages.defaultConfig
+//                    config.duration = .seconds(seconds: 3)
+//                    config.interactiveHide = true
+//                    let bannerView = NotifyBannerView()
+//                    bannerView.configure(for: .warning)
+//                    bannerView.configure(with: notifyBannerViewConfiguration.failureInfo)
+//                    SwiftMessages.show(config: config, view: bannerView)
+//                }
             case .finished:
-                DispatchQueue.main.async {
-                    var config = SwiftMessages.defaultConfig
-                    config.duration = .seconds(seconds: 3)
-                    config.interactiveHide = true
-                    let bannerView = NotifyBannerView()
-                    bannerView.configure(for: .normal)
-                    bannerView.configure(with: notifyBannerViewConfiguration.successInfo)
-                    SwiftMessages.show(config: config, view: bannerView)
-                }
+                break
+                // FIXME:
+//                DispatchQueue.main.async {
+//                    var config = SwiftMessages.defaultConfig
+//                    config.duration = .seconds(seconds: 3)
+//                    config.interactiveHide = true
+//                    let bannerView = NotifyBannerView()
+//                    bannerView.configure(for: .normal)
+//                    bannerView.configure(with: notifyBannerViewConfiguration.successInfo)
+//                    SwiftMessages.show(config: config, view: bannerView)
+//                }
             }
         })
         .eraseToAnyPublisher()

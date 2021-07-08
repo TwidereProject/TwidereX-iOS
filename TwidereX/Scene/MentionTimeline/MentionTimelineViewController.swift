@@ -14,7 +14,7 @@ import CoreData
 import CoreDataStack
 import GameplayKit
 import TwitterAPI
-import Floaty
+//import Floaty
 import AlamofireImage
 
 final class MentionTimelineViewController: UIViewController, NeedsDependency, DrawerSidebarTransitionableViewController, MediaPreviewableViewController {
@@ -41,23 +41,23 @@ final class MentionTimelineViewController: UIViewController, NeedsDependency, Dr
     }()
     
     let refreshControl = UIRefreshControl()
-    private lazy var floatyButton: Floaty = {
-        let button = Floaty()
-        button.plusColor = .white
-        button.buttonColor = Asset.Colors.hightLight.color
-        button.buttonImage = Asset.Editing.featherPen.image
-        button.handleFirstItemDirectly = true
-
-        let composeItem: FloatyItem = {
-            let item = FloatyItem()
-            item.title = L10n.Scene.Compose.Title.compose
-            item.handler = self.composeFloatyButtonPressed
-            return item
-        }()
-        button.addItem(item: composeItem)
-
-        return button
-    }()
+//    private lazy var floatyButton: Floaty = {
+//        let button = Floaty()
+//        button.plusColor = .white
+//        button.buttonColor = Asset.Colors.hightLight.color
+//        button.buttonImage = Asset.Editing.featherPen.image
+//        button.handleFirstItemDirectly = true
+//
+//        let composeItem: FloatyItem = {
+//            let item = FloatyItem()
+//            item.title = L10n.Scene.Compose.Title.compose
+//            item.handler = self.composeFloatyButtonPressed
+//            return item
+//        }()
+//        button.addItem(item: composeItem)
+//
+//        return button
+//    }()
     
     deinit {
         os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s:", ((#file as NSString).lastPathComponent), #line, #function)
@@ -118,7 +118,7 @@ extension MentionTimelineViewController {
             tableView.topAnchor.constraint(equalTo: view.topAnchor)
         ])
 
-        view.addSubview(floatyButton)
+//        view.addSubview(floatyButton)
 
         viewModel.contentOffsetAdjustableTimelineViewControllerDelegate = self
         viewModel.tableView = tableView
@@ -227,7 +227,7 @@ extension MentionTimelineViewController {
     override func viewSafeAreaInsetsDidChange() {
         super.viewSafeAreaInsetsDidChange()
 
-        floatyButton.paddingY = view.safeAreaInsets.bottom + UIView.floatyButtonBottomMargin
+//        floatyButton.paddingY = view.safeAreaInsets.bottom + UIView.floatyButtonBottomMargin
     }
     
 }
@@ -246,11 +246,11 @@ extension MentionTimelineViewController {
         }
     }
 
-    @objc private func composeFloatyButtonPressed(_ sender: FloatyItem) {
-        os_log("%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
-        let composeTweetViewModel = ComposeTweetViewModel(context: context, repliedTweetObjectID: nil)
-        coordinator.present(scene: .composeTweet(viewModel: composeTweetViewModel), from: self, transition: .modal(animated: true, completion: nil))
-    }
+//    @objc private func composeFloatyButtonPressed(_ sender: FloatyItem) {
+//        os_log("%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
+//        let composeTweetViewModel = ComposeTweetViewModel(context: context, repliedTweetObjectID: nil)
+//        coordinator.present(scene: .composeTweet(viewModel: composeTweetViewModel), from: self, transition: .modal(animated: true, completion: nil))
+//    }
     
     #if DEBUG
     @objc private func removeAllMentions() {

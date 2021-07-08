@@ -12,7 +12,7 @@ import Combine
 import TwitterAPI
 import CoreData
 import CoreDataStack
-import SwiftMessages
+//import SwiftMessages
 
 extension APIService {
     
@@ -117,17 +117,17 @@ extension APIService {
                 switch completion {
                 case .failure(let error):
                     os_log("%{public}s[%{public}ld], %{public}s: delete tweet fail: %s", ((#file as NSString).lastPathComponent), #line, #function, error.localizedDescription)
-                    var config = SwiftMessages.defaultConfig
-                    config.duration = .seconds(seconds: 3)
-                    config.interactiveHide = true
-                    let bannerView = NotifyBannerView()
-                    bannerView.configure(for: .error)
-                    bannerView.titleLabel.text = L10n.Common.Alerts.FailedToDeleteTweet.title
-                    bannerView.messageLabel.text = L10n.Common.Alerts.FailedToDeleteTweet.message
-                    DispatchQueue.main.async {
-                        SwiftMessages.show(config: config, view: bannerView)
-                        notificationFeedbackGenerator.notificationOccurred(.error)
-                    }
+//                    var config = SwiftMessages.defaultConfig
+//                    config.duration = .seconds(seconds: 3)
+//                    config.interactiveHide = true
+//                    let bannerView = NotifyBannerView()
+//                    bannerView.configure(for: .error)
+//                    bannerView.titleLabel.text = L10n.Common.Alerts.FailedToDeleteTweet.title
+//                    bannerView.messageLabel.text = L10n.Common.Alerts.FailedToDeleteTweet.message
+//                    DispatchQueue.main.async {
+//                        SwiftMessages.show(config: config, view: bannerView)
+//                        notificationFeedbackGenerator.notificationOccurred(.error)
+//                    }
                 case .finished:
                     notificationFeedbackGenerator.notificationOccurred(.success)
                 }

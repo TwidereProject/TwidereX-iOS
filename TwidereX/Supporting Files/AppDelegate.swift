@@ -8,7 +8,7 @@
 import UIKit
 import Combine
 import Firebase
-import Floaty
+//import Floaty
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -27,7 +27,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         UserDefaults.standard.setValue(UIApplication.appVersion(), forKey: "TwidereX.appVersion")
         UserDefaults.standard.setValue(UIApplication.appBuild(), forKey: "TwidereX.appBundle")
         
-        Floaty.global.rtlMode = UIApplication.shared.userInterfaceLayoutDirection == .rightToLeft
+//        Floaty.global.rtlMode = UIApplication.shared.userInterfaceLayoutDirection == .rightToLeft
         
         NotificationCenter.default.publisher(for: UIContentSizeCategory.didChangeNotification)
             .sink { _ in

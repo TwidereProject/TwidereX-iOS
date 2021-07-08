@@ -11,7 +11,7 @@ import UIKit
 import Combine
 import TwitterAPI
 import SafariServices
-import SwiftMessages
+//import SwiftMessages
 
 class MainTabBarController: UITabBarController {
     
@@ -119,9 +119,11 @@ extension MainTabBarController {
                 case .implicit:
                     break
                 case .explicit(let reason):
-                    let messageConfig = reason.messageConfig
-                    let notifyBannerView = reason.notifyBannerView
-                    SwiftMessages.show(config: messageConfig, view: notifyBannerView)
+                    break
+                    // FIXME:
+//                    let messageConfig = reason.messageConfig
+//                    let notifyBannerView = reason.notifyBannerView
+//                    SwiftMessages.show(config: messageConfig, view: notifyBannerView)
                 }
             }
             .store(in: &disposeBag)
