@@ -206,7 +206,7 @@ extension SearchDetailViewController: SearchDetailPagingViewControllerDelegate {
     func searchDetailPagingViewController(_ pagingViewController: SearchDetailPagingViewController, didScrollToViewController viewController: UIViewController, atIndex index: Int) {
         os_log("%{public}s[%{public}ld], %{public}s: scroll to index: %ld", ((#file as NSString).lastPathComponent), #line, #function, index)
 
-        // trigger uninitialized model perfom search
+        // trigger uninitialized model perform search
         if let searchMediaViewController = viewController as? SearchMediaViewController {
             searchMediaViewController.viewModel.searchActionPublisher.send()
         }

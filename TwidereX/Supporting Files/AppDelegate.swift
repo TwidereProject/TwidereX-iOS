@@ -8,6 +8,7 @@
 import UIKit
 import Combine
 import Firebase
+import Kingfisher
 //import Floaty
 
 @main
@@ -26,6 +27,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Update app version info. See: `Settings.bundle`
         UserDefaults.standard.setValue(UIApplication.appVersion(), forKey: "TwidereX.appVersion")
         UserDefaults.standard.setValue(UIApplication.appBuild(), forKey: "TwidereX.appBundle")
+
+        // Setup Kingfisher cache
+        ImageCache.default.memoryStorage.config.totalCostLimit = 50 * 1024 * 1024   // 50MB
+        ImageCache.default.memoryStorage.config.expiration = .seconds(600)
+        ImageCache.default.diskStorage.config.sizeLimit = 500 * 1024 * 1024
+        ImageCache.default.diskStorage.config.expiration = .days(7)
         
 //        Floaty.global.rtlMode = UIApplication.shared.userInterfaceLayoutDirection == .rightToLeft
         
