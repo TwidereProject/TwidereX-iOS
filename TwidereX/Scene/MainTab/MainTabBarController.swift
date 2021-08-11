@@ -25,28 +25,28 @@ class MainTabBarController: UITabBarController {
     
     enum Tab: Int, CaseIterable {
         case home
-        case timeline
-        case mention
-        case search
-        case me
+//        case timeline
+//        case mention
+//        case search
+//        case me
         
         var title: String {
             switch self {
             case .home:         return L10n.Scene.Timeline.title
-            case .timeline:     return L10n.Scene.Timeline.title
-            case .mention:      return L10n.Scene.Mentions.title
-            case .search:       return L10n.Scene.Search.title
-            case .me:           return L10n.Scene.Profile.title
+//            case .timeline:     return L10n.Scene.Timeline.title
+//            case .mention:      return L10n.Scene.Mentions.title
+//            case .search:       return L10n.Scene.Search.title
+//            case .me:           return L10n.Scene.Profile.title
             }
         }
         
         var image: UIImage {
             switch self {
-            case .home:     return Asset.ObjectTools.house.image.withRenderingMode(.alwaysTemplate)
-            case .timeline:     return Asset.ObjectTools.house.image.withRenderingMode(.alwaysTemplate)
-            case .mention:      return Asset.Communication.ellipsesBubble.image.withRenderingMode(.alwaysTemplate)
-            case .search:       return Asset.ObjectTools.magnifyingglass.image.withRenderingMode(.alwaysTemplate)
-            case .me:           return Asset.Human.person.image.withRenderingMode(.alwaysTemplate)
+            case .home:         return Asset.ObjectTools.house.image.withRenderingMode(.alwaysTemplate)
+//            case .timeline:     return Asset.ObjectTools.house.image.withRenderingMode(.alwaysTemplate)
+//            case .mention:      return Asset.Communication.ellipsesBubble.image.withRenderingMode(.alwaysTemplate)
+//            case .search:       return Asset.ObjectTools.magnifyingglass.image.withRenderingMode(.alwaysTemplate)
+//            case .me:           return Asset.Human.person.image.withRenderingMode(.alwaysTemplate)
             }
         }
         
@@ -54,31 +54,30 @@ class MainTabBarController: UITabBarController {
             let viewController: UIViewController
             switch self {
             case .home:
-                let rootView = HomeTimelineView().environment(\.managedObjectContext, context.managedObjectContext)
-                let _viewController = UIHostingController(rootView: rootView)
+                let _viewController = StubTimelineViewController()
                 viewController = _viewController
-            case .timeline:
-                let _viewController = HomeTimelineViewController()
-                _viewController.context = context
-                _viewController.coordinator = coordinator
-                viewController = _viewController
-            case .mention:
-                let _viewController = MentionTimelineViewController()
-                _viewController.context = context
-                _viewController.coordinator = coordinator
-                viewController = _viewController
-            case .search:
-                let _viewController = SearchViewController()
-                _viewController.context = context
-                _viewController.coordinator = coordinator
-                viewController = _viewController
-            case .me:
-                let _viewController = ProfileViewController()
-                _viewController.context = context
-                _viewController.coordinator = coordinator
-                let profileViewModel = MeProfileViewModel(context: context)
-                _viewController.viewModel = profileViewModel
-                viewController = _viewController
+//            case .timeline:
+//                let _viewController = HomeTimelineViewController()
+//                _viewController.context = context
+//                _viewController.coordinator = coordinator
+//                viewController = _viewController
+//            case .mention:
+//                let _viewController = MentionTimelineViewController()
+//                _viewController.context = context
+//                _viewController.coordinator = coordinator
+//                viewController = _viewController
+//            case .search:
+//                let _viewController = SearchViewController()
+//                _viewController.context = context
+//                _viewController.coordinator = coordinator
+//                viewController = _viewController
+//            case .me:
+//                let _viewController = ProfileViewController()
+//                _viewController.context = context
+//                _viewController.coordinator = coordinator
+//                let profileViewModel = MeProfileViewModel(context: context)
+//                _viewController.viewModel = profileViewModel
+//                viewController = _viewController
             }
             viewController.title = self.title
             return UINavigationController(rootViewController: viewController)

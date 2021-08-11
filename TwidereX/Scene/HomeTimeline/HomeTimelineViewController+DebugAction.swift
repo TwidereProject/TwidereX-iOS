@@ -37,6 +37,10 @@ extension HomeTimelineViewController {
                     guard let self = self else { return }
                     self.showFLEXAction(action)
                 }),
+                UIAction(title: "Show Stub Timeline", image: nil, attributes: [], handler: { [weak self] action in
+                    guard let self = self else { return }
+                    self.showStubTimelineAction(action)
+                }),
                 moveMenu,
                 dropMenu,
                 UIAction(title: "Enable Bottom Fetcher", image: nil, attributes: [], handler: { [weak self] action in
@@ -135,6 +139,10 @@ extension HomeTimelineViewController {
     
     @objc private func showFLEXAction(_ sender: UIAction) {
         FLEXManager.shared.showExplorer()
+    }
+    
+    @objc private func showStubTimelineAction(_ sender: UIAction) {
+        coordinator.present(scene: .stubTimeline, from: self, transition: .show)
     }
     
     @objc private func moveToTopGapAction(_ sender: UIAction) {

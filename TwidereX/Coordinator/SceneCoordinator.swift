@@ -58,6 +58,7 @@ extension SceneCoordinator {
         
         #if DEBUG
         case developer
+        case stubTimeline
         #endif
         
         case safari(url: URL)
@@ -196,6 +197,8 @@ private extension SceneCoordinator {
         #if DEBUG
         case .developer:
             viewController = DeveloperViewController()
+        case .stubTimeline:
+            viewController = StubTimelineViewController()
         #endif
         case .safari(let url):
             guard let scheme = url.scheme?.lowercased(),
