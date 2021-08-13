@@ -7,15 +7,16 @@
 
 import Foundation
 import Combine
-import TwitterAPI
+import TwitterSDK
+import AppShared
 
 extension APIService {
     
-    func twitterRequestToken(withOAuthExchangeProvider provider: OAuthExchangeProvider = AppSecret.default) -> AnyPublisher<Twitter.API.OAuth.OAuthRequestTokenExchange, Error> {
-        let oauthExchangeProvider = provider
-        return Twitter.API.OAuth.requestToken(session: session, oauthExchangeProvider: oauthExchangeProvider)
-            .receive(on: DispatchQueue.main)
-            .eraseToAnyPublisher()
+    func twitterRequestToken(
+        provider: TwitterOAuthExchangeProvider
+    ) async throws -> Twitter.API.OAuth.OAuthRequestTokenResponseExchange {
+        let oauthExchange = provider.oauthExchange()
+        return try await Twitter.API.OAuth.requestToken(session: session, oauthExchange: oauthExchange)
     }
     
     // only pin-based OAuth needs client swap AccessToken

@@ -7,7 +7,7 @@
 
 import Foundation
 import CoreDataStack
-import TwitterAPI
+import TwitterSDK
 
 extension TwitterUser.Property {
     init(entity: Twitter.Entity.User, networkDate: Date) {

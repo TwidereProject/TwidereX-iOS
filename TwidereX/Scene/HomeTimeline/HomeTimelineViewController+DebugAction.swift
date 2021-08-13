@@ -10,7 +10,7 @@ import os.log
 import UIKit
 import CoreData
 import CoreDataStack
-import TwitterAPI
+import TwitterSDK
 
 #if DEBUG
 import ZIPFoundation

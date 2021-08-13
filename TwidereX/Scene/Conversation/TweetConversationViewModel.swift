@@ -14,7 +14,7 @@ import CoreData
 import CoreDataStack
 import AlamofireImage
 import Kingfisher
-import TwitterAPI
+import TwitterSDK
 
 final class TweetConversationViewModel: NSObject {
     

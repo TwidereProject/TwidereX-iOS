@@ -12,7 +12,7 @@ import Combine
 import CoreData
 import CoreDataStack
 import ActiveLabel
-import TwitterAPI
+import TwitterSDK
 
 extension MediaInfoDescriptionViewDelegate where Self: StatusProvider {
     

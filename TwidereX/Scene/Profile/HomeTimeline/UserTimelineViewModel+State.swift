@@ -8,7 +8,7 @@
 import os.log
 import Foundation
 import GameplayKit
-import TwitterAPI
+import TwitterSDK
 
 extension UserTimelineViewModel {
     class State: GKState {

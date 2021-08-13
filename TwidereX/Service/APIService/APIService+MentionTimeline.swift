@@ -11,7 +11,7 @@ import Combine
 import CoreData
 import CoreDataStack
 import CommonOSLog
-import TwitterAPI
+import TwitterSDK
 
 extension APIService {
     

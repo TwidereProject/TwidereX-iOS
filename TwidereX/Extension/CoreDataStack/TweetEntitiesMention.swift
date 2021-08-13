@@ -8,7 +8,7 @@
 
 import Foundation
 import CoreDataStack
-import TwitterAPI
+import TwitterSDK
 
 extension TweetEntitiesMention.Property {
     static func properties(from entities: Twitter.Entity.Tweet.Entities, networkDate: Date) -> [TweetEntitiesMention.Property] {

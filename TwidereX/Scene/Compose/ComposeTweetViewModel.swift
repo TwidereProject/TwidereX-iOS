@@ -13,7 +13,7 @@ import CoreLocation
 import CoreData
 import CoreDataStack
 import AlamofireImage
-import TwitterAPI
+import TwitterSDK
 import twitter_text
 
 final class ComposeTweetViewModel: NSObject {

@@ -10,7 +10,7 @@ import UIKit
 import AVKit
 import Combine
 import CoreDataStack
-import TwitterAPI
+import TwitterSDK
 
 final class TweetConversationViewController: UIViewController, NeedsDependency, MediaPreviewableViewController {
     

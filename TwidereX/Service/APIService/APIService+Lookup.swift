@@ -8,7 +8,7 @@
 import os.log
 import Foundation
 import Combine
-import TwitterAPI
+import TwitterSDK
 import CoreDataStack
 import CommonOSLog
 

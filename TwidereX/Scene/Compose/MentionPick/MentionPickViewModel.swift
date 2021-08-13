@@ -10,7 +10,7 @@ import os.log
 import UIKit
 import Combine
 import AlamofireImage
-import TwitterAPI
+import TwitterSDK
 
 final class MentionPickViewModel {
     

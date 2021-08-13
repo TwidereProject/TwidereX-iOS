@@ -15,7 +15,7 @@ final public class AuthenticationIndex: NSManagedObject {
     
     @NSManaged public private(set) var platformRaw: String
     @NSManaged public private(set) var createdAt: Date
-    @NSManaged public private(set) var activedAt: Date
+    @NSManaged public private(set) var activeAt: Date
     
     // one-to-one relationship
     @NSManaged public private(set) var twitterAuthentication: TwitterAuthentication?
@@ -36,7 +36,7 @@ extension AuthenticationIndex {
         
         let now = Date()
         createdAt = now
-        activedAt = now
+        activeAt = now
     }
     
     @discardableResult
@@ -46,9 +46,9 @@ extension AuthenticationIndex {
         return authenticationIndex
     }
     
-    public func update(activedAt: Date) {
-        if self.activedAt != activedAt {
-            self.activedAt = activedAt
+    public func update(activeAt: Date) {
+        if self.activeAt != activeAt {
+            self.activeAt = activeAt
         }
     }
     
@@ -71,6 +71,6 @@ extension AuthenticationIndex {
 
 extension AuthenticationIndex: Managed {
     public static var defaultSortDescriptors: [NSSortDescriptor] {
-        return [NSSortDescriptor(keyPath: \AuthenticationIndex.createdAt, ascending: false)]
+        return [NSSortDescriptor(keyPath: \AuthenticationIndex.activeAt, ascending: false)]
     }
 }

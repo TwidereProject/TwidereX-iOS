@@ -10,7 +10,7 @@ import UIKit
 import Combine
 import CoreData
 import CoreDataStack
-import TwitterAPI
+import TwitterSDK
 
 final class MeProfileViewModel: ProfileViewModel {
     

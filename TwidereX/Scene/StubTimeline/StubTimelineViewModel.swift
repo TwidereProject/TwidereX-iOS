@@ -44,8 +44,8 @@ extension StubTimelineViewModel {
     static func diffableDataSource(
         collectionView: UICollectionView
     ) -> UICollectionViewDiffableDataSource<Section, Item> {
-        let stubCellRegistration = UICollectionView.CellRegistration<StubTimelineCollectionViewCell, StubTimelineCollectionViewCell.ViewModel> { cell, indexPath, item in
-            cell.primaryLabel.text = item.title
+        let stubCellRegistration = UICollectionView.CellRegistration<StubTimelineCollectionViewCell, StubTimelineCollectionViewCell.ViewModel> { cell, indexPath, viewModel in
+            cell.primaryLabel.text = viewModel.title
         }
     
         return UICollectionViewDiffableDataSource<Section, Item>(

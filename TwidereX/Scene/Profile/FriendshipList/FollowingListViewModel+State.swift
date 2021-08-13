@@ -9,7 +9,7 @@
 import os.log
 import Foundation
 import GameplayKit
-import TwitterAPI
+import TwitterSDK
 
 extension FriendshipListViewModel {
     class State: GKState {

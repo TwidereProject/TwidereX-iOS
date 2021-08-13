@@ -10,7 +10,7 @@ import os.log
 import Foundation
 import Combine
 import GameplayKit
-import TwitterAPI
+import TwitterSDK
 import Kingfisher
 
 protocol TwitterMediaServiceDelegate: class {

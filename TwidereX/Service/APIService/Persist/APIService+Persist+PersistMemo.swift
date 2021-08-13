@@ -10,7 +10,7 @@ import os.log
 import Foundation
 import CoreData
 import CoreDataStack
-import TwitterAPI
+import TwitterSDK
 
 extension APIService.Persist {
     

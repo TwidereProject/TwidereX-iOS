@@ -11,7 +11,8 @@ import Foundation
 import Combine
 import CoreData
 import CoreDataStack
-import TwitterAPI
+import AppShared
+import TwitterSDK
 
 class AuthenticationService: NSObject {
     
@@ -88,7 +89,7 @@ class AuthenticationService: NSObject {
 
         // bind data
         authenticationIndexes
-            .map { $0.sorted(by: { $0.activedAt > $1.activedAt }).first }
+            .map { $0.sorted(by: { $0.activeAt > $1.activeAt }).first }
             .assign(to: \.value, on: activeAuthenticationIndex)
             .store(in: &disposeBag)
         
@@ -129,18 +130,18 @@ extension AuthenticationService {
 extension AuthenticationService {
     
     func activeTwitterUser(id: TwitterUser.ID) -> AnyPublisher<Result<Bool, Error>, Never> {
-        var isActived = false
+        var isActive = false
         
         return backgroundManagedObjectContext.performChanges {
             let request = TwitterAuthentication.sortedFetchRequest
-            let twitterAutentications = try? self.backgroundManagedObjectContext.fetch(request)
-            guard let activeTwitterAutentication = (twitterAutentications ?? []).first(where: { $0.userID == id }) else { return }
-            guard let authenticationIndex = activeTwitterAutentication.authenticationIndex else { return }
-            authenticationIndex.update(activedAt: Date())
-            isActived = true
+            let twitterAuthentications = try? self.backgroundManagedObjectContext.fetch(request)
+            guard let activeTwitterAuthentication = (twitterAuthentications ?? []).first(where: { $0.userID == id }) else { return }
+            guard let authenticationIndex = activeTwitterAuthentication.authenticationIndex else { return }
+            authenticationIndex.update(activeAt: Date())
+            isActive = true
         }
         .map { result in
-            return result.map { isActived }
+            return result.map { isActive }
         }
         .eraseToAnyPublisher()
     }
@@ -150,11 +151,11 @@ extension AuthenticationService {
         
         return backgroundManagedObjectContext.performChanges {
             let request = TwitterAuthentication.sortedFetchRequest
-            let twitterAutentications = try? self.backgroundManagedObjectContext.fetch(request)
-            guard let deleteTwitterAutentication = (twitterAutentications ?? []).first(where: { $0.userID == id }) else { return }
-            guard let authenticationIndex = deleteTwitterAutentication.authenticationIndex else { return }
+            let twitterAuthentications = try? self.backgroundManagedObjectContext.fetch(request)
+            guard let deleteTwitterAuthentication = (twitterAuthentications ?? []).first(where: { $0.userID == id }) else { return }
+            guard let authenticationIndex = deleteTwitterAuthentication.authenticationIndex else { return }
             self.backgroundManagedObjectContext.delete(authenticationIndex)
-            self.backgroundManagedObjectContext.delete(deleteTwitterAutentication)
+            self.backgroundManagedObjectContext.delete(deleteTwitterAuthentication)
             isSignOut = true
         }
         .map { result in

@@ -8,7 +8,8 @@
 import Foundation
 import CryptoKit
 import CoreDataStack
-import TwitterAPI
+import AppShared
+import TwitterSDK
 
 extension TwitterAuthentication.Property {
     

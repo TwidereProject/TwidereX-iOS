@@ -9,7 +9,7 @@
 import os.log
 import Foundation
 import GameplayKit
-import TwitterAPI
+import TwitterSDK
 
 extension SearchTimelineViewModel {
     class State: GKState {

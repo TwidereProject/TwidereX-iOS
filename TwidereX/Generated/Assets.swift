@@ -24,6 +24,7 @@ internal enum Asset {
   internal static let accentColor = ColorAsset(name: "AccentColor")
   internal enum Arrows {
     internal static let arrowLeft = ImageAsset(name: "Arrows/arrow.left")
+    internal static let arrowRight = ImageAsset(name: "Arrows/arrow.right")
     internal static let arrowTriangle2Circlepath = ImageAsset(name: "Arrows/arrow.triangle.2.circlepath")
     internal static let arrowTurnUpLeft = ImageAsset(name: "Arrows/arrow.turn.up.left")
     internal static let arrowTurnUpLeftMini = ImageAsset(name: "Arrows/arrow.turn.up.left.mini")
@@ -33,6 +34,16 @@ internal enum Asset {
     internal static let trendingUp = ImageAsset(name: "Arrows/trending.up")
   }
   internal enum Colors {
+    internal enum Theme {
+      internal static let daylight = ColorAsset(name: "Colors/Theme/daylight")
+      internal static let goldenSpirit = ColorAsset(name: "Colors/Theme/golden.spirit")
+      internal static let grandBudapest = ColorAsset(name: "Colors/Theme/grand.budapest")
+      internal static let lime = ColorAsset(name: "Colors/Theme/lime")
+      internal static let maskBlue = ColorAsset(name: "Colors/Theme/mask.blue")
+      internal static let seafoam = ColorAsset(name: "Colors/Theme/seafoam")
+      internal static let violet = ColorAsset(name: "Colors/Theme/violet")
+      internal static let vulcan = ColorAsset(name: "Colors/Theme/vulcan")
+    }
     internal static let heartPink = ColorAsset(name: "Colors/heart.pink")
     internal static let hightLight = ColorAsset(name: "Colors/hight.light")
     internal static let twitterBlue = ColorAsset(name: "Colors/twitter.blue")

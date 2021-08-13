@@ -8,6 +8,7 @@
 
 import UIKit
 import SafariServices
+import CoreDataStack
 
 final public class SceneCoordinator {
     
@@ -39,9 +40,13 @@ extension SceneCoordinator {
     }
     
     enum Scene {
+        // Onboarding
+        case welcome(viewModel: WelcomeViewModel)
+        
         case authentication(viewModel: AuthenticationViewModel)
         case twitterAuthenticationOption(viewModel: TwitterAuthenticationOptionViewModel)
         case twitterPinBasedAuthentication(viewModel: TwitterPinBasedAuthenticationViewModel)
+        
         case accountList(viewModel: AccountListViewModel)
         case composeTweet(viewModel: ComposeTweetViewModel)
         case mentionPick(viewModel: MentionPickViewModel, delegate: MentionPickViewControllerDelegate)
@@ -72,6 +77,24 @@ extension SceneCoordinator {
     func setup() {
         let viewController = MainTabBarController(context: appContext, coordinator: self)
         sceneDelegate.window?.rootViewController = viewController
+    }
+    
+    func setupWelcomeIfNeeds() {
+        DispatchQueue.main.async {
+            let welcomeViewModel = WelcomeViewModel(context: self.appContext)
+            self.present(scene: .welcome(viewModel: welcomeViewModel), from: nil, transition: .modal(animated: false, completion: nil))
+        }
+//        do {
+//            let request = AuthenticationIndex.sortedFetchRequest
+//            if try appContext.managedObjectContext.fetch(request).isEmpty {
+//                DispatchQueue.main.async {
+//                    let authenticationViewModel = AuthenticationViewModel(isAuthenticationIndexExist: false)
+//                    self.present(scene: .authentication(viewModel: authenticationViewModel), from: nil, transition: .modal(animated: false, completion: nil))
+//                }
+//            }
+//        } catch {
+//            assertionFailure(error.localizedDescription)
+//        }
     }
     
     @discardableResult
@@ -134,6 +157,10 @@ private extension SceneCoordinator {
     func get(scene: Scene) -> UIViewController? {
         let viewController: UIViewController?
         switch scene {
+        case .welcome(let viewModel):
+            let _viewController = WelcomeViewController()
+            _viewController.viewModel = viewModel
+            viewController = _viewController
         case .authentication(let viewModel):
             let _viewController = AuthenticationViewController()
             _viewController.viewModel = viewModel

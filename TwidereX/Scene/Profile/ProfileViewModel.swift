@@ -9,7 +9,7 @@ import os.log
 import Foundation
 import Combine
 import CoreDataStack
-import TwitterAPI
+import TwitterSDK
 
 // please override this base class
 class ProfileViewModel: NSObject {

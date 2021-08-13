@@ -7,7 +7,7 @@
 //
 
 import UIKit
-import TwitterAPI
+import TwitterSDK
 // import SwiftMessages
 
 extension APIService {

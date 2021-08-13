@@ -11,7 +11,7 @@ import UIKit
 import Combine
 import CoreData
 import CoreDataStack
-import TwitterAPI
+import TwitterSDK
 import ActiveLabel
 
 extension TimelinePostTableViewCellDelegate where Self: StatusProvider {

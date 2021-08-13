@@ -1,5 +1,5 @@
 source 'https://cdn.cocoapods.org/'
-platform :ios, '13.0'
+platform :ios, '15.0'
 
 target 'TwidereX' do
   # Comment the next line if you don't want to use dynamic frameworks
@@ -34,6 +34,11 @@ target 'TwidereX' do
 
 end
 
+target 'AppShared' do 
+  # Comment the next line if you don't want to use dynamic frameworks
+  use_frameworks!
+end
+
 plugin 'cocoapods-keys', {
   :project => "TwidereX",
   :keys => [
@@ -45,3 +50,11 @@ plugin 'cocoapods-keys', {
     "oauth_endpoint_debug"
   ]
 }
+
+post_install do |installer|
+  installer.pods_project.targets.each do |target|
+    target.build_configurations.each do |config|
+      config.build_settings.delete 'IPHONEOS_DEPLOYMENT_TARGET'
+    end
+  end
+end

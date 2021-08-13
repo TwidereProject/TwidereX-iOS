@@ -6,15 +6,15 @@ import PackageDescription
 let package = Package(
     name: "TwidereSDK",
     platforms: [
-        .iOS(.v13),
-        .macOS(.v10_15),
+        .iOS(.v15),
+        .macOS(.v12),
     ],
     products: [
         // Products define the executables and libraries a package produces, and make them visible to other packages.
         .library(
             name: "TwidereSDK",
             type: .dynamic,
-            targets: ["TwitterAPI"]),
+            targets: ["TwitterSDK", "MastodonSDK"]),
     ],
     dependencies: [
         .package(url: "https://github.com/SwiftyJSON/SwiftyJSON.git", from: "5.0.0"),
@@ -24,11 +24,22 @@ let package = Package(
         // Targets are the basic building blocks of a package. A target can define a module or a test suite.
         // Targets can depend on other targets in this package, and on products in packages this package depends on.
         .target(
-            name: "TwitterAPI",
+            name: "TwitterSDK",
             dependencies: [
                 .product(name: "SwiftyJSON", package: "SwiftyJSON"),
                 .product(name: "NIOHTTP1", package: "swift-nio"),
             ]
+        ),
+        .target(
+            name: "MastodonSDK",
+            dependencies: [
+                .product(name: "SwiftyJSON", package: "SwiftyJSON"),
+                .product(name: "NIOHTTP1", package: "swift-nio"),
+            ]
+        ),
+        .testTarget(
+            name: "TwitterSDKTests",
+            dependencies: ["TwitterSDK"]
         ),
     ]
 )

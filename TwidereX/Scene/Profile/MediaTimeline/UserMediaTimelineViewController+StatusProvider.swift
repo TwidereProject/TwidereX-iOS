@@ -10,7 +10,7 @@ import os.log
 import UIKit
 import Combine
 import CoreDataStack
-import TwitterAPI
+import TwitterSDK
 
 // MARK: - StatusProvider
 extension UserMediaTimelineViewController: StatusProvider {

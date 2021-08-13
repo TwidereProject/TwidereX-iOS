@@ -6,9 +6,10 @@
 //  Copyright © 2020 Dimension. All rights reserved.
 //
 
-import os
+import os.log
 import Foundation
 import CoreData
+import AppShared
 
 public final class CoreDataStack {
     
@@ -18,8 +19,8 @@ public final class CoreDataStack {
         self.storeDescriptions = storeDescriptions
     }
     
-    public convenience init(databaseName: String = "shared") {
-        let storeURL = URL.storeURL(for: "group.com.twidere.twiderex", databaseName: databaseName)
+    public convenience init(databaseName: String = "shared_v2") {
+        let storeURL = URL.storeURL(for: AppCommon.groupID, databaseName: databaseName)
         let storeDescription = NSPersistentStoreDescription(url: storeURL)
         self.init(persistentStoreDescriptions: [storeDescription])
     }

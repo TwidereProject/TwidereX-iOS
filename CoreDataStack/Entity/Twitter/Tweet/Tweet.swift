@@ -7,7 +7,7 @@
 
 import Foundation
 import CoreData
-import TwitterAPI
+import TwitterSDK
 
 final public class Tweet: NSManagedObject {
     

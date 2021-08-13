@@ -7,7 +7,7 @@
 
 import Foundation
 import CoreDataStack
-import TwitterAPI
+import TwitterSDK
 import Kanna
 
 extension Tweet.Property {

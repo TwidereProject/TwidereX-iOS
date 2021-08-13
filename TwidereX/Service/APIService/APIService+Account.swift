@@ -9,7 +9,7 @@ import Foundation
 import Combine
 import CoreDataStack
 import CommonOSLog
-import TwitterAPI
+import TwitterSDK
 
 extension APIService {
     

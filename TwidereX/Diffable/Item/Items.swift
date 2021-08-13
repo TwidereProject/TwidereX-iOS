@@ -7,7 +7,7 @@
 
 import Foundation
 import CoreData
-import TwitterAPI
+import TwitterSDK
 import CoreDataStack
 
 /// Note: update Equatable when change case

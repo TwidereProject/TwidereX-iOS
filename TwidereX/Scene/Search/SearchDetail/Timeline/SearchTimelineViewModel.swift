@@ -12,7 +12,7 @@ import GameplayKit
 import Combine
 import CoreData
 import CoreDataStack
-import TwitterAPI
+import TwitterSDK
 import AlamofireImage
 
 class SearchTimelineViewModel: NSObject {

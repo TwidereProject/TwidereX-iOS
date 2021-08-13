@@ -12,7 +12,7 @@ import Combine
 import CoreData
 import CoreDataStack
 import GameplayKit
-import TwitterAPI
+import TwitterSDK
 
 final class SearchMediaViewModel: NSObject {
     

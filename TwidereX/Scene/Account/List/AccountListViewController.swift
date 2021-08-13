@@ -11,7 +11,7 @@ import UIKit
 import AuthenticationServices
 import Combine
 import CoreDataStack
-import TwitterAPI
+import TwitterSDK
 
 protocol AccountListViewControllerDelegate: class {
     func signoutTwitterUser(id: TwitterUser.ID)

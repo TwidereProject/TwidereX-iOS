@@ -1,0 +1,295 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="19197" systemVersion="20G80" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+    <entity name="AuthenticationIndex" representedClassName=".AuthenticationIndex" syncable="YES">
+        <attribute name="activeAt" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="createdAt" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="identifier" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="platformRaw" attributeType="String"/>
+        <relationship name="twitterAuthentication" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="TwitterAuthentication" inverseName="authenticationIndex" inverseEntity="TwitterAuthentication"/>
+    </entity>
+    <entity name="MastodonAuthentication" representedClassName="MastodonAuthentication" syncable="YES" codeGenerationType="class"/>
+    <entity name="MentionTimelineIndex" representedClassName=".MentionTimelineIndex" syncable="YES">
+        <attribute name="createdAt" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="deletedAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="hasMore" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="identifier" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="platformRaw" attributeType="String"/>
+        <attribute name="userID" attributeType="String"/>
+        <relationship name="toots" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Toots" inverseName="mentionTimelineIndexes" inverseEntity="Toots"/>
+        <relationship name="tweet" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Tweet" inverseName="mentionTimelineIndexes" inverseEntity="Tweet"/>
+    </entity>
+    <entity name="TimelineIndex" representedClassName=".TimelineIndex" syncable="YES">
+        <attribute name="createdAt" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="deletedAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="hasMore" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="identifier" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="platformRaw" attributeType="String"/>
+        <attribute name="userID" attributeType="String"/>
+        <relationship name="toots" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Toots" inverseName="timelineIndexes" inverseEntity="Toots"/>
+        <relationship name="tweet" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Tweet" inverseName="timelineIndexes" inverseEntity="Tweet"/>
+    </entity>
+    <entity name="Toots" representedClassName=".Tools" syncable="YES">
+        <attribute name="createdAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="identifier" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="updatedAt" attributeType="Date" usesScalarValueType="NO"/>
+        <relationship name="mentionTimelineIndexes" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="MentionTimelineIndex" inverseName="toots" inverseEntity="MentionTimelineIndex"/>
+        <relationship name="timelineIndexes" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="TimelineIndex" inverseName="toots" inverseEntity="TimelineIndex"/>
+    </entity>
+    <entity name="Tweet" representedClassName=".Tweet" syncable="YES">
+        <attribute name="conversationID" optional="YES" attributeType="String"/>
+        <attribute name="createdAt" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="deletedAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="id" attributeType="String"/>
+        <attribute name="identifier" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="inReplyToTweetID" optional="YES" attributeType="String"/>
+        <attribute name="inReplyToUserID" optional="YES" attributeType="String"/>
+        <attribute name="lang" optional="YES" attributeType="String"/>
+        <attribute name="possiblySensitive" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="source" optional="YES" attributeType="String"/>
+        <attribute name="text" attributeType="String"/>
+        <attribute name="updatedAt" attributeType="Date" usesScalarValueType="NO"/>
+        <relationship name="author" maxCount="1" deletionRule="Nullify" destinationEntity="TwitterUser" inverseName="tweets" inverseEntity="TwitterUser"/>
+        <relationship name="entities" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="TweetEntities" inverseName="tweet" inverseEntity="TweetEntities"/>
+        <relationship name="likeBy" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="TwitterUser" inverseName="like" inverseEntity="TwitterUser"/>
+        <relationship name="media" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="TwitterMedia" inverseName="tweet" inverseEntity="TwitterMedia"/>
+        <relationship name="mentionTimelineIndexes" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="MentionTimelineIndex" inverseName="tweet" inverseEntity="MentionTimelineIndex"/>
+        <relationship name="metrics" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="TweetMetrics" inverseName="tweet" inverseEntity="TweetMetrics"/>
+        <relationship name="pinnedBy" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="TwitterUser" inverseName="pinnedTweet" inverseEntity="TwitterUser"/>
+        <relationship name="place" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="TwitterPlace" inverseName="tweet" inverseEntity="TwitterPlace"/>
+        <relationship name="poll" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="TwitterPoll" inverseName="tweet" inverseEntity="TwitterPoll"/>
+        <relationship name="quote" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Tweet" inverseName="quoteFrom" inverseEntity="Tweet"/>
+        <relationship name="quoteFrom" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Tweet" inverseName="quote" inverseEntity="Tweet"/>
+        <relationship name="replyFrom" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Tweet" inverseName="replyTo" inverseEntity="Tweet"/>
+        <relationship name="replyTo" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Tweet" inverseName="replyFrom" inverseEntity="Tweet"/>
+        <relationship name="retweet" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Tweet" inverseName="retweetFrom" inverseEntity="Tweet"/>
+        <relationship name="retweetBy" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="TwitterUser" inverseName="retweets" inverseEntity="TwitterUser"/>
+        <relationship name="retweetFrom" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Tweet" inverseName="retweet" inverseEntity="Tweet"/>
+        <relationship name="timelineIndexes" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="TimelineIndex" inverseName="tweet" inverseEntity="TimelineIndex"/>
+        <relationship name="withheld" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="TwitterWithheld" inverseName="tweet" inverseEntity="TwitterWithheld"/>
+    </entity>
+    <entity name="TweetEntities" representedClassName=".TweetEntities" syncable="YES">
+        <attribute name="createdAt" attributeType="Date" defaultDateTimeInterval="631123200" usesScalarValueType="NO"/>
+        <attribute name="identifier" attributeType="UUID" usesScalarValueType="NO"/>
+        <relationship name="annotations" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="TweetEntitiesAnnotation" inverseName="entities" inverseEntity="TweetEntitiesAnnotation"/>
+        <relationship name="cashtags" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="TweetEntitiesCashtag" inverseName="entities" inverseEntity="TweetEntitiesCashtag"/>
+        <relationship name="hashtags" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="TweetEntitiesHashtag" inverseName="entities" inverseEntity="TweetEntitiesHashtag"/>
+        <relationship name="mentions" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="TweetEntitiesMention" inverseName="entities" inverseEntity="TweetEntitiesMention"/>
+        <relationship name="tweet" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Tweet" inverseName="entities" inverseEntity="Tweet"/>
+        <relationship name="urls" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="TweetEntitiesURL" inverseName="entities" inverseEntity="TweetEntitiesURL"/>
+    </entity>
+    <entity name="TweetEntitiesAnnotation" representedClassName=".TweetEntitiesAnnotation" syncable="YES">
+        <attribute name="createdAt" attributeType="Date" defaultDateTimeInterval="631123200" usesScalarValueType="NO"/>
+        <attribute name="end" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="identifier" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="normalizedText" optional="YES" attributeType="String"/>
+        <attribute name="probability" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="start" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="type" optional="YES" attributeType="String"/>
+        <relationship name="entities" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="TweetEntities" inverseName="annotations" inverseEntity="TweetEntities"/>
+    </entity>
+    <entity name="TweetEntitiesCashtag" representedClassName=".TweetEntitiesCashtag" syncable="YES">
+        <attribute name="createdAt" attributeType="Date" defaultDateTimeInterval="631123200" usesScalarValueType="NO"/>
+        <attribute name="end" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="identifier" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="start" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="tag" optional="YES" attributeType="String"/>
+        <relationship name="entities" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="TweetEntities" inverseName="cashtags" inverseEntity="TweetEntities"/>
+    </entity>
+    <entity name="TweetEntitiesHashtag" representedClassName=".TweetEntitiesHashtag" syncable="YES">
+        <attribute name="createdAt" attributeType="Date" defaultDateTimeInterval="631123200" usesScalarValueType="NO"/>
+        <attribute name="end" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="identifier" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="start" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="tag" optional="YES" attributeType="String"/>
+        <relationship name="entities" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="TweetEntities" inverseName="hashtags" inverseEntity="TweetEntities"/>
+    </entity>
+    <entity name="TweetEntitiesMention" representedClassName=".TweetEntitiesMention" syncable="YES">
+        <attribute name="createdAt" attributeType="Date" defaultDateTimeInterval="631123200" usesScalarValueType="NO"/>
+        <attribute name="end" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="identifier" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="start" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="userID" optional="YES" attributeType="String"/>
+        <attribute name="username" optional="YES" attributeType="String"/>
+        <relationship name="entities" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="TweetEntities" inverseName="mentions" inverseEntity="TweetEntities"/>
+        <relationship name="user" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="TwitterUser" inverseName="mentionIn" inverseEntity="TwitterUser"/>
+    </entity>
+    <entity name="TweetEntitiesURL" representedClassName=".TweetEntitiesURL" syncable="YES">
+        <attribute name="createdAt" attributeType="Date" defaultDateTimeInterval="631123200" usesScalarValueType="NO"/>
+        <attribute name="displayURL" optional="YES" attributeType="String"/>
+        <attribute name="end" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="expandedURL" optional="YES" attributeType="String"/>
+        <attribute name="identifier" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="start" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="unwoundURL" optional="YES" attributeType="String"/>
+        <attribute name="url" optional="YES" attributeType="String"/>
+        <relationship name="entities" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="TweetEntities" inverseName="urls" inverseEntity="TweetEntities"/>
+    </entity>
+    <entity name="TweetMetrics" representedClassName=".TweetMetrics" syncable="YES">
+        <attribute name="createdAt" attributeType="Date" defaultDateTimeInterval="631123200" usesScalarValueType="NO"/>
+        <attribute name="identifier" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="likeCount" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="quoteCount" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="replyCount" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="retweetCount" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <relationship name="tweet" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Tweet" inverseName="metrics" inverseEntity="Tweet"/>
+    </entity>
+    <entity name="TwitterAuthentication" representedClassName=".TwitterAuthentication" syncable="YES">
+        <attribute name="accessToken" attributeType="String"/>
+        <attribute name="accessTokenSecret" attributeType="String"/>
+        <attribute name="activeAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="consumerKey" attributeType="String"/>
+        <attribute name="consumerSecret" attributeType="String"/>
+        <attribute name="createdAt" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="identifier" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="nonce" attributeType="String" defaultValueString=""/>
+        <attribute name="screenName" attributeType="String"/>
+        <attribute name="updatedAt" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="userID" attributeType="String"/>
+        <relationship name="authenticationIndex" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="AuthenticationIndex" inverseName="twitterAuthentication" inverseEntity="AuthenticationIndex"/>
+        <relationship name="twitterUser" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="TwitterUser" inverseName="twitterAuthentication" inverseEntity="TwitterUser"/>
+    </entity>
+    <entity name="TwitterMedia" representedClassName=".TwitterMedia" syncable="YES">
+        <attribute name="createdAt" attributeType="Date" defaultDateTimeInterval="631123200" usesScalarValueType="NO"/>
+        <attribute name="durationMS" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="height" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="id" optional="YES" attributeType="String"/>
+        <attribute name="identifier" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="index" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="mediaKey" attributeType="String"/>
+        <attribute name="previewImageURL" optional="YES" attributeType="String"/>
+        <attribute name="type" attributeType="String"/>
+        <attribute name="url" optional="YES" attributeType="String"/>
+        <attribute name="width" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <relationship name="metrics" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="TwitterMediaMetrics" inverseName="media" inverseEntity="TwitterMediaMetrics"/>
+        <relationship name="tweet" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Tweet" inverseName="media" inverseEntity="Tweet"/>
+    </entity>
+    <entity name="TwitterMediaMetrics" representedClassName=".TwitterMediaMetrics" syncable="YES">
+        <attribute name="createdAt" attributeType="Date" defaultDateTimeInterval="631123200" usesScalarValueType="NO"/>
+        <attribute name="identifier" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="viewCount" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <relationship name="media" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="TwitterMedia" inverseName="metrics" inverseEntity="TwitterMedia"/>
+    </entity>
+    <entity name="TwitterPlace" representedClassName=".TwitterPlace" syncable="YES">
+        <attribute name="country" optional="YES" attributeType="String"/>
+        <attribute name="countryCode" optional="YES" attributeType="String"/>
+        <attribute name="createdAt" attributeType="Date" defaultDateTimeInterval="631123200" usesScalarValueType="NO"/>
+        <attribute name="fullname" attributeType="String"/>
+        <attribute name="geoJSON" optional="YES" attributeType="Binary"/>
+        <attribute name="id" attributeType="String"/>
+        <attribute name="identifier" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="name" optional="YES" attributeType="String"/>
+        <attribute name="placeType" optional="YES" attributeType="String"/>
+        <relationship name="tweet" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Tweet" inverseName="place" inverseEntity="Tweet"/>
+    </entity>
+    <entity name="TwitterPoll" representedClassName=".TwitterPoll" syncable="YES">
+        <attribute name="createdAt" attributeType="Date" defaultDateTimeInterval="631123200" usesScalarValueType="NO"/>
+        <attribute name="durationMinutes" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="endDatetime" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="id" optional="YES" attributeType="String"/>
+        <attribute name="identifier" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="votingStatus" optional="YES" attributeType="String"/>
+        <relationship name="options" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="TwitterPollOption" inverseName="poll" inverseEntity="TwitterPollOption"/>
+        <relationship name="tweet" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Tweet" inverseName="poll" inverseEntity="Tweet"/>
+    </entity>
+    <entity name="TwitterPollOption" representedClassName=".TwitterPollOption" syncable="YES">
+        <attribute name="createdAt" attributeType="Date" defaultDateTimeInterval="631123200" usesScalarValueType="NO"/>
+        <attribute name="identifier" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="label" optional="YES" attributeType="String"/>
+        <attribute name="position" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="votes" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <relationship name="poll" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="TwitterPoll" inverseName="options" inverseEntity="TwitterPoll"/>
+    </entity>
+    <entity name="TwitterUser" representedClassName=".TwitterUser" syncable="YES">
+        <attribute name="bioDescription" optional="YES" attributeType="String"/>
+        <attribute name="createdAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="id" attributeType="String"/>
+        <attribute name="identifier" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="location" optional="YES" attributeType="String"/>
+        <attribute name="name" attributeType="String"/>
+        <attribute name="pinnedTweetID" optional="YES" attributeType="String"/>
+        <attribute name="profileBannerURL" optional="YES" attributeType="String"/>
+        <attribute name="profileImageURL" optional="YES" attributeType="String"/>
+        <attribute name="protected" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="updatedAt" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="url" optional="YES" attributeType="String"/>
+        <attribute name="username" attributeType="String"/>
+        <attribute name="verified" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
+        <relationship name="blocking" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="TwitterUser" inverseName="blockingBy" inverseEntity="TwitterUser"/>
+        <relationship name="blockingBy" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="TwitterUser" inverseName="blocking" inverseEntity="TwitterUser"/>
+        <relationship name="entities" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="TwitterUserEntities" inverseName="user" inverseEntity="TwitterUserEntities"/>
+        <relationship name="following" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="TwitterUser" inverseName="followingBy" inverseEntity="TwitterUser"/>
+        <relationship name="followingBy" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="TwitterUser" inverseName="following" inverseEntity="TwitterUser" elementID="followingFrom"/>
+        <relationship name="followRequestSent" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="TwitterUser" inverseName="followRequestSentFrom" inverseEntity="TwitterUser"/>
+        <relationship name="followRequestSentFrom" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="TwitterUser" inverseName="followRequestSent" inverseEntity="TwitterUser"/>
+        <relationship name="like" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Tweet" inverseName="likeBy" inverseEntity="Tweet"/>
+        <relationship name="mentionIn" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="TweetEntitiesMention" inverseName="user" inverseEntity="TweetEntitiesMention"/>
+        <relationship name="metrics" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="TwitterUserMetrics" inverseName="user" inverseEntity="TwitterUserMetrics"/>
+        <relationship name="muting" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="TwitterUser" inverseName="mutingBy" inverseEntity="TwitterUser"/>
+        <relationship name="mutingBy" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="TwitterUser" inverseName="muting" inverseEntity="TwitterUser"/>
+        <relationship name="pinnedTweet" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Tweet" inverseName="pinnedBy" inverseEntity="Tweet"/>
+        <relationship name="retweets" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Tweet" inverseName="retweetBy" inverseEntity="Tweet"/>
+        <relationship name="tweets" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Tweet" inverseName="author" inverseEntity="Tweet"/>
+        <relationship name="twitterAuthentication" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="TwitterAuthentication" inverseName="twitterUser" inverseEntity="TwitterAuthentication"/>
+        <relationship name="withheld" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="TwitterWithheld" inverseName="twitterUser" inverseEntity="TwitterWithheld"/>
+    </entity>
+    <entity name="TwitterUserEntities" representedClassName=".TwitterUserEntities" syncable="YES">
+        <attribute name="createdAt" attributeType="Date" defaultDateTimeInterval="631123740" usesScalarValueType="NO"/>
+        <attribute name="identifier" attributeType="UUID" usesScalarValueType="NO"/>
+        <relationship name="urls" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="TwitterUserEntitiesURL" inverseName="entities" inverseEntity="TwitterUserEntitiesURL"/>
+        <relationship name="user" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="TwitterUser" inverseName="entities" inverseEntity="TwitterUser"/>
+    </entity>
+    <entity name="TwitterUserEntitiesURL" representedClassName=".TwitterUserEntitiesURL" syncable="YES">
+        <attribute name="createdAt" attributeType="Date" defaultDateTimeInterval="631123200" usesScalarValueType="NO"/>
+        <attribute name="displayURL" optional="YES" attributeType="String"/>
+        <attribute name="end" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="expandedURL" optional="YES" attributeType="String"/>
+        <attribute name="identifier" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="start" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="url" optional="YES" attributeType="String"/>
+        <relationship name="entities" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="TwitterUserEntities" inverseName="urls" inverseEntity="TwitterUserEntities"/>
+    </entity>
+    <entity name="TwitterUserMetrics" representedClassName=".TwitterUserMetrics" syncable="YES">
+        <attribute name="createdAt" attributeType="Date" defaultDateTimeInterval="631123200" usesScalarValueType="NO"/>
+        <attribute name="followersCount" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="followingCount" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="identifier" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="listedCount" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="tweetCount" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <relationship name="user" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="TwitterUser" inverseName="metrics" inverseEntity="TwitterUser"/>
+    </entity>
+    <entity name="TwitterWithheld" representedClassName=".TwitterWithheld" syncable="YES">
+        <attribute name="copyright" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="countryCodesJSON" optional="YES" attributeType="Binary" valueTransformerName="NSSecureUnarchiveFromData"/>
+        <attribute name="createdAt" attributeType="Date" defaultDateTimeInterval="631123200" usesScalarValueType="NO"/>
+        <attribute name="identifier" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="scope" optional="YES" attributeType="String"/>
+        <relationship name="tweet" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Tweet" inverseName="withheld" inverseEntity="Tweet"/>
+        <relationship name="twitterUser" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="TwitterUser" inverseName="withheld" inverseEntity="TwitterUser"/>
+    </entity>
+    <elements>
+        <element name="AuthenticationIndex" positionX="-63" positionY="-153" width="128" height="104"/>
+        <element name="MentionTimelineIndex" positionX="-63" positionY="-162" width="128" height="163"/>
+        <element name="TimelineIndex" positionX="748.46875" positionY="302.9921875" width="128" height="149"/>
+        <element name="Toots" positionX="-267.625" positionY="-3.98828125" width="128" height="118"/>
+        <element name="Tweet" positionX="526.87890625" positionY="-317.48828125" width="128" height="493"/>
+        <element name="TweetEntities" positionX="-63" positionY="-45" width="128" height="149"/>
+        <element name="TweetEntitiesAnnotation" positionX="-63" positionY="-45" width="128" height="149"/>
+        <element name="TweetEntitiesCashtag" positionX="-27" positionY="-9" width="128" height="119"/>
+        <element name="TweetEntitiesHashtag" positionX="-45" positionY="-27" width="128" height="119"/>
+        <element name="TweetEntitiesMention" positionX="-36" positionY="-18" width="128" height="149"/>
+        <element name="TweetEntitiesURL" positionX="-54" positionY="-36" width="128" height="164"/>
+        <element name="TweetMetrics" positionX="968.33984375" positionY="-300.5078125" width="128" height="134"/>
+        <element name="TwitterAuthentication" positionX="-109.453125" positionY="275.71875" width="128" height="238"/>
+        <element name="TwitterMedia" positionX="1009.765625" positionY="-162.66796875" width="128" height="224"/>
+        <element name="TwitterMediaMetrics" positionX="1124.859375" positionY="38.72265625" width="128" height="89"/>
+        <element name="TwitterPlace" positionX="1146.6953125" positionY="350.890625" width="128" height="179"/>
+        <element name="TwitterPoll" positionX="-54" positionY="-36" width="128" height="149"/>
+        <element name="TwitterPollOption" positionX="-45" positionY="-27" width="128" height="119"/>
+        <element name="TwitterUser" positionX="281.5234375" positionY="201.703125" width="128" height="494"/>
+        <element name="TwitterUserEntities" positionX="-72" positionY="-171" width="128" height="89"/>
+        <element name="TwitterUserEntitiesURL" positionX="-63" positionY="-162" width="128" height="149"/>
+        <element name="TwitterUserMetrics" positionX="-45" positionY="-180" width="128" height="134"/>
+        <element name="TwitterWithheld" positionX="-18" positionY="0" width="128" height="134"/>
+        <element name="MastodonAuthentication" positionX="-63" positionY="-153" width="128" height="29"/>
+    </elements>
+</model>

@@ -11,7 +11,7 @@ import CoreData
 import CoreDataStack
 import CommonOSLog
 import DateToolsSwift
-import TwitterAPI
+import TwitterSDK
 
 extension APIService {
     

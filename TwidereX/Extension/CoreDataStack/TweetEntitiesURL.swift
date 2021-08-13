@@ -8,7 +8,7 @@
 
 import Foundation
 import CoreDataStack
-import TwitterAPI
+import TwitterSDK
 
 extension TweetEntitiesURL.Property {
     

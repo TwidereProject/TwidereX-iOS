@@ -12,6 +12,12 @@
 		AF66F7A022E93DE9E329F6A3 /* Pods_TwidereXTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 62DC6A6809A00EA057395C07 /* Pods_TwidereXTests.framework */; };
 		DB0849B0251375E9009E0CD7 /* ConversationPostView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB0849AF251375E9009E0CD7 /* ConversationPostView.swift */; };
 		DB0849B22513760D009E0CD7 /* ConversationPostTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB0849B12513760D009E0CD7 /* ConversationPostTableViewCell.swift */; };
+		DB0B3B8626C662CC00501BB7 /* AppShared.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DB94B6BB26C65CB000A2E8A1 /* AppShared.framework */; };
+		DB0B3B8726C662CC00501BB7 /* AppShared.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = DB94B6BB26C65CB000A2E8A1 /* AppShared.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		DB0B3B8B26C6637500501BB7 /* TwidereSDK in Frameworks */ = {isa = PBXBuildFile; productRef = DB0B3B8A26C6637500501BB7 /* TwidereSDK */; };
+		DB0B3B8C26C6637500501BB7 /* TwidereSDK in Embed Frameworks */ = {isa = PBXBuildFile; productRef = DB0B3B8A26C6637500501BB7 /* TwidereSDK */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		DB0B3B8E26C6639100501BB7 /* AppSecret.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB2611462518AC13004BF309 /* AppSecret.swift */; };
+		DB0B3B9026C666E300501BB7 /* APIService+WebFinger.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB0B3B8F26C666E300501BB7 /* APIService+WebFinger.swift */; };
 		DB0D0AC025944F75007A23C8 /* UserProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB0D0ABF25944F75007A23C8 /* UserProvider.swift */; };
 		DB0D0AC825944FF2007A23C8 /* FollowingListViewController+UserProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB0D0AC725944FF2007A23C8 /* FollowingListViewController+UserProvider.swift */; };
 		DB0D0ACD25945075007A23C8 /* UserProvider+UITableViewDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB0D0ACC25945075007A23C8 /* UserProvider+UITableViewDelegate.swift */; };
@@ -39,7 +45,6 @@
 		DB25BA08253D7D6E00A5420F /* APIService+Persist+DictContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB25BA07253D7D6E00A5420F /* APIService+Persist+DictContent.swift */; };
 		DB25BA10253D7F4D00A5420F /* APIService+CoreData+V2+Tweet.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB25BA0F253D7F4D00A5420F /* APIService+CoreData+V2+Tweet.swift */; };
 		DB25BA1F253DACD100A5420F /* APIService+CoreData+V2+TwitterUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB25BA1E253DACD100A5420F /* APIService+CoreData+V2+TwitterUser.swift */; };
-		DB2611472518AC13004BF309 /* AppSecret.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB2611462518AC13004BF309 /* AppSecret.swift */; };
 		DB261195251B213A004BF309 /* TwitterAuthentication.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB261194251B2139004BF309 /* TwitterAuthentication.swift */; };
 		DB2611B7251B2D42004BF309 /* CryptoSwift in Frameworks */ = {isa = PBXBuildFile; productRef = DB2611B6251B2D42004BF309 /* CryptoSwift */; };
 		DB2924C22546A77B003899A7 /* TwitterMediaService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB2924C12546A77B003899A7 /* TwitterMediaService.swift */; };
@@ -79,6 +84,9 @@
 		DB3FC045255270D6003A2F8A /* UserMediaTimelineViewModel+State.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB3FC044255270D6003A2F8A /* UserMediaTimelineViewModel+State.swift */; };
 		DB3FC04A2552711C003A2F8A /* UserMediaTimelineViewModel+Diffable.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB3FC0492552711C003A2F8A /* UserMediaTimelineViewModel+Diffable.swift */; };
 		DB3FC0522552742E003A2F8A /* MediaSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB3FC0512552742E003A2F8A /* MediaSection.swift */; };
+		DB42410E26C3E4BF00B6C5F8 /* WelcomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB42410D26C3E4BF00B6C5F8 /* WelcomeViewController.swift */; };
+		DB42411426C3E55200B6C5F8 /* WelcomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB42411326C3E55200B6C5F8 /* WelcomeView.swift */; };
+		DB42411626C3EB9100B6C5F8 /* ReadabilityPadding.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB42411526C3EB9100B6C5F8 /* ReadabilityPadding.swift */; };
 		DB4323D22514936F004FAAEC /* TwidereSDK in Frameworks */ = {isa = PBXBuildFile; productRef = DB4323D12514936F004FAAEC /* TwidereSDK */; };
 		DB4323D425149374004FAAEC /* TwidereSDK in Frameworks */ = {isa = PBXBuildFile; productRef = DB4323D325149374004FAAEC /* TwidereSDK */; };
 		DB4323D8251493C5004FAAEC /* TwidereSDK in Embed Frameworks */ = {isa = PBXBuildFile; productRef = DB4323D12514936F004FAAEC /* TwidereSDK */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
@@ -88,6 +96,8 @@
 		DB43488D251DFF0F005B599F /* ProfileBannerStatusItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB43488C251DFF0F005B599F /* ProfileBannerStatusItemView.swift */; };
 		DB434892251E09A8005B599F /* CALayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB434891251E09A8005B599F /* CALayer.swift */; };
 		DB43CBDD2595CE2100D47607 /* LoadMoreConfigurableViewContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB43CBDC2595CE2100D47607 /* LoadMoreConfigurableViewContainer.swift */; };
+		DB44A56026C4DC35004C8B78 /* ThemeService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB44A55F26C4DC35004C8B78 /* ThemeService.swift */; };
+		DB44A56226C4FEAB004C8B78 /* WelcomeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB44A56126C4FEAB004C8B78 /* WelcomeViewModel.swift */; };
 		DB491609253ECD8E008755C3 /* TweetEntities.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB491608253ECD8E008755C3 /* TweetEntities.swift */; };
 		DB49160E253ECE78008755C3 /* TweetEntitiesAnnotation.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB49160D253ECE78008755C3 /* TweetEntitiesAnnotation.swift */; };
 		DB491613253ECF25008755C3 /* TweetEntitiesCashtag.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB491612253ECF25008755C3 /* TweetEntitiesCashtag.swift */; };
@@ -201,6 +211,12 @@
 		DB925744251C9CD6004FEFB5 /* ProfilePagingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB925743251C9CD6004FEFB5 /* ProfilePagingViewController.swift */; };
 		DB925749251C9D48004FEFB5 /* ProfilePagingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB925748251C9D47004FEFB5 /* ProfilePagingViewModel.swift */; };
 		DB94887D2599F70600C3E111 /* TimelineHeaderTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB94887C2599F70600C3E111 /* TimelineHeaderTableViewCell.swift */; };
+		DB94B6B126C64DAC00A2E8A1 /* Introspect in Frameworks */ = {isa = PBXBuildFile; productRef = DB94B6B026C64DAC00A2E8A1 /* Introspect */; };
+		DB94B6B426C65BE100A2E8A1 /* MastodonAuthenticationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB94B6B326C65BE100A2E8A1 /* MastodonAuthenticationController.swift */; };
+		DB94B6BE26C65CB000A2E8A1 /* AppShared.h in Headers */ = {isa = PBXBuildFile; fileRef = DB94B6BD26C65CB000A2E8A1 /* AppShared.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		DB94B6C126C65CB000A2E8A1 /* AppShared.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DB94B6BB26C65CB000A2E8A1 /* AppShared.framework */; };
+		DB94B6C226C65CB100A2E8A1 /* AppShared.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = DB94B6BB26C65CB000A2E8A1 /* AppShared.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		DB94B6C726C660D000A2E8A1 /* AppCommon.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB94B6C626C660D000A2E8A1 /* AppCommon.swift */; };
 		DB969A0C252475F00053CB31 /* APIService+Persist+Tweets.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB969A0B252475F00053CB31 /* APIService+Persist+Tweets.swift */; };
 		DB969A2F252490090053CB31 /* UserTimelineViewModel+State.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB969A2E252490090053CB31 /* UserTimelineViewModel+State.swift */; };
 		DB969A3925305EEF0053CB31 /* HomeTimelineViewModel+LoadLatestState.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB969A3825305EEE0053CB31 /* HomeTimelineViewModel+LoadLatestState.swift */; };
@@ -392,9 +408,24 @@
 		DBFA4A2B25A5A69100D51703 /* SearchTimelineViewModel+Diffable.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBFA4A2A25A5A69100D51703 /* SearchTimelineViewModel+Diffable.swift */; };
 		DBFCC44725667C620016698E /* UILabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBFCC44625667C620016698E /* UILabel.swift */; };
 		DBFCC46325668B860016698E /* DrawerSidebarPresentationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBFCC46225668B860016698E /* DrawerSidebarPresentationController.swift */; };
+		E5E65DC85CA480AE17571EFC /* Pods_AppShared.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 84835D7E14A262E389DD4AB3 /* Pods_AppShared.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		DB0B3B8826C662CC00501BB7 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = DBDA8E1624FCF8A3006750DC /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = DB94B6BA26C65CB000A2E8A1;
+			remoteInfo = AppShared;
+		};
+		DB94B6BF26C65CB000A2E8A1 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = DBDA8E1624FCF8A3006750DC /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = DB94B6BA26C65CB000A2E8A1;
+			remoteInfo = AppShared;
+		};
 		DBD40BC32599BDB6006E4ABC /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = DBDA8E1624FCF8A3006750DC /* Project object */;
@@ -440,12 +471,24 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
+		DB0B3B8D26C6637500501BB7 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				DB0B3B8C26C6637500501BB7 /* TwidereSDK in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		DB56A46025148D9900A7DA3E /* Embed Frameworks */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				DB0B3B8726C662CC00501BB7 /* AppShared.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -456,6 +499,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				DB94B6C226C65CB100A2E8A1 /* AppShared.framework in Embed Frameworks */,
 				DB4323D8251493C5004FAAEC /* TwidereSDK in Embed Frameworks */,
 				DBE76CA6250093CA00DEB0FC /* CoreDataStack.framework in Embed Frameworks */,
 			);
@@ -476,6 +520,7 @@
 
 /* Begin PBXFileReference section */
 		038E5A2895D82A5D7BA40C73 /* Pods_TwidereX_TwidereXUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_TwidereX_TwidereXUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		06C6C02930FE7CBB4E13D99E /* Pods-AppShared.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AppShared.release.xcconfig"; path = "Target Support Files/Pods-AppShared/Pods-AppShared.release.xcconfig"; sourceTree = "<group>"; };
 		120596A33EFEAC5EEDF6B0FC /* Pods-TwitterAPI-TwitterAPITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TwitterAPI-TwitterAPITests.debug.xcconfig"; path = "Target Support Files/Pods-TwitterAPI-TwitterAPITests/Pods-TwitterAPI-TwitterAPITests.debug.xcconfig"; sourceTree = "<group>"; };
 		17256F5127E8AA2E9B5A25FA /* Pods-TwitterAPI.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TwitterAPI.debug.xcconfig"; path = "Target Support Files/Pods-TwitterAPI/Pods-TwitterAPI.debug.xcconfig"; sourceTree = "<group>"; };
 		2504A7AE733D038B91122765 /* Pods-TwidereXTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TwidereXTests.release.xcconfig"; path = "Target Support Files/Pods-TwidereXTests/Pods-TwidereXTests.release.xcconfig"; sourceTree = "<group>"; };
@@ -483,15 +528,18 @@
 		3CFF05E953F47DC2B0B5AC95 /* Pods-TwidereXTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TwidereXTests.debug.xcconfig"; path = "Target Support Files/Pods-TwidereXTests/Pods-TwidereXTests.debug.xcconfig"; sourceTree = "<group>"; };
 		4423B1DC6D103908A7B752AF /* Pods-TwidereX.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TwidereX.release.xcconfig"; path = "Target Support Files/Pods-TwidereX/Pods-TwidereX.release.xcconfig"; sourceTree = "<group>"; };
 		44D01BA9E21B7F374DBDA38A /* Pods-TwidereX-TwidereXUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TwidereX-TwidereXUITests.release.xcconfig"; path = "Target Support Files/Pods-TwidereX-TwidereXUITests/Pods-TwidereX-TwidereXUITests.release.xcconfig"; sourceTree = "<group>"; };
+		5635061D4E24E9A2C69E90ED /* Pods-AppShared.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AppShared.debug.xcconfig"; path = "Target Support Files/Pods-AppShared/Pods-AppShared.debug.xcconfig"; sourceTree = "<group>"; };
 		5DAC343225B9987000109C6E /* CoreDataStack 3.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "CoreDataStack 3.xcdatamodel"; sourceTree = "<group>"; };
 		62DC6A6809A00EA057395C07 /* Pods_TwidereXTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_TwidereXTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		7252E908942B535D4A05450E /* Pods_TwitterAPI.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_TwitterAPI.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		84835D7E14A262E389DD4AB3 /* Pods_AppShared.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_AppShared.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		8564534D30DC2640CEB8344E /* Pods_TwidereX.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_TwidereX.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		85C8450177CD0E942954FD2C /* Pods-TwitterAPI.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TwitterAPI.release.xcconfig"; path = "Target Support Files/Pods-TwitterAPI/Pods-TwitterAPI.release.xcconfig"; sourceTree = "<group>"; };
 		9D73AD6A9D116695A879E8D7 /* Pods-TwitterAPI-TwitterAPITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TwitterAPI-TwitterAPITests.release.xcconfig"; path = "Target Support Files/Pods-TwitterAPI-TwitterAPITests/Pods-TwitterAPI-TwitterAPITests.release.xcconfig"; sourceTree = "<group>"; };
 		A4649F84FF237A9295846A9E /* Pods_TwitterAPI_TwitterAPITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_TwitterAPI_TwitterAPITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		DB0849AF251375E9009E0CD7 /* ConversationPostView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationPostView.swift; sourceTree = "<group>"; };
 		DB0849B12513760D009E0CD7 /* ConversationPostTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationPostTableViewCell.swift; sourceTree = "<group>"; };
+		DB0B3B8F26C666E300501BB7 /* APIService+WebFinger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "APIService+WebFinger.swift"; sourceTree = "<group>"; };
 		DB0D0ABF25944F75007A23C8 /* UserProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserProvider.swift; sourceTree = "<group>"; };
 		DB0D0AC725944FF2007A23C8 /* FollowingListViewController+UserProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FollowingListViewController+UserProvider.swift"; sourceTree = "<group>"; };
 		DB0D0ACC25945075007A23C8 /* UserProvider+UITableViewDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UserProvider+UITableViewDelegate.swift"; sourceTree = "<group>"; };
@@ -555,6 +603,9 @@
 		DB3FC044255270D6003A2F8A /* UserMediaTimelineViewModel+State.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UserMediaTimelineViewModel+State.swift"; sourceTree = "<group>"; };
 		DB3FC0492552711C003A2F8A /* UserMediaTimelineViewModel+Diffable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UserMediaTimelineViewModel+Diffable.swift"; sourceTree = "<group>"; };
 		DB3FC0512552742E003A2F8A /* MediaSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaSection.swift; sourceTree = "<group>"; };
+		DB42410D26C3E4BF00B6C5F8 /* WelcomeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeViewController.swift; sourceTree = "<group>"; };
+		DB42411326C3E55200B6C5F8 /* WelcomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeView.swift; sourceTree = "<group>"; };
+		DB42411526C3EB9100B6C5F8 /* ReadabilityPadding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReadabilityPadding.swift; sourceTree = "<group>"; };
 		DB43239D251491EB004FAAEC /* TwidereSDK */ = {isa = PBXFileReference; lastKnownFileType = folder; path = TwidereSDK; sourceTree = "<group>"; };
 		DB434873251DEB77005B599F /* ProfileBannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileBannerView.swift; sourceTree = "<group>"; };
 		DB434882251DF18C005B599F /* ProfileBannerInfoActionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileBannerInfoActionView.swift; sourceTree = "<group>"; };
@@ -562,6 +613,9 @@
 		DB43488C251DFF0F005B599F /* ProfileBannerStatusItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileBannerStatusItemView.swift; sourceTree = "<group>"; };
 		DB434891251E09A8005B599F /* CALayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CALayer.swift; sourceTree = "<group>"; };
 		DB43CBDC2595CE2100D47607 /* LoadMoreConfigurableViewContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadMoreConfigurableViewContainer.swift; sourceTree = "<group>"; };
+		DB44A55F26C4DC35004C8B78 /* ThemeService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemeService.swift; sourceTree = "<group>"; };
+		DB44A56126C4FEAB004C8B78 /* WelcomeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeViewModel.swift; sourceTree = "<group>"; };
+		DB44A56526C53FB0004C8B78 /* CoreDataStack 4.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "CoreDataStack 4.xcdatamodel"; sourceTree = "<group>"; };
 		DB491608253ECD8E008755C3 /* TweetEntities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TweetEntities.swift; sourceTree = "<group>"; };
 		DB49160D253ECE78008755C3 /* TweetEntitiesAnnotation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TweetEntitiesAnnotation.swift; sourceTree = "<group>"; };
 		DB491612253ECF25008755C3 /* TweetEntitiesCashtag.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TweetEntitiesCashtag.swift; sourceTree = "<group>"; };
@@ -674,6 +728,10 @@
 		DB925743251C9CD6004FEFB5 /* ProfilePagingViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfilePagingViewController.swift; sourceTree = "<group>"; };
 		DB925748251C9D47004FEFB5 /* ProfilePagingViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfilePagingViewModel.swift; sourceTree = "<group>"; };
 		DB94887C2599F70600C3E111 /* TimelineHeaderTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimelineHeaderTableViewCell.swift; sourceTree = "<group>"; };
+		DB94B6B326C65BE100A2E8A1 /* MastodonAuthenticationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MastodonAuthenticationController.swift; sourceTree = "<group>"; };
+		DB94B6BB26C65CB000A2E8A1 /* AppShared.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = AppShared.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		DB94B6BD26C65CB000A2E8A1 /* AppShared.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppShared.h; sourceTree = "<group>"; };
+		DB94B6C626C660D000A2E8A1 /* AppCommon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppCommon.swift; sourceTree = "<group>"; };
 		DB969A0B252475F00053CB31 /* APIService+Persist+Tweets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "APIService+Persist+Tweets.swift"; sourceTree = "<group>"; };
 		DB969A2E252490090053CB31 /* UserTimelineViewModel+State.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UserTimelineViewModel+State.swift"; sourceTree = "<group>"; };
 		DB969A3825305EEE0053CB31 /* HomeTimelineViewModel+LoadLatestState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "HomeTimelineViewModel+LoadLatestState.swift"; sourceTree = "<group>"; };
@@ -890,6 +948,15 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		DB94B6B826C65CB000A2E8A1 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				DB0B3B8B26C6637500501BB7 /* TwidereSDK in Frameworks */,
+				E5E65DC85CA480AE17571EFC /* Pods_AppShared.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		DBDA8E1B24FCF8A3006750DC /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -899,6 +966,7 @@
 				DB2611B7251B2D42004BF309 /* CryptoSwift in Frameworks */,
 				DB74A164256E148F00C5F3C9 /* CropViewController in Frameworks */,
 				DB4323D22514936F004FAAEC /* TwidereSDK in Frameworks */,
+				DB94B6B126C64DAC00A2E8A1 /* Introspect in Frameworks */,
 				DB3282DB26AFFD40002B721C /* MetaTextKit in Frameworks */,
 				DB6CF1C4269715CD001DE069 /* FPSIndicator in Frameworks */,
 				DB2924CB2546B958003899A7 /* Kingfisher in Frameworks */,
@@ -909,6 +977,7 @@
 				DBE76CA5250093CA00DEB0FC /* CoreDataStack.framework in Frameworks */,
 				44CCAE5E7B79E0C359E367E5 /* Pods_TwidereX.framework in Frameworks */,
 				DBBC3F3525835B8B005CF99E /* ActiveLabel in Frameworks */,
+				DB94B6C126C65CB000A2E8A1 /* AppShared.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -933,6 +1002,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				DB4323D425149374004FAAEC /* TwidereSDK in Frameworks */,
+				DB0B3B8626C662CC00501BB7 /* AppShared.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -967,6 +1037,8 @@
 				85C8450177CD0E942954FD2C /* Pods-TwitterAPI.release.xcconfig */,
 				120596A33EFEAC5EEDF6B0FC /* Pods-TwitterAPI-TwitterAPITests.debug.xcconfig */,
 				9D73AD6A9D116695A879E8D7 /* Pods-TwitterAPI-TwitterAPITests.release.xcconfig */,
+				5635061D4E24E9A2C69E90ED /* Pods-AppShared.debug.xcconfig */,
+				06C6C02930FE7CBB4E13D99E /* Pods-AppShared.release.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -1162,6 +1234,26 @@
 			path = Section;
 			sourceTree = "<group>";
 		};
+		DB42410F26C3E4C300B6C5F8 /* Welcome */ = {
+			isa = PBXGroup;
+			children = (
+				DB8E4FE42563D41000459DA2 /* Twitter */,
+				DB94B6B526C65BED00A2E8A1 /* Mastodon */,
+				DB42410D26C3E4BF00B6C5F8 /* WelcomeViewController.swift */,
+				DB44A56126C4FEAB004C8B78 /* WelcomeViewModel.swift */,
+				DB42411326C3E55200B6C5F8 /* WelcomeView.swift */,
+			);
+			path = Welcome;
+			sourceTree = "<group>";
+		};
+		DB42411026C3E4C900B6C5F8 /* Onboarding */ = {
+			isa = PBXGroup;
+			children = (
+				DB42410F26C3E4C300B6C5F8 /* Welcome */,
+			);
+			path = Onboarding;
+			sourceTree = "<group>";
+		};
 		DB434878251DEB7A005B599F /* View */ = {
 			isa = PBXGroup;
 			children = (
@@ -1295,6 +1387,7 @@
 				DB7D1247250B5C6C00999903 /* UIButton+Inset.swift */,
 				DBA6B1BE2535B0BE005FB0B4 /* ControlContainableScrollViews.swift */,
 				DBA5FA182553DCBC00D2E98E /* TransitioningMath.swift */,
+				DB42411526C3EB9100B6C5F8 /* ReadabilityPadding.swift */,
 			);
 			path = Vender;
 			sourceTree = "<group>";
@@ -1459,6 +1552,32 @@
 				DB544B9C2589D09E00331B3D /* VideoPlayerViewModel.swift */,
 			);
 			path = ViewModel;
+			sourceTree = "<group>";
+		};
+		DB94B6B226C65BB500A2E8A1 /* Deprecated */ = {
+			isa = PBXGroup;
+			children = (
+				DBDA8E8624FE05B9006750DC /* Authentication */,
+			);
+			path = Deprecated;
+			sourceTree = "<group>";
+		};
+		DB94B6B526C65BED00A2E8A1 /* Mastodon */ = {
+			isa = PBXGroup;
+			children = (
+				DB94B6B326C65BE100A2E8A1 /* MastodonAuthenticationController.swift */,
+			);
+			path = Mastodon;
+			sourceTree = "<group>";
+		};
+		DB94B6BC26C65CB000A2E8A1 /* AppShared */ = {
+			isa = PBXGroup;
+			children = (
+				DB94B6BD26C65CB000A2E8A1 /* AppShared.h */,
+				DB94B6C626C660D000A2E8A1 /* AppCommon.swift */,
+				DB2611462518AC13004BF309 /* AppSecret.swift */,
+			);
+			path = AppShared;
 			sourceTree = "<group>";
 		};
 		DB97D1E7256CBA5D0056F8C2 /* TableViewCell */ = {
@@ -1715,6 +1834,7 @@
 				DBE76C91250093CA00DEB0FC /* CoreDataStack */,
 				DBE76C9E250093CA00DEB0FC /* CoreDataStackTests */,
 				DBE76CE92500B29300DEB0FC /* StubMixer */,
+				DB94B6BC26C65CB000A2E8A1 /* AppShared */,
 				DBDA8E1F24FCF8A3006750DC /* Products */,
 				0ACC0E3D669CFFCB246A2D5B /* Pods */,
 				F30A8D6C372DFF6B5AEEE327 /* Frameworks */,
@@ -1730,6 +1850,7 @@
 				DBE76C90250093CA00DEB0FC /* CoreDataStack.framework */,
 				DBE76C98250093CA00DEB0FC /* CoreDataStackTests.xctest */,
 				DBE76CE82500B29300DEB0FC /* StubMixer.app */,
+				DB94B6BB26C65CB000A2E8A1 /* AppShared.framework */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1742,6 +1863,7 @@
 				DB6B8B2C25AF235F00F20FD5 /* TwidereX.xctestplan */,
 				DB6B8B2D25AF235F00F20FD5 /* TwidereX-Performance.xctestplan */,
 				DBA122CA256C13B000928671 /* GoogleService-Info.plist */,
+				DB94B6B226C65BB500A2E8A1 /* Deprecated */,
 				DBCB408E255D8C2E00DD8D8F /* Activity */,
 				DB88AC312508BA950009E562 /* Diffable */,
 				DBDA8E8724FE0615006750DC /* State */,
@@ -1781,7 +1903,6 @@
 		DBDA8E5324FDF3D6006750DC /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
-				DB2611462518AC13004BF309 /* AppSecret.swift */,
 				DBDA8E2124FCF8A3006750DC /* AppDelegate.swift */,
 				DBDA8E2324FCF8A3006750DC /* SceneDelegate.swift */,
 				DBDA8E2724FCF8A3006750DC /* Main.storyboard */,
@@ -1797,7 +1918,7 @@
 				DBEA4F782511E4660007FEC5 /* Share */,
 				DBF69ECE25496E6800E2A915 /* Transition */,
 				DBDA8E9624FE075E006750DC /* MainTab */,
-				DBDA8E8624FE05B9006750DC /* Authentication */,
+				DB42411026C3E4C900B6C5F8 /* Onboarding */,
 				DBCB4032255B670F00DD8D8F /* Account */,
 				DBDA8EA024FE1002006750DC /* HomeTimeline */,
 				DB9154592551210D00613473 /* MentionTimeline */,
@@ -1816,12 +1937,13 @@
 		DBDA8E5924FE0374006750DC /* Service */ = {
 			isa = PBXGroup;
 			children = (
+				DBE76C8A24FF941A00DEB0FC /* APIService */,
 				DBE76D222500FF1C00DEB0FC /* AuthenticationService.swift */,
 				DB8AC1322541662200E636BE /* KeyboardResponderService.swift */,
 				DBC8E03C2574F7DB00401E20 /* PhotoLibraryService.swift */,
 				DB2FFF35258B56E5003DBC19 /* VideoPlaybackService.swift */,
 				DB2924C12546A77B003899A7 /* TwitterMediaService.swift */,
-				DBE76C8A24FF941A00DEB0FC /* APIService */,
+				DB44A55F26C4DC35004C8B78 /* ThemeService.swift */,
 			);
 			path = Service;
 			sourceTree = "<group>";
@@ -1829,7 +1951,6 @@
 		DBDA8E8624FE05B9006750DC /* Authentication */ = {
 			isa = PBXGroup;
 			children = (
-				DB8E4FE42563D41000459DA2 /* Twitter */,
 				DB1D7B2F25B1959700397DCD /* View */,
 				DBDA8E8424FE05B6006750DC /* AuthenticationViewController.swift */,
 				DB1D7B4A25B5A21A00397DCD /* AuthenticationViewModel.swift */,
@@ -1926,9 +2047,10 @@
 				DB25B9EC2539A9BA00A5420F /* CoreData */,
 				DBDA8E5724FE0371006750DC /* APIService.swift */,
 				DBFA4A1A25A580FA00D51703 /* APIService+APIError.swift */,
-				DBFA4A1525A580C100D51703 /* APIService+RateLimit.swift */,
+				DB36F353257DF14E0028F81E /* APIService+Application.swift */,
 				DBE76C8824FF941400DEB0FC /* APIService+Autentication.swift */,
 				DB3402C92521E4AF009EFADF /* APIService+Account.swift */,
+				DBFA4A1525A580C100D51703 /* APIService+RateLimit.swift */,
 				DBE76D202500ED5100DEB0FC /* APIService+HomeTimeline.swift */,
 				DB9154672551389D00613473 /* APIService+MentionTimeline.swift */,
 				DB34028D2521BC06009EFADF /* APIService+UserTimeline.swift */,
@@ -1943,7 +2065,7 @@
 				DB91540A254FE4B200613473 /* APIService+Friendship.swift */,
 				DB53999F25AEF75D0064586D /* APIService+Mute.swift */,
 				DB5399A725AF0A790064586D /* APIService+Block.swift */,
-				DB36F353257DF14E0028F81E /* APIService+Application.swift */,
+				DB0B3B8F26C666E300501BB7 /* APIService+WebFinger.swift */,
 			);
 			path = APIService;
 			sourceTree = "<group>";
@@ -2254,6 +2376,7 @@
 				62DC6A6809A00EA057395C07 /* Pods_TwidereXTests.framework */,
 				7252E908942B535D4A05450E /* Pods_TwitterAPI.framework */,
 				A4649F84FF237A9295846A9E /* Pods_TwitterAPI_TwitterAPITests.framework */,
+				84835D7E14A262E389DD4AB3 /* Pods_AppShared.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -2261,6 +2384,14 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
+		DB94B6B626C65CB000A2E8A1 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				DB94B6BE26C65CB000A2E8A1 /* AppShared.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		DBE76C8B250093CA00DEB0FC /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
@@ -2272,6 +2403,29 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
+		DB94B6BA26C65CB000A2E8A1 /* AppShared */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = DB94B6C326C65CB100A2E8A1 /* Build configuration list for PBXNativeTarget "AppShared" */;
+			buildPhases = (
+				51870AB6AC62D0F5C707B21E /* [CP] Check Pods Manifest.lock */,
+				DB94B6B626C65CB000A2E8A1 /* Headers */,
+				DB94B6B726C65CB000A2E8A1 /* Sources */,
+				DB94B6B826C65CB000A2E8A1 /* Frameworks */,
+				DB94B6B926C65CB000A2E8A1 /* Resources */,
+				DB0B3B8D26C6637500501BB7 /* Embed Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = AppShared;
+			packageProductDependencies = (
+				DB0B3B8A26C6637500501BB7 /* TwidereSDK */,
+			);
+			productName = AppShared;
+			productReference = DB94B6BB26C65CB000A2E8A1 /* AppShared.framework */;
+			productType = "com.apple.product-type.framework";
+		};
 		DBDA8E1D24FCF8A3006750DC /* TwidereX */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = DBDA8E4824FCF8A7006750DC /* Build configuration list for PBXNativeTarget "TwidereX" */;
@@ -2289,6 +2443,7 @@
 			);
 			dependencies = (
 				DBE76CA4250093CA00DEB0FC /* PBXTargetDependency */,
+				DB94B6C026C65CB000A2E8A1 /* PBXTargetDependency */,
 			);
 			name = TwidereX;
 			packageProductDependencies = (
@@ -2305,6 +2460,7 @@
 				DB3282DA26AFFD40002B721C /* MetaTextKit */,
 				DB3282DC26AFFD40002B721C /* TwitterMeta */,
 				DB71CF1926B3E2720018F605 /* MetaTextArea */,
+				DB94B6B026C64DAC00A2E8A1 /* Introspect */,
 			);
 			productName = TwidereX;
 			productReference = DBDA8E1E24FCF8A3006750DC /* TwidereX.app */;
@@ -2363,6 +2519,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				DB0B3B8926C662CC00501BB7 /* PBXTargetDependency */,
 			);
 			name = CoreDataStack;
 			packageProductDependencies = (
@@ -2419,6 +2576,10 @@
 				LastUpgradeCheck = 1200;
 				ORGANIZATIONNAME = Twidere;
 				TargetAttributes = {
+					DB94B6BA26C65CB000A2E8A1 = {
+						CreatedOnToolsVersion = 13.0;
+						LastSwiftMigration = 1300;
+					};
 					DBDA8E1D24FCF8A3006750DC = {
 						CreatedOnToolsVersion = 12.0;
 					};
@@ -2471,6 +2632,7 @@
 				DBBC3F3325835B8B005CF99E /* XCRemoteSwiftPackageReference "ActiveLabel" */,
 				DB6CF1C2269715CD001DE069 /* XCRemoteSwiftPackageReference "FPSIndicator" */,
 				DB3282D926AFFD40002B721C /* XCRemoteSwiftPackageReference "MetaTextKit" */,
+				DB94B6AF26C64DAC00A2E8A1 /* XCRemoteSwiftPackageReference "SwiftUI-Introspect" */,
 			);
 			productRefGroup = DBDA8E1F24FCF8A3006750DC /* Products */;
 			projectDirPath = "";
@@ -2482,11 +2644,19 @@
 				DBE76CE72500B29300DEB0FC /* StubMixer */,
 				DBE76C8F250093CA00DEB0FC /* CoreDataStack */,
 				DBE76C97250093CA00DEB0FC /* CoreDataStackTests */,
+				DB94B6BA26C65CB000A2E8A1 /* AppShared */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		DB94B6B926C65CB000A2E8A1 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		DBDA8E1C24FCF8A3006750DC /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -2582,6 +2752,28 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-TwidereX-TwidereXUITests/Pods-TwidereX-TwidereXUITests-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		51870AB6AC62D0F5C707B21E /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-AppShared-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
 		6B1901F5A04D5AA62D66599E /* [CP] Embed Pods Frameworks */ = {
@@ -2684,6 +2876,15 @@
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		DB94B6B726C65CB000A2E8A1 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				DB94B6C726C660D000A2E8A1 /* AppCommon.swift in Sources */,
+				DB0B3B8E26C6639100501BB7 /* AppSecret.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		DBDA8E1A24FCF8A3006750DC /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -2712,7 +2913,6 @@
 				DB6D671F2566221D00B70DC0 /* DisplayPreferenceViewModel.swift in Sources */,
 				DB5399A825AF0A790064586D /* APIService+Block.swift in Sources */,
 				DB761E6A255946160050DC01 /* DrawerSidebarViewModel.swift in Sources */,
-				DB2611472518AC13004BF309 /* AppSecret.swift in Sources */,
 				DB36F359257DF9DE0028F81E /* DeveloperViewModel.swift in Sources */,
 				DBE76D212500ED5100DEB0FC /* APIService+HomeTimeline.swift in Sources */,
 				DBA6B1CC2535BC6E005FB0B4 /* APIService+Like.swift in Sources */,
@@ -2768,6 +2968,7 @@
 				DBB1FEC4269C3714005BC761 /* StatusView.swift in Sources */,
 				DB3FC04025527053003A2F8A /* UserMediaTimelineViewModel.swift in Sources */,
 				DB0D0AC825944FF2007A23C8 /* FollowingListViewController+UserProvider.swift in Sources */,
+				DB42411626C3EB9100B6C5F8 /* ReadabilityPadding.swift in Sources */,
 				DBA5FA1E2553DDDD00D2E98E /* UITapGestureRecognizer.swift in Sources */,
 				DBCE2E992591A44000926D09 /* UIViewAnimatingPosition.swift in Sources */,
 				DBCB4053255B6EB100DD8D8F /* AccountListViewModel.swift in Sources */,
@@ -2823,6 +3024,7 @@
 				DBA5FA192553DCBC00D2E98E /* TransitioningMath.swift in Sources */,
 				DBF69EAC25496C9F00E2A915 /* SearchDetailViewModel.swift in Sources */,
 				DB915470255142A500613473 /* MentionTimelineViewModel+LoadLatestState.swift in Sources */,
+				DB44A56226C4FEAB004C8B78 /* WelcomeViewModel.swift in Sources */,
 				DBC8E04B2576337F00401E20 /* DisposeBagCollectable.swift in Sources */,
 				DB33017625A41102003552B0 /* StatusProviderFacade.swift in Sources */,
 				DB2924C22546A77B003899A7 /* TwitterMediaService.swift in Sources */,
@@ -2832,6 +3034,7 @@
 				DBA5FA0F2553D59E00D2E98E /* MediaPreviewTransitionItem.swift in Sources */,
 				DB969A2F252490090053CB31 /* UserTimelineViewModel+State.swift in Sources */,
 				DBB2513E2599DBAB0064A876 /* HomeTimelineViewController+DebugAction.swift in Sources */,
+				DB42410E26C3E4BF00B6C5F8 /* WelcomeViewController.swift in Sources */,
 				DB33A4A925A319A0003CED7D /* ActionToolbarContainer.swift in Sources */,
 				DBC747E1259DBD5400787EEF /* AvatarBarButtonItem.swift in Sources */,
 				DBE196DB256FB48E004E831A /* TwitterUserEntitiesURL.swift in Sources */,
@@ -2850,6 +3053,7 @@
 				DB8E4FBA2563B61500459DA2 /* DisplayPreferenceViewController.swift in Sources */,
 				DBB1FECC269C3BE4005BC761 /* Sample.swift in Sources */,
 				DBA6B1BF2535B0BE005FB0B4 /* ControlContainableScrollViews.swift in Sources */,
+				DB42411426C3E55200B6C5F8 /* WelcomeView.swift in Sources */,
 				DBB1FEC2269C34FE005BC761 /* AvatarImageView.swift in Sources */,
 				DB2924DF2547CCD6003899A7 /* ComposeTweetMediaItem.swift in Sources */,
 				DBE71B7A26B7AF5C00DFAB8E /* StubTimelineViewController.swift in Sources */,
@@ -2869,6 +3073,7 @@
 				DBF639FC259B333A009E12C8 /* EmptyStateView.swift in Sources */,
 				DBE76D36250221D700DEB0FC /* TwitterUser.swift in Sources */,
 				DBA397BD25551C0900A95662 /* MediaPreviewPagingViewController.swift in Sources */,
+				DB0B3B9026C666E300501BB7 /* APIService+WebFinger.swift in Sources */,
 				DBFCC44725667C620016698E /* UILabel.swift in Sources */,
 				DB25BA08253D7D6E00A5420F /* APIService+Persist+DictContent.swift in Sources */,
 				DB9EC4EA255A6BC7005403AA /* TwitterAccountUnlockViewController.swift in Sources */,
@@ -2918,6 +3123,7 @@
 				DB2FFF29258B0C2C003DBC19 /* TouchBlockingView.swift in Sources */,
 				DBF69EE12549705A00E2A915 /* ViewControllerAnimatedTransitioningDelegate.swift in Sources */,
 				DBE71B7D26B7C5FD00DFAB8E /* StubTimelineViewModel.swift in Sources */,
+				DB44A56026C4DC35004C8B78 /* ThemeService.swift in Sources */,
 				DB3402B72521D389009EFADF /* UserTimelineViewModel.swift in Sources */,
 				DBED96D8253F5D7800C5383A /* NamingState.swift in Sources */,
 				DB6DF3E0252060AA00E8A273 /* ProfileViewModel.swift in Sources */,
@@ -2937,6 +3143,7 @@
 				DB67610D254AD681006C6798 /* ActivityIndicatorCollectionViewCell.swift in Sources */,
 				DB2FFF61258CB051003DBC19 /* NeedsDependency+AVPlayerViewControllerDelegate.swift in Sources */,
 				DBD40C0D2599CD9D006E4ABC /* FollowerListViewController+UserProvider.swift in Sources */,
+				DB94B6B426C65BE100A2E8A1 /* MastodonAuthenticationController.swift in Sources */,
 				DBA5FA2E2553F06B00D2E98E /* MediaInfoDescriptionView.swift in Sources */,
 				DB5918F7255E81FB00B20F6F /* MediaPreviewViewController+StatusProvider.swift in Sources */,
 				DBA6B1B725355C1E005FB0B4 /* UIAlertController.swift in Sources */,
@@ -3079,6 +3286,16 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		DB0B3B8926C662CC00501BB7 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = DB94B6BA26C65CB000A2E8A1 /* AppShared */;
+			targetProxy = DB0B3B8826C662CC00501BB7 /* PBXContainerItemProxy */;
+		};
+		DB94B6C026C65CB000A2E8A1 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = DB94B6BA26C65CB000A2E8A1 /* AppShared */;
+			targetProxy = DB94B6BF26C65CB000A2E8A1 /* PBXContainerItemProxy */;
+		};
 		DBD40BC42599BDB6006E4ABC /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = DBE76CE72500B29300DEB0FC /* StubMixer */;
@@ -3179,6 +3396,75 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		DB94B6C426C65CB100A2E8A1 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 5635061D4E24E9A2C69E90ED /* Pods-AppShared.debug.xcconfig */;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = 7LFDZ96332;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2021 Twidere. All rights reserved.";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.twidere.AppShared;
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
+		};
+		DB94B6C526C65CB100A2E8A1 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 06C6C02930FE7CBB4E13D99E /* Pods-AppShared.release.xcconfig */;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = 7LFDZ96332;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2021 Twidere. All rights reserved.";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.twidere.AppShared;
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Release;
+		};
 		DBDA8E4624FCF8A7006750DC /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -3301,6 +3587,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = F58BC0DB264850C274FDE699 /* Pods-TwidereX.debug.xcconfig */;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = TwidereX/TwidereX.entitlements;
@@ -3325,6 +3612,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 4423B1DC6D103908A7B752AF /* Pods-TwidereX.release.xcconfig */;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = TwidereX/TwidereX.entitlements;
@@ -3353,7 +3641,6 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 7LFDZ96332;
 				INFOPLIST_FILE = TwidereXTests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -3375,7 +3662,6 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 7LFDZ96332;
 				INFOPLIST_FILE = TwidereXTests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -3489,7 +3775,6 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 7LFDZ96332;
 				INFOPLIST_FILE = CoreDataStackTests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -3509,7 +3794,6 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 7LFDZ96332;
 				INFOPLIST_FILE = CoreDataStackTests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -3564,6 +3848,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		DB94B6C326C65CB100A2E8A1 /* Build configuration list for PBXNativeTarget "AppShared" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				DB94B6C426C65CB100A2E8A1 /* Debug */,
+				DB94B6C526C65CB100A2E8A1 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		DBDA8E1924FCF8A3006750DC /* Build configuration list for PBXProject "TwidereX" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -3670,6 +3963,14 @@
 				minimumVersion = 2.5.5;
 			};
 		};
+		DB94B6AF26C64DAC00A2E8A1 /* XCRemoteSwiftPackageReference "SwiftUI-Introspect" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/siteline/SwiftUI-Introspect.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.1.3;
+			};
+		};
 		DB9EC4DF255A6317005403AA /* XCRemoteSwiftPackageReference "SwiftMessages" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/SwiftKickMobile/SwiftMessages";
@@ -3721,6 +4022,10 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		DB0B3B8A26C6637500501BB7 /* TwidereSDK */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = TwidereSDK;
+		};
 		DB2611B6251B2D42004BF309 /* CryptoSwift */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = DB2611B5251B2D42004BF309 /* XCRemoteSwiftPackageReference "CryptoSwift" */;
@@ -3763,6 +4068,11 @@
 			package = DB74A162256E148F00C5F3C9 /* XCRemoteSwiftPackageReference "TOCropViewController" */;
 			productName = CropViewController;
 		};
+		DB94B6B026C64DAC00A2E8A1 /* Introspect */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = DB94B6AF26C64DAC00A2E8A1 /* XCRemoteSwiftPackageReference "SwiftUI-Introspect" */;
+			productName = Introspect;
+		};
 		DBBC3F3425835B8B005CF99E /* ActiveLabel */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = DBBC3F3325835B8B005CF99E /* XCRemoteSwiftPackageReference "ActiveLabel" */;
@@ -3794,11 +4104,12 @@
 		DBE76CBF250093E200DEB0FC /* CoreDataStack.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
+				DB44A56526C53FB0004C8B78 /* CoreDataStack 4.xcdatamodel */,
 				5DAC343225B9987000109C6E /* CoreDataStack 3.xcdatamodel */,
 				DB53999825AED8420064586D /* CoreDataStack 2.xcdatamodel */,
 				DBE76CC0250093E200DEB0FC /* CoreDataStack.xcdatamodel */,
 			);
-			currentVersion = 5DAC343225B9987000109C6E /* CoreDataStack 3.xcdatamodel */;
+			currentVersion = DB44A56526C53FB0004C8B78 /* CoreDataStack 4.xcdatamodel */;
 			path = CoreDataStack.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;

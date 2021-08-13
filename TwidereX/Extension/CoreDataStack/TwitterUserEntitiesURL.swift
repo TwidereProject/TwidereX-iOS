@@ -8,7 +8,7 @@
 
 import Foundation
 import CoreDataStack
-import TwitterAPI
+import TwitterSDK
 
 extension TwitterUserEntitiesURL.Property {
     static func properties(from entities: Twitter.Entity.User.Entities, networkDate: Date) -> [TwitterUserEntitiesURL.Property] {

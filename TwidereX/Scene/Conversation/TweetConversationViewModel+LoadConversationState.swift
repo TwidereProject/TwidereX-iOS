@@ -10,7 +10,7 @@ import os.log
 import Foundation
 import GameplayKit
 import CoreDataStack
-import TwitterAPI
+import TwitterSDK
 
 extension TweetConversationViewModel {
     class LoadConversationState: GKState, NamingState {

@@ -9,7 +9,7 @@
 import os.log
 import UIKit
 import Combine
-import TwitterAPI
+import TwitterSDK
 import CoreData
 import CoreDataStack
 import CommonOSLog
