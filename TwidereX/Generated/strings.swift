@@ -28,6 +28,8 @@ internal enum L10n {
         internal static let github = L10n.tr("Localizable", "Accessibility.Common.Logo.Github")
         /// Mastodon Logo
         internal static let mastodon = L10n.tr("Localizable", "Accessibility.Common.Logo.Mastodon")
+        /// Telegram Logo
+        internal static let telegram = L10n.tr("Localizable", "Accessibility.Common.Logo.Telegram")
         /// Twidere X logo
         internal static let twidere = L10n.tr("Localizable", "Accessibility.Common.Logo.Twidere")
         /// Twitter Logo
@@ -56,18 +58,20 @@ internal enum L10n {
     }
     internal enum Scene {
       internal enum Compose {
-        /// At
-        internal static let at = L10n.tr("Localizable", "Accessibility.Scene.Compose.At")
+        /// Add mention
+        internal static let addMention = L10n.tr("Localizable", "Accessibility.Scene.Compose.AddMention")
         /// Open draft
         internal static let draft = L10n.tr("Localizable", "Accessibility.Scene.Compose.Draft")
         /// Add image
         internal static let image = L10n.tr("Localizable", "Accessibility.Scene.Compose.Image")
         /// Send
         internal static let send = L10n.tr("Localizable", "Accessibility.Scene.Compose.Send")
+        /// Thread mode
+        internal static let thread = L10n.tr("Localizable", "Accessibility.Scene.Compose.Thread")
         internal enum Location {
           /// Disable location
           internal static let disable = L10n.tr("Localizable", "Accessibility.Scene.Compose.Location.Disable")
-          /// Enable Location
+          /// Enable location
           internal static let enable = L10n.tr("Localizable", "Accessibility.Scene.Compose.Location.Enable")
         }
       }
@@ -174,6 +178,18 @@ internal enum L10n {
         /// Failed to Load
         internal static let title = L10n.tr("Localizable", "Common.Alerts.FailedToLoad.Title")
       }
+      internal enum FailedToLoginMastodonServer {
+        /// Server URL is incorrect.
+        internal static let message = L10n.tr("Localizable", "Common.Alerts.FailedToLoginMastodonServer.Message")
+        /// Failed to Login
+        internal static let title = L10n.tr("Localizable", "Common.Alerts.FailedToLoginMastodonServer.Title")
+      }
+      internal enum FailedToLoginTimeout {
+        /// Connection timeout.
+        internal static let message = L10n.tr("Localizable", "Common.Alerts.FailedToLoginTimeout.Message")
+        /// Failed to Login
+        internal static let title = L10n.tr("Localizable", "Common.Alerts.FailedToLoginTimeout.Title")
+      }
       internal enum FailedToMuteUser {
         /// Please try again
         internal static let message = L10n.tr("Localizable", "Common.Alerts.FailedToMuteUser.Message")
@@ -197,6 +213,12 @@ internal enum L10n {
         internal static func title(_ p1: Any) -> String {
           return L10n.tr("Localizable", "Common.Alerts.FailedToReportUser.Title", String(describing: p1))
         }
+      }
+      internal enum FailedToSendMessage {
+        /// Failed to send message
+        internal static let message = L10n.tr("Localizable", "Common.Alerts.FailedToSendMessage.Message")
+        /// Sending message
+        internal static let title = L10n.tr("Localizable", "Common.Alerts.FailedToSendMessage.Title")
       }
       internal enum FailedToUnblockUser {
         /// Please try again
@@ -227,6 +249,24 @@ internal enum L10n {
       internal enum FollowingSuccess {
         /// Following Succeeded
         internal static let title = L10n.tr("Localizable", "Common.Alerts.FollowingSuccess.Title")
+      }
+      internal enum MediaSaveFail {
+        /// Please try again
+        internal static let message = L10n.tr("Localizable", "Common.Alerts.MediaSaveFail.Message")
+        /// Failed to save media
+        internal static let title = L10n.tr("Localizable", "Common.Alerts.MediaSaveFail.Title")
+      }
+      internal enum MediaSaved {
+        /// Media saved
+        internal static let title = L10n.tr("Localizable", "Common.Alerts.MediaSaved.Title")
+      }
+      internal enum MediaSaving {
+        /// Saving media
+        internal static let title = L10n.tr("Localizable", "Common.Alerts.MediaSaving.Title")
+      }
+      internal enum MediaSharing {
+        /// Media will be shared after download is completed
+        internal static let title = L10n.tr("Localizable", "Common.Alerts.MediaSharing.Title")
       }
       internal enum MuteUserSuccess {
         /// %@ has been muted
@@ -292,6 +332,10 @@ internal enum L10n {
         /// Failed to Tweet
         internal static let title = L10n.tr("Localizable", "Common.Alerts.TweetFail.Title")
       }
+      internal enum TweetSending {
+        /// Sending tweet
+        internal static let title = L10n.tr("Localizable", "Common.Alerts.TweetSending.Title")
+      }
       internal enum TweetSent {
         /// Tweet Sent
         internal static let title = L10n.tr("Localizable", "Common.Alerts.TweetSent.Title")
@@ -341,10 +385,14 @@ internal enum L10n {
         internal static let save = L10n.tr("Localizable", "Common.Controls.Actions.Save")
         /// Save photo
         internal static let savePhoto = L10n.tr("Localizable", "Common.Controls.Actions.SavePhoto")
+        /// Share media
+        internal static let shareMedia = L10n.tr("Localizable", "Common.Controls.Actions.ShareMedia")
         /// Sign in
         internal static let signIn = L10n.tr("Localizable", "Common.Controls.Actions.SignIn")
         /// Take photo
         internal static let takePhoto = L10n.tr("Localizable", "Common.Controls.Actions.TakePhoto")
+        /// Yes
+        internal static let yes = L10n.tr("Localizable", "Common.Controls.Actions.Yes")
       }
       internal enum Friendship {
         /// Block %@
@@ -424,6 +472,32 @@ internal enum L10n {
           internal static let retweet = L10n.tr("Localizable", "Common.Controls.Status.Actions.Retweet")
           /// Share link
           internal static let shareLink = L10n.tr("Localizable", "Common.Controls.Status.Actions.ShareLink")
+          /// Vote
+          internal static let vote = L10n.tr("Localizable", "Common.Controls.Status.Actions.Vote")
+        }
+        internal enum Poll {
+          /// Closed
+          internal static let expired = L10n.tr("Localizable", "Common.Controls.Status.Poll.Expired")
+          /// %@ people
+          internal static func totalPeople(_ p1: Any) -> String {
+            return L10n.tr("Localizable", "Common.Controls.Status.Poll.TotalPeople", String(describing: p1))
+          }
+          /// %@ person
+          internal static func totalPerson(_ p1: Any) -> String {
+            return L10n.tr("Localizable", "Common.Controls.Status.Poll.TotalPerson", String(describing: p1))
+          }
+          /// %@ vote
+          internal static func totalVote(_ p1: Any) -> String {
+            return L10n.tr("Localizable", "Common.Controls.Status.Poll.TotalVote", String(describing: p1))
+          }
+          /// %@ votes
+          internal static func totalVotes(_ p1: Any) -> String {
+            return L10n.tr("Localizable", "Common.Controls.Status.Poll.TotalVotes", String(describing: p1))
+          }
+        }
+        internal enum Thread {
+          /// Show this thread
+          internal static let show = L10n.tr("Localizable", "Common.Controls.Status.Thread.Show")
         }
       }
       internal enum Timeline {
@@ -433,52 +507,140 @@ internal enum L10n {
     }
     internal enum Countable {
       internal enum Like {
-        /// likes
-        internal static let multiple = L10n.tr("Localizable", "Common.Countable.Like.Multiple")
-        /// like
-        internal static let single = L10n.tr("Localizable", "Common.Countable.Like.Single")
+        /// %@ likes
+        internal static func multiple(_ p1: Any) -> String {
+          return L10n.tr("Localizable", "Common.Countable.Like.Multiple", String(describing: p1))
+        }
+        /// %@ like
+        internal static func single(_ p1: Any) -> String {
+          return L10n.tr("Localizable", "Common.Countable.Like.Single", String(describing: p1))
+        }
       }
       internal enum List {
-        /// lists
-        internal static let multiple = L10n.tr("Localizable", "Common.Countable.List.Multiple")
-        /// list
-        internal static let single = L10n.tr("Localizable", "Common.Countable.List.Single")
+        /// %@ lists
+        internal static func multiple(_ p1: Any) -> String {
+          return L10n.tr("Localizable", "Common.Countable.List.Multiple", String(describing: p1))
+        }
+        /// %@ list
+        internal static func single(_ p1: Any) -> String {
+          return L10n.tr("Localizable", "Common.Countable.List.Single", String(describing: p1))
+        }
       }
       internal enum Member {
-        /// members
-        internal static let multiple = L10n.tr("Localizable", "Common.Countable.Member.Multiple")
-        /// member
-        internal static let single = L10n.tr("Localizable", "Common.Countable.Member.Single")
+        /// %@ members
+        internal static func multiple(_ p1: Any) -> String {
+          return L10n.tr("Localizable", "Common.Countable.Member.Multiple", String(describing: p1))
+        }
+        /// %@ member
+        internal static func single(_ p1: Any) -> String {
+          return L10n.tr("Localizable", "Common.Countable.Member.Single", String(describing: p1))
+        }
       }
       internal enum Photo {
-        /// photos
-        internal static let multiple = L10n.tr("Localizable", "Common.Countable.Photo.Multiple")
-        /// photo
-        internal static let single = L10n.tr("Localizable", "Common.Countable.Photo.Single")
+        /// %@ photos
+        internal static func multiple(_ p1: Any) -> String {
+          return L10n.tr("Localizable", "Common.Countable.Photo.Multiple", String(describing: p1))
+        }
+        /// %@ photo
+        internal static func single(_ p1: Any) -> String {
+          return L10n.tr("Localizable", "Common.Countable.Photo.Single", String(describing: p1))
+        }
       }
       internal enum Quote {
-        /// quotes
-        internal static let mutiple = L10n.tr("Localizable", "Common.Countable.Quote.Mutiple")
-        /// quote
-        internal static let single = L10n.tr("Localizable", "Common.Countable.Quote.Single")
+        /// %@ quotes
+        internal static func mutiple(_ p1: Any) -> String {
+          return L10n.tr("Localizable", "Common.Countable.Quote.Mutiple", String(describing: p1))
+        }
+        /// %@ quote
+        internal static func single(_ p1: Any) -> String {
+          return L10n.tr("Localizable", "Common.Countable.Quote.Single", String(describing: p1))
+        }
       }
       internal enum Reply {
-        /// replies
-        internal static let mutiple = L10n.tr("Localizable", "Common.Countable.Reply.Mutiple")
-        /// reply
-        internal static let single = L10n.tr("Localizable", "Common.Countable.Reply.Single")
+        /// %@ replies
+        internal static func mutiple(_ p1: Any) -> String {
+          return L10n.tr("Localizable", "Common.Countable.Reply.Mutiple", String(describing: p1))
+        }
+        /// %@ reply
+        internal static func single(_ p1: Any) -> String {
+          return L10n.tr("Localizable", "Common.Countable.Reply.Single", String(describing: p1))
+        }
       }
       internal enum Retweet {
-        /// retweets
-        internal static let mutiple = L10n.tr("Localizable", "Common.Countable.Retweet.Mutiple")
-        /// retweet
-        internal static let single = L10n.tr("Localizable", "Common.Countable.Retweet.Single")
+        /// %@ retweets
+        internal static func mutiple(_ p1: Any) -> String {
+          return L10n.tr("Localizable", "Common.Countable.Retweet.Mutiple", String(describing: p1))
+        }
+        /// %@ retweet
+        internal static func single(_ p1: Any) -> String {
+          return L10n.tr("Localizable", "Common.Countable.Retweet.Single", String(describing: p1))
+        }
       }
       internal enum Tweet {
-        /// tweets
-        internal static let multiple = L10n.tr("Localizable", "Common.Countable.Tweet.Multiple")
-        /// tweet
-        internal static let single = L10n.tr("Localizable", "Common.Countable.Tweet.Single")
+        /// %@ tweets
+        internal static func multiple(_ p1: Any) -> String {
+          return L10n.tr("Localizable", "Common.Countable.Tweet.Multiple", String(describing: p1))
+        }
+        /// %@ tweet
+        internal static func single(_ p1: Any) -> String {
+          return L10n.tr("Localizable", "Common.Countable.Tweet.Single", String(describing: p1))
+        }
+      }
+    }
+    internal enum Notification {
+      /// %@ favourited your toot
+      internal static func favourite(_ p1: Any) -> String {
+        return L10n.tr("Localizable", "Common.Notification.Favourite", String(describing: p1))
+      }
+      /// %@ followed you
+      internal static func follow(_ p1: Any) -> String {
+        return L10n.tr("Localizable", "Common.Notification.Follow", String(describing: p1))
+      }
+      /// %@ has requested to follow you
+      internal static func followRequest(_ p1: Any) -> String {
+        return L10n.tr("Localizable", "Common.Notification.FollowRequest", String(describing: p1))
+      }
+      /// %@ mentions you
+      internal static func mentions(_ p1: Any) -> String {
+        return L10n.tr("Localizable", "Common.Notification.Mentions", String(describing: p1))
+      }
+      /// Your poll has ended
+      internal static let ownPoll = L10n.tr("Localizable", "Common.Notification.OwnPoll")
+      /// A poll you have voted in has ended
+      internal static let poll = L10n.tr("Localizable", "Common.Notification.Poll")
+      /// %@ boosted your toot
+      internal static func reblog(_ p1: Any) -> String {
+        return L10n.tr("Localizable", "Common.Notification.Reblog", String(describing: p1))
+      }
+      /// %@ just posted
+      internal static func status(_ p1: Any) -> String {
+        return L10n.tr("Localizable", "Common.Notification.Status", String(describing: p1))
+      }
+      internal enum Messages {
+        /// %@ sent you a message
+        internal static func content(_ p1: Any) -> String {
+          return L10n.tr("Localizable", "Common.Notification.Messages.Content", String(describing: p1))
+        }
+        /// New direct message
+        internal static let title = L10n.tr("Localizable", "Common.Notification.Messages.Title")
+      }
+    }
+    internal enum NotificationChannel {
+      internal enum BackgroundProgresses {
+        /// Background progresses
+        internal static let name = L10n.tr("Localizable", "Common.NotificationChannel.BackgroundProgresses.Name")
+      }
+      internal enum ContentInteractions {
+        /// Interactions like mentions and retweets
+        internal static let description = L10n.tr("Localizable", "Common.NotificationChannel.ContentInteractions.Description")
+        /// Interactions
+        internal static let name = L10n.tr("Localizable", "Common.NotificationChannel.ContentInteractions.Name")
+      }
+      internal enum ContentMessages {
+        /// Direct messages
+        internal static let description = L10n.tr("Localizable", "Common.NotificationChannel.ContentMessages.Description")
+        /// Messages
+        internal static let name = L10n.tr("Localizable", "Common.NotificationChannel.ContentMessages.Name")
       }
     }
   }
@@ -495,6 +657,8 @@ internal enum L10n {
     internal enum Compose {
       /// , 
       internal static let and = L10n.tr("Localizable", "Scene.Compose.And")
+      /// Write your warning here
+      internal static let cwPlaceholder = L10n.tr("Localizable", "Scene.Compose.CwPlaceholder")
       ///  and 
       internal static let lastEnd = L10n.tr("Localizable", "Scene.Compose.LastEnd")
       /// Others in this conversation:
@@ -519,6 +683,44 @@ internal enum L10n {
         /// Reply
         internal static let reply = L10n.tr("Localizable", "Scene.Compose.Title.Reply")
       }
+      internal enum Visibility {
+        /// Direct
+        internal static let direct = L10n.tr("Localizable", "Scene.Compose.Visibility.Direct")
+        /// Private
+        internal static let `private` = L10n.tr("Localizable", "Scene.Compose.Visibility.Private")
+        /// Public
+        internal static let `public` = L10n.tr("Localizable", "Scene.Compose.Visibility.Public")
+        /// Unlisted
+        internal static let unlisted = L10n.tr("Localizable", "Scene.Compose.Visibility.Unlisted")
+      }
+      internal enum Vote {
+        /// Multiple choice
+        internal static let multiple = L10n.tr("Localizable", "Scene.Compose.Vote.Multiple")
+        internal enum Expiration {
+          /// 1 day
+          internal static let _1Day = L10n.tr("Localizable", "Scene.Compose.Vote.Expiration.1Day")
+          /// 1 hour
+          internal static let _1Hour = L10n.tr("Localizable", "Scene.Compose.Vote.Expiration.1Hour")
+          /// 30 minutes
+          internal static let _30Min = L10n.tr("Localizable", "Scene.Compose.Vote.Expiration.30Min")
+          /// 3 days
+          internal static let _3Day = L10n.tr("Localizable", "Scene.Compose.Vote.Expiration.3Day")
+          /// 5 minutes
+          internal static let _5Min = L10n.tr("Localizable", "Scene.Compose.Vote.Expiration.5Min")
+          /// 6 hours
+          internal static let _6Hour = L10n.tr("Localizable", "Scene.Compose.Vote.Expiration.6Hour")
+          /// 7 days
+          internal static let _7Day = L10n.tr("Localizable", "Scene.Compose.Vote.Expiration.7Day")
+        }
+      }
+    }
+    internal enum ComposeHashtagSearch {
+      /// Search hashtag
+      internal static let searchPlaceholder = L10n.tr("Localizable", "Scene.ComposeHashtagSearch.SearchPlaceholder")
+    }
+    internal enum ComposeUserSearch {
+      /// Search users
+      internal static let searchPlaceholder = L10n.tr("Localizable", "Scene.ComposeUserSearch.SearchPlaceholder")
     }
     internal enum Drafts {
       /// Drafts
@@ -535,6 +737,10 @@ internal enum L10n {
       internal static let manageAccounts = L10n.tr("Localizable", "Scene.Drawer.ManageAccounts")
       /// Sign in
       internal static let signIn = L10n.tr("Localizable", "Scene.Drawer.SignIn")
+    }
+    internal enum Federated {
+      /// Federated
+      internal static let title = L10n.tr("Localizable", "Scene.Federated.Title")
     }
     internal enum Followers {
       /// Followers
@@ -555,16 +761,28 @@ internal enum L10n {
     internal enum Lists {
       /// Lists
       internal static let title = L10n.tr("Localizable", "Scene.Lists.Title")
+      internal enum Icons {
+        /// Create list
+        internal static let create = L10n.tr("Localizable", "Scene.Lists.Icons.Create")
+        /// Private visibility
+        internal static let `private` = L10n.tr("Localizable", "Scene.Lists.Icons.Private")
+      }
       internal enum Tabs {
-        /// Created
+        /// MY LISTS
         internal static let created = L10n.tr("Localizable", "Scene.Lists.Tabs.Created")
-        /// Subscribed
+        /// SUBSCRIBED
         internal static let subscribed = L10n.tr("Localizable", "Scene.Lists.Tabs.Subscribed")
       }
     }
     internal enum ListsDetails {
       /// Add Members
       internal static let addMembers = L10n.tr("Localizable", "Scene.ListsDetails.AddMembers")
+      /// Delete this list: %@
+      internal static func deleteListConfirm(_ p1: Any) -> String {
+        return L10n.tr("Localizable", "Scene.ListsDetails.DeleteListConfirm", String(describing: p1))
+      }
+      /// Delete this list
+      internal static let deleteListTitle = L10n.tr("Localizable", "Scene.ListsDetails.DeleteListTitle")
       /// No Members Found.
       internal static let noMembersFound = L10n.tr("Localizable", "Scene.ListsDetails.NoMembersFound")
       /// Lists Details
@@ -586,15 +804,63 @@ internal enum L10n {
       internal enum MenuActions {
         /// Add Member
         internal static let addMember = L10n.tr("Localizable", "Scene.ListsDetails.MenuActions.AddMember")
+        /// Delete List
+        internal static let deleteList = L10n.tr("Localizable", "Scene.ListsDetails.MenuActions.DeleteList")
         /// Edit List
         internal static let editList = L10n.tr("Localizable", "Scene.ListsDetails.MenuActions.EditList")
+        /// Follow
+        internal static let follow = L10n.tr("Localizable", "Scene.ListsDetails.MenuActions.Follow")
+        /// Rename List
+        internal static let renameList = L10n.tr("Localizable", "Scene.ListsDetails.MenuActions.RenameList")
+        /// Unfollow
+        internal static let unfollow = L10n.tr("Localizable", "Scene.ListsDetails.MenuActions.Unfollow")
       }
       internal enum Tabs {
-        /// Members
+        /// List Members
         internal static let members = L10n.tr("Localizable", "Scene.ListsDetails.Tabs.Members")
-        /// Subscriber
+        /// Subscribers
         internal static let subscriber = L10n.tr("Localizable", "Scene.ListsDetails.Tabs.Subscriber")
       }
+    }
+    internal enum ListsModify {
+      /// Description
+      internal static let description = L10n.tr("Localizable", "Scene.ListsModify.Description")
+      /// Name
+      internal static let name = L10n.tr("Localizable", "Scene.ListsModify.Name")
+      /// Private
+      internal static let `private` = L10n.tr("Localizable", "Scene.ListsModify.Private")
+      internal enum Create {
+        /// New List
+        internal static let title = L10n.tr("Localizable", "Scene.ListsModify.Create.Title")
+      }
+      internal enum Dialog {
+        /// Create a list
+        internal static let create = L10n.tr("Localizable", "Scene.ListsModify.Dialog.Create")
+        /// Rename the list
+        internal static let edit = L10n.tr("Localizable", "Scene.ListsModify.Dialog.Edit")
+      }
+      internal enum Edit {
+        /// Edit List
+        internal static let title = L10n.tr("Localizable", "Scene.ListsModify.Edit.Title")
+      }
+    }
+    internal enum ListsUsers {
+      internal enum Add {
+        /// Search people
+        internal static let search = L10n.tr("Localizable", "Scene.ListsUsers.Add.Search")
+        /// Add Member
+        internal static let title = L10n.tr("Localizable", "Scene.ListsUsers.Add.Title")
+      }
+      internal enum MenuActions {
+        /// Add
+        internal static let add = L10n.tr("Localizable", "Scene.ListsUsers.MenuActions.Add")
+        /// Remove
+        internal static let remove = L10n.tr("Localizable", "Scene.ListsUsers.MenuActions.Remove")
+      }
+    }
+    internal enum Local {
+      /// Local
+      internal static let title = L10n.tr("Localizable", "Scene.Local.Title")
     }
     internal enum ManageAccounts {
       /// Delete account
@@ -609,12 +875,50 @@ internal enum L10n {
     internal enum Messages {
       /// Messages
       internal static let title = L10n.tr("Localizable", "Scene.Messages.Title")
+      internal enum Action {
+        /// Copy message text
+        internal static let copyText = L10n.tr("Localizable", "Scene.Messages.Action.CopyText")
+        /// Delete message for you
+        internal static let delete = L10n.tr("Localizable", "Scene.Messages.Action.Delete")
+      }
+      internal enum Error {
+        /// The Current account does not support direct messages
+        internal static let notSupported = L10n.tr("Localizable", "Scene.Messages.Error.NotSupported")
+      }
+      internal enum Expanded {
+        /// [Photo]
+        internal static let photo = L10n.tr("Localizable", "Scene.Messages.Expanded.Photo")
+      }
+      internal enum Icon {
+        /// Send message failed
+        internal static let failed = L10n.tr("Localizable", "Scene.Messages.Icon.Failed")
+      }
+      internal enum NewConversation {
+        /// Search people
+        internal static let search = L10n.tr("Localizable", "Scene.Messages.NewConversation.Search")
+        /// Find people
+        internal static let title = L10n.tr("Localizable", "Scene.Messages.NewConversation.Title")
+      }
+    }
+    internal enum Notification {
+      /// Notification
+      internal static let title = L10n.tr("Localizable", "Scene.Notification.Title")
+      internal enum Tabs {
+        /// All
+        internal static let all = L10n.tr("Localizable", "Scene.Notification.Tabs.All")
+      }
     }
     internal enum Profile {
       /// Hide reply
       internal static let hideReply = L10n.tr("Localizable", "Scene.Profile.HideReply")
       /// Me
       internal static let title = L10n.tr("Localizable", "Scene.Profile.Title")
+      internal enum Filter {
+        /// All tweets
+        internal static let all = L10n.tr("Localizable", "Scene.Profile.Filter.All")
+        /// Exclude replies
+        internal static let excludeReplies = L10n.tr("Localizable", "Scene.Profile.Filter.ExcludeReplies")
+      }
       internal enum PermissionDeniedProfileBlocked {
         /// You have been blocked from viewing this user’s profile.
         internal static let message = L10n.tr("Localizable", "Scene.Profile.PermissionDeniedProfileBlocked.Message")
@@ -625,6 +929,10 @@ internal enum L10n {
     internal enum Search {
       /// Saved Search
       internal static let savedSearch = L10n.tr("Localizable", "Scene.Search.SavedSearch")
+      /// Show less
+      internal static let showLess = L10n.tr("Localizable", "Scene.Search.ShowLess")
+      /// Show more
+      internal static let showMore = L10n.tr("Localizable", "Scene.Search.ShowMore")
       /// Search
       internal static let title = L10n.tr("Localizable", "Scene.Search.Title")
       internal enum SearchBar {
@@ -632,6 +940,8 @@ internal enum L10n {
         internal static let placeholder = L10n.tr("Localizable", "Scene.Search.SearchBar.Placeholder")
       }
       internal enum Tabs {
+        /// Hashtag
+        internal static let hashtag = L10n.tr("Localizable", "Scene.Search.Tabs.Hashtag")
         /// Media
         internal static let media = L10n.tr("Localizable", "Scene.Search.Tabs.Media")
         /// Tweets
@@ -644,19 +954,43 @@ internal enum L10n {
       /// Settings
       internal static let title = L10n.tr("Localizable", "Scene.Settings.Title")
       internal enum About {
+        /// Next generation of Twidere for Android 5.0+. \nStill in early stage.
+        internal static let description = L10n.tr("Localizable", "Scene.Settings.About.Description")
         /// License
         internal static let license = L10n.tr("Localizable", "Scene.Settings.About.License")
         /// About
         internal static let title = L10n.tr("Localizable", "Scene.Settings.About.Title")
+        /// Ver %@
+        internal static func version(_ p1: Any) -> String {
+          return L10n.tr("Localizable", "Scene.Settings.About.Version", String(describing: p1))
+        }
+        internal enum Logo {
+          /// About page background logo
+          internal static let background = L10n.tr("Localizable", "Scene.Settings.About.Logo.Background")
+          /// About page background logo shadow
+          internal static let backgroundShadow = L10n.tr("Localizable", "Scene.Settings.About.Logo.BackgroundShadow")
+        }
       }
       internal enum Appearance {
+        /// AMOLED optimized mode
+        internal static let amoledOptimizedMode = L10n.tr("Localizable", "Scene.Settings.Appearance.AmoledOptimizedMode")
         /// Highlight color
         internal static let highlightColor = L10n.tr("Localizable", "Scene.Settings.Appearance.HighlightColor")
         /// Pick color
         internal static let pickColor = L10n.tr("Localizable", "Scene.Settings.Appearance.PickColor")
         /// Appearance
         internal static let title = L10n.tr("Localizable", "Scene.Settings.Appearance.Title")
+        internal enum ScrollingTimeline {
+          /// Hide app bar when scrolling
+          internal static let appBar = L10n.tr("Localizable", "Scene.Settings.Appearance.ScrollingTimeline.AppBar")
+          /// Hide FAB when scrolling
+          internal static let fab = L10n.tr("Localizable", "Scene.Settings.Appearance.ScrollingTimeline.Fab")
+          /// Hide tab bar when scrolling
+          internal static let tabBar = L10n.tr("Localizable", "Scene.Settings.Appearance.ScrollingTimeline.TabBar")
+        }
         internal enum SectionHeader {
+          /// Scrolling timeline
+          internal static let scrollingTimeline = L10n.tr("Localizable", "Scene.Settings.Appearance.SectionHeader.ScrollingTimeline")
           /// Tab position
           internal static let tabPosition = L10n.tr("Localizable", "Scene.Settings.Appearance.SectionHeader.TabPosition")
           /// Theme
@@ -680,6 +1014,8 @@ internal enum L10n {
       internal enum Display {
         /// Display
         internal static let title = L10n.tr("Localizable", "Scene.Settings.Display.Title")
+        /// Url previews
+        internal static let urlPreview = L10n.tr("Localizable", "Scene.Settings.Display.UrlPreview")
         internal enum DateFormat {
           /// Absolute
           internal static let absolute = L10n.tr("Localizable", "Scene.Settings.Display.DateFormat.Absolute")
@@ -723,11 +1059,115 @@ internal enum L10n {
           internal static let useTheSystemFontSize = L10n.tr("Localizable", "Scene.Settings.Display.Text.UseTheSystemFontSize")
         }
       }
+      internal enum Layout {
+        /// Layout
+        internal static let title = L10n.tr("Localizable", "Scene.Settings.Layout.Title")
+        internal enum Actions {
+          /// Drawer actions
+          internal static let drawer = L10n.tr("Localizable", "Scene.Settings.Layout.Actions.Drawer")
+          /// Tabbar actions
+          internal static let tabbar = L10n.tr("Localizable", "Scene.Settings.Layout.Actions.Tabbar")
+        }
+        internal enum Desc {
+          /// Choose and arrange up to 5 actions that will appear on the tabbar (The local and federal timelines will only be displayed in Mastodon.)
+          internal static let content = L10n.tr("Localizable", "Scene.Settings.Layout.Desc.Content")
+          /// Custom Layout
+          internal static let title = L10n.tr("Localizable", "Scene.Settings.Layout.Desc.Title")
+        }
+      }
+      internal enum Misc {
+        /// Misc
+        internal static let title = L10n.tr("Localizable", "Scene.Settings.Misc.Title")
+        internal enum Nitter {
+          /// Third-party Twitter data provider
+          internal static let title = L10n.tr("Localizable", "Scene.Settings.Misc.Nitter.Title")
+          internal enum Dialog {
+            internal enum Information {
+              /// Due to the limitation of Twitter API, some data might not be able to fetch from Twitter, you can use a third-party data provider to provide these data. Twidere does not take any responsibility for them.
+              internal static let content = L10n.tr("Localizable", "Scene.Settings.Misc.Nitter.Dialog.Information.Content")
+              /// Third party Twitter data provider
+              internal static let title = L10n.tr("Localizable", "Scene.Settings.Misc.Nitter.Dialog.Information.Title")
+            }
+            internal enum Usage {
+              /// - Twitter status threading
+              internal static let content = L10n.tr("Localizable", "Scene.Settings.Misc.Nitter.Dialog.Usage.Content")
+              /// Project URL
+              internal static let projectButton = L10n.tr("Localizable", "Scene.Settings.Misc.Nitter.Dialog.Usage.ProjectButton")
+              /// Using Third-party data provider in
+              internal static let title = L10n.tr("Localizable", "Scene.Settings.Misc.Nitter.Dialog.Usage.Title")
+            }
+          }
+          internal enum Input {
+            /// Alternative Twitter front-end focused on privacy.
+            internal static let description = L10n.tr("Localizable", "Scene.Settings.Misc.Nitter.Input.Description")
+            /// Nitter Instance
+            internal static let placeholder = L10n.tr("Localizable", "Scene.Settings.Misc.Nitter.Input.Placeholder")
+          }
+        }
+        internal enum Proxy {
+          /// Password
+          internal static let password = L10n.tr("Localizable", "Scene.Settings.Misc.Proxy.Password")
+          /// Server
+          internal static let server = L10n.tr("Localizable", "Scene.Settings.Misc.Proxy.Server")
+          /// Proxy settings
+          internal static let title = L10n.tr("Localizable", "Scene.Settings.Misc.Proxy.Title")
+          /// Username
+          internal static let username = L10n.tr("Localizable", "Scene.Settings.Misc.Proxy.Username")
+          internal enum Enable {
+            /// Use proxy for all network requests
+            internal static let description = L10n.tr("Localizable", "Scene.Settings.Misc.Proxy.Enable.Description")
+            /// Proxy
+            internal static let title = L10n.tr("Localizable", "Scene.Settings.Misc.Proxy.Enable.Title")
+          }
+          internal enum Port {
+            /// Proxy server port must be numbers
+            internal static let error = L10n.tr("Localizable", "Scene.Settings.Misc.Proxy.Port.Error")
+            /// Port
+            internal static let title = L10n.tr("Localizable", "Scene.Settings.Misc.Proxy.Port.Title")
+          }
+          internal enum `Type` {
+            /// HTTP
+            internal static let http = L10n.tr("Localizable", "Scene.Settings.Misc.Proxy.Type.Http")
+            /// Reverse
+            internal static let reverse = L10n.tr("Localizable", "Scene.Settings.Misc.Proxy.Type.Reverse")
+            /// Proxy type
+            internal static let title = L10n.tr("Localizable", "Scene.Settings.Misc.Proxy.Type.Title")
+          }
+        }
+      }
+      internal enum Notification {
+        /// Accounts
+        internal static let accounts = L10n.tr("Localizable", "Scene.Settings.Notification.Accounts")
+        /// Show Notification
+        internal static let notificationSwitch = L10n.tr("Localizable", "Scene.Settings.Notification.NotificationSwitch")
+        /// Notification
+        internal static let title = L10n.tr("Localizable", "Scene.Settings.Notification.Title")
+      }
       internal enum SectionHeader {
         /// About
         internal static let about = L10n.tr("Localizable", "Scene.Settings.SectionHeader.About")
         /// General
         internal static let general = L10n.tr("Localizable", "Scene.Settings.SectionHeader.General")
+      }
+      internal enum Storage {
+        /// Storage
+        internal static let title = L10n.tr("Localizable", "Scene.Settings.Storage.Title")
+        internal enum All {
+          /// Delete all Twidere X cache. Your account credentials will not be lost.
+          internal static let subTitle = L10n.tr("Localizable", "Scene.Settings.Storage.All.SubTitle")
+          /// Clear all cache
+          internal static let title = L10n.tr("Localizable", "Scene.Settings.Storage.All.Title")
+        }
+        internal enum Media {
+          /// Clear stored media cache.
+          internal static let subTitle = L10n.tr("Localizable", "Scene.Settings.Storage.Media.SubTitle")
+          /// Clear media cache
+          internal static let title = L10n.tr("Localizable", "Scene.Settings.Storage.Media.Title")
+        }
+        internal enum Search {
+          /// Clear search history
+          internal static let title = L10n.tr("Localizable", "Scene.Settings.Storage.Search.Title")
+        }
       }
     }
     internal enum SignIn {
@@ -747,6 +1187,8 @@ internal enum L10n {
     internal enum Status {
       /// Tweet
       internal static let title = L10n.tr("Localizable", "Scene.Status.Title")
+      /// Toot
+      internal static let titleMastodon = L10n.tr("Localizable", "Scene.Status.TitleMastodon")
       internal enum Like {
         /// %d Likes
         internal static func multiple(_ p1: Int) -> String {
@@ -785,8 +1227,16 @@ internal enum L10n {
       internal static let title = L10n.tr("Localizable", "Scene.Timeline.Title")
     }
     internal enum Trends {
+      /// %d people talking
+      internal static func accounts(_ p1: Int) -> String {
+        return L10n.tr("Localizable", "Scene.Trends.Accounts", p1)
+      }
+      /// Trending Now
+      internal static let now = L10n.tr("Localizable", "Scene.Trends.Now")
       /// Trends
       internal static let title = L10n.tr("Localizable", "Scene.Trends.Title")
+      /// Trends - Worldwide
+      internal static let worldWide = L10n.tr("Localizable", "Scene.Trends.WorldWide")
     }
   }
 }
