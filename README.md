@@ -63,6 +63,7 @@ The localization resource files locate in [TwidereX-Localization](https://github
 - [Floaty](https://github.com/kciter/Floaty)
 - [Kanna](https://github.com/tid-kijyun/Kanna)
 - [Kingfisher](https://github.com/onevcat/Kingfisher)
+- [Mastodon](https://github.com/mastodon/mastodon-ios)
 - [PageBoy](https://github.com/uias/Pageboy)
 - [swift-nio](https://github.com/apple/swift-nio)
 - [SwiftGen](https://github.com/SwiftGen/SwiftGen)

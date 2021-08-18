@@ -26,6 +26,10 @@ extension Twitter.API {
         return formatter
     }()
     
+}
+
+extension Twitter.API {
+    
     public enum Error { }
     
     public enum Account { }

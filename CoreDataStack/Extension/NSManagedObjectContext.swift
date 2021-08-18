@@ -47,4 +47,13 @@ extension NSManagedObjectContext {
             }
         }
     }
+    
+    public func performChanges<T>(block: @escaping () throws -> T) async throws -> T {
+        try await perform {
+            let value = try block()
+            try self.saveOrRollback()
+            return value
+        }
+    }
+
 }

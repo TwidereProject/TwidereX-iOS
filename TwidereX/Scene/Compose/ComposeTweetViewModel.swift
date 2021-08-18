@@ -342,7 +342,7 @@ extension ComposeTweetViewModel {
         .receive(on: DispatchQueue.main)
         .sink { authenticationIndex, excludeReplyUserInfos in
             let activeUsername: String? = {
-                return authenticationIndex?.twitterAuthentication?.twitterUser?.username
+                return authenticationIndex?.twitterAuthentication?.twitterUser.username
             }()
             
             var usernames: [String] = []

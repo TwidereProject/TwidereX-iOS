@@ -5,9 +5,46 @@
         <attribute name="createdAt" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="identifier" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="platformRaw" attributeType="String"/>
+        <relationship name="mastodonAuthentication" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="MastodonAuthentication" inverseName="authenticationIndex" inverseEntity="MastodonAuthentication"/>
         <relationship name="twitterAuthentication" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="TwitterAuthentication" inverseName="authenticationIndex" inverseEntity="TwitterAuthentication"/>
     </entity>
-    <entity name="MastodonAuthentication" representedClassName="MastodonAuthentication" syncable="YES" codeGenerationType="class"/>
+    <entity name="MastodonAuthentication" representedClassName=".MastodonAuthentication" syncable="YES">
+        <attribute name="appAccessToken" attributeType="String"/>
+        <attribute name="clientID" attributeType="String"/>
+        <attribute name="clientSecret" attributeType="String"/>
+        <attribute name="createdAt" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="domain" attributeType="String"/>
+        <attribute name="identifier" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="updatedAt" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="userAccessToken" attributeType="String"/>
+        <attribute name="userID" attributeType="String"/>
+        <relationship name="authenticationIndex" maxCount="1" deletionRule="Nullify" destinationEntity="AuthenticationIndex" inverseName="mastodonAuthentication" inverseEntity="AuthenticationIndex"/>
+        <relationship name="mastodonUser" maxCount="1" deletionRule="Nullify" destinationEntity="MastodonUser" inverseName="mastodonAuthentication" inverseEntity="MastodonUser"/>
+    </entity>
+    <entity name="MastodonUser" representedClassName=".MastodonUser" syncable="YES">
+        <attribute name="acct" attributeType="String"/>
+        <attribute name="avatar" optional="YES" attributeType="String"/>
+        <attribute name="avatarStatic" optional="YES" attributeType="String"/>
+        <attribute name="bot" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="createdAt" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="displayName" optional="YES" attributeType="String"/>
+        <attribute name="domain" attributeType="String"/>
+        <attribute name="emojisData" optional="YES" attributeType="Binary"/>
+        <attribute name="fieldsData" optional="YES" attributeType="Binary"/>
+        <attribute name="followersCount" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="followingCount" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="header" optional="YES" attributeType="String"/>
+        <attribute name="headerStatic" optional="YES" attributeType="String"/>
+        <attribute name="id" attributeType="String"/>
+        <attribute name="locked" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="note" optional="YES" attributeType="String"/>
+        <attribute name="statusesCount" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="suspended" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="updatedAt" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="url" optional="YES" attributeType="String"/>
+        <attribute name="username" attributeType="String"/>
+        <relationship name="mastodonAuthentication" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="MastodonAuthentication" inverseName="mastodonUser" inverseEntity="MastodonAuthentication"/>
+    </entity>
     <entity name="MentionTimelineIndex" representedClassName=".MentionTimelineIndex" syncable="YES">
         <attribute name="createdAt" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="deletedAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
@@ -136,7 +173,6 @@
     <entity name="TwitterAuthentication" representedClassName=".TwitterAuthentication" syncable="YES">
         <attribute name="accessToken" attributeType="String"/>
         <attribute name="accessTokenSecret" attributeType="String"/>
-        <attribute name="activeAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="consumerKey" attributeType="String"/>
         <attribute name="consumerSecret" attributeType="String"/>
         <attribute name="createdAt" attributeType="Date" usesScalarValueType="NO"/>
@@ -145,8 +181,8 @@
         <attribute name="screenName" attributeType="String"/>
         <attribute name="updatedAt" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="userID" attributeType="String"/>
-        <relationship name="authenticationIndex" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="AuthenticationIndex" inverseName="twitterAuthentication" inverseEntity="AuthenticationIndex"/>
-        <relationship name="twitterUser" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="TwitterUser" inverseName="twitterAuthentication" inverseEntity="TwitterUser"/>
+        <relationship name="authenticationIndex" maxCount="1" deletionRule="Nullify" destinationEntity="AuthenticationIndex" inverseName="twitterAuthentication" inverseEntity="AuthenticationIndex"/>
+        <relationship name="twitterUser" maxCount="1" deletionRule="Nullify" destinationEntity="TwitterUser" inverseName="twitterAuthentication" inverseEntity="TwitterUser"/>
     </entity>
     <entity name="TwitterMedia" representedClassName=".TwitterMedia" syncable="YES">
         <attribute name="createdAt" attributeType="Date" defaultDateTimeInterval="631123200" usesScalarValueType="NO"/>
@@ -267,7 +303,9 @@
         <relationship name="twitterUser" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="TwitterUser" inverseName="withheld" inverseEntity="TwitterUser"/>
     </entity>
     <elements>
-        <element name="AuthenticationIndex" positionX="-63" positionY="-153" width="128" height="104"/>
+        <element name="AuthenticationIndex" positionX="-63" positionY="-153" width="128" height="14"/>
+        <element name="MastodonAuthentication" positionX="-63" positionY="-153" width="128" height="14"/>
+        <element name="MastodonUser" positionX="-63" positionY="-153" width="128" height="359"/>
         <element name="MentionTimelineIndex" positionX="-63" positionY="-162" width="128" height="163"/>
         <element name="TimelineIndex" positionX="748.46875" positionY="302.9921875" width="128" height="149"/>
         <element name="Toots" positionX="-267.625" positionY="-3.98828125" width="128" height="118"/>
@@ -279,7 +317,7 @@
         <element name="TweetEntitiesMention" positionX="-36" positionY="-18" width="128" height="149"/>
         <element name="TweetEntitiesURL" positionX="-54" positionY="-36" width="128" height="164"/>
         <element name="TweetMetrics" positionX="968.33984375" positionY="-300.5078125" width="128" height="134"/>
-        <element name="TwitterAuthentication" positionX="-109.453125" positionY="275.71875" width="128" height="238"/>
+        <element name="TwitterAuthentication" positionX="-109.453125" positionY="275.71875" width="128" height="14"/>
         <element name="TwitterMedia" positionX="1009.765625" positionY="-162.66796875" width="128" height="224"/>
         <element name="TwitterMediaMetrics" positionX="1124.859375" positionY="38.72265625" width="128" height="89"/>
         <element name="TwitterPlace" positionX="1146.6953125" positionY="350.890625" width="128" height="179"/>
@@ -290,6 +328,5 @@
         <element name="TwitterUserEntitiesURL" positionX="-63" positionY="-162" width="128" height="149"/>
         <element name="TwitterUserMetrics" positionX="-45" positionY="-180" width="128" height="134"/>
         <element name="TwitterWithheld" positionX="-18" positionY="0" width="128" height="134"/>
-        <element name="MastodonAuthentication" positionX="-63" positionY="-153" width="128" height="29"/>
     </elements>
 </model>

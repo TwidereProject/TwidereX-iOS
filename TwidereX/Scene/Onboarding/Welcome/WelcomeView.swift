@@ -60,6 +60,7 @@ struct WelcomeView: View {
                             viewModel.delegate?.presentTwitterAuthenticationOption()
                         }
                     )
+                    .disabled(viewModel.isBusy)
                 case .mastodon:
                     TextField(
                         "example.com",
@@ -98,8 +99,8 @@ struct WelcomeView: View {
                         }
                     }
                 )
+                .disabled(viewModel.isBusy)
             }
-            .disabled(viewModel.isBusy)
             .padding(.bottom, 20)
         }
         .modifier(ReadabilityPadding(isEnabled: true))

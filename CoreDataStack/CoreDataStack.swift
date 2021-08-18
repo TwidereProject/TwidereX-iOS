@@ -13,10 +13,22 @@ import AppShared
 
 public final class CoreDataStack {
     
+    let logger = Logger(subsystem: "CoreDataStack", category: "persistence")
+    
     private(set) var storeDescriptions: [NSPersistentStoreDescription]
+    
+    private var notificationToken: NSObjectProtocol?
     
     init(persistentStoreDescriptions storeDescriptions: [NSPersistentStoreDescription]) {
         self.storeDescriptions = storeDescriptions
+        
+        // Observe Core Data remote change notifications on the queue where the changes were made.
+        notificationToken = NotificationCenter.default.addObserver(forName: .NSPersistentStoreRemoteChange, object: nil, queue: nil) { note in
+            self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): Received a persistent store remote change notification")
+            Task {
+                // await self.fetchPersistentHistory()
+            }
+        }
     }
     
     public convenience init(databaseName: String = "shared_v2") {

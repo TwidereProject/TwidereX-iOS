@@ -478,18 +478,17 @@ extension Twitter.API.OAuth {
 
 extension Twitter.API.OAuth {
     
-    public static func accessToken(session: URLSession, consumerKey: String, consumerSecret: String, requestToken: String, pinCode: String) -> AnyPublisher<AccessTokenResponse, Error> {
+    public static func accessToken(session: URLSession, consumerKey: String, consumerSecret: String, requestToken: String, pinCode: String) async throws -> AccessTokenResponse {
         let request = Twitter.API.OAuth.accessTokenURLRequest(consumerKey: consumerKey, consumerSecret: consumerSecret, requestToken: requestToken, pinCode: pinCode)
-        return session.dataTaskPublisher(for: request)
-            .tryMap { data, response -> AccessTokenResponse in
-                guard let body = String(data: data, encoding: .utf8),
-                      let accessTokenResponse = AccessTokenResponse(urlEncodedForm: body) else {
-                          throw Twitter.API.Error.InternalError(message: "process requestToken response fail")
-                      }
-                return accessTokenResponse
-            }
-            .eraseToAnyPublisher()
+
+        let (data, response) = try await session.data(for: request, delegate: nil)
+        guard let body = String(data: data, encoding: .utf8),
+              let accessTokenResponse = AccessTokenResponse(urlEncodedForm: body)
+        else {
+            throw Twitter.API.Error.InternalError(message: "process requestToken response fail")
+        }
         
+        return accessTokenResponse
     }
     
     static func accessTokenURLRequest(consumerKey: String, consumerSecret: String, requestToken: String, pinCode: String) -> URLRequest {

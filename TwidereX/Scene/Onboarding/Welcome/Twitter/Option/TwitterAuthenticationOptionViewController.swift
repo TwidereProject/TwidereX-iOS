@@ -120,7 +120,7 @@ extension TwitterAuthenticationOptionViewController {
         }()
         let authenticateURL = Twitter.API.OAuth.authenticateURL(requestToken: requestToken)
         
-        twitterAuthenticationController = TwitterAuthenticationController(
+        let authenticationController = TwitterAuthenticationController(
             context: context,
             coordinator: coordinator,
             appSecret: appSecret,
@@ -128,7 +128,7 @@ extension TwitterAuthenticationOptionViewController {
             requestTokenExchange: requestTokenExchange
         )
         
-        twitterAuthenticationController?.isAuthenticating
+        authenticationController.isAuthenticating
             .receive(on: DispatchQueue.main)
             .sink(receiveValue: { [weak self] isAuthenticating in
                 guard let self = self else { return }
@@ -138,7 +138,7 @@ extension TwitterAuthenticationOptionViewController {
             })
             .store(in: &disposeBag)
         
-        twitterAuthenticationController?.error
+        authenticationController.error
             .receive(on: DispatchQueue.main)
             .sink(receiveValue: { [weak self] error in
                 guard let self = self else { return }
@@ -148,30 +148,29 @@ extension TwitterAuthenticationOptionViewController {
             })
             .store(in: &disposeBag)
         
-        twitterAuthenticationController?.authenticated
+        authenticationController.authenticated
             .receive(on: DispatchQueue.main)
             .sink(receiveValue: { [weak self] twitterUser in
                 guard let self = self else { return }
-                // make authenticated user active and always reset view hierarchy
-                self.context.authenticationService.activeTwitterUser(id: twitterUser.idStr)
-                    .receive(on: DispatchQueue.main)
-                    .sink { [weak self] result in
-                        guard let self = self else { return }
-                        switch result {
-                        case .failure(let error):
-                            assertionFailure(error.localizedDescription)
-                        case .success(let isActived):
-                            assert(isActived)
-                            self.coordinator.setup()
-                        }
+                Task {
+                    do {
+                        let userID = twitterUser.idStr
+                        let isActive = try await self.context.authenticationService.activeTwitterUser(userID: userID)
+                        
+                        // active user and reset view hierarchy
+                        guard isActive else { return }
+                        self.coordinator.setup()
+                    } catch {
+                        // TODO: handle error
+                        assertionFailure()
                     }
-                    .store(in: &self.disposeBag)
+                }
             })
             .store(in: &disposeBag)
-        
-        twitterAuthenticationController?.authenticationSession?.prefersEphemeralWebBrowserSession = true
-        twitterAuthenticationController?.authenticationSession?.presentationContextProvider = self
-        twitterAuthenticationController?.authenticationSession?.start()
+        twitterAuthenticationController = authenticationController
+        authenticationController.authenticationSession?.prefersEphemeralWebBrowserSession = true
+        authenticationController.authenticationSession?.presentationContextProvider = self
+        authenticationController.authenticationSession?.start()
     }
 }
 

@@ -76,15 +76,17 @@ class ProfileViewModel: NSObject {
         context.authenticationService.activeAuthenticationIndex
             .sink { [weak self] activeAuthenticationIndex in
                 guard let self = self else { return }
-                guard let activeAuthenticationIndex = activeAuthenticationIndex,
-                      let platform = activeAuthenticationIndex.platform else {
+                guard let activeAuthenticationIndex = activeAuthenticationIndex else {
                     self.currentTwitterUser.value = nil
                     return
                 }
+                let platform = activeAuthenticationIndex.platform
                 switch platform {
                 case .twitter:
                     self.currentTwitterUser.value = activeAuthenticationIndex.twitterAuthentication?.twitterUser
                 case .mastodon:
+                    self.currentTwitterUser.value = nil
+                case .none:
                     self.currentTwitterUser.value = nil
                 }
             }

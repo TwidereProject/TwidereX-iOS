@@ -23,8 +23,8 @@ final public class AuthenticationIndex: NSManagedObject {
 }
 
 extension AuthenticationIndex {
-    public var platform: Platform? {
-        return Platform(rawValue: platformRaw)
+    public var platform: Platform {
+        return Platform(rawValue: platformRaw) ?? .none
     }
 }
 
@@ -56,6 +56,7 @@ extension AuthenticationIndex {
 
 extension AuthenticationIndex {
     public enum Platform: String {
+        case none
         case twitter
         case mastodon
     }

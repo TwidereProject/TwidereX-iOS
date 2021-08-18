@@ -1,0 +1,34 @@
+{% for type in types.implementing.AutoGenerateProperty %}
+// sourcery:inline:{{type.name}}.AutoGenerateProperty
+
+// Generated using Sourcery
+// DO NOT EDIT
+public struct Property {
+	{% for variable in type.storedVariables|!annotated:"skipAutoGenerateProperty" %}
+	public let  {{variable.name}}: {{variable.typeName}}
+	{% endfor %}
+
+	public init(
+		{% for variable in type.storedVariables|!annotated:"skipAutoGenerateProperty" %}
+		{{variable.name}}: {{variable.typeName}}{% if not forloop.last %},{% endif %}
+		{% endfor %}
+	) {
+		{% for variable in type.storedVariables|!annotated:"skipAutoGenerateProperty" %}
+		self.{{variable.name}} = {{variable.name}}
+		{% endfor %}
+	}
+}
+
+func configure(property: Property) {
+	{% for variable in type.storedVariables|!annotated:"skipAutoGenerateProperty" %}
+	self.{{variable.name}} = property.{{variable.name}}
+	{% endfor %}
+}
+
+public func update(property: Property) {
+	{% for variable in type.storedVariables|!annotated:"skipAutoGenerateProperty"|!annotated:"skipAutoUpdatableObject" %}
+	update({{variable.name}}: property.{{variable.name}})
+	{% endfor %}
+}
+// sourcery:end
+{% endfor %}

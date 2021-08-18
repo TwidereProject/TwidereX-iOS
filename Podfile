@@ -15,6 +15,7 @@ target 'TwidereX' do
   pod 'DateToolsSwift', '~> 5.0.0'
   pod 'Firebase/Analytics', '~> 8.2.0' 
   pod 'Firebase/Crashlytics', '~> 8.2.0'
+  pod 'Sourcery'
 
   # Twitter
   pod 'twitter-text', '~> 3.1.0'
@@ -35,6 +36,11 @@ target 'TwidereX' do
 end
 
 target 'AppShared' do 
+  # Comment the next line if you don't want to use dynamic frameworks
+  use_frameworks!
+end
+
+target 'CoreDataStack' do 
   # Comment the next line if you don't want to use dynamic frameworks
   use_frameworks!
 end

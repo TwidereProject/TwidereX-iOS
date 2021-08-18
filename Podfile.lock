@@ -93,6 +93,7 @@ PODS:
   - nanopb/decode (2.30908.0)
   - nanopb/encode (2.30908.0)
   - PromisesObjC (1.2.12)
+  - Sourcery (1.5.0)
   - SwiftGen (6.3.0)
   - twitter-text (3.1.0)
   - ZIPFoundation (0.9.11)
@@ -104,6 +105,7 @@ DEPENDENCIES:
   - FLEX (~> 4.4.0)
   - Floaty (~> 4.2.0)
   - Keys (from `Pods/CocoaPodsKeys`)
+  - Sourcery
   - SwiftGen (~> 6.3.0)
   - twitter-text (~> 3.1.0)
   - ZIPFoundation (~> 0.9.11)
@@ -124,6 +126,7 @@ SPEC REPOS:
     - GoogleUtilities
     - nanopb
     - PromisesObjC
+    - Sourcery
     - SwiftGen
     - twitter-text
     - ZIPFoundation
@@ -148,10 +151,11 @@ SPEC CHECKSUMS:
   Keys: a576f4c9c1c641ca913a959a9c62ed3f215a8de9
   nanopb: a0ba3315591a9ae0a16a309ee504766e90db0c96
   PromisesObjC: 3113f7f76903778cf4a0586bd1ab89329a0b7b97
+  Sourcery: eecfeb011c61d150ffc4f306d2fbf52ae89019d5
   SwiftGen: 3d5024a47ea79e408cded20763d7a17d18a4548c
   twitter-text: 3a0d73ca52955439dc8b208ca7e123ea0abd6a51
   ZIPFoundation: b1f0de4eed33e74a676f76e12559ab6b75990197
 
-PODFILE CHECKSUM: ce962f000833dfdb106b18f1971a4735a1cef5b7
+PODFILE CHECKSUM: 094bc1d5dfd4a38d8624caf2c82a3568c42642b9
 
 COCOAPODS: 1.10.2

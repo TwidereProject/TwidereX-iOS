@@ -10,5 +10,5 @@ import Foundation
 public enum Mastodon {
     public enum API { }
     public enum Entity {  }
-    public enum Query { }
+    public enum Response { }
 }

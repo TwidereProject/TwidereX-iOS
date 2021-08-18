@@ -9,7 +9,15 @@
 /* Begin PBXBuildFile section */
 		02F6D779D988FB3601DEB108 /* Pods_TwidereX_TwidereXUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 038E5A2895D82A5D7BA40C73 /* Pods_TwidereX_TwidereXUITests.framework */; };
 		44CCAE5E7B79E0C359E367E5 /* Pods_TwidereX.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8564534D30DC2640CEB8344E /* Pods_TwidereX.framework */; };
+		7A3B5623435A7CB08D40E414 /* Pods_CoreDataStack.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 765E576F8ECB1EC1A3937771 /* Pods_CoreDataStack.framework */; };
 		AF66F7A022E93DE9E329F6A3 /* Pods_TwidereXTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 62DC6A6809A00EA057395C07 /* Pods_TwidereXTests.framework */; };
+		DB004BC926CCD68B00F5C574 /* MastodonUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB004BC826CCD68B00F5C574 /* MastodonUser.swift */; };
+		DB004BCB26CCD76000F5C574 /* MastodonEmojiContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB004BCA26CCD76000F5C574 /* MastodonEmojiContainer.swift */; };
+		DB004BCD26CCD7E900F5C574 /* MastodonFieldContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB004BCC26CCD7E900F5C574 /* MastodonFieldContainer.swift */; };
+		DB004BD426CCEBF600F5C574 /* AutoUpdatableObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB004BD326CCEBF600F5C574 /* AutoUpdatableObject.swift */; };
+		DB004BDF26CCFE8E00F5C574 /* Persistence.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB004BDE26CCFE8E00F5C574 /* Persistence.swift */; };
+		DB004BE126CCFED600F5C574 /* Persistence+MastodonUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB004BE026CCFED600F5C574 /* Persistence+MastodonUser.swift */; };
+		DB004BE326CD01CF00F5C574 /* AutoGenerateProperty.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB004BE226CD01CF00F5C574 /* AutoGenerateProperty.swift */; };
 		DB0849B0251375E9009E0CD7 /* ConversationPostView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB0849AF251375E9009E0CD7 /* ConversationPostView.swift */; };
 		DB0849B22513760D009E0CD7 /* ConversationPostTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB0849B12513760D009E0CD7 /* ConversationPostTableViewCell.swift */; };
 		DB0B3B8626C662CC00501BB7 /* AppShared.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DB94B6BB26C65CB000A2E8A1 /* AppShared.framework */; };
@@ -155,6 +163,8 @@
 		DB74A16E256E50E300C5F3C9 /* UIColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB74A16D256E50E300C5F3C9 /* UIColor.swift */; };
 		DB74A18F256F6FA000C5F3C9 /* TwitterUserEntities.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB74A18E256F6FA000C5F3C9 /* TwitterUserEntities.swift */; };
 		DB74A194256F6FF400C5F3C9 /* TwitterUserEntitiesURL.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB74A193256F6FF400C5F3C9 /* TwitterUserEntitiesURL.swift */; };
+		DB756BFB26CBA4AE00AAD328 /* MastodonUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB756BFA26CBA4AE00AAD328 /* MastodonUser.swift */; };
+		DB756BFE26CBA64300AAD328 /* MastodonAuthentication.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB756BFD26CBA64300AAD328 /* MastodonAuthentication.swift */; };
 		DB761E3F25592AA20050DC01 /* DrawerSidebarAnimatedTransitioning.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB761E3E25592AA20050DC01 /* DrawerSidebarAnimatedTransitioning.swift */; };
 		DB761E4E255935380050DC01 /* DrawerSidebarHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB761E4D255935380050DC01 /* DrawerSidebarHeaderView.swift */; };
 		DB761E5D255940EF0050DC01 /* DrawerSidebarEntryTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB761E5C255940EF0050DC01 /* DrawerSidebarEntryTableViewCell.swift */; };
@@ -330,7 +340,7 @@
 		DBE71B7A26B7AF5C00DFAB8E /* StubTimelineViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBE71B7926B7AF5C00DFAB8E /* StubTimelineViewController.swift */; };
 		DBE71B7D26B7C5FD00DFAB8E /* StubTimelineViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBE71B7C26B7C5FD00DFAB8E /* StubTimelineViewModel.swift */; };
 		DBE71B7F26B7D68500DFAB8E /* StubTimelineCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBE71B7E26B7D68500DFAB8E /* StubTimelineCollectionViewCell.swift */; };
-		DBE76C8924FF941400DEB0FC /* APIService+Autentication.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBE76C8824FF941400DEB0FC /* APIService+Autentication.swift */; };
+		DBE76C8924FF941400DEB0FC /* APIService+Authentication.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBE76C8824FF941400DEB0FC /* APIService+Authentication.swift */; };
 		DBE76C99250093CA00DEB0FC /* CoreDataStack.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DBE76C90250093CA00DEB0FC /* CoreDataStack.framework */; };
 		DBE76CA0250093CA00DEB0FC /* CoreDataStackTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBE76C9F250093CA00DEB0FC /* CoreDataStackTests.swift */; };
 		DBE76CA2250093CA00DEB0FC /* CoreDataStack.h in Headers */ = {isa = PBXBuildFile; fileRef = DBE76C92250093CA00DEB0FC /* CoreDataStack.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -521,6 +531,7 @@
 /* Begin PBXFileReference section */
 		038E5A2895D82A5D7BA40C73 /* Pods_TwidereX_TwidereXUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_TwidereX_TwidereXUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		06C6C02930FE7CBB4E13D99E /* Pods-AppShared.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AppShared.release.xcconfig"; path = "Target Support Files/Pods-AppShared/Pods-AppShared.release.xcconfig"; sourceTree = "<group>"; };
+		11A96C051C6ACCB3A9B716BB /* Pods-CoreDataStack.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-CoreDataStack.debug.xcconfig"; path = "Target Support Files/Pods-CoreDataStack/Pods-CoreDataStack.debug.xcconfig"; sourceTree = "<group>"; };
 		120596A33EFEAC5EEDF6B0FC /* Pods-TwitterAPI-TwitterAPITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TwitterAPI-TwitterAPITests.debug.xcconfig"; path = "Target Support Files/Pods-TwitterAPI-TwitterAPITests/Pods-TwitterAPI-TwitterAPITests.debug.xcconfig"; sourceTree = "<group>"; };
 		17256F5127E8AA2E9B5A25FA /* Pods-TwitterAPI.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TwitterAPI.debug.xcconfig"; path = "Target Support Files/Pods-TwitterAPI/Pods-TwitterAPI.debug.xcconfig"; sourceTree = "<group>"; };
 		2504A7AE733D038B91122765 /* Pods-TwidereXTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TwidereXTests.release.xcconfig"; path = "Target Support Files/Pods-TwidereXTests/Pods-TwidereXTests.release.xcconfig"; sourceTree = "<group>"; };
@@ -532,11 +543,20 @@
 		5DAC343225B9987000109C6E /* CoreDataStack 3.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "CoreDataStack 3.xcdatamodel"; sourceTree = "<group>"; };
 		62DC6A6809A00EA057395C07 /* Pods_TwidereXTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_TwidereXTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		7252E908942B535D4A05450E /* Pods_TwitterAPI.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_TwitterAPI.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		765E576F8ECB1EC1A3937771 /* Pods_CoreDataStack.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_CoreDataStack.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		84835D7E14A262E389DD4AB3 /* Pods_AppShared.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_AppShared.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		8564534D30DC2640CEB8344E /* Pods_TwidereX.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_TwidereX.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		85C8450177CD0E942954FD2C /* Pods-TwitterAPI.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TwitterAPI.release.xcconfig"; path = "Target Support Files/Pods-TwitterAPI/Pods-TwitterAPI.release.xcconfig"; sourceTree = "<group>"; };
+		8810A335C578F294D7BB74AE /* Pods-CoreDataStack.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-CoreDataStack.release.xcconfig"; path = "Target Support Files/Pods-CoreDataStack/Pods-CoreDataStack.release.xcconfig"; sourceTree = "<group>"; };
 		9D73AD6A9D116695A879E8D7 /* Pods-TwitterAPI-TwitterAPITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TwitterAPI-TwitterAPITests.release.xcconfig"; path = "Target Support Files/Pods-TwitterAPI-TwitterAPITests/Pods-TwitterAPI-TwitterAPITests.release.xcconfig"; sourceTree = "<group>"; };
 		A4649F84FF237A9295846A9E /* Pods_TwitterAPI_TwitterAPITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_TwitterAPI_TwitterAPITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		DB004BC826CCD68B00F5C574 /* MastodonUser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MastodonUser.swift; sourceTree = "<group>"; };
+		DB004BCA26CCD76000F5C574 /* MastodonEmojiContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MastodonEmojiContainer.swift; sourceTree = "<group>"; };
+		DB004BCC26CCD7E900F5C574 /* MastodonFieldContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MastodonFieldContainer.swift; sourceTree = "<group>"; };
+		DB004BD326CCEBF600F5C574 /* AutoUpdatableObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutoUpdatableObject.swift; sourceTree = "<group>"; };
+		DB004BDE26CCFE8E00F5C574 /* Persistence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Persistence.swift; sourceTree = "<group>"; };
+		DB004BE026CCFED600F5C574 /* Persistence+MastodonUser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Persistence+MastodonUser.swift"; sourceTree = "<group>"; };
+		DB004BE226CD01CF00F5C574 /* AutoGenerateProperty.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutoGenerateProperty.swift; sourceTree = "<group>"; };
 		DB0849AF251375E9009E0CD7 /* ConversationPostView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationPostView.swift; sourceTree = "<group>"; };
 		DB0849B12513760D009E0CD7 /* ConversationPostTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationPostTableViewCell.swift; sourceTree = "<group>"; };
 		DB0B3B8F26C666E300501BB7 /* APIService+WebFinger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "APIService+WebFinger.swift"; sourceTree = "<group>"; };
@@ -672,6 +692,8 @@
 		DB74A16D256E50E300C5F3C9 /* UIColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIColor.swift; sourceTree = "<group>"; };
 		DB74A18E256F6FA000C5F3C9 /* TwitterUserEntities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwitterUserEntities.swift; sourceTree = "<group>"; };
 		DB74A193256F6FF400C5F3C9 /* TwitterUserEntitiesURL.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwitterUserEntitiesURL.swift; sourceTree = "<group>"; };
+		DB756BFA26CBA4AE00AAD328 /* MastodonUser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MastodonUser.swift; sourceTree = "<group>"; };
+		DB756BFD26CBA64300AAD328 /* MastodonAuthentication.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MastodonAuthentication.swift; sourceTree = "<group>"; };
 		DB761E3E25592AA20050DC01 /* DrawerSidebarAnimatedTransitioning.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawerSidebarAnimatedTransitioning.swift; sourceTree = "<group>"; };
 		DB761E4D255935380050DC01 /* DrawerSidebarHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawerSidebarHeaderView.swift; sourceTree = "<group>"; };
 		DB761E5C255940EF0050DC01 /* DrawerSidebarEntryTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawerSidebarEntryTableViewCell.swift; sourceTree = "<group>"; };
@@ -863,7 +885,7 @@
 		DBE71B7926B7AF5C00DFAB8E /* StubTimelineViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StubTimelineViewController.swift; sourceTree = "<group>"; };
 		DBE71B7C26B7C5FD00DFAB8E /* StubTimelineViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StubTimelineViewModel.swift; sourceTree = "<group>"; };
 		DBE71B7E26B7D68500DFAB8E /* StubTimelineCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StubTimelineCollectionViewCell.swift; sourceTree = "<group>"; };
-		DBE76C8824FF941400DEB0FC /* APIService+Autentication.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "APIService+Autentication.swift"; sourceTree = "<group>"; };
+		DBE76C8824FF941400DEB0FC /* APIService+Authentication.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "APIService+Authentication.swift"; sourceTree = "<group>"; };
 		DBE76C90250093CA00DEB0FC /* CoreDataStack.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = CoreDataStack.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		DBE76C92250093CA00DEB0FC /* CoreDataStack.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CoreDataStack.h; sourceTree = "<group>"; };
 		DBE76C93250093CA00DEB0FC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -1003,6 +1025,7 @@
 			files = (
 				DB4323D425149374004FAAEC /* TwidereSDK in Frameworks */,
 				DB0B3B8626C662CC00501BB7 /* AppShared.framework in Frameworks */,
+				7A3B5623435A7CB08D40E414 /* Pods_CoreDataStack.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1039,8 +1062,27 @@
 				9D73AD6A9D116695A879E8D7 /* Pods-TwitterAPI-TwitterAPITests.release.xcconfig */,
 				5635061D4E24E9A2C69E90ED /* Pods-AppShared.debug.xcconfig */,
 				06C6C02930FE7CBB4E13D99E /* Pods-AppShared.release.xcconfig */,
+				11A96C051C6ACCB3A9B716BB /* Pods-CoreDataStack.debug.xcconfig */,
+				8810A335C578F294D7BB74AE /* Pods-CoreDataStack.release.xcconfig */,
 			);
 			path = Pods;
+			sourceTree = "<group>";
+		};
+		DB004BD226CCEB3900F5C574 /* Generated */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Generated;
+			path = CoreDataStack/Generated;
+			sourceTree = SOURCE_ROOT;
+		};
+		DB004BDB26CCFD6800F5C574 /* Persistence */ = {
+			isa = PBXGroup;
+			children = (
+				DB004BDE26CCFE8E00F5C574 /* Persistence.swift */,
+				DB004BE026CCFED600F5C574 /* Persistence+MastodonUser.swift */,
+			);
+			path = Persistence;
 			sourceTree = "<group>";
 		};
 		DB0491FF25904CE400CCD50E /* Toolbar */ = {
@@ -1325,6 +1367,24 @@
 				DBD40C1A2599D7F6006E4ABC /* FriendshipList */,
 			);
 			path = Profile;
+			sourceTree = "<group>";
+		};
+		DB756BFC26CBA4B100AAD328 /* Mastodon */ = {
+			isa = PBXGroup;
+			children = (
+				DB756BFA26CBA4AE00AAD328 /* MastodonUser.swift */,
+			);
+			path = Mastodon;
+			sourceTree = "<group>";
+		};
+		DB756BFF26CBA8DF00AAD328 /* Authentication */ = {
+			isa = PBXGroup;
+			children = (
+				DB5A2299255BC82D006CA5B2 /* AuthenticationIndex.swift */,
+				DBE76CD02500949900DEB0FC /* TwitterAuthentication.swift */,
+				DB756BFD26CBA64300AAD328 /* MastodonAuthentication.swift */,
+			);
+			path = Authentication;
 			sourceTree = "<group>";
 		};
 		DB761E3A255923620050DC01 /* DrawerSidebar */ = {
@@ -1870,6 +1930,7 @@
 				DBDA8E5924FE0374006750DC /* Service */,
 				DBDA8E5424FDF3E2006750DC /* Scene */,
 				DBDA8E8C24FE068C006750DC /* Coordinator */,
+				DB004BDB26CCFD6800F5C574 /* Persistence */,
 				DBDA8E9B24FE0F8B006750DC /* Generated */,
 				DBDA8E9924FE0DC8006750DC /* Resources */,
 				DB88AC34250B25170009E562 /* Vender */,
@@ -2048,7 +2109,7 @@
 				DBDA8E5724FE0371006750DC /* APIService.swift */,
 				DBFA4A1A25A580FA00D51703 /* APIService+APIError.swift */,
 				DB36F353257DF14E0028F81E /* APIService+Application.swift */,
-				DBE76C8824FF941400DEB0FC /* APIService+Autentication.swift */,
+				DBE76C8824FF941400DEB0FC /* APIService+Authentication.swift */,
 				DB3402C92521E4AF009EFADF /* APIService+Account.swift */,
 				DBFA4A1525A580C100D51703 /* APIService+RateLimit.swift */,
 				DBE76D202500ED5100DEB0FC /* APIService+HomeTimeline.swift */,
@@ -2077,6 +2138,7 @@
 				DBE76C92250093CA00DEB0FC /* CoreDataStack.h */,
 				DBE76CB7250093E200DEB0FC /* CoreDataStack.swift */,
 				DBE76CBF250093E200DEB0FC /* CoreDataStack.xcdatamodeld */,
+				DB004BD226CCEB3900F5C574 /* Generated */,
 				DBE76CAD250093E200DEB0FC /* Entity */,
 				DBE76CBA250093E200DEB0FC /* Extension */,
 				DBE76CBD250093E200DEB0FC /* Protocol */,
@@ -2097,12 +2159,12 @@
 		DBE76CAD250093E200DEB0FC /* Entity */ = {
 			isa = PBXGroup;
 			children = (
-				DB5A2299255BC82D006CA5B2 /* AuthenticationIndex.swift */,
-				DBE76CD02500949900DEB0FC /* TwitterAuthentication.swift */,
-				DBE76D152500D7C200DEB0FC /* TimelineIndex.swift */,
+				DB756BFF26CBA8DF00AAD328 /* Authentication */,
 				DB91543C255111E400613473 /* MentionTimelineIndex.swift */,
+				DBE76D152500D7C200DEB0FC /* TimelineIndex.swift */,
 				DBE76D192500D93D00DEB0FC /* Toots.swift */,
 				DB491604253EC7A1008755C3 /* Twitter */,
+				DB756BFC26CBA4B100AAD328 /* Mastodon */,
 			);
 			path = Entity;
 			sourceTree = "<group>";
@@ -2131,6 +2193,8 @@
 			children = (
 				DBE76CBE250093E200DEB0FC /* Managed.swift */,
 				DBE76D2A25020C0F00DEB0FC /* NetworkUpdatable.swift */,
+				DB004BD326CCEBF600F5C574 /* AutoUpdatableObject.swift */,
+				DB004BE226CD01CF00F5C574 /* AutoGenerateProperty.swift */,
 			);
 			path = Protocol;
 			sourceTree = "<group>";
@@ -2189,6 +2253,9 @@
 				DBC8DFCD2570BDB800401E20 /* TweetEntitiesURL.swift */,
 				DBC8DFD52570D28A00401E20 /* TweetEntitiesMention.swift */,
 				DBE196DA256FB48E004E831A /* TwitterUserEntitiesURL.swift */,
+				DB004BCA26CCD76000F5C574 /* MastodonEmojiContainer.swift */,
+				DB004BCC26CCD7E900F5C574 /* MastodonFieldContainer.swift */,
+				DB004BC826CCD68B00F5C574 /* MastodonUser.swift */,
 			);
 			path = CoreDataStack;
 			sourceTree = "<group>";
@@ -2377,6 +2444,7 @@
 				7252E908942B535D4A05450E /* Pods_TwitterAPI.framework */,
 				A4649F84FF237A9295846A9E /* Pods_TwitterAPI_TwitterAPITests.framework */,
 				84835D7E14A262E389DD4AB3 /* Pods_AppShared.framework */,
+				765E576F8ECB1EC1A3937771 /* Pods_CoreDataStack.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -2510,11 +2578,13 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = DBE76CA7250093CA00DEB0FC /* Build configuration list for PBXNativeTarget "CoreDataStack" */;
 			buildPhases = (
+				1BFEF06F2065310AA9A76919 /* [CP] Check Pods Manifest.lock */,
 				DBE76C8B250093CA00DEB0FC /* Headers */,
 				DBE76C8C250093CA00DEB0FC /* Sources */,
 				DBE76C8D250093CA00DEB0FC /* Frameworks */,
 				DBE76C8E250093CA00DEB0FC /* Resources */,
 				DB56A46025148D9900A7DA3E /* Embed Frameworks */,
+				DB004BCE26CCEA2900F5C574 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -2715,6 +2785,28 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		1BFEF06F2065310AA9A76919 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-CoreDataStack-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
 		28402567E770BE197B4A9352 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -2815,6 +2907,23 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
+		DB004BCE26CCEA2900F5C574 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "if [[ -f \"${PODS_ROOT}/Sourcery/bin/sourcery\" ]]; then\n  \"${PODS_ROOT}/Sourcery/bin/sourcery\" --config ./CoreDataStack\nelse\n  echo \"warning: Sourcery is not installed. Run 'pod install --repo-update' to install it.\"\nfi\n";
+		};
 		DB14DF30259484C40029FEBE /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -2903,6 +3012,7 @@
 				DB7D124C250F875F00999903 /* UIView.swift in Sources */,
 				DB10B32C254A7633002D86F3 /* SearchTimelineViewModel+State.swift in Sources */,
 				DBA9B3CB2587615300EA14ED /* MentionPickItem.swift in Sources */,
+				DB004BCB26CCD76000F5C574 /* MastodonEmojiContainer.swift in Sources */,
 				DBC8E03D2574F7DB00401E20 /* PhotoLibraryService.swift in Sources */,
 				DB2924D02546C6DD003899A7 /* APIService+Media.swift in Sources */,
 				DBEA4F8F251314640007FEC5 /* MosaicImageView.swift in Sources */,
@@ -2918,6 +3028,7 @@
 				DBA6B1CC2535BC6E005FB0B4 /* APIService+Like.swift in Sources */,
 				DBF69EF425498ADC00E2A915 /* SearchTimelineViewController.swift in Sources */,
 				DBFA4A1B25A580FA00D51703 /* APIService+APIError.swift in Sources */,
+				DB004BE126CCFED600F5C574 /* Persistence+MastodonUser.swift in Sources */,
 				DB3B5F7A2562916400C46819 /* StatusProvider+MediaInfoDescriptionViewDelegate.swift in Sources */,
 				DB67617B254C0279006C6798 /* SearchUserViewModel.swift in Sources */,
 				DBB1FEC8269C3878005BC761 /* User.swift in Sources */,
@@ -2954,6 +3065,7 @@
 				DBA9B3C12587609200EA14ED /* MentionPickViewModel.swift in Sources */,
 				DBFCC46325668B860016698E /* DrawerSidebarPresentationController.swift in Sources */,
 				DB0D3A38255E4341000BB9FA /* UserLikeTimelineViewController+StatusProvider.swift in Sources */,
+				DB004BCD26CCD7E900F5C574 /* MastodonFieldContainer.swift in Sources */,
 				DBE76D232500FF1C00DEB0FC /* AuthenticationService.swift in Sources */,
 				DBB1FECE269C3E16005BC761 /* StatusAuthorView.swift in Sources */,
 				DBBC33DC259D8C0E00E9FAEF /* NSKeyValueObservation.swift in Sources */,
@@ -2999,7 +3111,7 @@
 				DB578CD8254C0FB500745336 /* SearchUserViewModel+State.swift in Sources */,
 				DBCE2EE32593319000926D09 /* AvatarConfigurableView.swift in Sources */,
 				DB36F354257DF14E0028F81E /* APIService+Application.swift in Sources */,
-				DBE76C8924FF941400DEB0FC /* APIService+Autentication.swift in Sources */,
+				DBE76C8924FF941400DEB0FC /* APIService+Authentication.swift in Sources */,
 				DBED96D3253F46CF00C5383A /* TwitterMedia.swift in Sources */,
 				DBC8E1622577B02A00401E20 /* Strings.swift in Sources */,
 				DBEA4F772511DD610007FEC5 /* TweetConversationViewModel.swift in Sources */,
@@ -3085,6 +3197,7 @@
 				DBF69ECA25496E6400E2A915 /* SearchDetailTransitionController.swift in Sources */,
 				DB915406254FC8CE00613473 /* FollowActionButton.swift in Sources */,
 				DBDA8E8F24FE068C006750DC /* SceneCoordinator.swift in Sources */,
+				DB004BDF26CCFE8E00F5C574 /* Persistence.swift in Sources */,
 				DB74A169256E392F00C5F3C9 /* ContextMenuImagePreviewViewController.swift in Sources */,
 				DB8AC1902542DA9500E636BE /* ActiveLabel.swift in Sources */,
 				DB6CF1BF26970A21001DE069 /* HomeTimelineView.swift in Sources */,
@@ -3149,6 +3262,7 @@
 				DBA6B1B725355C1E005FB0B4 /* UIAlertController.swift in Sources */,
 				DBFA4A0725A4621C00D51703 /* UserProvider+SearchUserTableViewCellDelegate.swift in Sources */,
 				DBBABA11255E61C900C1B3D9 /* SearchMediaViewController+StatusProvider.swift in Sources */,
+				DB004BC926CCD68B00F5C574 /* MastodonUser.swift in Sources */,
 				DB25B9E82539897B00A5420F /* APIService+Tweet+Search.swift in Sources */,
 				DBFA4A2B25A5A69100D51703 /* SearchTimelineViewModel+Diffable.swift in Sources */,
 				DBBABA0C255E550D00C1B3D9 /* StatusProvider+UICollectionViewDelegate.swift in Sources */,
@@ -3231,6 +3345,7 @@
 			files = (
 				DBE76CCB250093E300DEB0FC /* ManagedObjectContextObjectsDidChangeNotification.swift in Sources */,
 				DB74A194256F6FF400C5F3C9 /* TwitterUserEntitiesURL.swift in Sources */,
+				DB004BE326CD01CF00F5C574 /* AutoGenerateProperty.swift in Sources */,
 				DB491618253ECF58008755C3 /* TweetEntitiesHashtag.swift in Sources */,
 				DB5A229A255BC82D006CA5B2 /* AuthenticationIndex.swift in Sources */,
 				DB49161D253ECF81008755C3 /* TweetEntitiesMention.swift in Sources */,
@@ -3238,7 +3353,9 @@
 				DBE76D182500D93400DEB0FC /* Tweet.swift in Sources */,
 				DB8AC0E9253EE4EE00E636BE /* TwitterPollOption.swift in Sources */,
 				DBE76D292501F88600DEB0FC /* TwitterUser.swift in Sources */,
+				DB756BFB26CBA4AE00AAD328 /* MastodonUser.swift in Sources */,
 				DBE76CCC250093E300DEB0FC /* NSManagedObjectContext.swift in Sources */,
+				DB004BD426CCEBF600F5C574 /* AutoUpdatableObject.swift in Sources */,
 				DBE76CCD250093E300DEB0FC /* URL.swift in Sources */,
 				DBE716F82536CA9C00DF98C5 /* Collection.swift in Sources */,
 				DB8AC0E0253EE4B400E636BE /* TwitterPoll.swift in Sources */,
@@ -3256,6 +3373,7 @@
 				DB491622253ECFD9008755C3 /* TweetEntitiesURL.swift in Sources */,
 				DBE76CCE250093E300DEB0FC /* Managed.swift in Sources */,
 				DBE76D162500D7C200DEB0FC /* TimelineIndex.swift in Sources */,
+				DB756BFE26CBA64300AAD328 /* MastodonAuthentication.swift in Sources */,
 				DBE76D2B25020C0F00DEB0FC /* NetworkUpdatable.swift in Sources */,
 				DB491636253ED329008755C3 /* TwitterPlace.swift in Sources */,
 				DBE76CD12500949900DEB0FC /* TwitterAuthentication.swift in Sources */,
@@ -3717,6 +3835,7 @@
 		};
 		DBE76CA8250093CA00DEB0FC /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 11A96C051C6ACCB3A9B716BB /* Pods-CoreDataStack.debug.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
@@ -3744,6 +3863,7 @@
 		};
 		DBE76CA9250093CA00DEB0FC /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 8810A335C578F294D7BB74AE /* Pods-CoreDataStack.release.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;

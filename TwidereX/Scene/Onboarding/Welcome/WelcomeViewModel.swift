@@ -12,17 +12,19 @@ import SwiftUI
 import Combine
 import AppShared
 import TwitterSDK
+import MastodonSDK
 
 protocol WelcomeViewModelDelegate: AnyObject {
     func presentTwitterAuthenticationOption()
-    func welcomeViewModel(_ viewModel: WelcomeViewModel, authenticateRequestTokenResponse exchange: Twitter.API.OAuth.OAuthRequestTokenResponseExchange)
+    func welcomeViewModel(_ viewModel: WelcomeViewModel, authenticateTwitter exchange: Twitter.API.OAuth.OAuthRequestTokenResponseExchange)
+    func welcomeViewModel(_ viewModel: WelcomeViewModel, authenticateMastodon authenticationInfo: MastodonAuthenticationController.MastodonAuthenticationInfo)
 }
 
 @MainActor
 final class WelcomeViewModel: ObservableObject {
     
     weak var delegate: WelcomeViewModelDelegate?
-    
+
     // input
     let context: AppContext
     @Published var mastodonDomain = ""
@@ -35,6 +37,8 @@ final class WelcomeViewModel: ObservableObject {
 
     let error = PassthroughSubject<Error, Never>()
     
+    
+    
     init(context: AppContext) {
         self.context = context
     }
@@ -45,6 +49,20 @@ extension WelcomeViewModel {
     enum AuthenticateMode {
         case normal         // default
         case mastodon       // for mastodon domain input
+    }
+    
+    enum WelcomeError: Error, LocalizedError {
+        case invalidMastodonDomain
+        case invalidAuthenticationToken
+        
+        var errorDescription: String? {
+            switch self {
+            case .invalidMastodonDomain:
+                return ""
+            case .invalidAuthenticationToken:
+                return ""
+            }
+        }
     }
 }
 
@@ -60,7 +78,7 @@ extension WelcomeViewModel {
         
         do {
             let requestTokenResponse = try await context.apiService.twitterRequestToken(provider: AppSecret.default)
-            delegate?.welcomeViewModel(self, authenticateRequestTokenResponse: requestTokenResponse)
+            delegate?.welcomeViewModel(self, authenticateTwitter: requestTokenResponse)
         } catch {
             self.error.send(error)
         }
@@ -69,6 +87,7 @@ extension WelcomeViewModel {
 
 
 extension WelcomeViewModel {
+    
     func authenticateMastodon() async {
         switch authenticateMode {
         case .normal:
@@ -78,35 +97,36 @@ extension WelcomeViewModel {
             isAuthenticateMastodon = true
             
             defer {
-                isBusy = false
-                isAuthenticateMastodon = false
+                self.isBusy = false
+                self.isAuthenticateMastodon = false
             }
             
-            do {
-                // TODO:
-            } catch {
-                
+            // delay 1s
+            await Task.sleep(1_000_000_000) // 1s
+            guard let domain = MastodonAuthenticationController.parseDomain(from: mastodonDomain) else {
+                self.error.send(WelcomeError.invalidMastodonDomain)
+                return
             }
-
+            do {
+                let redirectedDomain = try await context.apiService.webFinger(domain: domain)
+                let applicationResponse = try await context.apiService.createMastodonApplication(domain: redirectedDomain)
+                
+                let _authenticateInfo = MastodonAuthenticationController.MastodonAuthenticationInfo(
+                    domain: redirectedDomain,
+                    application: applicationResponse.value,
+                    redirectURI: MastodonAuthenticationController.callbackURL
+                )
+                guard let authenticateInfo = _authenticateInfo else {
+                    self.error.send(WelcomeError.invalidAuthenticationToken)
+                    return
+                }
+                
+                delegate?.welcomeViewModel(self, authenticateMastodon: authenticateInfo)
+            } catch {
+                self.error.send(error)
+            }
         }
     }
-    
-    static func parseDomain(from text: String) -> String? {
-        let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
-        guard !trimmed.isEmpty else { return nil }
-        
-        let urlString = trimmed.hasPrefix("https://") ? trimmed : "https://" + trimmed
-        guard let url = URL(string: urlString),
-              let host = url.host else {
-                  return nil
-              }
-        let components = host.components(separatedBy: ".")
-        guard !components.contains(where: { $0.isEmpty }) else { return nil }
-        guard components.count >= 2 else { return nil }
-        
-        os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: input host: %s", ((#file as NSString).lastPathComponent), #line, #function, host)
-        
-        return host
-    }
+
     
 }

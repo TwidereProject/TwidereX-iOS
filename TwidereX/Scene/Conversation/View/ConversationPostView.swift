@@ -284,19 +284,23 @@ extension ConversationPostView {
         statusMetaContainer.spacing = 20
         
         // reply status
-        replyPostStatusView.statusLabel.text = L10n.Common.Countable.Reply.single
+        // FIXME:
+//        replyPostStatusView.statusLabel.text = L10n.Common.Countable.Reply.single(<#T##p1: Any##Any#>)
         statusMetaContainer.addArrangedSubview(replyPostStatusView)
         
         // retweet status
-        retweetPostStatusView.statusLabel.text = L10n.Common.Countable.Retweet.single
+        // FIXME:
+//        retweetPostStatusView.statusLabel.text = L10n.Common.Countable.Retweet.single
         statusMetaContainer.addArrangedSubview(retweetPostStatusView)
         
         // quote status
-        quotePostStatusView.statusLabel.text = L10n.Common.Countable.Quote.single
+        // FIXME:
+//        quotePostStatusView.statusLabel.text = L10n.Common.Countable.Quote.single
         statusMetaContainer.addArrangedSubview(quotePostStatusView)
         
         // like status
-        likePostStatusView.statusLabel.text = L10n.Common.Countable.Like.single
+        // FIXME:
+//        likePostStatusView.statusLabel.text = L10n.Common.Countable.Like.single
         statusMetaContainer.addArrangedSubview(likePostStatusView)
         
         // action toolbar

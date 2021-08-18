@@ -12,6 +12,7 @@ import SwiftUI
 import Combine
 import AppShared
 import TwitterSDK
+import MastodonSDK
 import AuthenticationServices
 
 final class WelcomeViewController: UIViewController, NeedsDependency {
@@ -25,7 +26,8 @@ final class WelcomeViewController: UIViewController, NeedsDependency {
     var viewModel: WelcomeViewModel!
     
     private var twitterAuthenticationController: TwitterAuthenticationController?
-    
+    private var mastodonAuthenticationController: MastodonAuthenticationController?
+
     private(set) lazy var backBarButtonItem: UIBarButtonItem = {
         let image = Asset.Arrows.arrowLeft.image.withRenderingMode(.alwaysTemplate)
         let item = UIBarButtonItem(image: image, style: .plain, target: self, action: #selector(WelcomeViewController.backBarButtonItemPressed(_:)))
@@ -103,16 +105,16 @@ extension WelcomeViewController {
 // MARK: - WelcomeViewModelDelegate
 extension WelcomeViewController: WelcomeViewModelDelegate {
     
-    // For user PIN-based OAuth Twitter authentication
+    // For user PIN-based OAuth Twitter authentication (WebView)
     func presentTwitterAuthenticationOption() {
         let twitterAuthenticationOptionViewModel = TwitterAuthenticationOptionViewModel(context: context)
         coordinator.present(scene: .twitterAuthenticationOption(viewModel: twitterAuthenticationOptionViewModel), from: self, transition: .modal(animated: true, completion: nil))
     }
     
-    // For app custom OAuth Twitter authentication
+    // For app custom OAuth Twitter authentication (AuthenticationServices)
     func welcomeViewModel(
         _ viewModel: WelcomeViewModel,
-        authenticateRequestTokenResponse exchange: Twitter.API.OAuth.OAuthRequestTokenResponseExchange
+        authenticateTwitter exchange: Twitter.API.OAuth.OAuthRequestTokenResponseExchange
     ) {
         let requestToken: String = {
             switch exchange {
@@ -122,7 +124,7 @@ extension WelcomeViewController: WelcomeViewModelDelegate {
         }()
         let authenticateURL = Twitter.API.OAuth.authenticateURL(requestToken: requestToken)
 
-        twitterAuthenticationController = TwitterAuthenticationController(
+        let authenticationController = TwitterAuthenticationController(
             context: context,
             coordinator: coordinator,
             appSecret: AppSecret.default,
@@ -130,15 +132,15 @@ extension WelcomeViewController: WelcomeViewModelDelegate {
             requestTokenExchange: exchange
         )
         
-        twitterAuthenticationController?.isAuthenticating
+        authenticationController.isAuthenticating
             .receive(on: DispatchQueue.main)
             .sink(receiveValue: { [weak self] isAuthenticating in
                 guard let _ = self else { return }
                 // do nothing
             })
-            .store(in: &disposeBag)
+            .store(in: &authenticationController.disposeBag)
         
-        twitterAuthenticationController?.error
+        authenticationController.error
             .receive(on: DispatchQueue.main)
             .sink(receiveValue: { [weak self] error in
                 guard let self = self else { return }
@@ -146,32 +148,88 @@ extension WelcomeViewController: WelcomeViewModelDelegate {
                 let alertController = UIAlertController.standardAlert(of: error)
                 self.present(alertController, animated: true)
             })
-            .store(in: &disposeBag)
+            .store(in: &authenticationController.disposeBag)
         
-        twitterAuthenticationController?.authenticated
+        authenticationController.authenticated
             .receive(on: DispatchQueue.main)
             .sink(receiveValue: { [weak self] twitterUser in
                 guard let self = self else { return }
-                // make authenticated user active and always reset view hierarchy
-                self.context.authenticationService.activeTwitterUser(id: twitterUser.idStr)
-                    .receive(on: DispatchQueue.main)
-                    .sink { [weak self] result in
-                        guard let self = self else { return }
-                        switch result {
-                        case .failure(let error):
-                            assertionFailure(error.localizedDescription)
-                        case .success(let isActive):
-                            assert(isActive)
-                            self.coordinator.setup()
-                        }
+                Task {
+                    do {
+                        let userID = twitterUser.idStr
+                        let isActive = try await self.context.authenticationService.activeTwitterUser(userID: userID)
+                        
+                        // active user and reset view hierarchy
+                        guard isActive else { return }
+                        self.coordinator.setup()
+                    } catch {
+                        // TODO: handle error
+                        assertionFailure()
                     }
-                    .store(in: &self.disposeBag)
+                }
             })
-            .store(in: &disposeBag)
+            .store(in: &authenticationController.disposeBag)
         
-        twitterAuthenticationController?.authenticationSession?.prefersEphemeralWebBrowserSession = true
-        twitterAuthenticationController?.authenticationSession?.presentationContextProvider = self
-        twitterAuthenticationController?.authenticationSession?.start()
+        self.twitterAuthenticationController = authenticationController
+        authenticationController.authenticationSession?.prefersEphemeralWebBrowserSession = true
+        authenticationController.authenticationSession?.presentationContextProvider = self
+        authenticationController.authenticationSession?.start()
+    }
+    
+    // For PIN-Based OAuth Mastodon authentication (AuthenticationServices)
+    func welcomeViewModel(
+        _ viewModel: WelcomeViewModel,
+        authenticateMastodon authenticationInfo: MastodonAuthenticationController.MastodonAuthenticationInfo
+    ) {
+        let authenticationController = MastodonAuthenticationController(
+            context: context,
+            coordinator: coordinator,
+            authenticationInfo: authenticationInfo,
+            appSecret: AppSecret.default
+        )
+        
+        authenticationController.isAuthenticating
+            .receive(on: DispatchQueue.main)
+            .sink(receiveValue: { [weak self] isAuthenticating in
+                guard let _ = self else { return }
+                // do nothing
+            })
+            .store(in: &authenticationController.disposeBag)
+        
+        authenticationController.error
+            .receive(on: DispatchQueue.main)
+            .sink(receiveValue: { [weak self] error in
+                guard let self = self else { return }
+                guard let error = error else { return }
+                let alertController = UIAlertController.standardAlert(of: error)
+                self.present(alertController, animated: true)
+            })
+            .store(in: &authenticationController.disposeBag)
+        
+        authenticationController.authenticated
+            .receive(on: DispatchQueue.main)
+            .sink(receiveValue: { [weak self] mastodonUser in
+                guard let self = self else { return }
+                Task {
+                    do {
+                        let domain = authenticationInfo.domain
+                        let userID = mastodonUser.id
+                        let isActive = try await self.context.authenticationService.activeMastodonUser(domain: domain, userID: userID)
+                        
+                        // active user and reset view hierarchy
+                        guard isActive else { return }
+                        self.coordinator.setup()
+                    } catch {
+                        // TODO: handle error
+                        assertionFailure()
+                    }
+                }
+            })
+            .store(in: &authenticationController.disposeBag)
+        
+        self.mastodonAuthenticationController = authenticationController
+        authenticationController.authenticationSession?.presentationContextProvider = self
+        authenticationController.authenticationSession?.start()
     }
     
 }

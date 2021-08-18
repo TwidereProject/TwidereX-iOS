@@ -134,7 +134,7 @@ extension MentionTimelineViewController {
                 guard let self = self else { return }
                 let predicate: NSPredicate
                 if let activeAuthenticationIndex = activeAuthenticationIndex {
-                    let userID = activeAuthenticationIndex.twitterAuthentication?.twitterUser?.id ?? ""
+                    let userID = activeAuthenticationIndex.twitterAuthentication?.twitterUser.id ?? ""
                     predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [
                         MentionTimelineIndex.predicate(platform: .twitter),
                         MentionTimelineIndex.predicate(userID: userID),

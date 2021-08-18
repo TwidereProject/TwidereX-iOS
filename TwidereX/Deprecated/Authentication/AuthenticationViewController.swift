@@ -288,30 +288,30 @@ extension AuthenticationViewController {
             })
             .store(in: &disposeBag)
         
-        twitterAuthenticationController?.authenticated
-            .receive(on: DispatchQueue.main)
-            .sink(receiveValue: { [weak self] twitterUser in
-                guard let self = self else { return }
-                // reset view hierarchy only if needs
-                if self.viewModel.viewHierarchyShouldReset {
-                    self.context.authenticationService.activeTwitterUser(id: twitterUser.idStr)
-                        .receive(on: DispatchQueue.main)
-                        .sink { [weak self] result in
-                            guard let self = self else { return }
-                            switch result {
-                            case .failure(let error):
-                                assertionFailure(error.localizedDescription)
-                            case .success(let isActived):
-                                assert(isActived)
-                                self.coordinator.setup()
-                            }
-                        }
-                        .store(in: &self.disposeBag)
-                } else {
-                    self.dismiss(animated: true, completion: nil)
-                }
-            })
-            .store(in: &disposeBag)
+//        twitterAuthenticationController?.authenticated
+//            .receive(on: DispatchQueue.main)
+//            .sink(receiveValue: { [weak self] twitterUser in
+//                guard let self = self else { return }
+//                // reset view hierarchy only if needs
+//                if self.viewModel.viewHierarchyShouldReset {
+//                    self.context.authenticationService.activeTwitterUser(id: twitterUser.idStr)
+//                        .receive(on: DispatchQueue.main)
+//                        .sink { [weak self] result in
+//                            guard let self = self else { return }
+//                            switch result {
+//                            case .failure(let error):
+//                                assertionFailure(error.localizedDescription)
+//                            case .success(let isActived):
+//                                assert(isActived)
+//                                self.coordinator.setup()
+//                            }
+//                        }
+//                        .store(in: &self.disposeBag)
+//                } else {
+//                    self.dismiss(animated: true, completion: nil)
+//                }
+//            })
+//            .store(in: &disposeBag)
         
         twitterAuthenticationController?.authenticationSession?.prefersEphemeralWebBrowserSession = true
         twitterAuthenticationController?.authenticationSession?.presentationContextProvider = self

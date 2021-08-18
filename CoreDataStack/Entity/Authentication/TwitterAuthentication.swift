@@ -27,8 +27,8 @@ final public class TwitterAuthentication: NSManagedObject {
     @NSManaged public private(set) var updatedAt: Date
     
     // one-to-one relationship
-    @NSManaged public private(set) var authenticationIndex: AuthenticationIndex?
-    @NSManaged public private(set) var twitterUser: TwitterUser?
+    @NSManaged public private(set) var authenticationIndex: AuthenticationIndex
+    @NSManaged public private(set) var twitterUser: TwitterUser
     
 }
 
@@ -43,14 +43,23 @@ extension TwitterAuthentication {
     }
     
     @discardableResult
-    public static func insert(into context: NSManagedObjectContext, property: Property, authenticationIndex: AuthenticationIndex, twitterUser: TwitterUser) -> TwitterAuthentication {
+    public static func insert(
+        into context: NSManagedObjectContext,
+        property: Property,
+        authenticationIndex: AuthenticationIndex,
+        twitterUser: TwitterUser
+    ) -> TwitterAuthentication {
         let authentication: TwitterAuthentication = context.insertObject()
+        
         authentication.userID = property.userID
         authentication.screenName = property.screenName
+        
         authentication.consumerKey = property.consumerKey
         authentication.consumerSecret = property.consumerSecret
+        
         authentication.accessToken = property.accessToken
         authentication.accessTokenSecret = property.accessTokenSecret
+        
         authentication.nonce = property.nonce ?? ""
         
         authentication.authenticationIndex = authenticationIndex
@@ -95,13 +104,7 @@ extension TwitterAuthentication {
         }
     }
     
-    public func update(authenticationIndex: AuthenticationIndex?) {
-        if self.authenticationIndex != authenticationIndex {
-            self.authenticationIndex = authenticationIndex
-        }
-    }
-    
-    public func update(twitterUser: TwitterUser?) {
+    public func update(twitterUser: TwitterUser) {
         if self.twitterUser != twitterUser {
             self.twitterUser = twitterUser
         }

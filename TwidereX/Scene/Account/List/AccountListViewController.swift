@@ -98,21 +98,20 @@ extension AccountListViewController: UITableViewDelegate {
         guard case let .twitterUser(objectID) = item else { return }
         
         let managedObjectContext = context.managedObjectContext
-        managedObjectContext.perform {
-            guard let twitterUser = managedObjectContext.object(with: objectID) as? TwitterUser else { return }
-            self.context.authenticationService.activeTwitterUser(id: twitterUser.id)
-                .receive(on: DispatchQueue.main)
-                .sink { [weak self] result in
-                    guard let self = self else { return }
-                    switch result {
-                    case .failure(let error):
-                        assertionFailure(error.localizedDescription)
-                    case .success(let isActived):
-                        assert(isActived)
-                        self.coordinator.setup()
-                    }
+        Task {
+            do {
+                let _userID: String? = await managedObjectContext.perform {
+                    let twitterUser = managedObjectContext.object(with: objectID) as? TwitterUser
+                    return twitterUser?.id
                 }
-                .store(in: &self.disposeBag)
+                guard let userID = _userID else { return }
+                let isActive = try await self.context.authenticationService.activeTwitterUser(userID: userID)
+                guard isActive else { return }
+                self.coordinator.setup()
+            } catch {
+                // handle error
+                assertionFailure(error.localizedDescription)
+            }
         }
     }
     

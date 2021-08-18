@@ -503,21 +503,24 @@ extension TweetConversationViewModel {
         // set status
         if let replyCount = (tweet.retweet ?? tweet).metrics?.replyCount.flatMap({ Int(truncating: $0) }), replyCount > 0 {
             cell.conversationPostView.replyPostStatusView.countLabel.text = String(replyCount)
-            cell.conversationPostView.replyPostStatusView.statusLabel.text = replyCount > 1 ? L10n.Common.Countable.Reply.mutiple.localizedCapitalized : L10n.Common.Countable.Reply.single.localizedCapitalized
+            // FIXME:
+//            cell.conversationPostView.replyPostStatusView.statusLabel.text = replyCount > 1 ? L10n.Common.Countable.Reply.mutiple.localizedCapitalized : L10n.Common.Countable.Reply.single.localizedCapitalized
             cell.conversationPostView.replyPostStatusView.isHidden = false
         } else {
             cell.conversationPostView.replyPostStatusView.isHidden = true
         }
         if let retweetCount = (tweet.retweet ?? tweet).metrics?.retweetCount.flatMap({ Int(truncating: $0) }), retweetCount > 0 {
             cell.conversationPostView.retweetPostStatusView.countLabel.text = String(retweetCount)
-            cell.conversationPostView.retweetPostStatusView.statusLabel.text = retweetCount > 1 ? L10n.Common.Countable.Retweet.mutiple.localizedCapitalized : L10n.Common.Countable.Retweet.single.localizedCapitalized
+            // FIXME:
+//            cell.conversationPostView.retweetPostStatusView.statusLabel.text = retweetCount > 1 ? L10n.Common.Countable.Retweet.mutiple.localizedCapitalized : L10n.Common.Countable.Retweet.single.localizedCapitalized
             cell.conversationPostView.retweetPostStatusView.isHidden = false
         } else {
             cell.conversationPostView.retweetPostStatusView.isHidden = true
         }
         if let quoteCount = (tweet.retweet ?? tweet).metrics?.quoteCount.flatMap({ Int(truncating: $0) }), quoteCount > 0 {
             cell.conversationPostView.quotePostStatusView.countLabel.text = String(quoteCount)
-            cell.conversationPostView.quotePostStatusView.statusLabel.text = quoteCount > 1 ? L10n.Common.Countable.Quote.mutiple.localizedCapitalized : L10n.Common.Countable.Quote.single.localizedCapitalized
+            // FIXME:
+//            cell.conversationPostView.quotePostStatusView.statusLabel.text = quoteCount > 1 ? L10n.Common.Countable.Quote.mutiple.localizedCapitalized : L10n.Common.Countable.Quote.single.localizedCapitalized
             cell.conversationPostView.quotePostStatusView.isHidden = false
         } else {
             cell.conversationPostView.quotePostStatusView.isHidden = true
@@ -525,7 +528,8 @@ extension TweetConversationViewModel {
         cell.conversationPostView.quotePostStatusView.isHidden = true   // FIXME:
         if let favoriteCount = (tweet.retweet ?? tweet).metrics?.likeCount.flatMap({ Int(truncating: $0) }), favoriteCount > 0 {
             cell.conversationPostView.likePostStatusView.countLabel.text = String(favoriteCount)
-            cell.conversationPostView.likePostStatusView.statusLabel.text = favoriteCount > 1 ? L10n.Common.Countable.Like.multiple.localizedCapitalized : L10n.Common.Countable.Like.single.localizedCapitalized
+            // FIXME:
+//            cell.conversationPostView.likePostStatusView.statusLabel.text = favoriteCount > 1 ? L10n.Common.Countable.Like.multiple.localizedCapitalized : L10n.Common.Countable.Like.single.localizedCapitalized
             cell.conversationPostView.likePostStatusView.isHidden = false
         } else {
             cell.conversationPostView.likePostStatusView.isHidden = true
