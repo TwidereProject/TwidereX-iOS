@@ -128,7 +128,7 @@ extension MastodonAuthentication: AutoGenerateProperty {
     	}
     }
 
-    func configure(property: Property) {
+    public func configure(property: Property) {
     	self.domain = property.domain
     	self.userID = property.userID
     	self.appAccessToken = property.appAccessToken

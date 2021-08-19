@@ -235,6 +235,14 @@
         <attribute name="votes" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <relationship name="poll" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="TwitterPoll" inverseName="options" inverseEntity="TwitterPoll"/>
     </entity>
+    <entity name="TwitterStatus" representedClassName=".TwitterStatus" syncable="YES">
+        <attribute name="id" attributeType="String"/>
+        <uniquenessConstraints>
+            <uniquenessConstraint>
+                <constraint value="id"/>
+            </uniquenessConstraint>
+        </uniquenessConstraints>
+    </entity>
     <entity name="TwitterUser" representedClassName=".TwitterUser" syncable="YES">
         <attribute name="bioDescription" optional="YES" attributeType="String"/>
         <attribute name="createdAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
@@ -328,5 +336,6 @@
         <element name="TwitterUserEntitiesURL" positionX="-63" positionY="-162" width="128" height="149"/>
         <element name="TwitterUserMetrics" positionX="-45" positionY="-180" width="128" height="134"/>
         <element name="TwitterWithheld" positionX="-18" positionY="0" width="128" height="134"/>
+        <element name="TwitterStatus" positionX="-63" positionY="-153" width="128" height="14"/>
     </elements>
 </model>

@@ -19,7 +19,7 @@ public struct Property {
 	}
 }
 
-func configure(property: Property) {
+public func configure(property: Property) {
 	{% for variable in type.storedVariables|!annotated:"skipAutoGenerateProperty" %}
 	self.{{variable.name}} = property.{{variable.name}}
 	{% endfor %}

@@ -22,6 +22,7 @@ extension APIService {
     // A1. incoming tweet NOT in local timeline, retweet NOT  in local (never see tweet and retweet)
     // A2. incoming tweet NOT in local timeline, retweet      in local (never see tweet but saw retweet before)
     // A3. incoming tweet     in local timeline, retweet MUST in local (saw tweet before)
+    @available(*, deprecated, message: "")
     func twitterHomeTimeline(
         count: Int = APIService.homeTimelineRequestFetchLimit,
         maxID: String? = nil,
@@ -40,7 +41,7 @@ extension APIService {
         }
                 
         os_log("%{public}s[%{public}ld], %{public}s: fetch home timeline…", ((#file as NSString).lastPathComponent), #line, #function)
-        let query = Twitter.API.Timeline.Query(count: count, maxID: maxID)
+        let query = Twitter.API.Timeline.TimelineQuery(count: count, maxID: maxID)
         return Twitter.API.Timeline.homeTimeline(session: session, authorization: authorization, query: query)
             .map { response -> AnyPublisher<Twitter.Response.Content<[Twitter.Entity.Tweet]>, Error> in
                 let log = OSLog.api

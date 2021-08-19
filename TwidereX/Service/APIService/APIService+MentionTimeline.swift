@@ -22,7 +22,7 @@ extension APIService {
     ) -> AnyPublisher<Twitter.Response.Content<[Twitter.Entity.Tweet]>, Error> {
         let authorization = twitterAuthenticationBox.twitterAuthorization
         let requestTwitterUserID = twitterAuthenticationBox.twitterUserID
-        let query = Twitter.API.Timeline.Query(count: count, maxID: maxID)
+        let query = Twitter.API.Timeline.TimelineQuery(count: count, maxID: maxID)
         
         return Twitter.API.Timeline.mentionTimeline(session: session, authorization: authorization, query: query)
             .map { response -> AnyPublisher<Twitter.Response.Content<[Twitter.Entity.Tweet]>, Error> in

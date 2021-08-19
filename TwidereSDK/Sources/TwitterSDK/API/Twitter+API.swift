@@ -57,6 +57,49 @@ extension Twitter.API {
     
 }
 
+
+extension Twitter.API {
+    
+    enum Method: String {
+        case GET, POST, PATCH, PUT, DELETE
+    }
+    
+    static func request(
+        url: URL,
+        method: Method,
+        query: Query?,
+        authorization: Twitter.API.OAuth.Authorization
+    ) -> URLRequest {
+        var components = URLComponents(string: url.absoluteString)!
+        components.queryItems = query?.queryItems
+        if let encodedQueryItems = query?.encodedQueryItems {
+            let percentEncodedQueryItems = (components.percentEncodedQueryItems ?? []) + encodedQueryItems
+            components.percentEncodedQueryItems = percentEncodedQueryItems
+        }
+        
+        let requestURL = components.url!
+        var request = URLRequest(
+            url: requestURL,
+            cachePolicy: .reloadIgnoringLocalAndRemoteCacheData,
+            timeoutInterval: Twitter.API.timeoutInterval
+        )
+        request.httpMethod = method.rawValue
+        
+        let authorizationValue = authorization.authorizationHeader(
+            requestURL: requestURL,
+            requestFormQueryItems: query?.formQueryItems,
+            httpMethod: method.rawValue
+        )
+        request.setValue(
+            authorizationValue,
+            forHTTPHeaderField: Twitter.API.OAuth.authorizationField
+        )
+        
+        return request
+    }
+    
+}
+
 extension Twitter.API {
     // Error Response when request V1 endpoint
     struct ErrorResponse: Codable {
@@ -149,6 +192,7 @@ extension Twitter.API {
         }
     }
     
+    @available(*, deprecated, message: "")
     static func request(url: URL, httpMethod: String, authorization: Twitter.API.OAuth.Authorization, queryItems: [URLQueryItem]? = nil, encodedQueryItems: [URLQueryItem]? = nil, formQueryItems: [URLQueryItem]? = nil) -> URLRequest {
         var components = URLComponents(string: url.absoluteString)!
         components.queryItems = queryItems
@@ -168,6 +212,7 @@ extension Twitter.API {
         request.httpMethod = httpMethod
         return request
     }
+    
 }
 
 extension JSONDecoder.DateDecodingStrategy {

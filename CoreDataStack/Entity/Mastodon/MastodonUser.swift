@@ -139,6 +139,7 @@ extension MastodonUser {
     
 }
 
+// MARK: - AutoGenerateProperty
 extension MastodonUser: AutoGenerateProperty {
     // sourcery:inline:MastodonUser.AutoGenerateProperty
 
@@ -214,7 +215,7 @@ extension MastodonUser: AutoGenerateProperty {
     	}
     }
 
-    func configure(property: Property) {
+    public func configure(property: Property) {
     	self.domain = property.domain
     	self.id = property.id
     	self.acct = property.acct

@@ -17,14 +17,14 @@ extension APIService {
     static let defaultSearchCount = 20
     static let conversationSearchCount = 50
     
-    // convsersation tweet search
+    // conversation tweet search
     func tweetsSearch(
         conversationRootTweetID: Twitter.Entity.Tweet.ID,
         authorUsername: String,
         maxID: String?,
         twitterAuthenticationBox: AuthenticationService.TwitterAuthenticationBox
     ) -> AnyPublisher<Twitter.Response.Content<Twitter.API.Search.Content>, Error> {
-        let query = Twitter.API.Timeline.Query(
+        let query = Twitter.API.Timeline.TimelineQuery(
             count: APIService.conversationSearchCount,
             maxID: maxID,
             sinceID: conversationRootTweetID,
@@ -42,7 +42,7 @@ extension APIService {
         maxID: String?,
         twitterAuthenticationBox: AuthenticationService.TwitterAuthenticationBox
     ) -> AnyPublisher<Twitter.Response.Content<Twitter.API.Search.Content>, Error> {
-        let query = Twitter.API.Timeline.Query(
+        let query = Twitter.API.Timeline.TimelineQuery(
             count: APIService.defaultSearchCount,
             maxID: maxID,
             query: searchText
@@ -54,7 +54,7 @@ extension APIService {
     }
 
     private func _tweetsSearch(
-        query: Twitter.API.Timeline.Query,
+        query: Twitter.API.Timeline.TimelineQuery,
         twitterAuthenticationBox: AuthenticationService.TwitterAuthenticationBox
     ) -> AnyPublisher<Twitter.Response.Content<Twitter.API.Search.Content>, Error> {
         let requestTwitterUserID = twitterAuthenticationBox.twitterUserID

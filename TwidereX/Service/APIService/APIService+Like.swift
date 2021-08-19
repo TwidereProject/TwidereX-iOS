@@ -140,7 +140,7 @@ extension APIService {
     ) -> AnyPublisher<Twitter.Response.Content<[Twitter.Entity.Tweet]>, Error> {
         let authorization = twitterAuthenticationBox.twitterAuthorization
         let requestTwitterUserID = twitterAuthenticationBox.twitterUserID
-        let query = Twitter.API.Timeline.Query(count: count, userID: userID, maxID: maxID)
+        let query = Twitter.API.Timeline.TimelineQuery(count: count, userID: userID, maxID: maxID)
         return Twitter.API.Favorites.list(session: session, authorization: authorization, query: query)
             .map { response -> AnyPublisher<Twitter.Response.Content<[Twitter.Entity.Tweet]>, Error> in
                 let log = OSLog.api

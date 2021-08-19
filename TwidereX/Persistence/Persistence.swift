@@ -8,7 +8,13 @@
 
 import Foundation
 
-enum Persistence {
+enum Persistence { }
+
+extension Persistence {
+    enum TwitterStatus { }
+}
+
+extension Persistence {
     enum MastodonUser { }
 }
 

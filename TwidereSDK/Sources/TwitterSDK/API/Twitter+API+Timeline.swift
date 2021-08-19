@@ -11,10 +11,38 @@ import Combine
 extension Twitter.API.Timeline {
     
     static let homeTimelineEndpointURL = Twitter.API.endpointURL.appendingPathComponent("statuses/home_timeline.json")
+    
+    public static func homeTimeline(
+        session: URLSession,
+        query: TimelineQuery,
+        authorization: Twitter.API.OAuth.Authorization
+    ) async throws -> Twitter.Response.Content<[Twitter.Entity.Tweet]> {
+        let request = Twitter.API.request(
+            url: homeTimelineEndpointURL,
+            method: .GET,
+            query: query,
+            authorization: authorization
+        )
+        let (data, response) = try await session.data(for: request, delegate: nil)
+        do {
+            let value = try Twitter.API.decode(type: [Twitter.Entity.Tweet].self, from: data, response: response)
+            return Twitter.Response.Content(value: value, response: response)
+        } catch {
+            debugPrint(error)
+            throw error
+        }
+    }
+    
+    
     static let mentionTimelineEndpointURL = Twitter.API.endpointURL.appendingPathComponent("statuses/mentions_timeline.json")
     static let userTimelineEndpointURL = Twitter.API.endpointURL.appendingPathComponent("statuses/user_timeline.json")
     
-    public static func homeTimeline(session: URLSession, authorization: Twitter.API.OAuth.Authorization, query: Query) -> AnyPublisher<Twitter.Response.Content<[Twitter.Entity.Tweet]>, Error> {
+    
+}
+
+extension Twitter.API.Timeline {
+    @available(*, deprecated, message: "")
+    public static func homeTimeline(session: URLSession, authorization: Twitter.API.OAuth.Authorization, query: TimelineQuery) -> AnyPublisher<Twitter.Response.Content<[Twitter.Entity.Tweet]>, Error> {
         let request = Twitter.API.request(url: homeTimelineEndpointURL, httpMethod: "GET", authorization: authorization, queryItems: query.queryItems)
         return session.dataTaskPublisher(for: request)
             .tryMap { data, response in
@@ -29,7 +57,7 @@ extension Twitter.API.Timeline {
             .eraseToAnyPublisher()
     }
     
-    public static func mentionTimeline(session: URLSession, authorization: Twitter.API.OAuth.Authorization, query: Query) -> AnyPublisher<Twitter.Response.Content<[Twitter.Entity.Tweet]>, Error> {
+    public static func mentionTimeline(session: URLSession, authorization: Twitter.API.OAuth.Authorization, query: TimelineQuery) -> AnyPublisher<Twitter.Response.Content<[Twitter.Entity.Tweet]>, Error> {
         let request = Twitter.API.request(url: mentionTimelineEndpointURL, httpMethod: "GET", authorization: authorization, queryItems: query.queryItems)
         return session.dataTaskPublisher(for: request)
             .tryMap { data, response in
@@ -39,7 +67,7 @@ extension Twitter.API.Timeline {
             .eraseToAnyPublisher()
     }
     
-    public static func userTimeline(session: URLSession, authorization: Twitter.API.OAuth.Authorization, query: Query) -> AnyPublisher<Twitter.Response.Content<[Twitter.Entity.Tweet]>, Error> {
+    public static func userTimeline(session: URLSession, authorization: Twitter.API.OAuth.Authorization, query: TimelineQuery) -> AnyPublisher<Twitter.Response.Content<[Twitter.Entity.Tweet]>, Error> {
         assert(query.userID != nil && query.userID != "")
         
         var components = URLComponents(string: userTimelineEndpointURL.absoluteString)!
@@ -76,10 +104,9 @@ public protocol TimelineQueryType {
 }
 
 extension Twitter.API.Timeline {
-    
-    public typealias TimelineQuery = TimelineQueryType
-    
-    public struct Query: TimelineQuery {
+        
+    public struct TimelineQuery: TimelineQueryType, Query {
+        
         // share
         public let count: Int?
         public let maxID: Twitter.Entity.Tweet.ID?
@@ -140,5 +167,8 @@ extension Twitter.API.Timeline {
             guard !items.isEmpty else { return nil }
             return items
         }
+        
+        var formQueryItems: [URLQueryItem]? { nil }
+
     }
 }
