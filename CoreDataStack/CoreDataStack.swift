@@ -8,6 +8,7 @@
 
 import os.log
 import Foundation
+import Combine
 import CoreData
 import AppShared
 
@@ -15,25 +16,34 @@ public final class CoreDataStack {
     
     let logger = Logger(subsystem: "CoreDataStack", category: "persistence")
     
+    private var disposeBag = Set<AnyCancellable>()
+    
     private(set) var storeDescriptions: [NSPersistentStoreDescription]
     
-    private var notificationToken: NSObjectProtocol?
+    /// A persistent history token used for fetching transactions from the store.
+    private var lastToken: NSPersistentHistoryToken?
     
     init(persistentStoreDescriptions storeDescriptions: [NSPersistentStoreDescription]) {
         self.storeDescriptions = storeDescriptions
         
         // Observe Core Data remote change notifications on the queue where the changes were made.
-        notificationToken = NotificationCenter.default.addObserver(forName: .NSPersistentStoreRemoteChange, object: nil, queue: nil) { note in
-            self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): Received a persistent store remote change notification")
-            Task {
-                // await self.fetchPersistentHistory()
+        NotificationCenter.default.publisher(for: .NSPersistentStoreRemoteChange)
+            .sink { notification in
+                self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): Received a persistent store remote change notification")
+                Task {
+                    await self.fetchPersistentHistory()
+                }
             }
-        }
+            .store(in: &disposeBag)
     }
     
     public convenience init(databaseName: String = "shared_v2") {
         let storeURL = URL.storeURL(for: AppCommon.groupID, databaseName: databaseName)
         let storeDescription = NSPersistentStoreDescription(url: storeURL)
+        // enable remote change notification
+        storeDescription.setOption(true as NSNumber, forKey: NSPersistentStoreRemoteChangeNotificationPostOptionKey)
+        // enable persistent history tracking
+        storeDescription.setOption(true as NSNumber, forKey: NSPersistentHistoryTrackingKey)
         self.init(persistentStoreDescriptions: [storeDescription])
     }
     
@@ -93,12 +103,76 @@ public final class CoreDataStack {
             }
             
             container.viewContext.mergePolicy = NSMergePolicy.mergeByPropertyObjectTrump
-            
-            // it's looks like the remote notification only trigger when app enter and leave background
+        
+            // enable background context auto merge
             container.viewContext.automaticallyMergesChangesFromParent = true
             
             os_log("%{public}s[%{public}ld], %{public}s: %s", ((#file as NSString).lastPathComponent), #line, #function, storeDescription.debugDescription)
         })
+    }
+    
+}
+
+// WWDC20 - 10017
+extension CoreDataStack {
+    
+    private func newTaskContext() -> NSManagedObjectContext {
+        // Create a private queue context.
+        /// - Tag: newBackgroundContext
+        let taskContext = persistentContainer.newBackgroundContext()
+        taskContext.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
+        // Set unused undoManager to nil for macOS (it is nil by default on iOS)
+        // to reduce resource requirements.
+        taskContext.undoManager = nil
+        return taskContext
+    }
+    
+    func fetchPersistentHistory() async {
+        do {
+            try await fetchPersistentHistoryTransactionsAndChanges()
+        } catch {
+            logger.debug("\(error.localizedDescription)")
+        }
+    }
+    
+    private func fetchPersistentHistoryTransactionsAndChanges() async throws {
+        let taskContext = newTaskContext()
+        taskContext.name = "persistentHistoryContext"
+        logger.debug("Start fetching persistent history changes from the store...")
+        
+        try await taskContext.perform {
+            // Execute the persistent history change since the last transaction.
+            /// - Tag: fetchHistory
+            let changeRequest = NSPersistentHistoryChangeRequest.fetchHistory(after: self.lastToken)
+            let historyResult = try taskContext.execute(changeRequest) as? NSPersistentHistoryResult
+            if let history = historyResult?.result as? [NSPersistentHistoryTransaction],
+               !history.isEmpty {
+                self.mergePersistentHistoryChanges(from: history)
+                return
+            }
+            
+            self.logger.debug("No persistent history transactions found.")
+            throw CoreDataStackError.persistentHistoryChangeError
+        }
+        
+        logger.debug("Finished merging history changes.")
+    }
+    
+    private func mergePersistentHistoryChanges(from history: [NSPersistentHistoryTransaction]) {
+        self.logger.debug("Received \(history.count) persistent history transactions.")
+        // Update view context with objectIDs from history change request.
+        /// - Tag: mergeChanges
+        let viewContext = persistentContainer.viewContext
+        viewContext.perform {
+            for transaction in history {
+                viewContext.mergeChanges(fromContextDidSave: transaction.objectIDNotification())
+                self.lastToken = transaction.token
+            }
+        }
+    }
+    
+    enum CoreDataStackError: Error {
+        case persistentHistoryChangeError
     }
     
 }

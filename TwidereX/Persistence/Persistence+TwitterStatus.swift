@@ -15,9 +15,7 @@ import os.log
 extension Persistence.TwitterStatus {
     
     struct PersistContext {
-        let domain: String
         let entities: [Twitter.Entity.Tweet]
-        // let cache: APIService.Persist.PersistCache<MastodonUser>?
         let networkDate: Date
         let log = OSLog.api
     }
@@ -25,12 +23,11 @@ extension Persistence.TwitterStatus {
     static func createOrMerge(
         in managedObjectContext: NSManagedObjectContext,
         context: PersistContext
-    ) async throws {
-    
-        try await managedObjectContext.performChanges {
-            let request = batchInsertRequest(context: context)
-            try managedObjectContext.execute(request)
-        }
+    ) throws -> NSBatchInsertResult {
+        let request = batchInsertRequest(context: context)
+        request.resultType = .objectIDs
+        let result = try managedObjectContext.execute(request) as! NSBatchInsertResult
+        return result
     }
     
 }

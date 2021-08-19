@@ -22,7 +22,7 @@ struct HomeTimelineView: View {
     var body: some View {
         List {
             ForEach(indexes, id: \.objectID) { index in
-                StatusView(status: index.tweet!)
+                StatusSwiftUIView(status: index.tweet!)
 //                let media = Array((index.tweet?.retweet ?? index.tweet)?.media ?? []).sorted { $0.index.compare($1.index) == .orderedAscending }
 //                let imageMedia = media.filter { $0.type == "photo" }
 //                HStack(alignment: .top) {

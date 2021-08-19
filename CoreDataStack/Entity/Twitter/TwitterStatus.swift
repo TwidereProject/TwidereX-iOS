@@ -19,12 +19,29 @@ final public class TwitterStatus: NSManagedObject {
     @NSManaged public private(set) var createdAt: Date
     @NSManaged public private(set) var updatedAt: Date
     
+    // sourcery:begin: skipAutoUpdatableObject, skipAutoGenerateProperty
+    // many-to-one relationship
+    @NSManaged public private(set) var feeds: Set<Feed>
+    // sourcery:end
 }
 
 extension TwitterStatus: Managed {
     public static var defaultSortDescriptors: [NSSortDescriptor] {
         return [NSSortDescriptor(keyPath: \TwitterStatus.createdAt, ascending: false)]
     }
+}
+
+
+extension TwitterStatus {
+    
+    public static func predicate(id: String) -> NSPredicate {
+        return NSPredicate(format: "%K == %@", #keyPath(TwitterStatus.id), id)
+    }
+    
+    public static func predicate(ids: [String]) -> NSPredicate {
+        return NSPredicate(format: "%K IN %@", #keyPath(TwitterStatus.id), ids)
+    }
+    
 }
 
 // MARK: - AutoGenerateProperty
@@ -79,4 +96,10 @@ extension TwitterStatus: AutoUpdatableObject {
     	}
     }
     // sourcery:end
+}
+
+extension TwitterStatus {
+    public func attach(feed: Feed) {
+        mutableSetValue(forKey: #keyPath(TwitterStatus.feeds)).add(feed)
+    }
 }

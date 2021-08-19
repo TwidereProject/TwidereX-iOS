@@ -58,16 +58,3 @@ extension Sample {
         )
     }
 }
-
-final class PlaintextMetaContent: MetaContent {
-    var string: String
-    let entities: [Meta.Entity] = []
-
-    init(string: String) {
-        self.string = string
-    }
-
-    func metaAttachment(for entity: Meta.Entity) -> MetaAttachment? {
-        return nil
-    }
-}

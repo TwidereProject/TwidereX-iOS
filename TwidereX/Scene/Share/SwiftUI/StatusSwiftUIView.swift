@@ -1,5 +1,5 @@
 //
-//  StatusView.swift
+//  StatusSwiftUIView.swift
 //  TwidereX
 //
 //  Created by MainasuK Cirno on 2021-7-12.
@@ -9,7 +9,7 @@
 import Foundation
 import SwiftUI
 
-struct StatusView: View {
+struct StatusSwiftUIView: View {
 
     let status: Status
 
@@ -29,7 +29,7 @@ struct StatusView: View {
 
 struct StatusView_Previews: PreviewProvider {
     static var previews: some View {
-        StatusView(status: Sample.status)
+        StatusSwiftUIView(status: Sample.status)
             .frame(width: 375)
             .previewLayout(.sizeThatFits)
     }

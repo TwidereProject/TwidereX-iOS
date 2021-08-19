@@ -49,8 +49,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             }
             .store(in: &disposeBag)
         
-        let appContext = AppContext.shared
-        let sceneCoordinator = SceneCoordinator(scene: scene, sceneDelegate: self, appContext: appContext)
+        let sceneCoordinator = SceneCoordinator(scene: scene, sceneDelegate: self, context: AppContext.shared)
         self.coordinator = sceneCoordinator
         
         sceneCoordinator.setup()

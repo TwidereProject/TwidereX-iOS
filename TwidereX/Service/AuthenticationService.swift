@@ -27,6 +27,10 @@ class AuthenticationService: NSObject {
     // output
     let authenticationIndexes = CurrentValueSubject<[AuthenticationIndex], Never>([])
     let activeAuthenticationIndex = CurrentValueSubject<AuthenticationIndex?, Never>(nil)
+    
+    let activeTwitterAuthenticationContext = CurrentValueSubject<AuthenticationService.TwitterAuthenticationContext?, Never>(nil)
+    
+    @available(*, deprecated, message: "")
     let activeTwitterAuthenticationBox = CurrentValueSubject<AuthenticationService.TwitterAuthenticationBox?, Never>(nil)
 
     init(
@@ -88,42 +92,50 @@ class AuthenticationService: NSObject {
 //            }
 //            .store(in: &disposeBag)
 
-        // bind data
-//        authenticationIndexes
-//            .map { $0.sorted(by: { $0.activeAt > $1.activeAt }).first }
-//            .assign(to: \.value, on: activeAuthenticationIndex)
-//            .store(in: &disposeBag)
+        // bind activeAuthenticationIndex
+        authenticationIndexes
+            .map { $0.sorted(by: { $0.activeAt > $1.activeAt }).first }
+            .assign(to: \.value, on: activeAuthenticationIndex)
+            .store(in: &disposeBag)
         
-//        activeAuthenticationIndex
-//            .map { activeAuthenticationIndex -> AuthenticationService.TwitterAuthenticationBox? in
-//                guard let activeAuthenticationIndex = activeAuthenticationIndex else  { return nil }
-//                guard let twitterAuthentication = activeAuthenticationIndex.twitterAuthentication else { return nil }
-//                guard let authorization = try? twitterAuthentication.authorization(appSecret: .default) else { return nil }
-//                return AuthenticationService.TwitterAuthenticationBox(
-//                    authenticationIndexObjectID: activeAuthenticationIndex.objectID,
-//                    twitterUserID: twitterAuthentication.userID,
-//                    twitterAuthorization: authorization
-//                )
-//            }
-//            .assign(to: \.value, on: activeTwitterAuthenticationBox)
-//            .store(in: &disposeBag)
+        // bind activeTwitterAuthenticationContext
+        activeAuthenticationIndex
+            .map { authenticationIndex -> AuthenticationService.TwitterAuthenticationContext? in
+                guard let authenticationIndex = authenticationIndex else { return nil }
+                guard let authentication = authenticationIndex.twitterAuthentication else { return nil }
+                guard let authorization = try? authentication.authorization(appSecret: .default) else { return nil }
+                return AuthenticationService.TwitterAuthenticationContext(
+                    authenticationObjectID: authentication.objectID,
+                    userID: authentication.userID,
+                    authorization: authorization
+                )
+            }
+            .assign(to: \.value, on: activeTwitterAuthenticationContext)
+            .store(in: &disposeBag)
 
-//        do {
-//            try authenticationIndexFetchedResultsController.performFetch()
-//            authenticationIndexes.value = authenticationIndexFetchedResultsController.fetchedObjects ?? []
-//        } catch {
-//            assertionFailure(error.localizedDescription)
-//        }
+        do {
+            try authenticationIndexFetchedResultsController.performFetch()
+            authenticationIndexes.value = authenticationIndexFetchedResultsController.fetchedObjects ?? []
+        } catch {
+            assertionFailure(error.localizedDescription)
+        }
     }
     
 }
 
 extension AuthenticationService {
     
+    @available(*, deprecated, message: "use TwitterAuthenticationContext")
     struct TwitterAuthenticationBox {
         let authenticationIndexObjectID: NSManagedObjectID
         let twitterUserID: TwitterUser.ID
         let twitterAuthorization: Twitter.API.OAuth.Authorization
+    }
+    
+    struct TwitterAuthenticationContext {
+        let authenticationObjectID: NSManagedObjectID
+        let userID: TwitterUser.ID
+        let authorization: Twitter.API.OAuth.Authorization
     }
 
 }
@@ -194,8 +206,11 @@ extension AuthenticationService: NSFetchedResultsControllerDelegate {
     }
 
     func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
-        if controller === authenticationIndexFetchedResultsController {
+        switch controller {
+        case authenticationIndexFetchedResultsController:
             authenticationIndexes.value = authenticationIndexFetchedResultsController.fetchedObjects ?? []
+        default:
+            assertionFailure()
         }
     }
     

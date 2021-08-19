@@ -18,6 +18,65 @@ extension APIService {
     static let homeTimelineRequestWindowInSec: TimeInterval = 15 * 60
     static let homeTimelineRequestFetchLimit: Int = 100
     
+    func twitterHomeTimeline(
+        maxID: Twitter.Entity.Tweet.ID? = nil,
+        authenticationContext: AuthenticationService.TwitterAuthenticationContext
+    ) async throws -> Twitter.Response.Content<[Twitter.Entity.Tweet]> {
+        let count = APIService.homeTimelineRequestFetchLimit
+        let query = Twitter.API.Timeline.TimelineQuery(count: count, maxID: maxID)
+        
+        let response = try await Twitter.API.Timeline.homeTimeline(
+            session: session,
+            query: query,
+            authorization: authenticationContext.authorization
+        )
+        
+        let managedObjectContext = backgroundManagedObjectContext
+        try await managedObjectContext.performChanges {
+            // persist TwitterStatus
+            let persistContext = Persistence.TwitterStatus.PersistContext(
+                entities: response.value,
+                networkDate: response.networkDate
+            )
+            let result = try Persistence.TwitterStatus.createOrMerge(
+                in: managedObjectContext,
+                context: persistContext
+            )
+            assert(result.resultType == .objectIDs)
+        
+            // persist Feed relationship
+            guard let objectIDs = result.result as? [NSManagedObjectID] else {
+                assertionFailure()
+                return
+            }
+                
+            let acct = Feed.Acct.twitter(userID: authenticationContext.userID).value
+            for objectID in objectIDs {
+                guard let status = try? managedObjectContext.existingObject(with: objectID) as? TwitterStatus else {
+                    continue
+                }
+                let isHomeFeedAttached = status.feeds.contains(where: { feed in
+                    feed.kind == .home && feed.acct == acct
+                })
+                guard !isHomeFeedAttached else { continue }
+                let feedProperty = Feed.Property(
+                    acct: acct,
+                    kindRaw: Feed.Kind.home.rawValue,
+                    hasMore: false,
+                    createdAt: response.networkDate
+                )
+                let feed = Feed.insert(into: managedObjectContext, property: feedProperty)
+                status.attach(feed: feed)
+            }
+            
+            return
+        }
+        
+        return response
+    }
+        
+    
+    
     // incoming tweet - retweet relationship could be:
     // A1. incoming tweet NOT in local timeline, retweet NOT  in local (never see tweet and retweet)
     // A2. incoming tweet NOT in local timeline, retweet      in local (never see tweet but saw retweet before)
