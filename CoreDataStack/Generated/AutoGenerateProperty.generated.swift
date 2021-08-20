@@ -1,81 +1,87 @@
 // Generated using Sourcery 1.5.0 — https://github.com/krzysztofzablocki/Sourcery
 // DO NOT EDIT
 
-// sourcery:inline:MastodonAuthentication.AutoGenerateProperty
+
+
+
+// sourcery:inline:TwitterUser.AutoGenerateProperty
 
 // Generated using Sourcery
 // DO NOT EDIT
 public struct Property {
-	public let  identifier: ID
-	public let  domain: String
-	public let  userID: String
+	public let  id: ID
+	public let  name: String
 	public let  username: String
-	public let  appAccessToken: String
-	public let  userAccessToken: String
-	public let  clientID: String
-	public let  clientSecret: String
-	public let  createdAt: Date
+	public let  bioDescription: String?
+	public let  createdAt: Date?
+	public let  location: String?
+	public let  pinnedTweetID: Tweet.ID?
+	public let  profileBannerURL: String?
+	public let  profileImageURL: String?
+	public let  protected: Bool
+	public let  url: String?
+	public let  verified: Bool
 	public let  updatedAt: Date
-	public let  authenticationIndex: AuthenticationIndex
-	public let  mastodonUser: MastodonUser
 
 	public init(
-		identifier: ID,
-		domain: String,
-		userID: String,
+		id: ID,
+		name: String,
 		username: String,
-		appAccessToken: String,
-		userAccessToken: String,
-		clientID: String,
-		clientSecret: String,
-		createdAt: Date,
-		updatedAt: Date,
-		authenticationIndex: AuthenticationIndex,
-		mastodonUser: MastodonUser
+		bioDescription: String?,
+		createdAt: Date?,
+		location: String?,
+		pinnedTweetID: Tweet.ID?,
+		profileBannerURL: String?,
+		profileImageURL: String?,
+		protected: Bool,
+		url: String?,
+		verified: Bool,
+		updatedAt: Date
 	) {
-		self.identifier = identifier
-		self.domain = domain
-		self.userID = userID
+		self.id = id
+		self.name = name
 		self.username = username
-		self.appAccessToken = appAccessToken
-		self.userAccessToken = userAccessToken
-		self.clientID = clientID
-		self.clientSecret = clientSecret
+		self.bioDescription = bioDescription
 		self.createdAt = createdAt
+		self.location = location
+		self.pinnedTweetID = pinnedTweetID
+		self.profileBannerURL = profileBannerURL
+		self.profileImageURL = profileImageURL
+		self.protected = protected
+		self.url = url
+		self.verified = verified
 		self.updatedAt = updatedAt
-		self.authenticationIndex = authenticationIndex
-		self.mastodonUser = mastodonUser
 	}
 }
 
-func configure(property: Property) {
-	self.identifier = identifier
-	self.domain = domain
-	self.userID = userID
-	self.username = username
-	self.appAccessToken = appAccessToken
-	self.userAccessToken = userAccessToken
-	self.clientID = clientID
-	self.clientSecret = clientSecret
-	self.createdAt = createdAt
-	self.updatedAt = updatedAt
-	self.authenticationIndex = authenticationIndex
-	self.mastodonUser = mastodonUser
+public func configure(property: Property) {
+	self.id = property.id
+	self.name = property.name
+	self.username = property.username
+	self.bioDescription = property.bioDescription
+	self.createdAt = property.createdAt
+	self.location = property.location
+	self.pinnedTweetID = property.pinnedTweetID
+	self.profileBannerURL = property.profileBannerURL
+	self.profileImageURL = property.profileImageURL
+	self.protected = property.protected
+	self.url = property.url
+	self.verified = property.verified
+	self.updatedAt = property.updatedAt
 }
 
 public func update(property: Property) {
-	update(identifier: property.identifier)
-	update(domain: property.domain)
-	update(userID: property.userID)
+	update(name: property.name)
 	update(username: property.username)
-	update(appAccessToken: property.appAccessToken)
-	update(userAccessToken: property.userAccessToken)
-	update(clientID: property.clientID)
-	update(clientSecret: property.clientSecret)
+	update(bioDescription: property.bioDescription)
 	update(createdAt: property.createdAt)
+	update(location: property.location)
+	update(pinnedTweetID: property.pinnedTweetID)
+	update(profileBannerURL: property.profileBannerURL)
+	update(profileImageURL: property.profileImageURL)
+	update(protected: property.protected)
+	update(url: property.url)
+	update(verified: property.verified)
 	update(updatedAt: property.updatedAt)
-	update(authenticationIndex: property.authenticationIndex)
-	update(mastodonUser: property.mastodonUser)
 }
 // sourcery:end
-

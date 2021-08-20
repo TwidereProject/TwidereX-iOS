@@ -63,9 +63,9 @@ class ProfileViewModel: NSObject {
         self.bioDescription = CurrentValueSubject(twitterUser?.displayBioDescription)
         self.url = CurrentValueSubject(twitterUser?.displayURL)
         self.location = CurrentValueSubject(twitterUser?.location)
-        self.friendsCount = CurrentValueSubject(twitterUser?.metrics?.followingCount.flatMap { Int(truncating: $0) })
-        self.followersCount = CurrentValueSubject(twitterUser?.metrics?.followersCount.flatMap { Int(truncating: $0) })
-        self.listedCount = CurrentValueSubject(twitterUser?.metrics?.listedCount.flatMap{ Int(truncating: $0) })
+        self.friendsCount = CurrentValueSubject(0)
+        self.followersCount = CurrentValueSubject(0)
+        self.listedCount = CurrentValueSubject(0)
         self.friendship = CurrentValueSubject(nil)
         self.followedBy = CurrentValueSubject(nil)
         self.muted = CurrentValueSubject(false)
@@ -352,9 +352,9 @@ extension ProfileViewModel {
         self.bioDescription.value = twitterUser?.displayBioDescription
         self.url.value = twitterUser?.displayURL
         self.location.value = twitterUser?.location
-        self.friendsCount.value = twitterUser?.metrics?.followingCount.flatMap { Int(truncating: $0) }
-        self.followersCount.value = twitterUser?.metrics?.followersCount.flatMap { Int(truncating: $0) }
-        self.listedCount.value = twitterUser?.metrics?.listedCount.flatMap{ Int(truncating: $0) }
+//        self.friendsCount.value = twitterUser?.metrics?.followingCount.flatMap { Int(truncating: $0) }
+//        self.followersCount.value = twitterUser?.metrics?.followersCount.flatMap { Int(truncating: $0) }
+//        self.listedCount.value = twitterUser?.metrics?.listedCount.flatMap{ Int(truncating: $0) }
     }
     
     private func update(twitterUser: TwitterUser?, currentTwitterUser: TwitterUser?) {
@@ -369,21 +369,21 @@ extension ProfileViewModel {
             self.friendship.value = nil
             self.followedBy.value = nil
         } else {
-            let isFollowing = twitterUser.followingBy.flatMap { $0.contains(currentTwitterUser) } ?? false
-            let isPending = twitterUser.followRequestSentFrom.flatMap { $0.contains(currentTwitterUser) } ?? false
+            let isFollowing = twitterUser.followingBy.contains(currentTwitterUser)
+            let isPending = twitterUser.followRequestSentFrom.contains(currentTwitterUser)
             let friendship = isPending ? .pending : (isFollowing) ? .following : ProfileViewModel.Friendship.none
             self.friendship.value = friendship
             os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: friendship update: %s", ((#file as NSString).lastPathComponent), #line, #function, friendship.debugDescription)
             
-            let followedBy = currentTwitterUser.followingBy.flatMap { $0.contains(twitterUser) } ?? false
+            let followedBy = currentTwitterUser.followingBy.contains(twitterUser)
             self.followedBy.value = followedBy
             os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: followedBy update: %s", ((#file as NSString).lastPathComponent), #line, #function, followedBy ? "true" : "false")
             
-            let muted = twitterUser.mutingBy.flatMap { $0.contains(currentTwitterUser) } ?? false
+            let muted = twitterUser.mutingBy.contains(currentTwitterUser)
             self.muted.value = muted
             os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: muted update: %s", ((#file as NSString).lastPathComponent), #line, #function, muted ? "true" : "false")
             
-            let blocked = twitterUser.blockingBy.flatMap { $0.contains(currentTwitterUser) } ?? false
+            let blocked = twitterUser.blockingBy.contains(currentTwitterUser)
             self.blocked.value = blocked
             os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: blocked update: %s", ((#file as NSString).lastPathComponent), #line, #function, blocked ? "true" : "false")
         }

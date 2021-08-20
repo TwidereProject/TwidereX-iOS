@@ -16,7 +16,7 @@ public protocol MetaTextAreaViewDelegate: AnyObject {
 
 public class MetaTextAreaView: UIView {
     
-    // let logger = Logger(subsystem: "MetaTextAreaView", category: "layout")
+    // let logger = Logger(subsystem: "MetaTextAreaView", category: "Layout")
     let logger = Logger(OSLog.disabled)
     
     public let textContentStorage = NSTextContentStorage()
@@ -57,38 +57,34 @@ public class MetaTextAreaView: UIView {
     }
     
     public override func layoutSubviews() {
+        invalidateIntrinsicContentSize()
         super.layoutSubviews()
-        
         logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): bounds \(self.bounds.debugDescription)")
-        
-        if translatesAutoresizingMaskIntoConstraints == false {
-            maxWidth = bounds.width
-            logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): (AutoLayout) set maxWidth to \(self.maxWidth)")
-        }
-        
-        updateTextContainerSize()
     }
-    
-    public var maxWidth: CGFloat = .zero {
-        didSet {
-            guard maxWidth != oldValue else { return }
-            invalidateIntrinsicContentSize()
-        }
-    }
+
     
     public override var intrinsicContentSize: CGSize {
-        guard maxWidth > 0 else { return super.intrinsicContentSize }
-        let size = CGSize(width: maxWidth, height: .greatestFiniteMagnitude)
+        let width: CGFloat = {
+            if bounds.width == .zero {
+                return UIScreen.main.bounds.width
+            } else {
+                return bounds.width
+            }
+        }()
+        let size = CGSize(width: width, height: CGFloat.greatestFiniteMagnitude)
         let _intrinsicContentSize = sizeThatFits(size)
-        defer {
-            delegate?.metaTextAreaView(self, intrinsicContentSizeDidUpdate: _intrinsicContentSize)
-        }
         return _intrinsicContentSize
     }
     
     public override func sizeThatFits(_ size: CGSize) -> CGSize {
+        // update textContainer width
         textContainer.size.width = size.width
         
+        // needs always draw to fit tableView/collectionView cell reusing
+        // also, make sure precise height calculate possible
+        textLayoutManager.textViewportLayoutController.layoutViewport()
+        
+        // calculate height
         var height: CGFloat = 0
         textLayoutManager.enumerateTextLayoutFragments(
             from: textLayoutManager.documentRange.endLocation,
@@ -98,30 +94,28 @@ public class MetaTextAreaView: UIView {
             return false // stop
         }
         
-        var size = size
-        size.height = ceil(height)
+        var newSize = size
+        newSize.height = ceil(height)
         
-        logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): \(size.debugDescription)")
+        logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): \(newSize.debugDescription)")
         
-        return size
+        return newSize
     }
     
     deinit {
-        resetContent()
         logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public)")
     }
     
 }
 
 extension MetaTextAreaView {
-    public func updateTextContainerSize() {
-        let width = maxWidth > 0 ? maxWidth : bounds.width
-        if textContainer.size.width != width {
-            logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): update container width: \(width)")
-            textContainer.size = CGSize(width: width, height: 0)
-            textLayoutManager.textViewportLayoutController.layoutViewport()
-        }
+    public func setAttributedString(_ attributedString: NSAttributedString) {
+        textContentStorage.textStorage?.setAttributedString(attributedString)
+        invalidateIntrinsicContentSize()
     }
+}
+
+extension MetaTextAreaView {
     
     public func resetContent() {
         contentLayer.sublayers?.forEach { layer in layer.removeFromSuperlayer() }

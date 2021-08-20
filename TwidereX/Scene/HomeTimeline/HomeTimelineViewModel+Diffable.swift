@@ -26,7 +26,7 @@ extension HomeTimelineViewModel {
         snapshot.appendSections([.main])
         diffableDataSource?.apply(snapshot)
         
-        fetchedResultsController.objectIDs
+        fetchedResultsController.objectIDs.removeDuplicates()
             .receive(on: DispatchQueue.main, options: nil)
             .sink { [weak self] objectIDs in
                 guard let self = self else { return }
@@ -41,31 +41,31 @@ extension HomeTimelineViewModel {
                     snapshot.appendItems(newItems, toSection: .main)
                     return snapshot
                 }()
-                
-                let difference = self.calculateReloadSnapshotDifference(
-                    collectionView: collectionView,
-                    oldSnapshot: oldSnapshot,
-                    newSnapshot: newSnapshot
-                )
-                
+
                 DispatchQueue.main.async { [weak self] in
                     guard let self = self else { return }
                     
+                    let difference = self.calculateReloadSnapshotDifference(
+                        collectionView: collectionView,
+                        oldSnapshot: oldSnapshot,
+                        newSnapshot: newSnapshot
+                    )
+                    
                     let animatingDifferences = difference == nil
                     diffableDataSource.apply(newSnapshot, animatingDifferences: animatingDifferences) {
-                        self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): applied new snapshot")
                         defer {
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.33) { [weak self] in
-                                self?.didLoadLatest.send()
-                            }
+                            self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): applied new snapshot")
+                            self.didLoadLatest.send()
                         }
                         guard let difference = difference else { return }
+//                        collectionView.scrollToItem(at: difference.targetIndexPath, at: .top, animated: false)
+//                        let targetDistanceToTop = collectionView.contentOffset.y
+//                        let offset = targetDistanceToTop - difference.sourceDistanceToTop
+//                        collectionView.contentOffset.y = collectionView.contentOffset.y + offset
                         guard let layoutAttributes = collectionView.layoutAttributesForItem(at: difference.targetIndexPath) else { return }
                         let targetDistanceToTop = layoutAttributes.frame.origin.y - collectionView.bounds.origin.y
                         let offset = targetDistanceToTop - difference.sourceDistanceToTop
-                        var contentOffset = collectionView.contentOffset
-                        contentOffset.y += offset
-                        collectionView.setContentOffset(contentOffset, animated: false)
+                        collectionView.contentOffset.y = collectionView.contentOffset.y + offset
                     }
                 }
             }
@@ -124,7 +124,7 @@ extension HomeTimelineViewModel {
                 maxID: nil,
                 authenticationContext: authenticationContext
             )
-            
+            // FIXME: needs stop when no new status
             // self.didLoadLatest.send()
             
         } catch {

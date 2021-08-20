@@ -6,9 +6,12 @@
 //  Copyright © 2021 Twidere. All rights reserved.
 //
 
+import os.log
 import UIKit
+import Combine
 import CoreData
 import CoreDataStack
+import MetaTextKit
 
 enum StatusSection: Hashable {
     case main
@@ -20,11 +23,7 @@ extension StatusSection {
         context: AppContext
     ) -> UICollectionViewDiffableDataSource<StatusSection, StatusItem> {
         let cellRegistrationForTwitterStatus = UICollectionView.CellRegistration<StatusCollectionViewCell, TwitterStatus> { cell, indexPath, status in
-            status.publisher(for: \.id).sink { id in
-                let metaContent = PlaintextMetaContent(string: id)
-                cell.statusView.authorNameLabel.configure(content: metaContent)
-            }
-            .store(in: &cell.disposeBag)
+            configure(statusView: cell.statusView, status: status, disposeBag: &cell.disposeBag)
         }
 
         return UICollectionViewDiffableDataSource<StatusSection, StatusItem>(
@@ -63,3 +62,67 @@ extension StatusSection {
     }
 }
 
+extension StatusSection {
+
+    static func configure(
+        statusView: StatusView,
+        status: TwitterStatus,
+        disposeBag: inout Set<AnyCancellable>
+    ) {
+        configureAuthor(statusView: statusView, status: status, disposeBag: &disposeBag)
+        configureContent(statusView: statusView, status: status, disposeBag: &disposeBag)
+    }
+    
+    static func configureAuthor(
+        statusView: StatusView,
+        status: TwitterStatus,
+        disposeBag: inout Set<AnyCancellable>
+    ) {
+        let author = (status.repost ?? status).author
+        
+        // author avatar
+        statusView.authorAvatarButton.avatarImageView.configure(
+            configuration: .init(url: author.avatarImageURL())
+        )
+        
+        // author name
+        // statusView.authorNameLabel.configure(content: PlaintextMetaContent(string: " "))
+        Publishers.CombineLatest(
+            author.publisher(for: \.name),
+            NotificationCenter.default.publisher(for: UIContentSizeCategory.didChangeNotification).map { _ in }.prepend(Void())
+        )
+            .map { text, _ in PlaintextMetaContent(string: text) }
+            .sink { metaContent in
+                statusView.authorNameLabel.setupAttributes(style: StatusView.authorNameLabelStyle)
+                statusView.authorNameLabel.configure(content: metaContent)
+            }
+            .store(in: &disposeBag)
+        
+        // author username
+        // statusView.authorUsernameLabel.text = " "
+        Publishers.CombineLatest(
+            author.publisher(for: \.username),
+            NotificationCenter.default.publisher(for: UIContentSizeCategory.didChangeNotification).map { _ in }.prepend(Void())
+        )
+            .map { text, _ in "@\(text)" }
+            .assign(to: \.text, on: statusView.authorUsernameLabel)
+            .store(in: &disposeBag)
+    }
+    
+    static func configureContent(
+        statusView: StatusView,
+        status: TwitterStatus,
+        disposeBag: inout Set<AnyCancellable>
+    ) {
+        // status content
+        let attributedString = NSAttributedString(
+            string: status.text,
+            attributes: [
+                .font: UIFontMetrics(forTextStyle: .body).scaledFont(for: .systemFont(ofSize: 14, weight: .regular)),
+                .foregroundColor: UIColor.label
+            ]
+        )
+        statusView.contentTextView.setAttributedString(attributedString)
+    }
+    
+}

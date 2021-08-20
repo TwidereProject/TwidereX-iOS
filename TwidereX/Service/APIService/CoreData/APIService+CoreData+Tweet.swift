@@ -156,7 +156,7 @@ extension APIService.CoreData {
                 retweetBy: (entity.retweeted ?? false) ? requestTwitterUser : nil
             )
             tweetCache?.dictionary[entity.idStr] = tweet
-            os_signpost(.event, log: log, name: "update database - process entity: createOrMergeTweet", signpostID: processEntityTaskSignpostID, "did insert new tweet %{public}s: %s", twitterUser.identifier.uuidString, entity.idStr)
+            os_signpost(.event, log: log, name: "update database - process entity: createOrMergeTweet", signpostID: processEntityTaskSignpostID, "did insert new tweet %s", entity.idStr)
             return (tweet, true, isTwitterUserCreated)
         }
     }

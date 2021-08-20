@@ -1,5 +1,5 @@
 //
-//  TwitterStatus.swift
+//  TwitterStatus+Property.swift
 //  TwitterStatus
 //
 //  Created by Cirno MainasuK on 2021-8-19.
@@ -15,6 +15,7 @@ extension TwitterStatus.Property {
     init(entity: Twitter.Entity.Tweet, networkDate: Date) {
         self.init(
             id: entity.id,
+            text: entity.fullText ?? entity.text ?? "",
             createdAt: entity.createdAt,
             updatedAt: networkDate
         )

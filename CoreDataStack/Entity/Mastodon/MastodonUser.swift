@@ -45,6 +45,7 @@ final public class MastodonUser: NSManagedObject {
     @NSManaged public private(set) var updatedAt: Date
     
     // sourcery:begin: skipAutoUpdatableObject, skipAutoGenerateProperty
+    
     // one-to-one relationship
     @NSManaged public private(set) var mastodonAuthentication: MastodonAuthentication?
     // @NSManaged public private(set) var pinnedStatus: Status?
@@ -75,6 +76,7 @@ final public class MastodonUser: NSManagedObject {
     // @NSManaged public private(set) var endorsedBy: Set<MastodonUser>?
     // @NSManaged public private(set) var domainBlocking: Set<MastodonUser>?
     // @NSManaged public private(set) var domainBlockingBy: Set<MastodonUser>?
+    
     // sourcery:end
 }
 

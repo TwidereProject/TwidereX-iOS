@@ -58,7 +58,7 @@ extension MediaSection {
         cell.userBriefInfoView.nameLabel.text = twitterUser.name
         cell.userBriefInfoView.usernameLabel.text = "@" + twitterUser.username
         
-        let followersCount = twitterUser.metrics?.followersCount.flatMap { String($0.intValue) } ?? "-"
+        let followersCount = 0
         cell.userBriefInfoView.detailLabel.text = "\(L10n.Common.Controls.Friendship.followers.capitalized): \(followersCount)"
         
         configureMenu(cell: cell, for: twitterUser, context: context)

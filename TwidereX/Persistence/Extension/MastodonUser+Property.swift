@@ -1,5 +1,5 @@
 //
-//  MastodonUser.swift
+//  MastodonUser+Property.swift
 //  MastodonUser
 //
 //  Created by Cirno MainasuK on 2021-8-18.

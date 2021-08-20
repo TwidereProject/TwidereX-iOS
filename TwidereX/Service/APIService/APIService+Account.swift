@@ -24,15 +24,15 @@ extension APIService {
             let log = OSLog.api
             let entity = response.value
             
-            let (twitterUser, isCreated) = APIService.CoreData.createOrMergeTwitterUser(
-                into: managedObjectContext,
-                for: nil,
-                entity: entity,
-                userCache: nil,
-                networkDate: response.networkDate,
-                log: log
+            let (twitterUser, isCreated) = Persistence.TwitterUser.createOrMerge(
+                in: managedObjectContext,
+                context: Persistence.TwitterUser.PersistContext(
+                    entity: entity,
+                    cache: nil,
+                    networkDate: response.networkDate
+                )
             )
-            
+
             let flag = isCreated ? "+" : "~"
             os_log(.info, log: log, "%{public}s[%{public}ld], %{public}s: twitter user [%s](%s)%s verified", ((#file as NSString).lastPathComponent), #line, #function, flag, twitterUser.id, twitterUser.username)
         }

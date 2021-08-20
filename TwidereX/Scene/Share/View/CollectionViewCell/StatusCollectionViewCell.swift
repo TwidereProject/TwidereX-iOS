@@ -18,6 +18,7 @@ final class StatusCollectionViewCell: UICollectionViewCell {
     override func prepareForReuse() {
         super.prepareForReuse()
         
+        statusView.prepareForReuse()
         disposeBag.removeAll()
     }
     
@@ -39,9 +40,9 @@ extension StatusCollectionViewCell {
         statusView.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(statusView)
         NSLayoutConstraint.activate([
-            statusView.topAnchor.constraint(equalTo: contentView.topAnchor),
-            statusView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
-            statusView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+            statusView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 12),
+            statusView.leadingAnchor.constraint(equalTo: contentView.readableContentGuide.leadingAnchor),
+            statusView.trailingAnchor.constraint(equalTo: contentView.readableContentGuide.trailingAnchor),
             statusView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
         ])
     }

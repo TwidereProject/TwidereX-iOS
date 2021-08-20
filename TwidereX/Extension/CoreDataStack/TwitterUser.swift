@@ -10,40 +10,25 @@ import CoreDataStack
 import TwitterSDK
 
 extension TwitterUser.Property {
-    init(entity: Twitter.Entity.User, networkDate: Date) {
-        self.init(
-            id: entity.idStr,
-            name: entity.name,
-            username: entity.screenName,
-            bioDescription: entity.userDescription,
-            createdAt: entity.createdAt,
-            location: entity.location,
-            pinnedTweetID: nil,
-            profileBannerURL: entity.profileBannerURL,
-            profileImageURL: entity.profileImageURLHTTPS,
-            protected: entity.protected ?? false,
-            url: entity.url,
-            verified: entity.verified ?? false,
-            networkDate: networkDate
-        )
-    }
     
+    @available(*, deprecated, message: "")
     init(entity: Twitter.Entity.V2.User, networkDate: Date) {
-        self.init(
-            id: entity.id,
-            name: entity.name,
-            username: entity.username,
-            bioDescription: entity.description,
-            createdAt: entity.createdAt,
-            location: entity.location,
-            pinnedTweetID: entity.pinnedTweetID,
-            profileBannerURL: nil,
-            profileImageURL: entity.profileImageURL,
-            protected: entity.protected ?? false,
-            url: entity.url,
-            verified: entity.verified ?? false,
-            networkDate: networkDate
-        )
+        fatalError()
+//        self.init(
+//            id: entity.id,
+//            name: entity.name,
+//            username: entity.username,
+//            bioDescription: entity.description,
+//            createdAt: entity.createdAt,
+//            location: entity.location,
+//            pinnedTweetID: entity.pinnedTweetID,
+//            profileBannerURL: nil,
+//            profileImageURL: entity.profileImageURL,
+//            protected: entity.protected ?? false,
+//            url: entity.url,
+//            verified: entity.verified ?? false,
+//            networkDate: networkDate
+//        )
     }
 }
 
@@ -88,23 +73,23 @@ extension TwitterUser {
 
 extension TwitterUser {
     var displayBioDescription: String? {
-        return bioDescription.flatMap { bioDescription in
-            var bioDescription = bioDescription
-            for url in entities?.urls ?? [] {
-                guard let shortURL = url.url, let expandedURL = url.expandedURL else { continue }
-                bioDescription = bioDescription.replacingOccurrences(of: shortURL, with: expandedURL)
-            }
-            return bioDescription
+        return bio.flatMap { bio in
+            var bio = bio
+//            for url in entities?.urls ?? [] {
+//                guard let shortURL = url.url, let expandedURL = url.expandedURL else { continue }
+//                bioDescription = bioDescription.replacingOccurrences(of: shortURL, with: expandedURL)
+//            }
+            return bio
         }
     }
     
     var displayURL: String? {
         return url.flatMap { text in
             var text = text
-            for url in entities?.urls ?? [] {
-                guard let shortURL = url.url, let expandedURL = url.expandedURL else { continue }
-                text = text.replacingOccurrences(of: shortURL, with: expandedURL)
-            }
+//            for url in entities?.urls ?? [] {
+//                guard let shortURL = url.url, let expandedURL = url.expandedURL else { continue }
+//                text = text.replacingOccurrences(of: shortURL, with: expandedURL)
+//            }
             return text
         }
     }

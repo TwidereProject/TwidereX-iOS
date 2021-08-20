@@ -66,11 +66,11 @@ extension APIService.CoreData {
             let twitterUserProperty = TwitterUser.Property(entity: entity, networkDate: networkDate)
             let twitterUser = TwitterUser.insert(
                 into: managedObjectContext,
-                property: twitterUserProperty,
-                entities: entities,
-                metrics: metrics,
-                followingBy: (entity.following ?? false) ? requestTwitterUser : nil,
-                followRequestSentFrom: (entity.followRequestSent ?? false) ? requestTwitterUser : nil
+                property: twitterUserProperty
+//                entities: entities,
+//                metrics: metrics,
+//                followingBy: (entity.following ?? false) ? requestTwitterUser : nil,
+//                followRequestSentFrom: (entity.followRequestSent ?? false) ? requestTwitterUser : nil
             )
             
             // update tweet mentions
@@ -86,7 +86,7 @@ extension APIService.CoreData {
                 assertionFailure(error.localizedDescription)
             }
             userCache?.dictionary[entity.idStr] = twitterUser
-            os_signpost(.event, log: log, name: "update database - process entity: createOrMergeTwitterUser", signpostID: processEntityTaskSignpostID, "did insert new twitter user %{public}s: name %s", twitterUser.identifier.uuidString, twitterUserProperty.name)
+            os_signpost(.event, log: log, name: "update database - process entity: createOrMergeTwitterUser", signpostID: processEntityTaskSignpostID, "did insert new twitter user: name %s", twitterUserProperty.name)
             return (twitterUser, true)
         }
     }
@@ -99,23 +99,23 @@ extension APIService.CoreData {
         user.update(name: property.name)
         user.update(username: property.username)
         user.update(protected: property.protected)
-        property.bioDescription.flatMap { user.update(bioDescription: $0) }
+        property.bio.flatMap { user.update(bio: $0) }
         property.url.flatMap { user.update(url: $0) }
         property.location.flatMap { user.update(location: $0) }
         property.profileBannerURL.flatMap { user.update(profileBannerURL: $0) }
         property.profileImageURL.flatMap { user.update(profileImageURL: $0) }
         
         // update entities
-        user.setupEntitiesIfNeeds()
-        let entitiesURLProperties = entity.entities
-            .flatMap { TwitterUserEntitiesURL.Property.properties(from: $0, networkDate: networkDate) } ?? []
-        user.update(entitiesURLProperties: entitiesURLProperties)
+//        user.setupEntitiesIfNeeds()
+//        let entitiesURLProperties = entity.entities
+//            .flatMap { TwitterUserEntitiesURL.Property.properties(from: $0, networkDate: networkDate) } ?? []
+//        user.update(entitiesURLProperties: entitiesURLProperties)
         
-        user.setupMetricsIfNeeds()
-        entity.friendsCount.flatMap { user.metrics?.update(followingCount: $0) }
-        entity.followersCount.flatMap { user.metrics?.update(followersCount: $0) }
-        entity.listedCount.flatMap { user.metrics?.update(listedCount: $0) }
-        entity.statusesCount.flatMap { user.metrics?.update(tweetCount: $0) }
+//        user.setupMetricsIfNeeds()
+//        entity.friendsCount.flatMap { user.metrics?.update(followingCount: $0) }
+//        entity.followersCount.flatMap { user.metrics?.update(followersCount: $0) }
+//        entity.listedCount.flatMap { user.metrics?.update(listedCount: $0) }
+//        entity.statusesCount.flatMap { user.metrics?.update(tweetCount: $0) }
         
         // relationship with requestTwitterUser
         if let requestTwitterUser = requestTwitterUser {

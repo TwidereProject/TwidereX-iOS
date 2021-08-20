@@ -34,27 +34,24 @@ extension APIService {
         let managedObjectContext = backgroundManagedObjectContext
         try await managedObjectContext.performChanges {
             // persist TwitterStatus
-            let persistContext = Persistence.TwitterStatus.PersistContext(
-                entities: response.value,
-                networkDate: response.networkDate
-            )
-            let result = try Persistence.TwitterStatus.createOrMerge(
-                in: managedObjectContext,
-                context: persistContext
-            )
-            assert(result.resultType == .objectIDs)
+            var twitterStatusArray: [TwitterStatus] = []
+            for entity in response.value {
+                let persistContext = Persistence.TwitterStatus.PersistContext(
+                    entity: entity,
+                    statusCache: nil,   // TODO:
+                    userCache: nil,
+                    networkDate: response.networkDate
+                )
+                let (twitterStatus, _) = Persistence.TwitterStatus.createOrMerge(
+                    in: managedObjectContext,
+                    context: persistContext
+                )
+                twitterStatusArray.append(twitterStatus)
+            }
         
             // persist Feed relationship
-            guard let objectIDs = result.result as? [NSManagedObjectID] else {
-                assertionFailure()
-                return
-            }
-                
             let acct = Feed.Acct.twitter(userID: authenticationContext.userID).value
-            for objectID in objectIDs {
-                guard let status = try? managedObjectContext.existingObject(with: objectID) as? TwitterStatus else {
-                    continue
-                }
+            for status in twitterStatusArray {
                 let isHomeFeedAttached = status.feeds.contains(where: { feed in
                     feed.kind == .home && feed.acct == acct
                 })
@@ -68,8 +65,6 @@ extension APIService {
                 let feed = Feed.insert(into: managedObjectContext, property: feedProperty)
                 status.attach(feed: feed)
             }
-            
-            return
         }
         
         return response

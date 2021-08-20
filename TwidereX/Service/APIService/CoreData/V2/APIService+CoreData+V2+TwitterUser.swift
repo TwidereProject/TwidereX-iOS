@@ -79,11 +79,7 @@ extension APIService.CoreData.V2 {
             let twitterUserProperty = TwitterUser.Property(entity: user, networkDate: networkDate)
             let twitterUser = TwitterUser.insert(
                 into: managedObjectContext,
-                property: twitterUserProperty,
-                entities: entities,
-                metrics: metrics,
-                followingBy: nil,
-                followRequestSentFrom: nil
+                property: twitterUserProperty
             )
             
             // update tweet mentions
@@ -99,7 +95,7 @@ extension APIService.CoreData.V2 {
                 assertionFailure(error.localizedDescription)
             }
             
-            os_signpost(.event, log: log, name: "update database - process entity: createOrMergeTwitterUser", signpostID: processEntityTaskSignpostID, "did insert new twitter user %{public}s: name %s", twitterUser.identifier.uuidString, twitterUserProperty.name)
+            os_signpost(.event, log: log, name: "update database - process entity: createOrMergeTwitterUser", signpostID: processEntityTaskSignpostID, "did insert new twitter user: name %s", twitterUserProperty.name)
             return (twitterUser, true)
         }
     }
@@ -112,16 +108,16 @@ extension APIService.CoreData.V2 {
         user.update(name: property.name)
         user.update(username: property.username)
         user.update(protected: property.protected)
-        property.bioDescription.flatMap { user.update(bioDescription: $0) }
+        property.bio.flatMap { user.update(bio: $0) }
         property.url.flatMap { user.update(url: $0) }
         property.location.flatMap { user.update(location: $0) }
         property.profileImageURL.flatMap { user.update(profileImageURL: $0) }
         
-        user.setupMetricsIfNeeds()
-        entity.publicMetrics.flatMap { user.metrics?.update(followingCount: $0.followingCount) }
-        entity.publicMetrics.flatMap { user.metrics?.update(followersCount: $0.followersCount) }
-        entity.publicMetrics.flatMap { user.metrics?.update(listedCount: $0.listedCount) }
-        entity.publicMetrics.flatMap { user.metrics?.update(tweetCount: $0.tweetCount) }
+//        user.setupMetricsIfNeeds()
+//        entity.publicMetrics.flatMap { user.metrics?.update(followingCount: $0.followingCount) }
+//        entity.publicMetrics.flatMap { user.metrics?.update(followersCount: $0.followersCount) }
+//        entity.publicMetrics.flatMap { user.metrics?.update(listedCount: $0.listedCount) }
+//        entity.publicMetrics.flatMap { user.metrics?.update(tweetCount: $0.tweetCount) }
 
         // relationship with requestTwitterUser
         // TODO: merge more fileds

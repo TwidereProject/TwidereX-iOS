@@ -30,8 +30,19 @@ final class HomeTimelineViewController: UIViewController, NeedsDependency {
     private(set) lazy var viewModel = HomeTimelineViewModel(context: context)
     
     private(set) lazy var collectionView: UICollectionView = {
-        let layoutConfiguration = UICollectionLayoutListConfiguration(appearance: .plain)
-        let layout = UICollectionViewCompositionalLayout.list(using: layoutConfiguration)
+        let layout = UICollectionViewCompositionalLayout() { sectionIndex, layoutEnvironment in
+            var configuration = UICollectionLayoutListConfiguration(appearance: .plain)
+            configuration.headerMode = .none
+            configuration.showsSeparators = false
+            
+            let section = NSCollectionLayoutSection.list(
+                using: configuration,
+                layoutEnvironment: layoutEnvironment
+            )
+            section.contentInsetsReference = .readableContent
+            
+            return section
+        }
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         return collectionView
     }()
@@ -100,12 +111,28 @@ extension HomeTimelineViewController {
         
         collectionView.refreshControl = refreshControl
         viewModel.didLoadLatest
-            .receive(on: DispatchQueue.main)
             .sink { [weak self] in
                 guard let self = self else { return }
-                self.refreshControl.endRefreshing()
+                UIView.animate(withDuration: 0.5) { [weak self] in
+                    guard let self = self else { return }
+                    self.refreshControl.endRefreshing()
+                }
             }
             .store(in: &disposeBag)
+        
+        
+        //        viewModel.isFetchingLatestTimeline
+        //            .receive(on: DispatchQueue.main)
+        //            .sink { [weak self] isFetching in
+        //                guard let self = self else { return }
+        //                if !isFetching {
+        //                    UIView.animate(withDuration: 0.5) { [weak self] in
+        //                        guard let self = self else { return }
+        //                        self.refreshControl.endRefreshing()
+        //                    }
+        //                }
+        //            }
+        //            .store(in: &disposeBag)
         
 //        navigationItem.leftBarButtonItem = avatarBarButtonItem
 //        avatarBarButtonItem.avatarButton.addTarget(self, action: #selector(HomeTimelineViewController.avatarButtonPressed(_:)), for: .touchUpInside)

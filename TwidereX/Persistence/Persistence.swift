@@ -11,6 +11,7 @@ import Foundation
 enum Persistence { }
 
 extension Persistence {
+    enum TwitterUser { }
     enum TwitterStatus { }
 }
 
