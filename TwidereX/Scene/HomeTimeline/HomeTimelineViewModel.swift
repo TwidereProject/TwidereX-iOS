@@ -37,7 +37,7 @@ final class HomeTimelineViewModel: NSObject {
 //    weak var timelineMiddleLoaderTableViewCellDelegate: TimelineMiddleLoaderTableViewCellDelegate?
     
     // output
-    var diffableDataSource: UICollectionViewDiffableDataSource<StatusSection, StatusItem>?
+    var diffableDataSource: UITableViewDiffableDataSource<StatusSection, StatusItem>?
     var didLoadLatest = PassthroughSubject<Void, Never>()
 
     // top loader

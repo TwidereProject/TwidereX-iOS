@@ -14,11 +14,11 @@ import CoreDataStack
 extension HomeTimelineViewModel {
     
     func setupDiffableDataSource(
-        collectionView: UICollectionView
+        tableView: UITableView
     ) {
         
         diffableDataSource = StatusSection.diffableDataSource(
-            collectionView: collectionView,
+            tableView: tableView,
             context: context
         )
         
@@ -35,38 +35,30 @@ extension HomeTimelineViewModel {
                 let oldSnapshot = diffableDataSource.snapshot()
 
                 let newSnapshot: NSDiffableDataSourceSnapshot<StatusSection, StatusItem> = {
-                    let newItems = objectIDs.map { StatusItem.homeTimelineFeed(objectID: $0) }
+                    let newItems = objectIDs.map { objectID in
+                        StatusItem.homeTimelineFeed(record: ManagedObjectRecord<Feed>(objectID: objectID))
+                    }
                     var snapshot = NSDiffableDataSourceSnapshot<StatusSection, StatusItem>()
                     snapshot.appendSections([.main])
                     snapshot.appendItems(newItems, toSection: .main)
                     return snapshot
                 }()
 
-                DispatchQueue.main.async { [weak self] in
-                    guard let self = self else { return }
-                    
-                    let difference = self.calculateReloadSnapshotDifference(
-                        collectionView: collectionView,
-                        oldSnapshot: oldSnapshot,
-                        newSnapshot: newSnapshot
-                    )
-                    
-                    let animatingDifferences = difference == nil
-                    diffableDataSource.apply(newSnapshot, animatingDifferences: animatingDifferences) {
-                        defer {
-                            self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): applied new snapshot")
-                            self.didLoadLatest.send()
-                        }
-                        guard let difference = difference else { return }
-//                        collectionView.scrollToItem(at: difference.targetIndexPath, at: .top, animated: false)
-//                        let targetDistanceToTop = collectionView.contentOffset.y
-//                        let offset = targetDistanceToTop - difference.sourceDistanceToTop
-//                        collectionView.contentOffset.y = collectionView.contentOffset.y + offset
-                        guard let layoutAttributes = collectionView.layoutAttributesForItem(at: difference.targetIndexPath) else { return }
-                        let targetDistanceToTop = layoutAttributes.frame.origin.y - collectionView.bounds.origin.y
-                        let offset = targetDistanceToTop - difference.sourceDistanceToTop
-                        collectionView.contentOffset.y = collectionView.contentOffset.y + offset
-                    }
+                guard let difference = self.calculateReloadSnapshotDifference(
+                    tableView: tableView,
+                    oldSnapshot: oldSnapshot,
+                    newSnapshot: newSnapshot
+                ) else {
+                    diffableDataSource.apply(newSnapshot)
+                    self.didLoadLatest.send()
+                    return
+                }
+                
+                diffableDataSource.apply(newSnapshot, animatingDifferences: true) {
+//                    tableView.scrollToRow(at: difference.targetIndexPath, at: .top, animated: false)
+//                    tableView.contentOffset.y = tableView.contentOffset.y - difference.sourceDistanceToTableViewTopEdge
+                    self.didLoadLatest.send()
+                    self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): applied new snapshot")
                 }
             }
             .store(in: &disposeBag)
@@ -78,19 +70,18 @@ extension HomeTimelineViewModel {
     struct Difference<T> {
         let item: T
         let sourceIndexPath: IndexPath
-        let sourceDistanceToTop: CGFloat
+        let sourceDistanceToTableViewTopEdge: CGFloat
         let targetIndexPath: IndexPath
     }
     
     private func calculateReloadSnapshotDifference<S: Hashable, T: Hashable>(
-        collectionView: UICollectionView,
+        tableView: UITableView,
         oldSnapshot: NSDiffableDataSourceSnapshot<S, T>,
         newSnapshot: NSDiffableDataSourceSnapshot<S, T>
     ) -> Difference<T>? {
-        guard let sourceIndexPath = collectionView.indexPathsForVisibleItems.sorted().first else { return nil }
-        guard let layoutAttributes = collectionView.layoutAttributesForItem(at: sourceIndexPath) else { return nil }
-        
-        let sourceDistanceToTop = layoutAttributes.frame.origin.y - collectionView.bounds.origin.y
+        guard let sourceIndexPath = (tableView.indexPathsForVisibleRows ?? []).sorted().first else { return nil }
+        let rectForSourceItemCell = tableView.rectForRow(at: sourceIndexPath)
+        let sourceDistanceToTableViewTopEdge = tableView.convert(rectForSourceItemCell, to: nil).origin.y - tableView.safeAreaInsets.top
         
         guard sourceIndexPath.section < oldSnapshot.numberOfSections,
               sourceIndexPath.row < oldSnapshot.numberOfItems(inSection: oldSnapshot.sectionIdentifiers[sourceIndexPath.section])
@@ -109,7 +100,7 @@ extension HomeTimelineViewModel {
         return Difference(
             item: item,
             sourceIndexPath: sourceIndexPath,
-            sourceDistanceToTop: sourceDistanceToTop,
+            sourceDistanceToTableViewTopEdge: sourceDistanceToTableViewTopEdge,
             targetIndexPath: targetIndexPath
         )
     }

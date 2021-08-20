@@ -6,19 +6,16 @@
 //  Copyright © 2020 Twidere. All rights reserved.
 //
 
+#if DEBUG
+
 import os.log
 import UIKit
 import CoreData
 import CoreDataStack
 import TwitterSDK
-
-#if DEBUG
 import ZIPFoundation
 import FLEX
-#endif
 
-#if DEBUG
-@available(iOS 14.0, *)
 extension HomeTimelineViewController {
     
     var debugActionBarButtonItem: UIBarButtonItem {
@@ -146,145 +143,145 @@ extension HomeTimelineViewController {
     }
     
     @objc private func moveToTopGapAction(_ sender: UIAction) {
-        guard let diffableDataSource = viewModel.diffableDataSource else { return }
-        let snapshotTransitioning = diffableDataSource.snapshot()
-        let item = snapshotTransitioning.itemIdentifiers.first(where: { item in
-            switch item {
-            case .middleLoader: return true
-            default:                        return false
-            }
-        })
-        if let targetItem = item, let index = snapshotTransitioning.indexOfItem(targetItem) {
-            tableView.scrollToRow(at: IndexPath(row: index, section: 0), at: .middle, animated: true)
-        }
+//        guard let diffableDataSource = viewModel.diffableDataSource else { return }
+//        let snapshotTransitioning = diffableDataSource.snapshot()
+//        let item = snapshotTransitioning.itemIdentifiers.first(where: { item in
+//            switch item {
+//            case .middleLoader: return true
+//            default:                        return false
+//            }
+//        })
+//        if let targetItem = item, let index = snapshotTransitioning.indexOfItem(targetItem) {
+//            tableView.scrollToRow(at: IndexPath(row: index, section: 0), at: .middle, animated: true)
+//        }
     }
     
     @objc private func moveToFirstProtectedTweet(_ sender: UIAction) {
-        guard let diffableDataSource = viewModel.diffableDataSource else { return }
-        let snapshotTransitioning = diffableDataSource.snapshot()
-        let item = snapshotTransitioning.itemIdentifiers.first(where: { item in
-            switch item {
-            case .homeTimelineIndex(let objectID, _):
-                let tweet = viewModel.fetchedResultsController.managedObjectContext.object(with: objectID) as! TimelineIndex
-                guard let targetTweet = (tweet.tweet?.retweet ?? tweet.tweet) else { return false }
-                return targetTweet.author.protected
-            default:
-                return false
-            }
-        })
-        if let targetItem = item, let index = snapshotTransitioning.indexOfItem(targetItem) {
-            tableView.scrollToRow(at: IndexPath(row: index, section: 0), at: .middle, animated: true)
-            tableView.blinkRow(at: IndexPath(row: index, section: 0))
-        } else {
-            print("Not found protected tweet")
-        }
+//        guard let diffableDataSource = viewModel.diffableDataSource else { return }
+//        let snapshotTransitioning = diffableDataSource.snapshot()
+//        let item = snapshotTransitioning.itemIdentifiers.first(where: { item in
+//            switch item {
+//            case .homeTimelineIndex(let objectID, _):
+//                let tweet = viewModel.fetchedResultsController.managedObjectContext.object(with: objectID) as! TimelineIndex
+//                guard let targetTweet = (tweet.tweet?.retweet ?? tweet.tweet) else { return false }
+//                return targetTweet.author.protected
+//            default:
+//                return false
+//            }
+//        })
+//        if let targetItem = item, let index = snapshotTransitioning.indexOfItem(targetItem) {
+//            tableView.scrollToRow(at: IndexPath(row: index, section: 0), at: .middle, animated: true)
+//            tableView.blinkRow(at: IndexPath(row: index, section: 0))
+//        } else {
+//            print("Not found protected tweet")
+//        }
     }
     
     @objc private func moveToFirstProtectedUser(_ sender: UIAction) {
-        guard let diffableDataSource = viewModel.diffableDataSource else { return }
-        let snapshotTransitioning = diffableDataSource.snapshot()
-        let item = snapshotTransitioning.itemIdentifiers.first(where: { item in
-            switch item {
-            case .homeTimelineIndex(let objectID, _):
-                let tweet = viewModel.fetchedResultsController.managedObjectContext.object(with: objectID) as! TimelineIndex
-                guard let targetTweet = (tweet.tweet) else { return false }
-                return targetTweet.author.protected
-            default:
-                return false
-            }
-        })
-        if let targetItem = item, let index = snapshotTransitioning.indexOfItem(targetItem) {
-            tableView.scrollToRow(at: IndexPath(row: index, section: 0), at: .middle, animated: true)
-            tableView.blinkRow(at: IndexPath(row: index, section: 0))
-        } else {
-            print("Not found protected tweet")
-        }
+//        guard let diffableDataSource = viewModel.diffableDataSource else { return }
+//        let snapshotTransitioning = diffableDataSource.snapshot()
+//        let item = snapshotTransitioning.itemIdentifiers.first(where: { item in
+//            switch item {
+//            case .homeTimelineIndex(let objectID, _):
+//                let tweet = viewModel.fetchedResultsController.managedObjectContext.object(with: objectID) as! TimelineIndex
+//                guard let targetTweet = (tweet.tweet) else { return false }
+//                return targetTweet.author.protected
+//            default:
+//                return false
+//            }
+//        })
+//        if let targetItem = item, let index = snapshotTransitioning.indexOfItem(targetItem) {
+//            tableView.scrollToRow(at: IndexPath(row: index, section: 0), at: .middle, animated: true)
+//            tableView.blinkRow(at: IndexPath(row: index, section: 0))
+//        } else {
+//            print("Not found protected tweet")
+//        }
     }
     
     @objc private func moveToFirstReplyTweet(_ sender: UIAction) {
-        guard let diffableDataSource = viewModel.diffableDataSource else { return }
-        let snapshotTransitioning = diffableDataSource.snapshot()
-        let item = snapshotTransitioning.itemIdentifiers.first(where: { item in
-            switch item {
-            case .homeTimelineIndex(let objectID, _):
-                let tweet = viewModel.fetchedResultsController.managedObjectContext.object(with: objectID) as! TimelineIndex
-                guard let targetTweet = (tweet.tweet) else { return false }
-                return targetTweet.inReplyToTweetID != nil
-            default:
-                return false
-            }
-        })
-        if let targetItem = item, let index = snapshotTransitioning.indexOfItem(targetItem) {
-            tableView.scrollToRow(at: IndexPath(row: index, section: 0), at: .middle, animated: true)
-            tableView.blinkRow(at: IndexPath(row: index, section: 0))
-        } else {
-            print("Not found reply tweet")
-        }
+//        guard let diffableDataSource = viewModel.diffableDataSource else { return }
+//        let snapshotTransitioning = diffableDataSource.snapshot()
+//        let item = snapshotTransitioning.itemIdentifiers.first(where: { item in
+//            switch item {
+//            case .homeTimelineIndex(let objectID, _):
+//                let tweet = viewModel.fetchedResultsController.managedObjectContext.object(with: objectID) as! TimelineIndex
+//                guard let targetTweet = (tweet.tweet) else { return false }
+//                return targetTweet.inReplyToTweetID != nil
+//            default:
+//                return false
+//            }
+//        })
+//        if let targetItem = item, let index = snapshotTransitioning.indexOfItem(targetItem) {
+//            tableView.scrollToRow(at: IndexPath(row: index, section: 0), at: .middle, animated: true)
+//            tableView.blinkRow(at: IndexPath(row: index, section: 0))
+//        } else {
+//            print("Not found reply tweet")
+//        }
     }
     
     @objc private func moveToFirstReplyRetweet(_ sender: UIAction) {
-        guard let diffableDataSource = viewModel.diffableDataSource else { return }
-        let snapshotTransitioning = diffableDataSource.snapshot()
-        let item = snapshotTransitioning.itemIdentifiers.first(where: { item in
-            switch item {
-            case .homeTimelineIndex(let objectID, _):
-                let tweet = viewModel.fetchedResultsController.managedObjectContext.object(with: objectID) as! TimelineIndex
-                guard let targetTweet = (tweet.tweet?.retweet) else { return false }
-                return targetTweet.inReplyToTweetID != nil
-            default:
-                return false
-            }
-        })
-        if let targetItem = item, let index = snapshotTransitioning.indexOfItem(targetItem) {
-            tableView.scrollToRow(at: IndexPath(row: index, section: 0), at: .middle, animated: true)
-            tableView.blinkRow(at: IndexPath(row: index, section: 0))
-        } else {
-            print("Not found reply retweet")
-        }
+//        guard let diffableDataSource = viewModel.diffableDataSource else { return }
+//        let snapshotTransitioning = diffableDataSource.snapshot()
+//        let item = snapshotTransitioning.itemIdentifiers.first(where: { item in
+//            switch item {
+//            case .homeTimelineIndex(let objectID, _):
+//                let tweet = viewModel.fetchedResultsController.managedObjectContext.object(with: objectID) as! TimelineIndex
+//                guard let targetTweet = (tweet.tweet?.retweet) else { return false }
+//                return targetTweet.inReplyToTweetID != nil
+//            default:
+//                return false
+//            }
+//        })
+//        if let targetItem = item, let index = snapshotTransitioning.indexOfItem(targetItem) {
+//            tableView.scrollToRow(at: IndexPath(row: index, section: 0), at: .middle, animated: true)
+//            tableView.blinkRow(at: IndexPath(row: index, section: 0))
+//        } else {
+//            print("Not found reply retweet")
+//        }
     }
     
     @objc private func moveToFirstVideoTweet(_ sender: UIAction) {
-        guard let diffableDataSource = viewModel.diffableDataSource else { return }
-        let snapshotTransitioning = diffableDataSource.snapshot()
-        let item = snapshotTransitioning.itemIdentifiers.first(where: { item in
-            switch item {
-            case .homeTimelineIndex(let objectID, _):
-                let tweet = viewModel.fetchedResultsController.managedObjectContext.object(with: objectID) as! TimelineIndex
-                guard let targetTweet = (tweet.tweet?.retweet ?? tweet.tweet) else { return false }
-                guard let type = targetTweet.media?.first?.type else { return false }
-                return type == "video"
-            default:
-                return false
-            }
-        })
-        if let targetItem = item, let index = snapshotTransitioning.indexOfItem(targetItem) {
-            tableView.scrollToRow(at: IndexPath(row: index, section: 0), at: .middle, animated: true)
-            tableView.blinkRow(at: IndexPath(row: index, section: 0))
-        } else {
-            print("Not found video tweet")
-        }
+//        guard let diffableDataSource = viewModel.diffableDataSource else { return }
+//        let snapshotTransitioning = diffableDataSource.snapshot()
+//        let item = snapshotTransitioning.itemIdentifiers.first(where: { item in
+//            switch item {
+//            case .homeTimelineIndex(let objectID, _):
+//                let tweet = viewModel.fetchedResultsController.managedObjectContext.object(with: objectID) as! TimelineIndex
+//                guard let targetTweet = (tweet.tweet?.retweet ?? tweet.tweet) else { return false }
+//                guard let type = targetTweet.media?.first?.type else { return false }
+//                return type == "video"
+//            default:
+//                return false
+//            }
+//        })
+//        if let targetItem = item, let index = snapshotTransitioning.indexOfItem(targetItem) {
+//            tableView.scrollToRow(at: IndexPath(row: index, section: 0), at: .middle, animated: true)
+//            tableView.blinkRow(at: IndexPath(row: index, section: 0))
+//        } else {
+//            print("Not found video tweet")
+//        }
     }
     
     @objc private func moveToFirstGIFTweet(_ sender: UIAction) {
-        guard let diffableDataSource = viewModel.diffableDataSource else { return }
-        let snapshotTransitioning = diffableDataSource.snapshot()
-        let item = snapshotTransitioning.itemIdentifiers.first(where: { item in
-            switch item {
-            case .homeTimelineIndex(let objectID, _):
-                let tweet = viewModel.fetchedResultsController.managedObjectContext.object(with: objectID) as! TimelineIndex
-                guard let targetTweet = (tweet.tweet?.retweet ?? tweet.tweet) else { return false }
-                guard let type = targetTweet.media?.first?.type else { return false }
-                return type == "animated_gif"
-            default:
-                return false
-            }
-        })
-        if let targetItem = item, let index = snapshotTransitioning.indexOfItem(targetItem) {
-            tableView.scrollToRow(at: IndexPath(row: index, section: 0), at: .middle, animated: true)
-            tableView.blinkRow(at: IndexPath(row: index, section: 0))
-        } else {
-            print("Not found video tweet")
-        }
+//        guard let diffableDataSource = viewModel.diffableDataSource else { return }
+//        let snapshotTransitioning = diffableDataSource.snapshot()
+//        let item = snapshotTransitioning.itemIdentifiers.first(where: { item in
+//            switch item {
+//            case .homeTimelineIndex(let objectID, _):
+//                let tweet = viewModel.fetchedResultsController.managedObjectContext.object(with: objectID) as! TimelineIndex
+//                guard let targetTweet = (tweet.tweet?.retweet ?? tweet.tweet) else { return false }
+//                guard let type = targetTweet.media?.first?.type else { return false }
+//                return type == "animated_gif"
+//            default:
+//                return false
+//            }
+//        })
+//        if let targetItem = item, let index = snapshotTransitioning.indexOfItem(targetItem) {
+//            tableView.scrollToRow(at: IndexPath(row: index, section: 0), at: .middle, animated: true)
+//            tableView.blinkRow(at: IndexPath(row: index, section: 0))
+//        } else {
+//            print("Not found video tweet")
+//        }
     }
     
     @objc private func dropRecentTweetsAction(_ sender: UIAction, count: Int) {
@@ -293,16 +290,15 @@ extension HomeTimelineViewController {
         
         let droppingObjectIDs = snapshotTransitioning.itemIdentifiers.prefix(count).compactMap { item -> NSManagedObjectID? in
             switch item {
-            case .homeTimelineIndex(let objectID, _):   return objectID
+            case .homeTimelineFeed(let record):         return record.objectID
             default:                                    return nil
             }
         }
         context.apiService.backgroundManagedObjectContext.performChanges { [weak self] in
             guard let self = self else { return }
             for objectID in droppingObjectIDs {
-                guard let object = try? self.context.apiService.backgroundManagedObjectContext.existingObject(with: objectID) as? TimelineIndex else { continue }
-                self.context.apiService.backgroundManagedObjectContext.delete(object.tweet!)
-                self.context.apiService.backgroundManagedObjectContext.delete(object)
+                let feed = self.context.apiService.backgroundManagedObjectContext.object(with: objectID) as! Feed
+                self.context.apiService.backgroundManagedObjectContext.delete(feed)
             }
         }
         .sink { result in
@@ -317,56 +313,56 @@ extension HomeTimelineViewController {
     }
     
     @objc private func enableBottomFetcher(_ sender: UIAction) {
-        if let last = viewModel.fetchedResultsController.fetchedObjects?.last {
-            let objectID = last.objectID
-            context.apiService.backgroundManagedObjectContext.performChanges { [weak self] in
-                guard let self = self else { return }
-                let object = self.context.apiService.backgroundManagedObjectContext.object(with: objectID) as! TimelineIndex
-                object.update(hasMore: true)
-            }
-            .sink { result in
-                switch result {
-                case .success:
-                    break
-                case .failure(let error):
-                    assertionFailure(error.localizedDescription)
-                }
-            }
-            .store(in: &disposeBag)
-        }
-        
+//        if let last = viewModel.fetchedResultsController.fetchedObjects?.last {
+//            let objectID = last.objectID
+//            context.apiService.backgroundManagedObjectContext.performChanges { [weak self] in
+//                guard let self = self else { return }
+//                let object = self.context.apiService.backgroundManagedObjectContext.object(with: objectID) as! TimelineIndex
+//                object.update(hasMore: true)
+//            }
+//            .sink { result in
+//                switch result {
+//                case .success:
+//                    break
+//                case .failure(let error):
+//                    assertionFailure(error.localizedDescription)
+//                }
+//            }
+//            .store(in: &disposeBag)
+//        }
     }
     
     @objc private func exportDatabase(_ sender: UIAction) {
-        let storeURL = URL.storeURL(for: "group.com.twidere.twiderex", databaseName: "shared")
-        let databaseFolderURL = storeURL.deletingLastPathComponent()
-        
-        let temporaryDirectoryURL = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent(UUID().uuidString)
-        let archiveSourceDirectoryURL = temporaryDirectoryURL.appendingPathComponent("Archive")
-        let archiveURL = temporaryDirectoryURL.appendingPathComponent("database.zip")
-        
-        DispatchQueue(label: "com.twidere.twiderex", qos: .userInitiated).async {
-            do {
-                try? FileManager.default.createDirectory(at: temporaryDirectoryURL, withIntermediateDirectories: true, attributes: nil)
-                try FileManager.default.copyItem(at: databaseFolderURL, to: archiveSourceDirectoryURL)
-                // zip under DEBUG mode is pretty slow (may CRC performance issue of ZIPFoundation)
-                try FileManager.default.zipItem(at: archiveSourceDirectoryURL, to: archiveURL, shouldKeepParent: false, compressionMethod: .none)
-                print(temporaryDirectoryURL)
-            } catch {
-                os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: archive database fail: %s", ((#file as NSString).lastPathComponent), #line, #function, error.localizedDescription)
-            }
-            
-            let activityViewController = UIActivityViewController(activityItems: [archiveURL], applicationActivities: nil)
-            DispatchQueue.main.async {
-                self.present(activityViewController, animated: true, completion: nil)
-            }
-        }
+//        let storeURL = URL.storeURL(for: "group.com.twidere.twiderex", databaseName: "shared")
+//        let databaseFolderURL = storeURL.deletingLastPathComponent()
+//
+//        let temporaryDirectoryURL = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent(UUID().uuidString)
+//        let archiveSourceDirectoryURL = temporaryDirectoryURL.appendingPathComponent("Archive")
+//        let archiveURL = temporaryDirectoryURL.appendingPathComponent("database.zip")
+//
+//        DispatchQueue(label: "com.twidere.twiderex", qos: .userInitiated).async {
+//            do {
+//                try? FileManager.default.createDirectory(at: temporaryDirectoryURL, withIntermediateDirectories: true, attributes: nil)
+//                try FileManager.default.copyItem(at: databaseFolderURL, to: archiveSourceDirectoryURL)
+//                // zip under DEBUG mode is pretty slow (may CRC performance issue of ZIPFoundation)
+//                try FileManager.default.zipItem(at: archiveSourceDirectoryURL, to: archiveURL, shouldKeepParent: false, compressionMethod: .none)
+//                print(temporaryDirectoryURL)
+//            } catch {
+//                os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: archive database fail: %s", ((#file as NSString).lastPathComponent), #line, #function, error.localizedDescription)
+//            }
+//
+//            let activityViewController = UIActivityViewController(activityItems: [archiveURL], applicationActivities: nil)
+//            DispatchQueue.main.async {
+//                self.present(activityViewController, animated: true, completion: nil)
+//            }
+//        }
     }
     
     @objc private func importDatabase(_ sender: UIAction) {
-        let picker = UIDocumentPickerViewController(documentTypes: ["public.text"], in: .open)
-        picker.delegate = self
-        present(picker, animated: true, completion: nil)
+//        let picker = UIDocumentPickerViewController(documentTypes: ["public.text"], in: .open)
+//        picker.delegate = self
+//        present(picker, animated: true, completion: nil)
+        
 //        let storeURL = URL.storeURL(for: "group.com.twidere.twiderex", databaseName: "shared")
 //        let databaseFolderURL = storeURL.deletingLastPathComponent()
 //
@@ -400,18 +396,18 @@ extension HomeTimelineViewController {
     
 }
 
-extension HomeTimelineViewController: UIDocumentPickerDelegate {
-    func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
-        guard let url = urls.first else { return }
-        
-        do {
-            guard url.startAccessingSecurityScopedResource() else { return }
-            defer { url.stopAccessingSecurityScopedResource() }
-            
-        } catch {
-            os_log("%{public}s[%{public}ld], %{public}s: %s", ((#file as NSString).lastPathComponent), #line, #function, error.localizedDescription)
-        }
-    }
-}
+//extension HomeTimelineViewController: UIDocumentPickerDelegate {
+//    func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
+//        guard let url = urls.first else { return }
+//
+//        do {
+//            guard url.startAccessingSecurityScopedResource() else { return }
+//            defer { url.stopAccessingSecurityScopedResource() }
+//
+//        } catch {
+//            os_log("%{public}s[%{public}ld], %{public}s: %s", ((#file as NSString).lastPathComponent), #line, #function, error.localizedDescription)
+//        }
+//    }
+//}
 
 #endif

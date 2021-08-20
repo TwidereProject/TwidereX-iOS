@@ -85,6 +85,8 @@
 		DB30ADD326CF57DD00B2D2BE /* AvatarImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB30ADD226CF57DD00B2D2BE /* AvatarImageView.swift */; };
 		DB30ADD626CF583900B2D2BE /* FLAnimatedImage in Frameworks */ = {isa = PBXBuildFile; productRef = DB30ADD526CF583900B2D2BE /* FLAnimatedImage */; };
 		DB30ADDA26CF5A9E00B2D2BE /* FLAnimatedImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB30ADD926CF5A9E00B2D2BE /* FLAnimatedImageView.swift */; };
+		DB30ADDC26CFC7EE00B2D2BE /* StatusTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB30ADDB26CFC7EE00B2D2BE /* StatusTableViewCell.swift */; };
+		DB30ADDD26CFD3CC00B2D2BE /* HomeTimelineViewController+DebugAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBB2513D2599DBAB0064A876 /* HomeTimelineViewController+DebugAction.swift */; };
 		DB3282DB26AFFD40002B721C /* MetaTextKit in Frameworks */ = {isa = PBXBuildFile; productRef = DB3282DA26AFFD40002B721C /* MetaTextKit */; };
 		DB3282DD26AFFD40002B721C /* TwitterMeta in Frameworks */ = {isa = PBXBuildFile; productRef = DB3282DC26AFFD40002B721C /* TwitterMeta */; };
 		DB33017625A41102003552B0 /* StatusProviderFacade.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB33017525A41102003552B0 /* StatusProviderFacade.swift */; };
@@ -627,6 +629,7 @@
 		DB30ADD026CF579E00B2D2BE /* AvatarButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvatarButton.swift; sourceTree = "<group>"; };
 		DB30ADD226CF57DD00B2D2BE /* AvatarImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvatarImageView.swift; sourceTree = "<group>"; };
 		DB30ADD926CF5A9E00B2D2BE /* FLAnimatedImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FLAnimatedImageView.swift; sourceTree = "<group>"; };
+		DB30ADDB26CFC7EE00B2D2BE /* StatusTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusTableViewCell.swift; sourceTree = "<group>"; };
 		DB33017525A41102003552B0 /* StatusProviderFacade.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusProviderFacade.swift; sourceTree = "<group>"; };
 		DB33A4A025A2F049003CED7D /* Item+EmptyStateHeaderAttribute+TimelineHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Item+EmptyStateHeaderAttribute+TimelineHeaderView.swift"; sourceTree = "<group>"; };
 		DB33A4A825A319A0003CED7D /* ActionToolbarContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionToolbarContainer.swift; sourceTree = "<group>"; };
@@ -1731,6 +1734,7 @@
 				DBF63A12259C36D8009E12C8 /* ListEntryTableViewCell.swift */,
 				DBC747D3259DA03B00787EEF /* ListCheckmarkTableViewCell.swift */,
 				DB1D7B4F25B5A43F00397DCD /* ListTextFieldTableViewCell.swift */,
+				DB30ADDB26CFC7EE00B2D2BE /* StatusTableViewCell.swift */,
 			);
 			path = TableViewCell;
 			sourceTree = "<group>";
@@ -3206,6 +3210,7 @@
 				DBEFDC8825591F5C0086F268 /* DrawerSidebarViewController.swift in Sources */,
 				DBF69EFA25498B1500E2A915 /* SearchTimelineViewModel.swift in Sources */,
 				DB36F376257F79DB0028F81E /* SearchViewModel.swift in Sources */,
+				DB30ADDC26CFC7EE00B2D2BE /* StatusTableViewCell.swift in Sources */,
 				DB8AC0F825401BA200E636BE /* UIViewController.swift in Sources */,
 				DB434888251DFE2D005B599F /* ProfileBannerStatusView.swift in Sources */,
 				DBFA4A1125A5641000D51703 /* ProfileViewController+UserProvider.swift in Sources */,
@@ -3217,6 +3222,7 @@
 				DB747FF9251C496A000C4BD7 /* ProfileViewController.swift in Sources */,
 				DB004BFA26CE4B8100F5C574 /* MetaLabel.swift in Sources */,
 				DB9EC519255A8285005403AA /* SettingListViewController.swift in Sources */,
+				DB30ADDD26CFD3CC00B2D2BE /* HomeTimelineViewController+DebugAction.swift in Sources */,
 				DBA5FA192553DCBC00D2E98E /* TransitioningMath.swift in Sources */,
 				DBF69EAC25496C9F00E2A915 /* SearchDetailViewModel.swift in Sources */,
 				DB915470255142A500613473 /* MentionTimelineViewModel+LoadLatestState.swift in Sources */,

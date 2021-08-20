@@ -29,24 +29,6 @@ final class HomeTimelineViewController: UIViewController, NeedsDependency {
     var disposeBag = Set<AnyCancellable>()
     private(set) lazy var viewModel = HomeTimelineViewModel(context: context)
     
-    private(set) lazy var collectionView: UICollectionView = {
-        let layout = UICollectionViewCompositionalLayout() { sectionIndex, layoutEnvironment in
-            var configuration = UICollectionLayoutListConfiguration(appearance: .plain)
-            configuration.headerMode = .none
-            configuration.showsSeparators = false
-            
-            let section = NSCollectionLayoutSection.list(
-                using: configuration,
-                layoutEnvironment: layoutEnvironment
-            )
-            section.contentInsetsReference = .readableContent
-            
-            return section
-        }
-        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
-        return collectionView
-    }()
-    
     private(set) lazy var refreshControl: UIRefreshControl = {
         let refreshControl = UIRefreshControl()
         refreshControl.addTarget(self, action: #selector(HomeTimelineViewController.refreshControlValueChanged(_:)), for: .valueChanged)
@@ -58,17 +40,14 @@ final class HomeTimelineViewController: UIViewController, NeedsDependency {
     
 //    let avatarBarButtonItem = AvatarBarButtonItem()
     
-//    let tableView: UITableView = {
-//        let tableView = ControlContainableTableView()
-//        tableView.register(TimelinePostTableViewCell.self, forCellReuseIdentifier: String(describing: TimelinePostTableViewCell.self))
-//        tableView.register(TimelineMiddleLoaderTableViewCell.self, forCellReuseIdentifier: String(describing: TimelineMiddleLoaderTableViewCell.self))
-//        tableView.register(TimelineBottomLoaderTableViewCell.self, forCellReuseIdentifier: String(describing: TimelineBottomLoaderTableViewCell.self))
-//        tableView.rowHeight = UITableView.automaticDimension
+    private(set) lazy var tableView: UITableView = {
+        let tableView = UITableView()
+        tableView.register(StatusTableViewCell.self, forCellReuseIdentifier: String(describing: StatusTableViewCell.self))
+        tableView.rowHeight = UITableView.automaticDimension
 //        tableView.separatorStyle = .none
-//        tableView.backgroundColor = .clear
-//
-//        return tableView
-//    }()
+        tableView.backgroundColor = .systemBackground
+        return tableView
+    }()
     
 //    private lazy var floatyButton: Floaty = {
 //        let button = Floaty()
@@ -103,14 +82,18 @@ extension HomeTimelineViewController {
         
         view.backgroundColor = .systemBackground
         
-        collectionView.backgroundColor = .systemBackground
-        collectionView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        collectionView.frame = view.bounds
-        view.addSubview(collectionView)
-        viewModel.setupDiffableDataSource(collectionView: collectionView)
+        #if DEBUG
+        navigationItem.rightBarButtonItem = debugActionBarButtonItem
+        #endif
         
-        collectionView.refreshControl = refreshControl
+        tableView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        tableView.frame = view.bounds
+        view.addSubview(tableView)
+        viewModel.setupDiffableDataSource(tableView: tableView)
+        
+        tableView.refreshControl = refreshControl
         viewModel.didLoadLatest
+            .receive(on: DispatchQueue.main, options: nil)
             .sink { [weak self] in
                 guard let self = self else { return }
                 UIView.animate(withDuration: 0.5) { [weak self] in
@@ -120,20 +103,6 @@ extension HomeTimelineViewController {
             }
             .store(in: &disposeBag)
         
-        
-        //        viewModel.isFetchingLatestTimeline
-        //            .receive(on: DispatchQueue.main)
-        //            .sink { [weak self] isFetching in
-        //                guard let self = self else { return }
-        //                if !isFetching {
-        //                    UIView.animate(withDuration: 0.5) { [weak self] in
-        //                        guard let self = self else { return }
-        //                        self.refreshControl.endRefreshing()
-        //                    }
-        //                }
-        //            }
-        //            .store(in: &disposeBag)
-        
 //        navigationItem.leftBarButtonItem = avatarBarButtonItem
 //        avatarBarButtonItem.avatarButton.addTarget(self, action: #selector(HomeTimelineViewController.avatarButtonPressed(_:)), for: .touchUpInside)
 //
@@ -141,21 +110,8 @@ extension HomeTimelineViewController {
 //        tableView.refreshControl = refreshControl
 //        refreshControl.addTarget(self, action: #selector(HomeTimelineViewController.refreshControlValueChanged(_:)), for: .valueChanged)
 //
-//        #if DEBUG
-//        if #available(iOS 14.0, *) {
-//            navigationItem.rightBarButtonItem = debugActionBarButtonItem
-//        }
-//        #endif
-//
-//        tableView.translatesAutoresizingMaskIntoConstraints = false
-//        view.addSubview(tableView)
-//        NSLayoutConstraint.activate([
-//            tableView.topAnchor.constraint(equalTo: view.topAnchor),
-//            tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-//            tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-//            tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-//        ])
-//
+        
+
 ////        view.addSubview(floatyButton)
 //
 //        viewModel.tableView = tableView

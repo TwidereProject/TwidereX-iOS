@@ -18,45 +18,38 @@ enum StatusSection: Hashable {
 }
 
 extension StatusSection {
-    static func diffableDataSource(
-        collectionView: UICollectionView,
-        context: AppContext
-    ) -> UICollectionViewDiffableDataSource<StatusSection, StatusItem> {
-        let cellRegistrationForTwitterStatus = UICollectionView.CellRegistration<StatusCollectionViewCell, TwitterStatus> { cell, indexPath, status in
-            configure(statusView: cell.statusView, status: status, disposeBag: &cell.disposeBag)
-        }
 
-        return UICollectionViewDiffableDataSource<StatusSection, StatusItem>(
-            collectionView: collectionView
-        ) { collectionView, indexPath, item in
+    static func diffableDataSource(
+        tableView: UITableView,
+        context: AppContext
+    ) -> UITableViewDiffableDataSource<StatusSection, StatusItem> {
+        return UITableViewDiffableDataSource<StatusSection, StatusItem>(
+            tableView: tableView
+        ) { tableView, indexPath, item in
             // data source should dispatch in main thread
             assert(Thread.isMainThread)
+            
             // configure cell with item
             switch item {
-            case .homeTimelineFeed(let objectID):
-                guard let feed = try? context.managedObjectContext.existingObject(with: objectID) as? Feed,
-                      let status = feed.twitterStatus
-                else {
-                    assertionFailure()
-                    return UICollectionViewCell()
+            case .homeTimelineFeed(let record):
+                let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: StatusTableViewCell.self), for: indexPath) as! StatusTableViewCell
+                context.managedObjectContext.performAndWait {
+                    guard let feed = record.object(in: context.managedObjectContext) else { return }
+                    if let status = feed.twitterStatus {
+                        configure(statusView: cell.statusView, status: status, disposeBag: &cell.disposeBag)
+                    } else {
+                        assertionFailure()
+                    }
                 }
-                return collectionView.dequeueConfiguredReusableCell(
-                    using: cellRegistrationForTwitterStatus,
-                    for: indexPath,
-                    item: status
-                )
-                
-            case .twitterStatus(let objectID):
-                guard let status = try? context.managedObjectContext.existingObject(with: objectID) as? TwitterStatus
-                else {
-                    assertionFailure()
-                    return UICollectionViewCell()
+                return cell
+
+            case .twitterStatus(let record):
+                let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: StatusTableViewCell.self), for: indexPath) as! StatusTableViewCell
+                context.managedObjectContext.performAndWait {
+                    guard let status = record.object(in: context.managedObjectContext) else { return }
+                    configure(statusView: cell.statusView, status: status, disposeBag: &cell.disposeBag)
                 }
-                return collectionView.dequeueConfiguredReusableCell(
-                    using: cellRegistrationForTwitterStatus,
-                    for: indexPath,
-                    item: status
-                )
+                return cell
             }
         }
     }
@@ -122,7 +115,8 @@ extension StatusSection {
                 .foregroundColor: UIColor.label
             ]
         )
-        statusView.contentTextView.setAttributedString(attributedString)
+        //statusView.contentTextView.setAttributedString(attributedString)
+        statusView.contentTextView.attributedText = attributedString
     }
     
 }

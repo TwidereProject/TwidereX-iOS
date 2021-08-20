@@ -27,23 +27,25 @@ public final class CoreDataStack {
         self.storeDescriptions = storeDescriptions
         
         // Observe Core Data remote change notifications on the queue where the changes were made.
-        NotificationCenter.default.publisher(for: .NSPersistentStoreRemoteChange)
-            .sink { notification in
-                self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): Received a persistent store remote change notification")
-                Task {
-                    await self.fetchPersistentHistory()
-                }
-            }
-            .store(in: &disposeBag)
+//        NotificationCenter.default.publisher(for: .NSPersistentStoreRemoteChange)
+//            .sink { notification in
+//                self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): Received a persistent store remote change notification")
+//                Task {
+//                    await self.fetchPersistentHistory()
+//                }
+//            }
+//            .store(in: &disposeBag)
     }
     
     public convenience init(databaseName: String = "shared_v2") {
         let storeURL = URL.storeURL(for: AppCommon.groupID, databaseName: databaseName)
         let storeDescription = NSPersistentStoreDescription(url: storeURL)
+        
         // enable remote change notification
         storeDescription.setOption(true as NSNumber, forKey: NSPersistentStoreRemoteChangeNotificationPostOptionKey)
         // enable persistent history tracking
         storeDescription.setOption(true as NSNumber, forKey: NSPersistentHistoryTrackingKey)
+        
         self.init(persistentStoreDescriptions: [storeDescription])
     }
     

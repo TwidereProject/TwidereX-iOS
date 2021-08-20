@@ -24,10 +24,15 @@ final class StatusView: UIView {
     
     let authorUsernameLabel = PlainMetaLabel(style: .statusAuthorUsername)
     
-    let contentTextView: MetaTextAreaView = {
-        let textView = MetaTextAreaView()
-        return textView
+    let contentTextView: UILabel = {
+        let label = UILabel()
+        label.numberOfLines = 0
+        return label
     }()
+//    let contentTextView: MetaTextAreaView = {
+//        let textView = MetaTextAreaView()
+//        return textView
+//    }()
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -45,9 +50,6 @@ extension StatusView {
     
     func prepareForReuse() {
         authorAvatarButton.avatarImageView.cancelTask()
-        authorNameLabel.reset()
-        authorUsernameLabel.text = ""
-        contentTextView.setAttributedString(NSAttributedString(string: ""))
     }
     
     private func _init() {
