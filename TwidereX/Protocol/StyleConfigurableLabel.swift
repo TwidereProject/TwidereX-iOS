@@ -1,8 +1,8 @@
 //
-//  MetaLabel.swift
-//  MetaLabel
+//  StyleConfigurableLabel.swift
+//  StyleConfigurableLabel
 //
-//  Created by Cirno MainasuK on 2021-8-19.
+//  Created by Cirno MainasuK on 2021-8-23.
 //  Copyright © 2021 Twidere. All rights reserved.
 //
 
@@ -10,57 +10,68 @@ import UIKit
 import Meta
 import MetaTextKit
 
-protocol MetaStyleConfigurable {
-    func setupLayout(style: Meta.Style)
-    func setupAttributes(style: Meta.Style)
+protocol StyleConfigurableLabel {
+    func setupLayout(style: UILabel.Style)
+    func setupAttributes(style: UILabel.Style)
 }
 
-extension Meta {
+extension UILabel {
     enum Style {
+        case statusHeader
         case statusAuthorName
         case statusAuthorUsername
+        case statusTimestamp
     }
 }
 
-extension Meta.Style {
+extension UILabel.Style {
     var numberOfLines: Int {
         switch self {
+        case .statusHeader:             return 1
         case .statusAuthorName:         return 1
         case .statusAuthorUsername:     return 1
+        case .statusTimestamp:          return 1
         }
     }
 }
 
-extension Meta.Style {
+extension UILabel.Style {
     var font: UIFont {
         switch self {
+        case .statusHeader:
+            return .preferredFont(forTextStyle: .footnote)
         case .statusAuthorName:
-            return UIFontMetrics(forTextStyle: .headline).scaledFont(for: .systemFont(ofSize: 14, weight: .medium))
+            return .preferredFont(forTextStyle: .headline)
         case .statusAuthorUsername:
-            return UIFontMetrics(forTextStyle: .headline).scaledFont(for: .systemFont(ofSize: 14, weight: .regular))
+            return .preferredFont(forTextStyle: .subheadline)
+        case .statusTimestamp:
+            return .preferredFont(forTextStyle: .subheadline)
         }
     }
     
     var textColor: UIColor {
         switch self {
+        case .statusHeader:
+            return .secondaryLabel
         case .statusAuthorName:
             return .label
         case .statusAuthorUsername:
+            return .secondaryLabel
+        case .statusTimestamp:
             return .secondaryLabel
         }
     }
 }
 
-
-extension MetaLabel: MetaStyleConfigurable {
-    convenience init(style: Meta.Style) {
+extension MetaLabel: StyleConfigurableLabel {
+    convenience init(style: UILabel.Style) {
         self.init()
-
+        
         setupLayout(style: style)
         setupAttributes(style: style)
     }
-
-    func setupLayout(style: Meta.Style) {
+    
+    func setupLayout(style: UILabel.Style) {
         layer.masksToBounds = true
         lineBreakMode = .byTruncatingTail
         textContainer.lineBreakMode = .byTruncatingTail
@@ -69,13 +80,13 @@ extension MetaLabel: MetaStyleConfigurable {
         numberOfLines = style.numberOfLines
     }
     
-    func setupAttributes(style: Meta.Style) {
+    func setupAttributes(style: UILabel.Style) {
         let font = style.font
         let textColor = style.textColor
-
+        
         self.font = font
         self.textColor = textColor
-
+        
         textAttributes = [
             .font: font,
             .foregroundColor: textColor
@@ -88,22 +99,22 @@ extension MetaLabel: MetaStyleConfigurable {
     }
 }
 
-class PlainMetaLabel: UILabel, MetaStyleConfigurable {
-    convenience init(style: Meta.Style) {
+class PlainLabel: UILabel, StyleConfigurableLabel {
+    convenience init(style: UILabel.Style) {
         self.init()
         
         setupLayout(style: style)
         setupAttributes(style: style)
     }
     
-    func setupLayout(style: Meta.Style) {
+    func setupLayout(style: UILabel.Style) {
         layer.masksToBounds = true
         lineBreakMode = .byTruncatingTail
         
         numberOfLines = style.numberOfLines
     }
     
-    func setupAttributes(style: Meta.Style) {
+    func setupAttributes(style: UILabel.Style) {
         self.font = style.font
         self.textColor = style.textColor
     }

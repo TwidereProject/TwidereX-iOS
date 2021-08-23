@@ -14,8 +14,8 @@ extension TwitterUser.Property {
     init(entity: Twitter.Entity.User, networkDate: Date) {
         self.init(
             id: entity.idStr,
-            name: entity.screenName,
-            username: entity.name,
+            name: entity.name,
+            username: entity.screenName,
             bio: entity.userDescription.flatMap { text in
                 text.replacingOccurrences(of: "&amp;", with: "&")
                     .replacingOccurrences(of: "&lt;", with: "<")

@@ -9,7 +9,7 @@
 import os.log
 import UIKit
 
-protocol ActionToolbarContainerDelegate: class {
+protocol ActionToolbarContainerDelegate: AnyObject {
     func actionToolbarContainer(_ actionToolbarContainer: ActionToolbarContainer, replayButtonDidPressed sender: UIButton)
     func actionToolbarContainer(_ actionToolbarContainer: ActionToolbarContainer, retweetButtonDidPressed sender: UIButton)
     func actionToolbarContainer(_ actionToolbarContainer: ActionToolbarContainer, likeButtonDidPressed sender: UIButton)
@@ -24,8 +24,8 @@ final class ActionToolbarContainer: UIView {
     let likeButton      = HitTestExpandedButton()
     let menuButton      = HitTestExpandedButton()
     
-    var isRetweetButtonHighligh: Bool = false {
-        didSet { isRetweetButtonHighlightStateDidChange(to: isRetweetButtonHighligh) }
+    var isRetweetButtonHighlight: Bool = false {
+        didSet { isRetweetButtonHighlightStateDidChange(to: isRetweetButtonHighlight) }
     }
     
     var isLikeButtonHighlight: Bool = false {
@@ -228,7 +228,7 @@ struct ActionToolbarContainer_Previews: PreviewProvider {
             UIViewPreview(width: 300) {
                 let toolbar = ActionToolbarContainer()
                 toolbar.configure(for: .inline)
-                toolbar.isRetweetButtonHighligh = true
+                toolbar.isRetweetButtonHighlight = true
                 toolbar.isLikeButtonHighlight = true
                 return toolbar
             }
@@ -244,7 +244,7 @@ struct ActionToolbarContainer_Previews: PreviewProvider {
             UIViewPreview(width: 300) {
                 let toolbar = ActionToolbarContainer()
                 toolbar.configure(for: .plain)
-                toolbar.isRetweetButtonHighligh = true
+                toolbar.isRetweetButtonHighlight = true
                 toolbar.isLikeButtonHighlight = true
                 return toolbar
             }

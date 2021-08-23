@@ -44,7 +44,7 @@ final class HomeTimelineViewController: UIViewController, NeedsDependency {
         let tableView = UITableView()
         tableView.register(StatusTableViewCell.self, forCellReuseIdentifier: String(describing: StatusTableViewCell.self))
         tableView.rowHeight = UITableView.automaticDimension
-//        tableView.separatorStyle = .none
+        tableView.separatorInsetReference = .fromAutomaticInsets
         tableView.backgroundColor = .systemBackground
         return tableView
     }()
@@ -83,12 +83,20 @@ extension HomeTimelineViewController {
         view.backgroundColor = .systemBackground
         
         #if DEBUG
-        navigationItem.rightBarButtonItem = debugActionBarButtonItem
+        navigationItem.leftBarButtonItem = debugActionBarButtonItem
         #endif
         
-        tableView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        tableView.translatesAutoresizingMaskIntoConstraints = false
         tableView.frame = view.bounds
         view.addSubview(tableView)
+        NSLayoutConstraint.activate([
+            tableView.topAnchor.constraint(equalTo: view.topAnchor),
+            tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+        ])
+//        tableView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+//        view.addSubview(tableView)
         viewModel.setupDiffableDataSource(tableView: tableView)
         
         tableView.refreshControl = refreshControl
@@ -162,8 +170,8 @@ extension HomeTimelineViewController {
 //        tableView.deselectRow(with: transitionCoordinator, animated: animated)
     }
 
-//    override func viewDidAppear(_ animated: Bool) {
-//        super.viewDidAppear(animated)
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
 //
 //        viewModel.viewDidAppear.send()
 //
@@ -173,7 +181,9 @@ extension HomeTimelineViewController {
 //                self.viewModel.loadLatestStateMachine.enter(HomeTimelineViewModel.LoadLatestState.Loading.self)
 //            }
 //        }
-//    }
+        
+//        tableView.reloadData()
+    }
     
 //    override func viewDidDisappear(_ animated: Bool) {
 //        super.viewDidDisappear(animated)
@@ -181,17 +191,21 @@ extension HomeTimelineViewController {
 //        context.videoPlaybackService.viewDidDisappear(from: self)
 //    }
 
-//    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
-//        super.viewWillTransition(to: size, with: coordinator)
-//
-//        coordinator.animate { _ in
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
+//        self.tableView.setNeedsLayout()
+        
+        coordinator.animate { _ in
+            self.tableView.beginUpdates()
+            self.tableView.reloadData()
+            self.tableView.endUpdates()
 //            // do nothing
-//        } completion: { _ in
-//            // fix AutoLayout cell height not update after rotate issue
+        } completion: { _ in
+            // fix AutoLayout cell height not update after rotate issue
 //            self.viewModel.cellFrameCache.removeAllObjects()
 //            self.tableView.reloadData()
-//        }
-//    }
+        }
+    }
 
     override func viewSafeAreaInsetsDidChange() {
         super.viewSafeAreaInsetsDidChange()

@@ -26,42 +26,63 @@ extension HomeTimelineViewModel {
         snapshot.appendSections([.main])
         diffableDataSource?.apply(snapshot)
         
-        fetchedResultsController.objectIDs.removeDuplicates()
+        fetchedResultsController.objectIDs
             .receive(on: DispatchQueue.main, options: nil)
             .sink { [weak self] objectIDs in
                 guard let self = self else { return }
                 guard let diffableDataSource = self.diffableDataSource else { return }
-                
-                let oldSnapshot = diffableDataSource.snapshot()
-
-                let newSnapshot: NSDiffableDataSourceSnapshot<StatusSection, StatusItem> = {
-                    let newItems = objectIDs.map { objectID in
-                        StatusItem.homeTimelineFeed(record: ManagedObjectRecord<Feed>(objectID: objectID))
+                Task {
+                    let oldSnapshot = diffableDataSource.snapshot()
+                    
+                    let newSnapshot: NSDiffableDataSourceSnapshot<StatusSection, StatusItem> = {
+                        let newItems = objectIDs.map { objectID in
+                            StatusItem.homeTimelineFeed(record: ManagedObjectRecord<Feed>(objectID: objectID))
+                        }
+                        var snapshot = NSDiffableDataSourceSnapshot<StatusSection, StatusItem>()
+                        snapshot.appendSections([.main])
+                        snapshot.appendItems(newItems, toSection: .main)
+                        return snapshot
+                    }()
+                    
+                    let hasChanges = newSnapshot.itemIdentifiers != oldSnapshot.itemIdentifiers
+                    guard hasChanges else {
+                        self.didLoadLatest.send()
+                        return
                     }
-                    var snapshot = NSDiffableDataSourceSnapshot<StatusSection, StatusItem>()
-                    snapshot.appendSections([.main])
-                    snapshot.appendItems(newItems, toSection: .main)
-                    return snapshot
-                }()
 
-                guard let difference = self.calculateReloadSnapshotDifference(
-                    tableView: tableView,
-                    oldSnapshot: oldSnapshot,
-                    newSnapshot: newSnapshot
-                ) else {
-                    diffableDataSource.apply(newSnapshot)
-                    self.didLoadLatest.send()
-                    return
-                }
-                
-                diffableDataSource.apply(newSnapshot, animatingDifferences: true) {
-//                    tableView.scrollToRow(at: difference.targetIndexPath, at: .top, animated: false)
-//                    tableView.contentOffset.y = tableView.contentOffset.y - difference.sourceDistanceToTableViewTopEdge
+                    guard let difference = await self.calculateReloadSnapshotDifference(
+                        tableView: tableView,
+                        oldSnapshot: oldSnapshot,
+                        newSnapshot: newSnapshot
+                    ) else {
+                        await self.updateDataSource(snapshot: newSnapshot, animatingDifferences: false)
+                        self.didLoadLatest.send()
+                        return
+                    }
+                    
+                    await self.updateSnapshotUsingReloadData(snapshot: newSnapshot)
+                    await tableView.scrollToRow(at: difference.targetIndexPath, at: .top, animated: false)
+                    var contentOffset = await tableView.contentOffset
+                    contentOffset.y = await tableView.contentOffset.y - difference.sourceDistanceToTableViewTopEdge
+                    await tableView.setContentOffset(contentOffset, animated: false)
                     self.didLoadLatest.send()
                     self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): applied new snapshot")
                 }
             }
             .store(in: &disposeBag)
+    }
+    
+    @MainActor private func updateDataSource(
+        snapshot: NSDiffableDataSourceSnapshot<StatusSection, StatusItem>,
+        animatingDifferences: Bool
+    ) async {
+        await self.diffableDataSource?.apply(snapshot, animatingDifferences: animatingDifferences)
+    }
+    
+    @MainActor private func updateSnapshotUsingReloadData(
+        snapshot: NSDiffableDataSourceSnapshot<StatusSection, StatusItem>
+    ) async {
+        await self.diffableDataSource?.applySnapshotUsingReloadData(snapshot)
     }
     
 }
@@ -74,7 +95,7 @@ extension HomeTimelineViewModel {
         let targetIndexPath: IndexPath
     }
     
-    private func calculateReloadSnapshotDifference<S: Hashable, T: Hashable>(
+    @MainActor private func calculateReloadSnapshotDifference<S: Hashable, T: Hashable>(
         tableView: UITableView,
         oldSnapshot: NSDiffableDataSourceSnapshot<S, T>,
         newSnapshot: NSDiffableDataSourceSnapshot<S, T>
@@ -115,7 +136,7 @@ extension HomeTimelineViewModel {
                 maxID: nil,
                 authenticationContext: authenticationContext
             )
-            // FIXME: needs stop when no new status
+            // FIXME: needs stop refreshControl if no new status
             // self.didLoadLatest.send()
             
         } catch {

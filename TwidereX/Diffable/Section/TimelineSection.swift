@@ -37,7 +37,7 @@ extension TimelineSection {
                 managedObjectContext.performAndWait {
                     let timelineIndex = managedObjectContext.object(with: objectID) as! TimelineIndex
                     TimelineSection.configure(cell: cell, readableLayoutFrame: tableView.readableContentGuide.layoutFrame, dependency: dependency, timelineIndex: timelineIndex)
-                    TimelineSection.configure(cell: cell, overrideTraitCollection: dependency.context.overrideTraitCollection.value)
+//                    TimelineSection.configure(cell: cell, overrideTraitCollection: dependency.context.overrideTraitCollection.value)
                     TimelineSection.configure(cell: cell, timelineIndex: timelineIndex, timestampUpdatePublisher: timestampUpdatePublisher)
                     TimelineSection.configure(cell: cell, attribute: attribute)
                 }
@@ -50,7 +50,7 @@ extension TimelineSection {
                 managedObjectContext.performAndWait {
                     let mentionTimelineIndex = managedObjectContext.object(with: objectID) as! MentionTimelineIndex
                     TimelineSection.configure(cell: cell, readableLayoutFrame: tableView.readableContentGuide.layoutFrame, dependency: dependency, mentionTimelineIndex: mentionTimelineIndex)
-                    TimelineSection.configure(cell: cell, overrideTraitCollection: dependency.context.overrideTraitCollection.value)
+//                    TimelineSection.configure(cell: cell, overrideTraitCollection: dependency.context.overrideTraitCollection.value)
                     TimelineSection.configure(cell: cell, mentionTimelineIndex: mentionTimelineIndex, timestampUpdatePublisher: timestampUpdatePublisher)
                     TimelineSection.configure(cell: cell, attribute: attribute)
                 }
@@ -168,7 +168,7 @@ extension TimelineSection {
         }()
         cell.timelinePostView.actionToolbarContainer.retweetButton.setTitle(retweetCountTitle, for: .normal)
         cell.timelinePostView.actionToolbarContainer.retweetButton.isEnabled = !(tweet.retweet ?? tweet).author.protected
-        cell.timelinePostView.actionToolbarContainer.isRetweetButtonHighligh = isRetweeted
+        cell.timelinePostView.actionToolbarContainer.isRetweetButtonHighlight = isRetweeted
         
         let isLike = (tweet.retweet ?? tweet).likeBy.flatMap({ $0.contains(where: { $0.id == requestUserID }) }) ?? false
         let favoriteCountTitle: String = {
@@ -318,7 +318,7 @@ extension TimelineSection {
                 let retweetCount = targetTweet.metrics?.retweetCount.flatMap { Int(truncating: $0) }
                 let retweetCountTitle = TimelineSection.formattedNumberTitleForActionButton(retweetCount)
                 cell.timelinePostView.actionToolbarContainer.retweetButton.setTitle(retweetCountTitle, for: .normal)
-                cell.timelinePostView.actionToolbarContainer.isRetweetButtonHighligh = isRetweeted
+                cell.timelinePostView.actionToolbarContainer.isRetweetButtonHighlight = isRetweeted
                 os_log("%{public}s[%{public}ld], %{public}s: retweet count label for tweet %s did update: %ld", ((#file as NSString).lastPathComponent), #line, #function, targetTweet.id, retweetCount ?? 0)
                 
                 let isLike = targetTweet.likeBy.flatMap({ $0.contains(where: { $0.id == requestUserID }) }) ?? false

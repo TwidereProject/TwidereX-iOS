@@ -26,7 +26,6 @@
 		DB004BF426CE360400F5C574 /* TwitterStatusFetchedResultController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB004BF326CE360400F5C574 /* TwitterStatusFetchedResultController.swift */; };
 		DB004BF626CE4A7F00F5C574 /* StatusCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB004BF526CE4A7F00F5C574 /* StatusCollectionViewCell.swift */; };
 		DB004BF826CE4AF200F5C574 /* StatusView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB004BF726CE4AF200F5C574 /* StatusView.swift */; };
-		DB004BFA26CE4B8100F5C574 /* MetaLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB004BF926CE4B8100F5C574 /* MetaLabel.swift */; };
 		DB004BFD26CE4C1E00F5C574 /* PlaintextMetaContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB004BFC26CE4C1E00F5C574 /* PlaintextMetaContent.swift */; };
 		DB0849B0251375E9009E0CD7 /* ConversationPostView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB0849AF251375E9009E0CD7 /* ConversationPostView.swift */; };
 		DB0849B22513760D009E0CD7 /* ConversationPostTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB0849B12513760D009E0CD7 /* ConversationPostTableViewCell.swift */; };
@@ -40,6 +39,10 @@
 		DB0D0AC825944FF2007A23C8 /* FollowingListViewController+UserProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB0D0AC725944FF2007A23C8 /* FollowingListViewController+UserProvider.swift */; };
 		DB0D0ACD25945075007A23C8 /* UserProvider+UITableViewDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB0D0ACC25945075007A23C8 /* UserProvider+UITableViewDelegate.swift */; };
 		DB0D3A38255E4341000BB9FA /* UserLikeTimelineViewController+StatusProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB0D3A37255E4341000BB9FA /* UserLikeTimelineViewController+StatusProvider.swift */; };
+		DB0EB9EF26D3748700034427 /* StyleConfigurableLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB0EB9EE26D3748700034427 /* StyleConfigurableLabel.swift */; };
+		DB0EB9F126D3899200034427 /* StatusToolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB0EB9F026D3899200034427 /* StatusToolbar.swift */; };
+		DB0EB9F326D38ED700034427 /* NumberMetricFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB0EB9F226D38ED700034427 /* NumberMetricFormatter.swift */; };
+		DB0EB9F626D3AC7900034427 /* MediaGridContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB0EB9F526D3AC7800034427 /* MediaGridContainerView.swift */; };
 		DB10B32C254A7633002D86F3 /* SearchTimelineViewModel+State.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB10B32B254A7633002D86F3 /* SearchTimelineViewModel+State.swift */; };
 		DB10B347254AB338002D86F3 /* SearchMediaViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB10B346254AB338002D86F3 /* SearchMediaViewController.swift */; };
 		DB1A1D6B2559A0A50049DA6D /* StatusProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB1A1D6A2559A0A50049DA6D /* StatusProvider.swift */; };
@@ -576,7 +579,6 @@
 		DB004BF326CE360400F5C574 /* TwitterStatusFetchedResultController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwitterStatusFetchedResultController.swift; sourceTree = "<group>"; };
 		DB004BF526CE4A7F00F5C574 /* StatusCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusCollectionViewCell.swift; sourceTree = "<group>"; };
 		DB004BF726CE4AF200F5C574 /* StatusView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusView.swift; sourceTree = "<group>"; };
-		DB004BF926CE4B8100F5C574 /* MetaLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetaLabel.swift; sourceTree = "<group>"; };
 		DB004BFC26CE4C1E00F5C574 /* PlaintextMetaContent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaintextMetaContent.swift; sourceTree = "<group>"; };
 		DB0849AF251375E9009E0CD7 /* ConversationPostView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationPostView.swift; sourceTree = "<group>"; };
 		DB0849B12513760D009E0CD7 /* ConversationPostTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationPostTableViewCell.swift; sourceTree = "<group>"; };
@@ -585,6 +587,10 @@
 		DB0D0AC725944FF2007A23C8 /* FollowingListViewController+UserProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FollowingListViewController+UserProvider.swift"; sourceTree = "<group>"; };
 		DB0D0ACC25945075007A23C8 /* UserProvider+UITableViewDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UserProvider+UITableViewDelegate.swift"; sourceTree = "<group>"; };
 		DB0D3A37255E4341000BB9FA /* UserLikeTimelineViewController+StatusProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UserLikeTimelineViewController+StatusProvider.swift"; sourceTree = "<group>"; };
+		DB0EB9EE26D3748700034427 /* StyleConfigurableLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StyleConfigurableLabel.swift; sourceTree = "<group>"; };
+		DB0EB9F026D3899200034427 /* StatusToolbar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusToolbar.swift; sourceTree = "<group>"; };
+		DB0EB9F226D38ED700034427 /* NumberMetricFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NumberMetricFormatter.swift; sourceTree = "<group>"; };
+		DB0EB9F526D3AC7800034427 /* MediaGridContainerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaGridContainerView.swift; sourceTree = "<group>"; };
 		DB10B32B254A7633002D86F3 /* SearchTimelineViewModel+State.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SearchTimelineViewModel+State.swift"; sourceTree = "<group>"; };
 		DB10B346254AB338002D86F3 /* SearchMediaViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchMediaViewController.swift; sourceTree = "<group>"; };
 		DB1A1D6A2559A0A50049DA6D /* StatusProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusProvider.swift; sourceTree = "<group>"; };
@@ -1152,7 +1158,6 @@
 		DB004BFB26CE4B8500F5C574 /* MetaTextKit */ = {
 			isa = PBXGroup;
 			children = (
-				DB004BF926CE4B8100F5C574 /* MetaLabel.swift */,
 				DB004BFC26CE4C1E00F5C574 /* PlaintextMetaContent.swift */,
 			);
 			path = MetaTextKit;
@@ -1162,6 +1167,7 @@
 			isa = PBXGroup;
 			children = (
 				DB33A4A825A319A0003CED7D /* ActionToolbarContainer.swift */,
+				DB0EB9F026D3899200034427 /* StatusToolbar.swift */,
 			);
 			path = Toolbar;
 			sourceTree = "<group>";
@@ -1174,6 +1180,7 @@
 				DB2FFF2D258B1077003DBC19 /* MosaicPlayerView.swift */,
 				DB2FFF28258B0C2C003DBC19 /* TouchBlockingView.swift */,
 				DBF639FB259B333A009E12C8 /* EmptyStateView.swift */,
+				DB0EB9F526D3AC7800034427 /* MediaGridContainerView.swift */,
 			);
 			path = Container;
 			sourceTree = "<group>";
@@ -1191,6 +1198,14 @@
 				DB004BF726CE4AF200F5C574 /* StatusView.swift */,
 			);
 			path = Content;
+			sourceTree = "<group>";
+		};
+		DB0EB9F426D38EDB00034427 /* Helper */ = {
+			isa = PBXGroup;
+			children = (
+				DB0EB9F226D38ED700034427 /* NumberMetricFormatter.swift */,
+			);
+			path = Helper;
 			sourceTree = "<group>";
 		};
 		DB10B34B254AB350002D86F3 /* MediaTimeline */ = {
@@ -2018,6 +2033,7 @@
 				DBDA8E9B24FE0F8B006750DC /* Generated */,
 				DBDA8E9924FE0DC8006750DC /* Resources */,
 				DB88AC34250B25170009E562 /* Vender */,
+				DB0EB9F426D38EDB00034427 /* Helper */,
 				DBE76D312502147200DEB0FC /* Extension */,
 				DB1BF29D25663EFE00B5F490 /* Preference */,
 				DBED96DC253F5D7B00C5383A /* Protocol */,
@@ -2400,6 +2416,7 @@
 				DB36F35D257F74C00028F81E /* ScrollViewContainer.swift */,
 				DB2FFF60258CB051003DBC19 /* NeedsDependency+AVPlayerViewControllerDelegate.swift */,
 				DBCE2EE22593319000926D09 /* AvatarConfigurableView.swift */,
+				DB0EB9EE26D3748700034427 /* StyleConfigurableLabel.swift */,
 				DB43CBDC2595CE2100D47607 /* LoadMoreConfigurableViewContainer.swift */,
 				DB6B8B5E25AF30B900F20FD5 /* ContextMenuAction.swift */,
 				DBB1FEC5269C382F005BC761 /* Status.swift */,
@@ -3162,6 +3179,7 @@
 				DBDA8E9024FE068C006750DC /* NeedsDependency.swift in Sources */,
 				DB004BF426CE360400F5C574 /* TwitterStatusFetchedResultController.swift in Sources */,
 				DB5399A025AEF75D0064586D /* APIService+Mute.swift in Sources */,
+				DB0EB9EF26D3748700034427 /* StyleConfigurableLabel.swift in Sources */,
 				DB1D7B2B25B1959300397DCD /* AuthenticateButton.swift in Sources */,
 				DB2EBBFC255D3B4700956CAA /* MosaicImageViewModel.swift in Sources */,
 				DB25B9F42539A9CE00A5420F /* APIService+CoreData+TwitterUser.swift in Sources */,
@@ -3174,6 +3192,7 @@
 				DB7E22F92552A40000551314 /* UserLikeTimelineViewModel.swift in Sources */,
 				DBF69E9C25496BB100E2A915 /* SearchDetailViewController.swift in Sources */,
 				DBE76D302502146F00DEB0FC /* OSLog.swift in Sources */,
+				DB0EB9F626D3AC7900034427 /* MediaGridContainerView.swift in Sources */,
 				DB98DC10250787420087E30F /* TimelineBottomLoaderTableViewCell.swift in Sources */,
 				DB8AC10025401C2700E636BE /* ContentOffsetAdjustableTimelineViewControllerDelegate.swift in Sources */,
 				DB3FC0522552742E003A2F8A /* MediaSection.swift in Sources */,
@@ -3220,7 +3239,6 @@
 				DB92570A251C8FE0004FEFB5 /* ProfileHeaderViewController.swift in Sources */,
 				DB89F591257A2A70005ECD04 /* TimelineLoaderTableViewCell.swift in Sources */,
 				DB747FF9251C496A000C4BD7 /* ProfileViewController.swift in Sources */,
-				DB004BFA26CE4B8100F5C574 /* MetaLabel.swift in Sources */,
 				DB9EC519255A8285005403AA /* SettingListViewController.swift in Sources */,
 				DB30ADDD26CFD3CC00B2D2BE /* HomeTimelineViewController+DebugAction.swift in Sources */,
 				DBA5FA192553DCBC00D2E98E /* TransitioningMath.swift in Sources */,
@@ -3251,6 +3269,7 @@
 				DBE76D1E2500E65D00DEB0FC /* HomeTimelineViewModel.swift in Sources */,
 				DBDA8E8A24FE0615006750DC /* DocumentStore.swift in Sources */,
 				DB5A2288255B9155006CA5B2 /* AccountListViewModel+Diffable.swift in Sources */,
+				DB0EB9F326D38ED700034427 /* NumberMetricFormatter.swift in Sources */,
 				DB8E4FBA2563B61500459DA2 /* DisplayPreferenceViewController.swift in Sources */,
 				DBB1FECC269C3BE4005BC761 /* Sample.swift in Sources */,
 				DBBF3DB526CF4C850013852A /* Persistence+TwitterUser.swift in Sources */,
@@ -3265,6 +3284,7 @@
 				DB2FFF3E258B78B0003DBC19 /* AVPlayer.swift in Sources */,
 				DB7D1248250B5C6C00999903 /* UIButton+Inset.swift in Sources */,
 				DB25BA10253D7F4D00A5420F /* APIService+CoreData+V2+Tweet.swift in Sources */,
+				DB0EB9F126D3899200034427 /* StatusToolbar.swift in Sources */,
 				DBFA4A1625A580C100D51703 /* APIService+RateLimit.swift in Sources */,
 				DB34028E2521BC06009EFADF /* APIService+UserTimeline.swift in Sources */,
 				DB8AC180254275C600E636BE /* RepliedToTweetContentTableViewCell.swift in Sources */,
@@ -4166,7 +4186,7 @@
 			repositoryURL = "https://github.com/TwidereProject/MetaTextKit.git";
 			requirement = {
 				kind = exactVersion;
-				version = 2.1.0;
+				version = 2.1.1;
 			};
 		};
 		DB6CF1C2269715CD001DE069 /* XCRemoteSwiftPackageReference "FPSIndicator" */ = {

@@ -440,22 +440,22 @@ extension ProfileViewController {
         }
         .store(in: &disposeBag)
 
-        context.overrideTraitCollection
-            .sink { [weak self] traitCollection in
-                guard let self = self else { return }
-                self.profileHeaderViewController.profileBannerView.nameLabel.font = .preferredFont(forTextStyle: .headline, compatibleWith: traitCollection)
-                self.profileHeaderViewController.profileBannerView.usernameLabel.font = .preferredFont(forTextStyle: .subheadline, compatibleWith: traitCollection)
-                self.profileHeaderViewController.profileBannerView.bioLabel.font = .preferredFont(forTextStyle: .body, compatibleWith: traitCollection)
-                self.profileHeaderViewController.profileBannerView.linkButton.titleLabel?.font = .preferredFont(forTextStyle: .callout, compatibleWith: traitCollection)
-                self.profileHeaderViewController.profileBannerView.geoButton.titleLabel?.font = .preferredFont(forTextStyle: .callout, compatibleWith: traitCollection)
-                self.profileHeaderViewController.profileBannerView.profileBannerStatusView.followingStatusItemView.countLabel.font = .preferredFont(forTextStyle: .callout, compatibleWith: traitCollection)
-                self.profileHeaderViewController.profileBannerView.profileBannerStatusView.followingStatusItemView.statusLabel.font = .preferredFont(forTextStyle: .callout, compatibleWith: traitCollection)
-                self.profileHeaderViewController.profileBannerView.profileBannerStatusView.followersStatusItemView.countLabel.font = .preferredFont(forTextStyle: .callout, compatibleWith: traitCollection)
-                self.profileHeaderViewController.profileBannerView.profileBannerStatusView.followersStatusItemView.statusLabel.font = .preferredFont(forTextStyle: .callout, compatibleWith: traitCollection)
-                self.profileHeaderViewController.profileBannerView.profileBannerStatusView.listedStatusItemView.countLabel.font = .preferredFont(forTextStyle: .callout, compatibleWith: traitCollection)
-                self.profileHeaderViewController.profileBannerView.profileBannerStatusView.listedStatusItemView.statusLabel.font = .preferredFont(forTextStyle: .callout, compatibleWith: traitCollection)
-            }
-            .store(in: &disposeBag)
+//        context.overrideTraitCollection
+//            .sink { [weak self] traitCollection in
+//                guard let self = self else { return }
+//                self.profileHeaderViewController.profileBannerView.nameLabel.font = .preferredFont(forTextStyle: .headline, compatibleWith: traitCollection)
+//                self.profileHeaderViewController.profileBannerView.usernameLabel.font = .preferredFont(forTextStyle: .subheadline, compatibleWith: traitCollection)
+//                self.profileHeaderViewController.profileBannerView.bioLabel.font = .preferredFont(forTextStyle: .body, compatibleWith: traitCollection)
+//                self.profileHeaderViewController.profileBannerView.linkButton.titleLabel?.font = .preferredFont(forTextStyle: .callout, compatibleWith: traitCollection)
+//                self.profileHeaderViewController.profileBannerView.geoButton.titleLabel?.font = .preferredFont(forTextStyle: .callout, compatibleWith: traitCollection)
+//                self.profileHeaderViewController.profileBannerView.profileBannerStatusView.followingStatusItemView.countLabel.font = .preferredFont(forTextStyle: .callout, compatibleWith: traitCollection)
+//                self.profileHeaderViewController.profileBannerView.profileBannerStatusView.followingStatusItemView.statusLabel.font = .preferredFont(forTextStyle: .callout, compatibleWith: traitCollection)
+//                self.profileHeaderViewController.profileBannerView.profileBannerStatusView.followersStatusItemView.countLabel.font = .preferredFont(forTextStyle: .callout, compatibleWith: traitCollection)
+//                self.profileHeaderViewController.profileBannerView.profileBannerStatusView.followersStatusItemView.statusLabel.font = .preferredFont(forTextStyle: .callout, compatibleWith: traitCollection)
+//                self.profileHeaderViewController.profileBannerView.profileBannerStatusView.listedStatusItemView.countLabel.font = .preferredFont(forTextStyle: .callout, compatibleWith: traitCollection)
+//                self.profileHeaderViewController.profileBannerView.profileBannerStatusView.listedStatusItemView.statusLabel.font = .preferredFont(forTextStyle: .callout, compatibleWith: traitCollection)
+//            }
+//            .store(in: &disposeBag)
             
         profileHeaderViewController.profileBannerView.profileBannerInfoActionView.delegate = self
         profileHeaderViewController.profileBannerView.delegate = self

@@ -18,6 +18,8 @@ enum StatusSection: Hashable {
 }
 
 extension StatusSection {
+    
+    static let logger = Logger(subsystem: "StatusSection", category: "Logic")
 
     static func diffableDataSource(
         tableView: UITableView,
@@ -36,7 +38,7 @@ extension StatusSection {
                 context.managedObjectContext.performAndWait {
                     guard let feed = record.object(in: context.managedObjectContext) else { return }
                     if let status = feed.twitterStatus {
-                        configure(statusView: cell.statusView, status: status, disposeBag: &cell.disposeBag)
+                        configure(tableView: tableView, statusView: cell.statusView, status: status, disposeBag: &cell.disposeBag)
                     } else {
                         assertionFailure()
                     }
@@ -47,7 +49,7 @@ extension StatusSection {
                 let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: StatusTableViewCell.self), for: indexPath) as! StatusTableViewCell
                 context.managedObjectContext.performAndWait {
                     guard let status = record.object(in: context.managedObjectContext) else { return }
-                    configure(statusView: cell.statusView, status: status, disposeBag: &cell.disposeBag)
+                    configure(tableView: tableView, statusView: cell.statusView, status: status, disposeBag: &cell.disposeBag)
                 }
                 return cell
             }
@@ -58,12 +60,47 @@ extension StatusSection {
 extension StatusSection {
 
     static func configure(
+        tableView: UITableView,
         statusView: StatusView,
         status: TwitterStatus,
         disposeBag: inout Set<AnyCancellable>
     ) {
+        if statusView.frame == .zero {
+            statusView.frame.size.width = tableView.readableContentGuide.layoutFrame.width
+            statusView.contentTextView.preferredMaxLayoutWidth = statusView.frame.width - StatusView.authorAvatarButtonSize.width - StatusView.bodyContainerStackViewSpacing
+            logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): layout new cell")
+        }
+        configureHeader(statusView: statusView, status: status, disposeBag: &disposeBag)
         configureAuthor(statusView: statusView, status: status, disposeBag: &disposeBag)
         configureContent(statusView: statusView, status: status, disposeBag: &disposeBag)
+    }
+    
+    
+    static func configureHeader(
+        statusView: StatusView,
+        status: TwitterStatus,
+        disposeBag: inout Set<AnyCancellable>
+    ) {
+        if let repost = status.repost {
+            // repost icon
+            statusView.headerIconImageView.image = Asset.Media.repeat.image
+            // repost text
+            Publishers.CombineLatest(
+                repost.publisher(for: \.author.name),
+                NotificationCenter.default.publisher(for: UIContentSizeCategory.didChangeNotification).map { _ in }.prepend(Void())
+            )
+            .map { text, _ -> PlaintextMetaContent in
+                let userRepostText = L10n.Common.Controls.Status.userRetweeted(text)
+                return PlaintextMetaContent(string: userRepostText)
+            }
+            .sink { metaContent in
+                statusView.headerTextLabel.setupAttributes(style: StatusView.headerTextLabelStyle)
+                statusView.headerTextLabel.configure(content: metaContent)
+            }
+            .store(in: &disposeBag)
+            // set display
+            statusView.setHeaderDisplay()
+        }
     }
     
     static func configureAuthor(
@@ -79,26 +116,33 @@ extension StatusSection {
         )
         
         // author name
-        // statusView.authorNameLabel.configure(content: PlaintextMetaContent(string: " "))
         Publishers.CombineLatest(
             author.publisher(for: \.name),
             NotificationCenter.default.publisher(for: UIContentSizeCategory.didChangeNotification).map { _ in }.prepend(Void())
         )
-            .map { text, _ in PlaintextMetaContent(string: text) }
-            .sink { metaContent in
-                statusView.authorNameLabel.setupAttributes(style: StatusView.authorNameLabelStyle)
-                statusView.authorNameLabel.configure(content: metaContent)
-            }
-            .store(in: &disposeBag)
+        .map { text, _ in PlaintextMetaContent(string: text) }
+        .sink { metaContent in
+            statusView.authorNameLabel.setupAttributes(style: StatusView.authorNameLabelStyle)
+            statusView.authorNameLabel.configure(content: metaContent)
+        }
+        .store(in: &disposeBag)
         
         // author username
-        // statusView.authorUsernameLabel.text = " "
         Publishers.CombineLatest(
             author.publisher(for: \.username),
             NotificationCenter.default.publisher(for: UIContentSizeCategory.didChangeNotification).map { _ in }.prepend(Void())
         )
-            .map { text, _ in "@\(text)" }
-            .assign(to: \.text, on: statusView.authorUsernameLabel)
+        .map { text, _ in "@\(text)" }
+        .assign(to: \.text, on: statusView.authorUsernameLabel)
+        .store(in: &disposeBag)
+        
+        // timestamp
+        let createdAt = (status.repost ?? status).createdAt
+        statusView.timestampLabel.text = createdAt.shortTimeAgoSinceNow
+        AppContext.shared.timestampUpdatePublisher
+            .sink { _ in
+                statusView.timestampLabel.text = createdAt.shortTimeAgoSinceNow
+            }
             .store(in: &disposeBag)
     }
     
@@ -107,16 +151,23 @@ extension StatusSection {
         status: TwitterStatus,
         disposeBag: inout Set<AnyCancellable>
     ) {
+        let content = (status.repost ?? status).text
+        func configureContent() {
+            let attributedString = NSAttributedString(
+                string: content,
+                attributes: [
+                    .font: UIFont.preferredFont(forTextStyle: .body),
+                    .foregroundColor: UIColor.label
+                ]
+            )
+            statusView.contentTextView.setAttributedString(attributedString)
+        }
+        
         // status content
-        let attributedString = NSAttributedString(
-            string: status.text,
-            attributes: [
-                .font: UIFontMetrics(forTextStyle: .body).scaledFont(for: .systemFont(ofSize: 14, weight: .regular)),
-                .foregroundColor: UIColor.label
-            ]
-        )
-        //statusView.contentTextView.setAttributedString(attributedString)
-        statusView.contentTextView.attributedText = attributedString
+        configureContent()
+        NotificationCenter.default.publisher(for: UIContentSizeCategory.didChangeNotification)
+            .sink { _ in configureContent() }
+            .store(in: &disposeBag)
     }
     
 }

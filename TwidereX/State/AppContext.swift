@@ -31,7 +31,12 @@ class AppContext: ObservableObject {
     let photoLibraryService = PhotoLibraryService()
     let videoPlaybackService = VideoPlaybackService()
 
-    let overrideTraitCollection = CurrentValueSubject<UITraitCollection?, Never>(nil)
+    // let overrideTraitCollection = CurrentValueSubject<UITraitCollection?, Never>(nil)
+    
+    let timestampUpdatePublisher = Timer.publish(every: 1.0, on: .main, in: .common)
+        .autoconnect()
+        .share()
+        .eraseToAnyPublisher()
 
     init() {
         let _coreDataStack = CoreDataStack()
@@ -67,18 +72,18 @@ class AppContext: ObservableObject {
             }
             .store(in: &disposeBag)
 
-        Publishers.CombineLatest(
-            UserDefaults.shared.publisher(for: \.useTheSystemFontSize).eraseToAnyPublisher(),
-            UserDefaults.shared.publisher(for: \.customContentSizeCatagory)
-        )
-        .receive(on: DispatchQueue.main)
-        .sink { [weak self] useTheSystemFontSize, customContentSizeCatagory in
-            guard let self = self else { return }
-            // let traitCollection = useTheSystemFontSize ? UITraitCollection(preferredContentSizeCategory: UIApplication.shared.preferredContentSizeCategory) : UITraitCollection(preferredContentSizeCategory: customContentSizeCatagory)
-            let traitCollection = UITraitCollection(preferredContentSizeCategory: UIApplication.shared.preferredContentSizeCategory)
-            self.overrideTraitCollection.value = traitCollection
-        }
-        .store(in: &disposeBag)
+//        Publishers.CombineLatest(
+//            UserDefaults.shared.publisher(for: \.useTheSystemFontSize).eraseToAnyPublisher(),
+//            UserDefaults.shared.publisher(for: \.customContentSizeCatagory)
+//        )
+//        .receive(on: DispatchQueue.main)
+//        .sink { [weak self] useTheSystemFontSize, customContentSizeCatagory in
+//            guard let self = self else { return }
+//            // let traitCollection = useTheSystemFontSize ? UITraitCollection(preferredContentSizeCategory: UIApplication.shared.preferredContentSizeCategory) : UITraitCollection(preferredContentSizeCategory: customContentSizeCatagory)
+//            let traitCollection = UITraitCollection(preferredContentSizeCategory: UIApplication.shared.preferredContentSizeCategory)
+//            self.overrideTraitCollection.value = traitCollection
+//        }
+//        .store(in: &disposeBag)
     }
     
 }

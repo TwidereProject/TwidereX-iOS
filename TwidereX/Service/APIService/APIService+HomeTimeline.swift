@@ -52,18 +52,22 @@ extension APIService {
             // persist Feed relationship
             let acct = Feed.Acct.twitter(userID: authenticationContext.userID).value
             for status in twitterStatusArray {
-                let isHomeFeedAttached = status.feeds.contains(where: { feed in
+                let _feed = status.feeds.first { feed in
                     feed.kind == .home && feed.acct == acct
-                })
-                guard !isHomeFeedAttached else { continue }
-                let feedProperty = Feed.Property(
-                    acct: acct,
-                    kindRaw: Feed.Kind.home.rawValue,
-                    hasMore: false,
-                    createdAt: response.networkDate
-                )
-                let feed = Feed.insert(into: managedObjectContext, property: feedProperty)
-                status.attach(feed: feed)
+                }
+                if let feed = _feed {
+                    feed.update(updatedAt: response.networkDate)
+                } else {
+                    let feedProperty = Feed.Property(
+                        acct: acct,
+                        kindRaw: Feed.Kind.home.rawValue,
+                        hasMore: false,
+                        createdAt: status.createdAt,
+                        updatedAt: response.networkDate
+                    )
+                    let feed = Feed.insert(into: managedObjectContext, property: feedProperty)
+                    status.attach(feed: feed)
+                }
             }
         }
         

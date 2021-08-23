@@ -33,10 +33,12 @@ extension Twitter.API.Timeline {
         }
     }
     
-    
+}
+
+extension Twitter.API.Timeline {
+
     static let mentionTimelineEndpointURL = Twitter.API.endpointURL.appendingPathComponent("statuses/mentions_timeline.json")
     static let userTimelineEndpointURL = Twitter.API.endpointURL.appendingPathComponent("statuses/user_timeline.json")
-    
     
 }
 

@@ -17,38 +17,11 @@ final public class Feed: NSManagedObject {
     @NSManaged public private(set) var hasMore: Bool
 
     @NSManaged public private(set) var createdAt: Date
+    @NSManaged public private(set) var updatedAt: Date
     
     // sourcery:begin: skipAutoGenerateProperty
     // one-to-one relationship
     @NSManaged public private(set) var twitterStatus: TwitterStatus?
-    // @NSManaged public private(set) var pinnedStatus: Status?
-    // @NSManaged public private(set) var searchHistory: SearchHistory?
-    
-    // one-to-many relationship
-    // @NSManaged public private(set) var statuses: Set<Status>?
-    // @NSManaged public private(set) var notifications: Set<MastodonNotification>?
-    
-    // many-to-many relationship
-    // @NSManaged public private(set) var favourite: Set<Status>?
-    // @NSManaged public private(set) var reblogged: Set<Status>?
-    // @NSManaged public private(set) var muted: Set<Status>?
-    // @NSManaged public private(set) var bookmarked: Set<Status>?
-    // @NSManaged public private(set) var votePollOptions: Set<PollOption>?
-    // @NSManaged public private(set) var votePolls: Set<Poll>?
-    
-    // relationships
-    // @NSManaged public private(set) var following: Set<MastodonUser>?
-    // @NSManaged public private(set) var followingBy: Set<MastodonUser>?
-    // @NSManaged public private(set) var followRequested: Set<MastodonUser>?
-    // @NSManaged public private(set) var followRequestedBy: Set<MastodonUser>?
-    // @NSManaged public private(set) var muting: Set<MastodonUser>?
-    // @NSManaged public private(set) var mutingBy: Set<MastodonUser>?
-    // @NSManaged public private(set) var blocking: Set<MastodonUser>?
-    // @NSManaged public private(set) var blockingBy: Set<MastodonUser>?
-    // @NSManaged public private(set) var endorsed: Set<MastodonUser>?
-    // @NSManaged public private(set) var endorsedBy: Set<MastodonUser>?
-    // @NSManaged public private(set) var domainBlocking: Set<MastodonUser>?
-    // @NSManaged public private(set) var domainBlockingBy: Set<MastodonUser>?
     // sourcery:end
 }
 
@@ -128,17 +101,20 @@ extension Feed: AutoGenerateProperty {
     	public let  kindRaw: String
     	public let  hasMore: Bool
     	public let  createdAt: Date
+    	public let  updatedAt: Date
 
     	public init(
     		acct: String,
     		kindRaw: String,
     		hasMore: Bool,
-    		createdAt: Date
+    		createdAt: Date,
+    		updatedAt: Date
     	) {
     		self.acct = acct
     		self.kindRaw = kindRaw
     		self.hasMore = hasMore
     		self.createdAt = createdAt
+    		self.updatedAt = updatedAt
     	}
     }
 
@@ -147,12 +123,14 @@ extension Feed: AutoGenerateProperty {
     	self.kindRaw = property.kindRaw
     	self.hasMore = property.hasMore
     	self.createdAt = property.createdAt
+    	self.updatedAt = property.updatedAt
     }
 
     public func update(property: Property) {
     	update(kindRaw: property.kindRaw)
     	update(hasMore: property.hasMore)
     	update(createdAt: property.createdAt)
+    	update(updatedAt: property.updatedAt)
     }
     // sourcery:end
 }
@@ -176,6 +154,11 @@ extension Feed: AutoUpdatableObject {
     public func update(createdAt: Date) {
     	if self.createdAt != createdAt {
     		self.createdAt = createdAt
+    	}
+    }
+    public func update(updatedAt: Date) {
+    	if self.updatedAt != updatedAt {
+    		self.updatedAt = updatedAt
     	}
     }
     public func update(twitterStatus: TwitterStatus?) {

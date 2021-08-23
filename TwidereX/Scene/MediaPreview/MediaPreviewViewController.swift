@@ -212,7 +212,7 @@ extension MediaPreviewViewController {
 extension MediaPreviewViewController {
     private static func configure(actionToolbarContainer: ActionToolbarContainer, tweet: Tweet, requestTwitterUserID: TwitterUser.ID) {
         let isRetweeted = tweet.retweetBy.flatMap({ $0.contains(where: { $0.id == requestTwitterUserID }) }) ?? false
-        actionToolbarContainer.isRetweetButtonHighligh = isRetweeted
+        actionToolbarContainer.isRetweetButtonHighlight = isRetweeted
         
         let isLike = tweet.likeBy.flatMap({ $0.contains(where: { $0.id == requestTwitterUserID }) }) ?? false
         actionToolbarContainer.isLikeButtonHighlight = isLike

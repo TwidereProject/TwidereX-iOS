@@ -45,6 +45,13 @@ extension StatusTableViewCell {
             statusView.trailingAnchor.constraint(equalTo: contentView.readableContentGuide.trailingAnchor),
             statusView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
         ])
+        statusView.toolbar.setup(style: .inline)
+    }
+    
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        
+        separatorInset.left = StatusView.authorAvatarButtonSize.width + StatusView.bodyContainerStackViewSpacing
     }
     
 }

@@ -301,7 +301,7 @@ extension TweetConversationViewModel {
                 managedObjectContext.performAndWait {
                     let tweet = managedObjectContext.object(with: objectID) as! Tweet
                     TweetConversationViewModel.configure(cell: cell, readableLayoutFrame: tableView.readableContentGuide.layoutFrame, dependency: dependency, tweet: tweet, requestUserID: requestTwitterUserID)
-                    TweetConversationViewModel.configure(cell: cell, overrideTraitCollection: self.context.overrideTraitCollection.value)
+//                    TweetConversationViewModel.configure(cell: cell, overrideTraitCollection: self.context.overrideTraitCollection.value)
                 }
                 cell.delegate = self.conversationPostTableViewCellDelegate
                 return cell
@@ -313,7 +313,7 @@ extension TweetConversationViewModel {
                 managedObjectContext.performAndWait {
                     let tweet = managedObjectContext.object(with: objectID) as! Tweet
                     TimelineSection.configure(cell: cell, readableLayoutFrame: tableView.readableContentGuide.layoutFrame, dependency: dependency, tweet: tweet, requestUserID: requestUserID)
-                    TimelineSection.configure(cell: cell, overrideTraitCollection: self.context.overrideTraitCollection.value)
+//                    TimelineSection.configure(cell: cell, overrideTraitCollection: self.context.overrideTraitCollection.value)
                     cell.conversationLinkUpper.isHidden = tweet.inReplyToTweetID == nil
                     cell.conversationLinkLower.isHidden = false
                 }
@@ -328,7 +328,7 @@ extension TweetConversationViewModel {
                 managedObjectContext.performAndWait {
                     let tweet = managedObjectContext.object(with: objectID) as! Tweet
                     TimelineSection.configure(cell: cell, readableLayoutFrame: tableView.readableContentGuide.layoutFrame, dependency: dependency, tweet: tweet, requestUserID: requestUserID)
-                    TimelineSection.configure(cell: cell, overrideTraitCollection: self.context.overrideTraitCollection.value)
+//                    TimelineSection.configure(cell: cell, overrideTraitCollection: self.context.overrideTraitCollection.value)
                 }
                 cell.conversationLinkUpper.isHidden = attribute.level == 0
                 cell.conversationLinkLower.isHidden = !attribute.hasReply || attribute.level != 0
@@ -541,7 +541,7 @@ extension TweetConversationViewModel {
         // set action toolbar title
         let isRetweeted = (tweet.retweet ?? tweet).retweetBy.flatMap({ $0.contains(where: { $0.id == requestUserID }) }) ?? false
         cell.conversationPostView.actionToolbarContainer.retweetButton.isEnabled = !(tweet.retweet ?? tweet).author.protected
-        cell.conversationPostView.actionToolbarContainer.isRetweetButtonHighligh = isRetweeted
+        cell.conversationPostView.actionToolbarContainer.isRetweetButtonHighlight = isRetweeted
 
         let isLike = (tweet.retweet ?? tweet).likeBy.flatMap({ $0.contains(where: { $0.id == requestUserID }) }) ?? false
         cell.conversationPostView.actionToolbarContainer.isLikeButtonHighlight = isLike
@@ -577,7 +577,7 @@ extension TweetConversationViewModel {
                 let targetTweet = newTweet.retweet ?? newTweet
                 
                 let isRetweeted = targetTweet.retweetBy.flatMap({ $0.contains(where: { $0.id == requestUserID }) }) ?? false
-                cell.conversationPostView.actionToolbarContainer.isRetweetButtonHighligh = isRetweeted
+                cell.conversationPostView.actionToolbarContainer.isRetweetButtonHighlight = isRetweeted
 
                 let isLike = targetTweet.likeBy.flatMap({ $0.contains(where: { $0.id == requestUserID }) }) ?? false
                 cell.conversationPostView.actionToolbarContainer.isLikeButtonHighlight = isLike

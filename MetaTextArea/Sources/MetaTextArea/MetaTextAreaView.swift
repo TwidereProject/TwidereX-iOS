@@ -30,6 +30,7 @@ public class MetaTextAreaView: UIView {
     public var showLayerFrames: Bool = false
     #endif
     
+    public var preferredMaxLayoutWidth: CGFloat?
     public weak var delegate: MetaTextAreaViewDelegate?
     
     public override init(frame: CGRect) {
@@ -57,8 +58,8 @@ public class MetaTextAreaView: UIView {
     }
     
     public override func layoutSubviews() {
-        invalidateIntrinsicContentSize()
         super.layoutSubviews()
+        invalidateIntrinsicContentSize()
         logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): bounds \(self.bounds.debugDescription)")
     }
 
@@ -66,7 +67,7 @@ public class MetaTextAreaView: UIView {
     public override var intrinsicContentSize: CGSize {
         let width: CGFloat = {
             if bounds.width == .zero {
-                return UIScreen.main.bounds.width
+                return preferredMaxLayoutWidth ?? UIScreen.main.bounds.width
             } else {
                 return bounds.width
             }
