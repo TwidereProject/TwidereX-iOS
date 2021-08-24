@@ -42,6 +42,7 @@ final class StatusView: UIView {
         let textView = MetaTextAreaView()
         return textView
     }()
+    let mediaGridContainerView = MediaGridContainerView()
     
     // toolbar
     let toolbar = StatusToolbar()
@@ -63,6 +64,8 @@ extension StatusView {
     func prepareForReuse() {
         authorAvatarButton.avatarImageView.cancelTask()
         headerContainerView.isHidden = true
+        mediaGridContainerView.isHidden = true
+        mediaGridContainerView.prepareForReuse()
     }
     
     private func _init() {
@@ -116,7 +119,7 @@ extension StatusView {
         ])
         authorAvatarButton.avatarImageView.imageViewSize = StatusView.authorAvatarButtonSize
         
-        // content container: V - [ author content | contentTextView | … | toolbar ]
+        // content container: V - [ author content | contentTextView | mediaGridContainerView | … | toolbar ]
         let contentContainerView = UIStackView()
         contentContainerView.axis = .vertical
         bodyContainerStackView.addArrangedSubview(contentContainerView)
@@ -137,14 +140,18 @@ extension StatusView {
         timestampLabel.setContentHuggingPriority(.required - 9, for: .horizontal)
         timestampLabel.setContentCompressionResistancePriority(.required - 9, for: .horizontal)
         
-        contentTextView.translatesAutoresizingMaskIntoConstraints = false
-        contentContainerView.addArrangedSubview(contentTextView)
-        contentTextView.setContentHuggingPriority(.required - 10, for: .vertical)
-        
         NSLayoutConstraint.activate([
             headerTextLabel.leadingAnchor.constraint(equalTo: authorNameLabel.leadingAnchor),
         ])
-        
+
+        contentTextView.translatesAutoresizingMaskIntoConstraints = false
+        contentContainerView.addArrangedSubview(contentTextView)
+        contentTextView.setContentHuggingPriority(.required - 10, for: .vertical)
+
+        mediaGridContainerView.translatesAutoresizingMaskIntoConstraints = false
+        contentContainerView.addArrangedSubview(mediaGridContainerView)
+        mediaGridContainerView.isHidden = true
+
         contentContainerView.addArrangedSubview(toolbar)
         toolbar.setContentHuggingPriority(.required - 9, for: .vertical)
         
@@ -166,5 +173,13 @@ extension StatusView {
     
     func setHeaderDisplay() {
         headerContainerView.isHidden = false
+    }
+    
+    func setMediaDisplay() {
+        mediaGridContainerView.isHidden = false
+    }
+    
+    var contentMaxLayoutWidth: CGFloat {
+        frame.width - StatusView.authorAvatarButtonSize.width - StatusView.bodyContainerStackViewSpacing
     }
 }

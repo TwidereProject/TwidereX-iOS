@@ -193,17 +193,13 @@ extension HomeTimelineViewController {
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
-//        self.tableView.setNeedsLayout()
         
         coordinator.animate { _ in
             self.tableView.beginUpdates()
             self.tableView.reloadData()
             self.tableView.endUpdates()
-//            // do nothing
         } completion: { _ in
-            // fix AutoLayout cell height not update after rotate issue
-//            self.viewModel.cellFrameCache.removeAllObjects()
-//            self.tableView.reloadData()
+            self.tableView.reloadData()
         }
     }
 

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="19197" systemVersion="20G80" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="19197" systemVersion="20G95" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
     <entity name="AuthenticationIndex" representedClassName=".AuthenticationIndex" syncable="YES">
         <attribute name="activeAt" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="createdAt" attributeType="Date" usesScalarValueType="NO"/>
@@ -249,6 +249,7 @@
         <relationship name="poll" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="TwitterPoll" inverseName="options" inverseEntity="TwitterPoll"/>
     </entity>
     <entity name="TwitterStatus" representedClassName=".TwitterStatus" syncable="YES">
+        <attribute name="attachmentsRaw" optional="YES" attributeType="Binary"/>
         <attribute name="createdAt" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="id" attributeType="String"/>
         <attribute name="text" attributeType="String" defaultValueString=""/>
@@ -343,7 +344,7 @@
         <element name="TwitterPlace" positionX="1146.6953125" positionY="350.890625" width="128" height="179"/>
         <element name="TwitterPoll" positionX="-54" positionY="-36" width="128" height="149"/>
         <element name="TwitterPollOption" positionX="-45" positionY="-27" width="128" height="119"/>
-        <element name="TwitterStatus" positionX="-63" positionY="-153" width="128" height="14"/>
+        <element name="TwitterStatus" positionX="-63" positionY="-153" width="128" height="194"/>
         <element name="TwitterUser" positionX="281.5234375" positionY="201.703125" width="128" height="404"/>
         <element name="TwitterUserEntities" positionX="-72" positionY="-171" width="128" height="89"/>
         <element name="TwitterUserEntitiesURL" positionX="-63" positionY="-162" width="128" height="149"/>

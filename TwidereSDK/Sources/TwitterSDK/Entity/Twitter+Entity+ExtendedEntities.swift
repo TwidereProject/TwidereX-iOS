@@ -114,8 +114,8 @@ extension Twitter.Entity.ExtendedEntities.Media {
     }
     
     public struct VideoInfo: Codable {
-        let durationMillis: Int?
-        let variants: [Variant]?
+        public let durationMillis: Int?
+        public let variants: [Variant]?
         
         enum CodingKeys: String, CodingKey {
             case durationMillis = "duration_millis"
@@ -123,9 +123,9 @@ extension Twitter.Entity.ExtendedEntities.Media {
         }
         
         public struct Variant: Codable {
-            let bitrate: Int?
-            let contentType: String
-            let url: String
+            public let bitrate: Int?
+            public let contentType: String
+            public let url: String
             
             enum CodingKeys: String, CodingKey {
                 case bitrate

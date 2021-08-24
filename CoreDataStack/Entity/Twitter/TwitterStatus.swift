@@ -16,6 +16,9 @@ final public class TwitterStatus: NSManagedObject {
     // sourcery: skipAutoUpdatableObject
     @NSManaged public private(set) var id: ID
     @NSManaged public private(set) var text: String
+    
+    // sourcery: skipAutoUpdatableObject
+    @NSManaged public private(set) var attachmentsRaw: Data?
 
     @NSManaged public private(set) var createdAt: Date
     @NSManaged public private(set) var updatedAt: Date
@@ -38,6 +41,19 @@ final public class TwitterStatus: NSManagedObject {
     @NSManaged public private(set) var quoteFrom: Set<TwitterStatus>
     
     // sourcery:end
+}
+
+extension TwitterStatus {
+    public var attachments: [TwitterAttachment] {
+        guard let data = attachmentsRaw else { return [] }
+        do {
+            let attachments = try JSONDecoder().decode([TwitterAttachment].self, from: data)
+            return attachments
+        } catch {
+            assertionFailure(error.localizedDescription)
+            return []
+        }
+    }
 }
 
 extension TwitterStatus {
@@ -85,17 +101,20 @@ extension TwitterStatus: AutoGenerateProperty {
     public struct Property {
     	public let  id: ID
     	public let  text: String
+    	public let  attachmentsRaw: Data?
     	public let  createdAt: Date
     	public let  updatedAt: Date
 
     	public init(
     		id: ID,
     		text: String,
+    		attachmentsRaw: Data?,
     		createdAt: Date,
     		updatedAt: Date
     	) {
     		self.id = id
     		self.text = text
+    		self.attachmentsRaw = attachmentsRaw
     		self.createdAt = createdAt
     		self.updatedAt = updatedAt
     	}
@@ -104,6 +123,7 @@ extension TwitterStatus: AutoGenerateProperty {
     public func configure(property: Property) {
     	self.id = property.id
     	self.text = property.text
+    	self.attachmentsRaw = property.attachmentsRaw
     	self.createdAt = property.createdAt
     	self.updatedAt = property.updatedAt
     }

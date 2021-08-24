@@ -67,12 +67,13 @@ extension StatusSection {
     ) {
         if statusView.frame == .zero {
             statusView.frame.size.width = tableView.readableContentGuide.layoutFrame.width
-            statusView.contentTextView.preferredMaxLayoutWidth = statusView.frame.width - StatusView.authorAvatarButtonSize.width - StatusView.bodyContainerStackViewSpacing
+            statusView.contentTextView.preferredMaxLayoutWidth = statusView.contentMaxLayoutWidth
             logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): layout new cell")
         }
         configureHeader(statusView: statusView, status: status, disposeBag: &disposeBag)
         configureAuthor(statusView: statusView, status: status, disposeBag: &disposeBag)
         configureContent(statusView: statusView, status: status, disposeBag: &disposeBag)
+        configureMedia(statusView: statusView, status: status, disposeBag: &disposeBag)
     }
     
     
@@ -170,4 +171,48 @@ extension StatusSection {
             .store(in: &disposeBag)
     }
     
+    static func configureMedia(
+        statusView: StatusView,
+        status: TwitterStatus,
+        disposeBag: inout Set<AnyCancellable>
+    ) {
+        let maxSize = CGSize(
+            width: statusView.contentMaxLayoutWidth,
+            height: statusView.contentMaxLayoutWidth
+        )
+        var needsDisplay = true
+        var mediaViews: [MediaView] = []
+        let attachments = status.attachments
+        switch attachments.count {
+        case 0:
+            needsDisplay = false
+        case 1:
+            let attachment = attachments[0]
+            let aspectRatio = attachment.size
+            let adaptiveLayout = MediaGridContainerView.AdaptiveLayout(aspectRatio: aspectRatio, maxSize: maxSize)
+            let view = statusView.mediaGridContainerView.dequeueMediaView(adaptiveLayout: adaptiveLayout)
+            mediaViews.append(view)
+        default:
+            let gridLayout = MediaGridContainerView.GridLayout(count: attachments.count, maxSize: maxSize)
+            let views = statusView.mediaGridContainerView.dequeueMediaView(gridLayout: gridLayout)
+            mediaViews.append(contentsOf: views)
+        }
+        
+        guard needsDisplay else {
+            return
+        }
+        statusView.setMediaDisplay()
+        
+        for (i, (attachment, mediaView)) in zip(attachments, mediaViews).enumerated() {
+            guard i < MediaGridContainerView.maxCount else { break }
+            switch attachment.kind {
+            case .photo:
+                mediaView.configure(imageURL: attachment.assetURL)
+            case .video:
+                break
+            case .animatedGIF:
+                break
+            }
+        }
+    }
 }

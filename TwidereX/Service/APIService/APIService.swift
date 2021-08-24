@@ -21,6 +21,7 @@ final class APIService {
     // internal
     let session: URLSession
     var homeTimelineRequestThrottler = RequestThrottler()
+    let logger = Logger(subsystem: "APIService", category: "API")
     
     // input
     let backgroundManagedObjectContext: NSManagedObjectContext

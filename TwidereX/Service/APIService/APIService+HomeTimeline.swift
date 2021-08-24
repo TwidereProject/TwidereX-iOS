@@ -12,6 +12,7 @@ import CoreDataStack
 import CommonOSLog
 import DateToolsSwift
 import TwitterSDK
+import func QuartzCore.CACurrentMediaTime
 
 extension APIService {
     
@@ -30,6 +31,19 @@ extension APIService {
             query: query,
             authorization: authenticationContext.authorization
         )
+        #if DEBUG
+        
+        // log time cost
+        let start = CACurrentMediaTime()
+        defer {
+            // log rate limit
+            response.logRateLimit()
+
+            let end = CACurrentMediaTime()
+            os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: persist cost %.2fs", ((#file as NSString).lastPathComponent), #line, #function, end - start)
+        }
+        #endif
+        
         
         let managedObjectContext = backgroundManagedObjectContext
         try await managedObjectContext.performChanges {
@@ -71,10 +85,10 @@ extension APIService {
             }
         }
         
+        
+        
         return response
     }
-        
-    
     
     // incoming tweet - retweet relationship could be:
     // A1. incoming tweet NOT in local timeline, retweet NOT  in local (never see tweet and retweet)
