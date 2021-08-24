@@ -38,7 +38,7 @@ extension StatusSection {
                 context.managedObjectContext.performAndWait {
                     guard let feed = record.object(in: context.managedObjectContext) else { return }
                     if let status = feed.twitterStatus {
-                        configure(tableView: tableView, statusView: cell.statusView, status: status, disposeBag: &cell.disposeBag)
+                        configure(tableView: tableView, cell: cell, status: status)
                     } else {
                         assertionFailure()
                     }
@@ -49,7 +49,7 @@ extension StatusSection {
                 let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: StatusTableViewCell.self), for: indexPath) as! StatusTableViewCell
                 context.managedObjectContext.performAndWait {
                     guard let status = record.object(in: context.managedObjectContext) else { return }
-                    configure(tableView: tableView, statusView: cell.statusView, status: status, disposeBag: &cell.disposeBag)
+                    configure(tableView: tableView, cell: cell, status: status)
                 }
                 return cell
             }
@@ -58,24 +58,50 @@ extension StatusSection {
 }
 
 extension StatusSection {
-
+    
     static func configure(
         tableView: UITableView,
+        cell: StatusTableViewCell,
+        status: TwitterStatus
+    ) {
+        if cell.statusView.frame == .zero {
+            // set status view width
+            cell.statusView.frame.size.width = tableView.readableContentGuide.layoutFrame.width
+            let contentMaxLayoutWidth = cell.statusView.contentMaxLayoutWidth
+            cell.statusView.quoteStatusView?.frame.size.width = contentMaxLayoutWidth
+            // set preferredMaxLayoutWidth for content
+            cell.statusView.contentTextView.preferredMaxLayoutWidth = contentMaxLayoutWidth
+            cell.statusView.quoteStatusView?.contentTextView.preferredMaxLayoutWidth = cell.statusView.quoteStatusView?.contentMaxLayoutWidth
+            logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): layout new cell")
+        }
+        configure(
+            statusView: cell.statusView,
+            status: status,
+            disposeBag: &cell.disposeBag
+        )
+        cell.updateSeparatorInset()
+    }
+
+    static func configure(
         statusView: StatusView,
         status: TwitterStatus,
         disposeBag: inout Set<AnyCancellable>
     ) {
-        if statusView.frame == .zero {
-            statusView.frame.size.width = tableView.readableContentGuide.layoutFrame.width
-            statusView.contentTextView.preferredMaxLayoutWidth = statusView.contentMaxLayoutWidth
-            logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): layout new cell")
-        }
         configureHeader(statusView: statusView, status: status, disposeBag: &disposeBag)
         configureAuthor(statusView: statusView, status: status, disposeBag: &disposeBag)
         configureContent(statusView: statusView, status: status, disposeBag: &disposeBag)
         configureMedia(statusView: statusView, status: status, disposeBag: &disposeBag)
+        
+        if let quote = status.quote,
+           let quoteStatusView = statusView.quoteStatusView {
+            statusView.setQuoteDisplay()
+            configure(
+                statusView: quoteStatusView,
+                status: quote,
+                disposeBag: &disposeBag
+            )
+        }
     }
-    
     
     static func configureHeader(
         statusView: StatusView,
@@ -154,11 +180,13 @@ extension StatusSection {
     ) {
         let content = (status.repost ?? status).text
         func configureContent() {
+            let textStyle = statusView.contentTextViewFontTextStyle ?? .body
+            let textColor = statusView.contentTextViewTextColor ?? .label
             let attributedString = NSAttributedString(
                 string: content,
                 attributes: [
-                    .font: UIFont.preferredFont(forTextStyle: .body),
-                    .foregroundColor: UIColor.label
+                    .font: UIFont.preferredFont(forTextStyle: textStyle),
+                    .foregroundColor: textColor
                 ]
             )
             statusView.contentTextView.setAttributedString(attributedString)
@@ -209,10 +237,11 @@ extension StatusSection {
             case .photo:
                 mediaView.configure(imageURL: attachment.assetURL)
             case .video:
-                break
+                mediaView.configure(videoURL: attachment.assetURL, isGIF: false)
             case .animatedGIF:
-                break
+                mediaView.configure(videoURL: attachment.assetURL, isGIF: true)
             }
         }
     }
+
 }

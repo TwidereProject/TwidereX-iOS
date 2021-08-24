@@ -44,7 +44,7 @@ final class HomeTimelineViewController: UIViewController, NeedsDependency {
         let tableView = UITableView()
         tableView.register(StatusTableViewCell.self, forCellReuseIdentifier: String(describing: StatusTableViewCell.self))
         tableView.rowHeight = UITableView.automaticDimension
-        tableView.separatorInsetReference = .fromAutomaticInsets
+        tableView.separatorInsetReference = .fromCellEdges
         tableView.backgroundColor = .systemBackground
         return tableView
     }()
@@ -195,9 +195,9 @@ extension HomeTimelineViewController {
         super.viewWillTransition(to: size, with: coordinator)
         
         coordinator.animate { _ in
-            self.tableView.beginUpdates()
-            self.tableView.reloadData()
-            self.tableView.endUpdates()
+//            self.tableView.beginUpdates()
+//            self.tableView.reloadData()
+//            self.tableView.endUpdates()
         } completion: { _ in
             self.tableView.reloadData()
         }

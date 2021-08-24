@@ -6,19 +6,28 @@
 //  Copyright © 2021 Twidere. All rights reserved.
 //
 
+import AVKit
 import UIKit
 
 final class MediaView: UIView {
     
     static let cornerRadius: CGFloat = 8
     
-    lazy var imageView: UIImageView = {
+    private(set) lazy var imageView: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFill
         imageView.layer.masksToBounds = true
         imageView.layer.cornerCurve = .continuous
         imageView.layer.cornerRadius = MediaView.cornerRadius
         return imageView
+    }()
+    
+    private(set) lazy var playerViewController: AVPlayerViewController = {
+        let playerViewController = AVPlayerViewController()
+        playerViewController.view.layer.masksToBounds = true
+        playerViewController.view.layer.cornerCurve = .continuous
+        playerViewController.view.layer.cornerRadius = MediaView.cornerRadius
+        return playerViewController
     }()
     
     override init(frame: CGRect) {
@@ -35,9 +44,7 @@ final class MediaView: UIView {
 
 extension MediaView {
     private func _init() {
-        #if DEBUG
-        backgroundColor = .gray
-        #endif
+        // lazy load later
     }
     
     func configure(imageURL: String?) {
@@ -62,10 +69,35 @@ extension MediaView {
         )
     }
     
+    func configure(videoURL: String?, isGIF: Bool) {
+        playerViewController.view.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(playerViewController.view)
+        NSLayoutConstraint.activate([
+            playerViewController.view.topAnchor.constraint(equalTo: topAnchor),
+            playerViewController.view.leadingAnchor.constraint(equalTo: leadingAnchor),
+            playerViewController.view.trailingAnchor.constraint(equalTo: trailingAnchor),
+            playerViewController.view.bottomAnchor.constraint(equalTo: bottomAnchor),
+        ])
+        
+        guard let urlString = videoURL,
+              let url = URL(string: urlString)
+        else { return }
+        
+        let playerItem = AVPlayerItem(url: url)
+        let player = AVPlayer(playerItem: playerItem)
+        playerViewController.player = player
+    }
+    
     func prepareForReuse() {
+        // reset imageView
         imageView.removeFromSuperview()
         imageView.removeConstraints(imageView.constraints)
         imageView.af.cancelImageRequest()
         imageView.image = nil
+        
+        // reset playerViewController
+        playerViewController.view.removeFromSuperview()
+        playerViewController.player?.pause()
+        playerViewController.player = nil
     }
 }

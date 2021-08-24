@@ -36,6 +36,11 @@ final class StatusToolbar: UIView {
         _init()
     }
     
+    override func willMove(toWindow newWindow: UIWindow?) {
+        super.willMove(toWindow: newWindow)
+        assert(style != nil, "Needs setup style before use")
+    }
+    
 }
 
 extension StatusToolbar {

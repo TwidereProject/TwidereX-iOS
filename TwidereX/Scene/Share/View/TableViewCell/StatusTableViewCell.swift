@@ -45,13 +45,34 @@ extension StatusTableViewCell {
             statusView.trailingAnchor.constraint(equalTo: contentView.readableContentGuide.trailingAnchor),
             statusView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
         ])
+        statusView.setup(style: .inline)
         statusView.toolbar.setup(style: .inline)
     }
     
     override func layoutSubviews() {
         super.layoutSubviews()
         
-        separatorInset.left = StatusView.authorAvatarButtonSize.width + StatusView.bodyContainerStackViewSpacing
+        updateSeparatorInset()
+    }
+    
+    func updateSeparatorInset() {
+        let readableLayoutFrame = contentView.readableContentGuide.layoutFrame
+        switch traitCollection.horizontalSizeClass {
+        case .compact:
+            separatorInset = UIEdgeInsets(
+                top: 0,
+                left: readableLayoutFrame.minX + statusView.contentLayoutInset.left,
+                bottom: 0,
+                right: 0
+            )
+        default:
+            separatorInset = UIEdgeInsets(
+                top: 0,
+                left: readableLayoutFrame.minX,
+                bottom: 0,
+                right: frame.width - readableLayoutFrame.maxX
+            )
+        }
     }
     
 }

@@ -8,6 +8,7 @@
 
 import UIKit
 import FLAnimatedImage
+import AlamofireImage
 
 class AvatarImageView: FLAnimatedImageView {
     var imageViewSize: CGSize?
@@ -51,7 +52,17 @@ extension AvatarImageView {
                 scaleToSize: configuration.imageViewSize ?? self.imageViewSize
             )
         default:
-            af.setImage(withURL: url)            
+            let filter: ImageFilter? = {
+                if let imageViewSize = self.imageViewSize {
+                    return ScaledToSizeCircleFilter(size: imageViewSize)
+                }
+                guard self.frame.size.width != 0,
+                      self.frame.size.height != 0
+                else { return nil }
+                return ScaledToSizeCircleFilter(size: self.frame.size)
+            }()
+            
+            af.setImage(withURL: url, filter: filter)
         }
 
     }
