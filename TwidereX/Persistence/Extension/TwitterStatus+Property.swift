@@ -18,6 +18,9 @@ extension TwitterStatus.Property {
             id: entity.id,
             text: entity.fullText ?? entity.text ?? "",
             attachmentsRaw: entity.attachmentsRaw,
+            likeCount: entity.favoriteCount ?? 0,
+            replyCount: 0,
+            repostCount: entity.retweetCount ?? 0,
             createdAt: entity.createdAt,
             updatedAt: networkDate
         )
@@ -40,7 +43,8 @@ extension Twitter.Entity.Tweet {
                 kind: kind,
                 size: CGSize(width: width, height: height),
                 assetURL: media.attachmentAssetURL,
-                previewURL: media.attachmentPreviewURL
+                previewURL: media.attachmentPreviewURL,
+                durationMS: media.videoInfo?.durationMillis
             )
         }
         

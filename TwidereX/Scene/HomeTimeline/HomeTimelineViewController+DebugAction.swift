@@ -83,33 +83,33 @@ extension HomeTimelineViewController {
             identifier: nil,
             options: [],
             children: [
-                UIAction(title: "First Gap", image: nil, attributes: [], handler: { [weak self] action in
+//                UIAction(title: "First Gap", image: nil, attributes: [], handler: { [weak self] action in
+//                    guard let self = self else { return }
+//                    self.moveToTopGapAction(action)
+//                }),
+//                UIAction(title: "First Protected Tweet", image: nil, attributes: [], handler: { [weak self] action in
+//                    guard let self = self else { return }
+//                    self.moveToFirstProtectedTweet(action)
+//                }),
+//                UIAction(title: "First Protected User", image: nil, attributes: [], handler: { [weak self] action in
+//                    guard let self = self else { return }
+//                    self.moveToFirstProtectedUser(action)
+//                }),
+//                UIAction(title: "First Reply Tweet", image: nil, attributes: [], handler: { [weak self] action in
+//                    guard let self = self else { return }
+//                    self.moveToFirstReplyTweet(action)
+//                }),
+//                UIAction(title: "First Reply Retweet", image: nil, attributes: [], handler: { [weak self] action in
+//                    guard let self = self else { return }
+//                    self.moveToFirstReplyRetweet(action)
+//                }),
+                UIAction(title: "First Video Status", image: nil, attributes: [], handler: { [weak self] action in
                     guard let self = self else { return }
-                    self.moveToTopGapAction(action)
+                    self.moveToFirst(action, category: .video)
                 }),
-                UIAction(title: "First Protected Tweet", image: nil, attributes: [], handler: { [weak self] action in
+                UIAction(title: "First GIF Status", image: nil, attributes: [], handler: { [weak self] action in
                     guard let self = self else { return }
-                    self.moveToFirstProtectedTweet(action)
-                }),
-                UIAction(title: "First Protected User", image: nil, attributes: [], handler: { [weak self] action in
-                    guard let self = self else { return }
-                    self.moveToFirstProtectedUser(action)
-                }),
-                UIAction(title: "First Reply Tweet", image: nil, attributes: [], handler: { [weak self] action in
-                    guard let self = self else { return }
-                    self.moveToFirstReplyTweet(action)
-                }),
-                UIAction(title: "First Reply Retweet", image: nil, attributes: [], handler: { [weak self] action in
-                    guard let self = self else { return }
-                    self.moveToFirstReplyRetweet(action)
-                }),
-                UIAction(title: "First Video Tweet", image: nil, attributes: [], handler: { [weak self] action in
-                    guard let self = self else { return }
-                    self.moveToFirstVideoTweet(action)
-                }),
-                UIAction(title: "First GIF Tweet", image: nil, attributes: [], handler: { [weak self] action in
-                    guard let self = self else { return }
-                    self.moveToFirstGIFTweet(action)
+                    self.moveToFirst(action, category: .gif)
                 }),
             ]
         )
@@ -154,6 +154,49 @@ extension HomeTimelineViewController {
 //        if let targetItem = item, let index = snapshotTransitioning.indexOfItem(targetItem) {
 //            tableView.scrollToRow(at: IndexPath(row: index, section: 0), at: .middle, animated: true)
 //        }
+    }
+    
+    enum StatusCategory {
+        case gap
+        case gif
+        case video
+        
+        func match(item: StatusItem) -> Bool {
+            switch item {
+            case .homeTimelineFeed(let record):
+                guard let feed = record.object(in: AppContext.shared.managedObjectContext) else { return false }
+                if let status = feed.twitterStatus {
+                    switch self {
+                    case .gif:
+                        return status.attachments.contains(where: { attachment in attachment.kind == .animatedGIF })
+                    case .video:
+                        return status.attachments.contains(where: { attachment in attachment.kind == .video })
+                    default:
+                        return false
+                    }
+                } else {
+                    return false
+                }
+            default:
+                return false
+            }
+        }
+        
+        func firstMatch(in items: [StatusItem]) -> StatusItem? {
+            return items.first { item in self.match(item: item) }
+        }
+    }
+    
+    private func moveToFirst(_ sender: UIAction, category: StatusCategory) {
+        guard let diffableDataSource = viewModel.diffableDataSource else { return }
+        let snapshot = diffableDataSource.snapshot()
+        let items = snapshot.itemIdentifiers
+        guard let targetItem = category.firstMatch(in: items),
+              let index = snapshot.indexOfItem(targetItem)
+        else { return }
+        let indexPath = IndexPath(row: index, section: 0)
+        tableView.scrollToRow(at: indexPath, at: .middle, animated: true)
+        tableView.blinkRow(at: indexPath)
     }
     
     @objc private func moveToFirstProtectedTweet(_ sender: UIAction) {

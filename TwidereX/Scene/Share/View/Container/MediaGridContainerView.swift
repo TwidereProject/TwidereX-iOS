@@ -10,16 +10,33 @@ import os.log
 import UIKit
 import func AVFoundation.AVMakeRect
 
+protocol MediaGridContainerViewDelegate: AnyObject {
+    func mediaGridContainerView(_ container: MediaGridContainerView, didTapMediaView mediaView: MediaView, at index: Int)
+}
+
 final class MediaGridContainerView: UIView {
     
     static let maxCount = 9
     
-    private(set) var mediaViews: [MediaView] = {
+    let logger = Logger(subsystem: "MediaGridContainerView", category: "UI")
+    
+    weak var delegate: MediaGridContainerViewDelegate?
+    
+    // lazy ver is required here to setup gesture recognizer target-action
+    // Swift not doesn't emit compiler error if without lazy here
+    private(set) lazy var mediaViews: [MediaView] = {
         var mediaViews: [MediaView] = []
         for i in 0..<MediaGridContainerView.maxCount {
+            // init media view
             let mediaView = MediaView()
             mediaView.tag = i
             mediaViews.append(mediaView)
+            
+            // add gesture recognizer
+            let tapGesture = UITapGestureRecognizer.singleTapGestureRecognizer
+            tapGesture.addTarget(self, action: #selector(MediaGridContainerView.mediaViewTapGestureRecognizerHandler(_:)))
+            mediaView.container.addGestureRecognizer(tapGesture)
+            mediaView.container.isUserInteractionEnabled = true
         }
         return mediaViews
     }()
@@ -39,6 +56,15 @@ final class MediaGridContainerView: UIView {
 extension MediaGridContainerView {
     private func _init() {
         
+    }
+}
+
+extension MediaGridContainerView {
+    @objc private func mediaViewTapGestureRecognizerHandler(_ sender: UITapGestureRecognizer) {
+        guard let index = mediaViews.firstIndex(where: { $0.container === sender.view }) else { return }
+        let mediaView = mediaViews[index]
+        delegate?.mediaGridContainerView(self, didTapMediaView: mediaView, at: index)
+        logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): \(index)")
     }
 }
 

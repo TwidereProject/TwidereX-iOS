@@ -10,3 +10,5 @@ import Foundation
 
 // Stencil protocol
 protocol AutoUpdatableObject { }
+
+// - skipAutoUpdatableObject

@@ -19,6 +19,11 @@ final public class TwitterStatus: NSManagedObject {
     
     // sourcery: skipAutoUpdatableObject
     @NSManaged public private(set) var attachmentsRaw: Data?
+    
+    @NSManaged public private(set) var likeCount: Int
+    // sourcery: skipAutoUpdatableObject
+    @NSManaged public private(set) var replyCount: Int
+    @NSManaged public private(set) var repostCount: Int
 
     @NSManaged public private(set) var createdAt: Date
     @NSManaged public private(set) var updatedAt: Date
@@ -102,6 +107,9 @@ extension TwitterStatus: AutoGenerateProperty {
     	public let  id: ID
     	public let  text: String
     	public let  attachmentsRaw: Data?
+    	public let  likeCount: Int
+    	public let  replyCount: Int
+    	public let  repostCount: Int
     	public let  createdAt: Date
     	public let  updatedAt: Date
 
@@ -109,12 +117,18 @@ extension TwitterStatus: AutoGenerateProperty {
     		id: ID,
     		text: String,
     		attachmentsRaw: Data?,
+    		likeCount: Int,
+    		replyCount: Int,
+    		repostCount: Int,
     		createdAt: Date,
     		updatedAt: Date
     	) {
     		self.id = id
     		self.text = text
     		self.attachmentsRaw = attachmentsRaw
+    		self.likeCount = likeCount
+    		self.replyCount = replyCount
+    		self.repostCount = repostCount
     		self.createdAt = createdAt
     		self.updatedAt = updatedAt
     	}
@@ -124,12 +138,17 @@ extension TwitterStatus: AutoGenerateProperty {
     	self.id = property.id
     	self.text = property.text
     	self.attachmentsRaw = property.attachmentsRaw
+    	self.likeCount = property.likeCount
+    	self.replyCount = property.replyCount
+    	self.repostCount = property.repostCount
     	self.createdAt = property.createdAt
     	self.updatedAt = property.updatedAt
     }
 
     public func update(property: Property) {
     	update(text: property.text)
+    	update(likeCount: property.likeCount)
+    	update(repostCount: property.repostCount)
     	update(createdAt: property.createdAt)
     	update(updatedAt: property.updatedAt)
     }
@@ -175,6 +194,16 @@ extension TwitterStatus: AutoUpdatableObject {
     public func update(text: String) {
     	if self.text != text {
     		self.text = text
+    	}
+    }
+    public func update(likeCount: Int) {
+    	if self.likeCount != likeCount {
+    		self.likeCount = likeCount
+    	}
+    }
+    public func update(repostCount: Int) {
+    	if self.repostCount != repostCount {
+    		self.repostCount = repostCount
     	}
     }
     public func update(createdAt: Date) {

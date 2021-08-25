@@ -97,7 +97,10 @@ extension HomeTimelineViewController {
         ])
 //        tableView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
 //        view.addSubview(tableView)
-        viewModel.setupDiffableDataSource(tableView: tableView)
+        viewModel.setupDiffableDataSource(
+            tableView: tableView,
+            statusTableViewCellDelegate: self
+        )
         
         tableView.refreshControl = refreshControl
         viewModel.didLoadLatest
@@ -195,11 +198,13 @@ extension HomeTimelineViewController {
         super.viewWillTransition(to: size, with: coordinator)
         
         coordinator.animate { _ in
-//            self.tableView.beginUpdates()
-//            self.tableView.reloadData()
-//            self.tableView.endUpdates()
+            // do nothing
         } completion: { _ in
+//            guard self.view.frame.size == size,         // the full screen player could trigger rotate but view not resize
+//                  self.tableView.frame.size != size     // and the size should be different
+//            else { return }
             self.tableView.reloadData()
+            self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): view transition to new size: \(size.debugDescription). And table reloaded")
         }
     }
 
@@ -372,18 +377,6 @@ extension HomeTimelineViewController {
 //    }
 //}
 //
-//// MARK: - AVPlayerViewControllerDelegate
-//extension HomeTimelineViewController: AVPlayerViewControllerDelegate {
-//
-//    func playerViewController(_ playerViewController: AVPlayerViewController, willBeginFullScreenPresentationWithAnimationCoordinator coordinator: UIViewControllerTransitionCoordinator) {
-//        handlePlayerViewController(playerViewController, willBeginFullScreenPresentationWithAnimationCoordinator: coordinator)
-//    }
-//
-//    func playerViewController(_ playerViewController: AVPlayerViewController, willEndFullScreenPresentationWithAnimationCoordinator coordinator: UIViewControllerTransitionCoordinator) {
-//        handlePlayerViewController(playerViewController, willEndFullScreenPresentationWithAnimationCoordinator: coordinator)
-//    }
-//
-//}
 //
 //// MARK: - TimelinePostTableViewCellDelegate
 //extension HomeTimelineViewController: TimelinePostTableViewCellDelegate {
@@ -423,3 +416,10 @@ extension HomeTimelineViewController {
 //    var loadMoreConfigurableTableView: UITableView { return tableView }
 //    var loadMoreConfigurableStateMachine: GKStateMachine { return viewModel.loadoldestStateMachine }
 //}
+
+// MARK: - StatusTableViewCellDelegate
+extension HomeTimelineViewController: StatusTableViewCellDelegate {
+    func statusTableViewCell(_ cell: StatusTableViewCell, mediaGridContainerView containerView: MediaGridContainerView, didTapMediaView mediaView: MediaView, at index: Int) {
+        
+    }
+}

@@ -14,12 +14,16 @@ import CoreDataStack
 extension HomeTimelineViewModel {
     
     func setupDiffableDataSource(
-        tableView: UITableView
+        tableView: UITableView,
+        statusTableViewCellDelegate: StatusTableViewCellDelegate
     ) {
         
         diffableDataSource = StatusSection.diffableDataSource(
             tableView: tableView,
-            context: context
+            context: context,
+            configuration: .init(
+                statusTableViewCellDelegate: statusTableViewCellDelegate
+            )
         )
         
         var snapshot = NSDiffableDataSourceSnapshot<StatusSection, StatusItem>()

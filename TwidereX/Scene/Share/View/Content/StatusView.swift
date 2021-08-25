@@ -373,15 +373,3 @@ extension StatusView {
     }
 
 }
-
-import SwiftUI
-
-struct StatusView_Previews: PreviewProvider {
-    static var previews: some View {
-        UIViewPreview {
-            let statusView = StatusView()
-            statusView.setup(style: .inline)
-            return statusView
-        }
-    }
-}

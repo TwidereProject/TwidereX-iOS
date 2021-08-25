@@ -15,6 +15,8 @@ protocol StatusToolbarDelegate: AnyObject {
 
 final class StatusToolbar: UIView {
     
+    static let numberMetricFormatter = NumberMetricFormatter()
+    
     let replyButton     = HitTestExpandedButton()
     let repostButton    = HitTestExpandedButton()
     let likeButton      = HitTestExpandedButton()
@@ -172,15 +174,25 @@ extension StatusToolbar {
 }
 
 extension StatusToolbar {
+    
+    private func metricText(count: Int) -> String {
+        guard count > 0 else { return "" }
+        return StatusToolbar.numberMetricFormatter.string(from: count) ?? ""
+    }
 
-    func setReply(count: Int, isEnabled: Bool) {
-        let text = NumberMetricFormatter().string(from: count) ?? ""
+    func setupReply(count: Int, isEnabled: Bool) {
+        let text = metricText(count: count)
         replyButton.setTitle(text, for: .normal)
     }
     
-    func setRepost(count: Int, isEnabled: Bool, isLocked: Bool) {
-        // let text = NumberMetricFormatter().string(from: count) ?? ""
-        // repostButton.setTitle(text, for: .normal)
+    func setupRepost(count: Int, isEnabled: Bool, isLocked: Bool) {
+        let text = metricText(count: count)
+        repostButton.setTitle(text, for: .normal)
+    }
+    
+    func setupLike(count: Int) {
+        let text = metricText(count: count)
+        likeButton.setTitle(text, for: .normal)
     }
     
 }

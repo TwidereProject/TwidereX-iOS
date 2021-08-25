@@ -20,10 +20,15 @@ enum StatusSection: Hashable {
 extension StatusSection {
     
     static let logger = Logger(subsystem: "StatusSection", category: "Logic")
+    
+    struct Configuration {
+        let statusTableViewCellDelegate: StatusTableViewCellDelegate
+    }
 
     static func diffableDataSource(
         tableView: UITableView,
-        context: AppContext
+        context: AppContext,
+        configuration: Configuration
     ) -> UITableViewDiffableDataSource<StatusSection, StatusItem> {
         return UITableViewDiffableDataSource<StatusSection, StatusItem>(
             tableView: tableView
@@ -38,7 +43,7 @@ extension StatusSection {
                 context.managedObjectContext.performAndWait {
                     guard let feed = record.object(in: context.managedObjectContext) else { return }
                     if let status = feed.twitterStatus {
-                        configure(tableView: tableView, cell: cell, status: status)
+                        configure(tableView: tableView, cell: cell, status: status, configuration: configuration)
                     } else {
                         assertionFailure()
                     }
@@ -49,7 +54,7 @@ extension StatusSection {
                 let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: StatusTableViewCell.self), for: indexPath) as! StatusTableViewCell
                 context.managedObjectContext.performAndWait {
                     guard let status = record.object(in: context.managedObjectContext) else { return }
-                    configure(tableView: tableView, cell: cell, status: status)
+                    configure(tableView: tableView, cell: cell, status: status, configuration: configuration)
                 }
                 return cell
             }
@@ -62,7 +67,8 @@ extension StatusSection {
     static func configure(
         tableView: UITableView,
         cell: StatusTableViewCell,
-        status: TwitterStatus
+        status: TwitterStatus,
+        configuration: Configuration
     ) {
         if cell.statusView.frame == .zero {
             // set status view width
@@ -77,20 +83,24 @@ extension StatusSection {
         configure(
             statusView: cell.statusView,
             status: status,
+            configuration: configuration,
             disposeBag: &cell.disposeBag
         )
+        cell.delegate = configuration.statusTableViewCellDelegate
         cell.updateSeparatorInset()
     }
 
     static func configure(
         statusView: StatusView,
         status: TwitterStatus,
+        configuration: Configuration,
         disposeBag: inout Set<AnyCancellable>
     ) {
         configureHeader(statusView: statusView, status: status, disposeBag: &disposeBag)
         configureAuthor(statusView: statusView, status: status, disposeBag: &disposeBag)
         configureContent(statusView: statusView, status: status, disposeBag: &disposeBag)
         configureMedia(statusView: statusView, status: status, disposeBag: &disposeBag)
+        configureToolbar(statusView: statusView, status: status, disposeBag: &disposeBag)
         
         if let quote = status.quote,
            let quoteStatusView = statusView.quoteStatusView {
@@ -98,6 +108,7 @@ extension StatusSection {
             configure(
                 statusView: quoteStatusView,
                 status: quote,
+                configuration: configuration,
                 disposeBag: &disposeBag
             )
         }
@@ -231,17 +242,37 @@ extension StatusSection {
         }
         statusView.setMediaDisplay()
         
+        func videoInfo(from attachment: TwitterAttachment) -> MediaView.Configuration.VideoInfo {
+            MediaView.Configuration.VideoInfo(
+                assertURL: attachment.assetURL,
+                previewURL: attachment.previewURL,
+                durationMS: attachment.durationMS
+            )
+        }
+        
         for (i, (attachment, mediaView)) in zip(attachments, mediaViews).enumerated() {
             guard i < MediaGridContainerView.maxCount else { break }
             switch attachment.kind {
             case .photo:
-                mediaView.configure(imageURL: attachment.assetURL)
+                mediaView.setup(configuration: MediaView.Configuration.image(url: attachment.assetURL))
             case .video:
-                mediaView.configure(videoURL: attachment.assetURL, isGIF: false)
+                let info = videoInfo(from: attachment)
+                mediaView.setup(configuration: MediaView.Configuration.video(info: info))
             case .animatedGIF:
-                mediaView.configure(videoURL: attachment.assetURL, isGIF: true)
+                let info = videoInfo(from: attachment)
+                mediaView.setup(configuration: MediaView.Configuration.gif(info: info))
             }
         }
     }
-
+    
+    static func configureToolbar(
+        statusView: StatusView,
+        status: TwitterStatus,
+        disposeBag: inout Set<AnyCancellable>
+    ) {
+        let status = status.repost ?? status
+        statusView.toolbar.setupReply(count: status.replyCount, isEnabled: true)
+        statusView.toolbar.setupRepost(count: status.repostCount, isEnabled: true, isLocked: false)
+        statusView.toolbar.setupLike(count: status.likeCount)
+    }
 }

@@ -6,13 +6,21 @@
 //  Copyright © 2021 Twidere. All rights reserved.
 //
 
+import os.log
 import UIKit
 import Combine
+
+protocol StatusTableViewCellDelegate: AnyObject {
+    func statusTableViewCell(_ cell: StatusTableViewCell, mediaGridContainerView containerView: MediaGridContainerView, didTapMediaView mediaView: MediaView, at index: Int)
+}
 
 final class StatusTableViewCell: UITableViewCell {
     
     var disposeBag = Set<AnyCancellable>()
     
+    let logger = Logger(subsystem: "StatusTableViewCell", category: "UI")
+    
+    weak var delegate: StatusTableViewCellDelegate?
     let statusView = StatusView()
     
     override func prepareForReuse() {
@@ -47,6 +55,8 @@ extension StatusTableViewCell {
         ])
         statusView.setup(style: .inline)
         statusView.toolbar.setup(style: .inline)
+        
+        statusView.mediaGridContainerView.delegate = self
     }
     
     override func layoutSubviews() {
@@ -75,4 +85,17 @@ extension StatusTableViewCell {
         }
     }
     
+}
+
+// MARK: - MediaGridContainerViewDelegate
+extension StatusTableViewCell: MediaGridContainerViewDelegate {
+    func mediaGridContainerView(_ container: MediaGridContainerView, didTapMediaView mediaView: MediaView, at index: Int) {
+        switch container {
+        case statusView.mediaGridContainerView:
+            delegate?.statusTableViewCell(self, mediaGridContainerView: container, didTapMediaView: mediaView, at: index)
+        default:
+            assertionFailure()
+            return
+        }
+    }
 }

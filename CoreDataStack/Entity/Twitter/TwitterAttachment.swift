@@ -14,17 +14,20 @@ public struct TwitterAttachment: Codable {
     public let size: CGSize
     public let assetURL: String?
     public let previewURL: String?
+    public let durationMS: Int?
     
     public init(
         kind: TwitterAttachment.Kind,
         size: CGSize,
         assetURL: String?,
-        previewURL: String?
+        previewURL: String?,
+        durationMS: Int?
     ) {
         self.kind = kind
         self.size = size
         self.assetURL = assetURL
         self.previewURL = previewURL
+        self.durationMS = durationMS
     }
 }
 
