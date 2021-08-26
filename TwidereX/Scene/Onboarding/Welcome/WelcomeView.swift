@@ -29,7 +29,7 @@ struct WelcomeView: View {
     var body: some View {
         VStack {
             HStack {
-                Image(Asset.Logo.twidere.name)
+                Image(Asset.Scene.Welcome.twidere.name)
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                     .frame(width: 48, height: 48)
@@ -109,7 +109,8 @@ struct WelcomeView: View {
 
 struct WelcomeView_Previews: PreviewProvider {
     static var previews: some View {
-        WelcomeView().environmentObject(WelcomeViewModel(context: AppContext.shared))
+        let configuration = WelcomeViewModel.Configuration(allowDismissModal: false)
+        WelcomeView().environmentObject(WelcomeViewModel(context: AppContext.shared, configuration: configuration))
     }
 }
 
@@ -125,7 +126,7 @@ struct TwitterAuthenticateButton: View {
                 primaryAction()
             } label: {
                 HStack {
-                    Image(Asset.Logo.twitterMedium.name)
+                    Image(Asset.Logo.twitter.name)
                         .renderingMode(.template)
                     Spacer()
                     if isBusy {
@@ -167,7 +168,7 @@ struct MastodonAuthenticateButton: View {
             primaryAction()
         } label: {
             HStack {
-                Image(Asset.Logo.mastodonMedium.name)
+                Image(Asset.Logo.mastodon.name)
                     .renderingMode(.template)
                 Spacer()
                 if isBusy {

@@ -27,6 +27,7 @@ final class WelcomeViewModel: ObservableObject {
 
     // input
     let context: AppContext
+    let configuration: Configuration
     @Published var mastodonDomain = ""
     
     // output
@@ -37,10 +38,13 @@ final class WelcomeViewModel: ObservableObject {
 
     let error = PassthroughSubject<Error, Never>()
     
-    
-    
-    init(context: AppContext) {
+    init(context: AppContext, configuration: Configuration) {
         self.context = context
+        self.configuration = configuration
+    }
+    
+    struct Configuration {
+        let allowDismissModal: Bool
     }
     
 }

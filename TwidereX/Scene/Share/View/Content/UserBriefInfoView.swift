@@ -10,17 +10,13 @@ import UIKit
 
 final class UserBriefInfoView: UIView {
     
+    static let containerStackViewSpacing: CGFloat = 10
     static let avatarImageViewSize = CGSize(width: 44, height: 44)
+    static let badgeImageViewSize = CGSize(width: 20, height: 20)
     
-    let avatarImageView = UIImageView()
+    let avatarImageView = AvatarImageView()
     
-    let verifiedBadgeImageView: UIImageView = {
-        let imageView = UIImageView()
-        imageView.tintColor = .white
-        imageView.contentMode = .center
-        imageView.image = Asset.ObjectTools.verifiedBadgeMini.image.withRenderingMode(.alwaysOriginal)
-        return imageView
-    }()
+    let badgeImageView = UIImageView()
     
     let nameLabel: UILabel = {
         let label = UILabel()
@@ -39,7 +35,7 @@ final class UserBriefInfoView: UIView {
         return imageView
     }()
     
-    let usernameLabel: UILabel = {
+    let headerSecondaryLabel: UILabel = {
         let label = UILabel()
         label.font = .preferredFont(forTextStyle: .subheadline)
         label.adjustsFontForContentSizeCategory = true
@@ -91,6 +87,17 @@ final class UserBriefInfoView: UIView {
 }
 
 extension UserBriefInfoView {
+    
+    func prepareForReuse() {
+        badgeImageView.isHidden = true
+        lockImageView.isHidden = true
+        
+        activityIndicatorView.isHidden = true
+        checkmarkButton.isHidden = true
+        followActionButton.isHidden = true
+        menuButton.isHidden = true
+    }
+    
     private func _init() {
         // container: [user avatar | brief info container | more button]
         let containerStackView = UIStackView()
@@ -114,13 +121,13 @@ extension UserBriefInfoView {
             avatarImageView.widthAnchor.constraint(equalToConstant: UserBriefInfoView.avatarImageViewSize.width).priority(.required - 1),
             avatarImageView.heightAnchor.constraint(equalToConstant: UserBriefInfoView.avatarImageViewSize.height).priority(.required - 1),
         ])
-        verifiedBadgeImageView.translatesAutoresizingMaskIntoConstraints = false
-        avatarImageView.addSubview(verifiedBadgeImageView)
+        badgeImageView.translatesAutoresizingMaskIntoConstraints = false
+        containerStackView.addSubview(badgeImageView)
         NSLayoutConstraint.activate([
-            verifiedBadgeImageView.trailingAnchor.constraint(equalTo: avatarImageView.trailingAnchor),
-            verifiedBadgeImageView.bottomAnchor.constraint(equalTo: avatarImageView.bottomAnchor),
-            verifiedBadgeImageView.widthAnchor.constraint(equalToConstant: 16),
-            verifiedBadgeImageView.heightAnchor.constraint(equalToConstant: 16),
+            badgeImageView.trailingAnchor.constraint(equalTo: avatarImageView.trailingAnchor, constant: 4),
+            badgeImageView.bottomAnchor.constraint(equalTo: avatarImageView.bottomAnchor, constant: 4),
+            badgeImageView.widthAnchor.constraint(equalToConstant: UserBriefInfoView.badgeImageViewSize.width).priority(.required - 1),
+            badgeImageView.heightAnchor.constraint(equalToConstant: UserBriefInfoView.badgeImageViewSize.height).priority(.required - 1),
         ])
 
         // brief info container: [user meta container | detail]
@@ -137,13 +144,13 @@ extension UserBriefInfoView {
         userMetaContainerStackView.spacing = 6
         userMetaContainerStackView.addArrangedSubview(nameLabel)
         userMetaContainerStackView.addArrangedSubview(lockImageView)
-        userMetaContainerStackView.addArrangedSubview(usernameLabel)
+        userMetaContainerStackView.addArrangedSubview(headerSecondaryLabel)
         let paddingView = UIView()
         userMetaContainerStackView.addArrangedSubview(paddingView)
 
         nameLabel.setContentHuggingPriority(.defaultHigh, for: .horizontal)
         lockImageView.setContentHuggingPriority(.defaultHigh - 1, for: .horizontal)
-        usernameLabel.setContentHuggingPriority(.defaultHigh - 2, for: .horizontal)
+        headerSecondaryLabel.setContentHuggingPriority(.defaultHigh - 2, for: .horizontal)
         paddingView.setContentHuggingPriority(.defaultLow, for: .horizontal)
         
         // detail container: [detail]
@@ -177,22 +184,22 @@ extension UserBriefInfoView {
         containerStackView.addArrangedSubview(activityIndicatorView)
         activityIndicatorView.setContentHuggingPriority(.defaultHigh, for: .horizontal)
         activityIndicatorView.setContentCompressionResistancePriority(.required - 1, for: .horizontal)
-        
-        verifiedBadgeImageView.isHidden = true
-        lockImageView.isHidden = true
-        
-        activityIndicatorView.isHidden = true
-        checkmarkButton.isHidden = true
-        followActionButton.isHidden = true
-        menuButton.isHidden = true
-    }
-}
 
-extension UserBriefInfoView: AvatarConfigurableView {
-    static var configurableAvatarImageViewSize: CGSize { return avatarImageViewSize }
-    var configurableAvatarImageView: UIImageView? { return avatarImageView }
-    var configurableAvatarButton: UIButton? { return nil }
-    var configurableVerifiedBadgeImageView: UIImageView? { return verifiedBadgeImageView }
+        prepareForReuse()
+    }
+    
+    var contentLayoutInset: UIEdgeInsets {
+        return UIEdgeInsets(
+            top: 0,
+            left: UserBriefInfoView.avatarImageViewSize.width + UserBriefInfoView.containerStackViewSpacing,
+            bottom: 0,
+            right: 0
+        )
+    }
+    
+    func setBadgeDisplay() {
+        badgeImageView.isHidden = false
+    }
 }
 
 #if DEBUG

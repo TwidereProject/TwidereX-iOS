@@ -13,28 +13,29 @@ final public class MastodonAuthentication: NSManagedObject {
     
     public typealias ID = UUID
     
-    // sourcery: skipAutoUpdatableObject, skipAutoGenerateProperty
     @NSManaged public private(set) var identifier: ID
     
-    // sourcery: skipAutoUpdatableObject
+    // sourcery: autoGenerateProperty
     @NSManaged public private(set) var domain: String
-    // sourcery: skipAutoUpdatableObject
+    // sourcery: autoGenerateProperty
     @NSManaged public private(set) var userID: String
     
+    // sourcery: autoUpdatableObject, autoGenerateProperty
     @NSManaged public private(set) var appAccessToken: String
+    // sourcery: autoUpdatableObject, autoGenerateProperty
     @NSManaged public private(set) var userAccessToken: String
+    // sourcery: autoUpdatableObject, autoGenerateProperty
     @NSManaged public private(set) var clientID: String
+    // sourcery: autoUpdatableObject, autoGenerateProperty
     @NSManaged public private(set) var clientSecret: String
     
-    // sourcery: skipAutoUpdatableObject, skipAutoGenerateProperty
     @NSManaged public private(set) var createdAt: Date
+    // sourcery: autoUpdatableObject, autoGenerateProperty
     @NSManaged public private(set) var updatedAt: Date
     
-    // sourcery:begin: skipAutoUpdatableObject, skipAutoGenerateProperty
     // one-to-one relationship
     @NSManaged public private(set) var authenticationIndex: AuthenticationIndex
     @NSManaged public private(set) var mastodonUser: MastodonUser
-    // sourcery:end
 
 }
 
@@ -101,13 +102,13 @@ extension MastodonAuthentication: AutoGenerateProperty {
     // Generated using Sourcery
     // DO NOT EDIT
     public struct Property {
-    	public let  domain: String
-    	public let  userID: String
-    	public let  appAccessToken: String
-    	public let  userAccessToken: String
-    	public let  clientID: String
-    	public let  clientSecret: String
-    	public let  updatedAt: Date
+        public let  domain: String
+        public let  userID: String
+        public let  appAccessToken: String
+        public let  userAccessToken: String
+        public let  clientID: String
+        public let  clientSecret: String
+        public let  updatedAt: Date
 
     	public init(
     		domain: String,
@@ -146,35 +147,6 @@ extension MastodonAuthentication: AutoGenerateProperty {
     	update(updatedAt: property.updatedAt)
     }
     // sourcery:end
-//    public struct Property {
-//
-//        public let domain: String
-//        public let userID: String
-//        public let username: String
-//        public let appAccessToken: String
-//        public let userAccessToken: String
-//        public let clientID: String
-//        public let clientSecret: String
-//
-//        public init(
-//            domain: String,
-//            userID: String,
-//            username: String,
-//            appAccessToken: String,
-//            userAccessToken: String,
-//            clientID: String,
-//            clientSecret: String
-//        ) {
-//            self.domain = domain
-//            self.userID = userID
-//            self.username = username
-//            self.appAccessToken = appAccessToken
-//            self.userAccessToken = userAccessToken
-//            self.clientID = clientID
-//            self.clientSecret = clientSecret
-//        }
-//
-//    }
 }
 
 // MARK: - AutoUpdatableObject

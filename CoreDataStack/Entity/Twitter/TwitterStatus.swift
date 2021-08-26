@@ -13,23 +13,23 @@ final public class TwitterStatus: NSManagedObject {
 
     public typealias ID = String
     
-    // sourcery: skipAutoUpdatableObject
+    // sourcery: autoGenerateProperty
     @NSManaged public private(set) var id: ID
+    
+    // sourcery: autoUpdatableObject, autoGenerateProperty
     @NSManaged public private(set) var text: String
-    
-    // sourcery: skipAutoUpdatableObject
-    @NSManaged public private(set) var attachmentsRaw: Data?
-    
+    // sourcery: autoUpdatableObject, autoGenerateProperty
     @NSManaged public private(set) var likeCount: Int
-    // sourcery: skipAutoUpdatableObject
+    // sourcery: autoGenerateProperty
     @NSManaged public private(set) var replyCount: Int
+    // sourcery: autoUpdatableObject, autoGenerateProperty
     @NSManaged public private(set) var repostCount: Int
 
+    // sourcery: autoUpdatableObject, autoGenerateProperty
     @NSManaged public private(set) var createdAt: Date
+    // sourcery: autoUpdatableObject, autoGenerateProperty
     @NSManaged public private(set) var updatedAt: Date
-    
-    // sourcery:begin: skipAutoUpdatableObject, skipAutoGenerateProperty
-    
+        
     // one-to-many relationship
     @NSManaged public private(set) var feeds: Set<Feed>
     
@@ -45,18 +45,31 @@ final public class TwitterStatus: NSManagedObject {
     @NSManaged public private(set) var repostFrom: Set<TwitterStatus>
     @NSManaged public private(set) var quoteFrom: Set<TwitterStatus>
     
-    // sourcery:end
 }
 
 extension TwitterStatus {
-    public var attachments: [TwitterAttachment] {
-        guard let data = attachmentsRaw else { return [] }
-        do {
-            let attachments = try JSONDecoder().decode([TwitterAttachment].self, from: data)
-            return attachments
-        } catch {
-            assertionFailure(error.localizedDescription)
-            return []
+    // sourcery: autoUpdatableObject, autoGenerateProperty
+    @objc public var attachments: [TwitterAttachment] {
+        get {
+            let keyPath = #keyPath(TwitterStatus.attachments)
+            willAccessValue(forKey: keyPath)
+            let _data = primitiveValue(forKey: keyPath) as? Data
+            didAccessValue(forKey: keyPath)
+            do {
+                guard let data = _data else { return [] }
+                let attachments = try JSONDecoder().decode([TwitterAttachment].self, from: data)
+                return attachments
+            } catch {
+                assertionFailure(error.localizedDescription)
+                return []
+            }
+        }
+        set {
+            let keyPath = #keyPath(TwitterStatus.attachments)
+            let data = try? JSONEncoder().encode(newValue)
+            willChangeValue(forKey: keyPath)
+            setPrimitiveValue(data, forKey: keyPath)
+            didChangeValue(forKey: keyPath)
         }
     }
 }
@@ -104,45 +117,45 @@ extension TwitterStatus: AutoGenerateProperty {
     // Generated using Sourcery
     // DO NOT EDIT
     public struct Property {
-    	public let  id: ID
-    	public let  text: String
-    	public let  attachmentsRaw: Data?
-    	public let  likeCount: Int
-    	public let  replyCount: Int
-    	public let  repostCount: Int
-    	public let  createdAt: Date
-    	public let  updatedAt: Date
+        public let  id: ID
+        public let  text: String
+        public let  likeCount: Int
+        public let  replyCount: Int
+        public let  repostCount: Int
+        public let  createdAt: Date
+        public let  updatedAt: Date
+        public let  attachments: [TwitterAttachment]
 
     	public init(
     		id: ID,
     		text: String,
-    		attachmentsRaw: Data?,
     		likeCount: Int,
     		replyCount: Int,
     		repostCount: Int,
     		createdAt: Date,
-    		updatedAt: Date
+    		updatedAt: Date,
+    		attachments: [TwitterAttachment]
     	) {
     		self.id = id
     		self.text = text
-    		self.attachmentsRaw = attachmentsRaw
     		self.likeCount = likeCount
     		self.replyCount = replyCount
     		self.repostCount = repostCount
     		self.createdAt = createdAt
     		self.updatedAt = updatedAt
+    		self.attachments = attachments
     	}
     }
 
     public func configure(property: Property) {
     	self.id = property.id
     	self.text = property.text
-    	self.attachmentsRaw = property.attachmentsRaw
     	self.likeCount = property.likeCount
     	self.replyCount = property.replyCount
     	self.repostCount = property.repostCount
     	self.createdAt = property.createdAt
     	self.updatedAt = property.updatedAt
+    	self.attachments = property.attachments
     }
 
     public func update(property: Property) {
@@ -151,6 +164,7 @@ extension TwitterStatus: AutoGenerateProperty {
     	update(repostCount: property.repostCount)
     	update(createdAt: property.createdAt)
     	update(updatedAt: property.updatedAt)
+    	update(attachments: property.attachments)
     }
     // sourcery:end
 }
@@ -214,6 +228,11 @@ extension TwitterStatus: AutoUpdatableObject {
     public func update(updatedAt: Date) {
     	if self.updatedAt != updatedAt {
     		self.updatedAt = updatedAt
+    	}
+    }
+    public func update(attachments: [TwitterAttachment]) {
+    	if self.attachments != attachments {
+    		self.attachments = attachments
     	}
     }
     // sourcery:end

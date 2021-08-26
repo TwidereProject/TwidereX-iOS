@@ -3,14 +3,14 @@
 
 // Generated using Sourcery
 // DO NOT EDIT
-{% for variable in type.storedVariables %}
-{% if variable|!annotated:"skipAutoUpdatableObject" and variable.typeName|!hasPrefix:"Set<" %}
+{% for variable in type.variables|instance where
+variable|annotated:"autoUpdatableObject"
+%}
 public func update({{variable.name}}: {{variable.typeName}}) {
 	if self.{{variable.name}} != {{variable.name}} {
 		self.{{variable.name}} = {{variable.name}}
 	}
 }
-{% endif %}
 {% endfor %}
 // sourcery:end
 {% endfor %}

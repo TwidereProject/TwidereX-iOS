@@ -28,6 +28,8 @@ final class WelcomeViewController: UIViewController, NeedsDependency {
     private var twitterAuthenticationController: TwitterAuthenticationController?
     private var mastodonAuthenticationController: MastodonAuthenticationController?
 
+    private(set) lazy var closeBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "xmark"), style: .plain, target: self, action: #selector(WelcomeViewController.closeBarButtonItemPressed(_:)))
+
     private(set) lazy var backBarButtonItem: UIBarButtonItem = {
         let image = Asset.Arrows.arrowLeft.image.withRenderingMode(.alwaysTemplate)
         let item = UIBarButtonItem(image: image, style: .plain, target: self, action: #selector(WelcomeViewController.backBarButtonItemPressed(_:)))
@@ -78,8 +80,7 @@ extension WelcomeViewController {
                 guard let self = self else { return }
                 switch authenticateMode {
                 case .normal:
-                    // TODO: handle close case
-                    self.navigationItem.leftBarButtonItem = nil
+                    self.navigationItem.leftBarButtonItem = self.viewModel.configuration.allowDismissModal ? self.closeBarButtonItem : nil
                 case .mastodon:
                     self.navigationItem.leftBarButtonItem = self.backBarButtonItem
                 }
@@ -90,6 +91,11 @@ extension WelcomeViewController {
 }
 
 extension WelcomeViewController {
+    @objc private func closeBarButtonItemPressed(_ sender: UIBarButtonItem) {
+        logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public)")
+        dismiss(animated: true, completion: nil)
+    }
+    
     @objc private func backBarButtonItemPressed(_ sender: UIBarButtonItem) {
         logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public)")
         switch viewModel.authenticateMode {
@@ -99,7 +105,6 @@ extension WelcomeViewController {
             viewModel.authenticateMode = .normal
         }
     }
-    
 }
 
 // MARK: - WelcomeViewModelDelegate

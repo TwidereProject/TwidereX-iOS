@@ -12,6 +12,29 @@ import AlamofireImage
 
 class AvatarImageView: FLAnimatedImageView {
     var imageViewSize: CGSize?
+    var configuration = Configuration(url: nil)
+}
+
+extension AvatarImageView {
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        
+        setup(corner: configuration.corner)
+    }
+    
+    private func setup(corner: Configuration.Corner) {
+        layer.masksToBounds = true
+        switch configuration.corner {
+        case .circle:
+            layer.cornerCurve = .circular
+            layer.cornerRadius = frame.width / 2
+        case .roundRect(let radius):
+            layer.cornerCurve = .continuous
+            layer.cornerRadius = radius
+        }
+    }
+    
 }
 
 extension AvatarImageView {
@@ -21,16 +44,21 @@ extension AvatarImageView {
     struct Configuration {
         let url: URL?
         let placeholder: UIImage?
-        let imageViewSize: CGSize?
+        let corner: Corner
         
         init(
             url: URL?,
             placeholder: UIImage = AvatarImageView.placeholder,
-            imageViewSize: CGSize? = nil
+            corner: Corner = .circle
         ) {
             self.url = url
             self.placeholder = placeholder
-            self.imageViewSize = imageViewSize
+            self.corner = corner
+        }
+        
+        enum Corner {
+            case circle
+            case roundRect(radius: CGFloat)
         }
     }
     
@@ -38,6 +66,9 @@ extension AvatarImageView {
         // reset
         cancelTask()
         af.cancelImageRequest()
+        
+        self.configuration = configuration
+        setup(corner: configuration.corner)
         
         guard let url = configuration.url else {
             image = configuration.placeholder
@@ -49,22 +80,21 @@ extension AvatarImageView {
             setImage(
                 url: configuration.url,
                 placeholder: configuration.placeholder,
-                scaleToSize: configuration.imageViewSize ?? self.imageViewSize
+                scaleToSize: imageViewSize
             )
         default:
             let filter: ImageFilter? = {
                 if let imageViewSize = self.imageViewSize {
-                    return ScaledToSizeCircleFilter(size: imageViewSize)
+                    return ScaledToSizeFilter(size: imageViewSize)
                 }
                 guard self.frame.size.width != 0,
                       self.frame.size.height != 0
                 else { return nil }
-                return ScaledToSizeCircleFilter(size: self.frame.size)
+                return ScaledToSizeFilter(size: self.frame.size)
             }()
             
             af.setImage(withURL: url, filter: filter)
         }
-
     }
     
 }

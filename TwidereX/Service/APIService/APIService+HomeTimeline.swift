@@ -74,7 +74,7 @@ extension APIService {
                 } else {
                     let feedProperty = Feed.Property(
                         acct: acct,
-                        kindRaw: Feed.Kind.home.rawValue,
+                        kind: .home,
                         hasMore: false,
                         createdAt: status.createdAt,
                         updatedAt: response.networkDate

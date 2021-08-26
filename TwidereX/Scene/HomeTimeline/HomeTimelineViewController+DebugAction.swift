@@ -38,6 +38,7 @@ extension HomeTimelineViewController {
                     guard let self = self else { return }
                     self.showStubTimelineAction(action)
                 }),
+                showMenu,
                 moveMenu,
                 dropMenu,
                 UIAction(title: "Enable Bottom Fetcher", image: nil, attributes: [], handler: { [weak self] action in
@@ -72,6 +73,21 @@ extension HomeTimelineViewController {
                     guard let self = self else { return }
                     self.cornerSmoothPreview(action)
                 })
+            ]
+        )
+    }
+    
+    var showMenu: UIMenu {
+        return UIMenu(
+            title: "Show…",
+            image: UIImage(systemName: "macwindow.badge.plus"),
+            identifier: nil,
+            options: [],
+            children: [
+                UIAction(title: "Account List", image: nil, attributes: [], handler: { [weak self] action in
+                    guard let self = self else { return }
+                    self.showAccountListAction(action)
+                }),
             ]
         )
     }
@@ -140,6 +156,11 @@ extension HomeTimelineViewController {
     
     @objc private func showStubTimelineAction(_ sender: UIAction) {
         coordinator.present(scene: .stubTimeline, from: self, transition: .show)
+    }
+    
+    @objc private func showAccountListAction(_ sender: UIAction) {
+        let accountListViewModel = AccountListViewModel(context: context)
+        coordinator.present(scene: .accountList(viewModel: accountListViewModel), from: self, transition: .modal(animated: true, completion: nil))
     }
     
     @objc private func moveToTopGapAction(_ sender: UIAction) {

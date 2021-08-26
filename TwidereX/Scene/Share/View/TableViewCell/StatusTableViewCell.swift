@@ -57,6 +57,8 @@ extension StatusTableViewCell {
         statusView.toolbar.setup(style: .inline)
         
         statusView.mediaGridContainerView.delegate = self
+        
+        updateSeparatorInset()
     }
     
     override func layoutSubviews() {

@@ -17,17 +17,40 @@ extension TwitterStatus.Property {
         self.init(
             id: entity.id,
             text: entity.fullText ?? entity.text ?? "",
-            attachmentsRaw: entity.attachmentsRaw,
             likeCount: entity.favoriteCount ?? 0,
             replyCount: 0,
             repostCount: entity.retweetCount ?? 0,
             createdAt: entity.createdAt,
-            updatedAt: networkDate
+            updatedAt: networkDate,
+            attachments: entity.attachments
         )
     }
 }
 
 extension Twitter.Entity.Tweet {
+    var attachments: [TwitterAttachment] {
+        guard let extendedEntities = self.extendedEntities,
+              let media = extendedEntities.media
+        else { return [] }
+        
+        let attachments = media.compactMap { media -> TwitterAttachment? in
+            guard let kind = media.attachmentKind,
+                  let size = media.sizes?.size(kind: .large),
+                  let width = size.w,
+                  let height = size.h
+            else { return nil }
+            return TwitterAttachment(
+                kind: kind,
+                size: CGSize(width: width, height: height),
+                assetURL: media.attachmentAssetURL,
+                previewURL: media.attachmentPreviewURL,
+                durationMS: media.videoInfo?.durationMillis
+            )
+        }
+        
+        return attachments
+    }
+    
     var attachmentsRaw: Data? {
         guard let extendedEntities = self.extendedEntities,
               let media = extendedEntities.media

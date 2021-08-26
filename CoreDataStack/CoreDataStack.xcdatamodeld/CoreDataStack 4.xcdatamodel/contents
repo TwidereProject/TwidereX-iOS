@@ -249,7 +249,7 @@
         <relationship name="poll" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="TwitterPoll" inverseName="options" inverseEntity="TwitterPoll"/>
     </entity>
     <entity name="TwitterStatus" representedClassName=".TwitterStatus" syncable="YES">
-        <attribute name="attachmentsRaw" optional="YES" attributeType="Binary"/>
+        <attribute name="attachments" optional="YES" attributeType="Binary"/>
         <attribute name="createdAt" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="id" attributeType="String"/>
         <attribute name="likeCount" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
@@ -326,7 +326,7 @@
         <relationship name="twitterUser" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="TwitterUser"/>
     </entity>
     <elements>
-        <element name="AuthenticationIndex" positionX="-63" positionY="-153" width="128" height="14"/>
+        <element name="AuthenticationIndex" positionX="-63" positionY="-153" width="128" height="119"/>
         <element name="Feed" positionX="-54" positionY="-144" width="128" height="119"/>
         <element name="MastodonAuthentication" positionX="-63" positionY="-153" width="128" height="14"/>
         <element name="MastodonUser" positionX="-63" positionY="-153" width="128" height="359"/>

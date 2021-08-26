@@ -15,7 +15,6 @@ final public class Toots: NSManagedObject {
     @NSManaged public private(set) var createdAt: Date
     @NSManaged public private(set) var updatedAt: Date
     
-    
     // one-to-many relationship
     @NSManaged public private(set) var timelineIndexes: Set<TimelineIndex>?
     @NSManaged public private(set) var mentionTimelineIndexes: Set<MentionTimelineIndex>?

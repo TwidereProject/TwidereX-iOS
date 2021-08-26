@@ -14,25 +14,33 @@ final public class TwitterUser: NSManagedObject {
     
     // @NSManaged public private(set) var identifier: UUID
 
-    // sourcery: skipAutoUpdatableObject
+    // sourcery: autoGenerateProperty
     @NSManaged public private(set) var id: ID
+    // sourcery: autoUpdatableObject, autoGenerateProperty
     @NSManaged public private(set) var name: String
+    // sourcery: autoUpdatableObject, autoGenerateProperty
     @NSManaged public private(set) var username: String
     
+    // sourcery: autoUpdatableObject, autoGenerateProperty
     @NSManaged public private(set) var bio: String?
+    // sourcery: autoUpdatableObject, autoGenerateProperty
     @NSManaged public private(set) var createdAt: Date?
+    // sourcery: autoUpdatableObject, autoGenerateProperty
     @NSManaged public private(set) var location: String?
-    // @NSManaged public private(set) var pinnedTweetID: Tweet.ID?
+    // sourcery: autoUpdatableObject, autoGenerateProperty
     @NSManaged public private(set) var profileBannerURL: String?
+    // sourcery: autoUpdatableObject, autoGenerateProperty
     @NSManaged public private(set) var profileImageURL: String?
+    // sourcery: autoUpdatableObject, autoGenerateProperty
     @NSManaged public private(set) var protected: Bool
+    // sourcery: autoUpdatableObject, autoGenerateProperty
     @NSManaged public private(set) var url: String?
+    // sourcery: autoUpdatableObject, autoGenerateProperty
     @NSManaged public private(set) var verified: Bool
     
+    // sourcery: autoUpdatableObject, autoGenerateProperty
     @NSManaged public private(set) var updatedAt: Date
     
-    // sourcery:begin: skipAutoUpdatableObject, skipAutoGenerateProperty
-
     // one-to-one relationship
 //    @NSManaged public private(set) var pinnedTweet: Tweet?
 //    @NSManaged public private(set) var entities: TwitterUserEntities?
@@ -241,18 +249,18 @@ extension TwitterUser: AutoGenerateProperty {
     // Generated using Sourcery
     // DO NOT EDIT
     public struct Property {
-    	public let  id: ID
-    	public let  name: String
-    	public let  username: String
-    	public let  bio: String?
-    	public let  createdAt: Date?
-    	public let  location: String?
-    	public let  profileBannerURL: String?
-    	public let  profileImageURL: String?
-    	public let  protected: Bool
-    	public let  url: String?
-    	public let  verified: Bool
-    	public let  updatedAt: Date
+        public let  id: ID
+        public let  name: String
+        public let  username: String
+        public let  bio: String?
+        public let  createdAt: Date?
+        public let  location: String?
+        public let  profileBannerURL: String?
+        public let  profileImageURL: String?
+        public let  protected: Bool
+        public let  url: String?
+        public let  verified: Bool
+        public let  updatedAt: Date
 
     	public init(
     		id: ID,

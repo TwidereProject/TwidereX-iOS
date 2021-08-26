@@ -36,10 +36,12 @@ extension TwitterAuthentication {
     
     public override func awakeFromInsert() {
         super.awakeFromInsert()
-        identifier = UUID()
+
+        setPrimitiveValue(UUID(), forKey: #keyPath(TwitterAuthentication.identifier))
+        
         let now = Date()
-        createdAt = now
-        updatedAt = now
+        setPrimitiveValue(now, forKey: #keyPath(TwitterAuthentication.createdAt))
+        setPrimitiveValue(now, forKey: #keyPath(TwitterAuthentication.updatedAt))
     }
     
     @discardableResult

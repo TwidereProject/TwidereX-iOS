@@ -10,7 +10,7 @@ import os.log
 import UIKit
 import Combine
 
-protocol AccountListTableViewCellDelegate: class {
+protocol AccountListTableViewCellDelegate: AnyObject {
     func accountListTableViewCell(_ cell: AccountListTableViewCell, menuButtonPressed button: UIButton)
 }
 
@@ -20,7 +20,9 @@ final class AccountListTableViewCell: UITableViewCell {
     var observations = Set<NSKeyValueObservation>()
     
     weak var delegate: AccountListTableViewCellDelegate?
+    
     let userBriefInfoView = UserBriefInfoView()
+    
     let separatorLine = UIView.separatorLine
     
     override func prepareForReuse() {
@@ -62,9 +64,6 @@ extension AccountListTableViewCell {
             separatorLine.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
             separatorLine.heightAnchor.constraint(equalToConstant: UIView.separatorLineHeight(of: contentView)),
         ])
-        
-        userBriefInfoView.menuButton.isHidden = false
-        userBriefInfoView.menuButton.addTarget(self, action: #selector(AccountListTableViewCell.menuButtonPressed(_:)), for: .touchUpInside)
     }
     
 }

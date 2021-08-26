@@ -28,7 +28,7 @@ final class AuthenticationViewController: UIViewController, NeedsDependency {
     
     let logoImageView: UIImageView = {
         let imageView = UIImageView()
-        imageView.image = Asset.Logo.twidere.image.af.imageAspectScaled(toFit: AuthenticationViewController.logoImageSize)
+        imageView.image = Asset.Scene.Welcome.twidere.image.af.imageAspectScaled(toFit: AuthenticationViewController.logoImageSize)
         return imageView
     }()
     
@@ -55,7 +55,7 @@ final class AuthenticationViewController: UIViewController, NeedsDependency {
         button.backgroundColor = .white     // make same appearance when set alpha under the Dark Mode
         button.setBackgroundImage(UIImage.placeholder(color: Asset.Colors.twitterBlue.color), for: .normal)
         button.setBackgroundImage(UIImage.placeholder(color: Asset.Colors.twitterBlue.color.withAlphaComponent(0.8)), for: .highlighted)
-        button.setLeadingImage(Asset.Logo.twitterMedium.image.withRenderingMode(.alwaysTemplate), for: .normal)
+        button.setLeadingImage(Asset.Logo.twitter.image.withRenderingMode(.alwaysTemplate), for: .normal)
         button.setTrailingBackgroundImage(UIImage.placeholder(color: UIColor.white.withAlphaComponent(0.2)), for: .highlighted)
         button.setTrailingImage(Asset.Editing.ellipsis.image.withRenderingMode(.alwaysTemplate), for: .normal)
         button.setTitle("Sign in with Twitter", for: .normal)
@@ -191,7 +191,7 @@ extension AuthenticationViewController {
         super.traitCollectionDidChange(previousTraitCollection)
         
         // Update if Dark Mode change
-        logoImageView.image = Asset.Logo.twidere.image.af.imageAspectScaled(toFit: AuthenticationViewController.logoImageSize)
+        logoImageView.image = Asset.Scene.Welcome.twidere.image.af.imageAspectScaled(toFit: AuthenticationViewController.logoImageSize)
         
         UIView.animate(withDuration: 0.3) {
             self.view.backgroundColor = .systemBackground

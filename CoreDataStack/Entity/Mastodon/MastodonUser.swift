@@ -13,38 +13,56 @@ final public class MastodonUser: NSManagedObject {
     
     public typealias ID = String
     
-    // sourcery: skipAutoUpdatableObject
+    // sourcery: autoGenerateProperty
     @NSManaged public private(set) var domain: String
     
-    // sourcery: skipAutoUpdatableObject
+    // sourcery: autoGenerateProperty
     @NSManaged public private(set) var id: ID
+    
+    // sourcery: autoUpdatableObject, autoGenerateProperty
     @NSManaged public private(set) var acct: String
+    // sourcery: autoUpdatableObject, autoGenerateProperty
     @NSManaged public private(set) var username: String
+    // sourcery: autoUpdatableObject, autoGenerateProperty
     @NSManaged public private(set) var displayName: String
+    // sourcery: autoUpdatableObject, autoGenerateProperty
     @NSManaged public private(set) var note: String?
+    // sourcery: autoUpdatableObject, autoGenerateProperty
     @NSManaged public private(set) var url: String?
     
+    // sourcery: autoUpdatableObject, autoGenerateProperty
     @NSManaged public private(set) var avatar: String?
+    // sourcery: autoUpdatableObject, autoGenerateProperty
     @NSManaged public private(set) var avatarStatic: String?
     
+    // sourcery: autoUpdatableObject, autoGenerateProperty
     @NSManaged public private(set) var header: String?
+    // sourcery: autoUpdatableObject, autoGenerateProperty
     @NSManaged public private(set) var headerStatic: String?
         
+    // sourcery: autoUpdatableObject, autoGenerateProperty
     @NSManaged public private(set) var emojisData: Data?
+    // sourcery: autoUpdatableObject, autoGenerateProperty
     @NSManaged public private(set) var fieldsData: Data?
     
+    // sourcery: autoUpdatableObject, autoGenerateProperty
     @NSManaged public private(set) var statusesCount: NSNumber
+    // sourcery: autoUpdatableObject, autoGenerateProperty
     @NSManaged public private(set) var followingCount: NSNumber
+    // sourcery: autoUpdatableObject, autoGenerateProperty
     @NSManaged public private(set) var followersCount: NSNumber
     
+    // sourcery: autoUpdatableObject, autoGenerateProperty
     @NSManaged public private(set) var locked: Bool
+    // sourcery: autoUpdatableObject, autoGenerateProperty
     @NSManaged public private(set) var bot: Bool
+    // sourcery: autoUpdatableObject, autoGenerateProperty
     @NSManaged public private(set) var suspended: Bool
     
+    // sourcery: autoUpdatableObject, autoGenerateProperty
     @NSManaged public private(set) var createdAt: Date
+    // sourcery: autoUpdatableObject, autoGenerateProperty
     @NSManaged public private(set) var updatedAt: Date
-    
-    // sourcery:begin: skipAutoUpdatableObject, skipAutoGenerateProperty
     
     // one-to-one relationship
     @NSManaged public private(set) var mastodonAuthentication: MastodonAuthentication?
@@ -148,27 +166,27 @@ extension MastodonUser: AutoGenerateProperty {
     // Generated using Sourcery
     // DO NOT EDIT
     public struct Property {
-    	public let  domain: String
-    	public let  id: ID
-    	public let  acct: String
-    	public let  username: String
-    	public let  displayName: String
-    	public let  note: String?
-    	public let  url: String?
-    	public let  avatar: String?
-    	public let  avatarStatic: String?
-    	public let  header: String?
-    	public let  headerStatic: String?
-    	public let  emojisData: Data?
-    	public let  fieldsData: Data?
-    	public let  statusesCount: NSNumber
-    	public let  followingCount: NSNumber
-    	public let  followersCount: NSNumber
-    	public let  locked: Bool
-    	public let  bot: Bool
-    	public let  suspended: Bool
-    	public let  createdAt: Date
-    	public let  updatedAt: Date
+        public let  domain: String
+        public let  id: ID
+        public let  acct: String
+        public let  username: String
+        public let  displayName: String
+        public let  note: String?
+        public let  url: String?
+        public let  avatar: String?
+        public let  avatarStatic: String?
+        public let  header: String?
+        public let  headerStatic: String?
+        public let  emojisData: Data?
+        public let  fieldsData: Data?
+        public let  statusesCount: NSNumber
+        public let  followingCount: NSNumber
+        public let  followersCount: NSNumber
+        public let  locked: Bool
+        public let  bot: Bool
+        public let  suspended: Bool
+        public let  createdAt: Date
+        public let  updatedAt: Date
 
     	public init(
     		domain: String,

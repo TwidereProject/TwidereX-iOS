@@ -52,17 +52,17 @@ extension SearchUserViewModel {
         // set avatar
         let avatarImageURL = twitterUser.avatarImageURL()
         let verified = twitterUser.verified
-        UserDefaults.shared
-            .observe(\.avatarStyle, options: [.initial, .new]) { defaults, _ in
-                cell.userBriefInfoView.configure(withConfigurationInput: AvatarConfigurableViewConfiguration.Input(avatarImageURL: avatarImageURL, verified: verified))
-            }
-            .store(in: &cell.observations)
+//        UserDefaults.shared
+//            .observe(\.avatarStyle, options: [.initial, .new]) { defaults, _ in
+//                cell.userBriefInfoView.configure(withConfigurationInput: AvatarConfigurableViewConfiguration.Input(avatarImageURL: avatarImageURL, verified: verified))
+//            }
+//            .store(in: &cell.observations)
 
         cell.userBriefInfoView.lockImageView.isHidden = !twitterUser.protected
         
         // set name and username
         cell.userBriefInfoView.nameLabel.text = twitterUser.name
-        cell.userBriefInfoView.usernameLabel.text = "@" + twitterUser.username
+        cell.userBriefInfoView.headerSecondaryLabel.text = "@" + twitterUser.username
         
         // set detail
         let followersCount = 0

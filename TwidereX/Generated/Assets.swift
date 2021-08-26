@@ -33,6 +33,10 @@ internal enum Asset {
     internal static let tablerChevronDown = ImageAsset(name: "Arrows/tabler.chevron.down")
     internal static let trendingUp = ImageAsset(name: "Arrows/trending.up")
   }
+  internal enum Badge {
+    internal static let mastodon = ImageAsset(name: "Badge/mastodon")
+    internal static let twitter = ImageAsset(name: "Badge/twitter")
+  }
   internal enum Colors {
     internal enum Theme {
       internal static let daylight = ColorAsset(name: "Colors/Theme/daylight")
@@ -46,6 +50,7 @@ internal enum Asset {
     }
     internal static let heartPink = ColorAsset(name: "Colors/heart.pink")
     internal static let hightLight = ColorAsset(name: "Colors/hight.light")
+    internal static let mastodonBlue = ColorAsset(name: "Colors/mastodon.blue")
     internal static let twitterBlue = ColorAsset(name: "Colors/twitter.blue")
   }
   internal enum Communication {
@@ -80,11 +85,8 @@ internal enum Asset {
   }
   internal enum Logo {
     internal static let githubCircle = ImageAsset(name: "Logo/github.circle")
-    internal static let mastodonMedium = ImageAsset(name: "Logo/mastodon.medium")
-    internal static let twidereAvatar = ImageAsset(name: "Logo/twidere.avatar")
-    internal static let twidere = ImageAsset(name: "Logo/twidere")
-    internal static let twitterCircle = ImageAsset(name: "Logo/twitter.circle")
-    internal static let twitterMedium = ImageAsset(name: "Logo/twitter.medium")
+    internal static let mastodon = ImageAsset(name: "Logo/mastodon")
+    internal static let twitter = ImageAsset(name: "Logo/twitter")
   }
   internal enum Media {
     internal static let `repeat` = ImageAsset(name: "Media/repeat")
@@ -111,6 +113,14 @@ internal enum Asset {
     internal static let verifiedBadge = ImageAsset(name: "Object&Tools/verified.badge")
     internal static let verifiedBadgeMini = ImageAsset(name: "Object&Tools/verified.badge.mini")
     internal static let verifiedBadgeSmall = ImageAsset(name: "Object&Tools/verified.badge.small")
+  }
+  internal enum Scene {
+    internal enum Preference {
+      internal static let twidereAvatar = ImageAsset(name: "Scene/Preference/twidere.avatar")
+    }
+    internal enum Welcome {
+      internal static let twidere = ImageAsset(name: "Scene/Welcome/twidere")
+    }
   }
   internal enum Symbol {
     internal static let sharp = ImageAsset(name: "Symbol/sharp")

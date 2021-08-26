@@ -85,7 +85,8 @@ extension SceneCoordinator {
             let count = try context.managedObjectContext.count(for: request)
             if count == 0 {
                 DispatchQueue.main.async {
-                    let welcomeViewModel = WelcomeViewModel(context: self.context)
+                    let configuration = WelcomeViewModel.Configuration(allowDismissModal: false)
+                    let welcomeViewModel = WelcomeViewModel(context: self.context, configuration: configuration)
                     self.present(scene: .welcome(viewModel: welcomeViewModel), from: nil, transition: .modal(animated: false, completion: nil))
                 }
             }

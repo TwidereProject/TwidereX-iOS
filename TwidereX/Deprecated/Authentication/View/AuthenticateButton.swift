@@ -272,7 +272,7 @@ struct AuthenticateButton_Previews: PreviewProvider {
             UIViewPreview(width: 400) {
                 let button = AuthenticateButton()
                 button.setBackgroundImage(UIImage.placeholder(color: Asset.Colors.twitterBlue.color), for: .normal)
-                button.setLeadingImage(Asset.Logo.twitterMedium.image.withRenderingMode(.alwaysTemplate), for: .normal)
+                button.setLeadingImage(Asset.Logo.twitter.image.withRenderingMode(.alwaysTemplate), for: .normal)
                 button.setTrailingImage(Asset.Editing.ellipsis.image.withRenderingMode(.alwaysTemplate), for: .normal)
                 button.setTitle("Sign in with Twitter", for: .normal)
                 button.setTitleColor(.white, for: .normal)
@@ -284,7 +284,7 @@ struct AuthenticateButton_Previews: PreviewProvider {
                 let button = AuthenticateButton()
                 button.setBackgroundImage(UIImage.placeholder(color: Asset.Colors.twitterBlue.color), for: .normal)
                 button.setTrailingBackgroundImage(UIImage.placeholder(color: .systemGreen), for: .normal)
-                button.setLeadingImage(Asset.Logo.twitterMedium.image.withRenderingMode(.alwaysTemplate), for: .normal)
+                button.setLeadingImage(Asset.Logo.twitter.image.withRenderingMode(.alwaysTemplate), for: .normal)
                 button.setTrailingImage(Asset.Editing.ellipsis.image.withRenderingMode(.alwaysTemplate), for: .normal)
                 button.setTitle("Sign in with Twitter", for: .normal)
                 button.setTitleColor(.white, for: .normal)

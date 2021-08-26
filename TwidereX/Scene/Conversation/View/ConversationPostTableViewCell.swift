@@ -227,7 +227,7 @@ struct ConversationPostTableViewCell_Previews: PreviewProvider {
             view.conversationPostView.mosaicImageView.isHidden = false
             // view.quotePostView.avatarImageView.image = avatarImage2
             // view.quotePostView.nameLabel.text = "Bob"
-            // view.quotePostView.usernameLabel.text = "@bob"
+            // view.quotePostView.headerSecondaryLabel.text = "@bob"
             // view.quotePostView.isHidden = false
             return view
         }

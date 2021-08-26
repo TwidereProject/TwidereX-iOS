@@ -30,9 +30,7 @@ extension StatusSection {
         context: AppContext,
         configuration: Configuration
     ) -> UITableViewDiffableDataSource<StatusSection, StatusItem> {
-        return UITableViewDiffableDataSource<StatusSection, StatusItem>(
-            tableView: tableView
-        ) { tableView, indexPath, item in
+        return UITableViewDiffableDataSource<StatusSection, StatusItem>(tableView: tableView) { tableView, indexPath, item in
             // data source should dispatch in main thread
             assert(Thread.isMainThread)
             

@@ -62,14 +62,14 @@ extension MentionPickViewModel {
         switch item {
         case .twitterUser(let username, let attribute):
             let avatarImageURL = attribute.avatarImageURL
-            UserDefaults.shared
-                .observe(\.avatarStyle, options: [.initial, .new]) { defaults, _ in
-                    cell.userBriefInfoView.configure(withConfigurationInput: AvatarConfigurableViewConfiguration.Input(avatarImageURL: avatarImageURL))
-                }
-                .store(in: &cell.observations)
+//            UserDefaults.shared
+//                .observe(\.avatarStyle, options: [.initial, .new]) { defaults, _ in
+//                    cell.userBriefInfoView.configure(withConfigurationInput: AvatarConfigurableViewConfiguration.Input(avatarImageURL: avatarImageURL))
+//                }
+//                .store(in: &cell.observations)
             
             cell.userBriefInfoView.nameLabel.text = attribute.name ?? "-"
-            cell.userBriefInfoView.usernameLabel.text = " "
+            cell.userBriefInfoView.headerSecondaryLabel.text = " "
             cell.userBriefInfoView.detailLabel.text = "@" + username
             
             cell.userBriefInfoView.activityIndicatorView.isHidden = attribute.state == .finish

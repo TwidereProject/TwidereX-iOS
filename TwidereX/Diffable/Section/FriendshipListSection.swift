@@ -53,10 +53,10 @@ extension MediaSection {
 
 extension MediaSection {
     static func configure(cell: FriendshipTableViewCell, twitterUser: TwitterUser, context: AppContext) {
-        cell.userBriefInfoView.configure(withConfigurationInput: AvatarConfigurableViewConfiguration.Input(avatarImageURL: twitterUser.avatarImageURL(), verified: twitterUser.verified))
+//        cell.userBriefInfoView.configure(withConfigurationInput: AvatarConfigurableViewConfiguration.Input(avatarImageURL: twitterUser.avatarImageURL(), verified: twitterUser.verified))
         cell.userBriefInfoView.lockImageView.isHidden = !twitterUser.protected
         cell.userBriefInfoView.nameLabel.text = twitterUser.name
-        cell.userBriefInfoView.usernameLabel.text = "@" + twitterUser.username
+        cell.userBriefInfoView.headerSecondaryLabel.text = "@" + twitterUser.username
         
         let followersCount = 0
         cell.userBriefInfoView.detailLabel.text = "\(L10n.Common.Controls.Friendship.followers.capitalized): \(followersCount)"
