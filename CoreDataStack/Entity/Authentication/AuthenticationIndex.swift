@@ -14,17 +14,6 @@ final public class AuthenticationIndex: NSManagedObject {
     @NSManaged public private(set) var identifier: UUID
     
     @NSManaged public private(set) var platformRaw: String
-
-    @NSManaged public private(set) var createdAt: Date
-    @NSManaged public private(set) var activeAt: Date
-    
-    // one-to-one relationship
-    @NSManaged public private(set) var twitterAuthentication: TwitterAuthentication?
-    @NSManaged public private(set) var mastodonAuthentication: MastodonAuthentication?
-    
-}
-
-extension AuthenticationIndex {
     public private(set) var platform: Platform {
         get {
             return Platform(rawValue: platformRaw) ?? .none
@@ -33,6 +22,14 @@ extension AuthenticationIndex {
             platformRaw = newValue.rawValue
         }
     }
+
+    @NSManaged public private(set) var createdAt: Date
+    @NSManaged public private(set) var activeAt: Date
+    
+    // one-to-one relationship
+    @NSManaged public private(set) var twitterAuthentication: TwitterAuthentication?
+    @NSManaged public private(set) var mastodonAuthentication: MastodonAuthentication?
+    
 }
 
 extension AuthenticationIndex {

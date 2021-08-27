@@ -28,7 +28,7 @@ class AuthenticationService: NSObject {
     let authenticationIndexes = CurrentValueSubject<[AuthenticationIndex], Never>([])
     let activeAuthenticationIndex = CurrentValueSubject<AuthenticationIndex?, Never>(nil)
     
-    let activeTwitterAuthenticationContext = CurrentValueSubject<AuthenticationService.TwitterAuthenticationContext?, Never>(nil)
+    let activeAuthenticationContext = CurrentValueSubject<AuthenticationContext?, Never>(nil)
     
     @available(*, deprecated, message: "")
     let activeTwitterAuthenticationBox = CurrentValueSubject<AuthenticationService.TwitterAuthenticationBox?, Never>(nil)
@@ -98,19 +98,14 @@ class AuthenticationService: NSObject {
             .assign(to: \.value, on: activeAuthenticationIndex)
             .store(in: &disposeBag)
         
-        // bind activeTwitterAuthenticationContext
+        // bind activeAuthenticationContext
         activeAuthenticationIndex
-            .map { authenticationIndex -> AuthenticationService.TwitterAuthenticationContext? in
+            .map { authenticationIndex -> AuthenticationContext? in
                 guard let authenticationIndex = authenticationIndex else { return nil }
-                guard let authentication = authenticationIndex.twitterAuthentication else { return nil }
-                guard let authorization = try? authentication.authorization(appSecret: .default) else { return nil }
-                return AuthenticationService.TwitterAuthenticationContext(
-                    authenticationObjectID: authentication.objectID,
-                    userID: authentication.userID,
-                    authorization: authorization
-                )
+                guard let authenticationContext = AuthenticationContext(authenticationIndex: authenticationIndex) else { return nil }
+                return authenticationContext
             }
-            .assign(to: \.value, on: activeTwitterAuthenticationContext)
+            .assign(to: \.value, on: activeAuthenticationContext)
             .store(in: &disposeBag)
 
         do {
@@ -132,12 +127,6 @@ extension AuthenticationService {
         let twitterAuthorization: Twitter.API.OAuth.Authorization
     }
     
-    struct TwitterAuthenticationContext {
-        let authenticationObjectID: NSManagedObjectID
-        let userID: TwitterUser.ID
-        let authorization: Twitter.API.OAuth.Authorization
-    }
-
 }
 
 extension AuthenticationService {

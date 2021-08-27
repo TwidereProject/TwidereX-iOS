@@ -200,9 +200,6 @@ extension HomeTimelineViewController {
         coordinator.animate { _ in
             // do nothing
         } completion: { _ in
-//            guard self.view.frame.size == size,         // the full screen player could trigger rotate but view not resize
-//                  self.tableView.frame.size != size     // and the size should be different
-//            else { return }
             self.tableView.reloadData()
             self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): view transition to new size: \(size.debugDescription). And table reloaded")
         }

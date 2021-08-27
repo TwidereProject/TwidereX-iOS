@@ -20,6 +20,12 @@ final class StatusView: UIView {
     
     private var style: Style?
     
+    private(set) lazy var viewModel: ViewModel = {
+        let viewModel = ViewModel()
+        viewModel.bind(statusView: self)
+        return viewModel
+    }()
+    
     // container
     let containerStackView: UIStackView = {
         let stackView = UIStackView()
@@ -79,11 +85,16 @@ final class StatusView: UIView {
         assert(style != nil, "Needs setup style before use")
     }
     
+    deinit {
+        viewModel.disposeBag.removeAll()
+    }
+    
 }
 
 extension StatusView {
     
     func prepareForReuse() {
+        disposeBag.removeAll()
         authorAvatarButton.avatarImageView.cancelTask()
         mediaGridContainerView.prepareForReuse()
         style?.prepareForReuse(statusView: self)

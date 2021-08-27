@@ -30,6 +30,7 @@ extension NSManagedObjectContext {
             rollback()
             
             os_log("%{public}s[%{public}ld], %{public}s: %s", ((#file as NSString).lastPathComponent), #line, #function, error.localizedDescription)
+            debugPrint(error)
             throw error
         }
     }

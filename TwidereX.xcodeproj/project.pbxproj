@@ -152,6 +152,12 @@
 		DB5A2288255B9155006CA5B2 /* AccountListViewModel+Diffable.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB5A2287255B9155006CA5B2 /* AccountListViewModel+Diffable.swift */; };
 		DB5A229A255BC82D006CA5B2 /* AuthenticationIndex.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB5A2299255BC82D006CA5B2 /* AuthenticationIndex.swift */; };
 		DB5FAD6B257DD1DD0098B2C8 /* DeveloperViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB5FAD6A257DD1DD0098B2C8 /* DeveloperViewController.swift */; };
+		DB5FD9AB26D8C7C800CF5439 /* Persistence+MastodonStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB5FD9AA26D8C7C800CF5439 /* Persistence+MastodonStatus.swift */; };
+		DB5FD9AD26D8CA6600CF5439 /* MastodonStatus+Property.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB5FD9AC26D8CA6600CF5439 /* MastodonStatus+Property.swift */; };
+		DB5FD9AF26D8CF0400CF5439 /* MastodonVisibility.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB5FD9AE26D8CF0400CF5439 /* MastodonVisibility.swift */; };
+		DB5FD9B126D8D50A00CF5439 /* StatusView+ViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB5FD9B026D8D50A00CF5439 /* StatusView+ViewModel.swift */; };
+		DB5FD9B326D8D94600CF5439 /* StatusTableViewCell+ViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB5FD9B226D8D94600CF5439 /* StatusTableViewCell+ViewModel.swift */; };
+		DB5FD9B526D8EE7A00CF5439 /* MastodonMeta in Frameworks */ = {isa = PBXBuildFile; productRef = DB5FD9B426D8EE7A00CF5439 /* MastodonMeta */; };
 		DB657A7325AC4DF6001339B6 /* TweetFetchedResultsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB657A7225AC4DF6001339B6 /* TweetFetchedResultsController.swift */; };
 		DB657A7B25AD574D001339B6 /* UIBarButtonItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB657A7A25AD574D001339B6 /* UIBarButtonItem.swift */; };
 		DB6760F9254AD026006C6798 /* SearchMediaViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB6760F8254AD026006C6798 /* SearchMediaViewModel.swift */; };
@@ -299,6 +305,8 @@
 		DBBF3DB526CF4C850013852A /* Persistence+TwitterUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBBF3DB426CF4C850013852A /* Persistence+TwitterUser.swift */; };
 		DBBF70F726D7B62F00971656 /* AccountListTableViewCell+ViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBBF70F626D7B62F00971656 /* AccountListTableViewCell+ViewModel.swift */; };
 		DBBF70F926D7B9C400971656 /* MastodonUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBBF70F826D7B9C400971656 /* MastodonUser.swift */; };
+		DBBF70FC26D88E8B00971656 /* AuthenticationContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBBF70FB26D88E8B00971656 /* AuthenticationContext.swift */; };
+		DBBF70FE26D8B9D300971656 /* MastodonStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBBF70FD26D8B9D300971656 /* MastodonStatus.swift */; };
 		DBC747D4259DA03B00787EEF /* ListCheckmarkTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBC747D3259DA03B00787EEF /* ListCheckmarkTableViewCell.swift */; };
 		DBC747D9259DA07C00787EEF /* ListTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBC747D8259DA07C00787EEF /* ListTableViewCell.swift */; };
 		DBC747E1259DBD5400787EEF /* AvatarBarButtonItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBC747E0259DBD5400787EEF /* AvatarBarButtonItem.swift */; };
@@ -709,6 +717,11 @@
 		DB5A2287255B9155006CA5B2 /* AccountListViewModel+Diffable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AccountListViewModel+Diffable.swift"; sourceTree = "<group>"; };
 		DB5A2299255BC82D006CA5B2 /* AuthenticationIndex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationIndex.swift; sourceTree = "<group>"; };
 		DB5FAD6A257DD1DD0098B2C8 /* DeveloperViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeveloperViewController.swift; sourceTree = "<group>"; };
+		DB5FD9AA26D8C7C800CF5439 /* Persistence+MastodonStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Persistence+MastodonStatus.swift"; sourceTree = "<group>"; };
+		DB5FD9AC26D8CA6600CF5439 /* MastodonStatus+Property.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MastodonStatus+Property.swift"; sourceTree = "<group>"; };
+		DB5FD9AE26D8CF0400CF5439 /* MastodonVisibility.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MastodonVisibility.swift; sourceTree = "<group>"; };
+		DB5FD9B026D8D50A00CF5439 /* StatusView+ViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "StatusView+ViewModel.swift"; sourceTree = "<group>"; };
+		DB5FD9B226D8D94600CF5439 /* StatusTableViewCell+ViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "StatusTableViewCell+ViewModel.swift"; sourceTree = "<group>"; };
 		DB657A7225AC4DF6001339B6 /* TweetFetchedResultsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TweetFetchedResultsController.swift; sourceTree = "<group>"; };
 		DB657A7A25AD574D001339B6 /* UIBarButtonItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIBarButtonItem.swift; sourceTree = "<group>"; };
 		DB6760F8254AD026006C6798 /* SearchMediaViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchMediaViewModel.swift; sourceTree = "<group>"; };
@@ -866,6 +879,8 @@
 		DBBF3DB426CF4C850013852A /* Persistence+TwitterUser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Persistence+TwitterUser.swift"; sourceTree = "<group>"; };
 		DBBF70F626D7B62F00971656 /* AccountListTableViewCell+ViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AccountListTableViewCell+ViewModel.swift"; sourceTree = "<group>"; };
 		DBBF70F826D7B9C400971656 /* MastodonUser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MastodonUser.swift; sourceTree = "<group>"; };
+		DBBF70FB26D88E8B00971656 /* AuthenticationContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationContext.swift; sourceTree = "<group>"; };
+		DBBF70FD26D8B9D300971656 /* MastodonStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MastodonStatus.swift; sourceTree = "<group>"; };
 		DBC747D3259DA03B00787EEF /* ListCheckmarkTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListCheckmarkTableViewCell.swift; sourceTree = "<group>"; };
 		DBC747D8259DA07C00787EEF /* ListTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListTableViewCell.swift; sourceTree = "<group>"; };
 		DBC747E0259DBD5400787EEF /* AvatarBarButtonItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvatarBarButtonItem.swift; sourceTree = "<group>"; };
@@ -1044,6 +1059,7 @@
 				DBE76D34250214A700DEB0FC /* CommonOSLog in Frameworks */,
 				DB3282DD26AFFD40002B721C /* TwitterMeta in Frameworks */,
 				DB2611B7251B2D42004BF309 /* CryptoSwift in Frameworks */,
+				DB5FD9B526D8EE7A00CF5439 /* MastodonMeta in Frameworks */,
 				DB74A164256E148F00C5F3C9 /* CropViewController in Frameworks */,
 				DB4323D22514936F004FAAEC /* TwidereSDK in Frameworks */,
 				DB94B6B126C64DAC00A2E8A1 /* Introspect in Frameworks */,
@@ -1141,8 +1157,9 @@
 				DB004BEB26CE28D700F5C574 /* Extension */,
 				DB004BDE26CCFE8E00F5C574 /* Persistence.swift */,
 				DB004BE026CCFED600F5C574 /* Persistence+MastodonUser.swift */,
-				DB004BE426CE21AE00F5C574 /* Persistence+TwitterStatus.swift */,
+				DB5FD9AA26D8C7C800CF5439 /* Persistence+MastodonStatus.swift */,
 				DBBF3DB426CF4C850013852A /* Persistence+TwitterUser.swift */,
+				DB004BE426CE21AE00F5C574 /* Persistence+TwitterStatus.swift */,
 			);
 			path = Persistence;
 			sourceTree = "<group>";
@@ -1162,8 +1179,9 @@
 				DB004BCA26CCD76000F5C574 /* MastodonEmojiContainer.swift */,
 				DB004BCC26CCD7E900F5C574 /* MastodonFieldContainer.swift */,
 				DB004BC826CCD68B00F5C574 /* MastodonUser+Property.swift */,
-				DB004BEC26CE28EA00F5C574 /* TwitterStatus+Property.swift */,
+				DB5FD9AC26D8CA6600CF5439 /* MastodonStatus+Property.swift */,
 				DB30ADCE26CF52A700B2D2BE /* TwitterUser+Property.swift */,
+				DB004BEC26CE28EA00F5C574 /* TwitterStatus+Property.swift */,
 			);
 			path = Extension;
 			sourceTree = "<group>";
@@ -1218,6 +1236,7 @@
 				DB97D1DF256CBA4E0056F8C2 /* NotifyBannerView.swift */,
 				DBF639F1259B13BB009E12C8 /* TimelineHeaderView.swift */,
 				DB004BF726CE4AF200F5C574 /* StatusView.swift */,
+				DB5FD9B026D8D50A00CF5439 /* StatusView+ViewModel.swift */,
 				DB0EB9F926D3B2A500034427 /* MediaView.swift */,
 			);
 			path = Content;
@@ -1424,12 +1443,6 @@
 		DB491604253EC7A1008755C3 /* Twitter */ = {
 			isa = PBXGroup;
 			children = (
-				DB8AC0D3253EE47400E636BE /* Tweet */,
-				DB8AC0D7253EE48500E636BE /* User */,
-				DB8AC0DB253EE48B00E636BE /* Media */,
-				DB8AC0E4253EE4BB00E636BE /* Poll */,
-				DB2924F325493FB9003899A7 /* Place */,
-				DBE196E82570A8AA004E831A /* Withheld */,
 				DB004BE626CE22FC00F5C574 /* TwitterStatus.swift */,
 				DBE76D282501F88600DEB0FC /* TwitterUser.swift */,
 			);
@@ -1492,6 +1505,7 @@
 			isa = PBXGroup;
 			children = (
 				DB756BFA26CBA4AE00AAD328 /* MastodonUser.swift */,
+				DBBF70FD26D8B9D300971656 /* MastodonStatus.swift */,
 			);
 			path = Mastodon;
 			sourceTree = "<group>";
@@ -1783,6 +1797,7 @@
 				DBC747D3259DA03B00787EEF /* ListCheckmarkTableViewCell.swift */,
 				DB1D7B4F25B5A43F00397DCD /* ListTextFieldTableViewCell.swift */,
 				DB30ADDB26CFC7EE00B2D2BE /* StatusTableViewCell.swift */,
+				DB5FD9B226D8D94600CF5439 /* StatusTableViewCell+ViewModel.swift */,
 			);
 			path = TableViewCell;
 			sourceTree = "<group>";
@@ -1899,6 +1914,15 @@
 				DBA9B3B425875FAC00EA14ED /* MentionPickTableViewCell.swift */,
 			);
 			path = View;
+			sourceTree = "<group>";
+		};
+		DBBF70FA26D88E7600971656 /* AuthenticationService */ = {
+			isa = PBXGroup;
+			children = (
+				DBE76D222500FF1C00DEB0FC /* AuthenticationService.swift */,
+				DBBF70FB26D88E8B00971656 /* AuthenticationContext.swift */,
+			);
+			path = AuthenticationService;
 			sourceTree = "<group>";
 		};
 		DBC8DFF52574B32A00401E20 /* ViewController */ = {
@@ -2028,10 +2052,11 @@
 		DBD73D7C26D764590003997E /* Transient */ = {
 			isa = PBXGroup;
 			children = (
-				DB38CDBB26D4A54200B45A44 /* TwitterAttachment.swift */,
 				DBD73D7A26D764540003997E /* Platform.swift */,
 				DBD73D7F26D789660003997E /* Feed+Kind.swift */,
 				DBD73D8126D789820003997E /* Feed+Acct.swift */,
+				DB38CDBB26D4A54200B45A44 /* TwitterAttachment.swift */,
+				DB5FD9AE26D8CF0400CF5439 /* MastodonVisibility.swift */,
 			);
 			path = Transient;
 			sourceTree = "<group>";
@@ -2039,7 +2064,14 @@
 		DBD73D7D26D787050003997E /* Deprecated */ = {
 			isa = PBXGroup;
 			children = (
+				DB8AC0D3253EE47400E636BE /* Tweet */,
+				DB8AC0D7253EE48500E636BE /* User */,
+				DB8AC0DB253EE48B00E636BE /* Media */,
+				DB8AC0E4253EE4BB00E636BE /* Poll */,
+				DB2924F325493FB9003899A7 /* Place */,
+				DBE196E82570A8AA004E831A /* Withheld */,
 				DBE76D152500D7C200DEB0FC /* TimelineIndex.swift */,
+				DB91543C255111E400613473 /* MentionTimelineIndex.swift */,
 				DBE76D192500D93D00DEB0FC /* Toots.swift */,
 			);
 			path = Deprecated;
@@ -2170,7 +2202,7 @@
 			isa = PBXGroup;
 			children = (
 				DBE76C8A24FF941A00DEB0FC /* APIService */,
-				DBE76D222500FF1C00DEB0FC /* AuthenticationService.swift */,
+				DBBF70FA26D88E7600971656 /* AuthenticationService */,
 				DB8AC1322541662200E636BE /* KeyboardResponderService.swift */,
 				DBC8E03C2574F7DB00401E20 /* PhotoLibraryService.swift */,
 				DB2FFF35258B56E5003DBC19 /* VideoPlaybackService.swift */,
@@ -2331,11 +2363,10 @@
 			isa = PBXGroup;
 			children = (
 				DBD73D7C26D764590003997E /* Transient */,
-				DB756BFF26CBA8DF00AAD328 /* Authentication */,
 				DBD73D7E26D788DB0003997E /* App */,
+				DB756BFF26CBA8DF00AAD328 /* Authentication */,
 				DB491604253EC7A1008755C3 /* Twitter */,
 				DB756BFC26CBA4B100AAD328 /* Mastodon */,
-				DB91543C255111E400613473 /* MentionTimelineIndex.swift */,
 			);
 			path = Entity;
 			sourceTree = "<group>";
@@ -2704,6 +2735,7 @@
 				DB71CF1926B3E2720018F605 /* MetaTextArea */,
 				DB94B6B026C64DAC00A2E8A1 /* Introspect */,
 				DB30ADD526CF583900B2D2BE /* FLAnimatedImage */,
+				DB5FD9B426D8EE7A00CF5439 /* MastodonMeta */,
 			);
 			productName = TwidereX;
 			productReference = DBDA8E1E24FCF8A3006750DC /* TwidereX.app */;
@@ -3221,6 +3253,7 @@
 				DB67616C254C021A006C6798 /* SearchUserViewController.swift in Sources */,
 				DBDDE72E254C084A0057CF8E /* SearchUserViewModel+Diffable.swift in Sources */,
 				DB761E3F25592AA20050DC01 /* DrawerSidebarAnimatedTransitioning.swift in Sources */,
+				DB5FD9B126D8D50A00CF5439 /* StatusView+ViewModel.swift in Sources */,
 				DB3402CF2521FA77009EFADF /* APIService+CoreData+Tweet.swift in Sources */,
 				DBDA8E5824FE0371006750DC /* APIService.swift in Sources */,
 				DBBABA04255E54A000C1B3D9 /* UserMediaTimelineViewController+StatusProvider.swift in Sources */,
@@ -3264,6 +3297,7 @@
 				DBCE2E992591A44000926D09 /* UIViewAnimatingPosition.swift in Sources */,
 				DBCB4053255B6EB100DD8D8F /* AccountListViewModel.swift in Sources */,
 				DB7E22F92552A40000551314 /* UserLikeTimelineViewModel.swift in Sources */,
+				DB5FD9AB26D8C7C800CF5439 /* Persistence+MastodonStatus.swift in Sources */,
 				DB0EB9FA26D3B2A500034427 /* MediaView.swift in Sources */,
 				DBF69E9C25496BB100E2A915 /* SearchDetailViewController.swift in Sources */,
 				DBE76D302502146F00DEB0FC /* OSLog.swift in Sources */,
@@ -3333,9 +3367,11 @@
 				DBD73D7726D65DAB0003997E /* UserItem.swift in Sources */,
 				DB33A4A925A319A0003CED7D /* ActionToolbarContainer.swift in Sources */,
 				DB30ADDA26CF5A9E00B2D2BE /* FLAnimatedImageView.swift in Sources */,
+				DB5FD9B326D8D94600CF5439 /* StatusTableViewCell+ViewModel.swift in Sources */,
 				DBC747E1259DBD5400787EEF /* AvatarBarButtonItem.swift in Sources */,
 				DBE196DB256FB48E004E831A /* TwitterUserEntitiesURL.swift in Sources */,
 				DB434892251E09A8005B599F /* CALayer.swift in Sources */,
+				DBBF70FC26D88E8B00971656 /* AuthenticationContext.swift in Sources */,
 				DB0849B0251375E9009E0CD7 /* ConversationPostView.swift in Sources */,
 				DB969A66253064FE0053CB31 /* DispatchQueue.swift in Sources */,
 				DB1A1DA9255B5C780049DA6D /* MediaPreviewableViewController.swift in Sources */,
@@ -3394,6 +3430,7 @@
 				DBC8E0042574B37C00401E20 /* ContextMenuImagePreviewViewModel.swift in Sources */,
 				DBDA8E8B24FE0615006750DC /* AppContext.swift in Sources */,
 				DBE76D1C2500E5E000DEB0FC /* TimelinePostTableViewCell.swift in Sources */,
+				DB5FD9AD26D8CA6600CF5439 /* MastodonStatus+Property.swift in Sources */,
 				DBF63A04259B4811009E12C8 /* TouchBlockingCollectionView.swift in Sources */,
 				DB0D0ACD25945075007A23C8 /* UserProvider+UITableViewDelegate.swift in Sources */,
 				DB3FC04A2552711C003A2F8A /* UserMediaTimelineViewModel+Diffable.swift in Sources */,
@@ -3558,6 +3595,7 @@
 				DB74A18F256F6FA000C5F3C9 /* TwitterUserEntities.swift in Sources */,
 				DB491613253ECF25008755C3 /* TweetEntitiesCashtag.swift in Sources */,
 				DB49163B253ED443008755C3 /* TwitteWithheld.swift in Sources */,
+				DB5FD9AF26D8CF0400CF5439 /* MastodonVisibility.swift in Sources */,
 				DB38CDBC26D4A54200B45A44 /* TwitterAttachment.swift in Sources */,
 				DB491640253EDA7D008755C3 /* TwitterUserMetrics.swift in Sources */,
 				DB491627253ED15E008755C3 /* TwitterMedia.swift in Sources */,
@@ -3566,6 +3604,7 @@
 				DBE76CCA250093E300DEB0FC /* ManagedObjectObserver.swift in Sources */,
 				DBE76D1A2500D93D00DEB0FC /* Toots.swift in Sources */,
 				DBE76CCF250093E300DEB0FC /* CoreDataStack.xcdatamodeld in Sources */,
+				DBBF70FE26D8B9D300971656 /* MastodonStatus.swift in Sources */,
 				DB491622253ECFD9008755C3 /* TweetEntitiesURL.swift in Sources */,
 				DBE76CCE250093E300DEB0FC /* Managed.swift in Sources */,
 				DBE76D162500D7C200DEB0FC /* TimelineIndex.swift in Sources */,
@@ -4384,6 +4423,11 @@
 		DB4323D325149374004FAAEC /* TwidereSDK */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = TwidereSDK;
+		};
+		DB5FD9B426D8EE7A00CF5439 /* MastodonMeta */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = DB3282D926AFFD40002B721C /* XCRemoteSwiftPackageReference "MetaTextKit" */;
+			productName = MastodonMeta;
 		};
 		DB6CF1C3269715CD001DE069 /* FPSIndicator */ = {
 			isa = XCSwiftPackageProductDependency;

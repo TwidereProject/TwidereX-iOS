@@ -53,9 +53,9 @@ extension Persistence.TwitterStatus {
             return status
         }
         
-        if let oldTwitterStatus = fetch(in: managedObjectContext, context: context) {
-            merge(twitterStatus: oldTwitterStatus, context: context)
-            return (oldTwitterStatus, false)
+        if let oldStatus = fetch(in: managedObjectContext, context: context) {
+            merge(twitterStatus: oldStatus, context: context)
+            return (oldStatus, false)
         } else {
             let (author, _) = Persistence.TwitterUser.createOrMerge(
                 in: managedObjectContext,

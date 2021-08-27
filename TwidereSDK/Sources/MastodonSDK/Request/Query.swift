@@ -13,14 +13,26 @@ protocol Query {
     var body: Data? { get }
 }
 
-extension Query where Self: Encodable {
+extension Query {
+    var contentType: String? {
+        return nil
+    }
+}
+
+protocol JSONEncodeQuery: Query, Encodable { }
+
+extension JSONEncodeQuery {
     var contentType: String? {
         return "application/json; charset=utf-8"
     }
+    
     var body: Data? {
         return try? Mastodon.API.encoder.encode(self)
     }
 }
+
+// TODO:
+protocol MultipartEncodeQuery { }
 
 extension Query {
     static func multipartContentType(boundary: String = Multipart.boundary) -> String {

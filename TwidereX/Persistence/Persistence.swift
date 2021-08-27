@@ -17,6 +17,7 @@ extension Persistence {
 
 extension Persistence {
     enum MastodonUser { }
+    enum MastodonStatus { }
 }
 
 extension Persistence {

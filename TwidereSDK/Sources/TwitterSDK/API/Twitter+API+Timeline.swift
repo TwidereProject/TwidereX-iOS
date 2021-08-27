@@ -12,7 +12,7 @@ extension Twitter.API.Timeline {
     
     static let homeTimelineEndpointURL = Twitter.API.endpointURL.appendingPathComponent("statuses/home_timeline.json")
     
-    public static func homeTimeline(
+    public static func home(
         session: URLSession,
         query: TimelineQuery,
         authorization: Twitter.API.OAuth.Authorization
@@ -106,7 +106,6 @@ public protocol TimelineQueryType {
 }
 
 extension Twitter.API.Timeline {
-        
     public struct TimelineQuery: TimelineQueryType, Query {
         
         // share

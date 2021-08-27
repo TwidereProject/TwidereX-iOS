@@ -40,11 +40,12 @@ extension StatusSection {
                 let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: StatusTableViewCell.self), for: indexPath) as! StatusTableViewCell
                 context.managedObjectContext.performAndWait {
                     guard let feed = record.object(in: context.managedObjectContext) else { return }
-                    if let status = feed.twitterStatus {
-                        configure(tableView: tableView, cell: cell, status: status, configuration: configuration)
-                    } else {
-                        assertionFailure()
-                    }
+                    configure(
+                        tableView: tableView,
+                        cell: cell,
+                        viewModel: StatusTableViewCell.ViewModel(value: .feed(feed)),
+                        configuration: configuration
+                    )
                 }
                 return cell
 
@@ -52,7 +53,14 @@ extension StatusSection {
                 let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: StatusTableViewCell.self), for: indexPath) as! StatusTableViewCell
                 context.managedObjectContext.performAndWait {
                     guard let status = record.object(in: context.managedObjectContext) else { return }
-                    configure(tableView: tableView, cell: cell, status: status, configuration: configuration)
+//                    configure(
+//                        tableView: tableView,
+//                        cell: cell,
+//                        viewModel: StatusTableViewCell.ViewModel(
+//                            statusViewModel: StatusView.ViewModel(twitterStatus: status)
+//                        ),
+//                        configuration: configuration
+//                    )
                 }
                 return cell
             }
@@ -65,27 +73,33 @@ extension StatusSection {
     static func configure(
         tableView: UITableView,
         cell: StatusTableViewCell,
-        status: TwitterStatus,
+        viewModel: StatusTableViewCell.ViewModel,
         configuration: Configuration
     ) {
-        if cell.statusView.frame == .zero {
-            // set status view width
-            cell.statusView.frame.size.width = tableView.readableContentGuide.layoutFrame.width
-            let contentMaxLayoutWidth = cell.statusView.contentMaxLayoutWidth
-            cell.statusView.quoteStatusView?.frame.size.width = contentMaxLayoutWidth
-            // set preferredMaxLayoutWidth for content
-            cell.statusView.contentTextView.preferredMaxLayoutWidth = contentMaxLayoutWidth
-            cell.statusView.quoteStatusView?.contentTextView.preferredMaxLayoutWidth = cell.statusView.quoteStatusView?.contentMaxLayoutWidth
-            logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): layout new cell")
-        }
-        configure(
-            statusView: cell.statusView,
-            status: status,
-            configuration: configuration,
-            disposeBag: &cell.disposeBag
+        cell.configuration(
+            tableView: tableView,
+            viewModel: viewModel,
+            delegate: configuration.statusTableViewCellDelegate
         )
-        cell.delegate = configuration.statusTableViewCellDelegate
-        cell.updateSeparatorInset()
+//        if cell.statusView.frame == .zero {
+//            // set status view width
+//            cell.statusView.frame.size.width = tableView.readableContentGuide.layoutFrame.width
+//            let contentMaxLayoutWidth = cell.statusView.contentMaxLayoutWidth
+//            cell.statusView.quoteStatusView?.frame.size.width = contentMaxLayoutWidth
+//            // set preferredMaxLayoutWidth for content
+//            cell.statusView.contentTextView.preferredMaxLayoutWidth = contentMaxLayoutWidth
+//            cell.statusView.quoteStatusView?.contentTextView.preferredMaxLayoutWidth = cell.statusView.quoteStatusView?.contentMaxLayoutWidth
+//            logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): layout new cell")
+//        }
+//        cell.configuration(statusViewModel: viewM)
+//        configure(
+//            statusView: cell.statusView,
+//            status: status,
+//            configuration: configuration,
+//            disposeBag: &cell.disposeBag
+//        )
+//        cell.delegate = configuration.statusTableViewCellDelegate
+//        cell.updateSeparatorInset()
     }
 
     static func configure(
@@ -144,42 +158,42 @@ extension StatusSection {
         status: TwitterStatus,
         disposeBag: inout Set<AnyCancellable>
     ) {
-        let author = (status.repost ?? status).author
-        
-        // author avatar
-        statusView.authorAvatarButton.avatarImageView.configure(
-            configuration: .init(url: author.avatarImageURL())
-        )
-        
-        // author name
-        Publishers.CombineLatest(
-            author.publisher(for: \.name),
-            NotificationCenter.default.publisher(for: UIContentSizeCategory.didChangeNotification).map { _ in }.prepend(Void())
-        )
-        .map { text, _ in PlaintextMetaContent(string: text) }
-        .sink { metaContent in
-            statusView.authorNameLabel.setupAttributes(style: StatusView.authorNameLabelStyle)
-            statusView.authorNameLabel.configure(content: metaContent)
-        }
-        .store(in: &disposeBag)
-        
-        // author username
-        Publishers.CombineLatest(
-            author.publisher(for: \.username),
-            NotificationCenter.default.publisher(for: UIContentSizeCategory.didChangeNotification).map { _ in }.prepend(Void())
-        )
-        .map { text, _ in "@\(text)" }
-        .assign(to: \.text, on: statusView.authorUsernameLabel)
-        .store(in: &disposeBag)
-        
-        // timestamp
-        let createdAt = (status.repost ?? status).createdAt
-        statusView.timestampLabel.text = createdAt.shortTimeAgoSinceNow
-        AppContext.shared.timestampUpdatePublisher
-            .sink { _ in
-                statusView.timestampLabel.text = createdAt.shortTimeAgoSinceNow
-            }
-            .store(in: &disposeBag)
+//        let author = (status.repost ?? status).author
+//
+//        // author avatar
+//        statusView.authorAvatarButton.avatarImageView.configure(
+//            configuration: .init(url: author.avatarImageURL())
+//        )
+//
+//        // author name
+//        Publishers.CombineLatest(
+//            author.publisher(for: \.name),
+//            NotificationCenter.default.publisher(for: UIContentSizeCategory.didChangeNotification).map { _ in }.prepend(Void())
+//        )
+//        .map { text, _ in PlaintextMetaContent(string: text) }
+//        .sink { metaContent in
+//            statusView.authorNameLabel.setupAttributes(style: StatusView.authorNameLabelStyle)
+//            statusView.authorNameLabel.configure(content: metaContent)
+//        }
+//        .store(in: &disposeBag)
+//
+//        // author username
+//        Publishers.CombineLatest(
+//            author.publisher(for: \.username),
+//            NotificationCenter.default.publisher(for: UIContentSizeCategory.didChangeNotification).map { _ in }.prepend(Void())
+//        )
+//        .map { text, _ in "@\(text)" }
+//        .assign(to: \.text, on: statusView.authorUsernameLabel)
+//        .store(in: &disposeBag)
+//
+//        // timestamp
+//        let createdAt = (status.repost ?? status).createdAt
+//        statusView.timestampLabel.text = createdAt.shortTimeAgoSinceNow
+//        AppContext.shared.timestampUpdatePublisher
+//            .sink { _ in
+//                statusView.timestampLabel.text = createdAt.shortTimeAgoSinceNow
+//            }
+//            .store(in: &disposeBag)
     }
     
     static func configureContent(

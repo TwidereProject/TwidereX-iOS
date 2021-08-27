@@ -140,7 +140,7 @@ extension HomeTimelineViewController {
             children: [50, 100, 150, 200, 250, 300].map { count in
                 UIAction(title: "Drop Recent \(count) Tweets", image: nil, attributes: [], handler: { [weak self] action in
                     guard let self = self else { return }
-                    self.dropRecentTweetsAction(action, count: count)
+                    self.dropRecentFeedAction(action, count: count)
                 })
             }
         )
@@ -348,7 +348,7 @@ extension HomeTimelineViewController {
 //        }
     }
     
-    @objc private func dropRecentTweetsAction(_ sender: UIAction, count: Int) {
+    @objc private func dropRecentFeedAction(_ sender: UIAction, count: Int) {
         guard let diffableDataSource = viewModel.diffableDataSource else { return }
         let snapshotTransitioning = diffableDataSource.snapshot()
         

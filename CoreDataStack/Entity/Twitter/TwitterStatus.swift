@@ -100,11 +100,11 @@ extension TwitterStatus: Managed {
 
 extension TwitterStatus {
     
-    public static func predicate(id: String) -> NSPredicate {
+    public static func predicate(id: ID) -> NSPredicate {
         return NSPredicate(format: "%K == %@", #keyPath(TwitterStatus.id), id)
     }
     
-    public static func predicate(ids: [String]) -> NSPredicate {
+    public static func predicate(ids: [ID]) -> NSPredicate {
         return NSPredicate(format: "%K IN %@", #keyPath(TwitterStatus.id), ids)
     }
     

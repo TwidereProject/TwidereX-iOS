@@ -134,15 +134,20 @@ extension HomeTimelineViewModel {
 extension HomeTimelineViewModel {
 
     func loadLatest() async {
-        guard let authenticationContext = context.authenticationService.activeTwitterAuthenticationContext.value else { return }
+        guard let authenticationContext = context.authenticationService.activeAuthenticationContext.value else { return }
         do {
-            let response = try await context.apiService.twitterHomeTimeline(
-                maxID: nil,
-                authenticationContext: authenticationContext
-            )
-            // FIXME: needs stop refreshControl if no new status
-            // self.didLoadLatest.send()
-            
+            switch authenticationContext {
+            case .twitter(let authenticationContext):
+                let response = try await context.apiService.twitterHomeTimeline(
+                    maxID: nil,
+                    authenticationContext: authenticationContext
+                )
+            case .mastodon(let authenticationContext):
+                let response = try await context.apiService.mastodonHomeTimeline(
+                    maxID: nil,
+                    authenticationContext: authenticationContext
+                )
+            }
         } catch {
             self.didLoadLatest.send()
             logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): \(error.localizedDescription)")

@@ -12,6 +12,7 @@ import CoreDataStack
 import CommonOSLog
 import DateToolsSwift
 import TwitterSDK
+import MastodonSDK
 import func QuartzCore.CACurrentMediaTime
 
 extension APIService {
@@ -21,18 +22,18 @@ extension APIService {
     
     func twitterHomeTimeline(
         maxID: Twitter.Entity.Tweet.ID? = nil,
-        authenticationContext: AuthenticationService.TwitterAuthenticationContext
+        authenticationContext: TwitterAuthenticationContext
     ) async throws -> Twitter.Response.Content<[Twitter.Entity.Tweet]> {
         let count = APIService.homeTimelineRequestFetchLimit
         let query = Twitter.API.Timeline.TimelineQuery(count: count, maxID: maxID)
         
-        let response = try await Twitter.API.Timeline.homeTimeline(
+        let response = try await Twitter.API.Timeline.home(
             session: session,
             query: query,
             authorization: authenticationContext.authorization
         )
-        #if DEBUG
         
+        #if DEBUG
         // log time cost
         let start = CACurrentMediaTime()
         defer {
@@ -44,11 +45,10 @@ extension APIService {
         }
         #endif
         
-        
         let managedObjectContext = backgroundManagedObjectContext
         try await managedObjectContext.performChanges {
             // persist TwitterStatus
-            var twitterStatusArray: [TwitterStatus] = []
+            var statusArray: [TwitterStatus] = []
             for entity in response.value {
                 let persistContext = Persistence.TwitterStatus.PersistContext(
                     entity: entity,
@@ -56,16 +56,16 @@ extension APIService {
                     userCache: nil,
                     networkDate: response.networkDate
                 )
-                let (twitterStatus, _) = Persistence.TwitterStatus.createOrMerge(
+                let (status, _) = Persistence.TwitterStatus.createOrMerge(
                     in: managedObjectContext,
                     context: persistContext
                 )
-                twitterStatusArray.append(twitterStatus)
+                statusArray.append(status)
             }
         
             // persist Feed relationship
             let acct = Feed.Acct.twitter(userID: authenticationContext.userID).value
-            for status in twitterStatusArray {
+            for status in statusArray {
                 let _feed = status.feeds.first { feed in
                     feed.kind == .home && feed.acct == acct
                 }
@@ -84,8 +84,6 @@ extension APIService {
                 }
             }
         }
-        
-        
         
         return response
     }
@@ -176,4 +174,84 @@ extension APIService {
             .eraseToAnyPublisher()
     }
     
+}
+
+extension APIService {
+    func mastodonHomeTimeline(
+        maxID: Mastodon.Entity.Status.ID? = nil,
+        authenticationContext: MastodonAuthenticationContext
+    ) async throws -> Mastodon.Response.Content<[Mastodon.Entity.Status]> {
+        let query = Mastodon.API.Timeline.TimelineQuery(
+            local: nil,
+            remote: nil,
+            onlyMedia: nil,
+            maxID: maxID,
+            sinceID: nil,
+            minID: nil,
+            limit: APIService.homeTimelineRequestFetchLimit
+        )
+        
+        let response = try await Mastodon.API.Timeline.home(
+            session: session,
+            domain: authenticationContext.domain,
+            query: query,
+            authorization: authenticationContext.authorization
+        )
+        
+        #if DEBUG
+        // log time cost
+        let start = CACurrentMediaTime()
+        defer {
+            // log rate limit
+            // response.logRateLimit()
+            
+            let end = CACurrentMediaTime()
+            os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: persist cost %.2fs", ((#file as NSString).lastPathComponent), #line, #function, end - start)
+        }
+        #endif
+        
+        let managedObjectContext = backgroundManagedObjectContext
+        try await managedObjectContext.performChanges {
+            // persist MastodonStatus
+            var statusArray: [MastodonStatus] = []
+            for entity in response.value {
+                let persistContext = Persistence.MastodonStatus.PersistContext(
+                    domain: authenticationContext.domain,
+                    entity: entity,
+                    statusCache: nil,   // TODO:
+                    userCache: nil,
+                    networkDate: response.networkDate
+                )
+                
+                let (status, _) = Persistence.MastodonStatus.createOrMerge(
+                    in: managedObjectContext,
+                    context: persistContext
+                )
+                statusArray.append(status)
+            }
+            
+            // persist Feed relationship
+            let acct = Feed.Acct.mastodon(domain: authenticationContext.domain, userID: authenticationContext.userID).value
+            for status in statusArray {
+                let _feed = status.feeds.first { feed in
+                    feed.kind == .home && feed.acct == acct
+                }
+                if let feed = _feed {
+                    feed.update(updatedAt: response.networkDate)
+                } else {
+                    let feedProperty = Feed.Property(
+                        acct: acct,
+                        kind: .home,
+                        hasMore: false,
+                        createdAt: status.createdAt,
+                        updatedAt: response.networkDate
+                    )
+                    let feed = Feed.insert(into: managedObjectContext, property: feedProperty)
+                    status.attach(feed: feed)
+                }
+            }
+        }
+
+        return response
+    }
 }

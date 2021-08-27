@@ -93,32 +93,26 @@ final class HomeTimelineViewModel: NSObject {
 //        }()
         super.init()
         
-        context.authenticationService.activeAuthenticationIndex
-            .sink { [weak self] authenticationIndex in
+        context.authenticationService.activeAuthenticationContext
+            .sink { [weak self] authenticationContext in
                 guard let self = self else { return }
                 let emptyFeedPredicate = Feed.predicate(kind: .home, acct: Feed.Acct.twitter(userID: ""))
-                guard let authenticationIndex = authenticationIndex else {
+                guard let authenticationContext = authenticationContext else {
                     self.fetchedResultsController.predicate.value = emptyFeedPredicate
                     return
                 }
                 
-                let predicate: NSPredicate?
-                switch authenticationIndex.platform {
-                case .twitter:
-                    if let userID = authenticationIndex.twitterAuthentication?.userID {
-                        predicate = Feed.predicate(kind: .home, acct: Feed.Acct.twitter(userID: userID))
-                    } else {
-                        predicate = nil
-                    }
-                case .mastodon:
-                    // TODO:
-                    predicate = nil
-                case .none:
-                    // TODO:
-                    predicate = nil
+                let predicate: NSPredicate
+                switch authenticationContext {
+                case .twitter(let authenticationContext):
+                    let userID = authenticationContext.userID
+                    predicate = Feed.predicate(kind: .home, acct: Feed.Acct.twitter(userID: userID))
+                case .mastodon(let authenticationContext):
+                    let domain = authenticationContext.domain
+                    let userID = authenticationContext.userID
+                    predicate = Feed.predicate(kind: .home, acct: Feed.Acct.mastodon(domain: domain, userID: userID))
                 }
-                
-                self.fetchedResultsController.predicate.value = predicate ?? emptyFeedPredicate
+                self.fetchedResultsController.predicate.value = predicate
             }
             .store(in: &disposeBag)
         
@@ -145,37 +139,6 @@ final class HomeTimelineViewModel: NSObject {
 //                }
 //            }
 //            .store(in: &disposeBag)
-//
-//        context.authenticationService.activeAuthenticationIndex
-//            .sink { [weak self] activeAuthenticationIndex in
-//                guard let self = self else { return }
-//                guard let activeAuthenticationIndex = activeAuthenticationIndex else { return }
-//                    switch activeAuthenticationIndex.platform {
-//                    case .twitter:
-//                        guard let twitterAuthentication = activeAuthenticationIndex.twitterAuthentication else { return }
-//                        let activeTwitterUserID = twitterAuthentication.userID
-//                        let predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [
-//                            TimelineIndex.predicate(userID: activeTwitterUserID),
-//                            TimelineIndex.predicate(platform: .twitter),
-//                            TimelineIndex.notDeleted()
-//                        ])
-//                        self.timelinePredicate.value = predicate
-//                    case .mastodon:
-//                        // TODO:
-//                        break
-//                    case .none:
-//                        // do nothing
-//                        break
-//                    }
-//            }
-//            .store(in: &disposeBag)
-//
-//        UserDefaults.shared
-//            .observe(\.avatarStyle) { [weak self] defaults, _ in
-//                guard let self = self else { return }
-//                self.avatarStyle.value = defaults.avatarStyle
-//            }
-//            .store(in: &observations)
     }
     
     deinit {

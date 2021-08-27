@@ -47,8 +47,8 @@ extension Mastodon.API.App {
     }
     
     
-    public struct CreateQuery: Codable, Query {
-        
+    public struct CreateQuery: JSONEncodeQuery {
+                
         public let clientName: String
         public let redirectURIs: String
         public let scopes: String?

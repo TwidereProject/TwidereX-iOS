@@ -56,7 +56,6 @@ extension Mastodon.API.OAuth {
     }
     
     public struct AuthorizeQuery: Codable, Query {
-        
         public let forceLogin: String?
         public let responseType: String
         public let clientID: String
@@ -88,6 +87,7 @@ extension Mastodon.API.OAuth {
             return items
         }
         
+        var body: Data? { nil }
     }
     
 }
@@ -129,7 +129,7 @@ extension Mastodon.API.OAuth {
         return Mastodon.Response.Content(value: value, response: response)
     }
     
-    public struct AccessTokenQuery: Codable, Query {
+    public struct AccessTokenQuery: JSONEncodeQuery {
         
         public enum GrantType: String, Codable {
             case authorizationCode = "authorization_code"
@@ -209,7 +209,7 @@ extension Mastodon.API.OAuth {
         _ = try Mastodon.API.decode(type: String.self, from: data, response: response)
     }
     
-    public struct RevokeTokenQuery: Codable, Query {
+    public struct RevokeTokenQuery: JSONEncodeQuery {
         public let clientID: String
         public let clientSecret: String
         public let token: String

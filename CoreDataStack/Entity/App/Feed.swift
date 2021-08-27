@@ -35,6 +35,7 @@ final public class Feed: NSManagedObject {
     
     // one-to-one relationship
     @NSManaged public private(set) var twitterStatus: TwitterStatus?
+    @NSManaged public private(set) var mastodonStatus: MastodonStatus?
 }
 
 extension Feed {
