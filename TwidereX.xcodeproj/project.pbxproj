@@ -158,6 +158,7 @@
 		DB5FD9B126D8D50A00CF5439 /* StatusView+ViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB5FD9B026D8D50A00CF5439 /* StatusView+ViewModel.swift */; };
 		DB5FD9B326D8D94600CF5439 /* StatusTableViewCell+ViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB5FD9B226D8D94600CF5439 /* StatusTableViewCell+ViewModel.swift */; };
 		DB5FD9B526D8EE7A00CF5439 /* MastodonMeta in Frameworks */ = {isa = PBXBuildFile; productRef = DB5FD9B426D8EE7A00CF5439 /* MastodonMeta */; };
+		DB5FD9B726D8EFF700CF5439 /* UserBriefInfoView+ViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB5FD9B626D8EFF700CF5439 /* UserBriefInfoView+ViewModel.swift */; };
 		DB657A7325AC4DF6001339B6 /* TweetFetchedResultsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB657A7225AC4DF6001339B6 /* TweetFetchedResultsController.swift */; };
 		DB657A7B25AD574D001339B6 /* UIBarButtonItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB657A7A25AD574D001339B6 /* UIBarButtonItem.swift */; };
 		DB6760F9254AD026006C6798 /* SearchMediaViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB6760F8254AD026006C6798 /* SearchMediaViewModel.swift */; };
@@ -722,6 +723,7 @@
 		DB5FD9AE26D8CF0400CF5439 /* MastodonVisibility.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MastodonVisibility.swift; sourceTree = "<group>"; };
 		DB5FD9B026D8D50A00CF5439 /* StatusView+ViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "StatusView+ViewModel.swift"; sourceTree = "<group>"; };
 		DB5FD9B226D8D94600CF5439 /* StatusTableViewCell+ViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "StatusTableViewCell+ViewModel.swift"; sourceTree = "<group>"; };
+		DB5FD9B626D8EFF700CF5439 /* UserBriefInfoView+ViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UserBriefInfoView+ViewModel.swift"; sourceTree = "<group>"; };
 		DB657A7225AC4DF6001339B6 /* TweetFetchedResultsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TweetFetchedResultsController.swift; sourceTree = "<group>"; };
 		DB657A7A25AD574D001339B6 /* UIBarButtonItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIBarButtonItem.swift; sourceTree = "<group>"; };
 		DB6760F8254AD026006C6798 /* SearchMediaViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchMediaViewModel.swift; sourceTree = "<group>"; };
@@ -1231,6 +1233,7 @@
 				DBEA4F8C251225610007FEC5 /* TimelinePostView.swift */,
 				DBEA4F90251331BE0007FEC5 /* QuotePostView.swift */,
 				DB578CCC254C0BDB00745336 /* UserBriefInfoView.swift */,
+				DB5FD9B626D8EFF700CF5439 /* UserBriefInfoView+ViewModel.swift */,
 				DB434887251DFE2D005B599F /* ProfileBannerStatusView.swift */,
 				DB43488C251DFF0F005B599F /* ProfileBannerStatusItemView.swift */,
 				DB97D1DF256CBA4E0056F8C2 /* NotifyBannerView.swift */,
@@ -3211,6 +3214,7 @@
 				DBB09D562511BA9700AE260E /* APIService+Lookup.swift in Sources */,
 				DBCB40A4255D9AC200DD8D8F /* SearchTimelineViewController+StatusProvider.swift in Sources */,
 				DBBABA1E255E805F00C1B3D9 /* StatusProvider+ActionToolbarContainerDelegate.swift in Sources */,
+				DB5FD9B726D8EFF700CF5439 /* UserBriefInfoView+ViewModel.swift in Sources */,
 				DB1BF29425663ED000B5F490 /* UserDefaults.swift in Sources */,
 				DB2EBBEB255D34BE00956CAA /* AboutView.swift in Sources */,
 				DB761E72255946720050DC01 /* SidebarSection.swift in Sources */,

@@ -11,32 +11,73 @@ import UIKit
 import Combine
 import SwiftUI
 import CoreDataStack
+import TwitterMeta
 import MastodonMeta
+import Meta
 
 extension StatusView {
     final class ViewModel: ObservableObject {
-        
         var disposeBag = Set<AnyCancellable>()
         
         @Published var platform: Platform = .none
+        
+        @Published var header: Header = .none
         
         @Published var authorAvatarImageURL: URL?
         @Published var authorName: String?
         @Published var authorUsername: String?
         
         @Published var content: String?
+        @Published var mediaViewConfigurations: [MediaView.Configuration] = []
+        
+        @Published var replyCount: Int = 0
+        @Published var repostCount: Int = 0
+        @Published var likeCount: Int = 0
         
         @Published var timestamp: Date?
+        
+        enum Header {
+            case none
+            case repost(info: RepostInfo)
+            // TODO: replyTo
+            
+            struct RepostInfo {
+                let authorNameMetaContent: MetaContent
+            }
+        }
     }
 }
 
 extension StatusView.ViewModel {
     func bind(statusView: StatusView) {
+        bindHeader(statusView: statusView)
         bindAuthor(statusView: statusView)
         bindContent(statusView: statusView)
+        bindMedia(statusView: statusView)
+        bindToolbar(statusView: statusView)
     }
     
-    func bindAuthor(statusView: StatusView) {
+    private func bindHeader(statusView: StatusView) {
+        Publishers.CombineLatest(
+            $header,
+            NotificationCenter.default.publisher(for: UIContentSizeCategory.didChangeNotification).map { _ in }.prepend(Void())
+        )
+        .map { header, _ in header }
+        .sink { header in
+            switch header {
+            case .none:
+                return
+            case .repost(let info):
+                statusView.headerIconImageView.image = Asset.Media.repeat.image
+                statusView.headerTextLabel.setupAttributes(style: StatusView.headerTextLabelStyle)
+                statusView.headerTextLabel.configure(content: info.authorNameMetaContent)
+                statusView.setHeaderDisplay()
+            }
+        }
+        .store(in: &disposeBag)
+    }
+    
+    private func bindAuthor(statusView: StatusView) {
         // avatar
         $authorAvatarImageURL
             .sink { url in
@@ -77,7 +118,7 @@ extension StatusView.ViewModel {
         .store(in: &disposeBag)
     }
     
-    func bindContent(statusView: StatusView) {
+    private func bindContent(statusView: StatusView) {
         Publishers.CombineLatest(
             $content,
             NotificationCenter.default.publisher(for: UIContentSizeCategory.didChangeNotification).map { _ in }.prepend(Void())
@@ -99,17 +140,180 @@ extension StatusView.ViewModel {
         }
         .store(in: &disposeBag)
     }
+    
+    private func bindMedia(statusView: StatusView) {
+        $mediaViewConfigurations
+            .sink { configurations in
+                let maxSize = CGSize(
+                    width: statusView.contentMaxLayoutWidth,
+                    height: statusView.contentMaxLayoutWidth
+                )
+                var needsDisplay = true
+                switch configurations.count {
+                case 0:
+                    needsDisplay = false
+                case 1:
+                    let configuration = configurations[0]
+                    let adaptiveLayout = MediaGridContainerView.AdaptiveLayout(
+                        aspectRatio: configuration.aspectRadio,
+                        maxSize: maxSize
+                    )
+                    let mediaView = statusView.mediaGridContainerView.dequeueMediaView(adaptiveLayout: adaptiveLayout)
+                    mediaView.setup(configuration: configuration)
+                default:
+                    let gridLayout = MediaGridContainerView.GridLayout(
+                        count: configurations.count,
+                        maxSize: maxSize
+                    )
+                    let mediaViews = statusView.mediaGridContainerView.dequeueMediaView(gridLayout: gridLayout)
+                    for (i, (configuration, mediaView)) in zip(configurations, mediaViews).enumerated() {
+                        guard i < MediaGridContainerView.maxCount else { break }
+                        mediaView.setup(configuration: configuration)
+                    }
+                }
+                if needsDisplay {
+                    statusView.setMediaDisplay()
+                }
+            }
+            .store(in: &disposeBag)
+    }
+    
+    private func bindToolbar(statusView: StatusView) {
+        $replyCount
+            .sink { count in
+                statusView.toolbar.setupReply(count: count, isEnabled: true)
+            }
+            .store(in: &disposeBag)
+        $repostCount
+            .sink { count in
+                statusView.toolbar.setupRepost(count: count, isEnabled: true, isLocked: false)
+            }
+            .store(in: &disposeBag)
+        $likeCount
+            .sink { count in
+                statusView.toolbar.setupLike(count: count)
+            }
+            .store(in: &disposeBag)
+    }
 }
 
 extension StatusView {
     func configure(feed: Feed) {
-        if let twitterStatus = feed.twitterStatus {
-            // TODO:
-        } else if let mastodonStatus = feed.mastodonStatus  {
-            configure(mastodonStatus: mastodonStatus)
+        if let status = feed.twitterStatus {
+            configure(twitterStatus: status)
+        } else if let status = feed.mastodonStatus {
+            configure(mastodonStatus: status)
         } else {
             assertionFailure()
         }
+    }
+}
+
+extension StatusView {
+    func configure(twitterStatus status: TwitterStatus) {
+        configureHeader(twitterStatus: status)
+        configureAuthor(twitterStatus: status)
+        configureContent(twitterStatus: status)
+        configureMedia(twitterStatus: status)
+        configureToolbar(twitterStatus: status)
+        
+        if let quote = status.quote {
+            quoteStatusView?.configure(twitterStatus: quote)
+            setQuoteDisplay()
+        }
+    }
+    
+    private func configureHeader(twitterStatus status: TwitterStatus) {
+        if let _ = status.repost {
+            status.author.publisher(for: \.name)
+                .map { name -> StatusView.ViewModel.Header in
+                    let userRepostText = L10n.Common.Controls.Status.userRetweeted(name)
+                    let metaContent = PlaintextMetaContent(string: userRepostText)
+                    let info = ViewModel.Header.RepostInfo(authorNameMetaContent: metaContent)
+                    return .repost(info: info)
+                }
+                .assign(to: \.header, on: viewModel)
+                .store(in: &disposeBag)
+        } else {
+            viewModel.header = .none
+        }
+    }
+    
+    private func configureAuthor(twitterStatus status: TwitterStatus) {
+        let author = (status.repost ?? status).author
+        // author avatar
+        author.publisher(for: \.profileImageURL)
+            .map { _ in author.avatarImageURL() }
+            .assign(to: \.authorAvatarImageURL, on: viewModel)
+            .store(in: &disposeBag)
+        // author name
+        author.publisher(for: \.name)
+            .map { $0 as String? }
+            .assign(to: \.authorName, on: viewModel)
+            .store(in: &disposeBag)
+        // author username
+        author.publisher(for: \.username)
+            .map { $0 as String? }
+            .assign(to: \.authorUsername, on: viewModel)
+            .store(in: &disposeBag)
+        // timestamp
+        (status.repost ?? status).publisher(for: \.createdAt)
+            .map { $0 as Date? }
+            .assign(to: \.timestamp, on: viewModel)
+            .store(in: &disposeBag)
+    }
+    
+    private func configureContent(twitterStatus status: TwitterStatus) {
+        let status = (status.repost ?? status)
+        let content = TwitterContent(content: status.text)
+        let metaContent = TwitterMetaContent.convert(
+            content: content,
+            urlMaximumLength: 20,
+            twitterTextProvider: OfficialTwitterTextProvider()
+        )
+        // TODO:
+        viewModel.content = metaContent.trimmed
+    }
+    
+    private func configureMedia(twitterStatus status: TwitterStatus) {
+        func videoInfo(from attachment: TwitterAttachment) -> MediaView.Configuration.VideoInfo {
+            MediaView.Configuration.VideoInfo(
+                aspectRadio: attachment.size,
+                assertURL: attachment.assetURL,
+                previewURL: attachment.previewURL,
+                durationMS: attachment.durationMS
+            )
+        }
+        
+        let status = (status.repost ?? status)
+        status.publisher(for: \.attachments)
+            .map { attachments -> [MediaView.Configuration] in
+                return attachments.map { attachment -> MediaView.Configuration in
+                    switch attachment.kind {
+                    case .photo:
+                        let info = MediaView.Configuration.ImageInfo(
+                            aspectRadio: attachment.size,
+                            assetURL: attachment.assetURL
+                        )
+                        return .image(info: info)
+                    case .video:
+                        let info = videoInfo(from: attachment)
+                        return .video(info: info)
+                    case .animatedGIF:
+                        let info = videoInfo(from: attachment)
+                        return .gif(info: info)
+                    }
+                }
+            }
+            .assign(to: \.mediaViewConfigurations, on: viewModel)
+            .store(in: &disposeBag)
+    }
+    
+    private func configureToolbar(twitterStatus status: TwitterStatus) {
+        let status = (status.repost ?? status)
+        status.publisher(for: \.replyCount).assign(to: \.replyCount, on: viewModel).store(in: &disposeBag)
+        status.publisher(for: \.repostCount).assign(to: \.repostCount, on: viewModel).store(in: &disposeBag)
+        status.publisher(for: \.likeCount).assign(to: \.likeCount, on: viewModel).store(in: &disposeBag)
     }
 }
 

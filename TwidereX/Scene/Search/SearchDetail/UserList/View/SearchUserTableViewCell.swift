@@ -10,7 +10,7 @@ import os.log
 import UIKit
 import Combine
 
-protocol SearchUserTableViewCellDelegate: class {
+protocol SearchUserTableViewCellDelegate: AnyObject {
     func userBriefInfoTableViewCell(_ cell: SearchUserTableViewCell, followActionButtonPressed button: FollowActionButton)
 }
 
@@ -61,7 +61,7 @@ extension SearchUserTableViewCell {
         separatorLine.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(separatorLine)
         NSLayoutConstraint.activate([
-            separatorLine.leadingAnchor.constraint(equalTo: userBriefInfoView.nameLabel.leadingAnchor),
+            separatorLine.leadingAnchor.constraint(equalTo: userBriefInfoView.headlineLabel.leadingAnchor),
             separatorLine.trailingAnchor.constraint(equalTo: contentView.readableContentGuide.trailingAnchor),
             separatorLine.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
             separatorLine.heightAnchor.constraint(equalToConstant: UIView.separatorLineHeight(of: contentView)),

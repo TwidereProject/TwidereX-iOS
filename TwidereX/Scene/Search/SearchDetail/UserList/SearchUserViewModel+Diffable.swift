@@ -58,15 +58,15 @@ extension SearchUserViewModel {
 //            }
 //            .store(in: &cell.observations)
 
-        cell.userBriefInfoView.lockImageView.isHidden = !twitterUser.protected
+//        cell.userBriefInfoView.lockImageView.isHidden = !twitterUser.protected
         
         // set name and username
-        cell.userBriefInfoView.nameLabel.text = twitterUser.name
-        cell.userBriefInfoView.headerSecondaryLabel.text = "@" + twitterUser.username
+        cell.userBriefInfoView.headlineLabel.text = twitterUser.name
+        cell.userBriefInfoView.secondaryHeadlineLabel.text = "@" + twitterUser.username
         
         // set detail
         let followersCount = 0
-        cell.userBriefInfoView.detailLabel.text = "\(L10n.Common.Controls.Friendship.followers.capitalized): \(followersCount)"
+        cell.userBriefInfoView.subheadlineLabel.text = "\(L10n.Common.Controls.Friendship.followers.capitalized): \(followersCount)"
         
         if let requestTwitterUserID = requestTwitterUserID {
             cell.userBriefInfoView.followActionButton.isHidden = twitterUser.id == requestTwitterUserID

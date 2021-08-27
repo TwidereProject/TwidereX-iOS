@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import Combine
 
 final class UserBriefInfoView: UIView {
     
@@ -14,42 +15,47 @@ final class UserBriefInfoView: UIView {
     static let avatarImageViewSize = CGSize(width: 44, height: 44)
     static let badgeImageViewSize = CGSize(width: 20, height: 20)
     
+    var disposeBag = Set<AnyCancellable>()
+    
+    private(set) lazy var viewModel: ViewModel = {
+        let viewModel = ViewModel()
+        viewModel.bind(userBriefInfoView: self)
+        return viewModel
+    }()
+    
     let avatarImageView = AvatarImageView()
     
     let badgeImageView = UIImageView()
     
-    let nameLabel: UILabel = {
+    let headlineLabel: UILabel = {
         let label = UILabel()
         label.font = .preferredFont(forTextStyle: .headline)
         label.adjustsFontForContentSizeCategory = true
         label.textColor = .label
-        label.text = "Alice"
         return label
     }()
     
-    let lockImageView: UIImageView = {
-        let imageView = UIImageView()
-        imageView.tintColor = .secondaryLabel
-        imageView.contentMode = .center
-        imageView.image = Asset.ObjectTools.lockMini.image.withRenderingMode(.alwaysTemplate)
-        return imageView
-    }()
+//    let lockImageView: UIImageView = {
+//        let imageView = UIImageView()
+//        imageView.tintColor = .secondaryLabel
+//        imageView.contentMode = .center
+//        imageView.image = Asset.ObjectTools.lockMini.image.withRenderingMode(.alwaysTemplate)
+//        return imageView
+//    }()
     
-    let headerSecondaryLabel: UILabel = {
+    let secondaryHeadlineLabel: UILabel = {
         let label = UILabel()
         label.font = .preferredFont(forTextStyle: .subheadline)
         label.adjustsFontForContentSizeCategory = true
         label.textColor = .secondaryLabel
-        label.text = "@alice"
         return label
     }()
     
-    let detailLabel: UILabel = {
+    let subheadlineLabel: UILabel = {
         let label = UILabel()
         label.font = .preferredFont(forTextStyle: .callout)
         label.adjustsFontForContentSizeCategory = true
         label.textColor = .secondaryLabel
-        label.text = "Followers: -"
         return label
     }()
     
@@ -84,13 +90,20 @@ final class UserBriefInfoView: UIView {
         _init()
     }
     
+    deinit {
+        viewModel.disposeBag.removeAll()
+    }
+    
 }
 
 extension UserBriefInfoView {
     
     func prepareForReuse() {
+        disposeBag.removeAll()
+        
+        avatarImageView.cancelTask()
         badgeImageView.isHidden = true
-        lockImageView.isHidden = true
+        // lockImageView.isHidden = true
         
         activityIndicatorView.isHidden = true
         checkmarkButton.isHidden = true
@@ -142,15 +155,15 @@ extension UserBriefInfoView {
         userMetaContainerStackView.axis = .horizontal
         userMetaContainerStackView.alignment = .center
         userMetaContainerStackView.spacing = 6
-        userMetaContainerStackView.addArrangedSubview(nameLabel)
-        userMetaContainerStackView.addArrangedSubview(lockImageView)
-        userMetaContainerStackView.addArrangedSubview(headerSecondaryLabel)
+        userMetaContainerStackView.addArrangedSubview(headlineLabel)
+        // userMetaContainerStackView.addArrangedSubview(lockImageView)
+        userMetaContainerStackView.addArrangedSubview(secondaryHeadlineLabel)
         let paddingView = UIView()
         userMetaContainerStackView.addArrangedSubview(paddingView)
 
-        nameLabel.setContentHuggingPriority(.defaultHigh, for: .horizontal)
-        lockImageView.setContentHuggingPriority(.defaultHigh - 1, for: .horizontal)
-        headerSecondaryLabel.setContentHuggingPriority(.defaultHigh - 2, for: .horizontal)
+        headlineLabel.setContentHuggingPriority(.defaultHigh, for: .horizontal)
+        //lockImageView.setContentHuggingPriority(.defaultHigh - 1, for: .horizontal)
+        secondaryHeadlineLabel.setContentHuggingPriority(.defaultHigh - 2, for: .horizontal)
         paddingView.setContentHuggingPriority(.defaultLow, for: .horizontal)
         
         // detail container: [detail]
@@ -159,7 +172,7 @@ extension UserBriefInfoView {
         detailContainerStackView.axis = .horizontal
         detailContainerStackView.alignment = .center
         detailContainerStackView.spacing = 6
-        detailContainerStackView.addArrangedSubview(detailLabel)
+        detailContainerStackView.addArrangedSubview(subheadlineLabel)
         
         followActionButton.translatesAutoresizingMaskIntoConstraints = false
         containerStackView.addArrangedSubview(followActionButton)

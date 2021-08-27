@@ -74,11 +74,25 @@ final class MediaView: UIView {
 
 extension MediaView {
     enum Configuration {
-        case image(url: String?)
+        case image(info: ImageInfo)
         case gif(info: VideoInfo)
         case video(info: VideoInfo)
         
+        var aspectRadio: CGSize {
+            switch self {
+            case .image(let info):      return info.aspectRadio
+            case .gif(let info):        return info.aspectRadio
+            case .video(let info):      return info.aspectRadio
+            }
+        }
+        
+        struct ImageInfo {
+            let aspectRadio: CGSize
+            let assetURL: String?
+        }
+        
         struct VideoInfo {
+            let aspectRadio: CGSize
             let assertURL: String?
             let previewURL: String?
             let durationMS: Int?
@@ -97,8 +111,8 @@ extension MediaView {
         setupContainerViewHierarchy()
         
         switch configuration {
-        case .image(let url):
-            configure(imageURL: url)
+        case .image(let info):
+            configure(image: info)
         case .gif(let info):
             configure(gif: info)
         case .video(let info):
@@ -106,7 +120,7 @@ extension MediaView {
         }
     }
     
-    private func configure(imageURL: String?) {
+    private func configure(image info: Configuration.ImageInfo) {
         imageView.translatesAutoresizingMaskIntoConstraints = false
         container.addSubview(imageView)
         NSLayoutConstraint.activate([
@@ -117,7 +131,7 @@ extension MediaView {
         ])
         
         let placeholder = UIImage.placeholder(color: .systemFill)
-        guard let urlString = imageURL,
+        guard let urlString = info.assetURL,
               let url = URL(string: urlString) else {
                   imageView.image = placeholder
                   return
@@ -161,7 +175,11 @@ extension MediaView {
     }
     
     private func configure(video info: Configuration.VideoInfo) {
-        configure(imageURL: info.previewURL)
+        let imageInfo = Configuration.ImageInfo(
+            aspectRadio: info.aspectRadio,
+            assetURL: info.previewURL
+        )
+        configure(image: imageInfo)
         
         indicatorBlurEffectView.translatesAutoresizingMaskIntoConstraints = false
         imageView.addSubview(indicatorBlurEffectView)

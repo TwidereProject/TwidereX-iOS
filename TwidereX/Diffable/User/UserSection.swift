@@ -15,6 +15,11 @@ enum UserSection {
 }
 
 extension UserSection {
+    
+    struct Configuration {
+        let accountListTableViewCellDelegate: AccountListTableViewCellDelegate
+    }
+    
     static func diffableDataSource(
         tableView: UITableView,
         context: AppContext
@@ -43,8 +48,7 @@ extension UserSection {
         cell: AccountListTableViewCell,
         authenticationIndex: AuthenticationIndex
     ) {
-        let viewModel = AccountListTableViewCell.ViewModel(authenticationIndex: authenticationIndex)
-        cell.configure(viewModel: viewModel)
+        cell.configure(authenticationIndex: authenticationIndex)
     }
     
 }

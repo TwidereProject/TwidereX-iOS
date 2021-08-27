@@ -105,30 +105,26 @@ extension AccountListViewController {
 
 // MARK: - UITableViewDelegate
 extension AccountListViewController: UITableViewDelegate {
-    
-//    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-//        guard let diffableDataSource = viewModel.diffableDataSource else { return }
-//        guard let item = diffableDataSource.itemIdentifier(for: indexPath) else { return }
-//        guard case let .twitterUser(objectID) = item else { return }
-//
-//        let managedObjectContext = context.managedObjectContext
-//        Task {
-//            do {
-//                let _userID: String? = await managedObjectContext.perform {
-//                    let twitterUser = managedObjectContext.object(with: objectID) as? TwitterUser
-//                    return twitterUser?.id
-//                }
-//                guard let userID = _userID else { return }
-//                let isActive = try await self.context.authenticationService.activeTwitterUser(userID: userID)
-//                guard isActive else { return }
-//                self.coordinator.setup()
-//            } catch {
-//                // handle error
-//                assertionFailure(error.localizedDescription)
-//            }
-//        }
-//    }
-    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        defer {
+            tableView.deselectRow(at: indexPath, animated: true)
+        }
+        
+        guard let diffableDataSource = viewModel.diffableDataSource else { return }
+        guard let item = diffableDataSource.itemIdentifier(for: indexPath) else { return }
+        guard case let .authenticationIndex(record) = item else { return }
+        
+        Task {
+            do {
+                let isActive = try await self.context.authenticationService.activeAuthenticationIndex(record: record)
+                guard isActive else { return }
+                self.coordinator.setup()
+            } catch {
+                // handle error
+                assertionFailure(error.localizedDescription)
+            }
+        }
+    }
 }
 
 // MARK: - AccountListTableViewCellDelegate

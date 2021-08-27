@@ -68,9 +68,9 @@ extension MentionPickViewModel {
 //                }
 //                .store(in: &cell.observations)
             
-            cell.userBriefInfoView.nameLabel.text = attribute.name ?? "-"
-            cell.userBriefInfoView.headerSecondaryLabel.text = " "
-            cell.userBriefInfoView.detailLabel.text = "@" + username
+            cell.userBriefInfoView.headlineLabel.text = attribute.name ?? "-"
+            cell.userBriefInfoView.secondaryHeadlineLabel.text = " "
+            cell.userBriefInfoView.subheadlineLabel.text = "@" + username
             
             cell.userBriefInfoView.activityIndicatorView.isHidden = attribute.state == .finish
             cell.userBriefInfoView.checkmarkButton.isHidden = attribute.state == .loading

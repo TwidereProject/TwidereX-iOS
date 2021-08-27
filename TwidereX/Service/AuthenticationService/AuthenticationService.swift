@@ -131,6 +131,17 @@ extension AuthenticationService {
 
 extension AuthenticationService {
     
+    func activeAuthenticationIndex(record: ManagedObjectRecord<AuthenticationIndex>) async throws -> Bool {
+        let managedObjectContext = backgroundManagedObjectContext
+        let isActive = try await managedObjectContext.performChanges { () -> Bool in
+            guard let authenticationIndex = record.object(in: managedObjectContext) else { return false }
+            authenticationIndex.update(activeAt: Date())
+            return true
+        }
+        
+        return isActive
+    }
+    
     func activeTwitterUser(userID: TwitterUser.ID) async throws -> Bool {
         let managedObjectContext = backgroundManagedObjectContext
         let isActive = try await managedObjectContext.performChanges { () -> Bool in
@@ -148,6 +159,7 @@ extension AuthenticationService {
         return isActive
     }
     
+    @available(*, deprecated, message: "")
     func signOutTwitterUser(id: TwitterUser.ID) -> AnyPublisher<Result<Bool, Error>, Never> {
         var isSignOut = false
         
@@ -166,9 +178,6 @@ extension AuthenticationService {
         .eraseToAnyPublisher()
     }
     
-}
-
-extension AuthenticationService {
     func activeMastodonUser(domain: String, userID: MastodonUser.ID) async throws -> Bool {
         let managedObjectContext = backgroundManagedObjectContext
         let isActive = try await managedObjectContext.performChanges { () -> Bool in
