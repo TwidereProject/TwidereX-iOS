@@ -1,8 +1,8 @@
 //
-//  StatusTableViewCell.swift
-//  StatusTableViewCell
+//  StatusThreadRootTableViewCell.swift
+//  StatusThreadRootTableViewCell
 //
-//  Created by Cirno MainasuK on 2021-8-20.
+//  Created by Cirno MainasuK on 2021-8-30.
 //  Copyright © 2021 Twidere. All rights reserved.
 //
 
@@ -10,17 +10,17 @@ import os.log
 import UIKit
 import Combine
 
-protocol StatusTableViewCellDelegate: AnyObject {
-    func statusTableViewCell(_ cell: StatusTableViewCell, mediaGridContainerView containerView: MediaGridContainerView, didTapMediaView mediaView: MediaView, at index: Int)
+protocol StatusThreadRootTableViewCellDelegate: AnyObject {
+    func statusThreadRootTableViewCell(_ cell: StatusThreadRootTableViewCell, mediaGridContainerView containerView: MediaGridContainerView, didTapMediaView mediaView: MediaView, at index: Int)
 }
 
-class StatusTableViewCell: UITableViewCell {
+final class StatusThreadRootTableViewCell: UITableViewCell {
     
     var disposeBag = Set<AnyCancellable>()
     
-    let logger = Logger(subsystem: "StatusTableViewCell", category: "UI")
+    let logger = Logger(subsystem: "StatusThreadRootTableViewCell", category: "UI")
     
-    weak var delegate: StatusTableViewCellDelegate?
+    weak var delegate: StatusThreadRootTableViewCellDelegate?
     let statusView = StatusView()
     
     override func prepareForReuse() {
@@ -29,6 +29,7 @@ class StatusTableViewCell: UITableViewCell {
         statusView.prepareForReuse()
         disposeBag.removeAll()
     }
+    
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -42,7 +43,7 @@ class StatusTableViewCell: UITableViewCell {
     
 }
 
-extension StatusTableViewCell {
+extension StatusThreadRootTableViewCell {
     
     private func _init() {
         statusView.translatesAutoresizingMaskIntoConstraints = false
@@ -53,8 +54,8 @@ extension StatusTableViewCell {
             statusView.trailingAnchor.constraint(equalTo: contentView.readableContentGuide.trailingAnchor),
             statusView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
         ])
-        statusView.setup(style: .inline)
-        statusView.toolbar.setup(style: .inline)
+        statusView.setup(style: .plain)
+        statusView.toolbar.setup(style: .plain)
         
         statusView.mediaGridContainerView.delegate = self
         
@@ -90,11 +91,11 @@ extension StatusTableViewCell {
 }
 
 // MARK: - MediaGridContainerViewDelegate
-extension StatusTableViewCell: MediaGridContainerViewDelegate {
+extension StatusThreadRootTableViewCell: MediaGridContainerViewDelegate {
     func mediaGridContainerView(_ container: MediaGridContainerView, didTapMediaView mediaView: MediaView, at index: Int) {
         switch container {
         case statusView.mediaGridContainerView:
-            delegate?.statusTableViewCell(self, mediaGridContainerView: container, didTapMediaView: mediaView, at: index)
+            delegate?.statusThreadRootTableViewCell(self, mediaGridContainerView: container, didTapMediaView: mediaView, at: index)
         default:
             assertionFailure()
             return

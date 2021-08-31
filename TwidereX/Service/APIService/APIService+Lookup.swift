@@ -11,10 +11,12 @@ import Combine
 import TwitterSDK
 import CoreDataStack
 import CommonOSLog
+import func QuartzCore.CACurrentMediaTime
 
 extension APIService {
     
     // V1
+    @available(*, deprecated, message: "")
     func statuses(
         tweetIDs: [Twitter.Entity.Tweet.ID],
         twitterAuthenticationBox: AuthenticationService.TwitterAuthenticationBox
@@ -51,6 +53,7 @@ extension APIService {
     }
 
     // V2
+    @available(*, deprecated, message: "")
     func tweets(
         tweetIDs: [Twitter.Entity.V2.Tweet.ID],
         twitterAuthenticationBox: AuthenticationService.TwitterAuthenticationBox
@@ -79,5 +82,58 @@ extension APIService {
             .switchToLatest()
             .eraseToAnyPublisher()
     }
-    
+
+}
+
+extension APIService {
+    // V2
+    func twitterStatus(
+        statusIDs: [Twitter.Entity.V2.Tweet.ID],
+        authenticationContext: TwitterAuthenticationContext
+    ) async throws -> Twitter.Response.Content<Twitter.API.V2.Lookup.Content> {
+        let query = Twitter.API.V2.Lookup.StatusLookupQuery(statusIDs: statusIDs)
+        
+        let response = try await Twitter.API.V2.Lookup.statuses(
+            session: session,
+            query: query,
+            authorization: authenticationContext.authorization
+        )
+        
+        #if DEBUG
+        // log time cost
+        let start = CACurrentMediaTime()
+        defer {
+            // log rate limit
+            response.logRateLimit()
+            
+            let end = CACurrentMediaTime()
+            os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: persist cost %.2fs", ((#file as NSString).lastPathComponent), #line, #function, end - start)
+        }
+        #endif
+        
+        let managedObjectContext = backgroundManagedObjectContext
+        try await managedObjectContext.performChanges {
+            let content = response.value
+            let dictionary = Twitter.Response.V2.DictContent(
+                tweets: [content.data, content.includes?.tweets].compactMap { $0 }.flatMap { $0 },
+                users: content.includes?.users ?? [],
+                media: content.includes?.media ?? [],
+                places: content.includes?.places ?? []
+            )
+            let statusCache = Persist.PersistCache<TwitterStatus>()
+            let userCache = Persist.PersistCache<TwitterUser>()
+            
+            Persistence.Twitter.persist(
+                in: managedObjectContext,
+                context: Persistence.Twitter.PersistContextV2(
+                    dictionary: dictionary,
+                    statusCache: statusCache,
+                    userCache: userCache,
+                    networkDate: response.networkDate
+                )
+            )
+        }   // end .performChanges { … }
+        
+        return response
+    }
 }

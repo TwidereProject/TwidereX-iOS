@@ -9,29 +9,6 @@ import Foundation
 import CoreDataStack
 import TwitterSDK
 
-extension TwitterUser.Property {
-    
-    @available(*, deprecated, message: "")
-    init(entity: Twitter.Entity.V2.User, networkDate: Date) {
-        fatalError()
-//        self.init(
-//            id: entity.id,
-//            name: entity.name,
-//            username: entity.username,
-//            bioDescription: entity.description,
-//            createdAt: entity.createdAt,
-//            location: entity.location,
-//            pinnedTweetID: entity.pinnedTweetID,
-//            profileBannerURL: nil,
-//            profileImageURL: entity.profileImageURL,
-//            protected: entity.protected ?? false,
-//            url: entity.url,
-//            verified: entity.verified ?? false,
-//            networkDate: networkDate
-//        )
-    }
-}
-
 extension TwitterUser {
     public enum ProfileImageSize: String {
         case original

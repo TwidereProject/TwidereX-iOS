@@ -1,8 +1,8 @@
 //
-//  StatusTableViewCell+ViewModel.swift
-//  StatusTableViewCell+ViewModel
+//  StatusThreadRootTableViewCell+ViewModel.swift
+//  StatusThreadRootTableViewCell+ViewModel
 //
-//  Created by Cirno MainasuK on 2021-8-27.
+//  Created by Cirno MainasuK on 2021-8-30.
 //  Copyright © 2021 Twidere. All rights reserved.
 //
 
@@ -11,10 +11,9 @@ import Combine
 import SwiftUI
 import CoreDataStack
 
-extension StatusTableViewCell {
+extension StatusThreadRootTableViewCell {
     final class ViewModel {
         enum Value {
-            case feed(Feed)
             case twitterStatus(TwitterStatus)
             case mastodonStatus(MastodonStatus)
         }
@@ -28,8 +27,8 @@ extension StatusTableViewCell {
     
     func configure(
         tableView: UITableView,
-        viewModel: StatusTableViewCell.ViewModel,
-        delegate: StatusTableViewCellDelegate
+        viewModel: StatusThreadRootTableViewCell.ViewModel,
+        delegate: StatusThreadRootTableViewCellDelegate?
     ) {
         if statusView.frame == .zero {
             // set status view width
@@ -43,8 +42,6 @@ extension StatusTableViewCell {
         }
         
         switch viewModel.value {
-        case .feed(let feed):
-            statusView.configure(feed: feed)
         case .twitterStatus(let status):
             statusView.configure(twitterStatus: status)
         case .mastodonStatus(let status):

@@ -317,7 +317,7 @@ extension UserProviderFacade {
                 let cancelAction = UIAlertAction(title: L10n.Common.Controls.Actions.cancel, style: .cancel, handler: nil)
                 confirmAlertController.addAction(cancelAction)
                 confirmAlertController.popoverPresentationController?.barButtonItem = sender
-                dependency.coordinator.present(scene: .alertController(alertController: confirmAlertController), from: nil, transition: .alertController(animated: true, completion: nil))
+//                dependency.coordinator.present(scene: .alertController(alertController: confirmAlertController), from: nil, transition: .alertController(animated: true, completion: nil))
             }
         }
         alertController.addAction(muteAction)
@@ -361,7 +361,7 @@ extension UserProviderFacade {
                 let cancelAction = UIAlertAction(title: L10n.Common.Controls.Actions.cancel, style: .cancel, handler: nil)
                 confirmAlertController.addAction(cancelAction)
                 confirmAlertController.popoverPresentationController?.barButtonItem = sender
-                dependency.coordinator.present(scene: .alertController(alertController: confirmAlertController), from: nil, transition: .alertController(animated: true, completion: nil))
+//                dependency.coordinator.present(scene: .alertController(alertController: confirmAlertController), from: nil, transition: .alertController(animated: true, completion: nil))
             }
         }
         alertController.addAction(blockAction)
@@ -409,7 +409,7 @@ extension UserProviderFacade {
             let cancelAction = UIAlertAction(title: L10n.Common.Controls.Actions.cancel, style: .cancel, handler: nil)
             reportOptionsAlertController.addAction(cancelAction)
             reportOptionsAlertController.popoverPresentationController?.barButtonItem = sender
-            dependency.coordinator.present(scene: .alertController(alertController: reportOptionsAlertController), from: nil, transition: .alertController(animated: true, completion: nil))
+//            dependency.coordinator.present(scene: .alertController(alertController: reportOptionsAlertController), from: nil, transition: .alertController(animated: true, completion: nil))
         }
         alertController.addAction(reportAction)
         

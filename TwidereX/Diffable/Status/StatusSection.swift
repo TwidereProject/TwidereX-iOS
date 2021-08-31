@@ -23,6 +23,7 @@ extension StatusSection {
     
     struct Configuration {
         let statusTableViewCellDelegate: StatusTableViewCellDelegate
+        let statusThreadRootTableViewCellDelegate: StatusThreadRootTableViewCellDelegate?
     }
 
     static func diffableDataSource(
@@ -36,7 +37,7 @@ extension StatusSection {
             
             // configure cell with item
             switch item {
-            case .homeTimelineFeed(let record):
+            case .feed(let record):
                 let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: StatusTableViewCell.self), for: indexPath) as! StatusTableViewCell
                 context.managedObjectContext.performAndWait {
                     guard let feed = record.object(in: context.managedObjectContext) else { return }
@@ -48,20 +49,72 @@ extension StatusSection {
                     )
                 }
                 return cell
-
-            case .twitterStatus(let record):
+                
+            case .status(let status):
                 let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: StatusTableViewCell.self), for: indexPath) as! StatusTableViewCell
                 context.managedObjectContext.performAndWait {
-                    guard let status = record.object(in: context.managedObjectContext) else { return }
-                    configure(
-                        tableView: tableView,
-                        cell: cell,
-                        viewModel: StatusTableViewCell.ViewModel(value: .twitterStatus(status)),
-                        configuration: configuration
-                    )
+                    switch status {
+                    case .twitter(let record):
+                        guard let status = record.object(in: context.managedObjectContext) else { return }
+                        configure(
+                            tableView: tableView,
+                            cell: cell,
+                            viewModel: StatusTableViewCell.ViewModel(value: .twitterStatus(status)),
+                            configuration: configuration
+                        )
+                    case .mastodon(let record):
+                        guard let status = record.object(in: context.managedObjectContext) else { return }
+                        configure(
+                            tableView: tableView,
+                            cell: cell,
+                            viewModel: StatusTableViewCell.ViewModel(value: .mastodonStatus(status)),
+                            configuration: configuration
+                        )
+                    }   // end switch
                 }
                 return cell
-            }
+
+            case .thread(let thread):
+                switch thread {
+                case .root(let status):
+                    let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: StatusThreadRootTableViewCell.self), for: indexPath) as! StatusThreadRootTableViewCell
+                    context.managedObjectContext.performAndWait {
+                        switch status {
+                        case .twitter(let record):
+                            guard let status = record.object(in: context.managedObjectContext) else { return }
+                            configure(
+                                tableView: tableView,
+                                cell: cell,
+                                viewModel: StatusThreadRootTableViewCell.ViewModel(value: .twitterStatus(status)),
+                                configuration: configuration
+                            )
+                        case .mastodon(let record):
+                            guard let status = record.object(in: context.managedObjectContext) else { return }
+                            configure(
+                                tableView: tableView,
+                                cell: cell,
+                                viewModel: StatusThreadRootTableViewCell.ViewModel(value: .mastodonStatus(status)),
+                                configuration: configuration
+                            )
+                        }
+                    }
+                    return cell
+                case .reply(let status):
+                    fatalError()
+                case .leaf(let status):
+                    fatalError()
+                }
+                
+            case .topLoader:
+                let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: TimelineBottomLoaderTableViewCell.self), for: indexPath) as! TimelineBottomLoaderTableViewCell
+                cell.activityIndicatorView.startAnimating()
+                return cell
+
+            case .bottomLoader:
+                let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: TimelineBottomLoaderTableViewCell.self), for: indexPath) as! TimelineBottomLoaderTableViewCell
+                cell.activityIndicatorView.startAnimating()
+                return cell
+            }   // end switch
         }
     }
 }
@@ -74,10 +127,23 @@ extension StatusSection {
         viewModel: StatusTableViewCell.ViewModel,
         configuration: Configuration
     ) {
-        cell.configuration(
+        cell.configure(
             tableView: tableView,
             viewModel: viewModel,
             delegate: configuration.statusTableViewCellDelegate
+        )
+    }
+    
+    static func configure(
+        tableView: UITableView,
+        cell: StatusThreadRootTableViewCell,
+        viewModel: StatusThreadRootTableViewCell.ViewModel,
+        configuration: Configuration
+    ) {
+        cell.configure(
+            tableView: tableView,
+            viewModel: viewModel,
+            delegate: configuration.statusThreadRootTableViewCellDelegate
         )
     }
     

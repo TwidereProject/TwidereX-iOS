@@ -184,7 +184,7 @@ extension HomeTimelineViewController {
         
         func match(item: StatusItem) -> Bool {
             switch item {
-            case .homeTimelineFeed(let record):
+            case .feed(let record):
                 guard let feed = record.object(in: AppContext.shared.managedObjectContext) else { return false }
                 if let status = feed.twitterStatus {
                     switch self {
@@ -354,7 +354,7 @@ extension HomeTimelineViewController {
         
         let droppingObjectIDs = snapshotTransitioning.itemIdentifiers.prefix(count).compactMap { item -> NSManagedObjectID? in
             switch item {
-            case .homeTimelineFeed(let record):         return record.objectID
+            case .feed(let record):         return record.objectID
             default:                                    return nil
             }
         }

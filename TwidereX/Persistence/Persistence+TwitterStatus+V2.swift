@@ -1,0 +1,194 @@
+//
+//  Persistence+TwitterStatus+V2.swift
+//  Persistence+TwitterStatus+V2
+//
+//  Created by Cirno MainasuK on 2021-8-31.
+//  Copyright © 2021 Twidere. All rights reserved.
+//
+
+import CoreData
+import CoreDataStack
+import Foundation
+import TwitterSDK
+import os.log
+
+extension Persistence.TwitterStatus {
+
+    struct PersistContextV2 {
+        let entity: Entity
+        let repost: Entity?     // status.repost
+        let quote: Entity?
+        let replyTo: Entity?
+        
+        let dictionary: Twitter.Response.V2.DictContent
+        
+        let statusCache: APIService.Persist.PersistCache<TwitterStatus>?
+        let userCache: APIService.Persist.PersistCache<TwitterUser>?
+        let networkDate: Date
+        let log = OSLog.api
+        
+        struct Entity {
+            let status: Twitter.Entity.V2.Tweet
+            let author: Twitter.Entity.V2.User
+        }
+        
+        func entity(statusID: Twitter.Entity.V2.Tweet.ID) -> Entity? {
+            guard let status = dictionary.tweetDict[statusID],
+                  let authorID = status.authorID,
+                  let user = dictionary.userDict[authorID]
+            else { return nil }
+            return Entity(
+                status: status,
+                author: user
+            )
+        }
+    }
+    
+    static func createOrMerge(
+        in managedObjectContext: NSManagedObjectContext,
+        context: PersistContextV2
+    ) -> (TwitterStatus, Bool) {
+                
+        // build tree
+        // TODO: in reply to
+        // let replyTo = context.replyTo.flatMap { entity in … }
+        
+        let repost = context.repost.flatMap { entity -> TwitterStatus in
+            let (status, _) = createOrMerge(
+                in: managedObjectContext,
+                context: PersistContextV2(
+                    entity: entity,
+                    repost: nil,
+                    quote: context.quote,
+                    replyTo: nil,
+                    dictionary: context.dictionary,
+                    statusCache: context.statusCache,
+                    userCache: context.userCache,
+                    networkDate: context.networkDate
+                )
+            )
+            return status
+        }
+        
+        let quote: TwitterStatus? = {
+            guard repost == nil else { return nil }
+            return context.quote.flatMap { entity -> TwitterStatus in
+                let (status, _) = createOrMerge(
+                    in: managedObjectContext,
+                    context: PersistContextV2(
+                        entity: entity,
+                        repost: nil,
+                        quote: nil,
+                        replyTo: nil,
+                        dictionary: context.dictionary,
+                        statusCache: context.statusCache,
+                        userCache: context.userCache,
+                        networkDate: context.networkDate
+                    )
+                )
+                return status
+            }
+        }()
+
+        if let oldStatus = fetch(in: managedObjectContext, context: context) {
+            merge(twitterStatus: oldStatus, context: context)
+            return (oldStatus, false)
+        } else {
+            let (author, _) = Persistence.TwitterUser.createOrMerge(
+                in: managedObjectContext,
+                context: Persistence.TwitterUser.PersistContextV2(
+                    entity: context.entity.author,
+                    cache: context.userCache,
+                    networkDate: context.networkDate
+                )
+            )
+            let relationship = TwitterStatus.Relationship(
+                author: author,
+                repost: repost,
+                quote: quote
+            )
+            let status = create(in: managedObjectContext, context: context, relationship: relationship)
+            return (status, true)
+        }
+    }
+    
+}
+
+extension Persistence.TwitterStatus {
+    
+    static func fetch(
+        in managedObjectContext: NSManagedObjectContext,
+        context: PersistContextV2
+    ) -> TwitterStatus? {
+        if let cache = context.statusCache {
+            return cache.dictionary[context.entity.status.id]
+        } else {
+            let request = TwitterStatus.sortedFetchRequest
+            request.predicate = TwitterStatus.predicate(id: context.entity.status.id)
+            request.fetchLimit = 1
+            do {
+                return try managedObjectContext.fetch(request).first
+            } catch {
+                assertionFailure(error.localizedDescription)
+                return nil
+            }
+        }
+    }
+    
+    @discardableResult
+    static func create(
+        in managedObjectContext: NSManagedObjectContext,
+        context: PersistContextV2,
+        relationship: TwitterStatus.Relationship
+    ) -> TwitterStatus {
+        let property = TwitterStatus.Property(
+            status: context.entity.status,
+            author: context.entity.author,
+            place: nil,
+            media: context.dictionary.media(for: context.entity.status) ?? [],
+            networkDate: context.networkDate
+        )
+        let status = TwitterStatus.insert(
+            into: managedObjectContext,
+            property: property,
+            relationship: relationship
+        )
+        update(twitterStatus: status, context: context)
+        return status
+    }
+    
+    static func merge(
+        twitterStatus status: TwitterStatus,
+        context: PersistContextV2
+    ) {
+        guard context.networkDate > status.updatedAt else { return }
+
+        let property = TwitterStatus.Property(
+            status: context.entity.status,
+            author: context.entity.author,
+            place: nil,
+            media: context.dictionary.media(for: context.entity.status) ?? [],
+            networkDate: context.networkDate
+        )
+        status.update(property: property)
+        update(twitterStatus: status, context: context)
+        
+        // merge user
+        Persistence.TwitterUser.merge(
+            twitterUser: status.author,
+            context: Persistence.TwitterUser.PersistContextV2(
+                entity: context.entity.author,
+                cache: context.userCache,
+                networkDate: context.networkDate
+            )
+        )
+    }
+    
+    private static func update(
+        twitterStatus status: TwitterStatus,
+        context: PersistContextV2
+    ) {
+        status.update(conversationID: context.entity.status.conversationID)
+    }
+    
+}

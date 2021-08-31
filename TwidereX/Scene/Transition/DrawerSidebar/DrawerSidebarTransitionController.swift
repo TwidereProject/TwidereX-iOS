@@ -150,11 +150,12 @@ extension DrawerSidebarTransitionController {
         switch transitionType {
         case .present:
             wantsInteractive = true
-            drawerSidebarTransitionableViewController?.coordinator.present(
-                scene: .drawerSidebar,
-                from: drawerSidebarTransitionableViewController,
-                transition: .custom(transitioningDelegate: self)
-            )
+            // FIXME:
+//            drawerSidebarTransitionableViewController?.coordinator.present(
+//                scene: .drawerSidebar,
+//                from: drawerSidebarTransitionableViewController,
+//                transition: .custom(transitioningDelegate: self)
+//            )
 
         case .dismiss:
             assertionFailure()

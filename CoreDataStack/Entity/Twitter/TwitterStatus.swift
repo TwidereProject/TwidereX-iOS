@@ -24,6 +24,9 @@ final public class TwitterStatus: NSManagedObject {
     @NSManaged public private(set) var replyCount: Int
     // sourcery: autoUpdatableObject, autoGenerateProperty
     @NSManaged public private(set) var repostCount: Int
+    
+    // sourcery: autoUpdatableObject
+    @NSManaged public private(set) var conversationID: TwitterStatus.ID?
 
     // sourcery: autoUpdatableObject, autoGenerateProperty
     @NSManaged public private(set) var createdAt: Date
@@ -218,6 +221,11 @@ extension TwitterStatus: AutoUpdatableObject {
     public func update(repostCount: Int) {
     	if self.repostCount != repostCount {
     		self.repostCount = repostCount
+    	}
+    }
+    public func update(conversationID: TwitterStatus.ID?) {
+    	if self.conversationID != conversationID {
+    		self.conversationID = conversationID
     	}
     }
     public func update(createdAt: Date) {

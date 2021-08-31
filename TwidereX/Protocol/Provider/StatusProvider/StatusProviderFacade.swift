@@ -475,12 +475,12 @@ extension StatusProviderFacade {
         switch entity.type {
         case .hashtag(let text):
             let searchDetailViewModel = SearchDetailViewModel(initialSearchText: "#" + text)
-            provider.coordinator.present(scene: .searchDetail(viewModel: searchDetailViewModel), from: provider, transition: .show)
+//            provider.coordinator.present(scene: .searchDetail(viewModel: searchDetailViewModel), from: provider, transition: .show)
         case .mention(let text):
             coordinateToStatusMentionProfileScene(for: .tweet, provider: provider, cell: cell, mention: text)
         case .url(let originalURL, _):
             guard let url = URL(string: originalURL) else { return }
-            provider.coordinator.present(scene: .safari(url: url), from: nil, transition: .safariPresent(animated: true, completion: nil))
+//            provider.coordinator.present(scene: .safari(url: url), from: nil, transition: .safariPresent(animated: true, completion: nil))
         default:
             break
         }

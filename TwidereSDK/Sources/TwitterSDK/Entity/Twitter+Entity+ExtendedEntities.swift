@@ -34,6 +34,7 @@ extension Twitter.Entity.ExtendedEntities {
         public let sourceStatusIDStr: String?
         public let sourceUserID: Int?
         public let sourceUserIDStr: String?
+        public let extAltText: String?
         
         enum CodingKeys: String, CodingKey {
             case id = "id"
@@ -51,6 +52,7 @@ extension Twitter.Entity.ExtendedEntities {
             case sourceStatusIDStr = "source_status_id_str"
             case sourceUserID = "source_user_id"
             case sourceUserIDStr = "source_user_id_str"
+            case extAltText = "ext_alt_text"
         }
     }
 }

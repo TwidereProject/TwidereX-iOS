@@ -11,6 +11,7 @@ import Combine
 import TwitterSDK
 import CoreDataStack
 import CommonOSLog
+import Alamofire
 
 extension APIService {
     
@@ -96,7 +97,8 @@ extension APIService {
 // V2
 extension APIService {
     
-    // convsersation tweet search
+    // conversation tweet search
+    @available(*, deprecated, message: "")
     func tweetsRecentSearch(
         conversationID: Twitter.Entity.V2.Tweet.ConversationID,
         authorID: Twitter.Entity.User.ID,
@@ -104,10 +106,9 @@ extension APIService {
         startTime: Date?,
         nextToken: String?,
         twitterAuthenticationBox: AuthenticationService.TwitterAuthenticationBox
-    ) -> AnyPublisher<Twitter.Response.Content<Twitter.API.V2.RecentSearch.Content>, Error> {
+    ) -> AnyPublisher<Twitter.Response.Content<Twitter.API.V2.Search.Content>, Error> {
 
-        
-        let query = Twitter.API.V2.RecentSearch.Query(
+        let query = Twitter.API.V2.Search.RecentQuery(
             query: "conversation_id:\(conversationID) (to:\(authorID) OR from:\(authorID))",
             maxResults: APIService.conversationSearchCount,
             sinceID: sinceID,
@@ -121,13 +122,14 @@ extension APIService {
     }
     
     // global tweet search
+    @available(*, deprecated, message: "")
     func tweetsRecentSearch(
         searchText: String,
         nextToken: String?,
         twitterAuthenticationBox: AuthenticationService.TwitterAuthenticationBox
-    ) -> AnyPublisher<Twitter.Response.Content<Twitter.API.V2.RecentSearch.Content>, Error> {
+    ) -> AnyPublisher<Twitter.Response.Content<Twitter.API.V2.Search.Content>, Error> {
 
-        let query = Twitter.API.V2.RecentSearch.Query(
+        let query = Twitter.API.V2.Search.RecentQuery(
             query: searchText,
             maxResults: APIService.defaultSearchCount,
             sinceID: nil,
@@ -140,15 +142,16 @@ extension APIService {
         )
     }
     
+    @available(*, deprecated, message: "")
     private func _tweetsRecentSearch(
-        query: Twitter.API.V2.RecentSearch.Query,
+        query: Twitter.API.V2.Search.RecentQuery,
         twitterAuthenticationBox: AuthenticationService.TwitterAuthenticationBox
-    ) -> AnyPublisher<Twitter.Response.Content<Twitter.API.V2.RecentSearch.Content>, Error> {
+    ) -> AnyPublisher<Twitter.Response.Content<Twitter.API.V2.Search.Content>, Error> {
         let requestTwitterUserID = twitterAuthenticationBox.twitterUserID
         let authorization = twitterAuthenticationBox.twitterAuthorization
 
-        return Twitter.API.V2.RecentSearch.tweetsSearchRecent(query: query, session: session, authorization: authorization)
-            .map { response -> AnyPublisher<Twitter.Response.Content<Twitter.API.V2.RecentSearch.Content>, Error> in
+        return Twitter.API.V2.Search.tweetsSearchRecent(query: query, session: session, authorization: authorization)
+            .map { response -> AnyPublisher<Twitter.Response.Content<Twitter.API.V2.Search.Content>, Error> in
                 let log = OSLog.api
                 
                 let dictResponse = response.map { response in
@@ -171,5 +174,32 @@ extension APIService {
             // App will fallback to v1 API if get rate limit error
     }
 
+}
+
+extension APIService {
+    
+    // for thread
+    func searchTwitterStatus(
+        conversationID: Twitter.Entity.V2.Tweet.ConversationID,
+        authorID: Twitter.Entity.User.ID,
+        sinceID: Twitter.Entity.V2.Tweet.ID?,
+        startTime: Date?,
+        nextToken: String?,
+        authenticationContext: TwitterAuthenticationContext
+    ) async throws -> Twitter.Response.Content<Twitter.API.V2.Search.Content> {
+        let query = Twitter.API.V2.Search.RecentTweetQuery(
+            query: "conversation_id:\(conversationID) (to:\(authorID) OR from:\(authorID))",
+            maxResults: APIService.conversationSearchCount,
+            sinceID: sinceID,
+            startTime: startTime,
+            nextToken: nextToken
+        )
+        let response = try await Twitter.API.V2.Search.recentTweet(
+            session: session,
+            query: query,
+            authorization: authenticationContext.authorization
+        )
+        return response
+    }
     
 }

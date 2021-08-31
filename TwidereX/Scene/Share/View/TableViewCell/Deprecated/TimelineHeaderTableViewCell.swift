@@ -19,7 +19,7 @@ extension NeedsDependency where Self: TimelineHeaderTableViewCellDelegate {
         switch entity.type {
         case .url(let original, _):
             guard let url = URL(string: original) else { return }
-            coordinator.present(scene: .safari(url: url), from: nil, transition: .safariPresent(animated: true, completion: nil))
+//            coordinator.present(scene: .safari(url: url), from: nil, transition: .safariPresent(animated: true, completion: nil))
         default:
             break
         }

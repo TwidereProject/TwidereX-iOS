@@ -102,7 +102,7 @@ extension APIService.CoreData {
         property.bio.flatMap { user.update(bio: $0) }
         property.url.flatMap { user.update(url: $0) }
         property.location.flatMap { user.update(location: $0) }
-        property.profileBannerURL.flatMap { user.update(profileBannerURL: $0) }
+        // property.profileBannerURL.flatMap { user.update(profileBannerURL: $0) }
         property.profileImageURL.flatMap { user.update(profileImageURL: $0) }
         
         // update entities

@@ -31,6 +31,18 @@ enum AuthenticationContext {
         }
     }
 }
+
+extension AuthenticationContext {
+    var twitterAuthenticationContext: TwitterAuthenticationContext? {
+        guard case let .twitter(authenticationContext) = self else { return nil }
+        return authenticationContext
+    }
+    
+    var mastodonAuthenticationContext: MastodonAuthenticationContext? {
+        guard case let .mastodon(authenticationContext) = self else { return nil }
+        return authenticationContext
+    }
+}
         
 struct TwitterAuthenticationContext {
     let authenticationRecord: ManagedObjectRecord<TwitterAuthentication>

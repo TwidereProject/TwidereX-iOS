@@ -36,6 +36,7 @@
         <relationship name="mastodonUser" maxCount="1" deletionRule="Nullify" destinationEntity="MastodonUser" inverseName="mastodonAuthentication" inverseEntity="MastodonUser"/>
     </entity>
     <entity name="MastodonStatus" representedClassName=".MastodonStatus" syncable="YES">
+        <attribute name="attachments" optional="YES" attributeType="Binary"/>
         <attribute name="content" attributeType="String"/>
         <attribute name="createdAt" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="domain" attributeType="String"/>
@@ -273,6 +274,7 @@
     </entity>
     <entity name="TwitterStatus" representedClassName=".TwitterStatus" syncable="YES">
         <attribute name="attachments" optional="YES" attributeType="Binary"/>
+        <attribute name="conversationID" optional="YES" attributeType="String"/>
         <attribute name="createdAt" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="id" attributeType="String"/>
         <attribute name="likeCount" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
@@ -352,7 +354,7 @@
         <element name="AuthenticationIndex" positionX="-63" positionY="-153" width="128" height="119"/>
         <element name="Feed" positionX="-54" positionY="-144" width="128" height="134"/>
         <element name="MastodonAuthentication" positionX="-63" positionY="-153" width="128" height="14"/>
-        <element name="MastodonStatus" positionX="-63" positionY="-171" width="128" height="314"/>
+        <element name="MastodonStatus" positionX="-63" positionY="-171" width="128" height="329"/>
         <element name="MastodonUser" positionX="-63" positionY="-153" width="128" height="374"/>
         <element name="MentionTimelineIndex" positionX="-63" positionY="-162" width="128" height="163"/>
         <element name="TimelineIndex" positionX="748.46875" positionY="302.9921875" width="128" height="149"/>
@@ -371,7 +373,7 @@
         <element name="TwitterPlace" positionX="1146.6953125" positionY="350.890625" width="128" height="179"/>
         <element name="TwitterPoll" positionX="-54" positionY="-36" width="128" height="149"/>
         <element name="TwitterPollOption" positionX="-45" positionY="-27" width="128" height="119"/>
-        <element name="TwitterStatus" positionX="-63" positionY="-153" width="128" height="239"/>
+        <element name="TwitterStatus" positionX="-63" positionY="-153" width="128" height="254"/>
         <element name="TwitterUser" positionX="281.5234375" positionY="201.703125" width="128" height="404"/>
         <element name="TwitterUserEntities" positionX="-72" positionY="-171" width="128" height="89"/>
         <element name="TwitterUserEntitiesURL" positionX="-63" positionY="-162" width="128" height="149"/>

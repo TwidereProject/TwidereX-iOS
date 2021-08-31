@@ -68,6 +68,33 @@ final public class MastodonStatus: NSManagedObject {
 }
 
 extension MastodonStatus {
+    // sourcery: autoUpdatableObject, autoGenerateProperty
+    @objc public var attachments: [MastodonAttachment] {
+        get {
+            let keyPath = #keyPath(MastodonStatus.attachments)
+            willAccessValue(forKey: keyPath)
+            let _data = primitiveValue(forKey: keyPath) as? Data
+            didAccessValue(forKey: keyPath)
+            do {
+                guard let data = _data else { return [] }
+                let attachments = try JSONDecoder().decode([MastodonAttachment].self, from: data)
+                return attachments
+            } catch {
+                assertionFailure(error.localizedDescription)
+                return []
+            }
+        }
+        set {
+            let keyPath = #keyPath(MastodonStatus.attachments)
+            let data = try? JSONEncoder().encode(newValue)
+            willChangeValue(forKey: keyPath)
+            setPrimitiveValue(data, forKey: keyPath)
+            didChangeValue(forKey: keyPath)
+        }
+    }
+}
+
+extension MastodonStatus {
     
     @discardableResult
     public static func insert(
@@ -139,6 +166,7 @@ extension MastodonStatus: AutoGenerateProperty {
         public let  language: String?
         public let  createdAt: Date
         public let  updatedAt: Date
+        public let  attachments: [MastodonAttachment]
 
     	public init(
     		id: ID,
@@ -153,7 +181,8 @@ extension MastodonStatus: AutoGenerateProperty {
     		text: String?,
     		language: String?,
     		createdAt: Date,
-    		updatedAt: Date
+    		updatedAt: Date,
+    		attachments: [MastodonAttachment]
     	) {
     		self.id = id
     		self.domain = domain
@@ -168,6 +197,7 @@ extension MastodonStatus: AutoGenerateProperty {
     		self.language = language
     		self.createdAt = createdAt
     		self.updatedAt = updatedAt
+    		self.attachments = attachments
     	}
     }
 
@@ -185,6 +215,7 @@ extension MastodonStatus: AutoGenerateProperty {
     	self.language = property.language
     	self.createdAt = property.createdAt
     	self.updatedAt = property.updatedAt
+    	self.attachments = property.attachments
     }
 
     public func update(property: Property) {
@@ -198,6 +229,7 @@ extension MastodonStatus: AutoGenerateProperty {
     	update(language: property.language)
     	update(createdAt: property.createdAt)
     	update(updatedAt: property.updatedAt)
+    	update(attachments: property.attachments)
     }
     // sourcery:end
 }
@@ -282,6 +314,11 @@ extension MastodonStatus: AutoUpdatableObject {
     public func update(updatedAt: Date) {
     	if self.updatedAt != updatedAt {
     		self.updatedAt = updatedAt
+    	}
+    }
+    public func update(attachments: [MastodonAttachment]) {
+    	if self.attachments != attachments {
+    		self.attachments = attachments
     	}
     }
     // sourcery:end

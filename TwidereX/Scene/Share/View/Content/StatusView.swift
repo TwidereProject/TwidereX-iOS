@@ -249,7 +249,7 @@ extension StatusView.Style {
     }
     
     private func layoutPlain(statusView: StatusView) {
-        // container: V - [ header container | body container | toolbar ]
+        // container: V - [ header container | author container | contentTextView | mediaGridContainerView | quoteStatusView | toolbar ]
 
         // header container: H - [ icon | label ]
         statusView.containerStackView.addArrangedSubview(statusView.headerContainerView)
@@ -271,6 +271,72 @@ extension StatusView.Style {
         statusView.headerIconImageView.setContentHuggingPriority(.defaultLow, for: .vertical)
         statusView.headerIconImageView.setContentHuggingPriority(.defaultLow, for: .horizontal)
         statusView.headerContainerView.isHidden = true
+
+        // author content: H - [ authorAvatarButton | author info content ]
+        let authorContentStackView = UIStackView()
+        authorContentStackView.axis = .horizontal
+        authorContentStackView.spacing = 10
+        statusView.containerStackView.addArrangedSubview(authorContentStackView)
+        
+        // authorAvatarButton
+        let authorAvatarButtonSize = CGSize(width: 44, height: 44)
+        statusView.authorAvatarButton.size = authorAvatarButtonSize
+        statusView.authorAvatarButton.avatarImageView.imageViewSize = authorAvatarButtonSize
+        statusView.authorAvatarButton.translatesAutoresizingMaskIntoConstraints = false
+        authorContentStackView.addArrangedSubview(statusView.authorAvatarButton)
+        NSLayoutConstraint.activate([
+            statusView.authorAvatarButton.widthAnchor.constraint(equalToConstant: authorAvatarButtonSize.width).priority(.required - 1),
+            statusView.authorAvatarButton.heightAnchor.constraint(equalToConstant: authorAvatarButtonSize.height).priority(.required - 1),
+        ])
+        
+        // author info content: V - [ author info headline content | author info sub-headline content ]
+        let authorInfoContentStackView = UIStackView()
+        authorInfoContentStackView.axis = .vertical
+        authorContentStackView.addArrangedSubview(authorInfoContentStackView)
+        
+        // author info headline content: H - [ authorNameLabel | padding | visibilityImageView (for Mastodon) | timestampLabel ]
+        let authorInfoHeadlineContentStackView = UIStackView()
+        authorInfoHeadlineContentStackView.axis = .horizontal
+        authorInfoContentStackView.addArrangedSubview(authorInfoHeadlineContentStackView)
+        
+        // authorNameLabel
+        authorInfoHeadlineContentStackView.addArrangedSubview(statusView.authorNameLabel)
+        statusView.timestampLabel.setContentCompressionResistancePriority(.required - 10, for: .horizontal)
+        // padding
+        authorInfoHeadlineContentStackView.addArrangedSubview(statusView.authorNameLabel)
+        // timestampLabel
+        authorInfoHeadlineContentStackView.addArrangedSubview(statusView.timestampLabel)
+        statusView.timestampLabel.setContentHuggingPriority(.required - 9, for: .horizontal)
+        statusView.timestampLabel.setContentCompressionResistancePriority(.required - 9, for: .horizontal)
+        
+        // set header label align to author name
+        NSLayoutConstraint.activate([
+            statusView.headerTextLabel.leadingAnchor.constraint(equalTo: statusView.authorNameLabel.leadingAnchor),
+        ])
+        
+        // author info sub-headline content: H - [ authorUsernameLabel ]
+        let authorInfoSubHeadlineContentStackView = UIStackView()
+        authorInfoSubHeadlineContentStackView.axis = .horizontal
+        authorInfoContentStackView.addArrangedSubview(authorInfoSubHeadlineContentStackView)
+        
+        // authorUsernameLabel
+        authorInfoSubHeadlineContentStackView.addArrangedSubview(statusView.authorUsernameLabel)
+
+        // contentTextView
+        statusView.containerStackView.addArrangedSubview(statusView.contentTextView)
+        
+        // mediaGridContainerView
+        statusView.containerStackView.addArrangedSubview(statusView.mediaGridContainerView)
+        
+        // quoteStatusView
+        let quoteStatusView = StatusView()
+        quoteStatusView.setup(style: .quote)
+        statusView.quoteStatusView = quoteStatusView
+        statusView.containerStackView.addArrangedSubview(quoteStatusView)
+        
+        // toolbar
+        statusView.containerStackView.addArrangedSubview(statusView.toolbar)
+        statusView.toolbar.setContentHuggingPriority(.required - 9, for: .vertical)
     }
     
     private func layoutQuote(statusView: StatusView) {

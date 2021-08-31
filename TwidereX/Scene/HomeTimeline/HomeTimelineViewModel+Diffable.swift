@@ -17,13 +17,14 @@ extension HomeTimelineViewModel {
         tableView: UITableView,
         statusTableViewCellDelegate: StatusTableViewCellDelegate
     ) {
-        
+        let configuration = StatusSection.Configuration(
+            statusTableViewCellDelegate: statusTableViewCellDelegate,
+            statusThreadRootTableViewCellDelegate: nil
+        )
         diffableDataSource = StatusSection.diffableDataSource(
             tableView: tableView,
             context: context,
-            configuration: .init(
-                statusTableViewCellDelegate: statusTableViewCellDelegate
-            )
+            configuration: configuration
         )
         
         var snapshot = NSDiffableDataSourceSnapshot<StatusSection, StatusItem>()
@@ -35,12 +36,13 @@ extension HomeTimelineViewModel {
             .sink { [weak self] objectIDs in
                 guard let self = self else { return }
                 guard let diffableDataSource = self.diffableDataSource else { return }
+                self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): incoming \(objectIDs.count) objects")
                 Task {
                     let oldSnapshot = diffableDataSource.snapshot()
                     
                     let newSnapshot: NSDiffableDataSourceSnapshot<StatusSection, StatusItem> = {
                         let newItems = objectIDs.map { objectID in
-                            StatusItem.homeTimelineFeed(record: ManagedObjectRecord<Feed>(objectID: objectID))
+                            StatusItem.feed(record: ManagedObjectRecord<Feed>(objectID: objectID))
                         }
                         var snapshot = NSDiffableDataSourceSnapshot<StatusSection, StatusItem>()
                         snapshot.appendSections([.main])
@@ -50,10 +52,12 @@ extension HomeTimelineViewModel {
                     
                     let hasChanges = newSnapshot.itemIdentifiers != oldSnapshot.itemIdentifiers
                     guard hasChanges else {
+                        self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): snapshot not changes")
                         self.didLoadLatest.send()
                         return
                     }
 
+                    self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): snapshot has changes")
                     guard let difference = await self.calculateReloadSnapshotDifference(
                         tableView: tableView,
                         oldSnapshot: oldSnapshot,
@@ -61,6 +65,7 @@ extension HomeTimelineViewModel {
                     ) else {
                         await self.updateDataSource(snapshot: newSnapshot, animatingDifferences: false)
                         self.didLoadLatest.send()
+                        self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): applied new snapshot")
                         return
                     }
                     

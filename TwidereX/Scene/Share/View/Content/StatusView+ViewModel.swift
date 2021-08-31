@@ -264,7 +264,7 @@ extension StatusView {
     }
     
     private func configureContent(twitterStatus status: TwitterStatus) {
-        let status = (status.repost ?? status)
+        let status = status.repost ?? status
         let content = TwitterContent(content: status.text)
         let metaContent = TwitterMetaContent.convert(
             content: content,
@@ -285,7 +285,7 @@ extension StatusView {
             )
         }
         
-        let status = (status.repost ?? status)
+        let status = status.repost ?? status
         status.publisher(for: \.attachments)
             .map { attachments -> [MediaView.Configuration] in
                 return attachments.map { attachment -> MediaView.Configuration in
@@ -310,7 +310,7 @@ extension StatusView {
     }
     
     private func configureToolbar(twitterStatus status: TwitterStatus) {
-        let status = (status.repost ?? status)
+        let status = status.repost ?? status
         status.publisher(for: \.replyCount).assign(to: \.replyCount, on: viewModel).store(in: &disposeBag)
         status.publisher(for: \.repostCount).assign(to: \.repostCount, on: viewModel).store(in: &disposeBag)
         status.publisher(for: \.likeCount).assign(to: \.likeCount, on: viewModel).store(in: &disposeBag)
@@ -321,6 +321,8 @@ extension StatusView {
     func configure(mastodonStatus status: MastodonStatus) {
         configureAuthor(mastodonStatus: status)
         configureContent(mastodonStatus: status)
+        configureMedia(mastodonStatus: status)
+        configureToolbar(mastodonStatus: status)
     }
     
     private func configureAuthor(mastodonStatus status: MastodonStatus) {
@@ -348,7 +350,7 @@ extension StatusView {
     }
     
     private func configureContent(mastodonStatus status: MastodonStatus) {
-        let status = (status.repost ?? status)
+        let status = status.repost ?? status
         let content = MastodonContent(content: status.content, emojis: [:])
         do {
             let metaContent = try MastodonMetaContent.convert(document: content)
@@ -359,4 +361,50 @@ extension StatusView {
             viewModel.content = ""
         }
     }
+    
+    private func configureMedia(mastodonStatus status: MastodonStatus) {
+        func videoInfo(from attachment: MastodonAttachment) -> MediaView.Configuration.VideoInfo {
+            MediaView.Configuration.VideoInfo(
+                aspectRadio: attachment.size,
+                assertURL: attachment.assetURL,
+                previewURL: attachment.previewURL,
+                durationMS: attachment.durationMS
+            )
+        }
+        
+        let status = status.repost ?? status
+        status.publisher(for: \.attachments)
+            .map { attachments -> [MediaView.Configuration] in
+                return attachments.map { attachment -> MediaView.Configuration in
+                    switch attachment.kind {
+                    case .image:
+                        let info = MediaView.Configuration.ImageInfo(
+                            aspectRadio: attachment.size,
+                            assetURL: attachment.assetURL
+                        )
+                        return .image(info: info)
+                    case .video:
+                        let info = videoInfo(from: attachment)
+                        return .video(info: info)
+                    case .gifv:
+                        let info = videoInfo(from: attachment)
+                        return .gif(info: info)
+                    case .audio:
+                        // TODO:
+                        let info = videoInfo(from: attachment)
+                        return .video(info: info)
+                    }
+                }
+            }
+            .assign(to: \.mediaViewConfigurations, on: viewModel)
+            .store(in: &disposeBag)
+    }
+    
+    private func configureToolbar(mastodonStatus status: MastodonStatus) {
+        let status = status.repost ?? status
+        status.publisher(for: \.replyCount).assign(to: \.replyCount, on: viewModel).store(in: &disposeBag)
+        status.publisher(for: \.repostCount).assign(to: \.repostCount, on: viewModel).store(in: &disposeBag)
+        status.publisher(for: \.likeCount).assign(to: \.likeCount, on: viewModel).store(in: &disposeBag)
+    }
+        
 }

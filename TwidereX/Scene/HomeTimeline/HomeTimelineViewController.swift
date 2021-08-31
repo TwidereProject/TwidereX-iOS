@@ -95,8 +95,8 @@ extension HomeTimelineViewController {
             tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
         ])
-//        tableView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-//        view.addSubview(tableView)
+        
+        tableView.delegate = self
         viewModel.setupDiffableDataSource(
             tableView: tableView,
             statusTableViewCellDelegate: self
@@ -170,7 +170,7 @@ extension HomeTimelineViewController {
         super.viewWillAppear(animated)
 
         refreshControl.endRefreshing()
-//        tableView.deselectRow(with: transitionCoordinator, animated: animated)
+        tableView.deselectRow(with: transitionCoordinator, animated: animated)
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -250,10 +250,19 @@ extension HomeTimelineViewController {
 //        handleScrollViewDidScroll(scrollView)
 //    }
 //}
-//
-//// MARK: - UITableViewDelegate
-//extension HomeTimelineViewController: UITableViewDelegate {
-//
+
+// MARK: - UITableViewDelegate
+extension HomeTimelineViewController: UITableViewDelegate, AutoGenerateTableViewDelegate {
+    // sourcery:inline:HomeTimelineViewController.AutoGenerateTableViewDelegate
+
+    // Generated using Sourcery
+    // DO NOT EDIT
+        func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+            aspectTableView(tableView, didSelectRowAt: indexPath)
+        }
+
+    // sourcery:end
+    
 //    func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
 //        guard let diffableDataSource = viewModel.diffableDataSource else { return 100 }
 //        guard let item = diffableDataSource.itemIdentifier(for: indexPath) else { return 100 }
@@ -300,9 +309,9 @@ extension HomeTimelineViewController {
 //    func tableView(_ tableView: UITableView, willPerformPreviewActionForMenuWith configuration: UIContextMenuConfiguration, animator: UIContextMenuInteractionCommitAnimating) {
 //        handleTableView(tableView, willPerformPreviewActionForMenuWith: configuration, animator: animator)
 //    }
-//
-//}
-//
+
+}
+
 //// MARK: - ContentOffsetAdjustableTimelineViewControllerDelegate
 //extension HomeTimelineViewController: ContentOffsetAdjustableTimelineViewControllerDelegate {
 //    func navigationBar() -> UINavigationBar? {

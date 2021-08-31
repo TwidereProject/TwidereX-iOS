@@ -27,7 +27,7 @@ final public class TwitterUser: NSManagedObject {
     @NSManaged public private(set) var createdAt: Date?
     // sourcery: autoUpdatableObject, autoGenerateProperty
     @NSManaged public private(set) var location: String?
-    // sourcery: autoUpdatableObject, autoGenerateProperty
+    // sourcery: autoUpdatableObject
     @NSManaged public private(set) var profileBannerURL: String?
     // sourcery: autoUpdatableObject, autoGenerateProperty
     @NSManaged public private(set) var profileImageURL: String?
@@ -255,7 +255,6 @@ extension TwitterUser: AutoGenerateProperty {
         public let  bio: String?
         public let  createdAt: Date?
         public let  location: String?
-        public let  profileBannerURL: String?
         public let  profileImageURL: String?
         public let  protected: Bool
         public let  url: String?
@@ -269,7 +268,6 @@ extension TwitterUser: AutoGenerateProperty {
     		bio: String?,
     		createdAt: Date?,
     		location: String?,
-    		profileBannerURL: String?,
     		profileImageURL: String?,
     		protected: Bool,
     		url: String?,
@@ -282,7 +280,6 @@ extension TwitterUser: AutoGenerateProperty {
     		self.bio = bio
     		self.createdAt = createdAt
     		self.location = location
-    		self.profileBannerURL = profileBannerURL
     		self.profileImageURL = profileImageURL
     		self.protected = protected
     		self.url = url
@@ -298,7 +295,6 @@ extension TwitterUser: AutoGenerateProperty {
     	self.bio = property.bio
     	self.createdAt = property.createdAt
     	self.location = property.location
-    	self.profileBannerURL = property.profileBannerURL
     	self.profileImageURL = property.profileImageURL
     	self.protected = property.protected
     	self.url = property.url
@@ -312,7 +308,6 @@ extension TwitterUser: AutoGenerateProperty {
     	update(bio: property.bio)
     	update(createdAt: property.createdAt)
     	update(location: property.location)
-    	update(profileBannerURL: property.profileBannerURL)
     	update(profileImageURL: property.profileImageURL)
     	update(protected: property.protected)
     	update(url: property.url)

@@ -47,20 +47,37 @@ final class TwitterAuthenticationController: NeedsDependency {
         self.coordinator = coordinator
         self.appSecret = appSecret
         
-        switch requestTokenExchange {
-        // use PIN-based OAuth via WKWebView (when set callback as "oob")
-        case .pin(let response):
-            let twitterPinBasedAuthenticationViewModel = TwitterPinBasedAuthenticationViewModel(authenticateURL: authenticateURL)
-            setupPINAuthenticate(requestTokenResponse: response, appSecret: appSecret, pinCodePublisher: twitterPinBasedAuthenticationViewModel.pinCodePublisher)
-            twitterPinBasedAuthenticationViewController = coordinator.present(scene: .twitterPinBasedAuthentication(viewModel: twitterPinBasedAuthenticationViewModel), from: nil, transition: .modal(animated: true, completion: nil))
-        // use standard OAuth via system AuthenticationServices
-        case .custom(_, let append):
-            setupCustomAuthenticate(authenticateURL: authenticateURL, append: append)
+        Task {
+            await setup(
+                authenticateURL: authenticateURL,
+                requestTokenExchange: requestTokenExchange
+            )
         }
     }
     
     deinit {
         os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
+    }
+    
+}
+
+extension TwitterAuthenticationController {
+
+    @MainActor
+    private func setup(
+        authenticateURL: URL,
+        requestTokenExchange: Twitter.API.OAuth.OAuthRequestTokenResponseExchange
+    ) async {
+        switch requestTokenExchange {
+            // use PIN-based OAuth via WKWebView (when set callback as "oob")
+        case .pin(let response):
+            let twitterPinBasedAuthenticationViewModel = TwitterPinBasedAuthenticationViewModel(authenticateURL: authenticateURL)
+            setupPINAuthenticate(requestTokenResponse: response, appSecret: appSecret, pinCodePublisher: twitterPinBasedAuthenticationViewModel.pinCodePublisher)
+            twitterPinBasedAuthenticationViewController = coordinator.present(scene: .twitterPinBasedAuthentication(viewModel: twitterPinBasedAuthenticationViewModel), from: nil, transition: .modal(animated: true, completion: nil))
+            // use standard OAuth via system AuthenticationServices
+        case .custom(_, let append):
+            setupCustomAuthenticate(authenticateURL: authenticateURL, append: append)
+        }
     }
     
 }

@@ -699,7 +699,7 @@ extension TweetConversationViewModel {
         /// - Returns: Array of children nodes (node may has children) for given tweet as root
         static func children(
             for tweetID: Twitter.Entity.V2.Tweet.ID,
-            from content: Twitter.API.V2.RecentSearch.Content
+            from content: Twitter.API.V2.Search.Content
         ) -> [ConversationNode] {
             let tweets = [content.data, content.includes?.tweets].compactMap { $0 }.flatMap { $0 }
             let dictContent = Twitter.Response.V2.DictContent(

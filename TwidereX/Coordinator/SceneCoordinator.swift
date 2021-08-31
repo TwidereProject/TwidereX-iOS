@@ -42,12 +42,17 @@ extension SceneCoordinator {
     enum Scene {
         // Onboarding
         case welcome(viewModel: WelcomeViewModel)
-        
         case authentication(viewModel: AuthenticationViewModel)
         case twitterAuthenticationOption(viewModel: TwitterAuthenticationOptionViewModel)
         case twitterPinBasedAuthentication(viewModel: TwitterPinBasedAuthenticationViewModel)
         
+        // Account
         case accountList(viewModel: AccountListViewModel)
+        
+        // Status
+        case statusThread(viewModel: StatusThreadViewModel)
+        
+        // TODO:
         case composeTweet(viewModel: ComposeTweetViewModel)
         case mentionPick(viewModel: MentionPickViewModel, delegate: MentionPickViewControllerDelegate)
         case tweetConversation(viewModel: TweetConversationViewModel)
@@ -56,10 +61,11 @@ extension SceneCoordinator {
         case friendshipList(viewModel: FriendshipListViewModel)
         case mediaPreview(viewModel: MediaPreviewViewModel)
         case drawerSidebar
-        
+
         case setting
         case displayPreference
         case about
+        // end TODO:
         
         #if DEBUG
         case developer
@@ -96,7 +102,13 @@ extension SceneCoordinator {
         }
     }
     
+//    @MainActor
+//    func present(scene: Scene, from sender: UIViewController?, transition: Transition) -> UIViewController? {
+//
+//    }
+    
     @discardableResult
+    @MainActor
     func present(scene: Scene, from sender: UIViewController?, transition: Transition) -> UIViewController? {
         guard let viewController = get(scene: scene) else {
             return nil
@@ -174,6 +186,10 @@ private extension SceneCoordinator {
             viewController = _viewController
         case .accountList(let viewModel):
             let _viewController = AccountListViewController()
+            _viewController.viewModel = viewModel
+            viewController = _viewController
+        case .statusThread(let viewModel):
+            let _viewController = StatusThreadViewController()
             _viewController.viewModel = viewModel
             viewController = _viewController
         case .composeTweet(let viewModel):

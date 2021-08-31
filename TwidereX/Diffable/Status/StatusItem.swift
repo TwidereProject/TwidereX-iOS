@@ -10,6 +10,24 @@ import Foundation
 import CoreDataStack
 
 enum StatusItem: Hashable {
-    case homeTimelineFeed(record: ManagedObjectRecord<Feed>)
-    case twitterStatus(record: ManagedObjectRecord<TwitterStatus>)
+    case feed(record: ManagedObjectRecord<Feed>)
+    case status(Status)
+    case thread(Thread)
+    case topLoader
+    case bottomLoader
+}
+
+extension StatusItem {
+    enum Status: Hashable {
+        case twitter(record: ManagedObjectRecord<TwitterStatus>)
+        case mastodon(record: ManagedObjectRecord<MastodonStatus>)
+    }
+}
+ 
+extension StatusItem {
+    enum Thread: Hashable {
+        case root(status: Status)
+        case reply(status: Status)
+        case leaf(status: Status)
+    }
 }

@@ -1,8 +1,8 @@
 //
-//  Persistence+TwitterUser.swift
-//  Persistence+TwitterUser
+//  Persistence+TwitterUser+V2.swift
+//  Persistence+TwitterUser+V2
 //
-//  Created by Cirno MainasuK on 2021-8-20.
+//  Created by Cirno MainasuK on 2021-8-31.
 //  Copyright © 2021 Twidere. All rights reserved.
 //
 
@@ -14,8 +14,8 @@ import os.log
 
 extension Persistence.TwitterUser {
     
-    struct PersistContext {
-        let entity: Twitter.Entity.User
+    struct PersistContextV2 {
+        let entity: Twitter.Entity.V2.User
         let cache: APIService.Persist.PersistCache<TwitterUser>?
         let networkDate: Date
         let log = OSLog.api
@@ -23,7 +23,7 @@ extension Persistence.TwitterUser {
     
     static func createOrMerge(
         in managedObjectContext: NSManagedObjectContext,
-        context: PersistContext
+        context: PersistContextV2
     ) -> (TwitterUser, Bool) {
         if let oldTwitterUser = fetch(in: managedObjectContext, context: context) {
             merge(twitterUser: oldTwitterUser, context: context)
@@ -37,16 +37,16 @@ extension Persistence.TwitterUser {
 }
 
 extension Persistence.TwitterUser {
-
+    
     static func fetch(
         in managedObjectContext: NSManagedObjectContext,
-        context: PersistContext
+        context: PersistContextV2
     ) -> TwitterUser? {
         if let cache = context.cache {
-            return cache.dictionary[context.entity.idStr]
+            return cache.dictionary[context.entity.id]
         } else {
             let request = TwitterUser.sortedFetchRequest
-            request.predicate = TwitterUser.predicate(id: context.entity.idStr)
+            request.predicate = TwitterUser.predicate(id: context.entity.id)
             request.fetchLimit = 1
             do {
                 return try managedObjectContext.fetch(request).first
@@ -60,20 +60,19 @@ extension Persistence.TwitterUser {
     @discardableResult
     static func create(
         in managedObjectContext: NSManagedObjectContext,
-        context: PersistContext
+        context: PersistContextV2
     ) -> TwitterUser {
         let property = TwitterUser.Property(
             entity: context.entity,
             networkDate: context.networkDate
         )
         let user = TwitterUser.insert(into: managedObjectContext, property: property)
-        update(twitterUser: user, context: context)
         return user
     }
     
     static func merge(
         twitterUser user: TwitterUser,
-        context: PersistContext
+        context: PersistContextV2
     ) {
         guard context.networkDate > user.updatedAt else { return }
         let property = TwitterUser.Property(
@@ -81,14 +80,6 @@ extension Persistence.TwitterUser {
             networkDate: context.networkDate
         )
         user.update(property: property)
-        update(twitterUser: user, context: context)
-    }
-    
-    private static func update(
-        twitterUser user: TwitterUser,
-        context: PersistContext
-    ) {
-        user.update(profileBannerURL: context.entity.profileBannerURL)
     }
     
 }

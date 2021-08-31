@@ -117,43 +117,30 @@ extension Persistence.TwitterStatus {
         return status
     }
     
-    static func merge(twitterStatus status: TwitterStatus, context: PersistContext) {
+    static func merge(
+        twitterStatus status: TwitterStatus,
+        context: PersistContext
+    ) {
         guard context.networkDate > status.updatedAt else { return }
+        
         let property = TwitterStatus.Property(
             entity: context.entity,
             networkDate: context.networkDate
         )
         status.update(property: property)
+        
+        // merge user
+        Persistence.TwitterUser.merge(
+            twitterUser: status.author,
+            context: Persistence.TwitterUser.PersistContext(
+                entity: context.entity.user,
+                cache: context.userCache,
+                networkDate: context.networkDate
+            )
+        )
     }
     
 }
-
-
-//extension Persistence.TwitterStatus {
-//
-//    private static func batchInsertRequest(context: PersistContext) -> NSBatchInsertRequest {
-//        var index = 0
-//        let count = context.entities.count
-//
-//        let request = NSBatchInsertRequest(
-//            entity: TwitterStatus.entity()
-//        ) { (object: NSManagedObject) -> Bool in
-//            guard index < count else { return true }
-//            if let status = object as? TwitterStatus {
-//                let property = TwitterStatus.Property(
-//                    entity: context.entities[index],
-//                    networkDate: context.networkDate
-//                )
-//                status.configure(property: property)
-//            }
-//            index += 1
-//            return false
-//        }
-//
-//        return request
-//    }
-//
-//}
 
 extension Persistence.TwitterStatus {
     static func setupDictionary(

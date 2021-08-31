@@ -24,6 +24,7 @@ final class FeedFetchedResultsController: NSObject {
     let predicate: CurrentValueSubject<NSPredicate?, Never>
     
     // output
+    private let _objectIDs = PassthroughSubject<[NSManagedObjectID], Never>()
     let objectIDs = CurrentValueSubject<[NSManagedObjectID], Never>([])
     
     init(managedObjectContext: NSManagedObjectContext) {
@@ -64,6 +65,16 @@ final class FeedFetchedResultsController: NSObject {
                 }
             }
             .store(in: &disposeBag)
+        
+        // debounce output to prevent UI update issues
+        _objectIDs
+            .throttle(for: 0.1, scheduler: DispatchQueue.main, latest: true)
+            .assign(to: \.value, on: objectIDs)
+            .store(in: &disposeBag)
+    }
+    
+    deinit {
+        os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
     }
     
 }
@@ -76,7 +87,7 @@ extension FeedFetchedResultsController: NSFetchedResultsControllerDelegate {
     ) {
         os_log("%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
         let snapshot = snapshot as NSDiffableDataSourceSnapshot<String, NSManagedObjectID>
-        self.objectIDs.value = snapshot.itemIdentifiers
+        self._objectIDs.send(snapshot.itemIdentifiers)
     }
 }
 

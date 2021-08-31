@@ -98,7 +98,7 @@ extension StatusToolbar {
             container.addArrangedSubview(likeButton)
             container.addArrangedSubview(menuButton)
             NSLayoutConstraint.activate([
-                replyButton.heightAnchor.constraint(equalToConstant: 40).priority(.defaultHigh),
+                replyButton.heightAnchor.constraint(equalToConstant: 40).priority(.required - 10),
                 replyButton.heightAnchor.constraint(equalTo: repostButton.heightAnchor).priority(.defaultHigh),
                 replyButton.heightAnchor.constraint(equalTo: likeButton.heightAnchor).priority(.defaultHigh),
                 replyButton.heightAnchor.constraint(equalTo: menuButton.heightAnchor).priority(.defaultHigh),
@@ -125,6 +125,13 @@ extension StatusToolbar {
             container.addArrangedSubview(repostButton)
             container.addArrangedSubview(likeButton)
             container.addArrangedSubview(menuButton)
+            
+            NSLayoutConstraint.activate([
+                replyButton.heightAnchor.constraint(equalToConstant: 47).priority(.required - 10),
+                replyButton.heightAnchor.constraint(equalTo: repostButton.heightAnchor).priority(.defaultHigh),
+                replyButton.heightAnchor.constraint(equalTo: likeButton.heightAnchor).priority(.defaultHigh),
+                replyButton.heightAnchor.constraint(equalTo: menuButton.heightAnchor).priority(.defaultHigh),
+            ])
         }
     }
 }
@@ -182,17 +189,38 @@ extension StatusToolbar {
 
     func setupReply(count: Int, isEnabled: Bool) {
         let text = metricText(count: count)
-        replyButton.setTitle(text, for: .normal)
+        switch style {
+        case .inline:
+            replyButton.setTitle(text, for: .normal)
+        case .plain:
+            break
+        case .none:
+            break
+        }
     }
     
     func setupRepost(count: Int, isEnabled: Bool, isLocked: Bool) {
         let text = metricText(count: count)
-        repostButton.setTitle(text, for: .normal)
+        switch style {
+        case .inline:
+            repostButton.setTitle(text, for: .normal)
+        case .plain:
+            break
+        case .none:
+            break
+        }
     }
     
     func setupLike(count: Int) {
         let text = metricText(count: count)
-        likeButton.setTitle(text, for: .normal)
+        switch style {
+        case .inline:
+            likeButton.setTitle(text, for: .normal)
+        case .plain:
+            break
+        case .none:
+            break
+        }
     }
     
 }
