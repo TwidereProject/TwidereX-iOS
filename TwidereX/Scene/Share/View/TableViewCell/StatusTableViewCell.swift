@@ -22,6 +22,7 @@ class StatusTableViewCell: UITableViewCell {
     
     weak var delegate: StatusTableViewCellDelegate?
     let statusView = StatusView()
+    let separator = SeparatorLineView()
     
     override func prepareForReuse() {
         super.prepareForReuse()
@@ -55,36 +56,15 @@ extension StatusTableViewCell {
         ])
         statusView.setup(style: .inline)
         statusView.toolbar.setup(style: .inline)
-        
         statusView.mediaGridContainerView.delegate = self
         
-        updateSeparatorInset()
-    }
-    
-    override func layoutSubviews() {
-        super.layoutSubviews()
-        
-        updateSeparatorInset()
-    }
-    
-    func updateSeparatorInset() {
-        let readableLayoutFrame = contentView.readableContentGuide.layoutFrame
-        switch traitCollection.horizontalSizeClass {
-        case .compact:
-            separatorInset = UIEdgeInsets(
-                top: 0,
-                left: readableLayoutFrame.minX + statusView.contentLayoutInset.left,
-                bottom: 0,
-                right: 0
-            )
-        default:
-            separatorInset = UIEdgeInsets(
-                top: 0,
-                left: readableLayoutFrame.minX,
-                bottom: 0,
-                right: frame.width - readableLayoutFrame.maxX
-            )
-        }
+        separator.translatesAutoresizingMaskIntoConstraints = false
+        contentView.addSubview(separator)
+        NSLayoutConstraint.activate([
+            separator.leadingAnchor.constraint(equalTo: statusView.toolbar.leadingAnchor),
+            separator.trailingAnchor.constraint(equalTo: statusView.toolbar.trailingAnchor),
+            separator.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
+        ])
     }
     
 }

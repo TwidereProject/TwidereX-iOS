@@ -160,6 +160,8 @@
 		DB5632B626DE059E00FC893F /* Persistence+TwitterStatus+V2.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB5632B526DE059E00FC893F /* Persistence+TwitterStatus+V2.swift */; };
 		DB5632B826DE217600FC893F /* Persistence+TwitterUser+V2.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB5632B726DE217600FC893F /* Persistence+TwitterUser+V2.swift */; };
 		DB5632BA26DE29FE00FC893F /* Persistence+Twitter.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB5632B926DE29FE00FC893F /* Persistence+Twitter.swift */; };
+		DB5632BC26DF503800FC893F /* TwitterStatusThreadLeafViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB5632BB26DF503800FC893F /* TwitterStatusThreadLeafViewModel.swift */; };
+		DB5632BF26DF6D3600FC893F /* SeparatorLineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB5632BE26DF6D3600FC893F /* SeparatorLineView.swift */; };
 		DB578CCD254C0BDB00745336 /* UserBriefInfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB578CCC254C0BDB00745336 /* UserBriefInfoView.swift */; };
 		DB578CD8254C0FB500745336 /* SearchUserViewModel+State.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB578CD7254C0FB500745336 /* SearchUserViewModel+State.swift */; };
 		DB5918F7255E81FB00B20F6F /* MediaPreviewViewController+StatusProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB5918F6255E81FB00B20F6F /* MediaPreviewViewController+StatusProvider.swift */; };
@@ -742,6 +744,8 @@
 		DB5632B526DE059E00FC893F /* Persistence+TwitterStatus+V2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Persistence+TwitterStatus+V2.swift"; sourceTree = "<group>"; };
 		DB5632B726DE217600FC893F /* Persistence+TwitterUser+V2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Persistence+TwitterUser+V2.swift"; sourceTree = "<group>"; };
 		DB5632B926DE29FE00FC893F /* Persistence+Twitter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Persistence+Twitter.swift"; sourceTree = "<group>"; };
+		DB5632BB26DF503800FC893F /* TwitterStatusThreadLeafViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwitterStatusThreadLeafViewModel.swift; sourceTree = "<group>"; };
+		DB5632BE26DF6D3600FC893F /* SeparatorLineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SeparatorLineView.swift; sourceTree = "<group>"; };
 		DB578CCC254C0BDB00745336 /* UserBriefInfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserBriefInfoView.swift; sourceTree = "<group>"; };
 		DB578CD7254C0FB500745336 /* SearchUserViewModel+State.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SearchUserViewModel+State.swift"; sourceTree = "<group>"; };
 		DB58500C269D4523006CB091 /* StatusContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusContentView.swift; sourceTree = "<group>"; };
@@ -1280,6 +1284,7 @@
 				DB004BF726CE4AF200F5C574 /* StatusView.swift */,
 				DB5FD9B026D8D50A00CF5439 /* StatusView+ViewModel.swift */,
 				DB0EB9F926D3B2A500034427 /* MediaView.swift */,
+				DB5632BE26DF6D3600FC893F /* SeparatorLineView.swift */,
 			);
 			path = Content;
 			sourceTree = "<group>";
@@ -1494,6 +1499,7 @@
 		DB56329826DCBE1900FC893F /* StatusThread */ = {
 			isa = PBXGroup;
 			children = (
+				DB5632BD26DF503D00FC893F /* Twitter */,
 				DB56329626DCBE1600FC893F /* StatusThreadViewController.swift */,
 				DB56329926DCBE7300FC893F /* StatusThreadViewModel.swift */,
 				DB5632AC26DCE93900FC893F /* StatusThreadViewModel+Diffable.swift */,
@@ -1539,6 +1545,14 @@
 				DB1D7B4F25B5A43F00397DCD /* ListTextFieldTableViewCell.swift */,
 			);
 			path = Deprecated;
+			sourceTree = "<group>";
+		};
+		DB5632BD26DF503D00FC893F /* Twitter */ = {
+			isa = PBXGroup;
+			children = (
+				DB5632BB26DF503800FC893F /* TwitterStatusThreadLeafViewModel.swift */,
+			);
+			path = Twitter;
 			sourceTree = "<group>";
 		};
 		DB5FAD6F257DD1E00098B2C8 /* Developer */ = {
@@ -3376,6 +3390,7 @@
 				DBCB4058255B6ECA00DD8D8F /* AccountListSection.swift in Sources */,
 				DB4B59C025DFCC4F0012F495 /* APIService+Persist+PersistCache.swift in Sources */,
 				DB925749251C9D48004FEFB5 /* ProfilePagingViewModel.swift in Sources */,
+				DB5632BF26DF6D3600FC893F /* SeparatorLineView.swift in Sources */,
 				DB88AC38250B25170009E562 /* UIViewPreview.swift in Sources */,
 				DBA9B3C12587609200EA14ED /* MentionPickViewModel.swift in Sources */,
 				DBFCC46325668B860016698E /* DrawerSidebarPresentationController.swift in Sources */,
@@ -3553,6 +3568,7 @@
 				DBD73D7926D65E3A0003997E /* ManagedObjectRecord.swift in Sources */,
 				DBCE2EE825933B1600926D09 /* SearchUserTableViewCell.swift in Sources */,
 				DB004BE526CE21AE00F5C574 /* Persistence+TwitterStatus.swift in Sources */,
+				DB5632BC26DF503800FC893F /* TwitterStatusThreadLeafViewModel.swift in Sources */,
 				DBF69EEF25498A4800E2A915 /* SearchDetailPagingViewModel.swift in Sources */,
 				DB5632B026DCED1300FC893F /* StatusThreadRootTableViewCell.swift in Sources */,
 				DBDA8E2224FCF8A3006750DC /* AppDelegate.swift in Sources */,

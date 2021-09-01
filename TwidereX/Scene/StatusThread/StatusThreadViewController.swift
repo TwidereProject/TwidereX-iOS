@@ -24,9 +24,10 @@ final class StatusThreadViewController: UIViewController, NeedsDependency {
         let tableView = UITableView()
         tableView.register(StatusThreadRootTableViewCell.self, forCellReuseIdentifier: String(describing: StatusThreadRootTableViewCell.self))
         tableView.register(StatusTableViewCell.self, forCellReuseIdentifier: String(describing: StatusTableViewCell.self))
-        tableView.rowHeight = UITableView.automaticDimension
-        tableView.separatorInsetReference = .fromCellEdges
+        tableView.register(TimelineBottomLoaderTableViewCell.self, forCellReuseIdentifier: String(describing: TimelineBottomLoaderTableViewCell.self))
         tableView.backgroundColor = .systemBackground
+        tableView.rowHeight = UITableView.automaticDimension
+        tableView.separatorStyle = .none
         return tableView
     }()
     

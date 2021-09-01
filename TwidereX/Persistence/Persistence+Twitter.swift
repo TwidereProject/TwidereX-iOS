@@ -62,8 +62,8 @@ extension Persistence.Twitter {
                     quote: quote,
                     replyTo: replyTo,
                     dictionary: context.dictionary,
-                    statusCache: nil, // TODO: context.statusCache,
-                    userCache: nil, // TODO: context.userCache,
+                    statusCache: context.statusCache,
+                    userCache: context.userCache,
                     networkDate: context.networkDate
                 )
             )   // end .createOrMerge(…)

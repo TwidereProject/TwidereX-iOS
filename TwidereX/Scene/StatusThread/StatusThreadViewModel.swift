@@ -6,6 +6,7 @@
 //  Copyright © 2021 Twidere. All rights reserved.
 //
 
+import os.log
 import UIKit
 import Combine
 import GameplayKit
@@ -14,8 +15,13 @@ import MastodonSDK
 
 final class StatusThreadViewModel {
     
+    var disposeBag = Set<AnyCancellable>()
+    
+    let logger = Logger(subsystem: "StatusThreadViewModel", category: "ViewModel")
+    
     // input
     let context: AppContext
+    let twitterStatusThreadLeafViewModel: TwitterStatusThreadLeafViewModel
     
     // output
     var diffableDataSource: UITableViewDiffableDataSource<StatusSection, StatusItem>?
@@ -43,6 +49,7 @@ final class StatusThreadViewModel {
         optionalRoot: StatusItem.Thread?
     ) {
         self.context = context
+        self.twitterStatusThreadLeafViewModel = TwitterStatusThreadLeafViewModel(context: context)
         self.root = CurrentValueSubject(optionalRoot)
     }
     

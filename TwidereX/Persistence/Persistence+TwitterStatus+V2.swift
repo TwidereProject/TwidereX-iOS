@@ -188,7 +188,12 @@ extension Persistence.TwitterStatus {
         twitterStatus status: TwitterStatus,
         context: PersistContextV2
     ) {
-        status.update(conversationID: context.entity.status.conversationID)
+        context.entity.status.conversationID.flatMap { status.update(conversationID: $0) }
+        context.dictionary.media(for: context.entity.status)
+            .flatMap { media in
+                let attachments = media.compactMap { $0.twitterAttachment }
+                status.update(attachments: attachments)
+            }
     }
     
 }

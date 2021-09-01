@@ -102,7 +102,28 @@ extension StatusSection {
                 case .reply(let status):
                     fatalError()
                 case .leaf(let status):
-                    fatalError()
+                    let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: StatusTableViewCell.self), for: indexPath) as! StatusTableViewCell
+                    context.managedObjectContext.performAndWait {
+                        switch status {
+                        case .twitter(let record):
+                            guard let status = record.object(in: context.managedObjectContext) else { return }
+                            configure(
+                                tableView: tableView,
+                                cell: cell,
+                                viewModel: StatusTableViewCell.ViewModel(value: .twitterStatus(status)),
+                                configuration: configuration
+                            )
+                        case .mastodon(let record):
+                            guard let status = record.object(in: context.managedObjectContext) else { return }
+                            configure(
+                                tableView: tableView,
+                                cell: cell,
+                                viewModel: StatusTableViewCell.ViewModel(value: .mastodonStatus(status)),
+                                configuration: configuration
+                            )
+                        }   // end switch
+                    }
+                    return cell
                 }
                 
             case .topLoader:

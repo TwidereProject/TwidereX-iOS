@@ -51,7 +51,7 @@ final public class TwitterStatus: NSManagedObject {
 }
 
 extension TwitterStatus {
-    // sourcery: autoUpdatableObject, autoGenerateProperty
+    // sourcery: autoUpdatableObject
     @objc public var attachments: [TwitterAttachment] {
         get {
             let keyPath = #keyPath(TwitterStatus.attachments)
@@ -127,7 +127,6 @@ extension TwitterStatus: AutoGenerateProperty {
         public let  repostCount: Int
         public let  createdAt: Date
         public let  updatedAt: Date
-        public let  attachments: [TwitterAttachment]
 
     	public init(
     		id: ID,
@@ -136,8 +135,7 @@ extension TwitterStatus: AutoGenerateProperty {
     		replyCount: Int,
     		repostCount: Int,
     		createdAt: Date,
-    		updatedAt: Date,
-    		attachments: [TwitterAttachment]
+    		updatedAt: Date
     	) {
     		self.id = id
     		self.text = text
@@ -146,7 +144,6 @@ extension TwitterStatus: AutoGenerateProperty {
     		self.repostCount = repostCount
     		self.createdAt = createdAt
     		self.updatedAt = updatedAt
-    		self.attachments = attachments
     	}
     }
 
@@ -158,7 +155,6 @@ extension TwitterStatus: AutoGenerateProperty {
     	self.repostCount = property.repostCount
     	self.createdAt = property.createdAt
     	self.updatedAt = property.updatedAt
-    	self.attachments = property.attachments
     }
 
     public func update(property: Property) {
@@ -167,7 +163,6 @@ extension TwitterStatus: AutoGenerateProperty {
     	update(repostCount: property.repostCount)
     	update(createdAt: property.createdAt)
     	update(updatedAt: property.updatedAt)
-    	update(attachments: property.attachments)
     }
     // sourcery:end
 }

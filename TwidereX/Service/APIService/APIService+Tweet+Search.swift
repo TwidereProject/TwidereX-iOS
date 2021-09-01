@@ -6,12 +6,14 @@
 //  Copyright © 2020 Twidere. All rights reserved.
 //
 
+import os.log
 import Foundation
 import Combine
 import TwitterSDK
 import CoreDataStack
 import CommonOSLog
 import Alamofire
+import func QuartzCore.CACurrentMediaTime
 
 extension APIService {
     
@@ -199,6 +201,42 @@ extension APIService {
             query: query,
             authorization: authenticationContext.authorization
         )
+        
+        #if DEBUG
+        // log time cost
+        let start = CACurrentMediaTime()
+        defer {
+            // log rate limit
+            response.logRateLimit()
+            
+            let end = CACurrentMediaTime()
+            os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: persist cost %.2fs", ((#file as NSString).lastPathComponent), #line, #function, end - start)
+        }
+        #endif
+        
+        let managedObjectContext = backgroundManagedObjectContext
+        try await managedObjectContext.performChanges {
+            let content = response.value
+            let dictionary = Twitter.Response.V2.DictContent(
+                tweets: [content.data, content.includes?.tweets].compactMap { $0 }.flatMap { $0 },
+                users: content.includes?.users ?? [],
+                media: content.includes?.media ?? [],
+                places: content.includes?.places ?? []
+            )
+            let statusCache = Persist.PersistCache<TwitterStatus>()
+            let userCache = Persist.PersistCache<TwitterUser>()
+            
+            Persistence.Twitter.persist(
+                in: managedObjectContext,
+                context: Persistence.Twitter.PersistContextV2(
+                    dictionary: dictionary,
+                    statusCache: nil, // statusCache,
+                    userCache: nil, // userCache,
+                    networkDate: response.networkDate
+                )
+            )
+        }   // end .performChanges { … }
+        
         return response
     }
     

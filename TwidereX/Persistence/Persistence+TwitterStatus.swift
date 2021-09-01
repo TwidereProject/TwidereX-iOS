@@ -114,6 +114,7 @@ extension Persistence.TwitterStatus {
             property: property,
             relationship: relationship
         )
+        update(twitterStatus: status, context: context)
         return status
     }
     
@@ -128,6 +129,7 @@ extension Persistence.TwitterStatus {
             networkDate: context.networkDate
         )
         status.update(property: property)
+        update(twitterStatus: status, context: context)
         
         // merge user
         Persistence.TwitterUser.merge(
@@ -138,6 +140,13 @@ extension Persistence.TwitterStatus {
                 networkDate: context.networkDate
             )
         )
+    }
+    
+    private static func update(
+        twitterStatus status: TwitterStatus,
+        context: PersistContext
+    ) {
+        context.entity.twitterAttachments.flatMap { status.update(attachments: $0) }
     }
     
 }

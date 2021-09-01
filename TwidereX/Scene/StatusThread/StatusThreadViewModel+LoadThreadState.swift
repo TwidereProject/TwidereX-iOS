@@ -172,22 +172,22 @@ extension StatusThreadViewModel.LoadThreadState {
 //        var needsFallback = false
 //
 //        var maxID: String?          // v1
-//        var nextToken: String?      // v2
-//
-//        override func isValidNextState(_ stateClass: AnyClass) -> Bool {
-//            switch stateClass {
-//            case is Idle.Type, is NoMore.Type:
-//                return true
-//            case is Fail.Type:
-//                return true
-//            default:
-//                return false
-//            }
-//        }
-//
+        var nextToken: String?      // v2
+
+        override func isValidNextState(_ stateClass: AnyClass) -> Bool {
+            switch stateClass {
+            case is Idle.Type, is NoMore.Type:
+                return true
+            case is Fail.Type:
+                return true
+            default:
+                return false
+            }
+        }
+
         override func didEnter(from previousState: GKState?) {
             super.didEnter(from: previousState)
-//
+
             guard let viewModel = viewModel, let stateMachine = stateMachine else { return }
             guard let threadContext = viewModel.threadContext.value else {
                 assertionFailure()
@@ -197,7 +197,8 @@ extension StatusThreadViewModel.LoadThreadState {
             Task {
                 switch threadContext {
                 case .twitter(let twitterConversation):
-                    await loadTwitterThread(twitterConversation: twitterConversation)
+                    let nodes = await fetch(twitterConversation: twitterConversation)
+                    await append(nodes: nodes)
                 case .mastodon(let mastodonContext):
                     assertionFailure("TODO")
                 }
@@ -222,13 +223,13 @@ extension StatusThreadViewModel.LoadThreadState {
 //            }
         }
 
-        func loadTwitterThread(twitterConversation: StatusThreadViewModel.ThreadContext.TwitterConversation) async {
-            guard let viewModel = viewModel, let stateMachine = stateMachine else { return }
+        func fetch(twitterConversation: StatusThreadViewModel.ThreadContext.TwitterConversation) async -> [TwitterStatusThreadLeafViewModel.Node] {
+            guard let viewModel = viewModel, let stateMachine = stateMachine else { return [] }
             guard let authenticationContext = viewModel.context.authenticationService.activeAuthenticationContext.value?.twitterAuthenticationContext,
                   let conversationID = twitterConversation.conversationID
             else {
                 stateMachine.enter(Fail.self)
-                return
+                return []
             }
             
             let sevenDaysAgo = Date(timeInterval: -((7 * 24 * 60 * 60) - (5 * 60)), since: Date())
@@ -250,10 +251,34 @@ extension StatusThreadViewModel.LoadThreadState {
                     nextToken: nil, // TODO:
                     authenticationContext: authenticationContext
                 )
-                print(response.value.data?.count)
+                let nodes = TwitterStatusThreadLeafViewModel.Node.children(
+                    of: twitterConversation.statusID,
+                    from: response.value
+                )
+                
+                var hasMore = response.value.meta.resultCount != 0
+                if let nextToken = response.value.meta.nextToken {
+                    self.nextToken = nextToken
+                } else {
+                    hasMore = false
+                }
+
+                if hasMore {
+                    stateMachine.enter(Idle.self)
+                } else {
+                    stateMachine.enter(NoMore.self)
+                }
+                
+                return nodes
             } catch {
                 stateMachine.enter(Fail.self)
+                return []
             }
+        }
+        
+        @MainActor
+        func append(nodes: [TwitterStatusThreadLeafViewModel.Node]) async {
+            self.viewModel?.twitterStatusThreadLeafViewModel.append(nodes: nodes)
         }
         
 //        func loadingConversation(

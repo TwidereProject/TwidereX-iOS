@@ -22,7 +22,9 @@ final class StatusThreadRootTableViewCell: UITableViewCell {
     
     weak var delegate: StatusThreadRootTableViewCellDelegate?
     let statusView = StatusView()
-    
+    let toolbarSeparator = SeparatorLineView()
+    let separator = SeparatorLineView()
+
     override func prepareForReuse() {
         super.prepareForReuse()
         
@@ -56,36 +58,24 @@ extension StatusThreadRootTableViewCell {
         ])
         statusView.setup(style: .plain)
         statusView.toolbar.setup(style: .plain)
-        
         statusView.mediaGridContainerView.delegate = self
         
-        updateSeparatorInset()
-    }
-    
-    override func layoutSubviews() {
-        super.layoutSubviews()
+        toolbarSeparator.translatesAutoresizingMaskIntoConstraints = false
+        contentView.addSubview(toolbarSeparator)
+        NSLayoutConstraint.activate([
+            toolbarSeparator.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+            toolbarSeparator.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+            toolbarSeparator.bottomAnchor.constraint(equalTo: statusView.toolbar.topAnchor),
+        ])
         
-        updateSeparatorInset()
-    }
-    
-    func updateSeparatorInset() {
-        let readableLayoutFrame = contentView.readableContentGuide.layoutFrame
-        switch traitCollection.horizontalSizeClass {
-        case .compact:
-            separatorInset = UIEdgeInsets(
-                top: 0,
-                left: readableLayoutFrame.minX + statusView.contentLayoutInset.left,
-                bottom: 0,
-                right: 0
-            )
-        default:
-            separatorInset = UIEdgeInsets(
-                top: 0,
-                left: readableLayoutFrame.minX,
-                bottom: 0,
-                right: frame.width - readableLayoutFrame.maxX
-            )
-        }
+        separator.translatesAutoresizingMaskIntoConstraints = false
+        contentView.addSubview(separator)
+        NSLayoutConstraint.activate([
+            separator.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+            separator.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+            separator.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
+        ])
+        
     }
     
 }

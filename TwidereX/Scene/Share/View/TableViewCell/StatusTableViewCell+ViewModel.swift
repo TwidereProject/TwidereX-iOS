@@ -52,6 +52,5 @@ extension StatusTableViewCell {
         }
         
         self.delegate = delegate
-        updateSeparatorInset()
     }
 }

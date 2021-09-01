@@ -43,9 +43,9 @@ final class HomeTimelineViewController: UIViewController, NeedsDependency {
     private(set) lazy var tableView: UITableView = {
         let tableView = UITableView()
         tableView.register(StatusTableViewCell.self, forCellReuseIdentifier: String(describing: StatusTableViewCell.self))
-        tableView.rowHeight = UITableView.automaticDimension
-        tableView.separatorInsetReference = .fromCellEdges
         tableView.backgroundColor = .systemBackground
+        tableView.rowHeight = UITableView.automaticDimension
+        tableView.separatorStyle = .none
         return tableView
     }()
     

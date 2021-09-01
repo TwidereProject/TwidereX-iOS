@@ -49,6 +49,5 @@ extension StatusThreadRootTableViewCell {
         }
         
         self.delegate = delegate
-        updateSeparatorInset()
     }
 }

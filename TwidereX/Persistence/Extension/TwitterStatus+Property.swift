@@ -23,17 +23,16 @@ extension TwitterStatus.Property {
             replyCount: 0,
             repostCount: entity.retweetCount ?? 0,
             createdAt: entity.createdAt,
-            updatedAt: networkDate,
-            attachments: entity.twitterAttachments
+            updatedAt: networkDate
         )
     }
 }
 
 extension Twitter.Entity.Tweet {
-    var twitterAttachments: [TwitterAttachment] {
+    var twitterAttachments: [TwitterAttachment]? {
         guard let extendedEntities = self.extendedEntities,
               let media = extendedEntities.media
-        else { return [] }
+        else { return nil }
         
         let attachments = media.compactMap { media -> TwitterAttachment? in
             guard let kind = media.attachmentKind,
@@ -96,9 +95,6 @@ extension TwitterStatus.Property {
         media: [Twitter.Entity.V2.Media],
         networkDate: Date
     ) {
-        let attachments: [TwitterAttachment] = media.compactMap {
-            $0.twitterAttachment
-        }
         self.init(
             id: status.id,
             text: status.text,
@@ -106,8 +102,7 @@ extension TwitterStatus.Property {
             replyCount: status.publicMetrics?.replyCount ?? 0,
             repostCount: status.publicMetrics?.retweetCount ?? 0,
             createdAt: status.createdAt,
-            updatedAt: networkDate,
-            attachments: attachments
+            updatedAt: networkDate
         )
     }
 }

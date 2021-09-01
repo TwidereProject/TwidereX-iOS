@@ -127,8 +127,8 @@ extension APIService {
                 in: managedObjectContext,
                 context: Persistence.Twitter.PersistContextV2(
                     dictionary: dictionary,
-                    statusCache: statusCache,
-                    userCache: userCache,
+                    statusCache: nil, // statusCache,
+                    userCache: nil, // userCache,
                     networkDate: response.networkDate
                 )
             )
