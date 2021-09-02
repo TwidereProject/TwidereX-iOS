@@ -39,9 +39,7 @@ final public class MastodonUser: NSManagedObject {
     @NSManaged public private(set) var header: String?
     // sourcery: autoUpdatableObject, autoGenerateProperty
     @NSManaged public private(set) var headerStatic: String?
-        
-    // sourcery: autoUpdatableObject, autoGenerateProperty
-    @NSManaged public private(set) var emojisData: Data?
+    
     // sourcery: autoUpdatableObject, autoGenerateProperty
     @NSManaged public private(set) var fieldsData: Data?
     
@@ -95,6 +93,33 @@ final public class MastodonUser: NSManagedObject {
     // @NSManaged public private(set) var domainBlockingBy: Set<MastodonUser>?
     
     // sourcery:end
+}
+
+extension MastodonUser {
+    // sourcery: autoUpdatableObject
+    @objc public var emojis: [MastodonEmoji] {
+        get {
+            let keyPath = #keyPath(MastodonUser.emojis)
+            willAccessValue(forKey: keyPath)
+            let _data = primitiveValue(forKey: keyPath) as? Data
+            didAccessValue(forKey: keyPath)
+            do {
+                guard let data = _data else { return [] }
+                let emojis = try JSONDecoder().decode([MastodonEmoji].self, from: data)
+                return emojis
+            } catch {
+                assertionFailure(error.localizedDescription)
+                return []
+            }
+        }
+        set {
+            let keyPath = #keyPath(MastodonUser.emojis)
+            let data = try? JSONEncoder().encode(newValue)
+            willChangeValue(forKey: keyPath)
+            setPrimitiveValue(data, forKey: keyPath)
+            didChangeValue(forKey: keyPath)
+        }
+    }
 }
 
 extension MastodonUser {
@@ -176,7 +201,6 @@ extension MastodonUser: AutoGenerateProperty {
         public let  avatarStatic: String?
         public let  header: String?
         public let  headerStatic: String?
-        public let  emojisData: Data?
         public let  fieldsData: Data?
         public let  statusesCount: NSNumber
         public let  followingCount: NSNumber
@@ -199,7 +223,6 @@ extension MastodonUser: AutoGenerateProperty {
     		avatarStatic: String?,
     		header: String?,
     		headerStatic: String?,
-    		emojisData: Data?,
     		fieldsData: Data?,
     		statusesCount: NSNumber,
     		followingCount: NSNumber,
@@ -221,7 +244,6 @@ extension MastodonUser: AutoGenerateProperty {
     		self.avatarStatic = avatarStatic
     		self.header = header
     		self.headerStatic = headerStatic
-    		self.emojisData = emojisData
     		self.fieldsData = fieldsData
     		self.statusesCount = statusesCount
     		self.followingCount = followingCount
@@ -246,7 +268,6 @@ extension MastodonUser: AutoGenerateProperty {
     	self.avatarStatic = property.avatarStatic
     	self.header = property.header
     	self.headerStatic = property.headerStatic
-    	self.emojisData = property.emojisData
     	self.fieldsData = property.fieldsData
     	self.statusesCount = property.statusesCount
     	self.followingCount = property.followingCount
@@ -268,7 +289,6 @@ extension MastodonUser: AutoGenerateProperty {
     	update(avatarStatic: property.avatarStatic)
     	update(header: property.header)
     	update(headerStatic: property.headerStatic)
-    	update(emojisData: property.emojisData)
     	update(fieldsData: property.fieldsData)
     	update(statusesCount: property.statusesCount)
     	update(followingCount: property.followingCount)
@@ -333,11 +353,6 @@ extension MastodonUser: AutoUpdatableObject {
     		self.headerStatic = headerStatic
     	}
     }
-    public func update(emojisData: Data?) {
-    	if self.emojisData != emojisData {
-    		self.emojisData = emojisData
-    	}
-    }
     public func update(fieldsData: Data?) {
     	if self.fieldsData != fieldsData {
     		self.fieldsData = fieldsData
@@ -381,6 +396,11 @@ extension MastodonUser: AutoUpdatableObject {
     public func update(updatedAt: Date) {
     	if self.updatedAt != updatedAt {
     		self.updatedAt = updatedAt
+    	}
+    }
+    public func update(emojis: [MastodonEmoji]) {
+    	if self.emojis != emojis {
+    		self.emojis = emojis
     	}
     }
     // sourcery:end    

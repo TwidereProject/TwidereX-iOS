@@ -24,7 +24,7 @@ extension StatusView {
         @Published var header: Header = .none
         
         @Published var authorAvatarImageURL: URL?
-        @Published var authorName: String?
+        @Published var authorName: MetaContent?
         @Published var authorUsername: String?
         
         @Published var content: String?
@@ -92,8 +92,8 @@ extension StatusView.ViewModel {
             $authorName,
             NotificationCenter.default.publisher(for: UIContentSizeCategory.didChangeNotification).map { _ in }.prepend(Void())
         )
-        .map { text, _ in PlaintextMetaContent(string: text ?? "") }
-        .sink { metaContent in
+        .sink { metaContent, _ in
+            let metaContent = metaContent ?? PlaintextMetaContent(string: "")
             statusView.authorNameLabel.setupAttributes(style: StatusView.authorNameLabelStyle)
             statusView.authorNameLabel.configure(content: metaContent)
         }
@@ -271,7 +271,7 @@ extension StatusView {
             .store(in: &disposeBag)
         // author name
         author.publisher(for: \.name)
-            .map { $0 as String? }
+            .map { PlaintextMetaContent(string: $0) }
             .assign(to: \.authorName, on: viewModel)
             .store(in: &disposeBag)
         // author username
@@ -360,16 +360,27 @@ extension StatusView {
     
     private func configureHeader(mastodonStatus status: MastodonStatus) {
         if let _ = status.repost {
-            status.author.publisher(for: \.displayName)
-                .map { _ -> StatusView.ViewModel.Header in
-                    let name = status.author.name
-                    let userRepostText = L10n.Common.Controls.Status.userBoosted(name)
+            Publishers.CombineLatest(
+                status.author.publisher(for: \.displayName),
+                status.author.publisher(for: \.emojis)
+            )
+            .map { _, emojis -> StatusView.ViewModel.Header in
+                let name = status.author.name
+                let userRepostText = L10n.Common.Controls.Status.userBoosted(name)
+                let content = MastodonContent(content: userRepostText, emojis: emojis.asDictionary)
+                do {
+                    let metaContent = try MastodonMetaContent.convert(document: content)
+                    let info = ViewModel.Header.RepostInfo(authorNameMetaContent: metaContent)
+                    return .repost(info: info)
+                } catch {
+                    assertionFailure(error.localizedDescription)
                     let metaContent = PlaintextMetaContent(string: userRepostText)
                     let info = ViewModel.Header.RepostInfo(authorNameMetaContent: metaContent)
                     return .repost(info: info)
                 }
-                .assign(to: \.header, on: viewModel)
-                .store(in: &disposeBag)
+            }
+            .assign(to: \.header, on: viewModel)
+            .store(in: &disposeBag)
         } else {
             viewModel.header = .none
         }
@@ -383,10 +394,26 @@ extension StatusView {
             .assign(to: \.authorAvatarImageURL, on: viewModel)
             .store(in: &disposeBag)
         // author name
-        author.publisher(for: \.displayName)
-            .map { _ in author.name }
-            .assign(to: \.authorName, on: viewModel)
-            .store(in: &disposeBag)
+        Publishers.CombineLatest(
+            author.publisher(for: \.displayName),
+            author.publisher(for: \.emojis)
+        )
+        .map { _, emojis in
+            let content = MastodonContent(content: author.name, emojis: emojis.asDictionary)
+            do {
+                let metaContent = try MastodonMetaContent.convert(document: content)
+                return metaContent
+            } catch {
+                assertionFailure(error.localizedDescription)
+                return PlaintextMetaContent(string: author.name)
+            }
+        }
+        .assign(to: \.authorName, on: viewModel)
+        .store(in: &disposeBag)
+//        author.publisher(for: \.displayName)
+//            .map { _ in author.name }
+//            .assign(to: \.authorName, on: viewModel)
+//            .store(in: &disposeBag)
         // author username
         author.publisher(for: \.acct)
             .map { $0 as String? }

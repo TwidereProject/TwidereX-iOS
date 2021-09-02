@@ -66,7 +66,7 @@
         <attribute name="createdAt" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="displayName" optional="YES" attributeType="String"/>
         <attribute name="domain" attributeType="String"/>
-        <attribute name="emojisData" optional="YES" attributeType="Binary"/>
+        <attribute name="emojis" optional="YES" attributeType="Binary"/>
         <attribute name="fieldsData" optional="YES" attributeType="Binary"/>
         <attribute name="followersCount" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="followingCount" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>

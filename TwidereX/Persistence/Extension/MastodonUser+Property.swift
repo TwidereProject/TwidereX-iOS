@@ -24,7 +24,6 @@ extension MastodonUser.Property {
             avatarStatic: entity.avatarStatic,
             header: entity.header,
             headerStatic: entity.headerStatic,
-            emojisData: entity.emojis.flatMap { MastodonUser.encode(emojis: $0) },
             fieldsData: entity.fields.flatMap { MastodonUser.encode(fields: $0) },
             statusesCount: NSNumber(value: entity.statusesCount),
             followingCount: NSNumber(value: entity.followingCount),
@@ -38,5 +37,4 @@ extension MastodonUser.Property {
     }
 }
 
-extension MastodonUser: MastodonEmojiContainer { }
 extension MastodonUser: MastodonFieldContainer { }
