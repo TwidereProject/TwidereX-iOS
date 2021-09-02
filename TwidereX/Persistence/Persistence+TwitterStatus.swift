@@ -147,6 +147,7 @@ extension Persistence.TwitterStatus {
         context: PersistContext
     ) {
         context.entity.twitterAttachments.flatMap { status.update(attachments: $0) }
+        context.entity.twitterLocation.flatMap { status.update(location:$0) }
     }
     
 }

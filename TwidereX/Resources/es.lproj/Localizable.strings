@@ -39,7 +39,7 @@
 "Common.Alerts.AccountSuspended.Title" = "Cuenta suspendida";
 "Common.Alerts.AccountSuspended.TwitterRules" = "Reglas de Twitter";
 "Common.Alerts.AccountTemporarilyLocked.Message" = "Abre Twitter para desbloquear";
-"Common.Alerts.AccountTemporarilyLocked.Title" = "Cuenta Bloqueada Temporalmente";
+"Common.Alerts.AccountTemporarilyLocked.Title" = "Cuenta bloqueada temporalmente";
 "Common.Alerts.BlockUserSuccess.Title" = "%@ ha sido bloqueado";
 "Common.Alerts.CancelFollowRequest.Message" = "¿Cancelar la solicitud de seguimiento para %@?";
 "Common.Alerts.FailedToBlockUser.Message" = "Por favor, inténtelo de nuevo";
@@ -133,12 +133,17 @@
 "Common.Controls.ProfileDashboard.Followers" = "Seguidores";
 "Common.Controls.ProfileDashboard.Following" = "Siguiendo";
 "Common.Controls.ProfileDashboard.Listed" = "Listado";
+"Common.Controls.Status.Actions.Bookmark" = "Marcador";
 "Common.Controls.Status.Actions.CopyLink" = "Copiar enlace";
 "Common.Controls.Status.Actions.CopyText" = "Copiar texto";
 "Common.Controls.Status.Actions.DeleteTweet" = "Eliminar tweet";
+"Common.Controls.Status.Actions.PinOnProfile" = "Pin on Profile";
 "Common.Controls.Status.Actions.Quote" = "Cita";
 "Common.Controls.Status.Actions.Retweet" = "Retwittear";
+"Common.Controls.Status.Actions.Share" = "Share";
 "Common.Controls.Status.Actions.ShareLink" = "Compartir enlace";
+"Common.Controls.Status.Actions.Translate" = "Translate";
+"Common.Controls.Status.Actions.UnpinFromProfile" = "Unpin from Profile";
 "Common.Controls.Status.Actions.Vote" = "Votar";
 "Common.Controls.Status.Media" = "Multimedia";
 "Common.Controls.Status.Poll.Expired" = "Cerrado";
@@ -147,7 +152,10 @@
 "Common.Controls.Status.Poll.TotalVote" = "%@ voto";
 "Common.Controls.Status.Poll.TotalVotes" = "%@ votos";
 "Common.Controls.Status.Thread.Show" = "Mostrar este hilo de conversación";
+"Common.Controls.Status.UserBoosted" = "%@ boosted";
 "Common.Controls.Status.UserRetweeted" = "%@ ha retwitteado";
+"Common.Controls.Status.YouBoosted" = "You boosted";
+"Common.Controls.Status.YouRetweeted" = "You retweeted";
 "Common.Controls.Timeline.LoadMore" = "Cargar más";
 "Common.Countable.Like.Multiple" = "%@ me gusta";
 "Common.Countable.Like.Single" = "%@ me gusta";
@@ -257,7 +265,7 @@
 "Scene.Mentions.Title" = "Menciones";
 "Scene.Messages.Action.CopyText" = "Copiar texto del mensaje";
 "Scene.Messages.Action.Delete" = "Eliminar mensaje para ti";
-"Scene.Messages.Error.NotSupported" = "The Current account does not support direct messages";
+"Scene.Messages.Error.NotSupported" = "La cuenta actual no admite mensajes directos";
 "Scene.Messages.Expanded.Photo" = "[Photo]";
 "Scene.Messages.Icon.Failed" = "Error al enviar mensaje";
 "Scene.Messages.NewConversation.Search" = "Buscar personas";

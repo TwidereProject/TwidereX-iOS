@@ -30,49 +30,37 @@ extension HomeTimelineViewController {
             identifier: nil,
             options: .displayInline,
             children: [
-                UIAction(title: "Show FLEX", image: nil, attributes: [], handler: { [weak self] action in
+                UIAction(title: "Enable FLEX", image: nil, attributes: [], handler: { [weak self] action in
                     guard let self = self else { return }
                     self.showFLEXAction(action)
-                }),
-                UIAction(title: "Show Stub Timeline", image: nil, attributes: [], handler: { [weak self] action in
-                    guard let self = self else { return }
-                    self.showStubTimelineAction(action)
                 }),
                 showMenu,
                 moveMenu,
                 dropMenu,
-                UIAction(title: "Enable Bottom Fetcher", image: nil, attributes: [], handler: { [weak self] action in
-                    guard let self = self else { return }
-                    self.enableBottomFetcher(action)
-                }),
-                UIAction(title: "Show Account unlock alert", image: nil, attributes: [], handler: { [weak self] action in
-                    guard let self = self else { return }
-                    let error = Twitter.API.Error.ResponseError(
-                        httpResponseStatus: .forbidden,
-                        twitterAPIError: .accountIsTemporarilyLocked(message: "")
-                    )
-                    self.context.apiService.error.send(.explicit(.twitterResponseError(error)))
-                }),
-                UIAction(title: "Show Rate Limit alert", image: nil, attributes: [], handler: { [weak self] action in
-                    guard let self = self else { return }
-                    let error = Twitter.API.Error.ResponseError(
-                        httpResponseStatus: .tooManyRequests,
-                        twitterAPIError: .rateLimitExceeded
-                    )
-                    self.context.apiService.error.send(.explicit(.twitterResponseError(error)))
-                }),
-                UIAction(title: "Export Database", image: nil, attributes: [], handler: { [weak self] action in
-                    guard let self = self else { return }
-                    self.exportDatabase(action)
-                }),
-                UIAction(title: "Import Database", image: nil, attributes: [], handler: { [weak self] action in
-                    guard let self = self else { return }
-                    self.importDatabase(action)
-                }),
-                UIAction(title: "Corner Smooth Preview", attributes: [], state: .off, handler: { [weak self] action in
-                    guard let self = self else { return }
-                    self.cornerSmoothPreview(action)
-                })
+//                UIAction(title: "Show Account unlock alert", image: nil, attributes: [], handler: { [weak self] action in
+//                    guard let self = self else { return }
+//                    let error = Twitter.API.Error.ResponseError(
+//                        httpResponseStatus: .forbidden,
+//                        twitterAPIError: .accountIsTemporarilyLocked(message: "")
+//                    )
+//                    self.context.apiService.error.send(.explicit(.twitterResponseError(error)))
+//                }),
+//                UIAction(title: "Show Rate Limit alert", image: nil, attributes: [], handler: { [weak self] action in
+//                    guard let self = self else { return }
+//                    let error = Twitter.API.Error.ResponseError(
+//                        httpResponseStatus: .tooManyRequests,
+//                        twitterAPIError: .rateLimitExceeded
+//                    )
+//                    self.context.apiService.error.send(.explicit(.twitterResponseError(error)))
+//                }),
+//                UIAction(title: "Export Database", image: nil, attributes: [], handler: { [weak self] action in
+//                    guard let self = self else { return }
+//                    self.exportDatabase(action)
+//                }),
+//                UIAction(title: "Import Database", image: nil, attributes: [], handler: { [weak self] action in
+//                    guard let self = self else { return }
+//                    self.importDatabase(action)
+//                }),
             ]
         )
     }
@@ -88,6 +76,14 @@ extension HomeTimelineViewController {
                     guard let self = self else { return }
                     self.showAccountListAction(action)
                 }),
+                UIAction(title: "Stub Timeline", image: nil, attributes: [], handler: { [weak self] action in
+                    guard let self = self else { return }
+                    self.showStubTimelineAction(action)
+                }),
+                UIAction(title: "Corner Smooth Preview", attributes: [], state: .off, handler: { [weak self] action in
+                    guard let self = self else { return }
+                    self.cornerSmoothPreview(action)
+                }),
             ]
         )
     }
@@ -101,7 +97,7 @@ extension HomeTimelineViewController {
             children: [
                 UIAction(title: "First Gap", image: nil, attributes: [], handler: { [weak self] action in
                     guard let self = self else { return }
-                    self.moveToTopGapAction(action)
+                    self.moveToFirst(action, category: .gap)
                 }),
 //                UIAction(title: "First Protected Tweet", image: nil, attributes: [], handler: { [weak self] action in
 //                    guard let self = self else { return }
@@ -127,6 +123,10 @@ extension HomeTimelineViewController {
                     guard let self = self else { return }
                     self.moveToFirst(action, category: .gif)
                 }),
+                UIAction(title: "First Location Status", image: nil, attributes: [], handler: { [weak self] action in
+                    guard let self = self else { return }
+                    self.moveToFirst(action, category: .location)
+                }),
             ]
         )
     }
@@ -137,8 +137,8 @@ extension HomeTimelineViewController {
             image: UIImage(systemName: "minus.circle"),
             identifier: nil,
             options: [],
-            children: [50, 100, 150, 200, 250, 300].map { count in
-                UIAction(title: "Drop Recent \(count) Tweets", image: nil, attributes: [], handler: { [weak self] action in
+            children: [1, 2, 5, 10, 20, 50, 100, 150, 200, 250, 300].map { count in
+                UIAction(title: "Drop Recent \(count)", image: nil, attributes: [], handler: { [weak self] action in
                     guard let self = self else { return }
                     self.dropRecentFeedAction(action, count: count)
                 })
@@ -163,24 +163,11 @@ extension HomeTimelineViewController {
         coordinator.present(scene: .accountList(viewModel: accountListViewModel), from: self, transition: .modal(animated: true, completion: nil))
     }
     
-    @objc private func moveToTopGapAction(_ sender: UIAction) {
-        guard let diffableDataSource = viewModel.diffableDataSource else { return }
-        let snapshot = diffableDataSource.snapshot()
-        let _item = snapshot.itemIdentifiers.first { item in
-            switch item {
-            case .feedLoader:   return true
-            default:            return false
-            }
-        }
-        guard let item = _item else { return }
-        guard let indexPath = diffableDataSource.indexPath(for: item) else { return }
-        tableView.scrollToRow(at: indexPath, at: .middle, animated: true)
-    }
-    
     enum StatusCategory {
         case gap
         case gif
         case video
+        case location
         
         func match(item: StatusItem) -> Bool {
             switch item {
@@ -192,12 +179,16 @@ extension HomeTimelineViewController {
                         return status.attachments.contains(where: { attachment in attachment.kind == .animatedGIF })
                     case .video:
                         return status.attachments.contains(where: { attachment in attachment.kind == .video })
+                    case .location:
+                        return status.location != nil
                     default:
                         return false
                     }
                 } else {
                     return false
                 }
+            case .feedLoader where self == .gap:
+                return true
             default:
                 return false
             }
@@ -374,26 +365,6 @@ extension HomeTimelineViewController {
             }
         }
         .store(in: &disposeBag)
-    }
-    
-    @objc private func enableBottomFetcher(_ sender: UIAction) {
-//        if let last = viewModel.fetchedResultsController.fetchedObjects?.last {
-//            let objectID = last.objectID
-//            context.apiService.backgroundManagedObjectContext.performChanges { [weak self] in
-//                guard let self = self else { return }
-//                let object = self.context.apiService.backgroundManagedObjectContext.object(with: objectID) as! TimelineIndex
-//                object.update(hasMore: true)
-//            }
-//            .sink { result in
-//                switch result {
-//                case .success:
-//                    break
-//                case .failure(let error):
-//                    assertionFailure(error.localizedDescription)
-//                }
-//            }
-//            .store(in: &disposeBag)
-//        }
     }
     
     @objc private func exportDatabase(_ sender: UIAction) {

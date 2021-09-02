@@ -329,6 +329,7 @@
 		DBBF70FC26D88E8B00971656 /* AuthenticationContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBBF70FB26D88E8B00971656 /* AuthenticationContext.swift */; };
 		DBBF70FE26D8B9D300971656 /* MastodonStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBBF70FD26D8B9D300971656 /* MastodonStatus.swift */; };
 		DBC17A5C26E0A4C1005C0D79 /* TimelineMiddleLoaderTableViewCell+ViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBC17A5B26E0A4C1005C0D79 /* TimelineMiddleLoaderTableViewCell+ViewModel.swift */; };
+		DBC17A5F26E0D6F9005C0D79 /* TwitterLocation.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBC17A5E26E0D6F9005C0D79 /* TwitterLocation.swift */; };
 		DBC747D4259DA03B00787EEF /* ListCheckmarkTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBC747D3259DA03B00787EEF /* ListCheckmarkTableViewCell.swift */; };
 		DBC747D9259DA07C00787EEF /* ListTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBC747D8259DA07C00787EEF /* ListTableViewCell.swift */; };
 		DBC747E1259DBD5400787EEF /* AvatarBarButtonItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBC747E0259DBD5400787EEF /* AvatarBarButtonItem.swift */; };
@@ -926,6 +927,7 @@
 		DBBF70FB26D88E8B00971656 /* AuthenticationContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationContext.swift; sourceTree = "<group>"; };
 		DBBF70FD26D8B9D300971656 /* MastodonStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MastodonStatus.swift; sourceTree = "<group>"; };
 		DBC17A5B26E0A4C1005C0D79 /* TimelineMiddleLoaderTableViewCell+ViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TimelineMiddleLoaderTableViewCell+ViewModel.swift"; sourceTree = "<group>"; };
+		DBC17A5E26E0D6F9005C0D79 /* TwitterLocation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwitterLocation.swift; sourceTree = "<group>"; };
 		DBC747D3259DA03B00787EEF /* ListCheckmarkTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListCheckmarkTableViewCell.swift; sourceTree = "<group>"; };
 		DBC747D8259DA07C00787EEF /* ListTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListTableViewCell.swift; sourceTree = "<group>"; };
 		DBC747E0259DBD5400787EEF /* AvatarBarButtonItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvatarBarButtonItem.swift; sourceTree = "<group>"; };
@@ -2032,6 +2034,16 @@
 			path = AuthenticationService;
 			sourceTree = "<group>";
 		};
+		DBC17A5D26E0C878005C0D79 /* Deprecated */ = {
+			isa = PBXGroup;
+			children = (
+				DB1A1D832559AAFD0049DA6D /* HomeTimelineViewController+StatusProvider.swift */,
+				DB969A3825305EEE0053CB31 /* HomeTimelineViewModel+LoadLatestState.swift */,
+				DBA6B1A325340B3F005FB0B4 /* HomeTimelineViewModel+LoadMiddleState.swift */,
+			);
+			path = Deprecated;
+			sourceTree = "<group>";
+		};
 		DBC8DFF52574B32A00401E20 /* ViewController */ = {
 			isa = PBXGroup;
 			children = (
@@ -2163,6 +2175,7 @@
 				DBD73D7F26D789660003997E /* Feed+Kind.swift */,
 				DBD73D8126D789820003997E /* Feed+Acct.swift */,
 				DB38CDBB26D4A54200B45A44 /* TwitterAttachment.swift */,
+				DBC17A5E26E0D6F9005C0D79 /* TwitterLocation.swift */,
 				DB5FD9AE26D8CF0400CF5439 /* MastodonVisibility.swift */,
 				DB56329426DCA77600FC893F /* MastodonAttachment.swift */,
 			);
@@ -2382,14 +2395,12 @@
 		DBDA8EA024FE1002006750DC /* HomeTimeline */ = {
 			isa = PBXGroup;
 			children = (
+				DBC17A5D26E0C878005C0D79 /* Deprecated */,
 				DBDA8E9E24FE0FFF006750DC /* HomeTimelineViewController.swift */,
 				DB5632A826DCC96C00FC893F /* HomeTimelineViewController+DataSourceProvider.swift */,
 				DBB2513D2599DBAB0064A876 /* HomeTimelineViewController+DebugAction.swift */,
-				DB1A1D832559AAFD0049DA6D /* HomeTimelineViewController+StatusProvider.swift */,
 				DBE76D1D2500E65D00DEB0FC /* HomeTimelineViewModel.swift */,
 				DBFA4A1F25A5924C00D51703 /* HomeTimelineViewModel+Diffable.swift */,
-				DB969A3825305EEE0053CB31 /* HomeTimelineViewModel+LoadLatestState.swift */,
-				DBA6B1A325340B3F005FB0B4 /* HomeTimelineViewModel+LoadMiddleState.swift */,
 				DB3FC03025525BFD003A2F8A /* HomeTimelineViewModel+LoadOldestState.swift */,
 			);
 			path = HomeTimeline;
@@ -3756,6 +3767,7 @@
 				DB491622253ECFD9008755C3 /* TweetEntitiesURL.swift in Sources */,
 				DBE76CCE250093E300DEB0FC /* Managed.swift in Sources */,
 				DBE76D162500D7C200DEB0FC /* TimelineIndex.swift in Sources */,
+				DBC17A5F26E0D6F9005C0D79 /* TwitterLocation.swift in Sources */,
 				DBD73D7B26D764540003997E /* Platform.swift in Sources */,
 				DB756BFE26CBA64300AAD328 /* MastodonAuthentication.swift in Sources */,
 				DBE76D2B25020C0F00DEB0FC /* NetworkUpdatable.swift in Sources */,

@@ -67,6 +67,21 @@ final class StatusView: UIView {
     // quote
     private(set) var quoteStatusView: StatusView?
     
+    // location
+    let locationContainer: UIStackView = {
+        let stackView = UIStackView()
+        stackView.axis = .horizontal
+        stackView.spacing = 6
+        return stackView
+    }()
+    let locationMapPinImageView: UIImageView = {
+        let imageView = UIImageView()
+        imageView.tintColor = .secondaryLabel
+        return imageView
+    }()
+    let locationLabel = PlainLabel(style: .statusAuthorUsername)
+
+    
     // toolbar
     let toolbar = StatusToolbar()
     
@@ -148,6 +163,7 @@ extension StatusView {
             statusView.headerContainerView.isHidden = true
             statusView.mediaGridContainerView.isHidden = true
             statusView.quoteStatusView?.isHidden = true
+            statusView.locationContainer.isHidden = true
         }
     }
 }
@@ -195,7 +211,7 @@ extension StatusView.Style {
             statusView.authorAvatarButton.heightAnchor.constraint(equalToConstant: authorAvatarButtonSize.height).priority(.required - 1),
         ])
         
-        // content container: V - [ author content | contentTextView | mediaGridContainerView | quoteStatusView | … | toolbar ]
+        // content container: V - [ author content | contentTextView | mediaGridContainerView | quoteStatusView | … | location content | toolbar ]
         let contentContainerView = UIStackView()
         contentContainerView.axis = .vertical
         bodyContainerStackView.addArrangedSubview(contentContainerView)
@@ -243,13 +259,32 @@ extension StatusView.Style {
         statusView.quoteStatusView = quoteStatusView
         contentContainerView.addArrangedSubview(quoteStatusView)
         
+        // location content: H - [ locationMapPinImageView | locationLabel ]
+        contentContainerView.addArrangedSubview(statusView.locationContainer)
+        
+        statusView.locationMapPinImageView.translatesAutoresizingMaskIntoConstraints = false
+        statusView.locationLabel.translatesAutoresizingMaskIntoConstraints = false
+        
+        // locationMapPinImageView
+        statusView.locationContainer.addArrangedSubview(statusView.locationMapPinImageView)
+        // locationLabel
+        statusView.locationContainer.addArrangedSubview(statusView.locationLabel)
+        
+        NSLayoutConstraint.activate([
+            statusView.locationMapPinImageView.heightAnchor.constraint(equalTo: statusView.locationLabel.heightAnchor, multiplier: 1.0).priority(.required - 1),
+            statusView.locationMapPinImageView.widthAnchor.constraint(equalTo: statusView.locationMapPinImageView.heightAnchor, multiplier: 1.0).priority(.required - 1),
+        ])
+        statusView.locationLabel.setContentHuggingPriority(.required - 10, for: .vertical)
+        statusView.locationMapPinImageView.setContentHuggingPriority(.defaultLow, for: .vertical)
+        statusView.locationMapPinImageView.setContentHuggingPriority(.defaultLow, for: .horizontal)
+        
         // toolbar
         contentContainerView.addArrangedSubview(statusView.toolbar)
         statusView.toolbar.setContentHuggingPriority(.required - 9, for: .vertical)
     }
     
     private func layoutPlain(statusView: StatusView) {
-        // container: V - [ header container | author container | contentTextView | mediaGridContainerView | quoteStatusView | toolbar ]
+        // container: V - [ header container | author container | contentTextView | mediaGridContainerView | quoteStatusView | location content | toolbar ]
 
         // header container: H - [ icon | label ]
         statusView.containerStackView.addArrangedSubview(statusView.headerContainerView)
@@ -333,6 +368,25 @@ extension StatusView.Style {
         quoteStatusView.setup(style: .quote)
         statusView.quoteStatusView = quoteStatusView
         statusView.containerStackView.addArrangedSubview(quoteStatusView)
+        
+        // location content: H - [ locationMapPinImageView | locationLabel ]
+        statusView.containerStackView.addArrangedSubview(statusView.locationContainer)
+        
+        statusView.locationMapPinImageView.translatesAutoresizingMaskIntoConstraints = false
+        statusView.locationLabel.translatesAutoresizingMaskIntoConstraints = false
+        
+        // locationMapPinImageView
+        statusView.locationContainer.addArrangedSubview(statusView.locationMapPinImageView)
+        // locationLabel
+        statusView.locationContainer.addArrangedSubview(statusView.locationLabel)
+        
+        NSLayoutConstraint.activate([
+            statusView.locationMapPinImageView.heightAnchor.constraint(equalTo: statusView.locationLabel.heightAnchor, multiplier: 1.0).priority(.required - 1),
+            statusView.locationMapPinImageView.widthAnchor.constraint(equalTo: statusView.locationMapPinImageView.heightAnchor, multiplier: 1.0).priority(.required - 1),
+        ])
+        statusView.locationLabel.setContentHuggingPriority(.required - 10, for: .vertical)
+        statusView.locationMapPinImageView.setContentHuggingPriority(.defaultLow, for: .vertical)
+        statusView.locationMapPinImageView.setContentHuggingPriority(.defaultLow, for: .horizontal)
         
         // toolbar
         statusView.containerStackView.addArrangedSubview(statusView.toolbar)
@@ -423,6 +477,10 @@ extension StatusView {
     
     func setQuoteDisplay() {
         quoteStatusView?.isHidden = false
+    }
+    
+    func setLocationDisplay() {
+        locationContainer.isHidden = false
     }
     
     // content text Width

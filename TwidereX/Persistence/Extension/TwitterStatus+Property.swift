@@ -52,6 +52,20 @@ extension Twitter.Entity.Tweet {
         
         return attachments
     }
+    
+    var twitterLocation: TwitterLocation? {
+        guard let place = self.place,
+              let fullName = place.fullName
+        else { return nil }
+        
+        return TwitterLocation(
+            id: place.id,
+            fullName: fullName,
+            name: place.name,
+            country: place.country,
+            countryCode: place.countryCode
+        )
+    }
 }
 
 extension Twitter.Entity.ExtendedEntities.Media {
@@ -180,5 +194,17 @@ extension Twitter.Entity.V2.Media {
         case "animated_gif":    return .animatedGIF
         default:                return nil
         }
+    }
+}
+
+extension Twitter.Entity.V2.Place {
+    var twitterLocation: TwitterLocation {
+        return TwitterLocation(
+            id: id,
+            fullName: fullName,
+            name: name,
+            country: country,
+            countryCode: countryCode
+        )
     }
 }

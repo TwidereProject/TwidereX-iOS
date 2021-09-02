@@ -75,6 +75,31 @@ extension TwitterStatus {
             didChangeValue(forKey: keyPath)
         }
     }
+    
+    // sourcery: autoUpdatableObject
+    @objc public var location: TwitterLocation? {
+        get {
+            let keyPath = #keyPath(TwitterStatus.location)
+            willAccessValue(forKey: keyPath)
+            let _data = primitiveValue(forKey: keyPath) as? Data
+            didAccessValue(forKey: keyPath)
+            do {
+                guard let data = _data else { return nil }
+                let location = try JSONDecoder().decode(TwitterLocation.self, from: data)
+                return location
+            } catch {
+                assertionFailure(error.localizedDescription)
+                return nil
+            }
+        }
+        set {
+            let keyPath = #keyPath(TwitterStatus.location)
+            let data = try? JSONEncoder().encode(newValue)
+            willChangeValue(forKey: keyPath)
+            setPrimitiveValue(data, forKey: keyPath)
+            didChangeValue(forKey: keyPath)
+        }
+    }
 }
 
 extension TwitterStatus: FeedIndexable { }
@@ -238,6 +263,11 @@ extension TwitterStatus: AutoUpdatableObject {
     public func update(attachments: [TwitterAttachment]) {
     	if self.attachments != attachments {
     		self.attachments = attachments
+    	}
+    }
+    public func update(location: TwitterLocation?) {
+    	if self.location != location {
+    		self.location = location
     	}
     }
     // sourcery:end

@@ -21,6 +21,7 @@ extension UILabel {
         case statusAuthorName
         case statusAuthorUsername
         case statusTimestamp
+        case statusLocation
     }
 }
 
@@ -31,6 +32,7 @@ extension UILabel.Style {
         case .statusAuthorName:         return 1
         case .statusAuthorUsername:     return 1
         case .statusTimestamp:          return 1
+        case .statusLocation:           return 1
         }
     }
 }
@@ -46,6 +48,8 @@ extension UILabel.Style {
             return .preferredFont(forTextStyle: .subheadline)
         case .statusTimestamp:
             return .preferredFont(forTextStyle: .subheadline)
+        case .statusLocation:
+            return .preferredFont(forTextStyle: .caption1)
         }
     }
     
@@ -58,6 +62,8 @@ extension UILabel.Style {
         case .statusAuthorUsername:
             return .secondaryLabel
         case .statusTimestamp:
+            return .secondaryLabel
+        case .statusLocation:
             return .secondaryLabel
         }
     }

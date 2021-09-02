@@ -194,6 +194,10 @@ extension Persistence.TwitterStatus {
                 let attachments = media.compactMap { $0.twitterAttachment }
                 status.update(attachments: attachments)
             }
+        context.dictionary.place(for: context.entity.status)
+            .flatMap { place in
+                status.update(location: place.twitterLocation)
+            }
     }
     
 }

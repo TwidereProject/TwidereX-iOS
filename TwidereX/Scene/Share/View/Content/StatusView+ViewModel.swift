@@ -29,6 +29,7 @@ extension StatusView {
         
         @Published var content: String?
         @Published var mediaViewConfigurations: [MediaView.Configuration] = []
+        @Published var location: String?
         
         @Published var replyCount: Int = 0
         @Published var repostCount: Int = 0
@@ -54,6 +55,7 @@ extension StatusView.ViewModel {
         bindAuthor(statusView: statusView)
         bindContent(statusView: statusView)
         bindMedia(statusView: statusView)
+        bindLocation(statusView: statusView)
         bindToolbar(statusView: statusView)
     }
     
@@ -90,23 +92,23 @@ extension StatusView.ViewModel {
             $authorName,
             NotificationCenter.default.publisher(for: UIContentSizeCategory.didChangeNotification).map { _ in }.prepend(Void())
         )
-            .map { text, _ in PlaintextMetaContent(string: text ?? "") }
-            .sink { metaContent in
-                statusView.authorNameLabel.setupAttributes(style: StatusView.authorNameLabelStyle)
-                statusView.authorNameLabel.configure(content: metaContent)
-            }
-            .store(in: &disposeBag)
+        .map { text, _ in PlaintextMetaContent(string: text ?? "") }
+        .sink { metaContent in
+            statusView.authorNameLabel.setupAttributes(style: StatusView.authorNameLabelStyle)
+            statusView.authorNameLabel.configure(content: metaContent)
+        }
+        .store(in: &disposeBag)
         // username
         Publishers.CombineLatest(
             $authorUsername,
             NotificationCenter.default.publisher(for: UIContentSizeCategory.didChangeNotification).map { _ in }.prepend(Void())
         )
-            .map { text, _ in
-                guard let text = text else { return "" }
-                return "@\(text)"
-            }
-            .assign(to: \.text, on: statusView.authorUsernameLabel)
-            .store(in: &disposeBag)
+        .map { text, _ in
+            guard let text = text else { return "" }
+            return "@\(text)"
+        }
+        .assign(to: \.text, on: statusView.authorUsernameLabel)
+        .store(in: &disposeBag)
         // timestamp
         Publishers.CombineLatest(
             $timestamp,
@@ -178,6 +180,24 @@ extension StatusView.ViewModel {
             .store(in: &disposeBag)
     }
     
+    private func bindLocation(statusView: StatusView) {
+        Publishers.CombineLatest(
+            $location,
+            NotificationCenter.default.publisher(for: UIContentSizeCategory.didChangeNotification).map { _ in }.prepend(Void())
+        )
+        .sink { location, _ in
+            guard let location = location, !location.isEmpty else { return }
+            if statusView.traitCollection.preferredContentSizeCategory > .extraLarge {
+                statusView.locationMapPinImageView.image = Asset.ObjectTools.mappin.image
+            } else {
+                statusView.locationMapPinImageView.image = Asset.ObjectTools.mappinMini.image
+            }
+            statusView.locationLabel.text = location
+            statusView.setLocationDisplay()
+        }
+        .store(in: &disposeBag)
+    }
+    
     private func bindToolbar(statusView: StatusView) {
         $replyCount
             .sink { count in
@@ -209,12 +229,15 @@ extension StatusView {
     }
 }
 
+// MARK: - Twitter
+
 extension StatusView {
     func configure(twitterStatus status: TwitterStatus) {
         configureHeader(twitterStatus: status)
         configureAuthor(twitterStatus: status)
         configureContent(twitterStatus: status)
         configureMedia(twitterStatus: status)
+        configureLocation(twitterStatus: status)
         configureToolbar(twitterStatus: status)
         
         if let quote = status.quote {
@@ -309,6 +332,14 @@ extension StatusView {
             .store(in: &disposeBag)
     }
     
+    private func configureLocation(twitterStatus status: TwitterStatus) {
+        let status = status.repost ?? status
+        status.publisher(for: \.location)
+            .map { $0?.fullName }
+            .assign(to: \.location, on: viewModel)
+            .store(in: &disposeBag)
+    }
+    
     private func configureToolbar(twitterStatus status: TwitterStatus) {
         let status = status.repost ?? status
         status.publisher(for: \.replyCount).assign(to: \.replyCount, on: viewModel).store(in: &disposeBag)
@@ -317,12 +348,31 @@ extension StatusView {
     }
 }
 
+// MARK: - Mastodon
 extension StatusView {
     func configure(mastodonStatus status: MastodonStatus) {
+        configureHeader(mastodonStatus: status)
         configureAuthor(mastodonStatus: status)
         configureContent(mastodonStatus: status)
         configureMedia(mastodonStatus: status)
         configureToolbar(mastodonStatus: status)
+    }
+    
+    private func configureHeader(mastodonStatus status: MastodonStatus) {
+        if let _ = status.repost {
+            status.author.publisher(for: \.displayName)
+                .map { _ -> StatusView.ViewModel.Header in
+                    let name = status.author.name
+                    let userRepostText = L10n.Common.Controls.Status.userBoosted(name)
+                    let metaContent = PlaintextMetaContent(string: userRepostText)
+                    let info = ViewModel.Header.RepostInfo(authorNameMetaContent: metaContent)
+                    return .repost(info: info)
+                }
+                .assign(to: \.header, on: viewModel)
+                .store(in: &disposeBag)
+        } else {
+            viewModel.header = .none
+        }
     }
     
     private func configureAuthor(mastodonStatus status: MastodonStatus) {

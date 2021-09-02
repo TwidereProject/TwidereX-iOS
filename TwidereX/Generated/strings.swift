@@ -455,23 +455,41 @@ internal enum L10n {
       internal enum Status {
         /// Media
         internal static let media = L10n.tr("Localizable", "Common.Controls.Status.Media")
+        /// %@ boosted
+        internal static func userBoosted(_ p1: Any) -> String {
+          return L10n.tr("Localizable", "Common.Controls.Status.UserBoosted", String(describing: p1))
+        }
         /// %@ retweeted
         internal static func userRetweeted(_ p1: Any) -> String {
           return L10n.tr("Localizable", "Common.Controls.Status.UserRetweeted", String(describing: p1))
         }
+        /// You boosted
+        internal static let youBoosted = L10n.tr("Localizable", "Common.Controls.Status.YouBoosted")
+        /// You retweeted
+        internal static let youRetweeted = L10n.tr("Localizable", "Common.Controls.Status.YouRetweeted")
         internal enum Actions {
+          /// Bookmark
+          internal static let bookmark = L10n.tr("Localizable", "Common.Controls.Status.Actions.Bookmark")
           /// Copy link
           internal static let copyLink = L10n.tr("Localizable", "Common.Controls.Status.Actions.CopyLink")
           /// Copy text
           internal static let copyText = L10n.tr("Localizable", "Common.Controls.Status.Actions.CopyText")
           /// Delete tweet
           internal static let deleteTweet = L10n.tr("Localizable", "Common.Controls.Status.Actions.DeleteTweet")
+          /// Pin on Profile
+          internal static let pinOnProfile = L10n.tr("Localizable", "Common.Controls.Status.Actions.PinOnProfile")
           /// Quote
           internal static let quote = L10n.tr("Localizable", "Common.Controls.Status.Actions.Quote")
           /// Retweet
           internal static let retweet = L10n.tr("Localizable", "Common.Controls.Status.Actions.Retweet")
+          /// Share
+          internal static let share = L10n.tr("Localizable", "Common.Controls.Status.Actions.Share")
           /// Share link
           internal static let shareLink = L10n.tr("Localizable", "Common.Controls.Status.Actions.ShareLink")
+          /// Translate
+          internal static let translate = L10n.tr("Localizable", "Common.Controls.Status.Actions.Translate")
+          /// Unpin from Profile
+          internal static let unpinFromProfile = L10n.tr("Localizable", "Common.Controls.Status.Actions.UnpinFromProfile")
           /// Vote
           internal static let vote = L10n.tr("Localizable", "Common.Controls.Status.Actions.Vote")
         }
