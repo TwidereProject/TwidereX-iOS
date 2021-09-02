@@ -12,6 +12,7 @@ import AVKit
 import CoreDataStack
 import Combine
 
+@available(*, deprecated, message: "")
 final class VideoPlayerViewModel {
     
     var disposeBag = Set<AnyCancellable>()

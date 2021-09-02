@@ -27,9 +27,8 @@ final class HomeTimelineViewModel: NSObject {
     
     // input
     let context: AppContext
-//    let timelinePredicate = CurrentValueSubject<NSPredicate?, Never>(nil)
     let fetchedResultsController: FeedFetchedResultsController
-//    let isFetchingLatestTimeline = CurrentValueSubject<Bool, Never>(false)
+    let listBatchFetchViewModel = ListBatchFetchViewModel()
 //    let viewDidAppear = PassthroughSubject<Void, Never>()
     
 //    weak var contentOffsetAdjustableTimelineViewControllerDelegate: ContentOffsetAdjustableTimelineViewControllerDelegate?
@@ -53,19 +52,19 @@ final class HomeTimelineViewModel: NSObject {
 //        return stateMachine
 //    }()
 //    lazy var loadLatestStateMachinePublisher = CurrentValueSubject<LoadLatestState?, Never>(nil)
-//    // bottom loader
-//    private(set) lazy var loadoldestStateMachine: GKStateMachine = {
-//        // exclude timeline middle fetcher state
-//        let stateMachine = GKStateMachine(states: [
-//            LoadOldestState.Initial(viewModel: self),
-//            LoadOldestState.Loading(viewModel: self),
-//            LoadOldestState.Fail(viewModel: self),
-//            LoadOldestState.Idle(viewModel: self),
-//            LoadOldestState.NoMore(viewModel: self),
-//        ])
-//        stateMachine.enter(LoadOldestState.Initial.self)
-//        return stateMachine
-//    }()
+    // bottom loader
+    private(set) lazy var loadOldestStateMachine: GKStateMachine = {
+        // exclude timeline middle fetcher state
+        let stateMachine = GKStateMachine(states: [
+            LoadOldestState.Initial(viewModel: self),
+            LoadOldestState.Loading(viewModel: self),
+            LoadOldestState.Fail(viewModel: self),
+            LoadOldestState.Idle(viewModel: self),
+            LoadOldestState.NoMore(viewModel: self),
+        ])
+        stateMachine.enter(LoadOldestState.Initial.self)
+        return stateMachine
+    }()
 //    lazy var loadOldestStateMachinePublisher = CurrentValueSubject<LoadOldestState?, Never>(nil)
 //    // middle loader
 //    let loadMiddleSateMachineList = CurrentValueSubject<[NSManagedObjectID: GKStateMachine], Never>([:])    // TimelineIndex.objectID : middle loading state machine

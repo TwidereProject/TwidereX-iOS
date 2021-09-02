@@ -11,6 +11,7 @@ import CoreDataStack
 
 enum StatusItem: Hashable {
     case feed(record: ManagedObjectRecord<Feed>)
+    case feedLoader(record: ManagedObjectRecord<Feed>)
     case status(Status)
     case thread(Thread)
     case topLoader

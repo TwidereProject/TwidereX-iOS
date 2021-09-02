@@ -11,9 +11,16 @@ import CoreData
 
 final public class Feed: NSManagedObject {
     
+    @NSManaged public private(set) var acctRaw: String
     // sourcery: autoGenerateProperty
-    @NSManaged public private(set) var acct: String       // {userID}@{domain}
-    
+    public var acct: Acct {
+        get {
+            Acct(rawValue: acctRaw) ?? .none
+        }
+        set {
+            acctRaw = newValue.rawValue
+        }
+    }
     @NSManaged public private(set) var kindRaw: String
     // sourcery: autoGenerateProperty
     public var kind: Kind {
@@ -27,6 +34,8 @@ final public class Feed: NSManagedObject {
     
     // sourcery: autoUpdatableObject, autoGenerateProperty
     @NSManaged public private(set) var hasMore: Bool
+    // sourcery: autoUpdatableObject
+    @NSManaged public private(set) var isLoadingMore: Bool
 
     // sourcery: autoUpdatableObject, autoGenerateProperty
     @NSManaged public private(set) var createdAt: Date
@@ -65,7 +74,7 @@ extension Feed {
     }
     
     static func predicate(acct: Acct) -> NSPredicate {
-        return NSPredicate(format: "%K == %@", #keyPath(Feed.acct), acct.value)
+        return NSPredicate(format: "%K == %@", #keyPath(Feed.acctRaw), acct.rawValue)
     }
     
     public static func predicate(kind: Kind, acct: Acct) -> NSPredicate {
@@ -73,6 +82,10 @@ extension Feed {
             Feed.predicate(kind: kind),
             Feed.predicate(acct: acct)
         ])
+    }
+    
+    public static func hasMorePredicate() -> NSPredicate {
+        return NSPredicate(format: "%K == YES", #keyPath(Feed.hasMore))
     }
 
 }
@@ -84,14 +97,14 @@ extension Feed: AutoGenerateProperty {
     // Generated using Sourcery
     // DO NOT EDIT
     public struct Property {
-        public let  acct: String
+        public let  acct: Acct
         public let  kind: Kind
         public let  hasMore: Bool
         public let  createdAt: Date
         public let  updatedAt: Date
 
     	public init(
-    		acct: String,
+    		acct: Acct,
     		kind: Kind,
     		hasMore: Bool,
     		createdAt: Date,
@@ -132,6 +145,11 @@ extension Feed: AutoUpdatableObject {
     		self.hasMore = hasMore
     	}
     }
+    public func update(isLoadingMore: Bool) {
+    	if self.isLoadingMore != isLoadingMore {
+    		self.isLoadingMore = isLoadingMore
+    	}
+    }
     public func update(createdAt: Date) {
     	if self.createdAt != createdAt {
     		self.createdAt = createdAt
@@ -145,3 +163,15 @@ extension Feed: AutoUpdatableObject {
     // sourcery:end
 }
 
+public protocol FeedIndexable {
+    var feeds: Set<Feed> { get }
+    func feed(kind: Feed.Kind, acct: Feed.Acct) -> Feed?
+}
+
+extension FeedIndexable {
+    public func feed(kind: Feed.Kind, acct: Feed.Acct) -> Feed? {
+        return feeds.first(where: { feed in
+            feed.kind == kind && feed.acct == acct
+        })
+    }
+}

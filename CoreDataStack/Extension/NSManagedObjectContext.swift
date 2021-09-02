@@ -58,3 +58,24 @@ extension NSManagedObjectContext {
     }
 
 }
+
+
+extension NSManagedObjectContext {
+    static let objectCacheKey = "ObjectCacheKey"
+    private typealias ObjectCache = [String: NSManagedObject]
+    
+    public func cache(
+        _ object: NSManagedObject?,
+        key: String
+    ) {
+        var cache = userInfo[NSManagedObjectContext.objectCacheKey] as? ObjectCache ?? [:]
+        cache[key] = object
+        userInfo[NSManagedObjectContext.objectCacheKey] = cache
+    }
+    
+    public func cache(froKey key: String) -> NSManagedObject? {
+        guard let cache = userInfo[NSManagedObjectContext.objectCacheKey] as? ObjectCache
+        else { return nil }
+        return cache[key]
+    }
+}

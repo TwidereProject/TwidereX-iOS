@@ -24,6 +24,7 @@ extension StatusSection {
     struct Configuration {
         let statusTableViewCellDelegate: StatusTableViewCellDelegate
         let statusThreadRootTableViewCellDelegate: StatusThreadRootTableViewCellDelegate?
+        let timelineMiddleLoaderTableViewCellDelegate: TimelineMiddleLoaderTableViewCellDelegate?
     }
 
     static func diffableDataSource(
@@ -45,6 +46,17 @@ extension StatusSection {
                         tableView: tableView,
                         cell: cell,
                         viewModel: StatusTableViewCell.ViewModel(value: .feed(feed)),
+                        configuration: configuration
+                    )
+                }
+                return cell
+            case .feedLoader(let record):
+                let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: TimelineMiddleLoaderTableViewCell.self), for: indexPath) as! TimelineMiddleLoaderTableViewCell
+                context.managedObjectContext.performAndWait {
+                    guard let feed = record.object(in: context.managedObjectContext) else { return }
+                    configure(
+                        cell: cell,
+                        feed: feed,
                         configuration: configuration
                     )
                 }
@@ -165,6 +177,17 @@ extension StatusSection {
             tableView: tableView,
             viewModel: viewModel,
             delegate: configuration.statusThreadRootTableViewCellDelegate
+        )
+    }
+    
+    static func configure(
+        cell: TimelineMiddleLoaderTableViewCell,
+        feed: Feed,
+        configuration: Configuration
+    ) {
+        cell.configure(
+            feed: feed,
+            delegate: configuration.timelineMiddleLoaderTableViewCellDelegate
         )
     }
     

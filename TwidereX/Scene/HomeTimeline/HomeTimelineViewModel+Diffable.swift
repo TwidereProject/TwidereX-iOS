@@ -15,11 +15,13 @@ extension HomeTimelineViewModel {
     
     func setupDiffableDataSource(
         tableView: UITableView,
-        statusTableViewCellDelegate: StatusTableViewCellDelegate
+        statusTableViewCellDelegate: StatusTableViewCellDelegate,
+        timelineMiddleLoaderTableViewCellDelegate: TimelineMiddleLoaderTableViewCellDelegate
     ) {
         let configuration = StatusSection.Configuration(
             statusTableViewCellDelegate: statusTableViewCellDelegate,
-            statusThreadRootTableViewCellDelegate: nil
+            statusThreadRootTableViewCellDelegate: nil,
+            timelineMiddleLoaderTableViewCellDelegate: timelineMiddleLoaderTableViewCellDelegate
         )
         diffableDataSource = StatusSection.diffableDataSource(
             tableView: tableView,
@@ -31,25 +33,55 @@ extension HomeTimelineViewModel {
         snapshot.appendSections([.main])
         diffableDataSource?.apply(snapshot)
         
-        fetchedResultsController.objectIDs
+        fetchedResultsController.records
             .receive(on: DispatchQueue.main, options: nil)
-            .sink { [weak self] objectIDs in
+            .sink { [weak self] records in
                 guard let self = self else { return }
                 guard let diffableDataSource = self.diffableDataSource else { return }
-                self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): incoming \(objectIDs.count) objects")
+                self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): incoming \(records.count) objects")
                 Task {
                     let oldSnapshot = diffableDataSource.snapshot()
-                    
-                    let newSnapshot: NSDiffableDataSourceSnapshot<StatusSection, StatusItem> = {
-                        let newItems = objectIDs.map { objectID in
-                            StatusItem.feed(record: ManagedObjectRecord<Feed>(objectID: objectID))
+                    var newSnapshot: NSDiffableDataSourceSnapshot<StatusSection, StatusItem> = {
+                        let newItems = records.map { record in
+                            StatusItem.feed(record: record)
                         }
                         var snapshot = NSDiffableDataSourceSnapshot<StatusSection, StatusItem>()
                         snapshot.appendSections([.main])
                         snapshot.appendItems(newItems, toSection: .main)
                         return snapshot
                     }()
-                    
+
+                    let parentManagedObjectContext = self.context.managedObjectContext
+                    let managedObjectContext = NSManagedObjectContext(concurrencyType: .privateQueueConcurrencyType)
+                    managedObjectContext.parent = parentManagedObjectContext
+                    await managedObjectContext.perform {
+                        let anchors: [Feed] = {
+                            let request = Feed.sortedFetchRequest
+                            request.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [
+                                Feed.hasMorePredicate(),
+                                self.fetchedResultsController.predicate.value,
+                            ])
+                            do {
+                                return try managedObjectContext.fetch(request)
+                            } catch {
+                                assertionFailure(error.localizedDescription)
+                                return []
+                            }
+                        }()
+                        
+                        let itemIdentifiers = newSnapshot.itemIdentifiers
+                        for (index, item) in itemIdentifiers.enumerated() {
+                            guard case let .feed(record) = item else { continue }
+                            guard anchors.contains(where: { feed in feed.objectID == record.objectID }) else { continue }
+                            let isLast = index + 1 == itemIdentifiers.count
+                            if isLast {
+                                newSnapshot.insertItems([.bottomLoader], afterItem: item)
+                            } else {
+                                newSnapshot.insertItems([.feedLoader(record: record)], afterItem: item)
+                            }
+                        }
+                    }
+
                     let hasChanges = newSnapshot.itemIdentifiers != oldSnapshot.itemIdentifiers
                     guard hasChanges else {
                         self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): snapshot not changes")
@@ -157,6 +189,59 @@ extension HomeTimelineViewModel {
             self.didLoadLatest.send()
             logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): \(error.localizedDescription)")
         }
+    }
+    
+    func loadMore(item: StatusItem) async {
+        guard case let .feedLoader(record) = item else { return }
+        guard let authenticationContext = context.authenticationService.activeAuthenticationContext.value else { return }
+        guard let diffableDataSource = diffableDataSource else { return }
+        var snapshot = diffableDataSource.snapshot()
+
+        let managedObjectContext = context.managedObjectContext
+        let key = "LoadMore@\(record.objectID)"
+        
+        guard let feed = record.object(in: managedObjectContext) else { return }
+        // keep transient property live
+        managedObjectContext.cache(feed, key: key)
+        defer {
+            managedObjectContext.cache(nil, key: key)
+        }
+        do {
+            // update state
+            try await managedObjectContext.performChanges {
+                feed.update(isLoadingMore: true)
+            }
+        } catch {
+            assertionFailure(error.localizedDescription)
+        }
+        
+        // reconfigure item
+        snapshot.reconfigureItems([item])
+        await diffableDataSource.apply(snapshot)
+        
+        // fetch data
+        do {
+            switch (feed.content, authenticationContext) {
+            case (.twitter(let status), .twitter(let authenticationContext)):
+                let response = try await context.apiService.twitterHomeTimeline(
+                    maxID: status.id,
+                    authenticationContext: authenticationContext
+                )
+            case (.mastodon(let status), .mastodon(let authenticationContext)):
+                let response = try await context.apiService.mastodonHomeTimeline(
+                    maxID: status.id,
+                    authenticationContext: authenticationContext
+                )
+            default:
+                assertionFailure()
+            }
+        } catch {
+            logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): fetch more failure: \(error.localizedDescription)")
+        }
+        
+        // reconfigure item again
+        snapshot.reconfigureItems([item])
+        await diffableDataSource.apply(snapshot)
     }
     
 }

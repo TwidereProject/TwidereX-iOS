@@ -71,7 +71,7 @@ extension TimelineSection {
             case .middleLoader(let upperTimelineIndexObjectID):
                 let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: TimelineMiddleLoaderTableViewCell.self), for: indexPath) as! TimelineMiddleLoaderTableViewCell
                 cell.delegate = timelineMiddleLoaderTableViewCellDelegate
-                timelineMiddleLoaderTableViewCellDelegate?.configure(cell: cell, upperTimelineIndexObjectID: upperTimelineIndexObjectID)
+                // timelineMiddleLoaderTableViewCellDelegate?.configure(cell: cell, upperTimelineIndexObjectID: upperTimelineIndexObjectID)
                 return cell
             case .bottomLoader:
                 let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: TimelineBottomLoaderTableViewCell.self), for: indexPath) as! TimelineBottomLoaderTableViewCell

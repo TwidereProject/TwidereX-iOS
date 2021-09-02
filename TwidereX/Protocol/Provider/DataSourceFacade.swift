@@ -51,7 +51,7 @@ enum DataSourceFacade {
                 let objectID = (status.repost ?? status).objectID
                 return .init(objectID: objectID)
             case .repost:
-                guard let objectID = status.repost?.objectID else { return nil }
+                let objectID = status.objectID
                 return .init(objectID: objectID)
             case .quote:
                 assertionFailure("")

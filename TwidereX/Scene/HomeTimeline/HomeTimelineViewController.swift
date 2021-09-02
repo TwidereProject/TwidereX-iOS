@@ -43,6 +43,9 @@ final class HomeTimelineViewController: UIViewController, NeedsDependency {
     private(set) lazy var tableView: UITableView = {
         let tableView = UITableView()
         tableView.register(StatusTableViewCell.self, forCellReuseIdentifier: String(describing: StatusTableViewCell.self))
+        tableView.register(TimelineMiddleLoaderTableViewCell.self, forCellReuseIdentifier: String(describing: TimelineMiddleLoaderTableViewCell.self))
+        tableView.register(TimelineBottomLoaderTableViewCell.self, forCellReuseIdentifier: String(describing: TimelineBottomLoaderTableViewCell.self))
+
         tableView.backgroundColor = .systemBackground
         tableView.rowHeight = UITableView.automaticDimension
         tableView.separatorStyle = .none
@@ -99,9 +102,10 @@ extension HomeTimelineViewController {
         tableView.delegate = self
         viewModel.setupDiffableDataSource(
             tableView: tableView,
-            statusTableViewCellDelegate: self
+            statusTableViewCellDelegate: self,
+            timelineMiddleLoaderTableViewCellDelegate: self
         )
-        
+        // setup refresh control
         tableView.refreshControl = refreshControl
         viewModel.didLoadLatest
             .receive(on: DispatchQueue.main, options: nil)
@@ -111,6 +115,15 @@ extension HomeTimelineViewController {
                     guard let self = self else { return }
                     self.refreshControl.endRefreshing()
                 }
+            }
+            .store(in: &disposeBag)
+        // setup batch fetch
+        viewModel.listBatchFetchViewModel.setup(scrollView: tableView)
+        viewModel.listBatchFetchViewModel.shouldFetch
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                guard let self = self else { return }
+                self.viewModel.loadOldestStateMachine.enter(HomeTimelineViewModel.LoadOldestState.Loading.self)
             }
             .store(in: &disposeBag)
         
@@ -427,5 +440,21 @@ extension HomeTimelineViewController: UITableViewDelegate, AutoGenerateTableView
 extension HomeTimelineViewController: StatusTableViewCellDelegate {
     func statusTableViewCell(_ cell: StatusTableViewCell, mediaGridContainerView containerView: MediaGridContainerView, didTapMediaView mediaView: MediaView, at index: Int) {
         
+    }
+}
+
+// MARK: - TimelineMiddleLoaderTableViewCellDelegate
+extension HomeTimelineViewController: TimelineMiddleLoaderTableViewCellDelegate {
+    func timelineMiddleLoaderTableViewCell(
+        _ cell: TimelineMiddleLoaderTableViewCell,
+        loadMoreButtonDidPressed button: UIButton
+    ) {
+        guard let diffableDataSource = viewModel.diffableDataSource else { return }
+        guard let indexPath = tableView.indexPath(for: cell) else { return }
+        guard let item = diffableDataSource.itemIdentifier(for: indexPath) else { return }
+        
+        Task {
+            await viewModel.loadMore(item: item)            
+        }
     }
 }

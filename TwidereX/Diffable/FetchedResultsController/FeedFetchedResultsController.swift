@@ -21,11 +21,11 @@ final class FeedFetchedResultsController: NSObject {
     let fetchedResultsController: NSFetchedResultsController<Feed>
     
     // input
-    let predicate: CurrentValueSubject<NSPredicate?, Never>
+    let predicate: CurrentValueSubject<NSPredicate, Never>
     
     // output
     private let _objectIDs = PassthroughSubject<[NSManagedObjectID], Never>()
-    let objectIDs = CurrentValueSubject<[NSManagedObjectID], Never>([])
+    let records = CurrentValueSubject<[ManagedObjectRecord<Feed>], Never>([])
     
     init(managedObjectContext: NSManagedObjectContext) {
         self.fetchedResultsController = {
@@ -48,7 +48,12 @@ final class FeedFetchedResultsController: NSObject {
             
             return controller
         }()
-        self.predicate = CurrentValueSubject(Feed.predicate(kind: .home, acct: Feed.Acct.twitter(userID: "")))
+        self.predicate = CurrentValueSubject(
+            Feed.predicate(
+                kind: .home,
+                acct: .none
+            )
+        )
         super.init()
         
         fetchedResultsController.delegate = self
@@ -69,7 +74,8 @@ final class FeedFetchedResultsController: NSObject {
         // debounce output to prevent UI update issues
         _objectIDs
             .throttle(for: 0.1, scheduler: DispatchQueue.main, latest: true)
-            .assign(to: \.value, on: objectIDs)
+            .map { objectIDs in objectIDs.map { ManagedObjectRecord(objectID: $0) } }
+            .assign(to: \.value, on: records)
             .store(in: &disposeBag)
     }
     

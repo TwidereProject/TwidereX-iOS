@@ -9,16 +9,17 @@
         <relationship name="twitterAuthentication" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="TwitterAuthentication" inverseName="authenticationIndex" inverseEntity="TwitterAuthentication"/>
     </entity>
     <entity name="Feed" representedClassName=".Feed" syncable="YES">
-        <attribute name="acct" attributeType="String"/>
+        <attribute name="acctRaw" attributeType="String"/>
         <attribute name="createdAt" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="hasMore" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="isLoadingMore" transient="YES" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
         <attribute name="kindRaw" attributeType="String"/>
         <attribute name="updatedAt" attributeType="Date" usesScalarValueType="NO"/>
         <relationship name="mastodonStatus" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="MastodonStatus" inverseName="feeds" inverseEntity="MastodonStatus"/>
         <relationship name="twitterStatus" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="TwitterStatus" inverseName="feeds" inverseEntity="TwitterStatus"/>
         <fetchIndex name="byKindAndAcct">
             <fetchIndexElement property="kindRaw" type="Binary" order="ascending"/>
-            <fetchIndexElement property="acct" type="Binary" order="ascending"/>
+            <fetchIndexElement property="acctRaw" type="Binary" order="ascending"/>
             <fetchIndexElement property="createdAt" type="Binary" order="descending"/>
         </fetchIndex>
     </entity>
@@ -352,7 +353,7 @@
     </entity>
     <elements>
         <element name="AuthenticationIndex" positionX="-63" positionY="-153" width="128" height="119"/>
-        <element name="Feed" positionX="-54" positionY="-144" width="128" height="134"/>
+        <element name="Feed" positionX="-54" positionY="-144" width="128" height="149"/>
         <element name="MastodonAuthentication" positionX="-63" positionY="-153" width="128" height="14"/>
         <element name="MastodonStatus" positionX="-63" positionY="-171" width="128" height="329"/>
         <element name="MastodonUser" positionX="-63" positionY="-153" width="128" height="374"/>

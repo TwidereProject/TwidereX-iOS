@@ -59,7 +59,8 @@ extension StatusThreadViewModel.LoadThreadState {
                 case .twitter(let record):
                     await prepareTwitterStatusThread(record: record)
                 case .mastodon(let record):
-                    assertionFailure("TODO")
+                    break
+                    // assertionFailure("TODO")
                 }
             }
         }

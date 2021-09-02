@@ -77,6 +77,8 @@ extension TwitterStatus {
     }
 }
 
+extension TwitterStatus: FeedIndexable { }
+
 extension TwitterStatus {
     
     @discardableResult

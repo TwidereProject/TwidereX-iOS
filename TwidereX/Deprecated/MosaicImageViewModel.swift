@@ -9,6 +9,7 @@
 import UIKit
 import CoreDataStack
 
+@available(*, deprecated, message: "")
 struct MosaicImageViewModel {
     
     let metas: [MosaicMeta]

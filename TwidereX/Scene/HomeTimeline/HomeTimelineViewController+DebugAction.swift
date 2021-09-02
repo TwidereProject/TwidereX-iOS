@@ -99,10 +99,10 @@ extension HomeTimelineViewController {
             identifier: nil,
             options: [],
             children: [
-//                UIAction(title: "First Gap", image: nil, attributes: [], handler: { [weak self] action in
-//                    guard let self = self else { return }
-//                    self.moveToTopGapAction(action)
-//                }),
+                UIAction(title: "First Gap", image: nil, attributes: [], handler: { [weak self] action in
+                    guard let self = self else { return }
+                    self.moveToTopGapAction(action)
+                }),
 //                UIAction(title: "First Protected Tweet", image: nil, attributes: [], handler: { [weak self] action in
 //                    guard let self = self else { return }
 //                    self.moveToFirstProtectedTweet(action)
@@ -164,17 +164,17 @@ extension HomeTimelineViewController {
     }
     
     @objc private func moveToTopGapAction(_ sender: UIAction) {
-//        guard let diffableDataSource = viewModel.diffableDataSource else { return }
-//        let snapshotTransitioning = diffableDataSource.snapshot()
-//        let item = snapshotTransitioning.itemIdentifiers.first(where: { item in
-//            switch item {
-//            case .middleLoader: return true
-//            default:                        return false
-//            }
-//        })
-//        if let targetItem = item, let index = snapshotTransitioning.indexOfItem(targetItem) {
-//            tableView.scrollToRow(at: IndexPath(row: index, section: 0), at: .middle, animated: true)
-//        }
+        guard let diffableDataSource = viewModel.diffableDataSource else { return }
+        let snapshot = diffableDataSource.snapshot()
+        let _item = snapshot.itemIdentifiers.first { item in
+            switch item {
+            case .feedLoader:   return true
+            default:            return false
+            }
+        }
+        guard let item = _item else { return }
+        guard let indexPath = diffableDataSource.indexPath(for: item) else { return }
+        tableView.scrollToRow(at: indexPath, at: .middle, animated: true)
     }
     
     enum StatusCategory {

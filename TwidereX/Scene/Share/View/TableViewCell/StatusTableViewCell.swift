@@ -57,14 +57,6 @@ extension StatusTableViewCell {
         statusView.setup(style: .inline)
         statusView.toolbar.setup(style: .inline)
         statusView.mediaGridContainerView.delegate = self
-        
-        separator.translatesAutoresizingMaskIntoConstraints = false
-        contentView.addSubview(separator)
-        NSLayoutConstraint.activate([
-            separator.leadingAnchor.constraint(equalTo: statusView.toolbar.leadingAnchor),
-            separator.trailingAnchor.constraint(equalTo: statusView.toolbar.trailingAnchor),
-            separator.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
-        ])
     }
     
 }

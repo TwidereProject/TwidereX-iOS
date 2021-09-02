@@ -20,7 +20,8 @@ extension StatusThreadViewModel {
     ) {
         let configuration = StatusSection.Configuration(
             statusTableViewCellDelegate: statusTableViewCellDelegate,
-            statusThreadRootTableViewCellDelegate: statusThreadRootTableViewCellDelegate
+            statusThreadRootTableViewCellDelegate: statusThreadRootTableViewCellDelegate,
+            timelineMiddleLoaderTableViewCellDelegate: nil
         )
         diffableDataSource = StatusSection.diffableDataSource(
             tableView: tableView,

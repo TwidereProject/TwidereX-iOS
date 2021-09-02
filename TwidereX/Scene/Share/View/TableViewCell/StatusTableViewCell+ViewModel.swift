@@ -28,7 +28,7 @@ extension StatusTableViewCell {
     
     func configure(
         tableView: UITableView,
-        viewModel: StatusTableViewCell.ViewModel,
+        viewModel: ViewModel,
         delegate: StatusTableViewCellDelegate
     ) {
         if statusView.frame == .zero {
@@ -45,12 +45,49 @@ extension StatusTableViewCell {
         switch viewModel.value {
         case .feed(let feed):
             statusView.configure(feed: feed)
+            configureSeparator(style: feed.hasMore ? .edge : .inset)
         case .twitterStatus(let status):
             statusView.configure(twitterStatus: status)
+            configureSeparator(style: .inset)
         case .mastodonStatus(let status):
             statusView.configure(mastodonStatus: status)
+            configureSeparator(style: .inset)
         }
         
         self.delegate = delegate
+    }
+}
+
+
+extension StatusTableViewCell {
+    enum SeparatorStyle {
+        case edge
+        case inset
+    }
+    
+    func configureSeparator(style: SeparatorStyle) {
+        separator.removeFromSuperview()
+        separator.removeConstraints(separator.constraints)
+        
+        switch style {
+        case .edge:
+            separator.translatesAutoresizingMaskIntoConstraints = false
+            contentView.addSubview(separator)
+            NSLayoutConstraint.activate([
+                separator.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+                separator.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+                separator.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
+                separator.heightAnchor.constraint(equalToConstant: UIView.separatorLineHeight(of: contentView)),
+            ])
+        case .inset:
+            separator.translatesAutoresizingMaskIntoConstraints = false
+            contentView.addSubview(separator)
+            NSLayoutConstraint.activate([
+                separator.leadingAnchor.constraint(equalTo: statusView.toolbar.leadingAnchor),
+                separator.trailingAnchor.constraint(equalTo: statusView.toolbar.trailingAnchor),
+                separator.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
+                separator.heightAnchor.constraint(equalToConstant: UIView.separatorLineHeight(of: contentView)),
+            ])
+        }
     }
 }

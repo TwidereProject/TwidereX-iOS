@@ -94,6 +94,8 @@ extension MastodonStatus {
     }
 }
 
+extension MastodonStatus: FeedIndexable { }
+
 extension MastodonStatus {
     
     @discardableResult
