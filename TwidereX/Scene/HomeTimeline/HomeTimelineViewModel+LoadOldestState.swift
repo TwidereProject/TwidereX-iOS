@@ -131,8 +131,8 @@ extension HomeTimelineViewModel.LoadOldestState {
                 switch fetchContext {
                 case .twitter(let fetchContext):
                     try await fetch(fetchContext: fetchContext)
-                case .mastodon(let mastodonFetchContext):
-                    break
+                case .mastodon(let fetchContext):
+                    try await fetch(fetchContext: fetchContext)
                 }
             } catch {
                 stateMachine.enter(Fail.self)
@@ -148,6 +148,21 @@ extension HomeTimelineViewModel.LoadOldestState {
                 authenticationContext: authenticationContext
             )
             let notHasMore = response.value.isEmpty || (response.value.count == 1 && response.value[0].idStr == fetchContext.maxID)
+            if notHasMore {
+                stateMachine.enter(NoMore.self)
+            } else {
+                stateMachine.enter(Idle.self)
+            }
+        }
+        
+        func fetch(fetchContext: MastodonFetchContext) async throws {
+            guard let viewModel = viewModel, let stateMachine = stateMachine else { return }
+            guard let authenticationContext = viewModel.context.authenticationService.activeAuthenticationContext.value?.mastodonAuthenticationContext else { return }
+            let response = try await viewModel.context.apiService.mastodonHomeTimeline(
+                maxID: fetchContext.maxID,
+                authenticationContext: authenticationContext
+            )
+            let notHasMore = response.value.isEmpty || (response.value.count == 1 && response.value[0].id == fetchContext.maxID)
             if notHasMore {
                 stateMachine.enter(NoMore.self)
             } else {

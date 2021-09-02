@@ -249,9 +249,26 @@ extension APIService {
                 statusArray.append(status)
             }
             
-            // persist Feed relationship
+            // locate anchor status
+            let anchorStatus: MastodonStatus? = {
+                guard let maxID = maxID else { return nil }
+                let request = MastodonStatus.sortedFetchRequest
+                request.predicate = MastodonStatus.predicate(domain: authenticationContext.domain, id: maxID)
+                request.fetchLimit = 1
+                return try? managedObjectContext.fetch(request).first
+            }()
+            // update hasMore flag for anchor status
             let acct = Feed.Acct.mastodon(domain: authenticationContext.domain, userID: authenticationContext.userID)
-            for status in statusArray {
+            if let anchorStatus = anchorStatus,
+               let feed = anchorStatus.feed(kind: .home, acct: acct) {
+                feed.update(hasMore: false)
+            }
+            
+            
+            // persist Feed relationship
+            let sortedStatuses = statusArray.sorted(by: { $0.createdAt < $1.createdAt })
+            let oldestStatus = sortedStatuses.first
+            for status in sortedStatuses {
                 let _feed = status.feed(kind: .home, acct: acct)
                 if let feed = _feed {
                     feed.update(updatedAt: response.networkDate)
@@ -265,6 +282,11 @@ extension APIService {
                     )
                     let feed = Feed.insert(into: managedObjectContext, property: feedProperty)
                     status.attach(feed: feed)
+                    
+                    // set hasMore on oldest status if is new feed
+                    if status === oldestStatus {
+                        feed.update(hasMore: true)
+                    }
                 }
             }
         }

@@ -40,6 +40,11 @@ extension HomeTimelineViewModel {
                 guard let diffableDataSource = self.diffableDataSource else { return }
                 self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): incoming \(records.count) objects")
                 Task {
+                    let start = CACurrentMediaTime()
+                    defer {
+                        let end = CACurrentMediaTime()
+                        self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): cost \(end - start, format: .fixed(precision: 4 ))s to process \(records.count) feeds")
+                    }
                     let oldSnapshot = diffableDataSource.snapshot()
                     var newSnapshot: NSDiffableDataSourceSnapshot<StatusSection, StatusItem> = {
                         let newItems = records.map { record in
@@ -175,12 +180,12 @@ extension HomeTimelineViewModel {
         do {
             switch authenticationContext {
             case .twitter(let authenticationContext):
-                let response = try await context.apiService.twitterHomeTimeline(
+                _ = try await context.apiService.twitterHomeTimeline(
                     maxID: nil,
                     authenticationContext: authenticationContext
                 )
             case .mastodon(let authenticationContext):
-                let response = try await context.apiService.mastodonHomeTimeline(
+                _ =  try await context.apiService.mastodonHomeTimeline(
                     maxID: nil,
                     authenticationContext: authenticationContext
                 )
@@ -217,18 +222,18 @@ extension HomeTimelineViewModel {
         
         // reconfigure item
         snapshot.reconfigureItems([item])
-        await diffableDataSource.apply(snapshot)
+        await updateDataSource(snapshot: snapshot, animatingDifferences: true)
         
         // fetch data
         do {
             switch (feed.content, authenticationContext) {
             case (.twitter(let status), .twitter(let authenticationContext)):
-                let response = try await context.apiService.twitterHomeTimeline(
+                _ = try await context.apiService.twitterHomeTimeline(
                     maxID: status.id,
                     authenticationContext: authenticationContext
                 )
             case (.mastodon(let status), .mastodon(let authenticationContext)):
-                let response = try await context.apiService.mastodonHomeTimeline(
+                _ = try await context.apiService.mastodonHomeTimeline(
                     maxID: status.id,
                     authenticationContext: authenticationContext
                 )
@@ -241,7 +246,7 @@ extension HomeTimelineViewModel {
         
         // reconfigure item again
         snapshot.reconfigureItems([item])
-        await diffableDataSource.apply(snapshot)
+        await updateDataSource(snapshot: snapshot, animatingDifferences: true)
     }
     
 }
