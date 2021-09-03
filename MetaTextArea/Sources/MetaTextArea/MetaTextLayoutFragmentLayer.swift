@@ -120,7 +120,7 @@ class MetaTextLayoutFragmentLayer: CALayer {
                 let rect = CGRect(
                     x: attachmentFrameMinLocation.x,
                     y: textLineFragmentTypographicBounds.minY + self.frame.minY,
-                    width: attachmentFrameMaxLocation.x - attachmentFrameMinLocation.x,
+                    width: attachment.contentFrame.width,
                     height: textLineFragmentTypographicBounds.height
                 )
 
