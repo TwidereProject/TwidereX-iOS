@@ -38,7 +38,7 @@
 		DB0D0AC825944FF2007A23C8 /* FollowingListViewController+UserProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB0D0AC725944FF2007A23C8 /* FollowingListViewController+UserProvider.swift */; };
 		DB0D0ACD25945075007A23C8 /* UserProvider+UITableViewDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB0D0ACC25945075007A23C8 /* UserProvider+UITableViewDelegate.swift */; };
 		DB0D3A38255E4341000BB9FA /* UserLikeTimelineViewController+StatusProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB0D3A37255E4341000BB9FA /* UserLikeTimelineViewController+StatusProvider.swift */; };
-		DB0EB9EF26D3748700034427 /* StyleConfigurableLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB0EB9EE26D3748700034427 /* StyleConfigurableLabel.swift */; };
+		DB0EB9EF26D3748700034427 /* TextStyleConfigurable.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB0EB9EE26D3748700034427 /* TextStyleConfigurable.swift */; };
 		DB0EB9F126D3899200034427 /* StatusToolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB0EB9F026D3899200034427 /* StatusToolbar.swift */; };
 		DB0EB9F326D38ED700034427 /* NumberMetricFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB0EB9F226D38ED700034427 /* NumberMetricFormatter.swift */; };
 		DB0EB9F626D3AC7900034427 /* MediaGridContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB0EB9F526D3AC7800034427 /* MediaGridContainerView.swift */; };
@@ -331,6 +331,7 @@
 		DBC17A5F26E0D6F9005C0D79 /* TwitterLocation.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBC17A5E26E0D6F9005C0D79 /* TwitterLocation.swift */; };
 		DBC17A6126E0EADA005C0D79 /* MastodonEmoji.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBC17A6026E0EADA005C0D79 /* MastodonEmoji.swift */; };
 		DBC17A6526E0ED0E005C0D79 /* MastodonEmoji.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBC17A6426E0ED0E005C0D79 /* MastodonEmoji.swift */; };
+		DBC17A6726E1DB22005C0D79 /* MastodonEmojiContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBC17A6626E1DB22005C0D79 /* MastodonEmojiContainer.swift */; };
 		DBC747D4259DA03B00787EEF /* ListCheckmarkTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBC747D3259DA03B00787EEF /* ListCheckmarkTableViewCell.swift */; };
 		DBC747D9259DA07C00787EEF /* ListTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBC747D8259DA07C00787EEF /* ListTableViewCell.swift */; };
 		DBC747E1259DBD5400787EEF /* AvatarBarButtonItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBC747E0259DBD5400787EEF /* AvatarBarButtonItem.swift */; };
@@ -629,7 +630,7 @@
 		DB0D0AC725944FF2007A23C8 /* FollowingListViewController+UserProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FollowingListViewController+UserProvider.swift"; sourceTree = "<group>"; };
 		DB0D0ACC25945075007A23C8 /* UserProvider+UITableViewDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UserProvider+UITableViewDelegate.swift"; sourceTree = "<group>"; };
 		DB0D3A37255E4341000BB9FA /* UserLikeTimelineViewController+StatusProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UserLikeTimelineViewController+StatusProvider.swift"; sourceTree = "<group>"; };
-		DB0EB9EE26D3748700034427 /* StyleConfigurableLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StyleConfigurableLabel.swift; sourceTree = "<group>"; };
+		DB0EB9EE26D3748700034427 /* TextStyleConfigurable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextStyleConfigurable.swift; sourceTree = "<group>"; };
 		DB0EB9F026D3899200034427 /* StatusToolbar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusToolbar.swift; sourceTree = "<group>"; };
 		DB0EB9F226D38ED700034427 /* NumberMetricFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NumberMetricFormatter.swift; sourceTree = "<group>"; };
 		DB0EB9F526D3AC7800034427 /* MediaGridContainerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaGridContainerView.swift; sourceTree = "<group>"; };
@@ -680,6 +681,7 @@
 		DB30ADD926CF5A9E00B2D2BE /* FLAnimatedImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FLAnimatedImageView.swift; sourceTree = "<group>"; };
 		DB30ADDB26CFC7EE00B2D2BE /* StatusTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusTableViewCell.swift; sourceTree = "<group>"; };
 		DB33017525A41102003552B0 /* StatusProviderFacade.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusProviderFacade.swift; sourceTree = "<group>"; };
+		DB3353E126E2463C00C6A01C /* MetaTextKit */ = {isa = PBXFileReference; lastKnownFileType = folder; name = MetaTextKit; path = ../MetaTextKit; sourceTree = "<group>"; };
 		DB33A4A025A2F049003CED7D /* Item+EmptyStateHeaderAttribute+TimelineHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Item+EmptyStateHeaderAttribute+TimelineHeaderView.swift"; sourceTree = "<group>"; };
 		DB33A4A825A319A0003CED7D /* ActionToolbarContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionToolbarContainer.swift; sourceTree = "<group>"; };
 		DB34028D2521BC06009EFADF /* APIService+UserTimeline.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "APIService+UserTimeline.swift"; sourceTree = "<group>"; };
@@ -930,6 +932,7 @@
 		DBC17A5E26E0D6F9005C0D79 /* TwitterLocation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwitterLocation.swift; sourceTree = "<group>"; };
 		DBC17A6026E0EADA005C0D79 /* MastodonEmoji.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MastodonEmoji.swift; sourceTree = "<group>"; };
 		DBC17A6426E0ED0E005C0D79 /* MastodonEmoji.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MastodonEmoji.swift; sourceTree = "<group>"; };
+		DBC17A6626E1DB22005C0D79 /* MastodonEmojiContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MastodonEmojiContainer.swift; sourceTree = "<group>"; };
 		DBC747D3259DA03B00787EEF /* ListCheckmarkTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListCheckmarkTableViewCell.swift; sourceTree = "<group>"; };
 		DBC747D8259DA07C00787EEF /* ListTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListTableViewCell.swift; sourceTree = "<group>"; };
 		DBC747E0259DBD5400787EEF /* AvatarBarButtonItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvatarBarButtonItem.swift; sourceTree = "<group>"; };
@@ -1232,6 +1235,7 @@
 		DB004BEB26CE28D700F5C574 /* Extension */ = {
 			isa = PBXGroup;
 			children = (
+				DBC17A6626E1DB22005C0D79 /* MastodonEmojiContainer.swift */,
 				DB004BCC26CCD7E900F5C574 /* MastodonFieldContainer.swift */,
 				DBC17A6426E0ED0E005C0D79 /* MastodonEmoji.swift */,
 				DB004BC826CCD68B00F5C574 /* MastodonUser+Property.swift */,
@@ -2228,6 +2232,7 @@
 		DBDA8E1524FCF8A3006750DC = {
 			isa = PBXGroup;
 			children = (
+				DB3353E126E2463C00C6A01C /* MetaTextKit */,
 				DB71CF1826B3E0960018F605 /* MetaTextArea */,
 				DB43239D251491EB004FAAEC /* TwidereSDK */,
 				DBDA8E2024FCF8A3006750DC /* TwidereX */,
@@ -2658,7 +2663,7 @@
 				DB36F35D257F74C00028F81E /* ScrollViewContainer.swift */,
 				DB2FFF60258CB051003DBC19 /* NeedsDependency+AVPlayerViewControllerDelegate.swift */,
 				DBCE2EE22593319000926D09 /* AvatarConfigurableView.swift */,
-				DB0EB9EE26D3748700034427 /* StyleConfigurableLabel.swift */,
+				DB0EB9EE26D3748700034427 /* TextStyleConfigurable.swift */,
 				DB43CBDC2595CE2100D47607 /* LoadMoreConfigurableViewContainer.swift */,
 				DB6B8B5E25AF30B900F20FD5 /* ContextMenuAction.swift */,
 				DBB1FEC5269C382F005BC761 /* Status.swift */,
@@ -3444,7 +3449,7 @@
 				DBDA8E9024FE068C006750DC /* NeedsDependency.swift in Sources */,
 				DB004BF426CE360400F5C574 /* TwitterStatusFetchedResultController.swift in Sources */,
 				DB5399A025AEF75D0064586D /* APIService+Mute.swift in Sources */,
-				DB0EB9EF26D3748700034427 /* StyleConfigurableLabel.swift in Sources */,
+				DB0EB9EF26D3748700034427 /* TextStyleConfigurable.swift in Sources */,
 				DB1D7B2B25B1959300397DCD /* AuthenticateButton.swift in Sources */,
 				DB2EBBFC255D3B4700956CAA /* MosaicImageViewModel.swift in Sources */,
 				DB25B9F42539A9CE00A5420F /* APIService+CoreData+TwitterUser.swift in Sources */,
@@ -3530,6 +3535,7 @@
 				DBD73D7726D65DAB0003997E /* UserItem.swift in Sources */,
 				DB33A4A925A319A0003CED7D /* ActionToolbarContainer.swift in Sources */,
 				DB30ADDA26CF5A9E00B2D2BE /* FLAnimatedImageView.swift in Sources */,
+				DBC17A6726E1DB22005C0D79 /* MastodonEmojiContainer.swift in Sources */,
 				DB5FD9B326D8D94600CF5439 /* StatusTableViewCell+ViewModel.swift in Sources */,
 				DBC747E1259DBD5400787EEF /* AvatarBarButtonItem.swift in Sources */,
 				DB5632A726DCC84C00FC893F /* DataSourceProvider+UITableViewDelegate.swift in Sources */,

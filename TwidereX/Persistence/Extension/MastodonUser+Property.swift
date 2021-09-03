@@ -32,9 +32,11 @@ extension MastodonUser.Property {
             bot: entity.bot ?? false,
             suspended: entity.suspended ?? false,
             createdAt: entity.createdAt,
-            updatedAt: networkDate
+            updatedAt: networkDate,
+            emojis: entity.mastodonEmojis
         )
     }
 }
 
+extension Mastodon.Entity.Account: MastodonEmojiContainer { }
 extension MastodonUser: MastodonFieldContainer { }

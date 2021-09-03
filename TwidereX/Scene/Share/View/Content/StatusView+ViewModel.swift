@@ -27,7 +27,7 @@ extension StatusView {
         @Published var authorName: MetaContent?
         @Published var authorUsername: String?
         
-        @Published var content: String?
+        @Published var content: MetaContent?
         @Published var mediaViewConfigurations: [MediaView.Configuration] = []
         @Published var location: String?
         
@@ -125,20 +125,12 @@ extension StatusView.ViewModel {
             $content,
             NotificationCenter.default.publisher(for: UIContentSizeCategory.didChangeNotification).map { _ in }.prepend(Void())
         )
-        .map { content, _ -> NSAttributedString in
-            let textStyle = statusView.contentTextViewFontTextStyle ?? .body
-            let textColor = statusView.contentTextViewTextColor ?? .label
-            let attributedString = NSAttributedString(
-                string: content ?? "",
-                attributes: [
-                    .font: UIFont.preferredFont(forTextStyle: textStyle),
-                    .foregroundColor: textColor
-                ]
-            )
-            return attributedString
-        }
-        .sink { attributedString in
-            statusView.contentTextView.setAttributedString(attributedString)
+        .sink { metaContent, _ in
+            guard let content = metaContent else {
+                statusView.contentTextView.reset()
+                return
+            }
+            statusView.contentTextView.configure(content: content)
         }
         .store(in: &disposeBag)
     }
@@ -294,8 +286,7 @@ extension StatusView {
             urlMaximumLength: 20,
             twitterTextProvider: OfficialTwitterTextProvider()
         )
-        // TODO:
-        viewModel.content = metaContent.trimmed
+        viewModel.content = metaContent
     }
     
     private func configureMedia(twitterStatus status: TwitterStatus) {
@@ -410,10 +401,6 @@ extension StatusView {
         }
         .assign(to: \.authorName, on: viewModel)
         .store(in: &disposeBag)
-//        author.publisher(for: \.displayName)
-//            .map { _ in author.name }
-//            .assign(to: \.authorName, on: viewModel)
-//            .store(in: &disposeBag)
         // author username
         author.publisher(for: \.acct)
             .map { $0 as String? }
@@ -428,14 +415,13 @@ extension StatusView {
     
     private func configureContent(mastodonStatus status: MastodonStatus) {
         let status = status.repost ?? status
-        let content = MastodonContent(content: status.content, emojis: [:])
+        let content = MastodonContent(content: status.content, emojis: status.emojis.asDictionary)
         do {
             let metaContent = try MastodonMetaContent.convert(document: content)
-            // TODO:
-            viewModel.content = metaContent.trimmed
+            viewModel.content = metaContent
         } catch {
             assertionFailure(error.localizedDescription)
-            viewModel.content = ""
+            viewModel.content = PlaintextMetaContent(string: "")
         }
     }
     

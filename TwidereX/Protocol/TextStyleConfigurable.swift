@@ -1,6 +1,6 @@
 //
-//  StyleConfigurableLabel.swift
-//  StyleConfigurableLabel
+//  TextStyleConfigurable.swift
+//  TextStyleConfigurable
 //
 //  Created by Cirno MainasuK on 2021-8-23.
 //  Copyright © 2021 Twidere. All rights reserved.
@@ -10,22 +10,21 @@ import UIKit
 import Meta
 import MetaTextKit
 
-protocol StyleConfigurableLabel {
-    func setupLayout(style: UILabel.Style)
-    func setupAttributes(style: UILabel.Style)
+protocol TextStyleConfigurable {
+    func setupLayout(style: TextStyle)
+    func setupAttributes(style: TextStyle)
 }
 
-extension UILabel {
-    enum Style {
-        case statusHeader
-        case statusAuthorName
-        case statusAuthorUsername
-        case statusTimestamp
-        case statusLocation
-    }
+enum TextStyle {
+    case statusHeader
+    case statusAuthorName
+    case statusAuthorUsername
+    case statusTimestamp
+    case statusLocation
+    case statusContent
 }
 
-extension UILabel.Style {
+extension TextStyle {
     var numberOfLines: Int {
         switch self {
         case .statusHeader:             return 1
@@ -33,11 +32,12 @@ extension UILabel.Style {
         case .statusAuthorUsername:     return 1
         case .statusTimestamp:          return 1
         case .statusLocation:           return 1
+        case .statusContent:            return 0
         }
     }
 }
 
-extension UILabel.Style {
+extension TextStyle {
     var font: UIFont {
         switch self {
         case .statusHeader:
@@ -50,6 +50,8 @@ extension UILabel.Style {
             return .preferredFont(forTextStyle: .subheadline)
         case .statusLocation:
             return .preferredFont(forTextStyle: .caption1)
+        case .statusContent:
+            return .preferredFont(forTextStyle: .body)
         }
     }
     
@@ -65,19 +67,21 @@ extension UILabel.Style {
             return .secondaryLabel
         case .statusLocation:
             return .secondaryLabel
+        case .statusContent:
+            return .label
         }
     }
 }
 
-extension MetaLabel: StyleConfigurableLabel {
-    convenience init(style: UILabel.Style) {
+extension MetaLabel: TextStyleConfigurable {
+    convenience init(style: TextStyle) {
         self.init()
         
         setupLayout(style: style)
         setupAttributes(style: style)
     }
     
-    func setupLayout(style: UILabel.Style) {
+    func setupLayout(style: TextStyle) {
         layer.masksToBounds = true
         lineBreakMode = .byTruncatingTail
         textContainer.lineBreakMode = .byTruncatingTail
@@ -86,7 +90,7 @@ extension MetaLabel: StyleConfigurableLabel {
         numberOfLines = style.numberOfLines
     }
     
-    func setupAttributes(style: UILabel.Style) {
+    func setupAttributes(style: TextStyle) {
         let font = style.font
         let textColor = style.textColor
         
@@ -105,22 +109,35 @@ extension MetaLabel: StyleConfigurableLabel {
     }
 }
 
-class PlainLabel: UILabel, StyleConfigurableLabel {
-    convenience init(style: UILabel.Style) {
+class PlainLabel: UILabel, TextStyleConfigurable {
+    convenience init(style: TextStyle) {
         self.init()
         
         setupLayout(style: style)
         setupAttributes(style: style)
     }
     
-    func setupLayout(style: UILabel.Style) {
+    func setupLayout(style: TextStyle) {
         layer.masksToBounds = true
         lineBreakMode = .byTruncatingTail
         
         numberOfLines = style.numberOfLines
     }
     
-    func setupAttributes(style: UILabel.Style) {
+    func setupAttributes(style: TextStyle) {
+        self.font = style.font
+        self.textColor = style.textColor
+    }
+}
+
+extension MetaTextView: TextStyleConfigurable {
+    func setupLayout(style: TextStyle) {
+        layer.masksToBounds = true
+        
+        isScrollEnabled = false
+    }
+    
+    func setupAttributes(style: TextStyle) {
         self.font = style.font
         self.textColor = style.textColor
     }

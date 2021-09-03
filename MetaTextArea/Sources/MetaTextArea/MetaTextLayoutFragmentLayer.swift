@@ -6,11 +6,18 @@
 //
 
 import UIKit
+import Combine
 import CoreGraphics
+import MastodonMeta
+import Meta
 
 class MetaTextLayoutFragmentLayer: CALayer {
     
+    var disposeBag = Set<AnyCancellable>()
+    
     var textLayoutFragment: NSTextLayoutFragment?
+    
+    weak var contentView: UIView?
     
     #if DEBUG
     var showLayerFrames: Bool = false
@@ -59,7 +66,14 @@ class MetaTextLayoutFragmentLayer: CALayer {
             ctx.stroke(typographicBounds.insetBy(dx: inset, dy: inset))
             
             // draw bounds for lines
+            var i = 0
             for textLineFragment in textLayoutFragment.textLineFragments {
+//                defer { i += 1 }
+//                guard i == 1 else { continue }
+                
+                let line = textLineFragment.attributedString.attributedSubstring(from: textLineFragment.characterRange)
+                print(line.string)
+                
                 // draw typographic bounds for line
                 let lineTypographicBounds = textLineFragment.typographicBounds
                 ctx.setStrokeColor(MetaTextLayoutFragmentLayer.lineTypographicBoundsStrokeColor.cgColor)
@@ -70,6 +84,7 @@ class MetaTextLayoutFragmentLayer: CALayer {
                 let characterRange = textLineFragment.characterRange
                 guard let range = Range(characterRange) else { continue }
                 for characterLocation in range {
+                    print(characterLocation)
                     let characterOrigin = textLineFragment.locationForCharacter(at: characterLocation)
                     ctx.saveGState()
                     let rect = CGRect(
@@ -84,9 +99,37 @@ class MetaTextLayoutFragmentLayer: CALayer {
                     ctx.fillPath()
                     ctx.restoreGState()
                 }
+                print("###")
             }
         }
         #endif
+        
+        for textLineFragment in textLayoutFragment.textLineFragments {
+            let line = textLineFragment.attributedString.attributedSubstring(from: textLineFragment.characterRange)
+            let range = NSRange(location: 0, length: line.length)
+            let textLineFragmentTypographicBounds = textLineFragment.typographicBounds
+            line.enumerateAttribute(
+                .attachment,
+                in: range,
+                options: []
+            ) { attachment, range, _ in
+                guard let attachment = attachment as? MetaAttachment else { return }
+                let startLocation = textLineFragment.characterRange.location
+                let attachmentFrameMinLocation = textLineFragment.locationForCharacter(at: startLocation + range.lowerBound)
+                let attachmentFrameMaxLocation = textLineFragment.locationForCharacter(at: startLocation + range.upperBound)
+                let rect = CGRect(
+                    x: attachmentFrameMinLocation.x,
+                    y: textLineFragmentTypographicBounds.minY + self.frame.minY,
+                    width: attachmentFrameMaxLocation.x - attachmentFrameMinLocation.x,
+                    height: textLineFragmentTypographicBounds.height
+                )
+
+                attachment.content.frame = rect
+                if attachment.content.superview == nil {
+                    contentView?.addSubview(attachment.content)
+                }
+            }   // end enumerateAttribute
+        }   // end for
     }
     
 }

@@ -72,7 +72,6 @@ extension Persistence.MastodonUser {
             networkDate: context.networkDate
         )
         let user = MastodonUser.insert(into: managedObjectContext, property: property)
-        update(mastodonUser: user, context: context)
         return user
     }
     
@@ -87,19 +86,6 @@ extension Persistence.MastodonUser {
             networkDate: context.networkDate
         )
         user.update(property: property)
-        update(mastodonUser: user, context: context)
-    }
-    
-    private static func update(
-        mastodonUser user: MastodonUser,
-        context: PersistContext
-    ) {
-        context.entity.emojis.flatMap { emojis in
-            let mastodonEmojis = emojis.map { MastodonEmoji(emoji: $0) }
-            user.update(emojis: mastodonEmojis)
-        }
-//        context.entity.twitterAttachments.flatMap { status.update(attachments: $0) }
-//        context.entity.twitterLocation.flatMap { status.update(location:$0) }
     }
     
 }

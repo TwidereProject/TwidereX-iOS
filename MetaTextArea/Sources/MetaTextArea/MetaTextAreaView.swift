@@ -8,7 +8,6 @@
 import os.log
 import UIKit
 import Combine
-import Meta
 
 public protocol MetaTextAreaViewDelegate: AnyObject {
     func metaTextAreaView(_ view: MetaTextAreaView, intrinsicContentSizeDidUpdate size: CGSize)
@@ -23,11 +22,39 @@ public class MetaTextAreaView: UIView {
     public let textLayoutManager = NSTextLayoutManager()
     public let textContainer = NSTextContainer()
     
+    public var paragraphStyle: NSMutableParagraphStyle = {
+        let style = NSMutableParagraphStyle()
+        style.lineSpacing = 5
+        style.paragraphSpacing = 8
+        return style
+    }()
+    
+    static var fontSize: CGFloat = 17
+    
+    public var textAttributes: [NSAttributedString.Key: Any] = [
+        .font: UIFontMetrics(forTextStyle: .body).scaledFont(for: .systemFont(ofSize: MetaTextAreaView.fontSize, weight: .regular)),
+        .foregroundColor: UIColor.label,
+    ]
+    
+    public var linkAttributes: [NSAttributedString.Key: Any] = [
+        .font: UIFontMetrics(forTextStyle: .body).scaledFont(for: .systemFont(ofSize: MetaTextAreaView.fontSize, weight: .semibold)),
+        .foregroundColor: UIColor.link,
+    ]
+    
+    private let attachmentView = UIView()
     private let contentLayer = MetaTextAreaLayer()
     private let fragmentLayerMap = NSMapTable<NSTextLayoutFragment, CALayer>.weakToWeakObjects()
     
+    // private let underlyingQueue = DispatchQueue(label: "MetaTextAreaView.underlyingQueue", qos: .userInteractive)
+    // private lazy var layoutQueue: OperationQueue = {
+    //     let queue = OperationQueue()
+    //     queue.name = "MetaTextAreaView.layoutQueue"
+    //     queue.underlyingQueue = underlyingQueue
+    //     return queue
+    // }()
+    
     #if DEBUG
-    public var showLayerFrames: Bool = false
+    public var showLayerFrames: Bool = true
     #endif
     
     public var preferredMaxLayoutWidth: CGFloat?
@@ -43,6 +70,8 @@ public class MetaTextAreaView: UIView {
     }
     
     private func _init() {
+        attachmentView.frame = bounds
+        addSubview(attachmentView)
         layer.addSublayer(contentLayer)
         
         textContentStorage.addTextLayoutManager(textLayoutManager)
@@ -82,7 +111,7 @@ public class MetaTextAreaView: UIView {
         textContainer.size.width = size.width
         
         // needs always draw to fit tableView/collectionView cell reusing
-        // also, make sure precise height calculate possible
+        // also, make precise height calculate possible
         textLayoutManager.textViewportLayoutController.layoutViewport()
         
         // calculate height
@@ -118,10 +147,10 @@ extension MetaTextAreaView {
 
 extension MetaTextAreaView {
     
-    public func resetContent() {
+    private func resetContent() {
+        attachmentView.subviews.forEach { view in view.removeFromSuperview() }
         contentLayer.sublayers?.forEach { layer in layer.removeFromSuperlayer() }
         contentLayer.sublayers = nil
-        layer.setNeedsLayout()
     }
 }
 
@@ -138,8 +167,8 @@ extension MetaTextAreaView: NSTextViewportLayoutControllerDelegate {
     
     public func textViewportLayoutControllerWillLayout(_ textViewportLayoutController: NSTextViewportLayoutController) {
         logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public)")
-        contentLayer.sublayers?.forEach { layer in layer.removeFromSuperlayer() }
-        contentLayer.sublayers = nil
+        
+        resetContent()
     }
     
     private func findOrCreateLayer(_ textLayoutFragment: NSTextLayoutFragment) -> (MetaTextLayoutFragmentLayer, Bool) {
@@ -147,6 +176,7 @@ extension MetaTextAreaView: NSTextViewportLayoutControllerDelegate {
             return (layer, false)
         } else {
             let layer = MetaTextLayoutFragmentLayer(textLayoutFragment: textLayoutFragment)
+            layer.contentView = attachmentView
             fragmentLayerMap.setObject(layer, forKey: textLayoutFragment)
             return (layer, true)
         }
@@ -157,11 +187,11 @@ extension MetaTextAreaView: NSTextViewportLayoutControllerDelegate {
         configureRenderingSurfaceFor textLayoutFragment: NSTextLayoutFragment
     ) {
         logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): textLayoutFragment \(textLayoutFragment)")
-        let (textLayoutFragmentLayer, isCreate) = findOrCreateLayer(textLayoutFragment)
         
+        let (textLayoutFragmentLayer, isCreate) = findOrCreateLayer(textLayoutFragment)
+        contentLayer.addSublayer(textLayoutFragmentLayer)
+
         if !isCreate {
-            // let oldPosition = textLayoutFragmentLayer.position
-            
             let oldBounds = textLayoutFragmentLayer.bounds
             textLayoutFragmentLayer.updateGeometry()
             if oldBounds != textLayoutFragmentLayer.bounds {
@@ -176,29 +206,28 @@ extension MetaTextAreaView: NSTextViewportLayoutControllerDelegate {
         }
         #endif
         
-        contentLayer.addSublayer(textLayoutFragmentLayer)
         
-        for textLineFragment in textLayoutFragment.textLineFragments {
-            let range = NSRange(location: 0, length: textLineFragment.attributedString.length)
-            let textLineFragmentTypographicBounds = textLineFragment.typographicBounds
-            textLineFragment.attributedString.enumerateAttribute(.attachment, in: range, options: [.reverse]) { attachment, range, _ in
-                guard let attachment = attachment as? MetaAttachment else { return }
-                
-                let attachmentFrameMinLocation = textLineFragment.locationForCharacter(at: range.lowerBound)
-                let attachmentFrameMaxLocation = textLineFragment.locationForCharacter(at: range.upperBound)
-                let rect = CGRect(
-                    x: attachmentFrameMinLocation.x,
-                    y: textLineFragmentTypographicBounds.minY + textLayoutFragmentLayer.frame.minY,
-                    width: attachmentFrameMaxLocation.x - attachmentFrameMinLocation.x,
-                    height: textLineFragmentTypographicBounds.height
-                )
-                
-                attachment.content.frame = rect
-                if attachment.content.superview == nil {
-                    self.addSubview(attachment.content)
-                }
-            }
-        }
+//        for textLineFragment in textLayoutFragment.textLineFragments {
+//            let range = NSRange(location: 0, length: textLineFragment.attributedString.length)
+//            let textLineFragmentTypographicBounds = textLineFragment.typographicBounds
+//            textLineFragment.attributedString.enumerateAttribute(.attachment, in: range, options: [.reverse]) { attachment, range, _ in
+//                guard let attachment = attachment as? MetaAttachment else { return }
+//
+//                let attachmentFrameMinLocation = textLineFragment.locationForCharacter(at: range.lowerBound)
+//                let attachmentFrameMaxLocation = textLineFragment.locationForCharacter(at: range.upperBound)
+//                let rect = CGRect(
+//                    x: attachmentFrameMinLocation.x,
+//                    y: textLineFragmentTypographicBounds.minY + textLayoutFragmentLayer.frame.minY,
+//                    width: attachmentFrameMaxLocation.x - attachmentFrameMinLocation.x,
+//                    height: textLineFragmentTypographicBounds.height
+//                )
+//
+//                attachment.content.frame = rect
+//                if attachment.content.superview == nil {
+//                    self.addSubview(attachment.content)
+//                }
+//            }
+//        }
     }
     
     public func textViewportLayoutControllerDidLayout(_ textViewportLayoutController: NSTextViewportLayoutController) {

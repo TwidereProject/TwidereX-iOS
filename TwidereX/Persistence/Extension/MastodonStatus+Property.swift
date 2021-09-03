@@ -31,7 +31,8 @@ extension MastodonStatus.Property {
             language: entity.language,
             createdAt: entity.createdAt,
             updatedAt: networkDate,
-            attachments: entity.mastodonAttachments
+            attachments: entity.mastodonAttachments,
+            emojis: entity.mastodonEmojis
         )
     }
 }
@@ -66,6 +67,8 @@ extension Mastodon.Entity.Status {
         return attachments
     }
 }
+
+extension Mastodon.Entity.Status: MastodonEmojiContainer { }
 
 extension Mastodon.Entity.Attachment {
     var attachmentKind: MastodonAttachment.Kind? {

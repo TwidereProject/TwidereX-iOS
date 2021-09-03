@@ -37,14 +37,14 @@ final class StatusView: UIView {
     // header
     let headerContainerView = UIView()
     let headerIconImageView = UIImageView()
-    static var headerTextLabelStyle: UILabel.Style { .statusHeader }
+    static var headerTextLabelStyle: TextStyle { .statusHeader }
     let headerTextLabel = MetaLabel(style: .statusHeader)
     
     // avatar
     let authorAvatarButton = AvatarButton()
     
     // author
-    static var authorNameLabelStyle: UILabel.Style { .statusAuthorName }
+    static var authorNameLabelStyle: TextStyle { .statusAuthorName }
     let authorNameLabel = MetaLabel(style: StatusView.authorNameLabelStyle)
     let authorUsernameLabel = PlainLabel(style: .statusAuthorUsername)
     let visibilityImageView: UIImageView = {

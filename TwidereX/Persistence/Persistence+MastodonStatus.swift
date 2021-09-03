@@ -111,7 +111,10 @@ extension Persistence.MastodonStatus {
         return status
     }
     
-    static func merge(mastodonStatus status: MastodonStatus, context: PersistContext) {
+    static func merge(
+        mastodonStatus status: MastodonStatus,
+        context: PersistContext
+    ) {
         guard context.networkDate > status.updatedAt else { return }
         let property = MastodonStatus.Property(
             domain: context.domain,

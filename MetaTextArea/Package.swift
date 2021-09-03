@@ -15,13 +15,14 @@ let package = Package(
     dependencies: [
         // Dependencies declare other packages that this package depends on.
         .package(url: "https://github.com/TwidereProject/MetaTextKit.git", .exact("2.1.1")),
+        .package(url: "https://github.com/SDWebImage/SDWebImage.git", from: "5.11.1"),
     ],
     targets: [
         // Targets are the basic building blocks of a package. A target can define a module or a test suite.
         // Targets can depend on other targets in this package, and on products in packages this package depends on.
         .target(
             name: "MetaTextArea",
-            dependencies: ["MetaTextKit"]),
+            dependencies: ["MetaTextKit", "SDWebImage"]),
         .testTarget(
             name: "MetaTextAreaTests",
             dependencies: ["MetaTextArea"]),

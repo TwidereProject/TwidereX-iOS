@@ -96,7 +96,7 @@ final public class MastodonUser: NSManagedObject {
 }
 
 extension MastodonUser {
-    // sourcery: autoUpdatableObject
+    // sourcery: autoUpdatableObject, autoGenerateProperty
     @objc public var emojis: [MastodonEmoji] {
         get {
             let keyPath = #keyPath(MastodonUser.emojis)
@@ -210,6 +210,7 @@ extension MastodonUser: AutoGenerateProperty {
         public let  suspended: Bool
         public let  createdAt: Date
         public let  updatedAt: Date
+        public let  emojis: [MastodonEmoji]
 
     	public init(
     		domain: String,
@@ -231,7 +232,8 @@ extension MastodonUser: AutoGenerateProperty {
     		bot: Bool,
     		suspended: Bool,
     		createdAt: Date,
-    		updatedAt: Date
+    		updatedAt: Date,
+    		emojis: [MastodonEmoji]
     	) {
     		self.domain = domain
     		self.id = id
@@ -253,6 +255,7 @@ extension MastodonUser: AutoGenerateProperty {
     		self.suspended = suspended
     		self.createdAt = createdAt
     		self.updatedAt = updatedAt
+    		self.emojis = emojis
     	}
     }
 
@@ -277,6 +280,7 @@ extension MastodonUser: AutoGenerateProperty {
     	self.suspended = property.suspended
     	self.createdAt = property.createdAt
     	self.updatedAt = property.updatedAt
+    	self.emojis = property.emojis
     }
 
     public func update(property: Property) {
@@ -298,6 +302,7 @@ extension MastodonUser: AutoGenerateProperty {
     	update(suspended: property.suspended)
     	update(createdAt: property.createdAt)
     	update(updatedAt: property.updatedAt)
+    	update(emojis: property.emojis)
     }
     // sourcery:end
 }
