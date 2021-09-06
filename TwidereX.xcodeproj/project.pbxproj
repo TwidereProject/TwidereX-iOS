@@ -26,6 +26,7 @@
 		DB004BF626CE4A7F00F5C574 /* StatusCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB004BF526CE4A7F00F5C574 /* StatusCollectionViewCell.swift */; };
 		DB004BF826CE4AF200F5C574 /* StatusView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB004BF726CE4AF200F5C574 /* StatusView.swift */; };
 		DB004BFD26CE4C1E00F5C574 /* PlaintextMetaContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB004BFC26CE4C1E00F5C574 /* PlaintextMetaContent.swift */; };
+		DB01091226E5DC9D005F67D7 /* MetaTextArea in Frameworks */ = {isa = PBXBuildFile; productRef = DB01091126E5DC9C005F67D7 /* MetaTextArea */; };
 		DB0849B0251375E9009E0CD7 /* ConversationPostView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB0849AF251375E9009E0CD7 /* ConversationPostView.swift */; };
 		DB0849B22513760D009E0CD7 /* ConversationPostTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB0849B12513760D009E0CD7 /* ConversationPostTableViewCell.swift */; };
 		DB0B3B8626C662CC00501BB7 /* AppShared.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DB94B6BB26C65CB000A2E8A1 /* AppShared.framework */; };
@@ -197,7 +198,6 @@
 		DB6D672C2566349600B70DC0 /* SwitchTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB6D672B2566349600B70DC0 /* SwitchTableViewCell.swift */; };
 		DB6D6731256637A200B70DC0 /* TableViewSectionTextHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB6D6730256637A200B70DC0 /* TableViewSectionTextHeaderView.swift */; };
 		DB6DF3E0252060AA00E8A273 /* ProfileViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB6DF3DF252060AA00E8A273 /* ProfileViewModel.swift */; };
-		DB71CF1A26B3E2720018F605 /* MetaTextArea in Frameworks */ = {isa = PBXBuildFile; productRef = DB71CF1926B3E2720018F605 /* MetaTextArea */; };
 		DB747FEF251B63E3000C4BD7 /* HitTestExpandedButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB747FEE251B63E3000C4BD7 /* HitTestExpandedButton.swift */; };
 		DB747FF4251C47BD000C4BD7 /* UITableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB747FF3251C47BD000C4BD7 /* UITableView.swift */; };
 		DB747FF9251C496A000C4BD7 /* ProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB747FF8251C496A000C4BD7 /* ProfileViewController.swift */; };
@@ -681,7 +681,6 @@
 		DB30ADD926CF5A9E00B2D2BE /* FLAnimatedImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FLAnimatedImageView.swift; sourceTree = "<group>"; };
 		DB30ADDB26CFC7EE00B2D2BE /* StatusTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusTableViewCell.swift; sourceTree = "<group>"; };
 		DB33017525A41102003552B0 /* StatusProviderFacade.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusProviderFacade.swift; sourceTree = "<group>"; };
-		DB3353E126E2463C00C6A01C /* MetaTextKit */ = {isa = PBXFileReference; lastKnownFileType = folder; name = MetaTextKit; path = ../MetaTextKit; sourceTree = "<group>"; };
 		DB33A4A025A2F049003CED7D /* Item+EmptyStateHeaderAttribute+TimelineHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Item+EmptyStateHeaderAttribute+TimelineHeaderView.swift"; sourceTree = "<group>"; };
 		DB33A4A825A319A0003CED7D /* ActionToolbarContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionToolbarContainer.swift; sourceTree = "<group>"; };
 		DB34028D2521BC06009EFADF /* APIService+UserTimeline.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "APIService+UserTimeline.swift"; sourceTree = "<group>"; };
@@ -789,7 +788,6 @@
 		DB6D672B2566349600B70DC0 /* SwitchTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwitchTableViewCell.swift; sourceTree = "<group>"; };
 		DB6D6730256637A200B70DC0 /* TableViewSectionTextHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TableViewSectionTextHeaderView.swift; sourceTree = "<group>"; };
 		DB6DF3DF252060AA00E8A273 /* ProfileViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileViewModel.swift; sourceTree = "<group>"; };
-		DB71CF1826B3E0960018F605 /* MetaTextArea */ = {isa = PBXFileReference; lastKnownFileType = folder; path = MetaTextArea; sourceTree = "<group>"; };
 		DB71CF1B26B3E5520018F605 /* StatusTextArea.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusTextArea.swift; sourceTree = "<group>"; };
 		DB747FEE251B63E3000C4BD7 /* HitTestExpandedButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HitTestExpandedButton.swift; sourceTree = "<group>"; };
 		DB747FF3251C47BD000C4BD7 /* UITableView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UITableView.swift; sourceTree = "<group>"; };
@@ -1121,11 +1119,11 @@
 				DB30ADD626CF583900B2D2BE /* FLAnimatedImage in Frameworks */,
 				DBE76D3E2502518D00DEB0FC /* AlamofireImage in Frameworks */,
 				DBD98489251CB88A00ED87A1 /* Tabman in Frameworks */,
-				DB71CF1A26B3E2720018F605 /* MetaTextArea in Frameworks */,
 				DBEA4F842511F7460007FEC5 /* Kanna in Frameworks */,
 				DBE76CA5250093CA00DEB0FC /* CoreDataStack.framework in Frameworks */,
 				44CCAE5E7B79E0C359E367E5 /* Pods_TwidereX.framework in Frameworks */,
 				DBBC3F3525835B8B005CF99E /* ActiveLabel in Frameworks */,
+				DB01091226E5DC9D005F67D7 /* MetaTextArea in Frameworks */,
 				DB94B6C126C65CB000A2E8A1 /* AppShared.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2232,8 +2230,6 @@
 		DBDA8E1524FCF8A3006750DC = {
 			isa = PBXGroup;
 			children = (
-				DB3353E126E2463C00C6A01C /* MetaTextKit */,
-				DB71CF1826B3E0960018F605 /* MetaTextArea */,
 				DB43239D251491EB004FAAEC /* TwidereSDK */,
 				DBDA8E2024FCF8A3006750DC /* TwidereX */,
 				DBDA8E3724FCF8A7006750DC /* TwidereXTests */,
@@ -2876,10 +2872,10 @@
 				DB6CF1C3269715CD001DE069 /* FPSIndicator */,
 				DB3282DA26AFFD40002B721C /* MetaTextKit */,
 				DB3282DC26AFFD40002B721C /* TwitterMeta */,
-				DB71CF1926B3E2720018F605 /* MetaTextArea */,
 				DB94B6B026C64DAC00A2E8A1 /* Introspect */,
 				DB30ADD526CF583900B2D2BE /* FLAnimatedImage */,
 				DB5FD9B426D8EE7A00CF5439 /* MastodonMeta */,
+				DB01091126E5DC9C005F67D7 /* MetaTextArea */,
 			);
 			productName = TwidereX;
 			productReference = DBDA8E1E24FCF8A3006750DC /* TwidereX.app */;
@@ -4495,7 +4491,7 @@
 			repositoryURL = "https://github.com/TwidereProject/MetaTextKit.git";
 			requirement = {
 				kind = exactVersion;
-				version = 2.1.1;
+				version = 3.0.0;
 			};
 		};
 		DB6CF1C2269715CD001DE069 /* XCRemoteSwiftPackageReference "FPSIndicator" */ = {
@@ -4573,6 +4569,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		DB01091126E5DC9C005F67D7 /* MetaTextArea */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = DB3282D926AFFD40002B721C /* XCRemoteSwiftPackageReference "MetaTextKit" */;
+			productName = MetaTextArea;
+		};
 		DB0B3B8A26C6637500501BB7 /* TwidereSDK */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = TwidereSDK;
@@ -4619,10 +4620,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = DB6CF1C2269715CD001DE069 /* XCRemoteSwiftPackageReference "FPSIndicator" */;
 			productName = FPSIndicator;
-		};
-		DB71CF1926B3E2720018F605 /* MetaTextArea */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = MetaTextArea;
 		};
 		DB74A163256E148F00C5F3C9 /* CropViewController */ = {
 			isa = XCSwiftPackageProductDependency;

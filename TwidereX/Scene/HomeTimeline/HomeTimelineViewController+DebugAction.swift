@@ -15,6 +15,8 @@ import CoreDataStack
 import TwitterSDK
 import ZIPFoundation
 import FLEX
+import MetaTextKit
+import MetaTextArea
 
 extension HomeTimelineViewController {
     
@@ -37,6 +39,7 @@ extension HomeTimelineViewController {
                 showMenu,
                 moveMenu,
                 dropMenu,
+                displayMenu,
 //                UIAction(title: "Show Account unlock alert", image: nil, attributes: [], handler: { [weak self] action in
 //                    guard let self = self else { return }
 //                    let error = Twitter.API.Error.ResponseError(
@@ -143,6 +146,21 @@ extension HomeTimelineViewController {
                     self.dropRecentFeedAction(action, count: count)
                 })
             }
+        )
+    }
+    
+    var displayMenu: UIMenu {
+        return UIMenu(
+            title: "Display…",
+            image: UIImage(systemName: "square.dashed.inset.fill"),
+            identifier: nil,
+            options: [],
+            children: [
+                UIAction(title: "TextView Frame", image: nil, attributes: [], handler: { [weak self] action in
+                    guard let self = self else { return }
+                    self.displayTextViewFrame(action)
+                }),
+            ]
         )
     }
     
@@ -429,6 +447,13 @@ extension HomeTimelineViewController {
     }
 
     
+}
+
+extension HomeTimelineViewController {
+    @objc private func displayTextViewFrame(_ sender: UIAction) {
+        MetaTextAreaView.showLayerFrames.toggle()
+        tableView.reloadData()
+    }
 }
 
 //extension HomeTimelineViewController: UIDocumentPickerDelegate {
