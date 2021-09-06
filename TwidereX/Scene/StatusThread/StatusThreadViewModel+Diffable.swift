@@ -40,12 +40,20 @@ extension StatusThreadViewModel {
         // trigger thread loading
         loadThreadStateMachine.enter(LoadThreadState.Prepare.self)
         
-        Publishers.CombineLatest(
+        let replies = mastodonStatusThreadViewModel.ancestors.eraseToAnyPublisher()
+        let leafs = Publishers.CombineLatest(
+            twitterStatusThreadLeafViewModel.items,
+            mastodonStatusThreadViewModel.descendants
+        )
+        .map { $0 + $1 }
+        
+        Publishers.CombineLatest3(
             root,
-            twitterStatusThreadLeafViewModel.items
+            replies,
+            leafs
         )
         .receive(on: DispatchQueue.main)
-        .sink { [weak self] root, leafs in
+        .sink { [weak self] root, replies, leafs in
             guard let self = self else { return }
             guard let diffableDataSource = self.diffableDataSource else { return }
 

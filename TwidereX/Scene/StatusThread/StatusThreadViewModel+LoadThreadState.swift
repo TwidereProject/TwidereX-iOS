@@ -59,8 +59,7 @@ extension StatusThreadViewModel.LoadThreadState {
                 case .twitter(let record):
                     await prepareTwitterStatusThread(record: record)
                 case .mastodon(let record):
-                    break
-                    // assertionFailure("TODO")
+                    await prepareMastodonStatusThread(record: record)
                 }
             }
         }
@@ -76,6 +75,9 @@ extension StatusThreadViewModel.LoadThreadState {
             let _twitterConversation: StatusThreadViewModel.ThreadContext.TwitterConversation? = await managedObjectContext.perform {
                 guard let _status = record.object(in: managedObjectContext) else { return nil }
                 self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): resolve status \(_status.id) in local DB")
+                
+                // Note:
+                // make sure unwrap the repost wrapper
                 let status = _status.repost ?? _status
                 self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): resolve conversationID \(status.conversationID ?? "<nil>")")
                 return StatusThreadViewModel.ThreadContext.TwitterConversation(
@@ -131,7 +133,35 @@ extension StatusThreadViewModel.LoadThreadState {
                 stateMachine.enter(Loading.self)
             }
         }
-    }
+        
+        func prepareMastodonStatusThread(record: ManagedObjectRecord<MastodonStatus>) async {
+            guard let viewModel = viewModel, let stateMachine = stateMachine else { return }
+            
+            let managedObjectContext = viewModel.context.managedObjectContext
+            let _mastodonContext: StatusThreadViewModel.ThreadContext.MastodonContext? = await managedObjectContext.perform {
+                guard let _status = record.object(in: managedObjectContext) else { return nil }
+                
+                // Note:
+                // make sure unwrap the repost wrapper
+                let status = _status.repost ?? _status
+                return StatusThreadViewModel.ThreadContext.MastodonContext(
+                    domain: status.domain,
+                    contextID: status.id
+                )
+            }
+            
+            guard let mastodonContext = _mastodonContext else {
+                stateMachine.enter(PrepareFail.self)
+                return
+            }
+            
+            logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): fetch cached contextID: \(mastodonContext.contextID)")
+            viewModel.threadContext.value = .mastodon(mastodonContext)
+            stateMachine.enter(Idle.self)
+            stateMachine.enter(Loading.self)
+        }
+        
+    }   // end class Prepare { … }
     
     class PrepareFail: StatusThreadViewModel.LoadThreadState {
         override var name: String { "PrepareFail" }
@@ -201,7 +231,8 @@ extension StatusThreadViewModel.LoadThreadState {
                     let nodes = await fetch(twitterConversation: twitterConversation)
                     await append(nodes: nodes)
                 case .mastodon(let mastodonContext):
-                    assertionFailure("TODO")
+                    let response = await fetch(mastodonContext: mastodonContext)
+                    await append(response: response)
                 }
             }
             
@@ -224,7 +255,10 @@ extension StatusThreadViewModel.LoadThreadState {
 //            }
         }
 
-        func fetch(twitterConversation: StatusThreadViewModel.ThreadContext.TwitterConversation) async -> [TwitterStatusThreadLeafViewModel.Node] {
+        // fetch thread via V2 API
+        func fetch(
+            twitterConversation: StatusThreadViewModel.ThreadContext.TwitterConversation
+        ) async -> [TwitterStatusThreadLeafViewModel.Node] {
             guard let viewModel = viewModel, let stateMachine = stateMachine else { return [] }
             guard let authenticationContext = viewModel.context.authenticationService.activeAuthenticationContext.value?.twitterAuthenticationContext,
                   let conversationID = twitterConversation.conversationID
@@ -278,8 +312,24 @@ extension StatusThreadViewModel.LoadThreadState {
         }
         
         @MainActor
-        func append(nodes: [TwitterStatusThreadLeafViewModel.Node]) async {
-            self.viewModel?.twitterStatusThreadLeafViewModel.append(nodes: nodes)
+        private func append(nodes: [TwitterStatusThreadLeafViewModel.Node]) async {
+            guard let viewModel = viewModel else { return }
+            viewModel.twitterStatusThreadLeafViewModel.append(nodes: nodes)
+        }
+        
+        @MainActor
+        private func append(response: MastodonContextResponse) async {
+            guard let viewModel = viewModel else { return }
+            
+            viewModel.mastodonStatusThreadViewModel.appendAncestor(
+                domain: response.domain,
+                nodes: response.ancestorNodes
+            )
+            
+            viewModel.mastodonStatusThreadViewModel.appendDescendant(
+                domain: response.domain,
+                nodes: response.descendantNodes
+            )
         }
         
 //        func loadingConversation(
@@ -398,6 +448,65 @@ extension StatusThreadViewModel.LoadThreadState {
 //                .store(in: &viewModel.disposeBag)
 //
 //        }
+        
+        struct MastodonContextResponse {
+            let domain: String
+            let ancestorNodes: [MastodonStatusThreadViewModel.Node]
+            let descendantNodes: [MastodonStatusThreadViewModel.Node]
+        }
+        
+        // fetch thread
+        func fetch(
+            mastodonContext: StatusThreadViewModel.ThreadContext.MastodonContext
+        ) async -> MastodonContextResponse {
+            guard let viewModel = viewModel, let stateMachine = stateMachine else {
+                return MastodonContextResponse(
+                    domain: "",
+                    ancestorNodes: [],
+                    descendantNodes: []
+                )
+            }
+            guard let authenticationContext = viewModel.context.authenticationService.activeAuthenticationContext.value?.mastodonAuthenticationContext
+            else {
+                stateMachine.enter(Fail.self)
+                return MastodonContextResponse(
+                    domain: "",
+                    ancestorNodes: [],
+                    descendantNodes: []
+                )
+            }
+            
+            do {
+                let response = try await viewModel.context.apiService.mastodonStatusContext(
+                    statusID: mastodonContext.contextID,
+                    authenticationContext: authenticationContext
+                )
+                let ancestorNodes = MastodonStatusThreadViewModel.Node.children(
+                    of: mastodonContext.contextID,
+                    from: response.value.ancestors
+                )
+                let descendantNodes = MastodonStatusThreadViewModel.Node.children(
+                    of: mastodonContext.contextID,
+                    from: response.value.descendants
+                )
+
+                // update state
+                stateMachine.enter(NoMore.self)
+                
+                return MastodonContextResponse(
+                    domain: mastodonContext.domain,
+                    ancestorNodes: ancestorNodes,
+                    descendantNodes: descendantNodes
+                )
+            } catch {
+                stateMachine.enter(Fail.self)
+                return MastodonContextResponse(
+                    domain: "",
+                    ancestorNodes: [],
+                    descendantNodes: []
+                )
+            }
+        }
     }
     
     class Fail: StatusThreadViewModel.LoadThreadState {

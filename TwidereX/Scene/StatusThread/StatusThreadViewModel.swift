@@ -22,6 +22,7 @@ final class StatusThreadViewModel {
     // input
     let context: AppContext
     let twitterStatusThreadLeafViewModel: TwitterStatusThreadLeafViewModel
+    let mastodonStatusThreadViewModel: MastodonStatusThreadViewModel
     
     // output
     var diffableDataSource: UITableViewDiffableDataSource<StatusSection, StatusItem>?
@@ -50,6 +51,7 @@ final class StatusThreadViewModel {
     ) {
         self.context = context
         self.twitterStatusThreadLeafViewModel = TwitterStatusThreadLeafViewModel(context: context)
+        self.mastodonStatusThreadViewModel = MastodonStatusThreadViewModel(context: context)
         self.root = CurrentValueSubject(optionalRoot)
     }
     
@@ -81,6 +83,7 @@ extension StatusThreadViewModel {
         }
         
         struct MastodonContext {
+            let domain: String
             let contextID: Mastodon.Entity.Status.ID
         }
     }

@@ -97,7 +97,7 @@ extension Mastodon.API {
     public enum Onboarding { }
     public enum Polls { }
     public enum Reblog { }
-    public enum Statuses { }
+    public enum Status { }
     public enum Timeline { }
     public enum Trends { }
     public enum Suggestions { }

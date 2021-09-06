@@ -264,7 +264,6 @@ extension APIService {
                 feed.update(hasMore: false)
             }
             
-            
             // persist Feed relationship
             let sortedStatuses = statusArray.sorted(by: { $0.createdAt < $1.createdAt })
             let oldestStatus = sortedStatuses.first
