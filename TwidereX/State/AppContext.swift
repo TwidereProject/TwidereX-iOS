@@ -62,17 +62,6 @@ class AppContext: ObservableObject {
             .sink { [unowned self] in
                 self.objectWillChange.send()
             }
-        
-        backgroundManagedObjectContext.mergePolicy = NSMergePolicy.mergeByPropertyObjectTrump
-        NotificationCenter.default.publisher(for: .NSManagedObjectContextDidSave, object: backgroundManagedObjectContext)
-            .sink { [weak self] notification in
-                guard let self = self else { return }
-                self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): mergeChanges")
-                self.managedObjectContext.perform {
-                    self.managedObjectContext.mergeChanges(fromContextDidSave: notification)
-                }
-            }
-            .store(in: &disposeBag)
     }
     
 }

@@ -55,25 +55,25 @@ public final class CoreDataStack {
     init(persistentStoreDescriptions storeDescriptions: [NSPersistentStoreDescription]) {
         self.storeDescriptions = storeDescriptions
     
-//        if let storeDescription = storeDescriptions.first {
-//            // enable remote change notification
-//            storeDescription.setOption(true as NSNumber, forKey: NSPersistentStoreRemoteChangeNotificationPostOptionKey)
-//            // enable persistent history tracking
-//            storeDescription.setOption(true as NSNumber, forKey: NSPersistentHistoryTrackingKey)
-//        }
+        if let storeDescription = storeDescriptions.first {
+            // enable remote change notification
+            storeDescription.setOption(true as NSNumber, forKey: NSPersistentStoreRemoteChangeNotificationPostOptionKey)
+            // enable persistent history tracking
+            storeDescription.setOption(true as NSNumber, forKey: NSPersistentHistoryTrackingKey)
+        }
         
         // Observe Core Data remote change notifications on the queue where the changes were made.
-//        NotificationCenter.default.publisher(for: .NSPersistentStoreRemoteChange)
-//            .sink { notification in
-//                Task {
-//                    do {
-//                        try await self.processRemoteStoreChange()
-//                    } catch {
-//                        self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): \(error.localizedDescription)")
-//                    }
-//                }
-//            }
-//            .store(in: &disposeBag)
+        NotificationCenter.default.publisher(for: .NSPersistentStoreRemoteChange)
+            .sink { notification in
+                Task {
+                    do {
+                        try await self.processRemoteStoreChange()
+                    } catch {
+                        self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): \(error.localizedDescription)")
+                    }
+                }
+            }
+            .store(in: &disposeBag)
     }
     
     public convenience init(databaseName: String = "shared_v2") {
@@ -139,18 +139,11 @@ public final class CoreDataStack {
             
             // set merge policy
             container.viewContext.mergePolicy = NSMergePolicy.mergeByPropertyObjectTrump
-            // use persistent history tracking
-            container.viewContext.automaticallyMergesChangesFromParent = true
-            // pin query generation
-//            try? container.viewContext.setQueryGenerationFrom(.current)
+            // set false and use persistent history tracking to merge changes
+            container.viewContext.automaticallyMergesChangesFromParent = false
             
             os_log("%{public}s[%{public}ld], %{public}s: %s", ((#file as NSString).lastPathComponent), #line, #function, storeDescription.debugDescription)
         }
-        
-//        Task {
-//            //self.loadHistoryToken()
-//            try? await self.processRemoteStoreChange()
-//        }
     }
     
 }
@@ -161,75 +154,55 @@ public final class CoreDataStack {
 // Note:
 // call processRemoteStoreChange after container setup is required
 // otherwise, the UI not update until context merge happen
-//extension CoreDataStack {
-//
-//    // handle remote store change notification
-//    // seealso: `NSPersistentStoreRemoteChangeNotificationPostOptionKey`
-//private func processRemoteStoreChange() async throws {
-//        logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public)")
-//        let context = self.persistentContainer.newBackgroundContext()
-//        context.transactionAuthor = "PersistentHistoryContext"
-//        context.name = "PersistentHistoryContext"
-//
-//        try await context.perform {
-//            let changeRequest = NSPersistentHistoryChangeRequest.fetchHistory(after: self.lastHistoryToken)
-////            if let fetchRequest = NSPersistentHistoryTransaction.fetchRequest {
-////                var predicates: [NSPredicate] = []
-////
-//////                if let transactionAuthor = context.transactionAuthor {
-//////                    /// Only look at transactions created by other targets.
-//////                    predicates.append(NSPredicate(format: "%K != %@", #keyPath(NSPersistentHistoryTransaction.author), transactionAuthor))
-//////                }
-//////                if let contextName = context.name {
-//////                    /// Only look at transactions not from our current context.
-//////                    predicates.append(NSPredicate(format: "%K != %@", #keyPath(NSPersistentHistoryTransaction.contextName), contextName))
-//////                }
-////
-////                fetchRequest.predicate = NSCompoundPredicate(type: .and, subpredicates: predicates)
-////                changeRequest.fetchRequest = fetchRequest
-////            }
-//
-//            let historyResult = try context.execute(changeRequest) as? NSPersistentHistoryResult
-//            guard let history = historyResult?.result as? [NSPersistentHistoryTransaction],
-//                  !history.isEmpty
-//            else { return }
-//
-//            self.mergePersistentHistoryChanges(from: history)
-//
-//            if let token = history.last?.token {
-//                self.storeHistoryToken(token)
-//
-////                let deleteChangeRequest = NSPersistentHistoryChangeRequest.deleteHistory(before: token)
-////                _ = try? context.execute(deleteChangeRequest)
-//            }
-//        }
-//    }
-//
-//    private func newTaskContext() -> NSManagedObjectContext {
-//        // Create a private queue context.
-//        /// - Tag: newBackgroundContext
-//        let taskContext = persistentContainer.newBackgroundContext()
-//        taskContext.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
-//        // Set unused undoManager to nil for macOS (it is nil by default on iOS)
-//        // to reduce resource requirements.
-//        taskContext.undoManager = nil
-//        return taskContext
-//    }
-//
-//    // Update view context with objectIDs from history change request.
-//    private func mergePersistentHistoryChanges(from history: [NSPersistentHistoryTransaction]) {
-//        self.logger.debug("Received \(history.count) persistent history transactions.")
-//
-//        let viewContext = persistentContainer.viewContext
-//        viewContext.perform {
-//            for transaction in history {
-//                guard let userInfo = transaction.objectIDNotification().userInfo else { continue}
-//                NSManagedObjectContext.mergeChanges(fromRemoteContextSave: userInfo, into: [viewContext])
-//            }
-//        }
-//    }
-//
-//}
+extension CoreDataStack {
+
+    // handle remote store change notification
+    // seealso: `NSPersistentStoreRemoteChangeNotificationPostOptionKey`
+    private func processRemoteStoreChange() async throws {
+        logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public)")
+        let context = self.newTaskContext()
+        context.transactionAuthor = "PersistentHistoryContext"
+        context.name = "PersistentHistoryContext"
+
+        try await context.perform {
+            let changeRequest = NSPersistentHistoryChangeRequest.fetchHistory(after: self.lastHistoryToken)
+
+            let historyResult = try context.execute(changeRequest) as? NSPersistentHistoryResult
+            guard let history = historyResult?.result as? [NSPersistentHistoryTransaction],
+                  !history.isEmpty
+            else { return }
+
+            self.mergePersistentHistoryChanges(from: history)
+
+            if let token = history.last?.token {
+                self.storeHistoryToken(token)
+
+                let deleteChangeRequest = NSPersistentHistoryChangeRequest.deleteHistory(before: token)
+                _ = try? context.execute(deleteChangeRequest)
+            }
+        }
+    }
+
+    private func newTaskContext() -> NSManagedObjectContext {
+        let taskContext = persistentContainer.newBackgroundContext()
+        taskContext.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
+        taskContext.undoManager = nil
+        return taskContext
+    }
+
+    // Update view context with objectIDs from history change request.
+    private func mergePersistentHistoryChanges(from history: [NSPersistentHistoryTransaction]) {
+        self.logger.debug("Received \(history.count) persistent history transactions.")
+
+        let viewContext = persistentContainer.viewContext
+        viewContext.perform {
+            for transaction in history {
+                viewContext.mergeChanges(fromContextDidSave: transaction.objectIDNotification())
+            }
+        }
+    }
+
+}
 
 extension CoreDataStack {
     

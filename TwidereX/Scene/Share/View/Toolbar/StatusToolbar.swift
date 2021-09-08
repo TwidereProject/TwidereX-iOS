@@ -216,6 +216,8 @@ extension StatusToolbar {
         repostButton.tintColor = tintColor
         repostButton.setTitleColor(tintColor, for: .normal)
         repostButton.setTitleColor(tintColor.withAlphaComponent(0.8), for: .highlighted)
+        
+        // TODO: loked
     }
     
     func setupLike(count: Int, isLike: Bool) {
