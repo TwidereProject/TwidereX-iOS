@@ -52,6 +52,10 @@ extension Twitter.API {
         public enum FollowLookup { }
         public enum Lookup { }
         public enum Search { }
+        public enum User {
+            public enum Like { }
+            public enum Retweet { }
+        }
         public enum UserLookup { } 
     }
     
@@ -94,6 +98,12 @@ extension Twitter.API {
             authorizationValue,
             forHTTPHeaderField: Twitter.API.OAuth.authorizationField
         )
+        if let body = query?.body {
+            request.httpBody = body
+        }
+        if let contentType = query?.contentType {
+            request.setValue(contentType, forHTTPHeaderField: "content-type")
+        }
         
         return request
     }
@@ -161,6 +171,9 @@ extension Twitter.API {
         do {
             return try Twitter.API.decoder.decode(type, from: data)
         } catch let decodeError {
+            print(String(data: data, encoding: .utf8) ?? "<data>")
+            debugPrint(decodeError)
+
             guard let httpURLResponse = response as? HTTPURLResponse else {
                 assertionFailure()
                 throw decodeError
@@ -187,7 +200,6 @@ extension Twitter.API {
                 throw Error.ResponseError(httpResponseStatus: httpResponseStatus, twitterAPIError: .rateLimitExceeded)
             }
             
-            debugPrint(decodeError)
             throw Error.ResponseError(httpResponseStatus: httpResponseStatus, twitterAPIError: nil)
         }
     }

@@ -199,7 +199,8 @@ extension StatusToolbar {
         }
     }
     
-    func setupRepost(count: Int, isEnabled: Bool, isLocked: Bool) {
+    func setupRepost(count: Int, isRepost: Bool, isLocked: Bool) {
+        // set title
         let text = metricText(count: count)
         switch style {
         case .inline:
@@ -209,9 +210,16 @@ extension StatusToolbar {
         case .none:
             break
         }
+        
+        // set color
+        let tintColor = isRepost ? Asset.Scene.Status.Toolbar.repost.color : .secondaryLabel
+        repostButton.tintColor = tintColor
+        repostButton.setTitleColor(tintColor, for: .normal)
+        repostButton.setTitleColor(tintColor.withAlphaComponent(0.8), for: .highlighted)
     }
     
-    func setupLike(count: Int) {
+    func setupLike(count: Int, isLike: Bool) {
+        // set title
         let text = metricText(count: count)
         switch style {
         case .inline:
@@ -221,6 +229,12 @@ extension StatusToolbar {
         case .none:
             break
         }
+        
+        // set color
+        let tintColor = isLike ? Asset.Scene.Status.Toolbar.like.color : .secondaryLabel
+        likeButton.tintColor = tintColor
+        likeButton.setTitleColor(tintColor, for: .normal)
+        likeButton.setTitleColor(tintColor.withAlphaComponent(0.8), for: .highlighted)
     }
     
 }

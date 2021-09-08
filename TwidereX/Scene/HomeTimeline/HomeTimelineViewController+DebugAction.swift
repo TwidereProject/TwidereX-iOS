@@ -32,14 +32,10 @@ extension HomeTimelineViewController {
             identifier: nil,
             options: .displayInline,
             children: [
-                UIAction(title: "Enable FLEX", image: nil, attributes: [], handler: { [weak self] action in
-                    guard let self = self else { return }
-                    self.showFLEXAction(action)
-                }),
                 showMenu,
                 moveMenu,
                 dropMenu,
-                displayMenu,
+                debugMenu,
 //                UIAction(title: "Show Account unlock alert", image: nil, attributes: [], handler: { [weak self] action in
 //                    guard let self = self else { return }
 //                    let error = Twitter.API.Error.ResponseError(
@@ -149,16 +145,24 @@ extension HomeTimelineViewController {
         )
     }
     
-    var displayMenu: UIMenu {
+    var debugMenu: UIMenu {
         return UIMenu(
-            title: "Display…",
+            title: "Debug…",
             image: UIImage(systemName: "square.dashed.inset.fill"),
             identifier: nil,
             options: [],
             children: [
-                UIAction(title: "TextView Frame", image: nil, attributes: [], handler: { [weak self] action in
+                UIAction(title: "Enable FLEX", image: nil, attributes: [], handler: { [weak self] action in
+                    guard let self = self else { return }
+                    self.showFLEXAction(action)
+                }),
+                UIAction(title: "Display TextView Frame", image: nil, attributes: [], handler: { [weak self] action in
                     guard let self = self else { return }
                     self.displayTextViewFrame(action)
+                }),
+                UIAction(title: "Reload TableView", image: nil, attributes: [], handler: { [weak self] action in
+                    guard let self = self else { return }
+                    self.reloadTableView(action)
                 }),
             ]
         )
@@ -452,6 +456,10 @@ extension HomeTimelineViewController {
 extension HomeTimelineViewController {
     @objc private func displayTextViewFrame(_ sender: UIAction) {
         MetaTextAreaView.showLayerFrames.toggle()
+        tableView.reloadData()
+    }
+    
+    @objc private func reloadTableView(_ sender: UIAction) {
         tableView.reloadData()
     }
 }

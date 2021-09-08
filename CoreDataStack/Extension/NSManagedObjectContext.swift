@@ -50,7 +50,7 @@ extension NSManagedObjectContext {
     }
     
     public func performChanges<T>(block: @escaping () throws -> T) async throws -> T {
-        try await perform {
+        try await perform(schedule: .enqueued) {
             let value = try block()
             try self.saveOrRollback()
             return value

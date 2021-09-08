@@ -15,6 +15,7 @@ import CoreDataStack
 class AppContext: ObservableObject {
     
     var disposeBag = Set<AnyCancellable>()
+    let logger = Logger(subsystem: "AppContext", category: "AppContext")
     
     @Published var viewStateStore = ViewStateStore()
         
@@ -66,24 +67,12 @@ class AppContext: ObservableObject {
         NotificationCenter.default.publisher(for: .NSManagedObjectContextDidSave, object: backgroundManagedObjectContext)
             .sink { [weak self] notification in
                 guard let self = self else { return }
+                self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): mergeChanges")
                 self.managedObjectContext.perform {
                     self.managedObjectContext.mergeChanges(fromContextDidSave: notification)
                 }
             }
             .store(in: &disposeBag)
-
-//        Publishers.CombineLatest(
-//            UserDefaults.shared.publisher(for: \.useTheSystemFontSize).eraseToAnyPublisher(),
-//            UserDefaults.shared.publisher(for: \.customContentSizeCatagory)
-//        )
-//        .receive(on: DispatchQueue.main)
-//        .sink { [weak self] useTheSystemFontSize, customContentSizeCatagory in
-//            guard let self = self else { return }
-//            // let traitCollection = useTheSystemFontSize ? UITraitCollection(preferredContentSizeCategory: UIApplication.shared.preferredContentSizeCategory) : UITraitCollection(preferredContentSizeCategory: customContentSizeCatagory)
-//            let traitCollection = UITraitCollection(preferredContentSizeCategory: UIApplication.shared.preferredContentSizeCategory)
-//            self.overrideTraitCollection.value = traitCollection
-//        }
-//        .store(in: &disposeBag)
     }
     
 }

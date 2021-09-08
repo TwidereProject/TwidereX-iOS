@@ -152,7 +152,6 @@ extension Twitter.API.V2.Search {
             nextToken.flatMap { items.append(URLQueryItem(name: "next_token", value: $0)) }
             return items
         }
-        
         var encodedQueryItems: [URLQueryItem]? {
             var items: [URLQueryItem] = [
                 URLQueryItem(name: "query", value: query.urlEncoded)
@@ -165,8 +164,9 @@ extension Twitter.API.V2.Search {
             }
             return items
         }
-        
         var formQueryItems: [URLQueryItem]? { nil }
+        var contentType: String? { nil }
+        var body: Data? { nil }
     }
     
     public struct Content: Codable {

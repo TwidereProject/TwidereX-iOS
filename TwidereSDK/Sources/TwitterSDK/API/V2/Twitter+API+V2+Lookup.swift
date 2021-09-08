@@ -97,10 +97,10 @@ extension Twitter.API.V2.Lookup {
                 URLQueryItem(name: "ids", value: ids),
             ]
         }
-        
         var encodedQueryItems: [URLQueryItem]? { nil }
-        
         var formQueryItems: [URLQueryItem]? { nil }
+        var contentType: String? { nil }
+        var body: Data? { nil }
     }
     
     public struct Content: Codable {

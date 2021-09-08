@@ -88,13 +88,14 @@ extension HomeTimelineViewModel {
                     }
 
                     let hasChanges = newSnapshot.itemIdentifiers != oldSnapshot.itemIdentifiers
-                    guard hasChanges else {
+                    if !hasChanges {
                         self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): snapshot not changes")
                         self.didLoadLatest.send()
                         return
+                    } else {
+                        self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): snapshot has changes")
                     }
 
-                    self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): snapshot has changes")
                     guard let difference = await self.calculateReloadSnapshotDifference(
                         tableView: tableView,
                         oldSnapshot: oldSnapshot,

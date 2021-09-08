@@ -197,8 +197,6 @@ extension HomeTimelineViewController {
 //                self.viewModel.loadLatestStateMachine.enter(HomeTimelineViewModel.LoadLatestState.Loading.self)
 //            }
 //        }
-        
-//        tableView.reloadData()
     }
     
 //    override func viewDidDisappear(_ animated: Bool) {
@@ -437,11 +435,7 @@ extension HomeTimelineViewController: UITableViewDelegate, AutoGenerateTableView
 //}
 
 // MARK: - StatusTableViewCellDelegate
-extension HomeTimelineViewController: StatusTableViewCellDelegate {
-    func statusTableViewCell(_ cell: StatusTableViewCell, mediaGridContainerView containerView: MediaGridContainerView, didTapMediaView mediaView: MediaView, at index: Int) {
-        
-    }
-}
+extension HomeTimelineViewController: StatusTableViewCellDelegate { }
 
 // MARK: - TimelineMiddleLoaderTableViewCellDelegate
 extension HomeTimelineViewController: TimelineMiddleLoaderTableViewCellDelegate {

@@ -16,6 +16,7 @@ import CommonOSLog
 extension APIService {
 
     // make local state change only
+    @available(*, deprecated, message: "")
     func retweet(
         tweetObjectID: NSManagedObjectID,
         twitterUserObjectID: NSManagedObjectID,

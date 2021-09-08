@@ -159,7 +159,6 @@ extension Twitter.API.Timeline {
             guard !items.isEmpty else { return nil }
             return items
         }
-        
         var encodedQueryItems: [URLQueryItem]? {
             var items: [URLQueryItem] = []
             if let query = query {
@@ -168,8 +167,9 @@ extension Twitter.API.Timeline {
             guard !items.isEmpty else { return nil }
             return items
         }
-        
         var formQueryItems: [URLQueryItem]? { nil }
+        var contentType: String? { nil }
+        var body: Data? { nil }
 
     }
 }

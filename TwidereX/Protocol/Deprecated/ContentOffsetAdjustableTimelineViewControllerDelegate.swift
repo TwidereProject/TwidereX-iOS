@@ -8,6 +8,7 @@
 
 import UIKit
 
+@available(*, deprecated, message: "")
 protocol ContentOffsetAdjustableTimelineViewControllerDelegate: class {
     func navigationBar() -> UINavigationBar?
 }

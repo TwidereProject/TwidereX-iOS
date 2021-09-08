@@ -19,9 +19,9 @@ extension TwitterStatus.Property {
         self.init(
             id: entity.id,
             text: entity.fullText ?? entity.text ?? "",
-            likeCount: entity.favoriteCount ?? 0,
+            likeCount: entity.favoriteCount.flatMap(Int64.init) ?? 0,
             replyCount: 0,
-            repostCount: entity.retweetCount ?? 0,
+            repostCount: entity.retweetCount.flatMap(Int64.init) ?? 0,
             createdAt: entity.createdAt,
             updatedAt: networkDate
         )
@@ -112,9 +112,9 @@ extension TwitterStatus.Property {
         self.init(
             id: status.id,
             text: status.text,
-            likeCount: status.publicMetrics?.likeCount ?? 0,
-            replyCount: status.publicMetrics?.replyCount ?? 0,
-            repostCount: status.publicMetrics?.retweetCount ?? 0,
+            likeCount: status.publicMetrics.flatMap { Int64($0.likeCount) } ?? 0,
+            replyCount: status.publicMetrics.flatMap { Int64($0.replyCount) } ?? 0,
+            repostCount: status.publicMetrics.flatMap { Int64($0.retweetCount) } ?? 0,
             createdAt: status.createdAt,
             updatedAt: networkDate
         )

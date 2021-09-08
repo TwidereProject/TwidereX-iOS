@@ -17,7 +17,7 @@ enum DataSourceFacade {
         case quote          // remove repost wrapper then locate to quote
     }
     
-    private static func redirectStatusRecord(
+    static func redirectStatusRecord(
         managedObjectContext: NSManagedObjectContext,
         twitterStatusRecord record: ManagedObjectRecord<TwitterStatus>,
         target: StatusTarget
@@ -39,7 +39,7 @@ enum DataSourceFacade {
         return record
     }
     
-    private static func redirectStatus(
+    static func redirectStatus(
         managedObjectContext: NSManagedObjectContext,
         mastodonStatusRecord record: ManagedObjectRecord<MastodonStatus>,
         target: StatusTarget
@@ -63,72 +63,3 @@ enum DataSourceFacade {
     
 }
 
-extension DataSourceFacade {
-    static func coordinateToStatusThreadScene(
-        provider: DataSourceProvider,
-        target: StatusTarget,
-        status: DataSourceItem.Status
-    ) async {
-        switch status {
-        case .twitter(let record):
-            await coordinateToStatusThreadScene(provider: provider, target: target, twitterStatusRecord: record)
-        case .mastodon(let record):
-            await coordinateToStatusThreadScene(provider: provider, target: target, mastodonStatusRecord: record)
-        }
-    }
-    
-    static func coordinateToStatusThreadScene(
-        provider: DataSourceProvider,
-        target: StatusTarget,
-        twitterStatusRecord record: ManagedObjectRecord<TwitterStatus>
-    ) async {
-        let redirectedRecord = await redirectStatusRecord(
-            managedObjectContext: provider.context.managedObjectContext,
-            twitterStatusRecord: record,
-            target: target
-        )
-        let _root: StatusItem.Thread? = redirectedRecord.flatMap { StatusItem.Thread.root(status: .twitter(record: $0)) }
-        guard let root = _root else {
-            assertionFailure()
-            return
-        }
-        let statusThreadViewModel = StatusThreadViewModel(
-            context: provider.context,
-            root: root
-        )
-        await provider.coordinator.present(
-            scene: .statusThread(viewModel: statusThreadViewModel),
-            from: provider,
-            transition: .show
-        )
-    }
-    
-    static func coordinateToStatusThreadScene(
-        provider: DataSourceProvider,
-        target: StatusTarget,
-        mastodonStatusRecord record: ManagedObjectRecord<MastodonStatus>
-    ) async {
-        let redirectedRecord = await redirectStatus(
-            managedObjectContext: provider.context.managedObjectContext,
-            mastodonStatusRecord: record,
-            target: target
-        )
-        let _root: StatusItem.Thread? = redirectedRecord.flatMap { StatusItem.Thread.root(status: .mastodon(record: $0)) }
-        guard let root = _root else {
-            assertionFailure()
-            return
-        }
-        let statusThreadViewModel = StatusThreadViewModel(
-            context: provider.context,
-            root: root
-        )
-        await provider.coordinator.present(
-            scene: .statusThread(viewModel: statusThreadViewModel),
-            from: provider,
-            transition: .show
-        )
-    }
-
-}
-    
-    

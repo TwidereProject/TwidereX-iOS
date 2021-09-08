@@ -19,11 +19,11 @@ final public class TwitterStatus: NSManagedObject {
     // sourcery: autoUpdatableObject, autoGenerateProperty
     @NSManaged public private(set) var text: String
     // sourcery: autoUpdatableObject, autoGenerateProperty
-    @NSManaged public private(set) var likeCount: Int
+    @NSManaged public private(set) var likeCount: Int64
     // sourcery: autoGenerateProperty
-    @NSManaged public private(set) var replyCount: Int
+    @NSManaged public private(set) var replyCount: Int64
     // sourcery: autoUpdatableObject, autoGenerateProperty
-    @NSManaged public private(set) var repostCount: Int
+    @NSManaged public private(set) var repostCount: Int64
     
     // sourcery: autoUpdatableObject
     @NSManaged public private(set) var conversationID: TwitterStatus.ID?
@@ -47,6 +47,10 @@ final public class TwitterStatus: NSManagedObject {
     // one-to-many relationship
     @NSManaged public private(set) var repostFrom: Set<TwitterStatus>
     @NSManaged public private(set) var quoteFrom: Set<TwitterStatus>
+    
+    // many-to-many relationship
+    @NSManaged public private(set) var likeBy: Set<TwitterUser>
+    @NSManaged public private(set) var repostBy: Set<TwitterUser>
     
 }
 
@@ -149,18 +153,18 @@ extension TwitterStatus: AutoGenerateProperty {
     public struct Property {
         public let  id: ID
         public let  text: String
-        public let  likeCount: Int
-        public let  replyCount: Int
-        public let  repostCount: Int
+        public let  likeCount: Int64
+        public let  replyCount: Int64
+        public let  repostCount: Int64
         public let  createdAt: Date
         public let  updatedAt: Date
 
     	public init(
     		id: ID,
     		text: String,
-    		likeCount: Int,
-    		replyCount: Int,
-    		repostCount: Int,
+    		likeCount: Int64,
+    		replyCount: Int64,
+    		repostCount: Int64,
     		createdAt: Date,
     		updatedAt: Date
     	) {
@@ -235,12 +239,12 @@ extension TwitterStatus: AutoUpdatableObject {
     		self.text = text
     	}
     }
-    public func update(likeCount: Int) {
+    public func update(likeCount: Int64) {
     	if self.likeCount != likeCount {
     		self.likeCount = likeCount
     	}
     }
-    public func update(repostCount: Int) {
+    public func update(repostCount: Int64) {
     	if self.repostCount != repostCount {
     		self.repostCount = repostCount
     	}
@@ -271,6 +275,30 @@ extension TwitterStatus: AutoUpdatableObject {
     	}
     }
     // sourcery:end
+    
+    public func update(isRepost: Bool, user: TwitterUser) {
+        if isRepost {
+            if !repostBy.contains(user) {
+                self.mutableSetValue(forKey: #keyPath(TwitterStatus.repostBy)).add(user)
+            }
+        } else {
+            if repostBy.contains(user) {
+                self.mutableSetValue(forKey: #keyPath(TwitterStatus.repostBy)).remove(user)
+            }
+        }
+    }
+    
+    public func update(isLike: Bool, user: TwitterUser) {
+        if isLike {
+            if !likeBy.contains(user) {
+                self.mutableSetValue(forKey: #keyPath(TwitterStatus.likeBy)).add(user)
+            }
+        } else {
+            if likeBy.contains(user) {
+                self.mutableSetValue(forKey: #keyPath(TwitterStatus.likeBy)).remove(user)
+            }
+        }
+    }
 }
 
 extension TwitterStatus {

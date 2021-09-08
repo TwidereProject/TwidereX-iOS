@@ -12,6 +12,8 @@ import Combine
 
 protocol StatusTableViewCellDelegate: AnyObject {
     func statusTableViewCell(_ cell: StatusTableViewCell, mediaGridContainerView containerView: MediaGridContainerView, didTapMediaView mediaView: MediaView, at index: Int)
+    func statusTableViewCell(_ cell: StatusTableViewCell, statusToolbar: StatusToolbar, actionDidPressed action: StatusToolbar.Action)
+
 }
 
 class StatusTableViewCell: UITableViewCell {
@@ -57,13 +59,18 @@ extension StatusTableViewCell {
         statusView.setup(style: .inline)
         statusView.toolbar.setup(style: .inline)
         statusView.mediaGridContainerView.delegate = self
+        statusView.toolbar.delegate = self
     }
     
 }
 
 // MARK: - MediaGridContainerViewDelegate
 extension StatusTableViewCell: MediaGridContainerViewDelegate {
-    func mediaGridContainerView(_ container: MediaGridContainerView, didTapMediaView mediaView: MediaView, at index: Int) {
+    func mediaGridContainerView(
+        _ container: MediaGridContainerView,
+        didTapMediaView mediaView: MediaView,
+        at index: Int
+    ) {
         switch container {
         case statusView.mediaGridContainerView:
             delegate?.statusTableViewCell(self, mediaGridContainerView: container, didTapMediaView: mediaView, at: index)
@@ -71,5 +78,15 @@ extension StatusTableViewCell: MediaGridContainerViewDelegate {
             assertionFailure()
             return
         }
+    }
+}
+
+// MARK: - StatusToolbarDelegate
+extension StatusTableViewCell: StatusToolbarDelegate {
+    func statusToolbar(
+        _ statusToolbar: StatusToolbar,
+        actionDidPressed action: StatusToolbar.Action
+    ) {
+        delegate?.statusTableViewCell(self, statusToolbar: statusToolbar, actionDidPressed: action)
     }
 }

@@ -168,3 +168,114 @@ extension APIService {
             .eraseToAnyPublisher()
     }
 }
+
+// MARK: - V2
+extension APIService {
+    
+    func like(
+        status: DataSourceItem.Status,
+        authenticationContext: AuthenticationContext
+    ) async throws {
+        switch (status, authenticationContext) {
+        case (.twitter(let record), .twitter(let authenticationContext)):
+            _ = try await like(
+                record: record,
+                authenticationContext: authenticationContext
+            )
+        case (.mastodon(let record), .mastodon(let authenticationContext)):
+            assertionFailure()
+        default:
+            assertionFailure()
+        }
+    }
+    
+    private struct LikeContext {
+        let statusID: TwitterStatus.ID
+        let isLiked: Bool
+        let likedCount: Int64
+    }
+    
+    func like(
+        record: ManagedObjectRecord<TwitterStatus>,
+        authenticationContext: TwitterAuthenticationContext
+    ) async throws -> Twitter.Response.Content<Twitter.API.V2.User.Like.LikeContent> {
+        let managedObjectContext = backgroundManagedObjectContext
+        
+        // update repost state and retrieve repost context
+        let _likeContext: LikeContext? = try await managedObjectContext.performChanges {
+            guard let authentication = authenticationContext.authenticationRecord.object(in: managedObjectContext),
+                  let _status = record.object(in: managedObjectContext)
+            else { return nil }
+            let user = authentication.twitterUser
+            let status = _status.repost ?? _status
+            let isLiked = status.likeBy.contains(user)
+            let likedCount = status.likeCount
+            let likeCount = isLiked ? likedCount - 1 : likedCount + 1
+            status.update(isLike: !isLiked, user: user)
+            status.update(likeCount: Int64(max(0, likeCount)))
+            let repostContext = LikeContext(
+                statusID: status.id,
+                isLiked: isLiked,
+                likedCount: likedCount
+            )
+            self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): update status like: \(!isLiked), \(likeCount)")
+            return repostContext
+        }
+        guard let likeContext = _likeContext else {
+            throw APIService.APIError.implicit(.badRequest)
+        }
+        
+        // request repost or undo repost
+        let result: Result<Twitter.Response.Content<Twitter.API.V2.User.Like.LikeContent>, Error>
+        do {
+            if likeContext.isLiked {
+                let response = try await Twitter.API.V2.User.Like.undoLike(
+                    session: session,
+                    userID: authenticationContext.userID,
+                    statusID: likeContext.statusID,
+                    authorization: authenticationContext.authorization
+                )
+                result = .success(response)
+            } else {
+                let query = Twitter.API.V2.User.Like.LikeQuery(
+                    tweetID: likeContext.statusID
+                )
+                let response = try await Twitter.API.V2.User.Like.like(
+                    session: session,
+                    query: query,
+                    userID: authenticationContext.userID,
+                    authorization: authenticationContext.authorization
+                )
+                result = .success(response)
+            }
+        } catch {
+            result = .failure(error)
+            logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): update like failure: \(error.localizedDescription)")
+        }
+        
+        // update repost state
+        try await managedObjectContext.performChanges {
+            guard let authentication = authenticationContext.authenticationRecord.object(in: managedObjectContext),
+                  let _status = record.object(in: managedObjectContext)
+            else { return }
+            let user = authentication.twitterUser
+            let status = _status.repost ?? _status
+            
+            switch result {
+            case .success(let response):
+                let isLike = response.value.data.liked
+                status.update(isLike: isLike, user: user)
+                self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): update status like: \(isLike)")
+            case .failure:
+                // rollback
+                status.update(isLike: likeContext.isLiked, user: user)
+                status.update(likeCount: likeContext.likedCount)
+                self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): rollback status like")
+            }
+        }
+        
+        let response = try result.get()
+        return response
+    }
+    
+}

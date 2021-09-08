@@ -65,7 +65,11 @@ extension StatusThreadViewController {
 // MARK: - StatusTableViewCellDelegate
 extension StatusThreadViewController: StatusTableViewCellDelegate {
     func statusTableViewCell(_ cell: StatusTableViewCell, mediaGridContainerView containerView: MediaGridContainerView, didTapMediaView mediaView: MediaView, at index: Int) {
-        // TODO:
+        
+    }
+    
+    func statusTableViewCell(_ cell: StatusTableViewCell, statusToolbar: StatusToolbar, actionDidPressed action: StatusToolbar.Action) {
+        
     }
 }
 

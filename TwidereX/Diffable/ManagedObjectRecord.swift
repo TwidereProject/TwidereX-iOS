@@ -19,12 +19,7 @@ class ManagedObjectRecord<T: Managed>: Hashable {
     }
     
     func object(in managedObjectContext: NSManagedObjectContext) -> T? {
-        do {
-            return try managedObjectContext.existingObject(with: objectID) as? T
-        } catch {
-            assertionFailure(error.localizedDescription)
-            return nil
-        }
+        return managedObjectContext.object(with: objectID) as? T
     }
     
     static func == (lhs: ManagedObjectRecord<T>, rhs: ManagedObjectRecord<T>) -> Bool {

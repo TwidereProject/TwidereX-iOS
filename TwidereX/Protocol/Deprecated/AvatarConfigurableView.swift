@@ -10,6 +10,7 @@ import UIKit
 import AlamofireImage
 import Kingfisher
 
+@available(*, deprecated, message: "")
 protocol AvatarConfigurableView {
     static var configurableAvatarImageViewSize: CGSize { get }
     static var configurableAvatarImageViewBadgeAppearanceStyle: AvatarConfigurableViewConfiguration.BadgeAppearanceStyle { get }
@@ -20,6 +21,7 @@ protocol AvatarConfigurableView {
     func avatarConfigurableView(_ avatarConfigurableView: AvatarConfigurableView, didFinishConfiguration configuration: AvatarConfigurableViewConfiguration)
 }
 
+@available(*, deprecated, message: "")
 extension AvatarConfigurableView {
     
     static var configurableAvatarImageViewBadgeAppearanceStyle: AvatarConfigurableViewConfiguration.BadgeAppearanceStyle { return .mini }

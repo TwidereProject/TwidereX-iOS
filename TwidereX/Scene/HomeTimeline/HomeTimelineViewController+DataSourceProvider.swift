@@ -10,9 +10,11 @@ import UIKit
 
 extension HomeTimelineViewController: DataSourceProvider {
     func item(from source: DataSourceItem.Source) async -> DataSourceItem? {
-        guard let indexPath = source.indexPath ?? (source.tableViewCell.flatMap {
-            tableView.indexPath(for: $0)
-        }) else { return nil }
+        var _indexPath = source.indexPath
+        if _indexPath == nil, let cell = source.tableViewCell {
+            _indexPath = await self.indexPath(for: cell)
+        }
+        guard let indexPath = _indexPath else { return nil }
         
         guard let item = viewModel.diffableDataSource?.itemIdentifier(for: indexPath) else {
             return nil
@@ -36,5 +38,10 @@ extension HomeTimelineViewController: DataSourceProvider {
         default:
             return nil
         }
+    }
+    
+    @MainActor
+    private func indexPath(for cell: UITableViewCell) async -> IndexPath? {
+        return tableView.indexPath(for: cell)
     }
 }

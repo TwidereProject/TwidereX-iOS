@@ -32,13 +32,8 @@ final class FeedFetchedResultsController: NSObject {
             let fetchRequest = Feed.sortedFetchRequest
             // make sure initial query return empty results
             fetchRequest.returnsObjectsAsFaults = false
+            fetchRequest.shouldRefreshRefetchedObjects = true
             fetchRequest.fetchBatchSize = 15
-            fetchRequest.relationshipKeyPathsForPrefetching = [
-                #keyPath(Feed.twitterStatus),
-                #keyPath(Feed.twitterStatus.author),
-                #keyPath(Feed.twitterStatus.repost),
-                #keyPath(Feed.twitterStatus.repost.author)
-            ]
             let controller = NSFetchedResultsController(
                 fetchRequest: fetchRequest,
                 managedObjectContext: managedObjectContext,

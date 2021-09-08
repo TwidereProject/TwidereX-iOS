@@ -47,11 +47,13 @@ extension APIService {
         
         let managedObjectContext = backgroundManagedObjectContext
         try await managedObjectContext.performChanges {
+            let user = authenticationContext.authenticationRecord.object(in: managedObjectContext)?.twitterUser
             // persist TwitterStatus
             var statusArray: [TwitterStatus] = []
             for entity in response.value {
                 let persistContext = Persistence.TwitterStatus.PersistContext(
                     entity: entity,
+                    user: user,
                     statusCache: nil,   // TODO:
                     userCache: nil,
                     networkDate: response.networkDate

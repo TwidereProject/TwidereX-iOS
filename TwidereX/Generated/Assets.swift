@@ -118,6 +118,12 @@ internal enum Asset {
     internal enum Preference {
       internal static let twidereAvatar = ImageAsset(name: "Scene/Preference/twidere.avatar")
     }
+    internal enum Status {
+      internal enum Toolbar {
+        internal static let like = ColorAsset(name: "Scene/Status/Toolbar/like")
+        internal static let repost = ColorAsset(name: "Scene/Status/Toolbar/repost")
+      }
+    }
     internal enum Welcome {
       internal static let twidere = ImageAsset(name: "Scene/Welcome/twidere")
     }

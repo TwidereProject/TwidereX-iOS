@@ -10,6 +10,7 @@ import os.log
 import UIKit
 import Combine
 import SwiftUI
+import CoreData
 import CoreDataStack
 import TwitterMeta
 import MastodonMeta
@@ -18,6 +19,7 @@ import Meta
 extension StatusView {
     final class ViewModel: ObservableObject {
         var disposeBag = Set<AnyCancellable>()
+        var objects = Set<NSManagedObject>()
         
         @Published var platform: Platform = .none
         
@@ -30,6 +32,9 @@ extension StatusView {
         @Published var content: MetaContent?
         @Published var mediaViewConfigurations: [MediaView.Configuration] = []
         @Published var location: String?
+        
+        @Published var isRepost: Bool = false
+        @Published var isLike: Bool = false
         
         @Published var replyCount: Int = 0
         @Published var repostCount: Int = 0
@@ -196,16 +201,22 @@ extension StatusView.ViewModel {
                 statusView.toolbar.setupReply(count: count, isEnabled: true)
             }
             .store(in: &disposeBag)
-        $repostCount
-            .sink { count in
-                statusView.toolbar.setupRepost(count: count, isEnabled: true, isLocked: false)
-            }
-            .store(in: &disposeBag)
-        $likeCount
-            .sink { count in
-                statusView.toolbar.setupLike(count: count)
-            }
-            .store(in: &disposeBag)
+        Publishers.CombineLatest(
+            $isRepost,
+            $repostCount
+        )
+        .sink { isRepost, count in
+            statusView.toolbar.setupRepost(count: count, isRepost: isRepost, isLocked: false)
+        }
+        .store(in: &disposeBag)
+        Publishers.CombineLatest(
+            $isLike,
+            $likeCount
+        )
+        .sink { isLike, count in
+            statusView.toolbar.setupLike(count: count, isLike: isLike)
+        }
+        .store(in: &disposeBag)
     }
 }
 
@@ -225,6 +236,8 @@ extension StatusView {
 
 extension StatusView {
     func configure(twitterStatus status: TwitterStatus) {
+        viewModel.objects.insert(status)
+        
         configureHeader(twitterStatus: status)
         configureAuthor(twitterStatus: status)
         configureContent(twitterStatus: status)
@@ -333,15 +346,55 @@ extension StatusView {
     
     private func configureToolbar(twitterStatus status: TwitterStatus) {
         let status = status.repost ?? status
-        status.publisher(for: \.replyCount).assign(to: \.replyCount, on: viewModel).store(in: &disposeBag)
-        status.publisher(for: \.repostCount).assign(to: \.repostCount, on: viewModel).store(in: &disposeBag)
-        status.publisher(for: \.likeCount).assign(to: \.likeCount, on: viewModel).store(in: &disposeBag)
+        status.publisher(for: \.replyCount)
+            .map(Int.init)
+            .assign(to: \.replyCount, on: viewModel)
+            .store(in: &disposeBag)
+        status.publisher(for: \.repostCount)
+            .map(Int.init)
+            .assign(to: \.repostCount, on: viewModel)
+            .store(in: &disposeBag)
+        status.publisher(for: \.likeCount)
+            .map(Int.init)
+            .assign(to: \.likeCount, on: viewModel)
+            .store(in: &disposeBag)
+
+        // relationship
+        Publishers.CombineLatest(
+            AppContext.shared.authenticationService.activeAuthenticationContext,
+            status.publisher(for: \.repostBy)
+        )
+        .map { authenticationContext, repostBy in
+            guard let authenticationContext = authenticationContext?.twitterAuthenticationContext else {
+                return false
+            }
+            let userID = authenticationContext.userID
+            return repostBy.contains(where: { $0.id == userID })
+        }
+        .assign(to: \.isRepost, on: viewModel)
+        .store(in: &disposeBag)
+        
+        Publishers.CombineLatest(
+            AppContext.shared.authenticationService.activeAuthenticationContext,
+            status.publisher(for: \.likeBy)
+        )
+            .map { authenticationContext, likeBy in
+                guard let authenticationContext = authenticationContext?.twitterAuthenticationContext else {
+                    return false
+                }
+                let userID = authenticationContext.userID
+                return likeBy.contains(where: { $0.id == userID })
+            }
+            .assign(to: \.isLike, on: viewModel)
+            .store(in: &disposeBag)
     }
 }
 
 // MARK: - Mastodon
 extension StatusView {
     func configure(mastodonStatus status: MastodonStatus) {
+        viewModel.objects.insert(status)
+        
         configureHeader(mastodonStatus: status)
         configureAuthor(mastodonStatus: status)
         configureContent(mastodonStatus: status)

@@ -110,6 +110,7 @@ extension StatusView {
     
     func prepareForReuse() {
         disposeBag.removeAll()
+        viewModel.objects.removeAll()
         authorAvatarButton.avatarImageView.cancelTask()
         mediaGridContainerView.prepareForReuse()
         style?.prepareForReuse(statusView: self)

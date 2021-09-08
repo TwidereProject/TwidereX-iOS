@@ -16,6 +16,7 @@ extension Persistence.TwitterStatus {
     
     struct PersistContext {
         let entity: Twitter.Entity.Tweet
+        let user: TwitterUser?
         let statusCache: APIService.Persist.PersistCache<TwitterStatus>?
         let userCache: APIService.Persist.PersistCache<TwitterUser>?
         let networkDate: Date
@@ -32,6 +33,7 @@ extension Persistence.TwitterStatus {
                 in: managedObjectContext,
                 context: PersistContext(
                     entity: entity,
+                    user: context.user,
                     statusCache: context.statusCache,
                     userCache: context.userCache,
                     networkDate: context.networkDate
@@ -45,6 +47,7 @@ extension Persistence.TwitterStatus {
                 in: managedObjectContext,
                 context: PersistContext(
                     entity: entity,
+                    user: context.user,
                     statusCache: context.statusCache,
                     userCache: context.userCache,
                     networkDate: context.networkDate
@@ -148,6 +151,11 @@ extension Persistence.TwitterStatus {
     ) {
         context.entity.twitterAttachments.flatMap { status.update(attachments: $0) }
         context.entity.twitterLocation.flatMap { status.update(location:$0) }
+        
+        // update relationship
+        if let user = context.user {
+            context.entity.retweeted.flatMap { status.update(isRepost: $0, user: user) }
+        }
     }
     
 }
