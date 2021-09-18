@@ -48,7 +48,9 @@ internal enum Asset {
       internal static let violet = ColorAsset(name: "Colors/Theme/violet")
       internal static let vulcan = ColorAsset(name: "Colors/Theme/vulcan")
     }
-    internal static let heartPink = ColorAsset(name: "Colors/heart.pink")
+    internal enum Tint {
+      internal static let pink = ColorAsset(name: "Colors/Tint/pink")
+    }
     internal static let hightLight = ColorAsset(name: "Colors/hight.light")
     internal static let mastodonBlue = ColorAsset(name: "Colors/mastodon.blue")
     internal static let twitterBlue = ColorAsset(name: "Colors/twitter.blue")
@@ -93,6 +95,12 @@ internal enum Asset {
     internal static let repeatMini = ImageAsset(name: "Media/repeat.mini")
   }
   internal enum ObjectTools {
+    internal enum Badge {
+      internal static let circleMask = ImageAsset(name: "Object&Tools/Badge/circle.mask")
+      internal static let robot = ImageAsset(name: "Object&Tools/Badge/robot")
+      internal static let robotMask = ImageAsset(name: "Object&Tools/Badge/robot.mask")
+      internal static let verifiedMask = ImageAsset(name: "Object&Tools/Badge/verified.mask")
+    }
     internal static let blockedBadge = ImageAsset(name: "Object&Tools/blocked.badge")
     internal static let bookmarks = ImageAsset(name: "Object&Tools/bookmarks")
     internal static let camera = ImageAsset(name: "Object&Tools/camera")

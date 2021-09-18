@@ -9,6 +9,7 @@ import Foundation
 
 extension Twitter.Entity.User {
     public struct Entities: Codable {
+        // FIXME:
         public let url: URL?
         public let description: Description?
     }

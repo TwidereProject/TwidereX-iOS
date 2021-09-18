@@ -10,6 +10,7 @@ import UIKit
 import Combine
 import SwiftUI
 import CoreDataStack
+import Meta
 
 extension UserBriefInfoView {
     final class ViewModel: ObservableObject {
@@ -18,7 +19,7 @@ extension UserBriefInfoView {
         @Published var platform: Platform = .none
         
         @Published var avatarImageURL: URL?
-        @Published var headlineText: String?
+        @Published var headlineMetaContent: MetaContent?
         @Published var subheadlineText: String?
     }
 }
@@ -48,8 +49,14 @@ extension UserBriefInfoView.ViewModel {
             }
             .store(in: &disposeBag)
         // headline
-        $headlineText
-            .assign(to: \.text, on: userBriefInfoView.headlineLabel)
+        $headlineMetaContent
+            .sink { content in
+                guard let content = content else {
+                    userBriefInfoView.headlineLabel.reset()
+                    return
+                }
+                userBriefInfoView.headlineLabel.configure(content: content)
+            }
             .store(in: &disposeBag)
         // subheadline
         $subheadlineText

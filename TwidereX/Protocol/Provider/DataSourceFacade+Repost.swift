@@ -13,7 +13,7 @@ import CoreDataStack
 extension DataSourceFacade {
     static func responseToStatusRepostAction(
         provider: DataSourceProvider,
-        status: DataSourceItem.Status,
+        status: StatusRecord,
         authenticationContext: AuthenticationContext
     ) async throws {
         let impactFeedbackGenerator = await UIImpactFeedbackGenerator(style: .light)

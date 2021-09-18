@@ -28,11 +28,13 @@ extension APIService {
         
         let managedObjectContext = backgroundManagedObjectContext
         try await managedObjectContext.performChanges {
+            let user = authenticationContext.authenticationRecord.object(in: managedObjectContext)?.mastodonUser
             let statuses = response.value.ancestors + response.value.descendants
             for entity in statuses {
                 let persistContext = Persistence.MastodonStatus.PersistContext(
                     domain: authenticationContext.domain,
                     entity: entity,
+                    user: user,
                     statusCache: nil,   // TODO:
                     userCache: nil,
                     networkDate: response.networkDate

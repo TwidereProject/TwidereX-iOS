@@ -10,16 +10,17 @@ import UIKit
 import Combine
 import CoreDataStack
 
-extension ProfileViewController: UserProvider {
-    
-    func twitterUser() -> Future<TwitterUser?, Never> {
-        return Future { promise in
-            promise(.success(self.viewModel.twitterUser.value))
-        }
-    }
-    
-    func twitterUser(for cell: UITableViewCell, indexPath: IndexPath?) -> Future<TwitterUser?, Never> {
-        return Future { promise in promise(.success(nil)) }
-    }
-    
-}
+//extension ProfileViewController: UserProvider {
+//    
+//    func twitterUser() -> Future<TwitterUser?, Never> {
+//        return Future { promise in
+//            promise(.success(nil))
+////            promise(.success(self.viewModel.twitterUser.value))
+//        }
+//    }
+//    
+//    func twitterUser(for cell: UITableViewCell, indexPath: IndexPath?) -> Future<TwitterUser?, Never> {
+//        return Future { promise in promise(.success(nil)) }
+//    }
+//    
+//}

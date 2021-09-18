@@ -15,7 +15,8 @@ import AlamofireImage
 import Kingfisher
 import ActiveLabel
 
-final class ProfileViewController: UIViewController, DrawerSidebarTransitionableViewController, NeedsDependency {
+// TODO: DrawerSidebarTransitionableViewController
+final class ProfileViewController: UIViewController, NeedsDependency {
     
     weak var context: AppContext! { willSet { precondition(!isViewLoaded) } }
     weak var coordinator: SceneCoordinator! { willSet { precondition(!isViewLoaded) } }
@@ -23,7 +24,7 @@ final class ProfileViewController: UIViewController, DrawerSidebarTransitionable
     var disposeBag = Set<AnyCancellable>()
     var viewModel: ProfileViewModel!
     
-    private(set) var drawerSidebarTransitionController: DrawerSidebarTransitionController!
+//    private(set) var drawerSidebarTransitionController: DrawerSidebarTransitionController!
     
     let avatarBarButtonItem = AvatarBarButtonItem()
     let unmuteMenuBarButtonItem: UIBarButtonItem = {
@@ -58,8 +59,13 @@ final class ProfileViewController: UIViewController, DrawerSidebarTransitionable
         scrollView.delaysContentTouches = false
         return scrollView
     }()
-    lazy var profileSegmentedViewController = ProfileSegmentedViewController()
-    lazy var profileHeaderViewController = ProfileHeaderViewController()
+    
+    private(set) lazy var profileHeaderViewController: ProfileHeaderViewController = {
+        let profileHeaderViewController = ProfileHeaderViewController()
+        profileHeaderViewController.viewModel = ProfileHeaderViewModel(context: context)
+        return profileHeaderViewController
+    }()
+    private(set) lazy var profileSegmentedViewController = ProfileSegmentedViewController()
     
     lazy var bar: TMBar = {
         let bar = TMBarView<TMHorizontalBarLayout, TMTabItemBarButton, TMLineBarIndicator>()
@@ -118,59 +124,59 @@ extension ProfileViewController {
         unmuteMenuBarButtonItem.target = self
         unmuteMenuBarButtonItem.action = #selector(ProfileViewController.unmuteBarButtonItemPressed(_:))
         
-        Publishers.CombineLatest4(
-            viewModel.muted.eraseToAnyPublisher(),
-            viewModel.blocked.eraseToAnyPublisher(),
-            viewModel.twitterUser.eraseToAnyPublisher(),
-            context.authenticationService.activeTwitterAuthenticationBox.eraseToAnyPublisher()
-        )
-        .receive(on: DispatchQueue.main)
-        .sink { [weak self] muted, blocked, twitterUser, activeTwitterAuthenticationBox in
-            guard let self = self else { return }
-            guard let twitterUser = twitterUser,
-                  let activeTwitterAuthenticationBox = activeTwitterAuthenticationBox,
-                  twitterUser.id != activeTwitterAuthenticationBox.twitterUserID else {
-                self.navigationItem.rightBarButtonItems = []
-                return
-            }
-            
-            if #available(iOS 14.0, *) {
-                self.moreMenuBarButtonItem.target = nil
-                self.moreMenuBarButtonItem.action = nil
-                self.moreMenuBarButtonItem.menu = UserProviderFacade.createMenuForUser(
-                    twitterUser: twitterUser,
-                    muted: muted,
-                    blocked: blocked,
-                    dependency: self
-                )
-            } else {
-                // no menu supports for early version
-                self.moreMenuBarButtonItem.target = self
-                self.moreMenuBarButtonItem.action = #selector(ProfileViewController.moreMenuBarButtonItemPressed(_:))
-            }
-            
-            var rightBarButtonItems: [UIBarButtonItem] = [self.moreMenuBarButtonItem]
-            if muted {
-                rightBarButtonItems.append(self.unmuteMenuBarButtonItem)
-            }
-            
-            self.navigationItem.rightBarButtonItems = rightBarButtonItems
-        }
-        .store(in: &disposeBag)
+//        Publishers.CombineLatest4(
+//            viewModel.muted.eraseToAnyPublisher(),
+//            viewModel.blocked.eraseToAnyPublisher(),
+//            viewModel.twitterUser.eraseToAnyPublisher(),
+//            context.authenticationService.activeTwitterAuthenticationBox.eraseToAnyPublisher()
+//        )
+//        .receive(on: DispatchQueue.main)
+//        .sink { [weak self] muted, blocked, twitterUser, activeTwitterAuthenticationBox in
+//            guard let self = self else { return }
+//            guard let twitterUser = twitterUser,
+//                  let activeTwitterAuthenticationBox = activeTwitterAuthenticationBox,
+//                  twitterUser.id != activeTwitterAuthenticationBox.twitterUserID else {
+//                self.navigationItem.rightBarButtonItems = []
+//                return
+//            }
+//
+//            if #available(iOS 14.0, *) {
+//                self.moreMenuBarButtonItem.target = nil
+//                self.moreMenuBarButtonItem.action = nil
+//                self.moreMenuBarButtonItem.menu = UserProviderFacade.createMenuForUser(
+//                    twitterUser: twitterUser,
+//                    muted: muted,
+//                    blocked: blocked,
+//                    dependency: self
+//                )
+//            } else {
+//                // no menu supports for early version
+//                self.moreMenuBarButtonItem.target = self
+//                self.moreMenuBarButtonItem.action = #selector(ProfileViewController.moreMenuBarButtonItemPressed(_:))
+//            }
+//
+//            var rightBarButtonItems: [UIBarButtonItem] = [self.moreMenuBarButtonItem]
+//            if muted {
+//                rightBarButtonItems.append(self.unmuteMenuBarButtonItem)
+//            }
+//
+//            self.navigationItem.rightBarButtonItems = rightBarButtonItems
+//        }
+//        .store(in: &disposeBag)
         
         overlayScrollView.refreshControl = refreshControl
         refreshControl.addTarget(self, action: #selector(ProfileViewController.refreshControlValueChanged(_:)), for: .valueChanged)
         
-        drawerSidebarTransitionController = DrawerSidebarTransitionController(drawerSidebarTransitionableViewController: self)
+//        drawerSidebarTransitionController = DrawerSidebarTransitionController(drawerSidebarTransitionableViewController: self)
         
-        let userTimelineViewModel = UserTimelineViewModel(context: context, userID: viewModel.userID.value)
-        viewModel.userID.assign(to: \.value, on: userTimelineViewModel.userID).store(in: &disposeBag)
-        
-        let userMediaTimelineViewModel = UserMediaTimelineViewModel(context: context, userID: viewModel.userID.value)
-        viewModel.userID.assign(to: \.value, on: userMediaTimelineViewModel.userID).store(in: &disposeBag)
-        
-        let userLikeTimelineViewModel = UserLikeTimelineViewModel(context: context, userID: viewModel.userID.value)
-        viewModel.userID.assign(to: \.value, on: userLikeTimelineViewModel.userID).store(in: &disposeBag)
+        let userTimelineViewModel = UserTimelineViewModel(context: context)
+//        viewModel.userID.assign(to: \.value, on: userTimelineViewModel.userID).store(in: &disposeBag)
+//
+        let userMediaTimelineViewModel = UserMediaTimelineViewModel(context: context)
+//        viewModel.userID.assign(to: \.value, on: userMediaTimelineViewModel.userID).store(in: &disposeBag)
+//
+        let userLikeTimelineViewModel = UserLikeTimelineViewModel(context: context)
+//        viewModel.userID.assign(to: \.value, on: userLikeTimelineViewModel.userID).store(in: &disposeBag)
         
         profileSegmentedViewController.pagingViewController.viewModel = {
             let profilePagingViewModel = ProfilePagingViewModel(
@@ -253,218 +259,204 @@ extension ProfileViewController {
         )
 
         // bind view model
-        Publishers.CombineLatest3(
-            viewModel.bannerImageURL.eraseToAnyPublisher(),
-            viewModel.suspended.eraseToAnyPublisher(),
-            viewModel.viewDidAppear.eraseToAnyPublisher()
-        )
-        .receive(on: DispatchQueue.main)
-        .sink { [weak self] url, isSuspended, _ in
-            guard let self = self else { return }
-            guard !isSuspended else {
-                self.profileHeaderViewController.profileBannerView.profileBannerImageView.image = UIImage.placeholder(color: .systemGray)
-                return
-            }
-            let placeholderImage = UIImage.placeholder(color: Asset.Colors.hightLight.color)
-            guard let url = url else {
-                self.profileHeaderViewController.profileBannerView.profileBannerImageView.image = placeholderImage
-                return
-            }
-            self.profileHeaderViewController.profileBannerView.profileBannerImageView.af.setImage(
-                withURL: url,
-                placeholderImage: placeholderImage,
-                imageTransition: .crossDissolve(0.3),
-                runImageTransitionIfCached: false,
-                completion: { [weak self] response in
-                    guard let self = self else { return }
-                    switch response.result {
-                    case .success(let image):
-                        if #available(iOS 14.0, *) {
-                            guard let inversedDominantColor = image.dominantColor?.complementary else { return }
-                            self.refreshControl.tintColor = inversedDominantColor
-                        }
-                    case .failure:
-                        break
-                    }
-                }
-            )
-        }
-        .store(in: &disposeBag)
-        let verifiedAndBlocked = Publishers.CombineLatest(
-            viewModel.verified.eraseToAnyPublisher(),
-            viewModel.blocked.eraseToAnyPublisher()
-        )
-        Publishers.CombineLatest4(
-            viewModel.avatarImageURL.eraseToAnyPublisher(),
-            verifiedAndBlocked.eraseToAnyPublisher(),
-            viewModel.avatarStyle.eraseToAnyPublisher(),
-            viewModel.viewDidAppear.eraseToAnyPublisher()
-        )
-        .receive(on: DispatchQueue.main)
-        .sink { [weak self] avatarImageURL, verifiedAndblocked, _, _ in
-            guard let self = self else { return }
-            let (verified, blocked) = verifiedAndblocked
-            self.profileHeaderViewController.profileBannerView.configure(withConfigurationInput: AvatarConfigurableViewConfiguration.Input(avatarImageURL: avatarImageURL, blocked: blocked, verified: verified))
-        }
-        .store(in: &disposeBag)
-        viewModel.protected
-            .map { $0 != true }
-            .assign(to: \.isHidden, on: profileHeaderViewController.profileBannerView.lockImageView)
-            .store(in: &disposeBag)
-        viewModel.name
-            .map { $0 ?? " " }
-            .assign(to: \.text, on: profileHeaderViewController.profileBannerView.nameLabel)
-            .store(in: &disposeBag)
-        viewModel.username
-            .map { username in username.flatMap { "@" + $0 } ?? " " }
-            .assign(to: \.text, on: profileHeaderViewController.profileBannerView.usernameLabel)
-            .store(in: &disposeBag)
-        viewModel.friendship
-            .sink { [weak self] friendship in
-                guard let self = self else { return }
-                let followingButton = self.profileHeaderViewController.profileBannerView.profileBannerInfoActionView.followActionButton
-                followingButton.isHidden = friendship == nil
-
-                if let friendship = friendship {
-                    switch friendship {
-                    case .following:    followingButton.style = .following
-                    case .pending:      followingButton.style = .pending
-                    case .none:         followingButton.style = .follow
-                    }
-                }
-            }
-            .store(in: &disposeBag)
-        viewModel.followedBy
-            .sink { [weak self] followedBy in
-                guard let self = self else { return }
-                let followStatusLabel = self.profileHeaderViewController.profileBannerView.profileBannerInfoActionView.followStatusLabel
-                followStatusLabel.isHidden = followedBy != true
-            }
-            .store(in: &disposeBag)
+        viewModel.$user.assign(to: &profileHeaderViewController.viewModel.$user)
             
-        Publishers.CombineLatest(
-            viewModel.bioDescription.eraseToAnyPublisher(),
-            viewModel.suspended.eraseToAnyPublisher()
-        )
-        .receive(on: DispatchQueue.main)
-        .sink(receiveValue: { [weak self] bio, isSuspended in
-            guard let self = self else { return }
-            self.profileHeaderViewController.profileBannerView.bioLabel.configure(with: bio ?? " ")
-            self.profileHeaderViewController.profileBannerView.bioLabel.isHidden = isSuspended
-        })
-        .store(in: &disposeBag)
-        Publishers.CombineLatest(
-            viewModel.url.eraseToAnyPublisher(),
-            viewModel.suspended.eraseToAnyPublisher()
-        )
-        .receive(on: DispatchQueue.main)
-        .sink { [weak self] url, isSuspended in
-            guard let self = self else { return }
-            let url = url.flatMap { $0.trimmingCharacters(in: .whitespacesAndNewlines) } ?? " "
-            self.profileHeaderViewController.profileBannerView.linkButton.setTitle(url, for: .normal)
-            let isEmpty = url.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
-            self.profileHeaderViewController.profileBannerView.linkContainer.isHidden = isEmpty || isSuspended
-        }
-        .store(in: &disposeBag)
-        Publishers.CombineLatest(
-            viewModel.location.eraseToAnyPublisher(),
-            viewModel.suspended.eraseToAnyPublisher()
-        )
-        .receive(on: DispatchQueue.main)
-        .sink { [weak self] location, isSuspended in
-            guard let self = self else { return }
-            let location = location.flatMap { $0.trimmingCharacters(in: .whitespacesAndNewlines) } ?? " "
-            self.profileHeaderViewController.profileBannerView.geoButton.setTitle(location, for: .normal)
-            let isEmpty = location.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
-            self.profileHeaderViewController.profileBannerView.geoContainer.isHidden = isEmpty || isSuspended
-        }
-        .store(in: &disposeBag)
-        viewModel.friendsCount
-            .sink { [weak self] count in
-                guard let self = self else { return }
-                self.profileHeaderViewController.profileBannerView.profileBannerStatusView.followingStatusItemView.countLabel.text = count.flatMap { "\($0)" } ?? "-"
-            }
-            .store(in: &disposeBag)
-        viewModel.followersCount
-            .sink { [weak self] count in
-                guard let self = self else { return }
-                self.profileHeaderViewController.profileBannerView.profileBannerStatusView.followersStatusItemView.countLabel.text = count.flatMap { "\($0)" } ?? "-"
-            }
-            .store(in: &disposeBag)
-        viewModel.listedCount
-            .sink { [weak self] count in
-                guard let self = self else { return }
-                self.profileHeaderViewController.profileBannerView.profileBannerStatusView.listedStatusItemView.countLabel.text = count.flatMap { "\($0)" } ?? "-"
-            }
-            .store(in: &disposeBag)
-        viewModel.suspended
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] isSuspended in
-                guard let self = self else { return }
-                self.profileHeaderViewController.profileBannerView.profileBannerStatusView.isHidden = isSuspended
-                self.profileHeaderViewController.profileBannerView.profileBannerInfoActionView.isHidden = isSuspended
-                if isSuspended {
-                    self.profileSegmentedViewController
-                        .pagingViewController.viewModel
-                        .profileTweetPostTimelineViewController.viewModel
-                        .stateMachine
-                        .enter(UserTimelineViewModel.State.Suspended.self)
-                    self.profileSegmentedViewController
-                        .pagingViewController.viewModel
-                        .profileMediaPostTimelineViewController.viewModel
-                        .stateMachine
-                        .enter(UserMediaTimelineViewModel.State.Suspended.self)
-                    self.profileSegmentedViewController
-                        .pagingViewController.viewModel
-                        .profileLikesPostTimelineViewController.viewModel
-                        .stateMachine
-                        .enter(UserLikeTimelineViewModel.State.Suspended.self)
-                }
-            }
-            .store(in: &disposeBag)
         
-        Publishers.CombineLatest3(
-            context.authenticationService.activeAuthenticationIndex.eraseToAnyPublisher(),
-            viewModel.avatarStyle.eraseToAnyPublisher(),
-            viewModel.viewDidAppear.eraseToAnyPublisher()
-        )
-        .receive(on: DispatchQueue.main)
-        .sink { [weak self] activeAuthenticationIndex, _, _ in
-            guard let self = self else { return }
-            guard let twitterUser = activeAuthenticationIndex?.twitterAuthentication?.twitterUser,
-                  let avatarImageURL = twitterUser.avatarImageURL() else {
-                self.avatarBarButtonItem.configure(withConfigurationInput: AvatarConfigurableViewConfiguration.Input(avatarImageURL: nil))
-                return
-            }
-            self.avatarBarButtonItem.configure(withConfigurationInput: AvatarConfigurableViewConfiguration.Input(avatarImageURL: avatarImageURL))
-        }
-        .store(in: &disposeBag)
-
-//        context.overrideTraitCollection
-//            .sink { [weak self] traitCollection in
+//        Publishers.CombineLatest3(
+//            viewModel.bannerImageURL.eraseToAnyPublisher(),
+//            viewModel.suspended.eraseToAnyPublisher(),
+//            viewModel.viewDidAppear.eraseToAnyPublisher()
+//        )
+//        .receive(on: DispatchQueue.main)
+//        .sink { [weak self] url, isSuspended, _ in
+//            guard let self = self else { return }
+//            guard !isSuspended else {
+//                self.profileHeaderViewController.profileBannerView.profileBannerImageView.image = UIImage.placeholder(color: .systemGray)
+//                return
+//            }
+//            let placeholderImage = UIImage.placeholder(color: Asset.Colors.hightLight.color)
+//            guard let url = url else {
+//                self.profileHeaderViewController.profileBannerView.profileBannerImageView.image = placeholderImage
+//                return
+//            }
+//            self.profileHeaderViewController.profileBannerView.profileBannerImageView.af.setImage(
+//                withURL: url,
+//                placeholderImage: placeholderImage,
+//                imageTransition: .crossDissolve(0.3),
+//                runImageTransitionIfCached: false,
+//                completion: { [weak self] response in
+//                    guard let self = self else { return }
+//                    switch response.result {
+//                    case .success(let image):
+//                        if #available(iOS 14.0, *) {
+//                            guard let inversedDominantColor = image.dominantColor?.complementary else { return }
+//                            self.refreshControl.tintColor = inversedDominantColor
+//                        }
+//                    case .failure:
+//                        break
+//                    }
+//                }
+//            )
+//        }
+//        .store(in: &disposeBag)
+//        let verifiedAndBlocked = Publishers.CombineLatest(
+//            viewModel.verified.eraseToAnyPublisher(),
+//            viewModel.blocked.eraseToAnyPublisher()
+//        )
+//        Publishers.CombineLatest4(
+//            viewModel.avatarImageURL.eraseToAnyPublisher(),
+//            verifiedAndBlocked.eraseToAnyPublisher(),
+//            viewModel.avatarStyle.eraseToAnyPublisher(),
+//            viewModel.viewDidAppear.eraseToAnyPublisher()
+//        )
+//        .receive(on: DispatchQueue.main)
+//        .sink { [weak self] avatarImageURL, verifiedAndblocked, _, _ in
+//            guard let self = self else { return }
+//            let (verified, blocked) = verifiedAndblocked
+//            self.profileHeaderViewController.profileBannerView.configure(withConfigurationInput: AvatarConfigurableViewConfiguration.Input(avatarImageURL: avatarImageURL, blocked: blocked, verified: verified))
+//        }
+//        .store(in: &disposeBag)
+//        viewModel.protected
+//            .map { $0 != true }
+//            .assign(to: \.isHidden, on: profileHeaderViewController.profileBannerView.lockImageView)
+//            .store(in: &disposeBag)
+//        viewModel.name
+//            .map { $0 ?? " " }
+//            .assign(to: \.text, on: profileHeaderViewController.profileBannerView.nameLabel)
+//            .store(in: &disposeBag)
+//        viewModel.username
+//            .map { username in username.flatMap { "@" + $0 } ?? " " }
+//            .assign(to: \.text, on: profileHeaderViewController.profileBannerView.usernameLabel)
+//            .store(in: &disposeBag)
+//        viewModel.friendship
+//            .sink { [weak self] friendship in
 //                guard let self = self else { return }
-//                self.profileHeaderViewController.profileBannerView.nameLabel.font = .preferredFont(forTextStyle: .headline, compatibleWith: traitCollection)
-//                self.profileHeaderViewController.profileBannerView.usernameLabel.font = .preferredFont(forTextStyle: .subheadline, compatibleWith: traitCollection)
-//                self.profileHeaderViewController.profileBannerView.bioLabel.font = .preferredFont(forTextStyle: .body, compatibleWith: traitCollection)
-//                self.profileHeaderViewController.profileBannerView.linkButton.titleLabel?.font = .preferredFont(forTextStyle: .callout, compatibleWith: traitCollection)
-//                self.profileHeaderViewController.profileBannerView.geoButton.titleLabel?.font = .preferredFont(forTextStyle: .callout, compatibleWith: traitCollection)
-//                self.profileHeaderViewController.profileBannerView.profileBannerStatusView.followingStatusItemView.countLabel.font = .preferredFont(forTextStyle: .callout, compatibleWith: traitCollection)
-//                self.profileHeaderViewController.profileBannerView.profileBannerStatusView.followingStatusItemView.statusLabel.font = .preferredFont(forTextStyle: .callout, compatibleWith: traitCollection)
-//                self.profileHeaderViewController.profileBannerView.profileBannerStatusView.followersStatusItemView.countLabel.font = .preferredFont(forTextStyle: .callout, compatibleWith: traitCollection)
-//                self.profileHeaderViewController.profileBannerView.profileBannerStatusView.followersStatusItemView.statusLabel.font = .preferredFont(forTextStyle: .callout, compatibleWith: traitCollection)
-//                self.profileHeaderViewController.profileBannerView.profileBannerStatusView.listedStatusItemView.countLabel.font = .preferredFont(forTextStyle: .callout, compatibleWith: traitCollection)
-//                self.profileHeaderViewController.profileBannerView.profileBannerStatusView.listedStatusItemView.statusLabel.font = .preferredFont(forTextStyle: .callout, compatibleWith: traitCollection)
+//                let followingButton = self.profileHeaderViewController.profileBannerView.profileBannerInfoActionView.followActionButton
+//                followingButton.isHidden = friendship == nil
+//
+//                if let friendship = friendship {
+//                    switch friendship {
+//                    case .following:    followingButton.style = .following
+//                    case .pending:      followingButton.style = .pending
+//                    case .none:         followingButton.style = .follow
+//                    }
+//                }
 //            }
 //            .store(in: &disposeBag)
+//        viewModel.followedBy
+//            .sink { [weak self] followedBy in
+//                guard let self = self else { return }
+//                let followStatusLabel = self.profileHeaderViewController.profileBannerView.profileBannerInfoActionView.followStatusLabel
+//                followStatusLabel.isHidden = followedBy != true
+//            }
+//            .store(in: &disposeBag)
+//
+//        Publishers.CombineLatest(
+//            viewModel.bioDescription.eraseToAnyPublisher(),
+//            viewModel.suspended.eraseToAnyPublisher()
+//        )
+//        .receive(on: DispatchQueue.main)
+//        .sink(receiveValue: { [weak self] bio, isSuspended in
+//            guard let self = self else { return }
+//            self.profileHeaderViewController.profileBannerView.bioLabel.configure(with: bio ?? " ")
+//            self.profileHeaderViewController.profileBannerView.bioLabel.isHidden = isSuspended
+//        })
+//        .store(in: &disposeBag)
+//        Publishers.CombineLatest(
+//            viewModel.url.eraseToAnyPublisher(),
+//            viewModel.suspended.eraseToAnyPublisher()
+//        )
+//        .receive(on: DispatchQueue.main)
+//        .sink { [weak self] url, isSuspended in
+//            guard let self = self else { return }
+//            let url = url.flatMap { $0.trimmingCharacters(in: .whitespacesAndNewlines) } ?? " "
+//            self.profileHeaderViewController.profileBannerView.linkButton.setTitle(url, for: .normal)
+//            let isEmpty = url.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+//            self.profileHeaderViewController.profileBannerView.linkContainer.isHidden = isEmpty || isSuspended
+//        }
+//        .store(in: &disposeBag)
+//        Publishers.CombineLatest(
+//            viewModel.location.eraseToAnyPublisher(),
+//            viewModel.suspended.eraseToAnyPublisher()
+//        )
+//        .receive(on: DispatchQueue.main)
+//        .sink { [weak self] location, isSuspended in
+//            guard let self = self else { return }
+//            let location = location.flatMap { $0.trimmingCharacters(in: .whitespacesAndNewlines) } ?? " "
+//            self.profileHeaderViewController.profileBannerView.geoButton.setTitle(location, for: .normal)
+//            let isEmpty = location.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+//            self.profileHeaderViewController.profileBannerView.geoContainer.isHidden = isEmpty || isSuspended
+//        }
+//        .store(in: &disposeBag)
+//        viewModel.friendsCount
+//            .sink { [weak self] count in
+//                guard let self = self else { return }
+//                self.profileHeaderViewController.profileBannerView.profileBannerStatusView.followingStatusItemView.countLabel.text = count.flatMap { "\($0)" } ?? "-"
+//            }
+//            .store(in: &disposeBag)
+//        viewModel.followersCount
+//            .sink { [weak self] count in
+//                guard let self = self else { return }
+//                self.profileHeaderViewController.profileBannerView.profileBannerStatusView.followersStatusItemView.countLabel.text = count.flatMap { "\($0)" } ?? "-"
+//            }
+//            .store(in: &disposeBag)
+//        viewModel.listedCount
+//            .sink { [weak self] count in
+//                guard let self = self else { return }
+//                self.profileHeaderViewController.profileBannerView.profileBannerStatusView.listedStatusItemView.countLabel.text = count.flatMap { "\($0)" } ?? "-"
+//            }
+//            .store(in: &disposeBag)
+//        viewModel.suspended
+//            .receive(on: DispatchQueue.main)
+//            .sink { [weak self] isSuspended in
+//                guard let self = self else { return }
+//                self.profileHeaderViewController.profileBannerView.profileBannerStatusView.isHidden = isSuspended
+//                self.profileHeaderViewController.profileBannerView.profileBannerInfoActionView.isHidden = isSuspended
+//                if isSuspended {
+//                    self.profileSegmentedViewController
+//                        .pagingViewController.viewModel
+//                        .profileTweetPostTimelineViewController.viewModel
+//                        .stateMachine
+//                        .enter(UserTimelineViewModel.State.Suspended.self)
+//                    self.profileSegmentedViewController
+//                        .pagingViewController.viewModel
+//                        .profileMediaPostTimelineViewController.viewModel
+//                        .stateMachine
+//                        .enter(UserMediaTimelineViewModel.State.Suspended.self)
+//                    self.profileSegmentedViewController
+//                        .pagingViewController.viewModel
+//                        .profileLikesPostTimelineViewController.viewModel
+//                        .stateMachine
+//                        .enter(UserLikeTimelineViewModel.State.Suspended.self)
+//                }
+//            }
+//            .store(in: &disposeBag)
+//
+//        Publishers.CombineLatest3(
+//            context.authenticationService.activeAuthenticationIndex.eraseToAnyPublisher(),
+//            viewModel.avatarStyle.eraseToAnyPublisher(),
+//            viewModel.viewDidAppear.eraseToAnyPublisher()
+//        )
+//        .receive(on: DispatchQueue.main)
+//        .sink { [weak self] activeAuthenticationIndex, _, _ in
+//            guard let self = self else { return }
+//            guard let twitterUser = activeAuthenticationIndex?.twitterAuthentication?.twitterUser,
+//                  let avatarImageURL = twitterUser.avatarImageURL() else {
+//                self.avatarBarButtonItem.configure(withConfigurationInput: AvatarConfigurableViewConfiguration.Input(avatarImageURL: nil))
+//                return
+//            }
+//            self.avatarBarButtonItem.configure(withConfigurationInput: AvatarConfigurableViewConfiguration.Input(avatarImageURL: avatarImageURL))
+//        }
+//        .store(in: &disposeBag)
             
-        profileHeaderViewController.profileBannerView.profileBannerInfoActionView.delegate = self
-        profileHeaderViewController.profileBannerView.delegate = self
+//        profileHeaderViewController.profileBannerView.profileBannerInfoActionView.delegate = self
+//        profileHeaderViewController.profileBannerView.delegate = self
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-        viewModel.viewDidAppear.send()
+//        viewModel.viewDidAppear.send()
         
         // set overlay scroll view initial content size
         guard let currentViewController = profileSegmentedViewController.pagingViewController.currentViewController as? ScrollViewContainer else { return }
@@ -500,44 +492,44 @@ extension ProfileViewController {
     
     @objc private func avatarButtonPressed(_ sender: UIButton) {
         os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
-        coordinator.present(scene: .drawerSidebar, from: self, transition: .custom(transitioningDelegate: drawerSidebarTransitionController))
+//        coordinator.present(scene: .drawerSidebar, from: self, transition: .custom(transitioningDelegate: drawerSidebarTransitionController))
     }
     
     @objc private func unmuteBarButtonItemPressed(_ sender: UIBarButtonItem) {
         os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
-        guard let twitterUser = viewModel.twitterUser.value else {
-            assertionFailure()
-            return
-        }
-            
-        UserProviderFacade.toggleMuteUser(
-            context: context,
-            twitterUser: twitterUser,
-            muted: viewModel.muted.value
-        )
-        .sink { _ in
-            // do nothing
-        } receiveValue: { _ in
-            // do nothing
-        }
-        .store(in: &disposeBag)
+//        guard let twitterUser = viewModel.twitterUser.value else {
+//            assertionFailure()
+//            return
+//        }
+//
+//        UserProviderFacade.toggleMuteUser(
+//            context: context,
+//            twitterUser: twitterUser,
+//            muted: viewModel.muted.value
+//        )
+//        .sink { _ in
+//            // do nothing
+//        } receiveValue: { _ in
+//            // do nothing
+//        }
+//        .store(in: &disposeBag)
     }
     
     @objc private func moreMenuBarButtonItemPressed(_ sender: UIBarButtonItem) {
         os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
-        guard let twitterUser = viewModel.twitterUser.value else {
-            assertionFailure()
-            return
-        }
-        
-        let moreMenuAlertController = UserProviderFacade.createMoreMenuAlertControllerForUser(
-            twitterUser: twitterUser,
-            muted: viewModel.muted.value,
-            blocked: viewModel.blocked.value,
-            sender: sender,
-            dependency: self
-        )
-        present(moreMenuAlertController, animated: true, completion: nil)
+//        guard let twitterUser = viewModel.twitterUser.value else {
+//            assertionFailure()
+//            return
+//        }
+//
+//        let moreMenuAlertController = UserProviderFacade.createMoreMenuAlertControllerForUser(
+//            twitterUser: twitterUser,
+//            muted: viewModel.muted.value,
+//            blocked: viewModel.blocked.value,
+//            sender: sender,
+//            dependency: self
+//        )
+//        present(moreMenuAlertController, animated: true, completion: nil)
     }
     
 }
@@ -549,9 +541,9 @@ extension ProfileViewController: UIScrollViewDelegate {
         // elastically banner
         if overlayScrollView.contentOffset.y < -overlayScrollView.safeAreaInsets.top {
             let offset = overlayScrollView.contentOffset.y - (-overlayScrollView.safeAreaInsets.top)
-            profileHeaderViewController.profileBannerView.profileBannerImageViewTopLayoutConstraint.constant = offset
+            profileHeaderViewController.headerView.bannerImageViewTopLayoutConstraint.constant = offset
         } else {
-            profileHeaderViewController.profileBannerView.profileBannerImageViewTopLayoutConstraint.constant = 0
+            profileHeaderViewController.headerView.bannerImageViewTopLayoutConstraint.constant = 0
         }
         
         contentOffsets[profileSegmentedViewController.pagingViewController.currentIndex!] = scrollView.contentOffset.y
@@ -631,95 +623,95 @@ extension ProfileViewController: ProfilePagingViewControllerDelegate {
     
 }
 
-// MARK: - ProfileBannerInfoActionViewDelegate
-extension ProfileViewController: ProfileBannerInfoActionViewDelegate {
-    
-    func profileBannerInfoActionView(_ profileBannerInfoActionView: ProfileBannerInfoActionView, followActionButtonPressed button: FollowActionButton) {
-        UserProviderFacade
-            .toggleUserFriendship(provider: self, sender: button)
-            .sink { _ in
-                // do nothing
-            } receiveValue: { _ in
-                // do nothing
-            }
-            .store(in: &disposeBag)
-    }
-
-}
+//// MARK: - ProfileBannerInfoActionViewDelegate
+//extension ProfileViewController: ProfileBannerInfoActionViewDelegate {
+//
+//    func profileBannerInfoActionView(_ profileBannerInfoActionView: ProfileBannerInfoActionView, followActionButtonPressed button: FollowActionButton) {
+//        UserProviderFacade
+//            .toggleUserFriendship(provider: self, sender: button)
+//            .sink { _ in
+//                // do nothing
+//            } receiveValue: { _ in
+//                // do nothing
+//            }
+//            .store(in: &disposeBag)
+//    }
+//
+//}
 
 // MARK: - ProfileBannerViewDelegate
-extension ProfileViewController: ProfileBannerViewDelegate {
-    
-    func profileBannerView(_ profileBannerView: ProfileBannerView, linkButtonDidPressed button: UIButton) {
-        guard let urlString = viewModel.url.value, let url = URL(string: urlString) else { return }
-        coordinator.present(scene: .safari(url: url), from: nil, transition: .safariPresent(animated: true, completion: nil))
-    }
-    
-    func profileBannerView(_ profileBannerView: ProfileBannerView, activeLabel: ActiveLabel, didTapEntity entity: ActiveEntity) {
-        switch entity.type {
-        case .hashtag(let text):
-            let searchDetailViewModel = SearchDetailViewModel(initialSearchText: "#" + text)
-            coordinator.present(scene: .searchDetail(viewModel: searchDetailViewModel), from: self, transition: .show)
-        case .mention(let text):
-            let profileViewModel: ProfileViewModel = {
-                let targetUsername = text
-                let targetUser: TwitterUser? = {
-                    let userRequest = TwitterUser.sortedFetchRequest
-                    userRequest.fetchLimit = 1
-                    userRequest.predicate = TwitterUser.predicate(username: targetUsername)
-                    do {
-                        return try self.context.managedObjectContext.fetch(userRequest).first
-                    } catch {
-                        assertionFailure(error.localizedDescription)
-                        return nil
-                    }
-                }()
-                
-                if let targetUser = targetUser {
-                    let activeAuthenticationIndex = self.context.authenticationService.activeAuthenticationIndex.value
-                    let currentTwitterUser = activeAuthenticationIndex?.twitterAuthentication?.twitterUser
-                    if targetUser.id == currentTwitterUser?.id {
-                        return MeProfileViewModel(context: self.context)
-                    } else {
-                        return ProfileViewModel(context: self.context, twitterUser: targetUser)
-                    }
-                } else {
-                    return ProfileViewModel(context: self.context, username: targetUsername)
-                }
-            }()
-            
-            DispatchQueue.main.async {
-                self.coordinator.present(scene: .profile(viewModel: profileViewModel), from: self, transition: .show)
-            }
-        case .url(let originalURL, _):
-            guard let url = URL(string: originalURL) else { return }
-            coordinator.present(scene: .safari(url: url), from: nil, transition: .safariPresent(animated: true, completion: nil))
-        default:
-            break
-        }
-    }
-    
-    func profileBannerView(_ profileBannerView: ProfileBannerView, profileBannerStatusView: ProfileBannerStatusView, followingStatusItemViewDidPressed statusItemView: ProfileBannerStatusItemView) {
-        guard let twitterUserID = viewModel.twitterUser.value?.id else { return }
-        let followingListViewModel = FriendshipListViewModel(context: context, userID: twitterUserID, friendshipLookupKind: .following)
-        self.coordinator.present(scene: .friendshipList(viewModel: followingListViewModel), from: nil, transition: .show)
-    }
-    
-    func profileBannerView(_ profileBannerView: ProfileBannerView, profileBannerStatusView: ProfileBannerStatusView, followerStatusItemViewDidPressed statusItemView: ProfileBannerStatusItemView) {
-        guard let twitterUserID = viewModel.twitterUser.value?.id else { return }
-        let followingListViewModel = FriendshipListViewModel(context: context, userID: twitterUserID, friendshipLookupKind: .followers)
-        self.coordinator.present(scene: .friendshipList(viewModel: followingListViewModel), from: nil, transition: .show)
-    }
-    
-    func profileBannerView(_ profileBannerView: ProfileBannerView, profileBannerStatusView: ProfileBannerStatusView, listedStatusItemViewDidPressed statusItemView: ProfileBannerStatusItemView) {
-        // TODO:
-    }
-    
-    
-}
+//extension ProfileViewController: ProfileBannerViewDelegate {
+//
+//    func profileBannerView(_ profileBannerView: ProfileBannerView, linkButtonDidPressed button: UIButton) {
+//        guard let urlString = viewModel.url.value, let url = URL(string: urlString) else { return }
+//        coordinator.present(scene: .safari(url: url), from: nil, transition: .safariPresent(animated: true, completion: nil))
+//    }
+//
+//    func profileBannerView(_ profileBannerView: ProfileBannerView, activeLabel: ActiveLabel, didTapEntity entity: ActiveEntity) {
+//        switch entity.type {
+//        case .hashtag(let text):
+//            let searchDetailViewModel = SearchDetailViewModel(initialSearchText: "#" + text)
+//            coordinator.present(scene: .searchDetail(viewModel: searchDetailViewModel), from: self, transition: .show)
+//        case .mention(let text):
+//            let profileViewModel: ProfileViewModel = {
+//                let targetUsername = text
+//                let targetUser: TwitterUser? = {
+//                    let userRequest = TwitterUser.sortedFetchRequest
+//                    userRequest.fetchLimit = 1
+//                    userRequest.predicate = TwitterUser.predicate(username: targetUsername)
+//                    do {
+//                        return try self.context.managedObjectContext.fetch(userRequest).first
+//                    } catch {
+//                        assertionFailure(error.localizedDescription)
+//                        return nil
+//                    }
+//                }()
+//
+//                if let targetUser = targetUser {
+//                    let activeAuthenticationIndex = self.context.authenticationService.activeAuthenticationIndex.value
+//                    let currentTwitterUser = activeAuthenticationIndex?.twitterAuthentication?.twitterUser
+//                    if targetUser.id == currentTwitterUser?.id {
+//                        return MeProfileViewModel(context: self.context)
+//                    } else {
+//                        return ProfileViewModel(context: self.context, twitterUser: targetUser)
+//                    }
+//                } else {
+//                    return ProfileViewModel(context: self.context, username: targetUsername)
+//                }
+//            }()
+//
+//            DispatchQueue.main.async {
+//                self.coordinator.present(scene: .profile(viewModel: profileViewModel), from: self, transition: .show)
+//            }
+//        case .url(let originalURL, _):
+//            guard let url = URL(string: originalURL) else { return }
+//            coordinator.present(scene: .safari(url: url), from: nil, transition: .safariPresent(animated: true, completion: nil))
+//        default:
+//            break
+//        }
+//    }
+//
+//    func profileBannerView(_ profileBannerView: ProfileBannerView, profileBannerStatusView: ProfileBannerStatusView, followingStatusItemViewDidPressed statusItemView: ProfileBannerStatusItemView) {
+//        guard let twitterUserID = viewModel.twitterUser.value?.id else { return }
+//        let followingListViewModel = FriendshipListViewModel(context: context, userID: twitterUserID, friendshipLookupKind: .following)
+//        self.coordinator.present(scene: .friendshipList(viewModel: followingListViewModel), from: nil, transition: .show)
+//    }
+//
+//    func profileBannerView(_ profileBannerView: ProfileBannerView, profileBannerStatusView: ProfileBannerStatusView, followerStatusItemViewDidPressed statusItemView: ProfileBannerStatusItemView) {
+//        guard let twitterUserID = viewModel.twitterUser.value?.id else { return }
+//        let followingListViewModel = FriendshipListViewModel(context: context, userID: twitterUserID, friendshipLookupKind: .followers)
+//        self.coordinator.present(scene: .friendshipList(viewModel: followingListViewModel), from: nil, transition: .show)
+//    }
+//
+//    func profileBannerView(_ profileBannerView: ProfileBannerView, profileBannerStatusView: ProfileBannerStatusView, listedStatusItemViewDidPressed statusItemView: ProfileBannerStatusItemView) {
+//        // TODO:
+//    }
+//
+//
+//}
 
 
-// MARK: - ScrollViewContainer
-extension ProfileViewController: ScrollViewContainer {
-    var scrollView: UIScrollView { return overlayScrollView }
-}
+//// MARK: - ScrollViewContainer
+//extension ProfileViewController: ScrollViewContainer {
+//    var scrollView: UIScrollView { return overlayScrollView }
+//}

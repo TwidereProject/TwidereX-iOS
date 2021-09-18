@@ -55,12 +55,12 @@ extension SearchTimelineViewController {
         
         viewModel.tableView = tableView
         tableView.delegate = self
-        viewModel.setupDiffableDataSource(
-            for: tableView,
-            dependency: self,
-            timelinePostTableViewCellDelegate: self
-        )
-        viewModel.tweetFetchedResultsController.tweetIDs.value = []
+//        viewModel.setupDiffableDataSource(
+//            for: tableView,
+//            dependency: self,
+//            timelinePostTableViewCellDelegate: self
+//        )
+//        viewModel.tweetFetchedResultsController.tweetIDs.value = []
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -72,7 +72,7 @@ extension SearchTimelineViewController {
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         
-        context.videoPlaybackService.viewDidDisappear(from: self)
+//        context.videoPlaybackService.viewDidDisappear(from: self)
     }
 
 }
@@ -101,37 +101,37 @@ extension SearchTimelineViewController {
 // MARK: - UITableViewDelegate
 extension SearchTimelineViewController: UITableViewDelegate {
     
-    func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 200
-    }
-    
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        handleTableView(tableView, didSelectRowAt: indexPath)
-    }
-    
-    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        handleTableView(tableView, willDisplay: cell, forRowAt: indexPath)
-    }
-    
-    func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        handleTableView(tableView, didEndDisplaying: cell, forRowAt: indexPath)   
-    }
-    
-    func tableView(_ tableView: UITableView, contextMenuConfigurationForRowAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
-        handleTableView(tableView, contextMenuConfigurationForRowAt: indexPath, point: point)
-    }
-    
-    func tableView(_ tableView: UITableView, previewForHighlightingContextMenuWithConfiguration configuration: UIContextMenuConfiguration) -> UITargetedPreview? {
-        handleTableView(tableView, previewForHighlightingContextMenuWithConfiguration: configuration)
-    }
-    
-    func tableView(_ tableView: UITableView, previewForDismissingContextMenuWithConfiguration configuration: UIContextMenuConfiguration) -> UITargetedPreview? {
-        handleTableView(tableView, previewForDismissingContextMenuWithConfiguration: configuration)
-    }
-    
-    func tableView(_ tableView: UITableView, willPerformPreviewActionForMenuWith configuration: UIContextMenuConfiguration, animator: UIContextMenuInteractionCommitAnimating) {
-        handleTableView(tableView, willPerformPreviewActionForMenuWith: configuration, animator: animator)
-    }
+//    func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
+//        return 200
+//    }
+//
+//    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+//        handleTableView(tableView, didSelectRowAt: indexPath)
+//    }
+//
+//    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+//        handleTableView(tableView, willDisplay: cell, forRowAt: indexPath)
+//    }
+//
+//    func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+//        handleTableView(tableView, didEndDisplaying: cell, forRowAt: indexPath)
+//    }
+//
+//    func tableView(_ tableView: UITableView, contextMenuConfigurationForRowAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
+//        handleTableView(tableView, contextMenuConfigurationForRowAt: indexPath, point: point)
+//    }
+//
+//    func tableView(_ tableView: UITableView, previewForHighlightingContextMenuWithConfiguration configuration: UIContextMenuConfiguration) -> UITargetedPreview? {
+//        handleTableView(tableView, previewForHighlightingContextMenuWithConfiguration: configuration)
+//    }
+//
+//    func tableView(_ tableView: UITableView, previewForDismissingContextMenuWithConfiguration configuration: UIContextMenuConfiguration) -> UITargetedPreview? {
+//        handleTableView(tableView, previewForDismissingContextMenuWithConfiguration: configuration)
+//    }
+//
+//    func tableView(_ tableView: UITableView, willPerformPreviewActionForMenuWith configuration: UIContextMenuConfiguration, animator: UIContextMenuInteractionCommitAnimating) {
+//        handleTableView(tableView, willPerformPreviewActionForMenuWith: configuration, animator: animator)
+//    }
     
 }
 
@@ -149,8 +149,8 @@ extension SearchTimelineViewController: AVPlayerViewControllerDelegate {
 }
 
 // MARK: - TimelinePostTableViewCellDelegate
-extension SearchTimelineViewController: TimelinePostTableViewCellDelegate {
-    weak var playerViewControllerDelegate: AVPlayerViewControllerDelegate? { return self }
-    func parent() -> UIViewController { return self }
-}
+//extension SearchTimelineViewController: TimelinePostTableViewCellDelegate {
+//    weak var playerViewControllerDelegate: AVPlayerViewControllerDelegate? { return self }
+//    func parent() -> UIViewController { return self }
+//}
 

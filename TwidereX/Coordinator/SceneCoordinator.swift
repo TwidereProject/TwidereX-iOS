@@ -42,7 +42,7 @@ extension SceneCoordinator {
     enum Scene {
         // Onboarding
         case welcome(viewModel: WelcomeViewModel)
-        case authentication(viewModel: AuthenticationViewModel)
+//        case authentication(viewModel: AuthenticationViewModel)
         case twitterAuthenticationOption(viewModel: TwitterAuthenticationOptionViewModel)
         case twitterPinBasedAuthentication(viewModel: TwitterPinBasedAuthenticationViewModel)
         
@@ -53,14 +53,14 @@ extension SceneCoordinator {
         case statusThread(viewModel: StatusThreadViewModel)
         
         // TODO:
-        case composeTweet(viewModel: ComposeTweetViewModel)
-        case mentionPick(viewModel: MentionPickViewModel, delegate: MentionPickViewControllerDelegate)
-        case tweetConversation(viewModel: TweetConversationViewModel)
-        case searchDetail(viewModel: SearchDetailViewModel)
+//        case composeTweet(viewModel: ComposeTweetViewModel)
+//        case mentionPick(viewModel: MentionPickViewModel, delegate: MentionPickViewControllerDelegate)
+        // case tweetConversation(viewModel: TweetConversationViewModel)
+//        case searchDetail(viewModel: SearchDetailViewModel)
         case profile(viewModel: ProfileViewModel)
-        case friendshipList(viewModel: FriendshipListViewModel)
-        case mediaPreview(viewModel: MediaPreviewViewModel)
-        case drawerSidebar
+//        case friendshipList(viewModel: FriendshipListViewModel)
+//        case mediaPreview(viewModel: MediaPreviewViewModel)
+//        case drawerSidebar
 
         case setting
         case displayPreference
@@ -101,11 +101,6 @@ extension SceneCoordinator {
             assertionFailure(error.localizedDescription)
         }
     }
-    
-//    @MainActor
-//    func present(scene: Scene, from sender: UIViewController?, transition: Transition) -> UIViewController? {
-//
-//    }
     
     @discardableResult
     @MainActor
@@ -172,10 +167,10 @@ private extension SceneCoordinator {
             let _viewController = WelcomeViewController()
             _viewController.viewModel = viewModel
             viewController = _viewController
-        case .authentication(let viewModel):
-            let _viewController = AuthenticationViewController()
-            _viewController.viewModel = viewModel
-            viewController = _viewController
+//        case .authentication(let viewModel):
+//            let _viewController = AuthenticationViewController()
+//            _viewController.viewModel = viewModel
+//            viewController = _viewController
         case .twitterAuthenticationOption(let viewModel):
             let _viewController = TwitterAuthenticationOptionViewController()
             _viewController.viewModel = viewModel
@@ -192,44 +187,44 @@ private extension SceneCoordinator {
             let _viewController = StatusThreadViewController()
             _viewController.viewModel = viewModel
             viewController = _viewController
-        case .composeTweet(let viewModel):
-            let _viewController = ComposeTweetViewController()
-            _viewController.viewModel = viewModel
-            viewController = _viewController
-        case .mentionPick(let viewModel, let delegate):
-            let _viewController = MentionPickViewController()
-            _viewController.viewModel = viewModel
-            _viewController.delegate = delegate
-            viewController = _viewController
-        case .tweetConversation(let viewModel):
-            let _viewController = TweetConversationViewController()
-            _viewController.viewModel = viewModel
-            viewController = _viewController
-        case .searchDetail(let viewModel):
-            let _viewController = SearchDetailViewController()
-            _viewController.viewModel = viewModel
-            viewController = _viewController
+//        case .composeTweet(let viewModel):
+//            let _viewController = ComposeTweetViewController()
+//            _viewController.viewModel = viewModel
+//            viewController = _viewController
+//        case .mentionPick(let viewModel, let delegate):
+//            let _viewController = MentionPickViewController()
+//            _viewController.viewModel = viewModel
+//            _viewController.delegate = delegate
+//            viewController = _viewController
+//        case .tweetConversation(let viewModel):
+//            let _viewController = TweetConversationViewController()
+//            _viewController.viewModel = viewModel
+//            viewController = _viewController
+//        case .searchDetail(let viewModel):
+//            let _viewController = SearchDetailViewController()
+//            _viewController.viewModel = viewModel
+//            viewController = _viewController
         case .profile(let viewModel):
             let _viewController = ProfileViewController()
             _viewController.viewModel = viewModel
             viewController = _viewController
-        case .friendshipList(let viewModel):
-            switch viewModel.friendshipLookupKind {
-            case .following:
-                let _viewController = FollowingListViewController()
-                _viewController.viewModel = viewModel
-                viewController = _viewController
-            case .followers:
-                let _viewController = FollowerListViewController()
-                _viewController.viewModel = viewModel
-                viewController = _viewController
-            }
-        case .mediaPreview(let viewModel):
-            let _viewController = MediaPreviewViewController()
-            _viewController.viewModel = viewModel
-            viewController = _viewController
-        case .drawerSidebar:
-            viewController = DrawerSidebarViewController()
+//        case .friendshipList(let viewModel):
+//            switch viewModel.friendshipLookupKind {
+//            case .following:
+//                let _viewController = FollowingListViewController()
+//                _viewController.viewModel = viewModel
+//                viewController = _viewController
+//            case .followers:
+//                let _viewController = FollowerListViewController()
+//                _viewController.viewModel = viewModel
+//                viewController = _viewController
+//            }
+//        case .mediaPreview(let viewModel):
+//            let _viewController = MediaPreviewViewController()
+//            _viewController.viewModel = viewModel
+//            viewController = _viewController
+//        case .drawerSidebar:
+//            viewController = DrawerSidebarViewController()
         case .setting:
             viewController = SettingListViewController()
         case .displayPreference:

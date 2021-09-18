@@ -150,7 +150,6 @@ final class ProfileBannerView: UIView {
 extension ProfileBannerView {
     private func _init() {
         // banner
-        
         profileBannerContainer.translatesAutoresizingMaskIntoConstraints = false
         addSubview(profileBannerContainer)
         NSLayoutConstraint.activate([

@@ -16,7 +16,7 @@ extension Persistence.TwitterUser {
     
     struct PersistContext {
         let entity: Twitter.Entity.User
-        let cache: APIService.Persist.PersistCache<TwitterUser>?
+        let cache: Persistence.PersistCache<TwitterUser>?
         let networkDate: Date
         let log = OSLog.api
     }
@@ -89,6 +89,8 @@ extension Persistence.TwitterUser {
         context: PersistContext
     ) {
         user.update(profileBannerURL: context.entity.profileBannerURL)
+        user.update(bioEntities: TwitterEntity(entity: context.entity.entities?.description))
+        user.update(urlEntities: TwitterEntity(entity: context.entity.entities?.url))
     }
     
 }

@@ -15,12 +15,11 @@ extension HomeTimelineViewModel {
     
     func setupDiffableDataSource(
         tableView: UITableView,
-        statusTableViewCellDelegate: StatusTableViewCellDelegate,
+        statusViewTableViewCellDelegate: StatusViewTableViewCellDelegate,
         timelineMiddleLoaderTableViewCellDelegate: TimelineMiddleLoaderTableViewCellDelegate
     ) {
         let configuration = StatusSection.Configuration(
-            statusTableViewCellDelegate: statusTableViewCellDelegate,
-            statusThreadRootTableViewCellDelegate: nil,
+            statusViewTableViewCellDelegate: statusViewTableViewCellDelegate,
             timelineMiddleLoaderTableViewCellDelegate: timelineMiddleLoaderTableViewCellDelegate
         )
         diffableDataSource = StatusSection.diffableDataSource(

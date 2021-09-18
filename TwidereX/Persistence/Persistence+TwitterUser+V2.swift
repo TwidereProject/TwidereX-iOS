@@ -16,7 +16,7 @@ extension Persistence.TwitterUser {
     
     struct PersistContextV2 {
         let entity: Twitter.Entity.V2.User
-        let cache: APIService.Persist.PersistCache<TwitterUser>?
+        let cache: Persistence.PersistCache<TwitterUser>?
         let networkDate: Date
         let log = OSLog.api
     }
@@ -67,6 +67,7 @@ extension Persistence.TwitterUser {
             networkDate: context.networkDate
         )
         let user = TwitterUser.insert(into: managedObjectContext, property: property)
+        update(twitterUser: user, context: context)
         return user
     }
     
@@ -80,6 +81,15 @@ extension Persistence.TwitterUser {
             networkDate: context.networkDate
         )
         user.update(property: property)
+        update(twitterUser: user, context: context)
+    }
+    
+    private static func update(
+        twitterUser user: TwitterUser,
+        context: PersistContextV2
+    ) {
+//        user.update(bioEntities: TwitterEntity(entity: context.entity.entities?.description))
+//        user.update(urlEntities: TwitterEntity(entity: context.entity.entities?.url))
     }
     
 }

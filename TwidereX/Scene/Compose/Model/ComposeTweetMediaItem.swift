@@ -8,8 +8,8 @@
 
 import Foundation
 
-enum ComposeTweetMediaItem {
-    case media(mediaService: TwitterMediaService)
-}
-
-extension ComposeTweetMediaItem: Hashable { }
+//enum ComposeTweetMediaItem {
+//    case media(mediaService: TwitterMediaService)
+//}
+//
+//extension ComposeTweetMediaItem: Hashable { }

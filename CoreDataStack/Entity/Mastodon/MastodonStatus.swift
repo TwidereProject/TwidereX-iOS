@@ -23,11 +23,11 @@ final public class MastodonStatus: NSManagedObject {
     // sourcery: autoUpdatableObject, autoGenerateProperty
     @NSManaged public private(set) var content: String
     // sourcery: autoUpdatableObject, autoGenerateProperty
-    @NSManaged public private(set) var likeCount: Int
+    @NSManaged public private(set) var likeCount: Int64
     // sourcery: autoUpdatableObject, autoGenerateProperty
-    @NSManaged public private(set) var replyCount: Int
+    @NSManaged public private(set) var replyCount: Int64
     // sourcery: autoUpdatableObject, autoGenerateProperty
-    @NSManaged public private(set) var repostCount: Int
+    @NSManaged public private(set) var repostCount: Int64
     
     @NSManaged public private(set) var visibilityRaw: String
     // sourcery: autoUpdatableObject, autoGenerateProperty
@@ -64,6 +64,10 @@ final public class MastodonStatus: NSManagedObject {
 
     // one-to-many relationship
     @NSManaged public private(set) var repostFrom: Set<MastodonStatus>
+    
+    // many-to-many relationship
+    @NSManaged public private(set) var likeBy: Set<MastodonUser>
+    @NSManaged public private(set) var repostBy: Set<MastodonUser>
     
 }
 
@@ -184,9 +188,9 @@ extension MastodonStatus: AutoGenerateProperty {
         public let  domain: String
         public let  uri: String
         public let  content: String
-        public let  likeCount: Int
-        public let  replyCount: Int
-        public let  repostCount: Int
+        public let  likeCount: Int64
+        public let  replyCount: Int64
+        public let  repostCount: Int64
         public let  visibility: MastodonVisibility
         public let  url: String?
         public let  text: String?
@@ -201,9 +205,9 @@ extension MastodonStatus: AutoGenerateProperty {
     		domain: String,
     		uri: String,
     		content: String,
-    		likeCount: Int,
-    		replyCount: Int,
-    		repostCount: Int,
+    		likeCount: Int64,
+    		replyCount: Int64,
+    		repostCount: Int64,
     		visibility: MastodonVisibility,
     		url: String?,
     		text: String?,
@@ -303,17 +307,17 @@ extension MastodonStatus: AutoUpdatableObject {
     		self.content = content
     	}
     }
-    public func update(likeCount: Int) {
+    public func update(likeCount: Int64) {
     	if self.likeCount != likeCount {
     		self.likeCount = likeCount
     	}
     }
-    public func update(replyCount: Int) {
+    public func update(replyCount: Int64) {
     	if self.replyCount != replyCount {
     		self.replyCount = replyCount
     	}
     }
-    public func update(repostCount: Int) {
+    public func update(repostCount: Int64) {
     	if self.repostCount != repostCount {
     		self.repostCount = repostCount
     	}
@@ -359,6 +363,30 @@ extension MastodonStatus: AutoUpdatableObject {
     	}
     }
     // sourcery:end
+    
+    public func update(isRepost: Bool, user: MastodonUser) {
+        if isRepost {
+            if !repostBy.contains(user) {
+                self.mutableSetValue(forKey: #keyPath(MastodonStatus.repostBy)).add(user)
+            }
+        } else {
+            if repostBy.contains(user) {
+                self.mutableSetValue(forKey: #keyPath(MastodonStatus.repostBy)).remove(user)
+            }
+        }
+    }
+    
+    public func update(isLike: Bool, user: MastodonUser) {
+        if isLike {
+            if !likeBy.contains(user) {
+                self.mutableSetValue(forKey: #keyPath(MastodonStatus.likeBy)).add(user)
+            }
+        } else {
+            if likeBy.contains(user) {
+                self.mutableSetValue(forKey: #keyPath(MastodonStatus.likeBy)).remove(user)
+            }
+        }
+    }
 }
 
 extension MastodonStatus {

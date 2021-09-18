@@ -16,8 +16,8 @@ extension Persistence.Twitter {
     
     struct PersistContextV2 {
         let dictionary: Twitter.Response.V2.DictContent
-        let statusCache: APIService.Persist.PersistCache<TwitterStatus>?
-        let userCache: APIService.Persist.PersistCache<TwitterUser>?
+        let statusCache: Persistence.PersistCache<TwitterStatus>?
+        let userCache: Persistence.PersistCache<TwitterUser>?
         let networkDate: Date
         let log = OSLog.api
     }

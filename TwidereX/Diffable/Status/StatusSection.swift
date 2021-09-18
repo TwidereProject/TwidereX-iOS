@@ -22,8 +22,7 @@ extension StatusSection {
     static let logger = Logger(subsystem: "StatusSection", category: "Logic")
     
     struct Configuration {
-        let statusTableViewCellDelegate: StatusTableViewCellDelegate
-        let statusThreadRootTableViewCellDelegate: StatusThreadRootTableViewCellDelegate?
+        let statusViewTableViewCellDelegate: StatusViewTableViewCellDelegate
         let timelineMiddleLoaderTableViewCellDelegate: TimelineMiddleLoaderTableViewCellDelegate?
     }
 
@@ -163,7 +162,7 @@ extension StatusSection {
         cell.configure(
             tableView: tableView,
             viewModel: viewModel,
-            delegate: configuration.statusTableViewCellDelegate
+            delegate: configuration.statusViewTableViewCellDelegate
         )
     }
     
@@ -176,7 +175,7 @@ extension StatusSection {
         cell.configure(
             tableView: tableView,
             viewModel: viewModel,
-            delegate: configuration.statusThreadRootTableViewCellDelegate
+            delegate: configuration.statusViewTableViewCellDelegate
         )
     }
     

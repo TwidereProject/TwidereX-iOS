@@ -20,8 +20,14 @@
 "Accessibility.Scene.Compose.Image" = "画像を追加";
 "Accessibility.Scene.Compose.Location.Disable" = "位置情報を無効化";
 "Accessibility.Scene.Compose.Location.Enable" = "位置情報を有効化";
+"Accessibility.Scene.Compose.MediaInsert.Camera" = "Take Photo";
+"Accessibility.Scene.Compose.MediaInsert.Gif" = "Add GIF";
+"Accessibility.Scene.Compose.MediaInsert.Library" = "Browse Library";
+"Accessibility.Scene.Compose.MediaInsert.RecordVideo" = "Record Video";
 "Accessibility.Scene.Compose.Send" = "送信";
 "Accessibility.Scene.Compose.Thread" = "Thread mode";
+"Accessibility.Scene.Gif.Search" = "Search GIF";
+"Accessibility.Scene.Gif.Title" = "GIPHY";
 "Accessibility.Scene.Home.Compose" = "新規作成";
 "Accessibility.Scene.Home.Drawer.AccountDropdown" = "アカウント ドロップダウン";
 "Accessibility.Scene.Home.Menu" = "メニュー";
@@ -40,6 +46,7 @@
 "Common.Alerts.AccountSuspended.TwitterRules" = "Twitterルール";
 "Common.Alerts.AccountTemporarilyLocked.Message" = "Twitter を開いてロックを解除する";
 "Common.Alerts.AccountTemporarilyLocked.Title" = "アカウントは一時的にロックされています";
+"Common.Alerts.BlockUserConfirm.Title" = "Do you want to block %@?";
 "Common.Alerts.BlockUserSuccess.Title" = "%@ はブロックされました";
 "Common.Alerts.CancelFollowRequest.Message" = "%@ のフォローリクエストをキャンセルしますか？";
 "Common.Alerts.FailedToBlockUser.Message" = "もう一度やり直してください";
@@ -113,12 +120,14 @@
 "Common.Controls.Actions.TakePhoto" = "写真を撮影";
 "Common.Controls.Actions.Yes" = "はい";
 "Common.Controls.Friendship.Actions.Block" = "ブロック";
+"Common.Controls.Friendship.Actions.Blocked" = "Blocked";
 "Common.Controls.Friendship.Actions.Follow" = "フォロー";
 "Common.Controls.Friendship.Actions.Following" = "フォロー中";
 "Common.Controls.Friendship.Actions.Mute" = "ミュート";
 "Common.Controls.Friendship.Actions.Pending" = "保留中";
 "Common.Controls.Friendship.Actions.Report" = "報告";
 "Common.Controls.Friendship.Actions.ReportAndBlock" = "報告とブロック";
+"Common.Controls.Friendship.Actions.Request" = "Request";
 "Common.Controls.Friendship.Actions.Unblock" = "ブロック解除";
 "Common.Controls.Friendship.Actions.Unfollow" = "フォロー解除";
 "Common.Controls.Friendship.Actions.Unmute" = "ミュート解除";
@@ -316,6 +325,7 @@
 "Scene.Settings.Display.Media.AutoPlayback" = "自動再生";
 "Scene.Settings.Display.Media.Automatic" = "自動";
 "Scene.Settings.Display.Media.MediaPreviews" = "メディアのプレビュー";
+"Scene.Settings.Display.Media.MuteByDefault" = "Mute by default";
 "Scene.Settings.Display.Media.Off" = "オフ";
 "Scene.Settings.Display.Preview.ThankForUsingTwidereX" = "@TwidereProject をご利用いただきありがとうございます！";
 "Scene.Settings.Display.SectionHeader.DateFormat" = "日付フォーマット";

@@ -25,6 +25,8 @@ extension UITableViewDelegate where Self: DataSourceProvider {
                     target: .repost,    // keep repost wrapper
                     status: status
                 )
+            case .user(let user):
+                assertionFailure()
             }
         }
     }

@@ -20,27 +20,6 @@ extension AccountListViewModel {
             tableView: tableView,
             context: context
         )
-//        diffableDataSource = UITableViewDiffableDataSource(tableView: tableView) { [
-//            weak dependency,
-//            weak accountListTableViewCellDelegate,
-//            weak accountListViewControllerDelegate
-//        ] tableView, indexPath, item -> UITableViewCell? in
-//            guard let dependency = dependency else { return UITableViewCell() }
-//            guard let accountListViewControllerDelegate = accountListViewControllerDelegate else { return nil }
-//            switch item {
-//            case .twitterUser(let objectID):
-//                let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: AccountListTableViewCell.self), for: indexPath) as! AccountListTableViewCell
-//                let managedObjectContext = dependency.context.managedObjectContext
-//                managedObjectContext.performAndWait {
-//                    let twitterUser = managedObjectContext.object(with: objectID) as! TwitterUser
-//                    AccountListViewModel.configure(cell: cell, twitterUser: twitterUser, accountListViewControllerDelegate: accountListViewControllerDelegate)
-//                }
-//                cell.delegate = accountListTableViewCellDelegate
-//                return cell
-//            default:
-//                return nil
-//            }
-//        }
         
         var snapshot = NSDiffableDataSourceSnapshot<UserSection, UserItem>()
         snapshot.appendSections([.main])

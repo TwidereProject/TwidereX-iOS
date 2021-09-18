@@ -10,19 +10,13 @@ import os.log
 import UIKit
 import Combine
 
-protocol StatusTableViewCellDelegate: AnyObject {
-    func statusTableViewCell(_ cell: StatusTableViewCell, mediaGridContainerView containerView: MediaGridContainerView, didTapMediaView mediaView: MediaView, at index: Int)
-    func statusTableViewCell(_ cell: StatusTableViewCell, statusToolbar: StatusToolbar, actionDidPressed action: StatusToolbar.Action)
-
-}
-
 class StatusTableViewCell: UITableViewCell {
     
     var disposeBag = Set<AnyCancellable>()
     
     let logger = Logger(subsystem: "StatusTableViewCell", category: "UI")
     
-    weak var delegate: StatusTableViewCellDelegate?
+    weak var delegate: StatusViewTableViewCellDelegate?
     let statusView = StatusView()
     let separator = SeparatorLineView()
     
@@ -58,35 +52,13 @@ extension StatusTableViewCell {
         ])
         statusView.setup(style: .inline)
         statusView.toolbar.setup(style: .inline)
-        statusView.mediaGridContainerView.delegate = self
-        statusView.toolbar.delegate = self
+        statusView.delegate = self
     }
     
 }
 
-// MARK: - MediaGridContainerViewDelegate
-extension StatusTableViewCell: MediaGridContainerViewDelegate {
-    func mediaGridContainerView(
-        _ container: MediaGridContainerView,
-        didTapMediaView mediaView: MediaView,
-        at index: Int
-    ) {
-        switch container {
-        case statusView.mediaGridContainerView:
-            delegate?.statusTableViewCell(self, mediaGridContainerView: container, didTapMediaView: mediaView, at: index)
-        default:
-            assertionFailure()
-            return
-        }
-    }
-}
+// MARK: - StatusViewContainerTableViewCell
+extension StatusTableViewCell: StatusViewContainerTableViewCell { }
 
-// MARK: - StatusToolbarDelegate
-extension StatusTableViewCell: StatusToolbarDelegate {
-    func statusToolbar(
-        _ statusToolbar: StatusToolbar,
-        actionDidPressed action: StatusToolbar.Action
-    ) {
-        delegate?.statusTableViewCell(self, statusToolbar: statusToolbar, actionDidPressed: action)
-    }
-}
+// MARK: - StatusViewDelegate
+extension StatusTableViewCell: StatusViewDelegate { }

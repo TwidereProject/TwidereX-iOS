@@ -17,8 +17,9 @@ extension Persistence.MastodonStatus {
     struct PersistContext {
         let domain: String
         let entity: Mastodon.Entity.Status
-        let statusCache: APIService.Persist.PersistCache<MastodonStatus>?
-        let userCache: APIService.Persist.PersistCache<MastodonUser>?
+        let user: MastodonUser?
+        let statusCache: Persistence.PersistCache<MastodonStatus>?
+        let userCache: Persistence.PersistCache<MastodonUser>?
         let networkDate: Date
         let log = OSLog.api
     }
@@ -34,6 +35,7 @@ extension Persistence.MastodonStatus {
                 context: PersistContext(
                     domain: context.domain,
                     entity: entity,
+                    user: context.user,
                     statusCache: context.statusCache,
                     userCache: context.userCache,
                     networkDate: context.networkDate
@@ -108,6 +110,7 @@ extension Persistence.MastodonStatus {
             property: property,
             relationship: relationship
         )
+        update(status: status, context: context)
         return status
     }
     
@@ -122,6 +125,18 @@ extension Persistence.MastodonStatus {
             networkDate: context.networkDate
         )
         status.update(property: property)
+        update(status: status, context: context)
+    }
+    
+    private static func update(
+        status: MastodonStatus,
+        context: PersistContext
+    ) {
+        // update relationship
+        if let user = context.user {
+            context.entity.reblogged.flatMap { status.update(isRepost: $0, user: user) }
+            context.entity.favourited.flatMap { status.update(isLike: $0, user: user) }
+        }
     }
     
 }

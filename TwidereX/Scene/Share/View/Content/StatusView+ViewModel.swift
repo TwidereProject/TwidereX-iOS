@@ -65,23 +65,19 @@ extension StatusView.ViewModel {
     }
     
     private func bindHeader(statusView: StatusView) {
-        Publishers.CombineLatest(
-            $header,
-            NotificationCenter.default.publisher(for: UIContentSizeCategory.didChangeNotification).map { _ in }.prepend(Void())
-        )
-        .map { header, _ in header }
-        .sink { header in
-            switch header {
-            case .none:
-                return
-            case .repost(let info):
-                statusView.headerIconImageView.image = Asset.Media.repeat.image
-                statusView.headerTextLabel.setupAttributes(style: StatusView.headerTextLabelStyle)
-                statusView.headerTextLabel.configure(content: info.authorNameMetaContent)
-                statusView.setHeaderDisplay()
+        $header
+            .sink { header in
+                switch header {
+                case .none:
+                    return
+                case .repost(let info):
+                    statusView.headerIconImageView.image = Asset.Media.repeat.image
+                    statusView.headerTextLabel.setupAttributes(style: StatusView.headerTextLabelStyle)
+                    statusView.headerTextLabel.configure(content: info.authorNameMetaContent)
+                    statusView.setHeaderDisplay()
+                }
             }
-        }
-        .store(in: &disposeBag)
+            .store(in: &disposeBag)
     }
     
     private func bindAuthor(statusView: StatusView) {
@@ -93,51 +89,39 @@ extension StatusView.ViewModel {
             }
             .store(in: &disposeBag)
         // name
-        Publishers.CombineLatest(
-            $authorName,
-            NotificationCenter.default.publisher(for: UIContentSizeCategory.didChangeNotification).map { _ in }.prepend(Void())
-        )
-        .sink { metaContent, _ in
-            let metaContent = metaContent ?? PlaintextMetaContent(string: "")
-            statusView.authorNameLabel.setupAttributes(style: StatusView.authorNameLabelStyle)
-            statusView.authorNameLabel.configure(content: metaContent)
-        }
-        .store(in: &disposeBag)
+        $authorName
+            .sink { metaContent in
+                let metaContent = metaContent ?? PlaintextMetaContent(string: "")
+                statusView.authorNameLabel.setupAttributes(style: StatusView.authorNameLabelStyle)
+                statusView.authorNameLabel.configure(content: metaContent)
+            }
+            .store(in: &disposeBag)
         // username
-        Publishers.CombineLatest(
-            $authorUsername,
-            NotificationCenter.default.publisher(for: UIContentSizeCategory.didChangeNotification).map { _ in }.prepend(Void())
-        )
-        .map { text, _ in
-            guard let text = text else { return "" }
-            return "@\(text)"
-        }
-        .assign(to: \.text, on: statusView.authorUsernameLabel)
-        .store(in: &disposeBag)
+        $authorUsername
+            .map { text in
+                guard let text = text else { return "" }
+                return "@\(text)"
+            }
+            .assign(to: \.text, on: statusView.authorUsernameLabel)
+            .store(in: &disposeBag)
         // timestamp
-        Publishers.CombineLatest(
-            $timestamp,
-            AppContext.shared.timestampUpdatePublisher.map { _ in }.prepend(Void())
-        )
-        .sink { timestamp, _ in
-            statusView.timestampLabel.text = timestamp?.shortTimeAgoSinceNow
-        }
-        .store(in: &disposeBag)
+        $timestamp
+            .sink { timestamp in
+                statusView.timestampLabel.text = timestamp?.shortTimeAgoSinceNow
+            }
+            .store(in: &disposeBag)
     }
     
     private func bindContent(statusView: StatusView) {
-        Publishers.CombineLatest(
-            $content,
-            NotificationCenter.default.publisher(for: UIContentSizeCategory.didChangeNotification).map { _ in }.prepend(Void())
-        )
-        .sink { metaContent, _ in
-            guard let content = metaContent else {
-                statusView.contentTextView.reset()
-                return
+        $content
+            .sink { metaContent in
+                guard let content = metaContent else {
+                    statusView.contentTextView.reset()
+                    return
+                }
+                statusView.contentTextView.configure(content: content)
             }
-            statusView.contentTextView.configure(content: content)
-        }
-        .store(in: &disposeBag)
+            .store(in: &disposeBag)
     }
     
     private func bindMedia(statusView: StatusView) {
@@ -178,21 +162,18 @@ extension StatusView.ViewModel {
     }
     
     private func bindLocation(statusView: StatusView) {
-        Publishers.CombineLatest(
-            $location,
-            NotificationCenter.default.publisher(for: UIContentSizeCategory.didChangeNotification).map { _ in }.prepend(Void())
-        )
-        .sink { location, _ in
-            guard let location = location, !location.isEmpty else { return }
-            if statusView.traitCollection.preferredContentSizeCategory > .extraLarge {
-                statusView.locationMapPinImageView.image = Asset.ObjectTools.mappin.image
-            } else {
-                statusView.locationMapPinImageView.image = Asset.ObjectTools.mappinMini.image
+        $location
+            .sink { location in
+                guard let location = location, !location.isEmpty else { return }
+                if statusView.traitCollection.preferredContentSizeCategory > .extraLarge {
+                    statusView.locationMapPinImageView.image = Asset.ObjectTools.mappin.image
+                } else {
+                    statusView.locationMapPinImageView.image = Asset.ObjectTools.mappinMini.image
+                }
+                statusView.locationLabel.text = location
+                statusView.setLocationDisplay()
             }
-            statusView.locationLabel.text = location
-            statusView.setLocationDisplay()
-        }
-        .store(in: &disposeBag)
+            .store(in: &disposeBag)
     }
     
     private func bindToolbar(statusView: StatusView) {
@@ -518,9 +499,49 @@ extension StatusView {
     
     private func configureToolbar(mastodonStatus status: MastodonStatus) {
         let status = status.repost ?? status
-        status.publisher(for: \.replyCount).assign(to: \.replyCount, on: viewModel).store(in: &disposeBag)
-        status.publisher(for: \.repostCount).assign(to: \.repostCount, on: viewModel).store(in: &disposeBag)
-        status.publisher(for: \.likeCount).assign(to: \.likeCount, on: viewModel).store(in: &disposeBag)
+        status.publisher(for: \.replyCount)
+            .map(Int.init)
+            .assign(to: \.replyCount, on: viewModel)
+            .store(in: &disposeBag)
+        status.publisher(for: \.repostCount)
+            .map(Int.init)
+            .assign(to: \.repostCount, on: viewModel)
+            .store(in: &disposeBag)
+        status.publisher(for: \.likeCount)
+            .map(Int.init)
+            .assign(to: \.likeCount, on: viewModel)
+            .store(in: &disposeBag)
+        
+        // relationship
+        Publishers.CombineLatest(
+            AppContext.shared.authenticationService.activeAuthenticationContext,
+            status.publisher(for: \.repostBy)
+        )
+            .map { authenticationContext, repostBy in
+                guard let authenticationContext = authenticationContext?.mastodonAuthenticationContext else {
+                    return false
+                }
+                let domain = authenticationContext.domain
+                let userID = authenticationContext.userID
+                return repostBy.contains(where: { $0.id == userID && $0.domain == domain })
+            }
+            .assign(to: \.isRepost, on: viewModel)
+            .store(in: &disposeBag)
+        
+        Publishers.CombineLatest(
+            AppContext.shared.authenticationService.activeAuthenticationContext,
+            status.publisher(for: \.likeBy)
+        )
+            .map { authenticationContext, likeBy in
+                guard let authenticationContext = authenticationContext?.mastodonAuthenticationContext else {
+                    return false
+                }
+                let domain = authenticationContext.domain
+                let userID = authenticationContext.userID
+                return likeBy.contains(where: { $0.id == userID && $0.domain == domain })
+            }
+            .assign(to: \.isLike, on: viewModel)
+            .store(in: &disposeBag)
     }
         
 }

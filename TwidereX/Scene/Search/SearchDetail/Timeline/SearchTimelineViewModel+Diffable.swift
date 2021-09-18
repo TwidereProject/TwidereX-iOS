@@ -22,15 +22,15 @@ extension SearchTimelineViewModel {
             .share()
             .eraseToAnyPublisher()
         
-        diffableDataSource = TimelineSection.tableViewDiffableDataSource(
-            for: tableView,
-            dependency: dependency,
-            managedObjectContext: tweetFetchedResultsController.fetchedResultsController.managedObjectContext,
-            timestampUpdatePublisher: timestampUpdatePublisher,
-            timelinePostTableViewCellDelegate: timelinePostTableViewCellDelegate,
-            timelineMiddleLoaderTableViewCellDelegate: nil,
-            timelineHeaderTableViewCellDelegate: nil
-        )
+//        diffableDataSource = TimelineSection.tableViewDiffableDataSource(
+//            for: tableView,
+//            dependency: dependency,
+//            managedObjectContext: tweetFetchedResultsController.fetchedResultsController.managedObjectContext,
+//            timestampUpdatePublisher: timestampUpdatePublisher,
+//            timelinePostTableViewCellDelegate: timelinePostTableViewCellDelegate,
+//            timelineMiddleLoaderTableViewCellDelegate: nil,
+//            timelineHeaderTableViewCellDelegate: nil
+//        )
     }
 }
 

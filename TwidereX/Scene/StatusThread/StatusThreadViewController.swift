@@ -55,29 +55,11 @@ extension StatusThreadViewController {
         
         viewModel.setupDiffableDataSource(
             tableView: tableView,
-            statusTableViewCellDelegate: self,
-            statusThreadRootTableViewCellDelegate: self
+            statusViewTableViewCellDelegate: self
         )
     }
     
 }
 
-// MARK: - StatusTableViewCellDelegate
-extension StatusThreadViewController: StatusTableViewCellDelegate {
-    func statusTableViewCell(_ cell: StatusTableViewCell, mediaGridContainerView containerView: MediaGridContainerView, didTapMediaView mediaView: MediaView, at index: Int) {
-        
-    }
-    
-    func statusTableViewCell(_ cell: StatusTableViewCell, statusToolbar: StatusToolbar, actionDidPressed action: StatusToolbar.Action) {
-        
-    }
-}
-
-// MARK: - StatusThreadRootTableViewCellDelegate
-extension StatusThreadViewController: StatusThreadRootTableViewCellDelegate {
-    func statusThreadRootTableViewCell(_ cell: StatusThreadRootTableViewCell, mediaGridContainerView containerView: MediaGridContainerView, didTapMediaView mediaView: MediaView, at index: Int) {
-        // TODO:
-    }
-    
-
-}
+// MARK: - StatusViewTableViewCellDelegate
+extension StatusThreadViewController: StatusViewTableViewCellDelegate { }

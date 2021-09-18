@@ -7,21 +7,19 @@
 //
 
 import Foundation
+import CoreDataStack
 import MastodonSDK
 
 protocol MastodonFieldContainer {
-    var fieldsData: Data? { get }
+    var fields: [Mastodon.Entity.Field]? { get }
 }
 
 extension MastodonFieldContainer {
-    
-    static func encode(fields: [Mastodon.Entity.Field]) -> Data? {
-        return try? JSONEncoder().encode(fields)
+    var mastodonFields: [MastodonField] {
+        return fields.flatMap { fields in
+            fields.map { MastodonField(field: $0) }
+        } ?? []
     }
-    
-    var fields: [Mastodon.Entity.Field]? {
-        guard let data = fieldsData else { return nil }
-        return try? JSONDecoder().decode([Mastodon.Entity.Field].self, from: data)
-    }
-    
 }
+
+extension Mastodon.Entity.Account: MastodonFieldContainer { }

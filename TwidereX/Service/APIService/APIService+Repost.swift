@@ -9,14 +9,15 @@
 import Foundation
 import CoreData
 import CoreDataStack
-import TwitterSDK
 import Alamofire
 import UIKit
+import TwitterSDK
+import MastodonSDK
 
 extension APIService {
     
     func repost(
-        status: DataSourceItem.Status,
+        status: StatusRecord,
         authenticationContext: AuthenticationContext
     ) async throws {
         switch (status, authenticationContext) {
@@ -26,13 +27,20 @@ extension APIService {
                 authenticationContext: authenticationContext
             )
         case (.mastodon(let record), .mastodon(let authenticationContext)):
-            assertionFailure()
+            _ = try await repost(
+                record: record,
+                authenticationContext: authenticationContext
+            )
         default:
             assertionFailure()
         }
     }
     
-    private struct RepostContext {
+}
+
+extension APIService {
+
+    private struct TwitterRepostContext {
         let statusID: TwitterStatus.ID
         let isReposted: Bool
         let repostedCount: Int64
@@ -45,7 +53,7 @@ extension APIService {
         let managedObjectContext = backgroundManagedObjectContext
         
         // update repost state and retrieve repost context
-        let _repostContext: RepostContext? = try await managedObjectContext.performChanges {
+        let _repostContext: TwitterRepostContext? = try await managedObjectContext.performChanges {
             guard let authentication = authenticationContext.authenticationRecord.object(in: managedObjectContext),
                   let _status = record.object(in: managedObjectContext)
             else { return nil }
@@ -56,7 +64,7 @@ extension APIService {
             let repostCount = isReposted ? repostedCount - 1 : repostedCount + 1
             status.update(isRepost: !isReposted, user: user)
             status.update(repostCount: Int64(max(0, repostCount)))
-            let repostContext = RepostContext(
+            let repostContext = TwitterRepostContext(
                 statusID: status.id,
                 isReposted: isReposted,
                 repostedCount: repostedCount
@@ -109,6 +117,96 @@ extension APIService {
                 let isRepost = response.value.data.retweeted
                 status.update(isRepost: isRepost, user: user)
                 self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): update status repost: \(isRepost)")
+            case .failure:
+                // rollback
+                status.update(isRepost: repostContext.isReposted, user: user)
+                status.update(repostCount: repostContext.repostedCount)
+                self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): rollback status repost")
+            }
+        }
+        
+        let response = try result.get()
+        return response
+    }
+    
+}
+
+extension APIService {
+
+    private struct MastodonRepostContext {
+        let statusID: MastodonStatus.ID
+        let isReposted: Bool
+        let repostedCount: Int64
+    }
+    
+    func repost(
+        record: ManagedObjectRecord<MastodonStatus>,
+        authenticationContext: MastodonAuthenticationContext
+    ) async throws -> Mastodon.Response.Content<Mastodon.Entity.Status> {
+        let managedObjectContext = backgroundManagedObjectContext
+        
+        // update repost state and retrieve repost context
+        let _repostContext: MastodonRepostContext? = try await managedObjectContext.performChanges {
+            guard let authentication = authenticationContext.authenticationRecord.object(in: managedObjectContext),
+                  let _status = record.object(in: managedObjectContext)
+            else { return nil }
+            let user = authentication.mastodonUser
+            let status = _status.repost ?? _status
+            let isReposted = status.repostBy.contains(user)
+            let repostedCount = status.repostCount
+            let repostCount = isReposted ? repostedCount - 1 : repostedCount + 1
+            status.update(isRepost: !isReposted, user: user)
+            status.update(repostCount: Int64(max(0, repostCount)))
+            let repostContext = MastodonRepostContext(
+                statusID: status.id,
+                isReposted: isReposted,
+                repostedCount: repostedCount
+            )
+            self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): update status repost: \(!isReposted), \(repostCount)")
+            return repostContext
+        }
+        guard let repostContext = _repostContext else {
+            throw APIService.APIError.implicit(.badRequest)
+        }
+        
+        // request repost or undo repost
+        let result: Result<Mastodon.Response.Content<Mastodon.Entity.Status>, Error>
+        do {
+            let response = try await Mastodon.API.Reblog.reblog(
+                session: session,
+                domain: authenticationContext.domain,
+                statusID: repostContext.statusID,
+                reblogKind: repostContext.isReposted ? .undo : .do(query: Mastodon.API.Reblog.ReblogQuery(visibility: .public)),
+                authorization: authenticationContext.authorization
+            )
+            result = .success(response)
+        } catch {
+            result = .failure(error)
+            logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): update repost failure: \(error.localizedDescription)")
+        }
+        
+        // update repost state
+        try await managedObjectContext.performChanges {
+            guard let authentication = authenticationContext.authenticationRecord.object(in: managedObjectContext),
+                  let _status = record.object(in: managedObjectContext)
+            else { return }
+            let user = authentication.mastodonUser
+            let status = _status.repost ?? _status
+            
+            switch result {
+            case .success(let response):
+                _ = Persistence.MastodonStatus.createOrMerge(
+                    in: managedObjectContext,
+                    context: Persistence.MastodonStatus.PersistContext(
+                        domain: authentication.domain,
+                        entity: response.value,
+                        user: user,
+                        statusCache: nil,
+                        userCache: nil,
+                        networkDate: response.networkDate
+                    )
+                )
+                self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): update status repost: \(!repostContext.isReposted)")
             case .failure:
                 // rollback
                 status.update(isRepost: repostContext.isReposted, user: user)

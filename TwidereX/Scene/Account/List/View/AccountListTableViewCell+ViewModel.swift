@@ -9,6 +9,7 @@
 import UIKit
 import Combine
 import CoreDataStack
+import MastodonMeta
 
 extension AccountListTableViewCell {
     func configure(authenticationIndex: AuthenticationIndex) {
@@ -31,8 +32,8 @@ extension AccountListTableViewCell {
             .store(in: &disposeBag)
         // name
         user.publisher(for: \.name)
-            .map { $0 as String? }
-            .assign(to: \.headlineText, on: userBriefInfoView.viewModel)
+            .map { PlaintextMetaContent(string: $0) }
+            .assign(to: \.headlineMetaContent, on: userBriefInfoView.viewModel)
             .store(in: &disposeBag)
         // username
         user.publisher(for: \.username)
@@ -51,10 +52,22 @@ extension AccountListTableViewCell {
             .assign(to: \.avatarImageURL, on: userBriefInfoView.viewModel)
             .store(in: &disposeBag)
         // name
-        user.publisher(for: \.displayName)
-            .map { _ in user.name as String? }
-            .assign(to: \.headlineText, on: userBriefInfoView.viewModel)
-            .store(in: &disposeBag)
+        Publishers.CombineLatest(
+            user.publisher(for: \.displayName),
+            user.publisher(for: \.emojis)
+        )
+        .map { _, emojis -> MetaContent? in
+            let content = MastodonContent(content: user.name, emojis: emojis.asDictionary)
+            do {
+                let metaContent = try MastodonMetaContent.convert(document: content)
+                return metaContent
+            } catch {
+                assertionFailure()
+                return PlaintextMetaContent(string: user.name)
+            }
+        }
+        .assign(to: \.headlineMetaContent, on: userBriefInfoView.viewModel)
+        .store(in: &disposeBag)
         // username
         user.publisher(for: \.acct)
             .map { _ in user.acctWithDomain }

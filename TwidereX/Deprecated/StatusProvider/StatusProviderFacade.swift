@@ -45,18 +45,18 @@ enum StatusProviderFacade {
                 }()
                 guard let tweet = _tweet else { return }
                 
-                let twitterUser = tweet.author
-                let profileViewModel = ProfileViewModel(context: provider.context, twitterUser: twitterUser)
-                DispatchQueue.main.async {
-                    if provider.navigationController == nil {
-                        let from = provider.presentingViewController ?? provider
-                        provider.dismiss(animated: true) {
-                            provider.coordinator.present(scene: .profile(viewModel: profileViewModel), from: from, transition: .show)
-                        }
-                    } else {
-                        provider.coordinator.present(scene: .profile(viewModel: profileViewModel), from: provider, transition: .show)
-                    }
-                }
+//                let twitterUser = tweet.author
+//                let profileViewModel = ProfileViewModel(context: provider.context, twitterUser: twitterUser)
+//                DispatchQueue.main.async {
+//                    if provider.navigationController == nil {
+//                        let from = provider.presentingViewController ?? provider
+//                        provider.dismiss(animated: true) {
+//                            provider.coordinator.present(scene: .profile(viewModel: profileViewModel), from: from, transition: .show)
+//                        }
+//                    } else {
+//                        provider.coordinator.present(scene: .profile(viewModel: profileViewModel), from: provider, transition: .show)
+//                    }
+//                }
             }
             .store(in: &provider.disposeBag)
     }
@@ -487,74 +487,74 @@ extension StatusProviderFacade {
     }
     
     private static func coordinateToStatusMentionProfileScene(for target: Target, provider: StatusProvider, cell: UITableViewCell, mention: String) {
-        provider.tweet(for: cell, indexPath: nil)
-            .sink { [weak provider] tweet in
-                guard let provider = provider else { return }
-                let _tweet: Tweet? = {
-                    switch target {
-                    case .tweet:    return tweet?.retweet ?? tweet
-                    case .retweet:  return tweet
-                    case .quote:    return tweet?.retweet?.quote ?? tweet?.quote
-                    }
-                }()
-                guard let tweet = _tweet else { return }
-                
-                let profileViewModel: ProfileViewModel = {
-                    let targetUsername: String
-                    var targetUserID: TwitterUser.ID?
-                    var targetUser: TwitterUser?
-                    if let mentionEntity = (tweet.entities?.mentions ?? Set()).first(where: { $0.username == mention }) {
-                        targetUsername = mentionEntity.username ?? mention
-                        targetUserID = mentionEntity.userID
-                        targetUser = mentionEntity.user
-                    } else {
-                        targetUsername = mention
-                        targetUserID = nil
-                        targetUser = nil
-                    }
-                    
-                    if targetUser == nil {
-                        targetUser = {
-                            let userRequest = TwitterUser.sortedFetchRequest
-                            userRequest.fetchLimit = 1
-                            userRequest.predicate = {
-                                if let targetUserID = targetUserID {
-                                    return TwitterUser.predicate(idStr: targetUserID)
-                                } else {
-                                    return TwitterUser.predicate(username: targetUsername)
-                                }
-                            }()
-                            do {
-                                return try provider.context.managedObjectContext.fetch(userRequest).first
-                            } catch {
-                                assertionFailure(error.localizedDescription)
-                                return nil
-                            }
-                        }()
-                    }
-                    
-                    if let targetUser = targetUser {
-                        let activeAuthenticationIndex = provider.context.authenticationService.activeAuthenticationIndex.value
-                        let currentTwitterUser = activeAuthenticationIndex?.twitterAuthentication?.twitterUser
-                        if targetUser.id == currentTwitterUser?.id {
-                            return MeProfileViewModel(context: provider.context)
-                        } else {
-                            return ProfileViewModel(context: provider.context, twitterUser: targetUser)
-                        }
-                    } else {
-                        if let targetUserID = targetUserID {
-                            return ProfileViewModel(context: provider.context, userID: targetUserID, username: targetUsername)
-                        } else {
-                            return ProfileViewModel(context: provider.context, username: targetUsername)
-                        }
-                    }
-                }()
-                
-                DispatchQueue.main.async {
-                    provider.coordinator.present(scene: .profile(viewModel: profileViewModel), from: provider, transition: .show)
-                }
-            }
-            .store(in: &provider.disposeBag)
+//        provider.tweet(for: cell, indexPath: nil)
+//            .sink { [weak provider] tweet in
+//                guard let provider = provider else { return }
+//                let _tweet: Tweet? = {
+//                    switch target {
+//                    case .tweet:    return tweet?.retweet ?? tweet
+//                    case .retweet:  return tweet
+//                    case .quote:    return tweet?.retweet?.quote ?? tweet?.quote
+//                    }
+//                }()
+//                guard let tweet = _tweet else { return }
+//                
+//                let profileViewModel: ProfileViewModel = {
+//                    let targetUsername: String
+//                    var targetUserID: TwitterUser.ID?
+//                    var targetUser: TwitterUser?
+//                    if let mentionEntity = (tweet.entities?.mentions ?? Set()).first(where: { $0.username == mention }) {
+//                        targetUsername = mentionEntity.username ?? mention
+//                        targetUserID = mentionEntity.userID
+//                        targetUser = mentionEntity.user
+//                    } else {
+//                        targetUsername = mention
+//                        targetUserID = nil
+//                        targetUser = nil
+//                    }
+//                    
+//                    if targetUser == nil {
+//                        targetUser = {
+//                            let userRequest = TwitterUser.sortedFetchRequest
+//                            userRequest.fetchLimit = 1
+//                            userRequest.predicate = {
+//                                if let targetUserID = targetUserID {
+//                                    return TwitterUser.predicate(idStr: targetUserID)
+//                                } else {
+//                                    return TwitterUser.predicate(username: targetUsername)
+//                                }
+//                            }()
+//                            do {
+//                                return try provider.context.managedObjectContext.fetch(userRequest).first
+//                            } catch {
+//                                assertionFailure(error.localizedDescription)
+//                                return nil
+//                            }
+//                        }()
+//                    }
+//                    
+//                    if let targetUser = targetUser {
+//                        let activeAuthenticationIndex = provider.context.authenticationService.activeAuthenticationIndex.value
+//                        let currentTwitterUser = activeAuthenticationIndex?.twitterAuthentication?.twitterUser
+//                        if targetUser.id == currentTwitterUser?.id {
+//                            return MeProfileViewModel(context: provider.context)
+//                        } else {
+//                            return ProfileViewModel(context: provider.context, twitterUser: targetUser)
+//                        }
+//                    } else {
+//                        if let targetUserID = targetUserID {
+//                            return ProfileViewModel(context: provider.context, userID: targetUserID, username: targetUsername)
+//                        } else {
+//                            return ProfileViewModel(context: provider.context, username: targetUsername)
+//                        }
+//                    }
+//                }()
+//                
+//                DispatchQueue.main.async {
+//                    provider.coordinator.present(scene: .profile(viewModel: profileViewModel), from: provider, transition: .show)
+//                }
+//            }
+//            .store(in: &provider.disposeBag)
     }
 
 }

@@ -15,12 +15,10 @@ import CoreDataStack
 extension StatusThreadViewModel {
     func setupDiffableDataSource(
         tableView: UITableView,
-        statusTableViewCellDelegate: StatusTableViewCellDelegate,
-        statusThreadRootTableViewCellDelegate: StatusThreadRootTableViewCellDelegate
+        statusViewTableViewCellDelegate: StatusViewTableViewCellDelegate
     ) {
         let configuration = StatusSection.Configuration(
-            statusTableViewCellDelegate: statusTableViewCellDelegate,
-            statusThreadRootTableViewCellDelegate: statusThreadRootTableViewCellDelegate,
+            statusViewTableViewCellDelegate: statusViewTableViewCellDelegate,
             timelineMiddleLoaderTableViewCellDelegate: nil
         )
         diffableDataSource = StatusSection.diffableDataSource(

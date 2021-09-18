@@ -30,9 +30,7 @@ class AppContext: ObservableObject {
     private var documentStoreSubscription: AnyCancellable!
     
     let photoLibraryService = PhotoLibraryService()
-    let videoPlaybackService = VideoPlaybackService()
-
-    // let overrideTraitCollection = CurrentValueSubject<UITraitCollection?, Never>(nil)
+    // let videoPlaybackService = VideoPlaybackService()
     
     let timestampUpdatePublisher = Timer.publish(every: 1.0, on: .main, in: .common)
         .autoconnect()
@@ -42,7 +40,7 @@ class AppContext: ObservableObject {
     init() {
         let _coreDataStack = CoreDataStack()
         let _managedObjectContext = _coreDataStack.persistentContainer.viewContext
-        let _backgroundManagedObjectContext = _coreDataStack.persistentContainer.newBackgroundContext()
+        let _backgroundManagedObjectContext = _coreDataStack.newTaskContext()
         coreDataStack = _coreDataStack
         managedObjectContext = _managedObjectContext
         backgroundManagedObjectContext = _backgroundManagedObjectContext

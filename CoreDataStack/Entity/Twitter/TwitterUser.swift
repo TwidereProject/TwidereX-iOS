@@ -12,8 +12,6 @@ final public class TwitterUser: NSManagedObject {
     
     public typealias ID = String
     
-    // @NSManaged public private(set) var identifier: UUID
-
     // sourcery: autoGenerateProperty
     @NSManaged public private(set) var id: ID
     // sourcery: autoUpdatableObject, autoGenerateProperty
@@ -55,8 +53,8 @@ final public class TwitterUser: NSManagedObject {
 //    @NSManaged public private(set) var mentionIn: Set<TweetEntitiesMention>?
 
     // many-to-many relationship
-    @NSManaged public private(set) var like: Set<Tweet>
-    @NSManaged public private(set) var reposts: Set<Tweet>
+    @NSManaged public private(set) var like: Set<TwitterStatus>
+    @NSManaged public private(set) var reposts: Set<TwitterStatus>
 
     @NSManaged public private(set) var following: Set<TwitterUser>
     @NSManaged public private(set) var followingBy: Set<TwitterUser>
@@ -71,6 +69,58 @@ final public class TwitterUser: NSManagedObject {
     @NSManaged public private(set) var blockingBy: Set<TwitterUser>
 
     // sourcery:end
+}
+
+extension TwitterUser {
+    // sourcery: autoUpdatableObject
+    @objc public var bioEntities: TwitterEntity? {
+        get {
+            let keyPath = #keyPath(TwitterUser.bioEntities)
+            willAccessValue(forKey: keyPath)
+            let _data = primitiveValue(forKey: keyPath) as? Data
+            didAccessValue(forKey: keyPath)
+            do {
+                guard let data = _data else { return nil }
+                let entities = try JSONDecoder().decode(TwitterEntity.self, from: data)
+                return entities
+            } catch {
+                assertionFailure(error.localizedDescription)
+                return nil
+            }
+        }
+        set {
+            let keyPath = #keyPath(TwitterUser.bioEntities)
+            let data = try? JSONEncoder().encode(newValue)
+            willChangeValue(forKey: keyPath)
+            setPrimitiveValue(data, forKey: keyPath)
+            didChangeValue(forKey: keyPath)
+        }
+    }
+    
+    // sourcery: autoUpdatableObject
+    @objc public var urlEntities: TwitterEntity? {
+        get {
+            let keyPath = #keyPath(TwitterUser.urlEntities)
+            willAccessValue(forKey: keyPath)
+            let _data = primitiveValue(forKey: keyPath) as? Data
+            didAccessValue(forKey: keyPath)
+            do {
+                guard let data = _data else { return nil }
+                let entities = try JSONDecoder().decode(TwitterEntity.self, from: data)
+                return entities
+            } catch {
+                assertionFailure(error.localizedDescription)
+                return nil
+            }
+        }
+        set {
+            let keyPath = #keyPath(TwitterUser.urlEntities)
+            let data = try? JSONEncoder().encode(newValue)
+            willChangeValue(forKey: keyPath)
+            setPrimitiveValue(data, forKey: keyPath)
+            didChangeValue(forKey: keyPath)
+        }
+    }
 }
 
 extension TwitterUser {
@@ -93,7 +143,7 @@ extension TwitterUser {
         return object
     }
     
-    public func update(entitiesURLProperties: [TwitterUserEntitiesURL.Property]) {
+//    public func update(entitiesURLProperties: [TwitterUserEntitiesURL.Property]) {
 //        guard let entities = entities else { return }
 //        let oldURLs = Set((entities.urls ?? Set()).compactMap { $0.url })
 //        let newURLs = Set(entitiesURLProperties.compactMap { $0.url })
@@ -104,7 +154,7 @@ extension TwitterUser {
 //            }
 //            entities.mutableSetValue(forKey: #keyPath(TwitterUserEntities.urls)).addObjects(from: urls)
 //        }
-    }
+//    }
     
     public func setupMetricsIfNeeds() {
 //        if metrics == nil {
@@ -382,6 +432,16 @@ extension TwitterUser: AutoUpdatableObject {
     public func update(updatedAt: Date) {
     	if self.updatedAt != updatedAt {
     		self.updatedAt = updatedAt
+    	}
+    }
+    public func update(bioEntities: TwitterEntity?) {
+    	if self.bioEntities != bioEntities {
+    		self.bioEntities = bioEntities
+    	}
+    }
+    public func update(urlEntities: TwitterEntity?) {
+    	if self.urlEntities != urlEntities {
+    		self.urlEntities = urlEntities
     	}
     }
     // sourcery:end

@@ -96,9 +96,9 @@ extension FollowerListViewController {
 
 // MARK: - UITableViewDelegate
 extension FollowerListViewController: UITableViewDelegate {
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        handleTableView(tableView, didSelectRowAt: indexPath)
-    }
+//    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+//        handleTableView(tableView, didSelectRowAt: indexPath)
+//    }
 }
 
 // MARK: - LoadMoreConfigurableTableViewContainer

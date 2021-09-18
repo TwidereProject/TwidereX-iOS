@@ -25,7 +25,8 @@ final class TwitterStatusFetchedResultController: NSObject {
     let predicate = CurrentValueSubject<NSPredicate?, Never>(nil)
     
     // output
-    let objectIDs = CurrentValueSubject<[NSManagedObjectID], Never>([])
+    private let _objectIDs = PassthroughSubject<[NSManagedObjectID], Never>()
+    let records = CurrentValueSubject<[ManagedObjectRecord<TwitterStatus>], Never>([])
     
     init(managedObjectContext: NSManagedObjectContext) {
         self.fetchedResultsController = {
@@ -44,6 +45,13 @@ final class TwitterStatusFetchedResultController: NSObject {
         }()
         super.init()
         
+        // debounce output to prevent UI update issues
+        _objectIDs
+            .throttle(for: 0.1, scheduler: DispatchQueue.main, latest: true)
+            .map { objectIDs in objectIDs.map { ManagedObjectRecord(objectID: $0) } }
+            .assign(to: \.value, on: records)
+            .store(in: &disposeBag)
+        
         fetchedResultsController.delegate = self
         
         Publishers.CombineLatest(
@@ -57,11 +65,11 @@ final class TwitterStatusFetchedResultController: NSObject {
             let compoundPredicate: NSPredicate = {
                 if let predicate = predicate {
                     return NSCompoundPredicate(andPredicateWithSubpredicates: [
-                        Tweet.predicate(idStrs: statusIDs),
+                        TwitterStatus.predicate(ids: statusIDs),
                         predicate
                     ])
                 } else {
-                    return Tweet.predicate(idStrs: statusIDs)
+                    return TwitterStatus.predicate(ids: statusIDs)
                 }
             }()
             self.fetchedResultsController.fetchRequest.predicate = compoundPredicate
@@ -95,7 +103,7 @@ extension TwitterStatusFetchedResultController: NSFetchedResultsControllerDelega
             .sorted { $0.0 < $1.0 }
             .map { $0.1.objectID }
         
-        self.objectIDs.value = objectIDs
+        self._objectIDs.send(objectIDs)
     }
 }
 

@@ -51,6 +51,13 @@ final class FeedFetchedResultsController: NSObject {
         )
         super.init()
         
+        // debounce output to prevent UI update issues
+        _objectIDs
+            .throttle(for: 0.1, scheduler: DispatchQueue.main, latest: true)
+            .map { objectIDs in objectIDs.map { ManagedObjectRecord(objectID: $0) } }
+            .assign(to: \.value, on: records)
+            .store(in: &disposeBag)
+        
         fetchedResultsController.delegate = self
         
         predicate.removeDuplicates()
@@ -64,13 +71,6 @@ final class FeedFetchedResultsController: NSObject {
                     assertionFailure(error.localizedDescription)
                 }
             }
-            .store(in: &disposeBag)
-        
-        // debounce output to prevent UI update issues
-        _objectIDs
-            .throttle(for: 0.1, scheduler: DispatchQueue.main, latest: true)
-            .map { objectIDs in objectIDs.map { ManagedObjectRecord(objectID: $0) } }
-            .assign(to: \.value, on: records)
             .store(in: &disposeBag)
     }
     

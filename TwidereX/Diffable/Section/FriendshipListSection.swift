@@ -171,41 +171,41 @@ extension MediaSection {
         twitterUser: TwitterUser,
         friendshipBannerConfiguration: FriendshipBannerConfiguration
     ) {
-        UserProviderFacade
-            .toggleUserFriendship(context: context, twitterUser: twitterUser)
-            .sink { completion in
-                switch completion {
-                case .failure:
-                    break
-                    // FIXME:
-//                    var config = SwiftMessages.defaultConfig
-//                    config.duration = .seconds(seconds: 3)
-//                    config.interactiveHide = true
-//                    let bannerView = NotifyBannerView()
-//                    bannerView.configure(for: .warning)
-//                    bannerView.titleLabel.text = friendshipBannerConfiguration.failureInfo.title
-//                    bannerView.messageLabel.text = friendshipBannerConfiguration.failureInfo.message
-//                    DispatchQueue.main.async {
-//                        SwiftMessages.show(config: config, view: bannerView)
-//                    }
-                case .finished:
-                    break
-                    // FIXME:
-//                    var config = SwiftMessages.defaultConfig
-//                    config.duration = .seconds(seconds: 3)
-//                    config.interactiveHide = true
-//                    let bannerView = NotifyBannerView()
-//                    bannerView.configure(for: .normal)
-//                    bannerView.titleLabel.text = friendshipBannerConfiguration.successInfo.title
-//                    bannerView.messageLabel.isHidden = true
-//                    DispatchQueue.main.async {
-//                        SwiftMessages.show(config: config, view: bannerView)
-//                    }
-                }
-            } receiveValue: { response in
-                // do nothing
-            }
-            .store(in: &context.disposeBag)
+//        UserProviderFacade
+//            .toggleUserFriendship(context: context, twitterUser: twitterUser)
+//            .sink { completion in
+//                switch completion {
+//                case .failure:
+//                    break
+//                    // FIXME:
+////                    var config = SwiftMessages.defaultConfig
+////                    config.duration = .seconds(seconds: 3)
+////                    config.interactiveHide = true
+////                    let bannerView = NotifyBannerView()
+////                    bannerView.configure(for: .warning)
+////                    bannerView.titleLabel.text = friendshipBannerConfiguration.failureInfo.title
+////                    bannerView.messageLabel.text = friendshipBannerConfiguration.failureInfo.message
+////                    DispatchQueue.main.async {
+////                        SwiftMessages.show(config: config, view: bannerView)
+////                    }
+//                case .finished:
+//                    break
+//                    // FIXME:
+////                    var config = SwiftMessages.defaultConfig
+////                    config.duration = .seconds(seconds: 3)
+////                    config.interactiveHide = true
+////                    let bannerView = NotifyBannerView()
+////                    bannerView.configure(for: .normal)
+////                    bannerView.titleLabel.text = friendshipBannerConfiguration.successInfo.title
+////                    bannerView.messageLabel.isHidden = true
+////                    DispatchQueue.main.async {
+////                        SwiftMessages.show(config: config, view: bannerView)
+////                    }
+//                }
+//            } receiveValue: { response in
+//                // do nothing
+//            }
+//            .store(in: &context.disposeBag)
     }
 
 }

@@ -8,6 +8,7 @@
 
 import UIKit
 import Combine
+import MetaTextKit
 
 final class UserBriefInfoView: UIView {
     
@@ -27,11 +28,12 @@ final class UserBriefInfoView: UIView {
     
     let badgeImageView = UIImageView()
     
-    let headlineLabel: UILabel = {
-        let label = UILabel()
-        label.font = .preferredFont(forTextStyle: .headline)
-        label.adjustsFontForContentSizeCategory = true
-        label.textColor = .label
+    let headlineLabel: MetaLabel = {
+        let configuration = TextStyle.Configuration(
+            font: .preferredFont(forTextStyle: .headline),
+            textColor: .label
+        )
+        let label = MetaLabel(style: .custom(configuration))
         return label
     }()
     

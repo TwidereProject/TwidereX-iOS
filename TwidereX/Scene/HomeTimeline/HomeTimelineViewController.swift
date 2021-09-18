@@ -102,7 +102,7 @@ extension HomeTimelineViewController {
         tableView.delegate = self
         viewModel.setupDiffableDataSource(
             tableView: tableView,
-            statusTableViewCellDelegate: self,
+            statusViewTableViewCellDelegate: self,
             timelineMiddleLoaderTableViewCellDelegate: self
         )
         // setup refresh control
@@ -425,17 +425,9 @@ extension HomeTimelineViewController: UITableViewDelegate, AutoGenerateTableView
 //    }
 //
 //}
-//
-//// MARK: - LoadMoreConfigurableTableViewContainer
-//extension HomeTimelineViewController: LoadMoreConfigurableTableViewContainer {
-//    typealias BottomLoaderTableViewCell = TimelineBottomLoaderTableViewCell
-//    typealias LoadingState = HomeTimelineViewModel.LoadOldestState.Loading
-//    var loadMoreConfigurableTableView: UITableView { return tableView }
-//    var loadMoreConfigurableStateMachine: GKStateMachine { return viewModel.loadoldestStateMachine }
-//}
 
-// MARK: - StatusTableViewCellDelegate
-extension HomeTimelineViewController: StatusTableViewCellDelegate { }
+// MARK: - StatusViewTableViewCellDelegate
+extension HomeTimelineViewController: StatusViewTableViewCellDelegate { }
 
 // MARK: - TimelineMiddleLoaderTableViewCellDelegate
 extension HomeTimelineViewController: TimelineMiddleLoaderTableViewCellDelegate {

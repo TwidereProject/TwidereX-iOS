@@ -17,7 +17,7 @@ import TwitterSDK
 extension TwitterStatus.Property {
     init(entity: Twitter.Entity.Tweet, networkDate: Date) {
         self.init(
-            id: entity.id,
+            id: entity.idStr,
             text: entity.fullText ?? entity.text ?? "",
             likeCount: entity.favoriteCount.flatMap(Int64.init) ?? 0,
             replyCount: 0,
@@ -105,7 +105,7 @@ extension TwitterStatus.Property {
     init(
         status: Twitter.Entity.V2.Tweet,
         author: Twitter.Entity.V2.User,
-        place: Twitter.Entity.V2.Place?,        // TODO:
+        place: Twitter.Entity.V2.Place?,
         media: [Twitter.Entity.V2.Media],
         networkDate: Date
     ) {

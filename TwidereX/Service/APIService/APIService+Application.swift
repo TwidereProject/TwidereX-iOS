@@ -25,10 +25,10 @@ extension APIService {
 
     #if DEBUG
     private static let clientName = "Pyro"
-    private static let appWebsite: String? = "https://x.twidere.com"
+    private static let appWebsite: String? = nil
     #else
     private static let clientName = "Twidere X"
-    private static let appWebsite: String? = nil
+    private static let appWebsite: String? = "https://x.twidere.com"
     #endif
     
     public func createMastodonApplication(

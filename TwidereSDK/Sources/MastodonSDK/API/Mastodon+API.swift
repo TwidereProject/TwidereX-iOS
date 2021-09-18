@@ -90,7 +90,7 @@ extension Mastodon.API {
     public enum Account { }
     public enum App { }
     public enum CustomEmojis { }
-    public enum Favorites { }
+    public enum Favorite { }
     public enum Instance { }
     public enum Media { }
     public enum OAuth { }

@@ -63,35 +63,35 @@ extension UserTimelineViewModel.State {
             
             viewModel.tweetIDs.value = []
             
-            let userID = viewModel.userID.value
-            viewModel.fetchLatest()
-                .receive(on: DispatchQueue.main)
-                .sink { completion in
-                    switch completion {
-                    case .failure(let error):
-                        os_log("%{public}s[%{public}ld], %{public}s: fetch user timeline latest response error: %s", ((#file as NSString).lastPathComponent), #line, #function, error.localizedDescription)
-                        if NotAuthorized.canEnter(for: error) {
-                            stateMachine.enter(NotAuthorized.self)
-                        } else if Blocked.canEnter(for: error) {
-                            stateMachine.enter(Blocked.self)
-                        } else {
-                            stateMachine.enter(Fail.self)
-                        }
-                    case .finished:
-                        break
-                    }
-                } receiveValue: { response in
-                    guard viewModel.userID.value == userID else { return }
-                    let tweetIDs = response.value.map { $0.idStr }
-                    
-                    if tweetIDs.isEmpty {
-                        stateMachine.enter(NoMore.self)
-                    } else {
-                        stateMachine.enter(Idle.self)
-                    }
-                    viewModel.tweetIDs.value = tweetIDs
-                }
-                .store(in: &viewModel.disposeBag)
+//            let userID = viewModel.userID.value
+//            viewModel.fetchLatest()
+//                .receive(on: DispatchQueue.main)
+//                .sink { completion in
+//                    switch completion {
+//                    case .failure(let error):
+//                        os_log("%{public}s[%{public}ld], %{public}s: fetch user timeline latest response error: %s", ((#file as NSString).lastPathComponent), #line, #function, error.localizedDescription)
+//                        if NotAuthorized.canEnter(for: error) {
+//                            stateMachine.enter(NotAuthorized.self)
+//                        } else if Blocked.canEnter(for: error) {
+//                            stateMachine.enter(Blocked.self)
+//                        } else {
+//                            stateMachine.enter(Fail.self)
+//                        }
+//                    case .finished:
+//                        break
+//                    }
+//                } receiveValue: { response in
+//                    guard viewModel.userID.value == userID else { return }
+//                    let tweetIDs = response.value.map { $0.idStr }
+//                    
+//                    if tweetIDs.isEmpty {
+//                        stateMachine.enter(NoMore.self)
+//                    } else {
+//                        stateMachine.enter(Idle.self)
+//                    }
+//                    viewModel.tweetIDs.value = tweetIDs
+//                }
+//                .store(in: &viewModel.disposeBag)
         }
     }
     
@@ -143,37 +143,37 @@ extension UserTimelineViewModel.State {
             super.didEnter(from: previousState)
             guard let viewModel = viewModel, let stateMachine = stateMachine else { return }
             
-            let userID = viewModel.userID.value
-            viewModel.loadMore()
-                .sink { completion in
-                    switch completion {
-                    case .failure(let error):
-                        stateMachine.enter(Fail.self)
-                        os_log("%{public}s[%{public}ld], %{public}s: load more fail: %s", ((#file as NSString).lastPathComponent), #line, #function, error.localizedDescription)
-                    case .finished:
-                        break
-                    }
-                } receiveValue: { response in
-                    guard viewModel.userID.value == userID else { return }
-                    
-                    var hasNewTweets = false
-                    var tweetIDs = viewModel.tweetIDs.value
-                    for tweet in response.value {
-                        if !tweetIDs.contains(tweet.idStr) {
-                            hasNewTweets = true
-                            tweetIDs.append(tweet.idStr)
-                        }
-                    }
-                    
-                    if !hasNewTweets {
-                        stateMachine.enter(NoMore.self)
-                    } else {
-                        stateMachine.enter(Idle.self)
-                    }
-
-                    viewModel.tweetIDs.value = tweetIDs
-                }
-                .store(in: &viewModel.disposeBag)
+//            let userID = viewModel.userID.value
+//            viewModel.loadMore()
+//                .sink { completion in
+//                    switch completion {
+//                    case .failure(let error):
+//                        stateMachine.enter(Fail.self)
+//                        os_log("%{public}s[%{public}ld], %{public}s: load more fail: %s", ((#file as NSString).lastPathComponent), #line, #function, error.localizedDescription)
+//                    case .finished:
+//                        break
+//                    }
+//                } receiveValue: { response in
+//                    guard viewModel.userID.value == userID else { return }
+//
+//                    var hasNewTweets = false
+//                    var tweetIDs = viewModel.tweetIDs.value
+//                    for tweet in response.value {
+//                        if !tweetIDs.contains(tweet.idStr) {
+//                            hasNewTweets = true
+//                            tweetIDs.append(tweet.idStr)
+//                        }
+//                    }
+//
+//                    if !hasNewTweets {
+//                        stateMachine.enter(NoMore.self)
+//                    } else {
+//                        stateMachine.enter(Idle.self)
+//                    }
+//
+//                    viewModel.tweetIDs.value = tweetIDs
+//                }
+//                .store(in: &viewModel.disposeBag)
         }
     }
         

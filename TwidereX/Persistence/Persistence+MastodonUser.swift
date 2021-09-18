@@ -17,7 +17,7 @@ extension Persistence.MastodonUser {
     struct PersistContext {
         let domain: String
         let entity: Mastodon.Entity.Account
-        let cache: APIService.Persist.PersistCache<MastodonUser>?
+        let cache: Persistence.PersistCache<MastodonUser>?
         let networkDate: Date
         let log = OSLog.api
     }

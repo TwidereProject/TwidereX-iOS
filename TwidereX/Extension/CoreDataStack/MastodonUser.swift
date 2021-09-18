@@ -8,6 +8,7 @@
 
 import Foundation
 import CoreDataStack
+import MastodonMeta
 
 extension MastodonUser {
     var name: String {
@@ -24,6 +25,20 @@ extension MastodonUser {
             return username + "@" + domain
         } else {
             return acct
+        }
+    }
+}
+
+extension MastodonUser {
+    var bioMetaContent: MastodonMetaContent? {
+        guard let note = note else { return nil }
+        do {
+            let content = MastodonContent(content: note, emojis: emojis.asDictionary)
+            let metaContent = try MastodonMetaContent.convert(document: content)
+            return metaContent
+        } catch {
+            assertionFailure()
+            return nil
         }
     }
 }

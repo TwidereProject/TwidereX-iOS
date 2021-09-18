@@ -168,7 +168,7 @@ extension ActionToolbarContainer {
     }
     
     private func isLikeButtonHighlightStateDidChange(to isHighlight: Bool) {
-        let tintColor = isHighlight ? Asset.Colors.heartPink.color : .secondaryLabel
+        let tintColor = isHighlight ? Asset.Colors.Tint.pink.color : .secondaryLabel
         likeButton.tintColor = tintColor
         likeButton.setTitleColor(tintColor, for: .normal)
         likeButton.setTitleColor(tintColor.withAlphaComponent(0.8), for: .highlighted)

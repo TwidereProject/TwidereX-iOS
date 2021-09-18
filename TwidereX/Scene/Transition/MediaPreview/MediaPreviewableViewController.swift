@@ -9,5 +9,5 @@
 import Foundation
 
 protocol MediaPreviewableViewController: class {
-    var mediaPreviewTransitionController: MediaPreviewTransitionController { get }
+//    var mediaPreviewTransitionController: MediaPreviewTransitionController { get }
 }

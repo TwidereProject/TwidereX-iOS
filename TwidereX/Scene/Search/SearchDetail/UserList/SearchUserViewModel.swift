@@ -39,7 +39,7 @@ final class SearchUserViewModel: NSObject {
         return stateMachine
     }()
     lazy var stateMachinePublisher = CurrentValueSubject<State, Never>(State.Initial(viewModel: self))
-    var diffableDataSource: UITableViewDiffableDataSource<TimelineSection, Item>!
+//    var diffableDataSource: UITableViewDiffableDataSource<TimelineSection, Item>!
     let items = CurrentValueSubject<[Item], Never>([])
 
     init(context: AppContext) {
@@ -55,62 +55,62 @@ final class SearchUserViewModel: NSObject {
                 sectionNameKeyPath: nil,
                 cacheName: nil
             )
-            
+
             return controller
         }()
         super.init()
         
         self.fetchedResultsController.delegate = self
         
-        Publishers.CombineLatest(
-            items.eraseToAnyPublisher(),
-            stateMachinePublisher.eraseToAnyPublisher()
-        )
-        .throttle(for: .milliseconds(300), scheduler: DispatchQueue.main, latest: true)
-        .receive(on: DispatchQueue.main)
-        .sink { [weak self] items, state in
-            guard let self = self else { return }
-            os_log("%{public}s[%{public}ld], %{public}s: state did change", ((#file as NSString).lastPathComponent), #line, #function)
-            
-            var snapshot = NSDiffableDataSourceSnapshot<TimelineSection, Item>()
-            snapshot.appendSections([.main])
-            snapshot.appendItems(items)
-            switch self.stateMachine.currentState {
-            case is State.Fail:
-                // TODO:
-                break
-            case is State.Initial, is State.NoMore:
-                break
-            case is State.Idle, is State.Loading:
-                snapshot.appendItems([.bottomLoader], toSection: .main)
-            default:
-                assertionFailure()
-            }
-            
-            self.diffableDataSource?.apply(snapshot, animatingDifferences: true)
-        }
-        .store(in: &disposeBag)
-        
-        searchTwitterUserIDs
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] ids in
-                guard let self = self else { return }
-                self.fetchedResultsController.fetchRequest.predicate = TwitterUser.predicate(idStrs: ids)
-                do {
-                    try self.fetchedResultsController.performFetch()
-                } catch {
-                    assertionFailure(error.localizedDescription)
-                }
-            }
-            .store(in: &disposeBag)
-        
-        searchActionPublisher
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] _ in
-                guard let self = self else { return }
-                self.stateMachine.enter(State.Loading.self)
-            }
-            .store(in: &disposeBag)
+//        Publishers.CombineLatest(
+//            items.eraseToAnyPublisher(),
+//            stateMachinePublisher.eraseToAnyPublisher()
+//        )
+//        .throttle(for: .milliseconds(300), scheduler: DispatchQueue.main, latest: true)
+//        .receive(on: DispatchQueue.main)
+//        .sink { [weak self] items, state in
+//            guard let self = self else { return }
+//            os_log("%{public}s[%{public}ld], %{public}s: state did change", ((#file as NSString).lastPathComponent), #line, #function)
+//            
+//            var snapshot = NSDiffableDataSourceSnapshot<TimelineSection, Item>()
+//            snapshot.appendSections([.main])
+//            snapshot.appendItems(items)
+//            switch self.stateMachine.currentState {
+//            case is State.Fail:
+//                // TODO:
+//                break
+//            case is State.Initial, is State.NoMore:
+//                break
+//            case is State.Idle, is State.Loading:
+//                snapshot.appendItems([.bottomLoader], toSection: .main)
+//            default:
+//                assertionFailure()
+//            }
+//            
+//            self.diffableDataSource?.apply(snapshot, animatingDifferences: true)
+//        }
+//        .store(in: &disposeBag)
+//        
+//        searchTwitterUserIDs
+//            .receive(on: DispatchQueue.main)
+//            .sink { [weak self] ids in
+//                guard let self = self else { return }
+//                self.fetchedResultsController.fetchRequest.predicate = TwitterUser.predicate(idStrs: ids)
+//                do {
+//                    try self.fetchedResultsController.performFetch()
+//                } catch {
+//                    assertionFailure(error.localizedDescription)
+//                }
+//            }
+//            .store(in: &disposeBag)
+//        
+//        searchActionPublisher
+//            .receive(on: DispatchQueue.main)
+//            .sink { [weak self] _ in
+//                guard let self = self else { return }
+//                self.stateMachine.enter(State.Loading.self)
+//            }
+//            .store(in: &disposeBag)
     }
     
     deinit {

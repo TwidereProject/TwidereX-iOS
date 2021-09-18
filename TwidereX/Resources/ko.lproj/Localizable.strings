@@ -20,8 +20,14 @@
 "Accessibility.Scene.Compose.Image" = "사진 넣기";
 "Accessibility.Scene.Compose.Location.Disable" = "위치 끄기";
 "Accessibility.Scene.Compose.Location.Enable" = "위치 켜기";
+"Accessibility.Scene.Compose.MediaInsert.Camera" = "Take Photo";
+"Accessibility.Scene.Compose.MediaInsert.Gif" = "Add GIF";
+"Accessibility.Scene.Compose.MediaInsert.Library" = "Browse Library";
+"Accessibility.Scene.Compose.MediaInsert.RecordVideo" = "Record Video";
 "Accessibility.Scene.Compose.Send" = "보내기";
 "Accessibility.Scene.Compose.Thread" = "타래 모드";
+"Accessibility.Scene.Gif.Search" = "Search GIF";
+"Accessibility.Scene.Gif.Title" = "GIPHY";
 "Accessibility.Scene.Home.Compose" = "쓰기";
 "Accessibility.Scene.Home.Drawer.AccountDropdown" = "계정 목록";
 "Accessibility.Scene.Home.Menu" = "메뉴";
@@ -40,6 +46,7 @@
 "Common.Alerts.AccountSuspended.TwitterRules" = "트위터 규정";
 "Common.Alerts.AccountTemporarilyLocked.Message" = "트위터를 열어 잠금 풀기";
 "Common.Alerts.AccountTemporarilyLocked.Title" = "계정이 일시적으로 잠겼습니다.";
+"Common.Alerts.BlockUserConfirm.Title" = "Do you want to block %@?";
 "Common.Alerts.BlockUserSuccess.Title" = "%@를 차단했습니다.";
 "Common.Alerts.CancelFollowRequest.Message" = "%@의 팔로우 요청을 취소할까요?";
 "Common.Alerts.FailedToBlockUser.Message" = "다시 해보세요.";
@@ -113,12 +120,14 @@
 "Common.Controls.Actions.TakePhoto" = "사진 찍기";
 "Common.Controls.Actions.Yes" = "네";
 "Common.Controls.Friendship.Actions.Block" = "차단하기";
+"Common.Controls.Friendship.Actions.Blocked" = "Blocked";
 "Common.Controls.Friendship.Actions.Follow" = "팔로우하기";
 "Common.Controls.Friendship.Actions.Following" = "팔로우 중";
 "Common.Controls.Friendship.Actions.Mute" = "숨기기";
 "Common.Controls.Friendship.Actions.Pending" = "대기중";
 "Common.Controls.Friendship.Actions.Report" = "신고하기";
 "Common.Controls.Friendship.Actions.ReportAndBlock" = "신고하고 차단하기";
+"Common.Controls.Friendship.Actions.Request" = "Request";
 "Common.Controls.Friendship.Actions.Unblock" = "차단 풀기";
 "Common.Controls.Friendship.Actions.Unfollow" = "팔로우 끊기";
 "Common.Controls.Friendship.Actions.Unmute" = "숨기기 풀기";
@@ -316,6 +325,7 @@
 "Scene.Settings.Display.Media.AutoPlayback" = "자동 재생";
 "Scene.Settings.Display.Media.Automatic" = "자동";
 "Scene.Settings.Display.Media.MediaPreviews" = "미디어 미리보기";
+"Scene.Settings.Display.Media.MuteByDefault" = "Mute by default";
 "Scene.Settings.Display.Media.Off" = "끄기";
 "Scene.Settings.Display.Preview.ThankForUsingTwidereX" = "@TwidereProject를 써주셔서 고맙습니다!";
 "Scene.Settings.Display.SectionHeader.DateFormat" = "날짜 형식";

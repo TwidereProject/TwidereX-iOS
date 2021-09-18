@@ -17,8 +17,8 @@ extension Persistence.TwitterStatus {
     struct PersistContext {
         let entity: Twitter.Entity.Tweet
         let user: TwitterUser?
-        let statusCache: APIService.Persist.PersistCache<TwitterStatus>?
-        let userCache: APIService.Persist.PersistCache<TwitterUser>?
+        let statusCache: Persistence.PersistCache<TwitterStatus>?
+        let userCache: Persistence.PersistCache<TwitterUser>?
         let networkDate: Date
         let log = OSLog.api
     }
@@ -155,6 +155,7 @@ extension Persistence.TwitterStatus {
         // update relationship
         if let user = context.user {
             context.entity.retweeted.flatMap { status.update(isRepost: $0, user: user) }
+            context.entity.favorited.flatMap { status.update(isLike: $0, user: user) }
         }
     }
     

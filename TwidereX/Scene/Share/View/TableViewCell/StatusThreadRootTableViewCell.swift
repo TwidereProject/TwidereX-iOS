@@ -10,17 +10,13 @@ import os.log
 import UIKit
 import Combine
 
-protocol StatusThreadRootTableViewCellDelegate: AnyObject {
-    func statusThreadRootTableViewCell(_ cell: StatusThreadRootTableViewCell, mediaGridContainerView containerView: MediaGridContainerView, didTapMediaView mediaView: MediaView, at index: Int)
-}
-
 final class StatusThreadRootTableViewCell: UITableViewCell {
     
     var disposeBag = Set<AnyCancellable>()
     
     let logger = Logger(subsystem: "StatusThreadRootTableViewCell", category: "UI")
     
-    weak var delegate: StatusThreadRootTableViewCellDelegate?
+    weak var delegate: StatusViewTableViewCellDelegate?
     let statusView = StatusView()
     let toolbarSeparator = SeparatorLineView()
     let separator = SeparatorLineView()
@@ -58,7 +54,7 @@ extension StatusThreadRootTableViewCell {
         ])
         statusView.setup(style: .plain)
         statusView.toolbar.setup(style: .plain)
-        statusView.mediaGridContainerView.delegate = self
+        statusView.delegate = self
         
         toolbarSeparator.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(toolbarSeparator)
@@ -80,15 +76,8 @@ extension StatusThreadRootTableViewCell {
     
 }
 
-// MARK: - MediaGridContainerViewDelegate
-extension StatusThreadRootTableViewCell: MediaGridContainerViewDelegate {
-    func mediaGridContainerView(_ container: MediaGridContainerView, didTapMediaView mediaView: MediaView, at index: Int) {
-        switch container {
-        case statusView.mediaGridContainerView:
-            delegate?.statusThreadRootTableViewCell(self, mediaGridContainerView: container, didTapMediaView: mediaView, at: index)
-        default:
-            assertionFailure()
-            return
-        }
-    }
-}
+// MARK: - StatusViewContainerTableViewCell
+extension StatusThreadRootTableViewCell: StatusViewContainerTableViewCell { }
+
+// MARK: - StatusViewDelegate
+extension StatusThreadRootTableViewCell: StatusViewDelegate { }

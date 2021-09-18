@@ -41,9 +41,6 @@ final public class MastodonUser: NSManagedObject {
     @NSManaged public private(set) var headerStatic: String?
     
     // sourcery: autoUpdatableObject, autoGenerateProperty
-    @NSManaged public private(set) var fieldsData: Data?
-    
-    // sourcery: autoUpdatableObject, autoGenerateProperty
     @NSManaged public private(set) var statusesCount: NSNumber
     // sourcery: autoUpdatableObject, autoGenerateProperty
     @NSManaged public private(set) var followingCount: NSNumber
@@ -71,8 +68,8 @@ final public class MastodonUser: NSManagedObject {
     @NSManaged public private(set) var statuses: Set<MastodonStatus>
     
     // many-to-many relationship
-    // @NSManaged public private(set) var favourite: Set<Status>?
-    // @NSManaged public private(set) var reblogged: Set<Status>?
+    @NSManaged public private(set) var like: Set<MastodonStatus>
+    @NSManaged public private(set) var reposts: Set<MastodonStatus>
     // @NSManaged public private(set) var muted: Set<Status>?
     // @NSManaged public private(set) var bookmarked: Set<Status>?
     // @NSManaged public private(set) var votePollOptions: Set<PollOption>?
@@ -114,6 +111,31 @@ extension MastodonUser {
         }
         set {
             let keyPath = #keyPath(MastodonUser.emojis)
+            let data = try? JSONEncoder().encode(newValue)
+            willChangeValue(forKey: keyPath)
+            setPrimitiveValue(data, forKey: keyPath)
+            didChangeValue(forKey: keyPath)
+        }
+    }
+    
+    // sourcery: autoUpdatableObject, autoGenerateProperty
+    @objc public var fields: [MastodonField] {
+        get {
+            let keyPath = #keyPath(MastodonUser.fields)
+            willAccessValue(forKey: keyPath)
+            let _data = primitiveValue(forKey: keyPath) as? Data
+            didAccessValue(forKey: keyPath)
+            do {
+                guard let data = _data else { return [] }
+                let fields = try JSONDecoder().decode([MastodonField].self, from: data)
+                return fields
+            } catch {
+                assertionFailure(error.localizedDescription)
+                return []
+            }
+        }
+        set {
+            let keyPath = #keyPath(MastodonUser.fields)
             let data = try? JSONEncoder().encode(newValue)
             willChangeValue(forKey: keyPath)
             setPrimitiveValue(data, forKey: keyPath)
@@ -201,7 +223,6 @@ extension MastodonUser: AutoGenerateProperty {
         public let  avatarStatic: String?
         public let  header: String?
         public let  headerStatic: String?
-        public let  fieldsData: Data?
         public let  statusesCount: NSNumber
         public let  followingCount: NSNumber
         public let  followersCount: NSNumber
@@ -211,6 +232,7 @@ extension MastodonUser: AutoGenerateProperty {
         public let  createdAt: Date
         public let  updatedAt: Date
         public let  emojis: [MastodonEmoji]
+        public let  fields: [MastodonField]
 
     	public init(
     		domain: String,
@@ -224,7 +246,6 @@ extension MastodonUser: AutoGenerateProperty {
     		avatarStatic: String?,
     		header: String?,
     		headerStatic: String?,
-    		fieldsData: Data?,
     		statusesCount: NSNumber,
     		followingCount: NSNumber,
     		followersCount: NSNumber,
@@ -233,7 +254,8 @@ extension MastodonUser: AutoGenerateProperty {
     		suspended: Bool,
     		createdAt: Date,
     		updatedAt: Date,
-    		emojis: [MastodonEmoji]
+    		emojis: [MastodonEmoji],
+    		fields: [MastodonField]
     	) {
     		self.domain = domain
     		self.id = id
@@ -246,7 +268,6 @@ extension MastodonUser: AutoGenerateProperty {
     		self.avatarStatic = avatarStatic
     		self.header = header
     		self.headerStatic = headerStatic
-    		self.fieldsData = fieldsData
     		self.statusesCount = statusesCount
     		self.followingCount = followingCount
     		self.followersCount = followersCount
@@ -256,6 +277,7 @@ extension MastodonUser: AutoGenerateProperty {
     		self.createdAt = createdAt
     		self.updatedAt = updatedAt
     		self.emojis = emojis
+    		self.fields = fields
     	}
     }
 
@@ -271,7 +293,6 @@ extension MastodonUser: AutoGenerateProperty {
     	self.avatarStatic = property.avatarStatic
     	self.header = property.header
     	self.headerStatic = property.headerStatic
-    	self.fieldsData = property.fieldsData
     	self.statusesCount = property.statusesCount
     	self.followingCount = property.followingCount
     	self.followersCount = property.followersCount
@@ -281,6 +302,7 @@ extension MastodonUser: AutoGenerateProperty {
     	self.createdAt = property.createdAt
     	self.updatedAt = property.updatedAt
     	self.emojis = property.emojis
+    	self.fields = property.fields
     }
 
     public func update(property: Property) {
@@ -293,7 +315,6 @@ extension MastodonUser: AutoGenerateProperty {
     	update(avatarStatic: property.avatarStatic)
     	update(header: property.header)
     	update(headerStatic: property.headerStatic)
-    	update(fieldsData: property.fieldsData)
     	update(statusesCount: property.statusesCount)
     	update(followingCount: property.followingCount)
     	update(followersCount: property.followersCount)
@@ -303,6 +324,7 @@ extension MastodonUser: AutoGenerateProperty {
     	update(createdAt: property.createdAt)
     	update(updatedAt: property.updatedAt)
     	update(emojis: property.emojis)
+    	update(fields: property.fields)
     }
     // sourcery:end
 }
@@ -358,11 +380,6 @@ extension MastodonUser: AutoUpdatableObject {
     		self.headerStatic = headerStatic
     	}
     }
-    public func update(fieldsData: Data?) {
-    	if self.fieldsData != fieldsData {
-    		self.fieldsData = fieldsData
-    	}
-    }
     public func update(statusesCount: NSNumber) {
     	if self.statusesCount != statusesCount {
     		self.statusesCount = statusesCount
@@ -406,6 +423,11 @@ extension MastodonUser: AutoUpdatableObject {
     public func update(emojis: [MastodonEmoji]) {
     	if self.emojis != emojis {
     		self.emojis = emojis
+    	}
+    }
+    public func update(fields: [MastodonField]) {
+    	if self.fields != fields {
+    		self.fields = fields
     	}
     }
     // sourcery:end    

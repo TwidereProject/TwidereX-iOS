@@ -12,3 +12,13 @@ import CoreDataStack
 enum UserItem: Hashable {
     case authenticationIndex(record: ManagedObjectRecord<AuthenticationIndex>)
 }
+
+enum UserRecord: Hashable {
+    case twitter(record: ManagedObjectRecord<TwitterUser>)
+    case mastodon(record: ManagedObjectRecord<MastodonUser>)
+}
+
+enum UserObject: Hashable {
+    case twitter(object: TwitterUser)
+    case mastodon(object: MastodonUser)
+}

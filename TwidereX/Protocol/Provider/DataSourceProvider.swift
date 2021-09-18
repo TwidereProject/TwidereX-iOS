@@ -12,12 +12,11 @@ import CoreDataStack
 import UIKit
 
 enum DataSourceItem {
-    case status(Status)
+    case status(StatusRecord)
+    case user(UserRecord)
 }
 
 extension DataSourceItem {
-    typealias Status = StatusItem.Status
-    
     struct Source {
         let tableViewCell: UITableViewCell?
         let indexPath: IndexPath?

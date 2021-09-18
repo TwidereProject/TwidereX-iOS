@@ -6,17 +6,36 @@
 //  Copyright © 2021 Twidere. All rights reserved.
 //
 
+import os.log
 import Combine
 import UIKit
 import MetaTextKit
 import MetaTextArea
+import Kingfisher
+
+protocol StatusViewDelegate: AnyObject {
+    func statusView(_ statusView: StatusView, headerDidPressed header: UIView)
+    
+    func statusView(_ statusView: StatusView, authorAvatarButtonDidPressed button: AvatarButton)
+    func statusView(_ statusView: StatusView, quoteStatusView: StatusView, authorAvatarButtonDidPressed button: AvatarButton)
+    
+    func statusView(_ statusView: StatusView, mediaGridContainerView containerView: MediaGridContainerView, didTapMediaView mediaView: MediaView, at index: Int)
+    func statusView(_ statusView: StatusView, quoteStatusView: StatusView, mediaGridContainerView containerView: MediaGridContainerView, didTapMediaView mediaView: MediaView, at index: Int)
+    
+    func statusView(_ statusView: StatusView, statusToolbar: StatusToolbar, actionDidPressed action: StatusToolbar.Action)
+}
 
 final class StatusView: UIView {
     
-    var disposeBag = Set<AnyCancellable>()
+    private var _disposeBag = Set<AnyCancellable>() // which lifetime same to view scope
+    var disposeBag = Set<AnyCancellable>()          // clear when reuse
+    
+    weak var delegate: StatusViewDelegate?
 
     static let bodyContainerStackViewSpacing: CGFloat = 10
     static let quoteStatusViewContainerLayoutMargin: CGFloat = 12
+    
+    let logger = Logger(subsystem: "StatusView", category: "UI")
     
     private var style: Style?
     
@@ -54,10 +73,16 @@ final class StatusView: UIView {
     let timestampLabel = PlainLabel(style: .statusTimestamp)
     
     // content
-    var contentTextViewFontTextStyle: UIFont.TextStyle?
-    var contentTextViewTextColor: UIColor?
     let contentTextView: MetaTextAreaView = {
         let textView = MetaTextAreaView()
+        textView.textAttributes = [
+            .font: UIFont.preferredFont(forTextStyle: .body),
+            .foregroundColor: UIColor.label,
+        ]
+        textView.linkAttributes = [
+            .font: UIFont.preferredFont(forTextStyle: .body),
+            .foregroundColor: Asset.Colors.Theme.daylight.color
+        ]
         return textView
     }()
     
@@ -65,7 +90,13 @@ final class StatusView: UIView {
     let mediaGridContainerView = MediaGridContainerView()
     
     // quote
-    private(set) var quoteStatusView: StatusView?
+    private(set) var quoteStatusView: StatusView? {
+        didSet {
+            if let quoteStatusView = quoteStatusView {
+                quoteStatusView.delegate = self
+            }
+        }
+    }
     
     // location
     let locationContainer: UIStackView = {
@@ -125,6 +156,17 @@ extension StatusView {
             containerStackView.trailingAnchor.constraint(equalTo: trailingAnchor),
             containerStackView.bottomAnchor.constraint(equalTo: bottomAnchor),
         ])
+        
+        // header
+        let headerTapGestureRecognizer = UITapGestureRecognizer.singleTapGestureRecognizer
+        headerTapGestureRecognizer.addTarget(self, action: #selector(StatusView.headerTapGestureRecognizerHandler(_:)))
+        headerContainerView.addGestureRecognizer(headerTapGestureRecognizer)
+        // avatar button
+        authorAvatarButton.addTarget(self, action: #selector(StatusView.authorAvatarButtonDidPressed(_:)), for: .touchUpInside)
+        // media grid
+        mediaGridContainerView.delegate = self
+        // toolbar
+        toolbar.delegate = self
         
         ThemeService.shared.theme
             .sink { [weak self] theme in
@@ -215,6 +257,7 @@ extension StatusView.Style {
         // content container: V - [ author content | contentTextView | mediaGridContainerView | quoteStatusView | … | location content | toolbar ]
         let contentContainerView = UIStackView()
         contentContainerView.axis = .vertical
+        contentContainerView.spacing = 10
         bodyContainerStackView.addArrangedSubview(contentContainerView)
         
         // author content: H - [ authorNameLabel | authorUsernameLabel | padding | visibilityImageView (for Mastodon) | timestampLabel ]
@@ -223,6 +266,11 @@ extension StatusView.Style {
         authorContentStackView.spacing = 6
         contentContainerView.addArrangedSubview(authorContentStackView)
         contentContainerView.setCustomSpacing(4, after: authorContentStackView)
+        UIContentSizeCategory.publisher
+            .sink { category in
+                authorContentStackView.axis = category > .accessibilityLarge ? .vertical : .horizontal
+            }
+            .store(in: &statusView._disposeBag)
         
         // authorNameLabel
         authorContentStackView.addArrangedSubview(statusView.authorNameLabel)
@@ -245,10 +293,7 @@ extension StatusView.Style {
         // contentTextView
         statusView.contentTextView.translatesAutoresizingMaskIntoConstraints = false
         contentContainerView.addArrangedSubview(statusView.contentTextView)
-        contentContainerView.setCustomSpacing(10, after: statusView.contentTextView)
         statusView.contentTextView.setContentHuggingPriority(.required - 10, for: .vertical)
-        statusView.contentTextViewFontTextStyle = .body
-        statusView.contentTextViewTextColor = .label
         
         // mediaGridContainerView
         statusView.mediaGridContainerView.translatesAutoresizingMaskIntoConstraints = false
@@ -310,19 +355,21 @@ extension StatusView.Style {
 
         // author content: H - [ authorAvatarButton | author info content ]
         let authorContentStackView = UIStackView()
+        let authorContentStackViewSpacing: CGFloat = 10
         authorContentStackView.axis = .horizontal
-        authorContentStackView.spacing = 10
+        authorContentStackView.spacing = authorContentStackViewSpacing
         statusView.containerStackView.addArrangedSubview(authorContentStackView)
-        
+
         // authorAvatarButton
         let authorAvatarButtonSize = CGSize(width: 44, height: 44)
         statusView.authorAvatarButton.size = authorAvatarButtonSize
         statusView.authorAvatarButton.avatarImageView.imageViewSize = authorAvatarButtonSize
         statusView.authorAvatarButton.translatesAutoresizingMaskIntoConstraints = false
         authorContentStackView.addArrangedSubview(statusView.authorAvatarButton)
+        let authorAvatarButtonWidthFixLayoutConstraint = statusView.authorAvatarButton.widthAnchor.constraint(equalToConstant: authorAvatarButtonSize.width).priority(.required - 1)
         NSLayoutConstraint.activate([
-            statusView.authorAvatarButton.widthAnchor.constraint(equalToConstant: authorAvatarButtonSize.width).priority(.required - 1),
-            statusView.authorAvatarButton.heightAnchor.constraint(equalToConstant: authorAvatarButtonSize.height).priority(.required - 1),
+            authorAvatarButtonWidthFixLayoutConstraint,
+            statusView.authorAvatarButton.heightAnchor.constraint(equalTo: statusView.authorAvatarButton.widthAnchor, multiplier: 1.0).priority(.required - 1),
         ])
         
         // author info content: V - [ author info headline content | author info sub-headline content ]
@@ -330,30 +377,40 @@ extension StatusView.Style {
         authorInfoContentStackView.axis = .vertical
         authorContentStackView.addArrangedSubview(authorInfoContentStackView)
         
-        // author info headline content: H - [ authorNameLabel | padding | visibilityImageView (for Mastodon) | timestampLabel ]
+        // author info headline content: H - [ authorNameLabel | padding | visibilityImageView (for Mastodon) ]
         let authorInfoHeadlineContentStackView = UIStackView()
         authorInfoHeadlineContentStackView.axis = .horizontal
         authorInfoContentStackView.addArrangedSubview(authorInfoHeadlineContentStackView)
         
         // authorNameLabel
         authorInfoHeadlineContentStackView.addArrangedSubview(statusView.authorNameLabel)
-        statusView.timestampLabel.setContentCompressionResistancePriority(.required - 10, for: .horizontal)
+        statusView.authorNameLabel.setContentCompressionResistancePriority(.required - 10, for: .horizontal)
         // padding
         authorInfoHeadlineContentStackView.addArrangedSubview(statusView.authorNameLabel)
-        // timestampLabel
-        authorInfoHeadlineContentStackView.addArrangedSubview(statusView.timestampLabel)
-        statusView.timestampLabel.setContentHuggingPriority(.required - 9, for: .horizontal)
-        statusView.timestampLabel.setContentCompressionResistancePriority(.required - 9, for: .horizontal)
+        // visibilityImageView
+        // TODO:
         
         // set header label align to author name
         NSLayoutConstraint.activate([
-            statusView.headerTextLabel.leadingAnchor.constraint(equalTo: statusView.authorNameLabel.leadingAnchor),
+            statusView.headerTextLabel.leadingAnchor.constraint(equalTo: statusView.authorAvatarButton.trailingAnchor, constant: authorContentStackViewSpacing),
         ])
         
         // author info sub-headline content: H - [ authorUsernameLabel ]
         let authorInfoSubHeadlineContentStackView = UIStackView()
         authorInfoSubHeadlineContentStackView.axis = .horizontal
         authorInfoContentStackView.addArrangedSubview(authorInfoSubHeadlineContentStackView)
+        
+        UIContentSizeCategory.publisher
+            .sink { category in
+                if category >= .extraExtraLarge {
+                    authorContentStackView.axis = .vertical
+                    authorContentStackView.alignment = .leading // set leading
+                } else {
+                    authorContentStackView.axis = .horizontal
+                    authorContentStackView.alignment = .fill    // restore default
+                }
+            }
+            .store(in: &statusView._disposeBag)
         
         // authorUsernameLabel
         authorInfoSubHeadlineContentStackView.addArrangedSubview(statusView.authorUsernameLabel)
@@ -363,7 +420,7 @@ extension StatusView.Style {
         
         // mediaGridContainerView
         statusView.containerStackView.addArrangedSubview(statusView.mediaGridContainerView)
-        
+
         // quoteStatusView
         let quoteStatusView = StatusView()
         quoteStatusView.setup(style: .quote)
@@ -450,10 +507,15 @@ extension StatusView.Style {
         // contentTextView
         statusView.contentTextView.translatesAutoresizingMaskIntoConstraints = false
         bodyContainerStackView.addArrangedSubview(statusView.contentTextView)
-        bodyContainerStackView.setCustomSpacing(10, after: statusView.contentTextView)
         statusView.contentTextView.setContentHuggingPriority(.required - 10, for: .vertical)
-        statusView.contentTextViewFontTextStyle = .callout
-        statusView.contentTextViewTextColor = .secondaryLabel
+        statusView.contentTextView.textAttributes = [
+            .font: UIFont.preferredFont(forTextStyle: .callout),
+            .foregroundColor: UIColor.secondaryLabel,
+        ]
+        statusView.contentTextView.linkAttributes = [
+            .font: UIFont.preferredFont(forTextStyle: .callout),
+            .foregroundColor: Asset.Colors.Theme.daylight.color
+        ]
         
         // mediaGridContainerView
         statusView.mediaGridContainerView.translatesAutoresizingMaskIntoConstraints = false
@@ -508,4 +570,69 @@ extension StatusView {
         }
     }
 
+}
+
+extension StatusView {
+    @objc private func headerTapGestureRecognizerHandler(_ sender: UITapGestureRecognizer) {
+        logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public)")
+        delegate?.statusView(self, headerDidPressed: headerContainerView)
+    }
+    
+    @objc private func authorAvatarButtonDidPressed(_ button: UIButton) {
+        logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public)")
+        delegate?.statusView(self, authorAvatarButtonDidPressed: authorAvatarButton)
+    }
+}
+
+// MARK: - MediaGridContainerViewDelegate
+extension StatusView: MediaGridContainerViewDelegate {
+    func mediaGridContainerView(_ container: MediaGridContainerView, didTapMediaView mediaView: MediaView, at index: Int) {
+        delegate?.statusView(self, mediaGridContainerView: container, didTapMediaView: mediaView, at: index)
+    }
+}
+
+// MARK: - StatusToolbarDelegate
+extension StatusView: StatusToolbarDelegate {
+    func statusToolbar(_ statusToolbar: StatusToolbar, actionDidPressed action: StatusToolbar.Action) {
+        delegate?.statusView(self, statusToolbar: statusToolbar, actionDidPressed: action)
+    }
+}
+
+// MARK: - StatusViewDelegate
+// relay for quoteStatsView
+extension StatusView: StatusViewDelegate {
+    func statusView(_ statusView: StatusView, headerDidPressed header: UIView) {
+        assertionFailure()
+    }
+    
+    func statusView(_ statusView: StatusView, authorAvatarButtonDidPressed button: AvatarButton) {
+        guard statusView === quoteStatusView else {
+            assertionFailure()
+            return
+        }
+        
+        delegate?.statusView(self, quoteStatusView: statusView, authorAvatarButtonDidPressed: button)
+    }
+    
+    func statusView(_ statusView: StatusView, quoteStatusView: StatusView, authorAvatarButtonDidPressed button: AvatarButton) {
+        assertionFailure()
+    }
+    
+    func statusView(_ statusView: StatusView, mediaGridContainerView containerView: MediaGridContainerView, didTapMediaView mediaView: MediaView, at index: Int) {
+        guard statusView === quoteStatusView else {
+            assertionFailure()
+            return
+        }
+        
+        delegate?.statusView(self, quoteStatusView: statusView, mediaGridContainerView: containerView, didTapMediaView: mediaView, at: index)
+    }
+    
+    func statusView(_ statusView: StatusView, quoteStatusView: StatusView, mediaGridContainerView containerView: MediaGridContainerView, didTapMediaView mediaView: MediaView, at index: Int) {
+        assertionFailure()
+    }
+    
+    func statusView(_ statusView: StatusView, statusToolbar: StatusToolbar, actionDidPressed action: StatusToolbar.Action) {
+        assertionFailure()
+    }
+    
 }

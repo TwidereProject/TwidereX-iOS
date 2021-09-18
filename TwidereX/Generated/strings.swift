@@ -74,6 +74,22 @@ internal enum L10n {
           /// Enable location
           internal static let enable = L10n.tr("Localizable", "Accessibility.Scene.Compose.Location.Enable")
         }
+        internal enum MediaInsert {
+          /// Take Photo
+          internal static let camera = L10n.tr("Localizable", "Accessibility.Scene.Compose.MediaInsert.Camera")
+          /// Add GIF
+          internal static let gif = L10n.tr("Localizable", "Accessibility.Scene.Compose.MediaInsert.Gif")
+          /// Browse Library
+          internal static let library = L10n.tr("Localizable", "Accessibility.Scene.Compose.MediaInsert.Library")
+          /// Record Video
+          internal static let recordVideo = L10n.tr("Localizable", "Accessibility.Scene.Compose.MediaInsert.RecordVideo")
+        }
+      }
+      internal enum Gif {
+        /// Search GIF
+        internal static let search = L10n.tr("Localizable", "Accessibility.Scene.Gif.Search")
+        /// GIPHY
+        internal static let title = L10n.tr("Localizable", "Accessibility.Scene.Gif.Title")
       }
       internal enum Home {
         /// Compose
@@ -139,6 +155,12 @@ internal enum L10n {
         internal static let message = L10n.tr("Localizable", "Common.Alerts.AccountTemporarilyLocked.Message")
         /// Account Temporarily Locked
         internal static let title = L10n.tr("Localizable", "Common.Alerts.AccountTemporarilyLocked.Title")
+      }
+      internal enum BlockUserConfirm {
+        /// Do you want to block %@?
+        internal static func title(_ p1: Any) -> String {
+          return L10n.tr("Localizable", "Common.Alerts.BlockUserConfirm.Title", String(describing: p1))
+        }
       }
       internal enum BlockUserSuccess {
         /// %@ has been blocked
@@ -420,6 +442,8 @@ internal enum L10n {
         internal enum Actions {
           /// Block
           internal static let block = L10n.tr("Localizable", "Common.Controls.Friendship.Actions.Block")
+          /// Blocked
+          internal static let blocked = L10n.tr("Localizable", "Common.Controls.Friendship.Actions.Blocked")
           /// Follow
           internal static let follow = L10n.tr("Localizable", "Common.Controls.Friendship.Actions.Follow")
           /// Following
@@ -432,6 +456,8 @@ internal enum L10n {
           internal static let report = L10n.tr("Localizable", "Common.Controls.Friendship.Actions.Report")
           /// Report and Block
           internal static let reportAndBlock = L10n.tr("Localizable", "Common.Controls.Friendship.Actions.ReportAndBlock")
+          /// Request
+          internal static let request = L10n.tr("Localizable", "Common.Controls.Friendship.Actions.Request")
           /// Unblock
           internal static let unblock = L10n.tr("Localizable", "Common.Controls.Friendship.Actions.Unblock")
           /// Unfollow
@@ -1049,6 +1075,8 @@ internal enum L10n {
           internal static let autoPlayback = L10n.tr("Localizable", "Scene.Settings.Display.Media.AutoPlayback")
           /// Media previews
           internal static let mediaPreviews = L10n.tr("Localizable", "Scene.Settings.Display.Media.MediaPreviews")
+          /// Mute by default
+          internal static let muteByDefault = L10n.tr("Localizable", "Scene.Settings.Display.Media.MuteByDefault")
           /// Off
           internal static let off = L10n.tr("Localizable", "Scene.Settings.Display.Media.Off")
         }

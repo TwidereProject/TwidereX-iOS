@@ -39,44 +39,44 @@ extension MentionTimelineViewModel.LoadLatestState {
         
         override func didEnter(from previousState: GKState?) {
             super.didEnter(from: previousState)
-            guard let viewModel = viewModel, let stateMachine = stateMachine else { return }
-            guard let twitterAuthenticationBox = viewModel.context.authenticationService.activeTwitterAuthenticationBox.value else {
-                stateMachine.enter(Fail.self)
-                return
-            }
-            
-            let tweetIDs = (viewModel.fetchedResultsController.fetchedObjects ?? []).compactMap { timelineIndex in
-                timelineIndex.tweet?.id
-            }
-            
-            // TODO: only set large count when using Wi-Fi
-            viewModel.context.apiService.twitterMentionTimeline(count: 200, twitterAuthenticationBox: twitterAuthenticationBox)
-                .delay(for: .seconds(1), scheduler: DispatchQueue.main)
-                .receive(on: DispatchQueue.main)
-                .sink { completion in
-                    switch completion {
-                    case .failure(let error):
-                        // TODO: handle error
-                        viewModel.isFetchingLatestTimeline.value = false
-                        os_log("%{public}s[%{public}ld], %{public}s: fetch tweets failed. %s", ((#file as NSString).lastPathComponent), #line, #function, error.localizedDescription)
-                    case .finished:
-                        // handle isFetchingLatestTimeline in fetch controller delegate
-                        break
-                    }
-                    
-                    stateMachine.enter(Idle.self)
-                    
-                } receiveValue: { response in
-                    // stop refresher if no new tweets
-                    let tweets = response.value
-                    let newTweets = tweets.filter { !tweetIDs.contains($0.idStr) }
-                    os_log("%{public}s[%{public}ld], %{public}s: load %{public}ld new tweets", ((#file as NSString).lastPathComponent), #line, #function, newTweets.count)
-                    
-                    if newTweets.isEmpty {
-                        viewModel.isFetchingLatestTimeline.value = false
-                    }
-                }
-                .store(in: &viewModel.disposeBag)
+//            guard let viewModel = viewModel, let stateMachine = stateMachine else { return }
+//            guard let twitterAuthenticationBox = viewModel.context.authenticationService.activeTwitterAuthenticationBox.value else {
+//                stateMachine.enter(Fail.self)
+//                return
+//            }
+//            
+//            let tweetIDs = (viewModel.fetchedResultsController.fetchedObjects ?? []).compactMap { timelineIndex in
+//                timelineIndex.tweet?.id
+//            }
+//            
+//            // TODO: only set large count when using Wi-Fi
+//            viewModel.context.apiService.twitterMentionTimeline(count: 200, twitterAuthenticationBox: twitterAuthenticationBox)
+//                .delay(for: .seconds(1), scheduler: DispatchQueue.main)
+//                .receive(on: DispatchQueue.main)
+//                .sink { completion in
+//                    switch completion {
+//                    case .failure(let error):
+//                        // TODO: handle error
+//                        viewModel.isFetchingLatestTimeline.value = false
+//                        os_log("%{public}s[%{public}ld], %{public}s: fetch tweets failed. %s", ((#file as NSString).lastPathComponent), #line, #function, error.localizedDescription)
+//                    case .finished:
+//                        // handle isFetchingLatestTimeline in fetch controller delegate
+//                        break
+//                    }
+//                    
+//                    stateMachine.enter(Idle.self)
+//                    
+//                } receiveValue: { response in
+//                    // stop refresher if no new tweets
+//                    let tweets = response.value
+//                    let newTweets = tweets.filter { !tweetIDs.contains($0.idStr) }
+//                    os_log("%{public}s[%{public}ld], %{public}s: load %{public}ld new tweets", ((#file as NSString).lastPathComponent), #line, #function, newTweets.count)
+//                    
+//                    if newTweets.isEmpty {
+//                        viewModel.isFetchingLatestTimeline.value = false
+//                    }
+//                }
+//                .store(in: &viewModel.disposeBag)
         }
     }
     

@@ -20,12 +20,12 @@ class UserTimelineViewModel: NSObject {
     
     // input
     let context: AppContext
-    let fetchedResultsController: NSFetchedResultsController<Tweet>
+//    let fetchedResultsController: NSFetchedResultsController<Tweet>
     let userID: CurrentValueSubject<String?, Never>
     weak var tableView: UITableView?
     
     // output
-    var diffableDataSource: UITableViewDiffableDataSource<TimelineSection, Item>?
+//    var diffableDataSource: UITableViewDiffableDataSource<TimelineSection, Item>?
     private(set) lazy var stateMachine: GKStateMachine = {
         let stateMachine = GKStateMachine(states: [
             State.Initial(viewModel: self),
@@ -45,74 +45,74 @@ class UserTimelineViewModel: NSObject {
     let items = CurrentValueSubject<[Item], Never>([])
     var cellFrameCache = NSCache<NSNumber, NSValue>()
     
-    init(context: AppContext, userID: String?) {
+    init(context: AppContext) {
         self.context = context
-        self.fetchedResultsController = {
-            let fetchRequest = Tweet.sortedFetchRequest
-            fetchRequest.predicate = Tweet.predicate(idStrs: [])
-            fetchRequest.returnsObjectsAsFaults = false
-            fetchRequest.fetchBatchSize = 20
-            let controller = NSFetchedResultsController(
-                fetchRequest: fetchRequest,
-                managedObjectContext: context.managedObjectContext,
-                sectionNameKeyPath: nil,
-                cacheName: nil
-            )
-            
-            return controller
-        }()
-        self.userID = CurrentValueSubject(userID)
+//        self.fetchedResultsController = {
+//            let fetchRequest = Tweet.sortedFetchRequest
+//            fetchRequest.predicate = Tweet.predicate(idStrs: [])
+//            fetchRequest.returnsObjectsAsFaults = false
+//            fetchRequest.fetchBatchSize = 20
+//            let controller = NSFetchedResultsController(
+//                fetchRequest: fetchRequest,
+//                managedObjectContext: context.managedObjectContext,
+//                sectionNameKeyPath: nil,
+//                cacheName: nil
+//            )
+//
+//            return controller
+//        }()
+        self.userID = CurrentValueSubject(nil)
         super.init()
         
-        self.fetchedResultsController.delegate = self
+//        self.fetchedResultsController.delegate = self
         
-        items
-            .receive(on: DispatchQueue.main)
-            .debounce(for: .milliseconds(300), scheduler: DispatchQueue.main)
-            .sink { [weak self] items in
-                guard let self = self else { return }
-                guard let diffableDataSource = self.diffableDataSource else { return }
-                os_log("%{public}s[%{public}ld], %{public}s: items did change", ((#file as NSString).lastPathComponent), #line, #function)
-
-                var snapshot = NSDiffableDataSourceSnapshot<TimelineSection, Item>()
-                snapshot.appendSections([.main])
-                snapshot.appendItems(items)
-                
-                if let currentState = self.stateMachine.currentState {
-                    switch currentState {
-                    case is State.Reloading, is State.Idle, is State.LoadingMore, is State.Fail:
-                        snapshot.appendItems([.bottomLoader], toSection: .main)
-                    case is State.NotAuthorized:
-                        snapshot.appendItems([.emptyStateHeader(attribute: .init(reason: .notAuthorized))], toSection: .main)
-                    case is State.Blocked:
-                        snapshot.appendItems([.emptyStateHeader(attribute: .init(reason: .blocked))], toSection: .main)
-                    case is State.Suspended:
-                        snapshot.appendItems([.emptyStateHeader(attribute: .init(reason: .suspended))], toSection: .main)
-                    case is State.NoMore:
-                        if items.isEmpty {
-                            snapshot.appendItems([.emptyStateHeader(attribute: .init(reason: .noTweetsFound))], toSection: .main)
-                        }
-                    default:
-                        break
-                    }
-                }
-                
-                diffableDataSource.apply(snapshot, animatingDifferences: !items.isEmpty)
-            }
-            .store(in: &disposeBag)
-        
-        tweetIDs
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] ids in
-                guard let self = self else { return }
-                self.fetchedResultsController.fetchRequest.predicate = Tweet.predicate(idStrs: ids)
-                do {
-                    try self.fetchedResultsController.performFetch()
-                } catch {
-                    assertionFailure(error.localizedDescription)
-                }
-            }
-            .store(in: &disposeBag)
+//        items
+//            .receive(on: DispatchQueue.main)
+//            .debounce(for: .milliseconds(300), scheduler: DispatchQueue.main)
+//            .sink { [weak self] items in
+//                guard let self = self else { return }
+//                guard let diffableDataSource = self.diffableDataSource else { return }
+//                os_log("%{public}s[%{public}ld], %{public}s: items did change", ((#file as NSString).lastPathComponent), #line, #function)
+//
+//                var snapshot = NSDiffableDataSourceSnapshot<TimelineSection, Item>()
+//                snapshot.appendSections([.main])
+//                snapshot.appendItems(items)
+//                
+//                if let currentState = self.stateMachine.currentState {
+//                    switch currentState {
+//                    case is State.Reloading, is State.Idle, is State.LoadingMore, is State.Fail:
+//                        snapshot.appendItems([.bottomLoader], toSection: .main)
+//                    case is State.NotAuthorized:
+//                        snapshot.appendItems([.emptyStateHeader(attribute: .init(reason: .notAuthorized))], toSection: .main)
+//                    case is State.Blocked:
+//                        snapshot.appendItems([.emptyStateHeader(attribute: .init(reason: .blocked))], toSection: .main)
+//                    case is State.Suspended:
+//                        snapshot.appendItems([.emptyStateHeader(attribute: .init(reason: .suspended))], toSection: .main)
+//                    case is State.NoMore:
+//                        if items.isEmpty {
+//                            snapshot.appendItems([.emptyStateHeader(attribute: .init(reason: .noTweetsFound))], toSection: .main)
+//                        }
+//                    default:
+//                        break
+//                    }
+//                }
+//                
+//                diffableDataSource.apply(snapshot, animatingDifferences: !items.isEmpty)
+//            }
+//            .store(in: &disposeBag)
+//        
+//        tweetIDs
+//            .receive(on: DispatchQueue.main)
+//            .sink { [weak self] ids in
+//                guard let self = self else { return }
+//                self.fetchedResultsController.fetchRequest.predicate = Tweet.predicate(idStrs: ids)
+//                do {
+//                    try self.fetchedResultsController.performFetch()
+//                } catch {
+//                    assertionFailure(error.localizedDescription)
+//                }
+//            }
+//            .store(in: &disposeBag)
     }
     
     deinit {
@@ -129,30 +129,30 @@ extension UserTimelineViewModel {
         case invalidAnchorToLoadMore
     }
     
-    func fetchLatest() -> AnyPublisher<Twitter.Response.Content<[Twitter.Entity.Tweet]>, Error> {
-        guard let activeTwitterAuthenticationBox = context.authenticationService.activeTwitterAuthenticationBox.value else {
-            return Fail(error: UserTimelineError.invalidAuthorization).eraseToAnyPublisher()
-        }
-        guard let userID = self.userID.value, !userID.isEmpty else {
-            return Fail(error: UserTimelineError.invalidUserID).eraseToAnyPublisher()
-        }
-        
-        return context.apiService.twitterUserTimeline(count: 20, userID: userID, twitterAuthenticationBox: activeTwitterAuthenticationBox)
-    }
-    
-    func loadMore() -> AnyPublisher<Twitter.Response.Content<[Twitter.Entity.Tweet]>, Error> {
-        guard let activeTwitterAuthenticationBox = context.authenticationService.activeTwitterAuthenticationBox.value else {
-            return Fail(error: UserTimelineError.invalidAuthorization).eraseToAnyPublisher()
-        }
-        guard let userID = self.userID.value, !userID.isEmpty else {
-            return Fail(error: UserTimelineError.invalidUserID).eraseToAnyPublisher()
-        }
-        guard let oldestTweetID = tweetIDs.value.last else {
-            return Fail(error: UserTimelineError.invalidAnchorToLoadMore).eraseToAnyPublisher()
-        }
-        
-        let maxID = oldestTweetID
-        return context.apiService.twitterUserTimeline(count: 20, userID: userID, maxID: maxID, twitterAuthenticationBox: activeTwitterAuthenticationBox)
-    }
+//    func fetchLatest() -> AnyPublisher<Twitter.Response.Content<[Twitter.Entity.Tweet]>, Error> {
+//        guard let activeTwitterAuthenticationBox = context.authenticationService.activeTwitterAuthenticationBox.value else {
+//            return Fail(error: UserTimelineError.invalidAuthorization).eraseToAnyPublisher()
+//        }
+//        guard let userID = self.userID.value, !userID.isEmpty else {
+//            return Fail(error: UserTimelineError.invalidUserID).eraseToAnyPublisher()
+//        }
+//
+//        return context.apiService.twitterUserTimeline(count: 20, userID: userID, twitterAuthenticationBox: activeTwitterAuthenticationBox)
+//    }
+//
+//    func loadMore() -> AnyPublisher<Twitter.Response.Content<[Twitter.Entity.Tweet]>, Error> {
+//        guard let activeTwitterAuthenticationBox = context.authenticationService.activeTwitterAuthenticationBox.value else {
+//            return Fail(error: UserTimelineError.invalidAuthorization).eraseToAnyPublisher()
+//        }
+//        guard let userID = self.userID.value, !userID.isEmpty else {
+//            return Fail(error: UserTimelineError.invalidUserID).eraseToAnyPublisher()
+//        }
+//        guard let oldestTweetID = tweetIDs.value.last else {
+//            return Fail(error: UserTimelineError.invalidAnchorToLoadMore).eraseToAnyPublisher()
+//        }
+//
+//        let maxID = oldestTweetID
+//        return context.apiService.twitterUserTimeline(count: 20, userID: userID, maxID: maxID, twitterAuthenticationBox: activeTwitterAuthenticationBox)
+//    }
     
 }

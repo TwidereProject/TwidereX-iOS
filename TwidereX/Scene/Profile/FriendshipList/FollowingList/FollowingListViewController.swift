@@ -63,20 +63,20 @@ extension FollowingListViewController {
             tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
         ])
         
-        tableView.delegate = self
-        viewModel.setupDiffableDataSource(for: tableView)
-        viewModel.stateMachine.enter(FriendshipListViewModel.State.Loading.self)
-        
-        viewModel.isPermissionDenied
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] isPermissionDenied in
-                guard let self = self else { return }
-                self.emptyStateView.iconImageView.image = Asset.Human.eyeSlashLarge.image.withRenderingMode(.alwaysTemplate)
-                self.emptyStateView.titleLabel.text = L10n.Common.Alerts.PermissionDeniedNotAuthorized.title
-                self.emptyStateView.messageLabel.text = L10n.Common.Alerts.PermissionDeniedNotAuthorized.message
-                self.emptyStateView.isHidden = !isPermissionDenied
-            }
-            .store(in: &disposeBag)
+//        tableView.delegate = self
+//        viewModel.setupDiffableDataSource(for: tableView)
+//        viewModel.stateMachine.enter(FriendshipListViewModel.State.Loading.self)
+//        
+//        viewModel.isPermissionDenied
+//            .receive(on: DispatchQueue.main)
+//            .sink { [weak self] isPermissionDenied in
+//                guard let self = self else { return }
+//                self.emptyStateView.iconImageView.image = Asset.Human.eyeSlashLarge.image.withRenderingMode(.alwaysTemplate)
+//                self.emptyStateView.titleLabel.text = L10n.Common.Alerts.PermissionDeniedNotAuthorized.title
+//                self.emptyStateView.messageLabel.text = L10n.Common.Alerts.PermissionDeniedNotAuthorized.message
+//                self.emptyStateView.isHidden = !isPermissionDenied
+//            }
+//            .store(in: &disposeBag)
     }
     
     
@@ -89,26 +89,26 @@ extension FollowingListViewController {
 }
 
 // MARK: - UIScrollViewDelegate
-extension FollowingListViewController {
-    func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        handleScrollViewDidScroll(scrollView)
-    }
-}
+//extension FollowingListViewController {
+//    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+//        handleScrollViewDidScroll(scrollView)
+//    }
+//}
 
 // MARK: - UITableViewDelegate
-extension FollowingListViewController: UITableViewDelegate {
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        handleTableView(tableView, didSelectRowAt: indexPath)
-    }
-}
-
-// MARK: - LoadMoreConfigurableTableViewContainer
-extension FollowingListViewController: LoadMoreConfigurableTableViewContainer {
-    
-    typealias BottomLoaderTableViewCell = TimelineBottomLoaderTableViewCell
-    typealias LoadingState = FriendshipListViewModel.State.Loading
-    
-    var loadMoreConfigurableTableView: UITableView { return tableView }
-    var loadMoreConfigurableStateMachine: GKStateMachine { return viewModel.stateMachine }
-    
-}
+//extension FollowingListViewController: UITableViewDelegate {
+//    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+//        handleTableView(tableView, didSelectRowAt: indexPath)
+//    }
+//}
+//
+//// MARK: - LoadMoreConfigurableTableViewContainer
+//extension FollowingListViewController: LoadMoreConfigurableTableViewContainer {
+//
+//    typealias BottomLoaderTableViewCell = TimelineBottomLoaderTableViewCell
+//    typealias LoadingState = FriendshipListViewModel.State.Loading
+//
+//    var loadMoreConfigurableTableView: UITableView { return tableView }
+//    var loadMoreConfigurableStateMachine: GKStateMachine { return viewModel.stateMachine }
+//
+//}

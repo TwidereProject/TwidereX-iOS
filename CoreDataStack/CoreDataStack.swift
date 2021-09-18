@@ -183,7 +183,7 @@ extension CoreDataStack {
         }
     }
 
-    private func newTaskContext() -> NSManagedObjectContext {
+    public func newTaskContext() -> NSManagedObjectContext {
         let taskContext = persistentContainer.newBackgroundContext()
         taskContext.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
         taskContext.undoManager = nil

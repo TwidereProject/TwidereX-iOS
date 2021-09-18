@@ -8,6 +8,7 @@
 import Foundation
 import CoreDataStack
 import TwitterSDK
+import TwitterMeta
 
 extension TwitterUser {
     public enum ProfileImageSize: String {
@@ -49,30 +50,6 @@ extension TwitterUser {
 }
 
 extension TwitterUser {
-    var displayBioDescription: String? {
-        return bio.flatMap { bio in
-            var bio = bio
-//            for url in entities?.urls ?? [] {
-//                guard let shortURL = url.url, let expandedURL = url.expandedURL else { continue }
-//                bioDescription = bioDescription.replacingOccurrences(of: shortURL, with: expandedURL)
-//            }
-            return bio
-        }
-    }
-    
-    var displayURL: String? {
-        return url.flatMap { text in
-            var text = text
-//            for url in entities?.urls ?? [] {
-//                guard let shortURL = url.url, let expandedURL = url.expandedURL else { continue }
-//                text = text.replacingOccurrences(of: shortURL, with: expandedURL)
-//            }
-            return text
-        }
-    }
-}
-
-extension TwitterUser {
     
     public enum SizeKind: String {
         case small
@@ -98,5 +75,60 @@ extension String {
     mutating func deleteSuffix(_ suffix: String) {
         guard hasSuffix(suffix) else { return }
         removeLast(suffix.count)
+    }
+}
+
+extension TwitterUser {
+    var bioMetaContent: TwitterMetaContent? {
+        let _bioContent: String? = bio.flatMap { text in
+            var text = text
+            for url in bioEntities?.urls ?? [] {
+                guard let expandedURL = url.expandedURL else { continue }
+                let shortURL = url.url
+                text = text.replacingOccurrences(of: shortURL, with: expandedURL)
+            }
+            return text
+        }
+        guard let bioContent = _bioContent else { return nil }
+        let content = TwitterContent(content: bioContent)
+        let metaContent = TwitterMetaContent.convert(
+            content: content,
+            urlMaximumLength: 50,
+            twitterTextProvider: OfficialTwitterTextProvider()
+        )
+        return metaContent
+    }
+    
+    var urlMetaContent: TwitterMetaContent? {
+        let _urlContent: String? = url.flatMap { text in
+            var text = text
+            for url in urlEntities?.urls ?? [] {
+                guard let expandedURL = url.expandedURL else { continue }
+                let shortURL = url.url
+                text = text.replacingOccurrences(of: shortURL, with: expandedURL)
+            }
+            return text
+        }
+        guard let urlContent = _urlContent else { return nil }
+        let content = TwitterContent(content: urlContent)
+        let metaContent = TwitterMetaContent.convert(
+            content: content,
+            urlMaximumLength: 50,
+            twitterTextProvider: OfficialTwitterTextProvider()
+        )
+        return metaContent
+    }
+    
+    var locationMetaContent: TwitterMetaContent? {
+        return location.flatMap { location in
+            let location = location.trimmingCharacters(in: .whitespacesAndNewlines)
+            guard !location.isEmpty else { return nil }
+            let metaContent = TwitterMetaContent.convert(
+                content: TwitterContent(content: location),
+                urlMaximumLength: 50,
+                twitterTextProvider: OfficialTwitterTextProvider()
+            )
+            return metaContent
+        }
     }
 }

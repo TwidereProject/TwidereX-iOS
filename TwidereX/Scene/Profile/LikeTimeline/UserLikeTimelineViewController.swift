@@ -13,7 +13,7 @@ import Combine
 import CoreDataStack
 import GameplayKit
 
-final class UserLikeTimelineViewController: UIViewController, MediaPreviewableViewController, NeedsDependency {
+final class UserLikeTimelineViewController: UIViewController, NeedsDependency {
     
     weak var context: AppContext! { willSet { precondition(!isViewLoaded) } }
     weak var coordinator: SceneCoordinator! { willSet { precondition(!isViewLoaded) } }
@@ -21,7 +21,7 @@ final class UserLikeTimelineViewController: UIViewController, MediaPreviewableVi
     var disposeBag = Set<AnyCancellable>()
     var viewModel: UserLikeTimelineViewModel!
     
-    let mediaPreviewTransitionController = MediaPreviewTransitionController()
+//    let mediaPreviewTransitionController = MediaPreviewTransitionController()
     
     lazy var tableView: UITableView = {
         let tableView = UITableView()
@@ -54,23 +54,23 @@ extension UserLikeTimelineViewController {
             tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
         ])
         
-        viewModel.tableView = tableView
-        tableView.delegate = self
-        viewModel.setupDiffableDataSource(
-            for: tableView,
-            dependency: self,
-            timelinePostTableViewCellDelegate: self,
-            timelineHeaderTableViewCellDelegate: self
-        )
-        
-        // trigger timeline loading
-        viewModel.userID
-            .removeDuplicates()
-            .sink { [weak self] _ in
-                guard let self = self else { return }
-                self.viewModel.stateMachine.enter(UserLikeTimelineViewModel.State.Reloading.self)
-            }
-            .store(in: &disposeBag)
+//        viewModel.tableView = tableView
+//        tableView.delegate = self
+//        viewModel.setupDiffableDataSource(
+//            for: tableView,
+//            dependency: self,
+//            timelinePostTableViewCellDelegate: self,
+//            timelineHeaderTableViewCellDelegate: self
+//        )
+//
+//        // trigger timeline loading
+//        viewModel.userID
+//            .removeDuplicates()
+//            .sink { [weak self] _ in
+//                guard let self = self else { return }
+//                self.viewModel.stateMachine.enter(UserLikeTimelineViewModel.State.Reloading.self)
+//            }
+//            .store(in: &disposeBag)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -82,7 +82,7 @@ extension UserLikeTimelineViewController {
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         
-        context.videoPlaybackService.viewDidDisappear(from: self)
+//        context.videoPlaybackService.viewDidDisappear(from: self)
     }
     
 }
@@ -97,53 +97,53 @@ extension UserLikeTimelineViewController {
 // MARK: - UITableViewDelegate
 extension UserLikeTimelineViewController: UITableViewDelegate {
     
-    func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
-        guard let diffableDataSource = viewModel.diffableDataSource else { return 100 }
-        guard let item = diffableDataSource.itemIdentifier(for: indexPath) else { return 100 }
-        
-        guard let frame = viewModel.cellFrameCache.object(forKey: NSNumber(value: item.hashValue))?.cgRectValue else {
-            return 200
-        }
-        // os_log("%{public}s[%{public}ld], %{public}s: cache cell frame %s", ((#file as NSString).lastPathComponent), #line, #function, frame.debugDescription)
-        
-        return ceil(frame.height)
-    }
-    
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        handleTableView(tableView, didSelectRowAt: indexPath)
-    }
-    
-    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        handleTableView(tableView, willDisplay: cell, forRowAt: indexPath)
-    }
-    
-    func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        handleTableView(tableView, didEndDisplaying: cell, forRowAt: indexPath)
-        
-        guard let diffableDataSource = viewModel.diffableDataSource else { return }
-        guard let item = diffableDataSource.itemIdentifier(for: indexPath) else { return }
-        
-        let key = item.hashValue
-        let frame = cell.frame
-        viewModel.cellFrameCache.setObject(NSValue(cgRect: frame), forKey: NSNumber(value: key))
-    }
-    
-    func tableView(_ tableView: UITableView, contextMenuConfigurationForRowAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
-        handleTableView(tableView, contextMenuConfigurationForRowAt: indexPath, point: point)
-    }
-    
-    func tableView(_ tableView: UITableView, previewForHighlightingContextMenuWithConfiguration configuration: UIContextMenuConfiguration) -> UITargetedPreview? {
-        handleTableView(tableView, previewForHighlightingContextMenuWithConfiguration: configuration)
-    }
-    
-    func tableView(_ tableView: UITableView, previewForDismissingContextMenuWithConfiguration configuration: UIContextMenuConfiguration) -> UITargetedPreview? {
-        handleTableView(tableView, previewForDismissingContextMenuWithConfiguration: configuration)
-    }
-    
-    func tableView(_ tableView: UITableView, willPerformPreviewActionForMenuWith configuration: UIContextMenuConfiguration, animator: UIContextMenuInteractionCommitAnimating) {
-        handleTableView(tableView, willPerformPreviewActionForMenuWith: configuration, animator: animator)
-    }
-    
+//    func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
+//        guard let diffableDataSource = viewModel.diffableDataSource else { return 100 }
+//        guard let item = diffableDataSource.itemIdentifier(for: indexPath) else { return 100 }
+//        
+//        guard let frame = viewModel.cellFrameCache.object(forKey: NSNumber(value: item.hashValue))?.cgRectValue else {
+//            return 200
+//        }
+//        // os_log("%{public}s[%{public}ld], %{public}s: cache cell frame %s", ((#file as NSString).lastPathComponent), #line, #function, frame.debugDescription)
+//        
+//        return ceil(frame.height)
+//    }
+//    
+//    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+//        handleTableView(tableView, didSelectRowAt: indexPath)
+//    }
+//    
+//    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+//        handleTableView(tableView, willDisplay: cell, forRowAt: indexPath)
+//    }
+//    
+//    func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+//        handleTableView(tableView, didEndDisplaying: cell, forRowAt: indexPath)
+//        
+//        guard let diffableDataSource = viewModel.diffableDataSource else { return }
+//        guard let item = diffableDataSource.itemIdentifier(for: indexPath) else { return }
+//        
+//        let key = item.hashValue
+//        let frame = cell.frame
+//        viewModel.cellFrameCache.setObject(NSValue(cgRect: frame), forKey: NSNumber(value: key))
+//    }
+//    
+//    func tableView(_ tableView: UITableView, contextMenuConfigurationForRowAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
+//        handleTableView(tableView, contextMenuConfigurationForRowAt: indexPath, point: point)
+//    }
+//    
+//    func tableView(_ tableView: UITableView, previewForHighlightingContextMenuWithConfiguration configuration: UIContextMenuConfiguration) -> UITargetedPreview? {
+//        handleTableView(tableView, previewForHighlightingContextMenuWithConfiguration: configuration)
+//    }
+//    
+//    func tableView(_ tableView: UITableView, previewForDismissingContextMenuWithConfiguration configuration: UIContextMenuConfiguration) -> UITargetedPreview? {
+//        handleTableView(tableView, previewForDismissingContextMenuWithConfiguration: configuration)
+//    }
+//    
+//    func tableView(_ tableView: UITableView, willPerformPreviewActionForMenuWith configuration: UIContextMenuConfiguration, animator: UIContextMenuInteractionCommitAnimating) {
+//        handleTableView(tableView, willPerformPreviewActionForMenuWith: configuration, animator: animator)
+//    }
+//    
 }
 
 // MARK: - AVPlayerViewControllerDelegate
@@ -160,10 +160,10 @@ extension UserLikeTimelineViewController: AVPlayerViewControllerDelegate {
 }
 
 // MARK: - TimelinePostTableViewCellDelegate
-extension UserLikeTimelineViewController: TimelinePostTableViewCellDelegate {
-    weak var playerViewControllerDelegate: AVPlayerViewControllerDelegate? { return self }
-    func parent() -> UIViewController { return self }
-}
+//extension UserLikeTimelineViewController: TimelinePostTableViewCellDelegate {
+//    weak var playerViewControllerDelegate: AVPlayerViewControllerDelegate? { return self }
+//    func parent() -> UIViewController { return self }
+//}
 
 // MARK: - TimelineHeaderTableViewCellDelegate
 extension UserLikeTimelineViewController: TimelineHeaderTableViewCellDelegate { }

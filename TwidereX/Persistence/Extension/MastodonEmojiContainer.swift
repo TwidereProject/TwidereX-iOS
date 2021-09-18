@@ -21,3 +21,5 @@ extension MastodonEmojiContainer {
         } ?? []
     }
 }
+
+extension Mastodon.Entity.Account: MastodonEmojiContainer { }
