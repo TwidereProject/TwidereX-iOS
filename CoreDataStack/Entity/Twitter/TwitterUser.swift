@@ -37,13 +37,21 @@ final public class TwitterUser: NSManagedObject {
     @NSManaged public private(set) var verified: Bool
     
     // sourcery: autoUpdatableObject, autoGenerateProperty
+    @NSManaged public private(set) var statusesCount: Int64
+    // sourcery: autoUpdatableObject, autoGenerateProperty
+    @NSManaged public private(set) var followingCount: Int64
+    // sourcery: autoUpdatableObject, autoGenerateProperty
+    @NSManaged public private(set) var followersCount: Int64
+    // sourcery: autoUpdatableObject, autoGenerateProperty
+    @NSManaged public private(set) var listedCount: Int64
+    
+    // sourcery: autoUpdatableObject, autoGenerateProperty
     @NSManaged public private(set) var updatedAt: Date
     
     // one-to-one relationship
 //    @NSManaged public private(set) var pinnedTweet: Tweet?
-//    @NSManaged public private(set) var entities: TwitterUserEntities?
-//    @NSManaged public private(set) var metrics: TwitterUserMetrics?
 //    @NSManaged public private(set) var withheld: TwitteWithheld?
+    
 
     @NSManaged public private(set) var twitterAuthentication: TwitterAuthentication?
 
@@ -309,6 +317,10 @@ extension TwitterUser: AutoGenerateProperty {
         public let  protected: Bool
         public let  url: String?
         public let  verified: Bool
+        public let  statusesCount: Int64
+        public let  followingCount: Int64
+        public let  followersCount: Int64
+        public let  listedCount: Int64
         public let  updatedAt: Date
 
     	public init(
@@ -322,6 +334,10 @@ extension TwitterUser: AutoGenerateProperty {
     		protected: Bool,
     		url: String?,
     		verified: Bool,
+    		statusesCount: Int64,
+    		followingCount: Int64,
+    		followersCount: Int64,
+    		listedCount: Int64,
     		updatedAt: Date
     	) {
     		self.id = id
@@ -334,6 +350,10 @@ extension TwitterUser: AutoGenerateProperty {
     		self.protected = protected
     		self.url = url
     		self.verified = verified
+    		self.statusesCount = statusesCount
+    		self.followingCount = followingCount
+    		self.followersCount = followersCount
+    		self.listedCount = listedCount
     		self.updatedAt = updatedAt
     	}
     }
@@ -349,6 +369,10 @@ extension TwitterUser: AutoGenerateProperty {
     	self.protected = property.protected
     	self.url = property.url
     	self.verified = property.verified
+    	self.statusesCount = property.statusesCount
+    	self.followingCount = property.followingCount
+    	self.followersCount = property.followersCount
+    	self.listedCount = property.listedCount
     	self.updatedAt = property.updatedAt
     }
 
@@ -362,6 +386,10 @@ extension TwitterUser: AutoGenerateProperty {
     	update(protected: property.protected)
     	update(url: property.url)
     	update(verified: property.verified)
+    	update(statusesCount: property.statusesCount)
+    	update(followingCount: property.followingCount)
+    	update(followersCount: property.followersCount)
+    	update(listedCount: property.listedCount)
     	update(updatedAt: property.updatedAt)
     }
     // sourcery:end
@@ -427,6 +455,26 @@ extension TwitterUser: AutoUpdatableObject {
     public func update(verified: Bool) {
     	if self.verified != verified {
     		self.verified = verified
+    	}
+    }
+    public func update(statusesCount: Int64) {
+    	if self.statusesCount != statusesCount {
+    		self.statusesCount = statusesCount
+    	}
+    }
+    public func update(followingCount: Int64) {
+    	if self.followingCount != followingCount {
+    		self.followingCount = followingCount
+    	}
+    }
+    public func update(followersCount: Int64) {
+    	if self.followersCount != followersCount {
+    		self.followersCount = followersCount
+    	}
+    }
+    public func update(listedCount: Int64) {
+    	if self.listedCount != listedCount {
+    		self.listedCount = listedCount
     	}
     }
     public func update(updatedAt: Date) {

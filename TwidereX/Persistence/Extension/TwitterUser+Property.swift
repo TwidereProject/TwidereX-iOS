@@ -34,6 +34,10 @@ extension TwitterUser.Property {
             protected: entity.protected ?? false,
             url: entity.url,
             verified: entity.verified ?? false,
+            statusesCount: Int64(entity.statusesCount ?? 0),
+            followingCount: Int64(entity.friendsCount ?? 0),
+            followersCount: Int64(entity.followersCount ?? 0),
+            listedCount: Int64(entity.listedCount ?? 0),
             updatedAt: networkDate
         )
     }
@@ -63,6 +67,10 @@ extension TwitterUser.Property {
             protected: entity.protected ?? false,
             url: entity.url,
             verified: entity.verified ?? false,
+            statusesCount: Int64(entity.publicMetrics?.tweetCount ?? 0),
+            followingCount: Int64(entity.publicMetrics?.followingCount ?? 0),
+            followersCount: Int64(entity.publicMetrics?.followersCount ?? 0),
+            listedCount: Int64(entity.publicMetrics?.listedCount ?? 0),
             updatedAt: networkDate
         )
     }

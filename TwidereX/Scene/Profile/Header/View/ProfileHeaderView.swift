@@ -43,6 +43,8 @@ final class ProfileHeaderView: UIView {
         return imageView
     }()
     
+    // placeholder for layout
+    let _placeholderNameLabel = MetaLabel(style: .profileAuthorName)
     let nameLabel = MetaLabel(style: .profileAuthorName)
     let usernameLabel = MetaLabel(style: .profileAuthorUsername)
     
@@ -51,6 +53,8 @@ final class ProfileHeaderView: UIView {
     let bioTextAreaView = MetaTextAreaView(style: .profileAuthorBio)
     
     let fieldListView = ProfileFieldListView()
+    
+    let dashboardView = ProfileDashboardView()
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -97,6 +101,7 @@ extension ProfileHeaderView {
         container.spacing = 16
         container.axis = .vertical
         container.alignment = .center
+        container.distribution = .fill
         container.translatesAutoresizingMaskIntoConstraints = false
         addSubview(container)
         NSLayoutConstraint.activate([
@@ -108,24 +113,42 @@ extension ProfileHeaderView {
         
         // name container
         nameContainer.axis = .horizontal
-        nameContainer.alignment = .center
+        nameContainer.alignment = .top
         nameContainer.spacing = 2
+        nameContainer.distribution = .fill
+        nameContainer.translatesAutoresizingMaskIntoConstraints = false
         container.addArrangedSubview(nameContainer)
+        NSLayoutConstraint.activate([
+            nameContainer.leadingAnchor.constraint(equalTo: container.leadingAnchor, constant: 16),
+            container.trailingAnchor.constraint(equalTo: nameContainer.trailingAnchor, constant: 16),
+        ])
+        nameContainer.setContentHuggingPriority(.defaultLow, for: .horizontal)
         container.setCustomSpacing(0, after: nameContainer)
         
-        protectLockImageView.translatesAutoresizingMaskIntoConstraints = false
-        nameContainer.addSubview(protectLockImageView)
-        nameLabel.frame.size.width = 9999   // set initial width to workaround sometimes line wrap on short text issue
-        nameContainer.addArrangedSubview(nameLabel)
+        _placeholderNameLabel.translatesAutoresizingMaskIntoConstraints = false
+        nameContainer.addSubview(_placeholderNameLabel)
         NSLayoutConstraint.activate([
-            nameLabel.leadingAnchor.constraint(equalTo: protectLockImageView.trailingAnchor, constant: 4),
-            protectLockImageView.centerYAnchor.constraint(equalTo: nameLabel.centerYAnchor),
-            protectLockImageView.heightAnchor.constraint(equalTo: nameLabel.heightAnchor, multiplier: 0.5).priority(.required - 1), // 0.5x name height
-            protectLockImageView.widthAnchor.constraint(equalTo: protectLockImageView.heightAnchor, multiplier: 1.0).priority(.required - 1),
+            _placeholderNameLabel.topAnchor.constraint(equalTo: nameContainer.topAnchor),
+            _placeholderNameLabel.leadingAnchor.constraint(equalTo: nameContainer.leadingAnchor),
+            _placeholderNameLabel.trailingAnchor.constraint(equalTo: nameContainer.trailingAnchor),
         ])
-        nameLabel.setContentHuggingPriority(.required - 5, for: .horizontal)
-        nameLabel.setContentHuggingPriority(.required - 5, for: .vertical)
-        nameLabel.setContentCompressionResistancePriority(.required - 1, for: .horizontal)
+        _placeholderNameLabel.configure(content: PlaintextMetaContent(string: " "))
+        
+        let nameContainerLeadingPaddingView = UIView()
+        let nameContainerTrailingPaddingView = UIView()
+        nameContainerLeadingPaddingView.translatesAutoresizingMaskIntoConstraints = false
+        nameContainer.addArrangedSubview(nameContainerLeadingPaddingView)
+        protectLockImageView.translatesAutoresizingMaskIntoConstraints = false
+        nameContainer.addArrangedSubview(protectLockImageView)
+        nameContainer.addArrangedSubview(nameLabel)
+        nameContainerTrailingPaddingView.translatesAutoresizingMaskIntoConstraints = false
+        nameContainer.addArrangedSubview(nameContainerTrailingPaddingView)
+        
+        NSLayoutConstraint.activate([
+            nameContainerLeadingPaddingView.widthAnchor.constraint(equalTo: nameContainerTrailingPaddingView.widthAnchor).priority(.required - 1),
+            protectLockImageView.heightAnchor.constraint(equalTo: _placeholderNameLabel.heightAnchor).priority(.required - 1),
+            protectLockImageView.widthAnchor.constraint(equalTo: protectLockImageView.heightAnchor).priority(.required - 2),
+        ])
         protectLockImageView.setContentHuggingPriority(.defaultLow, for: .horizontal)
         protectLockImageView.setContentHuggingPriority(.defaultLow, for: .vertical)
         
@@ -155,6 +178,13 @@ extension ProfileHeaderView {
         NSLayoutConstraint.activate([
             fieldListView.leadingAnchor.constraint(equalTo: container.leadingAnchor),
             fieldListView.trailingAnchor.constraint(equalTo: container.trailingAnchor),
+        ])
+        
+        dashboardView.translatesAutoresizingMaskIntoConstraints = false
+        container.addArrangedSubview(dashboardView)
+        NSLayoutConstraint.activate([
+            dashboardView.leadingAnchor.constraint(equalTo: container.leadingAnchor),
+            dashboardView.trailingAnchor.constraint(equalTo: container.trailingAnchor),
         ])
     }
 }

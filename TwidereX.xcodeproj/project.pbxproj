@@ -112,13 +112,14 @@
 		DB4323D22514936F004FAAEC /* TwidereSDK in Frameworks */ = {isa = PBXBuildFile; productRef = DB4323D12514936F004FAAEC /* TwidereSDK */; };
 		DB4323D425149374004FAAEC /* TwidereSDK in Frameworks */ = {isa = PBXBuildFile; productRef = DB4323D325149374004FAAEC /* TwidereSDK */; };
 		DB4323D8251493C5004FAAEC /* TwidereSDK in Embed Frameworks */ = {isa = PBXBuildFile; productRef = DB4323D12514936F004FAAEC /* TwidereSDK */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		DB434883251DF18C005B599F /* ProfileBannerInfoActionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB434882251DF18C005B599F /* ProfileBannerInfoActionView.swift */; };
 		DB434888251DFE2D005B599F /* ProfileBannerStatusView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB434887251DFE2D005B599F /* ProfileBannerStatusView.swift */; };
 		DB43488D251DFF0F005B599F /* ProfileBannerStatusItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB43488C251DFF0F005B599F /* ProfileBannerStatusItemView.swift */; };
 		DB434892251E09A8005B599F /* CALayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB434891251E09A8005B599F /* CALayer.swift */; };
 		DB43CBDD2595CE2100D47607 /* LoadMoreConfigurableViewContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB43CBDC2595CE2100D47607 /* LoadMoreConfigurableViewContainer.swift */; };
 		DB44A56026C4DC35004C8B78 /* ThemeService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB44A55F26C4DC35004C8B78 /* ThemeService.swift */; };
 		DB44A56226C4FEAB004C8B78 /* WelcomeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB44A56126C4FEAB004C8B78 /* WelcomeViewModel.swift */; };
+		DB51DC1A2715581E00A0D8FB /* ProfileDashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB51DC192715581E00A0D8FB /* ProfileDashboardView.swift */; };
+		DB51DC1C2715588E00A0D8FB /* ProfileDashboardMeterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB51DC1B2715588E00A0D8FB /* ProfileDashboardMeterView.swift */; };
 		DB5399A025AEF75D0064586D /* APIService+Mute.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB53999F25AEF75D0064586D /* APIService+Mute.swift */; };
 		DB5399A825AF0A790064586D /* APIService+Block.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB5399A725AF0A790064586D /* APIService+Block.swift */; };
 		DB56329526DCA77600FC893F /* MastodonAttachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB56329426DCA77600FC893F /* MastodonAttachment.swift */; };
@@ -642,6 +643,8 @@
 		DB4B599325DFB4D60012F495 /* APIService+Persist+PersistMemo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "APIService+Persist+PersistMemo.swift"; sourceTree = "<group>"; };
 		DB4B59B425DFBDB80012F495 /* APIService+Persist.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "APIService+Persist.swift"; sourceTree = "<group>"; };
 		DB4B59BF25DFCC4F0012F495 /* APIService+Persist+PersistCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "APIService+Persist+PersistCache.swift"; sourceTree = "<group>"; };
+		DB51DC192715581E00A0D8FB /* ProfileDashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileDashboardView.swift; sourceTree = "<group>"; };
+		DB51DC1B2715588E00A0D8FB /* ProfileDashboardMeterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileDashboardMeterView.swift; sourceTree = "<group>"; };
 		DB53999825AED8420064586D /* CoreDataStack 2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "CoreDataStack 2.xcdatamodel"; sourceTree = "<group>"; };
 		DB53999F25AEF75D0064586D /* APIService+Mute.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "APIService+Mute.swift"; sourceTree = "<group>"; };
 		DB5399A725AF0A790064586D /* APIService+Block.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "APIService+Block.swift"; sourceTree = "<group>"; };
@@ -1417,10 +1420,11 @@
 				DB3B906226E8BBD70010F64C /* ProfileHeaderView.swift */,
 				DB3B906426E8BF1F0010F64C /* ProfileHeaderView+ViewModel.swift */,
 				DB3B906E26E9B3C80010F64C /* ProfileAvatarView.swift */,
-				DB434882251DF18C005B599F /* ProfileBannerInfoActionView.swift */,
 				DBB47DA826EB3AA2001590F7 /* ProfileFieldListView.swift */,
 				DBB47DAC26EB440C001590F7 /* ProfileFieldCollectionViewCell.swift */,
 				DBB47DAA26EB3BF8001590F7 /* ProfileFieldContentView.swift */,
+				DB51DC192715581E00A0D8FB /* ProfileDashboardView.swift */,
+				DB51DC1B2715588E00A0D8FB /* ProfileDashboardMeterView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -1839,6 +1843,7 @@
 				DBB1FECD269C3E16005BC761 /* StatusAuthorView.swift */,
 				DB58500C269D4523006CB091 /* StatusContentView.swift */,
 				DB71CF1B26B3E5520018F605 /* StatusTextArea.swift */,
+				DB434882251DF18C005B599F /* ProfileBannerInfoActionView.swift */,
 			);
 			path = Deprecated;
 			sourceTree = "<group>";
@@ -3505,6 +3510,7 @@
 				DB01091526E5EB64005F67D7 /* MastodonStatusThreadViewModel.swift in Sources */,
 				DB004BE526CE21AE00F5C574 /* Persistence+TwitterStatus.swift in Sources */,
 				DB5632BC26DF503800FC893F /* TwitterStatusThreadLeafViewModel.swift in Sources */,
+				DB51DC1A2715581E00A0D8FB /* ProfileDashboardView.swift in Sources */,
 				DB5632B026DCED1300FC893F /* StatusThreadRootTableViewCell.swift in Sources */,
 				DBDA8E2224FCF8A3006750DC /* AppDelegate.swift in Sources */,
 				DB2EBBD5255D344800956CAA /* AboutViewController.swift in Sources */,
@@ -3573,11 +3579,11 @@
 				DB5632AB26DCCD3900FC893F /* DataSourceFacade.swift in Sources */,
 				DB9EC537255A8CEE005403AA /* ViewStateStore.swift in Sources */,
 				DB5FAD6B257DD1DD0098B2C8 /* DeveloperViewController.swift in Sources */,
+				DB51DC1C2715588E00A0D8FB /* ProfileDashboardMeterView.swift in Sources */,
 				DB6D6731256637A200B70DC0 /* TableViewSectionTextHeaderView.swift in Sources */,
 				DB925700251C8F29004FEFB5 /* UserTimelineViewController.swift in Sources */,
 				DBF639EA259B11F6009E12C8 /* UserTimelineViewModel+Diffable.swift in Sources */,
 				DB9EC532255A87A4005403AA /* SettingListView.swift in Sources */,
-				DB434883251DF18C005B599F /* ProfileBannerInfoActionView.swift in Sources */,
 				DBC8E050257653E100401E20 /* SavePhotoActivity.swift in Sources */,
 				DBF63A13259C36D8009E12C8 /* ListEntryTableViewCell.swift in Sources */,
 				DB1D7B4325B5938400397DCD /* TwitterAuthenticationOptionViewController.swift in Sources */,

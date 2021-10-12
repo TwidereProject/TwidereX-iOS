@@ -91,6 +91,19 @@ extension Persistence.TwitterUser {
         user.update(profileBannerURL: context.entity.profileBannerURL)
         user.update(bioEntities: TwitterEntity(entity: context.entity.entities?.description))
         user.update(urlEntities: TwitterEntity(entity: context.entity.entities?.url))
+        
+        if let count = context.entity.statusesCount {
+            user.update(statusesCount: Int64(count))
+        }
+        if let count = context.entity.friendsCount {
+            user.update(followingCount: Int64(count))
+        }
+        if let count = context.entity.followersCount {
+            user.update(followersCount: Int64(count))
+        }
+        if let count = context.entity.listedCount {
+            user.update(listedCount: Int64(count))
+        }
     }
     
 }

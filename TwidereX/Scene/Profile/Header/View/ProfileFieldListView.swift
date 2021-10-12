@@ -43,13 +43,16 @@ extension ProfileFieldListView {
     
     struct Item: Hashable {
         let index: Int
+        let updateAt: Date
         
         let symbol: UIImage?
         let key: MetaContent?
         let value: MetaContent?
         
+        
         static func == (lhs: Item, rhs: Item) -> Bool {
             return lhs.index == rhs.index
+                && lhs.updateAt == rhs.updateAt
                 && lhs.symbol == rhs.symbol
                 && lhs.key?.string == rhs.key?.string
                 && lhs.value?.string == rhs.value?.string
@@ -57,6 +60,7 @@ extension ProfileFieldListView {
         
         func hash(into hasher: inout Hasher) {
             hasher.combine(index)
+            hasher.combine(updateAt)
             hasher.combine(symbol)
             key.flatMap { hasher.combine($0.string) }
             value.flatMap { hasher.combine($0.string) }

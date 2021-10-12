@@ -72,7 +72,6 @@ extension ProfileFieldContentView {
             _placeholderMetaLabel.topAnchor.constraint(equalTo: container.topAnchor),
             _placeholderMetaLabel.leadingAnchor.constraint(equalTo: container.leadingAnchor),
             _placeholderMetaLabel.trailingAnchor.constraint(equalTo: container.trailingAnchor),
-            container.bottomAnchor.constraint(greaterThanOrEqualTo: _placeholderMetaLabel.bottomAnchor).priority(.defaultHigh),     // make sure layout always valid
         ])
         _placeholderMetaLabel.configure(content: PlaintextMetaContent(string: " "))
         _placeholderMetaLabel.setContentHuggingPriority(.required - 1, for: .vertical)
@@ -84,18 +83,21 @@ extension ProfileFieldContentView {
         container.addArrangedSubview(valueMetaLabel)
         NSLayoutConstraint.activate([
             symbolContainer.heightAnchor.constraint(equalTo: _placeholderMetaLabel.heightAnchor, multiplier: 1.0).priority(.required - 1),
-            symbolContainer.widthAnchor.constraint(equalTo: symbolContainer.heightAnchor, multiplier: 1.0).priority(.required - 1),
+            symbolContainer.widthAnchor.constraint(equalTo: symbolContainer.heightAnchor, multiplier: 1.0).priority(.required - 2),
         ])
+        symbolContainer.setContentHuggingPriority(.defaultLow, for: .horizontal)
+        symbolContainer.setContentHuggingPriority(.defaultLow, for: .vertical)
+        _placeholderMetaLabel.setContentHuggingPriority(.required - 1, for: .vertical)
+        _placeholderMetaLabel.setContentCompressionResistancePriority(.required - 1, for: .vertical)
+
         symbolImageView.translatesAutoresizingMaskIntoConstraints = false
         symbolContainer.addSubview(symbolImageView)
         NSLayoutConstraint.activate([
             symbolImageView.centerXAnchor.constraint(equalTo: symbolContainer.centerXAnchor),
             symbolImageView.centerYAnchor.constraint(equalTo: symbolContainer.centerYAnchor, constant: -1),
-            symbolImageView.widthAnchor.constraint(equalTo: symbolContainer.widthAnchor, multiplier: 0.6).priority(.required - 1),
-            symbolImageView.heightAnchor.constraint(equalTo: symbolContainer.heightAnchor, multiplier: 0.6).priority(.required - 1),
+            symbolImageView.widthAnchor.constraint(equalTo: symbolContainer.widthAnchor, multiplier: 0.6).priority(.required - 5),
+            symbolImageView.heightAnchor.constraint(equalTo: symbolContainer.heightAnchor, multiplier: 0.6).priority(.required - 5),
         ])
-        symbolContainer.setContentHuggingPriority(.defaultLow, for: .horizontal)
-        symbolContainer.setContentHuggingPriority(.defaultLow, for: .vertical)
         symbolImageView.setContentHuggingPriority(.defaultLow - 1, for: .horizontal)
         symbolImageView.setContentHuggingPriority(.defaultLow - 1, for: .vertical)
         keyMetaLabel.setContentHuggingPriority(.required - 9, for: .horizontal)
@@ -114,6 +116,9 @@ extension ProfileFieldContentView {
         
         guard let item = configuration.item else { return }
         
+        _placeholderMetaLabel.setupAttributes(style: .profileFieldValue)
+        _placeholderMetaLabel.configure(content: Meta.convert(from: .plaintext(string: " ")))
+        
         if let symbol = item.symbol {
             symbolImageView.image = symbol.withRenderingMode(.alwaysTemplate)
             symbolImageView.tintColor = .secondaryLabel
@@ -122,12 +127,14 @@ extension ProfileFieldContentView {
             symbolContainer.isHidden = true
         }
         if let content = item.key {
+            keyMetaLabel.setupAttributes(style: .profileFieldKey)
             keyMetaLabel.configure(content: content)
             keyMetaLabel.isHidden = false
         } else {
             keyMetaLabel.isHidden = true
         }
         if let content = item.value {
+            valueMetaLabel.setupAttributes(style: .profileFieldValue)
             valueMetaLabel.configure(content: content)
             valueMetaLabel.isHidden = false
         } else {

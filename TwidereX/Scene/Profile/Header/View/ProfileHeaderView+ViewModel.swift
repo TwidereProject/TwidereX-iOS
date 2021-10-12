@@ -31,6 +31,11 @@ extension ProfileHeaderView {
         @Published var bioMetaContent: MetaContent?
         @Published var fields: [ProfileFieldListView.Item]?
         
+        @Published var followingCount: Int?
+        @Published var followersCount: Int?
+        @Published var listedCount: Int?
+        
+        @Published var needsListCountDashboardMeterDisplay = true
     }
 }
 
@@ -73,6 +78,8 @@ extension ProfileHeaderView.ViewModel {
             .sink { content in
                 profileHeaderView.nameLabel.setupAttributes(style: .profileAuthorName)
                 profileHeaderView.nameLabel.configure(content: content)
+                profileHeaderView._placeholderNameLabel.setupAttributes(style: .profileAuthorName)
+                profileHeaderView._placeholderNameLabel.configure(content: PlaintextMetaContent(string: " "))
             }
             .store(in: &bindDisposeBag)
         // username
@@ -103,6 +110,40 @@ extension ProfileHeaderView.ViewModel {
                     return
                 }
                 profileHeaderView.fieldListView.configure(items: fields)
+            }
+            .store(in: &bindDisposeBag)
+        // dashboard
+        $followingCount
+            .sink { count in
+                if let count = count {
+                    profileHeaderView.dashboardView.followingMeterView.countLabel.text = "\(count)"
+                } else {
+                    profileHeaderView.dashboardView.followingMeterView.countLabel.text = "-"
+                }
+            }
+            .store(in: &bindDisposeBag)
+        $followersCount
+            .sink { count in
+                if let count = count {
+                    profileHeaderView.dashboardView.followerMeterView.countLabel.text = "\(count)"
+                } else {
+                    profileHeaderView.dashboardView.followerMeterView.countLabel.text = "-"
+                }
+            }
+            .store(in: &bindDisposeBag)
+        $listedCount
+            .sink { count in
+                if let count = count {
+                    profileHeaderView.dashboardView.listedMeterView.countLabel.text = "\(count)"
+                } else {
+                    profileHeaderView.dashboardView.listedMeterView.countLabel.text = "-"
+                }
+            }
+            .store(in: &bindDisposeBag)
+        $needsListCountDashboardMeterDisplay
+            .sink { needsListCountDashboardMeterDisplay in
+                profileHeaderView.dashboardView.listedMeterView.isHidden = !needsListCountDashboardMeterDisplay
+                profileHeaderView.dashboardView.separatorLine2.isHidden = !needsListCountDashboardMeterDisplay
             }
             .store(in: &bindDisposeBag)
     }
@@ -157,6 +198,23 @@ extension ProfileHeaderView {
         configureContent(twitterUser: user)
         // field
         configureField(twitterUser: user)
+        // dashboard
+        user.publisher(for: \.followingCount)
+            .combineLatest(UIContentSizeCategory.publisher) { value, _ in value }
+            .map { Int($0) }
+            .assign(to: \.followingCount, on: viewModel)
+            .store(in: &viewModel.configureDisposeBag)
+        user.publisher(for: \.followersCount)
+            .combineLatest(UIContentSizeCategory.publisher) { value, _ in value }
+            .map { Int($0) }
+            .assign(to: \.followersCount, on: viewModel)
+            .store(in: &viewModel.configureDisposeBag)
+        user.publisher(for: \.listedCount)
+            .combineLatest(UIContentSizeCategory.publisher) { value, _ in value }
+            .map { Int($0) }
+            .assign(to: \.listedCount, on: viewModel)
+            .store(in: &viewModel.configureDisposeBag)
+        viewModel.needsListCountDashboardMeterDisplay = true
     }
     
     private func configureContent(twitterUser user: TwitterUser) {
@@ -179,9 +237,11 @@ extension ProfileHeaderView {
         .map { _, _, _ -> [ProfileFieldListView.Item]? in
             var fields: [ProfileFieldListView.Item] = []
             var index = 0
+            let now = Date()
             if let value = user.urlMetaContent {
                 let item = ProfileFieldListView.Item(
                     index: index,
+                    updateAt: now,
                     symbol: Asset.ObjectTools.globeMini.image,
                     key: nil,
                     value: value
@@ -192,6 +252,7 @@ extension ProfileHeaderView {
             if let value = user.locationMetaContent {
                 let item = ProfileFieldListView.Item(
                     index: index,
+                    updateAt: now,
                     symbol: Asset.ObjectTools.mappinMini.image,
                     key: nil,
                     value: value
@@ -245,6 +306,16 @@ extension ProfileHeaderView {
         configureContent(mastodonUser: user)
         // field
         configureField(mastodonUser: user)
+        // dashboard
+        user.publisher(for: \.followingCount)
+            .map { Int($0) }
+            .assign(to: \.followingCount, on: viewModel)
+            .store(in: &viewModel.configureDisposeBag)
+        user.publisher(for: \.followersCount)
+            .map { Int($0) }
+            .assign(to: \.followersCount, on: viewModel)
+            .store(in: &viewModel.configureDisposeBag)
+        viewModel.needsListCountDashboardMeterDisplay = false
     }
     
     private func configureContent(mastodonUser user: MastodonUser) {
@@ -266,6 +337,7 @@ extension ProfileHeaderView {
         )
         .map { fields, emojis, _ -> [ProfileFieldListView.Item]? in
             guard !fields.isEmpty else { return nil }
+            let now = Date()
             
             let emojis = emojis.asDictionary
             let items = fields.enumerated().map { i, field -> ProfileFieldListView.Item in
@@ -277,6 +349,7 @@ extension ProfileHeaderView {
                 )
                 return ProfileFieldListView.Item(
                     index: i,
+                    updateAt: now,
                     symbol: nil,
                     key: key,
                     value: value

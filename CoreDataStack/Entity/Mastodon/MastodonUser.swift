@@ -41,11 +41,11 @@ final public class MastodonUser: NSManagedObject {
     @NSManaged public private(set) var headerStatic: String?
     
     // sourcery: autoUpdatableObject, autoGenerateProperty
-    @NSManaged public private(set) var statusesCount: NSNumber
+    @NSManaged public private(set) var statusesCount: Int64
     // sourcery: autoUpdatableObject, autoGenerateProperty
-    @NSManaged public private(set) var followingCount: NSNumber
+    @NSManaged public private(set) var followingCount: Int64
     // sourcery: autoUpdatableObject, autoGenerateProperty
-    @NSManaged public private(set) var followersCount: NSNumber
+    @NSManaged public private(set) var followersCount: Int64
     
     // sourcery: autoUpdatableObject, autoGenerateProperty
     @NSManaged public private(set) var locked: Bool
@@ -223,9 +223,9 @@ extension MastodonUser: AutoGenerateProperty {
         public let  avatarStatic: String?
         public let  header: String?
         public let  headerStatic: String?
-        public let  statusesCount: NSNumber
-        public let  followingCount: NSNumber
-        public let  followersCount: NSNumber
+        public let  statusesCount: Int64
+        public let  followingCount: Int64
+        public let  followersCount: Int64
         public let  locked: Bool
         public let  bot: Bool
         public let  suspended: Bool
@@ -246,9 +246,9 @@ extension MastodonUser: AutoGenerateProperty {
     		avatarStatic: String?,
     		header: String?,
     		headerStatic: String?,
-    		statusesCount: NSNumber,
-    		followingCount: NSNumber,
-    		followersCount: NSNumber,
+    		statusesCount: Int64,
+    		followingCount: Int64,
+    		followersCount: Int64,
     		locked: Bool,
     		bot: Bool,
     		suspended: Bool,
@@ -380,17 +380,17 @@ extension MastodonUser: AutoUpdatableObject {
     		self.headerStatic = headerStatic
     	}
     }
-    public func update(statusesCount: NSNumber) {
+    public func update(statusesCount: Int64) {
     	if self.statusesCount != statusesCount {
     		self.statusesCount = statusesCount
     	}
     }
-    public func update(followingCount: NSNumber) {
+    public func update(followingCount: Int64) {
     	if self.followingCount != followingCount {
     		self.followingCount = followingCount
     	}
     }
-    public func update(followersCount: NSNumber) {
+    public func update(followersCount: Int64) {
     	if self.followersCount != followersCount {
     		self.followersCount = followersCount
     	}
