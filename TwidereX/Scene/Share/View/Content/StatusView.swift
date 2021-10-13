@@ -73,18 +73,7 @@ final class StatusView: UIView {
     let timestampLabel = PlainLabel(style: .statusTimestamp)
     
     // content
-    let contentTextView: MetaTextAreaView = {
-        let textView = MetaTextAreaView()
-        textView.textAttributes = [
-            .font: UIFont.preferredFont(forTextStyle: .body),
-            .foregroundColor: UIColor.label,
-        ]
-        textView.linkAttributes = [
-            .font: UIFont.preferredFont(forTextStyle: .body),
-            .foregroundColor: Asset.Colors.Theme.daylight.color
-        ]
-        return textView
-    }()
+    let contentTextView = MetaTextAreaView()
     
     // media
     let mediaGridContainerView = MediaGridContainerView()

@@ -98,7 +98,7 @@ extension TextStyle {
         case .statusLocation:
             return .secondaryLabel
         case .statusContent:
-            return .label
+            return .label.withAlphaComponent(0.8)
         case .profileAuthorName:
             return .label
         case .profileAuthorUsername:
