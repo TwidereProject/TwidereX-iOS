@@ -9,6 +9,7 @@ import os.log
 import UIKit
 import Pageboy
 import Tabman
+import TabBarPager
 
 final class ProfilePagingViewModel: NSObject {
     
@@ -27,7 +28,7 @@ final class ProfilePagingViewModel: NSObject {
         super.init()
     }
     
-    var viewControllers: [ScrollViewContainer] {
+    var viewControllers: [ScrollViewContainer & TabBarPage] {
         return [
             profileTweetPostTimelineViewController,
             profileMediaPostTimelineViewController,

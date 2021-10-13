@@ -25,13 +25,3 @@ extension StatusItem {
         case leaf(status: StatusRecord)
     }
 }
-
-enum StatusRecord: Hashable {
-    case twitter(record: ManagedObjectRecord<TwitterStatus>)
-    case mastodon(record: ManagedObjectRecord<MastodonStatus>)
-}
-
-enum StatusObject: Hashable {
-    case twitter(object: TwitterStatus)
-    case mastodon(object: MastodonStatus)
-}

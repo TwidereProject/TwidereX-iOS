@@ -11,6 +11,7 @@ import UIKit
 import Combine
 import CoreData
 import CoreDataStack
+import TabBarPager
 
 final class UserMediaTimelineViewController: UIViewController, NeedsDependency {
     
@@ -103,6 +104,13 @@ extension UserMediaTimelineViewController: UICollectionViewDelegate {
 // MARK: - CustomScrollViewContainerController
 extension UserMediaTimelineViewController: ScrollViewContainer {
     var scrollView: UIScrollView { return collectionView }
+}
+
+// MARK: - TabBarPage
+extension UserMediaTimelineViewController: TabBarPage {
+    var pageScrollView: UIScrollView {
+        collectionView
+    }
 }
 
 // MARK: - MediaCollectionViewCellDelegate

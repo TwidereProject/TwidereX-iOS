@@ -27,7 +27,7 @@ class ProfileViewModel: ObservableObject {
 //    let viewDidAppear = PassthroughSubject<Void, Never>()
         
     // output
-//    let userID: CurrentValueSubject<String?, Never>
+    let userIdentifier = CurrentValueSubject<UserIdentifier?, Never>(nil)
 //    let bannerImageURL: CurrentValueSubject<URL?, Never>
 //    let avatarImageURL: CurrentValueSubject<URL?, Never>
 //    let protected: CurrentValueSubject<Bool?, Never>
@@ -50,7 +50,6 @@ class ProfileViewModel: ObservableObject {
 //
 //    let avatarStyle = CurrentValueSubject<UserDefaults.AvatarStyle, Never>(UserDefaults.shared.avatarStyle)
     
-    // FIXME: multi-platform support
     init(context: AppContext) {
         self.context = context
 //        self.twitterUser = CurrentValueSubject(twitterUser)
@@ -73,6 +72,20 @@ class ProfileViewModel: ObservableObject {
 //        self.blocked = CurrentValueSubject(false)
 //        super.init()
         // end init
+        
+        $user
+            .map { object -> UserIdentifier? in
+                switch object {
+                case .twitter(let object):
+                    return UserIdentifier.twitter(.init(id: object.id))
+                case .mastodon(let object):
+                    return UserIdentifier.mastodon(.init(domain: object.domain, id: object.id))
+                default:
+                    return nil
+                }
+            }
+            .assign(to: \.value, on: userIdentifier)
+            .store(in: &disposeBag)
 
 //        // bind active authentication
 //        context.authenticationService.activeAuthenticationIndex

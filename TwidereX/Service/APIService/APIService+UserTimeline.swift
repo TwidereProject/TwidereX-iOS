@@ -11,57 +11,54 @@ import CoreData
 import CoreDataStack
 import CommonOSLog
 import TwitterSDK
+import func QuartzCore.CACurrentMediaTime
 
 extension APIService {
+    
+    static let userTimelineRequestFetchLimit: Int = 100
 
     func twitterUserTimeline(
-        count: Int = 200,
-        userID: String,
-        maxID: String? = nil,
-        excludeReplies: Bool = false,
-        twitterAuthenticationBox: AuthenticationService.TwitterAuthenticationBox
-    ) -> AnyPublisher<Twitter.Response.Content<[Twitter.Entity.Tweet]>, Error> {
-        let authorization = twitterAuthenticationBox.twitterAuthorization
-        let requestTwitterUserID = twitterAuthenticationBox.twitterUserID
-        let query = Twitter.API.Timeline.TimelineQuery(count: count, userID: userID, maxID: maxID, excludeReplies: excludeReplies)
-        return Twitter.API.Timeline.userTimeline(session: session, authorization: authorization, query: query)
-            .map { response -> AnyPublisher<Twitter.Response.Content<[Twitter.Entity.Tweet]>, Error> in
-                let log = OSLog.api
-
-                return APIService.Persist.persistTweets(
-                    managedObjectContext: self.backgroundManagedObjectContext,
-                    query: query,
-                    response: response,
-                    persistType: .userTimeline,
-                    requestTwitterUserID: requestTwitterUserID,
-                    log: log
+        query: Twitter.API.Timeline.TimelineQuery,
+        authenticationContext: TwitterAuthenticationContext
+    ) async throws -> Twitter.Response.Content<[Twitter.Entity.Tweet]> {
+        let response = try await Twitter.API.Timeline.user(
+            session: session,
+            query: query,
+            authorization: authenticationContext.authorization
+        )
+        
+        #if DEBUG
+        // log time cost
+        let start = CACurrentMediaTime()
+        defer {
+            // log rate limit
+            response.logRateLimit()
+            
+            let end = CACurrentMediaTime()
+            os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: persist cost %.2fs", ((#file as NSString).lastPathComponent), #line, #function, end - start)
+        }
+        #endif
+        
+        let managedObjectContext = backgroundManagedObjectContext
+        try await managedObjectContext.performChanges {
+            let user = authenticationContext.authenticationRecord.object(in: managedObjectContext)?.twitterUser
+            // persist TwitterStatus
+            for entity in response.value {
+                let persistContext = Persistence.TwitterStatus.PersistContext(
+                    entity: entity,
+                    user: user,
+                    statusCache: nil,
+                    userCache: nil,
+                    networkDate: response.networkDate
                 )
-                .setFailureType(to: Error.self)
-                .tryMap { result -> Twitter.Response.Content<[Twitter.Entity.Tweet]> in
-                    switch result {
-                    case .success:
-                        return response
-                    case .failure(let error):
-                        throw error
-                    }
-                }
-                .eraseToAnyPublisher()
+                let _ = Persistence.TwitterStatus.createOrMerge(
+                    in: managedObjectContext,
+                    context: persistContext
+                )
             }
-            .switchToLatest()
-            .handleEvents(receiveCompletion: { [weak self] completion in
-                guard let self = self else { return }
-                switch completion {
-                case .failure(let error):
-                    if let responseError = error as? Twitter.API.Error.ResponseError {
-                        if case .accountIsTemporarilyLocked = responseError.twitterAPIError {
-                            self.error.send(.explicit(.twitterResponseError(responseError)))
-                        }
-                    }
-                case .finished:
-                    break
-                }
-            })
-            .eraseToAnyPublisher()
+        }
+        
+        return response
     }
     
 }

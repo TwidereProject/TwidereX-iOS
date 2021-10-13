@@ -134,19 +134,19 @@ struct ProgressBarView_Previews: PreviewProvider {
             .background(Color.black)
             .previewLayout(.sizeThatFits)
             UIViewPreview() {
-                let bar = ProgressBarView()
-                bar.tintColor = .white
-                return bar
+                let tabBar = ProgressBarView()
+                tabBar.tintColor = .white
+                return tabBar
             }
             .frame(width: 100, height: 44)
             .padding()
             .background(Color.black)
             .previewLayout(.sizeThatFits)
             UIViewPreview() {
-                let bar = ProgressBarView()
-                bar.tintColor = .white
-                bar.progress.value = 0.5
-                return bar
+                let tabBar = ProgressBarView()
+                tabBar.tintColor = .white
+                tabBar.progress.value = 0.5
+                return tabBar
             }
             .frame(width: 100, height: 44)
             .padding()

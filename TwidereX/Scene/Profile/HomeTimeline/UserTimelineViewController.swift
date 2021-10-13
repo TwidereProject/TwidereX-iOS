@@ -11,11 +11,14 @@ import AVKit
 import Combine
 import CoreDataStack
 import GameplayKit
+import TabBarPager
 
 final class UserTimelineViewController: UIViewController, NeedsDependency {
     
     weak var context: AppContext! { willSet { precondition(!isViewLoaded) } }
     weak var coordinator: SceneCoordinator! { willSet { precondition(!isViewLoaded) } }
+    
+    let logger = Logger(subsystem: "UserTimelineViewController", category: "UI")
     
     var disposeBag = Set<AnyCancellable>()
     var viewModel: UserTimelineViewModel!
@@ -24,13 +27,15 @@ final class UserTimelineViewController: UIViewController, NeedsDependency {
 
     lazy var tableView: UITableView = {
         let tableView = UITableView()
-        tableView.register(TimelinePostTableViewCell.self, forCellReuseIdentifier: String(describing: TimelinePostTableViewCell.self))
+        // tableView.register(TimelineHeaderTableViewCell.self, forCellReuseIdentifier: String(describing: TimelineHeaderTableViewCell.self))
+        tableView.register(StatusTableViewCell.self, forCellReuseIdentifier: String(describing: StatusTableViewCell.self))
         tableView.register(TimelineBottomLoaderTableViewCell.self, forCellReuseIdentifier: String(describing: TimelineBottomLoaderTableViewCell.self))
-        tableView.register(TimelineHeaderTableViewCell.self, forCellReuseIdentifier: String(describing: TimelineHeaderTableViewCell.self))
-        tableView.rowHeight = UITableView.automaticDimension
+        tableView.estimatedRowHeight = 200
         tableView.separatorStyle = .none
         return tableView
     }()
+    
+    let cellFrameCache = NSCache<NSNumber, NSValue>()
     
     deinit {
         os_log("%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
@@ -53,23 +58,29 @@ extension UserTimelineViewController {
             tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
         ])
         
-//        viewModel.tableView = tableView
-//        tableView.delegate = self
-//        viewModel.setupDiffableDataSource(
-//            for: tableView,
-//            dependency: self,
-//            timelinePostTableViewCellDelegate: self,
-//            timelineHeaderTableViewCellDelegate: self
-//        )
-//
-//        // trigger user timeline loading
-//        viewModel.userID
-//            .removeDuplicates()
-//            .sink { [weak self] _ in
-//                guard let self = self else { return }
-//                self.viewModel.stateMachine.enter(UserTimelineViewModel.State.Reloading.self)
-//            }
-//            .store(in: &disposeBag)
+        tableView.delegate = self
+        viewModel.setupDiffableDataSource(
+            tableView: tableView,
+            statusViewTableViewCellDelegate: self
+        )
+        // setup batch fetch
+        viewModel.listBatchFetchViewModel.setup(scrollView: tableView)
+        viewModel.listBatchFetchViewModel.shouldFetch
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                guard let self = self else { return }
+                self.viewModel.stateMachine.enter(UserTimelineViewModel.State.LoadingMore.self)
+            }
+            .store(in: &disposeBag)
+        
+        // trigger user timeline loading
+        viewModel.userIdentifier
+            .removeDuplicates()
+            .sink { [weak self] _ in
+                guard let self = self else { return }
+                self.viewModel.stateMachine.enter(UserTimelineViewModel.State.Reloading.self)
+            }
+            .store(in: &disposeBag)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -94,39 +105,41 @@ extension UserTimelineViewController {
 //
 //}
 
+// MARK: - CellFrameCacheContainer
+extension UserTimelineViewController: CellFrameCacheContainer {
+    func keyForCache(tableView: UITableView, indexPath: IndexPath) -> NSNumber? {
+        guard let diffableDataSource = viewModel.diffableDataSource else { return nil }
+        guard let item = diffableDataSource.itemIdentifier(for: indexPath) else { return nil }
+        let key = NSNumber(value: item.hashValue)
+        return key
+    }
+}
+
 // MARK: - UITableViewDelegate
-extension UserTimelineViewController: UITableViewDelegate {
-    
-//    func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
-//        guard let diffableDataSource = viewModel.diffableDataSource else { return 100 }
-//        guard let item = diffableDataSource.itemIdentifier(for: indexPath) else { return 100 }
-//
-//        guard let frame = viewModel.cellFrameCache.object(forKey: NSNumber(value: item.hashValue))?.cgRectValue else {
-//            return 200
-//        }
-//        // os_log("%{public}s[%{public}ld], %{public}s: cache cell frame %s", ((#file as NSString).lastPathComponent), #line, #function, frame.debugDescription)
-//
-//        return ceil(frame.height)
-//    }
-//
-//    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-//        handleTableView(tableView, didSelectRowAt: indexPath)
-//    }
-//
+extension UserTimelineViewController: UITableViewDelegate, AutoGenerateTableViewDelegate {
+    // sourcery:inline:UserTimelineViewController.AutoGenerateTableViewDelegate
+
+    // Generated using Sourcery
+    // DO NOT EDIT
+        func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+            aspectTableView(tableView, didSelectRowAt: indexPath)
+        }
+    // sourcery:end
+
+    func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
+        guard let frame = retrieveCellFrame(tableView: tableView, indexPath: indexPath) else {
+            return 200
+        }
+        return ceil(frame.height)
+    }
+
 //    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
 //        handleTableView(tableView, willDisplay: cell, forRowAt: indexPath)
 //    }
-//
-//    func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-//        handleTableView(tableView, didEndDisplaying: cell, forRowAt: indexPath)
-//
-//        guard let diffableDataSource = viewModel.diffableDataSource else { return }
-//        guard let item = diffableDataSource.itemIdentifier(for: indexPath) else { return }
-//
-//        let key = item.hashValue
-//        let frame = cell.frame
-//        viewModel.cellFrameCache.setObject(NSValue(cgRect: frame), forKey: NSNumber(value: key))
-//    }
+
+    func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        cacheCellFrame(tableView: tableView, didEndDisplaying: cell, forRowAt: indexPath)
+    }
 //
 //    func tableView(_ tableView: UITableView, contextMenuConfigurationForRowAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
 //        handleTableView(tableView, contextMenuConfigurationForRowAt: indexPath, point: point)
@@ -174,6 +187,13 @@ extension UserTimelineViewController: ScrollViewContainer {
     var scrollView: UIScrollView { return tableView }
 }
 
+// MARK: - TabBarPage
+extension UserTimelineViewController: TabBarPage {
+    var pageScrollView: UIScrollView {
+        scrollView
+    }
+}
+
 //// MARK: - LoadMoreConfigurableTableViewContainer
 //extension UserTimelineViewController: LoadMoreConfigurableTableViewContainer {
 //    typealias BottomLoaderTableViewCell = TimelineBottomLoaderTableViewCell
@@ -182,3 +202,6 @@ extension UserTimelineViewController: ScrollViewContainer {
 //    var loadMoreConfigurableTableView: UITableView { return tableView }
 //    var loadMoreConfigurableStateMachine: GKStateMachine { return viewModel.stateMachine }
 //}
+
+// MARK: - StatusViewTableViewCellDelegate
+extension UserTimelineViewController: StatusViewTableViewCellDelegate { }

@@ -9,16 +9,18 @@ import os.log
 import UIKit
 import Pageboy
 import Tabman
+import TabBarPager
 
-protocol ProfilePagingViewControllerDelegate: class {
+protocol ProfilePagingViewControllerDelegate: AnyObject {
     func profilePagingViewController(_ viewController: ProfilePagingViewController, didScrollToPostCustomScrollViewContainerController customScrollViewContainerController: ScrollViewContainer, atIndex index: Int)
 }
 
-final class ProfilePagingViewController: TabmanViewController {
-    
+final class ProfilePagingViewController: TabmanViewController, TabBarPageViewController {
+
+    weak var tabBarPageViewDelegate: TabBarPageViewDelegate?
     weak var pagingDelegate: ProfilePagingViewControllerDelegate?
-    var viewModel: ProfilePagingViewModel!
     
+    var viewModel: ProfilePagingViewModel!
     
     // MARK: - PageboyViewControllerDelegate
     
@@ -26,6 +28,7 @@ final class ProfilePagingViewController: TabmanViewController {
         super.pageboyViewController(pageboyViewController, didScrollToPageAt: index, direction: direction, animated: animated)
         
         let viewController = viewModel.viewControllers[index]
+        tabBarPageViewDelegate?.pageViewController(self, tabBarPage: viewController, at: index)
         pagingDelegate?.profilePagingViewController(self, didScrollToPostCustomScrollViewContainerController: viewController, atIndex: index)
     }
     

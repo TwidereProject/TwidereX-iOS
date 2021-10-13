@@ -14,6 +14,8 @@ import Tabman
 import AlamofireImage
 import Kingfisher
 import ActiveLabel
+import TabBarPager
+import Pageboy
 
 // TODO: DrawerSidebarTransitionableViewController
 final class ProfileViewController: UIViewController, NeedsDependency {
@@ -60,14 +62,51 @@ final class ProfileViewController: UIViewController, NeedsDependency {
         return scrollView
     }()
     
+    private(set) lazy var tabBarPagerController = TabBarPagerController()
+
     private(set) lazy var profileHeaderViewController: ProfileHeaderViewController = {
         let profileHeaderViewController = ProfileHeaderViewController()
         profileHeaderViewController.viewModel = ProfileHeaderViewModel(context: context)
         return profileHeaderViewController
     }()
+    private(set) lazy var profilePagingViewController: ProfilePagingViewController = {
+        let profilePagingViewController = ProfilePagingViewController()
+        
+        let userTimelineViewModel = UserTimelineViewModel(context: context)
+        viewModel.userIdentifier
+            .assign(to: \.value, on: userTimelineViewModel.userIdentifier)
+            .store(in: &disposeBag)
+        
+        let userMediaTimelineViewModel = UserMediaTimelineViewModel(context: context)
+        //        viewModel.userIdentifier
+        //            .assign(to: \.value, on: userMediaTimelineViewModel.userIdentifier)
+        //            .store(in: &disposeBag)
+        
+        let userLikeTimelineViewModel = UserLikeTimelineViewModel(context: context)
+        //        viewModel.userIdentifier
+        //            .assign(to: \.value, on: userLikeTimelineViewModel.userIdentifier)
+        //            .store(in: &disposeBag)
+        
+        profilePagingViewController.viewModel = {
+            let profilePagingViewModel = ProfilePagingViewModel(
+                userTimelineViewModel: userTimelineViewModel,
+                userMediaTimelineViewModel: userMediaTimelineViewModel,
+                userLikeTimelineViewModel: userLikeTimelineViewModel
+            )
+            profilePagingViewModel.viewControllers.forEach { viewController in
+                if let viewController = viewController as? NeedsDependency {
+                    viewController.context = context
+                    viewController.coordinator = coordinator
+                }
+            }
+            return profilePagingViewModel
+        }()
+        return profilePagingViewController
+    }()
+    
     private(set) lazy var profileSegmentedViewController = ProfileSegmentedViewController()
     
-    lazy var bar: TMBar = {
+    private(set) lazy var bar: TMBar = {
         let bar = TMBarView<TMHorizontalBarLayout, TMTabItemBarButton, TMLineBarIndicator>()
         bar.layout.contentMode = .fit
         bar.indicator.weight = .custom(value: 2)
@@ -124,6 +163,20 @@ extension ProfileViewController {
         unmuteMenuBarButtonItem.target = self
         unmuteMenuBarButtonItem.action = #selector(ProfileViewController.unmuteBarButtonItemPressed(_:))
         
+        addChild(tabBarPagerController)
+        tabBarPagerController.view.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(tabBarPagerController.view)
+        tabBarPagerController.didMove(toParent: self)
+        NSLayoutConstraint.activate([
+            tabBarPagerController.view.topAnchor.constraint(equalTo: view.topAnchor),
+            tabBarPagerController.view.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            tabBarPagerController.view.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            tabBarPagerController.view.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+        ])
+        
+        tabBarPagerController.delegate = self
+        tabBarPagerController.dataSource = self
+        
 //        Publishers.CombineLatest4(
 //            viewModel.muted.eraseToAnyPublisher(),
 //            viewModel.blocked.eraseToAnyPublisher(),
@@ -164,99 +217,105 @@ extension ProfileViewController {
 //        }
 //        .store(in: &disposeBag)
         
-        overlayScrollView.refreshControl = refreshControl
-        refreshControl.addTarget(self, action: #selector(ProfileViewController.refreshControlValueChanged(_:)), for: .valueChanged)
+//        overlayScrollView.refreshControl = refreshControl
+//        refreshControl.addTarget(self, action: #selector(ProfileViewController.refreshControlValueChanged(_:)), for: .valueChanged)
         
 //        drawerSidebarTransitionController = DrawerSidebarTransitionController(drawerSidebarTransitionableViewController: self)
         
-        let userTimelineViewModel = UserTimelineViewModel(context: context)
-//        viewModel.userID.assign(to: \.value, on: userTimelineViewModel.userID).store(in: &disposeBag)
-//
-        let userMediaTimelineViewModel = UserMediaTimelineViewModel(context: context)
-//        viewModel.userID.assign(to: \.value, on: userMediaTimelineViewModel.userID).store(in: &disposeBag)
-//
-        let userLikeTimelineViewModel = UserLikeTimelineViewModel(context: context)
-//        viewModel.userID.assign(to: \.value, on: userLikeTimelineViewModel.userID).store(in: &disposeBag)
+//        let userTimelineViewModel = UserTimelineViewModel(context: context)
+//        viewModel.userIdentifier
+//            .assign(to: \.value, on: userTimelineViewModel.userIdentifier)
+//            .store(in: &disposeBag)
+
+//        let userMediaTimelineViewModel = UserMediaTimelineViewModel(context: context)
+//        viewModel.userIdentifier
+//            .assign(to: \.value, on: userMediaTimelineViewModel.userIdentifier)
+//            .store(in: &disposeBag)
+
+//        let userLikeTimelineViewModel = UserLikeTimelineViewModel(context: context)
+//        viewModel.userIdentifier
+//            .assign(to: \.value, on: userLikeTimelineViewModel.userIdentifier)
+//            .store(in: &disposeBag)
         
-        profileSegmentedViewController.pagingViewController.viewModel = {
-            let profilePagingViewModel = ProfilePagingViewModel(
-                userTimelineViewModel: userTimelineViewModel,
-                userMediaTimelineViewModel: userMediaTimelineViewModel,
-                userLikeTimelineViewModel: userLikeTimelineViewModel
-            )
-            profilePagingViewModel.viewControllers.forEach { viewController in
-                if let viewController = viewController as? NeedsDependency {
-                    viewController.context = context
-                    viewController.coordinator = coordinator
-                }
-            }
-            return profilePagingViewModel
-        }()
+//        profileSegmentedViewController.pagingViewController.viewModel = {
+//            let profilePagingViewModel = ProfilePagingViewModel(
+//                userTimelineViewModel: userTimelineViewModel,
+//                userMediaTimelineViewModel: userMediaTimelineViewModel,
+//                userLikeTimelineViewModel: userLikeTimelineViewModel
+//            )
+//            profilePagingViewModel.viewControllers.forEach { viewController in
+//                if let viewController = viewController as? NeedsDependency {
+//                    viewController.context = context
+//                    viewController.coordinator = coordinator
+//                }
+//            }
+//            return profilePagingViewModel
+//        }()
 
-        overlayScrollView.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(overlayScrollView)
-        NSLayoutConstraint.activate([
-            overlayScrollView.frameLayoutGuide.topAnchor.constraint(equalTo: view.topAnchor),
-            overlayScrollView.frameLayoutGuide.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            view.trailingAnchor.constraint(equalTo: overlayScrollView.frameLayoutGuide.trailingAnchor),
-            view.bottomAnchor.constraint(equalTo: overlayScrollView.frameLayoutGuide.bottomAnchor),
-            overlayScrollView.contentLayoutGuide.widthAnchor.constraint(equalTo: view.widthAnchor),
-        ])
-
-        containerScrollView.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(containerScrollView)
-        NSLayoutConstraint.activate([
-            containerScrollView.frameLayoutGuide.topAnchor.constraint(equalTo: view.topAnchor),
-            containerScrollView.frameLayoutGuide.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            view.trailingAnchor.constraint(equalTo: containerScrollView.frameLayoutGuide.trailingAnchor),
-            view.bottomAnchor.constraint(equalTo: containerScrollView.frameLayoutGuide.bottomAnchor),
-            containerScrollView.contentLayoutGuide.widthAnchor.constraint(equalTo: view.widthAnchor),
-        ])
-
-        // add segmented list
-        addChild(profileSegmentedViewController)
-        profileSegmentedViewController.view.translatesAutoresizingMaskIntoConstraints = false
-        containerScrollView.addSubview(profileSegmentedViewController.view)
-        profileSegmentedViewController.didMove(toParent: self)
-        NSLayoutConstraint.activate([
-            profileSegmentedViewController.view.leadingAnchor.constraint(equalTo: containerScrollView.contentLayoutGuide.leadingAnchor),
-            profileSegmentedViewController.view.trailingAnchor.constraint(equalTo: containerScrollView.contentLayoutGuide.trailingAnchor),
-            profileSegmentedViewController.view.bottomAnchor.constraint(equalTo: containerScrollView.contentLayoutGuide.bottomAnchor),
-            profileSegmentedViewController.view.heightAnchor.constraint(equalTo: containerScrollView.frameLayoutGuide.heightAnchor),
-        ])
-
-        addChild(profileHeaderViewController)
-        profileHeaderViewController.view.translatesAutoresizingMaskIntoConstraints = false
-        containerScrollView.addSubview(profileHeaderViewController.view)
-        profileHeaderViewController.didMove(toParent: self)
-        NSLayoutConstraint.activate([
-            profileHeaderViewController.view.topAnchor.constraint(equalTo: containerScrollView.topAnchor),
-            profileHeaderViewController.view.leadingAnchor.constraint(equalTo: containerScrollView.contentLayoutGuide.leadingAnchor),
-            containerScrollView.contentLayoutGuide.trailingAnchor.constraint(equalTo: profileHeaderViewController.view.trailingAnchor),
-            profileSegmentedViewController.view.topAnchor.constraint(equalTo: profileHeaderViewController.view.bottomAnchor),
-        ])
-
-        containerScrollView.addGestureRecognizer(overlayScrollView.panGestureRecognizer)
-        overlayScrollView.layer.zPosition = .greatestFiniteMagnitude    // make vision top-most
-        overlayScrollView.delegate = self
-        profileHeaderViewController.delegate = self
-        profileSegmentedViewController.pagingViewController.pagingDelegate = self
-
-        // add segmented bar to header
-        profileSegmentedViewController.pagingViewController.addBar(
-            bar,
-            dataSource: profileSegmentedViewController.pagingViewController.viewModel,
-            at: .custom(view: profileHeaderViewController.view, layout: { bar in
-                bar.translatesAutoresizingMaskIntoConstraints = false
-                self.profileHeaderViewController.view.addSubview(bar)
-                NSLayoutConstraint.activate([
-                    bar.leadingAnchor.constraint(equalTo: self.profileHeaderViewController.view.leadingAnchor),
-                    bar.trailingAnchor.constraint(equalTo: self.profileHeaderViewController.view.trailingAnchor),
-                    bar.bottomAnchor.constraint(equalTo: self.profileHeaderViewController.view.bottomAnchor),
-                    bar.heightAnchor.constraint(equalToConstant: ProfileHeaderViewController.headerMinHeight).priority(.defaultHigh),
-                ])
-            })
-        )
+//        overlayScrollView.translatesAutoresizingMaskIntoConstraints = false
+//        view.addSubview(overlayScrollView)
+//        NSLayoutConstraint.activate([
+//            overlayScrollView.frameLayoutGuide.topAnchor.constraint(equalTo: view.topAnchor),
+//            overlayScrollView.frameLayoutGuide.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+//            view.trailingAnchor.constraint(equalTo: overlayScrollView.frameLayoutGuide.trailingAnchor),
+//            view.bottomAnchor.constraint(equalTo: overlayScrollView.frameLayoutGuide.bottomAnchor),
+//            overlayScrollView.contentLayoutGuide.widthAnchor.constraint(equalTo: view.widthAnchor),
+//        ])
+//
+//        containerScrollView.translatesAutoresizingMaskIntoConstraints = false
+//        view.addSubview(containerScrollView)
+//        NSLayoutConstraint.activate([
+//            containerScrollView.frameLayoutGuide.topAnchor.constraint(equalTo: view.topAnchor),
+//            containerScrollView.frameLayoutGuide.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+//            view.trailingAnchor.constraint(equalTo: containerScrollView.frameLayoutGuide.trailingAnchor),
+//            view.bottomAnchor.constraint(equalTo: containerScrollView.frameLayoutGuide.bottomAnchor),
+//            containerScrollView.contentLayoutGuide.widthAnchor.constraint(equalTo: view.widthAnchor),
+//        ])
+//
+//        // add segmented list
+//        addChild(profileSegmentedViewController)
+//        profileSegmentedViewController.view.translatesAutoresizingMaskIntoConstraints = false
+//        containerScrollView.addSubview(profileSegmentedViewController.view)
+//        profileSegmentedViewController.didMove(toParent: self)
+//        NSLayoutConstraint.activate([
+//            profileSegmentedViewController.view.leadingAnchor.constraint(equalTo: containerScrollView.contentLayoutGuide.leadingAnchor),
+//            profileSegmentedViewController.view.trailingAnchor.constraint(equalTo: containerScrollView.contentLayoutGuide.trailingAnchor),
+//            profileSegmentedViewController.view.bottomAnchor.constraint(equalTo: containerScrollView.contentLayoutGuide.bottomAnchor),
+//            profileSegmentedViewController.view.heightAnchor.constraint(equalTo: containerScrollView.frameLayoutGuide.heightAnchor),
+//        ])
+//
+//        addChild(profileHeaderViewController)
+//        profileHeaderViewController.view.translatesAutoresizingMaskIntoConstraints = false
+//        containerScrollView.addSubview(profileHeaderViewController.view)
+//        profileHeaderViewController.didMove(toParent: self)
+//        NSLayoutConstraint.activate([
+//            profileHeaderViewController.view.topAnchor.constraint(equalTo: containerScrollView.topAnchor),
+//            profileHeaderViewController.view.leadingAnchor.constraint(equalTo: containerScrollView.contentLayoutGuide.leadingAnchor),
+//            containerScrollView.contentLayoutGuide.trailingAnchor.constraint(equalTo: profileHeaderViewController.view.trailingAnchor),
+//            profileSegmentedViewController.view.topAnchor.constraint(equalTo: profileHeaderViewController.view.bottomAnchor),
+//        ])
+//
+//        containerScrollView.addGestureRecognizer(overlayScrollView.panGestureRecognizer)
+//        overlayScrollView.layer.zPosition = .greatestFiniteMagnitude    // make vision top-most
+//        overlayScrollView.delegate = self
+//        profileHeaderViewController.delegate = self
+//        profileSegmentedViewController.pagingViewController.pagingDelegate = self
+//
+//        // add segmented bar to header
+//        profileSegmentedViewController.pagingViewController.addBar(
+//            bar,
+//            dataSource: profileSegmentedViewController.pagingViewController.viewModel,
+//            at: .custom(view: profileHeaderViewController.view, layout: { bar in
+//                bar.translatesAutoresizingMaskIntoConstraints = false
+//                self.profileHeaderViewController.view.addSubview(bar)
+//                NSLayoutConstraint.activate([
+//                    bar.leadingAnchor.constraint(equalTo: self.profileHeaderViewController.view.leadingAnchor),
+//                    bar.trailingAnchor.constraint(equalTo: self.profileHeaderViewController.view.trailingAnchor),
+//                    bar.bottomAnchor.constraint(equalTo: self.profileHeaderViewController.view.bottomAnchor),
+//                    bar.heightAnchor.constraint(equalToConstant: ProfileHeaderViewController.headerMinHeight).priority(.defaultHigh),
+//                ])
+//            })
+//        )
 
         // bind view model
         viewModel.$user.assign(to: &profileHeaderViewController.viewModel.$user)
@@ -459,14 +518,14 @@ extension ProfileViewController {
 //        viewModel.viewDidAppear.send()
         
         // set overlay scroll view initial content size
-        guard let currentViewController = profileSegmentedViewController.pagingViewController.currentViewController as? ScrollViewContainer else { return }
-        currentPostTimelineTableViewContentSizeObservation = observeTableViewContentSize(scrollView: currentViewController.scrollView)
-        currentViewController.scrollView.panGestureRecognizer.require(toFail: overlayScrollView.panGestureRecognizer)
+//        guard let currentViewController = profileSegmentedViewController.pagingViewController.currentViewController as? ScrollViewContainer else { return }
+//        currentPostTimelineTableViewContentSizeObservation = observeTableViewContentSize(scrollView: currentViewController.scrollView)
+//        currentViewController.scrollView.panGestureRecognizer.require(toFail: overlayScrollView.panGestureRecognizer)
     }
     
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
-        currentPostTimelineTableViewContentSizeObservation = nil
+//        currentPostTimelineTableViewContentSizeObservation = nil
     }
     
 }
@@ -715,3 +774,43 @@ extension ProfileViewController: ProfilePagingViewControllerDelegate {
 //extension ProfileViewController: ScrollViewContainer {
 //    var scrollView: UIScrollView { return overlayScrollView }
 //}
+
+// MARK: - TabBarPagerDelegate
+extension ProfileViewController: TabBarPagerDelegate {
+    func tabBar() -> TMBar {
+        return bar
+    }
+    
+    func tabBarDataSource() -> TMBarDataSource {
+        return profilePagingViewController.viewModel
+    }
+    
+    func resetPageContentOffset(_ tabBarPagerController: TabBarPagerController) {
+        for viewController in profilePagingViewController.viewModel.viewControllers {
+            viewController.pageScrollView.contentOffset = .zero
+        }
+    }
+    
+    func tabBarPagerController(_ tabBarPagerController: TabBarPagerController, didScroll scrollView: UIScrollView) {
+        // elastically banner
+        if scrollView.contentOffset.y < -scrollView.safeAreaInsets.top {
+            let offset = scrollView.contentOffset.y - (-scrollView.safeAreaInsets.top)
+            profileHeaderViewController.headerView.bannerImageViewTopLayoutConstraint.constant = offset
+        } else {
+            profileHeaderViewController.headerView.bannerImageViewTopLayoutConstraint.constant = 0
+        }
+    }
+}
+
+// MARK: - TabBarPagerDataSource
+extension ProfileViewController: TabBarPagerDataSource {
+    func headerViewController() -> UIViewController & TabBarPagerHeader {
+        return profileHeaderViewController
+    }
+    
+    func pageViewController() -> TabmanViewController & TabBarPageViewController {
+        return profilePagingViewController
+    }
+    
+    
+}

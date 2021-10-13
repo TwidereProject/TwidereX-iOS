@@ -60,6 +60,7 @@ extension ProfileHeaderView.ViewModel {
             .store(in: &bindDisposeBag)
         // avatar
         $avatarImageURL
+            .removeDuplicates()
             .sink { imageURL in
                 profileHeaderView.avatarView.avatarButton.avatarImageView.setImage(
                     url: imageURL,

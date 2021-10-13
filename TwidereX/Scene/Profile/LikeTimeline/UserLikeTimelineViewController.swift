@@ -12,6 +12,7 @@ import AVKit
 import Combine
 import CoreDataStack
 import GameplayKit
+import TabBarPager
 
 final class UserLikeTimelineViewController: UIViewController, NeedsDependency {
     
@@ -90,7 +91,7 @@ extension UserLikeTimelineViewController {
 // MARK: - UIScrollViewDelegate
 extension UserLikeTimelineViewController {
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        handleScrollViewDidScroll(scrollView)
+//        handleScrollViewDidScroll(scrollView)
     }
 }
 
@@ -175,11 +176,18 @@ extension UserLikeTimelineViewController: ScrollViewContainer {
     }
 }
 
-// MARK: - LoadMoreConfigurableTableViewContainer
-extension UserLikeTimelineViewController: LoadMoreConfigurableTableViewContainer {
-    typealias BottomLoaderTableViewCell = TimelineBottomLoaderTableViewCell
-    typealias LoadingState = UserLikeTimelineViewModel.State.LoadingMore
-    
-    var loadMoreConfigurableTableView: UITableView { return tableView }
-    var loadMoreConfigurableStateMachine: GKStateMachine { return viewModel.stateMachine }
+// MARK: - TabBarPage
+extension UserLikeTimelineViewController: TabBarPage {
+    var pageScrollView: UIScrollView {
+        tableView
+    }
 }
+
+// MARK: - LoadMoreConfigurableTableViewContainer
+//extension UserLikeTimelineViewController: LoadMoreConfigurableTableViewContainer {
+//    typealias BottomLoaderTableViewCell = TimelineBottomLoaderTableViewCell
+//    typealias LoadingState = UserLikeTimelineViewModel.State.LoadingMore
+//
+//    var loadMoreConfigurableTableView: UITableView { return tableView }
+//    var loadMoreConfigurableStateMachine: GKStateMachine { return viewModel.stateMachine }
+//}

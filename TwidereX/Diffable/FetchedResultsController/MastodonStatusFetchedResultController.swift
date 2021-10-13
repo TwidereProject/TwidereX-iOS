@@ -1,8 +1,8 @@
 //
-//  TwitterStatusFetchedResultController.swift
-//  TwitterStatusFetchedResultController
+//  MastodonStatusFetchedResultController.swift
+//  TwidereX
 //
-//  Created by Cirno MainasuK on 2021-8-19.
+//  Created by Cirno MainasuK on 2021-10-12.
 //  Copyright © 2021 Twidere. All rights reserved.
 //
 
@@ -12,26 +12,27 @@ import UIKit
 import Combine
 import CoreData
 import CoreDataStack
-import TwitterSDK
+import MastodonSDK
 
-final class TwitterStatusFetchedResultController: NSObject {
+final class MastodonStatusFetchedResultController: NSObject {
     
     var disposeBag = Set<AnyCancellable>()
     
-    let fetchedResultsController: NSFetchedResultsController<TwitterStatus>
+    let fetchedResultsController: NSFetchedResultsController<MastodonStatus>
     
     // input
-    let statusIDs = CurrentValueSubject<[Twitter.Entity.V2.Tweet.ID], Never>([])
+    let domain = CurrentValueSubject<String, Never>("")
+    let statusIDs = CurrentValueSubject<[Mastodon.Entity.Status.ID], Never>([])
     let predicate = CurrentValueSubject<NSPredicate?, Never>(nil)
     
     // output
     private let _objectIDs = PassthroughSubject<[NSManagedObjectID], Never>()
-    let records = CurrentValueSubject<[ManagedObjectRecord<TwitterStatus>], Never>([])
+    let records = CurrentValueSubject<[ManagedObjectRecord<MastodonStatus>], Never>([])
     
     init(managedObjectContext: NSManagedObjectContext) {
         self.fetchedResultsController = {
-            let fetchRequest = TwitterStatus.sortedFetchRequest
-            fetchRequest.predicate = TwitterStatus.predicate(ids: [])
+            let fetchRequest = MastodonStatus.sortedFetchRequest
+            fetchRequest.predicate = MastodonStatus.predicate(domain: "", ids: [])
             fetchRequest.returnsObjectsAsFaults = false
             fetchRequest.fetchBatchSize = 15
             let controller = NSFetchedResultsController(
@@ -54,22 +55,23 @@ final class TwitterStatusFetchedResultController: NSObject {
         
         fetchedResultsController.delegate = self
         
-        Publishers.CombineLatest(
+        Publishers.CombineLatest3(
+            domain,
             statusIDs,
             predicate
         )
         .receive(on: DispatchQueue.main)
-        .sink { [weak self] statusIDs, predicate in
+        .sink { [weak self] domain, statusIDs, predicate in
             guard let self = self else { return }
             
             let compoundPredicate: NSPredicate = {
                 if let predicate = predicate {
                     return NSCompoundPredicate(andPredicateWithSubpredicates: [
-                        TwitterStatus.predicate(ids: statusIDs),
+                        MastodonStatus.predicate(domain: domain, ids: statusIDs),
                         predicate
                     ])
                 } else {
-                    return TwitterStatus.predicate(ids: statusIDs)
+                    return MastodonStatus.predicate(domain: domain, ids: statusIDs)
                 }
             }()
             self.fetchedResultsController.fetchRequest.predicate = compoundPredicate
@@ -85,8 +87,8 @@ final class TwitterStatusFetchedResultController: NSObject {
     
 }
 
-extension TwitterStatusFetchedResultController {
-    func append(statusIDs: [Twitter.Entity.V2.Tweet.ID]) {
+extension MastodonStatusFetchedResultController {
+    func append(statusIDs: [Mastodon.Entity.Status.ID]) {
         var result = self.statusIDs.value
         for statusID in statusIDs where !result.contains(statusID) {
             result.append(statusID)
@@ -96,7 +98,7 @@ extension TwitterStatusFetchedResultController {
 }
 
 // MARK: - NSFetchedResultsControllerDelegate
-extension TwitterStatusFetchedResultController: NSFetchedResultsControllerDelegate {
+extension MastodonStatusFetchedResultController: NSFetchedResultsControllerDelegate {
     func controller(
         _ controller: NSFetchedResultsController<NSFetchRequestResult>,
         didChangeContentWith snapshot: NSDiffableDataSourceSnapshotReference
@@ -116,4 +118,3 @@ extension TwitterStatusFetchedResultController: NSFetchedResultsControllerDelega
         self._objectIDs.send(objectIDs)
     }
 }
-

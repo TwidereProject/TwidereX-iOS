@@ -34,6 +34,8 @@ extension HomeTimelineViewModel.LoadOldestState {
     }
     
     class Loading: HomeTimelineViewModel.LoadOldestState {
+        let logger = Logger(subsystem: "HomeTimelineViewModel.LoadOldestState", category: "StateMachine")
+        
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {
             return stateClass == Fail.self || stateClass == Idle.self || stateClass == NoMore.self
         }
@@ -48,125 +50,62 @@ extension HomeTimelineViewModel.LoadOldestState {
             }
             
             Task {
-                await fetch(feed: feed)
+                await fetch(anchor: feed)
+            }
+        }
+
+        private func fetch(anchor record: ManagedObjectRecord<Feed>) async {
+            guard let viewModel = viewModel, let stateMachine = stateMachine else { return }
+            
+            guard let authenticationContext = viewModel.context.authenticationService.activeAuthenticationContext.value else {
+                stateMachine.enter(Fail.self)
+                return
             }
             
-            
-//            guard let activeTwitterAuthenticationBox = viewModel.context.authenticationService.activeTwitterAuthenticationBox.value else {
-//                assertionFailure()
-//                stateMachine.enter(Fail.self)
-//                return
-//            }
-//
-//            guard let last = viewModel.fetchedResultsController.fetchedObjects?.last,
-//                  let tweet = last.tweet else {
-//                stateMachine.enter(Idle.self)
-//                return
-//            }
-//
-//            // TODO: only set large count when using Wi-Fi
-//            let maxID = tweet.id
-//            viewModel.context.apiService.twitterHomeTimeline(count: 200, maxID: maxID, twitterAuthenticationBox: activeTwitterAuthenticationBox)
-//                .delay(for: .seconds(1), scheduler: DispatchQueue.main)
-//                .receive(on: DispatchQueue.main)
-//                .sink { completion in
-//                    switch completion {
-//                    case .failure(let error):
-//                        // TODO: handle error
-//                        os_log("%{public}s[%{public}ld], %{public}s: fetch tweets failed. %s", ((#file as NSString).lastPathComponent), #line, #function, error.localizedDescription)
-//                    case .finished:
-//                        // handle isFetchingLatestTimeline in fetch controller delegate
-//                        break
-//                    }
-//                } receiveValue: { response in
-//                    let tweets = response.value
-//                    // enter no more state when no new tweets
-//                    if tweets.isEmpty || (tweets.count == 1 && tweets[0].idStr == maxID) {
-//                        stateMachine.enter(NoMore.self)
-//                    } else {
-//                        stateMachine.enter(Idle.self)
-//                    }
-//                }
-//                .store(in: &viewModel.disposeBag)
-        }
-        
-        enum FetchContext {
-            case twitter(TwitterFetchContext)
-            case mastodon(MastodonFetchContext)
-        }
-        
-        struct TwitterFetchContext {
-            let maxID: TwitterStatus.ID
-        }
-        
-        struct MastodonFetchContext {
-            let maxID: MastodonStatus.ID
-        }
-        
-        func fetch(feed record: ManagedObjectRecord<Feed>) async {
-            guard let viewModel = viewModel, let stateMachine = stateMachine else { return }
-
             let managedObjectContext = viewModel.context.managedObjectContext
-            let _fetchContext: FetchContext? = await managedObjectContext.perform {
+            let _input: StatusListFetchViewModel.Input? = await managedObjectContext.perform {
                 guard let feed = record.object(in: managedObjectContext) else { return nil }
-                switch feed.content {
-                case .twitter(let status):
-                    let fetchContext = TwitterFetchContext(maxID: status.id)
-                    return .twitter(fetchContext)
-                case .mastodon(let status):
-                    let fetchContext = MastodonFetchContext(maxID: status.id)
-                    return .mastodon(fetchContext)
-                case .none:
-                    assertionFailure()
+                switch (feed.content, authenticationContext) {
+                case (.twitter(let status), .twitter(let authenticationContext)):
+                    return StatusListFetchViewModel.Input(
+                        context: viewModel.context,
+                        fetchContext: .twitter(.init(
+                            authenticationContext: authenticationContext,
+                            maxID: status.id,
+                            userIdentifier: nil
+                        ))
+                    )
+                case (.mastodon(let status), .mastodon(let authenticationContext)):
+                    return StatusListFetchViewModel.Input(
+                        context: viewModel.context,
+                        fetchContext: .mastodon(.init(
+                            authenticationContext: authenticationContext,
+                            maxID: status.id,
+                            userIdentifier: nil
+                        ))
+                    )
+                default:
                     return nil
                 }
             }
-            
-            guard let fetchContext = _fetchContext else {
+
+            guard let input = _input else {
                 stateMachine.enter(Fail.self)
                 return
             }
 
             do {
-                switch fetchContext {
-                case .twitter(let fetchContext):
-                    try await fetch(fetchContext: fetchContext)
-                case .mastodon(let fetchContext):
-                    try await fetch(fetchContext: fetchContext)
+                logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): fetch…")
+                let output = try await StatusListFetchViewModel.homeTimeline(input: input)
+                if output.hasMore {
+                    stateMachine.enter(Idle.self)
+                } else {
+                    stateMachine.enter(NoMore.self)
                 }
+                logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): fetch success")
             } catch {
+                logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): fetch failure: \(error.localizedDescription)")
                 stateMachine.enter(Fail.self)
-                return
-            }
-        }
-        
-        func fetch(fetchContext: TwitterFetchContext) async throws {
-            guard let viewModel = viewModel, let stateMachine = stateMachine else { return }
-            guard let authenticationContext = viewModel.context.authenticationService.activeAuthenticationContext.value?.twitterAuthenticationContext else { return }
-            let response = try await viewModel.context.apiService.twitterHomeTimeline(
-                maxID: fetchContext.maxID,
-                authenticationContext: authenticationContext
-            )
-            let notHasMore = response.value.isEmpty || (response.value.count == 1 && response.value[0].idStr == fetchContext.maxID)
-            if notHasMore {
-                stateMachine.enter(NoMore.self)
-            } else {
-                stateMachine.enter(Idle.self)
-            }
-        }
-        
-        func fetch(fetchContext: MastodonFetchContext) async throws {
-            guard let viewModel = viewModel, let stateMachine = stateMachine else { return }
-            guard let authenticationContext = viewModel.context.authenticationService.activeAuthenticationContext.value?.mastodonAuthenticationContext else { return }
-            let response = try await viewModel.context.apiService.mastodonHomeTimeline(
-                maxID: fetchContext.maxID,
-                authenticationContext: authenticationContext
-            )
-            let notHasMore = response.value.isEmpty || (response.value.count == 1 && response.value[0].id == fetchContext.maxID)
-            if notHasMore {
-                stateMachine.enter(NoMore.self)
-            } else {
-                stateMachine.enter(Idle.self)
             }
         }
     }

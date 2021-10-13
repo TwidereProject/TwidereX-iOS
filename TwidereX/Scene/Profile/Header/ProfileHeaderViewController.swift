@@ -8,6 +8,7 @@
 import os.log
 import UIKit
 import Combine
+import TabBarPager
 
 protocol ProfileHeaderViewControllerDelegate: AnyObject {
     func profileHeaderViewController(_ viewController: ProfileHeaderViewController, viewLayoutDidUpdate view: UIView)
@@ -72,4 +73,11 @@ extension ProfileHeaderViewController {
         )
     }
     
+}
+
+// MARK: - TabBarPagerHeader
+extension ProfileHeaderViewController: TabBarPagerHeader {
+    func minimalHeight() -> CGFloat {
+        ProfileHeaderViewController.headerMinHeight
+    }
 }

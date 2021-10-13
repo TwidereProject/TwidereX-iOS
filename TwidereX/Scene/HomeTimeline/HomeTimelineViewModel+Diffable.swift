@@ -175,6 +175,7 @@ extension HomeTimelineViewModel {
 
 extension HomeTimelineViewModel {
 
+    // load lastest
     func loadLatest() async {
         guard let authenticationContext = context.authenticationService.activeAuthenticationContext.value else { return }
         do {
@@ -196,6 +197,7 @@ extension HomeTimelineViewModel {
         }
     }
     
+    // load timeline gap
     func loadMore(item: StatusItem) async {
         guard case let .feedLoader(record) = item else { return }
         guard let authenticationContext = context.authenticationService.activeAuthenticationContext.value else { return }

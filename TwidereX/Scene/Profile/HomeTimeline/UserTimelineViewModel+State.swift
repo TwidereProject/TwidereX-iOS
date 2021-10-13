@@ -30,7 +30,7 @@ extension UserTimelineViewModel.State {
             guard let viewModel = viewModel else { return false }
             switch stateClass {
             case is Reloading.Type:
-                return viewModel.userID.value != nil
+                return viewModel.userIdentifier.value != nil
             case is Suspended.Type:
                 return true
             default:
@@ -61,37 +61,10 @@ extension UserTimelineViewModel.State {
             super.didEnter(from: previousState)
             guard let viewModel = viewModel, let stateMachine = stateMachine else { return }
             
-            viewModel.tweetIDs.value = []
-            
-//            let userID = viewModel.userID.value
-//            viewModel.fetchLatest()
-//                .receive(on: DispatchQueue.main)
-//                .sink { completion in
-//                    switch completion {
-//                    case .failure(let error):
-//                        os_log("%{public}s[%{public}ld], %{public}s: fetch user timeline latest response error: %s", ((#file as NSString).lastPathComponent), #line, #function, error.localizedDescription)
-//                        if NotAuthorized.canEnter(for: error) {
-//                            stateMachine.enter(NotAuthorized.self)
-//                        } else if Blocked.canEnter(for: error) {
-//                            stateMachine.enter(Blocked.self)
-//                        } else {
-//                            stateMachine.enter(Fail.self)
-//                        }
-//                    case .finished:
-//                        break
-//                    }
-//                } receiveValue: { response in
-//                    guard viewModel.userID.value == userID else { return }
-//                    let tweetIDs = response.value.map { $0.idStr }
-//                    
-//                    if tweetIDs.isEmpty {
-//                        stateMachine.enter(NoMore.self)
-//                    } else {
-//                        stateMachine.enter(Idle.self)
-//                    }
-//                    viewModel.tweetIDs.value = tweetIDs
-//                }
-//                .store(in: &viewModel.disposeBag)
+            viewModel.statusRecordFetchedResultController.reset()
+
+            stateMachine.enter(Idle.self)
+            stateMachine.enter(LoadingMore.self)
         }
     }
     
@@ -122,6 +95,8 @@ extension UserTimelineViewModel.State {
     }
     
     class LoadingMore: UserTimelineViewModel.State {
+        let logger = Logger(subsystem: "UserTimelineViewModel.State", category: "StateMachine")
+        
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {
             switch stateClass {
             case is Fail.Type:
@@ -142,6 +117,11 @@ extension UserTimelineViewModel.State {
         override func didEnter(from previousState: GKState?) {
             super.didEnter(from: previousState)
             guard let viewModel = viewModel, let stateMachine = stateMachine else { return }
+
+            let record = viewModel.statusRecordFetchedResultController.records.value.last
+            Task {
+                await fetch(anchor: record)
+            }
             
 //            let userID = viewModel.userID.value
 //            viewModel.loadMore()
@@ -175,6 +155,92 @@ extension UserTimelineViewModel.State {
 //                }
 //                .store(in: &viewModel.disposeBag)
         }
+        
+        private func fetch(anchor record: StatusRecord?) async {
+            guard let viewModel = viewModel, let stateMachine = stateMachine else { return }
+            
+            guard let userIdentifier = viewModel.userIdentifier.value,
+                  let authenticationContext = viewModel.context.authenticationService.activeAuthenticationContext.value else {
+                stateMachine.enter(Fail.self)
+                return
+            }
+            
+            let maxID: String? = await {
+                guard let record = record else { return nil }
+                
+                let managedObjectContext = viewModel.context.managedObjectContext
+                return await managedObjectContext.perform {
+                    switch record {
+                    case .twitter(let record):
+                        guard let status = record.object(in: managedObjectContext) else { return nil }
+                        return status.id
+                    case .mastodon(let record):
+                        guard let status = record.object(in: managedObjectContext) else { return nil }
+                        return status.id
+                    }
+                }
+            }()
+            
+            if record != nil && maxID == nil {
+                stateMachine.enter(Fail.self)
+                assertionFailure()
+                return
+            }
+            
+            let _input: StatusListFetchViewModel.Input? = {
+                switch (userIdentifier, authenticationContext) {
+                case (.twitter(let identifier), .twitter(let authenticationContext)):
+                    return StatusListFetchViewModel.Input(
+                        context: viewModel.context,
+                        fetchContext: .twitter(.init(
+                            authenticationContext: authenticationContext,
+                            maxID: maxID,
+                            userIdentifier: identifier
+                        ))
+                    )
+                case (.mastodon(let identifier), .mastodon(let authenticationContext)):
+                    return StatusListFetchViewModel.Input(
+                        context: viewModel.context,
+                        fetchContext: .mastodon(.init(
+                            authenticationContext: authenticationContext,
+                            maxID: maxID,
+                            userIdentifier: identifier
+                        ))
+                    )
+                default:
+                    return nil
+                }
+            }()
+            
+            guard let input = _input else {
+                assertionFailure()
+                stateMachine.enter(Fail.self)
+                return
+            }
+            
+            do {
+                logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): fetch…")
+                let output = try await StatusListFetchViewModel.userTimeline(input: input)
+                if output.hasMore {
+                    stateMachine.enter(Idle.self)
+                } else {
+                    stateMachine.enter(NoMore.self)
+                }
+                switch output.result {
+                case .twitter(let statuses):
+                    let statusIDs = statuses.map { $0.idStr }
+                    viewModel.statusRecordFetchedResultController.twitterStatusFetchedResultController.append(statusIDs: statusIDs)
+                case .mastodon(let statuses):
+                    let statusIDs = statuses.map { $0.id }
+                    viewModel.statusRecordFetchedResultController.mastodonStatusFetchedResultController.append(statusIDs: statusIDs)
+                }
+                
+                logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): fetch success")
+            } catch {
+                logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): fetch failure: \(error.localizedDescription)")
+                stateMachine.enter(Fail.self)
+            }
+        }
     }
         
     class NotAuthorized: UserTimelineViewModel.State {
@@ -204,7 +270,7 @@ extension UserTimelineViewModel.State {
             guard let viewModel = viewModel else { return }
 
             // trigger items update
-            viewModel.tweetIDs.value = []
+            viewModel.statusRecordFetchedResultController.reset()
         }
     }
     
@@ -235,7 +301,7 @@ extension UserTimelineViewModel.State {
             guard let viewModel = viewModel else { return }
             
             // trigger items update
-            viewModel.tweetIDs.value = []
+            viewModel.statusRecordFetchedResultController.reset()
         }
     }
     
@@ -249,7 +315,7 @@ extension UserTimelineViewModel.State {
             guard let viewModel = viewModel else { return }
             
             // trigger items update
-            viewModel.tweetIDs.value = []
+            viewModel.statusRecordFetchedResultController.reset()
         }
     }
     

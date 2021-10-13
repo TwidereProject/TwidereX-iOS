@@ -90,7 +90,7 @@ extension FollowerListViewController {
 // MARK: - UIScrollViewDelegate
 extension FollowerListViewController {
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        handleScrollViewDidScroll(scrollView)
+//        handleScrollViewDidScroll(scrollView)
     }
 }
 
@@ -102,12 +102,12 @@ extension FollowerListViewController: UITableViewDelegate {
 }
 
 // MARK: - LoadMoreConfigurableTableViewContainer
-extension FollowerListViewController: LoadMoreConfigurableTableViewContainer {
-    
-    typealias BottomLoaderTableViewCell = TimelineBottomLoaderTableViewCell
-    typealias LoadingState = FriendshipListViewModel.State.Loading
-    
-    var loadMoreConfigurableTableView: UITableView { return tableView }
-    var loadMoreConfigurableStateMachine: GKStateMachine { return viewModel.stateMachine }
-    
-}
+//extension FollowerListViewController: LoadMoreConfigurableTableViewContainer {
+//
+//    typealias BottomLoaderTableViewCell = TimelineBottomLoaderTableViewCell
+//    typealias LoadingState = FriendshipListViewModel.State.Loading
+//
+//    var loadMoreConfigurableTableView: UITableView { return tableView }
+//    var loadMoreConfigurableStateMachine: GKStateMachine { return viewModel.stateMachine }
+//
+//}

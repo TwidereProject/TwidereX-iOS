@@ -36,9 +36,35 @@ extension Twitter.API.Timeline {
 }
 
 extension Twitter.API.Timeline {
+    
+    static let userTimelineEndpointURL = Twitter.API.endpointURL.appendingPathComponent("statuses/user_timeline.json")
+
+    public static func user(
+        session: URLSession,
+        query: TimelineQuery,
+        authorization: Twitter.API.OAuth.Authorization
+    ) async throws -> Twitter.Response.Content<[Twitter.Entity.Tweet]> {
+        let request = Twitter.API.request(
+            url: userTimelineEndpointURL,
+            method: .GET,
+            query: query,
+            authorization: authorization
+        )
+        let (data, response) = try await session.data(for: request, delegate: nil)
+        do {
+            let value = try Twitter.API.decode(type: [Twitter.Entity.Tweet].self, from: data, response: response)
+            return Twitter.Response.Content(value: value, response: response)
+        } catch {
+            debugPrint(error)
+            throw error
+        }
+    }
+    
+}
+
+extension Twitter.API.Timeline {
 
     static let mentionTimelineEndpointURL = Twitter.API.endpointURL.appendingPathComponent("statuses/mentions_timeline.json")
-    static let userTimelineEndpointURL = Twitter.API.endpointURL.appendingPathComponent("statuses/user_timeline.json")
     
 }
 

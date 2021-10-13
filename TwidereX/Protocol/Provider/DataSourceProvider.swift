@@ -11,7 +11,7 @@ import Foundation
 import CoreDataStack
 import UIKit
 
-enum DataSourceItem {
+enum DataSourceItem: Hashable {
     case status(StatusRecord)
     case user(UserRecord)
 }

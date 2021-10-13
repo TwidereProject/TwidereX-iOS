@@ -142,6 +142,7 @@ extension StatusView {
     func prepareForReuse() {
         disposeBag.removeAll()
         viewModel.objects.removeAll()
+        viewModel.authorAvatarImageURL = nil
         authorAvatarButton.avatarImageView.cancelTask()
         mediaGridContainerView.prepareForReuse()
         style?.prepareForReuse(statusView: self)
