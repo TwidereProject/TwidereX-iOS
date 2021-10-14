@@ -24,6 +24,21 @@ final class ProfilePagingViewController: TabmanViewController, TabBarPageViewCon
     
     // MARK: - PageboyViewControllerDelegate
     
+    override func pageboyViewController(_ pageboyViewController: PageboyViewController, didScrollTo position: CGPoint, direction: PageboyViewController.NavigationDirection, animated: Bool) {
+        super.pageboyViewController(pageboyViewController, didScrollTo: position, direction: direction, animated: animated)
+        
+        // Fix the SDK bug for table view get row selected during swipe but cancel paging
+        guard let viewController = pageboyViewController.currentViewController as? TabBarPage else {
+            assertionFailure()
+            return
+        }
+        if let tableView = viewController.pageScrollView as? UITableView {
+            for cell in tableView.visibleCells {
+                cell.setHighlighted(false, animated: false)
+            }
+        }
+    }
+    
     override func pageboyViewController(_ pageboyViewController: PageboyViewController, didScrollToPageAt index: TabmanViewController.PageIndex, direction: PageboyViewController.NavigationDirection, animated: Bool) {
         super.pageboyViewController(pageboyViewController, didScrollToPageAt: index, direction: direction, animated: animated)
         
