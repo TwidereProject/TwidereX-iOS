@@ -22,8 +22,8 @@ final class MediaGridContainerView: UIView {
     
     weak var delegate: MediaGridContainerViewDelegate?
     
-    // lazy ver is required here to setup gesture recognizer target-action
-    // Swift not doesn't emit compiler error if without lazy here
+    // lazy var is required here to setup gesture recognizer target-action
+    // Swift not doesn't emit compiler error if without `lazy` here
     private(set) lazy var mediaViews: [MediaView] = {
         var mediaViews: [MediaView] = []
         for i in 0..<MediaGridContainerView.maxCount {

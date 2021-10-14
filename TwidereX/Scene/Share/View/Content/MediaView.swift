@@ -73,34 +73,6 @@ final class MediaView: UIView {
 }
 
 extension MediaView {
-    enum Configuration {
-        case image(info: ImageInfo)
-        case gif(info: VideoInfo)
-        case video(info: VideoInfo)
-        
-        var aspectRadio: CGSize {
-            switch self {
-            case .image(let info):      return info.aspectRadio
-            case .gif(let info):        return info.aspectRadio
-            case .video(let info):      return info.aspectRadio
-            }
-        }
-        
-        struct ImageInfo {
-            let aspectRadio: CGSize
-            let assetURL: String?
-        }
-        
-        struct VideoInfo {
-            let aspectRadio: CGSize
-            let assertURL: String?
-            let previewURL: String?
-            let durationMS: Int?
-        }
-    }
-}
-
-extension MediaView {
     private func _init() {
         // lazy load content later
     }

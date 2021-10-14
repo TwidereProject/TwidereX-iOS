@@ -16,14 +16,19 @@ import TwitterSDK
 
 final class UserMediaTimelineViewModel: NSObject {
     
+    let logger = Logger(subsystem: "UserMediaTimelineViewModel", category: "ViewModel")
+    
     var disposeBag = Set<AnyCancellable>()
     
     // input
     let context: AppContext
-//    let fetchedResultsController: NSFetchedResultsController<Tweet>
-    let userID: CurrentValueSubject<String?, Never>
+    let userIdentifier: CurrentValueSubject<UserIdentifier?, Never>
+    let statusRecordFetchedResultController: StatusRecordFetchedResultController
+    let listBatchFetchViewModel = ListBatchFetchViewModel()
     
     // output
+    var diffableDataSource: UICollectionViewDiffableDataSource<StatusMediaGallerySection, StatusItem>?
+
     private(set) lazy var stateMachine: GKStateMachine = {
         let stateMachine = GKStateMachine(states: [
             State.Initial(viewModel: self),
@@ -39,31 +44,20 @@ final class UserMediaTimelineViewModel: NSObject {
         stateMachine.enter(State.Initial.self)
         return stateMachine
     }()
-    lazy var stateMachinePublisher = CurrentValueSubject<State, Never>(State.Initial(viewModel: self))
-    var diffableDataSource: UICollectionViewDiffableDataSource<MediaSection, Item>!
-    let pagingTweetIDs = CurrentValueSubject<[Twitter.Entity.Tweet.ID], Never>([])      // paging use only. NOT for displaying
-    let tweetIDs = CurrentValueSubject<[Twitter.Entity.Tweet.ID], Never>([])
-    let items = CurrentValueSubject<[Item], Never>([])
+//    lazy var stateMachinePublisher = CurrentValueSubject<State, Never>(State.Initial(viewModel: self))
+//    let pagingTweetIDs = CurrentValueSubject<[Twitter.Entity.Tweet.ID], Never>([])      // paging use only. NOT for displaying
+//    let tweetIDs = CurrentValueSubject<[Twitter.Entity.Tweet.ID], Never>([])
+//    let items = CurrentValueSubject<[Item], Never>([])
     
     init(context: AppContext) {
         self.context = context
-//        self.fetchedResultsController = {
-//            let fetchRequest = Tweet.sortedFetchRequest
-//            fetchRequest.predicate = Tweet.predicate(idStrs: [])
-//            fetchRequest.returnsObjectsAsFaults = false
-//            fetchRequest.fetchBatchSize = 20
-//            let controller = NSFetchedResultsController(
-//                fetchRequest: fetchRequest,
-//                managedObjectContext: context.managedObjectContext,
-//                sectionNameKeyPath: nil,
-//                cacheName: nil
-//            )
-//
-//            return controller
-//        }()
-        self.userID = CurrentValueSubject(nil)
+        self.userIdentifier = CurrentValueSubject(nil)
+        self.statusRecordFetchedResultController = StatusRecordFetchedResultController(managedObjectContext: context.managedObjectContext)
         super.init()
         
+        userIdentifier
+            .assign(to: \.value, on: statusRecordFetchedResultController.userIdentifier)
+            .store(in: &disposeBag)
 //        self.fetchedResultsController.delegate = self
 //
 //        items.eraseToAnyPublisher()

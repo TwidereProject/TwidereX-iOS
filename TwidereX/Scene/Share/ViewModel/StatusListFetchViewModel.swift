@@ -13,13 +13,12 @@ import MastodonSDK
 
 enum StatusListFetchViewModel {
     struct Input {
-        let context: AppContext
         let fetchContext: FetchContext
-    }
-    
-    enum FetchContext {
-        case twitter(TwitterFetchContext)
-        case mastodon(MastodonFetchContext)
+        
+        enum FetchContext {
+            case twitter(TwitterFetchContext)
+            case mastodon(MastodonFetchContext)
+        }
     }
     
     struct TwitterFetchContext {
@@ -36,7 +35,9 @@ enum StatusListFetchViewModel {
     
     struct Output {
         let result: Result
+        
         let hasMore: Bool
+        let nextInput: Input?
 
         enum Result {
             case twitter([Twitter.Entity.Tweet])       // v1
@@ -46,9 +47,7 @@ enum StatusListFetchViewModel {
 }
 
 extension StatusListFetchViewModel {
-    static func homeTimeline(input: Input) async throws -> Output {
-        let context = input.context
-    
+    static func homeTimeline(context: AppContext, input: Input) async throws -> Output {    
         switch input.fetchContext {
         case .twitter(let twitterFetchContext):
             let authenticationContext = twitterFetchContext.authenticationContext
@@ -56,10 +55,21 @@ extension StatusListFetchViewModel {
                 maxID: twitterFetchContext.maxID,
                 authenticationContext: authenticationContext
             )
-            let notHasMore = response.value.isEmpty || (response.value.count == 1 && response.value[0].idStr == twitterFetchContext.maxID)
+            let noMore = response.value.isEmpty || (response.value.count == 1 && response.value[0].idStr == twitterFetchContext.maxID)
+            let nextInput: Input? = {
+                if noMore { return nil }
+                guard let maxID = response.value.last?.idStr else { return nil }
+                let fetchContext = TwitterFetchContext(
+                    authenticationContext: authenticationContext,
+                    maxID: maxID,
+                    userIdentifier: twitterFetchContext.userIdentifier
+                )
+                return Input(fetchContext: .twitter(fetchContext))
+            }()
             return Output(
                 result: .twitter(response.value),
-                hasMore: !notHasMore
+                hasMore: !noMore,
+                nextInput: nextInput
             )
         case .mastodon(let mastodonFetchContext):
             let authenticationContext = mastodonFetchContext.authenticationContext
@@ -67,17 +77,26 @@ extension StatusListFetchViewModel {
                 maxID: mastodonFetchContext.maxID,
                 authenticationContext: authenticationContext
             )
-            let notHasMore = response.value.isEmpty || (response.value.count == 1 && response.value[0].id == mastodonFetchContext.maxID)
+            let noMore = response.value.isEmpty || (response.value.count == 1 && response.value[0].id == mastodonFetchContext.maxID)
+            let nextInput: Input? = {
+                if noMore { return nil }
+                guard let maxID = response.value.last?.id else { return nil }
+                let fetchContext = MastodonFetchContext(
+                    authenticationContext: authenticationContext,
+                    maxID: maxID,
+                    userIdentifier: mastodonFetchContext.userIdentifier
+                )
+                return Input(fetchContext: .mastodon(fetchContext))
+            }()
             return Output(
                 result: .mastodon(response.value),
-                hasMore: !notHasMore
+                hasMore: !noMore,
+                nextInput: nextInput
             )
         }
     }
     
-    static func userTimeline(input: Input) async throws -> Output {
-        let context = input.context
-        
+    static func userTimeline(context: AppContext, input: Input) async throws -> Output {
         switch input.fetchContext {
         case .twitter(let twitterFetchContext):
             guard let userID = twitterFetchContext.userIdentifier?.id else {
@@ -94,10 +113,21 @@ extension StatusListFetchViewModel {
                 query: query,
                 authenticationContext: authenticationContext
             )
-            let notHasMore = response.value.isEmpty || (response.value.count == 1 && response.value[0].idStr == twitterFetchContext.maxID)
+            let noMore = response.value.isEmpty || (response.value.count == 1 && response.value[0].idStr == twitterFetchContext.maxID)
+            let nextInput: Input? = {
+                if noMore { return nil }
+                guard let maxID = response.value.last?.idStr else { return nil }
+                let fetchContext = TwitterFetchContext(
+                    authenticationContext: authenticationContext,
+                    maxID: maxID,
+                    userIdentifier: twitterFetchContext.userIdentifier
+                )
+                return Input(fetchContext: .twitter(fetchContext))
+            }()
             return Output(
                 result: .twitter(response.value),
-                hasMore: !notHasMore
+                hasMore: !noMore,
+                nextInput: nextInput
             )
         case .mastodon(let mastodonFetchContext):
             fatalError("TODO")

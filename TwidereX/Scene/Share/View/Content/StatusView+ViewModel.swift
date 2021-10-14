@@ -284,35 +284,7 @@ extension StatusView {
     }
     
     private func configureMedia(twitterStatus status: TwitterStatus) {
-        func videoInfo(from attachment: TwitterAttachment) -> MediaView.Configuration.VideoInfo {
-            MediaView.Configuration.VideoInfo(
-                aspectRadio: attachment.size,
-                assertURL: attachment.assetURL,
-                previewURL: attachment.previewURL,
-                durationMS: attachment.durationMS
-            )
-        }
-        
-        let status = status.repost ?? status
-        status.publisher(for: \.attachments)
-            .map { attachments -> [MediaView.Configuration] in
-                return attachments.map { attachment -> MediaView.Configuration in
-                    switch attachment.kind {
-                    case .photo:
-                        let info = MediaView.Configuration.ImageInfo(
-                            aspectRadio: attachment.size,
-                            assetURL: attachment.assetURL
-                        )
-                        return .image(info: info)
-                    case .video:
-                        let info = videoInfo(from: attachment)
-                        return .video(info: info)
-                    case .animatedGIF:
-                        let info = videoInfo(from: attachment)
-                        return .gif(info: info)
-                    }
-                }
-            }
+        MediaView.configuration(twitterStatus: status)
             .assign(to: \.mediaViewConfigurations, on: viewModel)
             .store(in: &disposeBag)
     }

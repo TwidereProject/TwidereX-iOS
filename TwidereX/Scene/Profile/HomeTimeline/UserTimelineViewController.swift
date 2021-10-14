@@ -63,6 +63,7 @@ extension UserTimelineViewController {
             tableView: tableView,
             statusViewTableViewCellDelegate: self
         )
+        
         // setup batch fetch
         viewModel.listBatchFetchViewModel.setup(scrollView: tableView)
         viewModel.listBatchFetchViewModel.shouldFetch
@@ -73,7 +74,7 @@ extension UserTimelineViewController {
             }
             .store(in: &disposeBag)
         
-        // trigger user timeline loading
+        // trigger loading
         viewModel.userIdentifier
             .removeDuplicates()
             .sink { [weak self] _ in

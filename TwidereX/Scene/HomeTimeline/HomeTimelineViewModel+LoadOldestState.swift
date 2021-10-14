@@ -62,13 +62,13 @@ extension HomeTimelineViewModel.LoadOldestState {
                 return
             }
             
+            // generate input from timeline last feed entry
             let managedObjectContext = viewModel.context.managedObjectContext
             let _input: StatusListFetchViewModel.Input? = await managedObjectContext.perform {
                 guard let feed = record.object(in: managedObjectContext) else { return nil }
                 switch (feed.content, authenticationContext) {
                 case (.twitter(let status), .twitter(let authenticationContext)):
                     return StatusListFetchViewModel.Input(
-                        context: viewModel.context,
                         fetchContext: .twitter(.init(
                             authenticationContext: authenticationContext,
                             maxID: status.id,
@@ -77,7 +77,6 @@ extension HomeTimelineViewModel.LoadOldestState {
                     )
                 case (.mastodon(let status), .mastodon(let authenticationContext)):
                     return StatusListFetchViewModel.Input(
-                        context: viewModel.context,
                         fetchContext: .mastodon(.init(
                             authenticationContext: authenticationContext,
                             maxID: status.id,
@@ -96,7 +95,7 @@ extension HomeTimelineViewModel.LoadOldestState {
 
             do {
                 logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): fetch…")
-                let output = try await StatusListFetchViewModel.homeTimeline(input: input)
+                let output = try await StatusListFetchViewModel.homeTimeline(context: viewModel.context, input: input)
                 if output.hasMore {
                     stateMachine.enter(Idle.self)
                 } else {

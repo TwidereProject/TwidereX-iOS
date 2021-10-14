@@ -46,22 +46,6 @@ final class ProfileViewController: UIViewController, NeedsDependency {
         return refreshControl
     }()
     
-    let containerScrollView: UIScrollView = {
-        let scrollView = UIScrollView()
-        scrollView.scrollsToTop = false
-        scrollView.showsVerticalScrollIndicator = false
-        scrollView.preservesSuperviewLayoutMargins = true
-        scrollView.delaysContentTouches = false
-        return scrollView
-    }()
-    let overlayScrollView: UIScrollView = {
-        let scrollView = UIScrollView()
-        scrollView.showsVerticalScrollIndicator = false
-        scrollView.backgroundColor = .clear
-        scrollView.delaysContentTouches = false
-        return scrollView
-    }()
-    
     private(set) lazy var tabBarPagerController = TabBarPagerController()
 
     private(set) lazy var profileHeaderViewController: ProfileHeaderViewController = {
@@ -78,9 +62,9 @@ final class ProfileViewController: UIViewController, NeedsDependency {
             .store(in: &disposeBag)
         
         let userMediaTimelineViewModel = UserMediaTimelineViewModel(context: context)
-        //        viewModel.userIdentifier
-        //            .assign(to: \.value, on: userMediaTimelineViewModel.userIdentifier)
-        //            .store(in: &disposeBag)
+        viewModel.userIdentifier
+            .assign(to: \.value, on: userMediaTimelineViewModel.userIdentifier)
+            .store(in: &disposeBag)
         
         let userLikeTimelineViewModel = UserLikeTimelineViewModel(context: context)
         //        viewModel.userIdentifier
@@ -126,27 +110,6 @@ final class ProfileViewController: UIViewController, NeedsDependency {
         os_log("%{public}s[%{public}ld], %{public}s: deinit", ((#file as NSString).lastPathComponent), #line, #function)
     }
 
-}
-
-extension ProfileViewController {
-    
-    func observeTableViewContentSize(scrollView: UIScrollView) -> NSKeyValueObservation {
-        updateOverlayScrollViewContentSize(scrollView: scrollView)
-        return scrollView.observe(\.contentSize, options: .new) { scrollView, change in
-            self.updateOverlayScrollViewContentSize(scrollView: scrollView)
-        }
-    }
-    
-    func updateOverlayScrollViewContentSize(scrollView: UIScrollView) {
-        let bottomPageHeight = max(scrollView.contentSize.height, self.containerScrollView.frame.height - ProfileHeaderViewController.headerMinHeight - self.containerScrollView.safeAreaInsets.bottom)
-        let headerViewHeight: CGFloat = profileHeaderViewController.view.frame.height
-        let contentSize = CGSize(
-            width: self.containerScrollView.contentSize.width,
-            height: bottomPageHeight + headerViewHeight
-        )
-        self.overlayScrollView.contentSize = contentSize
-    }
-    
 }
 
 extension ProfileViewController {
@@ -594,48 +557,48 @@ extension ProfileViewController {
 }
 
 // MARK: - UIScrollViewDelegate
-extension ProfileViewController: UIScrollViewDelegate {
-    
-    func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        // elastically banner
-        if overlayScrollView.contentOffset.y < -overlayScrollView.safeAreaInsets.top {
-            let offset = overlayScrollView.contentOffset.y - (-overlayScrollView.safeAreaInsets.top)
-            profileHeaderViewController.headerView.bannerImageViewTopLayoutConstraint.constant = offset
-        } else {
-            profileHeaderViewController.headerView.bannerImageViewTopLayoutConstraint.constant = 0
-        }
-        
-        contentOffsets[profileSegmentedViewController.pagingViewController.currentIndex!] = scrollView.contentOffset.y
-        
-        let topMaxContentOffsetY = profileSegmentedViewController.view.frame.minY - ProfileHeaderViewController.headerMinHeight - containerScrollView.safeAreaInsets.top
-        if scrollView.contentOffset.y < topMaxContentOffsetY {
-            self.containerScrollView.contentOffset.y = scrollView.contentOffset.y
-            for postTimelineView in profileSegmentedViewController.pagingViewController.viewModel.viewControllers {
-                postTimelineView.scrollView.contentOffset.y = 0
-            }
-            contentOffsets.removeAll()
-        } else {
-            containerScrollView.contentOffset.y = topMaxContentOffsetY
-            if let customScrollViewContainerController = profileSegmentedViewController.pagingViewController.currentViewController as? ScrollViewContainer {
-                let contentOffsetY = scrollView.contentOffset.y - containerScrollView.contentOffset.y
-                customScrollViewContainerController.scrollView.contentOffset.y = contentOffsetY
-            }
-        }
-    }
-
-}
+//extension ProfileViewController: UIScrollViewDelegate {
+//
+//    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+//        // elastically banner
+//        if overlayScrollView.contentOffset.y < -overlayScrollView.safeAreaInsets.top {
+//            let offset = overlayScrollView.contentOffset.y - (-overlayScrollView.safeAreaInsets.top)
+//            profileHeaderViewController.headerView.bannerImageViewTopLayoutConstraint.constant = offset
+//        } else {
+//            profileHeaderViewController.headerView.bannerImageViewTopLayoutConstraint.constant = 0
+//        }
+//
+//        contentOffsets[profileSegmentedViewController.pagingViewController.currentIndex!] = scrollView.contentOffset.y
+//
+//        let topMaxContentOffsetY = profileSegmentedViewController.view.frame.minY - ProfileHeaderViewController.headerMinHeight - containerScrollView.safeAreaInsets.top
+//        if scrollView.contentOffset.y < topMaxContentOffsetY {
+//            self.containerScrollView.contentOffset.y = scrollView.contentOffset.y
+//            for postTimelineView in profileSegmentedViewController.pagingViewController.viewModel.viewControllers {
+//                postTimelineView.scrollView.contentOffset.y = 0
+//            }
+//            contentOffsets.removeAll()
+//        } else {
+//            containerScrollView.contentOffset.y = topMaxContentOffsetY
+//            if let customScrollViewContainerController = profileSegmentedViewController.pagingViewController.currentViewController as? ScrollViewContainer {
+//                let contentOffsetY = scrollView.contentOffset.y - containerScrollView.contentOffset.y
+//                customScrollViewContainerController.scrollView.contentOffset.y = contentOffsetY
+//            }
+//        }
+//    }
+//
+//}
 
 // MARK: - ProfileHeaderViewControllerDelegate
-extension ProfileViewController: ProfileHeaderViewControllerDelegate {
-    func profileHeaderViewController(_ viewController: ProfileHeaderViewController, viewLayoutDidUpdate view: UIView) {
-        guard let scrollView = (profileSegmentedViewController.pagingViewController.currentViewController as? UserTimelineViewController)?.scrollView else {
-            // assertionFailure()
-            return
-        }
-        
-        updateOverlayScrollViewContentSize(scrollView: scrollView)
-    }
-}
+//extension ProfileViewController: ProfileHeaderViewControllerDelegate {
+//    func profileHeaderViewController(_ viewController: ProfileHeaderViewController, viewLayoutDidUpdate view: UIView) {
+//        guard let scrollView = (profileSegmentedViewController.pagingViewController.currentViewController as? UserTimelineViewController)?.scrollView else {
+//            // assertionFailure()
+//            return
+//        }
+//
+//        updateOverlayScrollViewContentSize(scrollView: scrollView)
+//    }
+//}
 
 // MARK: - ProfilePagingViewControllerDelegate
 extension ProfileViewController: ProfilePagingViewControllerDelegate {
@@ -643,41 +606,41 @@ extension ProfileViewController: ProfilePagingViewControllerDelegate {
     func profilePagingViewController(_ viewController: ProfilePagingViewController, didScrollToPostCustomScrollViewContainerController postTimelineViewController: ScrollViewContainer, atIndex index: Int) {
         os_log("%{public}s[%{public}ld], %{public}s: select at index: %ld", ((#file as NSString).lastPathComponent), #line, #function, index)
         
-        // save content offset
-        overlayScrollView.contentOffset.y = contentOffsets[index] ?? containerScrollView.contentOffset.y
+//        // save content offset
+//        overlayScrollView.contentOffset.y = contentOffsets[index] ?? containerScrollView.contentOffset.y
+//        
+//        // setup observer and gesture fallback
+//        currentPostTimelineTableViewContentSizeObservation = observeTableViewContentSize(scrollView: postTimelineViewController.scrollView)
+//        postTimelineViewController.scrollView.panGestureRecognizer.require(toFail: overlayScrollView.panGestureRecognizer)
         
-        // setup observer and gesture fallback
-        currentPostTimelineTableViewContentSizeObservation = observeTableViewContentSize(scrollView: postTimelineViewController.scrollView)
-        postTimelineViewController.scrollView.panGestureRecognizer.require(toFail: overlayScrollView.panGestureRecognizer)
         
-        
-        if let userMediaTimelineViewController = postTimelineViewController as? UserMediaTimelineViewController,
-           let currentState = userMediaTimelineViewController.viewModel.stateMachine.currentState {
-            switch currentState {
-            case is UserMediaTimelineViewModel.State.NoMore,
-                 is UserMediaTimelineViewModel.State.NotAuthorized,
-                 is UserMediaTimelineViewModel.State.Blocked:
-                break
-            default:
-                if userMediaTimelineViewController.viewModel.items.value.isEmpty {
-                    userMediaTimelineViewController.viewModel.stateMachine.enter(UserMediaTimelineViewModel.State.Reloading.self)
-                }
-            }
-        }
-        
-        if let userLikeTimelineViewController = postTimelineViewController as? UserLikeTimelineViewController,
-           let currentState = userLikeTimelineViewController.viewModel.stateMachine.currentState {
-            switch currentState {
-            case is UserLikeTimelineViewModel.State.NoMore,
-                 is UserLikeTimelineViewModel.State.NotAuthorized,
-                 is UserLikeTimelineViewModel.State.Blocked:
-                break
-            default:
-                if userLikeTimelineViewController.viewModel.items.value.isEmpty {
-                    userLikeTimelineViewController.viewModel.stateMachine.enter(UserLikeTimelineViewModel.State.Reloading.self)
-                }
-            }
-        }
+//        if let userMediaTimelineViewController = postTimelineViewController as? UserMediaTimelineViewController,
+//           let currentState = userMediaTimelineViewController.viewModel.stateMachine.currentState {
+//            switch currentState {
+//            case is UserMediaTimelineViewModel.State.NoMore,
+//                 is UserMediaTimelineViewModel.State.NotAuthorized,
+//                 is UserMediaTimelineViewModel.State.Blocked:
+//                break
+//            default:
+//                if userMediaTimelineViewController.viewModel.items.value.isEmpty {
+//                    userMediaTimelineViewController.viewModel.stateMachine.enter(UserMediaTimelineViewModel.State.Reloading.self)
+//                }
+//            }
+//        }
+//        
+//        if let userLikeTimelineViewController = postTimelineViewController as? UserLikeTimelineViewController,
+//           let currentState = userLikeTimelineViewController.viewModel.stateMachine.currentState {
+//            switch currentState {
+//            case is UserLikeTimelineViewModel.State.NoMore,
+//                 is UserLikeTimelineViewModel.State.NotAuthorized,
+//                 is UserLikeTimelineViewModel.State.Blocked:
+//                break
+//            default:
+//                if userLikeTimelineViewController.viewModel.items.value.isEmpty {
+//                    userLikeTimelineViewController.viewModel.stateMachine.enter(UserLikeTimelineViewModel.State.Reloading.self)
+//                }
+//            }
+//        }
     }
     
 }
@@ -811,6 +774,4 @@ extension ProfileViewController: TabBarPagerDataSource {
     func pageViewController() -> TabmanViewController & TabBarPageViewController {
         return profilePagingViewController
     }
-    
-    
 }

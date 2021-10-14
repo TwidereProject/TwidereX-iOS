@@ -131,6 +131,11 @@
 		DB51DC2F2715AC0900A0D8FB /* APIService+UserTimeline.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB34028D2521BC06009EFADF /* APIService+UserTimeline.swift */; };
 		DB51DC392716BCEB00A0D8FB /* TabBarPager in Frameworks */ = {isa = PBXBuildFile; productRef = DB51DC382716BCEB00A0D8FB /* TabBarPager */; };
 		DB51DC3B2716F82000A0D8FB /* CellFrameCacheContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB51DC3A2716F82000A0D8FB /* CellFrameCacheContainer.swift */; };
+		DB51DC3D2717F80800A0D8FB /* CoverFlowStackLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB51DC3C2717F80800A0D8FB /* CoverFlowStackLayout.swift */; };
+		DB51DC3F2717FA8000A0D8FB /* StatusMediaGallerySection.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB51DC3E2717FA8000A0D8FB /* StatusMediaGallerySection.swift */; };
+		DB51DC412717FCAA00A0D8FB /* StatusMediaGalleryCollectionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB51DC402717FCAA00A0D8FB /* StatusMediaGalleryCollectionCell.swift */; };
+		DB51DC432718117900A0D8FB /* StatusMediaGalleryCollectionCell+ViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB51DC422718117900A0D8FB /* StatusMediaGalleryCollectionCell+ViewModel.swift */; };
+		DB51DC452718144D00A0D8FB /* MediaView+Configuration.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB51DC442718144D00A0D8FB /* MediaView+Configuration.swift */; };
 		DB5399A025AEF75D0064586D /* APIService+Mute.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB53999F25AEF75D0064586D /* APIService+Mute.swift */; };
 		DB5399A825AF0A790064586D /* APIService+Block.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB5399A725AF0A790064586D /* APIService+Block.swift */; };
 		DB56329526DCA77600FC893F /* MastodonAttachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB56329426DCA77600FC893F /* MastodonAttachment.swift */; };
@@ -667,6 +672,11 @@
 		DB51DC2D27159A6000A0D8FB /* UserIdentifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserIdentifier.swift; sourceTree = "<group>"; };
 		DB51DC372716AEF000A0D8FB /* TabBarPager */ = {isa = PBXFileReference; lastKnownFileType = folder; path = TabBarPager; sourceTree = "<group>"; };
 		DB51DC3A2716F82000A0D8FB /* CellFrameCacheContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CellFrameCacheContainer.swift; sourceTree = "<group>"; };
+		DB51DC3C2717F80800A0D8FB /* CoverFlowStackLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoverFlowStackLayout.swift; sourceTree = "<group>"; };
+		DB51DC3E2717FA8000A0D8FB /* StatusMediaGallerySection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusMediaGallerySection.swift; sourceTree = "<group>"; };
+		DB51DC402717FCAA00A0D8FB /* StatusMediaGalleryCollectionCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusMediaGalleryCollectionCell.swift; sourceTree = "<group>"; };
+		DB51DC422718117900A0D8FB /* StatusMediaGalleryCollectionCell+ViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "StatusMediaGalleryCollectionCell+ViewModel.swift"; sourceTree = "<group>"; };
+		DB51DC442718144D00A0D8FB /* MediaView+Configuration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MediaView+Configuration.swift"; sourceTree = "<group>"; };
 		DB53999825AED8420064586D /* CoreDataStack 2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "CoreDataStack 2.xcdatamodel"; sourceTree = "<group>"; };
 		DB53999F25AEF75D0064586D /* APIService+Mute.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "APIService+Mute.swift"; sourceTree = "<group>"; };
 		DB5399A725AF0A790064586D /* APIService+Block.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "APIService+Block.swift"; sourceTree = "<group>"; };
@@ -1198,6 +1208,7 @@
 				DB004BF126CE2CE600F5C574 /* StatusItem.swift */,
 				DB51DC252715911E00A0D8FB /* StatusRecord.swift */,
 				DB51DC272715917700A0D8FB /* StatusObject.swift */,
+				DB51DC3E2717FA8000A0D8FB /* StatusMediaGallerySection.swift */,
 			);
 			path = Status;
 			sourceTree = "<group>";
@@ -1265,6 +1276,7 @@
 				DB004BF726CE4AF200F5C574 /* StatusView.swift */,
 				DB5FD9B026D8D50A00CF5439 /* StatusView+ViewModel.swift */,
 				DB0EB9F926D3B2A500034427 /* MediaView.swift */,
+				DB51DC442718144D00A0D8FB /* MediaView+Configuration.swift */,
 				DB5632BE26DF6D3600FC893F /* SeparatorLineView.swift */,
 			);
 			path = Content;
@@ -1552,6 +1564,8 @@
 				DB67610C254AD681006C6798 /* ActivityIndicatorCollectionViewCell.swift */,
 				DBF639F6259B1728009E12C8 /* TimelineHeaderCollectionViewCell.swift */,
 				DB004BF526CE4A7F00F5C574 /* StatusCollectionViewCell.swift */,
+				DB51DC402717FCAA00A0D8FB /* StatusMediaGalleryCollectionCell.swift */,
+				DB51DC422718117900A0D8FB /* StatusMediaGalleryCollectionCell+ViewModel.swift */,
 			);
 			path = CollectionViewCell;
 			sourceTree = "<group>";
@@ -2684,6 +2698,7 @@
 			children = (
 				DBF63A03259B4811009E12C8 /* TouchBlockingCollectionView.swift */,
 				DB914C4926C3AC7C00E85F1A /* ContentOffsetFixedCollectionView.swift */,
+				DB51DC3C2717F80800A0D8FB /* CoverFlowStackLayout.swift */,
 			);
 			path = CollectionView;
 			sourceTree = "<group>";
@@ -3413,6 +3428,7 @@
 				DB34029D2521BE8B009EFADF /* MeProfileViewModel.swift in Sources */,
 				DB36F35E257F74C10028F81E /* ScrollViewContainer.swift in Sources */,
 				DB51DC1E27156F3600A0D8FB /* MastodonStatusFetchedResultController.swift in Sources */,
+				DB51DC452718144D00A0D8FB /* MediaView+Configuration.swift in Sources */,
 				DB89F58C257A2A57005ECD04 /* TimelineTopLoaderTableViewCell.swift in Sources */,
 				DB51DC2A2715918F00A0D8FB /* UserRecord.swift in Sources */,
 				DB5FD9B126D8D50A00CF5439 /* StatusView+ViewModel.swift in Sources */,
@@ -3468,11 +3484,14 @@
 				DB578CCD254C0BDB00745336 /* UserBriefInfoView.swift in Sources */,
 				DB676180254C042C006C6798 /* FriendshipTableViewCell.swift in Sources */,
 				DB5632C226DF8DE100FC893F /* HomeTimelineViewModel+LoadOldestState.swift in Sources */,
+				DB51DC3F2717FA8000A0D8FB /* StatusMediaGallerySection.swift in Sources */,
 				DBCE2EE32593319000926D09 /* AvatarConfigurableView.swift in Sources */,
 				DB3B906326E8BBD70010F64C /* ProfileHeaderView.swift in Sources */,
 				DB36F354257DF14E0028F81E /* APIService+Application.swift in Sources */,
 				DB3B906726E8CD6D0010F64C /* ProfileHeaderViewModel.swift in Sources */,
+				DB51DC432718117900A0D8FB /* StatusMediaGalleryCollectionCell+ViewModel.swift in Sources */,
 				DBE76C8924FF941400DEB0FC /* APIService+Authentication.swift in Sources */,
+				DB51DC412717FCAA00A0D8FB /* StatusMediaGalleryCollectionCell.swift in Sources */,
 				DBC8E1622577B02A00401E20 /* Strings.swift in Sources */,
 				DB3B906126E8AB480010F64C /* StatusViewTableViewCellDelegate.swift in Sources */,
 				DB2EBBF0255D368200956CAA /* TableViewEntryRow.swift in Sources */,
@@ -3536,6 +3555,7 @@
 				DB0B3B9026C666E300501BB7 /* APIService+WebFinger.swift in Sources */,
 				DBFCC44725667C620016698E /* UILabel.swift in Sources */,
 				DB9EC4EA255A6BC7005403AA /* TwitterAccountUnlockViewController.swift in Sources */,
+				DB51DC3D2717F80800A0D8FB /* CoverFlowStackLayout.swift in Sources */,
 				DB25B9D1253828AA00A5420F /* APIService+Retweet.swift in Sources */,
 				DB3B907226E9FF3A0010F64C /* FriendshipButton.swift in Sources */,
 				DBCE2E912591A06300926D09 /* UINavigationController.swift in Sources */,

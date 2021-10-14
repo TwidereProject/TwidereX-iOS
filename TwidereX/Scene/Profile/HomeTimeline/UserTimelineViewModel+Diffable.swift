@@ -27,6 +27,11 @@ extension UserTimelineViewModel {
             configuration: configuration
         )
         
+        
+        var snapshot = NSDiffableDataSourceSnapshot<StatusSection, StatusItem>()
+        snapshot.appendSections([.main])
+        diffableDataSource?.apply(snapshot)
+        
         statusRecordFetchedResultController.records
             .receive(on: DispatchQueue.main)
             .sink { [weak self] records in
@@ -42,7 +47,6 @@ extension UserTimelineViewModel {
                         self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): cost \(end - start, format: .fixed(precision: 4))s to process \(recordsCount) feeds")
                     }
                     
-                    // let oldSnapshot = diffableDataSource.snapshot()
                     var newSnapshot: NSDiffableDataSourceSnapshot<StatusSection, StatusItem> = {
                         var snapshot = NSDiffableDataSourceSnapshot<StatusSection, StatusItem>()
                         snapshot.appendSections([.main])
@@ -73,16 +77,12 @@ extension UserTimelineViewModel {
                 }
             }
             .store(in: &disposeBag)
-        
-        var snapshot = NSDiffableDataSourceSnapshot<StatusSection, StatusItem>()
-        snapshot.appendSections([.main])
-        diffableDataSource?.apply(snapshot)
-    }
+    }   // end func setupDiffableDataSource
     
     @MainActor private func updateDataSource(
         snapshot: NSDiffableDataSourceSnapshot<StatusSection, StatusItem>,
         animatingDifferences: Bool
     ) async {
-        await self.diffableDataSource?.apply(snapshot, animatingDifferences: animatingDifferences)
+        await diffableDataSource?.apply(snapshot, animatingDifferences: animatingDifferences)
     }
 }

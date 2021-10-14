@@ -24,11 +24,12 @@ final class UserMediaTimelineViewController: UIViewController, NeedsDependency {
     var viewModel: UserMediaTimelineViewModel!
     
     private(set) lazy var collectionView: UICollectionView = {
-        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
-//        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: SearchMediaViewController.createCollectionViewLayout())
+//        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
+        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UserMediaTimelineViewController.createCollectionViewLayout())
 //        collectionView.register(SearchMediaCollectionViewCell.self, forCellWithReuseIdentifier: String(describing: SearchMediaCollectionViewCell.self))
 //        collectionView.register(ActivityIndicatorCollectionViewCell.self, forCellWithReuseIdentifier: String(describing: ActivityIndicatorCollectionViewCell.self))
 //        collectionView.register(TimelineHeaderCollectionViewCell.self, forCellWithReuseIdentifier: String(describing: TimelineHeaderCollectionViewCell.self))
+        collectionView.backgroundColor = .systemBackground
         return collectionView
     }()
     
@@ -39,35 +40,77 @@ final class UserMediaTimelineViewController: UIViewController, NeedsDependency {
 }
 
 extension UserMediaTimelineViewController {
+    static func createCollectionViewLayout() -> UICollectionViewCompositionalLayout {
+        let layout = UICollectionViewCompositionalLayout { sectionIndex, layoutEnvironment -> NSCollectionLayoutSection? in
+            switch sectionIndex {
+            case MediaSection.main.rawValue:
+                let columnCount: CGFloat = round(max(1.0, layoutEnvironment.container.effectiveContentSize.width / 200.0))
+                let item = NSCollectionLayoutItem(
+                    layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0 / columnCount),
+                                                       heightDimension: .fractionalHeight(1.0)))
+                item.contentInsets = NSDirectionalEdgeInsets(top: 8, leading: 8, bottom: 8, trailing: 8)
+                let group = NSCollectionLayoutGroup.horizontal(
+                    layoutSize: NSCollectionLayoutSize(
+                        widthDimension: .fractionalWidth(1.0),
+                        heightDimension: .fractionalWidth(1.0 / columnCount)),
+                    subitem: item,
+                    count: Int(columnCount)
+                )
+                let section = NSCollectionLayoutSection(group: group)
+                section.contentInsetsReference = .readableContent
+                return section
+            case MediaSection.footer.rawValue:
+                let item = NSCollectionLayoutItem(
+                    layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0),
+                                                       heightDimension: .estimated(60)))
+                let group = NSCollectionLayoutGroup.horizontal(     // <- horizontal for self size
+                    layoutSize: NSCollectionLayoutSize(
+                        widthDimension: .fractionalWidth(1.0),
+                        heightDimension: .estimated(60)),
+                    subitem: item,
+                    count: 1
+                )
+                let section = NSCollectionLayoutSection(group: group)
+                section.contentInsetsReference = .readableContent
+                return section
+            default:
+                assertionFailure()
+                return nil
+            }
+        }
+        return layout
+    }
+}
+
+extension UserMediaTimelineViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-//        collectionView.translatesAutoresizingMaskIntoConstraints = false
-//        view.addSubview(collectionView)
-//        NSLayoutConstraint.activate([
-//            collectionView.topAnchor.constraint(equalTo: view.topAnchor),
-//            collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-//            collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-//            collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-//        ])
-//        collectionView.backgroundColor = .systemBackground
+        collectionView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(collectionView)
+        NSLayoutConstraint.activate([
+            collectionView.topAnchor.constraint(equalTo: view.topAnchor),
+            collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+        ])
 //
-//        collectionView.delegate = self
-//        viewModel.setupDiffableDataSource(
-//            collectionView: collectionView,
+        collectionView.delegate = self
+        viewModel.setupDiffableDataSource(
+            collectionView: collectionView
 //            mediaCollectionViewCellDelegate: self,
 //            timelineHeaderCollectionViewCellDelegate: self
-//        )
+        )
         
-        // trigger timeline loading
-//        viewModel.userID
-//            .removeDuplicates()
-//            .sink { [weak self] _ in
-//                guard let self = self else { return }
-//                self.viewModel.stateMachine.enter(UserMediaTimelineViewModel.State.Reloading.self)
-//            }
-//            .store(in: &disposeBag)
+        // trigger loading
+        viewModel.userIdentifier
+            .removeDuplicates()
+            .sink { [weak self] _ in
+                guard let self = self else { return }
+                self.viewModel.stateMachine.enter(UserMediaTimelineViewModel.State.Reloading.self)
+            }
+            .store(in: &disposeBag)
     }
     
 }

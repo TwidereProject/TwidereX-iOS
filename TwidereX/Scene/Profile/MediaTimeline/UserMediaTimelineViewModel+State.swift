@@ -21,7 +21,6 @@ extension UserMediaTimelineViewModel {
         
         override func didEnter(from previousState: GKState?) {
             os_log("%{public}s[%{public}ld], %{public}s: enter %s, previous: %s", ((#file as NSString).lastPathComponent), #line, #function, self.debugDescription, previousState.debugDescription)
-            viewModel?.stateMachinePublisher.send(self)
         }
     }
 }
@@ -32,7 +31,7 @@ extension UserMediaTimelineViewModel.State {
             guard let viewModel = viewModel else { return false }
             switch stateClass {
             case is Reloading.Type:
-                return viewModel.userID.value != nil
+                return viewModel.userIdentifier.value != nil
             case is Suspended.Type:
                 return true
             default:
@@ -63,8 +62,13 @@ extension UserMediaTimelineViewModel.State {
             super.didEnter(from: previousState)
             guard let viewModel = viewModel, let stateMachine = stateMachine else { return }
             
-            viewModel.tweetIDs.value = []
-            viewModel.items.value = []
+            viewModel.statusRecordFetchedResultController.reset()
+            
+            stateMachine.enter(Idle.self)
+            stateMachine.enter(LoadingMore.self)
+            
+//            viewModel.tweetIDs.value = []
+//            viewModel.items.value = []
             
 //            let userID = viewModel.userID.value
 //            viewModel.fetchLatest()
@@ -131,6 +135,10 @@ extension UserMediaTimelineViewModel.State {
     }
     
     class LoadingMore: UserMediaTimelineViewModel.State {
+        let logger = Logger(subsystem: "UserMediaTimelineViewModel.State", category: "StateMachine")
+
+        var nextInput: StatusListFetchViewModel.Input?
+        
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {
             switch stateClass {
             case is Fail.Type:
@@ -150,63 +158,93 @@ extension UserMediaTimelineViewModel.State {
         
         override func didEnter(from previousState: GKState?) {
             super.didEnter(from: previousState)
+            
+            // reset when reloading
+            switch previousState {
+            case is Reloading:
+                nextInput = nil
+            default:
+                break
+            }
+            
             guard let viewModel = viewModel, let stateMachine = stateMachine else { return }
             
-//            let userID = viewModel.userID.value
-//            viewModel.loadMore()
-//                .receive(on: DispatchQueue.main)
-//                .sink { completion in
-//                    switch completion {
-//                    case .failure(let error):
-//                        stateMachine.enter(Fail.self)
-//                        os_log("%{public}s[%{public}ld], %{public}s: load more fail: %s", ((#file as NSString).lastPathComponent), #line, #function, error.localizedDescription)
-//                    case .finished:
-//                        break
-//                    }
-//                } receiveValue: { response in
-//                    guard viewModel.userID.value == userID else { return }
-//
-//                    var pagingTweetIDs = viewModel.pagingTweetIDs.value
-//                    var tweetIDs = viewModel.tweetIDs.value
-//
-//                    var hasNewMedia = false
-//                    for tweet in response.value {
-//                        let tweetID = tweet.idStr
-//
-//                        if !pagingTweetIDs.contains(tweetID) {
-//                            pagingTweetIDs.append(tweetID)
-//                        }
-//
-//                        // skip retweet
-//                        guard tweet.retweetedStatus == nil else {
-//                            continue
-//                        }
-//
-//
-//                        // skip no media (now require photo)
-//                        guard let media = tweet.extendedEntities?.media,
-//                              media.contains(where: { $0.type == "photo" }) else {
-//                            continue
-//                        }
-//                        hasNewMedia = true
-//
-//                        if !tweetIDs.contains(tweetID) {
-//                            tweetIDs.append(tweetID)
-//                        }
-//                    }
-//
-//                    if !hasNewMedia {
-//                        stateMachine.enter(NoMore.self)
-//                    } else {
-//                        stateMachine.enter(Idle.self)
-//                    }
-//
-//                    viewModel.pagingTweetIDs.value = pagingTweetIDs
-//                    viewModel.tweetIDs.value = tweetIDs
-//                }
-//                .store(in: &viewModel.disposeBag)
-        }
-    }
+            guard let userIdentifier = viewModel.userIdentifier.value,
+                  let authenticationContext = viewModel.context.authenticationService.activeAuthenticationContext.value
+            else {
+                stateMachine.enter(Fail.self)
+                return
+            }
+            
+            if nextInput == nil {
+                nextInput = {
+                    switch (userIdentifier, authenticationContext) {
+                    case (.twitter(let identifier), .twitter(let authenticationContext)):
+                        return StatusListFetchViewModel.Input(
+                            fetchContext: .twitter(.init(
+                                authenticationContext: authenticationContext,
+                                maxID: nil,
+                                userIdentifier: identifier
+                            ))
+                        )
+                    case (.mastodon(let identifier), .mastodon(let authenticationContext)):
+                        return StatusListFetchViewModel.Input(
+                            fetchContext: .mastodon(.init(
+                                authenticationContext: authenticationContext,
+                                maxID: nil,
+                                userIdentifier: identifier
+                            ))
+                        )
+                    default:
+                        return nil
+                    }
+                }()
+            }
+            
+            guard let input = nextInput else {
+                stateMachine.enter(Fail.self)
+                return
+            }
+            
+            Task {
+                do {
+                    logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): fetch…")
+                    let output = try await StatusListFetchViewModel.userTimeline(context: viewModel.context, input: input)
+                    
+                    nextInput = output.nextInput
+                    if output.hasMore {
+                        stateMachine.enter(Idle.self)
+                    } else {
+                        stateMachine.enter(NoMore.self)
+                    }
+                    
+                    switch output.result {
+                    case .twitter(let statuses):
+                        let statusIDs = statuses
+                            .filter { status in
+                                guard let media = (status.retweetedStatus ?? status).extendedEntities?.media else { return false }
+                                return !media.isEmpty
+                            }
+                            .map { $0.idStr }
+                        viewModel.statusRecordFetchedResultController.twitterStatusFetchedResultController.append(statusIDs: statusIDs)
+                    case .mastodon(let statuses):
+                        let statusIDs = statuses
+                            .filter { status in
+                                let mediaAttachments = (status.reblog ?? status).mediaAttachments ?? []
+                                return !mediaAttachments.isEmpty
+                            }
+                            .map { $0.id }
+                        viewModel.statusRecordFetchedResultController.mastodonStatusFetchedResultController.append(statusIDs: statusIDs)
+                    }
+                    logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): fetch success")
+                    
+                } catch {
+                    logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): fetch failure: \(error.localizedDescription)")
+                    stateMachine.enter(Fail.self)
+                }
+            }   // end Task
+        }   // end didEnter(from:)
+    }   // end func didEnter(from:)
     
     class NotAuthorized: UserMediaTimelineViewModel.State {
         static func canEnter(for error: Error) -> Bool {
@@ -235,8 +273,8 @@ extension UserMediaTimelineViewModel.State {
             guard let viewModel = viewModel else { return }
             
             // trigger items update
-            viewModel.pagingTweetIDs.value = []
-            viewModel.tweetIDs.value = []
+//            viewModel.pagingTweetIDs.value = []
+//            viewModel.tweetIDs.value = []
         }
     }
     
@@ -267,8 +305,8 @@ extension UserMediaTimelineViewModel.State {
             guard let viewModel = viewModel else { return }
             
             // trigger items update
-            viewModel.pagingTweetIDs.value = []
-            viewModel.tweetIDs.value = []
+//            viewModel.pagingTweetIDs.value = []
+//            viewModel.tweetIDs.value = []
         }
     }
     
@@ -282,9 +320,9 @@ extension UserMediaTimelineViewModel.State {
             guard let viewModel = viewModel else { return }
             
             // trigger items update
-            viewModel.pagingTweetIDs.value = []
-            viewModel.tweetIDs.value = []
-            viewModel.items.value = []
+//            viewModel.pagingTweetIDs.value = []
+//            viewModel.tweetIDs.value = []
+//            viewModel.items.value = []
         }
     }
     

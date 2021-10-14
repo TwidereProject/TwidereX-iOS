@@ -97,6 +97,8 @@ extension UserTimelineViewModel.State {
     class LoadingMore: UserTimelineViewModel.State {
         let logger = Logger(subsystem: "UserTimelineViewModel.State", category: "StateMachine")
         
+        var nextInput: StatusListFetchViewModel.Input?
+        
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {
             switch stateClass {
             case is Fail.Type:
@@ -116,132 +118,83 @@ extension UserTimelineViewModel.State {
         
         override func didEnter(from previousState: GKState?) {
             super.didEnter(from: previousState)
-            guard let viewModel = viewModel, let stateMachine = stateMachine else { return }
 
-            let record = viewModel.statusRecordFetchedResultController.records.value.last
-            Task {
-                await fetch(anchor: record)
+            // reset when reloading
+            switch previousState {
+            case is Reloading:
+                nextInput = nil
+            default:
+                break
             }
             
-//            let userID = viewModel.userID.value
-//            viewModel.loadMore()
-//                .sink { completion in
-//                    switch completion {
-//                    case .failure(let error):
-//                        stateMachine.enter(Fail.self)
-//                        os_log("%{public}s[%{public}ld], %{public}s: load more fail: %s", ((#file as NSString).lastPathComponent), #line, #function, error.localizedDescription)
-//                    case .finished:
-//                        break
-//                    }
-//                } receiveValue: { response in
-//                    guard viewModel.userID.value == userID else { return }
-//
-//                    var hasNewTweets = false
-//                    var tweetIDs = viewModel.tweetIDs.value
-//                    for tweet in response.value {
-//                        if !tweetIDs.contains(tweet.idStr) {
-//                            hasNewTweets = true
-//                            tweetIDs.append(tweet.idStr)
-//                        }
-//                    }
-//
-//                    if !hasNewTweets {
-//                        stateMachine.enter(NoMore.self)
-//                    } else {
-//                        stateMachine.enter(Idle.self)
-//                    }
-//
-//                    viewModel.tweetIDs.value = tweetIDs
-//                }
-//                .store(in: &viewModel.disposeBag)
-        }
-        
-        private func fetch(anchor record: StatusRecord?) async {
             guard let viewModel = viewModel, let stateMachine = stateMachine else { return }
             
             guard let userIdentifier = viewModel.userIdentifier.value,
-                  let authenticationContext = viewModel.context.authenticationService.activeAuthenticationContext.value else {
+                  let authenticationContext = viewModel.context.authenticationService.activeAuthenticationContext.value
+            else {
                 stateMachine.enter(Fail.self)
                 return
             }
             
-            let maxID: String? = await {
-                guard let record = record else { return nil }
-                
-                let managedObjectContext = viewModel.context.managedObjectContext
-                return await managedObjectContext.perform {
-                    switch record {
-                    case .twitter(let record):
-                        guard let status = record.object(in: managedObjectContext) else { return nil }
-                        return status.id
-                    case .mastodon(let record):
-                        guard let status = record.object(in: managedObjectContext) else { return nil }
-                        return status.id
+            if nextInput == nil {
+                nextInput = {
+                    switch (userIdentifier, authenticationContext) {
+                    case (.twitter(let identifier), .twitter(let authenticationContext)):
+                        return StatusListFetchViewModel.Input(
+                            fetchContext: .twitter(.init(
+                                authenticationContext: authenticationContext,
+                                maxID: nil,
+                                userIdentifier: identifier
+                            ))
+                        )
+                    case (.mastodon(let identifier), .mastodon(let authenticationContext)):
+                        return StatusListFetchViewModel.Input(
+                            fetchContext: .mastodon(.init(
+                                authenticationContext: authenticationContext,
+                                maxID: nil,
+                                userIdentifier: identifier
+                            ))
+                        )
+                    default:
+                        return nil
                     }
-                }
-            }()
-            
-            if record != nil && maxID == nil {
-                stateMachine.enter(Fail.self)
-                assertionFailure()
-                return
+                }()
             }
-            
-            let _input: StatusListFetchViewModel.Input? = {
-                switch (userIdentifier, authenticationContext) {
-                case (.twitter(let identifier), .twitter(let authenticationContext)):
-                    return StatusListFetchViewModel.Input(
-                        context: viewModel.context,
-                        fetchContext: .twitter(.init(
-                            authenticationContext: authenticationContext,
-                            maxID: maxID,
-                            userIdentifier: identifier
-                        ))
-                    )
-                case (.mastodon(let identifier), .mastodon(let authenticationContext)):
-                    return StatusListFetchViewModel.Input(
-                        context: viewModel.context,
-                        fetchContext: .mastodon(.init(
-                            authenticationContext: authenticationContext,
-                            maxID: maxID,
-                            userIdentifier: identifier
-                        ))
-                    )
-                default:
-                    return nil
-                }
-            }()
-            
-            guard let input = _input else {
-                assertionFailure()
+
+            guard let input = nextInput else {
                 stateMachine.enter(Fail.self)
                 return
             }
             
-            do {
-                logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): fetch…")
-                let output = try await StatusListFetchViewModel.userTimeline(input: input)
-                if output.hasMore {
-                    stateMachine.enter(Idle.self)
-                } else {
-                    stateMachine.enter(NoMore.self)
+            Task {
+                do {
+                    logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): fetch…")
+                    let output = try await StatusListFetchViewModel.userTimeline(context: viewModel.context, input: input)
+                    
+                    nextInput = output.nextInput
+                    if output.hasMore {
+                        stateMachine.enter(Idle.self)
+                    } else {
+                        stateMachine.enter(NoMore.self)
+                    }
+                    
+                    switch output.result {
+                    case .twitter(let statuses):
+                        let statusIDs = statuses.map { $0.idStr }
+                        viewModel.statusRecordFetchedResultController.twitterStatusFetchedResultController.append(statusIDs: statusIDs)
+                    case .mastodon(let statuses):
+                        let statusIDs = statuses.map { $0.id }
+                        viewModel.statusRecordFetchedResultController.mastodonStatusFetchedResultController.append(statusIDs: statusIDs)
+                    }
+                    logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): fetch success")
+                    
+                } catch {
+                    logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): fetch failure: \(error.localizedDescription)")
+                    stateMachine.enter(Fail.self)
                 }
-                switch output.result {
-                case .twitter(let statuses):
-                    let statusIDs = statuses.map { $0.idStr }
-                    viewModel.statusRecordFetchedResultController.twitterStatusFetchedResultController.append(statusIDs: statusIDs)
-                case .mastodon(let statuses):
-                    let statusIDs = statuses.map { $0.id }
-                    viewModel.statusRecordFetchedResultController.mastodonStatusFetchedResultController.append(statusIDs: statusIDs)
-                }
-                
-                logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): fetch success")
-            } catch {
-                logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): fetch failure: \(error.localizedDescription)")
-                stateMachine.enter(Fail.self)
-            }
-        }
-    }
+            }   // end Task
+        }   // end didEnter(from:)
+    }   // end class LoadingMore
         
     class NotAuthorized: UserTimelineViewModel.State {
         static func canEnter(for error: Error) -> Bool {
