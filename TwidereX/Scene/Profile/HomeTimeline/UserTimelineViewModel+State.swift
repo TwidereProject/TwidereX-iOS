@@ -144,6 +144,8 @@ extension UserTimelineViewModel.State {
                             fetchContext: .twitter(.init(
                                 authenticationContext: authenticationContext,
                                 maxID: nil,
+                                count: 50,
+                                excludeReplies: false,
                                 userIdentifier: identifier
                             ))
                         )
@@ -152,6 +154,10 @@ extension UserTimelineViewModel.State {
                             fetchContext: .mastodon(.init(
                                 authenticationContext: authenticationContext,
                                 maxID: nil,
+                                count: 50,
+                                excludeReplies: false,
+                                excludeReblogs: false,
+                                onlyMedia: false,
                                 userIdentifier: identifier
                             ))
                         )

@@ -20,10 +20,6 @@ final class CoverFlowStackMediaCollectionCell: UICollectionViewCell {
     
     let mediaView = MediaView()
     
-    private var mediaViewWidthLayoutConstraint: NSLayoutConstraint!
-    private var mediaViewHeightLayoutConstraint: NSLayoutConstraint!
-    private var placeholderConstraints: [NSLayoutConstraint] = []
-    
     override func prepareForReuse() {
         super.prepareForReuse()
         
@@ -51,36 +47,11 @@ extension CoverFlowStackMediaCollectionCell {
         mediaView.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(mediaView)
         NSLayoutConstraint.activate([
-            mediaView.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
-            mediaView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
+            mediaView.topAnchor.constraint(equalTo: contentView.topAnchor),
+            mediaView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+            mediaView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+            mediaView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
         ])
-        
-        placeholderConstraints =  [
-            mediaView.topAnchor.constraint(equalTo: contentView.topAnchor).priority(.defaultHigh),
-            mediaView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor).priority(.defaultHigh),
-            mediaView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor).priority(.defaultHigh),
-            mediaView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor).priority(.defaultHigh),
-        ]
-        NSLayoutConstraint.activate(placeholderConstraints)
-        
-        mediaViewWidthLayoutConstraint = mediaView.widthAnchor.constraint(equalToConstant: 100)
-        mediaViewHeightLayoutConstraint = mediaView.heightAnchor.constraint(equalToConstant: 100)
     }
-    
-    override func apply(_ layoutAttributes: UICollectionViewLayoutAttributes) {
-        super.apply(layoutAttributes)
-        
-        guard let attributes = layoutAttributes as? CoverFlowStackLayoutAttributes else { return }
-        
-        let size = attributes.originalFrame.size
-        mediaViewWidthLayoutConstraint.constant = size.width
-        mediaViewHeightLayoutConstraint.constant = size.height
-        NSLayoutConstraint.activate([
-            mediaViewWidthLayoutConstraint,
-            mediaViewHeightLayoutConstraint,
-        ])
-        
-        NSLayoutConstraint.deactivate(placeholderConstraints)
-    }
-    
+
 }

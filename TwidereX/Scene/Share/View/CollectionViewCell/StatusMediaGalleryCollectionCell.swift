@@ -24,8 +24,7 @@ final class StatusMediaGalleryCollectionCell: UICollectionViewCell {
     
     let collectionViewLayout: CoverFlowStackCollectionViewLayout = {
         let layout = CoverFlowStackCollectionViewLayout()
-        layout.startTrailingMarginRatio = 0.05
-        layout.endTrailingMarginRatio = 0.10
+        layout.sizeScaleRatio = 0.9
         return layout
     }()
     private(set) lazy var collectionView: UICollectionView = {

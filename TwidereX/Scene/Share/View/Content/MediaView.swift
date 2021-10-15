@@ -102,7 +102,7 @@ extension MediaView {
             imageView.bottomAnchor.constraint(equalTo: container.bottomAnchor),
         ])
         
-        let placeholder = UIImage.placeholder(color: .systemFill)
+        let placeholder = UIImage.placeholder(color: .systemGray6)
         guard let urlString = info.assetURL,
               let url = URL(string: urlString) else {
                   imageView.image = placeholder

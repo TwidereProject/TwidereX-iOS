@@ -72,6 +72,8 @@ extension HomeTimelineViewModel.LoadOldestState {
                         fetchContext: .twitter(.init(
                             authenticationContext: authenticationContext,
                             maxID: status.id,
+                            count: 100,
+                            excludeReplies: false,
                             userIdentifier: nil
                         ))
                     )
@@ -80,6 +82,10 @@ extension HomeTimelineViewModel.LoadOldestState {
                         fetchContext: .mastodon(.init(
                             authenticationContext: authenticationContext,
                             maxID: status.id,
+                            count: 100,
+                            excludeReplies: false,
+                            excludeReblogs: false,
+                            onlyMedia: false,
                             userIdentifier: nil
                         ))
                     )

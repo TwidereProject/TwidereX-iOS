@@ -47,17 +47,23 @@ extension StatusMediaGalleryCollectionCell.ViewModel {
 
 
 extension StatusMediaGalleryCollectionCell {
-    func configure(status: StatusObject) {
-        switch status {
-        case .twitter(let object):
-            configure(twitterStatus: object)
-        case .mastodon(let object):
-            break
+    func configure(status object: StatusObject) {
+        switch object {
+        case .twitter(let status):
+            configure(twitterStatus: status)
+        case .mastodon(let status):
+            configure(mastodonStatus: status)
         }
     }
 
     private func configure(twitterStatus status: TwitterStatus) {
         MediaView.configuration(twitterStatus: status)
+            .assign(to: \.mediaViewConfigurations, on: viewModel)
+            .store(in: &disposeBag)
+    }
+    
+    private func configure(mastodonStatus status: MastodonStatus) {
+        MediaView.configuration(mastodonStatus: status)
             .assign(to: \.mediaViewConfigurations, on: viewModel)
             .store(in: &disposeBag)
     }

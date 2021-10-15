@@ -31,7 +31,7 @@ extension Twitter.API.Favorites {
             .eraseToAnyPublisher()
     }
     
-    public static func list(session: URLSession, authorization: Twitter.API.OAuth.Authorization, query: Twitter.API.Timeline.TimelineQuery) -> AnyPublisher<Twitter.Response.Content<[Twitter.Entity.Tweet]>, Error> {
+    public static func list(session: URLSession, authorization: Twitter.API.OAuth.Authorization, query: Twitter.API.Statuses.TimelineQuery) -> AnyPublisher<Twitter.Response.Content<[Twitter.Entity.Tweet]>, Error> {
         assert(query.userID != nil && query.userID != "")
         
         let request = Twitter.API.request(url: favoritesListEndpointURL, httpMethod: "GET", authorization: authorization, queryItems: query.queryItems)

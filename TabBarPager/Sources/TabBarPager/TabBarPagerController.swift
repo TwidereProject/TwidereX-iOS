@@ -202,9 +202,6 @@ extension TabBarPagerController: UIScrollViewDelegate {
     public func scrollViewDidScroll(_ scrollView: UIScrollView) {
         switch scrollView {
         case relayScrollView:
-            defer {
-                print("relay: \(scrollView.contentOffset), container: \(containerScrollView.contentOffset)")
-            }
             guard let dataSource = self.dataSource else { return }
             let headerViewController = dataSource.headerViewController()
             let pageViewController = dataSource.pageViewController()
