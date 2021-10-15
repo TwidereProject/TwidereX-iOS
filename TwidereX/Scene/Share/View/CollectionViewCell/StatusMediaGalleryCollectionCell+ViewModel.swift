@@ -9,6 +9,7 @@
 import UIKit
 import Combine
 import CoreDataStack
+import CoverFlowStackCollectionViewLayout
 
 extension StatusMediaGalleryCollectionCell {
     final class ViewModel: ObservableObject {

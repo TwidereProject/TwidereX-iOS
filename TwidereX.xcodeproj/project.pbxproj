@@ -82,6 +82,7 @@
 		DB3282DD26AFFD40002B721C /* TwitterMeta in Frameworks */ = {isa = PBXBuildFile; productRef = DB3282DC26AFFD40002B721C /* TwitterMeta */; };
 		DB33A4A125A2F049003CED7D /* Item+EmptyStateHeaderAttribute+TimelineHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB33A4A025A2F049003CED7D /* Item+EmptyStateHeaderAttribute+TimelineHeaderView.swift */; };
 		DB33A4A925A319A0003CED7D /* ActionToolbarContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB33A4A825A319A0003CED7D /* ActionToolbarContainer.swift */; };
+		DB33E5B6271963AA00EC2225 /* CoverFlowStackCollectionViewLayout in Frameworks */ = {isa = PBXBuildFile; productRef = DB33E5B5271963AA00EC2225 /* CoverFlowStackCollectionViewLayout */; };
 		DB34029D2521BE8B009EFADF /* MeProfileViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB34029C2521BE8B009EFADF /* MeProfileViewModel.swift */; };
 		DB3402B72521D389009EFADF /* UserTimelineViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB3402B62521D389009EFADF /* UserTimelineViewModel.swift */; };
 		DB3402CA2521E4AF009EFADF /* APIService+Account.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB3402C92521E4AF009EFADF /* APIService+Account.swift */; };
@@ -131,7 +132,6 @@
 		DB51DC2F2715AC0900A0D8FB /* APIService+UserTimeline.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB34028D2521BC06009EFADF /* APIService+UserTimeline.swift */; };
 		DB51DC392716BCEB00A0D8FB /* TabBarPager in Frameworks */ = {isa = PBXBuildFile; productRef = DB51DC382716BCEB00A0D8FB /* TabBarPager */; };
 		DB51DC3B2716F82000A0D8FB /* CellFrameCacheContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB51DC3A2716F82000A0D8FB /* CellFrameCacheContainer.swift */; };
-		DB51DC3D2717F80800A0D8FB /* CoverFlowStackCollectionViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB51DC3C2717F80800A0D8FB /* CoverFlowStackCollectionViewLayout.swift */; };
 		DB51DC3F2717FA8000A0D8FB /* StatusMediaGallerySection.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB51DC3E2717FA8000A0D8FB /* StatusMediaGallerySection.swift */; };
 		DB51DC412717FCAA00A0D8FB /* StatusMediaGalleryCollectionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB51DC402717FCAA00A0D8FB /* StatusMediaGalleryCollectionCell.swift */; };
 		DB51DC432718117900A0D8FB /* StatusMediaGalleryCollectionCell+ViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB51DC422718117900A0D8FB /* StatusMediaGalleryCollectionCell+ViewModel.swift */; };
@@ -605,6 +605,7 @@
 		DB33017525A41102003552B0 /* StatusProviderFacade.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusProviderFacade.swift; sourceTree = "<group>"; };
 		DB33A4A025A2F049003CED7D /* Item+EmptyStateHeaderAttribute+TimelineHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Item+EmptyStateHeaderAttribute+TimelineHeaderView.swift"; sourceTree = "<group>"; };
 		DB33A4A825A319A0003CED7D /* ActionToolbarContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionToolbarContainer.swift; sourceTree = "<group>"; };
+		DB33E5B42719637400EC2225 /* CoverFlowStackCollectionViewLayout */ = {isa = PBXFileReference; lastKnownFileType = folder; path = CoverFlowStackCollectionViewLayout; sourceTree = "<group>"; };
 		DB34028D2521BC06009EFADF /* APIService+UserTimeline.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "APIService+UserTimeline.swift"; sourceTree = "<group>"; };
 		DB34029C2521BE8B009EFADF /* MeProfileViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeProfileViewModel.swift; sourceTree = "<group>"; };
 		DB3402B62521D389009EFADF /* UserTimelineViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserTimelineViewModel.swift; sourceTree = "<group>"; };
@@ -676,7 +677,6 @@
 		DB51DC2D27159A6000A0D8FB /* UserIdentifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserIdentifier.swift; sourceTree = "<group>"; };
 		DB51DC372716AEF000A0D8FB /* TabBarPager */ = {isa = PBXFileReference; lastKnownFileType = folder; path = TabBarPager; sourceTree = "<group>"; };
 		DB51DC3A2716F82000A0D8FB /* CellFrameCacheContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CellFrameCacheContainer.swift; sourceTree = "<group>"; };
-		DB51DC3C2717F80800A0D8FB /* CoverFlowStackCollectionViewLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoverFlowStackCollectionViewLayout.swift; sourceTree = "<group>"; };
 		DB51DC3E2717FA8000A0D8FB /* StatusMediaGallerySection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusMediaGallerySection.swift; sourceTree = "<group>"; };
 		DB51DC402717FCAA00A0D8FB /* StatusMediaGalleryCollectionCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusMediaGalleryCollectionCell.swift; sourceTree = "<group>"; };
 		DB51DC422718117900A0D8FB /* StatusMediaGalleryCollectionCell+ViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "StatusMediaGalleryCollectionCell+ViewModel.swift"; sourceTree = "<group>"; };
@@ -1071,6 +1071,7 @@
 				DBE76D34250214A700DEB0FC /* CommonOSLog in Frameworks */,
 				DB3282DD26AFFD40002B721C /* TwitterMeta in Frameworks */,
 				DB2611B7251B2D42004BF309 /* CryptoSwift in Frameworks */,
+				DB33E5B6271963AA00EC2225 /* CoverFlowStackCollectionViewLayout in Frameworks */,
 				DB5FD9B526D8EE7A00CF5439 /* MastodonMeta in Frameworks */,
 				DB74A164256E148F00C5F3C9 /* CropViewController in Frameworks */,
 				DB4323D22514936F004FAAEC /* TwidereSDK in Frameworks */,
@@ -2282,6 +2283,7 @@
 		DBDA8E1524FCF8A3006750DC = {
 			isa = PBXGroup;
 			children = (
+				DB33E5B42719637400EC2225 /* CoverFlowStackCollectionViewLayout */,
 				DB51DC372716AEF000A0D8FB /* TabBarPager */,
 				DB43239D251491EB004FAAEC /* TwidereSDK */,
 				DBDA8E2024FCF8A3006750DC /* TwidereX */,
@@ -2734,7 +2736,6 @@
 			children = (
 				DBF63A03259B4811009E12C8 /* TouchBlockingCollectionView.swift */,
 				DB914C4926C3AC7C00E85F1A /* ContentOffsetFixedCollectionView.swift */,
-				DB51DC3C2717F80800A0D8FB /* CoverFlowStackCollectionViewLayout.swift */,
 			);
 			path = CollectionView;
 			sourceTree = "<group>";
@@ -2922,6 +2923,7 @@
 				DB5FD9B426D8EE7A00CF5439 /* MastodonMeta */,
 				DB01091126E5DC9C005F67D7 /* MetaTextArea */,
 				DB51DC382716BCEB00A0D8FB /* TabBarPager */,
+				DB33E5B5271963AA00EC2225 /* CoverFlowStackCollectionViewLayout */,
 			);
 			productName = TwidereX;
 			productReference = DBDA8E1E24FCF8A3006750DC /* TwidereX.app */;
@@ -3592,7 +3594,6 @@
 				DB0B3B9026C666E300501BB7 /* APIService+WebFinger.swift in Sources */,
 				DBFCC44725667C620016698E /* UILabel.swift in Sources */,
 				DB9EC4EA255A6BC7005403AA /* TwitterAccountUnlockViewController.swift in Sources */,
-				DB51DC3D2717F80800A0D8FB /* CoverFlowStackCollectionViewLayout.swift in Sources */,
 				DB25B9D1253828AA00A5420F /* APIService+Retweet.swift in Sources */,
 				DB3B907226E9FF3A0010F64C /* FriendshipButton.swift in Sources */,
 				DBCE2E912591A06300926D09 /* UINavigationController.swift in Sources */,
@@ -4577,6 +4578,10 @@
 			isa = XCSwiftPackageProductDependency;
 			package = DB3282D926AFFD40002B721C /* XCRemoteSwiftPackageReference "MetaTextKit" */;
 			productName = TwitterMeta;
+		};
+		DB33E5B5271963AA00EC2225 /* CoverFlowStackCollectionViewLayout */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = CoverFlowStackCollectionViewLayout;
 		};
 		DB4323D12514936F004FAAEC /* TwidereSDK */ = {
 			isa = XCSwiftPackageProductDependency;

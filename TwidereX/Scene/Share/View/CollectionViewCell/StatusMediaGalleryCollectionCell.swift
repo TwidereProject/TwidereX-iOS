@@ -9,6 +9,7 @@
 import UIKit
 import Combine
 import TabBarPager
+import CoverFlowStackCollectionViewLayout
 
 final class StatusMediaGalleryCollectionCell: UICollectionViewCell {
     
@@ -21,9 +22,18 @@ final class StatusMediaGalleryCollectionCell: UICollectionViewCell {
 
     let mediaView = MediaView()
     
-    let collectionViewLayout = CoverFlowStackCollectionViewLayout()
+    let collectionViewLayout: CoverFlowStackCollectionViewLayout = {
+        let layout = CoverFlowStackCollectionViewLayout()
+        layout.startTrailingMarginRatio = 0.05
+        layout.endTrailingMarginRatio = 0.10
+        return layout
+    }()
     private(set) lazy var collectionView: UICollectionView = {
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: collectionViewLayout)
+        collectionView.backgroundColor = .clear
+        collectionView.layer.masksToBounds = true
+        collectionView.layer.cornerRadius = MediaView.cornerRadius
+        collectionView.layer.cornerCurve = .continuous
         return collectionView
     }()
     var diffableDataSource: UICollectionViewDiffableDataSource<CoverFlowStackSection, CoverFlowStackItem>?
@@ -50,9 +60,7 @@ final class StatusMediaGalleryCollectionCell: UICollectionViewCell {
 
 extension StatusMediaGalleryCollectionCell {
     
-    private func _init() {
-        contentView.backgroundColor = .red
-        
+    private func _init() {        
         mediaView.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(mediaView)
         NSLayoutConstraint.activate([
