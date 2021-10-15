@@ -8,26 +8,34 @@
 
 import UIKit
 import Combine
+import TabBarPager
 
 final class StatusMediaGalleryCollectionCell: UICollectionViewCell {
     
     var disposeBag = Set<AnyCancellable>()
     private(set) lazy var viewModel: ViewModel = {
         let viewModel = ViewModel()
-        viewModel.bind(cell: self) 
+        viewModel.bind(cell: self)
         return viewModel
     }()
 
     let mediaView = MediaView()
+    
+    let collectionViewLayout = CoverFlowStackCollectionViewLayout()
+    private(set) lazy var collectionView: UICollectionView = {
+        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: collectionViewLayout)
+        return collectionView
+    }()
+    var diffableDataSource: UICollectionViewDiffableDataSource<CoverFlowStackSection, CoverFlowStackItem>?
         
     override func prepareForReuse() {
         super.prepareForReuse()
     
         disposeBag.removeAll()
         mediaView.prepareForReuse()
+        diffableDataSource?.applySnapshotUsingReloadData(.init())
     }
 
-    
     override init(frame: CGRect) {
         super.init(frame: frame)
         _init()
@@ -53,6 +61,21 @@ extension StatusMediaGalleryCollectionCell {
             mediaView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
             mediaView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
         ])
+        
+        collectionView.translatesAutoresizingMaskIntoConstraints = false
+        contentView.addSubview(collectionView)
+        NSLayoutConstraint.activate([
+            collectionView.topAnchor.constraint(equalTo: contentView.topAnchor),
+            collectionView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+            collectionView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+            collectionView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
+        ])
+        
+        let configuration = CoverFlowStackSection.Configuration()
+        diffableDataSource = CoverFlowStackSection.diffableDataSource(
+            collectionView: collectionView,
+            configuration: configuration
+        )
     }
     
 }

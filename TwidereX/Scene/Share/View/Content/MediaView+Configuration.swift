@@ -12,7 +12,7 @@ import CoreData
 import CoreDataStack
 
 extension MediaView {
-    enum Configuration {
+    enum Configuration: Hashable {
         case image(info: ImageInfo)
         case gif(info: VideoInfo)
         case video(info: VideoInfo)
@@ -25,16 +25,30 @@ extension MediaView {
             }
         }
         
-        struct ImageInfo {
+        struct ImageInfo: Hashable {
             let aspectRadio: CGSize
             let assetURL: String?
+            
+            func hash(into hasher: inout Hasher) {
+                hasher.combine(aspectRadio.width)
+                hasher.combine(aspectRadio.height)
+                assetURL.flatMap { hasher.combine($0) }
+            }
         }
         
-        struct VideoInfo {
+        struct VideoInfo: Hashable {
             let aspectRadio: CGSize
-            let assertURL: String?
+            let assetURL: String?
             let previewURL: String?
             let durationMS: Int?
+            
+            func hash(into hasher: inout Hasher) {
+                hasher.combine(aspectRadio.width)
+                hasher.combine(aspectRadio.height)
+                assetURL.flatMap { hasher.combine($0) }
+                previewURL.flatMap { hasher.combine($0) }
+                durationMS.flatMap { hasher.combine($0) }
+            }
         }
     }
 }
@@ -44,7 +58,7 @@ extension MediaView {
         func videoInfo(from attachment: TwitterAttachment) -> MediaView.Configuration.VideoInfo {
             MediaView.Configuration.VideoInfo(
                 aspectRadio: attachment.size,
-                assertURL: attachment.assetURL,
+                assetURL: attachment.assetURL,
                 previewURL: attachment.previewURL,
                 durationMS: attachment.durationMS
             )

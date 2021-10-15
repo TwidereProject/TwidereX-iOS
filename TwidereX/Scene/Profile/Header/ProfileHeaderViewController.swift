@@ -44,7 +44,7 @@ extension ProfileHeaderViewController {
             headerView.topAnchor.constraint(equalTo: view.topAnchor),
             headerView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             headerView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            view.bottomAnchor.constraint(equalTo: headerView.bottomAnchor, constant: ProfileHeaderViewController.headerMinHeight + 8),
+            view.bottomAnchor.constraint(equalTo: headerView.bottomAnchor, constant: 8),
         ])
         headerView.preservesSuperviewLayoutMargins = true
         
@@ -60,24 +60,19 @@ extension ProfileHeaderViewController {
         super.viewDidLayoutSubviews()
         
         delegate?.profileHeaderViewController(self, viewLayoutDidUpdate: view)
-        view.layer.setupShadow(
-            color: UIColor.black.withAlphaComponent(0.12),
-            alpha: 1,
-            x: 0,
-            y: 2,
-            blur: 2,
-            spread: 0,
-            roundedRect: view.bounds,
-            byRoundingCorners: .allCorners,
-            cornerRadii: .zero
-        )
+//        view.layer.setupShadow(
+//            color: UIColor.black.withAlphaComponent(0.12),
+//            alpha: 1,
+//            x: 0,
+//            y: 2,
+//            blur: 2,
+//            spread: 0,
+//            roundedRect: view.bounds,
+//            byRoundingCorners: .allCorners,
+//            cornerRadii: .zero
+//        )
     }
     
 }
 
-// MARK: - TabBarPagerHeader
-extension ProfileHeaderViewController: TabBarPagerHeader {
-    func minimalHeight() -> CGFloat {
-        ProfileHeaderViewController.headerMinHeight
-    }
-}
+extension ProfileHeaderViewController: TabBarPagerHeader { }

@@ -209,7 +209,7 @@ extension MediaView {
 
 extension MediaView {
     private func setupGIFPlayer(info: Configuration.VideoInfo) -> AVPlayer? {
-        guard let urlString = info.assertURL,
+        guard let urlString = info.assetURL,
               let url = URL(string: urlString)
         else { return nil }
         let playerItem = AVPlayerItem(url: url)

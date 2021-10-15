@@ -435,7 +435,7 @@ extension StatusView {
         func videoInfo(from attachment: MastodonAttachment) -> MediaView.Configuration.VideoInfo {
             MediaView.Configuration.VideoInfo(
                 aspectRadio: attachment.size,
-                assertURL: attachment.assetURL,
+                assetURL: attachment.assetURL,
                 previewURL: attachment.previewURL,
                 durationMS: attachment.durationMS
             )

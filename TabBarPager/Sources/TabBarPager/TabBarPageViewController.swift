@@ -8,5 +8,7 @@
 import UIKit
 
 public protocol TabBarPageViewController: AnyObject {
+    var currentPage: TabBarPage? { get }
+    var currentPageIndex: Int? { get }
     var tabBarPageViewDelegate: TabBarPageViewDelegate? { get set }
 }

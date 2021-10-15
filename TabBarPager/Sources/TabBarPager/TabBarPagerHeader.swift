@@ -7,6 +7,4 @@
 
 import UIKit
 
-public protocol TabBarPagerHeader: AnyObject {
-    func minimalHeight() -> CGFloat
-}
+public protocol TabBarPagerHeader: AnyObject { }

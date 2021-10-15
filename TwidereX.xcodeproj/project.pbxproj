@@ -131,11 +131,15 @@
 		DB51DC2F2715AC0900A0D8FB /* APIService+UserTimeline.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB34028D2521BC06009EFADF /* APIService+UserTimeline.swift */; };
 		DB51DC392716BCEB00A0D8FB /* TabBarPager in Frameworks */ = {isa = PBXBuildFile; productRef = DB51DC382716BCEB00A0D8FB /* TabBarPager */; };
 		DB51DC3B2716F82000A0D8FB /* CellFrameCacheContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB51DC3A2716F82000A0D8FB /* CellFrameCacheContainer.swift */; };
-		DB51DC3D2717F80800A0D8FB /* CoverFlowStackLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB51DC3C2717F80800A0D8FB /* CoverFlowStackLayout.swift */; };
+		DB51DC3D2717F80800A0D8FB /* CoverFlowStackCollectionViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB51DC3C2717F80800A0D8FB /* CoverFlowStackCollectionViewLayout.swift */; };
 		DB51DC3F2717FA8000A0D8FB /* StatusMediaGallerySection.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB51DC3E2717FA8000A0D8FB /* StatusMediaGallerySection.swift */; };
 		DB51DC412717FCAA00A0D8FB /* StatusMediaGalleryCollectionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB51DC402717FCAA00A0D8FB /* StatusMediaGalleryCollectionCell.swift */; };
 		DB51DC432718117900A0D8FB /* StatusMediaGalleryCollectionCell+ViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB51DC422718117900A0D8FB /* StatusMediaGalleryCollectionCell+ViewModel.swift */; };
 		DB51DC452718144D00A0D8FB /* MediaView+Configuration.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB51DC442718144D00A0D8FB /* MediaView+Configuration.swift */; };
+		DB51DC472718197000A0D8FB /* CoverFlowStackSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB51DC462718197000A0D8FB /* CoverFlowStackSection.swift */; };
+		DB51DC4C27181BAE00A0D8FB /* CoverFlowStackItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB51DC4B27181BAE00A0D8FB /* CoverFlowStackItem.swift */; };
+		DB51DC4E27181D7500A0D8FB /* CoverFlowStackMediaCollectionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB51DC4D27181D7500A0D8FB /* CoverFlowStackMediaCollectionCell.swift */; };
+		DB51DC5027181DE500A0D8FB /* CoverFlowStackMediaCollectionCell+ViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB51DC4F27181DE400A0D8FB /* CoverFlowStackMediaCollectionCell+ViewModel.swift */; };
 		DB5399A025AEF75D0064586D /* APIService+Mute.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB53999F25AEF75D0064586D /* APIService+Mute.swift */; };
 		DB5399A825AF0A790064586D /* APIService+Block.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB5399A725AF0A790064586D /* APIService+Block.swift */; };
 		DB56329526DCA77600FC893F /* MastodonAttachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB56329426DCA77600FC893F /* MastodonAttachment.swift */; };
@@ -672,11 +676,15 @@
 		DB51DC2D27159A6000A0D8FB /* UserIdentifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserIdentifier.swift; sourceTree = "<group>"; };
 		DB51DC372716AEF000A0D8FB /* TabBarPager */ = {isa = PBXFileReference; lastKnownFileType = folder; path = TabBarPager; sourceTree = "<group>"; };
 		DB51DC3A2716F82000A0D8FB /* CellFrameCacheContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CellFrameCacheContainer.swift; sourceTree = "<group>"; };
-		DB51DC3C2717F80800A0D8FB /* CoverFlowStackLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoverFlowStackLayout.swift; sourceTree = "<group>"; };
+		DB51DC3C2717F80800A0D8FB /* CoverFlowStackCollectionViewLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoverFlowStackCollectionViewLayout.swift; sourceTree = "<group>"; };
 		DB51DC3E2717FA8000A0D8FB /* StatusMediaGallerySection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusMediaGallerySection.swift; sourceTree = "<group>"; };
 		DB51DC402717FCAA00A0D8FB /* StatusMediaGalleryCollectionCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusMediaGalleryCollectionCell.swift; sourceTree = "<group>"; };
 		DB51DC422718117900A0D8FB /* StatusMediaGalleryCollectionCell+ViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "StatusMediaGalleryCollectionCell+ViewModel.swift"; sourceTree = "<group>"; };
 		DB51DC442718144D00A0D8FB /* MediaView+Configuration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MediaView+Configuration.swift"; sourceTree = "<group>"; };
+		DB51DC462718197000A0D8FB /* CoverFlowStackSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoverFlowStackSection.swift; sourceTree = "<group>"; };
+		DB51DC4B27181BAE00A0D8FB /* CoverFlowStackItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoverFlowStackItem.swift; sourceTree = "<group>"; };
+		DB51DC4D27181D7500A0D8FB /* CoverFlowStackMediaCollectionCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoverFlowStackMediaCollectionCell.swift; sourceTree = "<group>"; };
+		DB51DC4F27181DE400A0D8FB /* CoverFlowStackMediaCollectionCell+ViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CoverFlowStackMediaCollectionCell+ViewModel.swift"; sourceTree = "<group>"; };
 		DB53999825AED8420064586D /* CoreDataStack 2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "CoreDataStack 2.xcdatamodel"; sourceTree = "<group>"; };
 		DB53999F25AEF75D0064586D /* APIService+Mute.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "APIService+Mute.swift"; sourceTree = "<group>"; };
 		DB5399A725AF0A790064586D /* APIService+Block.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "APIService+Block.swift"; sourceTree = "<group>"; };
@@ -1475,6 +1483,32 @@
 			path = Twitter;
 			sourceTree = "<group>";
 		};
+		DB51DC482718197400A0D8FB /* CoverFlowStack */ = {
+			isa = PBXGroup;
+			children = (
+				DB51DC462718197000A0D8FB /* CoverFlowStackSection.swift */,
+				DB51DC4B27181BAE00A0D8FB /* CoverFlowStackItem.swift */,
+			);
+			path = CoverFlowStack;
+			sourceTree = "<group>";
+		};
+		DB51DC492718198400A0D8FB /* Msic */ = {
+			isa = PBXGroup;
+			children = (
+				DB51DC482718197400A0D8FB /* CoverFlowStack */,
+			);
+			path = Msic;
+			sourceTree = "<group>";
+		};
+		DB51DC4A2718198E00A0D8FB /* Deprecated */ = {
+			isa = PBXGroup;
+			children = (
+				DB3FC05625527433003A2F8A /* Section */,
+				DB761E7B255947240050DC01 /* Item */,
+			);
+			path = Deprecated;
+			sourceTree = "<group>";
+		};
 		DB56329826DCBE1900FC893F /* StatusThread */ = {
 			isa = PBXGroup;
 			children = (
@@ -1566,6 +1600,8 @@
 				DB004BF526CE4A7F00F5C574 /* StatusCollectionViewCell.swift */,
 				DB51DC402717FCAA00A0D8FB /* StatusMediaGalleryCollectionCell.swift */,
 				DB51DC422718117900A0D8FB /* StatusMediaGalleryCollectionCell+ViewModel.swift */,
+				DB51DC4D27181D7500A0D8FB /* CoverFlowStackMediaCollectionCell.swift */,
+				DB51DC4F27181DE400A0D8FB /* CoverFlowStackMediaCollectionCell+ViewModel.swift */,
 			);
 			path = CollectionViewCell;
 			sourceTree = "<group>";
@@ -1666,11 +1702,11 @@
 		DB88AC312508BA950009E562 /* Diffable */ = {
 			isa = PBXGroup;
 			children = (
+				DB51DC4A2718198E00A0D8FB /* Deprecated */,
 				DBD73D7826D65E3A0003997E /* ManagedObjectRecord.swift */,
 				DB004BF026CE2CDA00F5C574 /* Status */,
 				DBD73D7526D65D980003997E /* User */,
-				DB3FC05625527433003A2F8A /* Section */,
-				DB761E7B255947240050DC01 /* Item */,
+				DB51DC492718198400A0D8FB /* Msic */,
 				DBCE2ED62591FD5B00926D09 /* FetchedResultsController */,
 			);
 			path = Diffable;
@@ -2698,7 +2734,7 @@
 			children = (
 				DBF63A03259B4811009E12C8 /* TouchBlockingCollectionView.swift */,
 				DB914C4926C3AC7C00E85F1A /* ContentOffsetFixedCollectionView.swift */,
-				DB51DC3C2717F80800A0D8FB /* CoverFlowStackLayout.swift */,
+				DB51DC3C2717F80800A0D8FB /* CoverFlowStackCollectionViewLayout.swift */,
 			);
 			path = CollectionView;
 			sourceTree = "<group>";
@@ -3536,6 +3572,7 @@
 				DBDA8E8A24FE0615006750DC /* DocumentStore.swift in Sources */,
 				DB5A2288255B9155006CA5B2 /* AccountListViewModel+Diffable.swift in Sources */,
 				DB0EB9F326D38ED700034427 /* NumberMetricFormatter.swift in Sources */,
+				DB51DC472718197000A0D8FB /* CoverFlowStackSection.swift in Sources */,
 				DB8E4FBA2563B61500459DA2 /* DisplayPreferenceViewController.swift in Sources */,
 				DBBF3DB526CF4C850013852A /* Persistence+TwitterUser.swift in Sources */,
 				DBA6B1BF2535B0BE005FB0B4 /* ControlContainableScrollViews.swift in Sources */,
@@ -3555,7 +3592,7 @@
 				DB0B3B9026C666E300501BB7 /* APIService+WebFinger.swift in Sources */,
 				DBFCC44725667C620016698E /* UILabel.swift in Sources */,
 				DB9EC4EA255A6BC7005403AA /* TwitterAccountUnlockViewController.swift in Sources */,
-				DB51DC3D2717F80800A0D8FB /* CoverFlowStackLayout.swift in Sources */,
+				DB51DC3D2717F80800A0D8FB /* CoverFlowStackCollectionViewLayout.swift in Sources */,
 				DB25B9D1253828AA00A5420F /* APIService+Retweet.swift in Sources */,
 				DB3B907226E9FF3A0010F64C /* FriendshipButton.swift in Sources */,
 				DBCE2E912591A06300926D09 /* UINavigationController.swift in Sources */,
@@ -3612,6 +3649,7 @@
 				DB44A56026C4DC35004C8B78 /* ThemeService.swift in Sources */,
 				DB51DC2427158BE700A0D8FB /* StatusRecordFetchedResultController.swift in Sources */,
 				DB3402B72521D389009EFADF /* UserTimelineViewModel.swift in Sources */,
+				DB51DC4E27181D7500A0D8FB /* CoverFlowStackMediaCollectionCell.swift in Sources */,
 				DBED96D8253F5D7800C5383A /* NamingState.swift in Sources */,
 				DB6DF3E0252060AA00E8A273 /* ProfileViewModel.swift in Sources */,
 				DBCE2ED82591FDF000926D09 /* FollowingListViewModel+State.swift in Sources */,
@@ -3632,6 +3670,7 @@
 				DB1BF29925663EFA00B5F490 /* DisplayPreference.swift in Sources */,
 				DB1BF2AC25664A0700B5F490 /* SlideTableViewCell.swift in Sources */,
 				DB5632C126DF7E7A00FC893F /* ListBatchFetchViewModel.swift in Sources */,
+				DB51DC5027181DE500A0D8FB /* CoverFlowStackMediaCollectionCell+ViewModel.swift in Sources */,
 				DB676101254AD12F006C6798 /* MediaCollectionViewCell.swift in Sources */,
 				DBDA8E2424FCF8A3006750DC /* SceneDelegate.swift in Sources */,
 				DB88AC332508BACD0009E562 /* Items.swift in Sources */,
@@ -3668,6 +3707,7 @@
 				DBF63A13259C36D8009E12C8 /* ListEntryTableViewCell.swift in Sources */,
 				DB1D7B4325B5938400397DCD /* TwitterAuthenticationOptionViewController.swift in Sources */,
 				DB51DC2F2715AC0900A0D8FB /* APIService+UserTimeline.swift in Sources */,
+				DB51DC4C27181BAE00A0D8FB /* CoverFlowStackItem.swift in Sources */,
 				DB2C3C6026F5E9B100FC66CD /* MetaContent.swift in Sources */,
 				DBCE2ED22591FB8D00926D09 /* OrderedTwitterUserFetchedResultsController.swift in Sources */,
 				DBCE2ECD2591FAA800926D09 /* FriendshipListSection.swift in Sources */,

@@ -10,5 +10,5 @@ import Tabman
 
 public protocol TabBarPagerDataSource: AnyObject {
     func headerViewController() -> UIViewController & TabBarPagerHeader
-    func pageViewController() -> TabmanViewController & TabBarPageViewController
+    func pageViewController() -> UIViewController & TabBarPageViewController
 }

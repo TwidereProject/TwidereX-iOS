@@ -1,5 +1,5 @@
 //
-//  CoverFlowStackLayout.swift
+//  CoverFlowStackCollectionViewLayout.swift
 //  TwidereX
 //
 //  Created by Cirno MainasuK on 2021-10-14.
@@ -8,7 +8,7 @@
 
 import UIKit
 
-final class CoverFlowStackLayout: UICollectionViewFlowLayout {
+final class CoverFlowStackCollectionViewLayout: UICollectionViewFlowLayout {
     
     override func prepare() {
         super.prepare()

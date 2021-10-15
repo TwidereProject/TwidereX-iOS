@@ -22,8 +22,22 @@ extension StatusMediaGalleryCollectionCell.ViewModel {
     func bind(cell: StatusMediaGalleryCollectionCell) {
         $mediaViewConfigurations
             .sink { configurations in
-                if let first = configurations.first {
-                    cell.mediaView.setup(configuration: first)
+                switch configurations.count {
+                case 0:
+                    cell.mediaView.isHidden = true
+                    cell.collectionView.isHidden = true
+                case 1:
+                    cell.mediaView.setup(configuration: configurations[0])
+                    cell.mediaView.isHidden = false
+                    cell.collectionView.isHidden = true
+                default:
+                    var snapshot = NSDiffableDataSourceSnapshot<CoverFlowStackSection, CoverFlowStackItem>()
+                    snapshot.appendSections([.main])
+                    let items: [CoverFlowStackItem] = configurations.map { .media(configuration: $0) }
+                    snapshot.appendItems(items, toSection: .main)
+                    cell.diffableDataSource?.applySnapshotUsingReloadData(snapshot)
+                    cell.mediaView.isHidden = true
+                    cell.collectionView.isHidden = false
                 }
             }
             .store(in: &disposeBag)

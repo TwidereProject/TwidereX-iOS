@@ -103,6 +103,16 @@ extension UserMediaTimelineViewController {
 //            timelineHeaderCollectionViewCellDelegate: self
         )
         
+        // setup batch fetch
+        viewModel.listBatchFetchViewModel.setup(scrollView: collectionView)
+        viewModel.listBatchFetchViewModel.shouldFetch
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                guard let self = self else { return }
+                self.viewModel.stateMachine.enter(UserMediaTimelineViewModel.State.LoadingMore.self)
+            }
+            .store(in: &disposeBag)
+        
         // trigger loading
         viewModel.userIdentifier
             .removeDuplicates()

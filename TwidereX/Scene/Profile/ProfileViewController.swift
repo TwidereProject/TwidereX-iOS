@@ -15,7 +15,7 @@ import AlamofireImage
 import Kingfisher
 import ActiveLabel
 import TabBarPager
-import Pageboy
+import XLPagerTabStrip
 
 // TODO: DrawerSidebarTransitionableViewController
 final class ProfileViewController: UIViewController, NeedsDependency {
@@ -498,18 +498,18 @@ extension ProfileViewController {
     @objc private func refreshControlValueChanged(_ sender: UIRefreshControl) {
         os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
         
-        let currentViewController = profileSegmentedViewController.pagingViewController.currentViewController
-        if let currentViewController = currentViewController as? UserTimelineViewController {
-            currentViewController.viewModel.stateMachine.enter(UserTimelineViewModel.State.Reloading.self)
-        } else if let currentViewController = currentViewController as? UserMediaTimelineViewController {
-            currentViewController.viewModel.stateMachine.enter(UserMediaTimelineViewModel.State.Reloading.self)
-        } else if let currentViewController = currentViewController as? UserLikeTimelineViewController {
-            currentViewController.viewModel.stateMachine.enter(UserLikeTimelineViewModel.State.Reloading.self)
-        }
-        
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-            sender.endRefreshing()            
-        }
+//        let currentViewController = profileSegmentedViewController.pagingViewController.currentViewController
+//        if let currentViewController = currentViewController as? UserTimelineViewController {
+//            currentViewController.viewModel.stateMachine.enter(UserTimelineViewModel.State.Reloading.self)
+//        } else if let currentViewController = currentViewController as? UserMediaTimelineViewController {
+//            currentViewController.viewModel.stateMachine.enter(UserMediaTimelineViewModel.State.Reloading.self)
+//        } else if let currentViewController = currentViewController as? UserLikeTimelineViewController {
+//            currentViewController.viewModel.stateMachine.enter(UserLikeTimelineViewModel.State.Reloading.self)
+//        }
+//
+//        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+//            sender.endRefreshing()
+//        }
     }
     
     @objc private func avatarButtonPressed(_ sender: UIButton) {
@@ -740,12 +740,9 @@ extension ProfileViewController: ProfilePagingViewControllerDelegate {
 
 // MARK: - TabBarPagerDelegate
 extension ProfileViewController: TabBarPagerDelegate {
-    func tabBar() -> TMBar {
-        return bar
-    }
     
-    func tabBarDataSource() -> TMBarDataSource {
-        return profilePagingViewController.viewModel
+    func tabBarMinimalHeight() -> CGFloat {
+        return profilePagingViewController.settings.style.buttonBarHeight ?? 44
     }
     
     func resetPageContentOffset(_ tabBarPagerController: TabBarPagerController) {
@@ -771,7 +768,25 @@ extension ProfileViewController: TabBarPagerDataSource {
         return profileHeaderViewController
     }
     
-    func pageViewController() -> TabmanViewController & TabBarPageViewController {
+    func pageViewController() -> UIViewController & TabBarPageViewController {
         return profilePagingViewController
+    }
+}
+
+extension UserTimelineViewController: IndicatorInfoProvider {
+    func indicatorInfo(for pagerTabStripController: PagerTabStripViewController) -> IndicatorInfo {
+        return IndicatorInfo(image: Asset.TextFormatting.capitalFloatLeft.image.withRenderingMode(.alwaysTemplate))
+    }
+}
+
+extension UserMediaTimelineViewController: IndicatorInfoProvider {
+    func indicatorInfo(for pagerTabStripController: PagerTabStripViewController) -> IndicatorInfo {
+        return IndicatorInfo(image: Asset.ObjectTools.photo.image.withRenderingMode(.alwaysTemplate))
+    }
+}
+
+extension UserLikeTimelineViewController: IndicatorInfoProvider {
+    func indicatorInfo(for pagerTabStripController: PagerTabStripViewController) -> IndicatorInfo {
+        return IndicatorInfo(image: Asset.Health.heartFill.image.withRenderingMode(.alwaysTemplate))
     }
 }

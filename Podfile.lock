@@ -96,6 +96,7 @@ PODS:
   - Sourcery (1.5.0)
   - SwiftGen (6.3.0)
   - twitter-text (3.1.0)
+  - XLPagerTabStrip (9.0.0)
   - ZIPFoundation (0.9.11)
 
 DEPENDENCIES:
@@ -108,6 +109,7 @@ DEPENDENCIES:
   - Sourcery
   - SwiftGen (~> 6.3.0)
   - twitter-text (~> 3.1.0)
+  - XLPagerTabStrip (~> 9.0.0)
   - ZIPFoundation (~> 0.9.11)
 
 SPEC REPOS:
@@ -129,6 +131,7 @@ SPEC REPOS:
     - Sourcery
     - SwiftGen
     - twitter-text
+    - XLPagerTabStrip
     - ZIPFoundation
 
 EXTERNAL SOURCES:
@@ -154,8 +157,9 @@ SPEC CHECKSUMS:
   Sourcery: eecfeb011c61d150ffc4f306d2fbf52ae89019d5
   SwiftGen: 3d5024a47ea79e408cded20763d7a17d18a4548c
   twitter-text: 3a0d73ca52955439dc8b208ca7e123ea0abd6a51
+  XLPagerTabStrip: 61c57fd61f611ee5f01ff1495ad6fbee8bf496c5
   ZIPFoundation: b1f0de4eed33e74a676f76e12559ab6b75990197
 
-PODFILE CHECKSUM: 094bc1d5dfd4a38d8624caf2c82a3568c42642b9
+PODFILE CHECKSUM: 80e83af8b649260d03ebcf47f097fb6a46157336
 
 COCOAPODS: 1.11.2

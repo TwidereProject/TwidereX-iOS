@@ -7,15 +7,6 @@
 
 import os.log
 import UIKit
-import Tabman
-import Pageboy
-
-public protocol TabBarPagerDelegate: AnyObject {
-    func tabBar() -> TMBar
-    func tabBarDataSource() -> TMBarDataSource
-    func resetPageContentOffset(_ tabBarPagerController: TabBarPagerController)
-    func tabBarPagerController(_ tabBarPagerController: TabBarPagerController, didScroll scrollView: UIScrollView)
-}
 
 public class TabBarPagerController: UIViewController {
     
@@ -29,14 +20,16 @@ public class TabBarPagerController: UIViewController {
         scrollView.preservesSuperviewLayoutMargins = true
         scrollView.delaysContentTouches = false
         scrollView.accessibilityLabel = "ContainerScrollView"
+//        scrollView.contentInsetAdjustmentBehavior = .never
         return scrollView
     }()
     
     // The relay scrollView for user interaction
     //
     // 1. pan gesture will be drop in this trap
-    // 2. scrollViewDidScroll(_:) will relay content offset changes to `containerScrollView` and
-    //    fire the `TabBarPagerControllerDelegate` method
+    // 2. scrollViewDidScroll(_:) will relay content offset changes to `containerScrollView`
+    // 3. will pin to tabBar if needs (a.k.a segmented control) and update page content offset
+    // 4. fire the `TabBarPagerControllerDelegate` method
     public let relayScrollView: UIScrollView = {
         let scrollView = UIScrollView()
         scrollView.showsVerticalScrollIndicator = false
@@ -46,8 +39,8 @@ public class TabBarPagerController: UIViewController {
         return scrollView
     }()
     
-    private var contentOffsets: [PageIndex: CGFloat] = [:]
-    private var contentSizeObservations: [PageIndex: NSKeyValueObservation] = [:]
+    private var contentOffsets: [Int: CGFloat] = [:]
+    private var contentSizeObservations: [Int: NSKeyValueObservation] = [:]
     
     public weak var delegate: TabBarPagerDelegate?
     public weak var dataSource: TabBarPagerDataSource? {
@@ -82,7 +75,6 @@ extension TabBarPagerController {
         ])
         
         containerScrollView.addGestureRecognizer(relayScrollView.panGestureRecognizer)
-        relayScrollView.layer.zPosition = .greatestFiniteMagnitude    // make pan gesture deliver first
         relayScrollView.delegate = self
     }
     
@@ -97,8 +89,8 @@ extension TabBarPagerController {
 extension TabBarPagerController {
     private func layout() {
         guard let dataSource = self.dataSource else { return }
-        guard let delegate = self.delegate else {
-            assertionFailure("please set delegate before dataSource")
+        guard let _ = self.delegate else {
+            assertionFailure("needs set delegate then dataSource")
             return
         }
         let pageViewController = dataSource.pageViewController()
@@ -131,26 +123,8 @@ extension TabBarPagerController {
             containerScrollView.contentLayoutGuide.trailingAnchor.constraint(equalTo: headerViewController.view.trailingAnchor),
             pageViewController.view.topAnchor.constraint(equalTo: headerViewController.view.bottomAnchor),                      // constraint page view below header
         ])
-        
-        
-        // add segmented bar to header
-        let bar = delegate.tabBar()
-        let barDataSource = delegate.tabBarDataSource()
-        pageViewController.addBar(
-            bar,
-            dataSource: barDataSource,
-            at: .custom(view: headerViewController.view, layout: { bar in
-                bar.translatesAutoresizingMaskIntoConstraints = false
-                headerViewController.view.addSubview(bar)
-                NSLayoutConstraint.activate([
-                    bar.leadingAnchor.constraint(equalTo: headerViewController.view.leadingAnchor),
-                    bar.trailingAnchor.constraint(equalTo: headerViewController.view.trailingAnchor),
-                    bar.bottomAnchor.constraint(equalTo: headerViewController.view.bottomAnchor),
-                    bar.heightAnchor.constraint(equalToConstant: headerViewController.minimalHeight()).priority(.defaultHigh),
-                ])
-            })
-        )
-        
+
+        // set delegate
         pageViewController.tabBarPageViewDelegate = self
     }
     
@@ -163,17 +137,20 @@ extension TabBarPagerController {
         
         // Note:
         // The `index` was updated when call from `TabBarPageViewDelegate`
-        guard let index = pageViewController.currentIndex else { return }
-        guard let page = pageViewController.currentViewController as? TabBarPage else { return }
+        guard let index = pageViewController.currentPageIndex else { return }
+        guard let page = pageViewController.currentPage else { return }
         
         // observe content size change
         observePageContentSize(scrollView: page.pageScrollView, at: index)
         
         // set pan gesture relay
         page.pageScrollView.panGestureRecognizer.require(toFail: relayScrollView.panGestureRecognizer)
+        
+        // prevent inner scrollView bounce
+        page.pageScrollView.alwaysBounceVertical = false
     }
     
-    private func observePageContentSize(scrollView: UIScrollView, at pageIndex: PageIndex) {
+    private func observePageContentSize(scrollView: UIScrollView, at pageIndex: Int) {
         // update content size
         updateRelayScrollViewContentSize(scrollView: scrollView, at: pageIndex)
         
@@ -186,32 +163,34 @@ extension TabBarPagerController {
         }
     }
 
-    private func updateRelayScrollViewContentSize(scrollView: UIScrollView, at pageIndex: PageIndex) {
-        guard let dataSource = self.dataSource else {
+    private func updateRelayScrollViewContentSize(scrollView: UIScrollView, at pageIndex: Int) {
+        guard let dataSource = self.dataSource,
+              let delegate = self.delegate
+        else {
             assertionFailure()
             return
         }
         
         let pageViewController = dataSource.pageViewController()
-        guard pageViewController.currentIndex == pageIndex else {
+        guard pageViewController.currentPageIndex == pageIndex else {
             return
         }
         
         let headerViewController = dataSource.headerViewController()
-        let headerMinimalHeight = headerViewController.minimalHeight()
+        let tabBarMinimalHeight = delegate.tabBarMinimalHeight()
         
         let pageHeight = max(
             scrollView.contentSize.height,
-            containerScrollView.frame.height - headerMinimalHeight - containerScrollView.safeAreaInsets.bottom
+            view.frame.height - view.safeAreaInsets.top - tabBarMinimalHeight - view.safeAreaInsets.bottom
         )
         let headerViewHeight: CGFloat = headerViewController.view.frame.height
         let contentSize = CGSize(
             width: containerScrollView.contentSize.width,
-            height: pageHeight + headerViewHeight
+            height: headerViewHeight + tabBarMinimalHeight + pageHeight
         )
         
         // Warning:
-        // For AutoLayout self-self cell
+        // For AutoLayout self-size cell
         // The tableView / collectionView should set estimatedRowHeight for smoothy scroll
         relayScrollView.contentSize = contentSize
     
@@ -223,9 +202,13 @@ extension TabBarPagerController: UIScrollViewDelegate {
     public func scrollViewDidScroll(_ scrollView: UIScrollView) {
         switch scrollView {
         case relayScrollView:
+            defer {
+                print("relay: \(scrollView.contentOffset), container: \(containerScrollView.contentOffset)")
+            }
             guard let dataSource = self.dataSource else { return }
+            let headerViewController = dataSource.headerViewController()
             let pageViewController = dataSource.pageViewController()
-            guard let currentPageIndex = pageViewController.currentIndex else {
+            guard let currentPageIndex = pageViewController.currentPageIndex else {
                 assertionFailure()
                 return
             }
@@ -236,15 +219,15 @@ extension TabBarPagerController: UIScrollViewDelegate {
 
             contentOffsets[currentPageIndex] = scrollView.contentOffset.y
             
-            let topMaxContentOffsetY = pageViewController.view.frame.minY - dataSource.headerViewController().minimalHeight() - containerScrollView.safeAreaInsets.top
+            let topMaxContentOffsetY = headerViewController.view.frame.maxY - containerScrollView.safeAreaInsets.top
             if scrollView.contentOffset.y < topMaxContentOffsetY {
                 containerScrollView.contentOffset.y = scrollView.contentOffset.y
                 delegate?.resetPageContentOffset(self)
                 contentOffsets.removeAll()
             } else {
                 containerScrollView.contentOffset.y = topMaxContentOffsetY
-                if let page = pageViewController.currentViewController as? TabBarPage {
-                    let contentOffsetY = scrollView.contentOffset.y - containerScrollView.contentOffset.y
+                if let page = pageViewController.currentPage {
+                    let contentOffsetY = scrollView.contentOffset.y - topMaxContentOffsetY
                     page.pageScrollView.contentOffset.y = contentOffsetY
                 }
             }
@@ -257,12 +240,12 @@ extension TabBarPagerController: UIScrollViewDelegate {
 
 // MARK: - TabBarPageViewDelegate
 extension TabBarPagerController: TabBarPageViewDelegate {
-    public func pageViewController(_ pageViewController: TabmanViewController, tabBarPage page: TabBarPage, at pageIndex: PageIndex) {
+    public func pageViewController(_ pageViewController: TabBarPageViewController, didPresentingTabBarPage page: TabBarPage, at index: Int) {
         // observe new page
         updatePageObservation()
         
         // set content offset
-        relayScrollView.contentOffset.y = contentOffsets[pageIndex] ?? containerScrollView.contentOffset.y
+        relayScrollView.contentOffset.y = contentOffsets[index] ?? containerScrollView.contentOffset.y
     }
 }
 

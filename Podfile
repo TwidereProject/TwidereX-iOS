@@ -9,6 +9,7 @@ target 'TwidereX' do
   
   ## UI
   pod 'Floaty', '~> 4.2.0'
+  pod 'XLPagerTabStrip', '~> 9.0.0'
   
   # misc
   pod 'SwiftGen', '~> 6.3.0'
