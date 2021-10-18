@@ -43,7 +43,7 @@ extension UserMediaTimelineViewModel {
                     
                     var newSnapshot: NSDiffableDataSourceSnapshot<StatusMediaGallerySection, StatusItem> = {
                         var snapshot = NSDiffableDataSourceSnapshot<StatusMediaGallerySection, StatusItem>()
-                        snapshot.appendSections([.main])
+                        snapshot.appendSections([.main, .footer])
                         let newItems: [StatusItem] = records.map { .status($0) }
                         snapshot.appendItems(newItems, toSection: .main)
                         return snapshot
@@ -52,9 +52,7 @@ extension UserMediaTimelineViewModel {
                     if let currentState = self.stateMachine.currentState {
                         switch currentState {
                         case is State.Reloading, is State.Idle, is State.LoadingMore, is State.Fail:
-                            break
-                            // TODO:
-                            // newSnapshot.appendItems([.bottomLoader], toSection: .main)
+                            newSnapshot.appendItems([.bottomLoader], toSection: .footer)
                         case is State.NotAuthorized:
                             break
                         case is State.Blocked:
@@ -64,6 +62,7 @@ extension UserMediaTimelineViewModel {
                         case is State.NoMore:
                             break
                         default:
+                            assertionFailure()
                             break
                         }
                     }

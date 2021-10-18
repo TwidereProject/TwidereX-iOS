@@ -21,6 +21,7 @@ class ProfileViewModel: ObservableObject {
     
     // input
     let context: AppContext
+    @Published var me: UserObject?
     @Published var user: UserObject?
 //    let twitterUser: CurrentValueSubject<TwitterUser?, Never>
 //    let currentTwitterUser = CurrentValueSubject<TwitterUser?, Never>(nil)
@@ -87,7 +88,27 @@ class ProfileViewModel: ObservableObject {
             .assign(to: \.value, on: userIdentifier)
             .store(in: &disposeBag)
 
-//        // bind active authentication
+        // bind active authentication
+        context.authenticationService.activeAuthenticationContext
+            .sink { [weak self] authenticationContext in
+                guard let self = self else { return }
+                Task {
+                    let managedObjectContext = self.context.managedObjectContext
+                    self.me = await managedObjectContext.perform {
+                        switch authenticationContext {
+                        case .twitter(let authenticationContext):
+                            let authentication = authenticationContext.authenticationRecord.object(in: managedObjectContext)
+                            return authentication.flatMap { .twitter(object: $0.twitterUser) }
+                        case .mastodon(let authenticationContext):
+                            let authentication = authenticationContext.authenticationRecord.object(in: managedObjectContext)
+                            return authentication.flatMap { .mastodon(object: $0.mastodonUser) }
+                        case nil:
+                            return nil
+                        }
+                    }
+                }
+            }
+            .store(in: &disposeBag)
 //        context.authenticationService.activeAuthenticationIndex
 //            .sink { [weak self] activeAuthenticationIndex in
 //                guard let self = self else { return }

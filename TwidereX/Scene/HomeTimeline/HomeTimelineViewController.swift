@@ -21,7 +21,7 @@ import SwiftUI
 // DrawerSidebarTransitionableViewController, MediaPreviewableViewController
 final class HomeTimelineViewController: UIViewController, NeedsDependency {
     
-    let logger = Logger(subsystem: "HomeTimelineViewController", category: "UI")
+    let logger = Logger(subsystem: "HomeTimelineViewController", category: "ViewController")
     
     weak var context: AppContext! { willSet { precondition(!isViewLoaded) } }
     weak var coordinator: SceneCoordinator! { willSet { precondition(!isViewLoaded) } }

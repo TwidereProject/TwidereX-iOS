@@ -18,7 +18,7 @@ final class UserTimelineViewController: UIViewController, NeedsDependency {
     weak var context: AppContext! { willSet { precondition(!isViewLoaded) } }
     weak var coordinator: SceneCoordinator! { willSet { precondition(!isViewLoaded) } }
     
-    let logger = Logger(subsystem: "UserTimelineViewController", category: "UI")
+    let logger = Logger(subsystem: "UserTimelineViewController", category: "ViewController")
     
     var disposeBag = Set<AnyCancellable>()
     var viewModel: UserTimelineViewModel!
@@ -30,8 +30,8 @@ final class UserTimelineViewController: UIViewController, NeedsDependency {
         // tableView.register(TimelineHeaderTableViewCell.self, forCellReuseIdentifier: String(describing: TimelineHeaderTableViewCell.self))
         tableView.register(StatusTableViewCell.self, forCellReuseIdentifier: String(describing: StatusTableViewCell.self))
         tableView.register(TimelineBottomLoaderTableViewCell.self, forCellReuseIdentifier: String(describing: TimelineBottomLoaderTableViewCell.self))
-        tableView.estimatedRowHeight = 200
         tableView.separatorStyle = .none
+        tableView.tableFooterView = UIView()
         return tableView
     }()
     

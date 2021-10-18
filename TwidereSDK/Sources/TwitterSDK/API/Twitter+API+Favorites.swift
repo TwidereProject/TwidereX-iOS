@@ -12,7 +12,6 @@ extension Twitter.API.Favorites {
     
     static let favoritesCreateEndpointURL = Twitter.API.endpointURL.appendingPathComponent("favorites/create.json")
     static let favoritesDestroyEndpointURL = Twitter.API.endpointURL.appendingPathComponent("favorites/destroy.json")
-    static let favoritesListEndpointURL = Twitter.API.endpointURL.appendingPathComponent("favorites/list.json")
 
     public static func favorites(session: URLSession, authorization: Twitter.API.OAuth.Authorization, favoriteKind: FavoriteKind, query: FavoriteQuery) -> AnyPublisher<Twitter.Response.Content<Twitter.Entity.Tweet>, Error> {
         let url: URL = {
@@ -30,20 +29,6 @@ extension Twitter.API.Favorites {
             }
             .eraseToAnyPublisher()
     }
-    
-    public static func list(session: URLSession, authorization: Twitter.API.OAuth.Authorization, query: Twitter.API.Statuses.TimelineQuery) -> AnyPublisher<Twitter.Response.Content<[Twitter.Entity.Tweet]>, Error> {
-        assert(query.userID != nil && query.userID != "")
-        
-        let request = Twitter.API.request(url: favoritesListEndpointURL, httpMethod: "GET", authorization: authorization, queryItems: query.queryItems)
-        return session.dataTaskPublisher(for: request)
-            .tryMap { data, response in
-                let value = try Twitter.API.decode(type: [Twitter.Entity.Tweet].self, from: data, response: response)
-                return Twitter.Response.Content(value: value, response: response)
-            }
-            .eraseToAnyPublisher()
-    }
-
-
 }
 
 extension Twitter.API.Favorites {
@@ -94,4 +79,29 @@ extension Twitter.API.Favorites {
             return items
         }
     }
+}
+
+extension Twitter.API.Favorites {
+    
+    static let listEndpointURL = Twitter.API.endpointURL.appendingPathComponent("favorites/list.json")
+    
+    // V1
+    public static func list(
+        session: URLSession,
+        query: Twitter.API.Statuses.TimelineQuery,
+        authorization: Twitter.API.OAuth.Authorization
+    ) async throws -> Twitter.Response.Content<[Twitter.Entity.Tweet]> {
+        assert(query.userID != nil && query.userID != "")
+        let request = Twitter.API.request(
+            url: listEndpointURL,
+            method: .GET,
+            query: query,
+            authorization: authorization
+        )
+        let (data, response) = try await session.data(for: request, delegate: nil)
+        let value = try Twitter.API.decode(type: [Twitter.Entity.Tweet].self, from: data, response: response)
+        return Twitter.Response.Content(value: value, response: response)
+    }
+    
+    
 }

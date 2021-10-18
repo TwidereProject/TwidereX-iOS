@@ -27,7 +27,6 @@ extension UserTimelineViewModel {
             configuration: configuration
         )
         
-        
         var snapshot = NSDiffableDataSourceSnapshot<StatusSection, StatusItem>()
         snapshot.appendSections([.main])
         diffableDataSource?.apply(snapshot)

@@ -26,9 +26,6 @@ final class UserMediaTimelineViewController: UIViewController, NeedsDependency {
     private(set) lazy var collectionView: UICollectionView = {
 //        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UserMediaTimelineViewController.createCollectionViewLayout())
-//        collectionView.register(SearchMediaCollectionViewCell.self, forCellWithReuseIdentifier: String(describing: SearchMediaCollectionViewCell.self))
-//        collectionView.register(ActivityIndicatorCollectionViewCell.self, forCellWithReuseIdentifier: String(describing: ActivityIndicatorCollectionViewCell.self))
-//        collectionView.register(TimelineHeaderCollectionViewCell.self, forCellWithReuseIdentifier: String(describing: TimelineHeaderCollectionViewCell.self))
         collectionView.backgroundColor = .systemBackground
         return collectionView
     }()

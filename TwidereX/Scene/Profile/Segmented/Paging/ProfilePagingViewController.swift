@@ -7,6 +7,7 @@
 
 import os.log
 import UIKit
+import Combine
 import XLPagerTabStrip
 import TabBarPager
 
@@ -19,9 +20,10 @@ final class ProfilePagingViewController: ButtonBarPagerTabStripViewController, T
     weak var tabBarPageViewDelegate: TabBarPageViewDelegate?
     weak var pagingDelegate: ProfilePagingViewControllerDelegate?
     
+    var disposeBag = Set<AnyCancellable>()
     var viewModel: ProfilePagingViewModel!
     
-    // MARK: - PageboyViewControllerDelegate
+    // MARK: - TabBarPageViewController
     
     var currentPage: TabBarPage? {
         return viewModel.viewControllers[currentIndex]
@@ -31,8 +33,14 @@ final class ProfilePagingViewController: ButtonBarPagerTabStripViewController, T
         currentIndex
     }
     
+    // MARK: - ButtonBarPagerTabStripViewController
+    
     override func viewControllers(for pagerTabStripController: PagerTabStripViewController) -> [UIViewController] {
-        return viewModel.viewControllers
+        if viewModel.displayLikeTimeline {
+            return viewModel.viewControllers
+        } else {
+            return Array(viewModel.viewControllers.prefix(2))
+        }
     }
     
     override func updateIndicator(for viewController: PagerTabStripViewController, fromIndex: Int, toIndex: Int, withProgressPercentage progressPercentage: CGFloat, indexWasChanged: Bool) {
@@ -42,29 +50,6 @@ final class ProfilePagingViewController: ButtonBarPagerTabStripViewController, T
         let page = viewModel.viewControllers[toIndex]
         tabBarPageViewDelegate?.pageViewController(self, didPresentingTabBarPage: page, at: toIndex)
     }
-    
-//    override func pageboyViewController(_ pageboyViewController: PageboyViewController, didScrollTo position: CGPoint, direction: PageboyViewController.NavigationDirection, animated: Bool) {
-//        super.pageboyViewController(pageboyViewController, didScrollTo: position, direction: direction, animated: animated)
-//
-//        // Fix the SDK bug for table view get row selected during swipe but cancel paging
-//        guard let viewController = pageboyViewController.currentViewController as? TabBarPage else {
-//            assertionFailure()
-//            return
-//        }
-//        if let tableView = viewController.pageScrollView as? UITableView {
-//            for cell in tableView.visibleCells {
-//                cell.setHighlighted(false, animated: false)
-//            }
-//        }
-//    }
-//
-//    override func pageboyViewController(_ pageboyViewController: PageboyViewController, didScrollToPageAt index: TabmanViewController.PageIndex, direction: PageboyViewController.NavigationDirection, animated: Bool) {
-//        super.pageboyViewController(pageboyViewController, didScrollToPageAt: index, direction: direction, animated: animated)
-//
-//        let viewController = viewModel.viewControllers[index]
-//        tabBarPageViewDelegate?.pageViewController(self, tabBarPage: viewController, at: index)
-//        pagingDelegate?.profilePagingViewController(self, didScrollToPostCustomScrollViewContainerController: viewController, atIndex: index)
-//    }
     
     deinit {
         os_log("%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
@@ -89,7 +74,14 @@ extension ProfilePagingViewController {
         
         super.viewDidLoad()
         
-        
+        viewModel.$displayLikeTimeline
+            .receive(on: DispatchQueue.main)
+            .removeDuplicates()
+            .sink { [weak self] _ in
+                guard let self = self else { return }
+                self.reloadPagerTabStripView()
+            }
+            .store(in: &disposeBag)
     }
 
 }

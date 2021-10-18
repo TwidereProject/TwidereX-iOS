@@ -40,13 +40,19 @@ extension StatusMediaGallerySection {
                     configuration: configuration
                 )
             }
-
+        }
+        
+        
+        let activityIndicatorCell = UICollectionView.CellRegistration<ActivityIndicatorCollectionViewCell, String> { cell, IndexPath, _ in
+            cell.activityIndicatorView.startAnimating()
         }
         
         return UICollectionViewDiffableDataSource(collectionView: collectionView) { collectionView, indexPath, item in
             switch item {
             case .status(let record):
                 return collectionView.dequeueConfiguredReusableCell(using: statusRecordCell, for: indexPath, item: record)
+            case .bottomLoader:
+                return collectionView.dequeueConfiguredReusableCell(using: activityIndicatorCell, for: indexPath, item: String(describing: StatusItem.bottomLoader.self))
             default:
                 assertionFailure()
                 return UICollectionViewCell()

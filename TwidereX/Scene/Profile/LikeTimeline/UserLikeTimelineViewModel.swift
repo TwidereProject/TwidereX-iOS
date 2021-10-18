@@ -17,16 +17,18 @@ import AlamofireImage
 
 class UserLikeTimelineViewModel: NSObject {
     
+    let logger = Logger(subsystem: "UserLikeTimelineViewModel", category: "ViewModel")
+    
     var disposeBag = Set<AnyCancellable>()
     
     // input
     let context: AppContext
-//    let fetchedResultsController: NSFetchedResultsController<Tweet>
-//    var diffableDataSource: UITableViewDiffableDataSource<TimelineSection, Item>?
-    let userID: CurrentValueSubject<String?, Never>
-    weak var tableView: UITableView?
+    let userIdentifier: CurrentValueSubject<UserIdentifier?, Never>
+    let statusRecordFetchedResultController: StatusRecordFetchedResultController
+    let listBatchFetchViewModel = ListBatchFetchViewModel()
     
     // output
+    var diffableDataSource: UITableViewDiffableDataSource<StatusSection, StatusItem>?
     private(set) lazy var stateMachine: GKStateMachine = {
         let stateMachine = GKStateMachine(states: [
             State.Initial(viewModel: self),
@@ -42,32 +44,17 @@ class UserLikeTimelineViewModel: NSObject {
         stateMachine.enter(State.Initial.self)
         return stateMachine
     }()
-    lazy var stateMachinePublisher = CurrentValueSubject<State, Never>(State.Initial(viewModel: self))
-    let tweetIDs = CurrentValueSubject<[Twitter.Entity.Tweet.ID], Never>([])
-    let items = CurrentValueSubject<[Item], Never>([])
-    var cellFrameCache = NSCache<NSNumber, NSValue>()
     
     init(context: AppContext) {
         self.context = context
-//        self.fetchedResultsController = {
-//            let fetchRequest = Tweet.sortedFetchRequest
-//            fetchRequest.predicate = Tweet.predicate(idStrs: [])
-//            fetchRequest.returnsObjectsAsFaults = false
-//            fetchRequest.fetchBatchSize = 20
-//            let controller = NSFetchedResultsController(
-//                fetchRequest: fetchRequest,
-//                managedObjectContext: context.managedObjectContext,
-//                sectionNameKeyPath: nil,
-//                cacheName: nil
-//            )
-//
-//            return controller
-//        }()
-        self.userID = CurrentValueSubject(nil)
+        self.userIdentifier = CurrentValueSubject(nil)
+        self.statusRecordFetchedResultController = StatusRecordFetchedResultController(managedObjectContext: context.managedObjectContext)
         super.init()
         
-//        self.fetchedResultsController.delegate = self
-//
+        userIdentifier
+            .assign(to: \.value, on: statusRecordFetchedResultController.userIdentifier)
+            .store(in: &disposeBag)
+
 //        items.eraseToAnyPublisher()
 //            .receive(on: DispatchQueue.main)
 //            .debounce(for: .milliseconds(300), scheduler: DispatchQueue.main)
@@ -100,19 +87,6 @@ class UserLikeTimelineViewModel: NSObject {
 //                }
 //                
 //                diffableDataSource.apply(snapshot, animatingDifferences: !items.isEmpty)
-//            }
-//            .store(in: &disposeBag)
-//        
-//        tweetIDs
-//            .receive(on: DispatchQueue.main)
-//            .sink { [weak self] ids in
-//                guard let self = self else { return }
-//                self.fetchedResultsController.fetchRequest.predicate = Tweet.predicate(idStrs: ids)
-//                do {
-//                    try self.fetchedResultsController.performFetch()
-//                } catch {
-//                    assertionFailure(error.localizedDescription)
-//                }
 //            }
 //            .store(in: &disposeBag)
     }

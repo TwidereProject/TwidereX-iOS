@@ -10,10 +10,6 @@ import UIKit
 import Combine
 import CoreData
 import CoreDataStack
-import Tabman
-import AlamofireImage
-import Kingfisher
-import ActiveLabel
 import TabBarPager
 import XLPagerTabStrip
 
@@ -67,9 +63,9 @@ final class ProfileViewController: UIViewController, NeedsDependency {
             .store(in: &disposeBag)
         
         let userLikeTimelineViewModel = UserLikeTimelineViewModel(context: context)
-        //        viewModel.userIdentifier
-        //            .assign(to: \.value, on: userLikeTimelineViewModel.userIdentifier)
-        //            .store(in: &disposeBag)
+        viewModel.userIdentifier
+            .assign(to: \.value, on: userLikeTimelineViewModel.userIdentifier)
+            .store(in: &disposeBag)
         
         profilePagingViewController.viewModel = {
             let profilePagingViewModel = ProfilePagingViewModel(
@@ -90,18 +86,18 @@ final class ProfileViewController: UIViewController, NeedsDependency {
     
     private(set) lazy var profileSegmentedViewController = ProfileSegmentedViewController()
     
-    private(set) lazy var bar: TMBar = {
-        let bar = TMBarView<TMHorizontalBarLayout, TMTabItemBarButton, TMLineBarIndicator>()
-        bar.layout.contentMode = .fit
-        bar.indicator.weight = .custom(value: 2)
-        bar.backgroundView.style = .flat(color: .systemBackground)
-        bar.buttons.customize { barItem in
-            barItem.shrinksImageWhenUnselected = false
-            barItem.selectedTintColor = Asset.Colors.hightLight.color
-            barItem.tintColor = .secondaryLabel
-        }
-        return bar
-    }()
+//    private(set) lazy var bar: TMBar = {
+//        let bar = TMBarView<TMHorizontalBarLayout, TMTabItemBarButton, TMLineBarIndicator>()
+//        bar.layout.contentMode = .fit
+//        bar.indicator.weight = .custom(value: 2)
+//        bar.backgroundView.style = .flat(color: .systemBackground)
+//        bar.buttons.customize { barItem in
+//            barItem.shrinksImageWhenUnselected = false
+//            barItem.selectedTintColor = Asset.Colors.hightLight.color
+//            barItem.tintColor = .secondaryLabel
+//        }
+//        return bar
+//    }()
     
     private var contentOffsets: [Int: CGFloat] = [:]
     var currentPostTimelineTableViewContentSizeObservation: NSKeyValueObservation?
@@ -139,6 +135,25 @@ extension ProfileViewController {
         
         tabBarPagerController.delegate = self
         tabBarPagerController.dataSource = self
+        Publishers.CombineLatest(
+            viewModel.$user,
+            viewModel.$me
+        )
+        .receive(on: DispatchQueue.main)
+        .sink { [weak self] user, me in
+            guard let self = self else { return }
+            guard let user = user, let me = me else { return }
+            
+            // set like timeline display
+            switch (user, me) {
+            case (.mastodon(let userObject), .mastodon(let meObject)):
+                self.profilePagingViewController.viewModel.displayLikeTimeline = userObject.objectID == meObject.objectID
+            default:
+                self.profilePagingViewController.viewModel.displayLikeTimeline = true
+            }
+        }
+        .store(in: &disposeBag)
+        
         
 //        Publishers.CombineLatest4(
 //            viewModel.muted.eraseToAnyPublisher(),

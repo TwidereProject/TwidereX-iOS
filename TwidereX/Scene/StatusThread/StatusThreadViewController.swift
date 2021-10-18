@@ -12,7 +12,7 @@ import Combine
 
 final class StatusThreadViewController: UIViewController, NeedsDependency {
 
-    let logger = Logger(subsystem: "StatusThreadViewController", category: "UI")
+    let logger = Logger(subsystem: "StatusThreadViewController", category: "ViewController")
     
     weak var context: AppContext! { willSet { precondition(!isViewLoaded) } }
     weak var coordinator: SceneCoordinator! { willSet { precondition(!isViewLoaded) } }
