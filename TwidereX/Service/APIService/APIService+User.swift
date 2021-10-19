@@ -133,9 +133,9 @@ extension APIService {
                             assertionFailure()
                             return
                         }
-                        twitterUser.update(blocking: true, by: requestTwitterUser)
-                        twitterUser.update(following: false, by: requestTwitterUser)
-                        twitterUser.update(followRequestSent: false, from: requestTwitterUser)
+//                        twitterUser.update(blocking: true, by: requestTwitterUser)
+//                        twitterUser.update(following: false, by: requestTwitterUser)
+//                        twitterUser.update(followRequestSent: false, from: requestTwitterUser)
                     }
                     .sink { _ in
                         // do nothing

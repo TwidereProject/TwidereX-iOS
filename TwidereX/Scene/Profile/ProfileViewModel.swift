@@ -29,6 +29,7 @@ class ProfileViewModel: ObservableObject {
         
     // output
     let userIdentifier = CurrentValueSubject<UserIdentifier?, Never>(nil)
+    let relationshipViewModel = RelationshipViewModel()
 //    let bannerImageURL: CurrentValueSubject<URL?, Never>
 //    let avatarImageURL: CurrentValueSubject<URL?, Never>
 //    let protected: CurrentValueSubject<Bool?, Never>
@@ -53,6 +54,8 @@ class ProfileViewModel: ObservableObject {
     
     init(context: AppContext) {
         self.context = context
+        $me.assign(to: &relationshipViewModel.$me)
+        $user.assign(to: &relationshipViewModel.$user)
 //        self.twitterUser = CurrentValueSubject(twitterUser)
 //        self.userID = CurrentValueSubject(twitterUser?.id)
 //        self.bannerImageURL = CurrentValueSubject(twitterUser?.profileBannerURL(sizeKind: .large))

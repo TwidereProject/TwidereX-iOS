@@ -16,6 +16,7 @@ extension Persistence.Twitter {
     
     struct PersistContextV2 {
         let dictionary: Twitter.Response.V2.DictContent
+        let user: TwitterUser?
         let statusCache: Persistence.PersistCache<TwitterStatus>?
         let userCache: Persistence.PersistCache<TwitterUser>?
         let networkDate: Date
@@ -62,6 +63,7 @@ extension Persistence.Twitter {
                     quote: quote,
                     replyTo: replyTo,
                     dictionary: context.dictionary,
+                    user: context.user,
                     statusCache: context.statusCache,
                     userCache: context.userCache,
                     networkDate: context.networkDate

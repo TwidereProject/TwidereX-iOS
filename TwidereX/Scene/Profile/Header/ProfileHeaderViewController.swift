@@ -11,17 +11,19 @@ import Combine
 import TabBarPager
 
 protocol ProfileHeaderViewControllerDelegate: AnyObject {
-    func profileHeaderViewController(_ viewController: ProfileHeaderViewController, viewLayoutDidUpdate view: UIView)
+    func headerViewController(_ viewController: ProfileHeaderViewController, profileHeaderView: ProfileHeaderView, friendshipButtonDidPressed button: UIButton)
 }
 
 final class ProfileHeaderViewController: UIViewController {
     
     static let headerMinHeight: CGFloat = 50
     
+    let logger = Logger(subsystem: "ProfileHeaderViewController", category: "ViewController")
     weak var delegate: ProfileHeaderViewControllerDelegate?
     
     var disposeBag = Set<AnyCancellable>()
     var viewModel: ProfileHeaderViewModel!
+    weak var headerDelegate: TabBarPagerHeaderDelegate?
     
     private(set) lazy var headerView = ProfileHeaderView()
 
@@ -54,25 +56,32 @@ extension ProfileHeaderViewController {
                 self.headerView.configure(user: user)
             }
             .store(in: &disposeBag)
+        
+        viewModel.$relationship
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] relationship in
+                guard let self = self else { return }
+                self.headerView.configure(relationship: relationship)
+            }
+            .store(in: &disposeBag)
+        
+        headerView.friendshipButton.addTarget(self, action: #selector(ProfileHeaderViewController.friendshipButtonDidPressed(_:)), for: .touchUpInside)
     }
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         
-        delegate?.profileHeaderViewController(self, viewLayoutDidUpdate: view)
-//        view.layer.setupShadow(
-//            color: UIColor.black.withAlphaComponent(0.12),
-//            alpha: 1,
-//            x: 0,
-//            y: 2,
-//            blur: 2,
-//            spread: 0,
-//            roundedRect: view.bounds,
-//            byRoundingCorners: .allCorners,
-//            cornerRadii: .zero
-//        )
+        headerDelegate?.viewLayoutDidUpdate(self)
     }
     
 }
 
+extension ProfileHeaderViewController {
+    @objc private func friendshipButtonDidPressed(_ sender: UIButton) {
+        logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public)")
+        delegate?.headerViewController(self, profileHeaderView: headerView, friendshipButtonDidPressed: sender)
+    }
+}
+
+// MARK: - TabBarPagerHeader
 extension ProfileHeaderViewController: TabBarPagerHeader { }

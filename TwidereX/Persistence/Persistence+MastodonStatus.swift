@@ -134,8 +134,8 @@ extension Persistence.MastodonStatus {
     ) {
         // update relationship
         if let user = context.user {
-            context.entity.reblogged.flatMap { status.update(isRepost: $0, user: user) }
-            context.entity.favourited.flatMap { status.update(isLike: $0, user: user) }
+            context.entity.reblogged.flatMap { status.update(isRepost: $0, by: user) }
+            context.entity.favourited.flatMap { status.update(isLike: $0, by: user) }
         }
     }
     

@@ -22,6 +22,7 @@ extension Persistence.TwitterStatus {
         
         let dictionary: Twitter.Response.V2.DictContent
         
+        let user: TwitterUser?
         let statusCache: Persistence.PersistCache<TwitterStatus>?
         let userCache: Persistence.PersistCache<TwitterUser>?
         let networkDate: Date
@@ -62,6 +63,7 @@ extension Persistence.TwitterStatus {
                     quote: context.quote,
                     replyTo: nil,
                     dictionary: context.dictionary,
+                    user: context.user,
                     statusCache: context.statusCache,
                     userCache: context.userCache,
                     networkDate: context.networkDate
@@ -81,6 +83,7 @@ extension Persistence.TwitterStatus {
                         quote: nil,
                         replyTo: nil,
                         dictionary: context.dictionary,
+                        user: context.user,
                         statusCache: context.statusCache,
                         userCache: context.userCache,
                         networkDate: context.networkDate
@@ -98,6 +101,7 @@ extension Persistence.TwitterStatus {
                 in: managedObjectContext,
                 context: Persistence.TwitterUser.PersistContextV2(
                     entity: context.entity.author,
+                    user: context.user,
                     cache: context.userCache,
                     networkDate: context.networkDate
                 )
@@ -178,6 +182,7 @@ extension Persistence.TwitterStatus {
             twitterUser: status.author,
             context: Persistence.TwitterUser.PersistContextV2(
                 entity: context.entity.author,
+                user: context.user,
                 cache: context.userCache,
                 networkDate: context.networkDate
             )

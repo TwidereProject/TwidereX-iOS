@@ -120,6 +120,7 @@ extension APIService {
                 media: content.includes?.media ?? [],
                 places: content.includes?.places ?? []
             )
+            let user = authenticationContext.authenticationRecord.object(in: managedObjectContext)?.twitterUser
             let statusCache = Persistence.PersistCache<TwitterStatus>()
             let userCache = Persistence.PersistCache<TwitterUser>()
             
@@ -127,6 +128,7 @@ extension APIService {
                 in: managedObjectContext,
                 context: Persistence.Twitter.PersistContextV2(
                     dictionary: dictionary,
+                    user: user,
                     statusCache: nil, // statusCache,
                     userCache: nil, // userCache,
                     networkDate: response.networkDate

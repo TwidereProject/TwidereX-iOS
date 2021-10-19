@@ -212,12 +212,12 @@ extension APIService {
             guard let authentication = authenticationContext.authenticationRecord.object(in: managedObjectContext),
                   let _status = record.object(in: managedObjectContext)
             else { return nil }
-            let user = authentication.twitterUser
+            let me = authentication.twitterUser
             let status = _status.repost ?? _status
-            let isLiked = status.likeBy.contains(user)
+            let isLiked = status.likeBy.contains(me)
             let likedCount = status.likeCount
             let likeCount = isLiked ? likedCount - 1 : likedCount + 1
-            status.update(isLike: !isLiked, user: user)
+            status.update(isLike: !isLiked, by: me)
             status.update(likeCount: Int64(max(0, likeCount)))
             let context = TwitterLikeContext(
                 statusID: status.id,
@@ -264,17 +264,17 @@ extension APIService {
             guard let authentication = authenticationContext.authenticationRecord.object(in: managedObjectContext),
                   let _status = record.object(in: managedObjectContext)
             else { return }
-            let user = authentication.twitterUser
+            let me = authentication.twitterUser
             let status = _status.repost ?? _status
             
             switch result {
             case .success(let response):
                 let isLike = response.value.data.liked
-                status.update(isLike: isLike, user: user)
+                status.update(isLike: isLike, by: me)
                 self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): update status like: \(isLike)")
             case .failure:
                 // rollback
-                status.update(isLike: likeContext.isLiked, user: user)
+                status.update(isLike: likeContext.isLiked, by: me)
                 status.update(likeCount: likeContext.likedCount)
                 self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): rollback status like")
             }
@@ -310,7 +310,7 @@ extension APIService {
             let isLiked = status.likeBy.contains(user)
             let likedCount = status.likeCount
             let likeCount = isLiked ? likedCount - 1 : likedCount + 1
-            status.update(isLike: !isLiked, user: user)
+            status.update(isLike: !isLiked, by: user)
             status.update(likeCount: Int64(max(0, likeCount)))
             let context = MastodonLikeContext(
                 statusID: status.id,
@@ -367,7 +367,7 @@ extension APIService {
                 self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): update status like: \(response.value.favourited.debugDescription)")
             case .failure:
                 // rollback
-                status.update(isLike: likeContext.isLiked, user: user)
+                status.update(isLike: likeContext.isLiked, by: user)
                 status.update(likeCount: likeContext.likedCount)
                 self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): rollback status like")
             }

@@ -53,6 +53,7 @@ extension Twitter.API {
         public enum Lookup { }
         public enum Search { }
         public enum User {
+            public enum Follow { } 
             public enum Like { }
             public enum Retweet { }
         }

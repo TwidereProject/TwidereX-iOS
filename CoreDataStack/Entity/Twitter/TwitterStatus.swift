@@ -276,7 +276,7 @@ extension TwitterStatus: AutoUpdatableObject {
     }
     // sourcery:end
     
-    public func update(isRepost: Bool, user: TwitterUser) {
+    public func update(isRepost: Bool, by user: TwitterUser) {
         if isRepost {
             if !repostBy.contains(user) {
                 self.mutableSetValue(forKey: #keyPath(TwitterStatus.repostBy)).add(user)
@@ -288,7 +288,7 @@ extension TwitterStatus: AutoUpdatableObject {
         }
     }
     
-    public func update(isLike: Bool, user: TwitterUser) {
+    public func update(isLike: Bool, by user: TwitterUser) {
         if isLike {
             if !likeBy.contains(user) {
                 self.mutableSetValue(forKey: #keyPath(TwitterStatus.likeBy)).add(user)

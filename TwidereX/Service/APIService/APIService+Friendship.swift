@@ -16,6 +16,152 @@ import CommonOSLog
 
 extension APIService {
     
+    /// Toggle friendship between user and *me*
+    ///
+    /// Following / Following pending <-> Unfollow
+    /// - Parameters:
+    ///   - user: target user record
+    ///   - authenticationContext: `AuthenticationContext`
+    func friendship(
+        user: UserRecord,
+        authenticationContext: AuthenticationContext
+    ) async throws {
+        switch (user, authenticationContext) {
+        case (.twitter(let record), .twitter(let authenticationContext)):
+            _ = try await friendship(
+                record: record,
+                authenticationContext: authenticationContext
+            )
+        case (.mastodon(let record), .mastodon(let authenticationContext)):
+            break
+//            _ = try await like(
+//                record: record,
+//                authenticationContext: authenticationContext
+//            )
+        default:
+            assertionFailure()
+        }
+    }
+}
+
+extension APIService {
+    private struct TwitterFollowContext {
+        let sourceUserID: TwitterUser.ID
+        let targetUserID: TwitterUser.ID
+        let isFollowing: Bool
+        let isPending: Bool
+        let needsUndoFollow: Bool
+    }
+    
+    func friendship(
+        record: ManagedObjectRecord<TwitterUser>,
+        authenticationContext: TwitterAuthenticationContext
+    ) async throws -> Twitter.Response.Content<Twitter.API.V2.User.Follow.FollowContent> {
+        let managedObjectContext = backgroundManagedObjectContext
+        
+        // update friendship state and retrieve friendship context
+        let _followContext: TwitterFollowContext? = try await managedObjectContext.performChanges {
+            guard let authentication = authenticationContext.authenticationRecord.object(in: managedObjectContext),
+                  let user = record.object(in: managedObjectContext)
+            else { return nil }
+            let me = authentication.twitterUser
+            
+            let isFollowing = user.followingBy.contains(me)
+            let isPending = user.followRequestSentFrom.contains(me)
+            let needsUndoFollow = isFollowing || isPending
+            
+            if needsUndoFollow {
+                // undo follow
+                user.update(isFollow: false, by: me)
+                user.update(isFollowRequestSent: false, from: me)
+                self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): [Local] update user friendship: undo follow")
+            } else {
+                // follow
+                if user.protected {
+                    user.update(isFollow: false, by: me)
+                    user.update(isFollowRequestSent: true, from: me)
+                    self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): [Local] update user friendship: pending follow")
+                } else {
+                    user.update(isFollow: true, by: me)
+                    user.update(isFollowRequestSent: false, from: me)
+                    self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): [Local] update user friendship: following")
+                }
+            }
+            let context = TwitterFollowContext(
+                sourceUserID: me.id,
+                targetUserID: user.id,
+                isFollowing: isFollowing,
+                isPending: isPending,
+                needsUndoFollow: needsUndoFollow
+            )
+            return context
+        }
+        guard let followContext = _followContext else {
+            throw APIService.APIError.implicit(.badRequest)
+        }
+        
+        // request follow or undo follow
+        let result: Result<Twitter.Response.Content<Twitter.API.V2.User.Follow.FollowContent>, Error>
+        do {
+            if followContext.needsUndoFollow  {
+                let response = try await Twitter.API.V2.User.Follow.undoFollow(
+                    session: session,
+                    sourceUserID: followContext.sourceUserID,
+                    targetUserID: followContext.targetUserID,
+                    authorization: authenticationContext.authorization
+                )
+                result = .success(response)
+            } else {
+                let response = try await Twitter.API.V2.User.Follow.follow(
+                    session: session,
+                    sourceUserID: followContext.sourceUserID,
+                    targetUserID: followContext.targetUserID,
+                    authorization: authenticationContext.authorization
+                )
+                result = .success(response)
+            }
+        } catch {
+            result = .failure(error)
+            logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): [Remote] update friendship failure: \(error.localizedDescription)")
+        }
+        
+        // update friendship state
+        try await managedObjectContext.performChanges {
+            guard let authentication = authenticationContext.authenticationRecord.object(in: managedObjectContext),
+                  let user = record.object(in: managedObjectContext)
+            else { return }
+            
+            let me = authentication.twitterUser
+            
+            switch result {
+            case .success(let response):
+                let following = response.value.data.following
+                user.update(isFollow: following, by: me)
+                if let pendingFollow = response.value.data.pendingFollow {
+                    user.update(isFollowRequestSent: pendingFollow, from: me)
+                } else {
+                    user.update(isFollowRequestSent: false, from: me)
+                }
+                if !followContext.needsUndoFollow {
+                    // break blocking implicitly
+                    user.update(isBlock: false, by: me)
+                }
+                self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): [Remote] update user friendship: following \(following)")
+            case .failure:
+                // rollback
+                user.update(isFollow: followContext.isFollowing, by: me)
+                user.update(isFollowRequestSent: followContext.isPending, from: me)
+                self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): [Remote] rollback user friendship")
+            }
+        }
+        
+        let response = try result.get()
+        return response
+    }
+}
+
+extension APIService {
+    
     /// Toggle friendship between twitterUser and activeTwitterUser
     ///
     /// Following / Following pending <-> Unfollow
@@ -24,6 +170,7 @@ extension APIService {
     ///   - twitterUser: target twitterUser
     ///   - activeTwitterAuthenticationBox: activeTwitterUser's auth box
     /// - Returns: publisher for twitterUser final state
+    @available(*, deprecated, message: "")
     func toggleFriendship(
         for twitterUser: TwitterUser,
         activeTwitterAuthenticationBox: AuthenticationService.TwitterAuthenticationBox
@@ -89,7 +236,6 @@ extension APIService {
                 }
                 .store(in: &self.disposeBag)
 
-                
             case .finished:
                 notificationFeedbackGenerator.notificationOccurred(.success)
                 os_log("%{public}s[%{public}ld], %{public}s: [Friendship] remote friendship update success", ((#file as NSString).lastPathComponent), #line, #function)
@@ -101,7 +247,7 @@ extension APIService {
 }
 
 extension APIService {
-    
+    @available(*, deprecated, message: "")
     func friendship(
         twitterUserObjectID: NSManagedObjectID,
         twitterAuthenticationBox: AuthenticationService.TwitterAuthenticationBox
@@ -147,12 +293,12 @@ extension APIService {
                         }
                         
                         let targetTwitterUser = managedObjectContext.object(with: twitterUserObjectID) as! TwitterUser
-                        targetTwitterUser.update(following: relationship.source.following, by: sourceTwitterUser)
-                        sourceTwitterUser.update(following: relationship.source.followedBy, by: targetTwitterUser)
-                        targetTwitterUser.update(followRequestSent: relationship.source.followingRequested, from: sourceTwitterUser)
-                        targetTwitterUser.update(muting: relationship.source.muting, by: sourceTwitterUser)
-                        targetTwitterUser.update(blocking: relationship.source.blocking, by: sourceTwitterUser)
-                        sourceTwitterUser.update(blocking: relationship.source.blockedBy, by: targetTwitterUser)
+//                        targetTwitterUser.update(following: relationship.source.following, by: sourceTwitterUser)
+//                        sourceTwitterUser.update(following: relationship.source.followedBy, by: targetTwitterUser)
+//                        targetTwitterUser.update(followRequestSent: relationship.source.followingRequested, from: sourceTwitterUser)
+//                        targetTwitterUser.update(muting: relationship.source.muting, by: sourceTwitterUser)
+//                        targetTwitterUser.update(blocking: relationship.source.blocking, by: sourceTwitterUser)
+//                        sourceTwitterUser.update(blocking: relationship.source.blockedBy, by: targetTwitterUser)
                     }
                     .setFailureType(to: Error.self)
                     .tryMap { result -> Twitter.Response.Content<Twitter.Entity.Relationship> in
@@ -171,6 +317,7 @@ extension APIService {
     }
     
     // update database local and return query update type for remote request
+    @available(*, deprecated, message: "")
     func friendshipUpdateLocal(
         twitterUserObjectID: NSManagedObjectID,
         twitterAuthenticationBox: AuthenticationService.TwitterAuthenticationBox
@@ -208,16 +355,16 @@ extension APIService {
             
             if isFollowing || isPending {
                 _queryType = .destroy
-                twitterUser.update(following: false, by: requestTwitterUser)
-                twitterUser.update(followRequestSent: false, from: requestTwitterUser)
+//                twitterUser.update(following: false, by: requestTwitterUser)
+//                twitterUser.update(followRequestSent: false, from: requestTwitterUser)
             } else {
                 _queryType = .create
                 if twitterUser.protected {
-                    twitterUser.update(following: false, by: requestTwitterUser)
-                    twitterUser.update(followRequestSent: true, from: requestTwitterUser)
+//                    twitterUser.update(following: false, by: requestTwitterUser)
+//                    twitterUser.update(followRequestSent: true, from: requestTwitterUser)
                 } else {
-                    twitterUser.update(following: true, by: requestTwitterUser)
-                    twitterUser.update(followRequestSent: false, from: requestTwitterUser)
+//                    twitterUser.update(following: true, by: requestTwitterUser)
+//                    twitterUser.update(followRequestSent: false, from: requestTwitterUser)
                 }
             }
         }
@@ -238,6 +385,7 @@ extension APIService {
         .eraseToAnyPublisher()
     }
     
+    @available(*, deprecated, message: "")
     func friendshipUpdateRemote(
         friendshipQueryType: Twitter.API.Friendships.UpdateQueryType,
         twitterUserID: TwitterUser.ID,
@@ -303,7 +451,7 @@ extension APIService {
                                 assertionFailure()
                                 return
                             }
-                            twitterUser.update(blocking: false, by: requestTwitterUser)
+//                            twitterUser.update(blocking: false, by: requestTwitterUser)
                         }
                         .sink { _ in
                             // do nothing
@@ -322,6 +470,7 @@ extension APIService {
 // V2 friendship lookup
 extension APIService {
     
+    @available(*, deprecated, message: "")
     func friendshipList(
         kind: FriendshipListKind,
         userID: Twitter.Entity.V2.User.ID,

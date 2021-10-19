@@ -173,54 +173,6 @@ extension TwitterUser {
 //        }
     }
     
-    public func update(following: Bool, by: TwitterUser) {
-        if following {
-            if !(self.followingBy ?? Set()).contains(by) {
-                self.mutableSetValue(forKey: #keyPath(TwitterUser.followingBy)).add(by)
-            }
-        } else {
-            if (self.followingBy ?? Set()).contains(by) {
-                self.mutableSetValue(forKey: #keyPath(TwitterUser.followingBy)).remove(by)
-            }
-        }
-    }
-    
-    public func update(followRequestSent: Bool, from: TwitterUser) {
-        if followRequestSent {
-            if !(self.followRequestSentFrom ?? Set()).contains(from) {
-                self.mutableSetValue(forKey: #keyPath(TwitterUser.followRequestSentFrom)).add(from)
-            }
-        } else {
-            if (self.followRequestSentFrom ?? Set()).contains(from) {
-                self.mutableSetValue(forKey: #keyPath(TwitterUser.followRequestSentFrom)).remove(from)
-            }
-        }
-    }
-    
-    public func update(muting: Bool, by: TwitterUser) {
-        if muting {
-            if !(self.mutingBy ?? Set()).contains(by) {
-                self.mutableSetValue(forKey: #keyPath(TwitterUser.mutingBy)).add(by)
-            }
-        } else {
-            if (self.mutingBy ?? Set()).contains(by) {
-                self.mutableSetValue(forKey: #keyPath(TwitterUser.mutingBy)).remove(by)
-            }
-        }
-    }
-    
-    public func update(blocking: Bool, by: TwitterUser) {
-        if blocking {
-            if !(self.blockingBy ?? Set()).contains(by) {
-                self.mutableSetValue(forKey: #keyPath(TwitterUser.blockingBy)).add(by)
-            }
-        } else {
-            if (self.blockingBy ?? Set()).contains(by) {
-                self.mutableSetValue(forKey: #keyPath(TwitterUser.blockingBy)).remove(by)
-            }
-        }
-    }
-    
     public func didUpdate(at networkDate: Date) {
         self.updatedAt = networkDate
     }
@@ -493,4 +445,53 @@ extension TwitterUser: AutoUpdatableObject {
     	}
     }
     // sourcery:end
+    
+    public func update(isFollow: Bool, by user: TwitterUser) {
+        if isFollow {
+            if !followingBy.contains(user) {
+                self.mutableSetValue(forKey: #keyPath(TwitterUser.followingBy)).add(user)
+            }
+        } else {
+            if followingBy.contains(user) {
+                self.mutableSetValue(forKey: #keyPath(TwitterUser.followingBy)).remove(user)
+            }
+        }
+    }
+    
+    public func update(isFollowRequestSent: Bool, from user: TwitterUser) {
+        if isFollowRequestSent {
+            if !followRequestSentFrom.contains(user) {
+                self.mutableSetValue(forKey: #keyPath(TwitterUser.followRequestSentFrom)).add(user)
+            }
+        } else {
+            if followRequestSentFrom.contains(user) {
+                self.mutableSetValue(forKey: #keyPath(TwitterUser.followRequestSentFrom)).remove(user)
+            }
+        }
+    }
+    
+    public func update(isMute: Bool, by user: TwitterUser) {
+        if isMute {
+            if !mutingBy.contains(user) {
+                self.mutableSetValue(forKey: #keyPath(TwitterUser.mutingBy)).add(user)
+            }
+        } else {
+            if mutingBy.contains(user) {
+                self.mutableSetValue(forKey: #keyPath(TwitterUser.mutingBy)).remove(user)
+            }
+        }
+    }
+    
+    public func update(isBlock: Bool, by user: TwitterUser) {
+        if isBlock {
+            if !blockingBy.contains(user) {
+                self.mutableSetValue(forKey: #keyPath(TwitterUser.blockingBy)).add(user)
+            }
+        } else {
+            if blockingBy.contains(user) {
+                self.mutableSetValue(forKey: #keyPath(TwitterUser.blockingBy)).remove(user)
+            }
+        }
+    }
+
 }

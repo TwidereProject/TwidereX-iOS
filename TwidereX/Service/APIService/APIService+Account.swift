@@ -28,6 +28,7 @@ extension APIService {
                 in: managedObjectContext,
                 context: Persistence.TwitterUser.PersistContext(
                     entity: entity,
+                    me: nil,
                     cache: nil,
                     networkDate: response.networkDate
                 )

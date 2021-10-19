@@ -7,4 +7,10 @@
 
 import UIKit
 
-public protocol TabBarPagerHeader: AnyObject { }
+public protocol TabBarPagerHeaderDelegate: AnyObject {
+    func viewLayoutDidUpdate(_ header: TabBarPagerHeader)
+}
+
+public protocol TabBarPagerHeader: AnyObject {
+    var headerDelegate: TabBarPagerHeaderDelegate? { get set }
+}

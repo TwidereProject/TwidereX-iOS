@@ -62,7 +62,7 @@ extension APIService {
             let isReposted = status.repostBy.contains(user)
             let repostedCount = status.repostCount
             let repostCount = isReposted ? repostedCount - 1 : repostedCount + 1
-            status.update(isRepost: !isReposted, user: user)
+            status.update(isRepost: !isReposted, by: user)
             status.update(repostCount: Int64(max(0, repostCount)))
             let repostContext = TwitterRepostContext(
                 statusID: status.id,
@@ -115,11 +115,11 @@ extension APIService {
             switch result {
             case .success(let response):
                 let isRepost = response.value.data.retweeted
-                status.update(isRepost: isRepost, user: user)
+                status.update(isRepost: isRepost, by: user)
                 self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): update status repost: \(isRepost)")
             case .failure:
                 // rollback
-                status.update(isRepost: repostContext.isReposted, user: user)
+                status.update(isRepost: repostContext.isReposted, by: user)
                 status.update(repostCount: repostContext.repostedCount)
                 self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): rollback status repost")
             }
@@ -155,7 +155,7 @@ extension APIService {
             let isReposted = status.repostBy.contains(user)
             let repostedCount = status.repostCount
             let repostCount = isReposted ? repostedCount - 1 : repostedCount + 1
-            status.update(isRepost: !isReposted, user: user)
+            status.update(isRepost: !isReposted, by: user)
             status.update(repostCount: Int64(max(0, repostCount)))
             let repostContext = MastodonRepostContext(
                 statusID: status.id,
@@ -209,7 +209,7 @@ extension APIService {
                 self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): update status repost: \(!repostContext.isReposted)")
             case .failure:
                 // rollback
-                status.update(isRepost: repostContext.isReposted, user: user)
+                status.update(isRepost: repostContext.isReposted, by: user)
                 status.update(repostCount: repostContext.repostedCount)
                 self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): rollback status repost")
             }

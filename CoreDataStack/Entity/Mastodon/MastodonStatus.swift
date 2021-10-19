@@ -364,7 +364,7 @@ extension MastodonStatus: AutoUpdatableObject {
     }
     // sourcery:end
     
-    public func update(isRepost: Bool, user: MastodonUser) {
+    public func update(isRepost: Bool, by user: MastodonUser) {
         if isRepost {
             if !repostBy.contains(user) {
                 self.mutableSetValue(forKey: #keyPath(MastodonStatus.repostBy)).add(user)
@@ -376,7 +376,7 @@ extension MastodonStatus: AutoUpdatableObject {
         }
     }
     
-    public func update(isLike: Bool, user: MastodonUser) {
+    public func update(isLike: Bool, by user: MastodonUser) {
         if isLike {
             if !likeBy.contains(user) {
                 self.mutableSetValue(forKey: #keyPath(MastodonStatus.likeBy)).add(user)

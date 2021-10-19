@@ -16,7 +16,7 @@ extension Persistence.TwitterStatus {
     
     struct PersistContext {
         let entity: Twitter.Entity.Tweet
-        let user: TwitterUser?
+        let me: TwitterUser?
         let statusCache: Persistence.PersistCache<TwitterStatus>?
         let userCache: Persistence.PersistCache<TwitterUser>?
         let networkDate: Date
@@ -33,7 +33,7 @@ extension Persistence.TwitterStatus {
                 in: managedObjectContext,
                 context: PersistContext(
                     entity: entity,
-                    user: context.user,
+                    me: context.me,
                     statusCache: context.statusCache,
                     userCache: context.userCache,
                     networkDate: context.networkDate
@@ -47,7 +47,7 @@ extension Persistence.TwitterStatus {
                 in: managedObjectContext,
                 context: PersistContext(
                     entity: entity,
-                    user: context.user,
+                    me: context.me,
                     statusCache: context.statusCache,
                     userCache: context.userCache,
                     networkDate: context.networkDate
@@ -64,6 +64,7 @@ extension Persistence.TwitterStatus {
                 in: managedObjectContext,
                 context: Persistence.TwitterUser.PersistContext(
                     entity: context.entity.user,
+                    me: context.me,
                     cache: context.userCache,
                     networkDate: context.networkDate
                 )
@@ -139,6 +140,7 @@ extension Persistence.TwitterStatus {
             twitterUser: status.author,
             context: Persistence.TwitterUser.PersistContext(
                 entity: context.entity.user,
+                me: context.me,
                 cache: context.userCache,
                 networkDate: context.networkDate
             )
@@ -153,9 +155,9 @@ extension Persistence.TwitterStatus {
         context.entity.twitterLocation.flatMap { status.update(location:$0) }
         
         // update relationship
-        if let user = context.user {
-            context.entity.retweeted.flatMap { status.update(isRepost: $0, user: user) }
-            context.entity.favorited.flatMap { status.update(isLike: $0, user: user) }
+        if let me = context.me {
+            context.entity.retweeted.flatMap { status.update(isRepost: $0, by: me) }
+            context.entity.favorited.flatMap { status.update(isLike: $0, by: me) }
         }
     }
     

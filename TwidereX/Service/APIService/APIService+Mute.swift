@@ -133,7 +133,7 @@ extension APIService {
             } else {
                 _queryType = .create
             }
-            twitterUser.update(muting: !isMuting, by: requestTwitterUser)
+//            twitterUser.update(muting: !isMuting, by: requestTwitterUser)
         }
         .tryMap { result in
             switch result {

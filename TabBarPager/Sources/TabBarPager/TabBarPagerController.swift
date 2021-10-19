@@ -125,6 +125,7 @@ extension TabBarPagerController {
         ])
 
         // set delegate
+        headerViewController.headerDelegate = self
         pageViewController.tabBarPageViewDelegate = self
     }
     
@@ -232,6 +233,13 @@ extension TabBarPagerController: UIScrollViewDelegate {
         default:
             assertionFailure()
         }
+    }
+}
+
+// MARK: - TabBarPagerHeaderDelegate
+extension TabBarPagerController: TabBarPagerHeaderDelegate {
+    public func viewLayoutDidUpdate(_ header: TabBarPagerHeader) {
+        updatePageObservation()
     }
 }
 

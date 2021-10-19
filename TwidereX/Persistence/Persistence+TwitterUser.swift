@@ -16,6 +16,7 @@ extension Persistence.TwitterUser {
     
     struct PersistContext {
         let entity: Twitter.Entity.User
+        let me: TwitterUser?
         let cache: Persistence.PersistCache<TwitterUser>?
         let networkDate: Date
         let log = OSLog.api
@@ -88,9 +89,19 @@ extension Persistence.TwitterUser {
         twitterUser user: TwitterUser,
         context: PersistContext
     ) {
-        user.update(profileBannerURL: context.entity.profileBannerURL)
+        user.update(name: context.entity.name)
+        user.update(username: context.entity.screenName)
+        
+        user.update(bio: context.entity.userDescription)
         user.update(bioEntities: TwitterEntity(entity: context.entity.entities?.description))
+        user.update(createdAt: context.entity.createdAt)
+        user.update(location: context.entity.location)
+        user.update(profileBannerURL: context.entity.profileBannerURL)
+        user.update(profileImageURL: context.entity.profileImageURLHTTPS)
+        user.update(protected: context.entity.protected ?? false)
+        user.update(url: context.entity.url)
         user.update(urlEntities: TwitterEntity(entity: context.entity.entities?.url))
+        user.update(verified: context.entity.verified ?? false)
         
         if let count = context.entity.statusesCount {
             user.update(statusesCount: Int64(count))
@@ -104,6 +115,16 @@ extension Persistence.TwitterUser {
         if let count = context.entity.listedCount {
             user.update(listedCount: Int64(count))
         }
-    }
+        
+        // relationship
+        if let me = context.me {
+            if let following = context.entity.following {
+                user.update(isFollow: following, by: me)
+            }
+            if let followRequestSent = context.entity.followRequestSent {
+                user.update(isFollowRequestSent: followRequestSent, from: me)
+            }
+        }
+    }   // end func update
     
 }

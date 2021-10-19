@@ -28,6 +28,8 @@ extension ProfileHeaderView {
         @Published var name: MetaContent = PlaintextMetaContent(string: "")
         @Published var username: String = ""
         
+        @Published var relationship: Relationship?
+        
         @Published var bioMetaContent: MetaContent?
         @Published var fields: [ProfileFieldListView.Item]?
         
@@ -89,6 +91,15 @@ extension ProfileHeaderView.ViewModel {
                 let metaContent = PlaintextMetaContent(string: "@" + username)
                 profileHeaderView.usernameLabel.setupAttributes(style: .profileAuthorUsername)
                 profileHeaderView.usernameLabel.configure(content: metaContent)
+            }
+            .store(in: &bindDisposeBag)
+        $relationship
+            .sink { relationship in
+                guard let relationship = relationship else {
+                    return
+                }
+                profileHeaderView.friendshipButton.configure(relationship: relationship)
+                profileHeaderView.friendshipButton.isHidden = relationship == .none
             }
             .store(in: &bindDisposeBag)
         // bio
@@ -163,6 +174,10 @@ extension ProfileHeaderView {
         case .mastodon(let object):
             configure(mastodonUser: object)
         }
+    }
+    
+    func configure(relationship: Relationship?) {
+        viewModel.relationship = relationship
     }
 }
 

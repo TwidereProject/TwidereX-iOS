@@ -43,6 +43,7 @@ extension FriendshipButton {
         var configuration = UIButton.Configuration.plain()
         configuration.cornerStyle = .capsule    // why capsule
         configuration.title = relationship.title
+        configuration.baseForegroundColor = baseForegroundColor(for: relationship)
         configuration.background = background(for: relationship)
         self.configuration = configuration
     }
@@ -62,9 +63,14 @@ extension FriendshipButton {
             background.backgroundColor = .clear
             background.strokeColor = Asset.Colors.Theme.daylight.color.withAlphaComponent(alpha)
             background.strokeWidth = 1
+            
         case .pending, .following:
             background.backgroundColor = Asset.Colors.Theme.daylight.color.withAlphaComponent(alpha)
             background.strokeColor = Asset.Colors.Theme.daylight.color.withAlphaComponent(alpha)
+            background.strokeWidth = 1
+        case .muting:
+            background.backgroundColor = Asset.Colors.Theme.vulcan.color.withAlphaComponent(alpha)
+            background.strokeColor = Asset.Colors.Theme.vulcan.color.withAlphaComponent(alpha)
             background.strokeWidth = 1
         case .blocked, .blocking, .suspended:
             background.backgroundColor = Asset.Colors.Tint.pink.color.withAlphaComponent(alpha)
@@ -73,80 +79,21 @@ extension FriendshipButton {
         }
         return background
     }
-
-}
-
-enum Relationship: Int, CaseIterable {
-    case none       // set hide from UI
-    case follow
-    case request
-    case pending
-    case following
-    case blocked
-    case blocking
-    case suspended
     
-    var option: RelationshipOptionSet {
-        return RelationshipOptionSet(rawValue: 1 << rawValue)
-    }
-    
-    var title: String {
-        switch self {
-        case .none: return " "
-        case .follow: return L10n.Common.Controls.Friendship.Actions.follow
-        case .request: return L10n.Common.Controls.Friendship.Actions.request
-        case .pending: return L10n.Common.Controls.Friendship.Actions.pending
-        case .following: return L10n.Common.Controls.Friendship.Actions.following
-        case .blocked: return L10n.Common.Controls.Friendship.Actions.follow   // blocked by user, button should disabled
-        case .blocking: return L10n.Common.Controls.Friendship.Actions.blocked
-        case .suspended: return L10n.Common.Controls.Friendship.Actions.follow
+    private func baseForegroundColor(for relationship: Relationship) -> UIColor {
+        let alpha: CGFloat = isHighlighted ? 0.5 : 1.0
+        switch relationship {
+        case .none:
+            return .clear
+        case .follow, .request:
+            return Asset.Colors.Theme.daylight.color.withAlphaComponent(alpha)
+        case .pending, .following:
+            return .white
+        case .muting:
+            return .white
+        case .blocked, .blocking, .suspended:
+            return .white
         }
     }
-    
-}
 
-// construct option set on the enum for safe iterator
-struct RelationshipOptionSet: OptionSet {
-    let rawValue: Int
-    
-    static let none = Relationship.none.option
-    static let follow = Relationship.follow.option
-    static let request = Relationship.request.option
-    static let pending = Relationship.pending.option
-    static let following = Relationship.following.option
-    static let blocked = Relationship.blocked.option
-    static let blocking = Relationship.blocking.option
-    static let suspended = Relationship.suspended.option
-    
-    
-    func highestPriorityAction(except: RelationshipOptionSet) -> Relationship? {
-        let set = subtracting(except)
-        for action in Relationship.allCases.reversed() where set.contains(action.option) {
-            return action
-        }
-        
-        return nil
-    }
-//
-//    var backgroundColor: UIColor {
-//        guard let highPriorityAction = self.highPriorityAction(except: []) else {
-//            assertionFailure()
-//            return Asset.Colors.brandBlue.color
-//        }
-//        switch highPriorityAction {
-//        case .none: return Asset.Colors.brandBlue.color
-//        case .follow: return Asset.Colors.brandBlue.color
-//        case .request: return Asset.Colors.brandBlue.color
-//        case .pending: return Asset.Colors.brandBlue.color
-//        case .following: return Asset.Colors.brandBlue.color
-//        case .muting: return Asset.Colors.alertYellow.color
-//        case .blocked: return Asset.Colors.brandBlue.color
-//        case .blocking: return Asset.Colors.danger.color
-//        case .suspended: return Asset.Colors.brandBlue.color
-//        case .edit: return Asset.Colors.brandBlue.color
-//        case .editing: return Asset.Colors.brandBlue.color
-//        case .updating: return Asset.Colors.brandBlue.color
-//        }
-//    }
-//
 }

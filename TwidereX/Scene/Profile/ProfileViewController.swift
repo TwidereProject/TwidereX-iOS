@@ -16,6 +16,8 @@ import XLPagerTabStrip
 // TODO: DrawerSidebarTransitionableViewController
 final class ProfileViewController: UIViewController, NeedsDependency {
     
+    let logger = Logger(subsystem: "ProfileViewController", category: "ViewController")
+    
     weak var context: AppContext! { willSet { precondition(!isViewLoaded) } }
     weak var coordinator: SceneCoordinator! { willSet { precondition(!isViewLoaded) } }
     
@@ -47,6 +49,7 @@ final class ProfileViewController: UIViewController, NeedsDependency {
     private(set) lazy var profileHeaderViewController: ProfileHeaderViewController = {
         let profileHeaderViewController = ProfileHeaderViewController()
         profileHeaderViewController.viewModel = ProfileHeaderViewModel(context: context)
+        profileHeaderViewController.delegate = self
         return profileHeaderViewController
     }()
     private(set) lazy var profilePagingViewController: ProfilePagingViewController = {
@@ -296,8 +299,11 @@ extension ProfileViewController {
 //        )
 
         // bind view model
-        viewModel.$user.assign(to: &profileHeaderViewController.viewModel.$user)
-            
+        viewModel.$user
+            .assign(to: &profileHeaderViewController.viewModel.$user)
+        viewModel.relationshipViewModel.$optionSet
+            .map { $0?.relationship(except: [.muting]) }
+            .assign(to: &profileHeaderViewController.viewModel.$relationship)
         
 //        Publishers.CombineLatest3(
 //            viewModel.bannerImageURL.eraseToAnyPublisher(),
@@ -604,7 +610,34 @@ extension ProfileViewController {
 //}
 
 // MARK: - ProfileHeaderViewControllerDelegate
-//extension ProfileViewController: ProfileHeaderViewControllerDelegate {
+extension ProfileViewController: ProfileHeaderViewControllerDelegate {
+    func headerViewController(
+        _ viewController: ProfileHeaderViewController,
+        profileHeaderView: ProfileHeaderView, friendshipButtonDidPressed
+        button: UIButton
+    ) {
+        guard let user = viewModel.user else { return }
+        guard let authenticationContext = context.authenticationService.activeAuthenticationContext.value else { return }
+        let record = UserRecord(object: user)
+        
+        Task {
+            await DataSourceFacade.responseToFriendshipButtonAction(
+                provider: self,
+                user: record,
+                authenticationContext: authenticationContext
+            )
+        }
+            
+        //        UserProviderFacade
+        //            .toggleUserFriendship(provider: self, sender: button)
+        //            .sink { _ in
+        //                // do nothing
+        //            } receiveValue: { _ in
+        //                // do nothing
+        //            }
+        //            .store(in: &disposeBag)
+    }
+    
 //    func profileHeaderViewController(_ viewController: ProfileHeaderViewController, viewLayoutDidUpdate view: UIView) {
 //        guard let scrollView = (profileSegmentedViewController.pagingViewController.currentViewController as? UserTimelineViewController)?.scrollView else {
 //            // assertionFailure()
@@ -613,7 +646,7 @@ extension ProfileViewController {
 //
 //        updateOverlayScrollViewContentSize(scrollView: scrollView)
 //    }
-//}
+}
 
 // MARK: - ProfilePagingViewControllerDelegate
 extension ProfileViewController: ProfilePagingViewControllerDelegate {
@@ -659,22 +692,6 @@ extension ProfileViewController: ProfilePagingViewControllerDelegate {
     }
     
 }
-
-//// MARK: - ProfileBannerInfoActionViewDelegate
-//extension ProfileViewController: ProfileBannerInfoActionViewDelegate {
-//
-//    func profileBannerInfoActionView(_ profileBannerInfoActionView: ProfileBannerInfoActionView, followActionButtonPressed button: FollowActionButton) {
-//        UserProviderFacade
-//            .toggleUserFriendship(provider: self, sender: button)
-//            .sink { _ in
-//                // do nothing
-//            } receiveValue: { _ in
-//                // do nothing
-//            }
-//            .store(in: &disposeBag)
-//    }
-//
-//}
 
 // MARK: - ProfileBannerViewDelegate
 //extension ProfileViewController: ProfileBannerViewDelegate {

@@ -133,7 +133,7 @@ extension APIService {
             } else {
                 _queryType = .create
             }
-            twitterUser.update(blocking: !isBlocking, by: requestTwitterUser)
+//            twitterUser.update(blocking: !isBlocking, by: requestTwitterUser)
         }
         .tryMap { result in
             switch result {
@@ -222,8 +222,8 @@ extension APIService {
                             assertionFailure()
                             return
                         }
-                        twitterUser.update(following: false, by: requestTwitterUser)
-                        twitterUser.update(followRequestSent: false, from: requestTwitterUser)
+//                        twitterUser.update(following: false, by: requestTwitterUser)
+//                        twitterUser.update(followRequestSent: false, from: requestTwitterUser)
                     }
                     .sink { _ in
                         // do nothing
