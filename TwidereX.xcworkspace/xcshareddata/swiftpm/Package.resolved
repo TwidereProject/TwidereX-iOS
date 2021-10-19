@@ -96,8 +96,8 @@
         "repositoryURL": "https://github.com/TwidereProject/MetaTextKit.git",
         "state": {
           "branch": null,
-          "revision": "d31b721b388d53e8c110d4da5c1707c28332a1d6",
-          "version": "3.0.2"
+          "revision": "b46401f7258a5981632cffa5e4cf9211b267cda7",
+          "version": "3.0.3"
         }
       },
       {
@@ -114,8 +114,8 @@
         "repositoryURL": "https://github.com/SDWebImage/SDWebImage.git",
         "state": {
           "branch": null,
-          "revision": "d6367439527663d2038ca445a3c3c4e4bac40d60",
-          "version": "5.12.0"
+          "revision": "a72df4849408da7e5d3c1b586797b7c601c41d1b",
+          "version": "5.12.1"
         }
       },
       {
