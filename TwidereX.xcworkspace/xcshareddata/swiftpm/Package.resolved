@@ -42,8 +42,8 @@
         "repositoryURL": "https://github.com/krzyzanowskim/CryptoSwift.git",
         "state": {
           "branch": null,
-          "revision": "8d4f6384e0a8cc41f2005247241dd553963a492a",
-          "version": "1.4.1"
+          "revision": "4b0565384d3c4c588af09e660535b2c7c9bf5b39",
+          "version": "1.4.2"
         }
       },
       {
@@ -60,8 +60,8 @@
         "repositoryURL": "https://github.com/MainasuK/FPSIndicator.git",
         "state": {
           "branch": null,
-          "revision": "b2a002d689c400485f2ba41f9e71e15f7b99764a",
-          "version": "1.0.1"
+          "revision": "e4a5067ccd5293b024c767f09e51056afd4a4796",
+          "version": "1.1.0"
         }
       },
       {
@@ -132,8 +132,8 @@
         "repositoryURL": "https://github.com/SwiftKickMobile/SwiftMessages",
         "state": {
           "branch": null,
-          "revision": "c5026484ff555db961ec549162e4026b017aa6c5",
-          "version": "9.0.4"
+          "revision": "1e49de7b3780b69927bc3e61903d8ec0693a3dc5",
+          "version": "9.0.5"
         }
       },
       {

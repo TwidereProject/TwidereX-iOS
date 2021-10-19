@@ -6,7 +6,6 @@
 //
 
 import UIKit
-import Tabman
 
 public protocol TabBarPagerDataSource: AnyObject {
     func headerViewController() -> UIViewController & TabBarPagerHeader
