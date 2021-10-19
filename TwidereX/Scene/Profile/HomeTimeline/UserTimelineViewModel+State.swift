@@ -44,9 +44,7 @@ extension UserTimelineViewModel.State {
             switch stateClass {
             case is Fail.Type:
                 return true
-            case is Idle.Type:
-                return true
-            case is NoMore.Type:
+            case is Idle.Type, is LoadingMore.Type:
                 return true
             case is NotAuthorized.Type, is Blocked.Type:
                 return true
@@ -63,7 +61,6 @@ extension UserTimelineViewModel.State {
             
             viewModel.statusRecordFetchedResultController.reset()
 
-            stateMachine.enter(Idle.self)
             stateMachine.enter(LoadingMore.self)
         }
     }

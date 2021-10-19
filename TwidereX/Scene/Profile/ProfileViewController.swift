@@ -84,7 +84,7 @@ final class ProfileViewController: UIViewController, NeedsDependency {
         return profilePagingViewController
     }()
     
-    private(set) lazy var profileSegmentedViewController = ProfileSegmentedViewController()
+//    private(set) lazy var profileSegmentedViewController = ProfileSegmentedViewController()
     
 //    private(set) lazy var bar: TMBar = {
 //        let bar = TMBarView<TMHorizontalBarLayout, TMTabItemBarButton, TMLineBarIndicator>()
@@ -195,8 +195,8 @@ extension ProfileViewController {
 //        }
 //        .store(in: &disposeBag)
         
-//        overlayScrollView.refreshControl = refreshControl
-//        refreshControl.addTarget(self, action: #selector(ProfileViewController.refreshControlValueChanged(_:)), for: .valueChanged)
+        tabBarPagerController.relayScrollView.refreshControl = refreshControl
+        refreshControl.addTarget(self, action: #selector(ProfileViewController.refreshControlValueChanged(_:)), for: .valueChanged)
         
 //        drawerSidebarTransitionController = DrawerSidebarTransitionController(drawerSidebarTransitionableViewController: self)
         
@@ -513,18 +513,18 @@ extension ProfileViewController {
     @objc private func refreshControlValueChanged(_ sender: UIRefreshControl) {
         os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
         
-//        let currentViewController = profileSegmentedViewController.pagingViewController.currentViewController
-//        if let currentViewController = currentViewController as? UserTimelineViewController {
-//            currentViewController.viewModel.stateMachine.enter(UserTimelineViewModel.State.Reloading.self)
-//        } else if let currentViewController = currentViewController as? UserMediaTimelineViewController {
-//            currentViewController.viewModel.stateMachine.enter(UserMediaTimelineViewModel.State.Reloading.self)
-//        } else if let currentViewController = currentViewController as? UserLikeTimelineViewController {
-//            currentViewController.viewModel.stateMachine.enter(UserLikeTimelineViewModel.State.Reloading.self)
-//        }
-//
-//        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-//            sender.endRefreshing()
-//        }
+        let currentPage = profilePagingViewController.currentPage
+        if let currentPage = currentPage as? UserTimelineViewController {
+            currentPage.viewModel.stateMachine.enter(UserTimelineViewModel.State.Reloading.self)
+        } else if let currentPage = currentPage as? UserMediaTimelineViewController {
+            currentPage.viewModel.stateMachine.enter(UserMediaTimelineViewModel.State.Reloading.self)
+        } else if let currentPage = currentPage as? UserLikeTimelineViewController {
+            currentPage.viewModel.stateMachine.enter(UserLikeTimelineViewModel.State.Reloading.self)
+        }
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+            sender.endRefreshing()
+        }
     }
     
     @objc private func avatarButtonPressed(_ sender: UIButton) {

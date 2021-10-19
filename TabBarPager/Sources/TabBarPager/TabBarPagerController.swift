@@ -20,7 +20,6 @@ public class TabBarPagerController: UIViewController {
         scrollView.preservesSuperviewLayoutMargins = true
         scrollView.delaysContentTouches = false
         scrollView.accessibilityLabel = "ContainerScrollView"
-//        scrollView.contentInsetAdjustmentBehavior = .never
         return scrollView
     }()
     
@@ -36,6 +35,7 @@ public class TabBarPagerController: UIViewController {
         scrollView.backgroundColor = .clear
         scrollView.delaysContentTouches = false
         scrollView.accessibilityLabel = "GestureRelayScrollView"
+        scrollView.layer.zPosition = .greatestFiniteMagnitude    // make vision top-most
         return scrollView
     }()
     
