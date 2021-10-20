@@ -82,8 +82,16 @@
         <attribute name="updatedAt" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="url" optional="YES" attributeType="String"/>
         <attribute name="username" attributeType="String"/>
+        <relationship name="blocking" toMany="YES" deletionRule="Nullify" destinationEntity="MastodonUser" inverseName="blockingBy" inverseEntity="MastodonUser"/>
+        <relationship name="blockingBy" toMany="YES" deletionRule="Nullify" destinationEntity="MastodonUser" inverseName="blocking" inverseEntity="MastodonUser"/>
+        <relationship name="following" toMany="YES" deletionRule="Nullify" destinationEntity="MastodonUser" inverseName="followingBy" inverseEntity="MastodonUser"/>
+        <relationship name="followingBy" toMany="YES" deletionRule="Nullify" destinationEntity="MastodonUser" inverseName="following" inverseEntity="MastodonUser"/>
+        <relationship name="followRequestSent" toMany="YES" deletionRule="Nullify" destinationEntity="MastodonUser" inverseName="followRequestSentFrom" inverseEntity="MastodonUser"/>
+        <relationship name="followRequestSentFrom" toMany="YES" deletionRule="Nullify" destinationEntity="MastodonUser" inverseName="followRequestSent" inverseEntity="MastodonUser"/>
         <relationship name="like" toMany="YES" deletionRule="Nullify" destinationEntity="MastodonStatus" inverseName="likeBy" inverseEntity="MastodonStatus"/>
         <relationship name="mastodonAuthentication" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="MastodonAuthentication" inverseName="mastodonUser" inverseEntity="MastodonAuthentication"/>
+        <relationship name="muting" toMany="YES" deletionRule="Nullify" destinationEntity="MastodonUser" inverseName="mutingBy" inverseEntity="MastodonUser"/>
+        <relationship name="mutingBy" toMany="YES" deletionRule="Nullify" destinationEntity="MastodonUser" inverseName="muting" inverseEntity="MastodonUser"/>
         <relationship name="reposts" toMany="YES" deletionRule="Nullify" destinationEntity="MastodonStatus" inverseName="repostBy" inverseEntity="MastodonStatus"/>
         <relationship name="statuses" toMany="YES" deletionRule="Nullify" destinationEntity="MastodonStatus" inverseName="author" inverseEntity="MastodonStatus"/>
     </entity>
@@ -160,7 +168,7 @@
         <element name="Feed" positionX="-54" positionY="-144" width="128" height="149"/>
         <element name="MastodonAuthentication" positionX="-63" positionY="-153" width="128" height="14"/>
         <element name="MastodonStatus" positionX="-63" positionY="-171" width="128" height="359"/>
-        <element name="MastodonUser" positionX="-63" positionY="-153" width="128" height="404"/>
+        <element name="MastodonUser" positionX="-63" positionY="-153" width="128" height="524"/>
         <element name="TwitterAuthentication" positionX="-109.453125" positionY="275.71875" width="128" height="14"/>
         <element name="TwitterStatus" positionX="-63" positionY="-153" width="128" height="314"/>
         <element name="TwitterUser" positionX="281.5234375" positionY="201.703125" width="128" height="494"/>

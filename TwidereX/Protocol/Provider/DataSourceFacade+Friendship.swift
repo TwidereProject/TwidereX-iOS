@@ -21,7 +21,7 @@ extension DataSourceFacade {
         
         await impactFeedbackGenerator.impactOccurred()
         do {
-            try await provider.context.apiService.friendship(
+            try await provider.context.apiService.follow(
                 user: user,
                 authenticationContext: authenticationContext
             )

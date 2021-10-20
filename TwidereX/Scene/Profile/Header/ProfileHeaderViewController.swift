@@ -57,11 +57,11 @@ extension ProfileHeaderViewController {
             }
             .store(in: &disposeBag)
         
-        viewModel.$relationship
+        viewModel.$relationshipOptionSet
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] relationship in
+            .sink { [weak self] relationshipOptionSet in
                 guard let self = self else { return }
-                self.headerView.configure(relationship: relationship)
+                self.headerView.configure(relationshipOptionSet: relationshipOptionSet)
             }
             .store(in: &disposeBag)
         

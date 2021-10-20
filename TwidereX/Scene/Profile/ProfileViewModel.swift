@@ -14,6 +14,8 @@ import TwitterSDK
 // please override this base class
 class ProfileViewModel: ObservableObject {
     
+    let logger = Logger(subsystem: "ProfileViewModel", category: "ViewModel")
+    
     var disposeBag = Set<AnyCancellable>()
     var observations = Set<NSKeyValueObservation>()
 //    private var twitterUserObserver: AnyCancellable?
@@ -28,26 +30,10 @@ class ProfileViewModel: ObservableObject {
 //    let viewDidAppear = PassthroughSubject<Void, Never>()
         
     // output
+    @Published var userRecord: UserRecord?
     let userIdentifier = CurrentValueSubject<UserIdentifier?, Never>(nil)
     let relationshipViewModel = RelationshipViewModel()
-//    let bannerImageURL: CurrentValueSubject<URL?, Never>
-//    let avatarImageURL: CurrentValueSubject<URL?, Never>
-//    let protected: CurrentValueSubject<Bool?, Never>
-//    let verified: CurrentValueSubject<Bool, Never>
-//    let name: CurrentValueSubject<String?, Never>
-//    let username: CurrentValueSubject<String?, Never>
-//    let bioDescription: CurrentValueSubject<String?, Never>
-//    let url: CurrentValueSubject<String?, Never>
-//    let location: CurrentValueSubject<String?, Never>
-//    let friendsCount: CurrentValueSubject<Int?, Never>
-//    let followersCount: CurrentValueSubject<Int?, Never>
-//    let listedCount: CurrentValueSubject<Int?, Never>
-//
-//    let friendship: CurrentValueSubject<Friendship?, Never>
-//    let followedBy: CurrentValueSubject<Bool?, Never>
-//    let muted: CurrentValueSubject<Bool, Never>
-//    let blocked: CurrentValueSubject<Bool, Never>
-//
+
 //    let suspended = CurrentValueSubject<Bool, Never>(false)
 //
 //    let avatarStyle = CurrentValueSubject<UserDefaults.AvatarStyle, Never>(UserDefaults.shared.avatarStyle)
@@ -56,26 +42,12 @@ class ProfileViewModel: ObservableObject {
         self.context = context
         $me.assign(to: &relationshipViewModel.$me)
         $user.assign(to: &relationshipViewModel.$user)
-//        self.twitterUser = CurrentValueSubject(twitterUser)
-//        self.userID = CurrentValueSubject(twitterUser?.id)
-//        self.bannerImageURL = CurrentValueSubject(twitterUser?.profileBannerURL(sizeKind: .large))
-//        self.avatarImageURL = CurrentValueSubject(twitterUser?.avatarImageURL(size: .original))
-//        self.protected = CurrentValueSubject(twitterUser?.protected)
-//        self.verified = CurrentValueSubject(twitterUser?.verified ?? false)
-//        self.name = CurrentValueSubject(twitterUser?.name)
-//        self.username = CurrentValueSubject(twitterUser?.username)
-//        self.bioDescription = CurrentValueSubject(twitterUser?.displayBioDescription)
-//        self.url = CurrentValueSubject(twitterUser?.displayURL)
-//        self.location = CurrentValueSubject(twitterUser?.location)
-//        self.friendsCount = CurrentValueSubject(0)
-//        self.followersCount = CurrentValueSubject(0)
-//        self.listedCount = CurrentValueSubject(0)
-//        self.friendship = CurrentValueSubject(nil)
-//        self.followedBy = CurrentValueSubject(nil)
-//        self.muted = CurrentValueSubject(false)
-//        self.blocked = CurrentValueSubject(false)
-//        super.init()
+        //        super.init()
         // end init
+        
+        $user
+            .map { user in user.flatMap { UserRecord(object: $0) } }
+            .assign(to: &$userRecord)
         
         $user
             .map { object -> UserIdentifier? in
@@ -112,25 +84,7 @@ class ProfileViewModel: ObservableObject {
                 }
             }
             .store(in: &disposeBag)
-//        context.authenticationService.activeAuthenticationIndex
-//            .sink { [weak self] activeAuthenticationIndex in
-//                guard let self = self else { return }
-//                guard let activeAuthenticationIndex = activeAuthenticationIndex else {
-//                    self.currentTwitterUser.value = nil
-//                    return
-//                }
-//                let platform = activeAuthenticationIndex.platform
-//                switch platform {
-//                case .twitter:
-//                    self.currentTwitterUser.value = activeAuthenticationIndex.twitterAuthentication?.twitterUser
-//                case .mastodon:
-//                    self.currentTwitterUser.value = nil
-//                case .none:
-//                    self.currentTwitterUser.value = nil
-//                }
-//            }
-//            .store(in: &disposeBag)
-//
+
 //        // bind avatar style
 //        UserDefaults.shared
 //            .observe(\.avatarStyle) { [weak self] defaults, _ in
@@ -142,10 +96,24 @@ class ProfileViewModel: ObservableObject {
 //        setup()
 //
 //        // query latest friendship
-//        Publishers.CombineLatest(
-//            self.twitterUser.eraseToAnyPublisher(),
-//            context.authenticationService.activeTwitterAuthenticationBox.eraseToAnyPublisher()
-//        )
+        Publishers.CombineLatest(
+            $userRecord,
+            context.authenticationService.activeAuthenticationContext
+        )
+        .sink { [weak self] userRecord, authenticationContext in
+            guard let self = self else { return }
+            guard let userRecord = userRecord,
+                  let authenticationContext = authenticationContext
+            else { return }
+            Task {
+                do {
+                    try await self.updateRelationship(user: userRecord, authenticationContext: authenticationContext)
+                } catch {
+                    self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): [Relationship] update user relationship failure: \(error.localizedDescription)")
+                }
+            }
+        }
+        .store(in: &disposeBag)
 //        .compactMap { twitterUser, activeTwitterAuthenticationBox -> (TwitterUser, AuthenticationService.TwitterAuthenticationBox)? in
 //            guard let twitterUser = twitterUser, let activeTwitterAuthenticationBox = activeTwitterAuthenticationBox else { return nil }
 //            return (twitterUser, activeTwitterAuthenticationBox)
@@ -295,26 +263,26 @@ class ProfileViewModel: ObservableObject {
     }
 }
 
-//extension ProfileViewModel {
-//    
-//    enum Friendship: CustomDebugStringConvertible {
-//        case following
-//        case pending
-//        case none
-//        
-//        var debugDescription: String {
-//            switch self {
-//            case .following:        return "following"
-//            case .pending:          return "pending"
-//            case .none:             return "none"
-//            }
-//        }
-//    }
-//    
-//}
-//
-//extension ProfileViewModel {
-//    private func setup() {
+extension ProfileViewModel {
+    private func updateRelationship(
+        user: UserRecord,
+        authenticationContext: AuthenticationContext
+    ) async throws {
+        logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): [Relationship] update user relationship...")
+        switch (user, authenticationContext) {
+        case (.twitter(let record), .twitter(let authenticationContext)):
+             _ = try await context.apiService.friendship(
+                record: record,
+                authenticationContext: authenticationContext
+            )
+            logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): [Relationship] did update TwitterUser relationship")
+        case (.mastodon(let record), .mastodon(let authenticationContext)):
+            
+            return
+        default:
+            return
+        }
+        
 //        Publishers.CombineLatest(
 //            twitterUser.eraseToAnyPublisher(),
 //            currentTwitterUser.eraseToAnyPublisher()
@@ -378,7 +346,7 @@ class ProfileViewModel: ObservableObject {
 //            }
 //        }
 //        .store(in: &disposeBag)
-//    }
+    }
 //    
 //    private func update(twitterUser: TwitterUser?) {
 //        self.userID.value = twitterUser?.id
@@ -442,4 +410,4 @@ class ProfileViewModel: ObservableObject {
 //        }
 //    }
 //    
-//}
+}

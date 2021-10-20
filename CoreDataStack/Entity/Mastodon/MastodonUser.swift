@@ -76,14 +76,17 @@ final public class MastodonUser: NSManagedObject {
     // @NSManaged public private(set) var votePolls: Set<Poll>?
     
     // relationships
-    // @NSManaged public private(set) var following: Set<MastodonUser>?
-    // @NSManaged public private(set) var followingBy: Set<MastodonUser>?
-    // @NSManaged public private(set) var followRequested: Set<MastodonUser>?
-    // @NSManaged public private(set) var followRequestedBy: Set<MastodonUser>?
-    // @NSManaged public private(set) var muting: Set<MastodonUser>?
-    // @NSManaged public private(set) var mutingBy: Set<MastodonUser>?
-    // @NSManaged public private(set) var blocking: Set<MastodonUser>?
-    // @NSManaged public private(set) var blockingBy: Set<MastodonUser>?
+    @NSManaged public private(set) var following: Set<MastodonUser>
+    @NSManaged public private(set) var followingBy: Set<MastodonUser>
+    
+    @NSManaged public private(set) var followRequestSent: Set<MastodonUser>
+    @NSManaged public private(set) var followRequestSentFrom: Set<MastodonUser>
+    
+    @NSManaged public private(set) var muting: Set<MastodonUser>
+    @NSManaged public private(set) var mutingBy: Set<MastodonUser>
+    
+    @NSManaged public private(set) var blocking: Set<MastodonUser>
+    @NSManaged public private(set) var blockingBy: Set<MastodonUser>
     // @NSManaged public private(set) var endorsed: Set<MastodonUser>?
     // @NSManaged public private(set) var endorsedBy: Set<MastodonUser>?
     // @NSManaged public private(set) var domainBlocking: Set<MastodonUser>?
@@ -430,6 +433,55 @@ extension MastodonUser: AutoUpdatableObject {
     		self.fields = fields
     	}
     }
-    // sourcery:end    
+    // sourcery:end
+    
+    public func update(isFollow: Bool, by user: MastodonUser) {
+        if isFollow {
+            if !followingBy.contains(user) {
+                self.mutableSetValue(forKey: #keyPath(MastodonUser.followingBy)).add(user)
+            }
+        } else {
+            if followingBy.contains(user) {
+                self.mutableSetValue(forKey: #keyPath(MastodonUser.followingBy)).remove(user)
+            }
+        }
+    }
+    
+    public func update(isFollowRequestSent: Bool, from user: MastodonUser) {
+        if isFollowRequestSent {
+            if !followRequestSentFrom.contains(user) {
+                self.mutableSetValue(forKey: #keyPath(MastodonUser.followRequestSentFrom)).add(user)
+            }
+        } else {
+            if followRequestSentFrom.contains(user) {
+                self.mutableSetValue(forKey: #keyPath(MastodonUser.followRequestSentFrom)).remove(user)
+            }
+        }
+    }
+    
+    public func update(isMute: Bool, by user: MastodonUser) {
+        if isMute {
+            if !mutingBy.contains(user) {
+                self.mutableSetValue(forKey: #keyPath(MastodonUser.mutingBy)).add(user)
+            }
+        } else {
+            if mutingBy.contains(user) {
+                self.mutableSetValue(forKey: #keyPath(MastodonUser.mutingBy)).remove(user)
+            }
+        }
+    }
+    
+    public func update(isBlock: Bool, by user: MastodonUser) {
+        if isBlock {
+            if !blockingBy.contains(user) {
+                self.mutableSetValue(forKey: #keyPath(MastodonUser.blockingBy)).add(user)
+            }
+        } else {
+            if blockingBy.contains(user) {
+                self.mutableSetValue(forKey: #keyPath(MastodonUser.blockingBy)).remove(user)
+            }
+        }
+    }
+    
 }
 

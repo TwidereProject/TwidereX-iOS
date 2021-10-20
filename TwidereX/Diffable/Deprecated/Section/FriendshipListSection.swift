@@ -96,59 +96,59 @@ extension MediaSection {
             }
             
             // TODO: handle blocked_by
-            context.apiService.friendship(twitterUserObjectID: twitterUser.objectID, twitterAuthenticationBox: activeTwitterAuthenticationBox)
-                .receive(on: DispatchQueue.main)
-                .sink { friendshipCompletion in
-                    switch friendshipCompletion {
-                    case .failure(let error):
-                        os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: fetch friendship for user %s fail: %s", ((#file as NSString).lastPathComponent), #line, #function, twitterUser.id, error.localizedDescription)
-                        elementProvider([errorAction])
-                    case .finished:
-                        os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: fetch friendship for user %s success", ((#file as NSString).lastPathComponent), #line, #function, twitterUser.id)
-                    }
-                } receiveValue: { response in
-                    let relationship = response.value
-                    let menuTitle = relationship.source.followedBy ? L10n.Common.Controls.Friendship.userIsFollowingYou(twitterUser.name) : L10n.Common.Controls.Friendship.userIsNotFollowingYou(twitterUser.name)
-                    let unfollowConfirmAction = UIAction(title: L10n.Common.Controls.Actions.confirm, image: nil, identifier: nil, discoverabilityTitle: nil, attributes: .destructive, state: .off, handler: { _ in
-                        let configuration = FriendshipBannerConfiguration(
-                            successInfo: FriendshipBannerConfiguration.Info(title: L10n.Common.Alerts.UnfollowingSuccess.title, message: ""),
-                            failureInfo: FriendshipBannerConfiguration.Info(title: L10n.Common.Alerts.FailedToUnfollowing.title, message: L10n.Common.Alerts.FailedToUnfollowing.message)
-                        )
-                        MediaSection.toggleFriendship(
-                            context: context,
-                            twitterUser: twitterUser,
-                            friendshipBannerConfiguration: configuration
-                        )
-                    })
-                    
-                    if relationship.source.followingRequested {
-                        let cancelFollowRequestMenu = UIMenu(title: L10n.Common.Alerts.CancelFollowRequest.message(twitterUser.name), image: nil, identifier: nil, options: .destructive, children: [unfollowConfirmAction])
-                        elementProvider([cancelFollowRequestMenu])
-                    } else {
-                        if relationship.source.following {
-                            let unfollowMenu = UIMenu(title: L10n.Common.Controls.Friendship.Actions.unfollow, image: UIImage(systemName: "person.crop.circle.badge.minus"), identifier: nil, options: .destructive, children: [unfollowConfirmAction])
-                            let menu = UIMenu(title: menuTitle, image: nil, identifier: nil, options: .displayInline, children: [unfollowMenu])
-                            elementProvider([menu])
-                            button?.menu = menu
-                        } else {
-                            let followingAction = UIAction(title: L10n.Common.Controls.Friendship.Actions.follow, image: nil, identifier: nil, discoverabilityTitle: nil, attributes: [], state: .off) { _ in
-                                let configuration = FriendshipBannerConfiguration(
-                                    successInfo: FriendshipBannerConfiguration.Info(title: L10n.Common.Alerts.FollowingSuccess.title, message: ""),
-                                    failureInfo: FriendshipBannerConfiguration.Info(title: L10n.Common.Alerts.FailedToFollowing.title, message: L10n.Common.Alerts.FailedToFollowing.message)
-                                )
-                                MediaSection.toggleFriendship(
-                                    context: context,
-                                    twitterUser: twitterUser,
-                                    friendshipBannerConfiguration: configuration
-                                )
-                            }
-                            let menu = UIMenu(title: menuTitle, image: nil, identifier: nil, options: .displayInline, children: [followingAction])
-                            elementProvider([menu])
-                            button?.menu = menu
-                        }
-                    }
-                }
-                .store(in: &context.disposeBag)
+//            context.apiService.friendship(twitterUserObjectID: twitterUser.objectID, twitterAuthenticationBox: activeTwitterAuthenticationBox)
+//                .receive(on: DispatchQueue.main)
+//                .sink { friendshipCompletion in
+//                    switch friendshipCompletion {
+//                    case .failure(let error):
+//                        os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: fetch friendship for user %s fail: %s", ((#file as NSString).lastPathComponent), #line, #function, twitterUser.id, error.localizedDescription)
+//                        elementProvider([errorAction])
+//                    case .finished:
+//                        os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: fetch friendship for user %s success", ((#file as NSString).lastPathComponent), #line, #function, twitterUser.id)
+//                    }
+//                } receiveValue: { response in
+//                    let relationship = response.value
+//                    let menuTitle = relationship.source.followedBy ? L10n.Common.Controls.Friendship.userIsFollowingYou(twitterUser.name) : L10n.Common.Controls.Friendship.userIsNotFollowingYou(twitterUser.name)
+//                    let unfollowConfirmAction = UIAction(title: L10n.Common.Controls.Actions.confirm, image: nil, identifier: nil, discoverabilityTitle: nil, attributes: .destructive, state: .off, handler: { _ in
+//                        let configuration = FriendshipBannerConfiguration(
+//                            successInfo: FriendshipBannerConfiguration.Info(title: L10n.Common.Alerts.UnfollowingSuccess.title, message: ""),
+//                            failureInfo: FriendshipBannerConfiguration.Info(title: L10n.Common.Alerts.FailedToUnfollowing.title, message: L10n.Common.Alerts.FailedToUnfollowing.message)
+//                        )
+//                        MediaSection.toggleFriendship(
+//                            context: context,
+//                            twitterUser: twitterUser,
+//                            friendshipBannerConfiguration: configuration
+//                        )
+//                    })
+//                    
+//                    if relationship.source.followingRequested {
+//                        let cancelFollowRequestMenu = UIMenu(title: L10n.Common.Alerts.CancelFollowRequest.message(twitterUser.name), image: nil, identifier: nil, options: .destructive, children: [unfollowConfirmAction])
+//                        elementProvider([cancelFollowRequestMenu])
+//                    } else {
+//                        if relationship.source.following {
+//                            let unfollowMenu = UIMenu(title: L10n.Common.Controls.Friendship.Actions.unfollow, image: UIImage(systemName: "person.crop.circle.badge.minus"), identifier: nil, options: .destructive, children: [unfollowConfirmAction])
+//                            let menu = UIMenu(title: menuTitle, image: nil, identifier: nil, options: .displayInline, children: [unfollowMenu])
+//                            elementProvider([menu])
+//                            button?.menu = menu
+//                        } else {
+//                            let followingAction = UIAction(title: L10n.Common.Controls.Friendship.Actions.follow, image: nil, identifier: nil, discoverabilityTitle: nil, attributes: [], state: .off) { _ in
+//                                let configuration = FriendshipBannerConfiguration(
+//                                    successInfo: FriendshipBannerConfiguration.Info(title: L10n.Common.Alerts.FollowingSuccess.title, message: ""),
+//                                    failureInfo: FriendshipBannerConfiguration.Info(title: L10n.Common.Alerts.FailedToFollowing.title, message: L10n.Common.Alerts.FailedToFollowing.message)
+//                                )
+//                                MediaSection.toggleFriendship(
+//                                    context: context,
+//                                    twitterUser: twitterUser,
+//                                    friendshipBannerConfiguration: configuration
+//                                )
+//                            }
+//                            let menu = UIMenu(title: menuTitle, image: nil, identifier: nil, options: .displayInline, children: [followingAction])
+//                            elementProvider([menu])
+//                            button?.menu = menu
+//                        }
+//                    }
+//                }
+//                .store(in: &context.disposeBag)
         }
     }
     

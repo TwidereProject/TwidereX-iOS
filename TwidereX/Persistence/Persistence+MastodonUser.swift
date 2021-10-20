@@ -88,4 +88,11 @@ extension Persistence.MastodonUser {
         user.update(property: property)
     }
     
+    private static func update(
+        mastodonUser user: MastodonUser,
+        context: PersistContext
+    ) {
+        // TODO:
+    }   // end func update
+
 }

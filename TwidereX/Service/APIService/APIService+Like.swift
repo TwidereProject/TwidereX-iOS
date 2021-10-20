@@ -355,7 +355,7 @@ extension APIService {
                     context: Persistence.MastodonStatus.PersistContext(
                         domain: authentication.domain,
                         entity: response.value,
-                        user: user,
+                        me: user,
                         statusCache: nil,
                         userCache: nil,
                         networkDate: response.networkDate

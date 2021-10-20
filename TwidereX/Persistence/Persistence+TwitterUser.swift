@@ -89,32 +89,8 @@ extension Persistence.TwitterUser {
         twitterUser user: TwitterUser,
         context: PersistContext
     ) {
-        user.update(name: context.entity.name)
-        user.update(username: context.entity.screenName)
-        
-        user.update(bio: context.entity.userDescription)
         user.update(bioEntities: TwitterEntity(entity: context.entity.entities?.description))
-        user.update(createdAt: context.entity.createdAt)
-        user.update(location: context.entity.location)
-        user.update(profileBannerURL: context.entity.profileBannerURL)
-        user.update(profileImageURL: context.entity.profileImageURLHTTPS)
-        user.update(protected: context.entity.protected ?? false)
-        user.update(url: context.entity.url)
         user.update(urlEntities: TwitterEntity(entity: context.entity.entities?.url))
-        user.update(verified: context.entity.verified ?? false)
-        
-        if let count = context.entity.statusesCount {
-            user.update(statusesCount: Int64(count))
-        }
-        if let count = context.entity.friendsCount {
-            user.update(followingCount: Int64(count))
-        }
-        if let count = context.entity.followersCount {
-            user.update(followersCount: Int64(count))
-        }
-        if let count = context.entity.listedCount {
-            user.update(listedCount: Int64(count))
-        }
         
         // relationship
         if let me = context.me {

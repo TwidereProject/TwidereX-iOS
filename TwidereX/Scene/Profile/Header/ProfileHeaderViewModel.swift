@@ -14,8 +14,7 @@ final class ProfileHeaderViewModel: ObservableObject {
     // input
     let context: AppContext
     @Published var user: UserObject?
-    @Published var relationship: Relationship?
-    
+    @Published var relationshipOptionSet: RelationshipOptionSet?
     
     init(context: AppContext) {
         self.context = context

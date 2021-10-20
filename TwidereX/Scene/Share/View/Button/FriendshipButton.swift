@@ -57,6 +57,8 @@ extension FriendshipButton {
         let alpha: CGFloat = isHighlighted ? 0.5 : 1.0
         
         switch relationship {
+        case .followingBy:
+            break
         case .none:
             break
         case .follow, .request:
@@ -83,6 +85,8 @@ extension FriendshipButton {
     private func baseForegroundColor(for relationship: Relationship) -> UIColor {
         let alpha: CGFloat = isHighlighted ? 0.5 : 1.0
         switch relationship {
+        case .followingBy:
+            return .clear
         case .none:
             return .clear
         case .follow, .request:

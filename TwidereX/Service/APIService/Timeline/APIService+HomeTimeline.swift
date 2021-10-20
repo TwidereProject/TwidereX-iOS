@@ -147,7 +147,7 @@ extension APIService {
         
         let managedObjectContext = backgroundManagedObjectContext
         try await managedObjectContext.performChanges {
-            let user = authenticationContext.authenticationRecord.object(in: managedObjectContext)?.mastodonUser
+            let me = authenticationContext.authenticationRecord.object(in: managedObjectContext)?.mastodonUser
             
             // persist MastodonStatus
             var statusArray: [MastodonStatus] = []
@@ -155,7 +155,7 @@ extension APIService {
                 let persistContext = Persistence.MastodonStatus.PersistContext(
                     domain: authenticationContext.domain,
                     entity: entity,
-                    user: user,
+                    me: me,
                     statusCache: nil,   // TODO:
                     userCache: nil,
                     networkDate: response.networkDate
@@ -183,10 +183,16 @@ extension APIService {
                 feed.update(hasMore: false)
             }
             
-            // persist Feed relationship
+            // persist relationship
             let sortedStatuses = statusArray.sorted(by: { $0.createdAt < $1.createdAt })
             let oldestStatus = sortedStatuses.first
             for status in sortedStatuses {
+                // set friendship
+                if let me = me {
+                    status.author.update(isFollow: true, by: me)
+                }
+                
+                // attach to Feed
                 let _feed = status.feed(kind: .home, acct: acct)
                 if let feed = _feed {
                     feed.update(updatedAt: response.networkDate)

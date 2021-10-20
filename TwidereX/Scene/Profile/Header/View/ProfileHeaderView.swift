@@ -35,6 +35,14 @@ final class ProfileHeaderView: UIView {
     
     let avatarView = ProfileAvatarView()
     
+    let followsYouIndicatorLabel: UILabel = {
+        let label = UILabel()
+        label.font = .preferredFont(forTextStyle: .caption1)
+        label.textColor = .secondaryLabel
+        label.text = L10n.Common.Controls.Friendship.followsYou
+        return label
+    }()
+    
     let nameContainer = UIStackView()
     let protectLockImageView: UIImageView = {
         let imageView = UIImageView()
@@ -109,6 +117,14 @@ extension ProfileHeaderView {
             container.leadingAnchor.constraint(equalTo: readableContentGuide.leadingAnchor),
             container.trailingAnchor.constraint(equalTo: readableContentGuide.trailingAnchor),
             container.bottomAnchor.constraint(equalTo: bottomAnchor),
+        ])
+        
+        // followsYouIndicatorLabel
+        followsYouIndicatorLabel.translatesAutoresizingMaskIntoConstraints = false
+        container.addSubview(followsYouIndicatorLabel)
+        NSLayoutConstraint.activate([
+            followsYouIndicatorLabel.topAnchor.constraint(equalTo: avatarView.centerYAnchor, constant: 12),
+            followsYouIndicatorLabel.leadingAnchor.constraint(equalTo: container.readableContentGuide.leadingAnchor),
         ])
         
         // name container

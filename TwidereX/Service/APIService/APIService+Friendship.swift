@@ -15,13 +15,6 @@ import CoreDataStack
 import CommonOSLog
 
 extension APIService {
-    
-    /// Toggle friendship between user and *me*
-    ///
-    /// Following / Following pending <-> Unfollow
-    /// - Parameters:
-    ///   - user: target user record
-    ///   - authenticationContext: `AuthenticationContext`
     func friendship(
         user: UserRecord,
         authenticationContext: AuthenticationContext
@@ -34,128 +27,58 @@ extension APIService {
             )
         case (.mastodon(let record), .mastodon(let authenticationContext)):
             break
-//            _ = try await like(
-//                record: record,
-//                authenticationContext: authenticationContext
-//            )
         default:
             assertionFailure()
+            break
         }
     }
+    
 }
 
 extension APIService {
-    private struct TwitterFollowContext {
-        let sourceUserID: TwitterUser.ID
-        let targetUserID: TwitterUser.ID
-        let isFollowing: Bool
-        let isPending: Bool
-        let needsUndoFollow: Bool
-    }
-    
     func friendship(
         record: ManagedObjectRecord<TwitterUser>,
         authenticationContext: TwitterAuthenticationContext
-    ) async throws -> Twitter.Response.Content<Twitter.API.V2.User.Follow.FollowContent> {
+    ) async throws -> Twitter.Response.Content<Twitter.Entity.Relationship> {
         let managedObjectContext = backgroundManagedObjectContext
-        
-        // update friendship state and retrieve friendship context
-        let _followContext: TwitterFollowContext? = try await managedObjectContext.performChanges {
-            guard let authentication = authenticationContext.authenticationRecord.object(in: managedObjectContext),
-                  let user = record.object(in: managedObjectContext)
-            else { return nil }
-            let me = authentication.twitterUser
-            
-            let isFollowing = user.followingBy.contains(me)
-            let isPending = user.followRequestSentFrom.contains(me)
-            let needsUndoFollow = isFollowing || isPending
-            
-            if needsUndoFollow {
-                // undo follow
-                user.update(isFollow: false, by: me)
-                user.update(isFollowRequestSent: false, from: me)
-                self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): [Local] update user friendship: undo follow")
-            } else {
-                // follow
-                if user.protected {
-                    user.update(isFollow: false, by: me)
-                    user.update(isFollowRequestSent: true, from: me)
-                    self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): [Local] update user friendship: pending follow")
-                } else {
-                    user.update(isFollow: true, by: me)
-                    user.update(isFollowRequestSent: false, from: me)
-                    self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): [Local] update user friendship: following")
-                }
+
+        let _query: Twitter.API.Friendships.FriendshipQuery? = await {
+            await managedObjectContext.perform {
+                guard let user = record.object(in: managedObjectContext) else { return nil }
+                return Twitter.API.Friendships.FriendshipQuery(
+                    sourceID: authenticationContext.userID,
+                    targetID: user.id
+                )
             }
-            let context = TwitterFollowContext(
-                sourceUserID: me.id,
-                targetUserID: user.id,
-                isFollowing: isFollowing,
-                isPending: isPending,
-                needsUndoFollow: needsUndoFollow
-            )
-            return context
-        }
-        guard let followContext = _followContext else {
+        }()
+        guard let query = _query else {
+            assertionFailure()
             throw APIService.APIError.implicit(.badRequest)
         }
-        
-        // request follow or undo follow
-        let result: Result<Twitter.Response.Content<Twitter.API.V2.User.Follow.FollowContent>, Error>
-        do {
-            if followContext.needsUndoFollow  {
-                let response = try await Twitter.API.V2.User.Follow.undoFollow(
-                    session: session,
-                    sourceUserID: followContext.sourceUserID,
-                    targetUserID: followContext.targetUserID,
-                    authorization: authenticationContext.authorization
-                )
-                result = .success(response)
-            } else {
-                let response = try await Twitter.API.V2.User.Follow.follow(
-                    session: session,
-                    sourceUserID: followContext.sourceUserID,
-                    targetUserID: followContext.targetUserID,
-                    authorization: authenticationContext.authorization
-                )
-                result = .success(response)
-            }
-        } catch {
-            result = .failure(error)
-            logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): [Remote] update friendship failure: \(error.localizedDescription)")
+        guard query.sourceID != query.targetID else {
+            throw APIService.APIError.implicit(.badRequest)
         }
+        let response = try await Twitter.API.Friendships.friendship(
+            session: session,
+            query: query,
+            authorization: authenticationContext.authorization
+        )
         
-        // update friendship state
         try await managedObjectContext.performChanges {
             guard let authentication = authenticationContext.authenticationRecord.object(in: managedObjectContext),
                   let user = record.object(in: managedObjectContext)
             else { return }
-            
             let me = authentication.twitterUser
             
-            switch result {
-            case .success(let response):
-                let following = response.value.data.following
-                user.update(isFollow: following, by: me)
-                if let pendingFollow = response.value.data.pendingFollow {
-                    user.update(isFollowRequestSent: pendingFollow, from: me)
-                } else {
-                    user.update(isFollowRequestSent: false, from: me)
-                }
-                if !followContext.needsUndoFollow {
-                    // break blocking implicitly
-                    user.update(isBlock: false, by: me)
-                }
-                self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): [Remote] update user friendship: following \(following)")
-            case .failure:
-                // rollback
-                user.update(isFollow: followContext.isFollowing, by: me)
-                user.update(isFollowRequestSent: followContext.isPending, from: me)
-                self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): [Remote] rollback user friendship")
-            }
-        }
-        
-        let response = try result.get()
+            let relationship = response.value
+            user.update(isFollow: relationship.source.following, by: me)
+            me.update(isFollow: relationship.source.followedBy, by: user)       // *not* the same (or reverse) to previous one
+            user.update(isFollowRequestSent: relationship.source.followingRequested ?? false, from: me)
+            user.update(isMute: relationship.source.muting ?? false, by: me)
+            user.update(isBlock: relationship.source.blocking ?? false, by: me)
+            me.update(isBlock: relationship.source.blockedBy ?? false, by: user)        // *not* the same (or reverse) to previous one
+        }   // end try await managedObjectContext.performChanges
+            
         return response
     }
 }
@@ -247,74 +170,6 @@ extension APIService {
 }
 
 extension APIService {
-    @available(*, deprecated, message: "")
-    func friendship(
-        twitterUserObjectID: NSManagedObjectID,
-        twitterAuthenticationBox: AuthenticationService.TwitterAuthenticationBox
-    ) -> AnyPublisher<Twitter.Response.Content<Twitter.Entity.Relationship>, Error> {
-        let authorization = twitterAuthenticationBox.twitterAuthorization
-        let sourceID = twitterAuthenticationBox.twitterUserID
-        
-        let managedObjectContext = backgroundManagedObjectContext
-        return Future<Twitter.API.Friendships.FriendshipQuery, Error> { promise in
-            managedObjectContext.perform {
-                let targetTwitterUser = managedObjectContext.object(with: twitterUserObjectID) as! TwitterUser
-                let targetTwitterUserID = targetTwitterUser.id
-                let query = Twitter.API.Friendships.FriendshipQuery(sourceID: sourceID, targetID: targetTwitterUserID)
-                promise(.success(query))
-            }
-        }
-        .tryMap { query -> AnyPublisher<Twitter.Response.Content<Twitter.Entity.Relationship>, Error> in
-            guard query.sourceID != query.targetID else {
-                throw APIError.implicit(.badRequest)
-            }
-            
-            return Twitter.API.Friendships.friendship(session: self.session, authorization: authorization, query: query)
-                .map { response -> AnyPublisher<Twitter.Response.Content<Twitter.Entity.Relationship>, Error> in
-                    return managedObjectContext.performChanges {
-                        let relationship = response.value
-                        
-                        let _sourceTwitterUser: TwitterUser? = {
-                            let request = TwitterUser.sortedFetchRequest
-                            request.predicate = TwitterUser.predicate(idStr: sourceID)
-                            request.fetchLimit = 1
-                            request.returnsObjectsAsFaults = false
-                            do {
-                                return try managedObjectContext.fetch(request).first
-                            } catch {
-                                assertionFailure(error.localizedDescription)
-                                return nil
-                            }
-                        }()
-                        
-                        guard let sourceTwitterUser = _sourceTwitterUser else {
-                            assertionFailure()
-                            return
-                        }
-                        
-                        let targetTwitterUser = managedObjectContext.object(with: twitterUserObjectID) as! TwitterUser
-//                        targetTwitterUser.update(following: relationship.source.following, by: sourceTwitterUser)
-//                        sourceTwitterUser.update(following: relationship.source.followedBy, by: targetTwitterUser)
-//                        targetTwitterUser.update(followRequestSent: relationship.source.followingRequested, from: sourceTwitterUser)
-//                        targetTwitterUser.update(muting: relationship.source.muting, by: sourceTwitterUser)
-//                        targetTwitterUser.update(blocking: relationship.source.blocking, by: sourceTwitterUser)
-//                        sourceTwitterUser.update(blocking: relationship.source.blockedBy, by: targetTwitterUser)
-                    }
-                    .setFailureType(to: Error.self)
-                    .tryMap { result -> Twitter.Response.Content<Twitter.Entity.Relationship> in
-                        switch result {
-                        case .success:                  return response
-                        case .failure(let error):       throw error
-                        }
-                    }
-                    .eraseToAnyPublisher()
-                }
-                .switchToLatest()
-                .eraseToAnyPublisher()
-        }
-        .switchToLatest()
-        .eraseToAnyPublisher()
-    }
     
     // update database local and return query update type for remote request
     @available(*, deprecated, message: "")

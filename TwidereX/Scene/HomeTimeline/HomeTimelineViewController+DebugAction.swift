@@ -110,10 +110,6 @@ extension HomeTimelineViewController {
 //                    guard let self = self else { return }
 //                    self.moveToFirstReplyTweet(action)
 //                }),
-//                UIAction(title: "First Reply Retweet", image: nil, attributes: [], handler: { [weak self] action in
-//                    guard let self = self else { return }
-//                    self.moveToFirstReplyRetweet(action)
-//                }),
                 UIAction(title: "First Video Status", image: nil, attributes: [], handler: { [weak self] action in
                     guard let self = self else { return }
                     self.moveToFirst(action, category: .video)
@@ -125,6 +121,10 @@ extension HomeTimelineViewController {
                 UIAction(title: "First Location Status", image: nil, attributes: [], handler: { [weak self] action in
                     guard let self = self else { return }
                     self.moveToFirst(action, category: .location)
+                }),
+                UIAction(title: "First Follows You Author", image: nil, attributes: [], handler: { [weak self] action in
+                    guard let self = self else { return }
+                    self.moveToFirst(action, category: .followsYouAuthor)
                 }),
             ]
         )
@@ -190,8 +190,10 @@ extension HomeTimelineViewController {
         case gif
         case video
         case location
+        case followsYouAuthor
         
         func match(item: StatusItem) -> Bool {
+            let authenticationContext = AppContext.shared.authenticationService.activeAuthenticationContext.value
             switch item {
             case .feed(let record):
                 guard let feed = record.object(in: AppContext.shared.managedObjectContext) else { return false }
@@ -203,6 +205,10 @@ extension HomeTimelineViewController {
                         return status.attachments.contains(where: { attachment in attachment.kind == .video })
                     case .location:
                         return status.location != nil
+                    case .followsYouAuthor:
+                        guard case let .twitter(authenticationContext) = authenticationContext else { return false }
+                        guard let me = authenticationContext.authenticationRecord.object(in: AppContext.shared.managedObjectContext)?.twitterUser else { return false }
+                        return status.author.following.contains(me)
                     default:
                         return false
                     }

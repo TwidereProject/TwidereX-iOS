@@ -20,7 +20,7 @@ extension ProfileHeaderView {
         
         @Published var bannerImageURL: URL?
         @Published var avatarImageURL: URL?
-        
+                
         @Published var isBot: Bool = false
         @Published var isVerified: Bool = false
         @Published var isProtected: Bool = false
@@ -28,6 +28,7 @@ extension ProfileHeaderView {
         @Published var name: MetaContent = PlaintextMetaContent(string: "")
         @Published var username: String = ""
         
+        @Published var isFollowsYou: Bool = false
         @Published var relationship: Relationship?
         
         @Published var bioMetaContent: MetaContent?
@@ -70,6 +71,11 @@ extension ProfileHeaderView.ViewModel {
                     scaleToSize: nil
                 )
             }
+            .store(in: &bindDisposeBag)
+        // isFollowsYou
+        $isFollowsYou
+            .map { !$0 }
+            .assign(to: \.isHidden, on: profileHeaderView.followsYouIndicatorLabel)
             .store(in: &bindDisposeBag)
         // isProtected
         $isProtected
@@ -176,8 +182,9 @@ extension ProfileHeaderView {
         }
     }
     
-    func configure(relationship: Relationship?) {
-        viewModel.relationship = relationship
+    func configure(relationshipOptionSet optionSet: RelationshipOptionSet?) {
+        viewModel.relationship = optionSet?.relationship(except: [.muting])
+        viewModel.isFollowsYou = optionSet?.contains(.followingBy) ?? false
     }
 }
 

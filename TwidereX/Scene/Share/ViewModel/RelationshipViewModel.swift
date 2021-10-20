@@ -12,6 +12,7 @@ import Combine
 import CoreDataStack
 
 enum Relationship: Int, CaseIterable {
+    case followingBy
     case none       // set hide from UI
     case follow
     case request
@@ -28,6 +29,7 @@ enum Relationship: Int, CaseIterable {
     
     var title: String {
         switch self {
+        case .followingBy: return L10n.Common.Controls.Friendship.followsYou
         case .none: return " "
         case .follow: return L10n.Common.Controls.Friendship.Actions.follow
         case .request: return L10n.Common.Controls.Friendship.Actions.request
@@ -46,6 +48,7 @@ enum Relationship: Int, CaseIterable {
 struct RelationshipOptionSet: OptionSet {
     let rawValue: Int
     
+    static let followingBy = Relationship.followingBy.option
     static let none = Relationship.none.option
     static let follow = Relationship.follow.option
     static let request = Relationship.request.option
@@ -146,11 +149,19 @@ extension RelationshipViewModel {
 
 extension RelationshipViewModel {
     private func update(user: UserObject?, me: UserObject?) {
+        let isMyself: Bool
+        let isProtected: Bool
+        let isFollowing: Bool
+        let isPending: Bool
+        let isFollowingBy: Bool
+        let isMuting: Bool
+        let isBlocking: Bool
+        let isBlockingBy: Bool
+        var optionSet: RelationshipOptionSet = [.follow]
+        
         switch (user, me) {
         case (.twitter(let user), .twitter(let me)):
-            let isMyself = user.id == me.id
-            self.isMyself = isMyself
-            
+            isMyself = user.id == me.id
             guard !isMyself else {
                 reset()
                 self.isMyself = true
@@ -158,50 +169,71 @@ extension RelationshipViewModel {
                 return
             }
             
-            var optionSet: RelationshipOptionSet = [.follow]
-            
-            if user.protected {
-                optionSet.insert(.request)
-            }
-            
-            let isFollowing = user.followingBy.contains(me)
-            if isFollowing {
-                optionSet.insert(.following)
-            }
-            
-            let isPending = user.followRequestSentFrom.contains(me)
-            if isPending {
-                optionSet.insert(.pending)
-            }
-            
-            let isFollowingBy = me.followingBy.contains(user)
-            self.isFollowingBy = isFollowingBy
-            
-            let isMuting = user.mutingBy.contains(me)
-            if isMuting {
-                optionSet.insert(.muting)
-            }
-            self.isMuting = isMuting
-            
-            let isBlocking = user.blockingBy.contains(me)
-            if isBlocking {
-                optionSet.insert(.blocking)
-            }
-            self.isBlocking = isBlocking
-            
-            let isBlockingBy = me.blockingBy.contains(user)
-            if isBlockingBy {
-                optionSet.insert(.blocked)
-            }
-            self.isBlockingBy = isBlockingBy
-            
-            self.optionSet = optionSet
+            isProtected = user.protected
+            isFollowing = user.followingBy.contains(me)
+            isPending = user.followRequestSentFrom.contains(me)
+            isFollowingBy = me.followingBy.contains(user)
+            isMuting = user.mutingBy.contains(me)
+            isBlocking = user.blockingBy.contains(me)
+            isBlockingBy = me.blockingBy.contains(user)
             
         case (.mastodon(let user), .mastodon(let me)):
-            break
+            isMyself = user.id == me.id && user.domain == me.domain
+            guard !isMyself else {
+                reset()
+                self.isMyself = true
+                self.optionSet = [.none]
+                return
+            }
+                
+            isProtected = user.locked
+            isFollowing = user.followingBy.contains(me)
+            isPending = user.followRequestSentFrom.contains(me)
+            isFollowingBy = me.followingBy.contains(user)
+            isMuting = user.mutingBy.contains(me)
+            isBlocking = user.blockingBy.contains(me)
+            isBlockingBy = me.blockingBy.contains(user)
+            
         default:
             self.reset()
+            return
         }
+        
+        self.isMyself = isMyself
+        
+        if isProtected {
+            optionSet.insert(.request)
+        }
+        
+        if isFollowing {
+            optionSet.insert(.following)
+        }
+        
+        if isPending {
+            optionSet.insert(.pending)
+        }
+        
+        if isFollowingBy {
+            optionSet.insert(.followingBy)
+        }
+        self.isFollowingBy = isFollowingBy
+        
+        if isMuting {
+            optionSet.insert(.muting)
+        }
+        self.isMuting = isMuting
+        
+        if isBlocking {
+            optionSet.insert(.blocking)
+        }
+        self.isBlocking = isBlocking
+        
+        if isBlockingBy {
+            optionSet.insert(.blocked)
+        }
+        self.isBlockingBy = isBlockingBy
+        
+        self.optionSet = optionSet
     }
     
     private func reset() {

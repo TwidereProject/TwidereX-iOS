@@ -17,7 +17,7 @@ extension Persistence.MastodonStatus {
     struct PersistContext {
         let domain: String
         let entity: Mastodon.Entity.Status
-        let user: MastodonUser?
+        let me: MastodonUser?
         let statusCache: Persistence.PersistCache<MastodonStatus>?
         let userCache: Persistence.PersistCache<MastodonUser>?
         let networkDate: Date
@@ -35,7 +35,7 @@ extension Persistence.MastodonStatus {
                 context: PersistContext(
                     domain: context.domain,
                     entity: entity,
-                    user: context.user,
+                    me: context.me,
                     statusCache: context.statusCache,
                     userCache: context.userCache,
                     networkDate: context.networkDate
@@ -133,7 +133,7 @@ extension Persistence.MastodonStatus {
         context: PersistContext
     ) {
         // update relationship
-        if let user = context.user {
+        if let user = context.me {
             context.entity.reblogged.flatMap { status.update(isRepost: $0, by: user) }
             context.entity.favourited.flatMap { status.update(isLike: $0, by: user) }
         }

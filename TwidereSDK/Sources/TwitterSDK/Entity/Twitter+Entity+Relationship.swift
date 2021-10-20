@@ -9,6 +9,7 @@ import Foundation
 
 extension Twitter.Entity {
     
+    // doc: https://developer.twitter.com/en/docs/twitter-api/v1/accounts-and-users/follow-search-get-users/api-reference/get-friendships-show
     public struct Relationship: Codable {
         public let source: RelationshipSource
         public let target: RelationshipTarget
@@ -44,17 +45,17 @@ extension Twitter.Entity {
         public let screenName: String
         public let following: Bool
         public let followedBy: Bool
-        public let liveFollowing: Bool
-        public let followingReceived: Bool
-        public let followingRequested: Bool
-        public let notificationsEnabled: Bool
-        public let canDM: Bool
-        public let blocking: Bool
-        public let blockedBy: Bool
-        public let muting: Bool
-        public let wantRetweets: Bool
-        public let allReplies: Bool
-        public let markedSpam: Bool
+        public let liveFollowing: Bool?
+        public let followingReceived: Bool?
+        public let followingRequested: Bool?
+        public let notificationsEnabled: Bool?
+        public let canDM: Bool?
+        public let blocking: Bool?
+        public let blockedBy: Bool?
+        public let muting: Bool?
+        public let wantRetweets: Bool?
+        public let allReplies: Bool?
+        public let markedSpam: Bool?
         
         enum CodingKeys: String, CodingKey {
             case idStr = "id_str"
@@ -82,8 +83,8 @@ extension Twitter.Entity {
         public let screenName: String
         public let following: Bool
         public let followedBy: Bool
-        public let followingReceived: Bool
-        public let followingRequested: Bool
+        public let followingReceived: Bool?
+        public let followingRequested: Bool?
         
         enum CodingKeys: String, CodingKey {
             case idStr = "id_str"

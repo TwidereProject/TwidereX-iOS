@@ -302,8 +302,7 @@ extension ProfileViewController {
         viewModel.$user
             .assign(to: &profileHeaderViewController.viewModel.$user)
         viewModel.relationshipViewModel.$optionSet
-            .map { $0?.relationship(except: [.muting]) }
-            .assign(to: &profileHeaderViewController.viewModel.$relationship)
+            .assign(to: &profileHeaderViewController.viewModel.$relationshipOptionSet)
         
 //        Publishers.CombineLatest3(
 //            viewModel.bannerImageURL.eraseToAnyPublisher(),
