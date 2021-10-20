@@ -96,3 +96,31 @@ extension Persistence.MastodonUser {
     }   // end func update
 
 }
+
+extension Persistence.MastodonUser {
+    struct RelationshipContext {
+        let entity: Mastodon.Entity.Relationship
+        let me: MastodonUser
+        let networkDate: Date
+        let log = OSLog.api
+    }
+
+    static func update(
+        mastodonUser user: MastodonUser,
+        context: RelationshipContext
+    ) {
+        guard context.entity.id != context.me.id else { return }    // not update relationship for self
+
+        let relationship = context.entity
+        let me = context.me
+        
+        user.update(isFollow: relationship.following, by: me)
+        relationship.requested.flatMap { user.update(isFollowRequestSent: $0, from: me) }
+        // relationship.endorsed.flatMap { user.update(isEndorsed: $0, by: me) }
+        me.update(isFollow: relationship.followedBy, by: user)
+        relationship.muting.flatMap { user.update(isMute: $0, by: me) }
+        user.update(isBlock: relationship.blocking, by: me)
+        // relationship.domainBlocking.flatMap { user.update(isDomainBlocking: $0, by: me) }
+        relationship.blockedBy.flatMap { me.update(isBlock: $0, by: user) }
+    }
+}

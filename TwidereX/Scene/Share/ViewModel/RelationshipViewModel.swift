@@ -102,14 +102,20 @@ final class RelationshipViewModel {
             guard let self = self else { return }
             self.update(user: user, me: me)
             
+            guard let user = user, let me = me else {
+                self.userObserver = nil
+                self.meObserver = nil
+                return
+            }
+            
             // do not modify object to prevent infinity loop
-            self.userObserver = RelationshipViewModel.createObjectChangePublisher(user: user)?
+            self.userObserver = RelationshipViewModel.createObjectChangePublisher(user: user)
                 .sink { [weak self] _ in
                     guard let self = self else { return }
                     self.relationshipUpdatePublisher.send()
                 }
                 
-            self.meObserver = RelationshipViewModel.createObjectChangePublisher(user: me)?
+            self.meObserver = RelationshipViewModel.createObjectChangePublisher(user: me)
                 .sink { [weak self] _ in
                     guard let self = self else { return }
                     self.relationshipUpdatePublisher.send()
@@ -122,8 +128,7 @@ final class RelationshipViewModel {
 
 extension RelationshipViewModel {
     
-    static func createObjectChangePublisher(user: UserObject?) -> AnyPublisher<Void, Never>? {
-        guard let user = user else { return nil }
+    static func createObjectChangePublisher(user: UserObject) -> AnyPublisher<Void, Never> {
         switch user {
         case .twitter(let object):
             return ManagedObjectObserver

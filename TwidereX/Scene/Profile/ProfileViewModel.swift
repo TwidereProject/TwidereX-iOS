@@ -18,8 +18,6 @@ class ProfileViewModel: ObservableObject {
     
     var disposeBag = Set<AnyCancellable>()
     var observations = Set<NSKeyValueObservation>()
-//    private var twitterUserObserver: AnyCancellable?
-//    private var currentTwitterUserObserver: AnyCancellable?
     
     // input
     let context: AppContext
@@ -40,15 +38,19 @@ class ProfileViewModel: ObservableObject {
     
     init(context: AppContext) {
         self.context = context
-        $me.assign(to: &relationshipViewModel.$me)
-        $user.assign(to: &relationshipViewModel.$user)
-        //        super.init()
         // end init
         
+        // bind data after publisher setup
+        // otherwise, the flow may omit event without response
+        defer {
+            $me.assign(to: &relationshipViewModel.$me)
+            $user.assign(to: &relationshipViewModel.$user)
+        }
+
         $user
             .map { user in user.flatMap { UserRecord(object: $0) } }
             .assign(to: &$userRecord)
-        
+            
         $user
             .map { object -> UserIdentifier? in
                 switch object {
@@ -85,17 +87,15 @@ class ProfileViewModel: ObservableObject {
             }
             .store(in: &disposeBag)
 
-//        // bind avatar style
+        // bind avatar style
 //        UserDefaults.shared
 //            .observe(\.avatarStyle) { [weak self] defaults, _ in
 //                guard let self = self else { return }
 //                self.avatarStyle.value = defaults.avatarStyle
 //            }
 //            .store(in: &observations)
-//
-//        setup()
-//
-//        // query latest friendship
+
+        // observe friendship
         Publishers.CombineLatest(
             $userRecord,
             context.authenticationService.activeAuthenticationContext
@@ -105,46 +105,9 @@ class ProfileViewModel: ObservableObject {
             guard let userRecord = userRecord,
                   let authenticationContext = authenticationContext
             else { return }
-            Task {
-                do {
-                    try await self.updateRelationship(user: userRecord, authenticationContext: authenticationContext)
-                } catch {
-                    self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): [Relationship] update user relationship failure: \(error.localizedDescription)")
-                }
-            }
+            self.dispatchUpdateRelationshipTask(user: userRecord, authenticationContext: authenticationContext)
         }
         .store(in: &disposeBag)
-//        .compactMap { twitterUser, activeTwitterAuthenticationBox -> (TwitterUser, AuthenticationService.TwitterAuthenticationBox)? in
-//            guard let twitterUser = twitterUser, let activeTwitterAuthenticationBox = activeTwitterAuthenticationBox else { return nil }
-//            return (twitterUser, activeTwitterAuthenticationBox)
-//        }
-//        .setFailureType(to: Error.self)
-//        .map { twitterUser, activeTwitterAuthenticationBox -> AnyPublisher<Twitter.Response.Content<Twitter.Entity.Relationship>, Error> in
-//            // Fix crash issue on the iOS 14.1
-//            // seealso: CombineTests.swift
-//            if #available(iOS 14.2, *) {
-//                return self.context.apiService.friendship(twitterUserObjectID: twitterUser.objectID, twitterAuthenticationBox: activeTwitterAuthenticationBox)
-//                    .retry(3)
-//                    .eraseToAnyPublisher()
-//            } else {
-//                return self.context.apiService.friendship(twitterUserObjectID: twitterUser.objectID, twitterAuthenticationBox: activeTwitterAuthenticationBox)
-//                    .eraseToAnyPublisher()
-//            }
-//        }
-//        .switchToLatest()
-//        .sink { completion in
-//            switch completion {
-//            case .failure(let error):
-//                os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: fetch friendship fail: %s", ((#file as NSString).lastPathComponent), #line, #function, error.localizedDescription)
-//            case .finished:
-//                break
-//            }
-//        } receiveValue: { [weak self] response in
-//            guard let self = self else { return }
-//            os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: fetch friendship success", ((#file as NSString).lastPathComponent), #line, #function)
-//            // friendship state will update via ManagedObjectObserver
-//        }
-//        .store(in: &disposeBag)
     }
     
 //    convenience init(context: AppContext, twitterUser: TwitterUser) {
@@ -264,6 +227,20 @@ class ProfileViewModel: ObservableObject {
 }
 
 extension ProfileViewModel {
+    
+    private func dispatchUpdateRelationshipTask(
+        user record: UserRecord,
+        authenticationContext: AuthenticationContext
+    ) {
+        Task {
+            do {
+                try await self.updateRelationship(user: record, authenticationContext: authenticationContext)
+            } catch {
+                self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): [Relationship] update user relationship failure: \(error.localizedDescription)")
+            }
+        }
+    }
+    
     private func updateRelationship(
         user: UserRecord,
         authenticationContext: AuthenticationContext
@@ -276,126 +253,19 @@ extension ProfileViewModel {
                 authenticationContext: authenticationContext
             )
             logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): [Relationship] did update TwitterUser relationship")
-        case (.mastodon(let record), .mastodon(let authenticationContext)):
             
-            return
+        case (.mastodon(let record), .mastodon(let authenticationContext)):
+            _ = try await context.apiService.friendship(
+                records: [record],
+                authenticationContext: authenticationContext
+            )
+            logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): [Relationship] did update MastodonUser relationship")
+
         default:
             return
         }
-        
-//        Publishers.CombineLatest(
-//            twitterUser.eraseToAnyPublisher(),
-//            currentTwitterUser.eraseToAnyPublisher()
-//        )
-//        .receive(on: DispatchQueue.main)
-//        .sink { [weak self] twitterUser, currentTwitterUser in
-//            guard let self = self else { return }
-//            self.update(twitterUser: twitterUser)
-//            self.update(twitterUser: twitterUser, currentTwitterUser: currentTwitterUser)
-//            
-//            if let twitterUser = twitterUser {
-//                // setup observer
-//                self.twitterUserObserver = ManagedObjectObserver.observe(object: twitterUser)
-//                    .sink { completion in
-//                        switch completion {
-//                        case .failure(let error):
-//                            assertionFailure(error.localizedDescription)
-//                        case .finished:
-//                            assertionFailure()
-//                        }
-//                    } receiveValue: { [weak self] change in
-//                        guard let self = self else { return }
-//                        guard let changeType = change.changeType else { return }
-//                        switch changeType {
-//                        case .update:
-//                            self.update(twitterUser: twitterUser)
-//                            self.update(twitterUser: twitterUser, currentTwitterUser: currentTwitterUser)
-//                        case .delete:
-//                            // TODO:
-//                            break
-//                        }
-//                    }
-//                
-//            } else {
-//                self.twitterUserObserver = nil
-//            }
-//            
-//            if let currentTwitterUser = currentTwitterUser {
-//                // setup observer
-//                self.currentTwitterUserObserver = ManagedObjectObserver.observe(object: currentTwitterUser)
-//                    .sink { completion in
-//                        switch completion {
-//                        case .failure(let error):
-//                            assertionFailure(error.localizedDescription)
-//                        case .finished:
-//                            assertionFailure()
-//                        }
-//                    } receiveValue: { [weak self] change in
-//                        guard let self = self else { return }
-//                        guard let changeType = change.changeType else { return }
-//                        switch changeType {
-//                        case .update:
-//                            self.update(twitterUser: twitterUser, currentTwitterUser: currentTwitterUser)
-//                        case .delete:
-//                            // TODO:
-//                            break
-//                        }
-//                    }
-//            } else {
-//                self.currentTwitterUserObserver = nil
-//            }
-//        }
-//        .store(in: &disposeBag)
     }
-//    
-//    private func update(twitterUser: TwitterUser?) {
-//        self.userID.value = twitterUser?.id
-//        self.bannerImageURL.value = twitterUser?.profileBannerURL(sizeKind: .large)
-//        self.avatarImageURL.value = twitterUser?.avatarImageURL(size: .original)
-//        self.protected.value = twitterUser?.protected
-//        self.verified.value = twitterUser?.verified ?? false
-//        self.name.value = twitterUser?.name
-//        self.username.value = twitterUser?.username
-//        self.bioDescription.value = twitterUser?.displayBioDescription
-//        self.url.value = twitterUser?.displayURL
-//        self.location.value = twitterUser?.location
-////        self.friendsCount.value = twitterUser?.metrics?.followingCount.flatMap { Int(truncating: $0) }
-////        self.followersCount.value = twitterUser?.metrics?.followersCount.flatMap { Int(truncating: $0) }
-////        self.listedCount.value = twitterUser?.metrics?.listedCount.flatMap{ Int(truncating: $0) }
-//    }
-//    
-//    private func update(twitterUser: TwitterUser?, currentTwitterUser: TwitterUser?) {
-//        guard let twitterUser = twitterUser,
-//              let currentTwitterUser = currentTwitterUser else {
-//            self.friendship.value = nil
-//            self.followedBy.value = nil
-//            return
-//        }
-//        
-//        if twitterUser == currentTwitterUser {
-//            self.friendship.value = nil
-//            self.followedBy.value = nil
-//        } else {
-//            let isFollowing = twitterUser.followingBy.contains(currentTwitterUser)
-//            let isPending = twitterUser.followRequestSentFrom.contains(currentTwitterUser)
-//            let friendship = isPending ? .pending : (isFollowing) ? .following : ProfileViewModel.Friendship.none
-//            self.friendship.value = friendship
-//            os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: friendship update: %s", ((#file as NSString).lastPathComponent), #line, #function, friendship.debugDescription)
-//            
-//            let followedBy = currentTwitterUser.followingBy.contains(twitterUser)
-//            self.followedBy.value = followedBy
-//            os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: followedBy update: %s", ((#file as NSString).lastPathComponent), #line, #function, followedBy ? "true" : "false")
-//            
-//            let muted = twitterUser.mutingBy.contains(currentTwitterUser)
-//            self.muted.value = muted
-//            os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: muted update: %s", ((#file as NSString).lastPathComponent), #line, #function, muted ? "true" : "false")
-//            
-//            let blocked = twitterUser.blockingBy.contains(currentTwitterUser)
-//            self.blocked.value = blocked
-//            os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: blocked update: %s", ((#file as NSString).lastPathComponent), #line, #function, blocked ? "true" : "false")
-//        }
-//    }
-//    
+
 //    private func updateAccountSuspendedState(content: Twitter.API.V2.UserLookup.Content, username: String) {
 //        guard let twitterAPIError = content.errors?.first.flatMap({ Twitter.API.Error.TwitterAPIError(responseContentError: $0) }) else {
 //            return

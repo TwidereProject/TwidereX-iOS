@@ -96,3 +96,35 @@ extension Persistence.TwitterUser {
     }
     
 }
+
+extension Persistence.TwitterUser {
+    struct RelationshipContext {
+        let entity: Twitter.API.V2.User.Follow.FollowContent
+        let me: TwitterUser
+        let isUnfollowAction: Bool
+        let networkDate: Date
+        let log = OSLog.api
+    }
+    
+    static func update(
+        twitterUser user: TwitterUser,
+        context: RelationshipContext
+    ) {
+        guard user.id != context.me.id else { return }
+        
+        let followContent = context.entity.data
+        let me = context.me
+        
+        let following = followContent.following
+        user.update(isFollow: following, by: me)
+        if let pendingFollow = followContent.pendingFollow {
+            user.update(isFollowRequestSent: pendingFollow, from: me)
+        } else {
+            user.update(isFollowRequestSent: false, from: me)
+        }
+        if !context.isUnfollowAction {
+            // break blocking implicitly
+            user.update(isBlock: false, by: me)
+        }
+    }
+}

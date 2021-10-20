@@ -101,9 +101,7 @@ extension ProfileHeaderView.ViewModel {
             .store(in: &bindDisposeBag)
         $relationship
             .sink { relationship in
-                guard let relationship = relationship else {
-                    return
-                }
+                guard let relationship = relationship else { return }
                 profileHeaderView.friendshipButton.configure(relationship: relationship)
                 profileHeaderView.friendshipButton.isHidden = relationship == .none
             }

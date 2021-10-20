@@ -13,23 +13,24 @@ final class LocalProfileViewModel: ProfileViewModel {
     init(context: AppContext, userRecord: UserRecord) {
         super.init(context: context)
         
-        Task {
-            await setup(user: userRecord)
-        }
+        setup(user: userRecord)
     }
     
-    @MainActor
-    func setup(user record: UserRecord) async {
+    // note:
+    // use sync method to force data prepared before using
+    // otherwise, the UI may delay update when profile display
+    func setup(user record: UserRecord) {
         let managedObjectContext = context.managedObjectContext
-        self.user = await managedObjectContext.perform {
+        managedObjectContext.performAndWait {
             switch record {
             case .twitter(let record):
-                return record.object(in: managedObjectContext)
-                    .flatMap { UserObject.twitter(object: $0) }
+                guard let object = record.object(in: managedObjectContext) else { return }
+                self.user = .twitter(object: object)
             case .mastodon(let record):
-                return record.object(in: managedObjectContext)
-                    .flatMap { UserObject.mastodon(object: $0) }
+                guard let object = record.object(in: managedObjectContext) else { return }
+                self.user = .mastodon(object: object)
             }
         }
-    }
+    }   // end func setup(user:)
+    
 }
