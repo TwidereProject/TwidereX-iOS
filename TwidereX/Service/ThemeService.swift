@@ -15,16 +15,36 @@ final class ThemeService {
     
     let theme: CurrentValueSubject<Theme, Never>
     
-    init() {
+    private init() {
         theme = CurrentValueSubject(UserDefaults.shared.theme)
     }
     
     func set(theme: Theme) {
         UserDefaults.shared.theme = theme
+        self.theme.value = theme
+        apply(theme: theme)
     }
     
     func apply(theme: Theme) {
-
+        // set navigation bar appearance
+        let appearance = UINavigationBarAppearance()
+        appearance.configureWithDefaultBackground()
+        UINavigationBar.appearance().standardAppearance = appearance
+        UINavigationBar.appearance().compactAppearance = appearance
+        UINavigationBar.appearance().scrollEdgeAppearance = appearance
+        UINavigationBar.appearance().compactScrollEdgeAppearance = appearance
+        
+        // set tab bar appearance
+        let tabBarAppearance = UITabBarAppearance()
+        tabBarAppearance.configureWithDefaultBackground()
+        let tabBarItemAppearance = UITabBarItemAppearance()
+//        tabBarItemAppearance.selected.titleTextAttributes = [.foregroundColor: UIColor.clear]
+//        tabBarItemAppearance.focused.titleTextAttributes = [.foregroundColor: UIColor.clear]
+//        tabBarItemAppearance.normal.titleTextAttributes = [.foregroundColor: UIColor.clear]
+//        tabBarItemAppearance.disabled.titleTextAttributes = [.foregroundColor: UIColor.clear]
+        UITabBar.appearance().standardAppearance = tabBarAppearance
+        UITabBar.appearance().scrollEdgeAppearance = tabBarAppearance
+        // UITabBar.appearance().barTintColor = theme.tabBarBackgroundColor
     }
     
 }
@@ -52,5 +72,4 @@ final class ThemeService {
         case .seafoam:          return Asset.Colors.Theme.seafoam.color
         }
     }
-    
 }

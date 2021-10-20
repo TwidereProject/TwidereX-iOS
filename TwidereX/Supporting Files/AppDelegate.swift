@@ -36,12 +36,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
 //        Floaty.global.rtlMode = UIApplication.shared.userInterfaceLayoutDirection == .rightToLeft
         
-        NotificationCenter.default.publisher(for: UIContentSizeCategory.didChangeNotification)
-            .sink { _ in
-                // only trigger update
-                UserDefaults.shared.useTheSystemFontSize = UserDefaults.shared.useTheSystemFontSize
-            }
-            .store(in: &disposeBag)
+//        NotificationCenter.default.publisher(for: UIContentSizeCategory.didChangeNotification)
+//            .sink { _ in
+//                // only trigger update
+//                UserDefaults.shared.useTheSystemFontSize = UserDefaults.shared.useTheSystemFontSize
+//            }
+//            .store(in: &disposeBag)
+        
+        // configure appearance
+        ThemeService.shared.apply(theme: ThemeService.shared.theme.value)
 
         return true
     }
