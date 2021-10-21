@@ -80,7 +80,7 @@ extension ProfileHeaderView.ViewModel {
         // isProtected
         $isProtected
             .map { !$0 }
-            .assign(to: \.isHidden, on: profileHeaderView.protectLockImageView)
+            .assign(to: \.isHidden, on: profileHeaderView.protectLockImageViewContainer)
             .store(in: &bindDisposeBag)
         // name
         $name

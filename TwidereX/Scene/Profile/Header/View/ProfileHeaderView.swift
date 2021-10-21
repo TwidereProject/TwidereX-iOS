@@ -44,11 +44,23 @@ final class ProfileHeaderView: UIView {
     }()
     
     let nameContainer = UIStackView()
-    let protectLockImageView: UIImageView = {
+    let protectLockImageViewContainer: UIView = {
+        let view = UIView()
         let imageView = UIImageView()
         imageView.image = Asset.ObjectTools.lockMini.image.withRenderingMode(.alwaysTemplate)
         imageView.tintColor = .secondaryLabel
-        return imageView
+        
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(imageView)
+        NSLayoutConstraint.activate([
+            imageView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            imageView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            imageView.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.6).priority(.required - 10),
+            imageView.heightAnchor.constraint(equalTo: imageView.widthAnchor).priority(.required - 11),
+        ])
+        imageView.setContentHuggingPriority(.defaultLow - 10, for: .horizontal)
+        imageView.setContentHuggingPriority(.defaultLow - 10, for: .vertical)
+        return view
     }()
     
     // placeholder for layout
@@ -127,7 +139,7 @@ extension ProfileHeaderView {
             followsYouIndicatorLabel.leadingAnchor.constraint(equalTo: container.readableContentGuide.leadingAnchor),
         ])
         
-        // name container
+        // name container: H - [protectLockImageViewContainer | nameLabel ]
         nameContainer.axis = .horizontal
         nameContainer.alignment = .top
         nameContainer.spacing = 2
@@ -154,19 +166,22 @@ extension ProfileHeaderView {
         let nameContainerTrailingPaddingView = UIView()
         nameContainerLeadingPaddingView.translatesAutoresizingMaskIntoConstraints = false
         nameContainer.addArrangedSubview(nameContainerLeadingPaddingView)
-        protectLockImageView.translatesAutoresizingMaskIntoConstraints = false
-        nameContainer.addArrangedSubview(protectLockImageView)
+        protectLockImageViewContainer.translatesAutoresizingMaskIntoConstraints = false
+        nameContainer.addArrangedSubview(protectLockImageViewContainer)
         nameContainer.addArrangedSubview(nameLabel)
         nameContainerTrailingPaddingView.translatesAutoresizingMaskIntoConstraints = false
         nameContainer.addArrangedSubview(nameContainerTrailingPaddingView)
         
         NSLayoutConstraint.activate([
             nameContainerLeadingPaddingView.widthAnchor.constraint(equalTo: nameContainerTrailingPaddingView.widthAnchor).priority(.required - 1),
-            protectLockImageView.heightAnchor.constraint(equalTo: _placeholderNameLabel.heightAnchor).priority(.required - 1),
-            protectLockImageView.widthAnchor.constraint(equalTo: protectLockImageView.heightAnchor).priority(.required - 2),
+            protectLockImageViewContainer.heightAnchor.constraint(equalTo: _placeholderNameLabel.heightAnchor).priority(.required - 10),
+            protectLockImageViewContainer.widthAnchor.constraint(equalTo: protectLockImageViewContainer.heightAnchor).priority(.required - 11),
         ])
-        protectLockImageView.setContentHuggingPriority(.defaultLow, for: .horizontal)
-        protectLockImageView.setContentHuggingPriority(.defaultLow, for: .vertical)
+        _placeholderNameLabel.setContentHuggingPriority(.required - 1, for: .vertical)
+        protectLockImageViewContainer.setContentHuggingPriority(.defaultLow, for: .horizontal)
+        protectLockImageViewContainer.setContentHuggingPriority(.defaultLow, for: .vertical)
+        // the lock icon imageView should align to placeholder centerY
+        // and keep position when name label more than one line
         
         // usernameLabel
         container.addArrangedSubview(usernameLabel)
