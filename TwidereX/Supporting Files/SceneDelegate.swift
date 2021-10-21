@@ -42,6 +42,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             .sink { [weak self] theme in
                 guard let self = self else { return }
                 guard let window = self.window else { return }
+                window.tintColor = theme.accentColor
                 window.subviews.forEach { view in
                     view.removeFromSuperview()
                     window.addSubview(view)

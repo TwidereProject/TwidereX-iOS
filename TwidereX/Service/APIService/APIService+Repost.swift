@@ -57,7 +57,7 @@ extension APIService {
             guard let authentication = authenticationContext.authenticationRecord.object(in: managedObjectContext),
                   let _status = record.object(in: managedObjectContext)
             else { return nil }
-            let user = authentication.twitterUser
+            let user = authentication.user
             let status = _status.repost ?? _status
             let isReposted = status.repostBy.contains(user)
             let repostedCount = status.repostCount
@@ -73,7 +73,7 @@ extension APIService {
             return repostContext
         }
         guard let repostContext = _repostContext else {
-            throw APIService.APIError.implicit(.badRequest)
+            throw AppError.implicit(.badRequest)
         }
         
         // request repost or undo repost
@@ -109,7 +109,7 @@ extension APIService {
             guard let authentication = authenticationContext.authenticationRecord.object(in: managedObjectContext),
                   let _status = record.object(in: managedObjectContext)
             else { return }
-            let user = authentication.twitterUser
+            let user = authentication.user
             let status = _status.repost ?? _status
 
             switch result {
@@ -150,7 +150,7 @@ extension APIService {
             guard let authentication = authenticationContext.authenticationRecord.object(in: managedObjectContext),
                   let _status = record.object(in: managedObjectContext)
             else { return nil }
-            let user = authentication.mastodonUser
+            let user = authentication.user
             let status = _status.repost ?? _status
             let isReposted = status.repostBy.contains(user)
             let repostedCount = status.repostCount
@@ -166,7 +166,7 @@ extension APIService {
             return repostContext
         }
         guard let repostContext = _repostContext else {
-            throw APIService.APIError.implicit(.badRequest)
+            throw AppError.implicit(.badRequest)
         }
         
         // request repost or undo repost
@@ -190,7 +190,7 @@ extension APIService {
             guard let authentication = authenticationContext.authenticationRecord.object(in: managedObjectContext),
                   let _status = record.object(in: managedObjectContext)
             else { return }
-            let user = authentication.mastodonUser
+            let user = authentication.user
             let status = _status.repost ?? _status
             
             switch result {

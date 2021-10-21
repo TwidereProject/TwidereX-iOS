@@ -75,10 +75,10 @@ class ProfileViewModel: ObservableObject {
                         switch authenticationContext {
                         case .twitter(let authenticationContext):
                             let authentication = authenticationContext.authenticationRecord.object(in: managedObjectContext)
-                            return authentication.flatMap { .twitter(object: $0.twitterUser) }
+                            return authentication.flatMap { .twitter(object: $0.user) }
                         case .mastodon(let authenticationContext):
                             let authentication = authenticationContext.authenticationRecord.object(in: managedObjectContext)
-                            return authentication.flatMap { .mastodon(object: $0.mastodonUser) }
+                            return authentication.flatMap { .mastodon(object: $0.user) }
                         case nil:
                             return nil
                         }

@@ -57,9 +57,7 @@ extension FriendshipButton {
         let alpha: CGFloat = isHighlighted ? 0.5 : 1.0
         
         switch relationship {
-        case .followingBy:
-            break
-        case .none:
+        case .isMyself, .followingBy, .none:
             break
         case .follow, .request:
             background.backgroundColor = .clear
@@ -74,7 +72,7 @@ extension FriendshipButton {
             background.backgroundColor = Asset.Colors.Theme.vulcan.color.withAlphaComponent(alpha)
             background.strokeColor = Asset.Colors.Theme.vulcan.color.withAlphaComponent(alpha)
             background.strokeWidth = 1
-        case .blocked, .blocking, .suspended:
+        case .blockingBy, .blocking, .suspended:
             background.backgroundColor = Asset.Colors.Tint.pink.color.withAlphaComponent(alpha)
             background.strokeColor = Asset.Colors.Tint.pink.color.withAlphaComponent(alpha)
             background.strokeWidth = 1
@@ -85,9 +83,7 @@ extension FriendshipButton {
     private func baseForegroundColor(for relationship: Relationship) -> UIColor {
         let alpha: CGFloat = isHighlighted ? 0.5 : 1.0
         switch relationship {
-        case .followingBy:
-            return .clear
-        case .none:
+        case .isMyself, .followingBy, .none:
             return .clear
         case .follow, .request:
             return Asset.Colors.Theme.daylight.color.withAlphaComponent(alpha)
@@ -95,7 +91,7 @@ extension FriendshipButton {
             return .white
         case .muting:
             return .white
-        case .blocked, .blocking, .suspended:
+        case .blockingBy, .blocking, .suspended:
             return .white
         }
     }

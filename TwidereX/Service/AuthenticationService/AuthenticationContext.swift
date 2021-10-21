@@ -7,9 +7,10 @@
 //
 
 import Foundation
+import CoreData
+import CoreDataStack
 import TwitterSDK
 import MastodonSDK
-import CoreDataStack
 
 enum AuthenticationContext {
     case twitter(authenticationContext: TwitterAuthenticationContext)
@@ -41,6 +42,19 @@ extension AuthenticationContext {
     var mastodonAuthenticationContext: MastodonAuthenticationContext? {
         guard case let .mastodon(authenticationContext) = self else { return nil }
         return authenticationContext
+    }
+}
+
+extension AuthenticationContext {
+    func user(in managedObjectContext: NSManagedObjectContext) -> UserObject? {
+        switch self {
+        case .twitter(let authenticationContext):
+            return authenticationContext.authenticationRecord.object(in: managedObjectContext)
+                .flatMap { UserObject.twitter(object: $0.user) }
+        case .mastodon(let authenticationContext):
+            return authenticationContext.authenticationRecord.object(in: managedObjectContext)
+                .flatMap { UserObject.mastodon(object: $0.user) }
+        }
     }
 }
         

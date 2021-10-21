@@ -34,7 +34,6 @@ final class ProfileViewController: UIViewController, NeedsDependency {
     }()
     let moreMenuBarButtonItem: UIBarButtonItem = {
         let barButtonItem = UIBarButtonItem(image: Asset.Editing.ellipsis.image.withRenderingMode(.alwaysTemplate), style: .plain, target: nil, action: nil)
-        barButtonItem.tintColor = Asset.Colors.hightLight.color
         return barButtonItem
     }()
     
@@ -156,6 +155,40 @@ extension ProfileViewController {
             }
         }
         .store(in: &disposeBag)
+        
+        Publishers.CombineLatest3(
+            viewModel.relationshipViewModel.$optionSet,  // update trigger
+            viewModel.$userRecord,
+            context.authenticationService.activeAuthenticationContext
+        )
+        .receive(on: DispatchQueue.main)
+        .sink { [weak self] _, userRecord, authenticationContext in
+            guard let self = self else { return }
+            guard let userRecord = userRecord,
+                  let authenticationContext = authenticationContext
+            else {
+                self.moreMenuBarButtonItem.menu = nil
+                self.navigationItem.rightBarButtonItems = []
+                return
+            }
+            Task {
+                do {
+                    self.moreMenuBarButtonItem.menu = try await DataSourceFacade.createMenuForUser(
+                        provider: self,
+                        user: userRecord,
+                        authenticationContext: authenticationContext
+                    )
+                    self.navigationItem.rightBarButtonItems = [
+                        self.moreMenuBarButtonItem
+                    ]
+                } catch {
+                    self.moreMenuBarButtonItem.menu = nil
+                    self.navigationItem.rightBarButtonItems = []
+                }
+            }
+        }
+        .store(in: &disposeBag)
+
         
         
 //        Publishers.CombineLatest4(
@@ -617,25 +650,27 @@ extension ProfileViewController: ProfileHeaderViewControllerDelegate {
     ) {
         guard let user = viewModel.user else { return }
         guard let authenticationContext = context.authenticationService.activeAuthenticationContext.value else { return }
+        guard let relationshipOptionSet = viewModel.relationshipViewModel.optionSet else { return }
         let record = UserRecord(object: user)
-        
+
         Task {
-            await DataSourceFacade.responseToFriendshipButtonAction(
-                provider: self,
-                user: record,
-                authenticationContext: authenticationContext
-            )
-        }
-            
-        //        UserProviderFacade
-        //            .toggleUserFriendship(provider: self, sender: button)
-        //            .sink { _ in
-        //                // do nothing
-        //            } receiveValue: { _ in
-        //                // do nothing
-        //            }
-        //            .store(in: &disposeBag)
+            if relationshipOptionSet.contains(.blocking) {
+                await DataSourceFacade.presentUserBlockAlert(
+                    provider: self,
+                    user: record,
+                    authenticationContext: authenticationContext
+                )
+            } else {
+                await DataSourceFacade.responseToFriendshipButtonAction(
+                    provider: self,
+                    user: record,
+                    authenticationContext: authenticationContext
+                )
+            }
+        }   // end Task { … }
     }
+    
+
     
 //    func profileHeaderViewController(_ viewController: ProfileHeaderViewController, viewLayoutDidUpdate view: UIView) {
 //        guard let scrollView = (profileSegmentedViewController.pagingViewController.currentViewController as? UserTimelineViewController)?.scrollView else {

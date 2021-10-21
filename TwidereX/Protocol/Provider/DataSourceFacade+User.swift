@@ -2,35 +2,86 @@
 //  DataSourceProvider+User.swift
 //  TwidereX
 //
-//  Created by Cirno MainasuK on 2021-10-19.
+//  Created by Cirno MainasuK on 2021-10-21.
 //  Copyright © 2021 Twidere. All rights reserved.
 //
 
-import Foundation
+import UIKit
+import CoreDataStack
 
 extension DataSourceFacade {
-    static func coordinateToFriendshipButtonAction(
+    static func createMenuForUser(
         provider: DataSourceProvider,
-        target: StatusTarget,
-        status: StatusRecord
-    ) async {
-        let _redirectRecord = await DataSourceFacade.author(
-            managedObjectContext: provider.context.managedObjectContext,
-            status: status,
-            target: target
+        user: UserRecord,
+        authenticationContext: AuthenticationContext
+    ) async throws -> UIMenu {
+        var children: [UIMenuElement] = []
+        
+        let relationshipOptionSet = try await DataSourceFacade.relationshipOptionSet(
+            provider: provider,
+            record: user,
+            authenticationContext: authenticationContext
         )
-        guard let redirectRecord = _redirectRecord else {
-            assertionFailure()
-            return
+        
+        let isMyself = relationshipOptionSet.contains(.isMyself)
+        
+        // block
+        if isMyself {
+            
+        } else {
+            let isBlocking = relationshipOptionSet.contains(.blocking)
+            let blockAction = await createMenuBlockActionForUser(
+                provider: provider,
+                record: user,
+                authenticationContext: authenticationContext,
+                isBlocking: isBlocking
+            )
+            children.append(blockAction)
         }
-        let profileViewModel = LocalProfileViewModel(
-            context: provider.context,
-            userRecord: redirectRecord
-        )
-        await provider.coordinator.present(
-            scene: .profile(viewModel: profileViewModel),
-            from: provider,
-            transition: .show
-        )
+        
+        return await UIMenu(title: "", options: [], children: children)
     }
+}
+ 
+extension DataSourceFacade {
+    static func relationshipOptionSet(
+        provider: DataSourceProvider,
+        record: UserRecord,
+        authenticationContext: AuthenticationContext
+    ) async throws -> RelationshipOptionSet {
+        let managedObjectContext = provider.context.managedObjectContext
+        let relationshipOptionSet: RelationshipOptionSet = try await managedObjectContext.perform {
+            guard let user = record.user(in: managedObjectContext),
+                  let me = authenticationContext.user(in: managedObjectContext)
+            else { throw AppError.implicit(.badRequest) }
+            return RelationshipViewModel.optionSet(user: user, me: me)
+        }
+        return relationshipOptionSet
+    }
+}
+
+extension DataSourceFacade {
+    
+    // block / unblock
+    private static func createMenuBlockActionForUser(
+        provider: DataSourceProvider,
+        record: UserRecord,
+        authenticationContext: AuthenticationContext,
+        isBlocking: Bool
+    ) async -> UIAction {
+        let title = isBlocking ? L10n.Common.Controls.Friendship.Actions.unblock : L10n.Common.Controls.Friendship.Actions.block
+        let image = isBlocking ? UIImage(systemName: "circle") : UIImage(systemName: "nosign")
+        let blockAction = await UIAction(title: title, image: image, attributes: [], state: .off) { [weak provider] _ in
+            guard let provider = provider else { return }
+            Task {
+                await DataSourceFacade.presentUserBlockAlert(
+                    provider: provider,
+                    user: record,
+                    authenticationContext: authenticationContext
+                )
+            }
+        }
+        return blockAction
+    }
+
 }

@@ -290,6 +290,12 @@ internal enum L10n {
         /// Media will be shared after download is completed
         internal static let title = L10n.tr("Localizable", "Common.Alerts.MediaSharing.Title")
       }
+      internal enum MuteUserConfirm {
+        /// Do you want to mute %@?
+        internal static func title(_ p1: Any) -> String {
+          return L10n.tr("Localizable", "Common.Alerts.MuteUserConfirm.Title", String(describing: p1))
+        }
+      }
       internal enum MuteUserSuccess {
         /// %@ has been muted
         internal static func title(_ p1: Any) -> String {
@@ -362,6 +368,12 @@ internal enum L10n {
         /// Tweet Sent
         internal static let title = L10n.tr("Localizable", "Common.Alerts.TweetSent.Title")
       }
+      internal enum UnblockUserConfirm {
+        /// Do you want to unblock %@?
+        internal static func title(_ p1: Any) -> String {
+          return L10n.tr("Localizable", "Common.Alerts.UnblockUserConfirm.Title", String(describing: p1))
+        }
+      }
       internal enum UnblockUserSuccess {
         /// %@ has been unblocked
         internal static func title(_ p1: Any) -> String {
@@ -377,6 +389,12 @@ internal enum L10n {
       internal enum UnfollowingSuccess {
         /// Unfollowing Succeeded
         internal static let title = L10n.tr("Localizable", "Common.Alerts.UnfollowingSuccess.Title")
+      }
+      internal enum UnmuteUserConfirm {
+        /// Do you want to unmute %@?
+        internal static func title(_ p1: Any) -> String {
+          return L10n.tr("Localizable", "Common.Alerts.UnmuteUserConfirm.Title", String(describing: p1))
+        }
       }
       internal enum UnmuteUserSuccess {
         /// %@ has been unmuted

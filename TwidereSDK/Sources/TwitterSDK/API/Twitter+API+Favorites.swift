@@ -8,6 +8,8 @@
 import Foundation
 import Combine
 
+// TODO: V2
+
 extension Twitter.API.Favorites {
     
     static let favoritesCreateEndpointURL = Twitter.API.endpointURL.appendingPathComponent("favorites/create.json")

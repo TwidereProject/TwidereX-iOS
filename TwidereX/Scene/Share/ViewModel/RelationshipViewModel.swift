@@ -11,7 +11,10 @@ import CoreData
 import Combine
 import CoreDataStack
 
+// Relationship in order
+// The high priority in the last
 enum Relationship: Int, CaseIterable {
+    case isMyself
     case followingBy
     case none       // set hide from UI
     case follow
@@ -19,7 +22,7 @@ enum Relationship: Int, CaseIterable {
     case pending
     case following
     case muting
-    case blocked
+    case blockingBy
     case blocking
     case suspended
     
@@ -29,6 +32,7 @@ enum Relationship: Int, CaseIterable {
     
     var title: String {
         switch self {
+        case .isMyself: return ""
         case .followingBy: return L10n.Common.Controls.Friendship.followsYou
         case .none: return " "
         case .follow: return L10n.Common.Controls.Friendship.Actions.follow
@@ -36,7 +40,7 @@ enum Relationship: Int, CaseIterable {
         case .pending: return L10n.Common.Controls.Friendship.Actions.pending
         case .following: return L10n.Common.Controls.Friendship.Actions.following
         case .muting: return L10n.Common.Controls.Friendship.Actions.unmute    // muting
-        case .blocked: return L10n.Common.Controls.Friendship.Actions.follow   // blocked by user, button should disabled
+        case .blockingBy: return L10n.Common.Controls.Friendship.Actions.follow   // blocked by user, button should disabled
         case .blocking: return L10n.Common.Controls.Friendship.Actions.blocked
         case .suspended: return L10n.Common.Controls.Friendship.Actions.follow
         }
@@ -48,6 +52,7 @@ enum Relationship: Int, CaseIterable {
 struct RelationshipOptionSet: OptionSet {
     let rawValue: Int
     
+    static let isMyself = Relationship.isMyself.option
     static let followingBy = Relationship.followingBy.option
     static let none = Relationship.none.option
     static let follow = Relationship.follow.option
@@ -55,7 +60,7 @@ struct RelationshipOptionSet: OptionSet {
     static let pending = Relationship.pending.option
     static let following = Relationship.following.option
     static let muting = Relationship.muting.option
-    static let blocked = Relationship.blocked.option
+    static let blockingBy = Relationship.blockingBy.option
     static let blocking = Relationship.blocking.option
     static let suspended = Relationship.suspended.option
     
@@ -154,60 +159,93 @@ extension RelationshipViewModel {
 
 extension RelationshipViewModel {
     private func update(user: UserObject?, me: UserObject?) {
+        guard let user = user,
+              let me = me
+        else {
+            reset()
+            return
+        }
+        
+        let optionSet = RelationshipViewModel.optionSet(user: user, me: me)
+
+        self.isMyself = optionSet.contains(.isMyself)
+        self.isFollowingBy = optionSet.contains(.followingBy)
+        self.isFollowing = optionSet.contains(.following)
+        self.isMuting = optionSet.contains(.muting)
+        self.isBlockingBy = optionSet.contains(.blockingBy)
+        self.isBlocking = optionSet.contains(.blocking)
+
+        
+        self.optionSet = optionSet
+    }
+    
+    private func reset() {
+        isMyself = false
+        isFollowingBy = false
+        isFollowing = false
+        isMuting = false
+        isBlockingBy = false
+        isBlocking = false
+        optionSet = nil
+    }
+}
+
+extension RelationshipViewModel {
+
+    static func optionSet(user: UserObject, me: UserObject) -> RelationshipOptionSet {
         let isMyself: Bool
         let isProtected: Bool
+        let isFollowingBy: Bool
         let isFollowing: Bool
         let isPending: Bool
-        let isFollowingBy: Bool
         let isMuting: Bool
-        let isBlocking: Bool
         let isBlockingBy: Bool
-        var optionSet: RelationshipOptionSet = [.follow]
+        let isBlocking: Bool
         
         switch (user, me) {
         case (.twitter(let user), .twitter(let me)):
             isMyself = user.id == me.id
             guard !isMyself else {
-                reset()
-                self.isMyself = true
-                self.optionSet = [.none]
-                return
+                return [.isMyself]
             }
             
             isProtected = user.protected
+            isFollowingBy = me.followingBy.contains(user)
             isFollowing = user.followingBy.contains(me)
             isPending = user.followRequestSentFrom.contains(me)
-            isFollowingBy = me.followingBy.contains(user)
             isMuting = user.mutingBy.contains(me)
-            isBlocking = user.blockingBy.contains(me)
             isBlockingBy = me.blockingBy.contains(user)
+            isBlocking = user.blockingBy.contains(me)
             
         case (.mastodon(let user), .mastodon(let me)):
             isMyself = user.id == me.id && user.domain == me.domain
             guard !isMyself else {
-                reset()
-                self.isMyself = true
-                self.optionSet = [.none]
-                return
+                return [.isMyself]
             }
-                
+            
             isProtected = user.locked
+            isFollowingBy = me.followingBy.contains(user)
             isFollowing = user.followingBy.contains(me)
             isPending = user.followRequestSentFrom.contains(me)
-            isFollowingBy = me.followingBy.contains(user)
             isMuting = user.mutingBy.contains(me)
-            isBlocking = user.blockingBy.contains(me)
             isBlockingBy = me.blockingBy.contains(user)
-            
+            isBlocking = user.blockingBy.contains(me)
         default:
-            self.reset()
-            return
+            return [.none]
         }
         
-        self.isMyself = isMyself
+        var optionSet: RelationshipOptionSet = [.follow]
+        
+        if isMyself {
+            optionSet.insert(.isMyself)
+        }
         
         if isProtected {
             optionSet.insert(.request)
+        }
+        
+        if isFollowingBy {
+            optionSet.insert(.followingBy)
         }
         
         if isFollowing {
@@ -218,36 +256,18 @@ extension RelationshipViewModel {
             optionSet.insert(.pending)
         }
         
-        if isFollowingBy {
-            optionSet.insert(.followingBy)
-        }
-        self.isFollowingBy = isFollowingBy
-        
         if isMuting {
             optionSet.insert(.muting)
         }
-        self.isMuting = isMuting
         
+        if isBlockingBy {
+            optionSet.insert(.blockingBy)
+        }
+
         if isBlocking {
             optionSet.insert(.blocking)
         }
-        self.isBlocking = isBlocking
-        
-        if isBlockingBy {
-            optionSet.insert(.blocked)
-        }
-        self.isBlockingBy = isBlockingBy
-        
-        self.optionSet = optionSet
-    }
-    
-    private func reset() {
-        isMyself = false
-        optionSet = nil
-        isFollowing = false
-        isFollowingBy = false
-        isMuting = false
-        isBlocking = false
-        isBlockingBy = false
+                
+        return optionSet
     }
 }

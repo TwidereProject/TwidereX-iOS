@@ -27,7 +27,7 @@ final class APIService {
     let backgroundManagedObjectContext: NSManagedObjectContext
 
     // output
-    let error = PassthroughSubject<APIError, Never>()
+    let error = PassthroughSubject<AppError, Never>()
     
     init(backgroundManagedObjectContext: NSManagedObjectContext) {
         self.backgroundManagedObjectContext = backgroundManagedObjectContext

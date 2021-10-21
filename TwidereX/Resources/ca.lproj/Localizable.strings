@@ -82,6 +82,7 @@
 "Common.Alerts.MediaSaved.Title" = "S'ha desat el mitjà";
 "Common.Alerts.MediaSaving.Title" = "S'està desant el mitjà";
 "Common.Alerts.MediaSharing.Title" = "Media will be shared after download is completed";
+"Common.Alerts.MuteUserConfirm.Title" = "Do you want to mute %@?";
 "Common.Alerts.MuteUserSuccess.Title" = "%@ ha estat silenciat";
 "Common.Alerts.NoTweetsFound.Title" = "No s'han trobat piulades";
 "Common.Alerts.PermissionDeniedFriendshipBlocked.Message" = "Has estat blocat de seguir aquest compte a petició de l'usuari";
@@ -101,9 +102,11 @@
 "Common.Alerts.TweetFail.Title" = "Error al piular";
 "Common.Alerts.TweetSending.Title" = "S'està enviant la piulada";
 "Common.Alerts.TweetSent.Title" = "Piulada enviada";
+"Common.Alerts.UnblockUserConfirm.Title" = "Do you want to unblock %@?";
 "Common.Alerts.UnblockUserSuccess.Title" = "%@ ha estat desblocat";
 "Common.Alerts.UnfollowUser.Message" = "Deixar de seguir l'usuari %@?";
 "Common.Alerts.UnfollowingSuccess.Title" = "S'ha deixat de seguir";
+"Common.Alerts.UnmuteUserConfirm.Title" = "Do you want to unmute %@?";
 "Common.Alerts.UnmuteUserSuccess.Title" = "%@ ha estat silenciat";
 "Common.Controls.Actions.Add" = "Afegir";
 "Common.Controls.Actions.Cancel" = "Canceŀla";

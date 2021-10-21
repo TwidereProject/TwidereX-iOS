@@ -64,7 +64,7 @@ extension APIService {
             guard let authentication = authenticationContext.authenticationRecord.object(in: managedObjectContext),
                   let user = record.object(in: managedObjectContext)
             else { return nil }
-            let me = authentication.twitterUser
+            let me = authentication.user
             
             let isFollowing = user.followingBy.contains(me)
             let isPending = user.followRequestSentFrom.contains(me)
@@ -97,7 +97,7 @@ extension APIService {
             return context
         }
         guard let followContext = _followContext else {
-            throw APIService.APIError.implicit(.badRequest)
+            throw AppError.implicit(.badRequest)
         }
         
         // request follow or unfollow
@@ -131,7 +131,7 @@ extension APIService {
                   let user = record.object(in: managedObjectContext)
             else { return }
             
-            let me = authentication.twitterUser
+            let me = authentication.user
             
             switch result {
             case .success(let response):
@@ -181,7 +181,7 @@ extension APIService {
             guard let authentication = authenticationContext.authenticationRecord.object(in: managedObjectContext),
                   let user = record.object(in: managedObjectContext)
             else { return nil }
-            let me = authentication.mastodonUser
+            let me = authentication.user
             
             let isFollowing = user.followingBy.contains(me)
             let isPending = user.followRequestSentFrom.contains(me)
@@ -214,7 +214,7 @@ extension APIService {
             return context
         }
         guard let followContext = _followContext else {
-            throw APIService.APIError.implicit(.badRequest)
+            throw AppError.implicit(.badRequest)
         }
         
         // request follow or unfollow
@@ -248,7 +248,7 @@ extension APIService {
                   let user = record.object(in: managedObjectContext)
             else { return }
             
-            let me = authentication.mastodonUser
+            let me = authentication.user
             
             switch result {
             case .success(let response):

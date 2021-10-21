@@ -82,6 +82,7 @@
 "Common.Alerts.MediaSaved.Title" = "Mídia salva";
 "Common.Alerts.MediaSaving.Title" = "Salvando mídia";
 "Common.Alerts.MediaSharing.Title" = "A mídia será compartilhada depois que o download for concluído";
+"Common.Alerts.MuteUserConfirm.Title" = "Do you want to mute %@?";
 "Common.Alerts.MuteUserSuccess.Title" = "%@ foi silenciado";
 "Common.Alerts.NoTweetsFound.Title" = "Nenhum Tweet Encontrado";
 "Common.Alerts.PermissionDeniedFriendshipBlocked.Message" = "Você foi impedido de seguir esta conta a pedido do usuário";
@@ -101,9 +102,11 @@
 "Common.Alerts.TweetFail.Title" = "Tweet Falhou";
 "Common.Alerts.TweetSending.Title" = "Enviando tweet";
 "Common.Alerts.TweetSent.Title" = "Tweet Enviado";
+"Common.Alerts.UnblockUserConfirm.Title" = "Do you want to unblock %@?";
 "Common.Alerts.UnblockUserSuccess.Title" = "%@ foi desbloqueado";
 "Common.Alerts.UnfollowUser.Message" = "Deixar de seguir o usuário %@?";
 "Common.Alerts.UnfollowingSuccess.Title" = "Deixou de Seguir com Sucesso";
+"Common.Alerts.UnmuteUserConfirm.Title" = "Do you want to unmute %@?";
 "Common.Alerts.UnmuteUserSuccess.Title" = "%@ foi dessilenciado";
 "Common.Controls.Actions.Add" = "Adicionar";
 "Common.Controls.Actions.Cancel" = "Cancelar";
@@ -127,7 +130,7 @@
 "Common.Controls.Friendship.Actions.Pending" = "Pendente";
 "Common.Controls.Friendship.Actions.Report" = "Reportar";
 "Common.Controls.Friendship.Actions.ReportAndBlock" = "Reportar e Bloquear";
-"Common.Controls.Friendship.Actions.Request" = "Request";
+"Common.Controls.Friendship.Actions.Request" = "Solicitar";
 "Common.Controls.Friendship.Actions.Unblock" = "Desbloquear";
 "Common.Controls.Friendship.Actions.Unfollow" = "Deixar de seguir";
 "Common.Controls.Friendship.Actions.Unmute" = "Dessilenciar";

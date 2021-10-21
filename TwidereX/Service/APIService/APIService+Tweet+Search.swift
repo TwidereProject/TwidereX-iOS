@@ -223,7 +223,7 @@ extension APIService {
                 media: content.includes?.media ?? [],
                 places: content.includes?.places ?? []
             )
-            let user = authenticationContext.authenticationRecord.object(in: managedObjectContext)?.twitterUser
+            let user = authenticationContext.authenticationRecord.object(in: managedObjectContext)?.user
             let statusCache = Persistence.PersistCache<TwitterStatus>()
             let userCache = Persistence.PersistCache<TwitterUser>()
             

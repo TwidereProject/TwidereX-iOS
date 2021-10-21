@@ -121,7 +121,7 @@ extension StatusListFetchViewModel {
         switch input.fetchContext {
         case .twitter(let fetchContext):
             guard let userID = fetchContext.userIdentifier?.id else {
-                throw APIService.APIError.implicit(.badRequest)
+                throw AppError.implicit(.badRequest)
             }
             let query = Twitter.API.Statuses.TimelineQuery(
                 count: fetchContext.count ?? 100,
@@ -154,7 +154,7 @@ extension StatusListFetchViewModel {
             )
         case .mastodon(let fetchContext):
             guard let accountID = fetchContext.userIdentifier?.id else {
-                throw APIService.APIError.implicit(.badRequest)
+                throw AppError.implicit(.badRequest)
             }
             let authenticationContext = fetchContext.authenticationContext
             let query = Mastodon.API.Account.AccountStatusesQuery(
@@ -197,7 +197,7 @@ extension StatusListFetchViewModel {
         switch input.fetchContext {
         case .twitter(let fetchContext):
             guard let userID = fetchContext.userIdentifier?.id else {
-                throw APIService.APIError.implicit(.badRequest)
+                throw AppError.implicit(.badRequest)
             }
             let authenticationContext = fetchContext.authenticationContext
             let query = Twitter.API.Statuses.TimelineQuery(

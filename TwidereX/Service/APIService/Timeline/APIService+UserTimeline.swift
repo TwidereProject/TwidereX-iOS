@@ -40,7 +40,7 @@ extension APIService {
         
         let managedObjectContext = backgroundManagedObjectContext
         try await managedObjectContext.performChanges {
-            let me = authenticationContext.authenticationRecord.object(in: managedObjectContext)?.twitterUser
+            let me = authenticationContext.authenticationRecord.object(in: managedObjectContext)?.user
             // persist TwitterStatus
             for entity in response.value {
                 let persistContext = Persistence.TwitterStatus.PersistContext(
@@ -91,7 +91,7 @@ extension APIService {
         
         let managedObjectContext = backgroundManagedObjectContext
         try await managedObjectContext.performChanges {
-            let user = authenticationContext.authenticationRecord.object(in: managedObjectContext)?.mastodonUser
+            let user = authenticationContext.authenticationRecord.object(in: managedObjectContext)?.user
             // persist status
             for entity in response.value {
                 let persistContext = Persistence.MastodonStatus.PersistContext(

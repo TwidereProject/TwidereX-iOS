@@ -82,6 +82,7 @@
 "Common.Alerts.MediaSaved.Title" = "Media saved";
 "Common.Alerts.MediaSaving.Title" = "Saving media";
 "Common.Alerts.MediaSharing.Title" = "Media will be shared after download is completed";
+"Common.Alerts.MuteUserConfirm.Title" = "Do you want to mute %@?";
 "Common.Alerts.MuteUserSuccess.Title" = "%@ has been muted";
 "Common.Alerts.NoTweetsFound.Title" = "No Tweets Found";
 "Common.Alerts.PermissionDeniedFriendshipBlocked.Message" = "You have been blocked from following this account at the request of the user";
@@ -101,9 +102,11 @@
 "Common.Alerts.TweetFail.Title" = "Failed to Tweet";
 "Common.Alerts.TweetSending.Title" = "Sending tweet";
 "Common.Alerts.TweetSent.Title" = "Tweet Sent";
+"Common.Alerts.UnblockUserConfirm.Title" = "Do you want to unblock %@?";
 "Common.Alerts.UnblockUserSuccess.Title" = "%@ has been unblocked";
 "Common.Alerts.UnfollowUser.Message" = "Unfollow user %@?";
 "Common.Alerts.UnfollowingSuccess.Title" = "Unfollowing Succeeded";
+"Common.Alerts.UnmuteUserConfirm.Title" = "Do you want to unmute %@?";
 "Common.Alerts.UnmuteUserSuccess.Title" = "%@ has been unmuted";
 "Common.Controls.Actions.Add" = "Add";
 "Common.Controls.Actions.Cancel" = "Cancel";

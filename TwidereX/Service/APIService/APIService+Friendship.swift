@@ -15,6 +15,11 @@ import TwitterSDK
 import MastodonSDK
 
 extension APIService {
+    
+    /// Query and update friendship for user
+    /// - Parameters:
+    ///   - user: target user
+    ///   - authenticationContext: `AuthenticationContext`
     func friendship(
         user: UserRecord,
         authenticationContext: AuthenticationContext
@@ -26,7 +31,10 @@ extension APIService {
                 authenticationContext: authenticationContext
             )
         case (.mastodon(let record), .mastodon(let authenticationContext)):
-            break
+            _ = try await friendship(
+                records: [record],
+                authenticationContext: authenticationContext
+            )
         default:
             assertionFailure()
             break
@@ -50,10 +58,10 @@ extension APIService {
         }
         guard let query = _query else {
             assertionFailure()
-            throw APIService.APIError.implicit(.badRequest)
+            throw AppError.implicit(.badRequest)
         }
         guard query.sourceID != query.targetID else {
-            throw APIService.APIError.implicit(.badRequest)
+            throw AppError.implicit(.badRequest)
         }
         let response = try await Twitter.API.Friendships.friendship(
             session: session,
@@ -65,7 +73,7 @@ extension APIService {
             guard let authentication = authenticationContext.authenticationRecord.object(in: managedObjectContext),
                   let user = record.object(in: managedObjectContext)
             else { return }
-            let me = authentication.twitterUser
+            let me = authentication.user
             
             let relationship = response.value
             user.update(isFollow: relationship.source.following, by: me)
@@ -98,7 +106,7 @@ extension APIService {
             return Mastodon.API.Account.RelationshipQuery(ids: ids)
         }
         guard let query = _query else {
-            throw APIService.APIError.implicit(.badRequest)
+            throw AppError.implicit(.badRequest)
         }
         
         let response = try await Mastodon.API.Account.relationships(
@@ -110,7 +118,7 @@ extension APIService {
 
         try await managedObjectContext.performChanges {
             guard let authentication = authenticationContext.authenticationRecord.object(in: managedObjectContext) else { return }
-            let me = authentication.mastodonUser
+            let me = authentication.user
 
             let relationships = response.value
             for record in records {
@@ -123,16 +131,8 @@ extension APIService {
                         me: me,
                         networkDate: response.networkDate
                     )
-                )
-            }
-
-            
-//            user.update(isFollow: relationship.source.following, by: me)
-//            me.update(isFollow: relationship.source.followedBy, by: user)       // *not* the same (or reverse) to previous one
-//            user.update(isFollowRequestSent: relationship.source.followingRequested ?? false, from: me)
-//            user.update(isMute: relationship.source.muting ?? false, by: me)
-//            user.update(isBlock: relationship.source.blocking ?? false, by: me)
-//            me.update(isBlock: relationship.source.blockedBy ?? false, by: user)        // *not* the same (or reverse) to previous one
+                )   // end Persistence.MastodonUser.update
+            }   // end for … in …
         }   // end try await managedObjectContext.performChanges
         
         return response

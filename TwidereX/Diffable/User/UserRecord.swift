@@ -6,6 +6,7 @@
 //  Copyright © 2021 Twidere. All rights reserved.
 //
 
+import CoreData
 import CoreDataStack
 
 enum UserRecord: Hashable {
@@ -20,6 +21,19 @@ extension UserRecord {
             self = .twitter(record: .init(objectID: object.objectID))
         case .mastodon(let object):
             self = .mastodon(record: .init(objectID: object.objectID))
+        }
+    }
+}
+
+extension UserRecord {
+    func user(in managedObjectContext: NSManagedObjectContext) -> UserObject? {
+        switch self {
+        case .twitter(let record):
+            return record.object(in: managedObjectContext)
+                .flatMap { UserObject.twitter(object: $0) }
+        case .mastodon(let record):
+            return record.object(in: managedObjectContext)
+                .flatMap { UserObject.mastodon(object: $0) }
         }
     }
 }

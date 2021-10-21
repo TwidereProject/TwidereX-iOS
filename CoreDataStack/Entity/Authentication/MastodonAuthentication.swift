@@ -35,7 +35,7 @@ final public class MastodonAuthentication: NSManagedObject {
     
     // one-to-one relationship
     @NSManaged public private(set) var authenticationIndex: AuthenticationIndex
-    @NSManaged public private(set) var mastodonUser: MastodonUser
+    @NSManaged public private(set) var user: MastodonUser
 
 }
 
@@ -63,7 +63,7 @@ extension MastodonAuthentication {
         object.configure(property: property)
         
         object.authenticationIndex = authenticationIndex
-        object.mastodonUser = mastodonUser
+        object.user = mastodonUser
         
         return object
     }

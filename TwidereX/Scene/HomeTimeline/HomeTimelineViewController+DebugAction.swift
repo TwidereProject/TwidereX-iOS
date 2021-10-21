@@ -126,6 +126,10 @@ extension HomeTimelineViewController {
                     guard let self = self else { return }
                     self.moveToFirst(action, category: .followsYouAuthor)
                 }),
+                UIAction(title: "First Blocking Author", image: nil, attributes: [], handler: { [weak self] action in
+                    guard let self = self else { return }
+                    self.moveToFirst(action, category: .blockingAuthor)
+                }),
             ]
         )
     }
@@ -191,6 +195,7 @@ extension HomeTimelineViewController {
         case video
         case location
         case followsYouAuthor
+        case blockingAuthor
         
         func match(item: StatusItem) -> Bool {
             let authenticationContext = AppContext.shared.authenticationService.activeAuthenticationContext.value
@@ -207,8 +212,12 @@ extension HomeTimelineViewController {
                         return status.location != nil
                     case .followsYouAuthor:
                         guard case let .twitter(authenticationContext) = authenticationContext else { return false }
-                        guard let me = authenticationContext.authenticationRecord.object(in: AppContext.shared.managedObjectContext)?.twitterUser else { return false }
-                        return status.author.following.contains(me)
+                        guard let me = authenticationContext.authenticationRecord.object(in: AppContext.shared.managedObjectContext)?.user else { return false }
+                        return (status.repost ?? status).author.following.contains(me)
+                    case .blockingAuthor:
+                        guard case let .twitter(authenticationContext) = authenticationContext else { return false }
+                        guard let me = authenticationContext.authenticationRecord.object(in: AppContext.shared.managedObjectContext)?.user else { return false }
+                        return (status.repost ?? status).author.blockingBy.contains(me)
                     default:
                         return false
                     }

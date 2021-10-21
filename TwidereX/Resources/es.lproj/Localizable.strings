@@ -20,13 +20,13 @@
 "Accessibility.Scene.Compose.Image" = "Añadir imagen";
 "Accessibility.Scene.Compose.Location.Disable" = "Desactivar la localización";
 "Accessibility.Scene.Compose.Location.Enable" = "Activar ubicación";
-"Accessibility.Scene.Compose.MediaInsert.Camera" = "Take Photo";
-"Accessibility.Scene.Compose.MediaInsert.Gif" = "Add GIF";
-"Accessibility.Scene.Compose.MediaInsert.Library" = "Browse Library";
-"Accessibility.Scene.Compose.MediaInsert.RecordVideo" = "Record Video";
+"Accessibility.Scene.Compose.MediaInsert.Camera" = "Tomar foto";
+"Accessibility.Scene.Compose.MediaInsert.Gif" = "Añadir GIF";
+"Accessibility.Scene.Compose.MediaInsert.Library" = "Explorar galería";
+"Accessibility.Scene.Compose.MediaInsert.RecordVideo" = "Grabar vídeo";
 "Accessibility.Scene.Compose.Send" = "Enviar";
 "Accessibility.Scene.Compose.Thread" = "Modo de hilo";
-"Accessibility.Scene.Gif.Search" = "Search GIF";
+"Accessibility.Scene.Gif.Search" = "Buscar GIF";
 "Accessibility.Scene.Gif.Title" = "GIPHY";
 "Accessibility.Scene.Home.Compose" = "Crear";
 "Accessibility.Scene.Home.Drawer.AccountDropdown" = "Desplegable de la cuenta";
@@ -82,6 +82,7 @@
 "Common.Alerts.MediaSaved.Title" = "Archivo multimedia guardado";
 "Common.Alerts.MediaSaving.Title" = "Guardando multimedia";
 "Common.Alerts.MediaSharing.Title" = "Los medios serán compartidos una vez completada la descarga";
+"Common.Alerts.MuteUserConfirm.Title" = "Do you want to mute %@?";
 "Common.Alerts.MuteUserSuccess.Title" = "%@ ha sido silenciado";
 "Common.Alerts.NoTweetsFound.Title" = "No se encontraron Tweets";
 "Common.Alerts.PermissionDeniedFriendshipBlocked.Message" = "Has sido bloqueado para seguir esta cuenta a petición del usuario";
@@ -101,9 +102,11 @@
 "Common.Alerts.TweetFail.Title" = "No se pudo enviar el Tweet";
 "Common.Alerts.TweetSending.Title" = "Enviando tweet";
 "Common.Alerts.TweetSent.Title" = "Tweet enviado";
+"Common.Alerts.UnblockUserConfirm.Title" = "Do you want to unblock %@?";
 "Common.Alerts.UnblockUserSuccess.Title" = "%@ ha sido desbloqueado";
 "Common.Alerts.UnfollowUser.Message" = "¿Dejar de seguir al usuario %@?";
 "Common.Alerts.UnfollowingSuccess.Title" = "Dejar de seguir con éxito";
+"Common.Alerts.UnmuteUserConfirm.Title" = "Do you want to unmute %@?";
 "Common.Alerts.UnmuteUserSuccess.Title" = "%@ ha sido desmuteado";
 "Common.Controls.Actions.Add" = "Añadir";
 "Common.Controls.Actions.Cancel" = "Cancelar";
@@ -127,7 +130,7 @@
 "Common.Controls.Friendship.Actions.Pending" = "Pendiente";
 "Common.Controls.Friendship.Actions.Report" = "Reportar";
 "Common.Controls.Friendship.Actions.ReportAndBlock" = "Reportar y Bloquear";
-"Common.Controls.Friendship.Actions.Request" = "Request";
+"Common.Controls.Friendship.Actions.Request" = "Solicitud";
 "Common.Controls.Friendship.Actions.Unblock" = "Desbloquear";
 "Common.Controls.Friendship.Actions.Unfollow" = "Dejar de seguir";
 "Common.Controls.Friendship.Actions.Unmute" = "No Silenciar";

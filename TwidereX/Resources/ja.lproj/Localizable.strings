@@ -82,6 +82,7 @@
 "Common.Alerts.MediaSaved.Title" = "メディアを保存しました";
 "Common.Alerts.MediaSaving.Title" = "メディアの保存";
 "Common.Alerts.MediaSharing.Title" = "Media will be shared after download is completed";
+"Common.Alerts.MuteUserConfirm.Title" = "Do you want to mute %@?";
 "Common.Alerts.MuteUserSuccess.Title" = "%@ はミュートされました";
 "Common.Alerts.NoTweetsFound.Title" = "ツイートが見つかりませんでした";
 "Common.Alerts.PermissionDeniedFriendshipBlocked.Message" = "ユーザーのリクエストにより、このアカウントのフォローをブロックされています";
@@ -101,9 +102,11 @@
 "Common.Alerts.TweetFail.Title" = "ツイートに失敗しました";
 "Common.Alerts.TweetSending.Title" = "ツイートを送信中";
 "Common.Alerts.TweetSent.Title" = "ツイートを送信しました";
+"Common.Alerts.UnblockUserConfirm.Title" = "Do you want to unblock %@?";
 "Common.Alerts.UnblockUserSuccess.Title" = "%@ はブロック解除されました";
 "Common.Alerts.UnfollowUser.Message" = "%@ のフォローを解除しますか？";
 "Common.Alerts.UnfollowingSuccess.Title" = "フォロー解除に成功しました";
+"Common.Alerts.UnmuteUserConfirm.Title" = "Do you want to unmute %@?";
 "Common.Alerts.UnmuteUserSuccess.Title" = "%@ はミュート解除されました";
 "Common.Controls.Actions.Add" = "追加";
 "Common.Controls.Actions.Cancel" = "キャンセル";

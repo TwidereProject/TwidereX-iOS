@@ -13,9 +13,9 @@ import MastodonMeta
 
 extension AccountListTableViewCell {
     func configure(authenticationIndex: AuthenticationIndex) {
-        if let twitterUser = authenticationIndex.twitterAuthentication?.twitterUser {
+        if let twitterUser = authenticationIndex.twitterAuthentication?.user {
             configure(twitterUser: twitterUser)
-        } else if let mastodonUser = authenticationIndex.mastodonAuthentication?.mastodonUser {
+        } else if let mastodonUser = authenticationIndex.mastodonAuthentication?.user {
             configure(mastodonUser: mastodonUser)
         } else {
             assertionFailure()

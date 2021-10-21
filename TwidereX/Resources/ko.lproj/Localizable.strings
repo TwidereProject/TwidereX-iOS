@@ -82,6 +82,7 @@
 "Common.Alerts.MediaSaved.Title" = "저장했습니다";
 "Common.Alerts.MediaSaving.Title" = "저장하기";
 "Common.Alerts.MediaSharing.Title" = "다운로드 뒤 미디어가 공유됩니다";
+"Common.Alerts.MuteUserConfirm.Title" = "Do you want to mute %@?";
 "Common.Alerts.MuteUserSuccess.Title" = "%@를 뮤트했습니다.";
 "Common.Alerts.NoTweetsFound.Title" = "트윗을 찾을 수 없습니다.";
 "Common.Alerts.PermissionDeniedFriendshipBlocked.Message" = "이 사용자의 요청으로 이 계정을 팔로우하는 것이 차단되어 있습니다.";
@@ -101,9 +102,11 @@
 "Common.Alerts.TweetFail.Title" = "트윗이 올라가지 않았습니다.";
 "Common.Alerts.TweetSending.Title" = "트윗을 보냅니다";
 "Common.Alerts.TweetSent.Title" = "트윗 보냄";
+"Common.Alerts.UnblockUserConfirm.Title" = "Do you want to unblock %@?";
 "Common.Alerts.UnblockUserSuccess.Title" = "%@의 차단을 풉니다.";
 "Common.Alerts.UnfollowUser.Message" = "%@를 그만 팔로우할까요?";
 "Common.Alerts.UnfollowingSuccess.Title" = "팔로우를 끊었습니다.";
+"Common.Alerts.UnmuteUserConfirm.Title" = "Do you want to unmute %@?";
 "Common.Alerts.UnmuteUserSuccess.Title" = "%@를 뮤트하지 않습니다.";
 "Common.Controls.Actions.Add" = "새로 만들기";
 "Common.Controls.Actions.Cancel" = "돌아가기";

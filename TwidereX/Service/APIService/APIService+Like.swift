@@ -15,124 +15,6 @@ import TwitterSDK
 import MastodonSDK
 
 extension APIService {
-    
-    // make local state change only
-//    func like(
-//        tweetObjectID: NSManagedObjectID,
-//        twitterUserObjectID: NSManagedObjectID,
-//        favoriteKind: Twitter.API.Favorites.FavoriteKind
-//    ) -> AnyPublisher<Tweet.ID, Error> {
-//        var _targetTweetID: Tweet.ID?
-//        let managedObjectContext = backgroundManagedObjectContext
-//        return managedObjectContext.performChanges {
-//            let tweet = managedObjectContext.object(with: tweetObjectID) as! Tweet
-//            let twitterUser = managedObjectContext.object(with: twitterUserObjectID) as! TwitterUser
-//            let targetTweet = tweet.retweet ?? tweet
-//            let targetTweetID = targetTweet.id
-//            _targetTweetID = targetTweetID
-//
-//            targetTweet.update(liked: favoriteKind == .create, twitterUser: twitterUser)
-//        }
-//        .tryMap { result in
-//            switch result {
-//            case .success:
-//                guard let targetTweetID = _targetTweetID else {
-//                    throw APIError.implicit(.badRequest)
-//                }
-//                return targetTweetID
-//
-//            case .failure(let error):
-//                assertionFailure(error.localizedDescription)
-//                throw error
-//            }
-//        }
-//        .eraseToAnyPublisher()
-//    }
-    
-    // send favorite request to remote
-//    func like(
-//        tweetID: Twitter.Entity.Tweet.ID,
-//        favoriteKind: Twitter.API.Favorites.FavoriteKind,
-//        twitterAuthenticationBox: AuthenticationService.TwitterAuthenticationBox
-//    ) -> AnyPublisher<Twitter.Response.Content<Twitter.Entity.Tweet>, Error> {
-//        let authorization = twitterAuthenticationBox.twitterAuthorization
-//        let requestTwitterUserID = twitterAuthenticationBox.twitterUserID
-//        let query = Twitter.API.Favorites.FavoriteQuery(id: tweetID)
-//        return Twitter.API.Favorites.favorites(session: session, authorization: authorization, favoriteKind: favoriteKind, query: query)
-//            .map { response -> AnyPublisher<Twitter.Response.Content<Twitter.Entity.Tweet>, Error> in
-//                let log = OSLog.api
-//                let entity = response.value
-//                let managedObjectContext = self.backgroundManagedObjectContext
-//
-//                return managedObjectContext.performChanges {
-//                    let _requestTwitterUser: TwitterUser? = {
-//                        let request = TwitterUser.sortedFetchRequest
-//                        request.predicate = TwitterUser.predicate(idStr: requestTwitterUserID)
-//                        request.fetchLimit = 1
-//                        request.returnsObjectsAsFaults = false
-//                        do {
-//                            return try managedObjectContext.fetch(request).first
-//                        } catch {
-//                            assertionFailure(error.localizedDescription)
-//                            return nil
-//                        }
-//                    }()
-//                    let _oldTweet: Tweet? = {
-//                        let request = Tweet.sortedFetchRequest
-//                        request.predicate = Tweet.predicate(idStr: entity.idStr)
-//                        request.returnsObjectsAsFaults = false
-//                        request.relationshipKeyPathsForPrefetching = [#keyPath(Tweet.retweet), #keyPath(Tweet.quote)]
-//                        do {
-//                            return try managedObjectContext.fetch(request).first
-//                        } catch {
-//                            assertionFailure(error.localizedDescription)
-//                            return nil
-//                        }
-//                    }()
-//
-//                    guard let requestTwitterUser = _requestTwitterUser,
-//                          let oldTweet = _oldTweet else {
-//                        assertionFailure()
-//                        return
-//                    }
-//
-//                    APIService.CoreData.mergeTweet(for: requestTwitterUser, old: oldTweet, entity: entity, networkDate: response.networkDate)
-//                    os_log(.info, log: log, "%{public}s[%{public}ld], %{public}s: did update tweet %{public}s like status to: %{public}s. now %ld likes", ((#file as NSString).lastPathComponent), #line, #function, entity.idStr, entity.favorited.flatMap { $0 ? "like" : "unlike" } ?? "<nil>", entity.favoriteCount ?? 0)
-//                }
-//                .setFailureType(to: Error.self)
-//                .tryMap { result -> Twitter.Response.Content<Twitter.Entity.Tweet> in
-//                    switch result {
-//                    case .success:
-//                        return response
-//                    case .failure(let error):
-//                        throw error
-//                    }
-//                }
-//                .eraseToAnyPublisher()
-//            }
-//            .switchToLatest()
-//            .handleEvents(receiveCompletion: { [weak self] completion in
-//                guard let self = self else { return }
-//                switch completion {
-//                case .failure(let error):
-//                    if let responseError = error as? Twitter.API.Error.ResponseError {
-//                        switch responseError.twitterAPIError {
-//                        case .accountIsTemporarilyLocked, .rateLimitExceeded:
-//                            self.error.send(.explicit(.twitterResponseError(responseError)))
-//                        default:
-//                            break
-//                        }
-//                    }
-//                case .finished:
-//                    break
-//                }
-//            })
-//            .eraseToAnyPublisher()
-//    }
-    
-}
-
-extension APIService {
 //    func likeList(
 //        count: Int = 200,
 //        userID: String,
@@ -171,6 +53,14 @@ extension APIService {
 }
 
 extension APIService {
+    
+    /// update status like state
+    ///
+    /// normal <-> like
+    ///
+    /// - Parameters:
+    ///   - status: target status
+    ///   - authenticationContext: `AuthenticationContext`
     func like(
         status: StatusRecord,
         authenticationContext: AuthenticationContext
@@ -208,11 +98,13 @@ extension APIService {
         let managedObjectContext = backgroundManagedObjectContext
         
         // update like state and retrieve like context
-        let _likeContext: TwitterLikeContext? = try await managedObjectContext.performChanges {
+        let likeContext: TwitterLikeContext = try await managedObjectContext.performChanges {
             guard let authentication = authenticationContext.authenticationRecord.object(in: managedObjectContext),
                   let _status = record.object(in: managedObjectContext)
-            else { return nil }
-            let me = authentication.twitterUser
+            else {
+                throw AppError.implicit(.badRequest)
+            }
+            let me = authentication.user
             let status = _status.repost ?? _status
             let isLiked = status.likeBy.contains(me)
             let likedCount = status.likeCount
@@ -226,9 +118,6 @@ extension APIService {
             )
             self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): update status like: \(!isLiked), \(likeCount)")
             return context
-        }
-        guard let likeContext = _likeContext else {
-            throw APIService.APIError.implicit(.badRequest)
         }
         
         // request like or undo like
@@ -264,7 +153,7 @@ extension APIService {
             guard let authentication = authenticationContext.authenticationRecord.object(in: managedObjectContext),
                   let _status = record.object(in: managedObjectContext)
             else { return }
-            let me = authentication.twitterUser
+            let me = authentication.user
             let status = _status.repost ?? _status
             
             switch result {
@@ -301,11 +190,13 @@ extension APIService {
         let managedObjectContext = backgroundManagedObjectContext
         
         // update like state and retrieve like context
-        let _likeContext: MastodonLikeContext? = try await managedObjectContext.performChanges {
+        let likeContext: MastodonLikeContext = try await managedObjectContext.performChanges {
             guard let authentication = authenticationContext.authenticationRecord.object(in: managedObjectContext),
                   let _status = record.object(in: managedObjectContext)
-            else { return nil }
-            let user = authentication.mastodonUser
+            else {
+                throw AppError.implicit(.badRequest)
+            }
+            let user = authentication.user
             let status = _status.repost ?? _status
             let isLiked = status.likeBy.contains(user)
             let likedCount = status.likeCount
@@ -320,10 +211,7 @@ extension APIService {
             self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): update status like: \(!isLiked), \(likeCount)")
             return context
         }
-        guard let likeContext = _likeContext else {
-            throw APIService.APIError.implicit(.badRequest)
-        }
-        
+
         // request like or undo like
         let result: Result<Mastodon.Response.Content<Mastodon.Entity.Status>, Error>
         do {
@@ -345,7 +233,7 @@ extension APIService {
             guard let authentication = authenticationContext.authenticationRecord.object(in: managedObjectContext),
                   let _status = record.object(in: managedObjectContext)
             else { return }
-            let user = authentication.mastodonUser
+            let user = authentication.user
             let status = _status.repost ?? _status
             
             switch result {

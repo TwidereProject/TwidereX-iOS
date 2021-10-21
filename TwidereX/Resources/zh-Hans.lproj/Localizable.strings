@@ -82,6 +82,7 @@
 "Common.Alerts.MediaSaved.Title" = "媒体已保存";
 "Common.Alerts.MediaSaving.Title" = "正在保存媒体";
 "Common.Alerts.MediaSharing.Title" = "下载完成后，媒体将被共享";
+"Common.Alerts.MuteUserConfirm.Title" = "是否要静音 %@？";
 "Common.Alerts.MuteUserSuccess.Title" = "%@ 已被静音";
 "Common.Alerts.NoTweetsFound.Title" = "未找到推文";
 "Common.Alerts.PermissionDeniedFriendshipBlocked.Message" = "您已被阻止关注此帐户";
@@ -101,9 +102,11 @@
 "Common.Alerts.TweetFail.Title" = "推文发送失败";
 "Common.Alerts.TweetSending.Title" = "正在发送推文";
 "Common.Alerts.TweetSent.Title" = "推文已发送";
+"Common.Alerts.UnblockUserConfirm.Title" = "是否要解除屏蔽 %@？";
 "Common.Alerts.UnblockUserSuccess.Title" = "%@ 已被解除屏蔽";
 "Common.Alerts.UnfollowUser.Message" = "是否取消关注用户 %@？";
 "Common.Alerts.UnfollowingSuccess.Title" = "取消关注成功";
+"Common.Alerts.UnmuteUserConfirm.Title" = "是否要解除静音 %@？";
 "Common.Alerts.UnmuteUserSuccess.Title" = "%@ 已被解除静音";
 "Common.Controls.Actions.Add" = "添加";
 "Common.Controls.Actions.Cancel" = "取消";
