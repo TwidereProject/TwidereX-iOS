@@ -124,9 +124,9 @@ extension UserTimelineViewController: UITableViewDelegate, AutoGenerateTableView
 
     // Generated using Sourcery
     // DO NOT EDIT
-        func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-            aspectTableView(tableView, didSelectRowAt: indexPath)
-        }
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        aspectTableView(tableView, didSelectRowAt: indexPath)
+    }
     // sourcery:end
 
     func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {

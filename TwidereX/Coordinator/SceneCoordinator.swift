@@ -118,6 +118,11 @@ extension SceneCoordinator {
             presentingViewController = topViewController
         }
         
+        // Fix SearchViewController + UISearchController cause viewController always show as modal issue
+        if let searchController = presentingViewController.presentingViewController as? SearchViewController {
+            presentingViewController = searchController
+        }
+        
         switch transition {
         case .show:
             presentingViewController.show(viewController, sender: sender)

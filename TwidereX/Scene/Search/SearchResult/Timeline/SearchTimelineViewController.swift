@@ -60,6 +60,10 @@ extension SearchTimelineViewController {
             tableView: tableView,
             statusViewTableViewCellDelegate: self
         )
+        
+        KeyboardResponderService
+            .configure(scrollView: tableView)
+            .store(in: &disposeBag)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -98,8 +102,16 @@ extension SearchTimelineViewController {
 
 
 // MARK: - UITableViewDelegate
-extension SearchTimelineViewController: UITableViewDelegate {
-    
+extension SearchTimelineViewController: UITableViewDelegate, AutoGenerateTableViewDelegate {
+    // sourcery:inline:SearchTimelineViewController.AutoGenerateTableViewDelegate
+
+    // Generated using Sourcery
+    // DO NOT EDIT
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        aspectTableView(tableView, didSelectRowAt: indexPath)
+    }
+    // sourcery:end
+
 //    func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
 //        return 200
 //    }
@@ -133,25 +145,6 @@ extension SearchTimelineViewController: UITableViewDelegate {
 //    }
     
 }
-
-// MARK: - AVPlayerViewControllerDelegate
-//extension SearchTimelineViewController: AVPlayerViewControllerDelegate {
-//    
-//    func playerViewController(_ playerViewController: AVPlayerViewController, willBeginFullScreenPresentationWithAnimationCoordinator coordinator: UIViewControllerTransitionCoordinator) {
-//        handlePlayerViewController(playerViewController, willBeginFullScreenPresentationWithAnimationCoordinator: coordinator)
-//    }
-//    
-//    func playerViewController(_ playerViewController: AVPlayerViewController, willEndFullScreenPresentationWithAnimationCoordinator coordinator: UIViewControllerTransitionCoordinator) {
-//        handlePlayerViewController(playerViewController, willEndFullScreenPresentationWithAnimationCoordinator: coordinator)
-//    }
-//    
-//}
-
-// MARK: - TimelinePostTableViewCellDelegate
-//extension SearchTimelineViewController: TimelinePostTableViewCellDelegate {
-//    weak var playerViewControllerDelegate: AVPlayerViewControllerDelegate? { return self }
-//    func parent() -> UIViewController { return self }
-//}
 
 // MARK: - StatusViewTableViewCellDelegate
 extension SearchTimelineViewController: StatusViewTableViewCellDelegate { }

@@ -86,3 +86,35 @@ extension KeyboardResponderService {
         case dock
     }
 }
+
+extension KeyboardResponderService {
+    static func configure(scrollView: UIScrollView) -> AnyCancellable {
+        return Publishers.CombineLatest3(
+            KeyboardResponderService.shared.isShow.eraseToAnyPublisher(),
+            KeyboardResponderService.shared.state.eraseToAnyPublisher(),
+            KeyboardResponderService.shared.endFrame.eraseToAnyPublisher()
+        )
+        .sink(receiveValue: { [weak scrollView] isShow, state, endFrame in
+            guard let scrollView = scrollView else { return }
+            guard let view = scrollView.superview else { return }
+            
+            guard isShow, state == .dock else {
+                scrollView.contentInset.bottom = 0.0
+                scrollView.verticalScrollIndicatorInsets.bottom = 0.0
+                return
+            }
+            
+            // isShow AND dock state
+            let contentFrame = view.convert(scrollView.frame, to: nil)
+            let padding = contentFrame.maxY - endFrame.minY
+            guard padding > 0 else {
+                scrollView.contentInset.bottom = 0.0
+                scrollView.verticalScrollIndicatorInsets.bottom = 0.0
+                return
+            }
+            
+            scrollView.contentInset.bottom = padding - scrollView.safeAreaInsets.bottom
+            scrollView.verticalScrollIndicatorInsets.bottom = padding - scrollView.safeAreaInsets.bottom
+        })
+    }
+}

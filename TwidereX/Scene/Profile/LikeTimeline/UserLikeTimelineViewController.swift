@@ -112,9 +112,9 @@ extension UserLikeTimelineViewController: UITableViewDelegate, AutoGenerateTable
 
     // Generated using Sourcery
     // DO NOT EDIT
-        func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-            aspectTableView(tableView, didSelectRowAt: indexPath)
-        }
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        aspectTableView(tableView, didSelectRowAt: indexPath)
+    }
     
     // sourcery:end
     
