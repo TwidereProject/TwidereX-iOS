@@ -103,7 +103,7 @@ extension ProfileHeaderView.ViewModel {
             .sink { relationship in
                 guard let relationship = relationship else { return }
                 profileHeaderView.friendshipButton.configure(relationship: relationship)
-                profileHeaderView.friendshipButton.isHidden = relationship == .none
+                profileHeaderView.friendshipButton.isHidden = relationship == .isMyself
             }
             .store(in: &bindDisposeBag)
         // bio
