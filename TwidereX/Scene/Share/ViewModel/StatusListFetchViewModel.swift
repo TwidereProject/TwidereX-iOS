@@ -30,10 +30,36 @@ enum StatusListFetchViewModel {
     
     struct TwitterFetchContext {
         let authenticationContext: TwitterAuthenticationContext
+        let searchText: String?
         let maxID: TwitterStatus.ID?
+        let nextToken: String?
         let count: Int?
         let excludeReplies: Bool
         let userIdentifier: TwitterUserIdentifier?
+        
+        func map(maxID: TwitterStatus.ID?) -> TwitterFetchContext {
+            TwitterFetchContext(
+                authenticationContext: self.authenticationContext,
+                searchText: self.searchText,
+                maxID: maxID,
+                nextToken: self.nextToken,
+                count: self.count,
+                excludeReplies: self.excludeReplies,
+                userIdentifier: self.userIdentifier
+            )
+        }
+        
+        func map(nextToken: String?) -> TwitterFetchContext {
+            TwitterFetchContext(
+                authenticationContext: self.authenticationContext,
+                searchText: self.searchText,
+                maxID: self.maxID,
+                nextToken: nextToken,
+                count: self.count,
+                excludeReplies: self.excludeReplies,
+                userIdentifier: self.userIdentifier
+            )
+        }
     }
     
     struct MastodonFetchContext {
@@ -44,6 +70,18 @@ enum StatusListFetchViewModel {
         let excludeReblogs: Bool
         let onlyMedia: Bool
         let userIdentifier: MastodonUserIdentifier?
+        
+        func map(maxID: MastodonStatus.ID?) -> MastodonFetchContext {
+            MastodonFetchContext(
+                authenticationContext: self.authenticationContext,
+                maxID: maxID,
+                count: self.count,
+                excludeReplies: self.excludeReplies,
+                excludeReblogs: self.excludeReblogs,
+                onlyMedia: self.onlyMedia,
+                userIdentifier: self.userIdentifier
+            )
+        }
     }
     
     struct Output {
@@ -53,7 +91,8 @@ enum StatusListFetchViewModel {
         let nextInput: Input?
 
         enum Result {
-            case twitter([Twitter.Entity.Tweet])       // v1
+            case twitterV2([Twitter.Entity.V2.Tweet]) // v2
+            case twitter([Twitter.Entity.Tweet]) // v1
             case mastodon([Mastodon.Entity.Status])
         }
     }
@@ -73,13 +112,7 @@ extension StatusListFetchViewModel {
             let nextInput: Input? = {
                 if noMore { return nil }
                 guard let maxID = response.value.last?.idStr else { return nil }
-                let fetchContext = TwitterFetchContext(
-                    authenticationContext: authenticationContext,
-                    maxID: maxID,
-                    count: fetchContext.count,
-                    excludeReplies: fetchContext.excludeReplies,
-                    userIdentifier: fetchContext.userIdentifier
-                )
+                let fetchContext = fetchContext.map(maxID: maxID)
                 return Input(fetchContext: .twitter(fetchContext))
             }()
             return Output(
@@ -98,15 +131,7 @@ extension StatusListFetchViewModel {
             let nextInput: Input? = {
                 if noMore { return nil }
                 guard let maxID = response.value.last?.id else { return nil }
-                let fetchContext = MastodonFetchContext(
-                    authenticationContext: authenticationContext,
-                    maxID: maxID,
-                    count: fetchContext.count,
-                    excludeReplies: fetchContext.excludeReplies,
-                    excludeReblogs: fetchContext.excludeReblogs,
-                    onlyMedia: fetchContext.onlyMedia,
-                    userIdentifier: fetchContext.userIdentifier
-                )
+                let fetchContext = fetchContext.map(maxID: maxID)
                 return Input(fetchContext: .mastodon(fetchContext))
             }()
             return Output(
@@ -138,13 +163,8 @@ extension StatusListFetchViewModel {
             let nextInput: Input? = {
                 if noMore { return nil }
                 guard let maxID = response.value.last?.idStr else { return nil }
-                let fetchContext = TwitterFetchContext(
-                    authenticationContext: authenticationContext,
-                    maxID: maxID,
-                    count: fetchContext.count,
-                    excludeReplies: fetchContext.excludeReplies,
-                    userIdentifier: fetchContext.userIdentifier
-                )
+                let fetchContext = fetchContext.map(maxID: maxID)
+
                 return Input(fetchContext: .twitter(fetchContext))
             }()
             return Output(
@@ -174,15 +194,7 @@ extension StatusListFetchViewModel {
             let nextInput: Input? = {
                 if noMore { return nil }
                 guard let maxID = response.value.last?.id else { return nil }
-                let fetchContext = MastodonFetchContext(
-                    authenticationContext: authenticationContext,
-                    maxID: maxID,
-                    count: fetchContext.count,
-                    excludeReplies: fetchContext.excludeReplies,
-                    excludeReblogs: fetchContext.excludeReblogs,
-                    onlyMedia: fetchContext.onlyMedia,
-                    userIdentifier: fetchContext.userIdentifier
-                )
+                let fetchContext = fetchContext.map(maxID: maxID)
                 return Input(fetchContext: .mastodon(fetchContext))
             }()
             return Output(
@@ -213,13 +225,7 @@ extension StatusListFetchViewModel {
             let nextInput: Input? = {
                 if noMore { return nil }
                 guard let maxID = response.value.last?.idStr else { return nil }
-                let fetchContext = TwitterFetchContext(
-                    authenticationContext: authenticationContext,
-                    maxID: maxID,
-                    count: fetchContext.count,
-                    excludeReplies: fetchContext.excludeReplies,
-                    userIdentifier: fetchContext.userIdentifier
-                )
+                let fetchContext = fetchContext.map(maxID: maxID)
                 return Input(fetchContext: .twitter(fetchContext))
             }()
             return Output(
@@ -240,15 +246,7 @@ extension StatusListFetchViewModel {
             let noMore = response.link?.maxID == nil
             let nextInput: Input? = {
                 guard let maxID = response.link?.maxID else { return nil }
-                let fetchContext = MastodonFetchContext(
-                    authenticationContext: authenticationContext,
-                    maxID: maxID,
-                    count: fetchContext.count,
-                    excludeReplies: fetchContext.excludeReplies,
-                    excludeReblogs: fetchContext.excludeReblogs,
-                    onlyMedia: fetchContext.onlyMedia,
-                    userIdentifier: fetchContext.userIdentifier
-                )
+                let fetchContext = fetchContext.map(maxID: maxID)
                 return Input(fetchContext: .mastodon(fetchContext))
             }()
             return Output(
@@ -256,6 +254,51 @@ extension StatusListFetchViewModel {
                 hasMore: !noMore,
                 nextInput: nextInput
             )
+        }
+    }
+    
+    static func searchTimeline(context: AppContext, input: Input) async throws -> Output {
+        switch input.fetchContext {
+        case .twitter(let fetchContext):
+            let authenticationContext = fetchContext.authenticationContext
+            let queryText: String = try {
+                let searchText = (fetchContext.searchText ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+                guard !searchText.isEmpty && searchText.count < 500 else {
+                    throw AppError.implicit(.badRequest)
+                }
+                var query = searchText
+                // default exclude retweet
+                query += " (-is:retweet)"
+                // TODO: more options
+                return query
+            }()
+            
+            let query = Twitter.API.V2.Search.RecentTweetQuery(
+                query: queryText,
+                maxResults: fetchContext.count ?? 100,
+                sinceID: nil,
+                startTime: nil,
+                nextToken: fetchContext.nextToken
+            )
+            let response = try await context.apiService.searchTwitterStatus(
+                query: query,
+                authenticationContext: authenticationContext
+            )
+            let content = response.value
+            debugPrint(content)
+            let nextToken = content.meta.nextToken
+            let noMore = nextToken == nil
+            let nextInput: Input? = {
+                let fetchContext = fetchContext.map(nextToken: nextToken)
+                return Input(fetchContext: .twitter(fetchContext))
+            }()
+            return Output(
+                result: .twitterV2(content.data ?? []),
+                hasMore: !noMore,
+                nextInput: nextInput
+            )
+        case .mastodon(let fetchContext):
+            fatalError()
         }
     }
 }

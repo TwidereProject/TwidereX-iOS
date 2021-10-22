@@ -1006,6 +1006,10 @@ internal enum L10n {
         internal static let hashtag = L10n.tr("Localizable", "Scene.Search.Tabs.Hashtag")
         /// Media
         internal static let media = L10n.tr("Localizable", "Scene.Search.Tabs.Media")
+        /// People
+        internal static let people = L10n.tr("Localizable", "Scene.Search.Tabs.People")
+        /// Toots
+        internal static let toots = L10n.tr("Localizable", "Scene.Search.Tabs.Toots")
         /// Tweets
         internal static let tweets = L10n.tr("Localizable", "Scene.Search.Tabs.Tweets")
         /// Users

@@ -111,7 +111,7 @@ extension UserMediaTimelineViewController {
             .store(in: &disposeBag)
         
         // trigger loading
-        viewModel.userIdentifier
+        viewModel.$userIdentifier
             .removeDuplicates()
             .sink { [weak self] _ in
                 guard let self = self else { return }

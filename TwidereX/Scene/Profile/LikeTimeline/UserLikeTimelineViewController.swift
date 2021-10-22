@@ -74,7 +74,7 @@ extension UserLikeTimelineViewController {
             .store(in: &disposeBag)
 
         // trigger timeline loading
-        viewModel.userIdentifier
+        viewModel.$userIdentifier
             .removeDuplicates()
             .sink { [weak self] _ in
                 guard let self = self else { return }

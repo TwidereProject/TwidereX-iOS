@@ -21,9 +21,9 @@ class UserTimelineViewModel: NSObject {
     
     // input
     let context: AppContext
-    let userIdentifier: CurrentValueSubject<UserIdentifier?, Never>
     let statusRecordFetchedResultController: StatusRecordFetchedResultController
     let listBatchFetchViewModel = ListBatchFetchViewModel()
+    @Published var userIdentifier: UserIdentifier?
     
     // output
     var diffableDataSource: UITableViewDiffableDataSource<StatusSection, StatusItem>?
@@ -45,13 +45,11 @@ class UserTimelineViewModel: NSObject {
     
     init(context: AppContext) {
         self.context = context
-        self.userIdentifier = CurrentValueSubject(nil)
         self.statusRecordFetchedResultController = StatusRecordFetchedResultController(managedObjectContext: context.managedObjectContext)
         super.init()
         
-        userIdentifier
-            .assign(to: \.value, on: statusRecordFetchedResultController.userIdentifier)
-            .store(in: &disposeBag)
+        $userIdentifier
+            .assign(to: &statusRecordFetchedResultController.$userIdentifier)
     }
     
     deinit {

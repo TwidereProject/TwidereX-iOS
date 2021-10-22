@@ -31,7 +31,7 @@ extension UserLikeTimelineViewModel.State {
             guard let viewModel = viewModel else { return false }
             switch stateClass {
             case is Reloading.Type:
-                return viewModel.userIdentifier.value != nil
+                return viewModel.userIdentifier != nil
             case is Suspended.Type:
                 return true
             default:
@@ -161,7 +161,7 @@ extension UserLikeTimelineViewModel.State {
             
             guard let viewModel = viewModel, let stateMachine = stateMachine else { return }
             
-            guard let userIdentifier = viewModel.userIdentifier.value,
+            guard let userIdentifier = viewModel.userIdentifier,
                   let authenticationContext = viewModel.context.authenticationService.activeAuthenticationContext.value
             else {
                 stateMachine.enter(Fail.self)
@@ -175,7 +175,9 @@ extension UserLikeTimelineViewModel.State {
                         return StatusListFetchViewModel.Input(
                             fetchContext: .twitter(.init(
                                 authenticationContext: authenticationContext,
+                                searchText: nil,
                                 maxID: nil,
+                                nextToken: nil,
                                 count: 50,
                                 excludeReplies: false,
                                 userIdentifier: identifier
@@ -221,6 +223,10 @@ extension UserLikeTimelineViewModel.State {
                     }
                     
                     switch output.result {
+                    case .twitterV2:
+                        // not use v2 API here
+                        assertionFailure()
+                        return
                     case .twitter(let statuses):
                         let statusIDs = statuses.map { $0.idStr }
                         viewModel.statusRecordFetchedResultController.twitterStatusFetchedResultController.append(statusIDs: statusIDs)

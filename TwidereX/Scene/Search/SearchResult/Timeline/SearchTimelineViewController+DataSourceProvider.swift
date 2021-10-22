@@ -1,15 +1,15 @@
 //
-//  UserTimelineViewController+DataSourceProvider.swift
+//  SearchTimelineViewController+DataSourceProvider.swift
 //  TwidereX
 //
-//  Created by Cirno MainasuK on 2021-10-12.
+//  Created by Cirno MainasuK on 2021-10-22.
 //  Copyright © 2021 Twidere. All rights reserved.
 //
 
 import UIKit
 
 // MARK: - DataSourceProvider
-extension UserTimelineViewController: DataSourceProvider {    
+extension SearchTimelineViewController: DataSourceProvider {    
     func item(from source: DataSourceItem.Source) async -> DataSourceItem? {
         var _indexPath = source.indexPath
         if _indexPath == nil, let cell = source.tableViewCell {

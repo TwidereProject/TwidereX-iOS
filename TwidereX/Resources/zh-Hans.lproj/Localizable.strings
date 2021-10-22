@@ -297,6 +297,8 @@
 "Scene.Search.ShowMore" = "显示更多";
 "Scene.Search.Tabs.Hashtag" = "标签";
 "Scene.Search.Tabs.Media" = "媒体";
+"Scene.Search.Tabs.People" = "用户";
+"Scene.Search.Tabs.Toots" = "嘟文";
 "Scene.Search.Tabs.Tweets" = "推文";
 "Scene.Search.Tabs.Users" = "用户";
 "Scene.Search.Title" = "搜索";

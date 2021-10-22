@@ -56,18 +56,15 @@ final class ProfileViewController: UIViewController, NeedsDependency {
         
         let userTimelineViewModel = UserTimelineViewModel(context: context)
         viewModel.userIdentifier
-            .assign(to: \.value, on: userTimelineViewModel.userIdentifier)
-            .store(in: &disposeBag)
+            .assign(to: &userTimelineViewModel.$userIdentifier)
         
         let userMediaTimelineViewModel = UserMediaTimelineViewModel(context: context)
         viewModel.userIdentifier
-            .assign(to: \.value, on: userMediaTimelineViewModel.userIdentifier)
-            .store(in: &disposeBag)
+            .assign(to: &userMediaTimelineViewModel.$userIdentifier)
         
         let userLikeTimelineViewModel = UserLikeTimelineViewModel(context: context)
         viewModel.userIdentifier
-            .assign(to: \.value, on: userLikeTimelineViewModel.userIdentifier)
-            .store(in: &disposeBag)
+            .assign(to: &userLikeTimelineViewModel.$userIdentifier)
         
         profilePagingViewController.viewModel = {
             let profilePagingViewModel = ProfilePagingViewModel(

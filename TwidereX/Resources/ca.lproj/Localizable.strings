@@ -297,6 +297,8 @@
 "Scene.Search.ShowMore" = "Show more";
 "Scene.Search.Tabs.Hashtag" = "Etiqueta";
 "Scene.Search.Tabs.Media" = "Multimèdia";
+"Scene.Search.Tabs.People" = "People";
+"Scene.Search.Tabs.Toots" = "Toots";
 "Scene.Search.Tabs.Tweets" = "Piulades";
 "Scene.Search.Tabs.Users" = "Usuaris";
 "Scene.Search.Title" = "Cerca";

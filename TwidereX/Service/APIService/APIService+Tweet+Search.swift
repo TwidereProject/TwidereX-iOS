@@ -180,6 +180,25 @@ extension APIService {
 
 extension APIService {
     
+    // for search
+    func searchTwitterStatus(
+        searchText: String,
+        nextToken: String?,
+        authenticationContext: TwitterAuthenticationContext
+    ) async throws -> Twitter.Response.Content<Twitter.API.V2.Search.Content> {
+        let query = Twitter.API.V2.Search.RecentTweetQuery(
+            query: searchText,
+            maxResults: APIService.defaultSearchCount,
+            sinceID: nil,
+            startTime: nil,
+            nextToken: nextToken
+        )
+        return try await searchTwitterStatus(
+            query: query,
+            authenticationContext: authenticationContext
+        )
+    }
+    
     // for thread
     func searchTwitterStatus(
         conversationID: Twitter.Entity.V2.Tweet.ConversationID,
@@ -196,6 +215,16 @@ extension APIService {
             startTime: startTime,
             nextToken: nextToken
         )
+        return try await searchTwitterStatus(
+            query: query,
+            authenticationContext: authenticationContext
+        )
+    }
+    
+    func searchTwitterStatus(
+        query: Twitter.API.V2.Search.RecentTweetQuery,
+        authenticationContext: TwitterAuthenticationContext
+    ) async throws -> Twitter.Response.Content<Twitter.API.V2.Search.Content> {
         let response = try await Twitter.API.V2.Search.recentTweet(
             session: session,
             query: query,
@@ -224,8 +253,8 @@ extension APIService {
                 places: content.includes?.places ?? []
             )
             let user = authenticationContext.authenticationRecord.object(in: managedObjectContext)?.user
-            let statusCache = Persistence.PersistCache<TwitterStatus>()
-            let userCache = Persistence.PersistCache<TwitterUser>()
+            // let statusCache = Persistence.PersistCache<TwitterStatus>()
+            // let userCache = Persistence.PersistCache<TwitterUser>()
             
             Persistence.Twitter.persist(
                 in: managedObjectContext,

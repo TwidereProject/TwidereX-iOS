@@ -8,11 +8,13 @@
 
 import os.log
 import UIKit
-import AVKit
 import Combine
 import CoreDataStack
 
-final class SearchTimelineViewController: UIViewController, MediaPreviewableViewController, NeedsDependency {
+// MediaPreviewableViewController
+final class SearchTimelineViewController: UIViewController, NeedsDependency {
+    
+    let logger = Logger(subsystem: "SearchTimelineViewController", category: "ViewController")
     
     weak var context: AppContext! { willSet { precondition(!isViewLoaded) } }
     weak var coordinator: SceneCoordinator! { willSet { precondition(!isViewLoaded) } }
@@ -20,21 +22,21 @@ final class SearchTimelineViewController: UIViewController, MediaPreviewableView
     var disposeBag = Set<AnyCancellable>()
     var viewModel: SearchTimelineViewModel!
     
-    let mediaPreviewTransitionController = MediaPreviewTransitionController()
+    // let mediaPreviewTransitionController = MediaPreviewTransitionController()
     
     lazy var tableView: UITableView = {
         let tableView = UITableView()
-        tableView.register(TimelinePostTableViewCell.self, forCellReuseIdentifier: String(describing: TimelinePostTableViewCell.self))
+        tableView.register(StatusTableViewCell.self, forCellReuseIdentifier: String(describing: StatusTableViewCell.self))
         tableView.register(TimelineBottomLoaderTableViewCell.self, forCellReuseIdentifier: String(describing: TimelineBottomLoaderTableViewCell.self))
-        tableView.rowHeight = UITableView.automaticDimension
         tableView.separatorStyle = .none
+        tableView.tableFooterView = UIView()
         return tableView
     }()
     
     deinit {
         os_log("%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
     }
-    
+
 }
 
 extension SearchTimelineViewController {
@@ -53,14 +55,11 @@ extension SearchTimelineViewController {
             tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
         ])
         
-        viewModel.tableView = tableView
         tableView.delegate = self
-//        viewModel.setupDiffableDataSource(
-//            for: tableView,
-//            dependency: self,
-//            timelinePostTableViewCellDelegate: self
-//        )
-//        viewModel.tweetFetchedResultsController.tweetIDs.value = []
+        viewModel.setupDiffableDataSource(
+            tableView: tableView,
+            statusViewTableViewCellDelegate: self
+        )
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -78,24 +77,24 @@ extension SearchTimelineViewController {
 }
 
 // MARK: - UIScrollViewDelegate
-extension SearchTimelineViewController {
-    func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        guard scrollView === tableView else { return }
-        let cells = tableView.visibleCells.compactMap { $0 as? TimelineBottomLoaderTableViewCell }
-        guard let loaderTableViewCell = cells.first else { return }
-        
-        if let tabBar = tabBarController?.tabBar, let window = view.window {
-            let loaderTableViewCellFrameInWindow = tableView.convert(loaderTableViewCell.frame, to: nil)
-            let windowHeight = window.frame.height
-            let loaderAppear = (loaderTableViewCellFrameInWindow.origin.y + 0.8 * loaderTableViewCell.frame.height) < (windowHeight - tabBar.frame.height)
-            if loaderAppear {
-                viewModel.stateMachine.enter(SearchTimelineViewModel.State.Loading.self)
-            }
-        } else {
-            viewModel.stateMachine.enter(SearchTimelineViewModel.State.Loading.self)
-        }
-    }
-}
+//extension SearchTimelineViewController {
+//    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+//        guard scrollView === tableView else { return }
+//        let cells = tableView.visibleCells.compactMap { $0 as? TimelineBottomLoaderTableViewCell }
+//        guard let loaderTableViewCell = cells.first else { return }
+//
+//        if let tabBar = tabBarController?.tabBar, let window = view.window {
+//            let loaderTableViewCellFrameInWindow = tableView.convert(loaderTableViewCell.frame, to: nil)
+//            let windowHeight = window.frame.height
+//            let loaderAppear = (loaderTableViewCellFrameInWindow.origin.y + 0.8 * loaderTableViewCell.frame.height) < (windowHeight - tabBar.frame.height)
+//            if loaderAppear {
+//                viewModel.stateMachine.enter(SearchTimelineViewModel.State.Loading.self)
+//            }
+//        } else {
+//            viewModel.stateMachine.enter(SearchTimelineViewModel.State.Loading.self)
+//        }
+//    }
+//}
 
 
 // MARK: - UITableViewDelegate
@@ -136,17 +135,17 @@ extension SearchTimelineViewController: UITableViewDelegate {
 }
 
 // MARK: - AVPlayerViewControllerDelegate
-extension SearchTimelineViewController: AVPlayerViewControllerDelegate {
-    
-    func playerViewController(_ playerViewController: AVPlayerViewController, willBeginFullScreenPresentationWithAnimationCoordinator coordinator: UIViewControllerTransitionCoordinator) {
-        handlePlayerViewController(playerViewController, willBeginFullScreenPresentationWithAnimationCoordinator: coordinator)
-    }
-    
-    func playerViewController(_ playerViewController: AVPlayerViewController, willEndFullScreenPresentationWithAnimationCoordinator coordinator: UIViewControllerTransitionCoordinator) {
-        handlePlayerViewController(playerViewController, willEndFullScreenPresentationWithAnimationCoordinator: coordinator)
-    }
-    
-}
+//extension SearchTimelineViewController: AVPlayerViewControllerDelegate {
+//    
+//    func playerViewController(_ playerViewController: AVPlayerViewController, willBeginFullScreenPresentationWithAnimationCoordinator coordinator: UIViewControllerTransitionCoordinator) {
+//        handlePlayerViewController(playerViewController, willBeginFullScreenPresentationWithAnimationCoordinator: coordinator)
+//    }
+//    
+//    func playerViewController(_ playerViewController: AVPlayerViewController, willEndFullScreenPresentationWithAnimationCoordinator coordinator: UIViewControllerTransitionCoordinator) {
+//        handlePlayerViewController(playerViewController, willEndFullScreenPresentationWithAnimationCoordinator: coordinator)
+//    }
+//    
+//}
 
 // MARK: - TimelinePostTableViewCellDelegate
 //extension SearchTimelineViewController: TimelinePostTableViewCellDelegate {
@@ -154,3 +153,5 @@ extension SearchTimelineViewController: AVPlayerViewControllerDelegate {
 //    func parent() -> UIViewController { return self }
 //}
 
+// MARK: - StatusViewTableViewCellDelegate
+extension SearchTimelineViewController: StatusViewTableViewCellDelegate { }

@@ -71,7 +71,9 @@ extension HomeTimelineViewModel.LoadOldestState {
                     return StatusListFetchViewModel.Input(
                         fetchContext: .twitter(.init(
                             authenticationContext: authenticationContext,
+                            searchText: nil,
                             maxID: status.id,
+                            nextToken: nil,
                             count: 100,
                             excludeReplies: false,
                             userIdentifier: nil

@@ -31,7 +31,7 @@ extension UserMediaTimelineViewModel.State {
             guard let viewModel = viewModel else { return false }
             switch stateClass {
             case is Reloading.Type:
-                return viewModel.userIdentifier.value != nil
+                return viewModel.userIdentifier != nil
             case is Suspended.Type:
                 return true
             default:
@@ -166,7 +166,7 @@ extension UserMediaTimelineViewModel.State {
             
             guard let viewModel = viewModel, let stateMachine = stateMachine else { return }
             
-            guard let userIdentifier = viewModel.userIdentifier.value,
+            guard let userIdentifier = viewModel.userIdentifier,
                   let authenticationContext = viewModel.context.authenticationService.activeAuthenticationContext.value
             else {
                 stateMachine.enter(Fail.self)
@@ -180,7 +180,9 @@ extension UserMediaTimelineViewModel.State {
                         return StatusListFetchViewModel.Input(
                             fetchContext: .twitter(.init(
                                 authenticationContext: authenticationContext,
+                                searchText: nil,
                                 maxID: nil,
+                                nextToken: nil,
                                 count: 200,
                                 excludeReplies: true,
                                 userIdentifier: identifier
@@ -222,6 +224,10 @@ extension UserMediaTimelineViewModel.State {
                     }
                     
                     switch output.result {
+                    case .twitterV2:
+                        // not use V2 API here
+                        assertionFailure()
+                        return
                     case .twitter(let statuses):
                         let statusIDs = statuses
                             .filter { status in

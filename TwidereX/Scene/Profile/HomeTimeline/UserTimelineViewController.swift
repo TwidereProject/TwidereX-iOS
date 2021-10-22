@@ -48,6 +48,8 @@ extension UserTimelineViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        view.backgroundColor = .systemBackground
+        
         tableView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(tableView)
         tableView.backgroundColor = .systemBackground
@@ -75,7 +77,7 @@ extension UserTimelineViewController {
             .store(in: &disposeBag)
         
         // trigger loading
-        viewModel.userIdentifier
+        viewModel.$userIdentifier
             .removeDuplicates()
             .sink { [weak self] _ in
                 guard let self = self else { return }

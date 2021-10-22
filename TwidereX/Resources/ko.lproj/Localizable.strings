@@ -297,6 +297,8 @@
 "Scene.Search.ShowMore" = "더 보기";
 "Scene.Search.Tabs.Hashtag" = "해시태그";
 "Scene.Search.Tabs.Media" = "미디어";
+"Scene.Search.Tabs.People" = "People";
+"Scene.Search.Tabs.Toots" = "Toots";
 "Scene.Search.Tabs.Tweets" = "트윗";
 "Scene.Search.Tabs.Users" = "사용자";
 "Scene.Search.Title" = "찾기";

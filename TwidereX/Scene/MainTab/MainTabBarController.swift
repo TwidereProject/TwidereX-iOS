@@ -25,17 +25,17 @@ class MainTabBarController: UITabBarController {
     
     enum Tab: Int, CaseIterable {
         case home
-        case timeline
+//        case timeline
 //        case mention
-//        case search
+        case search
         case me
         
         var title: String {
             switch self {
             case .home:         return L10n.Scene.Timeline.title
-            case .timeline:     return L10n.Scene.Timeline.title
+//            case .timeline:     return L10n.Scene.Timeline.title
 //            case .mention:      return L10n.Scene.Mentions.title
-//            case .search:       return L10n.Scene.Search.title
+            case .search:       return L10n.Scene.Search.title
             case .me:           return L10n.Scene.Profile.title
             }
         }
@@ -43,9 +43,9 @@ class MainTabBarController: UITabBarController {
         var image: UIImage {
             switch self {
             case .home:         return Asset.ObjectTools.house.image.withRenderingMode(.alwaysTemplate)
-            case .timeline:     return Asset.ObjectTools.house.image.withRenderingMode(.alwaysTemplate)
+//            case .timeline:     return Asset.ObjectTools.house.image.withRenderingMode(.alwaysTemplate)
 //            case .mention:      return Asset.Communication.ellipsesBubble.image.withRenderingMode(.alwaysTemplate)
-//            case .search:       return Asset.ObjectTools.magnifyingglass.image.withRenderingMode(.alwaysTemplate)
+            case .search:       return Asset.ObjectTools.magnifyingglass.image.withRenderingMode(.alwaysTemplate)
             case .me:           return Asset.Human.person.image.withRenderingMode(.alwaysTemplate)
             }
         }
@@ -58,19 +58,19 @@ class MainTabBarController: UITabBarController {
                 _viewController.context = context
                 _viewController.coordinator = coordinator
                 viewController = _viewController
-            case .timeline:
-                let _viewController = StubTimelineViewController()
-                viewController = _viewController
+//            case .timeline:
+//                let _viewController = StubTimelineViewController()
+//                viewController = _viewController
 //            case .mention:
 //                let _viewController = MentionTimelineViewController()
 //                _viewController.context = context
 //                _viewController.coordinator = coordinator
 //                viewController = _viewController
-//            case .search:
-//                let _viewController = SearchViewController()
-//                _viewController.context = context
-//                _viewController.coordinator = coordinator
-//                viewController = _viewController
+            case .search:
+                let _viewController = SearchViewController()
+                _viewController.context = context
+                _viewController.coordinator = coordinator
+                viewController = _viewController
             case .me:
                 let _viewController = ProfileViewController()
                 _viewController.context = context
@@ -113,27 +113,27 @@ extension MainTabBarController {
         setViewControllers(viewControllers, animated: false)
         selectedIndex = 0
         
-        // TODO: custom accent color
-        let tabBarAppearance = UITabBarAppearance()
-        tabBarAppearance.configureWithDefaultBackground()
-        tabBar.standardAppearance = tabBarAppearance
+//        // TODO: custom accent color
+//        let tabBarAppearance = UITabBarAppearance()
+//        tabBarAppearance.configureWithDefaultBackground()
+//        tabBar.standardAppearance = tabBarAppearance
         
-        context.apiService.error
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] error in
-                guard let _ = self else { return }
-                switch error {
-                case .implicit:
-                    break
-                case .explicit(let reason):
-                    break
-                    // FIXME:
-//                    let messageConfig = reason.messageConfig
-//                    let notifyBannerView = reason.notifyBannerView
-//                    SwiftMessages.show(config: messageConfig, view: notifyBannerView)
-                }
-            }
-            .store(in: &disposeBag)
+//        context.apiService.error
+//            .receive(on: DispatchQueue.main)
+//            .sink { [weak self] error in
+//                guard let _ = self else { return }
+//                switch error {
+//                case .implicit:
+//                    break
+//                case .explicit(let reason):
+//                    break
+//                    // FIXME:
+////                    let messageConfig = reason.messageConfig
+////                    let notifyBannerView = reason.notifyBannerView
+////                    SwiftMessages.show(config: messageConfig, view: notifyBannerView)
+//                }
+//            }
+//            .store(in: &disposeBag)
         
         doubleTapGestureRecognizer.addTarget(self, action: #selector(MainTabBarController.doubleTapGestureRecognizerHandler(_:)))
         doubleTapGestureRecognizer.delaysTouchesEnded = false

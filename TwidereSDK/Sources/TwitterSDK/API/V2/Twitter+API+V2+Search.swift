@@ -30,59 +30,59 @@ extension Twitter.API.V2.Search {
         return Twitter.Response.Content(value: value, response: response)
     }
     
-    @available(*, deprecated, message: "")
-    public static func tweetsSearchRecent(
-        query: Twitter.API.V2.Search.RecentQuery,
-        session: URLSession,
-        authorization: Twitter.API.OAuth.Authorization
-    ) -> AnyPublisher<Twitter.Response.Content<Twitter.API.V2.Search.Content>, Error> {
-        guard var components = URLComponents(string: tweetsSearchRecentEndpointURL.absoluteString) else { fatalError() }
-        
-        components.queryItems = [
-            Twitter.API.V2.Search.expansions.queryItem,
-            Twitter.Request.tweetsFields.queryItem,
-            Twitter.Request.userFields.queryItem,
-            Twitter.Request.mediaFields.queryItem,
-            Twitter.Request.placeFields.queryItem,
-            URLQueryItem(name: "max_results", value: String(query.maxResults)),
-        ]
-        query.sinceID.flatMap { components.queryItems?.append(URLQueryItem(name: "since_id", value: $0)) }
-        query.nextToken.flatMap { components.queryItems?.append(URLQueryItem(name: "next_token", value: $0)) }
-        var encodedQueryItems: [URLQueryItem] = [
-            URLQueryItem(name: "query", value: query.query.urlEncoded)
-        ]
-        if let startTime = query.startTime {
-            let formatter = ISO8601DateFormatter()
-            let time = formatter.string(from: startTime)
-            let item = URLQueryItem(name: "start_time", value: time.urlEncoded)
-            encodedQueryItems.append(item)
-        }
-        components.percentEncodedQueryItems = (components.percentEncodedQueryItems ?? []) + encodedQueryItems
-        
-        guard let requestURL = components.url else { fatalError() }
-        var request = URLRequest(
-            url: requestURL,
-            cachePolicy: .reloadIgnoringLocalAndRemoteCacheData,
-            timeoutInterval: Twitter.API.timeoutInterval
-        )
-        request.setValue(
-            authorization.authorizationHeader(requestURL: requestURL, httpMethod: "GET"),
-            forHTTPHeaderField: Twitter.API.OAuth.authorizationField
-        )
-        
-        return session.dataTaskPublisher(for: request)
-            .tryMap { data, response in
-                do {
-                    let value = try Twitter.API.decode(type: Twitter.API.V2.Search.Content.self, from: data, response: response)
-                    return Twitter.Response.Content(value: value, response: response)
-                } catch {
-                    debugPrint(error)
-                    os_log("%{public}s[%{public}ld], %{public}s: decode fail. error: %s. data: %s", ((#file as NSString).lastPathComponent), #line, #function, error.localizedDescription, String(data: data, encoding: .utf8) ?? "<nil>")
-                    throw error
-                }
-            }
-            .eraseToAnyPublisher()
-    }
+//    @available(*, deprecated, message: "")
+//    public static func tweetsSearchRecent(
+//        query: Twitter.API.V2.Search.RecentQuery,
+//        session: URLSession,
+//        authorization: Twitter.API.OAuth.Authorization
+//    ) -> AnyPublisher<Twitter.Response.Content<Twitter.API.V2.Search.Content>, Error> {
+//        guard var components = URLComponents(string: tweetsSearchRecentEndpointURL.absoluteString) else { fatalError() }
+//        
+//        components.queryItems = [
+//            Twitter.API.V2.Search.expansions.queryItem,
+//            Twitter.Request.tweetsFields.queryItem,
+//            Twitter.Request.userFields.queryItem,
+//            Twitter.Request.mediaFields.queryItem,
+//            Twitter.Request.placeFields.queryItem,
+//            URLQueryItem(name: "max_results", value: String(query.maxResults)),
+//        ]
+//        query.sinceID.flatMap { components.queryItems?.append(URLQueryItem(name: "since_id", value: $0)) }
+//        query.nextToken.flatMap { components.queryItems?.append(URLQueryItem(name: "next_token", value: $0)) }
+//        var encodedQueryItems: [URLQueryItem] = [
+//            URLQueryItem(name: "query", value: query.query.urlEncoded)
+//        ]
+//        if let startTime = query.startTime {
+//            let formatter = ISO8601DateFormatter()
+//            let time = formatter.string(from: startTime)
+//            let item = URLQueryItem(name: "start_time", value: time.urlEncoded)
+//            encodedQueryItems.append(item)
+//        }
+//        components.percentEncodedQueryItems = (components.percentEncodedQueryItems ?? []) + encodedQueryItems
+//        
+//        guard let requestURL = components.url else { fatalError() }
+//        var request = URLRequest(
+//            url: requestURL,
+//            cachePolicy: .reloadIgnoringLocalAndRemoteCacheData,
+//            timeoutInterval: Twitter.API.timeoutInterval
+//        )
+//        request.setValue(
+//            authorization.authorizationHeader(requestURL: requestURL, httpMethod: "GET"),
+//            forHTTPHeaderField: Twitter.API.OAuth.authorizationField
+//        )
+//        
+//        return session.dataTaskPublisher(for: request)
+//            .tryMap { data, response in
+//                do {
+//                    let value = try Twitter.API.decode(type: Twitter.API.V2.Search.Content.self, from: data, response: response)
+//                    return Twitter.Response.Content(value: value, response: response)
+//                } catch {
+//                    debugPrint(error)
+//                    os_log("%{public}s[%{public}ld], %{public}s: decode fail. error: %s. data: %s", ((#file as NSString).lastPathComponent), #line, #function, error.localizedDescription, String(data: data, encoding: .utf8) ?? "<nil>")
+//                    throw error
+//                }
+//            }
+//            .eraseToAnyPublisher()
+//    }
 
 }
 
@@ -100,24 +100,7 @@ extension Twitter.API.V2.Search {
             .referencedTweetsIDAuthorID
         ]
     }
-    
-    @available(*, deprecated, message: "")
-    public struct RecentQuery {
-        public let query: String
-        public let maxResults: Int
-        public let sinceID: Twitter.Entity.V2.Tweet.ID?
-        public let startTime: Date?
-        public let nextToken: String?
-        
-        public init(query: String, maxResults: Int, sinceID: Twitter.Entity.V2.Tweet.ID?, startTime: Date?, nextToken: String?) {
-            self.query = query
-            self.maxResults = min(100, max(10, maxResults)) 
-            self.sinceID = sinceID
-            self.startTime = startTime
-            self.nextToken = nextToken
-        }
-    }
-    
+
     public struct RecentTweetQuery: Query {
         public let query: String
         public let maxResults: Int

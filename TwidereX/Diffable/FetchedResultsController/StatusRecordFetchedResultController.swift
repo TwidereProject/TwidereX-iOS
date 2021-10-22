@@ -22,7 +22,7 @@ final class StatusRecordFetchedResultController {
     let mastodonStatusFetchedResultController: MastodonStatusFetchedResultController
     
     // input
-    let userIdentifier = CurrentValueSubject<UserIdentifier?, Never>(nil)
+    @Published var userIdentifier: UserIdentifier?
     
     // output
     let records = CurrentValueSubject<[StatusRecord], Never>([])
@@ -32,7 +32,7 @@ final class StatusRecordFetchedResultController {
         self.mastodonStatusFetchedResultController = MastodonStatusFetchedResultController(managedObjectContext: managedObjectContext)
         // end init
         
-        userIdentifier
+        $userIdentifier
             .sink { [weak self] identifier in
                 guard let self = self else { return }
                 switch identifier {

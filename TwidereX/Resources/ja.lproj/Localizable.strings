@@ -297,6 +297,8 @@
 "Scene.Search.ShowMore" = "もっと表示";
 "Scene.Search.Tabs.Hashtag" = "ハッシュタグ";
 "Scene.Search.Tabs.Media" = "メディア";
+"Scene.Search.Tabs.People" = "People";
+"Scene.Search.Tabs.Toots" = "Toots";
 "Scene.Search.Tabs.Tweets" = "ツイート";
 "Scene.Search.Tabs.Users" = "ユーザー";
 "Scene.Search.Title" = "検索";
