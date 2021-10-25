@@ -106,8 +106,14 @@ extension SearchResultViewModel {
             $searchText.assign(to: &_viewController.viewModel.$searchText)
             $userIdentifier.assign(to: &_viewController.viewModel.$userIdentifier)
             viewController = _viewController
+        
         case .media:
-            viewController = UIViewController()
+            let _viewController = SearchMediaViewController()
+            _viewController.viewModel = SearchMediaViewModel(context: context)
+            $searchText.assign(to: &_viewController.viewModel.$searchText)
+            $userIdentifier.assign(to: &_viewController.viewModel.$userIdentifier)
+            viewController = _viewController
+            
         case .user:
             viewController = UIViewController()
         case .hashtag:

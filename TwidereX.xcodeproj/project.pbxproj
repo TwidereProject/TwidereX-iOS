@@ -71,6 +71,10 @@
 		DB262A492722A9D800D18EF3 /* SearchTimelineViewModel+Diffable.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBFA4A2A25A5A69100D51703 /* SearchTimelineViewModel+Diffable.swift */; };
 		DB262A4A2722AAA700D18EF3 /* SearchTimelineViewModel+State.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB10B32B254A7633002D86F3 /* SearchTimelineViewModel+State.swift */; };
 		DB262A4C27267B5200D18EF3 /* APIService+Search.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB262A4B27267B5200D18EF3 /* APIService+Search.swift */; };
+		DB262A4D2726925900D18EF3 /* SearchMediaViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB10B346254AB338002D86F3 /* SearchMediaViewController.swift */; };
+		DB262A4E2726928F00D18EF3 /* SearchMediaViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB6760F8254AD026006C6798 /* SearchMediaViewModel.swift */; };
+		DB262A4F272692F900D18EF3 /* SearchMediaViewModel+Diffable.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB67611C254BC04B006C6798 /* SearchMediaViewModel+Diffable.swift */; };
+		DB262A502726938600D18EF3 /* SearchMediaViewModel+State.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB676117254BBF57006C6798 /* SearchMediaViewModel+State.swift */; };
 		DB2924CB2546B958003899A7 /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = DB2924CA2546B958003899A7 /* Kingfisher */; };
 		DB2924D02546C6DD003899A7 /* APIService+Media.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB2924CF2546C6DD003899A7 /* APIService+Media.swift */; };
 		DB2924EC25492006003899A7 /* APIService+Geo.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB2924EB25492006003899A7 /* APIService+Geo.swift */; };
@@ -3586,6 +3590,7 @@
 				DB51DC432718117900A0D8FB /* StatusMediaGalleryCollectionCell+ViewModel.swift in Sources */,
 				DBE76C8924FF941400DEB0FC /* APIService+Authentication.swift in Sources */,
 				DB51DC412717FCAA00A0D8FB /* StatusMediaGalleryCollectionCell.swift in Sources */,
+				DB262A4F272692F900D18EF3 /* SearchMediaViewModel+Diffable.swift in Sources */,
 				DBC8E1622577B02A00401E20 /* Strings.swift in Sources */,
 				DB3B906126E8AB480010F64C /* StatusViewTableViewCellDelegate.swift in Sources */,
 				DB2EBBF0255D368200956CAA /* TableViewEntryRow.swift in Sources */,
@@ -3613,6 +3618,7 @@
 				DBF63A38259D7CCB009E12C8 /* CornerSmoothPreviewViewController.swift in Sources */,
 				DB86433C26E898C5000C9879 /* DataSourceFacade+Like.swift in Sources */,
 				DB914C4A26C3AC7C00E85F1A /* ContentOffsetFixedCollectionView.swift in Sources */,
+				DB262A502726938600D18EF3 /* SearchMediaViewModel+State.swift in Sources */,
 				DB969A2F252490090053CB31 /* UserTimelineViewModel+State.swift in Sources */,
 				DB42410E26C3E4BF00B6C5F8 /* WelcomeViewController.swift in Sources */,
 				DBD73D7726D65DAB0003997E /* UserItem.swift in Sources */,
@@ -3653,6 +3659,7 @@
 				DBE76D36250221D700DEB0FC /* TwitterUser.swift in Sources */,
 				DB0B3B9026C666E300501BB7 /* APIService+WebFinger.swift in Sources */,
 				DBFCC44725667C620016698E /* UILabel.swift in Sources */,
+				DB262A4E2726928F00D18EF3 /* SearchMediaViewModel.swift in Sources */,
 				DB9EC4EA255A6BC7005403AA /* TwitterAccountUnlockViewController.swift in Sources */,
 				DB71C7D6271FE89400BE3819 /* APIService+Follow.swift in Sources */,
 				DB71C7D1271EB09A00BE3819 /* DataSourceFacade+Friendship.swift in Sources */,
@@ -3758,6 +3765,7 @@
 				DB71C7C8271D438E00BE3819 /* APIService+LikeTimeline.swift in Sources */,
 				DB5632B826DE217600FC893F /* Persistence+TwitterUser+V2.swift in Sources */,
 				DBBF3DB126CE5CCD0013852A /* FeedFetchedResultsController.swift in Sources */,
+				DB262A4D2726925900D18EF3 /* SearchMediaViewController.swift in Sources */,
 				DB1D7B5025B5A43F00397DCD /* ListTextFieldTableViewCell.swift in Sources */,
 				DB3B906B26E8D3AB0010F64C /* DataSourceFacade+Status.swift in Sources */,
 				DB97D1E0256CBA4E0056F8C2 /* NotifyBannerView.swift in Sources */,

@@ -53,13 +53,6 @@ extension SearchTimelineViewModel.State {
     
     class Loading: SearchTimelineViewModel.State {
         let logger = Logger(subsystem: "SearchTimelineViewModel.State", category: "StateMachine")
-//        var error: Error?
-//
-//        var needsFallback = false
-//        var previousSearchText = ""
-        
-        // var maxID: String?          // v1 fallback
-        // var nextToken: String?      // v2
         
         var nextInput: StatusListFetchViewModel.Input?
         var currentTask: Task<Void, Error>?
@@ -100,6 +93,7 @@ extension SearchTimelineViewModel.State {
                                 nextToken: nil,
                                 count: 50,
                                 excludeReplies: false,
+                                onlyMedia: false,
                                 userIdentifier: nil
                             ))
                         )
@@ -159,12 +153,6 @@ extension SearchTimelineViewModel.State {
                     }
                 }
             }   // end currentTask = Task { … }
-            
-//            if !needsFallback {
-//                loading(viewModel: viewModel, twitterAuthenticationBox: activeTwitterAuthenticationBox, stateMachine: stateMachine)
-//            } else {
-//                loadingFallback(viewModel: viewModel, twitterAuthenticationBox: activeTwitterAuthenticationBox, stateMachine: stateMachine)
-//            }
         }   // end func didEnter(from:)
         
 //        func loading(

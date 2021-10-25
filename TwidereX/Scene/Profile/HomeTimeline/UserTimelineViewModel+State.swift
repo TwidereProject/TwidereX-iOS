@@ -145,6 +145,7 @@ extension UserTimelineViewModel.State {
                                 nextToken: nil,
                                 count: 50,
                                 excludeReplies: false,
+                                onlyMedia: false,
                                 userIdentifier: identifier
                             ))
                         )

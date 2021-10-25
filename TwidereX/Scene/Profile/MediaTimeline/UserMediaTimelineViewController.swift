@@ -24,7 +24,6 @@ final class UserMediaTimelineViewController: UIViewController, NeedsDependency {
     var viewModel: UserMediaTimelineViewModel!
     
     private(set) lazy var collectionView: UICollectionView = {
-//        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UserMediaTimelineViewController.createCollectionViewLayout())
         collectionView.backgroundColor = .systemBackground
         return collectionView
@@ -92,7 +91,7 @@ extension UserMediaTimelineViewController {
             collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
         ])
-//
+
         collectionView.delegate = self
         viewModel.setupDiffableDataSource(
             collectionView: collectionView

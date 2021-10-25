@@ -14,22 +14,26 @@ import CoreDataStack
 import GameplayKit
 import TwitterSDK
 
-final class SearchMediaViewModel: NSObject {
+final class SearchMediaViewModel {
+    
+    let logger = Logger(subsystem: "SearchMediaViewModel", category: "ViewModel")
     
     var disposeBag = Set<AnyCancellable>()
     
     // input
     let context: AppContext
-//    let fetchedResultsController: NSFetchedResultsController<Tweet>
-    let searchMediaTweetIDs = CurrentValueSubject<[Twitter.Entity.Tweet.ID], Never>([])
-    let searchText = CurrentValueSubject<String, Never>("")
-    let searchActionPublisher = PassthroughSubject<Void, Never>()
+    let statusRecordFetchedResultController: StatusRecordFetchedResultController
+    let listBatchFetchViewModel = ListBatchFetchViewModel()
+    @Published var searchText = ""
+    @Published var userIdentifier: UserIdentifier?
     
     // output
+    var diffableDataSource: UICollectionViewDiffableDataSource<StatusMediaGallerySection, StatusItem>?
     private(set) lazy var stateMachine: GKStateMachine = {
         let stateMachine = GKStateMachine(states: [
             State.Initial(viewModel: self),
             State.Idle(viewModel: self),
+            State.Reset(viewModel: self),
             State.Loading(viewModel: self),
             State.Fail(viewModel: self),
             State.NoMore(viewModel: self),
@@ -37,27 +41,25 @@ final class SearchMediaViewModel: NSObject {
         stateMachine.enter(State.Initial.self)
         return stateMachine
     }()
-    lazy var stateMachinePublisher = CurrentValueSubject<State, Never>(State.Initial(viewModel: self))
-    var diffableDataSource: UICollectionViewDiffableDataSource<MediaSection, Item>!
-    let items = CurrentValueSubject<[Item], Never>([])
     
     init(context: AppContext) {
         self.context = context
-//        self.fetchedResultsController = {
-//            let fetchRequest = Tweet.sortedFetchRequest
-//            fetchRequest.predicate = Tweet.predicate(idStrs: [])
-//            fetchRequest.returnsObjectsAsFaults = false
-//            fetchRequest.fetchBatchSize = 20
-//            let controller = NSFetchedResultsController(
-//                fetchRequest: fetchRequest,
-//                managedObjectContext: context.managedObjectContext,
-//                sectionNameKeyPath: nil,
-//                cacheName: nil
-//            )
-//
-//            return controller
-//        }()
-        super.init()
+        self.statusRecordFetchedResultController = StatusRecordFetchedResultController(managedObjectContext: context.managedObjectContext)
+        // end init
+        
+        $searchText
+            .removeDuplicates()
+            .throttle(for: 0.5, scheduler: DispatchQueue.main, latest: true)
+            .sink { [weak self] searchText in
+                guard let self = self else { return }
+                self.logger.debug("\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): search \(searchText)")
+                self.stateMachine.enter(SearchMediaViewModel.State.Reset.self)
+            }
+            .store(in: &disposeBag)
+        
+        $userIdentifier
+            .assign(to: &statusRecordFetchedResultController.$userIdentifier)
+        
         
 //        self.fetchedResultsController.delegate = self
         
@@ -117,12 +119,4 @@ final class SearchMediaViewModel: NSObject {
         os_log("%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
     }
     
-}
-
-extension SearchMediaViewModel {
-    enum SearchMediaError: Swift.Error {
-        case invalidAuthorization
-        case invalidSearchText
-        case invalidAnchorToLoadMore
-    }
 }

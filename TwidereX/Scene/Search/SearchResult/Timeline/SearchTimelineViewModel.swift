@@ -12,10 +12,8 @@ import GameplayKit
 import Combine
 import CoreData
 import CoreDataStack
-import TwitterSDK
-import AlamofireImage
 
-class SearchTimelineViewModel: NSObject {
+class SearchTimelineViewModel {
     
     let logger = Logger(subsystem: "SearchTimelineViewModel", category: "ViewModel")
     
@@ -46,7 +44,7 @@ class SearchTimelineViewModel: NSObject {
     init(context: AppContext) {
         self.context = context
         self.statusRecordFetchedResultController = StatusRecordFetchedResultController(managedObjectContext: context.managedObjectContext)
-        super.init()
+        // end init
         
         $searchText
             .removeDuplicates()

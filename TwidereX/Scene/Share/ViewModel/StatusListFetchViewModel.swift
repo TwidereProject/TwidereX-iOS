@@ -35,6 +35,7 @@ enum StatusListFetchViewModel {
         let nextToken: String?
         let count: Int?
         let excludeReplies: Bool
+        let onlyMedia: Bool
         let userIdentifier: TwitterUserIdentifier?
         
         func map(maxID: TwitterStatus.ID?) -> TwitterFetchContext {
@@ -45,6 +46,7 @@ enum StatusListFetchViewModel {
                 nextToken: self.nextToken,
                 count: self.count,
                 excludeReplies: self.excludeReplies,
+                onlyMedia: self.onlyMedia,
                 userIdentifier: self.userIdentifier
             )
         }
@@ -57,6 +59,7 @@ enum StatusListFetchViewModel {
                 nextToken: nextToken,
                 count: self.count,
                 excludeReplies: self.excludeReplies,
+                onlyMedia: self.onlyMedia,
                 userIdentifier: self.userIdentifier
             )
         }
@@ -286,8 +289,13 @@ extension StatusListFetchViewModel {
                 }
                 var query = searchText
                 // default exclude retweet
-                query += " (-is:retweet)"
+                var options = ["-is:retweet"]
+                if fetchContext.onlyMedia {
+                    options.append("has:media")
+                }
                 // TODO: more options
+                let suffix = options.joined(separator: " ")
+                query += " (\(suffix))"
                 return query
             }()
             

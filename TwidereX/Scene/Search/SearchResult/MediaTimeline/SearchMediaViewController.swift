@@ -12,7 +12,8 @@ import Combine
 import CoreData
 import CoreDataStack
 
-final class SearchMediaViewController: UIViewController, MediaPreviewableViewController, NeedsDependency {
+// MediaPreviewableViewController
+final class SearchMediaViewController: UIViewController, NeedsDependency {
     
     weak var context: AppContext! { willSet { precondition(!isViewLoaded) } }
     weak var coordinator: SceneCoordinator! { willSet { precondition(!isViewLoaded) } }
@@ -20,12 +21,11 @@ final class SearchMediaViewController: UIViewController, MediaPreviewableViewCon
     var disposeBag = Set<AnyCancellable>()
     var viewModel: SearchMediaViewModel!
     
-    let mediaPreviewTransitionController = MediaPreviewTransitionController()
+    // let mediaPreviewTransitionController = MediaPreviewTransitionController()
 
     private(set) lazy var collectionView: UICollectionView = {
-        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: SearchMediaViewController.createCollectionViewLayout())
-        collectionView.register(SearchMediaCollectionViewCell.self, forCellWithReuseIdentifier: String(describing: SearchMediaCollectionViewCell.self))
-        collectionView.register(ActivityIndicatorCollectionViewCell.self, forCellWithReuseIdentifier: String(describing: ActivityIndicatorCollectionViewCell.self))
+        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UserMediaTimelineViewController.createCollectionViewLayout())
+        collectionView.backgroundColor = .systemBackground
         return collectionView
     }()
     
@@ -47,10 +47,27 @@ extension SearchMediaViewController {
             collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
         ])
-        collectionView.backgroundColor = .systemBackground
         
         collectionView.delegate = self
-        viewModel.setupDiffableDataSource(collectionView: collectionView, mediaCollectionViewCellDelegate: self)
+        viewModel.setupDiffableDataSource(
+            collectionView: collectionView
+            //            mediaCollectionViewCellDelegate: self,
+            //            timelineHeaderCollectionViewCellDelegate: self
+        )
+        
+        // setup batch fetch
+        viewModel.listBatchFetchViewModel.setup(scrollView: collectionView)
+        viewModel.listBatchFetchViewModel.shouldFetch
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                guard let self = self else { return }
+                self.viewModel.stateMachine.enter(SearchMediaViewModel.State.Loading.self)
+            }
+            .store(in: &disposeBag)
+        
+        KeyboardResponderService
+            .configure(scrollView: collectionView)
+            .store(in: &disposeBag)
     }
     
 }
@@ -112,24 +129,24 @@ extension SearchMediaViewController {
 }
 
 // MARK: - UIScrollViewDelegate
-extension SearchMediaViewController {
-    func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        guard scrollView === collectionView else { return }
-        let cells = collectionView.visibleCells.compactMap { $0 as? ActivityIndicatorCollectionViewCell }
-        guard let loaderCollectionViewCell = cells.first else { return }
-
-        if let tabBar = tabBarController?.tabBar, let window = view.window {
-            let loaderCollectionViewCellFrameInWindow = collectionView.convert(loaderCollectionViewCell.frame, to: nil)
-            let windowHeight = window.frame.height
-            let loaderAppear = (loaderCollectionViewCellFrameInWindow.origin.y + 0.8 * loaderCollectionViewCell.frame.height) < (windowHeight - tabBar.frame.height)
-            if loaderAppear {
-                viewModel.stateMachine.enter(SearchMediaViewModel.State.Loading.self)
-            }
-        } else {
-            viewModel.stateMachine.enter(SearchMediaViewModel.State.Loading.self)
-        }
-    }
-}
+//extension SearchMediaViewController {
+//    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+//        guard scrollView === collectionView else { return }
+//        let cells = collectionView.visibleCells.compactMap { $0 as? ActivityIndicatorCollectionViewCell }
+//        guard let loaderCollectionViewCell = cells.first else { return }
+//
+//        if let tabBar = tabBarController?.tabBar, let window = view.window {
+//            let loaderCollectionViewCellFrameInWindow = collectionView.convert(loaderCollectionViewCell.frame, to: nil)
+//            let windowHeight = window.frame.height
+//            let loaderAppear = (loaderCollectionViewCellFrameInWindow.origin.y + 0.8 * loaderCollectionViewCell.frame.height) < (windowHeight - tabBar.frame.height)
+//            if loaderAppear {
+//                viewModel.stateMachine.enter(SearchMediaViewModel.State.Loading.self)
+//            }
+//        } else {
+//            viewModel.stateMachine.enter(SearchMediaViewModel.State.Loading.self)
+//        }
+//    }
+//}
 
 // MARK: - UICollectionViewDelegate
 extension SearchMediaViewController: UICollectionViewDelegate { }
@@ -139,8 +156,8 @@ extension SearchMediaViewController: MediaCollectionViewCellDelegate {
     
     func mediaCollectionViewCell(_ cell: SearchMediaCollectionViewCell, collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         // discard nest collectionView and indexPath
-        guard let indexPath = self.collectionView.indexPath(for: cell) else { return }
-        handleCollectionView(self.collectionView, didSelectItemAt: indexPath)
+//        guard let indexPath = self.collectionView.indexPath(for: cell) else { return }
+//        handleCollectionView(self.collectionView, didSelectItemAt: indexPath)
     }
     
 }

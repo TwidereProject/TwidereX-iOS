@@ -76,6 +76,7 @@ extension HomeTimelineViewModel.LoadOldestState {
                             nextToken: nil,
                             count: 100,
                             excludeReplies: false,
+                            onlyMedia: false,
                             userIdentifier: nil
                         ))
                     )
