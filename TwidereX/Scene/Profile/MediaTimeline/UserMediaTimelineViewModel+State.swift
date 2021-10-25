@@ -192,6 +192,8 @@ extension UserMediaTimelineViewModel.State {
                         return StatusListFetchViewModel.Input(
                             fetchContext: .mastodon(.init(
                                 authenticationContext: authenticationContext,
+                                searchText: nil,
+                                offset: nil,
                                 maxID: nil,
                                 count: 200,
                                 excludeReplies: true,

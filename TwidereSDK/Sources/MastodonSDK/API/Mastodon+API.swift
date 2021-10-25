@@ -105,6 +105,10 @@ extension Mastodon.API {
     public enum Subscriptions { }
     public enum Reports { }
     public enum DomainBlock { }
+    
+    public enum V2 {
+        public enum Search { }
+    }
 }
 
 extension Mastodon.API {

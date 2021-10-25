@@ -50,11 +50,19 @@ extension SearchResultViewController {
             .sink { [weak self] scopes in
                 guard let self = self else { return }
                 self.reloadData()
-                if let preferredScope = self.viewModel.preferredScope {
-                    // TODO:
-                } else {
-                    self.scrollToPage(.first, animated: false, completion: nil)
-                }
+                self.scrollToPage(.first, animated: false, completion: nil)
+                self.viewModel.selectedScope = scopes.first
+            }
+            .store(in: &disposeBag)
+        
+        viewModel.$selectedScope
+            .removeDuplicates()
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] scope in
+                guard let self = self else { return }
+                guard let scope = scope else { return }
+                guard let index = self.viewModel.scopes.firstIndex(of: scope) else { return }
+                self.scrollToPage(.at(index: index), animated: true, completion: nil)
             }
             .store(in: &disposeBag)
     }
@@ -68,5 +76,16 @@ extension SearchResultViewController: UISearchResultsUpdating {
         
         let searchText = searchController.searchBar.text ?? ""
         viewModel.searchText = searchText
+    }
+}
+
+// MARK: - UISearchBarDelegate
+extension SearchResultViewController: UISearchBarDelegate {
+    func searchBar(_ searchBar: UISearchBar, selectedScopeButtonIndexDidChange selectedScope: Int) {
+        logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): selectedScope: \(selectedScope)")
+        let scopes = viewModel.scopes
+        guard selectedScope < scopes.count else { return }
+        let scope = scopes[selectedScope]
+        viewModel.selectedScope = scope
     }
 }

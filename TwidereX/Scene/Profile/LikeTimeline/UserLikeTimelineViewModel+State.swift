@@ -191,6 +191,8 @@ extension UserLikeTimelineViewModel.State {
                         return StatusListFetchViewModel.Input(
                             fetchContext: .mastodon(.init(
                                 authenticationContext: authenticationContext,
+                                searchText: nil,
+                                offset: nil,
                                 maxID: nil,
                                 count: 50,
                                 excludeReplies: false,

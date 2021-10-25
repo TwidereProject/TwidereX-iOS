@@ -28,7 +28,7 @@
 		DB004BFD26CE4C1E00F5C574 /* PlaintextMetaContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB004BFC26CE4C1E00F5C574 /* PlaintextMetaContent.swift */; };
 		DB01091226E5DC9D005F67D7 /* MetaTextArea in Frameworks */ = {isa = PBXBuildFile; productRef = DB01091126E5DC9C005F67D7 /* MetaTextArea */; };
 		DB01091526E5EB64005F67D7 /* MastodonStatusThreadViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB01091426E5EB64005F67D7 /* MastodonStatusThreadViewModel.swift */; };
-		DB01091826E5F0B6005F67D7 /* APIService+MastodonStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB01091726E5F0B6005F67D7 /* APIService+MastodonStatus.swift */; };
+		DB01091826E5F0B6005F67D7 /* APIService+Status+Thread.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB01091726E5F0B6005F67D7 /* APIService+Status+Thread.swift */; };
 		DB01091A26E60693005F67D7 /* ContentOffsetAdjustableTimelineViewControllerDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB8AC0FF25401C2700E636BE /* ContentOffsetAdjustableTimelineViewControllerDelegate.swift */; };
 		DB01091C26E606BB005F67D7 /* OfficialTwitterTextProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB01091B26E606BB005F67D7 /* OfficialTwitterTextProvider.swift */; };
 		DB01092026E60756005F67D7 /* DataSourceFacade+StatusThread.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB01091F26E60756005F67D7 /* DataSourceFacade+StatusThread.swift */; };
@@ -55,7 +55,7 @@
 		DB1D7B5525B5A87200397DCD /* TwitterAuthenticationOptionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB1D7B5425B5A87200397DCD /* TwitterAuthenticationOptionViewModel.swift */; };
 		DB1D7B6725B6C2E000397DCD /* TwitterAuthenticationOption.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB1D7B6625B6C2E000397DCD /* TwitterAuthenticationOption.swift */; };
 		DB25B9D1253828AA00A5420F /* APIService+Retweet.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB25B9D0253828AA00A5420F /* APIService+Retweet.swift */; };
-		DB25B9E82539897B00A5420F /* APIService+Tweet+Search.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB25B9E72539897B00A5420F /* APIService+Tweet+Search.swift */; };
+		DB25B9E82539897B00A5420F /* APIService+Status+Search.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB25B9E72539897B00A5420F /* APIService+Status+Search.swift */; };
 		DB261195251B213A004BF309 /* TwitterAuthentication.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB261194251B2139004BF309 /* TwitterAuthentication.swift */; };
 		DB2611B7251B2D42004BF309 /* CryptoSwift in Frameworks */ = {isa = PBXBuildFile; productRef = DB2611B6251B2D42004BF309 /* CryptoSwift */; };
 		DB262A332721377800D18EF3 /* DataSourceFacade+Block.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB262A322721377800D18EF3 /* DataSourceFacade+Block.swift */; };
@@ -70,6 +70,7 @@
 		DB262A482722A64900D18EF3 /* SearchTimelineViewController+DataSourceProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB262A472722A64900D18EF3 /* SearchTimelineViewController+DataSourceProvider.swift */; };
 		DB262A492722A9D800D18EF3 /* SearchTimelineViewModel+Diffable.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBFA4A2A25A5A69100D51703 /* SearchTimelineViewModel+Diffable.swift */; };
 		DB262A4A2722AAA700D18EF3 /* SearchTimelineViewModel+State.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB10B32B254A7633002D86F3 /* SearchTimelineViewModel+State.swift */; };
+		DB262A4C27267B5200D18EF3 /* APIService+Search.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB262A4B27267B5200D18EF3 /* APIService+Search.swift */; };
 		DB2924CB2546B958003899A7 /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = DB2924CA2546B958003899A7 /* Kingfisher */; };
 		DB2924D02546C6DD003899A7 /* APIService+Media.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB2924CF2546C6DD003899A7 /* APIService+Media.swift */; };
 		DB2924EC25492006003899A7 /* APIService+Geo.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB2924EB25492006003899A7 /* APIService+Geo.swift */; };
@@ -554,7 +555,7 @@
 		DB004BF726CE4AF200F5C574 /* StatusView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusView.swift; sourceTree = "<group>"; };
 		DB004BFC26CE4C1E00F5C574 /* PlaintextMetaContent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaintextMetaContent.swift; sourceTree = "<group>"; };
 		DB01091426E5EB64005F67D7 /* MastodonStatusThreadViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MastodonStatusThreadViewModel.swift; sourceTree = "<group>"; };
-		DB01091726E5F0B6005F67D7 /* APIService+MastodonStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "APIService+MastodonStatus.swift"; sourceTree = "<group>"; };
+		DB01091726E5F0B6005F67D7 /* APIService+Status+Thread.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "APIService+Status+Thread.swift"; sourceTree = "<group>"; };
 		DB01091B26E606BB005F67D7 /* OfficialTwitterTextProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OfficialTwitterTextProvider.swift; sourceTree = "<group>"; };
 		DB01091F26E60756005F67D7 /* DataSourceFacade+StatusThread.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DataSourceFacade+StatusThread.swift"; sourceTree = "<group>"; };
 		DB01092126E608B7005F67D7 /* DataSourceFacade+Repost.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DataSourceFacade+Repost.swift"; sourceTree = "<group>"; };
@@ -589,7 +590,7 @@
 		DB1D7B6625B6C2E000397DCD /* TwitterAuthenticationOption.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwitterAuthenticationOption.swift; sourceTree = "<group>"; };
 		DB25B9D0253828AA00A5420F /* APIService+Retweet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "APIService+Retweet.swift"; sourceTree = "<group>"; };
 		DB25B9E225385EFD00A5420F /* TweetConversationViewModel+LoadConversationState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TweetConversationViewModel+LoadConversationState.swift"; sourceTree = "<group>"; };
-		DB25B9E72539897B00A5420F /* APIService+Tweet+Search.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "APIService+Tweet+Search.swift"; sourceTree = "<group>"; };
+		DB25B9E72539897B00A5420F /* APIService+Status+Search.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "APIService+Status+Search.swift"; sourceTree = "<group>"; };
 		DB25B9F32539A9CE00A5420F /* APIService+CoreData+TwitterUser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "APIService+CoreData+TwitterUser.swift"; sourceTree = "<group>"; };
 		DB25BA07253D7D6E00A5420F /* APIService+Persist+DictContent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "APIService+Persist+DictContent.swift"; sourceTree = "<group>"; };
 		DB25BA0F253D7F4D00A5420F /* APIService+CoreData+V2+Tweet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "APIService+CoreData+V2+Tweet.swift"; sourceTree = "<group>"; };
@@ -603,6 +604,7 @@
 		DB262A3C27228B4800D18EF3 /* SearchResultViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchResultViewController.swift; sourceTree = "<group>"; };
 		DB262A412722970000D18EF3 /* SearchResultViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchResultViewModel.swift; sourceTree = "<group>"; };
 		DB262A472722A64900D18EF3 /* SearchTimelineViewController+DataSourceProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SearchTimelineViewController+DataSourceProvider.swift"; sourceTree = "<group>"; };
+		DB262A4B27267B5200D18EF3 /* APIService+Search.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "APIService+Search.swift"; sourceTree = "<group>"; };
 		DB2924C12546A77B003899A7 /* TwitterMediaService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwitterMediaService.swift; sourceTree = "<group>"; };
 		DB2924CF2546C6DD003899A7 /* APIService+Media.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "APIService+Media.swift"; sourceTree = "<group>"; };
 		DB2924D62547CCA2003899A7 /* ComposeTweetMediaSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComposeTweetMediaSection.swift; sourceTree = "<group>"; };
@@ -2568,8 +2570,9 @@
 				DB25B9D0253828AA00A5420F /* APIService+Retweet.swift */,
 				DB86433926E867B9000C9879 /* APIService+Repost.swift */,
 				DB8AC1842542BD8600E636BE /* APIService+Tweet.swift */,
-				DB25B9E72539897B00A5420F /* APIService+Tweet+Search.swift */,
-				DB01091726E5F0B6005F67D7 /* APIService+MastodonStatus.swift */,
+				DB262A4B27267B5200D18EF3 /* APIService+Search.swift */,
+				DB25B9E72539897B00A5420F /* APIService+Status+Search.swift */,
+				DB01091726E5F0B6005F67D7 /* APIService+Status+Thread.swift */,
 				DB2924CF2546C6DD003899A7 /* APIService+Media.swift */,
 				DB2924EB25492006003899A7 /* APIService+Geo.swift */,
 				DB915400254C148400613473 /* APIService+User.swift */,
@@ -2800,8 +2803,8 @@
 		DBF69E932549601C00E2A915 /* Search */ = {
 			isa = PBXGroup;
 			children = (
+				DBF69EA725496C9000E2A915 /* Deprecated */,
 				DBF69EA325496C8A00E2A915 /* Search */,
-				DBF69EA725496C9000E2A915 /* SearchDetail */,
 				DB262A3E27228DF700D18EF3 /* SearchResult */,
 			);
 			path = Search;
@@ -2816,14 +2819,15 @@
 			path = Search;
 			sourceTree = "<group>";
 		};
-		DBF69EA725496C9000E2A915 /* SearchDetail */ = {
+		DBF69EA725496C9000E2A915 /* Deprecated */ = {
 			isa = PBXGroup;
 			children = (
 				DBF69E9B25496BB100E2A915 /* SearchDetailViewController.swift */,
 				DBF69EAB25496C9F00E2A915 /* SearchDetailViewModel.swift */,
-				DBF69EEA25498A3A00E2A915 /* Paging */,
+				DBF69EE52549899300E2A915 /* SearchDetailPagingViewController.swift */,
+				DBF69EEE25498A4800E2A915 /* SearchDetailPagingViewModel.swift */,
 			);
-			path = SearchDetail;
+			path = Deprecated;
 			sourceTree = "<group>";
 		};
 		DBF69ECE25496E6800E2A915 /* Transition */ = {
@@ -2845,15 +2849,6 @@
 				DBF69ED92549701B00E2A915 /* SearchToSearchDetailViewControllerAnimatedTransitioning.swift */,
 			);
 			path = SearchDetail;
-			sourceTree = "<group>";
-		};
-		DBF69EEA25498A3A00E2A915 /* Paging */ = {
-			isa = PBXGroup;
-			children = (
-				DBF69EE52549899300E2A915 /* SearchDetailPagingViewController.swift */,
-				DBF69EEE25498A4800E2A915 /* SearchDetailPagingViewModel.swift */,
-			);
-			path = Paging;
 			sourceTree = "<group>";
 		};
 		DBF69EF825498AE400E2A915 /* Timeline */ = {
@@ -3735,7 +3730,7 @@
 				DB94B6B426C65BE100A2E8A1 /* MastodonAuthenticationController.swift in Sources */,
 				DBA6B1B725355C1E005FB0B4 /* UIAlertController.swift in Sources */,
 				DB004BC926CCD68B00F5C574 /* MastodonUser+Property.swift in Sources */,
-				DB25B9E82539897B00A5420F /* APIService+Tweet+Search.swift in Sources */,
+				DB25B9E82539897B00A5420F /* APIService+Status+Search.swift in Sources */,
 				DBD73D7426D65D940003997E /* UserSection.swift in Sources */,
 				DB5632BA26DE29FE00FC893F /* Persistence+Twitter.swift in Sources */,
 				DB1BF29925663EFA00B5F490 /* DisplayPreference.swift in Sources */,
@@ -3759,6 +3754,7 @@
 				DB5632AD26DCE93900FC893F /* StatusThreadViewModel+Diffable.swift in Sources */,
 				DBF639F7259B1728009E12C8 /* TimelineHeaderCollectionViewCell.swift in Sources */,
 				DB51DC222715786700A0D8FB /* StatusListFetchViewModel.swift in Sources */,
+				DB262A4C27267B5200D18EF3 /* APIService+Search.swift in Sources */,
 				DB71C7C8271D438E00BE3819 /* APIService+LikeTimeline.swift in Sources */,
 				DB5632B826DE217600FC893F /* Persistence+TwitterUser+V2.swift in Sources */,
 				DBBF3DB126CE5CCD0013852A /* FeedFetchedResultsController.swift in Sources */,
@@ -3789,7 +3785,7 @@
 				DB262A492722A9D800D18EF3 /* SearchTimelineViewModel+Diffable.swift in Sources */,
 				DB5632A926DCC96C00FC893F /* HomeTimelineViewController+DataSourceProvider.swift in Sources */,
 				DB8AC1332541662200E636BE /* KeyboardResponderService.swift in Sources */,
-				DB01091826E5F0B6005F67D7 /* APIService+MastodonStatus.swift in Sources */,
+				DB01091826E5F0B6005F67D7 /* APIService+Status+Thread.swift in Sources */,
 				DBC17A6526E0ED0E005C0D79 /* MastodonEmoji.swift in Sources */,
 				DB56329A26DCBE7300FC893F /* StatusThreadViewModel.swift in Sources */,
 			);

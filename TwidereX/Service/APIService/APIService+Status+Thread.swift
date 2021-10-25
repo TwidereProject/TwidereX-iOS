@@ -1,6 +1,6 @@
 //
-//  APIService+MastodonStatus.swift
-//  APIService+MastodonStatus
+//  APIService+Status+Thread.swift
+//  APIService+Status+Thread
 //
 //  Created by Cirno MainasuK on 2021-9-6.
 //  Copyright © 2021 Twidere. All rights reserved.

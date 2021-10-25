@@ -61,6 +61,16 @@ extension SearchTimelineViewController {
             statusViewTableViewCellDelegate: self
         )
         
+        // setup batch fetch
+        viewModel.listBatchFetchViewModel.setup(scrollView: tableView)
+        viewModel.listBatchFetchViewModel.shouldFetch
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                guard let self = self else { return }
+                self.viewModel.stateMachine.enter(SearchTimelineViewModel.State.Loading.self)
+            }
+            .store(in: &disposeBag)
+        
         KeyboardResponderService
             .configure(scrollView: tableView)
             .store(in: &disposeBag)

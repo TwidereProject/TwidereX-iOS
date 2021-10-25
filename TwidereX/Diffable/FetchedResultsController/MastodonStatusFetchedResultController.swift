@@ -16,6 +16,8 @@ import MastodonSDK
 
 final class MastodonStatusFetchedResultController: NSObject {
     
+    let logger = Logger(subsystem: "MastodonStatusFetchedResultController", category: "DB")
+    
     var disposeBag = Set<AnyCancellable>()
     
     let fetchedResultsController: NSFetchedResultsController<MastodonStatus>
@@ -103,7 +105,7 @@ extension MastodonStatusFetchedResultController: NSFetchedResultsControllerDeleg
         _ controller: NSFetchedResultsController<NSFetchRequestResult>,
         didChangeContentWith snapshot: NSDiffableDataSourceSnapshotReference
     ) {
-        os_log("%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
+        logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public)")
         
         let indexes = statusIDs.value
         let statuses = fetchedResultsController.fetchedObjects ?? []
@@ -116,5 +118,6 @@ extension MastodonStatusFetchedResultController: NSFetchedResultsControllerDeleg
             .map { $0.1.objectID }
         
         self._objectIDs.send(objectIDs)
+        logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): fetch \(objectIDs.count) objects")
     }
 }

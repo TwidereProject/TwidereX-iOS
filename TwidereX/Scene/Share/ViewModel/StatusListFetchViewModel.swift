@@ -64,6 +64,8 @@ enum StatusListFetchViewModel {
     
     struct MastodonFetchContext {
         let authenticationContext: MastodonAuthenticationContext
+        let searchText: String?
+        let offset: Int?
         let maxID: MastodonStatus.ID?
         let count: Int?
         let excludeReplies: Bool
@@ -74,7 +76,23 @@ enum StatusListFetchViewModel {
         func map(maxID: MastodonStatus.ID?) -> MastodonFetchContext {
             MastodonFetchContext(
                 authenticationContext: self.authenticationContext,
+                searchText: self.searchText,
+                offset: self.offset,
                 maxID: maxID,
+                count: self.count,
+                excludeReplies: self.excludeReplies,
+                excludeReblogs: self.excludeReblogs,
+                onlyMedia: self.onlyMedia,
+                userIdentifier: self.userIdentifier
+            )
+        }
+        
+        func map(offset: Int?) -> MastodonFetchContext {
+            MastodonFetchContext(
+                authenticationContext: self.authenticationContext,
+                searchText: self.searchText,
+                offset: offset,
+                maxID: self.maxID,
                 count: self.count,
                 excludeReplies: self.excludeReplies,
                 excludeReblogs: self.excludeReblogs,
@@ -91,8 +109,8 @@ enum StatusListFetchViewModel {
         let nextInput: Input?
 
         enum Result {
-            case twitterV2([Twitter.Entity.V2.Tweet]) // v2
             case twitter([Twitter.Entity.Tweet]) // v1
+            case twitterV2([Twitter.Entity.V2.Tweet]) // v2
             case mastodon([Mastodon.Entity.Status])
         }
     }
@@ -285,7 +303,6 @@ extension StatusListFetchViewModel {
                 authenticationContext: authenticationContext
             )
             let content = response.value
-            debugPrint(content)
             let nextToken = content.meta.nextToken
             let noMore = nextToken == nil
             let nextInput: Input? = {
@@ -298,7 +315,38 @@ extension StatusListFetchViewModel {
                 nextInput: nextInput
             )
         case .mastodon(let fetchContext):
-            fatalError()
+            let authenticationContext = fetchContext.authenticationContext
+            let searchText = (fetchContext.searchText ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+            guard !searchText.isEmpty else {
+                throw AppError.implicit(.badRequest)
+            }
+            let query = Mastodon.API.V2.Search.SearchQuery(
+                type: .statuses,
+                accountID: nil,
+                maxID: nil,
+                minID: nil,
+                excludeUnreviewed: nil,
+                q: searchText,
+                resolve: true,
+                limit: fetchContext.count,
+                offset: fetchContext.offset,
+                following: nil
+            )
+            let response = try await context.apiService.searchMastodon(
+                query: query,
+                authenticationContext: authenticationContext
+            )
+            let noMore = response.value.statuses.isEmpty
+            let nextInput: Input? = {
+                let offset = (fetchContext.offset ?? 0) + response.value.statuses.count
+                let fetchContext = fetchContext.map(offset: offset)
+                return Input(fetchContext: .mastodon(fetchContext))
+            }()
+            return Output(
+                result: .mastodon(response.value.statuses),
+                hasMore: !noMore,
+                nextInput: nextInput
+            )
         }
     }
 }

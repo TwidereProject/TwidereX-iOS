@@ -19,6 +19,7 @@ final class SearchResultViewModel {
     let _coordinator: SceneCoordinator  // only use for `setup`
     var preferredScope: Scope?
     @Published var searchText: String = ""
+    @Published var selectedScope: Scope? = nil
     
     // output
     @Published var scopes: [Scope] = []
@@ -93,6 +94,7 @@ extension SearchResultViewModel {
         // trigger data source update first
         self.viewControllers = viewControllers
         self.scopes = scopes
+        self.userIdentifier = userIdentifier
     }
     
     private func createViewController(for scope: Scope) -> UIViewController {

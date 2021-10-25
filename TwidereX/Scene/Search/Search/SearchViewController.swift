@@ -20,6 +20,8 @@ import Combine
 // DrawerSidebarTransitionableViewController
 final class SearchViewController: UIViewController, NeedsDependency {
     
+    let logger = Logger(subsystem: "SearchViewController", category: "ViewController")
+    
     weak var context: AppContext! { willSet { precondition(!isViewLoaded) } }
     weak var coordinator: SceneCoordinator! { willSet { precondition(!isViewLoaded) } }
     
@@ -35,6 +37,7 @@ final class SearchViewController: UIViewController, NeedsDependency {
     private(set) lazy var searchController: UISearchController = {
         let searchController = UISearchController(searchResultsController: searchResultViewController)
         searchController.searchResultsUpdater = searchResultViewController
+        searchController.searchBar.delegate = searchResultViewController
         return searchController
     }()
     
@@ -116,6 +119,8 @@ extension SearchViewController {
 //            self.avatarBarButtonItem.configure(withConfigurationInput: AvatarConfigurableViewConfiguration.Input(avatarImageURL: avatarImageURL))
 //        }
 //        .store(in: &disposeBag)
+        
+        
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -127,25 +132,6 @@ extension SearchViewController {
 }
 
 extension SearchViewController {
-
-//    private func setupSearchBar() {
-//        let searchBarContainerView = UIView()
-//        searchBar.translatesAutoresizingMaskIntoConstraints = false
-//        searchBarContainerView.addSubview(searchBar)
-//        NSLayoutConstraint.activate([
-//            searchBar.topAnchor.constraint(equalTo: searchBarContainerView.topAnchor),
-//            searchBar.leadingAnchor.constraint(equalTo: searchBarContainerView.leadingAnchor),
-//            searchBar.trailingAnchor.constraint(equalTo: searchBarContainerView.trailingAnchor),
-//            searchBar.bottomAnchor.constraint(equalTo: searchBarContainerView.bottomAnchor),
-//        ])
-//        searchBar.delegate = self
-//
-//        navigationItem.titleView = searchBarContainerView
-//    }
-
-}
-
-extension SearchViewController {
     
 //    @objc private func avatarButtonPressed(_ sender: UIButton) {
 //        os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
@@ -154,11 +140,3 @@ extension SearchViewController {
     
 }
 
-// MARK: - UISearchBarDelegate
-extension SearchViewController: UISearchBarDelegate {
-//    func searchBarShouldBeginEditing(_ searchBar: UISearchBar) -> Bool {
-//        os_log("%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
-//        searchBarTapPublisher.send()
-//        return false
-//    }
-}

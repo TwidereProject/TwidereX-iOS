@@ -83,6 +83,8 @@ extension HomeTimelineViewModel.LoadOldestState {
                     return StatusListFetchViewModel.Input(
                         fetchContext: .mastodon(.init(
                             authenticationContext: authenticationContext,
+                            searchText: nil,
+                            offset: nil,
                             maxID: status.id,
                             count: 100,
                             excludeReplies: false,

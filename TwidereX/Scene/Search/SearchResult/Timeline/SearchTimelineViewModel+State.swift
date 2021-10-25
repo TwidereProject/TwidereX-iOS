@@ -104,9 +104,12 @@ extension SearchTimelineViewModel.State {
                             ))
                         )
                     case .mastodon(let authenticationContext):
+                        let offset = viewModel.statusRecordFetchedResultController.mastodonStatusFetchedResultController.statusIDs.value.count
                         return StatusListFetchViewModel.Input(
                             fetchContext: .mastodon(.init(
                                 authenticationContext: authenticationContext,
+                                searchText: searchText,
+                                offset: offset,
                                 maxID: nil,
                                 count: 50,
                                 excludeReplies: false,
@@ -299,7 +302,7 @@ extension SearchTimelineViewModel.State {
     
     class NoMore: SearchTimelineViewModel.State {
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {
-            return stateClass == Reset.self || stateClass == Loading.self
+            return stateClass == Reset.self
         }
     }
 }

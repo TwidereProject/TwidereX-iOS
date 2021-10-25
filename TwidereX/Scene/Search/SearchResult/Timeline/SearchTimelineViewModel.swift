@@ -24,6 +24,7 @@ class SearchTimelineViewModel: NSObject {
     // input
     let context: AppContext
     let statusRecordFetchedResultController: StatusRecordFetchedResultController
+    let listBatchFetchViewModel = ListBatchFetchViewModel()
     @Published var searchText = ""
     @Published var userIdentifier: UserIdentifier?
     
