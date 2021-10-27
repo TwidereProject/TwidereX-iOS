@@ -89,6 +89,7 @@ extension Persistence.TwitterUser {
         twitterUser user: TwitterUser,
         context: PersistContext
     ) {
+        user.update(profileBannerURL: context.entity.profileBannerURL)
         user.update(bioEntities: TwitterEntity(entity: context.entity.entities?.description))
         user.update(urlEntities: TwitterEntity(entity: context.entity.entities?.url))
         

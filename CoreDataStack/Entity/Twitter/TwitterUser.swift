@@ -50,15 +50,12 @@ final public class TwitterUser: NSManagedObject {
     
     // one-to-one relationship
 //    @NSManaged public private(set) var pinnedTweet: Tweet?
-//    @NSManaged public private(set) var withheld: TwitteWithheld?
-    
 
     @NSManaged public private(set) var twitterAuthentication: TwitterAuthentication?
 
     // one-to-many relationship
     @NSManaged public private(set) var statuses: Set<TwitterStatus>
 //    @NSManaged public private(set) var inReplyFrom: Set<Tweet>
-//    @NSManaged public private(set) var mentionIn: Set<TweetEntitiesMention>?
 
     // many-to-many relationship
     @NSManaged public private(set) var like: Set<TwitterStatus>
