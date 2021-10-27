@@ -46,6 +46,9 @@ final class UserView: UIView {
     // followerCount
     let followerCountLabel = PlainLabel(style: .userDescription)
     
+    // friendship control
+    let friendshipButton = FriendshipButton()
+    
     func prepareForReuse() {
         disposeBag.removeAll()
         viewModel.avatarImageURL = nil
@@ -70,7 +73,7 @@ extension UserView {
         // container: H - [ user avatar | info container | accessory container ]
         containerStackView.axis = .horizontal
         containerStackView.spacing = 10
-        containerStackView.alignment = .top
+        containerStackView.alignment = .center
         
         containerStackView.translatesAutoresizingMaskIntoConstraints = false
         addSubview(containerStackView)
@@ -124,6 +127,12 @@ extension UserView.Style {
         
         infoContainerStackView.addArrangedSubview(userView.nameLabel)
         infoContainerStackView.addArrangedSubview(userView.usernameLabel)
+        
+        userView.friendshipButton.translatesAutoresizingMaskIntoConstraints = false
+        userView.containerStackView.addArrangedSubview(userView.friendshipButton)
+        NSLayoutConstraint.activate([
+            userView.friendshipButton.widthAnchor.constraint(equalToConstant: 80)   // maybe dynamic width for different language?
+        ])
         
         userView.setNeedsLayout()
     }

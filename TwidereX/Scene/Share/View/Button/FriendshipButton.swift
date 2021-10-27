@@ -9,9 +9,7 @@
 import UIKit
 
 final class FriendshipButton: UIButton {
-    
-    static let height: CGFloat = 32
-    
+        
     private(set) var relationship: Relationship = .follow
 
     override init(frame: CGRect) {

@@ -203,7 +203,7 @@ extension SearchUserViewModel.State {
     
     class NoMore: SearchUserViewModel.State {
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {
-            return stateClass == Reset.self || stateClass == Loading.self
+            return stateClass == Reset.self
         }
         
         override func didEnter(from previousState: GKState?) {

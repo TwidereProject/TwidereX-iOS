@@ -39,7 +39,7 @@ extension Twitter.API.Users {
         ) {
             self.q = q
             self.page = page
-            self.count = min(count, 1000)
+            self.count = min(count, 20)
         }
         
         var queryItems: [URLQueryItem]? {
