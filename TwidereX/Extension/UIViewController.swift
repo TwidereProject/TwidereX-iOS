@@ -79,3 +79,9 @@ extension UIViewController {
     }
     
 }
+
+extension UIViewController {
+    var isDisplaying: Bool {
+        return view.window != nil 
+    }
+}

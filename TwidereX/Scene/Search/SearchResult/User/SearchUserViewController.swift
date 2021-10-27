@@ -61,6 +61,7 @@ extension SearchUserViewController {
             .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in
                 guard let self = self else { return }
+                guard self.isDisplaying else { return }
                 self.viewModel.stateMachine.enter(SearchUserViewModel.State.Loading.self)
             }
             .store(in: &disposeBag)
