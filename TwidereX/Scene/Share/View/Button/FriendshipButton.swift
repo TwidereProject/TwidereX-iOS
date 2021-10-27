@@ -25,6 +25,7 @@ final class FriendshipButton: UIButton {
 }
 
 extension FriendshipButton {
+    
     private func _init() {
         configure(relationship: relationship)
     }
@@ -44,6 +45,8 @@ extension FriendshipButton {
         configuration.baseForegroundColor = baseForegroundColor(for: relationship)
         configuration.background = background(for: relationship)
         self.configuration = configuration
+        
+        titleLabel?.numberOfLines = 1
     }
     
 }

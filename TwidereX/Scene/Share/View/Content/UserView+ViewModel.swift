@@ -16,6 +16,8 @@ extension UserView {
     final class ViewModel: ObservableObject {
         var disposeBag = Set<AnyCancellable>()
         
+        let relationshipViewModel = RelationshipViewModel()
+        
         @Published var platform: Platform = .none
         
         @Published var avatarImageURL: URL?
@@ -62,23 +64,35 @@ extension UserView.ViewModel {
         $username
             .assign(to: \.text, on: userView.usernameLabel)
             .store(in: &disposeBag)
+        // relationship
+        relationshipViewModel.$optionSet
+            .map { $0?.relationship(except: [.muting]) }
+            .sink { relationship in
+                guard let relationship = relationship else { return }
+                userView.friendshipButton.configure(relationship: relationship)
+                userView.friendshipButton.isHidden = relationship == .isMyself
+            }
+            .store(in: &disposeBag)
     }
     
 }
 
 extension UserView {
-    func configure(user: UserObject) {
+    func configure(user: UserObject, me: UserObject?) {
         switch user {
         case .twitter(let user):
             configure(twitterUser: user)
         case .mastodon(let user):
             configure(mastodonUser: user)
         }
+        
+        viewModel.relationshipViewModel.user = user
+        viewModel.relationshipViewModel.me = me
     }
 }
 
 extension UserView {
-    func configure(twitterUser user: TwitterUser) {
+    private func configure(twitterUser user: TwitterUser) {
         // avatar
         user.publisher(for: \.profileImageURL)
             .map { _ in user.avatarImageURL() }
@@ -95,10 +109,11 @@ extension UserView {
             .assign(to: \.username, on: viewModel)
             .store(in: &disposeBag)
     }
+    
 }
 
 extension UserView {
-    func configure(mastodonUser user: MastodonUser) {
+    private func configure(mastodonUser user: MastodonUser) {
         
     }
 }

@@ -13,9 +13,14 @@ import CoreDataStack
 extension UserTableViewCell {
     final class ViewModel {
         let user: UserObject
+        let me: UserObject?
         
-        init(user: UserObject) {
+        init(
+            user: UserObject,
+            me: UserObject?
+        ) {
             self.user = user
+            self.me = me
         }
     }
     
@@ -23,7 +28,10 @@ extension UserTableViewCell {
     func configure(
         viewModel: ViewModel
     ) {
-        userView.configure(user: viewModel.user)
+        userView.configure(
+            user: viewModel.user,
+            me: viewModel.me
+        )
     }
     
 }

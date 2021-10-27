@@ -43,7 +43,13 @@ extension UserSection {
                     let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: UserFriendshipStyleTableViewCell.self), for: indexPath) as! UserFriendshipStyleTableViewCell
                     context.managedObjectContext.performAndWait {
                         guard let user = record.object(in: context.managedObjectContext) else { return }
-                        configure(cell: cell, user: user)
+                        let authenticationContext = context.authenticationService.activeAuthenticationContext.value
+                        let me = authenticationContext?.user(in: context.managedObjectContext)
+                        configure(
+                            cell: cell,
+                            user: user,
+                            me: me
+                        )
                     }
                     return cell
                 }
@@ -67,9 +73,10 @@ extension UserSection {
     
     static func configure(
         cell: UserFriendshipStyleTableViewCell,
-        user: UserObject
+        user: UserObject,
+        me: UserObject?
     ) {
-        let viewModel = UserTableViewCell.ViewModel(user: user)
+        let viewModel = UserTableViewCell.ViewModel(user: user, me: me)
         cell.configure(viewModel: viewModel)
     }
     

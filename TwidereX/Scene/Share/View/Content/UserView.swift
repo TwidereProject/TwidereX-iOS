@@ -131,7 +131,7 @@ extension UserView.Style {
         userView.friendshipButton.translatesAutoresizingMaskIntoConstraints = false
         userView.containerStackView.addArrangedSubview(userView.friendshipButton)
         NSLayoutConstraint.activate([
-            userView.friendshipButton.widthAnchor.constraint(equalToConstant: 80)   // maybe dynamic width for different language?
+            userView.friendshipButton.widthAnchor.constraint(equalToConstant: 80),  // maybe dynamic width for different language?
         ])
         
         userView.setNeedsLayout()
