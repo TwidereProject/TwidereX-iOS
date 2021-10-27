@@ -72,7 +72,10 @@ extension SearchTimelineViewController {
             .store(in: &disposeBag)
         
         KeyboardResponderService
-            .configure(scrollView: tableView)
+            .configure(
+                scrollView: tableView,
+                viewDidAppear: viewModel.viewDidAppear.eraseToAnyPublisher()
+            )
             .store(in: &disposeBag)
     }
     
@@ -80,6 +83,12 @@ extension SearchTimelineViewController {
         super.viewWillAppear(animated)
         
         tableView.deselectRow(with: transitionCoordinator, animated: animated)
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        viewModel.viewDidAppear.send()
     }
     
     override func viewDidDisappear(_ animated: Bool) {

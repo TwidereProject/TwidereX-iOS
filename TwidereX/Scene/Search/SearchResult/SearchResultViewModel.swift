@@ -115,7 +115,11 @@ extension SearchResultViewModel {
             viewController = _viewController
             
         case .user:
-            viewController = UIViewController()
+            let _viewController = SearchUserViewController()
+            _viewController.viewModel = SearchUserViewModel(context: context)
+            $searchText.assign(to: &_viewController.viewModel.$searchText)
+            $userIdentifier.assign(to: &_viewController.viewModel.$userIdentifier)
+            viewController = _viewController
         case .hashtag:
             viewController = UIViewController()
         }

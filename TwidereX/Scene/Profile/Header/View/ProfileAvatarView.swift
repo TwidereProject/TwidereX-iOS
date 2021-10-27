@@ -18,20 +18,31 @@ final class ProfileAvatarView: UIView {
     var disposeBag = Set<AnyCancellable>()
     
     let avatarContainerView = UIView()
+    
     let avatarButton: AvatarButton = {
         let frame = CGRect(origin: .zero, size: ProfileAvatarView.avatarButtonSize)
         let button = AvatarButton(frame: frame)
         button.avatarImageView.image = .placeholder(color: .systemFill)
         return button
     }()
+    var avatarButtonWidthLayoutConstraint: NSLayoutConstraint!
+    var avatarButtonHeightLayoutConstraint: NSLayoutConstraint!
     
     let badgeImageView = UIImageView()
+    var badgeImageViewWidthLayoutConstraint: NSLayoutConstraint!
+    var badgeImageViewHeightLayoutConstraint: NSLayoutConstraint!
+    
     private let badgeMaskImageView = UIImageView()
     
     let layoutDidChange = PassthroughSubject<Void, Never>()
-    let avatarStyle = CurrentValueSubject<CornerStyle, Never>(.circle)
-    let badge = CurrentValueSubject<Badge, Never>(.none)
-    let badgeStyle = CurrentValueSubject<CornerStyle, Never>(.circle)
+    
+    var scale: CGFloat = 1.0 {
+        didSet {
+            updateScale()
+        }
+    }
+    @Published var avatarStyle: CornerStyle = .circle
+    @Published var badge: Badge = .none
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -61,33 +72,36 @@ extension ProfileAvatarView {
         
         avatarButton.translatesAutoresizingMaskIntoConstraints = false
         avatarContainerView.addSubview(avatarButton)
+        avatarButtonWidthLayoutConstraint = avatarButton.widthAnchor.constraint(equalToConstant: ProfileAvatarView.avatarButtonSize.width).priority(.required - 1)
+        avatarButtonHeightLayoutConstraint = avatarButton.heightAnchor.constraint(equalToConstant: ProfileAvatarView.avatarButtonSize.height).priority(.required - 1)
         NSLayoutConstraint.activate([
-            avatarButton.topAnchor.constraint(equalTo: avatarContainerView.topAnchor, constant: ProfileAvatarView.margin),
-            avatarButton.leadingAnchor.constraint(equalTo: avatarContainerView.leadingAnchor, constant: ProfileAvatarView.margin),
-            avatarContainerView.trailingAnchor.constraint(equalTo: avatarButton.trailingAnchor, constant: ProfileAvatarView.margin),
-            avatarContainerView.bottomAnchor.constraint(equalTo: avatarButton.bottomAnchor, constant: ProfileAvatarView.margin),
-            avatarButton.widthAnchor.constraint(equalToConstant: ProfileAvatarView.avatarButtonSize.width).priority(.required - 1),
-            avatarButton.heightAnchor.constraint(equalToConstant: ProfileAvatarView.avatarButtonSize.height).priority(.required - 1),
+            avatarButton.topAnchor.constraint(equalTo: avatarContainerView.topAnchor),
+            avatarButton.leadingAnchor.constraint(equalTo: avatarContainerView.leadingAnchor),
+            avatarContainerView.trailingAnchor.constraint(equalTo: avatarButton.trailingAnchor),
+            avatarContainerView.bottomAnchor.constraint(equalTo: avatarButton.bottomAnchor),
+            avatarButtonWidthLayoutConstraint,
+            avatarButtonHeightLayoutConstraint,
         ])
         
         badgeImageView.translatesAutoresizingMaskIntoConstraints = false
         addSubview(badgeImageView)
+        badgeImageViewWidthLayoutConstraint = badgeImageView.widthAnchor.constraint(equalToConstant: ProfileAvatarView.badgeImageViewSize.width).priority(.required - 1)
+        badgeImageViewHeightLayoutConstraint = badgeImageView.heightAnchor.constraint(equalToConstant: ProfileAvatarView.badgeImageViewSize.height).priority(.required - 1)
         NSLayoutConstraint.activate([
             badgeImageView.trailingAnchor.constraint(equalTo: avatarButton.trailingAnchor),
             badgeImageView.bottomAnchor.constraint(equalTo: avatarButton.bottomAnchor),
-            badgeImageView.widthAnchor.constraint(equalToConstant: ProfileAvatarView.badgeImageViewSize.width).priority(.required - 1),
-            badgeImageView.heightAnchor.constraint(equalToConstant: ProfileAvatarView.badgeImageViewSize.height).priority(.required - 1),
+            badgeImageViewWidthLayoutConstraint,
+            badgeImageViewHeightLayoutConstraint,
         ])
-        
-        Publishers.CombineLatest4(
-            avatarStyle,
-            badge,
-            badgeStyle,
+
+        Publishers.CombineLatest3(
+            $avatarStyle,
+            $badge,
             layoutDidChange
         )
         .sink { [weak self] _ in
             guard let self = self else { return }
-            self.updateMask()
+            self.updateBadge()
         }
         .store(in: &disposeBag)
     }
@@ -96,6 +110,22 @@ extension ProfileAvatarView {
         super.layoutSubviews()
         
         layoutDidChange.send()
+    }
+    
+}
+
+extension ProfileAvatarView {
+
+    func updateScale() {
+        let avatarButtonDimension = ProfileAvatarView.avatarButtonSize.width * scale
+        self.avatarButtonWidthLayoutConstraint.constant = avatarButtonDimension
+        self.avatarButtonHeightLayoutConstraint.constant = avatarButtonDimension
+        
+        let badgeImageDimension = ProfileAvatarView.badgeImageViewSize.width * scale
+        self.badgeImageViewWidthLayoutConstraint.constant = badgeImageDimension
+        self.badgeImageViewHeightLayoutConstraint.constant = badgeImageDimension
+        
+        self.setNeedsLayout()
     }
     
 }
@@ -114,27 +144,40 @@ extension ProfileAvatarView {
         case roundedRect
     }
     
-    private func updateMask() {
+    private func updateBadge() {
         // mask avatarButton
         let _avatarMaskImage: UIImage? = {
-            switch badge.value {
+            switch badge {
             case .none:
                 return nil
             case .circle:
-                return Asset.ObjectTools.Badge.circleMask.image
+                return Asset.Badge.circleMask.image
             case .robot:
-                return Asset.ObjectTools.Badge.robotMask.image
+                return Asset.Badge.robotMask.image
             case .verified:
-                return Asset.ObjectTools.Badge.verifiedMask.image
+                return Asset.Badge.verifiedMask.image
             }
         }()
         if let avatarMaskImage = _avatarMaskImage {
             let frame = avatarButton.layer.frame
             let imageView = UIImageView(frame: frame)
+            imageView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
             imageView.image = avatarMaskImage
             avatarButton.mask = imageView
         } else {
             avatarButton.mask = nil
+        }
+        
+        // set badge
+        switch badge {
+        case .none:
+            badgeImageView.image = nil
+        case .circle:
+            badgeImageView.image = nil
+        case .verified:
+            badgeImageView.image = Asset.Badge.verified.image
+        case .robot:
+            badgeImageView.image = Asset.Badge.robot.image
         }
         
         // mask outline
@@ -143,7 +186,7 @@ extension ProfileAvatarView {
         outlineMaskLayer.path = {
             let containerFrame = bounds
             let path: UIBezierPath
-            switch avatarStyle.value {
+            switch avatarStyle {
             case .circle:
                 path = UIBezierPath(ovalIn: containerFrame)
             case .roundedRect:

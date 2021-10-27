@@ -88,13 +88,17 @@ extension KeyboardResponderService {
 }
 
 extension KeyboardResponderService {
-    static func configure(scrollView: UIScrollView) -> AnyCancellable {
-        return Publishers.CombineLatest3(
-            KeyboardResponderService.shared.isShow.eraseToAnyPublisher(),
-            KeyboardResponderService.shared.state.eraseToAnyPublisher(),
-            KeyboardResponderService.shared.endFrame.eraseToAnyPublisher()
+    static func configure(
+        scrollView: UIScrollView,
+        viewDidAppear: AnyPublisher<Void, Never>
+    ) -> AnyCancellable {
+        return Publishers.CombineLatest4(
+            KeyboardResponderService.shared.isShow,
+            KeyboardResponderService.shared.state,
+            KeyboardResponderService.shared.endFrame,
+            viewDidAppear       // make sure trigger again when view available
         )
-        .sink(receiveValue: { [weak scrollView] isShow, state, endFrame in
+        .sink(receiveValue: { [weak scrollView] isShow, state, endFrame, _ in
             guard let scrollView = scrollView else { return }
             guard let view = scrollView.superview else { return }
             

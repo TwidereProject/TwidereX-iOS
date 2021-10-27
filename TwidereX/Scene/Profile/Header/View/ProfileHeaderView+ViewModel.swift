@@ -72,6 +72,19 @@ extension ProfileHeaderView.ViewModel {
                 )
             }
             .store(in: &bindDisposeBag)
+        // badge
+        Publishers.CombineLatest(
+            $isBot,
+            $isVerified
+        )
+        .sink { isBot, isVerified in
+            if isVerified {
+                profileHeaderView.avatarView.badge = .verified
+            } else {
+                profileHeaderView.avatarView.badge = .none
+            }
+        }
+        .store(in: &bindDisposeBag)
         // isFollowsYou
         $isFollowsYou
             .map { !$0 }
@@ -198,6 +211,10 @@ extension ProfileHeaderView {
         user.publisher(for: \.profileImageURL)
             .map { _ in user.avatarImageURL(size: .original) }
             .assign(to: \.avatarImageURL, on: viewModel)
+            .store(in: &viewModel.configureDisposeBag)
+        // isVerified
+        user.publisher(for: \.verified)
+            .assign(to: \.isVerified, on: viewModel)
             .store(in: &viewModel.configureDisposeBag)
         // isProtected
         user.publisher(for: \.protected)

@@ -26,7 +26,7 @@ extension UserRecord {
 }
 
 extension UserRecord {
-    func user(in managedObjectContext: NSManagedObjectContext) -> UserObject? {
+    func object(in managedObjectContext: NSManagedObjectContext) -> UserObject? {
         switch self {
         case .twitter(let record):
             return record.object(in: managedObjectContext)

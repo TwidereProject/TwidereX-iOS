@@ -1,8 +1,8 @@
 //
-//  MastodonStatusFetchedResultController.swift
+//  MastodonUserFetchedResultController.swift
 //  TwidereX
 //
-//  Created by Cirno MainasuK on 2021-10-12.
+//  Created by Cirno MainasuK on 2021-10-26.
 //  Copyright © 2021 Twidere. All rights reserved.
 //
 
@@ -13,27 +13,27 @@ import CoreData
 import CoreDataStack
 import MastodonSDK
 
-final class MastodonStatusFetchedResultController: NSObject {
-    
+final class MastodonUserFetchedResultController: NSObject {
+
     let logger = Logger(subsystem: "MastodonStatusFetchedResultController", category: "DB")
     
     var disposeBag = Set<AnyCancellable>()
     
-    let fetchedResultsController: NSFetchedResultsController<MastodonStatus>
-    
+    let fetchedResultsController: NSFetchedResultsController<MastodonUser>
+
     // input
     let domain = CurrentValueSubject<String, Never>("")
-    let statusIDs = CurrentValueSubject<[Mastodon.Entity.Status.ID], Never>([])
+    let userIDs = CurrentValueSubject<[Mastodon.Entity.Account.ID], Never>([])
     let predicate = CurrentValueSubject<NSPredicate?, Never>(nil)
     
     // output
     private let _objectIDs = PassthroughSubject<[NSManagedObjectID], Never>()
-    let records = CurrentValueSubject<[ManagedObjectRecord<MastodonStatus>], Never>([])
+    let records = CurrentValueSubject<[ManagedObjectRecord<MastodonUser>], Never>([])
     
     init(managedObjectContext: NSManagedObjectContext) {
         self.fetchedResultsController = {
-            let fetchRequest = MastodonStatus.sortedFetchRequest
-            fetchRequest.predicate = MastodonStatus.predicate(domain: "", ids: [])
+            let fetchRequest = MastodonUser.sortedFetchRequest
+            fetchRequest.predicate = MastodonUser.predicate(domain: "", ids: [])
             fetchRequest.returnsObjectsAsFaults = false
             fetchRequest.fetchBatchSize = 15
             let controller = NSFetchedResultsController(
@@ -55,24 +55,24 @@ final class MastodonStatusFetchedResultController: NSObject {
             .store(in: &disposeBag)
         
         fetchedResultsController.delegate = self
-        
+
         Publishers.CombineLatest3(
             domain,
-            statusIDs,
+            userIDs,
             predicate
         )
         .receive(on: DispatchQueue.main)
-        .sink { [weak self] domain, statusIDs, predicate in
+        .sink { [weak self] domain, userIDs, predicate in
             guard let self = self else { return }
             
             let compoundPredicate: NSPredicate = {
                 if let predicate = predicate {
                     return NSCompoundPredicate(andPredicateWithSubpredicates: [
-                        MastodonStatus.predicate(domain: domain, ids: statusIDs),
+                        MastodonUser.predicate(domain: domain, ids: userIDs),
                         predicate
                     ])
                 } else {
-                    return MastodonStatus.predicate(domain: domain, ids: statusIDs)
+                    return MastodonUser.predicate(domain: domain, ids: userIDs)
                 }
             }()
             self.fetchedResultsController.fetchRequest.predicate = compoundPredicate
@@ -85,33 +85,33 @@ final class MastodonStatusFetchedResultController: NSObject {
         }
         .store(in: &disposeBag)
     }
-    
+
 }
 
-extension MastodonStatusFetchedResultController {
-    func append(statusIDs: [Mastodon.Entity.Status.ID]) {
-        var result = self.statusIDs.value
-        for statusID in statusIDs where !result.contains(statusID) {
+extension MastodonUserFetchedResultController {
+    func append(userIDs: [Mastodon.Entity.Account.ID]) {
+        var result = self.userIDs.value
+        for statusID in userIDs where !result.contains(statusID) {
             result.append(statusID)
         }
-        self.statusIDs.value = result
+        self.userIDs.value = result
     }
 }
 
 // MARK: - NSFetchedResultsControllerDelegate
-extension MastodonStatusFetchedResultController: NSFetchedResultsControllerDelegate {
+extension MastodonUserFetchedResultController: NSFetchedResultsControllerDelegate {
     func controller(
         _ controller: NSFetchedResultsController<NSFetchRequestResult>,
         didChangeContentWith snapshot: NSDiffableDataSourceSnapshotReference
     ) {
         logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public)")
         
-        let indexes = statusIDs.value
-        let statuses = fetchedResultsController.fetchedObjects ?? []
+        let indexes = userIDs.value
+        let users = fetchedResultsController.fetchedObjects ?? []
         
-        let objectIDs: [NSManagedObjectID] = statuses
-            .compactMap { status in
-                indexes.firstIndex(of: status.id).map { index in (index, status) }
+        let objectIDs: [NSManagedObjectID] = users
+            .compactMap { user in
+                indexes.firstIndex(of: user.id).map { index in (index, user) }
             }
             .sorted { $0.0 < $1.0 }
             .map { $0.1.objectID }

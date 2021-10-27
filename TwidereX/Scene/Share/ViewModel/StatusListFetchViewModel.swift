@@ -15,6 +15,7 @@ enum StatusListFetchViewModel {
     struct Input {
         let fetchContext: FetchContext
         
+        // TODO: refactor this with protocol and more specific case 
         enum FetchContext {
             case twitter(TwitterFetchContext)
             case mastodon(MastodonFetchContext)

@@ -23,6 +23,9 @@ enum TextStyle {
     case statusTimestamp
     case statusLocation
     case statusContent
+    case userAuthorName
+    case userAuthorUsername
+    case userDescription
     case profileAuthorName
     case profileAuthorUsername
     case profileAuthorBio
@@ -45,6 +48,9 @@ extension TextStyle {
         case .statusTimestamp:          return 1
         case .statusLocation:           return 1
         case .statusContent:            return 0
+        case .userAuthorName:           return 1
+        case .userAuthorUsername:       return 1
+        case .userDescription:          return 1
         case .profileAuthorName:        return 0
         case .profileAuthorUsername:    return 1
         case .profileAuthorBio:         return 0
@@ -70,6 +76,12 @@ extension TextStyle {
             return .preferredFont(forTextStyle: .caption1)
         case .statusContent:
             return .preferredFont(forTextStyle: .body)
+        case .userAuthorName:
+            return .preferredFont(forTextStyle: .headline)
+        case .userAuthorUsername:
+            return .preferredFont(forTextStyle: .subheadline)
+        case .userDescription:
+            return .preferredFont(forTextStyle: .subheadline)
         case .profileAuthorName:
             return .preferredFont(forTextStyle: .headline)
         case .profileAuthorUsername:
@@ -99,6 +111,12 @@ extension TextStyle {
             return .secondaryLabel
         case .statusContent:
             return .label.withAlphaComponent(0.8)
+        case .userAuthorName:
+            return .label
+        case .userAuthorUsername:
+            return .secondaryLabel
+        case .userDescription:
+            return .secondaryLabel
         case .profileAuthorName:
             return .label
         case .profileAuthorUsername:
@@ -142,6 +160,12 @@ extension MetaLabel: TextStyleConfigurable {
         case .statusLocation:
             break
         case .statusContent:
+            break
+        case .userAuthorName:
+            break
+        case .userAuthorUsername:
+            break
+        case .userDescription:
             break
         case .profileAuthorName, .profileAuthorUsername:
             textAlignment = .center

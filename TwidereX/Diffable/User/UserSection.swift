@@ -37,6 +37,20 @@ extension UserSection {
                     configure(cell: cell, authenticationIndex: authenticationIndex)
                 }
                 return cell
+            case .user(let record, let style):
+                switch style {
+                case .friendship:
+                    let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: UserFriendshipStyleTableViewCell.self), for: indexPath) as! UserFriendshipStyleTableViewCell
+                    context.managedObjectContext.performAndWait {
+                        guard let user = record.object(in: context.managedObjectContext) else { return }
+                        configure(cell: cell, user: user)
+                    }
+                    return cell
+                }
+            case .bottomLoader:
+                let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: TimelineBottomLoaderTableViewCell.self), for: indexPath) as! TimelineBottomLoaderTableViewCell
+                cell.activityIndicatorView.startAnimating()
+                return cell
             }
         }
     }
@@ -49,6 +63,14 @@ extension UserSection {
         authenticationIndex: AuthenticationIndex
     ) {
         cell.configure(authenticationIndex: authenticationIndex)
+    }
+    
+    static func configure(
+        cell: UserFriendshipStyleTableViewCell,
+        user: UserObject
+    ) {
+        let viewModel = UserTableViewCell.ViewModel(user: user)
+        cell.configure(viewModel: viewModel)
     }
     
 }

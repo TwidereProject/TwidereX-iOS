@@ -1,8 +1,8 @@
 //
-//  SearchMediaViewModel+State.swift
+//  SearchTimelineViewModel+State.swift
 //  TwidereX
 //
-//  Created by Cirno MainasuK on 2020-10-30.
+//  Created by Cirno MainasuK on 2020-10-29.
 //  Copyright © 2020 Twidere. All rights reserved.
 //
 
@@ -11,11 +11,11 @@ import Foundation
 import GameplayKit
 import TwitterSDK
 
-extension SearchMediaViewModel {
+extension SearchTimelineViewModel {
     class State: GKState {
-        weak var viewModel: SearchMediaViewModel?
+        weak var viewModel: SearchTimelineViewModel?
         
-        init(viewModel: SearchMediaViewModel) {
+        init(viewModel: SearchTimelineViewModel) {
             self.viewModel = viewModel
         }
         
@@ -25,39 +25,36 @@ extension SearchMediaViewModel {
     }
 }
 
-extension SearchMediaViewModel.State {
-    class Initial: SearchMediaViewModel.State {
+extension SearchTimelineViewModel.State {
+    class Initial: SearchTimelineViewModel.State {
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {
             return stateClass == Idle.self || stateClass == Reset.self || stateClass == Loading.self
         }
     }
     
-    class Idle: SearchMediaViewModel.State {
+    class Idle: SearchTimelineViewModel.State {
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {
             return stateClass == Reset.self || stateClass == Loading.self
         }
     }
     
-    class Reset: SearchMediaViewModel.State {
+    class Reset: SearchTimelineViewModel.State {
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {
             return stateClass == Loading.self
         }
         
         override func didEnter(from previousState: GKState?) {
             super.didEnter(from: previousState)
-            
+
             viewModel?.statusRecordFetchedResultController.reset()
             stateMachine?.enter(Loading.self)
         }
     }
     
-    
-    class Loading: SearchMediaViewModel.State {
-        
-        let logger = Logger(subsystem: "SearchMediaViewModel.State", category: "StateMachine")
+    class Loading: SearchTimelineViewModel.State {
+        let logger = Logger(subsystem: "SearchTimelineViewModel.State", category: "StateMachine")
         
         var nextInput: StatusListFetchViewModel.Input?
-        var currentTask: Task<Void, Error>?
         
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {
             return stateClass == Fail.self
@@ -71,11 +68,9 @@ extension SearchMediaViewModel.State {
             
             if previousState is Reset {
                 nextInput = nil
-                currentTask?.cancel()
             }
             
             guard let viewModel = viewModel, let stateMachine = stateMachine else { return }
-            
             guard let authenticationContext = viewModel.context.authenticationService.activeAuthenticationContext.value
             else {
                 stateMachine.enter(Fail.self)
@@ -83,7 +78,7 @@ extension SearchMediaViewModel.State {
             }
             
             let searchText = viewModel.searchText
-
+            
             if nextInput == nil {
                 nextInput = {
                     switch authenticationContext {
@@ -96,12 +91,11 @@ extension SearchMediaViewModel.State {
                                 nextToken: nil,
                                 count: 50,
                                 excludeReplies: false,
-                                onlyMedia: true,
+                                onlyMedia: false,
                                 userIdentifier: nil
                             ))
                         )
                     case .mastodon(let authenticationContext):
-                        assertionFailure("this is not accessible entry for Mastodon")
                         let offset = viewModel.statusRecordFetchedResultController.mastodonStatusFetchedResultController.statusIDs.value.count
                         return StatusListFetchViewModel.Input(
                             fetchContext: .mastodon(.init(
@@ -112,7 +106,7 @@ extension SearchMediaViewModel.State {
                                 count: 50,
                                 excludeReplies: false,
                                 excludeReblogs: false,
-                                onlyMedia: true,
+                                onlyMedia: false,
                                 userIdentifier: nil
                             ))
                         )
@@ -125,14 +119,13 @@ extension SearchMediaViewModel.State {
                 return
             }
             
-            currentTask?.cancel()
-            currentTask = Task {
+            Task {
                 do {
                     logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): fetch…")
                     let output = try await StatusListFetchViewModel.searchTimeline(context: viewModel.context, input: input)
                     
-                    // check cancel
-                    guard !Task.isCancelled else {
+                    // check task needs cancel
+                    guard viewModel.searchText == searchText else {
                         return
                     }
                     
@@ -155,23 +148,27 @@ extension SearchMediaViewModel.State {
                         let statusIDs = statuses.map { $0.id }
                         viewModel.statusRecordFetchedResultController.mastodonStatusFetchedResultController.append(statusIDs: statusIDs)
                     }
+                } catch let error {
+                    logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): fetch failure: \(error.localizedDescription)")
+                    debugPrint(error)
+                    stateMachine.enter(Fail.self)
                 }
             }   // end currentTask = Task { … }
-        }   // end didEnter(from:)
+        }   // end func didEnter(from:)
         
 //        func loading(
-//            viewModel: SearchMediaViewModel,
+//            viewModel: SearchTimelineViewModel,
 //            twitterAuthenticationBox: AuthenticationService.TwitterAuthenticationBox,
 //            stateMachine: GKStateMachine
 //        ) {
-//            let _searchText = viewModel.searchText.value
-//            let searchText = _searchText + " (-is:retweet has:media)"    // TODO: handle video & GIF
-//            guard !_searchText.isEmpty, searchText.count < 512 else {
-//                error = SearchMediaViewModel.SearchMediaError.invalidSearchText
+//            let searchText = viewModel.searchText.value + " (-is:retweet)"
+//            guard !searchText.isEmpty, searchText.count < 512 else {
+//                error = SearchTimelineViewModel.SearchTimelineError.invalidSearchText
+//                // TODO: notify error
 //                stateMachine.enter(Fail.self)
 //                return
 //            }
-//            if searchText != previoursSearchText {
+//            if searchText != previousSearchText {
 //                reset(searchText: searchText)
 //            }
 //
@@ -201,48 +198,42 @@ extension SearchMediaViewModel.State {
 //            } receiveValue: { [weak self] response in
 //                guard let self = self else { return }
 //                let content = response.value
-//                self.nextToken = content.meta.nextToken
 //                os_log("%{public}s[%{public}ld], %{public}s: search %s success. results count %ld", ((#file as NSString).lastPathComponent), #line, #function, searchText, content.meta.resultCount)
 //
-//                guard content.meta.resultCount > 0 else {
-//                    stateMachine.enter(NoMore.self)
-//                    return
-//                }
+//                self.nextToken = content.meta.nextToken
 //
+//                var hasNewTweetAppend = false
 //                let newTweets = content.data?.compactMap { $0 } ?? []
-//                let oldTweetIDs = viewModel.searchMediaTweetIDs.value
-//
-//                var tweetIDs: [Twitter.Entity.Tweet.ID] = []
-//                for tweetID in oldTweetIDs {
-//                    guard !tweetIDs.contains(tweetID) else { continue }
-//                    tweetIDs.append(tweetID)
-//                }
-//
+//                var tweetIDs: [Twitter.Entity.Tweet.ID] = viewModel.tweetFetchedResultsController.tweetIDs.value
 //                for tweet in newTweets {
 //                    guard !tweetIDs.contains(tweet.id) else { continue }
 //                    tweetIDs.append(tweet.id)
+//                    hasNewTweetAppend = true
 //                }
 //
-//                viewModel.searchMediaTweetIDs.value = tweetIDs
-//                stateMachine.enter(Idle.self)
+//                if hasNewTweetAppend {
+//                    stateMachine.enter(Idle.self)
+//                } else {
+//                    stateMachine.enter(NoMore.self)
+//                }
+//                viewModel.tweetFetchedResultsController.tweetIDs.value = tweetIDs
 //            }
 //            .store(in: &viewModel.disposeBag)
 //        }
         
 //        func loadingFallback(
-//            viewModel: SearchMediaViewModel,
+//            viewModel: SearchTimelineViewModel,
 //            twitterAuthenticationBox: AuthenticationService.TwitterAuthenticationBox,
 //            stateMachine: GKStateMachine
 //        ) {
-//            let _searchText = viewModel.searchText.value
-//            let searchText = _searchText + " -filter:retweets filter:media"
-//            guard !_searchText.isEmpty, searchText.count < 500 else {
+//            let searchText = viewModel.searchText.value
+//            guard !searchText.isEmpty, searchText.count < 500 else {
 //                error = SearchTimelineViewModel.SearchTimelineError.invalidSearchText
 //                // TODO: notify error
 //                stateMachine.enter(Fail.self)
 //                return
 //            }
-//            if searchText != previoursSearchText {
+//            if searchText != previousSearchText {
 //                reset(searchText: searchText)
 //            }
 //
@@ -267,7 +258,7 @@ extension SearchMediaViewModel.State {
 //
 //                var hasNewTweetAppend = false
 //                let newTweets = response.value.statuses ?? []
-//                var tweetIDs: [Twitter.Entity.Tweet.ID] = viewModel.searchMediaTweetIDs.value
+//                var tweetIDs: [Twitter.Entity.Tweet.ID] = viewModel.tweetFetchedResultsController.tweetIDs.value
 //                for tweet in newTweets {
 //                    guard !tweetIDs.contains(tweet.idStr) else { continue }
 //                    tweetIDs.append(tweet.idStr)
@@ -284,41 +275,23 @@ extension SearchMediaViewModel.State {
 //                } else {
 //                    stateMachine.enter(NoMore.self)
 //                }
-//                viewModel.searchMediaTweetIDs.value = tweetIDs
+//                viewModel.tweetFetchedResultsController.tweetIDs.value = tweetIDs
 //            }
 //            .store(in: &viewModel.disposeBag)
 //        }
-//
-//        func reset(searchText: String) {
-//            maxID = nil
-//            nextToken = nil
-//            previoursSearchText = searchText
-//            viewModel?.searchMediaTweetIDs.value = []
-//            viewModel?.items.value = []
-//        }
         
-    }
+    }   // end class Loading: SearchTimelineViewModel.State { … }
+
     
-    class Fail: SearchMediaViewModel.State {
+    class Fail: SearchTimelineViewModel.State {
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {
             return stateClass == Reset.self || stateClass == Loading.self
         }
     }
     
-    class NoMore: SearchMediaViewModel.State {
+    class NoMore: SearchTimelineViewModel.State {
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {
-            return stateClass == Loading.self
-        }
-        
-        override func didEnter(from previousState: GKState?) {
-            super.didEnter(from: previousState)
-//            guard let viewModel = viewModel else { return }
-//            guard let diffableDataSource = viewModel.diffableDataSource else { return }
-//            var snapshot = diffableDataSource.snapshot()
-//            if snapshot.itemIdentifiers.contains(.bottomLoader) {
-//                snapshot.deleteItems([.bottomLoader])
-//                diffableDataSource.apply(snapshot, animatingDifferences: false)
-//            }
+            return stateClass == Reset.self
         }
     }
 }

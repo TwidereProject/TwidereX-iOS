@@ -134,7 +134,7 @@ extension StatusView {
         viewModel.authorAvatarImageURL = nil
         authorAvatarButton.avatarImageView.cancelTask()
         mediaGridContainerView.prepareForReuse()
-        style?.prepareForReuse(statusView: self)
+        Style.prepareForReuse(statusView: self)
     }
     
     private func _init() {
@@ -173,7 +173,7 @@ extension StatusView {
         }
         self.style = style
         style.layout(statusView: self)
-        style.prepareForReuse(statusView: self)
+        Style.prepareForReuse(statusView: self)
     }
     
 }
@@ -192,7 +192,7 @@ extension StatusView {
             }
         }
         
-        func prepareForReuse(statusView: StatusView) {
+        static func prepareForReuse(statusView: StatusView) {
             statusView.headerContainerView.isHidden = true
             statusView.mediaGridContainerView.isHidden = true
             statusView.quoteStatusView?.isHidden = true

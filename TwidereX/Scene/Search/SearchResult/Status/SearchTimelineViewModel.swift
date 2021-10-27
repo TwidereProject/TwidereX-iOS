@@ -23,6 +23,7 @@ class SearchTimelineViewModel {
     let context: AppContext
     let statusRecordFetchedResultController: StatusRecordFetchedResultController
     let listBatchFetchViewModel = ListBatchFetchViewModel()
+    let viewDidAppear = CurrentValueSubject<Void, Never>(Void())
     @Published var searchText = ""
     @Published var userIdentifier: UserIdentifier?
     

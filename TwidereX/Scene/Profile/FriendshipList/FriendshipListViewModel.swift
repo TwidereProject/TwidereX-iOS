@@ -22,7 +22,7 @@ final class FriendshipListViewModel: NSObject {
     let context: AppContext
     let userID: Twitter.Entity.V2.User.ID
     let friendshipLookupKind: APIService.FriendshipListKind
-    let orderedTwitterUserFetchedResultsController: OrderedTwitterUserFetchedResultsController
+    let orderedTwitterUserFetchedResultsController: TwitterUserFetchedResultsController
     
     // output
     var diffableDataSource: UITableViewDiffableDataSource<FriendshipListSection, Item>!
@@ -44,38 +44,38 @@ final class FriendshipListViewModel: NSObject {
         self.context = context
         self.userID = userID
         self.friendshipLookupKind = friendshipLookupKind
-        self.orderedTwitterUserFetchedResultsController = OrderedTwitterUserFetchedResultsController(managedObjectContext: context.managedObjectContext)
+        self.orderedTwitterUserFetchedResultsController = TwitterUserFetchedResultsController(managedObjectContext: context.managedObjectContext)
         super.init()
         
-        orderedTwitterUserFetchedResultsController.items
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] items in
-                guard let self = self else { return }
-                guard let diffableDataSource = self.diffableDataSource else { return }
-                
-                var isPermissionDenied = false
-                
-                var snapshot = NSDiffableDataSourceSnapshot<FriendshipListSection, Item>()
-                snapshot.appendSections([.main])
-                snapshot.appendItems(items, toSection: .main)
-                if let currentState = self.stateMachine.currentState {
-                    switch currentState {
-                    case is State.Loading, is State.Idle, is State.Fail:
-                        snapshot.appendItems([.bottomLoader], toSection: .main)
-                    case is State.PermissionDenied:
-                        isPermissionDenied = true
-                    default:
-                        break
-                    }
-                }
-
-                // not animate when empty items fix loader first appear layout issue 
-                diffableDataSource.apply(snapshot, animatingDifferences: !items.isEmpty) { [weak self] in
-                    guard let self = self else { return }
-                    self.isPermissionDenied.value = isPermissionDenied
-                }
-            }
-            .store(in: &disposeBag)
+//        orderedTwitterUserFetchedResultsController.items
+//            .receive(on: DispatchQueue.main)
+//            .sink { [weak self] items in
+//                guard let self = self else { return }
+//                guard let diffableDataSource = self.diffableDataSource else { return }
+//                
+//                var isPermissionDenied = false
+//                
+//                var snapshot = NSDiffableDataSourceSnapshot<FriendshipListSection, Item>()
+//                snapshot.appendSections([.main])
+//                snapshot.appendItems(items, toSection: .main)
+//                if let currentState = self.stateMachine.currentState {
+//                    switch currentState {
+//                    case is State.Loading, is State.Idle, is State.Fail:
+//                        snapshot.appendItems([.bottomLoader], toSection: .main)
+//                    case is State.PermissionDenied:
+//                        isPermissionDenied = true
+//                    default:
+//                        break
+//                    }
+//                }
+//
+//                // not animate when empty items fix loader first appear layout issue 
+//                diffableDataSource.apply(snapshot, animatingDifferences: !items.isEmpty) { [weak self] in
+//                    guard let self = self else { return }
+//                    self.isPermissionDenied.value = isPermissionDenied
+//                }
+//            }
+//            .store(in: &disposeBag)
     }
     
     // convenience init for current active user

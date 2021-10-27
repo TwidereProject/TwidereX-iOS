@@ -42,9 +42,11 @@ extension AvatarConfigurableView {
             configurableVerifiedBadgeImageView?.isHidden = false
             switch Self.configurableAvatarImageViewBadgeAppearanceStyle {
             case .mini:
-                configurableVerifiedBadgeImageView?.image = Asset.ObjectTools.verifiedBadgeMini.image.withRenderingMode(.alwaysOriginal)
+                break
+//                configurableVerifiedBadgeImageView?.image = Asset.ObjectTools.verifiedBadgeMini.image.withRenderingMode(.alwaysOriginal)
             case .normal:
-                configurableVerifiedBadgeImageView?.image = Asset.ObjectTools.verifiedBadge.image.withRenderingMode(.alwaysOriginal)
+                break
+//                configurableVerifiedBadgeImageView?.image = Asset.ObjectTools.verifiedBadge.image.withRenderingMode(.alwaysOriginal)
             }
         default:
             configurableVerifiedBadgeImageView?.isHidden = true

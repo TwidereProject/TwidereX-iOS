@@ -34,8 +34,13 @@ internal enum Asset {
     internal static let trendingUp = ImageAsset(name: "Arrows/trending.up")
   }
   internal enum Badge {
-    internal static let mastodon = ImageAsset(name: "Badge/mastodon")
-    internal static let twitter = ImageAsset(name: "Badge/twitter")
+    internal static let circleMask = ImageAsset(name: "Badge/circle.mask")
+    internal static let circleMastodon = ImageAsset(name: "Badge/circle.mastodon")
+    internal static let circleTwitter = ImageAsset(name: "Badge/circle.twitter")
+    internal static let robot = ImageAsset(name: "Badge/robot")
+    internal static let robotMask = ImageAsset(name: "Badge/robot.mask")
+    internal static let verified = ImageAsset(name: "Badge/verified")
+    internal static let verifiedMask = ImageAsset(name: "Badge/verified.mask")
   }
   internal enum Colors {
     internal enum Theme {
@@ -95,12 +100,6 @@ internal enum Asset {
     internal static let repeatMini = ImageAsset(name: "Media/repeat.mini")
   }
   internal enum ObjectTools {
-    internal enum Badge {
-      internal static let circleMask = ImageAsset(name: "Object&Tools/Badge/circle.mask")
-      internal static let robot = ImageAsset(name: "Object&Tools/Badge/robot")
-      internal static let robotMask = ImageAsset(name: "Object&Tools/Badge/robot.mask")
-      internal static let verifiedMask = ImageAsset(name: "Object&Tools/Badge/verified.mask")
-    }
     internal static let blockedBadge = ImageAsset(name: "Object&Tools/blocked.badge")
     internal static let bookmarks = ImageAsset(name: "Object&Tools/bookmarks")
     internal static let camera = ImageAsset(name: "Object&Tools/camera")
@@ -118,9 +117,6 @@ internal enum Asset {
     internal static let photo = ImageAsset(name: "Object&Tools/photo")
     internal static let photos = ImageAsset(name: "Object&Tools/photos")
     internal static let speakerXmark = ImageAsset(name: "Object&Tools/speaker.xmark")
-    internal static let verifiedBadge = ImageAsset(name: "Object&Tools/verified.badge")
-    internal static let verifiedBadgeMini = ImageAsset(name: "Object&Tools/verified.badge.mini")
-    internal static let verifiedBadgeSmall = ImageAsset(name: "Object&Tools/verified.badge.small")
   }
   internal enum Scene {
     internal enum Preference {

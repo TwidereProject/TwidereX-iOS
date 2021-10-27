@@ -51,7 +51,7 @@ extension DataSourceFacade {
     ) async throws -> RelationshipOptionSet {
         let managedObjectContext = provider.context.managedObjectContext
         let relationshipOptionSet: RelationshipOptionSet = try await managedObjectContext.perform {
-            guard let user = record.user(in: managedObjectContext),
+            guard let user = record.object(in: managedObjectContext),
                   let me = authenticationContext.user(in: managedObjectContext)
             else { throw AppError.implicit(.badRequest) }
             return RelationshipViewModel.optionSet(user: user, me: me)

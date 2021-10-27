@@ -1,9 +1,9 @@
 //
-//  MastodonStatusFetchedResultController.swift
+//  TwitterUserFetchedResultsController.swift
 //  TwidereX
 //
-//  Created by Cirno MainasuK on 2021-10-12.
-//  Copyright © 2021 Twidere. All rights reserved.
+//  Created by Cirno MainasuK on 2020-12-22.
+//  Copyright © 2020 Twidere. All rights reserved.
 //
 
 import os.log
@@ -11,29 +11,28 @@ import UIKit
 import Combine
 import CoreData
 import CoreDataStack
-import MastodonSDK
+import TwitterSDK
 
-final class MastodonStatusFetchedResultController: NSObject {
+final class TwitterUserFetchedResultsController: NSObject {
     
-    let logger = Logger(subsystem: "MastodonStatusFetchedResultController", category: "DB")
+    let logger = Logger(subsystem: "TwitterUserFetchedResultsController", category: "ViewController")
     
     var disposeBag = Set<AnyCancellable>()
     
-    let fetchedResultsController: NSFetchedResultsController<MastodonStatus>
+    let fetchedResultsController: NSFetchedResultsController<TwitterUser>
     
     // input
-    let domain = CurrentValueSubject<String, Never>("")
-    let statusIDs = CurrentValueSubject<[Mastodon.Entity.Status.ID], Never>([])
+    let userIDs = CurrentValueSubject<[Twitter.Entity.User.ID], Never>([])
     let predicate = CurrentValueSubject<NSPredicate?, Never>(nil)
     
     // output
     private let _objectIDs = PassthroughSubject<[NSManagedObjectID], Never>()
-    let records = CurrentValueSubject<[ManagedObjectRecord<MastodonStatus>], Never>([])
+    let records = CurrentValueSubject<[ManagedObjectRecord<TwitterUser>], Never>([])
     
     init(managedObjectContext: NSManagedObjectContext) {
         self.fetchedResultsController = {
-            let fetchRequest = MastodonStatus.sortedFetchRequest
-            fetchRequest.predicate = MastodonStatus.predicate(domain: "", ids: [])
+            let fetchRequest = TwitterUser.sortedFetchRequest
+            fetchRequest.predicate = TwitterUser.predicate(ids: [])
             fetchRequest.returnsObjectsAsFaults = false
             fetchRequest.fetchBatchSize = 15
             let controller = NSFetchedResultsController(
@@ -56,23 +55,22 @@ final class MastodonStatusFetchedResultController: NSObject {
         
         fetchedResultsController.delegate = self
         
-        Publishers.CombineLatest3(
-            domain,
-            statusIDs,
+        Publishers.CombineLatest(
+            userIDs,
             predicate
         )
         .receive(on: DispatchQueue.main)
-        .sink { [weak self] domain, statusIDs, predicate in
+        .sink { [weak self] userIDs, predicate in
             guard let self = self else { return }
             
             let compoundPredicate: NSPredicate = {
                 if let predicate = predicate {
                     return NSCompoundPredicate(andPredicateWithSubpredicates: [
-                        MastodonStatus.predicate(domain: domain, ids: statusIDs),
+                        TwitterUser.predicate(ids: userIDs),
                         predicate
                     ])
                 } else {
-                    return MastodonStatus.predicate(domain: domain, ids: statusIDs)
+                    return TwitterUser.predicate(ids: userIDs)
                 }
             }()
             self.fetchedResultsController.fetchRequest.predicate = compoundPredicate
@@ -88,34 +86,30 @@ final class MastodonStatusFetchedResultController: NSObject {
     
 }
 
-extension MastodonStatusFetchedResultController {
-    func append(statusIDs: [Mastodon.Entity.Status.ID]) {
-        var result = self.statusIDs.value
-        for statusID in statusIDs where !result.contains(statusID) {
+extension TwitterUserFetchedResultsController {
+    func append(userIDs: [TwitterUser.ID]) {
+        var result = self.userIDs.value
+        for statusID in userIDs where !result.contains(statusID) {
             result.append(statusID)
         }
-        self.statusIDs.value = result
+        self.userIDs.value = result
     }
 }
 
 // MARK: - NSFetchedResultsControllerDelegate
-extension MastodonStatusFetchedResultController: NSFetchedResultsControllerDelegate {
-    func controller(
-        _ controller: NSFetchedResultsController<NSFetchRequestResult>,
-        didChangeContentWith snapshot: NSDiffableDataSourceSnapshotReference
-    ) {
+extension TwitterUserFetchedResultsController: NSFetchedResultsControllerDelegate {
+    func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChangeContentWith snapshot: NSDiffableDataSourceSnapshotReference) {
         logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public)")
+
+        let indexes = userIDs.value
+        let users = fetchedResultsController.fetchedObjects ?? []
         
-        let indexes = statusIDs.value
-        let statuses = fetchedResultsController.fetchedObjects ?? []
-        
-        let objectIDs: [NSManagedObjectID] = statuses
-            .compactMap { status in
-                indexes.firstIndex(of: status.id).map { index in (index, status) }
+        let objectIDs: [NSManagedObjectID] = users
+            .compactMap { user in
+                indexes.firstIndex(of: user.id).map { index in (index, user) }
             }
             .sorted { $0.0 < $1.0 }
             .map { $0.1.objectID }
-        
         self._objectIDs.send(objectIDs)
         logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): fetch \(objectIDs.count) objects")
     }

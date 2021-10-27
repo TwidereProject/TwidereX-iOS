@@ -38,10 +38,10 @@ extension UserBriefInfoView.ViewModel {
             .sink { platform in
                 switch platform {
                 case .twitter:
-                    userBriefInfoView.badgeImageView.image = Asset.Badge.twitter.image
+                    userBriefInfoView.badgeImageView.image = Asset.Badge.circleTwitter.image
                     userBriefInfoView.setBadgeDisplay()
                 case .mastodon:
-                    userBriefInfoView.badgeImageView.image = Asset.Badge.mastodon.image
+                    userBriefInfoView.badgeImageView.image = Asset.Badge.circleMastodon.image
                     userBriefInfoView.setBadgeDisplay()
                 case .none:
                     break

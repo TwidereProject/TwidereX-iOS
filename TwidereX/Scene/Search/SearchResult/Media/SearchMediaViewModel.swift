@@ -1,8 +1,8 @@
 //
-//  SearchUserViewModel.swift
+//  SearchMediaViewModel.swift
 //  TwidereX
 //
-//  Created by Cirno MainasuK on 2020-10-30.
+//  Created by Cirno MainasuK on 2020-10-29.
 //  Copyright © 2020 Twidere. All rights reserved.
 //
 
@@ -14,23 +14,27 @@ import CoreDataStack
 import GameplayKit
 import TwitterSDK
 
-final class SearchUserViewModel: NSObject {
+final class SearchMediaViewModel {
+    
+    let logger = Logger(subsystem: "SearchMediaViewModel", category: "ViewModel")
     
     var disposeBag = Set<AnyCancellable>()
     
     // input
     let context: AppContext
-    let fetchedResultsController: NSFetchedResultsController<TwitterUser>
-    let searchTwitterUserIDs = CurrentValueSubject<[Twitter.Entity.V2.User.ID], Never>([])
-    let searchText = CurrentValueSubject<String, Never>("")
-    let searchActionPublisher = PassthroughSubject<Void, Never>()
-    weak var searchUserTableViewCellDelegate: SearchUserTableViewCellDelegate?
+    let statusRecordFetchedResultController: StatusRecordFetchedResultController
+    let listBatchFetchViewModel = ListBatchFetchViewModel()
+    let viewDidAppear = CurrentValueSubject<Void, Never>(Void())
+    @Published var searchText = ""
+    @Published var userIdentifier: UserIdentifier?
     
     // output
+    var diffableDataSource: UICollectionViewDiffableDataSource<StatusMediaGallerySection, StatusItem>?
     private(set) lazy var stateMachine: GKStateMachine = {
         let stateMachine = GKStateMachine(states: [
             State.Initial(viewModel: self),
             State.Idle(viewModel: self),
+            State.Reset(viewModel: self),
             State.Loading(viewModel: self),
             State.Fail(viewModel: self),
             State.NoMore(viewModel: self),
@@ -38,29 +42,27 @@ final class SearchUserViewModel: NSObject {
         stateMachine.enter(State.Initial.self)
         return stateMachine
     }()
-    lazy var stateMachinePublisher = CurrentValueSubject<State, Never>(State.Initial(viewModel: self))
-//    var diffableDataSource: UITableViewDiffableDataSource<TimelineSection, Item>!
-    let items = CurrentValueSubject<[Item], Never>([])
-
+    
     init(context: AppContext) {
         self.context = context
-        self.fetchedResultsController = {
-            let fetchRequest = TwitterUser.sortedFetchRequest
-            fetchRequest.predicate = TwitterUser.predicate(idStrs: [])
-            fetchRequest.returnsObjectsAsFaults = false
-            fetchRequest.fetchBatchSize = 20
-            let controller = NSFetchedResultsController(
-                fetchRequest: fetchRequest,
-                managedObjectContext: context.managedObjectContext,
-                sectionNameKeyPath: nil,
-                cacheName: nil
-            )
-
-            return controller
-        }()
-        super.init()
+        self.statusRecordFetchedResultController = StatusRecordFetchedResultController(managedObjectContext: context.managedObjectContext)
+        // end init
         
-        self.fetchedResultsController.delegate = self
+        $searchText
+            .removeDuplicates()
+            .throttle(for: 0.5, scheduler: DispatchQueue.main, latest: true)
+            .sink { [weak self] searchText in
+                guard let self = self else { return }
+                self.logger.debug("\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): search \(searchText)")
+                self.stateMachine.enter(SearchMediaViewModel.State.Reset.self)
+            }
+            .store(in: &disposeBag)
+        
+        $userIdentifier
+            .assign(to: &statusRecordFetchedResultController.$userIdentifier)
+        
+        
+//        self.fetchedResultsController.delegate = self
         
 //        Publishers.CombineLatest(
 //            items.eraseToAnyPublisher(),
@@ -72,7 +74,7 @@ final class SearchUserViewModel: NSObject {
 //            guard let self = self else { return }
 //            os_log("%{public}s[%{public}ld], %{public}s: state did change", ((#file as NSString).lastPathComponent), #line, #function)
 //            
-//            var snapshot = NSDiffableDataSourceSnapshot<TimelineSection, Item>()
+//            var snapshot = NSDiffableDataSourceSnapshot<MediaSection, Item>()
 //            snapshot.appendSections([.main])
 //            snapshot.appendItems(items)
 //            switch self.stateMachine.currentState {
@@ -82,7 +84,8 @@ final class SearchUserViewModel: NSObject {
 //            case is State.Initial, is State.NoMore:
 //                break
 //            case is State.Idle, is State.Loading:
-//                snapshot.appendItems([.bottomLoader], toSection: .main)
+//                snapshot.appendSections([.footer])
+//                snapshot.appendItems([.bottomLoader], toSection: .footer)
 //            default:
 //                assertionFailure()
 //            }
@@ -91,11 +94,11 @@ final class SearchUserViewModel: NSObject {
 //        }
 //        .store(in: &disposeBag)
 //        
-//        searchTwitterUserIDs
+//        searchMediaTweetIDs
 //            .receive(on: DispatchQueue.main)
 //            .sink { [weak self] ids in
 //                guard let self = self else { return }
-//                self.fetchedResultsController.fetchRequest.predicate = TwitterUser.predicate(idStrs: ids)
+//                self.fetchedResultsController.fetchRequest.predicate = Tweet.predicate(idStrs: ids)
 //                do {
 //                    try self.fetchedResultsController.performFetch()
 //                } catch {

@@ -1,8 +1,8 @@
 //
-//  SearchMediaViewModel.swift
+//  SearchUserViewModel.swift
 //  TwidereX
 //
-//  Created by Cirno MainasuK on 2020-10-29.
+//  Created by Cirno MainasuK on 2020-10-30.
 //  Copyright © 2020 Twidere. All rights reserved.
 //
 
@@ -14,21 +14,22 @@ import CoreDataStack
 import GameplayKit
 import TwitterSDK
 
-final class SearchMediaViewModel {
-    
-    let logger = Logger(subsystem: "SearchMediaViewModel", category: "ViewModel")
+final class SearchUserViewModel {
     
     var disposeBag = Set<AnyCancellable>()
     
+    let logger = Logger(subsystem: "SearchUserViewModel", category: "ViewModel")
+    
     // input
     let context: AppContext
-    let statusRecordFetchedResultController: StatusRecordFetchedResultController
+    let userRecordFetchedResultController: UserRecordFetchedResultController
     let listBatchFetchViewModel = ListBatchFetchViewModel()
+    let viewDidAppear = PassthroughSubject<Void, Never>()
     @Published var searchText = ""
     @Published var userIdentifier: UserIdentifier?
-    
+
     // output
-    var diffableDataSource: UICollectionViewDiffableDataSource<StatusMediaGallerySection, StatusItem>?
+    var diffableDataSource: UITableViewDiffableDataSource<UserSection, UserItem>?
     private(set) lazy var stateMachine: GKStateMachine = {
         let stateMachine = GKStateMachine(states: [
             State.Initial(viewModel: self),
@@ -41,10 +42,10 @@ final class SearchMediaViewModel {
         stateMachine.enter(State.Initial.self)
         return stateMachine
     }()
-    
+
     init(context: AppContext) {
         self.context = context
-        self.statusRecordFetchedResultController = StatusRecordFetchedResultController(managedObjectContext: context.managedObjectContext)
+        self.userRecordFetchedResultController = UserRecordFetchedResultController(managedObjectContext: context.managedObjectContext)
         // end init
         
         $searchText
@@ -53,15 +54,12 @@ final class SearchMediaViewModel {
             .sink { [weak self] searchText in
                 guard let self = self else { return }
                 self.logger.debug("\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): search \(searchText)")
-                self.stateMachine.enter(SearchMediaViewModel.State.Reset.self)
+                self.stateMachine.enter(SearchUserViewModel.State.Reset.self)
             }
             .store(in: &disposeBag)
         
         $userIdentifier
-            .assign(to: &statusRecordFetchedResultController.$userIdentifier)
-        
-        
-//        self.fetchedResultsController.delegate = self
+            .assign(to: &userRecordFetchedResultController.$userIdentifier)
         
 //        Publishers.CombineLatest(
 //            items.eraseToAnyPublisher(),
@@ -73,7 +71,7 @@ final class SearchMediaViewModel {
 //            guard let self = self else { return }
 //            os_log("%{public}s[%{public}ld], %{public}s: state did change", ((#file as NSString).lastPathComponent), #line, #function)
 //            
-//            var snapshot = NSDiffableDataSourceSnapshot<MediaSection, Item>()
+//            var snapshot = NSDiffableDataSourceSnapshot<TimelineSection, Item>()
 //            snapshot.appendSections([.main])
 //            snapshot.appendItems(items)
 //            switch self.stateMachine.currentState {
@@ -83,8 +81,7 @@ final class SearchMediaViewModel {
 //            case is State.Initial, is State.NoMore:
 //                break
 //            case is State.Idle, is State.Loading:
-//                snapshot.appendSections([.footer])
-//                snapshot.appendItems([.bottomLoader], toSection: .footer)
+//                snapshot.appendItems([.bottomLoader], toSection: .main)
 //            default:
 //                assertionFailure()
 //            }
@@ -93,11 +90,11 @@ final class SearchMediaViewModel {
 //        }
 //        .store(in: &disposeBag)
 //        
-//        searchMediaTweetIDs
+//        searchTwitterUserIDs
 //            .receive(on: DispatchQueue.main)
 //            .sink { [weak self] ids in
 //                guard let self = self else { return }
-//                self.fetchedResultsController.fetchRequest.predicate = Tweet.predicate(idStrs: ids)
+//                self.fetchedResultsController.fetchRequest.predicate = TwitterUser.predicate(idStrs: ids)
 //                do {
 //                    try self.fetchedResultsController.performFetch()
 //                } catch {

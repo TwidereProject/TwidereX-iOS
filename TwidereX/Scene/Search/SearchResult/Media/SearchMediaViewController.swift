@@ -66,8 +66,17 @@ extension SearchMediaViewController {
             .store(in: &disposeBag)
         
         KeyboardResponderService
-            .configure(scrollView: collectionView)
+            .configure(
+                scrollView: collectionView,
+                viewDidAppear: viewModel.viewDidAppear.eraseToAnyPublisher()
+            )
             .store(in: &disposeBag)
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        
     }
     
 }

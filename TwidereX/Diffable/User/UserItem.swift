@@ -11,6 +11,6 @@ import CoreDataStack
 
 enum UserItem: Hashable {
     case authenticationIndex(record: ManagedObjectRecord<AuthenticationIndex>)
+    case user(record: UserRecord, style: UserView.Style)
+    case bottomLoader
 }
-
-
