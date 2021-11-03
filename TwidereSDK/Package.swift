@@ -15,6 +15,9 @@ let package = Package(
             name: "TwidereSDK",
             type: .dynamic,
             targets: ["TwitterSDK", "MastodonSDK"]),
+        .library(
+            name: "TwidereCommon",
+            targets: ["TwidereCommon"]),
     ],
     dependencies: [
         .package(url: "https://github.com/SwiftyJSON/SwiftyJSON.git", from: "5.0.0"),
@@ -36,6 +39,10 @@ let package = Package(
                 .product(name: "SwiftyJSON", package: "SwiftyJSON"),
                 .product(name: "NIOHTTP1", package: "swift-nio"),
             ]
+        ),
+        .target(
+            name: "TwidereCommon",
+            dependencies: []
         ),
         .testTarget(
             name: "TwitterSDKTests",

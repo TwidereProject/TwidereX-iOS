@@ -17,12 +17,13 @@ enum UserSection {
 extension UserSection {
     
     struct Configuration {
-        let accountListTableViewCellDelegate: AccountListTableViewCellDelegate
+        let userTableViewCellDelegate: UserTableViewCellDelegate?
     }
     
     static func diffableDataSource(
         tableView: UITableView,
-        context: AppContext
+        context: AppContext,
+        configuration: Configuration
     ) -> UITableViewDiffableDataSource<UserSection, UserItem> {
         return UITableViewDiffableDataSource<UserSection, UserItem>(tableView: tableView) { tableView, indexPath, item in
             // data source should dispatch in main thread
@@ -38,21 +39,22 @@ extension UserSection {
                 }
                 return cell
             case .user(let record, let style):
-                switch style {
-                case .friendship:
-                    let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: UserFriendshipStyleTableViewCell.self), for: indexPath) as! UserFriendshipStyleTableViewCell
-                    context.managedObjectContext.performAndWait {
-                        guard let user = record.object(in: context.managedObjectContext) else { return }
-                        let authenticationContext = context.authenticationService.activeAuthenticationContext.value
-                        let me = authenticationContext?.user(in: context.managedObjectContext)
-                        configure(
-                            cell: cell,
-                            user: user,
-                            me: me
-                        )
-                    }
-                    return cell
+                let cell = dequeueReusableCell(tableView: tableView, indexPath: indexPath, style: style)
+                context.managedObjectContext.performAndWait {
+                    guard let user = record.object(in: context.managedObjectContext) else { return }
+                    let authenticationContext = context.authenticationService.activeAuthenticationContext.value
+                    let me = authenticationContext?.user(in: context.managedObjectContext)
+                    let viewModel = UserTableViewCell.ViewModel(
+                        user: user,
+                        me: me
+                    )
+                    configure(
+                        cell: cell,
+                        viewModel: viewModel,
+                        configuration: configuration
+                    )
                 }
+                return cell
             case .bottomLoader:
                 let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: TimelineBottomLoaderTableViewCell.self), for: indexPath) as! TimelineBottomLoaderTableViewCell
                 cell.activityIndicatorView.startAnimating()
@@ -60,10 +62,37 @@ extension UserSection {
             }
         }
     }
+    
 }
 
 extension UserSection {
     
+    static func dequeueReusableCell(
+        tableView: UITableView,
+        indexPath: IndexPath,
+        style: UserView.Style
+    ) -> UserTableViewCell {
+        switch style {
+        case .plain:
+            return tableView.dequeueReusableCell(withIdentifier: String(describing: UserFriendshipStyleTableViewCell.self), for: indexPath) as! UserFriendshipStyleTableViewCell
+        case .friendship:
+            return tableView.dequeueReusableCell(withIdentifier: String(describing: UserFriendshipStyleTableViewCell.self), for: indexPath) as! UserFriendshipStyleTableViewCell
+        }
+    }
+    
+    static func configure(
+        cell: UserTableViewCell,
+        viewModel: UserTableViewCell.ViewModel,
+        configuration: Configuration
+    ) {
+        cell.configure(viewModel: viewModel)
+        cell.delegate = configuration.userTableViewCellDelegate
+    }
+}
+
+extension UserSection {
+    
+    @available(*, deprecated, message: "")
     static func configure(
         cell: AccountListTableViewCell,
         authenticationIndex: AuthenticationIndex
@@ -71,6 +100,7 @@ extension UserSection {
         cell.configure(authenticationIndex: authenticationIndex)
     }
     
+    @available(*, deprecated, message: "")
     static func configure(
         cell: UserFriendshipStyleTableViewCell,
         user: UserObject,

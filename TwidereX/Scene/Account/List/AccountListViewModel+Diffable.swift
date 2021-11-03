@@ -14,11 +14,15 @@ import AlamofireImage
 extension AccountListViewModel {
     
     func setupDiffableDataSource(
-        tableView: UITableView
+        tableView: UITableView,
+        userTableViewCellDelegate: UserTableViewCellDelegate
     ) {
         diffableDataSource = UserSection.diffableDataSource(
             tableView: tableView,
-            context: context
+            context: context,
+            configuration: UserSection.Configuration(
+                userTableViewCellDelegate: userTableViewCellDelegate
+            )
         )
         
         var snapshot = NSDiffableDataSourceSnapshot<UserSection, UserItem>()

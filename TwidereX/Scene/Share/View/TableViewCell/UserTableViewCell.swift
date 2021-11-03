@@ -10,6 +10,10 @@ import os.log
 import UIKit
 import Combine
 
+protocol UserTableViewCellDelegate: AnyObject {
+    // TODO:
+}
+
 class UserTableViewCell: UITableViewCell {
     
     var disposeBag = Set<AnyCancellable>()
@@ -18,11 +22,14 @@ class UserTableViewCell: UITableViewCell {
     
     let userView = UserView()
     
+    weak var delegate: UserTableViewCellDelegate?
+    
     override func prepareForReuse() {
         super.prepareForReuse()
         
         userView.prepareForReuse()
         disposeBag.removeAll()
+        delegate = nil
     }
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {

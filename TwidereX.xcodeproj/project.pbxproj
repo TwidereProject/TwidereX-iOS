@@ -47,7 +47,11 @@
 		DB0EB9F326D38ED700034427 /* NumberMetricFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB0EB9F226D38ED700034427 /* NumberMetricFormatter.swift */; };
 		DB0EB9F626D3AC7900034427 /* MediaGridContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB0EB9F526D3AC7800034427 /* MediaGridContainerView.swift */; };
 		DB0EB9FA26D3B2A500034427 /* MediaView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB0EB9F926D3B2A500034427 /* MediaView.swift */; };
-		DB1BF29425663ED000B5F490 /* UserDefaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB1BF29325663ED000B5F490 /* UserDefaults.swift */; };
+		DB12BEDF273295E7002AA635 /* UserDefaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB12BEDE273295E7002AA635 /* UserDefaults.swift */; };
+		DB12BEE12732980A002AA635 /* Preference+Display.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB12BEE02732980A002AA635 /* Preference+Display.swift */; };
+		DB12BEE32732996E002AA635 /* TwidereCommon in Frameworks */ = {isa = PBXBuildFile; productRef = DB12BEE22732996E002AA635 /* TwidereCommon */; };
+		DB12BEE527329977002AA635 /* TwidereCommon in Frameworks */ = {isa = PBXBuildFile; productRef = DB12BEE427329977002AA635 /* TwidereCommon */; };
+		DB12BEE727329F55002AA635 /* SearchUserViewController+DataSourceProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB12BEE627329F55002AA635 /* SearchUserViewController+DataSourceProvider.swift */; };
 		DB1BF29925663EFA00B5F490 /* DisplayPreference.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB1BF29825663EFA00B5F490 /* DisplayPreference.swift */; };
 		DB1BF2AC25664A0700B5F490 /* SlideTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB1BF2AB25664A0700B5F490 /* SlideTableViewCell.swift */; };
 		DB1D7B4325B5938400397DCD /* TwitterAuthenticationOptionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB1D7B4225B5938300397DCD /* TwitterAuthenticationOptionViewController.swift */; };
@@ -591,12 +595,14 @@
 		DB0EB9F926D3B2A500034427 /* MediaView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaView.swift; sourceTree = "<group>"; };
 		DB10B32B254A7633002D86F3 /* SearchTimelineViewModel+State.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SearchTimelineViewModel+State.swift"; sourceTree = "<group>"; };
 		DB10B346254AB338002D86F3 /* SearchMediaViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchMediaViewController.swift; sourceTree = "<group>"; };
+		DB12BEDE273295E7002AA635 /* UserDefaults.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefaults.swift; sourceTree = "<group>"; };
+		DB12BEE02732980A002AA635 /* Preference+Display.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Preference+Display.swift"; sourceTree = "<group>"; };
+		DB12BEE627329F55002AA635 /* SearchUserViewController+DataSourceProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SearchUserViewController+DataSourceProvider.swift"; sourceTree = "<group>"; };
 		DB1A1D6A2559A0A50049DA6D /* StatusProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusProvider.swift; sourceTree = "<group>"; };
 		DB1A1D722559A3C10049DA6D /* StatusProvider+TimelinePostTableViewCellDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "StatusProvider+TimelinePostTableViewCellDelegate.swift"; sourceTree = "<group>"; };
 		DB1A1D832559AAFD0049DA6D /* HomeTimelineViewController+StatusProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "HomeTimelineViewController+StatusProvider.swift"; sourceTree = "<group>"; };
 		DB1A1D9A2559AC640049DA6D /* TweetConversationViewController+StatusProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TweetConversationViewController+StatusProvider.swift"; sourceTree = "<group>"; };
 		DB1A1DA8255B5C780049DA6D /* MediaPreviewableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaPreviewableViewController.swift; sourceTree = "<group>"; };
-		DB1BF29325663ED000B5F490 /* UserDefaults.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefaults.swift; sourceTree = "<group>"; };
 		DB1BF29825663EFA00B5F490 /* DisplayPreference.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisplayPreference.swift; sourceTree = "<group>"; };
 		DB1BF2AB25664A0700B5F490 /* SlideTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SlideTableViewCell.swift; sourceTree = "<group>"; };
 		DB1D7B2A25B1959300397DCD /* AuthenticateButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticateButton.swift; sourceTree = "<group>"; };
@@ -1115,6 +1121,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DB12BEE32732996E002AA635 /* TwidereCommon in Frameworks */,
 				DB0B3B8B26C6637500501BB7 /* TwidereSDK in Frameworks */,
 				E5E65DC85CA480AE17571EFC /* Pods_AppShared.framework in Frameworks */,
 			);
@@ -1144,6 +1151,7 @@
 				44CCAE5E7B79E0C359E367E5 /* Pods_TwidereX.framework in Frameworks */,
 				DBBC3F3525835B8B005CF99E /* ActiveLabel in Frameworks */,
 				DB01091226E5DC9D005F67D7 /* MetaTextArea in Frameworks */,
+				DB12BEE527329977002AA635 /* TwidereCommon in Frameworks */,
 				DB94B6C126C65CB000A2E8A1 /* AppShared.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1684,7 +1692,7 @@
 			isa = PBXGroup;
 			children = (
 				DB67616B254C021A006C6798 /* SearchUserViewController.swift */,
-				DBFA4A0B25A4628D00D51703 /* SearchUserViewController+UserProvider.swift */,
+				DB12BEE627329F55002AA635 /* SearchUserViewController+DataSourceProvider.swift */,
 				DB67617A254C0279006C6798 /* SearchUserViewModel.swift */,
 				DBDDE72D254C084A0057CF8E /* SearchUserViewModel+Diffable.swift */,
 				DB578CD7254C0FB500745336 /* SearchUserViewModel+State.swift */,
@@ -2027,6 +2035,8 @@
 				DB94B6BD26C65CB000A2E8A1 /* AppShared.h */,
 				DB94B6C626C660D000A2E8A1 /* AppCommon.swift */,
 				DB2611462518AC13004BF309 /* AppSecret.swift */,
+				DB12BEDE273295E7002AA635 /* UserDefaults.swift */,
+				DB12BEE02732980A002AA635 /* Preference+Display.swift */,
 			);
 			path = AppShared;
 			sourceTree = "<group>";
@@ -2717,7 +2727,6 @@
 				DB8AC0F725401BA200E636BE /* UIViewController.swift */,
 				DBCE2E982591A44000926D09 /* UIViewAnimatingPosition.swift */,
 				DBE76D2F2502146F00DEB0FC /* OSLog.swift */,
-				DB1BF29325663ED000B5F490 /* UserDefaults.swift */,
 				DB74A16D256E50E300C5F3C9 /* UIColor.swift */,
 				DB2FFF3D258B78B0003DBC19 /* AVPlayer.swift */,
 				DB657A7A25AD574D001339B6 /* UIBarButtonItem.swift */,
@@ -2848,6 +2857,7 @@
 		DBF69EA725496C9000E2A915 /* Deprecated */ = {
 			isa = PBXGroup;
 			children = (
+				DBFA4A0B25A4628D00D51703 /* SearchUserViewController+UserProvider.swift */,
 				DBCE2EE725933B1600926D09 /* SearchUserTableViewCell.swift */,
 				DBF69E9B25496BB100E2A915 /* SearchDetailViewController.swift */,
 				DBF69EAB25496C9F00E2A915 /* SearchDetailViewModel.swift */,
@@ -2955,6 +2965,7 @@
 			name = AppShared;
 			packageProductDependencies = (
 				DB0B3B8A26C6637500501BB7 /* TwidereSDK */,
+				DB12BEE22732996E002AA635 /* TwidereCommon */,
 			);
 			productName = AppShared;
 			productReference = DB94B6BB26C65CB000A2E8A1 /* AppShared.framework */;
@@ -3001,6 +3012,7 @@
 				DB01091126E5DC9C005F67D7 /* MetaTextArea */,
 				DB51DC382716BCEB00A0D8FB /* TabBarPager */,
 				DB33E5B5271963AA00EC2225 /* CoverFlowStackCollectionViewLayout */,
+				DB12BEE427329977002AA635 /* TwidereCommon */,
 			);
 			productName = TwidereX;
 			productReference = DBDA8E1E24FCF8A3006750DC /* TwidereX.app */;
@@ -3498,6 +3510,8 @@
 			files = (
 				DB94B6C726C660D000A2E8A1 /* AppCommon.swift in Sources */,
 				DB0B3B8E26C6639100501BB7 /* AppSecret.swift in Sources */,
+				DB12BEDF273295E7002AA635 /* UserDefaults.swift in Sources */,
+				DB12BEE12732980A002AA635 /* Preference+Display.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3512,7 +3526,6 @@
 				DB51DC262715911E00A0D8FB /* StatusRecord.swift in Sources */,
 				DB5FD9B726D8EFF700CF5439 /* UserBriefInfoView+ViewModel.swift in Sources */,
 				DB3B906926E8D1D80010F64C /* LocalProfileViewModel.swift in Sources */,
-				DB1BF29425663ED000B5F490 /* UserDefaults.swift in Sources */,
 				DB2EBBEB255D34BE00956CAA /* AboutView.swift in Sources */,
 				DB761E72255946720050DC01 /* SidebarSection.swift in Sources */,
 				DB8E4FD92563CD6900459DA2 /* TwitterPinBasedAuthenticationViewController.swift in Sources */,
@@ -3670,6 +3683,7 @@
 				DB0EB9F326D38ED700034427 /* NumberMetricFormatter.swift in Sources */,
 				DB51DC472718197000A0D8FB /* CoverFlowStackSection.swift in Sources */,
 				DB8E4FBA2563B61500459DA2 /* DisplayPreferenceViewController.swift in Sources */,
+				DB12BEE727329F55002AA635 /* SearchUserViewController+DataSourceProvider.swift in Sources */,
 				DBBF3DB526CF4C850013852A /* Persistence+TwitterUser.swift in Sources */,
 				DBA6B1BF2535B0BE005FB0B4 /* ControlContainableScrollViews.swift in Sources */,
 				DB42411426C3E55200B6C5F8 /* WelcomeView.swift in Sources */,
@@ -4665,6 +4679,14 @@
 		DB0B3B8A26C6637500501BB7 /* TwidereSDK */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = TwidereSDK;
+		};
+		DB12BEE22732996E002AA635 /* TwidereCommon */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = TwidereCommon;
+		};
+		DB12BEE427329977002AA635 /* TwidereCommon */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = TwidereCommon;
 		};
 		DB2611B6251B2D42004BF309 /* CryptoSwift */ = {
 			isa = XCSwiftPackageProductDependency;

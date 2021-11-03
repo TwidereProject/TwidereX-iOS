@@ -10,6 +10,7 @@ import UIKit
 import Combine
 import SwiftUI
 import CoreDataStack
+import TwidereCommon
 import Meta
 
 extension UserView {
@@ -114,6 +115,27 @@ extension UserView {
 
 extension UserView {
     private func configure(mastodonUser user: MastodonUser) {
-        
+        // avatar
+        Publishers.CombineLatest3(
+            UserDefaults.shared.publisher(for: \.preferredStaticAvatar),
+            user.publisher(for: \.avatar),
+            user.publisher(for: \.avatarStatic)
+        )
+        .map { preferredStaticAvatar, avatar, avatarStatic in
+            let string = preferredStaticAvatar ? (avatarStatic ?? avatar) : avatar
+            return string.flatMap { URL(string: $0) }
+        }
+        .assign(to: \.avatarImageURL, on: viewModel)
+        .store(in: &disposeBag)
+        // author name
+        user.publisher(for: \.displayName)
+            .map { _ in PlaintextMetaContent(string: user.name) }
+            .assign(to: \.name, on: viewModel)
+            .store(in: &disposeBag)
+        // author username
+        user.publisher(for: \.username)
+            .map { "@\($0)" as String? }
+            .assign(to: \.username, on: viewModel)
+            .store(in: &disposeBag)
     }
 }

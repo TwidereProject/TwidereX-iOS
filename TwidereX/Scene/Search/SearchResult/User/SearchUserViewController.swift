@@ -16,6 +16,8 @@ import TwitterSDK
 
 final class SearchUserViewController: UIViewController, NeedsDependency {
     
+    let logger = Logger(subsystem: "SearchUserViewController", category: "ViewController")
+    
     weak var context: AppContext! { willSet { precondition(!isViewLoaded) } }
     weak var coordinator: SceneCoordinator! { willSet { precondition(!isViewLoaded) } }
     
@@ -53,7 +55,10 @@ extension SearchUserViewController {
         tableView.backgroundColor = .systemBackground
         
         tableView.delegate = self
-        viewModel.setupDiffableDataSource(tableView: tableView)
+        viewModel.setupDiffableDataSource(
+            tableView: tableView,
+            userTableViewCellDelegate: self
+        )
         
         // setup batch fetch
         viewModel.listBatchFetchViewModel.setup(scrollView: tableView)
@@ -126,3 +131,6 @@ extension SearchUserViewController: UITableViewDelegate {
 //    var loadMoreConfigurableTableView: UITableView { return tableView }
 //    var loadMoreConfigurableStateMachine: GKStateMachine { return viewModel.stateMachine }
 //}
+
+// MARK: - UserTableViewCellDelegate
+extension SearchUserViewController: UserTableViewCellDelegate { }

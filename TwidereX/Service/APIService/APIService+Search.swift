@@ -24,9 +24,29 @@ extension APIService {
             query: query,
             authorization: authenticationContext.authorization
         )
+        
+        let _relationshipResponse: Mastodon.Response.Content<[Mastodon.Entity.Relationship]>? = await {
+            let userIDs = response.value.accounts.map { $0.id }
+            guard !userIDs.isEmpty else { return nil }
+
+            let relationshipQuery = Mastodon.API.Account.RelationshipQuery(ids: userIDs)
+            do {
+                let relationshipResponse = try await Mastodon.API.Account.relationships(
+                    session: session,
+                    domain: authenticationContext.domain,
+                    query: relationshipQuery,
+                    authorization: authenticationContext.authorization
+                )
+                return relationshipResponse
+            } catch {
+                return nil
+            }
+        }()
+        let _relationshipDictionary = _relationshipResponse?.value.toDictionary()
+        
         let managedObjectContext = backgroundManagedObjectContext
         try await managedObjectContext.performChanges {
-            let me = authenticationContext.authenticationRecord.object(in: managedObjectContext)?.user
+            let _me = authenticationContext.authenticationRecord.object(in: managedObjectContext)?.user
             // persist statuses
             for status in response.value.statuses {
                 _ = Persistence.MastodonStatus.createOrMerge(
@@ -34,7 +54,7 @@ extension APIService {
                     context: Persistence.MastodonStatus.PersistContext(
                         domain: authenticationContext.domain,
                         entity: status,
-                        me: me,
+                        me: _me,
                         statusCache: nil,
                         userCache: nil,
                         networkDate: response.networkDate
@@ -42,14 +62,27 @@ extension APIService {
                 )
             }
             // persist users
+
             for account in response.value.accounts {
-                _ = Persistence.MastodonUser.createOrMerge(
+                let (user, _) = Persistence.MastodonUser.createOrMerge(
                     in: managedObjectContext,
                     context: Persistence.MastodonUser.PersistContext(
                         domain: authenticationContext.domain,
                         entity: account,
                         cache: nil,
                         networkDate: response.networkDate
+                    )
+                )
+                guard let me = _me,
+                      let relationshipResponse = _relationshipResponse,
+                      let relationship = _relationshipDictionary?[account.id]
+                else { continue }
+                Persistence.MastodonUser.update(
+                    mastodonUser: user,
+                    context: Persistence.MastodonUser.RelationshipContext(
+                        entity: relationship,
+                        me: me,
+                        networkDate: relationshipResponse.networkDate
                     )
                 )
             }

@@ -103,11 +103,16 @@ extension UserView {
     enum Style {
         // headline: name | username
         // subheadline: follower count
+        // accessory: none
+        case plain
+        // headline: name | username
+        // subheadline: follower count
         // accessory: follow button
         case friendship
         
         func layout(userView: UserView) {
             switch self {
+            case .plain:        layoutPlain(userView: userView)
             case .friendship:   layoutFriendship(userView: userView)
             }
         }
@@ -119,6 +124,20 @@ extension UserView {
 }
 
 extension UserView.Style {
+    // FIXME:
+    func layoutPlain(userView: UserView) {
+        let infoContainerStackView = UIStackView()
+        userView.containerStackView.addArrangedSubview(infoContainerStackView)
+        infoContainerStackView.axis = .vertical
+        infoContainerStackView.distribution = .fillEqually
+        
+        infoContainerStackView.addArrangedSubview(userView.nameLabel)
+        infoContainerStackView.addArrangedSubview(userView.usernameLabel)
+        
+        userView.setNeedsLayout()
+    }
+    
+    // FIXME:
     func layoutFriendship(userView: UserView) {
         let infoContainerStackView = UIStackView()
         userView.containerStackView.addArrangedSubview(infoContainerStackView)

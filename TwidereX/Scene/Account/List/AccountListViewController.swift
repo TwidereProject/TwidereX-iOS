@@ -66,7 +66,8 @@ extension AccountListViewController {
         
         tableView.delegate = self
         viewModel.setupDiffableDataSource(
-            tableView: tableView
+            tableView: tableView,
+            userTableViewCellDelegate: self
         )
         
         addBarButtonItem.target = self
@@ -186,3 +187,6 @@ extension AccountListViewController: AccountListViewControllerDelegate {
     }
     
 }
+
+// MARK: - UserTableViewCellDelegate
+extension AccountListViewController: UserTableViewCellDelegate { }

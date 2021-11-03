@@ -1,20 +1,15 @@
 //
 //  UserDefaults.swift
-//  TwidereX
+//  
 //
-//  Created by Cirno MainasuK on 2020-11-19.
-//  Copyright © 2020 Twidere. All rights reserved.
+//  Created by Cirno MainasuK on 2021-11-3.
 //
 
-import Foundation
-
-extension UserDefaults {
-    static let shared = UserDefaults(suiteName: "group.com.twidere.TwidereX")!
-}
+import UIKit
 
 extension UserDefaults {
     
-    subscript<T: RawRepresentable>(key: String) -> T? {
+    public subscript<T: RawRepresentable>(key: String) -> T? {
         get {
             if let rawValue = value(forKey: key) as? T.RawValue {
                 return T(rawValue: rawValue)
@@ -24,7 +19,7 @@ extension UserDefaults {
         set { set(newValue?.rawValue, forKey: key) }
     }
     
-    subscript<T>(key: String) -> T? {
+    public subscript<T>(key: String) -> T? {
         get { return value(forKey: key) as? T }
         set { set(newValue, forKey: key) }
     }

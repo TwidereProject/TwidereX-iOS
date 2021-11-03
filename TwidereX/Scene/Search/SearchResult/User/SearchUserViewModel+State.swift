@@ -89,7 +89,12 @@ extension SearchUserViewModel.State {
                             count: 50
                         ))
                     case .mastodon(let authenticationContext):
-                        return nil
+                        return UserListFetchViewModel.SearchInput.mastodon(.init(
+                            authenticationContext: authenticationContext,
+                            searchText: searchText,
+                            offset: 0,
+                            count: 50)
+                        )
                     }
                 }()
             }
@@ -102,6 +107,7 @@ extension SearchUserViewModel.State {
             Task {
                 do {
                     logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): fetch…")
+                    
                     let output = try await UserListFetchViewModel.search(
                         context: viewModel.context,
                         input: input
@@ -126,6 +132,9 @@ extension SearchUserViewModel.State {
                     case .twitterV2(let users):
                         let userIDs = users.map { $0.id }
                         viewModel.userRecordFetchedResultController.twitterUserFetchedResultsController.append(userIDs: userIDs)
+                    case .mastodon(let users):
+                        let userIDs = users.map { $0.id }
+                        viewModel.userRecordFetchedResultController.mastodonUserFetchedResultController.append(userIDs: userIDs)
                     }
                 } catch {
                     // logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): fetch failure: \(error.localizedDescription)")

@@ -65,7 +65,7 @@ extension Mastodon.API.V2.Search {
             minID: Mastodon.Entity.Status.ID? = nil,
             excludeUnreviewed: Bool? = nil,
             q: String,
-            resolve: Bool? = nil,
+            resolve: Bool? = true,
             limit: Int? = nil,
             offset: Int? = nil,
             following: Bool? = nil

@@ -47,7 +47,16 @@ extension Mastodon.Entity {
             case domainBlocking = "domain_blocking"
             case blockedBy = "blocked_by"
             case note
-            
         }
+    }
+}
+
+extension Array where Element == Mastodon.Entity.Relationship {
+    public func toDictionary() -> [Mastodon.Entity.Account.ID: Mastodon.Entity.Relationship] {
+        var dictionary: [Mastodon.Entity.Account.ID: Mastodon.Entity.Relationship] = [:]
+        for relationship in self {
+            dictionary[relationship.id] = relationship
+        }
+        return dictionary
     }
 }
