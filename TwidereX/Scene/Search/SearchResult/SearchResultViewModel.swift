@@ -121,7 +121,10 @@ extension SearchResultViewModel {
             $userIdentifier.assign(to: &_viewController.viewModel.$userIdentifier)
             viewController = _viewController
         case .hashtag:
-            viewController = UIViewController()
+            let _viewController = SearchHashtagViewController()
+            _viewController.viewModel = SearchHashtagViewModel(context: context)
+            $searchText.assign(to: &_viewController.viewModel.$searchText)
+            viewController = _viewController
         }
         if let viewController = viewController as? NeedsDependency {
             viewController.context = context

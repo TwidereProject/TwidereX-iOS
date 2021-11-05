@@ -39,14 +39,15 @@ class Helper {
     
     private func map(language: String) -> String? {
         switch language {
+        case "ar_SA":   return "ar"         // Arabic
         case "en_US":   return "en"
-        case "zh_CN":   return "zh-Hans"
-        case "ja_JP":   return "ja"
-        case "de_DE":   return "de"
-        case "pt_BR":   return "pt-BR"
-        case "ca_ES":   return "ca"
-        case "es_ES":   return "es"
-        case "ko_KR":   return "ko"
+        case "zh_CN":   return "zh-Hans"    // Chinese Simplified
+        case "ja_JP":   return "ja"         // Japanese
+        case "de_DE":   return "de"         // German
+        case "pt_BR":   return "pt-BR"      // Brazilian Portuguese
+        case "ca_ES":   return "ca"         // Catalan
+        case "es_ES":   return "es"         // Spanish
+        case "ko_KR":   return "ko"         // Korean
         default:        return nil
         }
     }

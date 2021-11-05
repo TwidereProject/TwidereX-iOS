@@ -31,6 +31,8 @@ enum TextStyle {
     case profileAuthorBio
     case profileFieldKey
     case profileFieldValue
+    case hashtagTitle
+    case hashtagDescription
     
     case custom(Configuration)
     struct Configuration {
@@ -56,6 +58,8 @@ extension TextStyle {
         case .profileAuthorBio:         return 0
         case .profileFieldKey:          return 1
         case .profileFieldValue:        return 0
+        case .hashtagTitle:             return 1
+        case .hashtagDescription:       return 1
         case .custom:                   return 1
         }
     }
@@ -92,6 +96,10 @@ extension TextStyle {
             return .preferredFont(forTextStyle: .footnote)
         case .profileFieldValue:
             return .preferredFont(forTextStyle: .footnote)
+        case .hashtagTitle:
+            return .preferredFont(forTextStyle: .headline)
+        case .hashtagDescription:
+            return .preferredFont(forTextStyle: .subheadline)
         case .custom(let configuration):
             return configuration.font
         }
@@ -127,6 +135,10 @@ extension TextStyle {
             return .secondaryLabel
         case .profileFieldValue:
             return .label
+        case .hashtagTitle:
+            return .label
+        case .hashtagDescription:
+            return .secondaryLabel
         case .custom(let configuration):
             return configuration.textColor
         }
@@ -175,6 +187,10 @@ extension MetaLabel: TextStyleConfigurable {
         case .profileFieldKey:
             break
         case .profileFieldValue:
+            break
+        case .hashtagTitle:
+            break
+        case .hashtagDescription:
             break
         case .custom:
             break

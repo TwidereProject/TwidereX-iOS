@@ -34,6 +34,17 @@
 		DB01092026E60756005F67D7 /* DataSourceFacade+StatusThread.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB01091F26E60756005F67D7 /* DataSourceFacade+StatusThread.swift */; };
 		DB01092226E608B7005F67D7 /* DataSourceFacade+Repost.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB01092126E608B7005F67D7 /* DataSourceFacade+Repost.swift */; };
 		DB01092426E6199C005F67D7 /* DataSourceFacade+StatusViewTableViewCellDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB01092326E6199C005F67D7 /* DataSourceFacade+StatusViewTableViewCellDelegate.swift */; };
+		DB02C76627350B98007EA0BF /* HashtagSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB02C76527350B98007EA0BF /* HashtagSection.swift */; };
+		DB02C76927350BA7007EA0BF /* HashtagItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB02C76827350BA7007EA0BF /* HashtagItem.swift */; };
+		DB02C76B27350C00007EA0BF /* HashtagData.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB02C76A27350C00007EA0BF /* HashtagData.swift */; };
+		DB02C76D27350D71007EA0BF /* SearchHashtagViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB02C76C27350D71007EA0BF /* SearchHashtagViewController.swift */; };
+		DB02C77027350D8A007EA0BF /* SearchHashtagViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB02C76F27350D8A007EA0BF /* SearchHashtagViewModel.swift */; };
+		DB02C77227351B7D007EA0BF /* HashtagTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB02C77127351B7D007EA0BF /* HashtagTableViewCell.swift */; };
+		DB02C77527351DA2007EA0BF /* HashtagTableViewCell+ViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB02C77427351DA2007EA0BF /* HashtagTableViewCell+ViewModel.swift */; };
+		DB02C777273520B8007EA0BF /* SearchHashtagViewModel+State.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB02C776273520B8007EA0BF /* SearchHashtagViewModel+State.swift */; };
+		DB02C77927352217007EA0BF /* SearchHashtagViewModel+Diffable.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB02C77827352217007EA0BF /* SearchHashtagViewModel+Diffable.swift */; };
+		DB02C77D27353479007EA0BF /* HashtagListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB02C77C27353479007EA0BF /* HashtagListViewModel.swift */; };
+		DB02C7DD27354A56007EA0BF /* Localizable.stringsdict in Resources */ = {isa = PBXBuildFile; fileRef = DB02C7DB27354A55007EA0BF /* Localizable.stringsdict */; };
 		DB0B3B8626C662CC00501BB7 /* AppShared.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DB94B6BB26C65CB000A2E8A1 /* AppShared.framework */; };
 		DB0B3B8726C662CC00501BB7 /* AppShared.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = DB94B6BB26C65CB000A2E8A1 /* AppShared.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		DB0B3B8B26C6637500501BB7 /* TwidereSDK in Frameworks */ = {isa = PBXBuildFile; productRef = DB0B3B8A26C6637500501BB7 /* TwidereSDK */; };
@@ -581,6 +592,25 @@
 		DB01091F26E60756005F67D7 /* DataSourceFacade+StatusThread.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DataSourceFacade+StatusThread.swift"; sourceTree = "<group>"; };
 		DB01092126E608B7005F67D7 /* DataSourceFacade+Repost.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DataSourceFacade+Repost.swift"; sourceTree = "<group>"; };
 		DB01092326E6199C005F67D7 /* DataSourceFacade+StatusViewTableViewCellDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DataSourceFacade+StatusViewTableViewCellDelegate.swift"; sourceTree = "<group>"; };
+		DB02C76527350B98007EA0BF /* HashtagSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HashtagSection.swift; sourceTree = "<group>"; };
+		DB02C76827350BA7007EA0BF /* HashtagItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HashtagItem.swift; sourceTree = "<group>"; };
+		DB02C76A27350C00007EA0BF /* HashtagData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HashtagData.swift; sourceTree = "<group>"; };
+		DB02C76C27350D71007EA0BF /* SearchHashtagViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchHashtagViewController.swift; sourceTree = "<group>"; };
+		DB02C76F27350D8A007EA0BF /* SearchHashtagViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchHashtagViewModel.swift; sourceTree = "<group>"; };
+		DB02C77127351B7D007EA0BF /* HashtagTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HashtagTableViewCell.swift; sourceTree = "<group>"; };
+		DB02C77427351DA2007EA0BF /* HashtagTableViewCell+ViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "HashtagTableViewCell+ViewModel.swift"; sourceTree = "<group>"; };
+		DB02C776273520B8007EA0BF /* SearchHashtagViewModel+State.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SearchHashtagViewModel+State.swift"; sourceTree = "<group>"; };
+		DB02C77827352217007EA0BF /* SearchHashtagViewModel+Diffable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SearchHashtagViewModel+Diffable.swift"; sourceTree = "<group>"; };
+		DB02C77C27353479007EA0BF /* HashtagListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HashtagListViewModel.swift; sourceTree = "<group>"; };
+		DB02C7DC27354A55007EA0BF /* ar */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = ar; path = ar.lproj/Localizable.stringsdict; sourceTree = "<group>"; };
+		DB02C7DE27354A5D007EA0BF /* ca */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = ca; path = ca.lproj/Localizable.stringsdict; sourceTree = "<group>"; };
+		DB02C7DF27354A64007EA0BF /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = de; path = de.lproj/Localizable.stringsdict; sourceTree = "<group>"; };
+		DB02C7E027354A6A007EA0BF /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = en; path = en.lproj/Localizable.stringsdict; sourceTree = "<group>"; };
+		DB02C7E127354A72007EA0BF /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = es; path = es.lproj/Localizable.stringsdict; sourceTree = "<group>"; };
+		DB02C7E227354A77007EA0BF /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = ja; path = ja.lproj/Localizable.stringsdict; sourceTree = "<group>"; };
+		DB02C7E327354A7C007EA0BF /* ko */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = ko; path = ko.lproj/Localizable.stringsdict; sourceTree = "<group>"; };
+		DB02C7E427354A81007EA0BF /* pt-BR */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = "pt-BR"; path = "pt-BR.lproj/Localizable.stringsdict"; sourceTree = "<group>"; };
+		DB02C7E527354A86007EA0BF /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.stringsdict"; sourceTree = "<group>"; };
 		DB0849AF251375E9009E0CD7 /* ConversationPostView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationPostView.swift; sourceTree = "<group>"; };
 		DB0849B12513760D009E0CD7 /* ConversationPostTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationPostTableViewCell.swift; sourceTree = "<group>"; };
 		DB0B3B8F26C666E300501BB7 /* APIService+WebFinger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "APIService+WebFinger.swift"; sourceTree = "<group>"; };
@@ -1313,6 +1343,37 @@
 			path = Deprecated;
 			sourceTree = "<group>";
 		};
+		DB02C76727350B9C007EA0BF /* Hashtag */ = {
+			isa = PBXGroup;
+			children = (
+				DB02C76527350B98007EA0BF /* HashtagSection.swift */,
+				DB02C76827350BA7007EA0BF /* HashtagItem.swift */,
+				DB02C76A27350C00007EA0BF /* HashtagData.swift */,
+			);
+			path = Hashtag;
+			sourceTree = "<group>";
+		};
+		DB02C76E27350D75007EA0BF /* Hashtag */ = {
+			isa = PBXGroup;
+			children = (
+				DB02C77327351B80007EA0BF /* Cell */,
+				DB02C76C27350D71007EA0BF /* SearchHashtagViewController.swift */,
+				DB02C76F27350D8A007EA0BF /* SearchHashtagViewModel.swift */,
+				DB02C77827352217007EA0BF /* SearchHashtagViewModel+Diffable.swift */,
+				DB02C776273520B8007EA0BF /* SearchHashtagViewModel+State.swift */,
+			);
+			path = Hashtag;
+			sourceTree = "<group>";
+		};
+		DB02C77327351B80007EA0BF /* Cell */ = {
+			isa = PBXGroup;
+			children = (
+				DB02C77127351B7D007EA0BF /* HashtagTableViewCell.swift */,
+				DB02C77427351DA2007EA0BF /* HashtagTableViewCell+ViewModel.swift */,
+			);
+			path = Cell;
+			sourceTree = "<group>";
+		};
 		DB0491FF25904CE400CCD50E /* Toolbar */ = {
 			isa = PBXGroup;
 			children = (
@@ -1431,6 +1492,7 @@
 				DBF69EF825498AE400E2A915 /* Status */,
 				DB10B34B254AB350002D86F3 /* Media */,
 				DB676170254C021D006C6798 /* User */,
+				DB02C76E27350D75007EA0BF /* Hashtag */,
 				DB262A3C27228B4800D18EF3 /* SearchResultViewController.swift */,
 				DB262A412722970000D18EF3 /* SearchResultViewModel.swift */,
 			);
@@ -1575,6 +1637,7 @@
 			isa = PBXGroup;
 			children = (
 				DB51DC482718197400A0D8FB /* CoverFlowStack */,
+				DB02C76727350B9C007EA0BF /* Hashtag */,
 			);
 			path = Msic;
 			sourceTree = "<group>";
@@ -1978,6 +2041,7 @@
 				DB5632C026DF7E7A00FC893F /* ListBatchFetchViewModel.swift */,
 				DB51DC212715786700A0D8FB /* StatusListFetchViewModel.swift */,
 				DB5FAFFC2727B940006520FA /* UserListFetchViewModel.swift */,
+				DB02C77C27353479007EA0BF /* HashtagListViewModel.swift */,
 				DB71C7CE271E8F6100BE3819 /* RelationshipViewModel.swift */,
 			);
 			path = ViewModel;
@@ -2544,6 +2608,7 @@
 			children = (
 				DBDA8E2A24FCF8A6006750DC /* Assets.xcassets */,
 				DB88AC3B250B26F40009E562 /* Preview Assets.xcassets */,
+				DB02C7DB27354A55007EA0BF /* Localizable.stringsdict */,
 				DBDA8EA524FE107E006750DC /* Localizable.strings */,
 				DBC8E16D2578C64A00401E20 /* InfoPlist.strings */,
 			);
@@ -3219,6 +3284,7 @@
 				DBDA8EA324FE107E006750DC /* Localizable.strings in Resources */,
 				DBC8E16B2578C64A00401E20 /* InfoPlist.strings in Resources */,
 				DBF3309925B988A500A678FB /* Settings.bundle in Resources */,
+				DB02C7DD27354A56007EA0BF /* Localizable.stringsdict in Resources */,
 				DBDA8E2E24FCF8A6006750DC /* LaunchScreen.storyboard in Resources */,
 				DB6B8B2E25AF235F00F20FD5 /* TwidereX.xctestplan in Resources */,
 				DB88AC3C250B26F40009E562 /* Preview Assets.xcassets in Resources */,
@@ -3521,6 +3587,7 @@
 			files = (
 				DB747FEF251B63E3000C4BD7 /* HitTestExpandedButton.swift in Sources */,
 				DB004BEF26CE2CAA00F5C574 /* StatusSection.swift in Sources */,
+				DB02C76927350BA7007EA0BF /* HashtagItem.swift in Sources */,
 				DB51DC2E27159A6000A0D8FB /* UserIdentifier.swift in Sources */,
 				DBB09D562511BA9700AE260E /* APIService+Lookup.swift in Sources */,
 				DB51DC262715911E00A0D8FB /* StatusRecord.swift in Sources */,
@@ -3573,6 +3640,7 @@
 				DBDA8E9824FE075E006750DC /* MainTabBarController.swift in Sources */,
 				DB261195251B213A004BF309 /* TwitterAuthentication.swift in Sources */,
 				DBCB408A255D8C2B00DD8D8F /* SafariActivity.swift in Sources */,
+				DB02C76D27350D71007EA0BF /* SearchHashtagViewController.swift in Sources */,
 				DBFA4A2025A5924C00D51703 /* HomeTimelineViewModel+Diffable.swift in Sources */,
 				DBCB4058255B6ECA00DD8D8F /* AccountListSection.swift in Sources */,
 				DB925749251C9D48004FEFB5 /* ProfilePagingViewModel.swift in Sources */,
@@ -3606,6 +3674,7 @@
 				DB5632B626DE059E00FC893F /* Persistence+TwitterStatus+V2.swift in Sources */,
 				DB0EB9F626D3AC7900034427 /* MediaGridContainerView.swift in Sources */,
 				DB98DC10250787420087E30F /* TimelineBottomLoaderTableViewCell.swift in Sources */,
+				DB02C777273520B8007EA0BF /* SearchHashtagViewModel+State.swift in Sources */,
 				DB3FC0522552742E003A2F8A /* MediaSection.swift in Sources */,
 				DB004BED26CE28EA00F5C574 /* TwitterStatus+Property.swift in Sources */,
 				DB01091A26E60693005F67D7 /* ContentOffsetAdjustableTimelineViewControllerDelegate.swift in Sources */,
@@ -3617,6 +3686,7 @@
 				DB761E5D255940EF0050DC01 /* DrawerSidebarEntryTableViewCell.swift in Sources */,
 				DB7E22F02552A3D500551314 /* UserLikeTimelineViewController.swift in Sources */,
 				DB262A3527213D1300D18EF3 /* AppError.swift in Sources */,
+				DB02C77D27353479007EA0BF /* HashtagListViewModel.swift in Sources */,
 				DB51DC282715917700A0D8FB /* StatusObject.swift in Sources */,
 				DB578CCD254C0BDB00745336 /* UserBriefInfoView.swift in Sources */,
 				DB676180254C042C006C6798 /* FriendshipTableViewCell.swift in Sources */,
@@ -3625,6 +3695,7 @@
 				DBCE2EE32593319000926D09 /* AvatarConfigurableView.swift in Sources */,
 				DB3B906326E8BBD70010F64C /* ProfileHeaderView.swift in Sources */,
 				DB36F354257DF14E0028F81E /* APIService+Application.swift in Sources */,
+				DB02C77227351B7D007EA0BF /* HashtagTableViewCell.swift in Sources */,
 				DB3B906726E8CD6D0010F64C /* ProfileHeaderViewModel.swift in Sources */,
 				DB51DC432718117900A0D8FB /* StatusMediaGalleryCollectionCell+ViewModel.swift in Sources */,
 				DBE76C8924FF941400DEB0FC /* APIService+Authentication.swift in Sources */,
@@ -3653,8 +3724,10 @@
 				DBC8E04B2576337F00401E20 /* DisposeBagCollectable.swift in Sources */,
 				DB71C7C6271D304900BE3819 /* UserLikeTimelineViewController+DataSourceProvider.swift in Sources */,
 				DB8AC1852542BD8700E636BE /* APIService+Tweet.swift in Sources */,
+				DB02C77927352217007EA0BF /* SearchHashtagViewModel+Diffable.swift in Sources */,
 				DB262A4327229BE700D18EF3 /* SearchTimelineViewController.swift in Sources */,
 				DBF63A38259D7CCB009E12C8 /* CornerSmoothPreviewViewController.swift in Sources */,
+				DB02C77527351DA2007EA0BF /* HashtagTableViewCell+ViewModel.swift in Sources */,
 				DB86433C26E898C5000C9879 /* DataSourceFacade+Like.swift in Sources */,
 				DB914C4A26C3AC7C00E85F1A /* ContentOffsetFixedCollectionView.swift in Sources */,
 				DB262A502726938600D18EF3 /* SearchMediaViewModel+State.swift in Sources */,
@@ -3715,8 +3788,10 @@
 				DB74A169256E392F00C5F3C9 /* ContextMenuImagePreviewViewController.swift in Sources */,
 				DB8AC1902542DA9500E636BE /* ActiveLabel.swift in Sources */,
 				DBCE2EC82591F74300926D09 /* FollowingListViewModel+Diffable.swift in Sources */,
+				DB02C76627350B98007EA0BF /* HashtagSection.swift in Sources */,
 				DB01092426E6199C005F67D7 /* DataSourceFacade+StatusViewTableViewCellDelegate.swift in Sources */,
 				DBC8E0042574B37C00401E20 /* ContextMenuImagePreviewViewModel.swift in Sources */,
+				DB02C77027350D8A007EA0BF /* SearchHashtagViewModel.swift in Sources */,
 				DBB47DB026EB5CA8001590F7 /* UIContentSizeCategory.swift in Sources */,
 				DB5632B226DCF1CD00FC893F /* StatusThreadRootTableViewCell+ViewModel.swift in Sources */,
 				DBDA8E8B24FE0615006750DC /* AppContext.swift in Sources */,
@@ -3800,6 +3875,7 @@
 				DB8E4FEC2563D42800459DA2 /* TwitterPinBasedAuthenticationViewModel.swift in Sources */,
 				DB2924EC25492006003899A7 /* APIService+Geo.swift in Sources */,
 				DBCB40A9255DA58000DD8D8F /* UserTimelineViewController+StatusProvider.swift in Sources */,
+				DB02C76B27350C00007EA0BF /* HashtagData.swift in Sources */,
 				DBC8E0092574BE3900401E20 /* TimelineTableViewCellContextMenuConfiguration.swift in Sources */,
 				DB30ADCF26CF52A700B2D2BE /* TwitterUser+Property.swift in Sources */,
 				DBC747D9259DA07C00787EEF /* ListTableViewCell.swift in Sources */,
@@ -3968,6 +4044,22 @@
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
+		DB02C7DB27354A55007EA0BF /* Localizable.stringsdict */ = {
+			isa = PBXVariantGroup;
+			children = (
+				DB02C7DC27354A55007EA0BF /* ar */,
+				DB02C7DE27354A5D007EA0BF /* ca */,
+				DB02C7DF27354A64007EA0BF /* de */,
+				DB02C7E027354A6A007EA0BF /* en */,
+				DB02C7E127354A72007EA0BF /* es */,
+				DB02C7E227354A77007EA0BF /* ja */,
+				DB02C7E327354A7C007EA0BF /* ko */,
+				DB02C7E427354A81007EA0BF /* pt-BR */,
+				DB02C7E527354A86007EA0BF /* zh-Hans */,
+			);
+			name = Localizable.stringsdict;
+			sourceTree = "<group>";
+		};
 		DBC8E16D2578C64A00401E20 /* InfoPlist.strings */ = {
 			isa = PBXVariantGroup;
 			children = (

@@ -2,6 +2,20 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
   <dict>
+    <key>count.people.talking</key>
+    <dict>
+      <key>NSStringLocalizedFormatKey</key>
+      <string>%#@count_people_talking@</string>
+      <key>count_people_talking</key>
+      <dict>
+        <key>NSStringFormatSpecTypeKey</key>
+        <string>NSStringPluralRuleType</string>
+        <key>NSStringFormatValueTypeKey</key>
+        <string>ld</string>
+        <key>other</key>
+        <string>%ld people talking</string>
+      </dict>
+    </dict>
     <key>date.year.left</key>
     <dict>
       <key>NSStringLocalizedFormatKey</key>

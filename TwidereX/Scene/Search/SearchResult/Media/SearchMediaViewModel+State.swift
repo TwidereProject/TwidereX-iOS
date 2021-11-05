@@ -128,10 +128,8 @@ extension SearchMediaViewModel.State {
                     logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): fetch…")
                     let output = try await StatusListFetchViewModel.searchTimeline(context: viewModel.context, input: input)
                     
-                    // check task needs cancel
-                    guard viewModel.searchText == searchText else {
-                        return
-                    }
+                    // check task is valid
+                    guard viewModel.searchText == searchText else { return }
                     
                     nextInput = output.nextInput
                     if output.hasMore {
@@ -153,6 +151,9 @@ extension SearchMediaViewModel.State {
                         viewModel.statusRecordFetchedResultController.mastodonStatusFetchedResultController.append(statusIDs: statusIDs)
                     }
                 } catch {
+                    // check task is valid
+                    guard viewModel.searchText == searchText else { return }
+                    
                     logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): fetch failure: \(error.localizedDescription)")
                     stateMachine.enter(Fail.self)
                 }

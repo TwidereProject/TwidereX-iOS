@@ -113,10 +113,8 @@ extension SearchUserViewModel.State {
                         input: input
                     )
                     
-                    // check task needs cancel
-                    guard viewModel.searchText == searchText else {
-                        return
-                    }
+                    // check task is valid
+                    guard viewModel.searchText == searchText else { return }
                     
                     nextInput = output.nextInput
                     if output.hasMore {
@@ -137,7 +135,10 @@ extension SearchUserViewModel.State {
                         viewModel.userRecordFetchedResultController.mastodonUserFetchedResultController.append(userIDs: userIDs)
                     }
                 } catch {
-                    // logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): fetch failure: \(error.localizedDescription)")
+                    // check task is valid
+                    guard viewModel.searchText == searchText else { return }
+                    
+                    logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): fetch failure: \(error.localizedDescription)")
                     stateMachine.enter(Fail.self)
                 }
             }   // end currentTask = Task { … }

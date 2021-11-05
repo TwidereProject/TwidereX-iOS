@@ -1307,6 +1307,54 @@ internal enum L10n {
       internal static let worldWide = L10n.tr("Localizable", "Scene.Trends.WorldWide")
     }
   }
+
+  internal enum Count {
+    internal enum People {
+      /// Plural format key: "%#@count_people_talking@"
+      internal static func talking(_ p1: Int) -> String {
+        return L10n.tr("Localizable", "count.people.talking", p1)
+      }
+    }
+  }
+
+  internal enum Date {
+    internal enum Day {
+      /// Plural format key: "%#@count_day_left@"
+      internal static func `left`(_ p1: Int) -> String {
+        return L10n.tr("Localizable", "date.day.left", p1)
+      }
+    }
+    internal enum Hour {
+      /// Plural format key: "%#@count_hour_left@"
+      internal static func `left`(_ p1: Int) -> String {
+        return L10n.tr("Localizable", "date.hour.left", p1)
+      }
+    }
+    internal enum Minute {
+      /// Plural format key: "%#@count_minute_left@"
+      internal static func `left`(_ p1: Int) -> String {
+        return L10n.tr("Localizable", "date.minute.left", p1)
+      }
+    }
+    internal enum Month {
+      /// Plural format key: "%#@count_month_left@"
+      internal static func `left`(_ p1: Int) -> String {
+        return L10n.tr("Localizable", "date.month.left", p1)
+      }
+    }
+    internal enum Second {
+      /// Plural format key: "%#@count_second_left@"
+      internal static func `left`(_ p1: Int) -> String {
+        return L10n.tr("Localizable", "date.second.left", p1)
+      }
+    }
+    internal enum Year {
+      /// Plural format key: "%#@count_year_left@"
+      internal static func `left`(_ p1: Int) -> String {
+        return L10n.tr("Localizable", "date.year.left", p1)
+      }
+    }
+  }
 }
 // swiftlint:enable explicit_type_interface function_parameter_count identifier_name line_length
 // swiftlint:enable nesting type_body_length type_name vertical_whitespace_opening_braces

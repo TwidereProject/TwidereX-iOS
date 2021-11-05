@@ -67,6 +67,7 @@ extension SearchUserViewController {
             .sink { [weak self] _ in
                 guard let self = self else { return }
                 guard self.isDisplaying else { return }
+                guard !self.viewModel.searchText.isEmpty else { return }
                 self.viewModel.stateMachine.enter(SearchUserViewModel.State.Loading.self)
             }
             .store(in: &disposeBag)

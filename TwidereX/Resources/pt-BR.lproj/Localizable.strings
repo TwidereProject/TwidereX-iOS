@@ -82,7 +82,7 @@
 "Common.Alerts.MediaSaved.Title" = "Mídia salva";
 "Common.Alerts.MediaSaving.Title" = "Salvando mídia";
 "Common.Alerts.MediaSharing.Title" = "A mídia será compartilhada depois que o download for concluído";
-"Common.Alerts.MuteUserConfirm.Title" = "Do you want to mute %@?";
+"Common.Alerts.MuteUserConfirm.Title" = "Você quer silenciar %@?";
 "Common.Alerts.MuteUserSuccess.Title" = "%@ foi silenciado";
 "Common.Alerts.NoTweetsFound.Title" = "Nenhum Tweet Encontrado";
 "Common.Alerts.PermissionDeniedFriendshipBlocked.Message" = "Você foi impedido de seguir esta conta a pedido do usuário";
@@ -102,11 +102,11 @@
 "Common.Alerts.TweetFail.Title" = "Tweet Falhou";
 "Common.Alerts.TweetSending.Title" = "Enviando tweet";
 "Common.Alerts.TweetSent.Title" = "Tweet Enviado";
-"Common.Alerts.UnblockUserConfirm.Title" = "Do you want to unblock %@?";
+"Common.Alerts.UnblockUserConfirm.Title" = "Você quer desbloquear %@?";
 "Common.Alerts.UnblockUserSuccess.Title" = "%@ foi desbloqueado";
 "Common.Alerts.UnfollowUser.Message" = "Deixar de seguir o usuário %@?";
 "Common.Alerts.UnfollowingSuccess.Title" = "Deixou de Seguir com Sucesso";
-"Common.Alerts.UnmuteUserConfirm.Title" = "Do you want to unmute %@?";
+"Common.Alerts.UnmuteUserConfirm.Title" = "Você quer ativar o som de %@?";
 "Common.Alerts.UnmuteUserSuccess.Title" = "%@ foi dessilenciado";
 "Common.Controls.Actions.Add" = "Adicionar";
 "Common.Controls.Actions.Cancel" = "Cancelar";
@@ -297,7 +297,7 @@
 "Scene.Search.ShowMore" = "Mostrar mais";
 "Scene.Search.Tabs.Hashtag" = "Hashtag";
 "Scene.Search.Tabs.Media" = "Mídia";
-"Scene.Search.Tabs.People" = "People";
+"Scene.Search.Tabs.People" = "Pessoas";
 "Scene.Search.Tabs.Toots" = "Toots";
 "Scene.Search.Tabs.Tweets" = "Tweets";
 "Scene.Search.Tabs.Users" = "Usuários";
