@@ -210,6 +210,7 @@ extension ProfileHeaderView {
             fieldListView.leadingAnchor.constraint(equalTo: container.leadingAnchor),
             fieldListView.trailingAnchor.constraint(equalTo: container.trailingAnchor),
         ])
+        fieldListView.isHidden = true   // default hidden
         
         dashboardView.translatesAutoresizingMaskIntoConstraints = false
         container.addArrangedSubview(dashboardView)

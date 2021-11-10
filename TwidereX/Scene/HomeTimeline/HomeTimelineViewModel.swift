@@ -47,8 +47,6 @@ final class HomeTimelineViewModel: NSObject {
         stateMachine.enter(LoadOldestState.Initial.self)
         return stateMachine
     }()
-//    var cellFrameCache = NSCache<NSNumber, NSValue>()
-
     
     init(context: AppContext) {
         self.context  = context

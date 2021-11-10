@@ -1,21 +1,20 @@
 //
-//  SearchTimelineViewModel+State.swift
+//  HashtagTimelineViewModel+State.swift
 //  TwidereX
 //
-//  Created by Cirno MainasuK on 2020-10-29.
-//  Copyright © 2020 Twidere. All rights reserved.
+//  Created by Cirno MainasuK on 2021-11-8.
+//  Copyright © 2021 Twidere. All rights reserved.
 //
 
 import os.log
 import Foundation
 import GameplayKit
-import TwitterSDK
 
-extension SearchTimelineViewModel {
+extension HashtagTimelineViewModel {
     class State: GKState {
-        weak var viewModel: SearchTimelineViewModel?
+        weak var viewModel: HashtagTimelineViewModel?
         
-        init(viewModel: SearchTimelineViewModel) {
+        init(viewModel: HashtagTimelineViewModel) {
             self.viewModel = viewModel
         }
         
@@ -25,42 +24,42 @@ extension SearchTimelineViewModel {
     }
 }
 
-extension SearchTimelineViewModel.State {
-    class Initial: SearchTimelineViewModel.State {
+extension HashtagTimelineViewModel.State {
+    class Initial: HashtagTimelineViewModel.State {
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {
             return stateClass == Idle.self || stateClass == Reset.self || stateClass == Loading.self
         }
     }
     
-    class Idle: SearchTimelineViewModel.State {
+    class Idle: HashtagTimelineViewModel.State {
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {
             return stateClass == Reset.self || stateClass == Loading.self
         }
     }
     
-    class Reset: SearchTimelineViewModel.State {
+    class Reset: HashtagTimelineViewModel.State {
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {
             return stateClass == Loading.self
         }
         
         override func didEnter(from previousState: GKState?) {
             super.didEnter(from: previousState)
-
+            
             viewModel?.statusRecordFetchedResultController.reset()
             stateMachine?.enter(Loading.self)
         }
     }
     
-    class Loading: SearchTimelineViewModel.State {
-        let logger = Logger(subsystem: "SearchTimelineViewModel.State", category: "StateMachine")
+    class Loading: HashtagTimelineViewModel.State {
+        let logger = Logger(subsystem: "HashtagTimelineViewModel.State", category: "StateMachine")
         
-        var nextInput: StatusListFetchViewModel.SearchInput?
+        var nextInput: StatusListFetchViewModel.HashtagInput?
         
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {
             return stateClass == Fail.self
-                || stateClass == Reset.self
-                || stateClass == Idle.self
-                || stateClass == NoMore.self
+            || stateClass == Reset.self
+            || stateClass == Idle.self
+            || stateClass == NoMore.self
         }
         
         override func didEnter(from previousState: GKState?) {
@@ -69,21 +68,21 @@ extension SearchTimelineViewModel.State {
             if previousState is Reset {
                 nextInput = nil
             }
-            
+
             guard let viewModel = viewModel, let stateMachine = stateMachine else { return }
             guard let authenticationContext = viewModel.context.authenticationService.activeAuthenticationContext.value
             else {
                 stateMachine.enter(Fail.self)
                 return
             }
-            
-            let searchText = viewModel.searchText
-            
+
+            let searchText = viewModel.hashtag
+
             if nextInput == nil {
                 nextInput = {
                     switch authenticationContext {
                     case .twitter(let authenticationContext):
-                        return StatusListFetchViewModel.SearchInput.twitter(.init(
+                        return StatusListFetchViewModel.HashtagInput.twitter(.init(
                             authenticationContext: authenticationContext,
                             searchText: searchText,
                             onlyMedia: false,
@@ -91,11 +90,10 @@ extension SearchTimelineViewModel.State {
                             maxResults: 50
                         ))
                     case .mastodon(let authenticationContext):
-                        let offset = viewModel.statusRecordFetchedResultController.mastodonStatusFetchedResultController.statusIDs.value.count
-                        return StatusListFetchViewModel.SearchInput.mastodon(.init(
+                        return StatusListFetchViewModel.HashtagInput.mastodon(.init(
                             authenticationContext: authenticationContext,
-                            searchText: searchText,
-                            offset: offset,
+                            hashtag: searchText,
+                            maxID: nil,
                             limit: 50
                         ))
                     }
@@ -109,22 +107,20 @@ extension SearchTimelineViewModel.State {
             
             Task {
                 do {
-                    logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): fetch…")
-                    let output = try await StatusListFetchViewModel.searchTimeline(
+                    logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): fetch \(searchText)…")
+                    let output = try await StatusListFetchViewModel.hashtagTimeline(
                         context: viewModel.context,
                         input: input
                     )
-                    
-                    // check task is valid
-                    guard viewModel.searchText == searchText else { return }
-                    
+
                     nextInput = output.nextInput
+
                     if output.hasMore {
                         stateMachine.enter(Idle.self)
                     } else {
                         stateMachine.enter(NoMore.self)
                     }
-                    
+
                     switch output.result {
                     case .twitter(let statuses):
                         let statusIDs = statuses.map { $0.idStr }
@@ -138,25 +134,23 @@ extension SearchTimelineViewModel.State {
                     }
                 } catch let error {
                     // check task is valid
-                    guard viewModel.searchText == searchText else { return }
-                    
                     logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): fetch failure: \(error.localizedDescription)")
                     debugPrint(error)
                     stateMachine.enter(Fail.self)
                 }
-            }   // end currentTask = Task { … }
+            }   // end Task { … }
         }   // end func didEnter(from:)
         
-    }   // end class Loading: SearchTimelineViewModel.State { … }
-
+    }   // end class Loading: SearchHashtagViewModel.State { … }
     
-    class Fail: SearchTimelineViewModel.State {
+    
+    class Fail: HashtagTimelineViewModel.State {
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {
             return stateClass == Reset.self || stateClass == Loading.self
         }
     }
     
-    class NoMore: SearchTimelineViewModel.State {
+    class NoMore: HashtagTimelineViewModel.State {
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {
             return stateClass == Reset.self
         }

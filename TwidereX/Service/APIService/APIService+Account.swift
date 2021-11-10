@@ -65,12 +65,14 @@ extension APIService {
                 cache: nil,
                 networkDate: response.networkDate
             )
-            let (mastodonUser, isCreated) = Persistence.MastodonUser.createOrMerge(
+            let result = Persistence.MastodonUser.createOrMerge(
                 in: managedObjectContext,
                 context: context
             )
+            let user = result.user
+            let isCreated = result.isNewInsertion
             let flag = isCreated ? "+" : "~"
-            os_log(.info, log: log, "%{public}s[%{public}ld], %{public}s: mastodon user [%s](%s)%s verified", ((#file as NSString).lastPathComponent), #line, #function, flag, mastodonUser.id, mastodonUser.username)
+            os_log(.info, log: log, "%{public}s[%{public}ld], %{public}s: mastodon user [%s](%s)%s verified", ((#file as NSString).lastPathComponent), #line, #function, flag, user.id, user.username)
         }
         
         return response

@@ -20,7 +20,6 @@ final class SeparatorLineView: UIView {
         _init()
     }
     
-    
     override var intrinsicContentSize: CGSize {
         let height = 1.0 / traitCollection.displayScale     // 1px
         return CGSize(width: UIView.layoutFittingExpandedSize.width, height: height)

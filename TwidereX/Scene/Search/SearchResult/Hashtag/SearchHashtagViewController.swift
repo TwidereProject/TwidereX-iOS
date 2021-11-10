@@ -81,12 +81,29 @@ extension SearchHashtagViewController {
     
 }
 
+// MARK: - DeselectRowTransitionCoordinator
+extension SearchHashtagViewController: DeselectRowTransitionCoordinator {
+    func deselectRow(with coordinator: UIViewControllerTransitionCoordinator, animated: Bool) {
+        tableView.deselectRow(with: coordinator, animated: animated)
+    }
+}
+
 // MARK: - UITableViewDelegate
 extension SearchHashtagViewController: UITableViewDelegate {
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         guard let item = viewModel.item(at: indexPath) else { return }
-        assertionFailure()
+        switch item {
+        case .hashtag(let data):
+            switch data {
+            case .mastodon(let tag):
+                let hashtagTimelineViewModel = HashtagTimelineViewModel(context: context, hashtag: tag.name)
+                coordinator.present(scene: .hashtagTimeline(viewModel: hashtagTimelineViewModel), from: self, transition: .show)
+            }
+            
+        case .bottomLoader:
+            break
+        }
     }
     
 }

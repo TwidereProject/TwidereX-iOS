@@ -30,6 +30,17 @@ extension MastodonUser {
 }
 
 extension MastodonUser {
+    var nameMetaContent: MastodonMetaContent? {
+        do {
+            let content = MastodonContent(content: name, emojis: emojis.asDictionary)
+            let metaContent = try MastodonMetaContent.convert(document: content)
+            return metaContent
+        } catch {
+            assertionFailure()
+            return nil
+        }
+    }
+    
     var bioMetaContent: MastodonMetaContent? {
         guard let note = note else { return nil }
         do {

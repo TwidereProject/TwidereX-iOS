@@ -26,7 +26,10 @@ extension UITableViewDelegate where Self: DataSourceProvider {
                     status: status
                 )
             case .user(let user):
-                assertionFailure()
+                await DataSourceFacade.coordinateToProfileScene(
+                    provider: self,
+                    user: user
+                )
             }
         }
     }

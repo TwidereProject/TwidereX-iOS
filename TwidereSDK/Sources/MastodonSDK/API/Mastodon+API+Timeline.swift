@@ -45,6 +45,47 @@ extension Mastodon.API.Timeline {
     }
 }
 
+extension Mastodon.API.Timeline {
+    
+    static func hashtagTimelineEndpointURL(domain: String, hashtag: String) -> URL {
+        return Mastodon.API.endpointURL(domain: domain)
+            .appendingPathComponent("timelines/tag/\(hashtag)")
+    }
+    
+    /// View public statuses containing the given hashtag.
+    ///
+    /// - Since: 0.0.0
+    /// - Version: 3.4.2
+    /// # Last Update
+    ///   2021/11/9
+    /// # Reference
+    ///   [Document](https://https://docs.joinmastodon.org/methods/timelines/)
+    /// - Parameters:
+    ///   - session: `URLSession`
+    ///   - domain: Mastodon instance domain. e.g. "example.com"
+    ///   - hashtag: Content of a #hashtag, not including # symbol.
+    ///   - query: `HashtagTimelineQuery` with query parameters
+    ///   - authorization: User token, auth is required if public preview is disabled
+    /// - Returns: `AnyPublisher` contains `Token` nested in the response
+    public static func hashtag(
+        session: URLSession,
+        domain: String,
+        hashtag: String,
+        query: TimelineQuery,
+        authorization: Mastodon.API.OAuth.Authorization?
+    ) async throws -> Mastodon.Response.Content<[Mastodon.Entity.Status]> {
+        let request = Mastodon.API.request(
+            url: hashtagTimelineEndpointURL(domain: domain, hashtag: hashtag),
+            method: .GET,
+            query: query,
+            authorization: authorization
+        )
+        let (data, response) = try await session.data(for: request, delegate: nil)
+        let value = try Mastodon.API.decode(type: [Mastodon.Entity.Status].self, from: data, response: response)
+        return Mastodon.Response.Content(value: value, response: response)
+    }
+}
+
 public protocol TimelineQueryType {
     var maxID: Mastodon.Entity.Status.ID? { get }
     var sinceID: Mastodon.Entity.Status.ID? { get }

@@ -57,6 +57,17 @@ extension AuthenticationContext {
         }
     }
 }
+
+extension AuthenticationContext {
+    var userIdentifier: UserIdentifier {
+        switch self {
+        case .twitter(let authenticationContext):
+            return .twitter(.init(id: authenticationContext.userID))
+        case .mastodon(let authenticationContext):
+            return .mastodon(.init(domain: authenticationContext.domain, id: authenticationContext.userID))
+        }
+    }
+}
         
 struct TwitterAuthenticationContext {
     let authenticationRecord: ManagedObjectRecord<TwitterAuthentication>

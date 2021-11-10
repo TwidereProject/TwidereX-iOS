@@ -52,6 +52,9 @@ extension SceneCoordinator {
         // Status
         case statusThread(viewModel: StatusThreadViewModel)
         
+        // Hashtag
+        case hashtagTimeline(viewModel: HashtagTimelineViewModel)
+        
         // TODO:
 //        case composeTweet(viewModel: ComposeTweetViewModel)
 //        case mentionPick(viewModel: MentionPickViewModel, delegate: MentionPickViewControllerDelegate)
@@ -190,6 +193,10 @@ private extension SceneCoordinator {
             viewController = _viewController
         case .statusThread(let viewModel):
             let _viewController = StatusThreadViewController()
+            _viewController.viewModel = viewModel
+            viewController = _viewController
+        case .hashtagTimeline(let viewModel):
+            let _viewController = HashtagTimelineViewController()
             _viewController.viewModel = viewModel
             viewController = _viewController
 //        case .composeTweet(let viewModel):

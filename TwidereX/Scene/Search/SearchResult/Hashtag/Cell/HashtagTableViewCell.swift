@@ -14,7 +14,7 @@ final class HashtagTableViewCell: UITableViewCell {
     let primaryLabel = MetaLabel(style: .hashtagTitle)
     let secondaryLabel = MetaLabel(style: .hashtagDescription)
     
-    let separatorLine = UIView.separatorLine
+    let separatorLine = SeparatorLineView()
     
     private(set) lazy var viewModel: ViewModel = {
         let viewModel = ViewModel()
@@ -59,6 +59,9 @@ extension HashtagTableViewCell {
             separatorLine.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
             separatorLine.heightAnchor.constraint(equalToConstant: UIView.separatorLineHeight(of: contentView)),
         ])
+        
+        primaryLabel.isUserInteractionEnabled = false
+        secondaryLabel.isUserInteractionEnabled = false
     }
     
 }

@@ -22,16 +22,21 @@ extension Persistence.MastodonUser {
         let log = OSLog.api
     }
     
+    struct PersistResult {
+        let user: MastodonUser
+        let isNewInsertion: Bool
+    }
+    
     static func createOrMerge(
         in managedObjectContext: NSManagedObjectContext,
         context: PersistContext
-    ) -> (MastodonUser, Bool) {
+    ) -> PersistResult {
         if let oldMastodonUser = fetch(in: managedObjectContext, context: context) {
             merge(mastodonUser: oldMastodonUser, context: context)
-            return (oldMastodonUser, false)
+            return PersistResult(user: oldMastodonUser, isNewInsertion: false)
         } else {
             let user = create(in: managedObjectContext, context: context)
-            return (user, true)
+            return PersistResult(user: user, isNewInsertion: true)
         }
     }
     

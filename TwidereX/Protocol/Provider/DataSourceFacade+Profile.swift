@@ -23,9 +23,19 @@ extension DataSourceFacade {
             assertionFailure()
             return
         }
+        await coordinateToProfileScene(
+            provider: provider,
+            user: redirectRecord
+        )
+    }
+    
+    static func coordinateToProfileScene(
+        provider: DataSourceProvider,
+        user: UserRecord
+    ) async {
         let profileViewModel = LocalProfileViewModel(
             context: provider.context,
-            userRecord: redirectRecord
+            userRecord: user
         )
         await provider.coordinator.present(
             scene: .profile(viewModel: profileViewModel),

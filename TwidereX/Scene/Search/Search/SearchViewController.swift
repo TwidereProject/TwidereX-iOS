@@ -69,7 +69,6 @@ extension SearchViewController {
         
         navigationItem.searchController = searchController
         navigationItem.hidesSearchBarWhenScrolling = false
-        definesPresentationContext = true
         
         searchResultViewModel.$scopes
             .receive(on: DispatchQueue.main)
@@ -121,6 +120,14 @@ extension SearchViewController {
 //        .store(in: &disposeBag)
         
         
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        if let transitionCoordinator = self.transitionCoordinator {
+            searchResultViewController.deselectRow(with: transitionCoordinator, animated: animated)            
+        }
     }
     
     override func viewDidAppear(_ animated: Bool) {

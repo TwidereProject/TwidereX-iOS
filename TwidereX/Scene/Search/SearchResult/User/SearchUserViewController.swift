@@ -94,6 +94,13 @@ extension SearchUserViewController {
     
 }
 
+// MARK: - DeselectRowTransitionCoordinator
+extension SearchUserViewController: DeselectRowTransitionCoordinator {
+    func deselectRow(with coordinator: UIViewControllerTransitionCoordinator, animated: Bool) {
+        tableView.deselectRow(with: coordinator, animated: animated)
+    }
+}
+
 //// MARK: - UIScrollViewDelegate
 //extension SearchUserViewController {
 //    func scrollViewDidScroll(_ scrollView: UIScrollView) {
@@ -102,8 +109,16 @@ extension SearchUserViewController {
 //}
 
 // MARK: - UITableViewDelegate
-extension SearchUserViewController: UITableViewDelegate {
-    
+extension SearchUserViewController: UITableViewDelegate, AutoGenerateTableViewDelegate {
+    // sourcery:inline:SearchUserViewController.AutoGenerateTableViewDelegate
+
+    // Generated using Sourcery
+    // DO NOT EDIT
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        aspectTableView(tableView, didSelectRowAt: indexPath)
+    }
+    // sourcery:end
+
     func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
         return 80
     }

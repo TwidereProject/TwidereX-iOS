@@ -1,59 +1,51 @@
 //
-//  UserTimelineViewModel.swift
+//  HashtagTimelineViewModel.swift
 //  TwidereX
 //
-//  Created by Cirno MainasuK on 2020-9-28.
+//  Created by Cirno MainasuK on 2021-11-8.
+//  Copyright © 2021 Twidere. All rights reserved.
 //
 
 import os.log
 import UIKit
-import GameplayKit
 import Combine
-import CoreData
-import CoreDataStack
-import TwitterSDK
-import AlamofireImage
+import GameplayKit
 
-class UserTimelineViewModel {
+final class HashtagTimelineViewModel {
     
     var disposeBag = Set<AnyCancellable>()
-    let logger = Logger(subsystem: "UserTimelineViewModel", category: "ViewModel")
+    let logger = Logger(subsystem: "HashtagTimelineViewModel", category: "ViewModel")
     
     // input
     let context: AppContext
+    let hashtag: String
     let statusRecordFetchedResultController: StatusRecordFetchedResultController
     let listBatchFetchViewModel = ListBatchFetchViewModel()
-    @Published var userIdentifier: UserIdentifier?
-    
+
     // output
     var diffableDataSource: UITableViewDiffableDataSource<StatusSection, StatusItem>?
     private(set) lazy var stateMachine: GKStateMachine = {
         let stateMachine = GKStateMachine(states: [
             State.Initial(viewModel: self),
-            State.Reloading(viewModel: self),
-            State.Fail(viewModel: self),
             State.Idle(viewModel: self),
-            State.LoadingMore(viewModel: self),
-            State.NotAuthorized(viewModel: self),
-            State.Blocked(viewModel: self),
-            State.Suspended(viewModel: self),
+            State.Reset(viewModel: self),
+            State.Loading(viewModel: self),
+            State.Fail(viewModel: self),
             State.NoMore(viewModel: self),
         ])
         stateMachine.enter(State.Initial.self)
         return stateMachine
     }()
     
-    init(context: AppContext) {
+    init(context: AppContext, hashtag: String) {
         self.context = context
+        self.hashtag = hashtag
         self.statusRecordFetchedResultController = StatusRecordFetchedResultController(managedObjectContext: context.managedObjectContext)
         // end init
         
-        $userIdentifier
+        context.authenticationService.activeAuthenticationContext
+            .map { $0?.userIdentifier }
             .assign(to: &statusRecordFetchedResultController.$userIdentifier)
-    }
-    
-    deinit {
-        os_log("%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
     }
     
 }

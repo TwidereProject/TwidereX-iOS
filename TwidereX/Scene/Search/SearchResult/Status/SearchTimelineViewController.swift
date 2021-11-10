@@ -96,9 +96,16 @@ extension SearchTimelineViewController {
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         
-//        context.videoPlaybackService.viewDidDisappear(from: self)
+//        context.videoPlaybackServicea.viewDidDisappear(from: self)
     }
 
+}
+
+// MARK: - DeselectRowTransitionCoordinator
+extension SearchTimelineViewController: DeselectRowTransitionCoordinator {
+    func deselectRow(with coordinator: UIViewControllerTransitionCoordinator, animated: Bool) {
+        tableView.deselectRow(with: coordinator, animated: animated)
+    }
 }
 
 // MARK: - UIScrollViewDelegate

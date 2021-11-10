@@ -161,11 +161,16 @@ extension APIService {
                     networkDate: response.networkDate
                 )
                 
-                let (status, _) = Persistence.MastodonStatus.createOrMerge(
+                let result = Persistence.MastodonStatus.createOrMerge(
                     in: managedObjectContext,
                     context: persistContext
                 )
+                let status = result.status
                 statusArray.append(status)
+                
+                #if DEBUG
+                result.log()
+                #endif
             }
             
             // locate anchor status

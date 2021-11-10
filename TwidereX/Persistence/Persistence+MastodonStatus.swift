@@ -24,13 +24,29 @@ extension Persistence.MastodonStatus {
         let log = OSLog.api
     }
     
+    struct PersistResult {
+        let status: MastodonStatus
+        let isNewInsertion: Bool
+        let isNewInsertionAuthor: Bool
+        
+        #if DEBUG
+        let logger = Logger(subsystem: "Persistence.MastodonStatus.PersistResult", category: "Persist")
+        func log() {
+            let statusInsertionFlag = isNewInsertion ? "+" : "-"
+            let authorInsertionFlag = isNewInsertionAuthor ? "+" : "-"
+            let contentPreview = status.content.prefix(32).replacingOccurrences(of: "\n", with: " ")
+            logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): [\(statusInsertionFlag)](\(status.id))[\(authorInsertionFlag)](\(status.author.id))@\(status.author.username): \(contentPreview)")
+        }
+        #endif
+    }
+    
     static func createOrMerge(
         in managedObjectContext: NSManagedObjectContext,
         context: PersistContext
-    ) -> (MastodonStatus, Bool) {
+    ) -> PersistResult {
         
         let repost = context.entity.reblog.flatMap { entity -> MastodonStatus in
-            let (status, _) = createOrMerge(
+            let result = createOrMerge(
                 in: managedObjectContext,
                 context: PersistContext(
                     domain: context.domain,
@@ -41,14 +57,18 @@ extension Persistence.MastodonStatus {
                     networkDate: context.networkDate
                 )
             )
-            return status
+            return result.status
         }
         
         if let oldStatus = fetch(in: managedObjectContext, context: context) {
             merge(mastodonStatus: oldStatus, context: context)
-            return (oldStatus, false)
+            return PersistResult(
+                status: oldStatus,
+                isNewInsertion: false,
+                isNewInsertionAuthor: false
+            )
         } else {
-            let (author, _) = Persistence.MastodonUser.createOrMerge(
+            let authorResult = Persistence.MastodonUser.createOrMerge(
                 in: managedObjectContext,
                 context: Persistence.MastodonUser.PersistContext(
                     domain: context.domain,
@@ -57,6 +77,7 @@ extension Persistence.MastodonStatus {
                     networkDate: context.networkDate
                 )
             )
+            let author = authorResult.user
                 
             let relationship = MastodonStatus.Relationship(
                 author: author,
@@ -67,7 +88,12 @@ extension Persistence.MastodonStatus {
                 context: context,
                 relationship: relationship
             )
-            return (status, false)
+
+            return PersistResult(
+                status: status,
+                isNewInsertion: true,
+                isNewInsertionAuthor: authorResult.isNewInsertion
+            )
         }
     }
     

@@ -128,10 +128,13 @@ extension UserView {
         .assign(to: \.avatarImageURL, on: viewModel)
         .store(in: &disposeBag)
         // author name
-        user.publisher(for: \.displayName)
-            .map { _ in PlaintextMetaContent(string: user.name) }
-            .assign(to: \.name, on: viewModel)
-            .store(in: &disposeBag)
+        Publishers.CombineLatest(
+            user.publisher(for: \.displayName),
+            user.publisher(for: \.emojis)
+        )
+        .map { _ in user.nameMetaContent }
+        .assign(to: \.name, on: viewModel)
+        .store(in: &disposeBag)
         // author username
         user.publisher(for: \.username)
             .map { "@\($0)" as String? }

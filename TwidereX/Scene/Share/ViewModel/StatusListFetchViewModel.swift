@@ -12,10 +12,21 @@ import TwitterSDK
 import MastodonSDK
 
 enum StatusListFetchViewModel {
+    
+    enum Result {
+        case twitter([Twitter.Entity.Tweet]) // v1
+        case twitterV2([Twitter.Entity.V2.Tweet]) // v2
+        case mastodon([Mastodon.Entity.Status])
+    }
+    
+}
+
+extension StatusListFetchViewModel {
+    @available(*, deprecated, message: "")
     struct Input {
         let fetchContext: FetchContext
         
-        // TODO: refactor this with protocol and more specific case 
+        // TODO: refactor this with protocol and more specific case
         enum FetchContext {
             case twitter(TwitterFetchContext)
             case mastodon(MastodonFetchContext)
@@ -29,6 +40,7 @@ enum StatusListFetchViewModel {
         }
     }
     
+    @available(*, deprecated, message: "")
     struct TwitterFetchContext {
         let authenticationContext: TwitterAuthenticationContext
         let searchText: String?
@@ -66,6 +78,7 @@ enum StatusListFetchViewModel {
         }
     }
     
+    @available(*, deprecated, message: "")
     struct MastodonFetchContext {
         let authenticationContext: MastodonAuthenticationContext
         let searchText: String?
@@ -106,18 +119,20 @@ enum StatusListFetchViewModel {
         }
     }
     
+    @available(*, deprecated, message: "")
     struct Output {
         let result: Result
         
         let hasMore: Bool
         let nextInput: Input?
-
+        
         enum Result {
             case twitter([Twitter.Entity.Tweet]) // v1
             case twitterV2([Twitter.Entity.V2.Tweet]) // v2
             case mastodon([Mastodon.Entity.Status])
         }
     }
+
 }
 
 extension StatusListFetchViewModel {
@@ -278,13 +293,65 @@ extension StatusListFetchViewModel {
             )
         }
     }
+
+}
+
+extension StatusListFetchViewModel {
     
-    static func searchTimeline(context: AppContext, input: Input) async throws -> Output {
-        switch input.fetchContext {
+    enum SearchInput {
+        case twitter(SearchTwitterStatusFetchContext)
+        case mastodon(SearchMastodonStatusFetchContext)
+    }
+    
+    struct SearchOutput {
+        let result: Result
+        let nextInput: SearchInput?
+        
+        var hasMore: Bool {
+            nextInput != nil
+        }
+    }
+    
+    struct SearchTwitterStatusFetchContext {
+        let authenticationContext: TwitterAuthenticationContext
+        let searchText: String
+        let onlyMedia: Bool
+        let nextToken: String?
+        let maxResults: Int?
+        
+        func map(nextToken: String) -> SearchTwitterStatusFetchContext {
+            return SearchTwitterStatusFetchContext(
+                authenticationContext: authenticationContext,
+                searchText: searchText,
+                onlyMedia: onlyMedia,
+                nextToken: nextToken,
+                maxResults: maxResults
+            )
+        }
+    }
+    
+    struct SearchMastodonStatusFetchContext {
+        let authenticationContext: MastodonAuthenticationContext
+        let searchText: String
+        let offset: Int
+        let limit: Int?
+        
+        func map(offset: Int) -> SearchMastodonStatusFetchContext {
+            return SearchMastodonStatusFetchContext(
+                authenticationContext: authenticationContext,
+                searchText: searchText,
+                offset: offset,
+                limit: limit
+            )
+        }
+    }
+    
+    static func searchTimeline(context: AppContext, input: SearchInput) async throws -> SearchOutput {
+        switch input {
         case .twitter(let fetchContext):
             let authenticationContext = fetchContext.authenticationContext
             let queryText: String = try {
-                let searchText = (fetchContext.searchText ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+                let searchText = fetchContext.searchText.trimmingCharacters(in: .whitespacesAndNewlines)
                 guard !searchText.isEmpty && searchText.count < 500 else {
                     throw AppError.implicit(.badRequest)
                 }
@@ -302,7 +369,7 @@ extension StatusListFetchViewModel {
             
             let query = Twitter.API.V2.Search.RecentTweetQuery(
                 query: queryText,
-                maxResults: fetchContext.count ?? 100,
+                maxResults: fetchContext.maxResults ?? 100,
                 sinceID: nil,
                 startTime: nil,
                 nextToken: fetchContext.nextToken
@@ -312,20 +379,18 @@ extension StatusListFetchViewModel {
                 authenticationContext: authenticationContext
             )
             let content = response.value
-            let nextToken = content.meta.nextToken
-            let noMore = nextToken == nil
-            let nextInput: Input? = {
-                let fetchContext = fetchContext.map(nextToken: nextToken)
-                return Input(fetchContext: .twitter(fetchContext))
-            }()
-            return Output(
+            return SearchOutput(
                 result: .twitterV2(content.data ?? []),
-                hasMore: !noMore,
-                nextInput: nextInput
+                nextInput: {
+                    guard let nextToken = content.meta.nextToken else { return nil }
+                    let fetchContext = fetchContext.map(nextToken: nextToken)
+                    return .twitter(fetchContext)
+                }()
             )
+            
         case .mastodon(let fetchContext):
             let authenticationContext = fetchContext.authenticationContext
-            let searchText = (fetchContext.searchText ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+            let searchText = fetchContext.searchText.trimmingCharacters(in: .whitespacesAndNewlines)
             guard !searchText.isEmpty else {
                 throw AppError.implicit(.badRequest)
             }
@@ -337,7 +402,7 @@ extension StatusListFetchViewModel {
                 excludeUnreviewed: nil,
                 q: searchText,
                 resolve: true,
-                limit: fetchContext.count,
+                limit: fetchContext.limit,
                 offset: fetchContext.offset,
                 following: nil
             )
@@ -345,17 +410,115 @@ extension StatusListFetchViewModel {
                 query: query,
                 authenticationContext: authenticationContext
             )
-            let noMore = response.value.statuses.isEmpty
-            let nextInput: Input? = {
-                let offset = (fetchContext.offset ?? 0) + response.value.statuses.count
-                let fetchContext = fetchContext.map(offset: offset)
-                return Input(fetchContext: .mastodon(fetchContext))
-            }()
-            return Output(
+            return SearchOutput(
                 result: .mastodon(response.value.statuses),
-                hasMore: !noMore,
-                nextInput: nextInput
+                nextInput: {
+                    guard !response.value.statuses.isEmpty else { return nil }
+                    let offset = fetchContext.offset + response.value.statuses.count
+                    let fetchContext = fetchContext.map(offset: offset)
+                    return .mastodon(fetchContext)
+                }()
             )
         }
     }
+    
+}
+
+extension StatusListFetchViewModel {
+
+    enum HashtagInput {
+        case twitter(SearchTwitterStatusFetchContext)
+        case mastodon(HashtagMastodonStatusFetchContext)
+    }
+    
+    struct HashtagOutput {
+        let result: Result
+        let nextInput: HashtagInput?
+        
+        var hasMore: Bool {
+            nextInput != nil
+        }
+    }
+    
+    
+    struct HashtagMastodonStatusFetchContext {
+        let authenticationContext: MastodonAuthenticationContext
+        let hashtag: String
+        let maxID: Mastodon.Entity.Status.ID?
+        let limit: Int?
+        
+        func map(maxID: Mastodon.Entity.Status.ID) -> HashtagMastodonStatusFetchContext {
+            return HashtagMastodonStatusFetchContext(
+                authenticationContext: authenticationContext,
+                hashtag: hashtag,
+                maxID: maxID,
+                limit: limit
+            )
+        }
+    }
+    
+    static func hashtagTimeline(context: AppContext, input: HashtagInput) async throws -> HashtagOutput {
+        switch input {
+        case .twitter(let fetchContext):
+            let authenticationContext = fetchContext.authenticationContext
+            let queryText: String = try {
+                let searchText = fetchContext.searchText.trimmingCharacters(in: .whitespacesAndNewlines)
+                guard !searchText.isEmpty && searchText.count < 500 else {
+                    throw AppError.implicit(.badRequest)
+                }
+                var query = searchText
+                // default exclude retweet
+                var options = ["-is:retweet"]
+                if fetchContext.onlyMedia {
+                    options.append("has:media")
+                }
+                // TODO: more options
+                let suffix = options.joined(separator: " ")
+                query += " (\(suffix))"
+                return query
+            }()
+            
+            let query = Twitter.API.V2.Search.RecentTweetQuery(
+                query: queryText,
+                maxResults: fetchContext.maxResults ?? 100,
+                sinceID: nil,
+                startTime: nil,
+                nextToken: fetchContext.nextToken
+            )
+            let response = try await context.apiService.searchTwitterStatus(
+                query: query,
+                authenticationContext: authenticationContext
+            )
+            let content = response.value
+            return HashtagOutput(
+                result: .twitterV2(content.data ?? []),
+                nextInput: {
+                    guard let nextToken = content.meta.nextToken else { return nil }
+                    let fetchContext = fetchContext.map(nextToken: nextToken)
+                    return .twitter(fetchContext)
+                }()
+            )
+        case .mastodon(let fetchContext):
+            let authenticationContext = fetchContext.authenticationContext
+            let query = Mastodon.API.Timeline.TimelineQuery(
+                maxID: fetchContext.maxID,
+                limit: fetchContext.limit
+            )
+            let response = try await context.apiService.mastodonHashtagTimeline(
+                hashtag: fetchContext.hashtag,
+                query: query,
+                authenticationContext: authenticationContext
+            )
+            return HashtagOutput(
+                result: .mastodon(response.value),
+                nextInput: {
+                    guard let maxID = response.value.last?.id else { return nil }
+                    let fetchContext = fetchContext.map(maxID: maxID)
+                    return .mastodon(fetchContext)
+                }()
+            )
+        }   // end switch input { }
+    }
+    
+
 }

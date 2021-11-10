@@ -49,7 +49,7 @@ extension APIService {
             let _me = authenticationContext.authenticationRecord.object(in: managedObjectContext)?.user
             // persist statuses
             for status in response.value.statuses {
-                _ = Persistence.MastodonStatus.createOrMerge(
+                let result = Persistence.MastodonStatus.createOrMerge(
                     in: managedObjectContext,
                     context: Persistence.MastodonStatus.PersistContext(
                         domain: authenticationContext.domain,
@@ -60,11 +60,14 @@ extension APIService {
                         networkDate: response.networkDate
                     )
                 )
+                #if DEBUG
+                result.log()
+                #endif
             }
+            
             // persist users
-
             for account in response.value.accounts {
-                let (user, _) = Persistence.MastodonUser.createOrMerge(
+                let result = Persistence.MastodonUser.createOrMerge(
                     in: managedObjectContext,
                     context: Persistence.MastodonUser.PersistContext(
                         domain: authenticationContext.domain,
@@ -73,6 +76,7 @@ extension APIService {
                         networkDate: response.networkDate
                     )
                 )
+                let user = result.user
                 guard let me = _me,
                       let relationshipResponse = _relationshipResponse,
                       let relationship = _relationshipDictionary?[account.id]

@@ -86,6 +86,11 @@ extension UserView {
         
         authorProfileAvatarView.scale = 0.5
         containerStackView.addArrangedSubview(authorProfileAvatarView)
+        
+        authorProfileAvatarView.isUserInteractionEnabled = false
+        nameLabel.isUserInteractionEnabled = false
+        usernameLabel.isUserInteractionEnabled = false
+        followerCountLabel.isUserInteractionEnabled = false
     }
     
     func setup(style: Style) {

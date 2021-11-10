@@ -56,7 +56,7 @@ extension SearchMediaViewModel.State {
         
         let logger = Logger(subsystem: "SearchMediaViewModel.State", category: "StateMachine")
         
-        var nextInput: StatusListFetchViewModel.Input?
+        var nextInput: StatusListFetchViewModel.SearchInput?
         
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {
             return stateClass == Fail.self
@@ -86,34 +86,22 @@ extension SearchMediaViewModel.State {
                 nextInput = {
                     switch authenticationContext {
                     case .twitter(let authenticationContext):
-                        return StatusListFetchViewModel.Input(
-                            fetchContext: .twitter(.init(
-                                authenticationContext: authenticationContext,
-                                searchText: searchText,
-                                maxID: nil,
-                                nextToken: nil,
-                                count: 50,
-                                excludeReplies: false,
-                                onlyMedia: true,
-                                userIdentifier: nil
-                            ))
-                        )
+                        return StatusListFetchViewModel.SearchInput.twitter(.init(
+                            authenticationContext: authenticationContext,
+                            searchText: searchText,
+                            onlyMedia: true,
+                            nextToken: nil,
+                            maxResults: 50
+                        ))
                     case .mastodon(let authenticationContext):
                         assertionFailure("this is not accessible entry for Mastodon")
                         let offset = viewModel.statusRecordFetchedResultController.mastodonStatusFetchedResultController.statusIDs.value.count
-                        return StatusListFetchViewModel.Input(
-                            fetchContext: .mastodon(.init(
-                                authenticationContext: authenticationContext,
-                                searchText: searchText,
-                                offset: offset,
-                                maxID: nil,
-                                count: 50,
-                                excludeReplies: false,
-                                excludeReblogs: false,
-                                onlyMedia: true,
-                                userIdentifier: nil
-                            ))
-                        )
+                        return StatusListFetchViewModel.SearchInput.mastodon(.init(
+                            authenticationContext: authenticationContext,
+                            searchText: searchText,
+                            offset: offset,
+                            limit: 50
+                        ))
                     }
                 }()
             }
@@ -126,7 +114,10 @@ extension SearchMediaViewModel.State {
             Task {
                 do {
                     logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): fetch…")
-                    let output = try await StatusListFetchViewModel.searchTimeline(context: viewModel.context, input: input)
+                    let output = try await StatusListFetchViewModel.searchTimeline(
+                        context: viewModel.context,
+                        input: input
+                    )
                     
                     // check task is valid
                     guard viewModel.searchText == searchText else { return }
@@ -139,13 +130,12 @@ extension SearchMediaViewModel.State {
                     }
                     
                     switch output.result {
+                    case .twitter(let statuses):
+                        let statusIDs = statuses.map { $0.idStr }
+                        viewModel.statusRecordFetchedResultController.twitterStatusFetchedResultController.append(statusIDs: statusIDs)
                     case .twitterV2(let statuses):
                         let statusIDs = statuses.map { $0.id }
                         viewModel.statusRecordFetchedResultController.twitterStatusFetchedResultController.append(statusIDs: statusIDs)
-                    case .twitter:
-                        // not use v1 API here
-                        assertionFailure()
-                        return
                     case .mastodon(let statuses):
                         let statusIDs = statuses.map { $0.id }
                         viewModel.statusRecordFetchedResultController.mastodonStatusFetchedResultController.append(statusIDs: statusIDs)
@@ -159,145 +149,6 @@ extension SearchMediaViewModel.State {
                 }
             }   // end currentTask = Task { … }
         }   // end didEnter(from:)
-        
-//        func loading(
-//            viewModel: SearchMediaViewModel,
-//            twitterAuthenticationBox: AuthenticationService.TwitterAuthenticationBox,
-//            stateMachine: GKStateMachine
-//        ) {
-//            let _searchText = viewModel.searchText.value
-//            let searchText = _searchText + " (-is:retweet has:media)"    // TODO: handle video & GIF
-//            guard !_searchText.isEmpty, searchText.count < 512 else {
-//                error = SearchMediaViewModel.SearchMediaError.invalidSearchText
-//                stateMachine.enter(Fail.self)
-//                return
-//            }
-//            if searchText != previoursSearchText {
-//                reset(searchText: searchText)
-//            }
-//
-//            viewModel.context.apiService.tweetsRecentSearch(
-//                searchText: searchText,
-//                nextToken: nextToken,
-//                twitterAuthenticationBox: twitterAuthenticationBox
-//            )
-//            .receive(on: DispatchQueue.main)
-//            .sink { [weak self] completion in
-//                guard let self = self else { return }
-//                switch completion {
-//                case .failure(let error):
-//                    os_log("%{public}s[%{public}ld], %{public}s: search %s fail: %s", ((#file as NSString).lastPathComponent), #line, #function, searchText, error.localizedDescription)
-//                    if let responseError = error as? Twitter.API.Error.ResponseError,
-//                       case .rateLimitExceeded = responseError.twitterAPIError {
-//                        self.needsFallback = true
-//                        stateMachine.enter(Idle.self)
-//                        stateMachine.enter(Loading.self)
-//                    } else {
-//                        stateMachine.enter(Fail.self)
-//                        self.error = error
-//                    }
-//                case .finished:
-//                    break
-//                }
-//            } receiveValue: { [weak self] response in
-//                guard let self = self else { return }
-//                let content = response.value
-//                self.nextToken = content.meta.nextToken
-//                os_log("%{public}s[%{public}ld], %{public}s: search %s success. results count %ld", ((#file as NSString).lastPathComponent), #line, #function, searchText, content.meta.resultCount)
-//
-//                guard content.meta.resultCount > 0 else {
-//                    stateMachine.enter(NoMore.self)
-//                    return
-//                }
-//
-//                let newTweets = content.data?.compactMap { $0 } ?? []
-//                let oldTweetIDs = viewModel.searchMediaTweetIDs.value
-//
-//                var tweetIDs: [Twitter.Entity.Tweet.ID] = []
-//                for tweetID in oldTweetIDs {
-//                    guard !tweetIDs.contains(tweetID) else { continue }
-//                    tweetIDs.append(tweetID)
-//                }
-//
-//                for tweet in newTweets {
-//                    guard !tweetIDs.contains(tweet.id) else { continue }
-//                    tweetIDs.append(tweet.id)
-//                }
-//
-//                viewModel.searchMediaTweetIDs.value = tweetIDs
-//                stateMachine.enter(Idle.self)
-//            }
-//            .store(in: &viewModel.disposeBag)
-//        }
-        
-//        func loadingFallback(
-//            viewModel: SearchMediaViewModel,
-//            twitterAuthenticationBox: AuthenticationService.TwitterAuthenticationBox,
-//            stateMachine: GKStateMachine
-//        ) {
-//            let _searchText = viewModel.searchText.value
-//            let searchText = _searchText + " -filter:retweets filter:media"
-//            guard !_searchText.isEmpty, searchText.count < 500 else {
-//                error = SearchTimelineViewModel.SearchTimelineError.invalidSearchText
-//                // TODO: notify error
-//                stateMachine.enter(Fail.self)
-//                return
-//            }
-//            if searchText != previoursSearchText {
-//                reset(searchText: searchText)
-//            }
-//
-//            viewModel.context.apiService.tweetsSearch(
-//                searchText: searchText,
-//                maxID: maxID,
-//                twitterAuthenticationBox: twitterAuthenticationBox
-//            )
-//            .receive(on: DispatchQueue.main)
-//            .sink { [weak self] completion in
-//                guard let self = self else { return }
-//                switch completion {
-//                case .failure(let error):
-//                    os_log("%{public}s[%{public}ld], %{public}s: search %s fail: %s", ((#file as NSString).lastPathComponent), #line, #function, searchText, error.localizedDescription)
-//                    self.error = error
-//                    stateMachine.enter(Fail.self)
-//                case .finished:
-//                    break
-//                }
-//            } receiveValue: { [weak self] response in
-//                guard let self = self else { return }
-//
-//                var hasNewTweetAppend = false
-//                let newTweets = response.value.statuses ?? []
-//                var tweetIDs: [Twitter.Entity.Tweet.ID] = viewModel.searchMediaTweetIDs.value
-//                for tweet in newTweets {
-//                    guard !tweetIDs.contains(tweet.idStr) else { continue }
-//                    tweetIDs.append(tweet.idStr)
-//                    hasNewTweetAppend = true
-//                }
-//
-//                let components = URLComponents(string: response.value.searchMetadata.nextResults)
-//                if let maxID = components?.queryItems?.first(where: { $0.name == "max_id" })?.value {
-//                    self.maxID = maxID
-//                }
-//
-//                if hasNewTweetAppend {
-//                    stateMachine.enter(Idle.self)
-//                } else {
-//                    stateMachine.enter(NoMore.self)
-//                }
-//                viewModel.searchMediaTweetIDs.value = tweetIDs
-//            }
-//            .store(in: &viewModel.disposeBag)
-//        }
-//
-//        func reset(searchText: String) {
-//            maxID = nil
-//            nextToken = nil
-//            previoursSearchText = searchText
-//            viewModel?.searchMediaTweetIDs.value = []
-//            viewModel?.items.value = []
-//        }
-        
     }
     
     class Fail: SearchMediaViewModel.State {
@@ -313,13 +164,6 @@ extension SearchMediaViewModel.State {
         
         override func didEnter(from previousState: GKState?) {
             super.didEnter(from: previousState)
-//            guard let viewModel = viewModel else { return }
-//            guard let diffableDataSource = viewModel.diffableDataSource else { return }
-//            var snapshot = diffableDataSource.snapshot()
-//            if snapshot.itemIdentifiers.contains(.bottomLoader) {
-//                snapshot.deleteItems([.bottomLoader])
-//                diffableDataSource.apply(snapshot, animatingDifferences: false)
-//            }
         }
     }
 }

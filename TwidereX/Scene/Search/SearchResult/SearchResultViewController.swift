@@ -12,6 +12,10 @@ import Combine
 import Tabman
 import Pageboy
 
+protocol DeselectRowTransitionCoordinator {
+    func deselectRow(with coordinator: UIViewControllerTransitionCoordinator, animated: Bool)
+}
+
 final class SearchResultViewController: TabmanViewController, NeedsDependency {
     
     let logger = Logger(subsystem: "SearchResultViewController", category: "ViewController")
@@ -25,10 +29,18 @@ final class SearchResultViewController: TabmanViewController, NeedsDependency {
     override func pageboyViewController(
         _ pageboyViewController: PageboyViewController,
         didScrollToPageAt index: TabmanViewController.PageIndex,
-        direction: PageboyViewController.NavigationDirection, animated: Bool
+        direction: PageboyViewController.NavigationDirection,
+        animated: Bool
     ) {
+        super.pageboyViewController(
+            pageboyViewController,
+            didScrollToPageAt: index,
+            direction: direction,
+            animated: animated
+        )
+        
         logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): index: \(index)")
-        viewModel.currentPageIndex = index
+        viewModel.currentPageIndex = index        
     }
     
     deinit {
@@ -67,6 +79,16 @@ extension SearchResultViewController {
             .store(in: &disposeBag)
     }
     
+}
+
+// MARK: - DeselectRowTransitionCoordinator
+extension SearchResultViewController: DeselectRowTransitionCoordinator {
+    func deselectRow(with coordinator: UIViewControllerTransitionCoordinator, animated: Bool) {
+        for viewController in viewModel.viewControllers {
+            guard let viewController = viewController as? DeselectRowTransitionCoordinator else { continue }
+            viewController.deselectRow(with: coordinator, animated: animated)
+        }
+    }
 }
 
 // MARK: - UISearchResultsUpdating
