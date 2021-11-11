@@ -15,7 +15,7 @@ extension Twitter.API.Search {
     public static func tweets(
         session: URLSession,
         authorization: Twitter.API.OAuth.Authorization,
-        query: Twitter.API.Statuses.TimelineQuery
+        query: Twitter.API.Statuses.Timeline.TimelineQuery
     ) -> AnyPublisher<Twitter.Response.Content<Twitter.API.Search.Content>, Error> {
         let url = tweetsEndpointURL
         let request = Twitter.API.request(url: url, httpMethod: "GET", authorization: authorization, queryItems: query.queryItems, encodedQueryItems: query.encodedQueryItems)

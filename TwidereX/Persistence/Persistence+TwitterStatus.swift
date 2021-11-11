@@ -23,13 +23,19 @@ extension Persistence.TwitterStatus {
         let log = OSLog.api
     }
     
+    struct PersistResult {
+        let status: TwitterStatus
+        let isNewInsertion: Bool
+        let isNewInsertionAuthor: Bool
+    }
+    
     static func createOrMerge(
         in managedObjectContext: NSManagedObjectContext,
         context: PersistContext
-    ) -> (TwitterStatus, Bool) {
+    ) -> PersistResult {
         
         let repost = context.entity.retweetedStatus.flatMap { entity -> TwitterStatus in
-            let (status, _) = createOrMerge(
+            let result = createOrMerge(
                 in: managedObjectContext,
                 context: PersistContext(
                     entity: entity,
@@ -39,11 +45,11 @@ extension Persistence.TwitterStatus {
                     networkDate: context.networkDate
                 )
             )
-            return status
+            return result.status
         }
         
         let quote = context.entity.quotedStatus.flatMap { entity -> TwitterStatus in
-            let (status, _) = createOrMerge(
+            let result = createOrMerge(
                 in: managedObjectContext,
                 context: PersistContext(
                     entity: entity,
@@ -53,14 +59,18 @@ extension Persistence.TwitterStatus {
                     networkDate: context.networkDate
                 )
             )
-            return status
+            return result.status
         }
         
         if let oldStatus = fetch(in: managedObjectContext, context: context) {
             merge(twitterStatus: oldStatus, context: context)
-            return (oldStatus, false)
+            return PersistResult(
+                status: oldStatus,
+                isNewInsertion: false,
+                isNewInsertionAuthor: false
+            )
         } else {
-            let (author, _) = Persistence.TwitterUser.createOrMerge(
+            let authorResult = Persistence.TwitterUser.createOrMerge(
                 in: managedObjectContext,
                 context: Persistence.TwitterUser.PersistContext(
                     entity: context.entity.user,
@@ -69,6 +79,7 @@ extension Persistence.TwitterStatus {
                     networkDate: context.networkDate
                 )
             )
+            let author = authorResult.user
             
             let relationship = TwitterStatus.Relationship(
                 author: author,
@@ -76,7 +87,11 @@ extension Persistence.TwitterStatus {
                 quote: quote
             )
             let status = create(in: managedObjectContext, context: context, relationship: relationship)
-            return (status, true)
+            return PersistResult(
+                status: status,
+                isNewInsertion: true,
+                isNewInsertionAuthor: authorResult.isNewInsertion
+            )
         }
     }
     

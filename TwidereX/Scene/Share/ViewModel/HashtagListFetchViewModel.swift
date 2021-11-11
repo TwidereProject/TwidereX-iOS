@@ -1,5 +1,5 @@
 //
-//  HashtagListViewModel.swift
+//  HashtagListFetchViewModel.swift
 //  TwidereX
 //
 //  Created by Cirno MainasuK on 2021-11-5.
@@ -10,16 +10,16 @@ import os.log
 import Foundation
 import MastodonSDK
 
-enum HashtagListViewModel {
+enum HashtagListFetchViewModel {
     
-    static let logger = Logger(subsystem: "HashtagListViewModel", category: "ViewModel")
+    static let logger = Logger(subsystem: "HashtagListFetchViewModel", category: "ViewModel")
     
     enum Result {
         case mastodon([Mastodon.Entity.Tag])
     }
 }
 
-extension HashtagListViewModel {
+extension HashtagListFetchViewModel {
     
     enum SearchInput {
         case mastodon(SearchMastodonHashtagFetchContext)

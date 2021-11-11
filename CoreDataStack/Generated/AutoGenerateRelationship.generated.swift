@@ -2,6 +2,7 @@
 // DO NOT EDIT
 
 
+
 // sourcery:inline:TwitterUser.AutoGenerateRelationship
 
 // Generated using Sourcery

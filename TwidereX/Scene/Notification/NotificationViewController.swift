@@ -29,6 +29,13 @@ extension NotificationViewController {
         super.viewDidLoad()
         
         dataSource = viewModel
+        viewModel.$viewControllers
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                guard let self = self else { return }
+                self.reloadData()
+            }
+            .store(in: &disposeBag)
     }
     
 }

@@ -15,7 +15,6 @@ final public class MastodonUser: NSManagedObject {
     
     // sourcery: autoGenerateProperty
     @NSManaged public private(set) var domain: String
-    
     // sourcery: autoGenerateProperty
     @NSManaged public private(set) var id: ID
     
@@ -66,6 +65,7 @@ final public class MastodonUser: NSManagedObject {
     
     // one-to-many relationship
     @NSManaged public private(set) var statuses: Set<MastodonStatus>
+    @NSManaged public private(set) var notifications: Set<MastodonNotification>
     
     // many-to-many relationship
     @NSManaged public private(set) var like: Set<MastodonStatus>

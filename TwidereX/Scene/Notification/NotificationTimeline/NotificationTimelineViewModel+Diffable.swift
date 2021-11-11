@@ -1,8 +1,8 @@
 //
-//  HomeTimelineViewModel+Diffable.swift
+//  NotificationTimelineViewModel+Diffable.swift
 //  TwidereX
 //
-//  Created by Cirno MainasuK on 2021-1-6.
+//  Created by MainasuK on 2021/11/11.
 //  Copyright © 2021 Twidere. All rights reserved.
 //
 
@@ -10,30 +10,29 @@ import os.log
 import UIKit
 import CoreData
 import CoreDataStack
+import TwitterSDK
 
-extension HomeTimelineViewModel {
+extension NotificationTimelineViewModel {
     
     func setupDiffableDataSource(
         tableView: UITableView,
-        statusViewTableViewCellDelegate: StatusViewTableViewCellDelegate,
-        timelineMiddleLoaderTableViewCellDelegate: TimelineMiddleLoaderTableViewCellDelegate
+        statusViewTableViewCellDelegate: StatusViewTableViewCellDelegate
     ) {
-        let configuration = StatusSection.Configuration(
-            statusViewTableViewCellDelegate: statusViewTableViewCellDelegate,
-            timelineMiddleLoaderTableViewCellDelegate: timelineMiddleLoaderTableViewCellDelegate
+        let configuration = NotificationSection.Configuration(
+            statusViewTableViewCellDelegate: statusViewTableViewCellDelegate
         )
-        diffableDataSource = StatusSection.diffableDataSource(
+        diffableDataSource = NotificationSection.diffableDataSource(
             tableView: tableView,
             context: context,
             configuration: configuration
         )
-        
-        var snapshot = NSDiffableDataSourceSnapshot<StatusSection, StatusItem>()
+
+        var snapshot = NSDiffableDataSourceSnapshot<NotificationSection, NotificationItem>()
         snapshot.appendSections([.main])
         diffableDataSource?.apply(snapshot)
         
         fetchedResultsController.records
-            .receive(on: DispatchQueue.main, options: nil)
+            .receive(on: DispatchQueue.main)
             .sink { [weak self] records in
                 guard let self = self else { return }
                 guard let diffableDataSource = self.diffableDataSource else { return }
@@ -45,11 +44,11 @@ extension HomeTimelineViewModel {
                         self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): cost \(end - start, format: .fixed(precision: 4 ))s to process \(records.count) feeds")
                     }
                     let oldSnapshot = diffableDataSource.snapshot()
-                    var newSnapshot: NSDiffableDataSourceSnapshot<StatusSection, StatusItem> = {
+                    var newSnapshot: NSDiffableDataSourceSnapshot<NotificationSection, NotificationItem> = {
                         let newItems = records.map { record in
-                            StatusItem.feed(record: record)
+                            NotificationItem.feed(record: record)
                         }
-                        var snapshot = NSDiffableDataSourceSnapshot<StatusSection, StatusItem>()
+                        var snapshot = NSDiffableDataSourceSnapshot<NotificationSection, NotificationItem>()
                         snapshot.appendSections([.main])
                         snapshot.appendItems(newItems, toSection: .main)
                         return snapshot
@@ -72,7 +71,7 @@ extension HomeTimelineViewModel {
                                 return []
                             }
                         }()
-                        
+
                         let itemIdentifiers = newSnapshot.itemIdentifiers
                         for (index, item) in itemIdentifiers.enumerated() {
                             guard case let .feed(record) = item else { continue }
@@ -81,7 +80,8 @@ extension HomeTimelineViewModel {
                             if isLast {
                                 newSnapshot.insertItems([.bottomLoader], afterItem: item)
                             } else {
-                                newSnapshot.insertItems([.feedLoader(record: record)], afterItem: item)
+                                // TODO:
+                                // newSnapshot.insertItems([.feedLoader(record: record)], afterItem: item)
                             }
                         }
                     }
@@ -119,21 +119,21 @@ extension HomeTimelineViewModel {
     }
     
     @MainActor private func updateDataSource(
-        snapshot: NSDiffableDataSourceSnapshot<StatusSection, StatusItem>,
+        snapshot: NSDiffableDataSourceSnapshot<NotificationSection, NotificationItem>,
         animatingDifferences: Bool
     ) async {
         await self.diffableDataSource?.apply(snapshot, animatingDifferences: animatingDifferences)
     }
     
     @MainActor private func updateSnapshotUsingReloadData(
-        snapshot: NSDiffableDataSourceSnapshot<StatusSection, StatusItem>
+        snapshot: NSDiffableDataSourceSnapshot<NotificationSection, NotificationItem>
     ) async {
         await self.diffableDataSource?.applySnapshotUsingReloadData(snapshot)
     }
     
 }
 
-extension HomeTimelineViewModel {
+extension NotificationTimelineViewModel {
     struct Difference<T> {
         let item: T
         let sourceIndexPath: IndexPath
@@ -173,7 +173,7 @@ extension HomeTimelineViewModel {
     }
 }
 
-extension HomeTimelineViewModel {
+extension NotificationTimelineViewModel {
 
     // load lastest
     func loadLatest() async {
@@ -181,8 +181,10 @@ extension HomeTimelineViewModel {
         do {
             switch authenticationContext {
             case .twitter(let authenticationContext):
-                _ = try await context.apiService.twitterHomeTimeline(
-                    maxID: nil,
+                _ = try await context.apiService.twitterMentionTimeline(
+                    query: Twitter.API.Statuses.Timeline.TimelineQuery(
+                        maxID: nil
+                    ),
                     authenticationContext: authenticationContext
                 )
             case .mastodon(let authenticationContext):
@@ -195,60 +197,6 @@ extension HomeTimelineViewModel {
             self.didLoadLatest.send()
             logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): \(error.localizedDescription)")
         }
-    }
-    
-    // load timeline gap
-    func loadMore(item: StatusItem) async {
-        guard case let .feedLoader(record) = item else { return }
-        guard let authenticationContext = context.authenticationService.activeAuthenticationContext.value else { return }
-        guard let diffableDataSource = diffableDataSource else { return }
-        var snapshot = diffableDataSource.snapshot()
-
-        let managedObjectContext = context.managedObjectContext
-        let key = "LoadMore@\(record.objectID)"
-        
-        guard let feed = record.object(in: managedObjectContext) else { return }
-        // keep transient property live
-        managedObjectContext.cache(feed, key: key)
-        defer {
-            managedObjectContext.cache(nil, key: key)
-        }
-        do {
-            // update state
-            try await managedObjectContext.performChanges {
-                feed.update(isLoadingMore: true)
-            }
-        } catch {
-            assertionFailure(error.localizedDescription)
-        }
-        
-        // reconfigure item
-        snapshot.reconfigureItems([item])
-        await updateDataSource(snapshot: snapshot, animatingDifferences: true)
-        
-        // fetch data
-        do {
-            switch (feed.content, authenticationContext) {
-            case (.twitter(let status), .twitter(let authenticationContext)):
-                _ = try await context.apiService.twitterHomeTimeline(
-                    maxID: status.id,
-                    authenticationContext: authenticationContext
-                )
-            case (.mastodon(let status), .mastodon(let authenticationContext)):
-                _ = try await context.apiService.mastodonHomeTimeline(
-                    maxID: status.id,
-                    authenticationContext: authenticationContext
-                )
-            default:
-                assertionFailure()
-            }
-        } catch {
-            logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): fetch more failure: \(error.localizedDescription)")
-        }
-        
-        // reconfigure item again
-        snapshot.reconfigureItems([item])
-        await updateDataSource(snapshot: snapshot, animatingDifferences: true)
     }
     
 }

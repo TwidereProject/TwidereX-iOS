@@ -90,7 +90,7 @@ extension Twitter.API.Favorites {
     // V1
     public static func list(
         session: URLSession,
-        query: Twitter.API.Statuses.TimelineQuery,
+        query: Twitter.API.Statuses.Timeline.TimelineQuery,
         authorization: Twitter.API.OAuth.Authorization
     ) async throws -> Twitter.Response.Content<[Twitter.Entity.Tweet]> {
         assert(query.userID != nil && query.userID != "")

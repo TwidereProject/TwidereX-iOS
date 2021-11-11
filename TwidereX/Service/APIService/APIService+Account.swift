@@ -24,7 +24,7 @@ extension APIService {
             let log = OSLog.api
             let entity = response.value
             
-            let (twitterUser, isCreated) = Persistence.TwitterUser.createOrMerge(
+            let result = Persistence.TwitterUser.createOrMerge(
                 in: managedObjectContext,
                 context: Persistence.TwitterUser.PersistContext(
                     entity: entity,
@@ -34,8 +34,8 @@ extension APIService {
                 )
             )
 
-            let flag = isCreated ? "+" : "~"
-            os_log(.info, log: log, "%{public}s[%{public}ld], %{public}s: twitter user [%s](%s)%s verified", ((#file as NSString).lastPathComponent), #line, #function, flag, twitterUser.id, twitterUser.username)
+            let flag = result.isNewInsertion ? "+" : "~"
+            os_log(.info, log: log, "%{public}s[%{public}ld], %{public}s: twitter user [%s](%s)%s verified", ((#file as NSString).lastPathComponent), #line, #function, flag, result.user.id, result.user.username)
         }
         
         return response

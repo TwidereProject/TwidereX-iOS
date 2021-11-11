@@ -203,12 +203,23 @@ extension StatusView.ViewModel {
 
 extension StatusView {
     func configure(feed: Feed) {
-        if let status = feed.twitterStatus {
-            configure(twitterStatus: status)
-        } else if let status = feed.mastodonStatus {
-            configure(mastodonStatus: status)
-        } else {
+        switch feed.acct {
+        case .none:
             assertionFailure()
+        case .twitter:
+            if let status = feed.twitterStatus {
+                configure(twitterStatus: status)
+            } else {
+                assertionFailure()
+            }
+        case .mastodon:
+            if let status = feed.mastodonStatus {
+                configure(mastodonStatus: status)
+            } else if let status = feed.mastodonNotification?.status {
+                configure(mastodonStatus: status)
+            } else {
+                assertionFailure()
+            }
         }
     }
 }

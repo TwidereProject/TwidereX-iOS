@@ -24,9 +24,9 @@ extension APIService {
         count: Int = 100,
         authenticationContext: TwitterAuthenticationContext
     ) async throws -> Twitter.Response.Content<[Twitter.Entity.Tweet]> {
-        let query = Twitter.API.Statuses.TimelineQuery(count: count, maxID: maxID)
+        let query = Twitter.API.Statuses.Timeline.TimelineQuery(count: count, maxID: maxID)
         
-        let response = try await Twitter.API.Statuses.home(
+        let response = try await Twitter.API.Statuses.Timeline.home(
             session: session,
             query: query,
             authorization: authenticationContext.authorization
@@ -47,6 +47,7 @@ extension APIService {
         let managedObjectContext = backgroundManagedObjectContext
         try await managedObjectContext.performChanges {
             let me = authenticationContext.authenticationRecord.object(in: managedObjectContext)?.user
+            
             // persist TwitterStatus
             var statusArray: [TwitterStatus] = []
             for entity in response.value {
@@ -57,11 +58,11 @@ extension APIService {
                     userCache: nil,
                     networkDate: response.networkDate
                 )
-                let (status, _) = Persistence.TwitterStatus.createOrMerge(
+                let result = Persistence.TwitterStatus.createOrMerge(
                     in: managedObjectContext,
                     context: persistContext
                 )
-                statusArray.append(status)
+                statusArray.append(result.status)
             }
             
             // locate anchor status
@@ -72,6 +73,7 @@ extension APIService {
                 request.fetchLimit = 1
                 return try? managedObjectContext.fetch(request).first
             }()
+            
             // update hasMore flag for anchor status
             let acct = Feed.Acct.twitter(userID: authenticationContext.userID)
             if let anchorStatus = anchorStatus,

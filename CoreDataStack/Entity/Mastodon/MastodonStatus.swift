@@ -55,15 +55,14 @@ final public class MastodonStatus: NSManagedObject {
     
     // one-to-many relationship
     @NSManaged public private(set) var feeds: Set<Feed>
-
+    @NSManaged public private(set) var repostFrom: Set<MastodonStatus>
+    @NSManaged public private(set) var notifications: Set<MastodonNotification>
+    
     // many-to-one relationship
     // sourcery: autoGenerateRelationship
     @NSManaged public private(set) var author: MastodonUser
     // sourcery: autoGenerateRelationship
     @NSManaged public private(set) var repost: MastodonStatus?
-
-    // one-to-many relationship
-    @NSManaged public private(set) var repostFrom: Set<MastodonStatus>
     
     // many-to-many relationship
     @NSManaged public private(set) var likeBy: Set<MastodonUser>

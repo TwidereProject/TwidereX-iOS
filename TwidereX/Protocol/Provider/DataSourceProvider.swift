@@ -14,6 +14,7 @@ import UIKit
 enum DataSourceItem: Hashable {
     case status(StatusRecord)
     case user(UserRecord)
+    case notification(NotificationRecord)
 }
 
 extension DataSourceItem {

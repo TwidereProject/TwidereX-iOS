@@ -43,8 +43,9 @@ extension Twitter.API {
     public enum Mute { }
     public enum OAuth { }
     public enum Search { }
-    public enum Statuses { }
-    public enum Timeline { }
+    public enum Statuses {
+        public enum Timeline { }
+    }
     public enum Users { }
     
     // V2

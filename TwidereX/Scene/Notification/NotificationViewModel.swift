@@ -13,11 +13,12 @@ import Pageboy
 final class NotificationViewModel {
     
     var disposeBag = Set<AnyCancellable>()
-    
+
     // input
     let context: AppContext
     let _coordinator: SceneCoordinator  // only use for `setup`
     @Published var selectedScope: Scope? = nil
+
     
     // output
     @Published var scopes: [Scope] = []
@@ -65,8 +66,12 @@ extension NotificationViewModel {
         let userIdentifier: UserIdentifier
         switch authenticationContext {
         case .twitter(let authenticationContext):
-            scopes = []     // set hidden
-            userIdentifier = UserIdentifier.twitter(.init(id: authenticationContext.userID))
+            scopes = [
+                .mentions(title: "Mentions"),
+            ]
+            userIdentifier = UserIdentifier.twitter(.init(
+                id: authenticationContext.userID
+            ))
         case .mastodon(let authenticationContext):
             scopes = [
                 .all(title: L10n.Scene.Notification.Tabs.all),
@@ -91,10 +96,23 @@ extension NotificationViewModel {
         let viewController: UIViewController
         switch scope {
         case .all:
-            viewController = UIViewController()
-            
+            let _viewController = NotificationTimelineViewController()
+            _viewController.context = context
+            _viewController.coordinator = _coordinator
+            _viewController.viewModel = NotificationTimelineViewModel(
+                context: context,
+                scope: .all
+            )
+            viewController = _viewController
         case .mentions:
-            viewController = UIViewController()
+            let _viewController = NotificationTimelineViewController()
+            _viewController.context = context
+            _viewController.coordinator = _coordinator
+            _viewController.viewModel = NotificationTimelineViewModel(
+                context: context,
+                scope: .mentions
+            )
+            viewController = _viewController
         }
         return viewController
     }

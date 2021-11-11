@@ -43,7 +43,7 @@
 		DB02C77527351DA2007EA0BF /* HashtagTableViewCell+ViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB02C77427351DA2007EA0BF /* HashtagTableViewCell+ViewModel.swift */; };
 		DB02C777273520B8007EA0BF /* SearchHashtagViewModel+State.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB02C776273520B8007EA0BF /* SearchHashtagViewModel+State.swift */; };
 		DB02C77927352217007EA0BF /* SearchHashtagViewModel+Diffable.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB02C77827352217007EA0BF /* SearchHashtagViewModel+Diffable.swift */; };
-		DB02C77D27353479007EA0BF /* HashtagListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB02C77C27353479007EA0BF /* HashtagListViewModel.swift */; };
+		DB02C77D27353479007EA0BF /* HashtagListFetchViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB02C77C27353479007EA0BF /* HashtagListFetchViewModel.swift */; };
 		DB02C7DD27354A56007EA0BF /* Localizable.stringsdict in Resources */ = {isa = PBXBuildFile; fileRef = DB02C7DB27354A55007EA0BF /* Localizable.stringsdict */; };
 		DB0B3B8626C662CC00501BB7 /* AppShared.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DB94B6BB26C65CB000A2E8A1 /* AppShared.framework */; };
 		DB0B3B8726C662CC00501BB7 /* AppShared.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = DB94B6BB26C65CB000A2E8A1 /* AppShared.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
@@ -264,6 +264,19 @@
 		DB7E22F92552A40000551314 /* UserLikeTimelineViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB7E22F82552A40000551314 /* UserLikeTimelineViewModel.swift */; };
 		DB7E22FE2552A6A700551314 /* UserLikeTimelineViewModel+State.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB7E22FD2552A6A700551314 /* UserLikeTimelineViewModel+State.swift */; };
 		DB7E23032552A6D100551314 /* UserLikeTimelineViewModel+Diffable.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB7E23022552A6D100551314 /* UserLikeTimelineViewModel+Diffable.swift */; };
+		DB8301F7273CED0400BF5224 /* NotificationTimelineViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB8301F6273CED0400BF5224 /* NotificationTimelineViewController.swift */; };
+		DB8301FA273CED2E00BF5224 /* NotificationTimelineViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB8301F9273CED2E00BF5224 /* NotificationTimelineViewModel.swift */; };
+		DB8301FC273CF2A300BF5224 /* MastodonNotification.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB8301FB273CF2A300BF5224 /* MastodonNotification.swift */; };
+		DB8301FE273CF4E000BF5224 /* MastodonNotificationType.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB8301FD273CF4E000BF5224 /* MastodonNotificationType.swift */; };
+		DB830200273D04D000BF5224 /* NotificationTimelineViewModel+Diffable.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB8301FF273D04D000BF5224 /* NotificationTimelineViewModel+Diffable.swift */; };
+		DB830202273D04F500BF5224 /* NotificationSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB830201273D04F500BF5224 /* NotificationSection.swift */; };
+		DB830205273D052800BF5224 /* NotificationItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB830204273D052800BF5224 /* NotificationItem.swift */; };
+		DB830207273D0AF600BF5224 /* NotificationObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB830206273D0AF600BF5224 /* NotificationObject.swift */; };
+		DB830209273D12E600BF5224 /* NotificationTimelineViewController+DataSourceProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB830208273D12E600BF5224 /* NotificationTimelineViewController+DataSourceProvider.swift */; };
+		DB83020B273D131D00BF5224 /* NotificationRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB83020A273D131D00BF5224 /* NotificationRecord.swift */; };
+		DB83020D273D160400BF5224 /* NotificationTimelineViewModel+LoadOldestState.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB83020C273D160400BF5224 /* NotificationTimelineViewModel+LoadOldestState.swift */; };
+		DB83020E273D1DAF00BF5224 /* APIService+NotificationTimeline.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB9154672551389D00613473 /* APIService+NotificationTimeline.swift */; };
+		DB830212273D2CAE00BF5224 /* NotificationListFetchViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB830211273D2CAE00BF5224 /* NotificationListFetchViewModel.swift */; };
 		DB86433A26E867B9000C9879 /* APIService+Repost.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB86433926E867B9000C9879 /* APIService+Repost.swift */; };
 		DB86433C26E898C5000C9879 /* DataSourceFacade+Like.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB86433B26E898C5000C9879 /* DataSourceFacade+Like.swift */; };
 		DB88AC332508BACD0009E562 /* Items.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB88AC322508BACD0009E562 /* Items.swift */; };
@@ -609,7 +622,7 @@
 		DB02C77427351DA2007EA0BF /* HashtagTableViewCell+ViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "HashtagTableViewCell+ViewModel.swift"; sourceTree = "<group>"; };
 		DB02C776273520B8007EA0BF /* SearchHashtagViewModel+State.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SearchHashtagViewModel+State.swift"; sourceTree = "<group>"; };
 		DB02C77827352217007EA0BF /* SearchHashtagViewModel+Diffable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SearchHashtagViewModel+Diffable.swift"; sourceTree = "<group>"; };
-		DB02C77C27353479007EA0BF /* HashtagListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HashtagListViewModel.swift; sourceTree = "<group>"; };
+		DB02C77C27353479007EA0BF /* HashtagListFetchViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HashtagListFetchViewModel.swift; sourceTree = "<group>"; };
 		DB02C7DC27354A55007EA0BF /* ar */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = ar; path = ar.lproj/Localizable.stringsdict; sourceTree = "<group>"; };
 		DB02C7DE27354A5D007EA0BF /* ca */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = ca; path = ca.lproj/Localizable.stringsdict; sourceTree = "<group>"; };
 		DB02C7DF27354A64007EA0BF /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = de; path = de.lproj/Localizable.stringsdict; sourceTree = "<group>"; };
@@ -876,6 +889,18 @@
 		DB7E22F82552A40000551314 /* UserLikeTimelineViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserLikeTimelineViewModel.swift; sourceTree = "<group>"; };
 		DB7E22FD2552A6A700551314 /* UserLikeTimelineViewModel+State.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UserLikeTimelineViewModel+State.swift"; sourceTree = "<group>"; };
 		DB7E23022552A6D100551314 /* UserLikeTimelineViewModel+Diffable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UserLikeTimelineViewModel+Diffable.swift"; sourceTree = "<group>"; };
+		DB8301F6273CED0400BF5224 /* NotificationTimelineViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationTimelineViewController.swift; sourceTree = "<group>"; };
+		DB8301F9273CED2E00BF5224 /* NotificationTimelineViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationTimelineViewModel.swift; sourceTree = "<group>"; };
+		DB8301FB273CF2A300BF5224 /* MastodonNotification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MastodonNotification.swift; sourceTree = "<group>"; };
+		DB8301FD273CF4E000BF5224 /* MastodonNotificationType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MastodonNotificationType.swift; sourceTree = "<group>"; };
+		DB8301FF273D04D000BF5224 /* NotificationTimelineViewModel+Diffable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NotificationTimelineViewModel+Diffable.swift"; sourceTree = "<group>"; };
+		DB830201273D04F500BF5224 /* NotificationSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationSection.swift; sourceTree = "<group>"; };
+		DB830204273D052800BF5224 /* NotificationItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationItem.swift; sourceTree = "<group>"; };
+		DB830206273D0AF600BF5224 /* NotificationObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationObject.swift; sourceTree = "<group>"; };
+		DB830208273D12E600BF5224 /* NotificationTimelineViewController+DataSourceProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NotificationTimelineViewController+DataSourceProvider.swift"; sourceTree = "<group>"; };
+		DB83020A273D131D00BF5224 /* NotificationRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationRecord.swift; sourceTree = "<group>"; };
+		DB83020C273D160400BF5224 /* NotificationTimelineViewModel+LoadOldestState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NotificationTimelineViewModel+LoadOldestState.swift"; sourceTree = "<group>"; };
+		DB830211273D2CAE00BF5224 /* NotificationListFetchViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationListFetchViewModel.swift; sourceTree = "<group>"; };
 		DB86433926E867B9000C9879 /* APIService+Repost.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "APIService+Repost.swift"; sourceTree = "<group>"; };
 		DB86433B26E898C5000C9879 /* DataSourceFacade+Like.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DataSourceFacade+Like.swift"; sourceTree = "<group>"; };
 		DB88AC2E2508BA8C0009E562 /* TimelineSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimelineSection.swift; sourceTree = "<group>"; };
@@ -911,7 +936,7 @@
 		DB9154512551210000613473 /* MentionTimelineViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MentionTimelineViewController.swift; sourceTree = "<group>"; };
 		DB91545D2551241F00613473 /* MentionTimelineViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MentionTimelineViewModel.swift; sourceTree = "<group>"; };
 		DB91546225512F8A00613473 /* MentionTimelineViewModel+Diffable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MentionTimelineViewModel+Diffable.swift"; sourceTree = "<group>"; };
-		DB9154672551389D00613473 /* APIService+MentionTimeline.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "APIService+MentionTimeline.swift"; sourceTree = "<group>"; };
+		DB9154672551389D00613473 /* APIService+NotificationTimeline.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "APIService+NotificationTimeline.swift"; sourceTree = "<group>"; };
 		DB91546F255142A500613473 /* MentionTimelineViewModel+LoadLatestState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MentionTimelineViewModel+LoadLatestState.swift"; sourceTree = "<group>"; };
 		DB91547425514B1C00613473 /* MentionTimelineViewModel+LoadOldestState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MentionTimelineViewModel+LoadOldestState.swift"; sourceTree = "<group>"; };
 		DB91547925514B8F00613473 /* MentionTimelineViewModel+LoadMiddleState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MentionTimelineViewModel+LoadMiddleState.swift"; sourceTree = "<group>"; };
@@ -1666,6 +1691,7 @@
 			children = (
 				DB51DC482718197400A0D8FB /* CoverFlowStack */,
 				DB02C76727350B9C007EA0BF /* Hashtag */,
+				DB830203273D04F800BF5224 /* Notification */,
 			);
 			path = Msic;
 			sourceTree = "<group>";
@@ -1796,8 +1822,8 @@
 			children = (
 				DBE76D202500ED5100DEB0FC /* APIService+HomeTimeline.swift */,
 				DB34028D2521BC06009EFADF /* APIService+UserTimeline.swift */,
+				DB9154672551389D00613473 /* APIService+NotificationTimeline.swift */,
 				DB71C7C7271D438D00BE3819 /* APIService+LikeTimeline.swift */,
-				DB9154672551389D00613473 /* APIService+MentionTimeline.swift */,
 				DB7274EC273A845700577D95 /* APIService+HashtagTimeline.swift */,
 			);
 			path = Timeline;
@@ -1806,6 +1832,7 @@
 		DB7274F0273BB25A00577D95 /* Notification */ = {
 			isa = PBXGroup;
 			children = (
+				DB8301F8273CED0700BF5224 /* NotificationTimeline */,
 				DB7274EE273BB25200577D95 /* NotificationViewController.swift */,
 				DB7274F1273BB29600577D95 /* NotificationViewModel.swift */,
 			);
@@ -1836,6 +1863,7 @@
 			children = (
 				DBBF70FD26D8B9D300971656 /* MastodonStatus.swift */,
 				DB756BFA26CBA4AE00AAD328 /* MastodonUser.swift */,
+				DB8301FB273CF2A300BF5224 /* MastodonNotification.swift */,
 			);
 			path = Mastodon;
 			sourceTree = "<group>";
@@ -1892,6 +1920,29 @@
 				DB7E22FD2552A6A700551314 /* UserLikeTimelineViewModel+State.swift */,
 			);
 			path = LikeTimeline;
+			sourceTree = "<group>";
+		};
+		DB8301F8273CED0700BF5224 /* NotificationTimeline */ = {
+			isa = PBXGroup;
+			children = (
+				DB8301F6273CED0400BF5224 /* NotificationTimelineViewController.swift */,
+				DB830208273D12E600BF5224 /* NotificationTimelineViewController+DataSourceProvider.swift */,
+				DB8301F9273CED2E00BF5224 /* NotificationTimelineViewModel.swift */,
+				DB8301FF273D04D000BF5224 /* NotificationTimelineViewModel+Diffable.swift */,
+				DB83020C273D160400BF5224 /* NotificationTimelineViewModel+LoadOldestState.swift */,
+			);
+			path = NotificationTimeline;
+			sourceTree = "<group>";
+		};
+		DB830203273D04F800BF5224 /* Notification */ = {
+			isa = PBXGroup;
+			children = (
+				DB830201273D04F500BF5224 /* NotificationSection.swift */,
+				DB830204273D052800BF5224 /* NotificationItem.swift */,
+				DB83020A273D131D00BF5224 /* NotificationRecord.swift */,
+				DB830206273D0AF600BF5224 /* NotificationObject.swift */,
+			);
+			path = Notification;
 			sourceTree = "<group>";
 		};
 		DB88AC312508BA950009E562 /* Diffable */ = {
@@ -2079,7 +2130,8 @@
 				DB5632C026DF7E7A00FC893F /* ListBatchFetchViewModel.swift */,
 				DB51DC212715786700A0D8FB /* StatusListFetchViewModel.swift */,
 				DB5FAFFC2727B940006520FA /* UserListFetchViewModel.swift */,
-				DB02C77C27353479007EA0BF /* HashtagListViewModel.swift */,
+				DB02C77C27353479007EA0BF /* HashtagListFetchViewModel.swift */,
+				DB830211273D2CAE00BF5224 /* NotificationListFetchViewModel.swift */,
 				DB71C7CE271E8F6100BE3819 /* RelationshipViewModel.swift */,
 			);
 			path = ViewModel;
@@ -2312,6 +2364,7 @@
 			children = (
 				DB5FD9AE26D8CF0400CF5439 /* MastodonVisibility.swift */,
 				DB56329426DCA77600FC893F /* MastodonAttachment.swift */,
+				DB8301FD273CF4E000BF5224 /* MastodonNotificationType.swift */,
 				DBC17A6026E0EADA005C0D79 /* MastodonEmoji.swift */,
 				DB2C3C5926F5E5C000FC66CD /* MastodonField.swift */,
 			);
@@ -3645,6 +3698,7 @@
 				DBA9B3CB2587615300EA14ED /* MentionPickItem.swift in Sources */,
 				DBC8E03D2574F7DB00401E20 /* PhotoLibraryService.swift in Sources */,
 				DB2924D02546C6DD003899A7 /* APIService+Media.swift in Sources */,
+				DB83020D273D160400BF5224 /* NotificationTimelineViewModel+LoadOldestState.swift in Sources */,
 				DB262A3727213FBE00D18EF3 /* UIAlertAction.swift in Sources */,
 				DBEA4F8F251314640007FEC5 /* MosaicImageView.swift in Sources */,
 				DB915401254C148400613473 /* APIService+User.swift in Sources */,
@@ -3662,6 +3716,7 @@
 				DB004BE126CCFED600F5C574 /* Persistence+MastodonUser.swift in Sources */,
 				DB71C7D3271EB71800BE3819 /* ProfileViewController+DataSourceProvider.swift in Sources */,
 				DB7274ED273A845700577D95 /* APIService+HashtagTimeline.swift in Sources */,
+				DB8301FA273CED2E00BF5224 /* NotificationTimelineViewModel.swift in Sources */,
 				DB5632C426DF91DB00FC893F /* Feed.swift in Sources */,
 				DB1D7B6725B6C2E000397DCD /* TwitterAuthenticationOption.swift in Sources */,
 				DB33A4A125A2F049003CED7D /* Item+EmptyStateHeaderAttribute+TimelineHeaderView.swift in Sources */,
@@ -3721,6 +3776,7 @@
 				DB02C777273520B8007EA0BF /* SearchHashtagViewModel+State.swift in Sources */,
 				DB3FC0522552742E003A2F8A /* MediaSection.swift in Sources */,
 				DB004BED26CE28EA00F5C574 /* TwitterStatus+Property.swift in Sources */,
+				DB830200273D04D000BF5224 /* NotificationTimelineViewModel+Diffable.swift in Sources */,
 				DB01091A26E60693005F67D7 /* ContentOffsetAdjustableTimelineViewControllerDelegate.swift in Sources */,
 				DBA6667D257DD37300E5F1AA /* DeveloperView.swift in Sources */,
 				DBCB4060255CAC0300DD8D8F /* TwitterAuthenticationController.swift in Sources */,
@@ -3731,11 +3787,13 @@
 				DB761E5D255940EF0050DC01 /* DrawerSidebarEntryTableViewCell.swift in Sources */,
 				DB7E22F02552A3D500551314 /* UserLikeTimelineViewController.swift in Sources */,
 				DB262A3527213D1300D18EF3 /* AppError.swift in Sources */,
-				DB02C77D27353479007EA0BF /* HashtagListViewModel.swift in Sources */,
+				DB02C77D27353479007EA0BF /* HashtagListFetchViewModel.swift in Sources */,
 				DB51DC282715917700A0D8FB /* StatusObject.swift in Sources */,
 				DB578CCD254C0BDB00745336 /* UserBriefInfoView.swift in Sources */,
+				DB83020B273D131D00BF5224 /* NotificationRecord.swift in Sources */,
 				DB676180254C042C006C6798 /* FriendshipTableViewCell.swift in Sources */,
 				DB5632C226DF8DE100FC893F /* HomeTimelineViewModel+LoadOldestState.swift in Sources */,
+				DB830207273D0AF600BF5224 /* NotificationObject.swift in Sources */,
 				DB51DC3F2717FA8000A0D8FB /* StatusMediaGallerySection.swift in Sources */,
 				DBCE2EE32593319000926D09 /* AvatarConfigurableView.swift in Sources */,
 				DB3B906326E8BBD70010F64C /* ProfileHeaderView.swift in Sources */,
@@ -3800,6 +3858,7 @@
 				DBE76D1E2500E65D00DEB0FC /* HomeTimelineViewModel.swift in Sources */,
 				DBDA8E8A24FE0615006750DC /* DocumentStore.swift in Sources */,
 				DB5A2288255B9155006CA5B2 /* AccountListViewModel+Diffable.swift in Sources */,
+				DB830205273D052800BF5224 /* NotificationItem.swift in Sources */,
 				DB0EB9F326D38ED700034427 /* NumberMetricFormatter.swift in Sources */,
 				DB51DC472718197000A0D8FB /* CoverFlowStackSection.swift in Sources */,
 				DB8E4FBA2563B61500459DA2 /* DisplayPreferenceViewController.swift in Sources */,
@@ -3811,6 +3870,7 @@
 				DB004BF226CE2CE600F5C574 /* StatusItem.swift in Sources */,
 				DB1D7B5525B5A87200397DCD /* TwitterAuthenticationOptionViewModel.swift in Sources */,
 				DB98DC0E2507862D0087E30F /* TimelineMiddleLoaderTableViewCell.swift in Sources */,
+				DB830212273D2CAE00BF5224 /* NotificationListFetchViewModel.swift in Sources */,
 				DB2FFF3E258B78B0003DBC19 /* AVPlayer.swift in Sources */,
 				DB7D1248250B5C6C00999903 /* UIButton+Inset.swift in Sources */,
 				DB0EB9F126D3899200034427 /* StatusToolbar.swift in Sources */,
@@ -3880,6 +3940,7 @@
 				DBBF70F726D7B62F00971656 /* AccountListTableViewCell+ViewModel.swift in Sources */,
 				DBB47DA926EB3AA2001590F7 /* ProfileFieldListView.swift in Sources */,
 				DBC747D4259DA03B00787EEF /* ListCheckmarkTableViewCell.swift in Sources */,
+				DB830202273D04F500BF5224 /* NotificationSection.swift in Sources */,
 				DB2FFF29258B0C2C003DBC19 /* TouchBlockingView.swift in Sources */,
 				DBF69EE12549705A00E2A915 /* ViewControllerAnimatedTransitioningDelegate.swift in Sources */,
 				DBE71B7D26B7C5FD00DFAB8E /* StubTimelineViewModel.swift in Sources */,
@@ -3927,6 +3988,7 @@
 				DB30ADCF26CF52A700B2D2BE /* TwitterUser+Property.swift in Sources */,
 				DBC747D9259DA07C00787EEF /* ListTableViewCell.swift in Sources */,
 				DB7E23032552A6D100551314 /* UserLikeTimelineViewModel+Diffable.swift in Sources */,
+				DB8301F7273CED0400BF5224 /* NotificationTimelineViewController.swift in Sources */,
 				DB5632AD26DCE93900FC893F /* StatusThreadViewModel+Diffable.swift in Sources */,
 				DBF639F7259B1728009E12C8 /* TimelineHeaderCollectionViewCell.swift in Sources */,
 				DB51DC222715786700A0D8FB /* StatusListFetchViewModel.swift in Sources */,
@@ -3949,6 +4011,7 @@
 				DB51DC1C2715588E00A0D8FB /* ProfileDashboardMeterView.swift in Sources */,
 				DB6D6731256637A200B70DC0 /* TableViewSectionTextHeaderView.swift in Sources */,
 				DB925700251C8F29004FEFB5 /* UserTimelineViewController.swift in Sources */,
+				DB83020E273D1DAF00BF5224 /* APIService+NotificationTimeline.swift in Sources */,
 				DBF639EA259B11F6009E12C8 /* UserTimelineViewModel+Diffable.swift in Sources */,
 				DB9EC532255A87A4005403AA /* SettingListView.swift in Sources */,
 				DBC8E050257653E100401E20 /* SavePhotoActivity.swift in Sources */,
@@ -3959,6 +4022,7 @@
 				DB2C3C6026F5E9B100FC66CD /* MetaContent.swift in Sources */,
 				DBCE2ED22591FB8D00926D09 /* TwitterUserFetchedResultsController.swift in Sources */,
 				DBCE2ECD2591FAA800926D09 /* FriendshipListSection.swift in Sources */,
+				DB830209273D12E600BF5224 /* NotificationTimelineViewController+DataSourceProvider.swift in Sources */,
 				DB91540B254FE4B200613473 /* APIService+Friendship.swift in Sources */,
 				DB5FB0082727E204006520FA /* UserTableViewCell.swift in Sources */,
 				DB747FF4251C47BD000C4BD7 /* UITableView.swift in Sources */,
@@ -4012,6 +4076,8 @@
 				DBE716F82536CA9C00DF98C5 /* Collection.swift in Sources */,
 				DB5FD9AF26D8CF0400CF5439 /* MastodonVisibility.swift in Sources */,
 				DB38CDBC26D4A54200B45A44 /* TwitterAttachment.swift in Sources */,
+				DB8301FC273CF2A300BF5224 /* MastodonNotification.swift in Sources */,
+				DB8301FE273CF4E000BF5224 /* MastodonNotificationType.swift in Sources */,
 				DBE76CC9250093E300DEB0FC /* CoreDataStack.swift in Sources */,
 				DBE76CCA250093E300DEB0FC /* ManagedObjectObserver.swift in Sources */,
 				DBE76CCF250093E300DEB0FC /* CoreDataStack.xcdatamodeld in Sources */,

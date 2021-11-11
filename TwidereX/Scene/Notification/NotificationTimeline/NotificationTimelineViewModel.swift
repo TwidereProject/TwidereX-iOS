@@ -1,40 +1,33 @@
 //
-//  HomeTimelineViewModel.swift
+//  NotificationTimelineVIewModel.swift
 //  TwidereX
 //
-//  Created by Cirno MainasuK on 2020-9-3.
+//  Created by MainasuK on 2021/11/11.
+//  Copyright © 2021 Twidere. All rights reserved.
 //
 
 import os.log
-import func AVFoundation.AVMakeRect
 import UIKit
-import AVKit
 import Combine
-import CoreData
 import CoreDataStack
 import GameplayKit
-import AlamofireImage
-import Kingfisher
-import DateToolsSwift
-import ActiveLabel
 
-final class HomeTimelineViewModel: NSObject {
+final class NotificationTimelineViewModel {
     
-    let logger = Logger(subsystem: "HomeTimelineViewModel", category: "ViewModel")
-
+    let logger = Logger(subsystem: "NotificationTimelineViewModel", category: "ViewModel")
+    
     var disposeBag = Set<AnyCancellable>()
-    var observations = Set<NSKeyValueObservation>()
     
     // input
     let context: AppContext
+    let scope: Scope
     let fetchedResultsController: FeedFetchedResultsController
     let listBatchFetchViewModel = ListBatchFetchViewModel()
-    
-    // output
-    var diffableDataSource: UITableViewDiffableDataSource<StatusSection, StatusItem>?
-    var didLoadLatest = PassthroughSubject<Void, Never>()
 
-    // bottom loader
+    // output
+    var diffableDataSource: UITableViewDiffableDataSource<NotificationSection, NotificationItem>?
+    var didLoadLatest = PassthroughSubject<Void, Never>()
+    
     private(set) lazy var loadOldestStateMachine: GKStateMachine = {
         // exclude timeline middle fetcher state
         let stateMachine = GKStateMachine(states: [
@@ -47,11 +40,12 @@ final class HomeTimelineViewModel: NSObject {
         stateMachine.enter(LoadOldestState.Initial.self)
         return stateMachine
     }()
-    
-    init(context: AppContext) {
-        self.context  = context
+
+    init(context: AppContext, scope: Scope) {
+        self.context = context
+        self.scope = scope
         self.fetchedResultsController = FeedFetchedResultsController(managedObjectContext: context.managedObjectContext)
-        super.init()
+        // end init
         
         context.authenticationService.activeAuthenticationContext
             .sink { [weak self] authenticationContext in
@@ -66,11 +60,21 @@ final class HomeTimelineViewModel: NSObject {
                 switch authenticationContext {
                 case .twitter(let authenticationContext):
                     let userID = authenticationContext.userID
-                    predicate = Feed.predicate(kind: .home, acct: Feed.Acct.twitter(userID: userID))
+                    predicate = Feed.predicate(kind: .notification, acct: Feed.Acct.twitter(userID: userID))
                 case .mastodon(let authenticationContext):
                     let domain = authenticationContext.domain
                     let userID = authenticationContext.userID
-                    predicate = Feed.predicate(kind: .home, acct: Feed.Acct.mastodon(domain: domain, userID: userID))
+                    predicate = {
+                        switch scope {
+                        case .all:
+                            return Feed.predicate(kind: .notification, acct: Feed.Acct.mastodon(domain: domain, userID: userID))
+                        case .mentions:
+                            return NSCompoundPredicate(andPredicateWithSubpredicates: [
+                                Feed.predicate(kind: .notification, acct: Feed.Acct.mastodon(domain: domain, userID: userID)),
+                                Feed.mastodonNotificationTypePredicate(type: .mention)
+                            ])
+                        }
+                    }()
                 }
                 self.fetchedResultsController.predicate.value = predicate
             }
@@ -81,4 +85,11 @@ final class HomeTimelineViewModel: NSObject {
         os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s:", ((#file as NSString).lastPathComponent), #line, #function)
     }
     
+}
+
+extension NotificationTimelineViewModel {
+    enum Scope {
+        case all
+        case mentions
+    }
 }

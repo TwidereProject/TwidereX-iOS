@@ -45,6 +45,7 @@ final public class Feed: NSManagedObject {
     // one-to-one relationship
     @NSManaged public private(set) var twitterStatus: TwitterStatus?
     @NSManaged public private(set) var mastodonStatus: MastodonStatus?
+    @NSManaged public private(set) var mastodonNotification: MastodonNotification?
 }
 
 extension Feed {
@@ -86,6 +87,22 @@ extension Feed {
     
     public static func hasMorePredicate() -> NSPredicate {
         return NSPredicate(format: "%K == YES", #keyPath(Feed.hasMore))
+    }
+    
+    public static func hasMastodonNotificationPredicate() -> NSPredicate {
+        return NSPredicate(format: "%K != nil", #keyPath(Feed.mastodonNotification))
+    }
+    
+    public static func mastodonNotificationTypePredicate(type: MastodonNotificationType) -> NSPredicate {
+        return NSCompoundPredicate(andPredicateWithSubpredicates: [
+            hasMastodonNotificationPredicate(),
+            NSPredicate(
+                format: "%K.%K == %K",
+                #keyPath(Feed.mastodonNotification),
+                #keyPath(MastodonNotification.typeRaw),
+                type.rawValue
+            )
+        ])
     }
 
 }

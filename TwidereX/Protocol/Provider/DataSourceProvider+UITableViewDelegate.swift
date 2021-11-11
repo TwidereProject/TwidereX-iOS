@@ -30,6 +30,8 @@ extension UITableViewDelegate where Self: DataSourceProvider {
                     provider: self,
                     user: user
                 )
+            case .notification(let notification):
+                assertionFailure("TODO")
             }
         }
     }

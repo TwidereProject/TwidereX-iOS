@@ -185,7 +185,7 @@ extension StatusListFetchViewModel {
             guard let userID = fetchContext.userIdentifier?.id else {
                 throw AppError.implicit(.badRequest)
             }
-            let query = Twitter.API.Statuses.TimelineQuery(
+            let query = Twitter.API.Statuses.Timeline.TimelineQuery(
                 count: fetchContext.count ?? 100,
                 userID: userID,
                 maxID: fetchContext.maxID,
@@ -249,7 +249,7 @@ extension StatusListFetchViewModel {
                 throw AppError.implicit(.badRequest)
             }
             let authenticationContext = fetchContext.authenticationContext
-            let query = Twitter.API.Statuses.TimelineQuery(
+            let query = Twitter.API.Statuses.Timeline.TimelineQuery(
                 count: fetchContext.count ?? 100,
                 userID: userID,
                 maxID: fetchContext.maxID

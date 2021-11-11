@@ -17,7 +17,7 @@ import func QuartzCore.CACurrentMediaTime
 
 extension APIService {
     func twitterLikeTimeline(
-        query: Twitter.API.Statuses.TimelineQuery,
+        query: Twitter.API.Statuses.Timeline.TimelineQuery,
         authenticationContext: TwitterAuthenticationContext
     ) async throws -> Twitter.Response.Content<[Twitter.Entity.Tweet]> {
         let response = try await Twitter.API.Favorites.list(

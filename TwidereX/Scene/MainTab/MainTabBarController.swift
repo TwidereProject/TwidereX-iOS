@@ -25,16 +25,14 @@ class MainTabBarController: UITabBarController {
     
     enum Tab: Int, CaseIterable {
         case home
-//        case timeline
-//        case mention
+        case notification
         case search
         case me
         
         var title: String {
             switch self {
             case .home:         return L10n.Scene.Timeline.title
-//            case .timeline:     return L10n.Scene.Timeline.title
-//            case .mention:      return L10n.Scene.Mentions.title
+            case .notification: return L10n.Scene.Notification.title
             case .search:       return L10n.Scene.Search.title
             case .me:           return L10n.Scene.Profile.title
             }
@@ -42,11 +40,14 @@ class MainTabBarController: UITabBarController {
         
         var image: UIImage {
             switch self {
-            case .home:         return Asset.ObjectTools.house.image.withRenderingMode(.alwaysTemplate)
-//            case .timeline:     return Asset.ObjectTools.house.image.withRenderingMode(.alwaysTemplate)
-//            case .mention:      return Asset.Communication.ellipsesBubble.image.withRenderingMode(.alwaysTemplate)
-            case .search:       return Asset.ObjectTools.magnifyingglass.image.withRenderingMode(.alwaysTemplate)
-            case .me:           return Asset.Human.person.image.withRenderingMode(.alwaysTemplate)
+            case .home:
+                return Asset.ObjectTools.house.image.withRenderingMode(.alwaysTemplate)
+            case .notification:
+                return Asset.ObjectTools.bell.image.withRenderingMode(.alwaysTemplate)
+            case .search:
+                return Asset.ObjectTools.magnifyingglass.image.withRenderingMode(.alwaysTemplate)
+            case .me:
+                return Asset.Human.person.image.withRenderingMode(.alwaysTemplate)
             }
         }
         
@@ -58,14 +59,11 @@ class MainTabBarController: UITabBarController {
                 _viewController.context = context
                 _viewController.coordinator = coordinator
                 viewController = _viewController
-//            case .timeline:
-//                let _viewController = StubTimelineViewController()
-//                viewController = _viewController
-//            case .mention:
-//                let _viewController = MentionTimelineViewController()
-//                _viewController.context = context
-//                _viewController.coordinator = coordinator
-//                viewController = _viewController
+            case .notification:
+                let _viewController = NotificationViewController()
+                _viewController.context = context
+                _viewController.coordinator = coordinator
+                viewController = _viewController
             case .search:
                 let _viewController = SearchViewController()
                 _viewController.context = context
