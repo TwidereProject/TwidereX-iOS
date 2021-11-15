@@ -54,18 +54,10 @@ extension NotificationSection {
                     }
                 }   // end return context.managedObjectContext.performAndWait
                 
-            case .feedLoader(let record):
-                return UITableViewCell()
-//                let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: TimelineMiddleLoaderTableViewCell.self), for: indexPath) as! TimelineMiddleLoaderTableViewCell
-//                context.managedObjectContext.performAndWait {
-//                    guard let feed = record.object(in: context.managedObjectContext) else { return }
-//                    configure(
-//                        cell: cell,
-//                        feed: feed,
-//                        configuration: configuration
-//                    )
-//                }
-//                return cell
+            case .feedLoader:
+                let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: TimelineMiddleLoaderTableViewCell.self), for: indexPath) as! TimelineMiddleLoaderTableViewCell
+                cell.viewModel.isFetching = true
+                return cell
 
             case .bottomLoader:
                 let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: TimelineBottomLoaderTableViewCell.self), for: indexPath) as! TimelineBottomLoaderTableViewCell

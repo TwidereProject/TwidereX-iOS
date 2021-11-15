@@ -25,12 +25,16 @@ extension NotificationTimelineViewController: DataSourceProvider {
             let managedObjectContext = context.managedObjectContext
             let item: DataSourceItem? = await managedObjectContext.perform {
                 guard let feed = record.object(in: managedObjectContext) else { return nil }
-                guard feed.kind == .home else { return nil }
-                if let status = feed.twitterStatus {
+                let content = feed.content
+                switch content {
+                case .twitter(let status):
                     return .status(.twitter(record: .init(objectID: status.objectID)))
-                } else if let status = feed.mastodonStatus {
+                case .mastodon(let status):
                     return .status(.mastodon(record: .init(objectID: status.objectID)))
-                } else {
+                case .mastodonNotification(let mastodonNotification):
+                    assertionFailure()
+                    return nil 
+                case .none:
                     return nil
                 }
             }

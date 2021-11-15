@@ -277,6 +277,7 @@
 		DB83020D273D160400BF5224 /* NotificationTimelineViewModel+LoadOldestState.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB83020C273D160400BF5224 /* NotificationTimelineViewModel+LoadOldestState.swift */; };
 		DB83020E273D1DAF00BF5224 /* APIService+NotificationTimeline.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB9154672551389D00613473 /* APIService+NotificationTimeline.swift */; };
 		DB830212273D2CAE00BF5224 /* NotificationListFetchViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB830211273D2CAE00BF5224 /* NotificationListFetchViewModel.swift */; };
+		DB8302142742180C00BF5224 /* NotificationTimelineViewController+DebugAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB8302132742180C00BF5224 /* NotificationTimelineViewController+DebugAction.swift */; };
 		DB86433A26E867B9000C9879 /* APIService+Repost.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB86433926E867B9000C9879 /* APIService+Repost.swift */; };
 		DB86433C26E898C5000C9879 /* DataSourceFacade+Like.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB86433B26E898C5000C9879 /* DataSourceFacade+Like.swift */; };
 		DB88AC332508BACD0009E562 /* Items.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB88AC322508BACD0009E562 /* Items.swift */; };
@@ -901,6 +902,7 @@
 		DB83020A273D131D00BF5224 /* NotificationRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationRecord.swift; sourceTree = "<group>"; };
 		DB83020C273D160400BF5224 /* NotificationTimelineViewModel+LoadOldestState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NotificationTimelineViewModel+LoadOldestState.swift"; sourceTree = "<group>"; };
 		DB830211273D2CAE00BF5224 /* NotificationListFetchViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationListFetchViewModel.swift; sourceTree = "<group>"; };
+		DB8302132742180C00BF5224 /* NotificationTimelineViewController+DebugAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NotificationTimelineViewController+DebugAction.swift"; sourceTree = "<group>"; };
 		DB86433926E867B9000C9879 /* APIService+Repost.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "APIService+Repost.swift"; sourceTree = "<group>"; };
 		DB86433B26E898C5000C9879 /* DataSourceFacade+Like.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DataSourceFacade+Like.swift"; sourceTree = "<group>"; };
 		DB88AC2E2508BA8C0009E562 /* TimelineSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimelineSection.swift; sourceTree = "<group>"; };
@@ -1927,6 +1929,7 @@
 			children = (
 				DB8301F6273CED0400BF5224 /* NotificationTimelineViewController.swift */,
 				DB830208273D12E600BF5224 /* NotificationTimelineViewController+DataSourceProvider.swift */,
+				DB8302132742180C00BF5224 /* NotificationTimelineViewController+DebugAction.swift */,
 				DB8301F9273CED2E00BF5224 /* NotificationTimelineViewModel.swift */,
 				DB8301FF273D04D000BF5224 /* NotificationTimelineViewModel+Diffable.swift */,
 				DB83020C273D160400BF5224 /* NotificationTimelineViewModel+LoadOldestState.swift */,
@@ -3714,6 +3717,7 @@
 				DB93A4C42727A9C0001889EA /* APIService+User+Search.swift in Sources */,
 				DBA6B1CC2535BC6E005FB0B4 /* APIService+Like.swift in Sources */,
 				DB004BE126CCFED600F5C574 /* Persistence+MastodonUser.swift in Sources */,
+				DB8302142742180C00BF5224 /* NotificationTimelineViewController+DebugAction.swift in Sources */,
 				DB71C7D3271EB71800BE3819 /* ProfileViewController+DataSourceProvider.swift in Sources */,
 				DB7274ED273A845700577D95 /* APIService+HashtagTimeline.swift in Sources */,
 				DB8301FA273CED2E00BF5224 /* NotificationTimelineViewModel.swift in Sources */,

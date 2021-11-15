@@ -85,6 +85,10 @@ extension Feed {
         ])
     }
     
+    public static func nonePredicate() -> NSPredicate {
+        return predicate(kind: .none, acct: .none)
+    }
+    
     public static func hasMorePredicate() -> NSPredicate {
         return NSPredicate(format: "%K == YES", #keyPath(Feed.hasMore))
     }

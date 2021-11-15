@@ -80,37 +80,20 @@ extension NotificationTimelineViewModel {
                             if isLast {
                                 newSnapshot.insertItems([.bottomLoader], afterItem: item)
                             } else {
-                                // TODO:
-                                // newSnapshot.insertItems([.feedLoader(record: record)], afterItem: item)
+                                newSnapshot.insertItems([.feedLoader(record: record)], afterItem: item)
                             }
                         }
                     }
 
                     let hasChanges = newSnapshot.itemIdentifiers != oldSnapshot.itemIdentifiers
-                    if !hasChanges {
+                    guard hasChanges else {
                         self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): snapshot not changes")
                         self.didLoadLatest.send()
                         return
-                    } else {
-                        self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): snapshot has changes")
                     }
+                    self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): snapshot has changes")
 
-                    guard let difference = await self.calculateReloadSnapshotDifference(
-                        tableView: tableView,
-                        oldSnapshot: oldSnapshot,
-                        newSnapshot: newSnapshot
-                    ) else {
-                        await self.updateDataSource(snapshot: newSnapshot, animatingDifferences: false)
-                        self.didLoadLatest.send()
-                        self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): applied new snapshot")
-                        return
-                    }
-                    
-                    await self.updateSnapshotUsingReloadData(snapshot: newSnapshot)
-                    await tableView.scrollToRow(at: difference.targetIndexPath, at: .top, animated: false)
-                    var contentOffset = await tableView.contentOffset
-                    contentOffset.y = await tableView.contentOffset.y - difference.sourceDistanceToTableViewTopEdge
-                    await tableView.setContentOffset(contentOffset, animated: false)
+                    await self.updateDataSource(snapshot: newSnapshot, animatingDifferences: false)
                     self.didLoadLatest.send()
                     self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): applied new snapshot")
                 }   // end Task
@@ -131,46 +114,6 @@ extension NotificationTimelineViewModel {
         await self.diffableDataSource?.applySnapshotUsingReloadData(snapshot)
     }
     
-}
-
-extension NotificationTimelineViewModel {
-    struct Difference<T> {
-        let item: T
-        let sourceIndexPath: IndexPath
-        let sourceDistanceToTableViewTopEdge: CGFloat
-        let targetIndexPath: IndexPath
-    }
-    
-    @MainActor private func calculateReloadSnapshotDifference<S: Hashable, T: Hashable>(
-        tableView: UITableView,
-        oldSnapshot: NSDiffableDataSourceSnapshot<S, T>,
-        newSnapshot: NSDiffableDataSourceSnapshot<S, T>
-    ) -> Difference<T>? {
-        guard let sourceIndexPath = (tableView.indexPathsForVisibleRows ?? []).sorted().first else { return nil }
-        let rectForSourceItemCell = tableView.rectForRow(at: sourceIndexPath)
-        let sourceDistanceToTableViewTopEdge = tableView.convert(rectForSourceItemCell, to: nil).origin.y - tableView.safeAreaInsets.top
-        
-        guard sourceIndexPath.section < oldSnapshot.numberOfSections,
-              sourceIndexPath.row < oldSnapshot.numberOfItems(inSection: oldSnapshot.sectionIdentifiers[sourceIndexPath.section])
-        else { return nil }
-        
-        let sectionIdentifier = oldSnapshot.sectionIdentifiers[sourceIndexPath.section]
-        let item = oldSnapshot.itemIdentifiers(inSection: sectionIdentifier)[sourceIndexPath.row]
-        
-        guard let targetIndexPathRow = newSnapshot.indexOfItem(item),
-              let newSectionIdentifier = newSnapshot.sectionIdentifier(containingItem: item),
-              let targetIndexPathSection = newSnapshot.indexOfSection(newSectionIdentifier)
-        else { return nil }
-        
-        let targetIndexPath = IndexPath(row: targetIndexPathRow, section: targetIndexPathSection)
-        
-        return Difference(
-            item: item,
-            sourceIndexPath: sourceIndexPath,
-            sourceDistanceToTableViewTopEdge: sourceDistanceToTableViewTopEdge,
-            targetIndexPath: targetIndexPath
-        )
-    }
 }
 
 extension NotificationTimelineViewModel {
@@ -196,6 +139,48 @@ extension NotificationTimelineViewModel {
         } catch {
             self.didLoadLatest.send()
             logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): \(error.localizedDescription)")
+        }
+    }
+    
+    // load timeline gap
+    func loadMore(item: NotificationItem) async {
+        guard case let .feedLoader(record) = item else { return }
+        guard let authenticationContext = context.authenticationService.activeAuthenticationContext.value else { return }
+
+        let managedObjectContext = context.managedObjectContext
+        let key = "LoadMore@\(record.objectID)"
+        
+        // return when already loading state
+        guard managedObjectContext.cache(froKey: key) == nil else { return }
+
+        guard let feed = record.object(in: managedObjectContext) else { return }
+        // keep transient property live
+        managedObjectContext.cache(feed, key: key)
+        defer {
+            managedObjectContext.cache(nil, key: key)
+        }
+        
+        // fetch data
+        do {
+            switch (feed.content, authenticationContext) {
+            case (.twitter(let status), .twitter(let authenticationContext)):
+                let query = Twitter.API.Statuses.Timeline.TimelineQuery(
+                    count: 20,
+                    maxID: status.id
+                )
+                _ = try await context.apiService.twitterMentionTimeline(
+                    query: query,
+                    authenticationContext: authenticationContext
+                )
+                
+            case (.mastodonNotification(let mastodonNotification), .mastodon(let authenticationContext)):
+                // TODO:
+                assertionFailure()
+            default:
+                assertionFailure()
+            }
+        } catch {
+            logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): fetch more failure: \(error.localizedDescription)")
         }
     }
     

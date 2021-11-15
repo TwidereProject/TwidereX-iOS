@@ -45,7 +45,7 @@ final class FeedFetchedResultsController: NSObject {
         }()
         self.predicate = CurrentValueSubject(
             Feed.predicate(
-                kind: .home,
+                kind: .none,
                 acct: .none
             )
         )

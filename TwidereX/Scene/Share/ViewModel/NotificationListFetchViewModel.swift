@@ -38,7 +38,7 @@ extension NotificationListFetchViewModel {
 
     struct TwitterMentionsFetchContext {
         let authenticationContext: TwitterAuthenticationContext
-        let maxID: String?
+        let maxID: Twitter.Entity.Tweet.ID?
         let count: Int?
         
         func map(maxID: String) -> TwitterMentionsFetchContext {

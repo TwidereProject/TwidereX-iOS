@@ -29,6 +29,7 @@ final class NotificationTimelineViewController: UIViewController, NeedsDependenc
     private(set) lazy var tableView: UITableView = {
         let tableView = UITableView()
         tableView.register(StatusTableViewCell.self, forCellReuseIdentifier: String(describing: StatusTableViewCell.self))
+        tableView.register(TimelineMiddleLoaderTableViewCell.self, forCellReuseIdentifier: String(describing: TimelineMiddleLoaderTableViewCell.self))
         tableView.register(TimelineBottomLoaderTableViewCell.self, forCellReuseIdentifier: String(describing: TimelineBottomLoaderTableViewCell.self))
         tableView.backgroundColor = .systemBackground
         tableView.rowHeight = UITableView.automaticDimension
@@ -76,9 +77,19 @@ extension NotificationTimelineViewController {
             .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in
                 guard let self = self else { return }
+                guard let snapshot = self.viewModel.diffableDataSource?.snapshot() else { return }
+                guard let lastItem = snapshot.itemIdentifiers.last else { return }
+                guard case .bottomLoader = lastItem else { return }
                 self.viewModel.loadOldestStateMachine.enter(NotificationTimelineViewModel.LoadOldestState.Loading.self)
             }
             .store(in: &disposeBag)
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        refreshControl.endRefreshing()
+        tableView.deselectRow(with: transitionCoordinator, animated: animated)
     }
 }
 
@@ -95,8 +106,27 @@ extension NotificationTimelineViewController {
 }
 
 // MARK: - UITableViewDelegate
-extension NotificationTimelineViewController: UITableViewDelegate {
+extension NotificationTimelineViewController: UITableViewDelegate, AutoGenerateTableViewDelegate {
+    // sourcery:inline:NotificationTimelineViewController.AutoGenerateTableViewDelegate
+
+    // Generated using Sourcery
+    // DO NOT EDIT
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        aspectTableView(tableView, didSelectRowAt: indexPath)
+    }
+    // sourcery:end
     
+    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        guard let item = viewModel.diffableDataSource?.itemIdentifier(for: indexPath) else {
+            return
+        }
+        
+        // check item type inside `loadMore`
+        Task {
+            await viewModel.loadMore(item: item)
+        }
+    }
+
 }
 
 // MARK: - StatusViewTableViewCellDelegate

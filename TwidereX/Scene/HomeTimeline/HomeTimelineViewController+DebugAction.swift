@@ -378,12 +378,12 @@ extension HomeTimelineViewController {
     
     @objc private func dropRecentFeedAction(_ sender: UIAction, count: Int) {
         guard let diffableDataSource = viewModel.diffableDataSource else { return }
-        let snapshotTransitioning = diffableDataSource.snapshot()
+        let snapshot = diffableDataSource.snapshot()
         
-        let droppingObjectIDs = snapshotTransitioning.itemIdentifiers.prefix(count).compactMap { item -> NSManagedObjectID? in
+        let droppingObjectIDs = snapshot.itemIdentifiers.prefix(count).compactMap { item -> NSManagedObjectID? in
             switch item {
             case .feed(let record):         return record.objectID
-            default:                                    return nil
+            default:                        return nil
             }
         }
         context.apiService.backgroundManagedObjectContext.performChanges { [weak self] in

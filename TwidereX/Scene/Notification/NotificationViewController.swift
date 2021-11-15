@@ -21,6 +21,24 @@ final class NotificationViewController: TabmanViewController, NeedsDependency {
     
     var disposeBag = Set<AnyCancellable>()
     private(set) lazy var viewModel = NotificationViewModel(context: context, coordinator: coordinator)
+    
+    override func pageboyViewController(
+        _ pageboyViewController: PageboyViewController,
+        didScrollToPageAt index: TabmanViewController.PageIndex,
+        direction: PageboyViewController.NavigationDirection,
+        animated: Bool
+    ) {
+        super.pageboyViewController(
+            pageboyViewController,
+            didScrollToPageAt: index,
+            direction: direction,
+            animated: animated
+        )
+        
+        #if DEBUG
+        setupDebugAction()
+        #endif
+    }
 
 }
 
@@ -39,6 +57,26 @@ extension NotificationViewController {
     }
     
 }
+
+#if DEBUG
+extension NotificationViewController {
+    func setupDebugAction() {
+        guard let index = currentIndex,
+              index < viewModel.viewControllers.count
+        else {
+            navigationItem.rightBarButtonItem = nil
+            return
+        }
+        let viewController = viewModel.viewControllers[index]
+        
+        if let viewController = viewController as? NotificationTimelineViewController {
+            navigationItem.rightBarButtonItem = viewController.debugActionBarButtonItem
+        } else {
+            navigationItem.rightBarButtonItem = nil
+        }
+    }
+}
+#endif
 
 extension NotificationViewController {
     @objc private func refreshControlValueChanged(_ sender: UIRefreshControl) {

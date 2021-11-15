@@ -50,32 +50,16 @@ final class NotificationTimelineViewModel {
         context.authenticationService.activeAuthenticationContext
             .sink { [weak self] authenticationContext in
                 guard let self = self else { return }
-                let emptyFeedPredicate = Feed.predicate(kind: .none, acct: Feed.Acct.none)
+                let emptyFeedPredicate = Feed.nonePredicate()
                 guard let authenticationContext = authenticationContext else {
                     self.fetchedResultsController.predicate.value = emptyFeedPredicate
                     return
                 }
                 
-                let predicate: NSPredicate
-                switch authenticationContext {
-                case .twitter(let authenticationContext):
-                    let userID = authenticationContext.userID
-                    predicate = Feed.predicate(kind: .notification, acct: Feed.Acct.twitter(userID: userID))
-                case .mastodon(let authenticationContext):
-                    let domain = authenticationContext.domain
-                    let userID = authenticationContext.userID
-                    predicate = {
-                        switch scope {
-                        case .all:
-                            return Feed.predicate(kind: .notification, acct: Feed.Acct.mastodon(domain: domain, userID: userID))
-                        case .mentions:
-                            return NSCompoundPredicate(andPredicateWithSubpredicates: [
-                                Feed.predicate(kind: .notification, acct: Feed.Acct.mastodon(domain: domain, userID: userID)),
-                                Feed.mastodonNotificationTypePredicate(type: .mention)
-                            ])
-                        }
-                    }()
-                }
+                let predicate = NotificationTimelineViewModel.feedPredicate(
+                    authenticationContext: authenticationContext,
+                    scope: scope
+                )
                 self.fetchedResultsController.predicate.value = predicate
             }
             .store(in: &disposeBag)
@@ -91,5 +75,32 @@ extension NotificationTimelineViewModel {
     enum Scope {
         case all
         case mentions
+    }
+    
+    static func feedPredicate(
+        authenticationContext: AuthenticationContext,
+        scope: Scope
+    ) -> NSPredicate {
+        let predicate: NSPredicate
+        switch authenticationContext {
+        case .twitter(let authenticationContext):
+            let userID = authenticationContext.userID
+            predicate = Feed.predicate(kind: .notification, acct: Feed.Acct.twitter(userID: userID))
+        case .mastodon(let authenticationContext):
+            let domain = authenticationContext.domain
+            let userID = authenticationContext.userID
+            predicate = {
+                switch scope {
+                case .all:
+                    return Feed.predicate(kind: .notification, acct: Feed.Acct.mastodon(domain: domain, userID: userID))
+                case .mentions:
+                    return NSCompoundPredicate(andPredicateWithSubpredicates: [
+                        Feed.predicate(kind: .notification, acct: Feed.Acct.mastodon(domain: domain, userID: userID)),
+                        Feed.mastodonNotificationTypePredicate(type: .mention)
+                    ])
+                }
+            }()
+        }
+        return predicate
     }
 }
