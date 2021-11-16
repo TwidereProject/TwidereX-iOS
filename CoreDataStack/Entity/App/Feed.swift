@@ -101,7 +101,7 @@ extension Feed {
         return NSCompoundPredicate(andPredicateWithSubpredicates: [
             hasMastodonNotificationPredicate(),
             NSPredicate(
-                format: "%K.%K == %K",
+                format: "%K.%K == %@",
                 #keyPath(Feed.mastodonNotification),
                 #keyPath(MastodonNotification.typeRaw),
                 type.rawValue
