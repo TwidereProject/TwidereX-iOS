@@ -47,6 +47,8 @@ final public class MastodonNotification: NSManagedObject {
     
 }
 
+extension MastodonNotification: FeedIndexable { }
+
 extension MastodonNotification {
     
     @discardableResult
@@ -165,8 +167,8 @@ extension MastodonNotification: AutoGenerateRelationship {
     // Generated using Sourcery
     // DO NOT EDIT
     public struct Relationship {
-    	public let  account: MastodonUser
-    	public let  status: MastodonStatus?
+    	public let account: MastodonUser
+    	public let status: MastodonStatus?
 
     	public init(
     		account: MastodonUser,
@@ -206,4 +208,10 @@ extension MastodonNotification: AutoUpdatableObject {
     	}
     }
     // sourcery:end
+}
+
+extension MastodonNotification {
+    public func attach(feed: Feed) {
+        mutableSetValue(forKey: #keyPath(MastodonNotification.feeds)).add(feed)
+    }
 }

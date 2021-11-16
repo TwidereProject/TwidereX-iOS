@@ -17,6 +17,7 @@ extension NotificationSection {
     
     struct Configuration {
         let statusViewTableViewCellDelegate: StatusViewTableViewCellDelegate
+        let userTableViewCellDelegate: UserTableViewCellDelegate?
     }
 
     static func diffableDataSource(
@@ -37,7 +38,8 @@ extension NotificationSection {
                         return UITableViewCell()
                     }
                     
-                    if let _ = feed.statusObject {
+                    switch feed.objectContent {
+                    case .status:
                         let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: StatusTableViewCell.self), for: indexPath) as! StatusTableViewCell
                         configure(
                             tableView: tableView,
@@ -46,9 +48,25 @@ extension NotificationSection {
                             configuration: configuration
                         )
                         return cell
-                    } else if let notificationObject = feed.notificationObject {
-                        return UITableViewCell()
-                    } else {
+                    case .notification(let object):
+                        switch object {
+                        case .mastodon(let notification):
+                            let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: UserNotificationStyleTableViewCell.self), for: indexPath) as! UserNotificationStyleTableViewCell
+                            let authenticationContext = context.authenticationService.activeAuthenticationContext.value
+                            let me = authenticationContext?.user(in: context.managedObjectContext)
+                            let user: UserObject = .mastodon(object: notification.account)
+                            configure(
+                                cell: cell,
+                                viewModel: UserTableViewCell.ViewModel(
+                                    user: user,
+                                    me: me,
+                                    notification: .mastodon(object: notification)
+                                ),
+                                configuration: configuration
+                            )
+                            return cell
+                        }
+                    case .none:
                         assertionFailure()
                         return UITableViewCell()
                     }
@@ -85,4 +103,14 @@ extension NotificationSection {
         )
     }
     
+    static func configure(
+        cell: UserTableViewCell,
+        viewModel: UserTableViewCell.ViewModel,
+        configuration: Configuration
+    ) {
+        cell.configure(
+            viewModel: viewModel,
+            delegate: configuration.userTableViewCellDelegate
+        )
+    }
 }

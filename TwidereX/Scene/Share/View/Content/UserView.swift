@@ -32,7 +32,41 @@ final class UserView: UIView {
         return viewModel
     }()
     
-    let containerStackView = UIStackView()
+    // container
+    let containerStackView: UIStackView = {
+        let stackView = UIStackView()
+        stackView.axis = .vertical
+        stackView.spacing = 8
+        return stackView
+    }()
+    
+    static var contentStackViewSpacing: CGFloat = 10
+    let contentStackView: UIStackView = {
+        let stackView = UIStackView()
+        stackView.axis = .horizontal
+        stackView.spacing = UserView.contentStackViewSpacing
+        stackView.alignment = .center
+        return stackView
+    }()
+    
+    let infoContainerStackView: UIStackView = {
+        let stackView = UIStackView()
+        stackView.axis = .vertical
+        stackView.distribution = .fillEqually
+        return stackView
+    }()
+    
+    let accessoryContainerView: UIStackView = {
+        let stackView = UIStackView()
+        stackView.axis = .horizontal
+        return stackView
+    }()
+    
+    // header
+    let headerContainerView = UIView()
+    let headerIconImageView = UIImageView()
+    static var headerTextLabelStyle: TextStyle { .statusHeader }
+    let headerTextLabel = MetaLabel(style: .statusHeader)
 
     // avatar
     let authorProfileAvatarView = ProfileAvatarView()
@@ -70,11 +104,6 @@ final class UserView: UIView {
 
 extension UserView {
     private func _init() {
-        // container: H - [ user avatar | info container | accessory container ]
-        containerStackView.axis = .horizontal
-        containerStackView.spacing = 10
-        containerStackView.alignment = .center
-        
         containerStackView.translatesAutoresizingMaskIntoConstraints = false
         addSubview(containerStackView)
         NSLayoutConstraint.activate([
@@ -84,8 +113,15 @@ extension UserView {
             bottomAnchor.constraint(equalTo: containerStackView.bottomAnchor),
         ])
         
+        // container:: V - [ header container | content ]
+        containerStackView.addArrangedSubview(headerContainerView)
+        containerStackView.addArrangedSubview(contentStackView)
+        
+        // content: H - [ user avatar | info container | accessory container ]
         authorProfileAvatarView.scale = 0.5
-        containerStackView.addArrangedSubview(authorProfileAvatarView)
+        contentStackView.addArrangedSubview(authorProfileAvatarView)
+        contentStackView.addArrangedSubview(infoContainerStackView)
+        contentStackView.addArrangedSubview(accessoryContainerView)
         
         authorProfileAvatarView.isUserInteractionEnabled = false
         nameLabel.isUserInteractionEnabled = false
@@ -114,16 +150,22 @@ extension UserView {
         // subheadline: follower count
         // accessory: follow button
         case friendship
+        // header: notification
+        // headline: name
+        // subheadline: username
+        // accessory: action button
+        case notification
         
         func layout(userView: UserView) {
             switch self {
-            case .plain:        layoutPlain(userView: userView)
-            case .friendship:   layoutFriendship(userView: userView)
+            case .plain:            layoutPlain(userView: userView)
+            case .friendship:       layoutFriendship(userView: userView)
+            case .notification:     layoutNotification(userView: userView)
             }
         }
         
         static func prepareForReuse(userView: UserView) {
-            
+            userView.headerContainerView.isHidden = true
         }
     }
 }
@@ -131,33 +173,59 @@ extension UserView {
 extension UserView.Style {
     // FIXME:
     func layoutPlain(userView: UserView) {
-        let infoContainerStackView = UIStackView()
-        userView.containerStackView.addArrangedSubview(infoContainerStackView)
-        infoContainerStackView.axis = .vertical
-        infoContainerStackView.distribution = .fillEqually
-        
-        infoContainerStackView.addArrangedSubview(userView.nameLabel)
-        infoContainerStackView.addArrangedSubview(userView.usernameLabel)
+        userView.infoContainerStackView.addArrangedSubview(userView.nameLabel)
+        userView.infoContainerStackView.addArrangedSubview(userView.usernameLabel)
         
         userView.setNeedsLayout()
     }
     
     // FIXME:
     func layoutFriendship(userView: UserView) {
-        let infoContainerStackView = UIStackView()
-        userView.containerStackView.addArrangedSubview(infoContainerStackView)
-        infoContainerStackView.axis = .vertical
-        infoContainerStackView.distribution = .fillEqually
-        
-        infoContainerStackView.addArrangedSubview(userView.nameLabel)
-        infoContainerStackView.addArrangedSubview(userView.usernameLabel)
+        userView.infoContainerStackView.addArrangedSubview(userView.nameLabel)
+        userView.infoContainerStackView.addArrangedSubview(userView.usernameLabel)
         
         userView.friendshipButton.translatesAutoresizingMaskIntoConstraints = false
-        userView.containerStackView.addArrangedSubview(userView.friendshipButton)
+        userView.accessoryContainerView.addArrangedSubview(userView.friendshipButton)
         NSLayoutConstraint.activate([
             userView.friendshipButton.widthAnchor.constraint(equalToConstant: 80),  // maybe dynamic width for different language?
         ])
         
         userView.setNeedsLayout()
+    }
+    
+    func layoutNotification(userView: UserView) {
+        userView.headerIconImageView.translatesAutoresizingMaskIntoConstraints = false
+        userView.headerTextLabel.translatesAutoresizingMaskIntoConstraints = false
+        userView.headerContainerView.addSubview(userView.headerIconImageView)
+        userView.headerContainerView.addSubview(userView.headerTextLabel)
+        NSLayoutConstraint.activate([
+            userView.headerTextLabel.topAnchor.constraint(equalTo: userView.headerContainerView.topAnchor),
+            userView.headerTextLabel.bottomAnchor.constraint(equalTo: userView.headerContainerView.bottomAnchor),
+            userView.headerTextLabel.trailingAnchor.constraint(equalTo: userView.headerContainerView.trailingAnchor),
+            userView.headerIconImageView.centerYAnchor.constraint(equalTo: userView.headerTextLabel.centerYAnchor),
+            userView.headerIconImageView.heightAnchor.constraint(equalTo: userView.headerTextLabel.heightAnchor, multiplier: 1.0).priority(.required - 1),
+            userView.headerIconImageView.widthAnchor.constraint(equalTo: userView.headerIconImageView.heightAnchor, multiplier: 1.0).priority(.required - 1),
+            userView.headerTextLabel.leadingAnchor.constraint(equalTo: userView.headerIconImageView.trailingAnchor, constant: 4),
+            // align to author name below
+        ])
+        userView.headerTextLabel.setContentHuggingPriority(.required - 10, for: .vertical)
+        userView.headerIconImageView.setContentHuggingPriority(.defaultLow, for: .vertical)
+        userView.headerIconImageView.setContentHuggingPriority(.defaultLow, for: .horizontal)
+
+        userView.infoContainerStackView.addArrangedSubview(userView.nameLabel)
+        userView.infoContainerStackView.addArrangedSubview(userView.usernameLabel)
+        
+        // set header label align to author name
+        NSLayoutConstraint.activate([
+            userView.headerTextLabel.leadingAnchor.constraint(equalTo: userView.authorProfileAvatarView.trailingAnchor, constant: UserView.contentStackViewSpacing),
+        ])
+        
+        userView.setNeedsLayout()
+    }
+}
+
+extension UserView {
+    func setHeaderDisplay() {
+        headerContainerView.isHidden = false
     }
 }

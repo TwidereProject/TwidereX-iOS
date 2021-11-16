@@ -89,21 +89,21 @@ extension Mastodon.API {
 
     public enum Account { }
     public enum App { }
-    public enum CustomEmojis { }
+    public enum CustomEmoji { }
     public enum Favorite { }
     public enum Instance { }
     public enum Media { }
     public enum OAuth { }
     public enum Onboarding { }
-    public enum Polls { }
+    public enum Poll { }
     public enum Reblog { }
     public enum Status { }
     public enum Timeline { }
     public enum Trends { }
-    public enum Suggestions { }
-    public enum Notifications { }
-    public enum Subscriptions { }
-    public enum Reports { }
+    public enum Suggestion { }
+    public enum Notification { }
+    public enum Subscription { }
+    public enum Report { }
     public enum DomainBlock { }
     
     public enum V2 {

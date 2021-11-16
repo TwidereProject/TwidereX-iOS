@@ -14,24 +14,31 @@ extension UserTableViewCell {
     final class ViewModel {
         let user: UserObject
         let me: UserObject?
+        let notification: NotificationObject?
         
         init(
             user: UserObject,
-            me: UserObject?
+            me: UserObject?,
+            notification: NotificationObject?
         ) {
             self.user = user
             self.me = me
+            self.notification = notification
         }
     }
     
     // TODO: add delegate
     func configure(
-        viewModel: ViewModel
+        viewModel: ViewModel,
+        delegate: UserTableViewCellDelegate?
     ) {
         userView.configure(
             user: viewModel.user,
-            me: viewModel.me
+            me: viewModel.me,
+            notification: viewModel.notification
         )
+        
+        self.delegate = delegate
     }
     
 }

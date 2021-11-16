@@ -29,6 +29,7 @@ final class NotificationTimelineViewController: UIViewController, NeedsDependenc
     private(set) lazy var tableView: UITableView = {
         let tableView = UITableView()
         tableView.register(StatusTableViewCell.self, forCellReuseIdentifier: String(describing: StatusTableViewCell.self))
+        tableView.register(UserNotificationStyleTableViewCell.self, forCellReuseIdentifier: String(describing: UserNotificationStyleTableViewCell.self))
         tableView.register(TimelineMiddleLoaderTableViewCell.self, forCellReuseIdentifier: String(describing: TimelineMiddleLoaderTableViewCell.self))
         tableView.register(TimelineBottomLoaderTableViewCell.self, forCellReuseIdentifier: String(describing: TimelineBottomLoaderTableViewCell.self))
         tableView.backgroundColor = .systemBackground
@@ -57,7 +58,8 @@ extension NotificationTimelineViewController {
         tableView.delegate = self
         viewModel.setupDiffableDataSource(
             tableView: tableView,
-            statusViewTableViewCellDelegate: self
+            statusViewTableViewCellDelegate: self,
+            userTableViewCellDelegate: self
         )
         // setup refresh control
         tableView.refreshControl = refreshControl
@@ -131,3 +133,6 @@ extension NotificationTimelineViewController: UITableViewDelegate, AutoGenerateT
 
 // MARK: - StatusViewTableViewCellDelegate
 extension NotificationTimelineViewController: StatusViewTableViewCellDelegate { }
+
+// MARK: - UserTableViewCellDelegate
+extension NotificationTimelineViewController: UserTableViewCellDelegate { }

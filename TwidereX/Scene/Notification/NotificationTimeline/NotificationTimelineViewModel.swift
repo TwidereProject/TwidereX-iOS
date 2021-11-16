@@ -11,6 +11,7 @@ import UIKit
 import Combine
 import CoreDataStack
 import GameplayKit
+import MastodonSDK
 
 final class NotificationTimelineViewModel {
     
@@ -75,6 +76,28 @@ extension NotificationTimelineViewModel {
     enum Scope {
         case all
         case mentions
+        
+        var includeTypes: [MastodonNotificationType]? {
+            switch self {
+            case .all:              return nil
+            case .mentions:         return [.mention, .status]
+            }
+        }
+        
+        
+        var excludeTypes: [MastodonNotificationType]? {
+            switch self {
+            case .all:              return nil
+            case .mentions:         return [.follow, .followRequest, .reblog, .favourite, .poll]
+            }
+        }
+        
+        var _excludeTypes: [Mastodon.Entity.Notification.NotificationType]? {
+            switch self {
+            case .all:              return nil
+            case .mentions:         return [.follow, .followRequest, .reblog, .favourite, .poll]
+            }
+        }
     }
     
     static func feedPredicate(
@@ -96,11 +119,12 @@ extension NotificationTimelineViewModel {
                 case .mentions:
                     return NSCompoundPredicate(andPredicateWithSubpredicates: [
                         Feed.predicate(kind: .notification, acct: Feed.Acct.mastodon(domain: domain, userID: userID)),
-                        Feed.mastodonNotificationTypePredicate(type: .mention)
+                        Feed.mastodonNotificationTypePredicate(types: scope.includeTypes ?? [])
                     ])
                 }
             }()
         }
         return predicate
     }
+
 }

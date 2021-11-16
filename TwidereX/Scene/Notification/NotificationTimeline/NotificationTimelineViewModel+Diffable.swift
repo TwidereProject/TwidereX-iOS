@@ -11,15 +11,18 @@ import UIKit
 import CoreData
 import CoreDataStack
 import TwitterSDK
+import MastodonSDK
 
 extension NotificationTimelineViewModel {
     
     func setupDiffableDataSource(
         tableView: UITableView,
-        statusViewTableViewCellDelegate: StatusViewTableViewCellDelegate
+        statusViewTableViewCellDelegate: StatusViewTableViewCellDelegate,
+        userTableViewCellDelegate: UserTableViewCellDelegate
     ) {
         let configuration = NotificationSection.Configuration(
-            statusViewTableViewCellDelegate: statusViewTableViewCellDelegate
+            statusViewTableViewCellDelegate: statusViewTableViewCellDelegate,
+            userTableViewCellDelegate: userTableViewCellDelegate
         )
         diffableDataSource = NotificationSection.diffableDataSource(
             tableView: tableView,
@@ -131,8 +134,18 @@ extension NotificationTimelineViewModel {
                     authenticationContext: authenticationContext
                 )
             case .mastodon(let authenticationContext):
-                _ =  try await context.apiService.mastodonHomeTimeline(
-                    maxID: nil,
+                _ = try await context.apiService.mastodonNotificationTimeline(
+                    query: Mastodon.API.Notification.NotificationsQuery(
+                        maxID: nil,
+                        excludeTypes: {
+                            switch scope {
+                            case .all:
+                                return nil
+                            case .mentions:
+                                return [.follow, .followRequest, .reblog, .favourite, .poll]
+                            }
+                        }()
+                    ),
                     authenticationContext: authenticationContext
                 )
             }

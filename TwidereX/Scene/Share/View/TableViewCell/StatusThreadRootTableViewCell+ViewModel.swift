@@ -45,7 +45,7 @@ extension StatusThreadRootTableViewCell {
         case .twitterStatus(let status):
             statusView.configure(twitterStatus: status)
         case .mastodonStatus(let status):
-            statusView.configure(mastodonStatus: status)
+            statusView.configure(mastodonStatus: status, notification: nil)
         }
         
         self.delegate = delegate

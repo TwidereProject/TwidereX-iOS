@@ -205,9 +205,9 @@ extension TwitterStatus: AutoGenerateRelationship {
     // Generated using Sourcery
     // DO NOT EDIT
     public struct Relationship {
-    	public let  author: TwitterUser
-    	public let  repost: TwitterStatus?
-    	public let  quote: TwitterStatus?
+    	public let author: TwitterUser
+    	public let repost: TwitterStatus?
+    	public let quote: TwitterStatus?
 
     	public init(
     		author: TwitterUser,

@@ -5,7 +5,7 @@
 // DO NOT EDIT
 public struct Relationship {
 	{% for variable in type.storedVariables|annotated:"autoGenerateRelationship" %}
-	public let  {{variable.name}}: {{variable.typeName}}
+	public let {{variable.name}}: {{variable.typeName}}
 	{% endfor %}
 
 	public init(

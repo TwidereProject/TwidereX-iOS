@@ -276,8 +276,8 @@ extension MastodonStatus: AutoGenerateRelationship {
     // Generated using Sourcery
     // DO NOT EDIT
     public struct Relationship {
-    	public let  author: MastodonUser
-    	public let  repost: MastodonStatus?
+    	public let author: MastodonUser
+    	public let repost: MastodonStatus?
 
     	public init(
     		author: MastodonUser,

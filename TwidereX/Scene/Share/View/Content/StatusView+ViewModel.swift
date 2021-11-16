@@ -45,6 +45,7 @@ extension StatusView {
         enum Header {
             case none
             case repost(info: RepostInfo)
+            case notification(info: NotificationHeaderInfo)
             // TODO: replyTo
             
             struct RepostInfo {
@@ -72,8 +73,15 @@ extension StatusView.ViewModel {
                     return
                 case .repost(let info):
                     statusView.headerIconImageView.image = Asset.Media.repeat.image
+                    statusView.headerIconImageView.tintColor = Asset.Colors.Theme.daylight.color
                     statusView.headerTextLabel.setupAttributes(style: StatusView.headerTextLabelStyle)
                     statusView.headerTextLabel.configure(content: info.authorNameMetaContent)
+                    statusView.setHeaderDisplay()
+                case .notification(let info):
+                    statusView.headerIconImageView.image = info.iconImage
+                    statusView.headerIconImageView.tintColor = info.iconImageTintColor
+                    statusView.headerTextLabel.setupAttributes(style: StatusView.headerTextLabelStyle)
+                    statusView.headerTextLabel.configure(content: info.textMetaContent)
                     statusView.setHeaderDisplay()
                 }
             }
@@ -203,23 +211,19 @@ extension StatusView.ViewModel {
 
 extension StatusView {
     func configure(feed: Feed) {
-        switch feed.acct {
+        switch feed.content {
         case .none:
             assertionFailure()
-        case .twitter:
-            if let status = feed.twitterStatus {
-                configure(twitterStatus: status)
-            } else {
+        case .twitter(let status):
+            configure(twitterStatus: status)
+        case .mastodon(let status):
+            configure(mastodonStatus: status, notification: nil)
+        case .mastodonNotification(let notification):
+            guard let status = notification.status else {
                 assertionFailure()
+                return
             }
-        case .mastodon:
-            if let status = feed.mastodonStatus {
-                configure(mastodonStatus: status)
-            } else if let status = feed.mastodonNotification?.status {
-                configure(mastodonStatus: status)
-            } else {
-                assertionFailure()
-            }
+            configure(mastodonStatus: status, notification: notification)
         }
     }
 }
@@ -356,18 +360,37 @@ extension StatusView {
 
 // MARK: - Mastodon
 extension StatusView {
-    func configure(mastodonStatus status: MastodonStatus) {
+    func configure(
+        mastodonStatus status: MastodonStatus,
+        notification: MastodonNotification?
+    ) {
         viewModel.objects.insert(status)
         
-        configureHeader(mastodonStatus: status)
+        configureHeader(mastodonStatus: status, mastodonNotification: notification)
         configureAuthor(mastodonStatus: status)
         configureContent(mastodonStatus: status)
         configureMedia(mastodonStatus: status)
         configureToolbar(mastodonStatus: status)
     }
     
-    private func configureHeader(mastodonStatus status: MastodonStatus) {
-        if let _ = status.repost {
+    private func configureHeader(
+        mastodonStatus status: MastodonStatus,
+        mastodonNotification notification: MastodonNotification?
+    ) {
+        if let notification = notification {
+            let user = notification.account
+            let type = notification.notificationType
+            Publishers.CombineLatest(
+                user.publisher(for: \.displayName),
+                user.publisher(for: \.emojis)
+            )
+            .map { _ in
+                guard let info = NotificationHeaderInfo(type: type, user: user) else { return .none }
+                return ViewModel.Header.notification(info: info)
+            }
+            .assign(to: \.header, on: viewModel)
+            .store(in: &disposeBag)
+        } else if let _ = status.repost {
             Publishers.CombineLatest(
                 status.author.publisher(for: \.displayName),
                 status.author.publisher(for: \.emojis)

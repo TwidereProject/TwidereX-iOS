@@ -97,14 +97,14 @@ extension Feed {
         return NSPredicate(format: "%K != nil", #keyPath(Feed.mastodonNotification))
     }
     
-    public static func mastodonNotificationTypePredicate(type: MastodonNotificationType) -> NSPredicate {
+    public static func mastodonNotificationTypePredicate(types: [MastodonNotificationType]) -> NSPredicate {
         return NSCompoundPredicate(andPredicateWithSubpredicates: [
             hasMastodonNotificationPredicate(),
             NSPredicate(
-                format: "%K.%K == %@",
+                format: "%K.%K IN %@",
                 #keyPath(Feed.mastodonNotification),
                 #keyPath(MastodonNotification.typeRaw),
-                type.rawValue
+                types.map { $0.rawValue }
             )
         ])
     }

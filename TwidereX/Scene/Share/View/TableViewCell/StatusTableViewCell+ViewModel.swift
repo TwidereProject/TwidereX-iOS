@@ -50,7 +50,7 @@ extension StatusTableViewCell {
             statusView.configure(twitterStatus: status)
             configureSeparator(style: .inset)
         case .mastodonStatus(let status):
-            statusView.configure(mastodonStatus: status)
+            statusView.configure(mastodonStatus: status, notification: nil)
             configureSeparator(style: .inset)
         }
         

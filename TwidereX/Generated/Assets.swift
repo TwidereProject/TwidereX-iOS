@@ -83,7 +83,9 @@ internal enum Asset {
   internal enum Human {
     internal static let eyeSlash = ImageAsset(name: "Human/eye.slash")
     internal static let eyeSlashLarge = ImageAsset(name: "Human/eye.slash.large")
+    internal static let personExclamation = ImageAsset(name: "Human/person.exclamation")
     internal static let person = ImageAsset(name: "Human/person")
+    internal static let personPlus = ImageAsset(name: "Human/person.plus")
   }
   internal enum Indices {
     internal static let checkmarkCircle = ImageAsset(name: "Indices/checkmark.circle")
@@ -101,6 +103,7 @@ internal enum Asset {
   }
   internal enum ObjectTools {
     internal static let bell = ImageAsset(name: "Object&Tools/bell")
+    internal static let bellRinging = ImageAsset(name: "Object&Tools/bell.ringing")
     internal static let blockedBadge = ImageAsset(name: "Object&Tools/blocked.badge")
     internal static let bookmarks = ImageAsset(name: "Object&Tools/bookmarks")
     internal static let camera = ImageAsset(name: "Object&Tools/camera")
@@ -117,6 +120,7 @@ internal enum Asset {
     internal static let paperplane = ImageAsset(name: "Object&Tools/paperplane")
     internal static let photo = ImageAsset(name: "Object&Tools/photo")
     internal static let photos = ImageAsset(name: "Object&Tools/photos")
+    internal static let poll = ImageAsset(name: "Object&Tools/poll")
     internal static let speakerXmark = ImageAsset(name: "Object&Tools/speaker.xmark")
   }
   internal enum Scene {

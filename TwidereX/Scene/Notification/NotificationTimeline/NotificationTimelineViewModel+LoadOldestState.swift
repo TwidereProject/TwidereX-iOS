@@ -72,7 +72,12 @@ extension NotificationTimelineViewModel.LoadOldestState {
                         ))
                         
                     case (.mastodonNotification(let notification), .mastodon(let authenticationContext)):
-                        fatalError("TODO")
+                        return NotificationListFetchViewModel.NotificationInput.mastodon(.init(
+                            authenticationContext: authenticationContext,
+                            maxID: notification.id,
+                            excludeTypes: viewModel.scope._excludeTypes,
+                            limit: 20
+                        ))
                     default:
                         return nil
                     }
@@ -115,8 +120,7 @@ extension NotificationTimelineViewModel.LoadOldestState {
 
     class NoMore: NotificationTimelineViewModel.LoadOldestState {
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {
-            // reset state if needs
-            return stateClass == Idle.self
+            return false
         }
         
         override func didEnter(from previousState: GKState?) {

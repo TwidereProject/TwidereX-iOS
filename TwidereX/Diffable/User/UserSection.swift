@@ -46,7 +46,8 @@ extension UserSection {
                     let me = authenticationContext?.user(in: context.managedObjectContext)
                     let viewModel = UserTableViewCell.ViewModel(
                         user: user,
-                        me: me
+                        me: me,
+                        notification: nil
                     )
                     configure(
                         cell: cell,
@@ -77,6 +78,8 @@ extension UserSection {
             return tableView.dequeueReusableCell(withIdentifier: String(describing: UserFriendshipStyleTableViewCell.self), for: indexPath) as! UserFriendshipStyleTableViewCell
         case .friendship:
             return tableView.dequeueReusableCell(withIdentifier: String(describing: UserFriendshipStyleTableViewCell.self), for: indexPath) as! UserFriendshipStyleTableViewCell
+        case .notification:
+            return tableView.dequeueReusableCell(withIdentifier: String(describing: UserFriendshipStyleTableViewCell.self), for: indexPath) as! UserFriendshipStyleTableViewCell
         }
     }
     
@@ -85,8 +88,10 @@ extension UserSection {
         viewModel: UserTableViewCell.ViewModel,
         configuration: Configuration
     ) {
-        cell.configure(viewModel: viewModel)
-        cell.delegate = configuration.userTableViewCellDelegate
+        cell.configure(
+            viewModel: viewModel,
+            delegate: configuration.userTableViewCellDelegate
+        )
     }
 }
 
@@ -99,15 +104,5 @@ extension UserSection {
     ) {
         cell.configure(authenticationIndex: authenticationIndex)
     }
-    
-    @available(*, deprecated, message: "")
-    static func configure(
-        cell: UserFriendshipStyleTableViewCell,
-        user: UserObject,
-        me: UserObject?
-    ) {
-        let viewModel = UserTableViewCell.ViewModel(user: user, me: me)
-        cell.configure(viewModel: viewModel)
-    }
-    
+
 }

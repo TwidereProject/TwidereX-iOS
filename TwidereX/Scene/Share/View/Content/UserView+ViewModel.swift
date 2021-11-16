@@ -12,6 +12,7 @@ import SwiftUI
 import CoreDataStack
 import TwidereCommon
 import Meta
+import MastodonSDK
 
 extension UserView {
     final class ViewModel: ObservableObject {
@@ -21,9 +22,17 @@ extension UserView {
         
         @Published var platform: Platform = .none
         
+        @Published var header: Header = .none
+        
         @Published var avatarImageURL: URL?
         @Published var name: MetaContent? = PlaintextMetaContent(string: " ")
         @Published var username: String? = " "
+        
+        enum Header {
+            case none
+            case notification(info: NotificationHeaderInfo)
+            
+        }
     }
 }
 
@@ -51,6 +60,21 @@ extension UserView.ViewModel {
 //                }
 //            }
 //            .store(in: &disposeBag)
+        // header
+        $header
+            .sink { header in
+                switch header {
+                case .none:
+                    return
+                case .notification(let info):
+                    userView.headerIconImageView.image = info.iconImage
+                    userView.headerIconImageView.tintColor = info.iconImageTintColor
+                    userView.headerTextLabel.setupAttributes(style: UserView.headerTextLabelStyle)
+                    userView.headerTextLabel.configure(content: info.textMetaContent)
+                    userView.setHeaderDisplay()
+                }
+            }
+            .store(in: &disposeBag)
         // name
         $name
             .sink { content in
@@ -79,7 +103,11 @@ extension UserView.ViewModel {
 }
 
 extension UserView {
-    func configure(user: UserObject, me: UserObject?) {
+    func configure(
+        user: UserObject,
+        me: UserObject?,
+        notification: NotificationObject?
+    ) {
         switch user {
         case .twitter(let user):
             configure(twitterUser: user)
@@ -87,8 +115,19 @@ extension UserView {
             configure(mastodonUser: user)
         }
         
+        if let notification = notification {
+            configure(notification: notification)
+        }
+        
         viewModel.relationshipViewModel.user = user
         viewModel.relationshipViewModel.me = me
+    }
+    
+    func configure(notification: NotificationObject) {
+        switch notification {
+        case .mastodon(let notification):
+            configure(mastodonNotification: notification)
+        }
     }
 }
 
@@ -141,4 +180,23 @@ extension UserView {
             .assign(to: \.username, on: viewModel)
             .store(in: &disposeBag)
     }
+    
+    private func configure(mastodonNotification notification: MastodonNotification) {
+        let user = notification.account
+        let type = notification.notificationType
+        Publishers.CombineLatest(
+            user.publisher(for: \.displayName),
+            user.publisher(for: \.emojis)
+        )
+        .map { _ in
+            guard let info = NotificationHeaderInfo(type: type, user: user) else {
+                return .none
+            }
+            return ViewModel.Header.notification(info: info)
+        }
+        .assign(to: \.header, on: viewModel)
+        .store(in: &disposeBag)
+    }
 }
+
+

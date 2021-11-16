@@ -30,6 +30,9 @@ extension Feed {
         case .notification:
             if let status = twitterStatus {
                 return .twitter(status)
+            } else if let status = mastodonStatus {
+                assertionFailure("The status should nest in mastodonNotification")
+                return .mastodon(status)
             } else if let notification = mastodonNotification {
                 return .mastodonNotification(notification)
             } else {
@@ -39,6 +42,45 @@ extension Feed {
             return .none
         }
     }
+}
+
+extension Feed {
+    enum ObjectContent {
+        case status(StatusObject)
+        case notification(NotificationObject)
+        case none
+    }
+    
+    var objectContent: ObjectContent {
+        switch kind {
+        case .home:
+            if let status = twitterStatus {
+                return .status(.twitter(object: status))
+            } else if let status = mastodonStatus {
+                return .status(.mastodon(object: status))
+            } else {
+                return .none
+            }
+        case .notification:
+            if let status = twitterStatus {
+                return .status(.twitter(object: status))
+            } else if let status = mastodonStatus {
+                assertionFailure("The status should nest in mastodonNotification")
+                return .status(.mastodon(object: status))
+            } else if let notification = mastodonNotification {
+                if let status = notification.status {
+                    return .status(.mastodon(object: status))
+                } else {
+                    return .notification(.mastodon(object: notification))
+                }
+            } else {
+                return .none
+            }
+        case .none:
+            return .none
+        }
+    }
+    
 }
 
 extension Feed {
@@ -61,6 +103,7 @@ extension Feed {
         }
     }
     
+    @available(*, deprecated, message: "")
     var notificationObject: NotificationObject? {
         switch acct {
         case .none:
