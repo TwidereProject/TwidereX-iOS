@@ -8,6 +8,7 @@
 import UIKit
 import ActiveLabel
 
+@available(*, deprecated, message: "")
 final class QuotePostView: UIView {
     
     static let avatarImageViewSize = CGSize(width: 44, height: 44)
@@ -21,7 +22,7 @@ final class QuotePostView: UIView {
         let imageView = UIImageView()
         imageView.tintColor = .white
         imageView.contentMode = .scaleAspectFill
-        imageView.image = Asset.ObjectTools.verifiedBadge.image.withRenderingMode(.alwaysOriginal)
+//        imageView.image = Asset.ObjectTools.verifiedBadge.image.withRenderingMode(.alwaysOriginal)
         return imageView
     }()
     

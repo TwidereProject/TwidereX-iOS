@@ -11,9 +11,9 @@ import UIKit
 import AuthenticationServices
 import Combine
 import CoreDataStack
-import TwitterAPI
+import TwitterSDK
 
-protocol AccountListViewControllerDelegate: class {
+protocol AccountListViewControllerDelegate: AnyObject {
     func signoutTwitterUser(id: TwitterUser.ID)
 }
 
@@ -25,10 +25,14 @@ final class AccountListViewController: UIViewController, NeedsDependency {
     var disposeBag = Set<AnyCancellable>()
     var viewModel: AccountListViewModel!
     
-    let addBarButtonItem = UIBarButtonItem(title: L10n.Common.Controls.Actions.add, style: .done, target: self, action: #selector(AccountListViewController.addBarButtonItemPressed(_:)))
-    
-    lazy var tableView: UITableView = {
-        let tableView = ControlContainableTableView()
+    private(set) lazy var closeBarButtonItem = UIBarButtonItem(barButtonSystemItem: .close, target: self, action: #selector(AccountListViewController.closeBarButtonItemPressed(_:)))
+
+    private(set) lazy var addBarButtonItem: UIBarButtonItem = {
+        let barButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(AccountListViewController.addBarButtonItemPressed(_:)))
+        return barButtonItem
+    }()
+    private(set) lazy var tableView: UITableView = {
+        let tableView = UITableView()
         tableView.register(AccountListTableViewCell.self, forCellReuseIdentifier: String(describing: AccountListTableViewCell.self))
         tableView.rowHeight = UITableView.automaticDimension
         tableView.separatorStyle = .none
@@ -48,7 +52,7 @@ extension AccountListViewController {
         
         title = L10n.Scene.ManageAccounts.title
         view.backgroundColor = .systemBackground
-        navigationItem.leftBarButtonItem = UIBarButtonItem(title: L10n.Common.Controls.Actions.cancel, style: .plain, target: self, action: #selector(AccountListViewController.closeBarButtonItemPressed(_:)))
+        navigationItem.leftBarButtonItem = closeBarButtonItem
         navigationItem.rightBarButtonItem = addBarButtonItem
         
         tableView.translatesAutoresizingMaskIntoConstraints = false
@@ -62,14 +66,23 @@ extension AccountListViewController {
         
         tableView.delegate = self
         viewModel.setupDiffableDataSource(
-            for: tableView,
-            dependency: self,
-            accountListTableViewCellDelegate: self,
-            accountListViewControllerDelegate: self
+            tableView: tableView,
+            userTableViewCellDelegate: self
         )
         
         addBarButtonItem.target = self
         addBarButtonItem.action = #selector(AccountListViewController.addBarButtonItemPressed(_:))
+        
+        ThemeService.shared.theme
+            .sink { [weak self] theme in
+                guard let self = self else { return }
+                self.update(theme: theme)
+            }
+            .store(in: &disposeBag)
+    }
+    
+    private func update(theme: Theme) {
+        addBarButtonItem.tintColor = theme.accentColor
     }
     
 }
@@ -83,69 +96,66 @@ extension AccountListViewController {
     
     @objc private func addBarButtonItemPressed(_ sender: UIBarButtonItem) {
         os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
-        let authenticationViewModel = AuthenticationViewModel(isAuthenticationIndexExist: true)
-        coordinator.present(scene: .authentication(viewModel: authenticationViewModel), from: self, transition: .modal(animated: true, completion: nil))
+        
+        let configuration = WelcomeViewModel.Configuration(allowDismissModal: true)
+        let welcomeViewModel = WelcomeViewModel(context: context, configuration: configuration)
+        coordinator.present(scene: .welcome(viewModel: welcomeViewModel), from: self, transition: .modal(animated: true, completion: nil))
     }
     
 }
 
 // MARK: - UITableViewDelegate
 extension AccountListViewController: UITableViewDelegate {
-    
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        defer {
+            tableView.deselectRow(at: indexPath, animated: true)
+        }
+        
         guard let diffableDataSource = viewModel.diffableDataSource else { return }
         guard let item = diffableDataSource.itemIdentifier(for: indexPath) else { return }
-        guard case let .twitterUser(objectID) = item else { return }
+        guard case let .authenticationIndex(record) = item else { return }
         
-        let managedObjectContext = context.managedObjectContext
-        managedObjectContext.perform {
-            guard let twitterUser = managedObjectContext.object(with: objectID) as? TwitterUser else { return }
-            self.context.authenticationService.activeTwitterUser(id: twitterUser.id)
-                .receive(on: DispatchQueue.main)
-                .sink { [weak self] result in
-                    guard let self = self else { return }
-                    switch result {
-                    case .failure(let error):
-                        assertionFailure(error.localizedDescription)
-                    case .success(let isActived):
-                        assert(isActived)
-                        self.coordinator.setup()
-                    }
-                }
-                .store(in: &self.disposeBag)
+        Task {
+            do {
+                let isActive = try await self.context.authenticationService.activeAuthenticationIndex(record: record)
+                guard isActive else { return }
+                self.coordinator.setup()
+            } catch {
+                // handle error
+                assertionFailure(error.localizedDescription)
+            }
         }
     }
-    
 }
 
 // MARK: - AccountListTableViewCellDelegate
 extension AccountListViewController: AccountListTableViewCellDelegate {
     
     func accountListTableViewCell(_ cell: AccountListTableViewCell, menuButtonPressed button: UIButton) {
-        guard let diffableDataSource = viewModel.diffableDataSource else { return }
-        guard let indexPath = tableView.indexPath(for: cell) else { return }
-        guard let item = diffableDataSource.itemIdentifier(for: indexPath) else { return }
-        guard case let .twitterUser(objectID) = item else { return }
-        
-        let managedObjectContext = context.managedObjectContext
-        managedObjectContext.perform {
-            guard let twitterUser = managedObjectContext.object(with: objectID) as? TwitterUser else { return }
-            let title = twitterUser.name
-         
-            DispatchQueue.main.async { [weak self] in
-                let alertController = UIAlertController(title: title, message: nil, preferredStyle: .actionSheet)
-                let signOutAction = UIAlertAction(title: L10n.Scene.ManageAccounts.deleteAccount.localizedCapitalized, style: .destructive) { [weak self] _ in
-                    guard let self = self else { return }
-                    self.signoutTwitterUser(id: twitterUser.id)
-                }
-                let cancelAction = UIAlertAction(title: L10n.Common.Controls.Actions.cancel, style: .cancel, handler: nil)
-                alertController.addAction(signOutAction)
-                alertController.addAction(cancelAction)
-                guard let self = self else { return }
-                alertController.popoverPresentationController?.sourceView = button
-                self.present(alertController, animated: true, completion: nil)
-            }
-        }
+//        guard let diffableDataSource = viewModel.diffableDataSource else { return }
+//        guard let indexPath = tableView.indexPath(for: cell) else { return }
+//        guard let item = diffableDataSource.itemIdentifier(for: indexPath) else { return }
+//        guard case let .twitterUser(objectID) = item else { return }
+//
+//        let managedObjectContext = context.managedObjectContext
+//        managedObjectContext.perform {
+//            guard let twitterUser = managedObjectContext.object(with: objectID) as? TwitterUser else { return }
+//            let title = twitterUser.name
+//
+//            DispatchQueue.main.async { [weak self] in
+//                let alertController = UIAlertController(title: title, message: nil, preferredStyle: .actionSheet)
+//                let signOutAction = UIAlertAction(title: L10n.Scene.ManageAccounts.deleteAccount.localizedCapitalized, style: .destructive) { [weak self] _ in
+//                    guard let self = self else { return }
+//                    self.signoutTwitterUser(id: twitterUser.id)
+//                }
+//                let cancelAction = UIAlertAction(title: L10n.Common.Controls.Actions.cancel, style: .cancel, handler: nil)
+//                alertController.addAction(signOutAction)
+//                alertController.addAction(cancelAction)
+//                guard let self = self else { return }
+//                alertController.popoverPresentationController?.sourceView = button
+//                self.present(alertController, animated: true, completion: nil)
+//            }
+//        }
     }
     
 }
@@ -154,26 +164,29 @@ extension AccountListViewController: AccountListTableViewCellDelegate {
 extension AccountListViewController: AccountListViewControllerDelegate {
     
     func signoutTwitterUser(id: TwitterUser.ID) {
-        let currentAccountCount = viewModel.diffableDataSource.snapshot().itemIdentifiers.count
-        context.authenticationService.signOutTwitterUser(id: id)
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] result in
-                guard let self = self else { return }
-                switch result {
-                case .failure(let error):
-                    assertionFailure(error.localizedDescription)
-                case .success(let isSignOut):
-                    guard isSignOut else { return }
-                    self.dismiss(animated: true) {
-                        if currentAccountCount == 1 {
-                            // No active user. Present Authentication scene
-                            let authenticationViewModel = AuthenticationViewModel(isAuthenticationIndexExist: false)
-                            self.coordinator.present(scene: .authentication(viewModel: authenticationViewModel), from: nil, transition: .modal(animated: true, completion: nil))
-                        }
-                    }
-                }
-            }
-            .store(in: &disposeBag)
+//        let currentAccountCount = viewModel.diffableDataSource.snapshot().itemIdentifiers.count
+//        context.authenticationService.signOutTwitterUser(id: id)
+//            .receive(on: DispatchQueue.main)
+//            .sink { [weak self] result in
+//                guard let self = self else { return }
+//                switch result {
+//                case .failure(let error):
+//                    assertionFailure(error.localizedDescription)
+//                case .success(let isSignOut):
+//                    guard isSignOut else { return }
+//                    self.dismiss(animated: true) {
+//                        if currentAccountCount == 1 {
+//                            // No active user. Present Authentication scene
+//                            let authenticationViewModel = AuthenticationViewModel(isAuthenticationIndexExist: false)
+//                            self.coordinator.present(scene: .authentication(viewModel: authenticationViewModel), from: nil, transition: .modal(animated: true, completion: nil))
+//                        }
+//                    }
+//                }
+//            }
+//            .store(in: &disposeBag)
     }
     
 }
+
+// MARK: - UserTableViewCellDelegate
+extension AccountListViewController: UserTableViewCellDelegate { }

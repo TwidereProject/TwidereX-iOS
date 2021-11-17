@@ -9,9 +9,10 @@
 import os.log
 import UIKit
 import Combine
-import TwitterAPI
+import TwitterSDK
 import SafariServices
-import SwiftMessages
+//import SwiftMessages
+import SwiftUI
 
 class MainTabBarController: UITabBarController {
     
@@ -23,15 +24,15 @@ class MainTabBarController: UITabBarController {
     let doubleTapGestureRecognizer = UITapGestureRecognizer.doubleTapGestureRecognizer
     
     enum Tab: Int, CaseIterable {
-        case timeline
-        case mention
+        case home
+        case notification
         case search
         case me
         
         var title: String {
             switch self {
-            case .timeline:     return L10n.Scene.Timeline.title
-            case .mention:      return L10n.Scene.Mentions.title
+            case .home:         return L10n.Scene.Timeline.title
+            case .notification: return L10n.Scene.Notification.title
             case .search:       return L10n.Scene.Search.title
             case .me:           return L10n.Scene.Profile.title
             }
@@ -39,23 +40,27 @@ class MainTabBarController: UITabBarController {
         
         var image: UIImage {
             switch self {
-            case .timeline:     return Asset.ObjectTools.house.image.withRenderingMode(.alwaysTemplate)
-            case .mention:      return Asset.Communication.ellipsesBubble.image.withRenderingMode(.alwaysTemplate)
-            case .search:       return Asset.ObjectTools.magnifyingglass.image.withRenderingMode(.alwaysTemplate)
-            case .me:           return Asset.Human.person.image.withRenderingMode(.alwaysTemplate)
+            case .home:
+                return Asset.ObjectTools.house.image.withRenderingMode(.alwaysTemplate)
+            case .notification:
+                return Asset.ObjectTools.bell.image.withRenderingMode(.alwaysTemplate)
+            case .search:
+                return Asset.ObjectTools.magnifyingglass.image.withRenderingMode(.alwaysTemplate)
+            case .me:
+                return Asset.Human.person.image.withRenderingMode(.alwaysTemplate)
             }
         }
         
         func viewController(context: AppContext, coordinator: SceneCoordinator) -> UIViewController {
             let viewController: UIViewController
             switch self {
-            case .timeline:
+            case .home:
                 let _viewController = HomeTimelineViewController()
                 _viewController.context = context
                 _viewController.coordinator = coordinator
                 viewController = _viewController
-            case .mention:
-                let _viewController = MentionTimelineViewController()
+            case .notification:
+                let _viewController = NotificationViewController()
                 _viewController.context = context
                 _viewController.coordinator = coordinator
                 viewController = _viewController
@@ -106,25 +111,27 @@ extension MainTabBarController {
         setViewControllers(viewControllers, animated: false)
         selectedIndex = 0
         
-        // TODO: custom accent color
-        let tabBarAppearance = UITabBarAppearance()
-        tabBarAppearance.configureWithDefaultBackground()
-        tabBar.standardAppearance = tabBarAppearance
+//        // TODO: custom accent color
+//        let tabBarAppearance = UITabBarAppearance()
+//        tabBarAppearance.configureWithDefaultBackground()
+//        tabBar.standardAppearance = tabBarAppearance
         
-        context.apiService.error
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] error in
-                guard let _ = self else { return }
-                switch error {
-                case .implicit:
-                    break
-                case .explicit(let reason):
-                    let messageConfig = reason.messageConfig
-                    let notifyBannerView = reason.notifyBannerView
-                    SwiftMessages.show(config: messageConfig, view: notifyBannerView)
-                }
-            }
-            .store(in: &disposeBag)
+//        context.apiService.error
+//            .receive(on: DispatchQueue.main)
+//            .sink { [weak self] error in
+//                guard let _ = self else { return }
+//                switch error {
+//                case .implicit:
+//                    break
+//                case .explicit(let reason):
+//                    break
+//                    // FIXME:
+////                    let messageConfig = reason.messageConfig
+////                    let notifyBannerView = reason.notifyBannerView
+////                    SwiftMessages.show(config: messageConfig, view: notifyBannerView)
+//                }
+//            }
+//            .store(in: &disposeBag)
         
         doubleTapGestureRecognizer.addTarget(self, action: #selector(MainTabBarController.doubleTapGestureRecognizerHandler(_:)))
         doubleTapGestureRecognizer.delaysTouchesEnded = false

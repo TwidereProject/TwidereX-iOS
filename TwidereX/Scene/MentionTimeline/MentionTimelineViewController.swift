@@ -13,11 +13,11 @@ import Combine
 import CoreData
 import CoreDataStack
 import GameplayKit
-import TwitterAPI
-import Floaty
+import TwitterSDK
+//import Floaty
 import AlamofireImage
 
-final class MentionTimelineViewController: UIViewController, NeedsDependency, DrawerSidebarTransitionableViewController, MediaPreviewableViewController {
+final class MentionTimelineViewController: UIViewController, NeedsDependency, DrawerSidebarTransitionableViewController {
     
     weak var context: AppContext! { willSet { precondition(!isViewLoaded) } }
     weak var coordinator: SceneCoordinator! { willSet { precondition(!isViewLoaded) } }
@@ -26,7 +26,7 @@ final class MentionTimelineViewController: UIViewController, NeedsDependency, Dr
     private(set) lazy var viewModel = MentionTimelineViewModel(context: context)
    
     private(set) var drawerSidebarTransitionController: DrawerSidebarTransitionController!
-    let mediaPreviewTransitionController = MediaPreviewTransitionController()
+//    let mediaPreviewTransitionController = MediaPreviewTransitionController()
     
     let avatarBarButtonItem = AvatarBarButtonItem()
 
@@ -41,23 +41,23 @@ final class MentionTimelineViewController: UIViewController, NeedsDependency, Dr
     }()
     
     let refreshControl = UIRefreshControl()
-    private lazy var floatyButton: Floaty = {
-        let button = Floaty()
-        button.plusColor = .white
-        button.buttonColor = Asset.Colors.hightLight.color
-        button.buttonImage = Asset.Editing.featherPen.image
-        button.handleFirstItemDirectly = true
-
-        let composeItem: FloatyItem = {
-            let item = FloatyItem()
-            item.title = L10n.Scene.Compose.Title.compose
-            item.handler = self.composeFloatyButtonPressed
-            return item
-        }()
-        button.addItem(item: composeItem)
-
-        return button
-    }()
+//    private lazy var floatyButton: Floaty = {
+//        let button = Floaty()
+//        button.plusColor = .white
+//        button.buttonColor = Asset.Colors.hightLight.color
+//        button.buttonImage = Asset.Editing.featherPen.image
+//        button.handleFirstItemDirectly = true
+//
+//        let composeItem: FloatyItem = {
+//            let item = FloatyItem()
+//            item.title = L10n.Scene.Compose.Title.compose
+//            item.handler = self.composeFloatyButtonPressed
+//            return item
+//        }()
+//        button.addItem(item: composeItem)
+//
+//        return button
+//    }()
     
     deinit {
         os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s:", ((#file as NSString).lastPathComponent), #line, #function)
@@ -79,33 +79,33 @@ extension MentionTimelineViewController {
         refreshControl.addTarget(self, action: #selector(MentionTimelineViewController.refreshControlValueChanged(_:)), for: .valueChanged)
         
         #if DEBUG
-        if #available(iOS 14.0, *) {
-            navigationItem.rightBarButtonItem = UIBarButtonItem(
-                title: "More",
-                image: UIImage(systemName: "ellipsis.circle"),
-                primaryAction: nil,
-                menu: UIMenu(
-                    title: "Debug Tools",
-                    image: nil,
-                    identifier: nil,
-                    options: .displayInline,
-                    children: [
-                        UIAction(title: "Drop first 1 mentions", image: nil, attributes: [], handler: { [weak self] action in
-                            guard let self = self else { return }
-                            self.dropMentions(count: 1)
-                        }),
-                        UIAction(title: "Drop first 5 mentions", image: nil, attributes: [], handler: { [weak self] action in
-                            guard let self = self else { return }
-                            self.dropMentions(count: 5)
-                        }),
-                        UIAction(title: "Remove all mentions", image: nil, attributes: [], handler: { [weak self] action in
-                            guard let self = self else { return }
-                            self.removeAllMentions()
-                        }),
-                    ]
-                )
-            )
-        }
+//        if #available(iOS 14.0, *) {
+//            navigationItem.rightBarButtonItem = UIBarButtonItem(
+//                title: "More",
+//                image: UIImage(systemName: "ellipsis.circle"),
+//                primaryAction: nil,
+//                menu: UIMenu(
+//                    title: "Debug Tools",
+//                    image: nil,
+//                    identifier: nil,
+//                    options: .displayInline,
+//                    children: [
+//                        UIAction(title: "Drop first 1 mentions", image: nil, attributes: [], handler: { [weak self] action in
+//                            guard let self = self else { return }
+//                            self.dropMentions(count: 1)
+//                        }),
+//                        UIAction(title: "Drop first 5 mentions", image: nil, attributes: [], handler: { [weak self] action in
+//                            guard let self = self else { return }
+//                            self.dropMentions(count: 5)
+//                        }),
+//                        UIAction(title: "Remove all mentions", image: nil, attributes: [], handler: { [weak self] action in
+//                            guard let self = self else { return }
+//                            self.removeAllMentions()
+//                        }),
+//                    ]
+//                )
+//            )
+//        }
         #endif
 
         tableView.translatesAutoresizingMaskIntoConstraints = false
@@ -118,44 +118,44 @@ extension MentionTimelineViewController {
             tableView.topAnchor.constraint(equalTo: view.topAnchor)
         ])
 
-        view.addSubview(floatyButton)
+//        view.addSubview(floatyButton)
 
         viewModel.contentOffsetAdjustableTimelineViewControllerDelegate = self
         viewModel.tableView = tableView
         tableView.delegate = self
-        viewModel.setupDiffableDataSource(
-            for: tableView,
-            dependency: self,
-            timelinePostTableViewCellDelegate: self,
-            timelineMiddleLoaderTableViewCellDelegate: self
-        )
-        context.authenticationService.activeAuthenticationIndex
-            .sink { [weak self] activeAuthenticationIndex in
-                guard let self = self else { return }
-                let predicate: NSPredicate
-                if let activeAuthenticationIndex = activeAuthenticationIndex {
-                    let userID = activeAuthenticationIndex.twitterAuthentication?.twitterUser?.id ?? ""
-                    predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [
-                        MentionTimelineIndex.predicate(platform: .twitter),
-                        MentionTimelineIndex.predicate(userID: userID),
-                        MentionTimelineIndex.notDeleted(),
-                    ])
-                } else {
-                    // use invalid predicate
-                    predicate = MentionTimelineIndex.predicate(userID: "")
-                }
-                self.viewModel.fetchedResultsController.fetchRequest.predicate = predicate
-                do {
-                    self.viewModel.diffableDataSource?.defaultRowAnimation = .fade
-                    try self.viewModel.fetchedResultsController.performFetch()
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
-                        self.viewModel.diffableDataSource?.defaultRowAnimation = .automatic
-                    }
-                } catch {
-                    assertionFailure(error.localizedDescription)
-                }
-            }
-            .store(in: &disposeBag)
+//        viewModel.setupDiffableDataSource(
+//            for: tableView,
+//            dependency: self,
+//            timelinePostTableViewCellDelegate: self,
+//            timelineMiddleLoaderTableViewCellDelegate: self
+//        )
+//        context.authenticationService.activeAuthenticationIndex
+//            .sink { [weak self] activeAuthenticationIndex in
+//                guard let self = self else { return }
+//                let predicate: NSPredicate
+//                if let activeAuthenticationIndex = activeAuthenticationIndex {
+//                    let userID = activeAuthenticationIndex.twitterAuthentication?.twitterUser.id ?? ""
+//                    predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [
+//                        MentionTimelineIndex.predicate(platform: .twitter),
+//                        MentionTimelineIndex.predicate(userID: userID),
+//                        MentionTimelineIndex.notDeleted(),
+//                    ])
+//                } else {
+//                    // use invalid predicate
+//                    predicate = MentionTimelineIndex.predicate(userID: "")
+//                }
+//                self.viewModel.fetchedResultsController.fetchRequest.predicate = predicate
+//                do {
+//                    self.viewModel.diffableDataSource?.defaultRowAnimation = .fade
+//                    try self.viewModel.fetchedResultsController.performFetch()
+//                    DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+//                        self.viewModel.diffableDataSource?.defaultRowAnimation = .automatic
+//                    }
+//                } catch {
+//                    assertionFailure(error.localizedDescription)
+//                }
+//            }
+//            .store(in: &disposeBag)
 
         // bind refresh control
         viewModel.isFetchingLatestTimeline
@@ -198,18 +198,18 @@ extension MentionTimelineViewController {
         
         viewModel.viewDidAppear.send()
 
-        DispatchQueue.main.async { [weak self] in
-            guard let self = self else { return }
-            if (self.viewModel.fetchedResultsController.fetchedObjects ?? []).count == 0 {
-                self.viewModel.loadLatestStateMachine.enter(MentionTimelineViewModel.LoadLatestState.Loading.self)
-            }
-        }
+//        DispatchQueue.main.async { [weak self] in
+//            guard let self = self else { return }
+//            if (self.viewModel.fetchedResultsController.fetchedObjects ?? []).count == 0 {
+//                self.viewModel.loadLatestStateMachine.enter(MentionTimelineViewModel.LoadLatestState.Loading.self)
+//            }
+//        }
     }
     
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         
-        context.videoPlaybackService.viewDidDisappear(from: self)
+//        context.videoPlaybackService.viewDidDisappear(from: self)
     }
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
@@ -227,7 +227,7 @@ extension MentionTimelineViewController {
     override func viewSafeAreaInsetsDidChange() {
         super.viewSafeAreaInsetsDidChange()
 
-        floatyButton.paddingY = view.safeAreaInsets.bottom + UIView.floatyButtonBottomMargin
+//        floatyButton.paddingY = view.safeAreaInsets.bottom + UIView.floatyButtonBottomMargin
     }
     
 }
@@ -236,7 +236,7 @@ extension MentionTimelineViewController {
     
     @objc private func avatarButtonPressed(_ sender: UIButton) {
         os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
-        coordinator.present(scene: .drawerSidebar, from: self, transition: .custom(transitioningDelegate: drawerSidebarTransitionController))
+//        coordinator.present(scene: .drawerSidebar, from: self, transition: .custom(transitioningDelegate: drawerSidebarTransitionController))
     }
     
     @objc private func refreshControlValueChanged(_ sender: UIRefreshControl) {
@@ -246,54 +246,54 @@ extension MentionTimelineViewController {
         }
     }
 
-    @objc private func composeFloatyButtonPressed(_ sender: FloatyItem) {
-        os_log("%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
-        let composeTweetViewModel = ComposeTweetViewModel(context: context, repliedTweetObjectID: nil)
-        coordinator.present(scene: .composeTweet(viewModel: composeTweetViewModel), from: self, transition: .modal(animated: true, completion: nil))
-    }
+//    @objc private func composeFloatyButtonPressed(_ sender: FloatyItem) {
+//        os_log("%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
+//        let composeTweetViewModel = ComposeTweetViewModel(context: context, repliedTweetObjectID: nil)
+//        coordinator.present(scene: .composeTweet(viewModel: composeTweetViewModel), from: self, transition: .modal(animated: true, completion: nil))
+//    }
     
     #if DEBUG
-    @objc private func removeAllMentions() {
-        os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
-        let mentionTimelineIndexes = viewModel.fetchedResultsController.fetchedObjects ?? []
-        let droppingObjectIDs = mentionTimelineIndexes.map { $0.objectID }
-        context.apiService.backgroundManagedObjectContext.performChanges {
-            for objectID in droppingObjectIDs {
-                guard let object = try? self.context.apiService.backgroundManagedObjectContext.existingObject(with: objectID) as? MentionTimelineIndex else { continue }
-                self.context.apiService.backgroundManagedObjectContext.delete(object)
-            }
-        }
-        .sink { result in
-            switch result {
-            case .success:
-                break
-            case .failure(let error):
-                assertionFailure(error.localizedDescription)
-            }
-        }
-        .store(in: &disposeBag)
-    }
-    
-    @objc private func dropMentions(count: Int) {
-        os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
-        let mentionTimelineIndexes = viewModel.fetchedResultsController.fetchedObjects ?? []
-        let droppingObjectIDs = mentionTimelineIndexes.prefix(count).map { $0.objectID }
-        context.apiService.backgroundManagedObjectContext.performChanges {
-            for objectID in droppingObjectIDs {
-                guard let object = try? self.context.apiService.backgroundManagedObjectContext.existingObject(with: objectID) as? MentionTimelineIndex else { continue }
-                self.context.apiService.backgroundManagedObjectContext.delete(object)
-            }
-        }
-        .sink { result in
-            switch result {
-            case .success:
-                break
-            case .failure(let error):
-                assertionFailure(error.localizedDescription)
-            }
-        }
-        .store(in: &disposeBag)
-    }
+//    @objc private func removeAllMentions() {
+//        os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
+//        let mentionTimelineIndexes = viewModel.fetchedResultsController.fetchedObjects ?? []
+//        let droppingObjectIDs = mentionTimelineIndexes.map { $0.objectID }
+//        context.apiService.backgroundManagedObjectContext.performChanges {
+//            for objectID in droppingObjectIDs {
+//                guard let object = try? self.context.apiService.backgroundManagedObjectContext.existingObject(with: objectID) as? MentionTimelineIndex else { continue }
+//                self.context.apiService.backgroundManagedObjectContext.delete(object)
+//            }
+//        }
+//        .sink { result in
+//            switch result {
+//            case .success:
+//                break
+//            case .failure(let error):
+//                assertionFailure(error.localizedDescription)
+//            }
+//        }
+//        .store(in: &disposeBag)
+//    }
+//
+//    @objc private func dropMentions(count: Int) {
+//        os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
+//        let mentionTimelineIndexes = viewModel.fetchedResultsController.fetchedObjects ?? []
+//        let droppingObjectIDs = mentionTimelineIndexes.prefix(count).map { $0.objectID }
+//        context.apiService.backgroundManagedObjectContext.performChanges {
+//            for objectID in droppingObjectIDs {
+//                guard let object = try? self.context.apiService.backgroundManagedObjectContext.existingObject(with: objectID) as? MentionTimelineIndex else { continue }
+//                self.context.apiService.backgroundManagedObjectContext.delete(object)
+//            }
+//        }
+//        .sink { result in
+//            switch result {
+//            case .success:
+//                break
+//            case .failure(let error):
+//                assertionFailure(error.localizedDescription)
+//            }
+//        }
+//        .store(in: &disposeBag)
+//    }
     #endif
 
 }
@@ -321,71 +321,71 @@ extension MentionTimelineViewController {
 // MARK: - UITableViewDelegate
 extension MentionTimelineViewController: UITableViewDelegate {
 
-    func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
-        guard let diffableDataSource = viewModel.diffableDataSource else { return 100 }
-        guard let item = diffableDataSource.itemIdentifier(for: indexPath) else { return 100 }
-
-        guard let frame = viewModel.cellFrameCache.object(forKey: NSNumber(value: item.hashValue))?.cgRectValue else {
-            return 200
-        }
+//    func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
+//        guard let diffableDataSource = viewModel.diffableDataSource else { return 100 }
+//        guard let item = diffableDataSource.itemIdentifier(for: indexPath) else { return 100 }
+//
+//        guard let frame = viewModel.cellFrameCache.object(forKey: NSNumber(value: item.hashValue))?.cgRectValue else {
+//            return 200
+//        }
         // os_log("%{public}s[%{public}ld], %{public}s: cache cell frame %s", ((#file as NSString).lastPathComponent), #line, #function, frame.debugDescription)
-
-        return ceil(frame.height)
-    }
-
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        os_log("%{public}s[%{public}ld], %{public}s: indexPath %s", ((#file as NSString).lastPathComponent), #line, #function, indexPath.debugDescription)
-
-        guard let diffableDataSource = viewModel.diffableDataSource else { return }
-        guard let item = diffableDataSource.itemIdentifier(for: indexPath) else { return }
-
-        switch item {
-        case .mentionTimelineIndex(let objectID, _):
-            let managedObjectContext = self.viewModel.fetchedResultsController.managedObjectContext
-            managedObjectContext.performAndWait {
-                guard let mentionTimelineIndex = managedObjectContext.object(with: objectID) as? MentionTimelineIndex else { return }
-                guard let tweet = mentionTimelineIndex.tweet?.retweet ?? mentionTimelineIndex.tweet else { return }
-                
-                self.context.videoPlaybackService.markTransitioning(for: tweet)
-                
-                let tweetPostViewModel = TweetConversationViewModel(context: self.context, tweetObjectID: tweet.objectID)
-                self.coordinator.present(scene: .tweetConversation(viewModel: tweetPostViewModel), from: self, transition: .show)
-            }
-        default:
-            return
-        }
-    }
-
-    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        handleTableView(tableView, willDisplay: cell, forRowAt: indexPath)
-    }
-    
-    func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        handleTableView(tableView, didEndDisplaying: cell, forRowAt: indexPath)
-
-        guard let diffableDataSource = viewModel.diffableDataSource else { return }
-        guard let item = diffableDataSource.itemIdentifier(for: indexPath) else { return }
-
-        let key = item.hashValue
-        let frame = cell.frame
-        viewModel.cellFrameCache.setObject(NSValue(cgRect: frame), forKey: NSNumber(value: key))
-    }
-    
-    func tableView(_ tableView: UITableView, contextMenuConfigurationForRowAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
-        handleTableView(tableView, contextMenuConfigurationForRowAt: indexPath, point: point)
-    }
-    
-    func tableView(_ tableView: UITableView, previewForHighlightingContextMenuWithConfiguration configuration: UIContextMenuConfiguration) -> UITargetedPreview? {
-        handleTableView(tableView, previewForHighlightingContextMenuWithConfiguration: configuration)
-    }
-    
-    func tableView(_ tableView: UITableView, previewForDismissingContextMenuWithConfiguration configuration: UIContextMenuConfiguration) -> UITargetedPreview? {
-        handleTableView(tableView, previewForDismissingContextMenuWithConfiguration: configuration)
-    }
-    
-    func tableView(_ tableView: UITableView, willPerformPreviewActionForMenuWith configuration: UIContextMenuConfiguration, animator: UIContextMenuInteractionCommitAnimating) {
-        handleTableView(tableView, willPerformPreviewActionForMenuWith: configuration, animator: animator)
-    }
+//
+//        return ceil(frame.height)
+//    }
+//
+//    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+//        os_log("%{public}s[%{public}ld], %{public}s: indexPath %s", ((#file as NSString).lastPathComponent), #line, #function, indexPath.debugDescription)
+//
+//        guard let diffableDataSource = viewModel.diffableDataSource else { return }
+//        guard let item = diffableDataSource.itemIdentifier(for: indexPath) else { return }
+//
+//        switch item {
+//        case .mentionTimelineIndex(let objectID, _):
+//            let managedObjectContext = self.viewModel.fetchedResultsController.managedObjectContext
+//            managedObjectContext.performAndWait {
+//                guard let mentionTimelineIndex = managedObjectContext.object(with: objectID) as? MentionTimelineIndex else { return }
+//                guard let tweet = mentionTimelineIndex.tweet?.retweet ?? mentionTimelineIndex.tweet else { return }
+//
+//                self.context.videoPlaybackService.markTransitioning(for: tweet)
+//
+//                let tweetPostViewModel = TweetConversationViewModel(context: self.context, tweetObjectID: tweet.objectID)
+//                self.coordinator.present(scene: .tweetConversation(viewModel: tweetPostViewModel), from: self, transition: .show)
+//            }
+//        default:
+//            return
+//        }
+//    }
+//
+//    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+//        handleTableView(tableView, willDisplay: cell, forRowAt: indexPath)
+//    }
+//
+//    func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+//        handleTableView(tableView, didEndDisplaying: cell, forRowAt: indexPath)
+//
+//        guard let diffableDataSource = viewModel.diffableDataSource else { return }
+//        guard let item = diffableDataSource.itemIdentifier(for: indexPath) else { return }
+//
+//        let key = item.hashValue
+//        let frame = cell.frame
+//        viewModel.cellFrameCache.setObject(NSValue(cgRect: frame), forKey: NSNumber(value: key))
+//    }
+//
+//    func tableView(_ tableView: UITableView, contextMenuConfigurationForRowAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
+//        handleTableView(tableView, contextMenuConfigurationForRowAt: indexPath, point: point)
+//    }
+//
+//    func tableView(_ tableView: UITableView, previewForHighlightingContextMenuWithConfiguration configuration: UIContextMenuConfiguration) -> UITargetedPreview? {
+//        handleTableView(tableView, previewForHighlightingContextMenuWithConfiguration: configuration)
+//    }
+//
+//    func tableView(_ tableView: UITableView, previewForDismissingContextMenuWithConfiguration configuration: UIContextMenuConfiguration) -> UITargetedPreview? {
+//        handleTableView(tableView, previewForDismissingContextMenuWithConfiguration: configuration)
+//    }
+//
+//    func tableView(_ tableView: UITableView, willPerformPreviewActionForMenuWith configuration: UIContextMenuConfiguration, animator: UIContextMenuInteractionCommitAnimating) {
+//        handleTableView(tableView, willPerformPreviewActionForMenuWith: configuration, animator: animator)
+//    }
 
 }
 
@@ -400,62 +400,62 @@ extension MentionTimelineViewController: ContentOffsetAdjustableTimelineViewCont
 extension MentionTimelineViewController: TimelineMiddleLoaderTableViewCellDelegate {
     
     func configure(cell: TimelineMiddleLoaderTableViewCell, upperTimelineIndexObjectID: NSManagedObjectID) {
-        viewModel.loadMiddleSateMachineList
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] ids in
-                guard let _ = self else { return }
-                if let stateMachine = ids[upperTimelineIndexObjectID] {
-                    guard let state = stateMachine.currentState else {
-                        assertionFailure()
-                        return
-                    }
-
-                    // make success state same as loading due to snapshot updating delay
-                    let isLoading = state is MentionTimelineViewModel.LoadMiddleState.Loading || state is MentionTimelineViewModel.LoadMiddleState.Success
-                    cell.loadMoreButton.isHidden = isLoading
-                    if isLoading {
-                        cell.activityIndicatorView.startAnimating()
-                    } else {
-                        cell.activityIndicatorView.stopAnimating()
-                    }
-                } else {
-                    cell.loadMoreButton.isHidden = false
-                    cell.activityIndicatorView.stopAnimating()
-                }
-            }
-            .store(in: &cell.disposeBag)
-        
-        var dict = viewModel.loadMiddleSateMachineList.value
-        if let _ = dict[upperTimelineIndexObjectID] {
-            // do nothing
-        } else {
-            let stateMachine = GKStateMachine(states: [
-                MentionTimelineViewModel.LoadMiddleState.Initial(viewModel: viewModel, upperTimelineIndexObjectID: upperTimelineIndexObjectID),
-                MentionTimelineViewModel.LoadMiddleState.Loading(viewModel: viewModel, upperTimelineIndexObjectID: upperTimelineIndexObjectID),
-                MentionTimelineViewModel.LoadMiddleState.Fail(viewModel: viewModel, upperTimelineIndexObjectID: upperTimelineIndexObjectID),
-                MentionTimelineViewModel.LoadMiddleState.Success(viewModel: viewModel, upperTimelineIndexObjectID: upperTimelineIndexObjectID),
-            ])
-            stateMachine.enter(MentionTimelineViewModel.LoadMiddleState.Initial.self)
-            dict[upperTimelineIndexObjectID] = stateMachine
-            viewModel.loadMiddleSateMachineList.value = dict
-        }
+//        viewModel.loadMiddleSateMachineList
+//            .receive(on: DispatchQueue.main)
+//            .sink { [weak self] ids in
+//                guard let _ = self else { return }
+//                if let stateMachine = ids[upperTimelineIndexObjectID] {
+//                    guard let state = stateMachine.currentState else {
+//                        assertionFailure()
+//                        return
+//                    }
+//
+//                    // make success state same as loading due to snapshot updating delay
+//                    let isLoading = state is MentionTimelineViewModel.LoadMiddleState.Loading || state is MentionTimelineViewModel.LoadMiddleState.Success
+//                    cell.loadMoreButton.isHidden = isLoading
+//                    if isLoading {
+//                        cell.activityIndicatorView.startAnimating()
+//                    } else {
+//                        cell.activityIndicatorView.stopAnimating()
+//                    }
+//                } else {
+//                    cell.loadMoreButton.isHidden = false
+//                    cell.activityIndicatorView.stopAnimating()
+//                }
+//            }
+//            .store(in: &cell.disposeBag)
+//
+//        var dict = viewModel.loadMiddleSateMachineList.value
+//        if let _ = dict[upperTimelineIndexObjectID] {
+//            // do nothing
+//        } else {
+//            let stateMachine = GKStateMachine(states: [
+//                MentionTimelineViewModel.LoadMiddleState.Initial(viewModel: viewModel, upperTimelineIndexObjectID: upperTimelineIndexObjectID),
+//                MentionTimelineViewModel.LoadMiddleState.Loading(viewModel: viewModel, upperTimelineIndexObjectID: upperTimelineIndexObjectID),
+//                MentionTimelineViewModel.LoadMiddleState.Fail(viewModel: viewModel, upperTimelineIndexObjectID: upperTimelineIndexObjectID),
+//                MentionTimelineViewModel.LoadMiddleState.Success(viewModel: viewModel, upperTimelineIndexObjectID: upperTimelineIndexObjectID),
+//            ])
+//            stateMachine.enter(MentionTimelineViewModel.LoadMiddleState.Initial.self)
+//            dict[upperTimelineIndexObjectID] = stateMachine
+//            viewModel.loadMiddleSateMachineList.value = dict
+//        }
     }
     
     func timelineMiddleLoaderTableViewCell(_ cell: TimelineMiddleLoaderTableViewCell, loadMoreButtonDidPressed button: UIButton) {
-        guard let diffableDataSource = viewModel.diffableDataSource else { return }
-        guard let indexPath = tableView.indexPath(for: cell) else { return }
-        guard let item = diffableDataSource.itemIdentifier(for: indexPath) else { return }
-
-        switch item {
-        case .middleLoader(let upper):
-            guard let stateMachine = viewModel.loadMiddleSateMachineList.value[upper] else {
-                assertionFailure()
-                return
-            }
-            stateMachine.enter(MentionTimelineViewModel.LoadMiddleState.Loading.self)
-        default:
-            assertionFailure()
-        }
+//        guard let diffableDataSource = viewModel.diffableDataSource else { return }
+//        guard let indexPath = tableView.indexPath(for: cell) else { return }
+//        guard let item = diffableDataSource.itemIdentifier(for: indexPath) else { return }
+//
+//        switch item {
+//        case .middleLoader(let upper):
+//            guard let stateMachine = viewModel.loadMiddleSateMachineList.value[upper] else {
+//                assertionFailure()
+//                return
+//            }
+//            stateMachine.enter(MentionTimelineViewModel.LoadMiddleState.Loading.self)
+//        default:
+//            assertionFailure()
+//        }
     }
 }
 
@@ -473,10 +473,10 @@ extension MentionTimelineViewController: AVPlayerViewControllerDelegate {
 }
 
 // MARK: - TimelinePostTableViewCellDelegate
-extension MentionTimelineViewController: TimelinePostTableViewCellDelegate {
-    weak var playerViewControllerDelegate: AVPlayerViewControllerDelegate? { return self }
-    func parent() -> UIViewController { return self }
-}
+//extension MentionTimelineViewController: TimelinePostTableViewCellDelegate {
+//    weak var playerViewControllerDelegate: AVPlayerViewControllerDelegate? { return self }
+//    func parent() -> UIViewController { return self }
+//}
 
 // MARK: - ScrollViewContainer
 extension MentionTimelineViewController: ScrollViewContainer {
@@ -484,21 +484,21 @@ extension MentionTimelineViewController: ScrollViewContainer {
     var scrollView: UIScrollView { return tableView }
     
     func scrollToTop(animated: Bool) {
-        if scrollView.contentOffset.y < scrollView.frame.height,
-           viewModel.loadLatestStateMachine.canEnterState(MentionTimelineViewModel.LoadLatestState.Loading.self),
-           (scrollView.contentOffset.y + scrollView.adjustedContentInset.top) == 0.0,
-           !refreshControl.isRefreshing {
-            scrollView.scrollRectToVisible(CGRect(origin: CGPoint(x: 0, y: -refreshControl.frame.height), size: CGSize(width: 1, height: 1)), animated: animated)
-            DispatchQueue.main.async { [weak self] in
-                guard let self = self else { return }
-                self.refreshControl.beginRefreshing()
-                self.refreshControl.sendActions(for: .valueChanged)
-            }
-        } else {
-            let indexPath = IndexPath(row: 0, section: 0)
-            guard viewModel.diffableDataSource?.itemIdentifier(for: indexPath) != nil else { return }
-            tableView.scrollToRow(at: indexPath, at: .top, animated: true)
-        }
+//        if scrollView.contentOffset.y < scrollView.frame.height,
+//           viewModel.loadLatestStateMachine.canEnterState(MentionTimelineViewModel.LoadLatestState.Loading.self),
+//           (scrollView.contentOffset.y + scrollView.adjustedContentInset.top) == 0.0,
+//           !refreshControl.isRefreshing {
+//            scrollView.scrollRectToVisible(CGRect(origin: CGPoint(x: 0, y: -refreshControl.frame.height), size: CGSize(width: 1, height: 1)), animated: animated)
+//            DispatchQueue.main.async { [weak self] in
+//                guard let self = self else { return }
+//                self.refreshControl.beginRefreshing()
+//                self.refreshControl.sendActions(for: .valueChanged)
+//            }
+//        } else {
+//            let indexPath = IndexPath(row: 0, section: 0)
+//            guard viewModel.diffableDataSource?.itemIdentifier(for: indexPath) != nil else { return }
+//            tableView.scrollToRow(at: indexPath, at: .top, animated: true)
+//        }
     }
     
 }

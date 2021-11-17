@@ -49,12 +49,13 @@ extension AboutViewController {
                     let url = URL(string: "https://github.com/TwidereProject/TwidereX-iOS")!
                     self.coordinator.present(scene: .safari(url: url), from: nil, transition: .safariPresent(animated: true, completion: nil))
                 case .twitter:
-                    let profileViewModel = ProfileViewModel(context: self.context, username: "TwidereProject")
-                    self.context.authenticationService.activeAuthenticationIndex
-                        .map { $0?.twitterAuthentication?.twitterUser }
-                        .assign(to: \.value, on: profileViewModel.currentTwitterUser)
-                        .store(in: &profileViewModel.disposeBag)
-                    self.coordinator.present(scene: .profile(viewModel: profileViewModel), from: self, transition: .show)
+                    break
+//                    let profileViewModel = ProfileViewModel(context: self.context, username: "TwidereProject")
+//                    self.context.authenticationService.activeAuthenticationIndex
+//                        .map { $0?.twitterAuthentication?.twitterUser }
+//                        .assign(to: \.value, on: profileViewModel.currentTwitterUser)
+//                        .store(in: &profileViewModel.disposeBag)
+//                    self.coordinator.present(scene: .profile(viewModel: profileViewModel), from: self, transition: .show)
                 case .license:
                     let url = URL(string: "https://github.com/TwidereProject/TwidereX-iOS/blob/master/LICENSE")!
                     self.coordinator.present(scene: .safari(url: url), from: nil, transition: .safariPresent(animated: true, completion: nil))

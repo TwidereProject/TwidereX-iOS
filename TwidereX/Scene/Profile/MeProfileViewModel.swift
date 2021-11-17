@@ -10,21 +10,38 @@ import UIKit
 import Combine
 import CoreData
 import CoreDataStack
-import TwitterAPI
+import TwitterSDK
 
 final class MeProfileViewModel: ProfileViewModel {
     
-    init(context: AppContext) {
-        super.init(context: context, optionalTwitterUser: context.authenticationService.activeAuthenticationIndex.value?.twitterAuthentication?.twitterUser)
+    override init(context: AppContext) {
+        super.init(context: context)
         
-        self.currentTwitterUser
-            .sink { [weak self] currentTwitterUser in
-                os_log("%{public}s[%{public}ld], %{public}s: current active twitter user: %s", ((#file as NSString).lastPathComponent), #line, #function, currentTwitterUser?.username ?? "<nil>")
-                
+        context.authenticationService.activeAuthenticationContext
+            .sink { [weak self] authenticationContext in
                 guard let self = self else { return }
-                self.twitterUser.value = currentTwitterUser
+                Task {
+                    await self.setup(authenticationContext: authenticationContext)
+                }
             }
             .store(in: &disposeBag)
+    }
+    
+    @MainActor
+    func setup(authenticationContext: AuthenticationContext?) async {
+        let managedObjectContext = context.managedObjectContext
+        self.user = await managedObjectContext.perform {
+            switch authenticationContext {
+            case .twitter(let authenticationContext):
+                let authentication = authenticationContext.authenticationRecord.object(in: managedObjectContext)
+                return authentication.flatMap { .twitter(object: $0.user) }
+            case .mastodon(let authenticationContext):
+                let authentication = authenticationContext.authenticationRecord.object(in: managedObjectContext)
+                return authentication.flatMap { .mastodon(object: $0.user) }
+            case nil:
+                return nil
+            }
+        }
     }
     
 }

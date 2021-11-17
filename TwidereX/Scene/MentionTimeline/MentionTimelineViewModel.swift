@@ -23,7 +23,7 @@ final class MentionTimelineViewModel: NSObject {
 
     // input
     let context: AppContext
-    let fetchedResultsController: NSFetchedResultsController<MentionTimelineIndex>
+//    let fetchedResultsController: NSFetchedResultsController<MentionTimelineIndex>
     let viewDidAppear = PassthroughSubject<Void, Never>()
 
     weak var contentOffsetAdjustableTimelineViewControllerDelegate: ContentOffsetAdjustableTimelineViewControllerDelegate?
@@ -60,29 +60,29 @@ final class MentionTimelineViewModel: NSObject {
     lazy var loadOldestStateMachinePublisher = CurrentValueSubject<LoadOldestState?, Never>(nil)
     // middle loader
     let loadMiddleSateMachineList = CurrentValueSubject<[NSManagedObjectID: GKStateMachine], Never>([:])    // MentionTimelineIndex.objectID : middle loading state machine
-    var diffableDataSource: UITableViewDiffableDataSource<TimelineSection, Item>?
+//    var diffableDataSource: UITableViewDiffableDataSource<TimelineSection, Item>?
     var cellFrameCache = NSCache<NSNumber, NSValue>()
     let avatarStyle = CurrentValueSubject<UserDefaults.AvatarStyle, Never>(UserDefaults.shared.avatarStyle)
 
     init(context: AppContext) {
         self.context  = context
-        self.fetchedResultsController = {
-            let fetchRequest = MentionTimelineIndex.sortedFetchRequest
-            fetchRequest.fetchBatchSize = 20
-            fetchRequest.returnsObjectsAsFaults = false
-            fetchRequest.relationshipKeyPathsForPrefetching = [#keyPath(MentionTimelineIndex.tweet)]
-            let controller = NSFetchedResultsController(
-                fetchRequest: fetchRequest,
-                managedObjectContext: context.managedObjectContext,
-                sectionNameKeyPath: nil,
-                cacheName: nil
-            )
-            
-            return controller
-        }()
+//        self.fetchedResultsController = {
+//            let fetchRequest = MentionTimelineIndex.sortedFetchRequest
+//            fetchRequest.fetchBatchSize = 20
+//            fetchRequest.returnsObjectsAsFaults = false
+//            fetchRequest.relationshipKeyPathsForPrefetching = [#keyPath(MentionTimelineIndex.tweet)]
+//            let controller = NSFetchedResultsController(
+//                fetchRequest: fetchRequest,
+//                managedObjectContext: context.managedObjectContext,
+//                sectionNameKeyPath: nil,
+//                cacheName: nil
+//            )
+//
+//            return controller
+//        }()
         super.init()
         
-        fetchedResultsController.delegate = self
+//        fetchedResultsController.delegate = self
         
         UserDefaults.shared
             .observe(\.avatarStyle) { [weak self] defaults, _ in

@@ -35,7 +35,7 @@ struct AboutView: View {
     var body: some View {
         VStack {
             VStack {
-                Image(uiImage: Asset.Logo.twidere.image)
+                Image(uiImage: Asset.Scene.Welcome.twidere.image)
                     .padding(44)
                 Text("Twidere X")
                     .font(.headline)
@@ -51,7 +51,7 @@ struct AboutView: View {
                 Button(action: {
                     context.viewStateStore.aboutView.aboutEntryPublisher.send(.twitter)
                 }, label: {
-                    Image(uiImage: Asset.Logo.twitterCircle.image.withRenderingMode(.alwaysTemplate))
+                    Image(uiImage: Asset.Logo.twitter.image.withRenderingMode(.alwaysTemplate))
                         .foregroundColor(.secondary)
                 })
                 Button(action: {

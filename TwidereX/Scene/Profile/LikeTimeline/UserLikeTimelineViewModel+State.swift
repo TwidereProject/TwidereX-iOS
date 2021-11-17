@@ -9,7 +9,7 @@
 import os.log
 import Foundation
 import GameplayKit
-import TwitterAPI
+import TwitterSDK
 
 extension UserLikeTimelineViewModel {
     class State: GKState {
@@ -21,7 +21,6 @@ extension UserLikeTimelineViewModel {
         
         override func didEnter(from previousState: GKState?) {
             os_log("%{public}s[%{public}ld], %{public}s: enter %s, previous: %s", ((#file as NSString).lastPathComponent), #line, #function, self.debugDescription, previousState.debugDescription)
-            viewModel?.stateMachinePublisher.send(self)
         }
     }
 }
@@ -32,7 +31,7 @@ extension UserLikeTimelineViewModel.State {
             guard let viewModel = viewModel else { return false }
             switch stateClass {
             case is Reloading.Type:
-                return viewModel.userID.value != nil
+                return viewModel.userIdentifier != nil
             case is Suspended.Type:
                 return true
             default:
@@ -46,9 +45,7 @@ extension UserLikeTimelineViewModel.State {
             switch stateClass {
             case is Fail.Type:
                 return true
-            case is Idle.Type:
-                return true
-            case is NoMore.Type:
+            case is Idle.Type, is LoadingMore.Type:
                 return true
             case is NotAuthorized.Type, is Blocked.Type:
                 return true
@@ -63,40 +60,43 @@ extension UserLikeTimelineViewModel.State {
             super.didEnter(from: previousState)
             guard let viewModel = viewModel, let stateMachine = stateMachine else { return }
             
-            var snapshot = NSDiffableDataSourceSnapshot<TimelineSection, Item>()
-            snapshot.appendSections([.main])
-            snapshot.appendItems([.bottomLoader], toSection: .main)
-            viewModel.diffableDataSource?.apply(snapshot)
+            viewModel.statusRecordFetchedResultController.reset()
             
-            let userID = viewModel.userID.value
-            viewModel.fetchLatest()
-                .receive(on: DispatchQueue.main)
-                .sink { completion in
-                    switch completion {
-                    case .failure(let error):
-                        os_log("%{public}s[%{public}ld], %{public}s: fetch user timeline latest response error: %s", ((#file as NSString).lastPathComponent), #line, #function, error.localizedDescription)
-                        if NotAuthorized.canEnter(for: error) {
-                            stateMachine.enter(NotAuthorized.self)
-                        } else if Blocked.canEnter(for: error) {
-                            stateMachine.enter(Blocked.self)
-                        } else {
-                            stateMachine.enter(Fail.self)
-                        }
-                    case .finished:
-                        break
-                    }
-                } receiveValue: { response in
-                    guard viewModel.userID.value == userID else { return }
-                    let tweetIDs = response.value.map { $0.idStr }
-
-                    if tweetIDs.isEmpty {
-                        stateMachine.enter(NoMore.self)
-                    } else {
-                        stateMachine.enter(Idle.self)
-                    }
-                    viewModel.tweetIDs.value = tweetIDs
-                }
-                .store(in: &viewModel.disposeBag)
+            stateMachine.enter(LoadingMore.self)
+//            var snapshot = NSDiffableDataSourceSnapshot<TimelineSection, Item>()
+//            snapshot.appendSections([.main])
+//            snapshot.appendItems([.bottomLoader], toSection: .main)
+//            viewModel.diffableDataSource?.apply(snapshot)
+//            
+//            let userID = viewModel.userID.value
+//            viewModel.fetchLatest()
+//                .receive(on: DispatchQueue.main)
+//                .sink { completion in
+//                    switch completion {
+//                    case .failure(let error):
+//                        os_log("%{public}s[%{public}ld], %{public}s: fetch user timeline latest response error: %s", ((#file as NSString).lastPathComponent), #line, #function, error.localizedDescription)
+//                        if NotAuthorized.canEnter(for: error) {
+//                            stateMachine.enter(NotAuthorized.self)
+//                        } else if Blocked.canEnter(for: error) {
+//                            stateMachine.enter(Blocked.self)
+//                        } else {
+//                            stateMachine.enter(Fail.self)
+//                        }
+//                    case .finished:
+//                        break
+//                    }
+//                } receiveValue: { response in
+//                    guard viewModel.userID.value == userID else { return }
+//                    let tweetIDs = response.value.map { $0.idStr }
+//
+//                    if tweetIDs.isEmpty {
+//                        stateMachine.enter(NoMore.self)
+//                    } else {
+//                        stateMachine.enter(Idle.self)
+//                    }
+//                    viewModel.tweetIDs.value = tweetIDs
+//                }
+//                .store(in: &viewModel.disposeBag)
         }
     }
     
@@ -127,6 +127,10 @@ extension UserLikeTimelineViewModel.State {
     }
     
     class LoadingMore: UserLikeTimelineViewModel.State {
+        let logger = Logger(subsystem: "UserLikeTimelineViewModel.State", category: "StateMachine")
+
+        var nextInput: StatusListFetchViewModel.Input?
+
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {
             switch stateClass {
             case is Fail.Type:
@@ -146,43 +150,102 @@ extension UserLikeTimelineViewModel.State {
         
         override func didEnter(from previousState: GKState?) {
             super.didEnter(from: previousState)
+            
+            // reset when reloading
+            switch previousState {
+            case is Reloading:
+                nextInput = nil
+            default:
+                break
+            }
+            
             guard let viewModel = viewModel, let stateMachine = stateMachine else { return }
             
-            let userID = viewModel.userID.value
-            viewModel.loadMore()
-                .receive(on: DispatchQueue.main)
-                .sink { completion in
-                    switch completion {
-                    case .failure(let error):
-                        stateMachine.enter(Fail.self)
-                        os_log("%{public}s[%{public}ld], %{public}s: load more fail: %s", ((#file as NSString).lastPathComponent), #line, #function, error.localizedDescription)
-                        
-                    case .finished:
-                        break
-                    }
-                } receiveValue: { response in
-                    guard viewModel.userID.value == userID else { return }
-                    
-                    var hasNewTweets = false
-                    var tweetIDs = viewModel.tweetIDs.value
-                    for tweet in response.value {
-                        if !tweetIDs.contains(tweet.idStr) {
-                            hasNewTweets = true
-                            tweetIDs.append(tweet.idStr)
+            guard let userIdentifier = viewModel.userIdentifier,
+                  let authenticationContext = viewModel.context.authenticationService.activeAuthenticationContext.value
+            else {
+                stateMachine.enter(Fail.self)
+                return
+            }
+            
+            if nextInput == nil {
+                nextInput = {
+                    switch (userIdentifier, authenticationContext) {
+                    case (.twitter(let identifier), .twitter(let authenticationContext)):
+                        return StatusListFetchViewModel.Input(
+                            fetchContext: .twitter(.init(
+                                authenticationContext: authenticationContext,
+                                searchText: nil,
+                                maxID: nil,
+                                nextToken: nil,
+                                count: 50,
+                                excludeReplies: false,
+                                onlyMedia: false,
+                                userIdentifier: identifier
+                            ))
+                        )
+                    case (.mastodon(let identifier), .mastodon(let authenticationContext)):
+                        // Mastodon allow fetch oneself like timeline only
+                        guard identifier.id == authenticationContext.userID else {
+                            return nil
                         }
+                        return StatusListFetchViewModel.Input(
+                            fetchContext: .mastodon(.init(
+                                authenticationContext: authenticationContext,
+                                searchText: nil,
+                                offset: nil,
+                                maxID: nil,
+                                count: 50,
+                                excludeReplies: false,
+                                excludeReblogs: false,
+                                onlyMedia: false,
+                                userIdentifier: identifier
+                            ))
+                        )
+                    default:
+                        return nil
                     }
+                }()
+            }
+            
+            guard let input = nextInput else {
+                stateMachine.enter(Fail.self)
+                return
+            }
+
+            Task {
+                do {
+                    logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): fetch…")
+                    let output = try await StatusListFetchViewModel.likeTimeline(context: viewModel.context, input: input)
                     
-                    if !hasNewTweets {
-                        stateMachine.enter(NoMore.self)
-                    } else {
+                    nextInput = output.nextInput
+                    if output.hasMore {
                         stateMachine.enter(Idle.self)
+                    } else {
+                        stateMachine.enter(NoMore.self)
                     }
                     
-                    viewModel.tweetIDs.value = tweetIDs
+                    switch output.result {
+                    case .twitterV2:
+                        // not use v2 API here
+                        assertionFailure()
+                        return
+                    case .twitter(let statuses):
+                        let statusIDs = statuses.map { $0.idStr }
+                        viewModel.statusRecordFetchedResultController.twitterStatusFetchedResultController.append(statusIDs: statusIDs)
+                    case .mastodon(let statuses):
+                        let statusIDs = statuses.map { $0.id }
+                        viewModel.statusRecordFetchedResultController.mastodonStatusFetchedResultController.append(statusIDs: statusIDs)
+                    }
+                    logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): fetch success")
+                    
+                } catch {
+                    logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): fetch failure: \(error.localizedDescription)")
+                    stateMachine.enter(Fail.self)
                 }
-                .store(in: &viewModel.disposeBag)
-        }
-    }
+            }   // end Task
+        }   // end didEnter(from:)
+    }   // end class LoadingMore
     
     class NotAuthorized: UserLikeTimelineViewModel.State {
         static func canEnter(for error: Error) -> Bool {
@@ -211,7 +274,7 @@ extension UserLikeTimelineViewModel.State {
             guard let viewModel = viewModel else { return }
             
             // trigger items update
-            viewModel.tweetIDs.value = []
+            viewModel.statusRecordFetchedResultController.reset()
         }
     }
     
@@ -242,7 +305,7 @@ extension UserLikeTimelineViewModel.State {
             guard let viewModel = viewModel else { return }
             
             // trigger items update
-            viewModel.tweetIDs.value = []
+            viewModel.statusRecordFetchedResultController.reset()
         }
     }
     
@@ -256,7 +319,7 @@ extension UserLikeTimelineViewModel.State {
             guard let viewModel = viewModel else { return }
             
             // trigger items update
-            viewModel.tweetIDs.value = []
+            viewModel.statusRecordFetchedResultController.reset()
         }
     }
     

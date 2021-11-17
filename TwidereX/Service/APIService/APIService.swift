@@ -10,9 +10,9 @@ import Foundation
 import Combine
 import CoreData
 import CoreDataStack
-import TwitterAPI
+import TwitterSDK
 import AlamofireImage
-import AlamofireNetworkActivityIndicator
+// import AlamofireNetworkActivityIndicator
 
 final class APIService {
         
@@ -21,12 +21,13 @@ final class APIService {
     // internal
     let session: URLSession
     var homeTimelineRequestThrottler = RequestThrottler()
+    let logger = Logger(subsystem: "APIService", category: "API")
     
     // input
     let backgroundManagedObjectContext: NSManagedObjectContext
 
     // output
-    let error = PassthroughSubject<APIError, Never>()
+    let error = PassthroughSubject<AppError, Never>()
     
     init(backgroundManagedObjectContext: NSManagedObjectContext) {
         self.backgroundManagedObjectContext = backgroundManagedObjectContext
@@ -36,9 +37,9 @@ final class APIService {
         URLCache.shared = URLCache(memoryCapacity: 10 * 1024 * 1024, diskCapacity: 50 * 1024 * 1024, diskPath: nil)
         
         // enable network activity manager for AlamofireImage
-        NetworkActivityIndicatorManager.shared.isEnabled = true
-        NetworkActivityIndicatorManager.shared.startDelay = 0.2
-        NetworkActivityIndicatorManager.shared.completionDelay = 0.5
+        // NetworkActivityIndicatorManager.shared.isEnabled = true
+        // NetworkActivityIndicatorManager.shared.startDelay = 0.2
+        // NetworkActivityIndicatorManager.shared.completionDelay = 0.5
     }
     
 }

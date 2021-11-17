@@ -1,5 +1,8 @@
 strings:
-  inputs: TwidereX/Resources/en.lproj/Localizable.strings
+  inputs: 
+  inputs:
+  - TwidereX/Resources/en.lproj/Localizable.strings
+  - TwidereX/Resources/en.lproj/Localizable.stringsdict
   outputs:
     - templateName: structured-swift5
       output: TwidereX/Generated/Strings.swift

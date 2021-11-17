@@ -11,8 +11,8 @@ import UIKit
 extension UserDefaults {
 
     @objc dynamic var useTheSystemFontSize: Bool {
-        get { return UserDefaults.shared[#function] ?? true }
-        set { UserDefaults.shared[#function] = newValue }
+        get { return self[#function] ?? true }
+        set { self[#function] = newValue }
     }
     
     static let contentSizeCategory: [UIContentSizeCategory] = [
@@ -28,7 +28,7 @@ extension UserDefaults {
     
     @objc dynamic var customContentSizeCatagory: UIContentSizeCategory {
         get {
-            guard let index: Int = UserDefaults.shared[#function] else {
+            guard let index: Int = self[#function], index < UserDefaults.contentSizeCategory.count else {
                 return .medium
             }
             return UserDefaults.contentSizeCategory[index]
@@ -36,11 +36,11 @@ extension UserDefaults {
         set {
             guard let index = UserDefaults.contentSizeCategory.firstIndex(of: newValue) else {
                 assertionFailure()
-                UserDefaults.shared[#function] = 0
+                self[#function] = 0
                 return
             }
             
-            UserDefaults.shared[#function] = index
+            self[#function] = index
         }
     }
     
@@ -62,14 +62,29 @@ extension UserDefaults {
     
     @objc dynamic var avatarStyle: AvatarStyle {
         get {
-            guard let rawValue: Int = UserDefaults.shared[#function] else {
+            guard let rawValue: Int = self[#function] else {
                 return .circle
             }
             return AvatarStyle(rawValue: rawValue) ?? .circle
         }
         set {
-            UserDefaults.shared[#function] = newValue.rawValue
+            self[#function] = newValue.rawValue
         }
     }
 
+}
+
+extension UserDefaults {
+    
+    @objc dynamic var theme: Theme {
+        get {
+            guard let rawValue: Int = self[#function] else {
+                return .daylight
+            }
+            return Theme(rawValue: rawValue) ?? .daylight
+        }
+        set {
+            self[#function] = newValue.rawValue
+        }
+    }
 }

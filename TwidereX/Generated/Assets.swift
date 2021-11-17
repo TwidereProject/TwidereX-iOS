@@ -24,6 +24,7 @@ internal enum Asset {
   internal static let accentColor = ColorAsset(name: "AccentColor")
   internal enum Arrows {
     internal static let arrowLeft = ImageAsset(name: "Arrows/arrow.left")
+    internal static let arrowRight = ImageAsset(name: "Arrows/arrow.right")
     internal static let arrowTriangle2Circlepath = ImageAsset(name: "Arrows/arrow.triangle.2.circlepath")
     internal static let arrowTurnUpLeft = ImageAsset(name: "Arrows/arrow.turn.up.left")
     internal static let arrowTurnUpLeftMini = ImageAsset(name: "Arrows/arrow.turn.up.left.mini")
@@ -32,9 +33,31 @@ internal enum Asset {
     internal static let tablerChevronDown = ImageAsset(name: "Arrows/tabler.chevron.down")
     internal static let trendingUp = ImageAsset(name: "Arrows/trending.up")
   }
+  internal enum Badge {
+    internal static let circleMask = ImageAsset(name: "Badge/circle.mask")
+    internal static let circleMastodon = ImageAsset(name: "Badge/circle.mastodon")
+    internal static let circleTwitter = ImageAsset(name: "Badge/circle.twitter")
+    internal static let robot = ImageAsset(name: "Badge/robot")
+    internal static let robotMask = ImageAsset(name: "Badge/robot.mask")
+    internal static let verified = ImageAsset(name: "Badge/verified")
+    internal static let verifiedMask = ImageAsset(name: "Badge/verified.mask")
+  }
   internal enum Colors {
-    internal static let heartPink = ColorAsset(name: "Colors/heart.pink")
+    internal enum Theme {
+      internal static let daylight = ColorAsset(name: "Colors/Theme/daylight")
+      internal static let goldenSpirit = ColorAsset(name: "Colors/Theme/golden.spirit")
+      internal static let grandBudapest = ColorAsset(name: "Colors/Theme/grand.budapest")
+      internal static let lime = ColorAsset(name: "Colors/Theme/lime")
+      internal static let maskBlue = ColorAsset(name: "Colors/Theme/mask.blue")
+      internal static let seafoam = ColorAsset(name: "Colors/Theme/seafoam")
+      internal static let violet = ColorAsset(name: "Colors/Theme/violet")
+      internal static let vulcan = ColorAsset(name: "Colors/Theme/vulcan")
+    }
+    internal enum Tint {
+      internal static let pink = ColorAsset(name: "Colors/Tint/pink")
+    }
     internal static let hightLight = ColorAsset(name: "Colors/hight.light")
+    internal static let mastodonBlue = ColorAsset(name: "Colors/mastodon.blue")
     internal static let twitterBlue = ColorAsset(name: "Colors/twitter.blue")
   }
   internal enum Communication {
@@ -60,7 +83,9 @@ internal enum Asset {
   internal enum Human {
     internal static let eyeSlash = ImageAsset(name: "Human/eye.slash")
     internal static let eyeSlashLarge = ImageAsset(name: "Human/eye.slash.large")
+    internal static let personExclamation = ImageAsset(name: "Human/person.exclamation")
     internal static let person = ImageAsset(name: "Human/person")
+    internal static let personPlus = ImageAsset(name: "Human/person.plus")
   }
   internal enum Indices {
     internal static let checkmarkCircle = ImageAsset(name: "Indices/checkmark.circle")
@@ -69,17 +94,16 @@ internal enum Asset {
   }
   internal enum Logo {
     internal static let githubCircle = ImageAsset(name: "Logo/github.circle")
-    internal static let mastodonMedium = ImageAsset(name: "Logo/mastodon.medium")
-    internal static let twidereAvatar = ImageAsset(name: "Logo/twidere.avatar")
-    internal static let twidere = ImageAsset(name: "Logo/twidere")
-    internal static let twitterCircle = ImageAsset(name: "Logo/twitter.circle")
-    internal static let twitterMedium = ImageAsset(name: "Logo/twitter.medium")
+    internal static let mastodon = ImageAsset(name: "Logo/mastodon")
+    internal static let twitter = ImageAsset(name: "Logo/twitter")
   }
   internal enum Media {
     internal static let `repeat` = ImageAsset(name: "Media/repeat")
     internal static let repeatMini = ImageAsset(name: "Media/repeat.mini")
   }
   internal enum ObjectTools {
+    internal static let bell = ImageAsset(name: "Object&Tools/bell")
+    internal static let bellRinging = ImageAsset(name: "Object&Tools/bell.ringing")
     internal static let blockedBadge = ImageAsset(name: "Object&Tools/blocked.badge")
     internal static let bookmarks = ImageAsset(name: "Object&Tools/bookmarks")
     internal static let camera = ImageAsset(name: "Object&Tools/camera")
@@ -96,10 +120,22 @@ internal enum Asset {
     internal static let paperplane = ImageAsset(name: "Object&Tools/paperplane")
     internal static let photo = ImageAsset(name: "Object&Tools/photo")
     internal static let photos = ImageAsset(name: "Object&Tools/photos")
+    internal static let poll = ImageAsset(name: "Object&Tools/poll")
     internal static let speakerXmark = ImageAsset(name: "Object&Tools/speaker.xmark")
-    internal static let verifiedBadge = ImageAsset(name: "Object&Tools/verified.badge")
-    internal static let verifiedBadgeMini = ImageAsset(name: "Object&Tools/verified.badge.mini")
-    internal static let verifiedBadgeSmall = ImageAsset(name: "Object&Tools/verified.badge.small")
+  }
+  internal enum Scene {
+    internal enum Preference {
+      internal static let twidereAvatar = ImageAsset(name: "Scene/Preference/twidere.avatar")
+    }
+    internal enum Status {
+      internal enum Toolbar {
+        internal static let like = ColorAsset(name: "Scene/Status/Toolbar/like")
+        internal static let repost = ColorAsset(name: "Scene/Status/Toolbar/repost")
+      }
+    }
+    internal enum Welcome {
+      internal static let twidere = ImageAsset(name: "Scene/Welcome/twidere")
+    }
   }
   internal enum Symbol {
     internal static let sharp = ImageAsset(name: "Symbol/sharp")

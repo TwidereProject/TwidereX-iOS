@@ -30,6 +30,7 @@ extension NSManagedObjectContext {
             rollback()
             
             os_log("%{public}s[%{public}ld], %{public}s: %s", ((#file as NSString).lastPathComponent), #line, #function, error.localizedDescription)
+            debugPrint(error)
             throw error
         }
     }
@@ -46,5 +47,35 @@ extension NSManagedObjectContext {
                 }
             }
         }
+    }
+    
+    public func performChanges<T>(block: @escaping () throws -> T) async throws -> T {
+        try await perform(schedule: .enqueued) {
+            let value = try block()
+            try self.saveOrRollback()
+            return value
+        }
+    }
+
+}
+
+
+extension NSManagedObjectContext {
+    static let objectCacheKey = "ObjectCacheKey"
+    private typealias ObjectCache = [String: NSManagedObject]
+    
+    public func cache(
+        _ object: NSManagedObject?,
+        key: String
+    ) {
+        var cache = userInfo[NSManagedObjectContext.objectCacheKey] as? ObjectCache ?? [:]
+        cache[key] = object
+        userInfo[NSManagedObjectContext.objectCacheKey] = cache
+    }
+    
+    public func cache(froKey key: String) -> NSManagedObject? {
+        guard let cache = userInfo[NSManagedObjectContext.objectCacheKey] as? ObjectCache
+        else { return nil }
+        return cache[key]
     }
 }

@@ -9,7 +9,7 @@
 import os.log
 import func QuartzCore.CACurrentMediaTime
 import Foundation
-import TwitterAPI
+import TwitterSDK
 
 extension APIService {
     

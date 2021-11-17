@@ -10,6 +10,7 @@ import UIKit
 
 extension UIView {
     
+    @available(*, deprecated, message: "Use SeparatorLineView instead")
     static var separatorLine: UIView {
         let line = UIView()
         line.backgroundColor = .separator

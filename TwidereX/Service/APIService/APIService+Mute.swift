@@ -9,7 +9,7 @@
 import os.log
 import UIKit
 import Combine
-import TwitterAPI
+import TwitterSDK
 import CoreData
 import CoreDataStack
 import CommonOSLog
@@ -133,14 +133,14 @@ extension APIService {
             } else {
                 _queryType = .create
             }
-            twitterUser.update(muting: !isMuting, by: requestTwitterUser)
+//            twitterUser.update(muting: !isMuting, by: requestTwitterUser)
         }
         .tryMap { result in
             switch result {
             case .success:
                 guard let targetTwitterUserID = _targetTwitterUserID,
                       let queryType = _queryType else {
-                    throw APIError.implicit(.badRequest)
+                    throw AppError.implicit(.badRequest)
                 }
                 return (queryType, targetTwitterUserID)
                 

@@ -105,9 +105,9 @@ extension DrawerSidebarViewController {
                 self.headerView.usernameButton.setTitle(twitterUser.flatMap { "@" + $0.username } ?? "-", for: .normal) 
                 
                 // bind status
-                self.headerView.profileBannerStatusView.followingStatusItemView.countLabel.text = twitterUser?.metrics?.followingCount.flatMap { "\($0.intValue)" } ?? "-"
-                self.headerView.profileBannerStatusView.followersStatusItemView.countLabel.text = twitterUser?.metrics?.followersCount.flatMap { "\($0.intValue)" } ?? "-"
-                self.headerView.profileBannerStatusView.listedStatusItemView.countLabel.text = twitterUser?.metrics?.listedCount.flatMap { "\($0.intValue)" } ?? "-"
+//                self.headerView.profileBannerStatusView.followingStatusItemView.countLabel.text = twitterUser?.metrics?.followingCount.flatMap { "\($0.intValue)" } ?? "-"
+//                self.headerView.profileBannerStatusView.followersStatusItemView.countLabel.text = twitterUser?.metrics?.followersCount.flatMap { "\($0.intValue)" } ?? "-"
+//                self.headerView.profileBannerStatusView.listedStatusItemView.countLabel.text = twitterUser?.metrics?.listedCount.flatMap { "\($0.intValue)" } ?? "-"
             }
             .store(in: &disposeBag)
     }

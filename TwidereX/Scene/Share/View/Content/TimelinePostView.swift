@@ -9,6 +9,7 @@ import UIKit
 import AVKit
 import ActiveLabel
 
+@available(*, deprecated, message: "")
 final class TimelinePostView: UIView {
     
     static let avatarImageViewSize = CGSize(width: 44, height: 44)
@@ -37,7 +38,7 @@ final class TimelinePostView: UIView {
         let imageView = UIImageView()
         imageView.tintColor = .white
         imageView.contentMode = .center
-        imageView.image = Asset.ObjectTools.verifiedBadgeMini.image.withRenderingMode(.alwaysOriginal)
+//        imageView.image = Asset.ObjectTools.verifiedBadgeMini.image.withRenderingMode(.alwaysOriginal)
         return imageView
     }()
     

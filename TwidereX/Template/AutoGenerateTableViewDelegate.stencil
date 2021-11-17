@@ -1,0 +1,11 @@
+{% for type in types.implementing.AutoGenerateTableViewDelegate %}
+// sourcery:inline:{{type.name}}.AutoGenerateTableViewDelegate
+
+// Generated using Sourcery
+// DO NOT EDIT
+func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+    aspectTableView(tableView, didSelectRowAt: indexPath)
+}
+// sourcery:end
+{% endfor %}
+

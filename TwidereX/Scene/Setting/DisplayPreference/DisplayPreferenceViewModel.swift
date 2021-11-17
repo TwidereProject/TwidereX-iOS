@@ -135,7 +135,7 @@ extension DisplayPreferenceViewModel {
     static func configure(cell: TimelinePostTableViewCell) {
         cell.selectionStyle = .none
         // set avatar
-        cell.timelinePostView.avatarImageView.image = Asset.Logo.twidereAvatar.image
+        cell.timelinePostView.avatarImageView.image = Asset.Scene.Preference.twidereAvatar.image
         UserDefaults.shared
             .observe(\.avatarStyle, options: [.initial, .new]) { defaults, _ in
                 let avatarStyle = defaults.avatarStyle

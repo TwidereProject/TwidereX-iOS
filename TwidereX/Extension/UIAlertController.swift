@@ -21,7 +21,7 @@ extension UIAlertController {
         
         let message: String? = {
             if let error = error as? LocalizedError {
-                return [error.failureReason, error.recoverySuggestion].compactMap { $0 }.joined(separator: " ")
+                return [error.failureReason, error.recoverySuggestion].compactMap { $0 }.joined(separator: "\n")
             } else {
                 return error.localizedDescription
             }

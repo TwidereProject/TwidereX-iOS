@@ -8,7 +8,8 @@
 import UIKit
 import Combine
 import Firebase
-import Floaty
+import Kingfisher
+//import Floaty
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -26,15 +27,24 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Update app version info. See: `Settings.bundle`
         UserDefaults.standard.setValue(UIApplication.appVersion(), forKey: "TwidereX.appVersion")
         UserDefaults.standard.setValue(UIApplication.appBuild(), forKey: "TwidereX.appBundle")
+
+        // Setup Kingfisher cache
+        ImageCache.default.memoryStorage.config.totalCostLimit = 50 * 1024 * 1024   // 50MB
+        ImageCache.default.memoryStorage.config.expiration = .seconds(600)
+        ImageCache.default.diskStorage.config.sizeLimit = 500 * 1024 * 1024
+        ImageCache.default.diskStorage.config.expiration = .days(7)
         
-        Floaty.global.rtlMode = UIApplication.shared.userInterfaceLayoutDirection == .rightToLeft
+//        Floaty.global.rtlMode = UIApplication.shared.userInterfaceLayoutDirection == .rightToLeft
         
-        NotificationCenter.default.publisher(for: UIContentSizeCategory.didChangeNotification)
-            .sink { _ in
-                // only trigger update
-                UserDefaults.shared.useTheSystemFontSize = UserDefaults.shared.useTheSystemFontSize
-            }
-            .store(in: &disposeBag)
+//        NotificationCenter.default.publisher(for: UIContentSizeCategory.didChangeNotification)
+//            .sink { _ in
+//                // only trigger update
+//                UserDefaults.shared.useTheSystemFontSize = UserDefaults.shared.useTheSystemFontSize
+//            }
+//            .store(in: &disposeBag)
+        
+        // configure appearance
+        ThemeService.shared.apply(theme: ThemeService.shared.theme.value)
 
         return true
     }
