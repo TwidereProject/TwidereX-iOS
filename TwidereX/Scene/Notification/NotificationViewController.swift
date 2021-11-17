@@ -22,6 +22,8 @@ final class NotificationViewController: TabmanViewController, NeedsDependency {
     var disposeBag = Set<AnyCancellable>()
     private(set) lazy var viewModel = NotificationViewModel(context: context, coordinator: coordinator)
     
+    private(set) lazy var pageSegmentedControl = UISegmentedControl()
+    
     override func pageboyViewController(
         _ pageboyViewController: PageboyViewController,
         didScrollToPageAt index: TabmanViewController.PageIndex,
@@ -34,6 +36,8 @@ final class NotificationViewController: TabmanViewController, NeedsDependency {
             direction: direction,
             animated: animated
         )
+        
+        viewModel.currentPageIndex = index
         
         #if DEBUG
         setupDebugAction()
@@ -49,11 +53,35 @@ extension NotificationViewController {
         dataSource = viewModel
         viewModel.$viewControllers
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] _ in
+            .sink { [weak self] viewControllers in
                 guard let self = self else { return }
                 self.reloadData()
+                self.bounces = viewControllers.count > 1
+                
             }
             .store(in: &disposeBag)
+        
+        setupSegmentedControl(scopes: viewModel.scopes)
+        viewModel.$scopes
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] scopes in
+                guard let self = self else { return }
+                self.setupSegmentedControl(scopes: scopes)
+                self.navigationItem.titleView = scopes.count > 1 ? self.pageSegmentedControl : nil
+            }
+            .store(in: &disposeBag)
+        
+        viewModel.$currentPageIndex
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] currentPageIndex in
+                guard let self = self else { return }
+                if self.pageSegmentedControl.selectedSegmentIndex != currentPageIndex {
+                    self.pageSegmentedControl.selectedSegmentIndex = currentPageIndex
+                }
+            }
+            .store(in: &disposeBag)
+        
+        pageSegmentedControl.addTarget(self, action: #selector(NotificationViewController.pageSegmentedControlValueChanged(_:)), for: .valueChanged)
     }
     
 }
@@ -79,7 +107,31 @@ extension NotificationViewController {
 #endif
 
 extension NotificationViewController {
+    private func setupSegmentedControl(scopes: [NotificationViewModel.Scope]) {
+        pageSegmentedControl.removeAllSegments()
+        for (i, scope) in scopes.enumerated() {
+            pageSegmentedControl.insertSegment(withTitle: scope.title, at: i, animated: false)
+        }
+        
+        // set initial selection
+        guard !pageSegmentedControl.isSelected else { return }
+        if viewModel.currentPageIndex < pageSegmentedControl.numberOfSegments {
+            pageSegmentedControl.selectedSegmentIndex = viewModel.currentPageIndex
+        } else {
+            pageSegmentedControl.selectedSegmentIndex = 0
+        }
+    }
+}
+
+extension NotificationViewController {
     @objc private func refreshControlValueChanged(_ sender: UIRefreshControl) {
         logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public)")
+    }
+    
+    @objc private func pageSegmentedControlValueChanged(_ sender: UISegmentedControl) {
+        logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public)")
+        
+        let index = sender.selectedSegmentIndex
+        scrollToPage(.at(index: index), animated: true, completion: nil)
     }
 }
