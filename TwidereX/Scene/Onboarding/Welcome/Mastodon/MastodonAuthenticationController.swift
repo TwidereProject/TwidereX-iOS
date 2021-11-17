@@ -14,6 +14,7 @@ import AuthenticationServices
 import WebKit
 import AppShared
 import MastodonSDK
+import TwidereCommon
 
 final class MastodonAuthenticationController: NeedsDependency {
     

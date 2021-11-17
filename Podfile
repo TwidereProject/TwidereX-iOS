@@ -8,7 +8,6 @@ target 'TwidereX' do
   # Pods for TwidereX
   
   ## UI
-  pod 'Floaty', '~> 4.2.0'
   pod 'XLPagerTabStrip', '~> 9.0.0'
   
   # misc
@@ -41,7 +40,7 @@ target 'AppShared' do
   use_frameworks!
 end
 
-target 'CoreDataStack' do 
+target 'ShareExtension' do 
   # Comment the next line if you don't want to use dynamic frameworks
   use_frameworks!
 end

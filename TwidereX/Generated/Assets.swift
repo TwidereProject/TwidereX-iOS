@@ -146,6 +146,9 @@ internal enum Asset {
     internal static let listBullet = ImageAsset(name: "TextFormatting/list.bullet")
     internal static let textHeaderRedaction = ImageAsset(name: "TextFormatting/text.header.redaction")
   }
+  internal enum Transportation {
+    internal static let paperAirplane = ImageAsset(name: "Transportation/paper.airplane")
+  }
   internal static let sidebarLeft = ImageAsset(name: "sidebar.left")
   internal static let window = ImageAsset(name: "window")
 }

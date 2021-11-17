@@ -39,23 +39,23 @@ extension DisplayPreferenceViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        title = L10n.Scene.Settings.Display.title
-        
-        tableView.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(tableView)
-        NSLayoutConstraint.activate([
-            tableView.topAnchor.constraint(equalTo: view.topAnchor),
-            tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-        ])
-        
-        tableView.delegate = self
-        tableView.dataSource = viewModel
-        
-        tableView.addGestureRecognizer(textFontSizeSliderPanGestureRecognizer)
-        textFontSizeSliderPanGestureRecognizer.addTarget(self, action: #selector(DisplayPreferenceViewController.sliderPanGestureRecoginzerHandler(_:)))
-        textFontSizeSliderPanGestureRecognizer.delegate = self
+//        title = L10n.Scene.Settings.Display.title
+//
+//        tableView.translatesAutoresizingMaskIntoConstraints = false
+//        view.addSubview(tableView)
+//        NSLayoutConstraint.activate([
+//            tableView.topAnchor.constraint(equalTo: view.topAnchor),
+//            tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+//            tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+//            tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+//        ])
+//
+//        tableView.delegate = self
+//        tableView.dataSource = viewModel
+//
+//        tableView.addGestureRecognizer(textFontSizeSliderPanGestureRecognizer)
+//        textFontSizeSliderPanGestureRecognizer.addTarget(self, action: #selector(DisplayPreferenceViewController.sliderPanGestureRecoginzerHandler(_:)))
+//        textFontSizeSliderPanGestureRecognizer.delegate = self
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -69,46 +69,46 @@ extension DisplayPreferenceViewController {
 // MARK: - UITableViewDelegate
 extension DisplayPreferenceViewController: UITableViewDelegate {
 
-    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        let sectionData = viewModel.sections[section]
-        let header = sectionData.header
-        let headerView = TableViewSectionTextHeaderView()
-        headerView.headerLabel.text = header
-        return headerView
-    }
-    
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let section = viewModel.sections[indexPath.section]
-        let setting = section.settings[indexPath.row]
-        
-        switch setting {
-        case .avatarStyle(let avatarStyle):
-            UserDefaults.shared.avatarStyle = avatarStyle
-            tableView.deselectRow(at: indexPath, animated: true)
-        default:
-            break
-        }
-    }
+//    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+//        let sectionData = viewModel.sections[section]
+//        let header = sectionData.header
+//        let headerView = TableViewSectionTextHeaderView()
+//        headerView.headerLabel.text = header
+//        return headerView
+//    }
+//
+//    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+//        let section = viewModel.sections[indexPath.section]
+//        let setting = section.settings[indexPath.row]
+//
+//        switch setting {
+//        case .avatarStyle(let avatarStyle):
+//            UserDefaults.shared.avatarStyle = avatarStyle
+//            tableView.deselectRow(at: indexPath, animated: true)
+//        default:
+//            break
+//        }
+//    }
     
 }
 
 extension DisplayPreferenceViewController {
     
     @objc private func sliderPanGestureRecoginzerHandler(_ sender: UIPanGestureRecognizer) {
-        let slider = viewModel.fontSizeSlideTableViewCell.slider
-        guard slider.isUserInteractionEnabled else { return }
-        
-        let position = sender.location(in: slider)
-        let x = position.x
-        let width = slider.bounds.width
-        let progress = x / width
-        let value = Float(progress) * slider.maximumValue + slider.minimumValue
-        let roundValue = round(value)
-        viewModel.fontSizeSlideTableViewCell.slider.setValue(roundValue, animated: true)
-
-        let index = max(0, min(UserDefaults.contentSizeCategory.count - 1, Int(roundValue)))
-        let customContentSizeCatagory = UserDefaults.contentSizeCategory[index]
-        viewModel.customContentSizeCatagory.value = customContentSizeCatagory
+//        let slider = viewModel.fontSizeSlideTableViewCell.slider
+//        guard slider.isUserInteractionEnabled else { return }
+//
+//        let position = sender.location(in: slider)
+//        let x = position.x
+//        let width = slider.bounds.width
+//        let progress = x / width
+//        let value = Float(progress) * slider.maximumValue + slider.minimumValue
+//        let roundValue = round(value)
+//        viewModel.fontSizeSlideTableViewCell.slider.setValue(roundValue, animated: true)
+//
+//        let index = max(0, min(UserDefaults.contentSizeCategory.count - 1, Int(roundValue)))
+//        let customContentSizeCatagory = UserDefaults.contentSizeCategory[index]
+//        viewModel.customContentSizeCatagory.value = customContentSizeCatagory
     }
     
 }
@@ -116,24 +116,24 @@ extension DisplayPreferenceViewController {
 // MARK: - UIGestureRecognizerDelegate
 extension DisplayPreferenceViewController: UIGestureRecognizerDelegate {
     
-    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
-        if gestureRecognizer === textFontSizeSliderPanGestureRecognizer {
-            return true
-        }
-        
-        return false
-    }
-    
-    func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
-        if gestureRecognizer === textFontSizeSliderPanGestureRecognizer {
-            let slider = viewModel.fontSizeSlideTableViewCell.slider
-            let position = gestureRecognizer.location(in: slider)
-            guard position.x > 0 && position.x < slider.bounds.width else { return false }
-            guard position.y > 0 && position.y < slider.bounds.height else  { return false }
-            return true
-        }
-        
-        return true
-    }
+//    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+//        if gestureRecognizer === textFontSizeSliderPanGestureRecognizer {
+//            return true
+//        }
+//        
+//        return false
+//    }
+//    
+//    func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+//        if gestureRecognizer === textFontSizeSliderPanGestureRecognizer {
+//            let slider = viewModel.fontSizeSlideTableViewCell.slider
+//            let position = gestureRecognizer.location(in: slider)
+//            guard position.x > 0 && position.x < slider.bounds.width else { return false }
+//            guard position.y > 0 && position.y < slider.bounds.height else  { return false }
+//            return true
+//        }
+//        
+//        return true
+//    }
 
 }

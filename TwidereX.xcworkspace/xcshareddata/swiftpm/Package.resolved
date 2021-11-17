@@ -56,6 +56,15 @@
         }
       },
       {
+        "package": "Floaty",
+        "repositoryURL": "https://github.com/kciter/Floaty.git",
+        "state": {
+          "branch": "master",
+          "revision": "1a6fd17ae1469c86baf830d9d5c93e6804cabe95",
+          "version": null
+        }
+      },
+      {
         "package": "FPSIndicator",
         "repositoryURL": "https://github.com/MainasuK/FPSIndicator.git",
         "state": {
@@ -87,8 +96,8 @@
         "repositoryURL": "https://github.com/onevcat/Kingfisher.git",
         "state": {
           "branch": null,
-          "revision": "d06df9adf50ed8cde5786d935836a5f445f780ba",
-          "version": "6.3.1"
+          "revision": "318e319998bf555c3e914d5c3adb6da05af86a32",
+          "version": "7.1.1"
         }
       },
       {

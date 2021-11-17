@@ -225,12 +225,12 @@ extension DrawerSidebarHeaderView: ProfileBannerStatusViewDelegate {
 }
 
 // MARK: - AvatarConfigurableView
-extension DrawerSidebarHeaderView: AvatarConfigurableView {
-    static var configurableAvatarImageViewSize: CGSize { return avatarImageViewSize }
-    var configurableAvatarImageView: UIImageView? { return nil }
-    var configurableAvatarButton: UIButton? { return avatarButton }
-    var configurableVerifiedBadgeImageView: UIImageView? { return nil }
-}
+//extension DrawerSidebarHeaderView: AvatarConfigurableView {
+//    static var configurableAvatarImageViewSize: CGSize { return avatarImageViewSize }
+//    var configurableAvatarImageView: UIImageView? { return nil }
+//    var configurableAvatarButton: UIButton? { return avatarButton }
+//    var configurableVerifiedBadgeImageView: UIImageView? { return nil }
+//}
 
 #if DEBUG
 import SwiftUI

@@ -14,7 +14,7 @@ import CoreData
 import CoreDataStack
 import GameplayKit
 import TwitterSDK
-//import Floaty
+import Floaty
 import AlamofireImage
 import SwiftUI
 
@@ -51,26 +51,26 @@ final class HomeTimelineViewController: UIViewController, NeedsDependency {
         return tableView
     }()
     
-//    private lazy var floatyButton: Floaty = {
-//        let button = Floaty()
-//        button.plusColor = .white
-//        button.buttonColor = Asset.Colors.hightLight.color
-//        button.buttonImage = Asset.Editing.featherPen.image
-//        button.handleFirstItemDirectly = true
-//        
-//        let composeItem: FloatyItem = {
-//            let item = FloatyItem()
-//            item.title = L10n.Scene.Compose.Title.compose
-//            item.handler = { [weak self] item in
-//                guard let self = self else { return }
-//                self.composeFloatyButtonPressed(item)
-//            }
-//            return item
-//        }()
-//        button.addItem(item: composeItem)
-//        
-//        return button
-//    }()
+    private lazy var floatyButton: Floaty = {
+        let button = Floaty()
+        button.plusColor = .white
+        button.buttonColor = ThemeService.shared.theme.value.accentColor
+        button.buttonImage = Asset.Editing.featherPen.image
+        button.handleFirstItemDirectly = true
+        
+        let composeItem: FloatyItem = {
+            let item = FloatyItem()
+            item.title = L10n.Scene.Compose.Title.compose
+            item.handler = { [weak self] item in
+                guard let self = self else { return }
+                self.floatyButtonPressed(item)
+            }
+            return item
+        }()
+        button.addItem(item: composeItem)
+        
+        return button
+    }()
 
     deinit {
         os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s:", ((#file as NSString).lastPathComponent), #line, #function)
@@ -97,6 +97,8 @@ extension HomeTimelineViewController {
             tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
         ])
+        
+        view.addSubview(floatyButton)
         
         tableView.delegate = self
         viewModel.setupDiffableDataSource(
@@ -130,36 +132,7 @@ extension HomeTimelineViewController {
 //        avatarBarButtonItem.avatarButton.addTarget(self, action: #selector(HomeTimelineViewController.avatarButtonPressed(_:)), for: .touchUpInside)
 //
 //        drawerSidebarTransitionController = DrawerSidebarTransitionController(drawerSidebarTransitionableViewController: self)
-//        tableView.refreshControl = refreshControl
-//        refreshControl.addTarget(self, action: #selector(HomeTimelineViewController.refreshControlValueChanged(_:)), for: .valueChanged)
-//
-        
 
-////        view.addSubview(floatyButton)
-//
-//        viewModel.tableView = tableView
-//        viewModel.contentOffsetAdjustableTimelineViewControllerDelegate = self
-//        tableView.delegate = self
-//        viewModel.setupDiffableDataSource(
-//            for: tableView,
-//            dependency: self,
-//            timelinePostTableViewCellDelegate: self,
-//            timelineMiddleLoaderTableViewCellDelegate: self
-//        )
-//
-//        // bind refresh control
-//        viewModel.isFetchingLatestTimeline
-//            .receive(on: DispatchQueue.main)
-//            .sink { [weak self] isFetching in
-//                guard let self = self else { return }
-//                if !isFetching {
-//                    UIView.animate(withDuration: 0.5) { [weak self] in
-//                        guard let self = self else { return }
-//                        self.refreshControl.endRefreshing()
-//                    }
-//                }
-//            }
-//            .store(in: &disposeBag)
 //        Publishers.CombineLatest3(
 //            context.authenticationService.activeAuthenticationIndex.eraseToAnyPublisher(),
 //            viewModel.avatarStyle.eraseToAnyPublisher(),
@@ -218,10 +191,10 @@ extension HomeTimelineViewController {
     override func viewSafeAreaInsetsDidChange() {
         super.viewSafeAreaInsetsDidChange()
         
-//        DispatchQueue.main.async { [weak self] in
-//            guard let self = self else { return }
-//            self.floatyButton.paddingY = self.view.safeAreaInsets.bottom + UIView.floatyButtonBottomMargin
-//        }
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            self.floatyButton.paddingY = self.view.safeAreaInsets.bottom + UIView.floatyButtonBottomMargin
+        }
     }
 
 }
@@ -246,11 +219,12 @@ extension HomeTimelineViewController {
 //        }
     }
 
-////    @objc private func composeFloatyButtonPressed(_ sender: FloatyItem) {
-////        os_log("%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
-////        let composeTweetViewModel = ComposeTweetViewModel(context: context, repliedTweetObjectID: nil)
-////        coordinator.present(scene: .composeTweet(viewModel: composeTweetViewModel), from: self, transition: .modal(animated: true, completion: nil))
-////    }
+    @objc private func floatyButtonPressed(_ sender: FloatyItem) {
+        os_log("%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
+        
+        let composeViewModel = ComposeViewModel(context: context)
+        coordinator.present(scene: .compose(viewModel: composeViewModel), from: self, transition: .modal(animated: true, completion: nil))
+    }
 
 }
 

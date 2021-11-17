@@ -2,10 +2,14 @@
 //  UserDefaults.swift
 //  
 //
-//  Created by Cirno MainasuK on 2021-11-3.
+//  Created by MainasuK on 2021/11/17.
 //
 
 import UIKit
+
+extension UserDefaults {
+    public static let shared = UserDefaults(suiteName: AppCommon.groupID)!
+}
 
 extension UserDefaults {
     

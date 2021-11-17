@@ -13,11 +13,13 @@ let package = Package(
         // Products define the executables and libraries a package produces, and make them visible to other packages.
         .library(
             name: "TwidereSDK",
-            type: .dynamic,
             targets: ["TwitterSDK", "MastodonSDK"]),
         .library(
             name: "TwidereCommon",
             targets: ["TwidereCommon"]),
+        .library(
+            name: "CoreDataStack",
+            targets: ["CoreDataStack"]),
     ],
     dependencies: [
         .package(url: "https://github.com/SwiftyJSON/SwiftyJSON.git", from: "5.0.0"),
@@ -33,6 +35,10 @@ let package = Package(
                 .product(name: "NIOHTTP1", package: "swift-nio"),
             ]
         ),
+        .testTarget(
+            name: "TwitterSDKTests",
+            dependencies: ["TwitterSDK"]
+        ),
         .target(
             name: "MastodonSDK",
             dependencies: [
@@ -44,9 +50,13 @@ let package = Package(
             name: "TwidereCommon",
             dependencies: []
         ),
-        .testTarget(
-            name: "TwitterSDKTests",
-            dependencies: ["TwitterSDK"]
+        .target(
+            name: "CoreDataStack",
+            dependencies: ["TwidereCommon"],
+            exclude: ["Template/Stencil"],
+            resources: [
+                .copy("CoreDataStack.xcdatamodeld"),
+            ]
         ),
     ]
 )

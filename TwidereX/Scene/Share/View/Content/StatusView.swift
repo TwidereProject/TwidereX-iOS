@@ -12,6 +12,7 @@ import UIKit
 import MetaTextKit
 import MetaTextArea
 import Kingfisher
+import TwidereCommon
 
 protocol StatusViewDelegate: AnyObject {
     func statusView(_ statusView: StatusView, headerDidPressed header: UIView)

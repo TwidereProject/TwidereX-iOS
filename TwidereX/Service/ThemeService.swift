@@ -8,24 +8,26 @@
 
 import UIKit
 import Combine
+import AppShared
+import TwidereCommon
 
 @MainActor
-final class ThemeService {
-    static let shared = ThemeService()
+final public class ThemeService {
+    public static let shared = ThemeService()
     
-    let theme: CurrentValueSubject<Theme, Never>
+    public let theme: CurrentValueSubject<Theme, Never>
     
     private init() {
         theme = CurrentValueSubject(UserDefaults.shared.theme)
     }
     
-    func set(theme: Theme) {
+    public func set(theme: Theme) {
         UserDefaults.shared.theme = theme
         self.theme.value = theme
         apply(theme: theme)
     }
     
-    func apply(theme: Theme) {
+    public func apply(theme: Theme) {
         // set navigation bar appearance
         let appearance = UINavigationBarAppearance()
         appearance.configureWithDefaultBackground()
@@ -49,18 +51,8 @@ final class ThemeService {
     
 }
 
-// Keep rawValue reserved for API compatibility
-@objc enum Theme: Int, CaseIterable {
-    case daylight       = 0
-    case maskBlue       = 1
-    case violet         = 2
-    case grandBudapest  = 3
-    case vulcan         = 4
-    case goldenSpirit   = 5
-    case lime           = 6
-    case seafoam        = 7
-    
-    var accentColor: UIColor {
+extension Theme {
+    public var accentColor: UIColor {
         switch self {
         case .daylight:         return Asset.Colors.Theme.daylight.color
         case .maskBlue:         return Asset.Colors.Theme.maskBlue.color

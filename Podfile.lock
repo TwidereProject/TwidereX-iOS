@@ -49,7 +49,6 @@ PODS:
     - GoogleUtilities/UserDefaults (~> 7.4)
     - PromisesObjC (~> 1.2)
   - FLEX (4.4.0)
-  - Floaty (4.2.0)
   - GoogleAppMeasurement (8.2.0):
     - GoogleAppMeasurement/AdIdSupport (= 8.2.0)
     - GoogleUtilities/AppDelegateSwizzler (~> 7.4)
@@ -104,7 +103,6 @@ DEPENDENCIES:
   - Firebase/Analytics (~> 8.2.0)
   - Firebase/Crashlytics (~> 8.2.0)
   - FLEX (~> 4.4.0)
-  - Floaty (~> 4.2.0)
   - Keys (from `Pods/CocoaPodsKeys`)
   - Sourcery
   - SwiftGen (~> 6.3.0)
@@ -122,7 +120,6 @@ SPEC REPOS:
     - FirebaseCrashlytics
     - FirebaseInstallations
     - FLEX
-    - Floaty
     - GoogleAppMeasurement
     - GoogleDataTransport
     - GoogleUtilities
@@ -147,7 +144,6 @@ SPEC CHECKSUMS:
   FirebaseCrashlytics: 935dbdb043a286ca92a22d15e5780802403ea0ea
   FirebaseInstallations: 9394ea09e242bf0816e95ac30e56a9214cc86ced
   FLEX: 0592c011c6dfbfdb94a5e24f2d4a9dbff0c6026d
-  Floaty: e2bd5a0f6f7f70899e26ff2da31081c8bee8d1b0
   GoogleAppMeasurement: b52eafc9dff542d580700e708216568bd2fbf168
   GoogleDataTransport: 04c3e9a480bbcaa2ec3f5d27f1cdeb6a92f20c8d
   GoogleUtilities: 45dbb24a7f351d69d0a601482b39ad6c32e30dab
@@ -160,6 +156,6 @@ SPEC CHECKSUMS:
   XLPagerTabStrip: 61c57fd61f611ee5f01ff1495ad6fbee8bf496c5
   ZIPFoundation: b1f0de4eed33e74a676f76e12559ab6b75990197
 
-PODFILE CHECKSUM: 80e83af8b649260d03ebcf47f097fb6a46157336
+PODFILE CHECKSUM: 9568de10fb1fbff21ac974d4c181845bfce03218
 
 COCOAPODS: 1.11.2
