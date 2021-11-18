@@ -17,9 +17,6 @@
 		DB004BE126CCFED600F5C574 /* Persistence+MastodonUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB004BE026CCFED600F5C574 /* Persistence+MastodonUser.swift */; };
 		DB004BE526CE21AE00F5C574 /* Persistence+TwitterStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB004BE426CE21AE00F5C574 /* Persistence+TwitterStatus.swift */; };
 		DB004BED26CE28EA00F5C574 /* TwitterStatus+Property.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB004BEC26CE28EA00F5C574 /* TwitterStatus+Property.swift */; };
-		DB004BEF26CE2CAA00F5C574 /* StatusSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB004BEE26CE2CAA00F5C574 /* StatusSection.swift */; };
-		DB004BF226CE2CE600F5C574 /* StatusItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB004BF126CE2CE600F5C574 /* StatusItem.swift */; };
-		DB004BF426CE360400F5C574 /* TwitterStatusFetchedResultController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB004BF326CE360400F5C574 /* TwitterStatusFetchedResultController.swift */; };
 		DB004BF626CE4A7F00F5C574 /* StatusCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB004BF526CE4A7F00F5C574 /* StatusCollectionViewCell.swift */; };
 		DB004BF826CE4AF200F5C574 /* StatusView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB004BF726CE4AF200F5C574 /* StatusView.swift */; };
 		DB004BFD26CE4C1E00F5C574 /* PlaintextMetaContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB004BFC26CE4C1E00F5C574 /* PlaintextMetaContent.swift */; };
@@ -31,9 +28,6 @@
 		DB01092026E60756005F67D7 /* DataSourceFacade+StatusThread.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB01091F26E60756005F67D7 /* DataSourceFacade+StatusThread.swift */; };
 		DB01092226E608B7005F67D7 /* DataSourceFacade+Repost.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB01092126E608B7005F67D7 /* DataSourceFacade+Repost.swift */; };
 		DB01092426E6199C005F67D7 /* DataSourceFacade+StatusViewTableViewCellDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB01092326E6199C005F67D7 /* DataSourceFacade+StatusViewTableViewCellDelegate.swift */; };
-		DB02C76627350B98007EA0BF /* HashtagSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB02C76527350B98007EA0BF /* HashtagSection.swift */; };
-		DB02C76927350BA7007EA0BF /* HashtagItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB02C76827350BA7007EA0BF /* HashtagItem.swift */; };
-		DB02C76B27350C00007EA0BF /* HashtagData.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB02C76A27350C00007EA0BF /* HashtagData.swift */; };
 		DB02C76D27350D71007EA0BF /* SearchHashtagViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB02C76C27350D71007EA0BF /* SearchHashtagViewController.swift */; };
 		DB02C77027350D8A007EA0BF /* SearchHashtagViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB02C76F27350D8A007EA0BF /* SearchHashtagViewModel.swift */; };
 		DB02C77227351B7D007EA0BF /* HashtagTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB02C77127351B7D007EA0BF /* HashtagTableViewCell.swift */; };
@@ -44,7 +38,6 @@
 		DB02C7DD27354A56007EA0BF /* Localizable.stringsdict in Resources */ = {isa = PBXBuildFile; fileRef = DB02C7DB27354A55007EA0BF /* Localizable.stringsdict */; };
 		DB0B3B8E26C6639100501BB7 /* AppSecret.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB2611462518AC13004BF309 /* AppSecret.swift */; };
 		DB0B3B9026C666E300501BB7 /* APIService+WebFinger.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB0B3B8F26C666E300501BB7 /* APIService+WebFinger.swift */; };
-		DB0D0AC825944FF2007A23C8 /* FollowingListViewController+UserProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB0D0AC725944FF2007A23C8 /* FollowingListViewController+UserProvider.swift */; };
 		DB0D3A38255E4341000BB9FA /* UserLikeTimelineViewController+StatusProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB0D3A37255E4341000BB9FA /* UserLikeTimelineViewController+StatusProvider.swift */; };
 		DB0EB9EF26D3748700034427 /* TextStyleConfigurable.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB0EB9EE26D3748700034427 /* TextStyleConfigurable.swift */; };
 		DB0EB9F126D3899200034427 /* StatusToolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB0EB9F026D3899200034427 /* StatusToolbar.swift */; };
@@ -104,7 +97,6 @@
 		DB30ADDD26CFD3CC00B2D2BE /* HomeTimelineViewController+DebugAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBB2513D2599DBAB0064A876 /* HomeTimelineViewController+DebugAction.swift */; };
 		DB3282DB26AFFD40002B721C /* MetaTextKit in Frameworks */ = {isa = PBXBuildFile; productRef = DB3282DA26AFFD40002B721C /* MetaTextKit */; };
 		DB3282DD26AFFD40002B721C /* TwitterMeta in Frameworks */ = {isa = PBXBuildFile; productRef = DB3282DC26AFFD40002B721C /* TwitterMeta */; };
-		DB33A4A125A2F049003CED7D /* Item+EmptyStateHeaderAttribute+TimelineHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB33A4A025A2F049003CED7D /* Item+EmptyStateHeaderAttribute+TimelineHeaderView.swift */; };
 		DB33A4A925A319A0003CED7D /* ActionToolbarContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB33A4A825A319A0003CED7D /* ActionToolbarContainer.swift */; };
 		DB34029D2521BE8B009EFADF /* MeProfileViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB34029C2521BE8B009EFADF /* MeProfileViewModel.swift */; };
 		DB3402B72521D389009EFADF /* UserTimelineViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB3402B62521D389009EFADF /* UserTimelineViewModel.swift */; };
@@ -127,7 +119,6 @@
 		DB3FC04025527053003A2F8A /* UserMediaTimelineViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB3FC03F25527053003A2F8A /* UserMediaTimelineViewModel.swift */; };
 		DB3FC045255270D6003A2F8A /* UserMediaTimelineViewModel+State.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB3FC044255270D6003A2F8A /* UserMediaTimelineViewModel+State.swift */; };
 		DB3FC04A2552711C003A2F8A /* UserMediaTimelineViewModel+Diffable.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB3FC0492552711C003A2F8A /* UserMediaTimelineViewModel+Diffable.swift */; };
-		DB3FC0522552742E003A2F8A /* MediaSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB3FC0512552742E003A2F8A /* MediaSection.swift */; };
 		DB42410E26C3E4BF00B6C5F8 /* WelcomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB42410D26C3E4BF00B6C5F8 /* WelcomeViewController.swift */; };
 		DB42411426C3E55200B6C5F8 /* WelcomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB42411326C3E55200B6C5F8 /* WelcomeView.swift */; };
 		DB42411626C3EB9100B6C5F8 /* ReadabilityPadding.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB42411526C3EB9100B6C5F8 /* ReadabilityPadding.swift */; };
@@ -138,23 +129,13 @@
 		DB44A56226C4FEAB004C8B78 /* WelcomeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB44A56126C4FEAB004C8B78 /* WelcomeViewModel.swift */; };
 		DB51DC1A2715581E00A0D8FB /* ProfileDashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB51DC192715581E00A0D8FB /* ProfileDashboardView.swift */; };
 		DB51DC1C2715588E00A0D8FB /* ProfileDashboardMeterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB51DC1B2715588E00A0D8FB /* ProfileDashboardMeterView.swift */; };
-		DB51DC1E27156F3600A0D8FB /* MastodonStatusFetchedResultController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB51DC1D27156F3600A0D8FB /* MastodonStatusFetchedResultController.swift */; };
 		DB51DC202715734900A0D8FB /* UserTimelineViewController+DataSourceProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB51DC1F2715734900A0D8FB /* UserTimelineViewController+DataSourceProvider.swift */; };
 		DB51DC222715786700A0D8FB /* StatusListFetchViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB51DC212715786700A0D8FB /* StatusListFetchViewModel.swift */; };
-		DB51DC2427158BE700A0D8FB /* StatusRecordFetchedResultController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB51DC2327158BE700A0D8FB /* StatusRecordFetchedResultController.swift */; };
-		DB51DC262715911E00A0D8FB /* StatusRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB51DC252715911E00A0D8FB /* StatusRecord.swift */; };
-		DB51DC282715917700A0D8FB /* StatusObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB51DC272715917700A0D8FB /* StatusObject.swift */; };
-		DB51DC2A2715918F00A0D8FB /* UserRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB51DC292715918F00A0D8FB /* UserRecord.swift */; };
-		DB51DC2C271591A200A0D8FB /* UserObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB51DC2B271591A200A0D8FB /* UserObject.swift */; };
-		DB51DC2E27159A6000A0D8FB /* UserIdentifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB51DC2D27159A6000A0D8FB /* UserIdentifier.swift */; };
 		DB51DC2F2715AC0900A0D8FB /* APIService+UserTimeline.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB34028D2521BC06009EFADF /* APIService+UserTimeline.swift */; };
 		DB51DC3B2716F82000A0D8FB /* CellFrameCacheContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB51DC3A2716F82000A0D8FB /* CellFrameCacheContainer.swift */; };
-		DB51DC3F2717FA8000A0D8FB /* StatusMediaGallerySection.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB51DC3E2717FA8000A0D8FB /* StatusMediaGallerySection.swift */; };
 		DB51DC412717FCAA00A0D8FB /* StatusMediaGalleryCollectionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB51DC402717FCAA00A0D8FB /* StatusMediaGalleryCollectionCell.swift */; };
 		DB51DC432718117900A0D8FB /* StatusMediaGalleryCollectionCell+ViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB51DC422718117900A0D8FB /* StatusMediaGalleryCollectionCell+ViewModel.swift */; };
 		DB51DC452718144D00A0D8FB /* MediaView+Configuration.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB51DC442718144D00A0D8FB /* MediaView+Configuration.swift */; };
-		DB51DC472718197000A0D8FB /* CoverFlowStackSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB51DC462718197000A0D8FB /* CoverFlowStackSection.swift */; };
-		DB51DC4C27181BAE00A0D8FB /* CoverFlowStackItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB51DC4B27181BAE00A0D8FB /* CoverFlowStackItem.swift */; };
 		DB51DC4E27181D7500A0D8FB /* CoverFlowStackMediaCollectionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB51DC4D27181D7500A0D8FB /* CoverFlowStackMediaCollectionCell.swift */; };
 		DB51DC5027181DE500A0D8FB /* CoverFlowStackMediaCollectionCell+ViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB51DC4F27181DE400A0D8FB /* CoverFlowStackMediaCollectionCell+ViewModel.swift */; };
 		DB5399A025AEF75D0064586D /* APIService+Mute.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB53999F25AEF75D0064586D /* APIService+Mute.swift */; };
@@ -183,8 +164,6 @@
 		DB5A2288255B9155006CA5B2 /* AccountListViewModel+Diffable.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB5A2287255B9155006CA5B2 /* AccountListViewModel+Diffable.swift */; };
 		DB5FAD6B257DD1DD0098B2C8 /* DeveloperViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB5FAD6A257DD1DD0098B2C8 /* DeveloperViewController.swift */; };
 		DB5FAFFD2727B940006520FA /* UserListFetchViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB5FAFFC2727B940006520FA /* UserListFetchViewModel.swift */; };
-		DB5FB0042727D01F006520FA /* MastodonUserFetchedResultController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB5FB0032727D01F006520FA /* MastodonUserFetchedResultController.swift */; };
-		DB5FB0062727DA46006520FA /* UserRecordFetchedResultController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB5FB0052727DA46006520FA /* UserRecordFetchedResultController.swift */; };
 		DB5FB0082727E204006520FA /* UserTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB5FB0072727E204006520FA /* UserTableViewCell.swift */; };
 		DB5FB00A2727E2F8006520FA /* UserView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB5FB0092727E2F8006520FA /* UserView.swift */; };
 		DB5FB00C2727E37C006520FA /* UserView+ViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB5FB00B2727E37C006520FA /* UserView+ViewModel.swift */; };
@@ -222,7 +201,6 @@
 		DB7274ED273A845700577D95 /* APIService+HashtagTimeline.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB7274EC273A845700577D95 /* APIService+HashtagTimeline.swift */; };
 		DB7274EF273BB25200577D95 /* NotificationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB7274EE273BB25200577D95 /* NotificationViewController.swift */; };
 		DB7274F2273BB29600577D95 /* NotificationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB7274F1273BB29600577D95 /* NotificationViewModel.swift */; };
-		DB747FEF251B63E3000C4BD7 /* HitTestExpandedButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB747FEE251B63E3000C4BD7 /* HitTestExpandedButton.swift */; };
 		DB747FF4251C47BD000C4BD7 /* UITableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB747FF3251C47BD000C4BD7 /* UITableView.swift */; };
 		DB747FF9251C496A000C4BD7 /* ProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB747FF8251C496A000C4BD7 /* ProfileViewController.swift */; };
 		DB74A164256E148F00C5F3C9 /* CropViewController in Frameworks */ = {isa = PBXBuildFile; productRef = DB74A163256E148F00C5F3C9 /* CropViewController */; };
@@ -231,12 +209,9 @@
 		DB761E4E255935380050DC01 /* DrawerSidebarHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB761E4D255935380050DC01 /* DrawerSidebarHeaderView.swift */; };
 		DB761E5D255940EF0050DC01 /* DrawerSidebarEntryTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB761E5C255940EF0050DC01 /* DrawerSidebarEntryTableViewCell.swift */; };
 		DB761E62255942050050DC01 /* DrawerSidebarEntryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB761E61255942050050DC01 /* DrawerSidebarEntryView.swift */; };
-		DB761E72255946720050DC01 /* SidebarSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB761E71255946720050DC01 /* SidebarSection.swift */; };
-		DB761E772559471F0050DC01 /* SidebarItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB761E762559471F0050DC01 /* SidebarItem.swift */; };
 		DB7AB33527437B920035EB8A /* Persistence+MastodonNotification.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB7AB33427437B920035EB8A /* Persistence+MastodonNotification.swift */; };
 		DB7AB33727437E220035EB8A /* MastodonNotification+Property.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB7AB33627437E220035EB8A /* MastodonNotification+Property.swift */; };
 		DB7AB33927439CB90035EB8A /* UserNotificationStyleTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB7AB33827439CB90035EB8A /* UserNotificationStyleTableViewCell.swift */; };
-		DB7AB33B2743C0A80035EB8A /* NotificationHeaderInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB7AB33A2743C0A80035EB8A /* NotificationHeaderInfo.swift */; };
 		DB7AB33E2744E3740035EB8A /* Floaty in Frameworks */ = {isa = PBXBuildFile; productRef = DB7AB33D2744E3740035EB8A /* Floaty */; };
 		DB7D1248250B5C6C00999903 /* UIButton+Inset.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB7D1247250B5C6C00999903 /* UIButton+Inset.swift */; };
 		DB7D124C250F875F00999903 /* UIView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB7D124B250F875E00999903 /* UIView.swift */; };
@@ -247,18 +222,30 @@
 		DB8301F7273CED0400BF5224 /* NotificationTimelineViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB8301F6273CED0400BF5224 /* NotificationTimelineViewController.swift */; };
 		DB8301FA273CED2E00BF5224 /* NotificationTimelineViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB8301F9273CED2E00BF5224 /* NotificationTimelineViewModel.swift */; };
 		DB830200273D04D000BF5224 /* NotificationTimelineViewModel+Diffable.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB8301FF273D04D000BF5224 /* NotificationTimelineViewModel+Diffable.swift */; };
-		DB830202273D04F500BF5224 /* NotificationSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB830201273D04F500BF5224 /* NotificationSection.swift */; };
-		DB830205273D052800BF5224 /* NotificationItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB830204273D052800BF5224 /* NotificationItem.swift */; };
-		DB830207273D0AF600BF5224 /* NotificationObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB830206273D0AF600BF5224 /* NotificationObject.swift */; };
 		DB830209273D12E600BF5224 /* NotificationTimelineViewController+DataSourceProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB830208273D12E600BF5224 /* NotificationTimelineViewController+DataSourceProvider.swift */; };
-		DB83020B273D131D00BF5224 /* NotificationRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB83020A273D131D00BF5224 /* NotificationRecord.swift */; };
 		DB83020D273D160400BF5224 /* NotificationTimelineViewModel+LoadOldestState.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB83020C273D160400BF5224 /* NotificationTimelineViewModel+LoadOldestState.swift */; };
 		DB83020E273D1DAF00BF5224 /* APIService+NotificationTimeline.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB9154672551389D00613473 /* APIService+NotificationTimeline.swift */; };
 		DB830212273D2CAE00BF5224 /* NotificationListFetchViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB830211273D2CAE00BF5224 /* NotificationListFetchViewModel.swift */; };
 		DB8302142742180C00BF5224 /* NotificationTimelineViewController+DebugAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB8302132742180C00BF5224 /* NotificationTimelineViewController+DebugAction.swift */; };
 		DB86433A26E867B9000C9879 /* APIService+Repost.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB86433926E867B9000C9879 /* APIService+Repost.swift */; };
 		DB86433C26E898C5000C9879 /* DataSourceFacade+Like.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB86433B26E898C5000C9879 /* DataSourceFacade+Like.swift */; };
-		DB88AC332508BACD0009E562 /* Items.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB88AC322508BACD0009E562 /* Items.swift */; };
+		DB876186274520F800BA7EE2 /* TwidereSDK in Frameworks */ = {isa = PBXBuildFile; productRef = DB876185274520F800BA7EE2 /* TwidereSDK */; };
+		DB8761BE274552F800BA7EE2 /* StatusMediaGallerySection.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB8761AA2745515F00BA7EE2 /* StatusMediaGallerySection.swift */; };
+		DB8761BF274552F800BA7EE2 /* StatusItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB8761AD2745515F00BA7EE2 /* StatusItem.swift */; };
+		DB8761C0274552F800BA7EE2 /* StatusSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB8761AE2745515F00BA7EE2 /* StatusSection.swift */; };
+		DB8761C1274552F800BA7EE2 /* UserItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB8761A42745515F00BA7EE2 /* UserItem.swift */; };
+		DB8761C2274552F800BA7EE2 /* UserSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB8761A82745515F00BA7EE2 /* UserSection.swift */; };
+		DB8761C3274552FB00BA7EE2 /* HashtagSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB8761B22745515F00BA7EE2 /* HashtagSection.swift */; };
+		DB8761C4274552FB00BA7EE2 /* HashtagData.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB8761B12745515F00BA7EE2 /* HashtagData.swift */; };
+		DB8761C5274552FB00BA7EE2 /* HashtagItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB8761B32745515F00BA7EE2 /* HashtagItem.swift */; };
+		DB8761C6274552FF00BA7EE2 /* NotificationItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB8761B72745515F00BA7EE2 /* NotificationItem.swift */; };
+		DB8761C7274552FF00BA7EE2 /* NotificationSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB8761B52745515F00BA7EE2 /* NotificationSection.swift */; };
+		DB8761C8274552FF00BA7EE2 /* NotificationRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB8761B92745515F00BA7EE2 /* NotificationRecord.swift */; };
+		DB8761C9274552FF00BA7EE2 /* NotificationHeaderInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB8761B82745515F00BA7EE2 /* NotificationHeaderInfo.swift */; };
+		DB8761CA274552FF00BA7EE2 /* NotificationObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB8761B62745515F00BA7EE2 /* NotificationObject.swift */; };
+		DB8761CB2745530200BA7EE2 /* CoverFlowStackSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB8761BB2745515F00BA7EE2 /* CoverFlowStackSection.swift */; };
+		DB8761CC2745530200BA7EE2 /* CoverFlowStackItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB8761BC2745515F00BA7EE2 /* CoverFlowStackItem.swift */; };
+		DB8761D02745553700BA7EE2 /* MediaSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB8761CF2745553600BA7EE2 /* MediaSection.swift */; };
 		DB88AC38250B25170009E562 /* UIViewPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB88AC35250B25170009E562 /* UIViewPreview.swift */; };
 		DB88AC3C250B26F40009E562 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DB88AC3B250B26F40009E562 /* Preview Assets.xcassets */; };
 		DB89F58C257A2A57005ECD04 /* TimelineTopLoaderTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB89F58B257A2A57005ECD04 /* TimelineTopLoaderTableViewCell.swift */; };
@@ -304,8 +291,6 @@
 		DBA6B1BF2535B0BE005FB0B4 /* ControlContainableScrollViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBA6B1BE2535B0BE005FB0B4 /* ControlContainableScrollViews.swift */; };
 		DBA6B1CC2535BC6E005FB0B4 /* APIService+Like.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBA6B1CB2535BC6E005FB0B4 /* APIService+Like.swift */; };
 		DBA7DD74256B96450008A95A /* UIFont.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBA7DD73256B96450008A95A /* UIFont.swift */; };
-		DBA9B3C62587610C00EA14ED /* MentionPickSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBA9B3C52587610C00EA14ED /* MentionPickSection.swift */; };
-		DBA9B3CB2587615300EA14ED /* MentionPickItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBA9B3CA2587615300EA14ED /* MentionPickItem.swift */; };
 		DBB09D562511BA9700AE260E /* APIService+Lookup.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBB09D552511BA9700AE260E /* APIService+Lookup.swift */; };
 		DBB47DA926EB3AA2001590F7 /* ProfileFieldListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBB47DA826EB3AA2001590F7 /* ProfileFieldListView.swift */; };
 		DBB47DAB26EB3BF8001590F7 /* ProfileFieldContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBB47DAA26EB3BF8001590F7 /* ProfileFieldContentView.swift */; };
@@ -330,7 +315,6 @@
 		DBBBBE8F2744FB42007ACB4B /* ComposeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBBBBE8E2744FB42007ACB4B /* ComposeViewModel.swift */; };
 		DBBC33DC259D8C0E00E9FAEF /* NSKeyValueObservation.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBBC33DB259D8C0E00E9FAEF /* NSKeyValueObservation.swift */; };
 		DBBC3F3525835B8B005CF99E /* ActiveLabel in Frameworks */ = {isa = PBXBuildFile; productRef = DBBC3F3425835B8B005CF99E /* ActiveLabel */; };
-		DBBF3DB126CE5CCD0013852A /* FeedFetchedResultsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBBF3DB026CE5CCD0013852A /* FeedFetchedResultsController.swift */; };
 		DBBF3DB526CF4C850013852A /* Persistence+TwitterUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBBF3DB426CF4C850013852A /* Persistence+TwitterUser.swift */; };
 		DBBF70F726D7B62F00971656 /* AccountListTableViewCell+ViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBBF70F626D7B62F00971656 /* AccountListTableViewCell+ViewModel.swift */; };
 		DBBF70F926D7B9C400971656 /* MastodonUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBBF70F826D7B9C400971656 /* MastodonUser.swift */; };
@@ -351,25 +335,13 @@
 		DBCB402E255B670C00DD8D8F /* AccountListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBCB402D255B670C00DD8D8F /* AccountListViewController.swift */; };
 		DBCB4047255B683B00DD8D8F /* AccountListTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBCB4046255B683B00DD8D8F /* AccountListTableViewCell.swift */; };
 		DBCB4053255B6EB100DD8D8F /* AccountListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBCB4052255B6EB100DD8D8F /* AccountListViewModel.swift */; };
-		DBCB4058255B6ECA00DD8D8F /* AccountListSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBCB4057255B6ECA00DD8D8F /* AccountListSection.swift */; };
 		DBCB4060255CAC0300DD8D8F /* TwitterAuthenticationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBCB405F255CAC0300DD8D8F /* TwitterAuthenticationController.swift */; };
 		DBCB408A255D8C2B00DD8D8F /* SafariActivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBCB4089255D8C2B00DD8D8F /* SafariActivity.swift */; };
 		DBCB40A9255DA58000DD8D8F /* UserTimelineViewController+StatusProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBCB40A8255DA58000DD8D8F /* UserTimelineViewController+StatusProvider.swift */; };
 		DBCE2E912591A06300926D09 /* UINavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBCE2E902591A06300926D09 /* UINavigationController.swift */; };
 		DBCE2E992591A44000926D09 /* UIViewAnimatingPosition.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBCE2E982591A44000926D09 /* UIViewAnimatingPosition.swift */; };
-		DBCE2EA92591F23B00926D09 /* FollowingListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBCE2EA82591F23B00926D09 /* FollowingListViewController.swift */; };
-		DBCE2EB22591F38100926D09 /* FriendshipListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBCE2EB12591F38100926D09 /* FriendshipListViewModel.swift */; };
-		DBCE2EC82591F74300926D09 /* FollowingListViewModel+Diffable.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBCE2EC72591F74300926D09 /* FollowingListViewModel+Diffable.swift */; };
-		DBCE2ECD2591FAA800926D09 /* FriendshipListSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBCE2ECC2591FAA800926D09 /* FriendshipListSection.swift */; };
-		DBCE2ED22591FB8D00926D09 /* TwitterUserFetchedResultsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBCE2ED12591FB8D00926D09 /* TwitterUserFetchedResultsController.swift */; };
-		DBCE2ED82591FDF000926D09 /* FollowingListViewModel+State.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBCE2ED72591FDF000926D09 /* FollowingListViewModel+State.swift */; };
 		DBCE2EE32593319000926D09 /* AvatarConfigurableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBCE2EE22593319000926D09 /* AvatarConfigurableView.swift */; };
 		DBD40B852599B9C2006E4ABC /* CombineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBD40B842599B9C2006E4ABC /* CombineTests.swift */; };
-		DBD40BEF2599CB89006E4ABC /* FollowerListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBD40BEE2599CB89006E4ABC /* FollowerListViewController.swift */; };
-		DBD40C0D2599CD9D006E4ABC /* FollowerListViewController+UserProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBD40C0C2599CD9D006E4ABC /* FollowerListViewController+UserProvider.swift */; };
-		DBD73D7426D65D940003997E /* UserSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBD73D7326D65D940003997E /* UserSection.swift */; };
-		DBD73D7726D65DAB0003997E /* UserItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBD73D7626D65DAB0003997E /* UserItem.swift */; };
-		DBD73D7926D65E3A0003997E /* ManagedObjectRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBD73D7826D65E3A0003997E /* ManagedObjectRecord.swift */; };
 		DBD98489251CB88A00ED87A1 /* Tabman in Frameworks */ = {isa = PBXBuildFile; productRef = DBD98488251CB88A00ED87A1 /* Tabman */; };
 		DBDA8E2224FCF8A3006750DC /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBDA8E2124FCF8A3006750DC /* AppDelegate.swift */; };
 		DBDA8E2424FCF8A3006750DC /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBDA8E2324FCF8A3006750DC /* SceneDelegate.swift */; };
@@ -405,7 +377,6 @@
 		DBE76D302502146F00DEB0FC /* OSLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBE76D2F2502146F00DEB0FC /* OSLog.swift */; };
 		DBE76D34250214A700DEB0FC /* CommonOSLog in Frameworks */ = {isa = PBXBuildFile; productRef = DBE76D33250214A700DEB0FC /* CommonOSLog */; };
 		DBE76D36250221D700DEB0FC /* TwitterUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBE76D35250221D700DEB0FC /* TwitterUser.swift */; };
-		DBE76D3B25024FDA00DEB0FC /* NSLayoutConstraint.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBE76D3A25024FDA00DEB0FC /* NSLayoutConstraint.swift */; };
 		DBE76D3E2502518D00DEB0FC /* AlamofireImage in Frameworks */ = {isa = PBXBuildFile; productRef = DBE76D3D2502518D00DEB0FC /* AlamofireImage */; };
 		DBE76D402502524500DEB0FC /* UIImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBE76D3F2502524500DEB0FC /* UIImage.swift */; };
 		DBEA4F842511F7460007FEC5 /* Kanna in Frameworks */ = {isa = PBXBuildFile; productRef = DBEA4F832511F7460007FEC5 /* Kanna */; };
@@ -414,12 +385,6 @@
 		DBEA4F91251331BE0007FEC5 /* QuotePostView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBEA4F90251331BE0007FEC5 /* QuotePostView.swift */; };
 		DBECA7FA2745010E000EA1CA /* CoverFlowStackCollectionViewLayout in Frameworks */ = {isa = PBXBuildFile; productRef = DBECA7F92745010E000EA1CA /* CoverFlowStackCollectionViewLayout */; };
 		DBECA7FC2745010E000EA1CA /* TabBarPager in Frameworks */ = {isa = PBXBuildFile; productRef = DBECA7FB2745010E000EA1CA /* TabBarPager */; };
-		DBECA8282745059F000EA1CA /* TwidereCommon in Frameworks */ = {isa = PBXBuildFile; productRef = DBECA8272745059F000EA1CA /* TwidereCommon */; };
-		DBECA82A2745059F000EA1CA /* TwidereSDK in Frameworks */ = {isa = PBXBuildFile; productRef = DBECA8292745059F000EA1CA /* TwidereSDK */; };
-		DBECA83027450D8C000EA1CA /* ComposeContentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBECA82E27450D8C000EA1CA /* ComposeContentViewController.swift */; };
-		DBECA83127450D8C000EA1CA /* ComposeContentViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBECA82F27450D8C000EA1CA /* ComposeContentViewModel.swift */; };
-		DBECA83327450F90000EA1CA /* ComposeContentViewModel+Diffable.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBECA83227450F90000EA1CA /* ComposeContentViewModel+Diffable.swift */; };
-		DBECA835274517AE000EA1CA /* CoreDataStack in Frameworks */ = {isa = PBXBuildFile; productRef = DBECA834274517AE000EA1CA /* CoreDataStack */; };
 		DBED96D8253F5D7800C5383A /* NamingState.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBED96D7253F5D7800C5383A /* NamingState.swift */; };
 		DBF3309125B96E0B00A678FB /* WKNavigationDelegateShim.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBF3309025B96E0B00A678FB /* WKNavigationDelegateShim.swift */; };
 		DBF3309925B988A500A678FB /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = DBF3309825B988A500A678FB /* Settings.bundle */; };
@@ -583,9 +548,6 @@
 		DB004BE026CCFED600F5C574 /* Persistence+MastodonUser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Persistence+MastodonUser.swift"; sourceTree = "<group>"; };
 		DB004BE426CE21AE00F5C574 /* Persistence+TwitterStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Persistence+TwitterStatus.swift"; sourceTree = "<group>"; };
 		DB004BEC26CE28EA00F5C574 /* TwitterStatus+Property.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TwitterStatus+Property.swift"; sourceTree = "<group>"; };
-		DB004BEE26CE2CAA00F5C574 /* StatusSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusSection.swift; sourceTree = "<group>"; };
-		DB004BF126CE2CE600F5C574 /* StatusItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusItem.swift; sourceTree = "<group>"; };
-		DB004BF326CE360400F5C574 /* TwitterStatusFetchedResultController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwitterStatusFetchedResultController.swift; sourceTree = "<group>"; };
 		DB004BF526CE4A7F00F5C574 /* StatusCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusCollectionViewCell.swift; sourceTree = "<group>"; };
 		DB004BF726CE4AF200F5C574 /* StatusView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusView.swift; sourceTree = "<group>"; };
 		DB004BFC26CE4C1E00F5C574 /* PlaintextMetaContent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaintextMetaContent.swift; sourceTree = "<group>"; };
@@ -595,9 +557,6 @@
 		DB01091F26E60756005F67D7 /* DataSourceFacade+StatusThread.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DataSourceFacade+StatusThread.swift"; sourceTree = "<group>"; };
 		DB01092126E608B7005F67D7 /* DataSourceFacade+Repost.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DataSourceFacade+Repost.swift"; sourceTree = "<group>"; };
 		DB01092326E6199C005F67D7 /* DataSourceFacade+StatusViewTableViewCellDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DataSourceFacade+StatusViewTableViewCellDelegate.swift"; sourceTree = "<group>"; };
-		DB02C76527350B98007EA0BF /* HashtagSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HashtagSection.swift; sourceTree = "<group>"; };
-		DB02C76827350BA7007EA0BF /* HashtagItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HashtagItem.swift; sourceTree = "<group>"; };
-		DB02C76A27350C00007EA0BF /* HashtagData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HashtagData.swift; sourceTree = "<group>"; };
 		DB02C76C27350D71007EA0BF /* SearchHashtagViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchHashtagViewController.swift; sourceTree = "<group>"; };
 		DB02C76F27350D8A007EA0BF /* SearchHashtagViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchHashtagViewModel.swift; sourceTree = "<group>"; };
 		DB02C77127351B7D007EA0BF /* HashtagTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HashtagTableViewCell.swift; sourceTree = "<group>"; };
@@ -686,7 +645,6 @@
 		DB30ADD926CF5A9E00B2D2BE /* FLAnimatedImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FLAnimatedImageView.swift; sourceTree = "<group>"; };
 		DB30ADDB26CFC7EE00B2D2BE /* StatusTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusTableViewCell.swift; sourceTree = "<group>"; };
 		DB33017525A41102003552B0 /* StatusProviderFacade.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusProviderFacade.swift; sourceTree = "<group>"; };
-		DB33A4A025A2F049003CED7D /* Item+EmptyStateHeaderAttribute+TimelineHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Item+EmptyStateHeaderAttribute+TimelineHeaderView.swift"; sourceTree = "<group>"; };
 		DB33A4A825A319A0003CED7D /* ActionToolbarContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionToolbarContainer.swift; sourceTree = "<group>"; };
 		DB33E5B42719637400EC2225 /* CoverFlowStackCollectionViewLayout */ = {isa = PBXFileReference; lastKnownFileType = folder; path = CoverFlowStackCollectionViewLayout; sourceTree = "<group>"; };
 		DB34028D2521BC06009EFADF /* APIService+UserTimeline.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "APIService+UserTimeline.swift"; sourceTree = "<group>"; };
@@ -716,7 +674,6 @@
 		DB3FC03F25527053003A2F8A /* UserMediaTimelineViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserMediaTimelineViewModel.swift; sourceTree = "<group>"; };
 		DB3FC044255270D6003A2F8A /* UserMediaTimelineViewModel+State.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UserMediaTimelineViewModel+State.swift"; sourceTree = "<group>"; };
 		DB3FC0492552711C003A2F8A /* UserMediaTimelineViewModel+Diffable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UserMediaTimelineViewModel+Diffable.swift"; sourceTree = "<group>"; };
-		DB3FC0512552742E003A2F8A /* MediaSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaSection.swift; sourceTree = "<group>"; };
 		DB42410D26C3E4BF00B6C5F8 /* WelcomeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeViewController.swift; sourceTree = "<group>"; };
 		DB42411326C3E55200B6C5F8 /* WelcomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeView.swift; sourceTree = "<group>"; };
 		DB42411526C3EB9100B6C5F8 /* ReadabilityPadding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReadabilityPadding.swift; sourceTree = "<group>"; };
@@ -734,23 +691,13 @@
 		DB4B59BF25DFCC4F0012F495 /* APIService+Persist+PersistCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "APIService+Persist+PersistCache.swift"; sourceTree = "<group>"; };
 		DB51DC192715581E00A0D8FB /* ProfileDashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileDashboardView.swift; sourceTree = "<group>"; };
 		DB51DC1B2715588E00A0D8FB /* ProfileDashboardMeterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileDashboardMeterView.swift; sourceTree = "<group>"; };
-		DB51DC1D27156F3600A0D8FB /* MastodonStatusFetchedResultController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MastodonStatusFetchedResultController.swift; sourceTree = "<group>"; };
 		DB51DC1F2715734900A0D8FB /* UserTimelineViewController+DataSourceProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UserTimelineViewController+DataSourceProvider.swift"; sourceTree = "<group>"; };
 		DB51DC212715786700A0D8FB /* StatusListFetchViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusListFetchViewModel.swift; sourceTree = "<group>"; };
-		DB51DC2327158BE700A0D8FB /* StatusRecordFetchedResultController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusRecordFetchedResultController.swift; sourceTree = "<group>"; };
-		DB51DC252715911E00A0D8FB /* StatusRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusRecord.swift; sourceTree = "<group>"; };
-		DB51DC272715917700A0D8FB /* StatusObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusObject.swift; sourceTree = "<group>"; };
-		DB51DC292715918F00A0D8FB /* UserRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserRecord.swift; sourceTree = "<group>"; };
-		DB51DC2B271591A200A0D8FB /* UserObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserObject.swift; sourceTree = "<group>"; };
-		DB51DC2D27159A6000A0D8FB /* UserIdentifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserIdentifier.swift; sourceTree = "<group>"; };
 		DB51DC372716AEF000A0D8FB /* TabBarPager */ = {isa = PBXFileReference; lastKnownFileType = folder; path = TabBarPager; sourceTree = "<group>"; };
 		DB51DC3A2716F82000A0D8FB /* CellFrameCacheContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CellFrameCacheContainer.swift; sourceTree = "<group>"; };
-		DB51DC3E2717FA8000A0D8FB /* StatusMediaGallerySection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusMediaGallerySection.swift; sourceTree = "<group>"; };
 		DB51DC402717FCAA00A0D8FB /* StatusMediaGalleryCollectionCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusMediaGalleryCollectionCell.swift; sourceTree = "<group>"; };
 		DB51DC422718117900A0D8FB /* StatusMediaGalleryCollectionCell+ViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "StatusMediaGalleryCollectionCell+ViewModel.swift"; sourceTree = "<group>"; };
 		DB51DC442718144D00A0D8FB /* MediaView+Configuration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MediaView+Configuration.swift"; sourceTree = "<group>"; };
-		DB51DC462718197000A0D8FB /* CoverFlowStackSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoverFlowStackSection.swift; sourceTree = "<group>"; };
-		DB51DC4B27181BAE00A0D8FB /* CoverFlowStackItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoverFlowStackItem.swift; sourceTree = "<group>"; };
 		DB51DC4D27181D7500A0D8FB /* CoverFlowStackMediaCollectionCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoverFlowStackMediaCollectionCell.swift; sourceTree = "<group>"; };
 		DB51DC4F27181DE400A0D8FB /* CoverFlowStackMediaCollectionCell+ViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CoverFlowStackMediaCollectionCell+ViewModel.swift"; sourceTree = "<group>"; };
 		DB53999F25AEF75D0064586D /* APIService+Mute.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "APIService+Mute.swift"; sourceTree = "<group>"; };
@@ -783,8 +730,6 @@
 		DB5A2287255B9155006CA5B2 /* AccountListViewModel+Diffable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AccountListViewModel+Diffable.swift"; sourceTree = "<group>"; };
 		DB5FAD6A257DD1DD0098B2C8 /* DeveloperViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeveloperViewController.swift; sourceTree = "<group>"; };
 		DB5FAFFC2727B940006520FA /* UserListFetchViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserListFetchViewModel.swift; sourceTree = "<group>"; };
-		DB5FB0032727D01F006520FA /* MastodonUserFetchedResultController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MastodonUserFetchedResultController.swift; sourceTree = "<group>"; };
-		DB5FB0052727DA46006520FA /* UserRecordFetchedResultController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserRecordFetchedResultController.swift; sourceTree = "<group>"; };
 		DB5FB0072727E204006520FA /* UserTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserTableViewCell.swift; sourceTree = "<group>"; };
 		DB5FB0092727E2F8006520FA /* UserView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserView.swift; sourceTree = "<group>"; };
 		DB5FB00B2727E37C006520FA /* UserView+ViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UserView+ViewModel.swift"; sourceTree = "<group>"; };
@@ -825,7 +770,6 @@
 		DB7274EC273A845700577D95 /* APIService+HashtagTimeline.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "APIService+HashtagTimeline.swift"; sourceTree = "<group>"; };
 		DB7274EE273BB25200577D95 /* NotificationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationViewController.swift; sourceTree = "<group>"; };
 		DB7274F1273BB29600577D95 /* NotificationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationViewModel.swift; sourceTree = "<group>"; };
-		DB747FEE251B63E3000C4BD7 /* HitTestExpandedButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HitTestExpandedButton.swift; sourceTree = "<group>"; };
 		DB747FF3251C47BD000C4BD7 /* UITableView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UITableView.swift; sourceTree = "<group>"; };
 		DB747FF8251C496A000C4BD7 /* ProfileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileViewController.swift; sourceTree = "<group>"; };
 		DB74A168256E392F00C5F3C9 /* ContextMenuImagePreviewViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContextMenuImagePreviewViewController.swift; sourceTree = "<group>"; };
@@ -835,12 +779,9 @@
 		DB761E5C255940EF0050DC01 /* DrawerSidebarEntryTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawerSidebarEntryTableViewCell.swift; sourceTree = "<group>"; };
 		DB761E61255942050050DC01 /* DrawerSidebarEntryView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DrawerSidebarEntryView.swift; sourceTree = "<group>"; };
 		DB761E69255946160050DC01 /* DrawerSidebarViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawerSidebarViewModel.swift; sourceTree = "<group>"; };
-		DB761E71255946720050DC01 /* SidebarSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SidebarSection.swift; sourceTree = "<group>"; };
-		DB761E762559471F0050DC01 /* SidebarItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SidebarItem.swift; sourceTree = "<group>"; };
 		DB7AB33427437B920035EB8A /* Persistence+MastodonNotification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Persistence+MastodonNotification.swift"; sourceTree = "<group>"; };
 		DB7AB33627437E220035EB8A /* MastodonNotification+Property.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MastodonNotification+Property.swift"; sourceTree = "<group>"; };
 		DB7AB33827439CB90035EB8A /* UserNotificationStyleTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserNotificationStyleTableViewCell.swift; sourceTree = "<group>"; };
-		DB7AB33A2743C0A80035EB8A /* NotificationHeaderInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationHeaderInfo.swift; sourceTree = "<group>"; };
 		DB7D1247250B5C6C00999903 /* UIButton+Inset.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIButton+Inset.swift"; sourceTree = "<group>"; };
 		DB7D124B250F875E00999903 /* UIView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIView.swift; sourceTree = "<group>"; };
 		DB7E22EF2552A3D500551314 /* UserLikeTimelineViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserLikeTimelineViewController.swift; sourceTree = "<group>"; };
@@ -850,18 +791,29 @@
 		DB8301F6273CED0400BF5224 /* NotificationTimelineViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationTimelineViewController.swift; sourceTree = "<group>"; };
 		DB8301F9273CED2E00BF5224 /* NotificationTimelineViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationTimelineViewModel.swift; sourceTree = "<group>"; };
 		DB8301FF273D04D000BF5224 /* NotificationTimelineViewModel+Diffable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NotificationTimelineViewModel+Diffable.swift"; sourceTree = "<group>"; };
-		DB830201273D04F500BF5224 /* NotificationSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationSection.swift; sourceTree = "<group>"; };
-		DB830204273D052800BF5224 /* NotificationItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationItem.swift; sourceTree = "<group>"; };
-		DB830206273D0AF600BF5224 /* NotificationObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationObject.swift; sourceTree = "<group>"; };
 		DB830208273D12E600BF5224 /* NotificationTimelineViewController+DataSourceProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NotificationTimelineViewController+DataSourceProvider.swift"; sourceTree = "<group>"; };
-		DB83020A273D131D00BF5224 /* NotificationRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationRecord.swift; sourceTree = "<group>"; };
 		DB83020C273D160400BF5224 /* NotificationTimelineViewModel+LoadOldestState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NotificationTimelineViewModel+LoadOldestState.swift"; sourceTree = "<group>"; };
 		DB830211273D2CAE00BF5224 /* NotificationListFetchViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationListFetchViewModel.swift; sourceTree = "<group>"; };
 		DB8302132742180C00BF5224 /* NotificationTimelineViewController+DebugAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NotificationTimelineViewController+DebugAction.swift"; sourceTree = "<group>"; };
 		DB86433926E867B9000C9879 /* APIService+Repost.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "APIService+Repost.swift"; sourceTree = "<group>"; };
 		DB86433B26E898C5000C9879 /* DataSourceFacade+Like.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DataSourceFacade+Like.swift"; sourceTree = "<group>"; };
+		DB8761A42745515F00BA7EE2 /* UserItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserItem.swift; sourceTree = "<group>"; };
+		DB8761A82745515F00BA7EE2 /* UserSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserSection.swift; sourceTree = "<group>"; };
+		DB8761AA2745515F00BA7EE2 /* StatusMediaGallerySection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusMediaGallerySection.swift; sourceTree = "<group>"; };
+		DB8761AD2745515F00BA7EE2 /* StatusItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusItem.swift; sourceTree = "<group>"; };
+		DB8761AE2745515F00BA7EE2 /* StatusSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusSection.swift; sourceTree = "<group>"; };
+		DB8761B12745515F00BA7EE2 /* HashtagData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HashtagData.swift; sourceTree = "<group>"; };
+		DB8761B22745515F00BA7EE2 /* HashtagSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HashtagSection.swift; sourceTree = "<group>"; };
+		DB8761B32745515F00BA7EE2 /* HashtagItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HashtagItem.swift; sourceTree = "<group>"; };
+		DB8761B52745515F00BA7EE2 /* NotificationSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationSection.swift; sourceTree = "<group>"; };
+		DB8761B62745515F00BA7EE2 /* NotificationObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationObject.swift; sourceTree = "<group>"; };
+		DB8761B72745515F00BA7EE2 /* NotificationItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationItem.swift; sourceTree = "<group>"; };
+		DB8761B82745515F00BA7EE2 /* NotificationHeaderInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationHeaderInfo.swift; sourceTree = "<group>"; };
+		DB8761B92745515F00BA7EE2 /* NotificationRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationRecord.swift; sourceTree = "<group>"; };
+		DB8761BB2745515F00BA7EE2 /* CoverFlowStackSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoverFlowStackSection.swift; sourceTree = "<group>"; };
+		DB8761BC2745515F00BA7EE2 /* CoverFlowStackItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoverFlowStackItem.swift; sourceTree = "<group>"; };
+		DB8761CF2745553600BA7EE2 /* MediaSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaSection.swift; sourceTree = "<group>"; };
 		DB88AC2E2508BA8C0009E562 /* TimelineSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimelineSection.swift; sourceTree = "<group>"; };
-		DB88AC322508BACD0009E562 /* Items.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Items.swift; sourceTree = "<group>"; };
 		DB88AC35250B25170009E562 /* UIViewPreview.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIViewPreview.swift; sourceTree = "<group>"; };
 		DB88AC3B250B26F40009E562 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		DB89F586257A1F20005ECD04 /* TweetConversationViewModel+LoadReplyState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TweetConversationViewModel+LoadReplyState.swift"; sourceTree = "<group>"; };
@@ -874,7 +826,6 @@
 		DB8AC1462541677900E636BE /* ComposeTweetViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComposeTweetViewModel.swift; sourceTree = "<group>"; };
 		DB8AC14B254167BE00E636BE /* TweetToolbarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TweetToolbarView.swift; sourceTree = "<group>"; };
 		DB8AC16125417D1300E636BE /* CycleCounterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CycleCounterView.swift; sourceTree = "<group>"; };
-		DB8AC166254198D800E636BE /* ComposeTweetContentTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComposeTweetContentTableViewCell.swift; sourceTree = "<group>"; };
 		DB8AC16B25419B2E00E636BE /* ComposeTweetSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComposeTweetSection.swift; sourceTree = "<group>"; };
 		DB8AC17125419B7500E636BE /* ComposeTweetItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComposeTweetItem.swift; sourceTree = "<group>"; };
 		DB8AC17F254275C600E636BE /* RepliedToTweetContentTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RepliedToTweetContentTableViewCell.swift; sourceTree = "<group>"; };
@@ -941,8 +892,6 @@
 		DBA9B3A525875B6B00EA14ED /* MentionPickViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MentionPickViewController.swift; sourceTree = "<group>"; };
 		DBA9B3B425875FAC00EA14ED /* MentionPickTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MentionPickTableViewCell.swift; sourceTree = "<group>"; };
 		DBA9B3C02587609200EA14ED /* MentionPickViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MentionPickViewModel.swift; sourceTree = "<group>"; };
-		DBA9B3C52587610C00EA14ED /* MentionPickSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MentionPickSection.swift; sourceTree = "<group>"; };
-		DBA9B3CA2587615300EA14ED /* MentionPickItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MentionPickItem.swift; sourceTree = "<group>"; };
 		DBAC4A6625552A1E00140B23 /* MediaPreviewImageViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaPreviewImageViewModel.swift; sourceTree = "<group>"; };
 		DBB09D552511BA9700AE260E /* APIService+Lookup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "APIService+Lookup.swift"; sourceTree = "<group>"; };
 		DBB1FEC1269C34FE005BC761 /* AvatarImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvatarImageView.swift; sourceTree = "<group>"; };
@@ -976,7 +925,6 @@
 		DBBBBE8C2744F9D9007ACB4B /* ComposeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComposeViewModel.swift; sourceTree = "<group>"; };
 		DBBBBE8E2744FB42007ACB4B /* ComposeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComposeViewModel.swift; sourceTree = "<group>"; };
 		DBBC33DB259D8C0E00E9FAEF /* NSKeyValueObservation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NSKeyValueObservation.swift; sourceTree = "<group>"; };
-		DBBF3DB026CE5CCD0013852A /* FeedFetchedResultsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedFetchedResultsController.swift; sourceTree = "<group>"; };
 		DBBF3DB426CF4C850013852A /* Persistence+TwitterUser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Persistence+TwitterUser.swift"; sourceTree = "<group>"; };
 		DBBF70F626D7B62F00971656 /* AccountListTableViewCell+ViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AccountListTableViewCell+ViewModel.swift"; sourceTree = "<group>"; };
 		DBBF70F826D7B9C400971656 /* MastodonUser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MastodonUser.swift; sourceTree = "<group>"; };
@@ -1001,7 +949,6 @@
 		DBCB402D255B670C00DD8D8F /* AccountListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountListViewController.swift; sourceTree = "<group>"; };
 		DBCB4046255B683B00DD8D8F /* AccountListTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountListTableViewCell.swift; sourceTree = "<group>"; };
 		DBCB4052255B6EB100DD8D8F /* AccountListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountListViewModel.swift; sourceTree = "<group>"; };
-		DBCB4057255B6ECA00DD8D8F /* AccountListSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountListSection.swift; sourceTree = "<group>"; };
 		DBCB405F255CAC0300DD8D8F /* TwitterAuthenticationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwitterAuthenticationController.swift; sourceTree = "<group>"; };
 		DBCB4089255D8C2B00DD8D8F /* SafariActivity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SafariActivity.swift; sourceTree = "<group>"; };
 		DBCB4098255D948400DD8D8F /* StatusProvider+UITableViewDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "StatusProvider+UITableViewDelegate.swift"; sourceTree = "<group>"; };
@@ -1011,17 +958,12 @@
 		DBCE2EA82591F23B00926D09 /* FollowingListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FollowingListViewController.swift; sourceTree = "<group>"; };
 		DBCE2EB12591F38100926D09 /* FriendshipListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendshipListViewModel.swift; sourceTree = "<group>"; };
 		DBCE2EC72591F74300926D09 /* FollowingListViewModel+Diffable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FollowingListViewModel+Diffable.swift"; sourceTree = "<group>"; };
-		DBCE2ECC2591FAA800926D09 /* FriendshipListSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendshipListSection.swift; sourceTree = "<group>"; };
-		DBCE2ED12591FB8D00926D09 /* TwitterUserFetchedResultsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwitterUserFetchedResultsController.swift; sourceTree = "<group>"; };
 		DBCE2ED72591FDF000926D09 /* FollowingListViewModel+State.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FollowingListViewModel+State.swift"; sourceTree = "<group>"; };
 		DBCE2EE22593319000926D09 /* AvatarConfigurableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvatarConfigurableView.swift; sourceTree = "<group>"; };
 		DBCE2EE725933B1600926D09 /* SearchUserTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchUserTableViewCell.swift; sourceTree = "<group>"; };
 		DBD40B842599B9C2006E4ABC /* CombineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CombineTests.swift; sourceTree = "<group>"; };
 		DBD40BEE2599CB89006E4ABC /* FollowerListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FollowerListViewController.swift; sourceTree = "<group>"; };
 		DBD40C0C2599CD9D006E4ABC /* FollowerListViewController+UserProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FollowerListViewController+UserProvider.swift"; sourceTree = "<group>"; };
-		DBD73D7326D65D940003997E /* UserSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserSection.swift; sourceTree = "<group>"; };
-		DBD73D7626D65DAB0003997E /* UserItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserItem.swift; sourceTree = "<group>"; };
-		DBD73D7826D65E3A0003997E /* ManagedObjectRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManagedObjectRecord.swift; sourceTree = "<group>"; };
 		DBD8B53C25E3C3C5006299ED /* ca */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ca; path = ca.lproj/Localizable.strings; sourceTree = "<group>"; };
 		DBD8B53D25E3C3C5006299ED /* ca */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ca; path = ca.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		DBD8B53E25E3C40B006299ED /* ko */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ko; path = ko.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -1074,7 +1016,6 @@
 		DBE76D2F2502146F00DEB0FC /* OSLog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OSLog.swift; sourceTree = "<group>"; };
 		DBE76D35250221D700DEB0FC /* TwitterUser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwitterUser.swift; sourceTree = "<group>"; };
 		DBE76D372502228900DEB0FC /* Tweet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tweet.swift; sourceTree = "<group>"; };
-		DBE76D3A25024FDA00DEB0FC /* NSLayoutConstraint.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NSLayoutConstraint.swift; sourceTree = "<group>"; };
 		DBE76D3F2502524500DEB0FC /* UIImage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIImage.swift; sourceTree = "<group>"; };
 		DBEA4F762511DD610007FEC5 /* TweetConversationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TweetConversationViewModel.swift; sourceTree = "<group>"; };
 		DBEA4F7D2511E7050007FEC5 /* ConversationSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationSection.swift; sourceTree = "<group>"; };
@@ -1082,9 +1023,6 @@
 		DBEA4F8C251225610007FEC5 /* TimelinePostView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimelinePostView.swift; sourceTree = "<group>"; };
 		DBEA4F8E251314640007FEC5 /* MosaicImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MosaicImageView.swift; sourceTree = "<group>"; };
 		DBEA4F90251331BE0007FEC5 /* QuotePostView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuotePostView.swift; sourceTree = "<group>"; };
-		DBECA82E27450D8C000EA1CA /* ComposeContentViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ComposeContentViewController.swift; sourceTree = "<group>"; };
-		DBECA82F27450D8C000EA1CA /* ComposeContentViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ComposeContentViewModel.swift; sourceTree = "<group>"; };
-		DBECA83227450F90000EA1CA /* ComposeContentViewModel+Diffable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ComposeContentViewModel+Diffable.swift"; sourceTree = "<group>"; };
 		DBED2A7025B8006400BE6941 /* ar */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ar; path = ar.lproj/Localizable.strings; sourceTree = "<group>"; };
 		DBED2A7125B8006400BE6941 /* ar */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ar; path = ar.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		DBED96D2253F46CF00C5383A /* TwitterMedia.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwitterMedia.swift; sourceTree = "<group>"; };
@@ -1128,9 +1066,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DBECA82A2745059F000EA1CA /* TwidereSDK in Frameworks */,
-				DBECA8282745059F000EA1CA /* TwidereCommon in Frameworks */,
-				DBECA835274517AE000EA1CA /* CoreDataStack in Frameworks */,
+				DB876186274520F800BA7EE2 /* TwidereSDK in Frameworks */,
 				E5E65DC85CA480AE17571EFC /* Pods_AppShared.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1257,18 +1193,6 @@
 			path = Extension;
 			sourceTree = "<group>";
 		};
-		DB004BF026CE2CDA00F5C574 /* Status */ = {
-			isa = PBXGroup;
-			children = (
-				DB004BEE26CE2CAA00F5C574 /* StatusSection.swift */,
-				DB004BF126CE2CE600F5C574 /* StatusItem.swift */,
-				DB51DC252715911E00A0D8FB /* StatusRecord.swift */,
-				DB51DC272715917700A0D8FB /* StatusObject.swift */,
-				DB51DC3E2717FA8000A0D8FB /* StatusMediaGallerySection.swift */,
-			);
-			path = Status;
-			sourceTree = "<group>";
-		};
 		DB004BFB26CE4B8500F5C574 /* MetaTextKit */ = {
 			isa = PBXGroup;
 			children = (
@@ -1294,16 +1218,6 @@
 				DBCE2EE22593319000926D09 /* AvatarConfigurableView.swift */,
 			);
 			path = Deprecated;
-			sourceTree = "<group>";
-		};
-		DB02C76727350B9C007EA0BF /* Hashtag */ = {
-			isa = PBXGroup;
-			children = (
-				DB02C76527350B98007EA0BF /* HashtagSection.swift */,
-				DB02C76827350BA7007EA0BF /* HashtagItem.swift */,
-				DB02C76A27350C00007EA0BF /* HashtagData.swift */,
-			);
-			path = Hashtag;
 			sourceTree = "<group>";
 		};
 		DB02C76E27350D75007EA0BF /* Hashtag */ = {
@@ -1524,18 +1438,6 @@
 			path = MediaTimeline;
 			sourceTree = "<group>";
 		};
-		DB3FC05625527433003A2F8A /* Section */ = {
-			isa = PBXGroup;
-			children = (
-				DB3FC0512552742E003A2F8A /* MediaSection.swift */,
-				DB761E71255946720050DC01 /* SidebarSection.swift */,
-				DBCB4057255B6ECA00DD8D8F /* AccountListSection.swift */,
-				DBA9B3C52587610C00EA14ED /* MentionPickSection.swift */,
-				DBCE2ECC2591FAA800926D09 /* FriendshipListSection.swift */,
-			);
-			path = Section;
-			sourceTree = "<group>";
-		};
 		DB42410F26C3E4C300B6C5F8 /* Welcome */ = {
 			isa = PBXGroup;
 			children = (
@@ -1569,34 +1471,6 @@
 				DB51DC1B2715588E00A0D8FB /* ProfileDashboardMeterView.swift */,
 			);
 			path = View;
-			sourceTree = "<group>";
-		};
-		DB51DC482718197400A0D8FB /* CoverFlowStack */ = {
-			isa = PBXGroup;
-			children = (
-				DB51DC462718197000A0D8FB /* CoverFlowStackSection.swift */,
-				DB51DC4B27181BAE00A0D8FB /* CoverFlowStackItem.swift */,
-			);
-			path = CoverFlowStack;
-			sourceTree = "<group>";
-		};
-		DB51DC492718198400A0D8FB /* Msic */ = {
-			isa = PBXGroup;
-			children = (
-				DB51DC482718197400A0D8FB /* CoverFlowStack */,
-				DB02C76727350B9C007EA0BF /* Hashtag */,
-				DB830203273D04F800BF5224 /* Notification */,
-			);
-			path = Msic;
-			sourceTree = "<group>";
-		};
-		DB51DC4A2718198E00A0D8FB /* Deprecated */ = {
-			isa = PBXGroup;
-			children = (
-				DB3FC05625527433003A2F8A /* Section */,
-				DB761E7B255947240050DC01 /* Item */,
-			);
-			path = Deprecated;
 			sourceTree = "<group>";
 		};
 		DB56329826DCBE1900FC893F /* StatusThread */ = {
@@ -1736,12 +1610,12 @@
 		DB747FFD251C496E000C4BD7 /* Profile */ = {
 			isa = PBXGroup;
 			children = (
+				DB8761CD2745546D00BA7EE2 /* Deprecated */,
 				DB92570E251C900F004FEFB5 /* Segmented */,
 				DB925732251C9294004FEFB5 /* Header */,
 				DB92573B251C9C31004FEFB5 /* HomeTimeline */,
 				DB3FC03825526D6B003A2F8A /* MediaTimeline */,
 				DB7E22F42552A3D800551314 /* LikeTimeline */,
-				DBD40C1A2599D7F6006E4ABC /* FriendshipList */,
 				DB747FF8251C496A000C4BD7 /* ProfileViewController.swift */,
 				DBFA4A1025A5640E00D51703 /* ProfileViewController+UserProvider.swift */,
 				DB71C7D2271EB71800BE3819 /* ProfileViewController+DataSourceProvider.swift */,
@@ -1772,17 +1646,6 @@
 			path = View;
 			sourceTree = "<group>";
 		};
-		DB761E7B255947240050DC01 /* Item */ = {
-			isa = PBXGroup;
-			children = (
-				DB88AC322508BACD0009E562 /* Items.swift */,
-				DB33A4A025A2F049003CED7D /* Item+EmptyStateHeaderAttribute+TimelineHeaderView.swift */,
-				DB761E762559471F0050DC01 /* SidebarItem.swift */,
-				DBA9B3CA2587615300EA14ED /* MentionPickItem.swift */,
-			);
-			path = Item;
-			sourceTree = "<group>";
-		};
 		DB7E22F42552A3D800551314 /* LikeTimeline */ = {
 			isa = PBXGroup;
 			children = (
@@ -1809,29 +1672,91 @@
 			path = NotificationTimeline;
 			sourceTree = "<group>";
 		};
-		DB830203273D04F800BF5224 /* Notification */ = {
+		DB8761A22745515F00BA7EE2 /* Diffable */ = {
 			isa = PBXGroup;
 			children = (
-				DB830201273D04F500BF5224 /* NotificationSection.swift */,
-				DB830204273D052800BF5224 /* NotificationItem.swift */,
-				DB83020A273D131D00BF5224 /* NotificationRecord.swift */,
-				DB830206273D0AF600BF5224 /* NotificationObject.swift */,
-				DB7AB33A2743C0A80035EB8A /* NotificationHeaderInfo.swift */,
+				DB8761A32745515F00BA7EE2 /* User */,
+				DB8761A92745515F00BA7EE2 /* Status */,
+				DB8761AF2745515F00BA7EE2 /* Msic */,
+			);
+			path = Diffable;
+			sourceTree = "<group>";
+		};
+		DB8761A32745515F00BA7EE2 /* User */ = {
+			isa = PBXGroup;
+			children = (
+				DB8761A42745515F00BA7EE2 /* UserItem.swift */,
+				DB8761A82745515F00BA7EE2 /* UserSection.swift */,
+			);
+			path = User;
+			sourceTree = "<group>";
+		};
+		DB8761A92745515F00BA7EE2 /* Status */ = {
+			isa = PBXGroup;
+			children = (
+				DB8761AA2745515F00BA7EE2 /* StatusMediaGallerySection.swift */,
+				DB8761AD2745515F00BA7EE2 /* StatusItem.swift */,
+				DB8761AE2745515F00BA7EE2 /* StatusSection.swift */,
+			);
+			path = Status;
+			sourceTree = "<group>";
+		};
+		DB8761AF2745515F00BA7EE2 /* Msic */ = {
+			isa = PBXGroup;
+			children = (
+				DB8761B02745515F00BA7EE2 /* Hashtag */,
+				DB8761B42745515F00BA7EE2 /* Notification */,
+				DB8761BA2745515F00BA7EE2 /* CoverFlowStack */,
+				DB8761D12745553A00BA7EE2 /* Media */,
+			);
+			path = Msic;
+			sourceTree = "<group>";
+		};
+		DB8761B02745515F00BA7EE2 /* Hashtag */ = {
+			isa = PBXGroup;
+			children = (
+				DB8761B12745515F00BA7EE2 /* HashtagData.swift */,
+				DB8761B22745515F00BA7EE2 /* HashtagSection.swift */,
+				DB8761B32745515F00BA7EE2 /* HashtagItem.swift */,
+			);
+			path = Hashtag;
+			sourceTree = "<group>";
+		};
+		DB8761B42745515F00BA7EE2 /* Notification */ = {
+			isa = PBXGroup;
+			children = (
+				DB8761B52745515F00BA7EE2 /* NotificationSection.swift */,
+				DB8761B62745515F00BA7EE2 /* NotificationObject.swift */,
+				DB8761B72745515F00BA7EE2 /* NotificationItem.swift */,
+				DB8761B82745515F00BA7EE2 /* NotificationHeaderInfo.swift */,
+				DB8761B92745515F00BA7EE2 /* NotificationRecord.swift */,
 			);
 			path = Notification;
 			sourceTree = "<group>";
 		};
-		DB88AC312508BA950009E562 /* Diffable */ = {
+		DB8761BA2745515F00BA7EE2 /* CoverFlowStack */ = {
 			isa = PBXGroup;
 			children = (
-				DB51DC4A2718198E00A0D8FB /* Deprecated */,
-				DBD73D7826D65E3A0003997E /* ManagedObjectRecord.swift */,
-				DB004BF026CE2CDA00F5C574 /* Status */,
-				DBD73D7526D65D980003997E /* User */,
-				DB51DC492718198400A0D8FB /* Msic */,
-				DBCE2ED62591FD5B00926D09 /* FetchedResultsController */,
+				DB8761BB2745515F00BA7EE2 /* CoverFlowStackSection.swift */,
+				DB8761BC2745515F00BA7EE2 /* CoverFlowStackItem.swift */,
 			);
-			path = Diffable;
+			path = CoverFlowStack;
+			sourceTree = "<group>";
+		};
+		DB8761CD2745546D00BA7EE2 /* Deprecated */ = {
+			isa = PBXGroup;
+			children = (
+				DBD40C1A2599D7F6006E4ABC /* FriendshipList */,
+			);
+			path = Deprecated;
+			sourceTree = "<group>";
+		};
+		DB8761D12745553A00BA7EE2 /* Media */ = {
+			isa = PBXGroup;
+			children = (
+				DB8761CF2745553600BA7EE2 /* MediaSection.swift */,
+			);
+			path = Media;
 			sourceTree = "<group>";
 		};
 		DB88AC34250B25170009E562 /* Vender */ = {
@@ -1862,7 +1787,6 @@
 			children = (
 				DB8AC14B254167BE00E636BE /* TweetToolbarView.swift */,
 				DB8AC16125417D1300E636BE /* CycleCounterView.swift */,
-				DB8AC166254198D800E636BE /* ComposeTweetContentTableViewCell.swift */,
 				DB8AC17F254275C600E636BE /* RepliedToTweetContentTableViewCell.swift */,
 				DB2924E32547D4C7003899A7 /* ComposeTweetMediaCollectionViewCell.swift */,
 			);
@@ -2019,7 +1943,6 @@
 			children = (
 				DB94B6BD26C65CB000A2E8A1 /* AppShared.h */,
 				DB2611462518AC13004BF309 /* AppSecret.swift */,
-				DBECA82D27450D76000EA1CA /* Compose */,
 			);
 			path = AppShared;
 			sourceTree = "<group>";
@@ -2048,7 +1971,6 @@
 		DB97D1EB256CBA6F0056F8C2 /* Button */ = {
 			isa = PBXGroup;
 			children = (
-				DB747FEE251B63E3000C4BD7 /* HitTestExpandedButton.swift */,
 				DB915405254FC8CE00613473 /* FollowActionButton.swift */,
 				DBC747E0259DBD5400787EEF /* AvatarBarButtonItem.swift */,
 				DB30ADD026CF579E00B2D2BE /* AvatarButton.swift */,
@@ -2268,20 +2190,6 @@
 			path = FollowingList;
 			sourceTree = "<group>";
 		};
-		DBCE2ED62591FD5B00926D09 /* FetchedResultsController */ = {
-			isa = PBXGroup;
-			children = (
-				DBCE2ED12591FB8D00926D09 /* TwitterUserFetchedResultsController.swift */,
-				DB5FB0032727D01F006520FA /* MastodonUserFetchedResultController.swift */,
-				DB5FB0052727DA46006520FA /* UserRecordFetchedResultController.swift */,
-				DB004BF326CE360400F5C574 /* TwitterStatusFetchedResultController.swift */,
-				DB51DC1D27156F3600A0D8FB /* MastodonStatusFetchedResultController.swift */,
-				DB51DC2327158BE700A0D8FB /* StatusRecordFetchedResultController.swift */,
-				DBBF3DB026CE5CCD0013852A /* FeedFetchedResultsController.swift */,
-			);
-			path = FetchedResultsController;
-			sourceTree = "<group>";
-		};
 		DBD245F425660E4400909BEF /* DisplayPreference */ = {
 			isa = PBXGroup;
 			children = (
@@ -2310,18 +2218,6 @@
 				DBD40BF62599CB93006E4ABC /* FollowerList */,
 			);
 			path = FriendshipList;
-			sourceTree = "<group>";
-		};
-		DBD73D7526D65D980003997E /* User */ = {
-			isa = PBXGroup;
-			children = (
-				DBD73D7326D65D940003997E /* UserSection.swift */,
-				DBD73D7626D65DAB0003997E /* UserItem.swift */,
-				DB51DC292715918F00A0D8FB /* UserRecord.swift */,
-				DB51DC2B271591A200A0D8FB /* UserObject.swift */,
-				DB51DC2D27159A6000A0D8FB /* UserIdentifier.swift */,
-			);
-			path = User;
 			sourceTree = "<group>";
 		};
 		DBDA8E1524FCF8A3006750DC = {
@@ -2365,8 +2261,8 @@
 				DBA122CA256C13B000928671 /* GoogleService-Info.plist */,
 				DB94B6B226C65BB500A2E8A1 /* Deprecated */,
 				DBCB408E255D8C2E00DD8D8F /* Activity */,
-				DB88AC312508BA950009E562 /* Diffable */,
 				DBDA8E8724FE0615006750DC /* State */,
+				DB8761A22745515F00BA7EE2 /* Diffable */,
 				DBDA8E5924FE0374006750DC /* Service */,
 				DBDA8E5424FDF3E2006750DC /* Scene */,
 				DBDA8E8C24FE068C006750DC /* Coordinator */,
@@ -2588,7 +2484,6 @@
 				DB8AC18F2542DA9500E636BE /* ActiveLabel.swift */,
 				DB434891251E09A8005B599F /* CALayer.swift */,
 				DB969A65253064FE0053CB31 /* DispatchQueue.swift */,
-				DBE76D3A25024FDA00DEB0FC /* NSLayoutConstraint.swift */,
 				DBBC33DB259D8C0E00E9FAEF /* NSKeyValueObservation.swift */,
 				DBA6B1B625355C1E005FB0B4 /* UIAlertController.swift */,
 				DB262A3627213FBE00D18EF3 /* UIAlertAction.swift */,
@@ -2666,16 +2561,6 @@
 				DBEA4F802511E7900007FEC5 /* ConversationItem.swift */,
 			);
 			path = Model;
-			sourceTree = "<group>";
-		};
-		DBECA82D27450D76000EA1CA /* Compose */ = {
-			isa = PBXGroup;
-			children = (
-				DBECA82E27450D8C000EA1CA /* ComposeContentViewController.swift */,
-				DBECA82F27450D8C000EA1CA /* ComposeContentViewModel.swift */,
-				DBECA83227450F90000EA1CA /* ComposeContentViewModel+Diffable.swift */,
-			);
-			path = Compose;
 			sourceTree = "<group>";
 		};
 		DBED96DC253F5D7B00C5383A /* Protocol */ = {
@@ -2844,9 +2729,7 @@
 			);
 			name = AppShared;
 			packageProductDependencies = (
-				DBECA8272745059F000EA1CA /* TwidereCommon */,
-				DBECA8292745059F000EA1CA /* TwidereSDK */,
-				DBECA834274517AE000EA1CA /* CoreDataStack */,
+				DB876185274520F800BA7EE2 /* TwidereSDK */,
 			);
 			productName = AppShared;
 			productReference = DB94B6BB26C65CB000A2E8A1 /* AppShared.framework */;
@@ -3348,9 +3231,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				DB0B3B8E26C6639100501BB7 /* AppSecret.swift in Sources */,
-				DBECA83127450D8C000EA1CA /* ComposeContentViewModel.swift in Sources */,
-				DBECA83327450F90000EA1CA /* ComposeContentViewModel+Diffable.swift in Sources */,
-				DBECA83027450D8C000EA1CA /* ComposeContentViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3370,16 +3250,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DB747FEF251B63E3000C4BD7 /* HitTestExpandedButton.swift in Sources */,
-				DB004BEF26CE2CAA00F5C574 /* StatusSection.swift in Sources */,
-				DB02C76927350BA7007EA0BF /* HashtagItem.swift in Sources */,
-				DB51DC2E27159A6000A0D8FB /* UserIdentifier.swift in Sources */,
 				DBB09D562511BA9700AE260E /* APIService+Lookup.swift in Sources */,
-				DB51DC262715911E00A0D8FB /* StatusRecord.swift in Sources */,
 				DB5FD9B726D8EFF700CF5439 /* UserBriefInfoView+ViewModel.swift in Sources */,
+				DB8761BE274552F800BA7EE2 /* StatusMediaGallerySection.swift in Sources */,
 				DB3B906926E8D1D80010F64C /* LocalProfileViewModel.swift in Sources */,
 				DB2EBBEB255D34BE00956CAA /* AboutView.swift in Sources */,
-				DB761E72255946720050DC01 /* SidebarSection.swift in Sources */,
 				DB8E4FD92563CD6900459DA2 /* TwitterPinBasedAuthenticationViewController.swift in Sources */,
 				DB7274F2273BB29600577D95 /* NotificationViewModel.swift in Sources */,
 				DB5FB0112727FD02006520FA /* SearchUserViewModel+Diffable.swift in Sources */,
@@ -3387,7 +3262,6 @@
 				DB3FC045255270D6003A2F8A /* UserMediaTimelineViewModel+State.swift in Sources */,
 				DB30ADD126CF579E00B2D2BE /* AvatarButton.swift in Sources */,
 				DB7D124C250F875F00999903 /* UIView.swift in Sources */,
-				DBA9B3CB2587615300EA14ED /* MentionPickItem.swift in Sources */,
 				DBC8E03D2574F7DB00401E20 /* PhotoLibraryService.swift in Sources */,
 				DB2924D02546C6DD003899A7 /* APIService+Media.swift in Sources */,
 				DB83020D273D160400BF5224 /* NotificationTimelineViewModel+LoadOldestState.swift in Sources */,
@@ -3411,14 +3285,11 @@
 				DB7274ED273A845700577D95 /* APIService+HashtagTimeline.swift in Sources */,
 				DB8301FA273CED2E00BF5224 /* NotificationTimelineViewModel.swift in Sources */,
 				DB5632C426DF91DB00FC893F /* Feed.swift in Sources */,
-				DB33A4A125A2F049003CED7D /* Item+EmptyStateHeaderAttribute+TimelineHeaderView.swift in Sources */,
 				DB34029D2521BE8B009EFADF /* MeProfileViewModel.swift in Sources */,
 				DB36F35E257F74C10028F81E /* ScrollViewContainer.swift in Sources */,
 				DB262A482722A64900D18EF3 /* SearchTimelineViewController+DataSourceProvider.swift in Sources */,
-				DB51DC1E27156F3600A0D8FB /* MastodonStatusFetchedResultController.swift in Sources */,
 				DB51DC452718144D00A0D8FB /* MediaView+Configuration.swift in Sources */,
 				DB89F58C257A2A57005ECD04 /* TimelineTopLoaderTableViewCell.swift in Sources */,
-				DB51DC2A2715918F00A0D8FB /* UserRecord.swift in Sources */,
 				DB5FD9B126D8D50A00CF5439 /* StatusView+ViewModel.swift in Sources */,
 				DBDA8E5824FE0371006750DC /* APIService.swift in Sources */,
 				DBBABA04255E54A000C1B3D9 /* UserMediaTimelineViewController+StatusProvider.swift in Sources */,
@@ -3432,7 +3303,6 @@
 				DB02C76D27350D71007EA0BF /* SearchHashtagViewController.swift in Sources */,
 				DB7AB33927439CB90035EB8A /* UserNotificationStyleTableViewCell.swift in Sources */,
 				DBFA4A2025A5924C00D51703 /* HomeTimelineViewModel+Diffable.swift in Sources */,
-				DBCB4058255B6ECA00DD8D8F /* AccountListSection.swift in Sources */,
 				DB925749251C9D48004FEFB5 /* ProfilePagingViewModel.swift in Sources */,
 				DB5632BF26DF6D3600FC893F /* SeparatorLineView.swift in Sources */,
 				DB88AC38250B25170009E562 /* UIViewPreview.swift in Sources */,
@@ -3445,15 +3315,12 @@
 				DB6D672C2566349600B70DC0 /* SwitchTableViewCell.swift in Sources */,
 				DBDA8E9024FE068C006750DC /* NeedsDependency.swift in Sources */,
 				DB71C7CF271E8F6100BE3819 /* RelationshipViewModel.swift in Sources */,
-				DB004BF426CE360400F5C574 /* TwitterStatusFetchedResultController.swift in Sources */,
 				DB5399A025AEF75D0064586D /* APIService+Mute.swift in Sources */,
 				DB0EB9EF26D3748700034427 /* TextStyleConfigurable.swift in Sources */,
 				DB3FC04025527053003A2F8A /* UserMediaTimelineViewModel.swift in Sources */,
-				DB0D0AC825944FF2007A23C8 /* FollowingListViewController+UserProvider.swift in Sources */,
 				DBBBBE592744E800007ACB4B /* ComposeViewController.swift in Sources */,
 				DB42411626C3EB9100B6C5F8 /* ReadabilityPadding.swift in Sources */,
 				DBA5FA1E2553DDDD00D2E98E /* UITapGestureRecognizer.swift in Sources */,
-				DB5FB0042727D01F006520FA /* MastodonUserFetchedResultController.swift in Sources */,
 				DBCE2E992591A44000926D09 /* UIViewAnimatingPosition.swift in Sources */,
 				DB262A422722970000D18EF3 /* SearchResultViewModel.swift in Sources */,
 				DBCB4053255B6EB100DD8D8F /* AccountListViewModel.swift in Sources */,
@@ -3468,7 +3335,7 @@
 				DB213FAB27392C44009ABD74 /* HashtagTimelineViewModel+Diffable.swift in Sources */,
 				DB98DC10250787420087E30F /* TimelineBottomLoaderTableViewCell.swift in Sources */,
 				DB02C777273520B8007EA0BF /* SearchHashtagViewModel+State.swift in Sources */,
-				DB3FC0522552742E003A2F8A /* MediaSection.swift in Sources */,
+				DB8761CA274552FF00BA7EE2 /* NotificationObject.swift in Sources */,
 				DB004BED26CE28EA00F5C574 /* TwitterStatus+Property.swift in Sources */,
 				DB830200273D04D000BF5224 /* NotificationTimelineViewModel+Diffable.swift in Sources */,
 				DB01091A26E60693005F67D7 /* ContentOffsetAdjustableTimelineViewControllerDelegate.swift in Sources */,
@@ -3482,13 +3349,9 @@
 				DB7E22F02552A3D500551314 /* UserLikeTimelineViewController.swift in Sources */,
 				DB262A3527213D1300D18EF3 /* AppError.swift in Sources */,
 				DB02C77D27353479007EA0BF /* HashtagListFetchViewModel.swift in Sources */,
-				DB51DC282715917700A0D8FB /* StatusObject.swift in Sources */,
 				DB578CCD254C0BDB00745336 /* UserBriefInfoView.swift in Sources */,
-				DB83020B273D131D00BF5224 /* NotificationRecord.swift in Sources */,
 				DB676180254C042C006C6798 /* FriendshipTableViewCell.swift in Sources */,
 				DB5632C226DF8DE100FC893F /* HomeTimelineViewModel+LoadOldestState.swift in Sources */,
-				DB830207273D0AF600BF5224 /* NotificationObject.swift in Sources */,
-				DB51DC3F2717FA8000A0D8FB /* StatusMediaGallerySection.swift in Sources */,
 				DBCE2EE32593319000926D09 /* AvatarConfigurableView.swift in Sources */,
 				DB3B906326E8BBD70010F64C /* ProfileHeaderView.swift in Sources */,
 				DB36F354257DF14E0028F81E /* APIService+Application.swift in Sources */,
@@ -3504,18 +3367,20 @@
 				DBBF70F926D7B9C400971656 /* MastodonUser.swift in Sources */,
 				DB30ADDC26CFC7EE00B2D2BE /* StatusTableViewCell.swift in Sources */,
 				DB01091C26E606BB005F67D7 /* OfficialTwitterTextProvider.swift in Sources */,
+				DB8761CB2745530200BA7EE2 /* CoverFlowStackSection.swift in Sources */,
 				DB8AC0F825401BA200E636BE /* UIViewController.swift in Sources */,
 				DB3B906F26E9B3C80010F64C /* ProfileAvatarView.swift in Sources */,
 				DB434888251DFE2D005B599F /* ProfileBannerStatusView.swift in Sources */,
 				DBBBBE8F2744FB42007ACB4B /* ComposeViewModel.swift in Sources */,
 				DBFA4A1125A5641000D51703 /* ProfileViewController+UserProvider.swift in Sources */,
 				DB761E62255942050050DC01 /* DrawerSidebarEntryView.swift in Sources */,
+				DB8761C9274552FF00BA7EE2 /* NotificationHeaderInfo.swift in Sources */,
 				DB92570A251C8FE0004FEFB5 /* ProfileHeaderViewController.swift in Sources */,
 				DB213FAD27392E7D009ABD74 /* HashtagTimelineViewController+DataSourceProvider.swift in Sources */,
+				DB8761BF274552F800BA7EE2 /* StatusItem.swift in Sources */,
 				DB89F591257A2A70005ECD04 /* TimelineLoaderTableViewCell.swift in Sources */,
 				DB747FF9251C496A000C4BD7 /* ProfileViewController.swift in Sources */,
 				DB9EC519255A8285005403AA /* SettingListViewController.swift in Sources */,
-				DB51DC2C271591A200A0D8FB /* UserObject.swift in Sources */,
 				DB30ADDD26CFD3CC00B2D2BE /* HomeTimelineViewController+DebugAction.swift in Sources */,
 				DBA5FA192553DCBC00D2E98E /* TransitioningMath.swift in Sources */,
 				DB56329C26DCC23700FC893F /* DataSourceProvider.swift in Sources */,
@@ -3532,7 +3397,6 @@
 				DB262A502726938600D18EF3 /* SearchMediaViewModel+State.swift in Sources */,
 				DB969A2F252490090053CB31 /* UserTimelineViewModel+State.swift in Sources */,
 				DB42410E26C3E4BF00B6C5F8 /* WelcomeViewController.swift in Sources */,
-				DBD73D7726D65DAB0003997E /* UserItem.swift in Sources */,
 				DB33A4A925A319A0003CED7D /* ActionToolbarContainer.swift in Sources */,
 				DB262A4427229BF400D18EF3 /* SearchTimelineViewModel.swift in Sources */,
 				DB30ADDA26CF5A9E00B2D2BE /* FLAnimatedImageView.swift in Sources */,
@@ -3543,7 +3407,6 @@
 				DB434892251E09A8005B599F /* CALayer.swift in Sources */,
 				DBB47DAD26EB440C001590F7 /* ProfileFieldCollectionViewCell.swift in Sources */,
 				DB3B905F26E8A9650010F64C /* StatusThreadViewController+DataSourceProvider.swift in Sources */,
-				DB5FB0062727DA46006520FA /* UserRecordFetchedResultController.swift in Sources */,
 				DB213FAF273930BF009ABD74 /* HashtagTimelineViewModel+State.swift in Sources */,
 				DBBF70FC26D88E8B00971656 /* AuthenticationContext.swift in Sources */,
 				DB969A66253064FE0053CB31 /* DispatchQueue.swift in Sources */,
@@ -3553,16 +3416,13 @@
 				DBE76D1E2500E65D00DEB0FC /* HomeTimelineViewModel.swift in Sources */,
 				DBDA8E8A24FE0615006750DC /* DocumentStore.swift in Sources */,
 				DB5A2288255B9155006CA5B2 /* AccountListViewModel+Diffable.swift in Sources */,
-				DB830205273D052800BF5224 /* NotificationItem.swift in Sources */,
 				DB0EB9F326D38ED700034427 /* NumberMetricFormatter.swift in Sources */,
-				DB51DC472718197000A0D8FB /* CoverFlowStackSection.swift in Sources */,
 				DB8E4FBA2563B61500459DA2 /* DisplayPreferenceViewController.swift in Sources */,
 				DB12BEE727329F55002AA635 /* SearchUserViewController+DataSourceProvider.swift in Sources */,
 				DBBF3DB526CF4C850013852A /* Persistence+TwitterUser.swift in Sources */,
 				DBA6B1BF2535B0BE005FB0B4 /* ControlContainableScrollViews.swift in Sources */,
 				DB42411426C3E55200B6C5F8 /* WelcomeView.swift in Sources */,
 				DBE71B7A26B7AF5C00DFAB8E /* StubTimelineViewController.swift in Sources */,
-				DB004BF226CE2CE600F5C574 /* StatusItem.swift in Sources */,
 				DB1D7B5525B5A87200397DCD /* TwitterAuthenticationOptionViewModel.swift in Sources */,
 				DB98DC0E2507862D0087E30F /* TimelineMiddleLoaderTableViewCell.swift in Sources */,
 				DB830212273D2CAE00BF5224 /* NotificationListFetchViewModel.swift in Sources */,
@@ -3576,6 +3436,7 @@
 				DBF639FC259B333A009E12C8 /* EmptyStateView.swift in Sources */,
 				DBE76D36250221D700DEB0FC /* TwitterUser.swift in Sources */,
 				DB0B3B9026C666E300501BB7 /* APIService+WebFinger.swift in Sources */,
+				DB8761C8274552FF00BA7EE2 /* NotificationRecord.swift in Sources */,
 				DBFCC44725667C620016698E /* UILabel.swift in Sources */,
 				DB262A4E2726928F00D18EF3 /* SearchMediaViewModel.swift in Sources */,
 				DB9EC4EA255A6BC7005403AA /* TwitterAccountUnlockViewController.swift in Sources */,
@@ -3590,15 +3451,16 @@
 				DB7AB33727437E220035EB8A /* MastodonNotification+Property.swift in Sources */,
 				DB004BDF26CCFE8E00F5C574 /* Persistence.swift in Sources */,
 				DB74A169256E392F00C5F3C9 /* ContextMenuImagePreviewViewController.swift in Sources */,
+				DB8761C0274552F800BA7EE2 /* StatusSection.swift in Sources */,
 				DB8AC1902542DA9500E636BE /* ActiveLabel.swift in Sources */,
-				DBCE2EC82591F74300926D09 /* FollowingListViewModel+Diffable.swift in Sources */,
-				DB02C76627350B98007EA0BF /* HashtagSection.swift in Sources */,
 				DB01092426E6199C005F67D7 /* DataSourceFacade+StatusViewTableViewCellDelegate.swift in Sources */,
 				DBC8E0042574B37C00401E20 /* ContextMenuImagePreviewViewModel.swift in Sources */,
 				DB02C77027350D8A007EA0BF /* SearchHashtagViewModel.swift in Sources */,
 				DBB47DB026EB5CA8001590F7 /* UIContentSizeCategory.swift in Sources */,
 				DB5632B226DCF1CD00FC893F /* StatusThreadRootTableViewCell+ViewModel.swift in Sources */,
+				DB8761CC2745530200BA7EE2 /* CoverFlowStackItem.swift in Sources */,
 				DBDA8E8B24FE0615006750DC /* AppContext.swift in Sources */,
+				DB8761C2274552F800BA7EE2 /* UserSection.swift in Sources */,
 				DBE76D1C2500E5E000DEB0FC /* TimelinePostTableViewCell.swift in Sources */,
 				DB5FD9AD26D8CA6600CF5439 /* MastodonStatus+Property.swift in Sources */,
 				DB3B907726EA23200010F64C /* TwitterEntity.swift in Sources */,
@@ -3608,21 +3470,19 @@
 				DB3B906526E8BF1F0010F64C /* ProfileHeaderView+ViewModel.swift in Sources */,
 				DB51DC3B2716F82000A0D8FB /* CellFrameCacheContainer.swift in Sources */,
 				DB3FC04A2552711C003A2F8A /* UserMediaTimelineViewModel+Diffable.swift in Sources */,
-				DB761E772559471F0050DC01 /* SidebarItem.swift in Sources */,
 				DB925744251C9CD6004FEFB5 /* ProfilePagingViewController.swift in Sources */,
-				DBA9B3C62587610C00EA14ED /* MentionPickSection.swift in Sources */,
 				DBDA8E9D24FE0F8B006750DC /* Assets.swift in Sources */,
-				DBD73D7926D65E3A0003997E /* ManagedObjectRecord.swift in Sources */,
 				DB01091526E5EB64005F67D7 /* MastodonStatusThreadViewModel.swift in Sources */,
 				DB004BE526CE21AE00F5C574 /* Persistence+TwitterStatus.swift in Sources */,
 				DB5632BC26DF503800FC893F /* TwitterStatusThreadLeafViewModel.swift in Sources */,
 				DB51DC1A2715581E00A0D8FB /* ProfileDashboardView.swift in Sources */,
+				DB8761C7274552FF00BA7EE2 /* NotificationSection.swift in Sources */,
 				DB5632B026DCED1300FC893F /* StatusThreadRootTableViewCell.swift in Sources */,
 				DB5FB00C2727E37C006520FA /* UserView+ViewModel.swift in Sources */,
+				DB8761C4274552FB00BA7EE2 /* HashtagData.swift in Sources */,
 				DBDA8E2224FCF8A3006750DC /* AppDelegate.swift in Sources */,
 				DB2EBBD5255D344800956CAA /* AboutViewController.swift in Sources */,
 				DB56329726DCBE1600FC893F /* StatusThreadViewController.swift in Sources */,
-				DBCE2EA92591F23B00926D09 /* FollowingListViewController.swift in Sources */,
 				DBDA8E9F24FE0FFF006750DC /* HomeTimelineViewController.swift in Sources */,
 				DB925705251C8FCB004FEFB5 /* ProfileSegmentedViewController.swift in Sources */,
 				DB74A16E256E50E300C5F3C9 /* UIColor.swift in Sources */,
@@ -3630,6 +3490,7 @@
 				DBE76D402502524500DEB0FC /* UIImage.swift in Sources */,
 				DB5FB00A2727E2F8006520FA /* UserView.swift in Sources */,
 				DB01092026E60756005F67D7 /* DataSourceFacade+StatusThread.swift in Sources */,
+				DB8761C3274552FB00BA7EE2 /* HashtagSection.swift in Sources */,
 				DB262A3B272288FC00D18EF3 /* SearchViewController.swift in Sources */,
 				DBF3309125B96E0B00A678FB /* WKNavigationDelegateShim.swift in Sources */,
 				DB86433A26E867B9000C9879 /* APIService+Repost.swift in Sources */,
@@ -3637,21 +3498,17 @@
 				DBBF70F726D7B62F00971656 /* AccountListTableViewCell+ViewModel.swift in Sources */,
 				DBB47DA926EB3AA2001590F7 /* ProfileFieldListView.swift in Sources */,
 				DBC747D4259DA03B00787EEF /* ListCheckmarkTableViewCell.swift in Sources */,
-				DB830202273D04F500BF5224 /* NotificationSection.swift in Sources */,
 				DB2FFF29258B0C2C003DBC19 /* TouchBlockingView.swift in Sources */,
 				DBF69EE12549705A00E2A915 /* ViewControllerAnimatedTransitioningDelegate.swift in Sources */,
 				DBE71B7D26B7C5FD00DFAB8E /* StubTimelineViewModel.swift in Sources */,
 				DB004BFD26CE4C1E00F5C574 /* PlaintextMetaContent.swift in Sources */,
 				DB44A56026C4DC35004C8B78 /* ThemeService.swift in Sources */,
-				DB51DC2427158BE700A0D8FB /* StatusRecordFetchedResultController.swift in Sources */,
 				DB3402B72521D389009EFADF /* UserTimelineViewModel.swift in Sources */,
 				DB5FB014272804EE006520FA /* UserTableViewCell+ViewModel.swift in Sources */,
 				DB51DC4E27181D7500A0D8FB /* CoverFlowStackMediaCollectionCell.swift in Sources */,
 				DBED96D8253F5D7800C5383A /* NamingState.swift in Sources */,
 				DB6DF3E0252060AA00E8A273 /* ProfileViewModel.swift in Sources */,
-				DBCE2ED82591FDF000926D09 /* FollowingListViewModel+State.swift in Sources */,
 				DB262A332721377800D18EF3 /* DataSourceFacade+Block.swift in Sources */,
-				DBCE2EB22591F38100926D09 /* FriendshipListViewModel.swift in Sources */,
 				DBEA4F8D251225610007FEC5 /* TimelinePostView.swift in Sources */,
 				DB657A7B25AD574D001339B6 /* UIBarButtonItem.swift in Sources */,
 				DB5FAFFD2727B940006520FA /* UserListFetchViewModel.swift in Sources */,
@@ -3659,12 +3516,10 @@
 				DBEA4F91251331BE0007FEC5 /* QuotePostView.swift in Sources */,
 				DB67610D254AD681006C6798 /* ActivityIndicatorCollectionViewCell.swift in Sources */,
 				DB2FFF61258CB051003DBC19 /* NeedsDependency+AVPlayerViewControllerDelegate.swift in Sources */,
-				DBD40C0D2599CD9D006E4ABC /* FollowerListViewController+UserProvider.swift in Sources */,
 				DB94B6B426C65BE100A2E8A1 /* MastodonAuthenticationController.swift in Sources */,
 				DBA6B1B725355C1E005FB0B4 /* UIAlertController.swift in Sources */,
 				DB004BC926CCD68B00F5C574 /* MastodonUser+Property.swift in Sources */,
 				DB25B9E82539897B00A5420F /* APIService+Status+Search.swift in Sources */,
-				DBD73D7426D65D940003997E /* UserSection.swift in Sources */,
 				DB5632BA26DE29FE00FC893F /* Persistence+Twitter.swift in Sources */,
 				DB1BF29925663EFA00B5F490 /* DisplayPreference.swift in Sources */,
 				DB1BF2AC25664A0700B5F490 /* SlideTableViewCell.swift in Sources */,
@@ -3672,16 +3527,13 @@
 				DB51DC5027181DE500A0D8FB /* CoverFlowStackMediaCollectionCell+ViewModel.swift in Sources */,
 				DB676101254AD12F006C6798 /* MediaCollectionViewCell.swift in Sources */,
 				DBDA8E2424FCF8A3006750DC /* SceneDelegate.swift in Sources */,
-				DB88AC332508BACD0009E562 /* Items.swift in Sources */,
 				DB6B8B5F25AF30B900F20FD5 /* ContextMenuAction.swift in Sources */,
 				DBA61AB62552596A006AC169 /* UserMediaTimelineViewController.swift in Sources */,
-				DB7AB33B2743C0A80035EB8A /* NotificationHeaderInfo.swift in Sources */,
-				DBE76D3B25024FDA00DEB0FC /* NSLayoutConstraint.swift in Sources */,
+				DB8761C6274552FF00BA7EE2 /* NotificationItem.swift in Sources */,
 				DBF69EE02549705A00E2A915 /* ViewControllerAnimatedTransitioning.swift in Sources */,
 				DB8E4FEC2563D42800459DA2 /* TwitterPinBasedAuthenticationViewModel.swift in Sources */,
 				DB2924EC25492006003899A7 /* APIService+Geo.swift in Sources */,
 				DBCB40A9255DA58000DD8D8F /* UserTimelineViewController+StatusProvider.swift in Sources */,
-				DB02C76B27350C00007EA0BF /* HashtagData.swift in Sources */,
 				DBC8E0092574BE3900401E20 /* TimelineTableViewCellContextMenuConfiguration.swift in Sources */,
 				DB30ADCF26CF52A700B2D2BE /* TwitterUser+Property.swift in Sources */,
 				DBC747D9259DA07C00787EEF /* ListTableViewCell.swift in Sources */,
@@ -3694,7 +3546,6 @@
 				DB71C7C8271D438E00BE3819 /* APIService+LikeTimeline.swift in Sources */,
 				DB7274EF273BB25200577D95 /* NotificationViewController.swift in Sources */,
 				DB5632B826DE217600FC893F /* Persistence+TwitterUser+V2.swift in Sources */,
-				DBBF3DB126CE5CCD0013852A /* FeedFetchedResultsController.swift in Sources */,
 				DB262A4D2726925900D18EF3 /* SearchMediaViewController.swift in Sources */,
 				DB1D7B5025B5A43F00397DCD /* ListTextFieldTableViewCell.swift in Sources */,
 				DB3B906B26E8D3AB0010F64C /* DataSourceFacade+Status.swift in Sources */,
@@ -3705,10 +3556,12 @@
 				DB5632AB26DCCD3900FC893F /* DataSourceFacade.swift in Sources */,
 				DB9EC537255A8CEE005403AA /* ViewStateStore.swift in Sources */,
 				DB5FAD6B257DD1DD0098B2C8 /* DeveloperViewController.swift in Sources */,
+				DB8761D02745553700BA7EE2 /* MediaSection.swift in Sources */,
 				DB5FB00E2727FAE6006520FA /* UserFriendshipStyleTableViewCell.swift in Sources */,
 				DB51DC1C2715588E00A0D8FB /* ProfileDashboardMeterView.swift in Sources */,
 				DB6D6731256637A200B70DC0 /* TableViewSectionTextHeaderView.swift in Sources */,
 				DB925700251C8F29004FEFB5 /* UserTimelineViewController.swift in Sources */,
+				DB8761C5274552FB00BA7EE2 /* HashtagItem.swift in Sources */,
 				DB83020E273D1DAF00BF5224 /* APIService+NotificationTimeline.swift in Sources */,
 				DBF639EA259B11F6009E12C8 /* UserTimelineViewModel+Diffable.swift in Sources */,
 				DB9EC532255A87A4005403AA /* SettingListView.swift in Sources */,
@@ -3716,15 +3569,12 @@
 				DBF63A13259C36D8009E12C8 /* ListEntryTableViewCell.swift in Sources */,
 				DB1D7B4325B5938400397DCD /* TwitterAuthenticationOptionViewController.swift in Sources */,
 				DB51DC2F2715AC0900A0D8FB /* APIService+UserTimeline.swift in Sources */,
-				DB51DC4C27181BAE00A0D8FB /* CoverFlowStackItem.swift in Sources */,
 				DB2C3C6026F5E9B100FC66CD /* MetaContent.swift in Sources */,
-				DBCE2ED22591FB8D00926D09 /* TwitterUserFetchedResultsController.swift in Sources */,
-				DBCE2ECD2591FAA800926D09 /* FriendshipListSection.swift in Sources */,
 				DB830209273D12E600BF5224 /* NotificationTimelineViewController+DataSourceProvider.swift in Sources */,
 				DB91540B254FE4B200613473 /* APIService+Friendship.swift in Sources */,
 				DB5FB0082727E204006520FA /* UserTableViewCell.swift in Sources */,
+				DB8761C1274552F800BA7EE2 /* UserItem.swift in Sources */,
 				DB747FF4251C47BD000C4BD7 /* UITableView.swift in Sources */,
-				DBD40BEF2599CB89006E4ABC /* FollowerListViewController.swift in Sources */,
 				DB5FB0102727FCC5006520FA /* SearchUserViewModel.swift in Sources */,
 				DB262A492722A9D800D18EF3 /* SearchTimelineViewModel+Diffable.swift in Sources */,
 				DB5632A926DCC96C00FC893F /* HomeTimelineViewController+DataSourceProvider.swift in Sources */,
@@ -4545,6 +4395,10 @@
 			package = DB7AB33C2744E3740035EB8A /* XCRemoteSwiftPackageReference "Floaty" */;
 			productName = Floaty;
 		};
+		DB876185274520F800BA7EE2 /* TwidereSDK */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = TwidereSDK;
+		};
 		DB94B6B026C64DAC00A2E8A1 /* Introspect */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = DB94B6AF26C64DAC00A2E8A1 /* XCRemoteSwiftPackageReference "SwiftUI-Introspect" */;
@@ -4587,18 +4441,6 @@
 		DBECA7FB2745010E000EA1CA /* TabBarPager */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = TabBarPager;
-		};
-		DBECA8272745059F000EA1CA /* TwidereCommon */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = TwidereCommon;
-		};
-		DBECA8292745059F000EA1CA /* TwidereSDK */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = TwidereSDK;
-		};
-		DBECA834274517AE000EA1CA /* CoreDataStack */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = CoreDataStack;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

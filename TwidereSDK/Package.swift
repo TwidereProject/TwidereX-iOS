@@ -5,6 +5,7 @@ import PackageDescription
 
 let package = Package(
     name: "TwidereSDK",
+    defaultLocalization: "en",
     platforms: [
         .iOS(.v15),
         .macOS(.v12),
@@ -13,13 +14,21 @@ let package = Package(
         // Products define the executables and libraries a package produces, and make them visible to other packages.
         .library(
             name: "TwidereSDK",
-            targets: ["TwitterSDK", "MastodonSDK"]),
+            targets: [
+                "TwitterSDK",
+                "MastodonSDK",
+                "TwidereCommon",
+                "TwidereCore",
+                "TwidereUI",
+                "CoreDataStack",
+            ]
+        ),
         .library(
-            name: "TwidereCommon",
-            targets: ["TwidereCommon"]),
-        .library(
-            name: "CoreDataStack",
-            targets: ["CoreDataStack"]),
+            name: "TwidereCore",
+            targets: [
+                "TwidereCore",
+            ]
+        ),
     ],
     dependencies: [
         .package(url: "https://github.com/SwiftyJSON/SwiftyJSON.git", from: "5.0.0"),
@@ -51,12 +60,25 @@ let package = Package(
             dependencies: []
         ),
         .target(
+            name: "TwidereCore",
+            dependencies: [
+                "TwidereCommon",
+                "TwitterSDK",
+                "MastodonSDK",
+                "CoreDataStack",
+            ]
+        ),
+        .target(
+            name: "TwidereUI",
+            dependencies: ["TwidereCore"]
+        ),
+        .target(
             name: "CoreDataStack",
             dependencies: ["TwidereCommon"],
             exclude: ["Template/Stencil"],
             resources: [
                 .copy("CoreDataStack.xcdatamodeld"),
             ]
-        ),
+        )
     ]
 )

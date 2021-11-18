@@ -16,7 +16,7 @@ public final class CoreDataStack {
     
     static let viewContextAuthorName = "CoreDataStack"
     
-    let logger = Logger(subsystem: "CoreDataStack", category: "persistence")
+    let logger = Logger(subsystem: "CoreDataStack", category: "DB")
     
     private var disposeBag = Set<AnyCancellable>()
     

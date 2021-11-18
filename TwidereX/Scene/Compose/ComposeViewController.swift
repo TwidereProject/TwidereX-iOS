@@ -9,7 +9,7 @@
 import os.log
 import UIKit
 import Combine
-import AppShared
+import TwidereUI
 
 final class ComposeViewController: UIViewController, NeedsDependency {
     
@@ -20,11 +20,11 @@ final class ComposeViewController: UIViewController, NeedsDependency {
     
     var disposeBag = Set<AnyCancellable>()
     var viewModel: ComposeViewModel!
+    var composecContentViewModel: ComposeContentViewModel!
     
     private(set) lazy var sendBarButtonItem = UIBarButtonItem(image: Asset.Transportation.paperAirplane.image, style: .plain, target: self, action: #selector(ComposeViewController.sendBarButtonItemPressed(_:)))
     
     
-    let composecContentViewModel = ComposeContentViewModel()
     private(set) lazy var composeContentViewController: ComposeContentViewController = {
         let composeContentViewController = ComposeContentViewController()
         composeContentViewController.viewModel = composecContentViewModel

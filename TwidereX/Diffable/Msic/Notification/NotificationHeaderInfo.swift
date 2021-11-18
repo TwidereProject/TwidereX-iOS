@@ -10,13 +10,13 @@ import UIKit
 import Meta
 import CoreDataStack
 
-struct NotificationHeaderInfo {
+public struct NotificationHeaderInfo {
     
-    let iconImage: UIImage
-    let iconImageTintColor: UIColor
-    let textMetaContent: MetaContent
+    public let iconImage: UIImage
+    public let iconImageTintColor: UIColor
+    public let textMetaContent: MetaContent
     
-    init(
+    public init(
         iconImage: UIImage,
         iconImageTintColor: UIColor,
         textMetaContent: MetaContent
@@ -26,7 +26,7 @@ struct NotificationHeaderInfo {
         self.textMetaContent = textMetaContent
     }
     
-    init?(
+    public init?(
         type: MastodonNotificationType,
         user: MastodonUser
     ) {

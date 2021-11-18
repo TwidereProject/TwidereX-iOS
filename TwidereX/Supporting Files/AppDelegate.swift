@@ -11,6 +11,9 @@ import Firebase
 import Kingfisher
 //import Floaty
 
+@_exported import TwidereCore
+@_exported import TwidereUI
+
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
 

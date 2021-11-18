@@ -67,6 +67,7 @@ extension ProfilePagingViewController {
         settings.style.selectedBarHeight = 3
         settings.style.selectedBarBackgroundColor = .systemBlue
         changeCurrentIndexProgressive = { [weak self] (oldCell: ButtonBarViewCell?, newCell: ButtonBarViewCell?, progressPercentage: CGFloat, changeCurrentIndex: Bool, animated: Bool) -> Void in
+            guard let _ = self else { return }
             guard changeCurrentIndex == true else { return }
             oldCell?.imageView.tintColor = .secondaryLabel
             newCell?.imageView.tintColor = .systemBlue

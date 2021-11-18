@@ -212,28 +212,17 @@ extension HomeTimelineViewController {
         Task {
             await viewModel.loadLatest()
         }
-        
-//        guard viewModel.loadLatestStateMachine.enter(HomeTimelineViewModel.LoadLatestState.Loading.self) else {
-//            sender.endRefreshing()
-//            return
-//        }
     }
 
     @objc private func floatyButtonPressed(_ sender: FloatyItem) {
         os_log("%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
         
         let composeViewModel = ComposeViewModel(context: context)
-        coordinator.present(scene: .compose(viewModel: composeViewModel), from: self, transition: .modal(animated: true, completion: nil))
+        let composeContentViewModel = ComposeContentViewModel(inputContext: .post)
+        coordinator.present(scene: .compose(viewModel: composeViewModel, contentViewModel: composeContentViewModel), from: self, transition: .modal(animated: true, completion: nil))
     }
 
 }
-
-//// MARK: - UIScrollViewDelegate
-//extension HomeTimelineViewController {
-//    func scrollViewDidScroll(_ scrollView: UIScrollView) {
-//        handleScrollViewDidScroll(scrollView)
-//    }
-//}
 
 // MARK: - UITableViewDelegate
 extension HomeTimelineViewController: UITableViewDelegate, AutoGenerateTableViewDelegate {
@@ -296,14 +285,6 @@ extension HomeTimelineViewController: UITableViewDelegate, AutoGenerateTableView
 
 }
 
-//// MARK: - ContentOffsetAdjustableTimelineViewControllerDelegate
-//extension HomeTimelineViewController: ContentOffsetAdjustableTimelineViewControllerDelegate {
-//    func navigationBar() -> UINavigationBar? {
-//        return navigationController?.navigationBar
-//    }
-//}
-//
-//
 //// MARK: - TimelineMiddleLoaderTableViewCellDelegate
 //extension HomeTimelineViewController: TimelineMiddleLoaderTableViewCellDelegate {
 //
@@ -366,14 +347,7 @@ extension HomeTimelineViewController: UITableViewDelegate, AutoGenerateTableView
 //        }
 //    }
 //}
-//
-//
-//// MARK: - TimelinePostTableViewCellDelegate
-//extension HomeTimelineViewController: TimelinePostTableViewCellDelegate {
-//    weak var playerViewControllerDelegate: AVPlayerViewControllerDelegate? { return self }
-//    func parent() -> UIViewController { return self }
-//}
-//
+
 //// MARK: - ScrollViewContainer
 //extension HomeTimelineViewController: ScrollViewContainer {
 //

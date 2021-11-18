@@ -9,6 +9,7 @@
 import UIKit
 import SafariServices
 import CoreDataStack
+import TwidereUI
 
 final public class SceneCoordinator {
     
@@ -56,7 +57,7 @@ extension SceneCoordinator {
         case hashtagTimeline(viewModel: HashtagTimelineViewModel)
         
         // TODO:
-        case compose(viewModel: ComposeViewModel)
+        case compose(viewModel: ComposeViewModel, contentViewModel: ComposeContentViewModel)
 //        case mentionPick(viewModel: MentionPickViewModel, delegate: MentionPickViewControllerDelegate)
         // case tweetConversation(viewModel: TweetConversationViewModel)
 //        case searchDetail(viewModel: SearchDetailViewModel)
@@ -199,9 +200,10 @@ private extension SceneCoordinator {
             let _viewController = HashtagTimelineViewController()
             _viewController.viewModel = viewModel
             viewController = _viewController
-        case .compose(let viewModel):
+        case .compose(let viewModel, let contentViewModel):
             let _viewController = ComposeViewController()
             _viewController.viewModel = viewModel
+            _viewController.composecContentViewModel = contentViewModel
             viewController = _viewController
 //        case .mentionPick(let viewModel, let delegate):
 //            let _viewController = MentionPickViewController()

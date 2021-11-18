@@ -9,7 +9,7 @@
 import os.log
 import UIKit
 import Combine
-import AppShared
+import TwidereUI
 
 class ComposeViewController: UIViewController {
 
@@ -20,7 +20,7 @@ class ComposeViewController: UIViewController {
     
     private(set) lazy var sendBarButtonItem = UIBarButtonItem(image: Asset.Transportation.paperAirplane.image, style: .plain, target: self, action: #selector(ComposeViewController.sendBarButtonItemPressed(_:)))
     
-    let composecContentViewModel = ComposeContentViewModel()
+    let composecContentViewModel = ComposeContentViewModel(inputContext: .post)
     private(set) lazy var composeContentViewController: ComposeContentViewController = {
         let composeContentViewController = ComposeContentViewController()
         composeContentViewController.viewModel = composecContentViewModel

@@ -8,6 +8,7 @@
 
 import Foundation
 import Combine
+import TwidereCore
 
 final class ProfileHeaderViewModel: ObservableObject {
     
