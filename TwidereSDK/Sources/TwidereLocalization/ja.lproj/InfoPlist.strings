@@ -1,0 +1,3 @@
+"NSCameraUsageDescription" = "ツイート用の写真を撮るために使用";
+"NSLocationWhenInUseUsageDescription" = "位置情報付きのツイートのために使用";
+"NSPhotoLibraryAddUsageDescription" = "フォトライブラリに写真を保存するために使用";

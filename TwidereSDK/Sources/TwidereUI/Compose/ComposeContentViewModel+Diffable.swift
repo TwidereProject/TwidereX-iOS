@@ -55,19 +55,6 @@ extension ComposeContentViewModel {
                 diffableDataSource.apply(snapshot)
             }
             .store(in: &disposeBag)
-        
-        composeInputTableViewCell.composeText
-            .removeDuplicates()
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] _ in
-                guard let _ = self else { return }
-                UIView.setAnimationsEnabled(false)
-                tableView.beginUpdates()
-                tableView.endUpdates()
-                UIView.setAnimationsEnabled(true)
-            }
-            .store(in: &disposeBag)
-        
     }
     
     private func cell(for item: Item, at indexPath: IndexPath) -> UITableViewCell {
@@ -83,9 +70,7 @@ extension ComposeContentViewModel {
             cell.backgroundColor = .yellow
             return cell
         case .attachment:
-            let cell = UITableViewCell()
-            cell.backgroundColor = .green
-            return cell
+            return composeAttachmentTableViewCell
         case .poll:
             let cell = UITableViewCell()
             cell.backgroundColor = .cyan

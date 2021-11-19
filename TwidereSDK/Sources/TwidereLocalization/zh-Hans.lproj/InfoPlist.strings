@@ -1,0 +1,3 @@
+"NSCameraUsageDescription" = "用于发送拍照推文";
+"NSLocationWhenInUseUsageDescription" = "用于发送含地理标记的推文";
+"NSPhotoLibraryAddUsageDescription" = "用于将照片保存到照片库";

@@ -9,9 +9,9 @@
 import UIKit
 
 // note: use subclass configuration not custom NSCopying identifier due to identifier cause crash issue
-final class TimelineTableViewCellContextMenuConfiguration: UIContextMenuConfiguration {
+final public class TimelineTableViewCellContextMenuConfiguration: UIContextMenuConfiguration {
     
-    var indexPath: IndexPath?
-    var index: Int?
+    public var indexPath: IndexPath?
+    public var index: Int?
     
 }

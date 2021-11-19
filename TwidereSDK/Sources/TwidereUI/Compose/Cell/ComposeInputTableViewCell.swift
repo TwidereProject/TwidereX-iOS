@@ -8,6 +8,7 @@
 import os.log
 import UIKit
 import Combine
+import MetaTextKit
 
 public protocol ComposeInputTableViewCellDelegate: AnyObject {
     func composeInputTableViewCell(_ cell: ComposeInputTableViewCell, mentionPickButtonDidPressed button: UIButton)
@@ -40,11 +41,37 @@ final public class ComposeInputTableViewCell: UITableViewCell {
 //        return button
 //    }()
     
-    public let composeTextView: UITextView = {
-        let textView = UITextView()
-        textView.font = .preferredFont(forTextStyle: .body)
-        textView.isScrollEnabled = false
-        return textView
+    let metaText: MetaText = {
+        let metaText = MetaText()
+        metaText.textView.backgroundColor = .clear
+        metaText.textView.isScrollEnabled = false
+        metaText.textView.keyboardType = .twitter
+        metaText.textView.textDragInteraction?.isEnabled = false    // disable drag for link and attachment
+        metaText.textView.textContainer.lineFragmentPadding = 10    // leading inset
+        metaText.textView.font = UIFontMetrics(forTextStyle: .body).scaledFont(for: .systemFont(ofSize: 17, weight: .regular))
+//        metaText.textView.attributedPlaceholder = {
+//            var attributes = metaText.textAttributes
+//            attributes[.foregroundColor] = Asset.Colors.Label.secondary.color
+//            return NSAttributedString(
+//                string: L10n.Scene.Compose.contentInputPlaceholder,
+//                attributes: attributes
+//            )
+//        }()
+//        metaText.paragraphStyle = {
+//            let style = NSMutableParagraphStyle()
+//            style.lineSpacing = 5
+//            style.paragraphSpacing = 0
+//            return style
+//        }()
+//        metaText.textAttributes = [
+//            .font: UIFontMetrics(forTextStyle: .body).scaledFont(for: .systemFont(ofSize: 17, weight: .regular)),
+//            .foregroundColor: Asset.Colors.Label.primary.color,
+//        ]
+//        metaText.linkAttributes = [
+//            .font: UIFontMetrics(forTextStyle: .body).scaledFont(for: .systemFont(ofSize: 17, weight: .semibold)),
+//            .foregroundColor: Asset.Colors.brandBlue.color,
+//        ]
+        return metaText
     }()
     
     public let composeText = PassthroughSubject<String, Never>()
@@ -110,13 +137,12 @@ extension ComposeInputTableViewCell {
         
 //        containerStackView.addArrangedSubview(mentionPickButton)
         
-        composeTextView.translatesAutoresizingMaskIntoConstraints = false
-        containerStackView.addArrangedSubview(composeTextView)
+        metaText.textView.translatesAutoresizingMaskIntoConstraints = false
+        containerStackView.addArrangedSubview(metaText.textView)
         NSLayoutConstraint.activate([
-            composeTextView.heightAnchor.constraint(greaterThanOrEqualToConstant: 64),
+            metaText.textView.bottomAnchor.constraint(greaterThanOrEqualTo: avatarView.bottomAnchor, constant: 16),
         ])
         
-        composeTextView.delegate = self
 //        conversationLinkUpper.isHidden = true
         
 //        mentionPickButton.addTarget(self, action: #selector(ComposeTweetContentTableViewCell.mentionPickButtonPressed(_:)), for: .touchUpInside)
@@ -131,9 +157,9 @@ extension ComposeInputTableViewCell {
 }
 
 // MARK: - UITextViewDelegate
-extension ComposeInputTableViewCell: UITextViewDelegate {
-    public func textViewDidChange(_ textView: UITextView) {
-        guard textView === composeTextView else { return }
-        composeText.send(composeTextView.text ?? "")
-    }
-}
+//extension ComposeInputTableViewCell: UITextViewDelegate {
+//    public func textViewDidChange(_ textView: UITextView) {
+//        guard textView === composeTextView else { return }
+//        composeText.send(composeTextView.text ?? "")
+//    }
+//}

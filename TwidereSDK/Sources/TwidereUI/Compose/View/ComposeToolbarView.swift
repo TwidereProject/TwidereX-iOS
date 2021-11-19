@@ -5,10 +5,12 @@
 //  Created by MainasuK on 2021/11/18.
 //
 
+import os.log
 import UIKit
+import TwidereLocalization
 
 public protocol ComposeToolbarViewDelegate: AnyObject {
-    func composeToolBarView(_ composeToolBarView: ComposeToolbarView, mediaButtonPressed button: UIButton)
+    func composeToolBarView(_ composeToolBarView: ComposeToolbarView, mediaButtonPressed button: UIButton, mediaSelectionType type: ComposeToolbarView.MediaSelectionType)
     func composeToolBarView(_ composeToolBarView: ComposeToolbarView, emojiButtonPressed button: UIButton)
     func composeToolBarView(_ composeToolBarView: ComposeToolbarView, pollButtonPressed button: UIButton)
     func composeToolBarView(_ composeToolBarView: ComposeToolbarView, mentionButtonPressed button: UIButton)
@@ -18,6 +20,7 @@ public protocol ComposeToolbarViewDelegate: AnyObject {
 
 final public class ComposeToolbarView: UIView {
     
+    let logger = Logger(subsystem: "ComposeToolbarView", category: "View")
     public weak var delegate: ComposeToolbarViewDelegate?
     
     public let scrollView: UIScrollView = {
@@ -118,8 +121,9 @@ extension ComposeToolbarView {
 
         let spacer = UIView()
         container.addArrangedSubview(spacer)
-        
-        mediaButton.addTarget(self, action: #selector(ComposeToolbarView.mediaButtonPressed(_:)), for: .touchUpInside)
+
+        mediaButton.menu = createMediaContextMenu(button: mediaButton)
+        mediaButton.showsMenuAsPrimaryAction = true
         emojiButton.addTarget(self, action: #selector(ComposeToolbarView.emojiButtonPressed(_:)), for: .touchUpInside)
         pollButton.addTarget(self, action: #selector(ComposeToolbarView.pollButtonPressed(_:)), for: .touchUpInside)
         mentionButton.addTarget(self, action: #selector(ComposeToolbarView.mentionButtonPressed(_:)), for: .touchUpInside)
@@ -131,10 +135,49 @@ extension ComposeToolbarView {
 }
 
 extension ComposeToolbarView {
-    @objc private func mediaButtonPressed(_ sender: UIButton) {
-        delegate?.composeToolBarView(self, mediaButtonPressed: sender)
+    public enum MediaSelectionType: String {
+        case camera
+        case photoLibrary
+        case browse
     }
+    
+    private func createMediaContextMenu(button: UIButton) -> UIMenu {
+        var children: [UIMenuElement] = []
+        let photoLibraryAction = UIAction(
+            title: L10n.Common.Controls.Ios.photoLibrary,
+            image: UIImage(systemName: "rectangle.on.rectangle"),
+            identifier: nil,
+            discoverabilityTitle: nil,
+            attributes: [],
+            state: .off
+        ) { [weak self, weak button] _ in
+            guard let self = self else { return }
+            guard let button = button else { return }
+            self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): select .photoLibrary")
+            self.delegate?.composeToolBarView(self, mediaButtonPressed: button, mediaSelectionType: .photoLibrary)
+        }
+        children.append(photoLibraryAction)
+        
+//        if UIImagePickerController.isSourceTypeAvailable(.camera) {
+//            let cameraAction = UIAction(title: L10n.Scene.Compose.MediaSelection.camera, image: UIImage(systemName: "camera"), identifier: nil, discoverabilityTitle: nil, attributes: [], state: .off, handler: { [weak self] _ in
+//                guard let self = self else { return }
+//                os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: mediaSelectionType: .camera", ((#file as NSString).lastPathComponent), #line, #function)
+//                self.delegate?.composeToolbarView(self, cameraButtonDidPressed: self.mediaButton, mediaSelectionType: .camera)
+//            })
+//            children.append(cameraAction)
+//        }
+//        let browseAction = UIAction(title: L10n.Scene.Compose.MediaSelection.browse, image: UIImage(systemName: "ellipsis"), identifier: nil, discoverabilityTitle: nil, attributes: [], state: .off) { [weak self] _ in
+//            guard let self = self else { return }
+//            os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: mediaSelectionType: .browse", ((#file as NSString).lastPathComponent), #line, #function)
+//            self.delegate?.composeToolbarView(self, cameraButtonDidPressed: self.mediaButton, mediaSelectionType: .browse)
+//        }
+//        children.append(browseAction)
+        
+        return UIMenu(title: "", image: nil, identifier: nil, options: .displayInline, children: children)
+    }
+}
 
+extension ComposeToolbarView {
     @objc private func emojiButtonPressed(_ sender: UIButton) {
         delegate?.composeToolBarView(self, emojiButtonPressed: sender)
     }

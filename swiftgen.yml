@@ -1,11 +1,13 @@
 strings:
-  inputs: 
   inputs:
-  - TwidereX/Resources/en.lproj/Localizable.strings
-  - TwidereX/Resources/en.lproj/Localizable.stringsdict
+  - TwidereSDK/Sources/TwidereLocalization/en.lproj/Localizable.strings
+  - TwidereSDK/Sources/TwidereLocalization/en.lproj/Localizable.stringsdict
   outputs:
     - templateName: structured-swift5
-      output: TwidereX/Generated/Strings.swift
+      output: TwidereSDK/Sources/TwidereLocalization/Generated/Strings.swift
+      params:
+        bundle: Bundle.module
+        publicAccess: true
 xcassets:
   inputs: TwidereX/Resources/Assets.xcassets
   outputs:

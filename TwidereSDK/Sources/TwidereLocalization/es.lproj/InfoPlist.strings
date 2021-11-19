@@ -1,0 +1,3 @@
+"NSCameraUsageDescription" = "Realizar una foto para el tweet";
+"NSLocationWhenInUseUsageDescription" = "Enviar geolocalización en el tweet";
+"NSPhotoLibraryAddUsageDescription" = "Guardar foto en la galería";

@@ -15,13 +15,17 @@ public final class ComposeContentViewModel {
     var disposeBag = Set<AnyCancellable>()
     
     public let composeInputTableViewCell = ComposeInputTableViewCell()
+    public let composeAttachmentTableViewCell = ComposeAttachmentTableViewCell()
     
     // input
+    @Published public internal(set) var attachmentViewModels: [AttachmentViewModel] = []
+    @Published public var maxMediaAttachmentLimit = 4
     
     // output
     public var diffableDataSource: UITableViewDiffableDataSource<Section, Item>?
     @Published public internal(set) var items: Set<Item> = [.input]
     @Published public private(set) var availableActions: Set<ComposeToolbarView.Action> = Set()
+    @Published public private(set) var isMediaToolBarButtonEnabled = true
     @Published public private(set) var shouldDismiss: Bool = true
     
     public init(inputContext: InputContext) {
@@ -35,7 +39,40 @@ public final class ComposeContentViewModel {
         case .reply(let status):
             items.insert(.replyTo)
         }
-            
+        // TODO: set availableActions
+        // end init
+        
+        // bind attachments
+        $attachmentViewModels
+            .sink { [weak self] attachmentViewModels in
+                guard let self = self else { return }
+                // update itmes
+                if attachmentViewModels.isEmpty {
+                    self.items.remove(.attachment)
+                } else {
+                    self.items.insert(.attachment)
+                }
+                // update data source
+                var snapshot = NSDiffableDataSourceSnapshot<ComposeAttachmentTableViewCell.Section, ComposeAttachmentTableViewCell.Item>()
+                snapshot.appendSections([.main])
+                let items: [ComposeAttachmentTableViewCell.Item] = attachmentViewModels.map {
+                    ComposeAttachmentTableViewCell.Item.attachment(viewModel: $0)
+                }
+                snapshot.appendItems(items, toSection: .main)
+                self.composeAttachmentTableViewCell.diffableDataSource.apply(snapshot)
+            }
+            .store(in: &disposeBag)
+        
+        // bind toolbar UI 
+        Publishers.CombineLatest(
+            $attachmentViewModels,
+            $maxMediaAttachmentLimit
+        )
+        .map { attachmentViewModels, maxMediaAttachmentLimit in
+            return attachmentViewModels.count < maxMediaAttachmentLimit
+        }
+        .assign(to: &$isMediaToolBarButtonEnabled)
+
     }
     
 }

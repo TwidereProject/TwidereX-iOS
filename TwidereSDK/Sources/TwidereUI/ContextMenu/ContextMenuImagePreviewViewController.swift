@@ -6,17 +6,18 @@
 //  Copyright © 2020 Twidere. All rights reserved.
 //
 
-import func AVFoundation.AVMakeRect
 import UIKit
 import Combine
+import AlamofireImage
+import func AVFoundation.AVMakeRect
 
-final class ContextMenuImagePreviewViewController: UIViewController {
+final public class ContextMenuImagePreviewViewController: UIViewController {
     
-    var disposeBag = Set<AnyCancellable>()
+    public var disposeBag = Set<AnyCancellable>()
     
-    var viewModel: ContextMenuImagePreviewViewModel!
+    public var viewModel: ContextMenuImagePreviewViewModel!
     
-    let imageView: UIImageView = {
+    public let imageView: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFill
         imageView.layer.masksToBounds = true
@@ -27,7 +28,7 @@ final class ContextMenuImagePreviewViewController: UIViewController {
 
 extension ContextMenuImagePreviewViewController {
     
-    override func viewDidLoad() {
+    public override func viewDidLoad() {
         super.viewDidLoad()
         
         imageView.translatesAutoresizingMaskIntoConstraints = false

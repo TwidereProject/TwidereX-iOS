@@ -12,27 +12,59 @@ let package = Package(
     ],
     products: [
         // Products define the executables and libraries a package produces, and make them visible to other packages.
+//        .library(
+//            name: "TwidereSDK",
+//            targets: [
+//                "TwitterSDK",
+//                "MastodonSDK",
+//                "TwidereCore",
+//                "TwidereUI",
+//                "CoreDataStack",
+//            ]
+//        ),
         .library(
-            name: "TwidereSDK",
-            targets: [
-                "TwitterSDK",
-                "MastodonSDK",
-                "TwidereCommon",
-                "TwidereCore",
-                "TwidereUI",
-                "CoreDataStack",
-            ]
+            name: "TwitterSDK",
+            targets: ["TwitterSDK"]
+        ),
+        .library(
+            name: "MastodonSDK",
+            targets: ["MastodonSDK"]
+        ),
+        .library(
+            name: "TwidereCommon",
+            targets: ["TwidereCommon"]
         ),
         .library(
             name: "TwidereCore",
-            targets: [
-                "TwidereCore",
-            ]
+            targets: ["TwidereCore"]
+        ),
+        .library(
+            name: "TwidereCore",
+            targets: ["TwidereCore"]
+        ),
+        .library(
+            name: "TwidereCore",
+            targets: ["TwidereCore"]
+        ),
+        .library(
+            name: "TwidereLocalization",
+            targets: ["TwidereLocalization"]
+        ),
+        .library(
+            name: "TwidereUI",
+            targets: ["TwidereUI"]
+        ),
+        .library(
+            name: "CoreDataStack",
+            targets: ["CoreDataStack"]
         ),
     ],
     dependencies: [
         .package(url: "https://github.com/SwiftyJSON/SwiftyJSON.git", from: "5.0.0"),
         .package(url: "https://github.com/apple/swift-nio.git", from: "2.3.0"),
+        .package(url: "https://github.com/TwidereProject/MetaTextKit.git", .exact("3.0.3")),
+        .package(url: "https://github.com/Alamofire/Alamofire.git", from: "5.4.0"),
+        .package(url: "https://github.com/Alamofire/AlamofireImage.git", from: "4.1.0"),
     ],
     targets: [
         // Targets are the basic building blocks of a package. A target can define a module or a test suite.
@@ -63,22 +95,29 @@ let package = Package(
             name: "TwidereCore",
             dependencies: [
                 "TwidereCommon",
+                "TwidereLocalization",
                 "TwitterSDK",
                 "MastodonSDK",
                 "CoreDataStack",
             ]
         ),
         .target(
+            name: "TwidereLocalization",
+            dependencies: []
+        ),
+        .target(
             name: "TwidereUI",
-            dependencies: ["TwidereCore"]
+            dependencies: [
+                "TwidereCore",
+                "MetaTextKit",
+                "Alamofire",
+                "AlamofireImage",
+            ]
         ),
         .target(
             name: "CoreDataStack",
             dependencies: ["TwidereCommon"],
-            exclude: ["Template/Stencil"],
-            resources: [
-                .copy("CoreDataStack.xcdatamodeld"),
-            ]
+            exclude: ["Template/Stencil"]
         )
     ]
 )

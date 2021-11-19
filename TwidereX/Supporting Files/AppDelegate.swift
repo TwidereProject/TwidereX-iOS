@@ -12,6 +12,7 @@ import Kingfisher
 //import Floaty
 
 @_exported import TwidereCore
+@_exported import TwidereLocalization
 @_exported import TwidereUI
 
 @main
