@@ -8,16 +8,17 @@
 
 import os.log
 import UIKit
+import SwiftUI
 import AVKit
 import Combine
 import CoreData
 import CoreDataStack
 import GameplayKit
+import TwidereUI
 import TwitterSDK
 import Floaty
 import AlamofireImage
-import SwiftUI
-import TwidereUI
+import AppShared
 
 // DrawerSidebarTransitionableViewController, MediaPreviewableViewController
 final class HomeTimelineViewController: UIViewController, NeedsDependency {
@@ -219,7 +220,13 @@ extension HomeTimelineViewController {
         os_log("%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
         
         let composeViewModel = ComposeViewModel(context: context)
-        let composeContentViewModel = ComposeContentViewModel(inputContext: .post)
+        let composeContentViewModel = ComposeContentViewModel(
+            inputContext: .post,
+            contentContext: ComposeContentViewModel.ContentContext(
+                dateTimeProvider: DateTimeSwiftProvider(),
+                twitterTextProvider: OfficialTwitterTextProvider()
+            )
+        )
         coordinator.present(scene: .compose(viewModel: composeViewModel, contentViewModel: composeContentViewModel), from: self, transition: .modal(animated: true, completion: nil))
     }
 

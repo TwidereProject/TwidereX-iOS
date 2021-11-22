@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import Combine
 import TwidereCore
 
 extension ComposeContentViewModel {
@@ -14,7 +15,7 @@ extension ComposeContentViewModel {
         case main
     }
     
-    public enum Item: Int, Hashable, CaseIterable, Comparable {
+    public enum Item: Int, Comparable, Hashable, CaseIterable {
         case replyTo
         case input
         case quote
@@ -34,7 +35,7 @@ extension ComposeContentViewModel {
         diffableDataSource = UITableViewDiffableDataSource(tableView: tableView) { tableView, indexPath, item in
             // data source should dispatch in main thread
             assert(Thread.isMainThread)
-            return self.cell(for: item, at: indexPath)
+            return self.cell(for: item, tableView: tableView, at: indexPath)
         }
                 
         var snapshot = NSDiffableDataSourceSnapshot<Section, Item>()
@@ -57,12 +58,26 @@ extension ComposeContentViewModel {
             .store(in: &disposeBag)
     }
     
-    private func cell(for item: Item, at indexPath: IndexPath) -> UITableViewCell {
+    private func cell(for item: Item, tableView: UITableView, at indexPath: IndexPath) -> UITableViewCell {
         switch item {
         case .replyTo:
-            let cell = UITableViewCell()
-            cell.backgroundColor = .red
-            return cell
+            guard let status = self.replyTo else {
+                assertionFailure()
+                return UITableViewCell()
+            }
+            composeReplyTableViewCell.prepareForReuse()
+            composeReplyTableViewCell.configure(
+                tableView: tableView,
+                viewModel: ComposeReplyTableViewCell.ViewModel(
+                    status: status,
+                    statusViewConfigureContext: StatusView.ConfigurationContext(
+                        dateTimeProvider: contentContext.dateTimeProvider,
+                        twitterTextProvider: contentContext.twitterTextProvider,
+                        activeAuthenticationContext: Just(nil).eraseToAnyPublisher()
+                    )
+                )
+            )
+            return composeReplyTableViewCell
         case .input:
             return composeInputTableViewCell
         case .quote:

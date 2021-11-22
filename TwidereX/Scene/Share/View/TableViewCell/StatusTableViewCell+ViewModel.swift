@@ -10,6 +10,7 @@ import UIKit
 import Combine
 import SwiftUI
 import CoreDataStack
+import AppShared
 
 extension StatusTableViewCell {
     final class ViewModel {

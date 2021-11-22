@@ -11,7 +11,6 @@ import Combine
 import UIKit
 import MetaTextKit
 import MetaTextArea
-//import Kingfisher
 import TwidereCommon
 
 public protocol StatusViewDelegate: AnyObject {
@@ -181,15 +180,17 @@ extension StatusView {
 
 extension StatusView {
     public enum Style {
-        case inline     // for timeline
-        case plain      // for thread
-        case quote      // for quote
+        case inline             // for timeline
+        case plain              // for thread
+        case quote              // for quote
+        case composeReply       // for compose
         
         func layout(statusView: StatusView) {
             switch self {
-            case .inline:   layoutInline(statusView: statusView)
-            case .plain:    layoutPlain(statusView: statusView)
-            case .quote:    layoutQuote(statusView: statusView)
+            case .inline:           layoutInline(statusView: statusView)
+            case .plain:            layoutPlain(statusView: statusView)
+            case .quote:            layoutQuote(statusView: statusView)
+            case .composeReply:     layoutComposeReply(statusView: statusView)
             }
         }
         
@@ -513,6 +514,93 @@ extension StatusView.Style {
         bodyContainerStackView.addArrangedSubview(statusView.mediaGridContainerView)
     }
     
+    func layoutComposeReply(statusView: StatusView) {
+        // container: V - [ body container ]
+        
+        // body container: H - [ authorAvatarButton | content container ]
+        let bodyContainerStackView = UIStackView()
+        bodyContainerStackView.axis = .horizontal
+        bodyContainerStackView.spacing = StatusView.bodyContainerStackViewSpacing
+        bodyContainerStackView.alignment = .top
+        statusView.containerStackView.addArrangedSubview(bodyContainerStackView)
+        
+        // authorAvatarButton
+        let authorAvatarButtonSize = CGSize(width: 44, height: 44)
+        statusView.authorAvatarButton.size = authorAvatarButtonSize
+        statusView.authorAvatarButton.avatarImageView.imageViewSize = authorAvatarButtonSize
+        statusView.authorAvatarButton.translatesAutoresizingMaskIntoConstraints = false
+        bodyContainerStackView.addArrangedSubview(statusView.authorAvatarButton)
+        NSLayoutConstraint.activate([
+            statusView.authorAvatarButton.widthAnchor.constraint(equalToConstant: authorAvatarButtonSize.width).priority(.required - 1),
+            statusView.authorAvatarButton.heightAnchor.constraint(equalToConstant: authorAvatarButtonSize.height).priority(.required - 1),
+        ])
+        
+        // content container: V - [ author content | contentTextView | mediaGridContainerView | quoteStatusView | … | location content | toolbar ]
+        let contentContainerView = UIStackView()
+        contentContainerView.axis = .vertical
+        contentContainerView.spacing = 10
+        bodyContainerStackView.addArrangedSubview(contentContainerView)
+        
+        // author content: H - [ authorNameLabel | authorUsernameLabel | padding | visibilityImageView (for Mastodon) | timestampLabel ]
+        let authorContentStackView = UIStackView()
+        authorContentStackView.axis = .horizontal
+        authorContentStackView.spacing = 6
+        contentContainerView.addArrangedSubview(authorContentStackView)
+        contentContainerView.setCustomSpacing(4, after: authorContentStackView)
+        UIContentSizeCategory.publisher
+            .sink { category in
+                authorContentStackView.axis = category > .accessibilityLarge ? .vertical : .horizontal
+            }
+            .store(in: &statusView._disposeBag)
+        
+        // authorNameLabel
+        authorContentStackView.addArrangedSubview(statusView.authorNameLabel)
+        statusView.authorNameLabel.setContentCompressionResistancePriority(.required - 10, for: .horizontal)
+        // authorUsernameLabel
+        authorContentStackView.addArrangedSubview(statusView.authorUsernameLabel)
+        statusView.authorUsernameLabel.setContentCompressionResistancePriority(.required - 11, for: .horizontal)
+        // padding
+        authorContentStackView.addArrangedSubview(UIView())
+        // timestampLabel
+        authorContentStackView.addArrangedSubview(statusView.timestampLabel)
+        statusView.timestampLabel.setContentHuggingPriority(.required - 9, for: .horizontal)
+        statusView.timestampLabel.setContentCompressionResistancePriority(.required - 9, for: .horizontal)
+        
+        // contentTextView
+        statusView.contentTextView.translatesAutoresizingMaskIntoConstraints = false
+        contentContainerView.addArrangedSubview(statusView.contentTextView)
+        statusView.contentTextView.setContentHuggingPriority(.required - 10, for: .vertical)
+        
+        // mediaGridContainerView
+        statusView.mediaGridContainerView.translatesAutoresizingMaskIntoConstraints = false
+        contentContainerView.addArrangedSubview(statusView.mediaGridContainerView)
+        
+        // quoteStatusView
+        let quoteStatusView = StatusView()
+        quoteStatusView.setup(style: .quote)
+        statusView.quoteStatusView = quoteStatusView
+        contentContainerView.addArrangedSubview(quoteStatusView)
+        
+        // location content: H - [ locationMapPinImageView | locationLabel ]
+        contentContainerView.addArrangedSubview(statusView.locationContainer)
+        
+        statusView.locationMapPinImageView.translatesAutoresizingMaskIntoConstraints = false
+        statusView.locationLabel.translatesAutoresizingMaskIntoConstraints = false
+        
+        // locationMapPinImageView
+        statusView.locationContainer.addArrangedSubview(statusView.locationMapPinImageView)
+        // locationLabel
+        statusView.locationContainer.addArrangedSubview(statusView.locationLabel)
+        
+        NSLayoutConstraint.activate([
+            statusView.locationMapPinImageView.heightAnchor.constraint(equalTo: statusView.locationLabel.heightAnchor, multiplier: 1.0).priority(.required - 1),
+            statusView.locationMapPinImageView.widthAnchor.constraint(equalTo: statusView.locationMapPinImageView.heightAnchor, multiplier: 1.0).priority(.required - 1),
+        ])
+        statusView.locationLabel.setContentHuggingPriority(.required - 10, for: .vertical)
+        statusView.locationMapPinImageView.setContentHuggingPriority(.defaultLow, for: .vertical)
+        statusView.locationMapPinImageView.setContentHuggingPriority(.defaultLow, for: .horizontal)
+    }
+    
 }
 
 extension StatusView {
@@ -550,7 +638,7 @@ extension StatusView {
         }
         
         switch style {
-        case .inline:
+        case .inline, .composeReply:
             let left = authorAvatarButton.size.width + StatusView.bodyContainerStackViewSpacing
             return UIEdgeInsets(top: 0, left: left, bottom: 0, right: 0)
         case .plain:

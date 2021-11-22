@@ -11,6 +11,7 @@ import Combine
 import SwiftUI
 import CoreDataStack
 import TwidereCore
+import AppShared
 
 extension StatusThreadRootTableViewCell {
     final class ViewModel {

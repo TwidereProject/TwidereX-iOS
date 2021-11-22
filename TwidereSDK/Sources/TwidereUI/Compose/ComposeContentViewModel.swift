@@ -9,15 +9,19 @@ import UIKit
 import SwiftUI
 import Combine
 import TwidereCore
+import TwitterMeta
 
 public final class ComposeContentViewModel {
     
     var disposeBag = Set<AnyCancellable>()
     
+    public let composeReplyTableViewCell = ComposeReplyTableViewCell()
     public let composeInputTableViewCell = ComposeInputTableViewCell()
     public let composeAttachmentTableViewCell = ComposeAttachmentTableViewCell()
     
     // input
+    public private(set) var replyTo: StatusObject?
+    public let contentContext: ContentContext
     @Published public var author: UserObject?
     @Published public internal(set) var attachmentViewModels: [AttachmentViewModel] = []
     @Published public var maxMediaAttachmentLimit = 4
@@ -29,7 +33,13 @@ public final class ComposeContentViewModel {
     @Published public private(set) var isMediaToolBarButtonEnabled = true
     @Published public private(set) var shouldDismiss: Bool = true
     
-    public init(inputContext: InputContext) {
+    public init(
+        inputContext: InputContext,
+        contentContext: ContentContext
+    ) {
+        self.contentContext = contentContext
+        // end init
+
         switch inputContext {
         case .post:
             break
@@ -38,10 +48,10 @@ public final class ComposeContentViewModel {
         case .mention(let user):
             break
         case .reply(let status):
+            replyTo = status
             items.insert(.replyTo)
         }
         // TODO: set availableActions
-        // end init
         
         // bind author
         $author
@@ -92,6 +102,19 @@ extension ComposeContentViewModel {
         case hashtag(hashtag: String)
         case mention(user: UserObject)
         case reply(status: StatusObject)
+    }
+    
+    public struct ContentContext {
+        public let dateTimeProvider: DateTimeProvider
+        public let twitterTextProvider: TwitterTextProvider
+        
+        public init(
+            dateTimeProvider: DateTimeProvider,
+            twitterTextProvider: TwitterTextProvider
+        ) {
+            self.dateTimeProvider = dateTimeProvider
+            self.twitterTextProvider = twitterTextProvider
+        }
     }
 }
 

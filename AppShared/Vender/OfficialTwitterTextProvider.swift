@@ -12,6 +12,7 @@ import TwitterMeta
 import twitter_text
 
 public class OfficialTwitterTextProvider: TwitterTextProvider {
+    
     public func entities(in text: String) -> [TwitterTextProviderEntity] {
         return TwitterText.entities(inText: text).compactMap { entity in
             switch entity.type {
@@ -28,4 +29,6 @@ public class OfficialTwitterTextProvider: TwitterTextProvider {
             }
         }
     }
+    
+    public init() { }
 }

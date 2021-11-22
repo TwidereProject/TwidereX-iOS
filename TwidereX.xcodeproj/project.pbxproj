@@ -16,7 +16,6 @@
 		DB01091526E5EB64005F67D7 /* MastodonStatusThreadViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB01091426E5EB64005F67D7 /* MastodonStatusThreadViewModel.swift */; };
 		DB01091826E5F0B6005F67D7 /* APIService+Status+Thread.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB01091726E5F0B6005F67D7 /* APIService+Status+Thread.swift */; };
 		DB01091A26E60693005F67D7 /* ContentOffsetAdjustableTimelineViewControllerDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB8AC0FF25401C2700E636BE /* ContentOffsetAdjustableTimelineViewControllerDelegate.swift */; };
-		DB01091C26E606BB005F67D7 /* OfficialTwitterTextProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB01091B26E606BB005F67D7 /* OfficialTwitterTextProvider.swift */; };
 		DB01092026E60756005F67D7 /* DataSourceFacade+StatusThread.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB01091F26E60756005F67D7 /* DataSourceFacade+StatusThread.swift */; };
 		DB01092226E608B7005F67D7 /* DataSourceFacade+Repost.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB01092126E608B7005F67D7 /* DataSourceFacade+Repost.swift */; };
 		DB01092426E6199C005F67D7 /* DataSourceFacade+StatusViewTableViewCellDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB01092326E6199C005F67D7 /* DataSourceFacade+StatusViewTableViewCellDelegate.swift */; };
@@ -296,7 +295,8 @@
 		DBCB4060255CAC0300DD8D8F /* TwitterAuthenticationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBCB405F255CAC0300DD8D8F /* TwitterAuthenticationController.swift */; };
 		DBCB408A255D8C2B00DD8D8F /* SafariActivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBCB4089255D8C2B00DD8D8F /* SafariActivity.swift */; };
 		DBCB40A9255DA58000DD8D8F /* UserTimelineViewController+StatusProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBCB40A8255DA58000DD8D8F /* UserTimelineViewController+StatusProvider.swift */; };
-		DBCC7AE4274B95C900E0986D /* DateTimeSwiftProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBCC7AE3274B95C900E0986D /* DateTimeSwiftProvider.swift */; };
+		DBCC7AE5274BA10100E0986D /* DateTimeSwiftProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBCC7AE3274B95C900E0986D /* DateTimeSwiftProvider.swift */; };
+		DBCC7AE6274BA10100E0986D /* OfficialTwitterTextProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB01091B26E606BB005F67D7 /* OfficialTwitterTextProvider.swift */; };
 		DBCE2E912591A06300926D09 /* UINavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBCE2E902591A06300926D09 /* UINavigationController.swift */; };
 		DBCE2E992591A44000926D09 /* UIViewAnimatingPosition.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBCE2E982591A44000926D09 /* UIViewAnimatingPosition.swift */; };
 		DBCE2EE32593319000926D09 /* AvatarConfigurableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBCE2EE22593319000926D09 /* AvatarConfigurableView.swift */; };
@@ -1614,8 +1614,6 @@
 				DBA6B1BE2535B0BE005FB0B4 /* ControlContainableScrollViews.swift */,
 				DBA5FA182553DCBC00D2E98E /* TransitioningMath.swift */,
 				DB42411526C3EB9100B6C5F8 /* ReadabilityPadding.swift */,
-				DB01091B26E606BB005F67D7 /* OfficialTwitterTextProvider.swift */,
-				DBCC7AE3274B95C900E0986D /* DateTimeSwiftProvider.swift */,
 			);
 			path = Vender;
 			sourceTree = "<group>";
@@ -1791,6 +1789,7 @@
 			children = (
 				DB94B6BD26C65CB000A2E8A1 /* AppShared.h */,
 				DB2611462518AC13004BF309 /* AppSecret.swift */,
+				DBCC7AE7274BA10300E0986D /* Vender */,
 			);
 			path = AppShared;
 			sourceTree = "<group>";
@@ -2014,6 +2013,15 @@
 				DBC8E04F257653E100401E20 /* SavePhotoActivity.swift */,
 			);
 			path = Activity;
+			sourceTree = "<group>";
+		};
+		DBCC7AE7274BA10300E0986D /* Vender */ = {
+			isa = PBXGroup;
+			children = (
+				DB01091B26E606BB005F67D7 /* OfficialTwitterTextProvider.swift */,
+				DBCC7AE3274B95C900E0986D /* DateTimeSwiftProvider.swift */,
+			);
+			path = Vender;
 			sourceTree = "<group>";
 		};
 		DBCE2EAD2591F37400926D09 /* FollowingList */ = {
@@ -3044,6 +3052,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				DB0B3B8E26C6639100501BB7 /* AppSecret.swift in Sources */,
+				DBCC7AE5274BA10100E0986D /* DateTimeSwiftProvider.swift in Sources */,
+				DBCC7AE6274BA10100E0986D /* OfficialTwitterTextProvider.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3156,7 +3166,6 @@
 				DB3B906126E8AB480010F64C /* StatusViewTableViewCellDelegate.swift in Sources */,
 				DB2EBBF0255D368200956CAA /* TableViewEntryRow.swift in Sources */,
 				DB30ADDC26CFC7EE00B2D2BE /* StatusTableViewCell.swift in Sources */,
-				DB01091C26E606BB005F67D7 /* OfficialTwitterTextProvider.swift in Sources */,
 				DB8761CB2745530200BA7EE2 /* CoverFlowStackSection.swift in Sources */,
 				DB8AC0F825401BA200E636BE /* UIViewController.swift in Sources */,
 				DB434888251DFE2D005B599F /* ProfileBannerStatusView.swift in Sources */,
@@ -3239,7 +3248,6 @@
 				DB262A392721621900D18EF3 /* DataSourceFacade+User.swift in Sources */,
 				DB3B906526E8BF1F0010F64C /* ProfileHeaderView+ViewModel.swift in Sources */,
 				DB51DC3B2716F82000A0D8FB /* CellFrameCacheContainer.swift in Sources */,
-				DBCC7AE4274B95C900E0986D /* DateTimeSwiftProvider.swift in Sources */,
 				DB3FC04A2552711C003A2F8A /* UserMediaTimelineViewModel+Diffable.swift in Sources */,
 				DB925744251C9CD6004FEFB5 /* ProfilePagingViewController.swift in Sources */,
 				DB01091526E5EB64005F67D7 /* MastodonStatusThreadViewModel.swift in Sources */,

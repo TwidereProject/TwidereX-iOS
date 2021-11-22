@@ -20,7 +20,6 @@ public final class ComposeContentViewController: UIViewController {
         
     private(set) lazy var tableView: UITableView = {
         let tableView = UITableView()
-        tableView.register(ComposeInputTableViewCell.self, forCellReuseIdentifier: String(describing: ComposeInputTableViewCell.self))
         tableView.backgroundColor = .systemBackground
         tableView.rowHeight = UITableView.automaticDimension
         tableView.separatorStyle = .none

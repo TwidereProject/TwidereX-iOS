@@ -8,10 +8,11 @@
 
 import UIKit
 import Combine
-import AlamofireImage
 import CoreDataStack
 import TwitterMeta
 import MastodonMeta
+import AlamofireImage
+import AppShared
 
 extension ProfileHeaderView {
     class ViewModel: ObservableObject {
