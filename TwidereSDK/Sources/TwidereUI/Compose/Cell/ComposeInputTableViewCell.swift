@@ -21,11 +21,15 @@ final public class ComposeInputTableViewCell: UITableViewCell {
     var disposeBag = Set<AnyCancellable>()
     
     public weak var delegate: ComposeInputTableViewCellDelegate?
+    public private(set) lazy var viewModel: ViewModel = {
+        let viewModel = ViewModel()
+        viewModel.bind(cell: self)
+        return viewModel
+    }()
     
-    // TODO: use ProfileAvatarButton
-    public let avatarView: UIImageView = {
-        let imageView = UIImageView()
-        imageView.contentMode = .scaleAspectFill
+    public let avatarView: ProfileAvatarView = {
+        let imageView = ProfileAvatarView()
+        imageView.dimention = ComposeInputTableViewCell.avatarImageViewSize.width
         return imageView
     }()
     
@@ -131,7 +135,6 @@ extension ComposeInputTableViewCell {
         ])
         
         #if DEBUG
-        avatarView.backgroundColor = .red
         containerStackView.backgroundColor = .green
         #endif
         

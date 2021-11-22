@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import TwidereUI
 
 protocol StatusViewContainerTableViewCell: UITableViewCell {
     var delegate: StatusViewTableViewCellDelegate? { get }

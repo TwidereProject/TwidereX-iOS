@@ -9,13 +9,14 @@
 import Foundation
 import CoreData
 import CoreDataStack
+import TwidereCommon
 
 public enum StatusRecord: Hashable {
     case twitter(record: ManagedObjectRecord<TwitterStatus>)
     case mastodon(record: ManagedObjectRecord<MastodonStatus>)
 }
 
-public extension StatusRecord {
+extension StatusRecord {
     public func object(in managedObjectContext: NSManagedObjectContext) -> StatusObject? {
         switch self {
         case .twitter(let record):

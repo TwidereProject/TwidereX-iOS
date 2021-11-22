@@ -13,6 +13,7 @@ import CoreData
 import CoreDataStack
 import GameplayKit
 import TwitterSDK
+import TwidereUI
 
 final class SearchMediaViewModel {
     

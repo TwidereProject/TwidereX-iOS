@@ -10,6 +10,7 @@ import UIKit
 import Combine
 import SwiftUI
 import CoreDataStack
+import TwidereCore
 
 extension StatusThreadRootTableViewCell {
     final class ViewModel {
@@ -19,9 +20,14 @@ extension StatusThreadRootTableViewCell {
         }
         
         let value: Value
+        let activeAuthenticationContext: AnyPublisher<AuthenticationContext?, Never>
         
-        init(value: Value) {
+        init(
+            value: Value,
+            activeAuthenticationContext: AnyPublisher<AuthenticationContext?, Never>
+        ) {
             self.value = value
+            self.activeAuthenticationContext = activeAuthenticationContext
         }
     }
     
@@ -41,11 +47,24 @@ extension StatusThreadRootTableViewCell {
             logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): did layout for new cell")
         }
         
+        let configurationContext = StatusView.ConfigurationContext(
+            dateTimeProvider: DateTimeSwiftProvider(),
+            twitterTextProvider: OfficialTwitterTextProvider(),
+            activeAuthenticationContext: viewModel.activeAuthenticationContext
+        )
+        
         switch viewModel.value {
         case .twitterStatus(let status):
-            statusView.configure(twitterStatus: status)
+            statusView.configure(
+                twitterStatus: status,
+                configurationContext: configurationContext
+            )
         case .mastodonStatus(let status):
-            statusView.configure(mastodonStatus: status, notification: nil)
+            statusView.configure(
+                mastodonStatus: status,
+                notification: nil,
+                configurationContext: configurationContext
+            )
         }
         
         self.delegate = delegate

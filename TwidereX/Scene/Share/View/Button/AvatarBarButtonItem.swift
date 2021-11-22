@@ -8,11 +8,11 @@
 
 import UIKit
 
-final class AvatarBarButtonItem: UIBarButtonItem {
+public final class AvatarBarButtonItem: UIBarButtonItem {
 
-    static let avatarButtonSize = CGSize(width: 30, height: 30)
+    public static let avatarButtonSize = CGSize(width: 30, height: 30)
 
-    let avatarButton: UIButton = {
+    public let avatarButton: UIButton = {
         let button = UIButton(type: .custom)
         button.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
@@ -22,12 +22,12 @@ final class AvatarBarButtonItem: UIBarButtonItem {
         return button
     }()
     
-    override init() {
+    public override init() {
         super.init()
         _init()
     }
     
-    required init?(coder: NSCoder) {
+    public required init?(coder: NSCoder) {
         super.init(coder: coder)
         _init()
     }
@@ -41,10 +41,3 @@ extension AvatarBarButtonItem {
     }
     
 }
-
-//extension AvatarBarButtonItem: AvatarConfigurableView {
-//    static var configurableAvatarImageViewSize: CGSize { return avatarButtonSize }
-//    var configurableAvatarImageView: UIImageView? { return nil }
-//    var configurableAvatarButton: UIButton? { return avatarButton }
-//    var configurableVerifiedBadgeImageView: UIImageView? { return nil }
-//}

@@ -18,6 +18,7 @@ public final class ComposeContentViewModel {
     public let composeAttachmentTableViewCell = ComposeAttachmentTableViewCell()
     
     // input
+    @Published public var author: UserObject?
     @Published public internal(set) var attachmentViewModels: [AttachmentViewModel] = []
     @Published public var maxMediaAttachmentLimit = 4
     
@@ -41,6 +42,14 @@ public final class ComposeContentViewModel {
         }
         // TODO: set availableActions
         // end init
+        
+        // bind author
+        $author
+            .sink { [weak self] author in
+                guard let self = self else { return }
+                self.composeInputTableViewCell.configure(user: author)
+            }
+            .store(in: &disposeBag)
         
         // bind attachments
         $attachmentViewModels

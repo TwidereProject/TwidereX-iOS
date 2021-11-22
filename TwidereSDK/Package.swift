@@ -12,16 +12,6 @@ let package = Package(
     ],
     products: [
         // Products define the executables and libraries a package produces, and make them visible to other packages.
-//        .library(
-//            name: "TwidereSDK",
-//            targets: [
-//                "TwitterSDK",
-//                "MastodonSDK",
-//                "TwidereCore",
-//                "TwidereUI",
-//                "CoreDataStack",
-//            ]
-//        ),
         .library(
             name: "TwitterSDK",
             targets: ["TwitterSDK"]
@@ -29,6 +19,10 @@ let package = Package(
         .library(
             name: "MastodonSDK",
             targets: ["MastodonSDK"]
+        ),
+        .library(
+            name: "TwidereAsset",
+            targets: ["TwidereAsset"]
         ),
         .library(
             name: "TwidereCommon",
@@ -62,6 +56,8 @@ let package = Package(
     dependencies: [
         .package(url: "https://github.com/SwiftyJSON/SwiftyJSON.git", from: "5.0.0"),
         .package(url: "https://github.com/apple/swift-nio.git", from: "2.3.0"),
+        .package(url: "https://github.com/Flipboard/FLAnimatedImage.git", from: "1.0.0"),
+        .package(url: "https://github.com/MainasuK/CommonOSLog", from: "0.1.1"),
         .package(url: "https://github.com/TwidereProject/MetaTextKit.git", .exact("3.0.3")),
         .package(url: "https://github.com/Alamofire/Alamofire.git", from: "5.4.0"),
         .package(url: "https://github.com/Alamofire/AlamofireImage.git", from: "4.1.0"),
@@ -88,17 +84,31 @@ let package = Package(
             ]
         ),
         .target(
-            name: "TwidereCommon",
+            name: "TwidereAsset",
             dependencies: []
+        ),
+        .target(
+            name: "TwidereCommon",
+            dependencies: [
+                "TwitterSDK",
+            ]
         ),
         .target(
             name: "TwidereCore",
             dependencies: [
+                "TwidereAsset",
                 "TwidereCommon",
                 "TwidereLocalization",
                 "TwitterSDK",
                 "MastodonSDK",
                 "CoreDataStack",
+                "CommonOSLog",
+                "Alamofire",
+                "AlamofireImage",
+                .product(name: "MetaTextKit", package: "MetaTextKit"),
+                .product(name: "MetaTextArea", package: "MetaTextKit"),
+                .product(name: "TwitterMeta", package: "MetaTextKit"),
+                .product(name: "MastodonMeta", package: "MetaTextKit"),
             ]
         ),
         .target(
@@ -109,9 +119,7 @@ let package = Package(
             name: "TwidereUI",
             dependencies: [
                 "TwidereCore",
-                "MetaTextKit",
-                "Alamofire",
-                "AlamofireImage",
+                "FLAnimatedImage",
             ]
         ),
         .target(

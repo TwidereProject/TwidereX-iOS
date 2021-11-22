@@ -7,6 +7,7 @@
 
 import UIKit
 import Combine
+import TwidereAsset
 
 final public class ComposeAttachmentCollectionViewCell: UICollectionViewCell {
     
@@ -26,12 +27,14 @@ final public class ComposeAttachmentCollectionViewCell: UICollectionViewCell {
     }()
     
     public private(set) lazy var optionImageView: UIImageView = {
-        let imageView = UIImageView(image: UIImage(named: "ellipsis.circle.fill", in: .module, with: nil))
+        let image = Asset.Editing.ellipsisCircleFill.image
+        let imageView = UIImageView(image: image)
         return imageView
     }()
     
     let altImageView: UIImageView = {
-        let imageView = UIImageView(image: UIImage(named: "alt.rectangle", in: .module, with: nil))
+        let image = Asset.Media.altRectangle.image
+        let imageView = UIImageView(image: image)
         return imageView
     }()
     

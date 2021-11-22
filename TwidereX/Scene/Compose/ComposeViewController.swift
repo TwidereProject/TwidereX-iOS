@@ -57,6 +57,8 @@ extension ComposeViewController {
         ])
         composeContentViewController.didMove(toParent: self)
         
+        // bind author
+        viewModel.$author.assign(to: &composecContentViewModel.$author)
     }
     
 }

@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import TwidereUI
 
 // MARK: - header
 extension StatusViewTableViewCellDelegate where Self: DataSourceProvider {

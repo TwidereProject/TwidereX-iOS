@@ -261,7 +261,7 @@ extension ProfileHeaderView {
             user.publisher(for: \.bioEntities),
             UIContentSizeCategory.publisher
         )
-        .map { _, _, _ in user.bioMetaContent }
+        .map { _, _, _ in user.bioMetaContent(provider: OfficialTwitterTextProvider()) }
         .assign(to: \.bioMetaContent, on: viewModel)
         .store(in: &viewModel.configureDisposeBag)
     }
@@ -276,7 +276,7 @@ extension ProfileHeaderView {
             var fields: [ProfileFieldListView.Item] = []
             var index = 0
             let now = Date()
-            if let value = user.urlMetaContent {
+            if let value = user.urlMetaContent(provider: OfficialTwitterTextProvider()) {
                 let item = ProfileFieldListView.Item(
                     index: index,
                     updateAt: now,
@@ -287,7 +287,7 @@ extension ProfileHeaderView {
                 fields.append(item)
                 index += 1
             }
-            if let value = user.locationMetaContent {
+            if let value = user.locationMetaContent(provider: OfficialTwitterTextProvider()) {
                 let item = ProfileFieldListView.Item(
                     index: index,
                     updateAt: now,

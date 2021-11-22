@@ -44,7 +44,10 @@ extension NotificationSection {
                         configure(
                             tableView: tableView,
                             cell: cell,
-                            viewModel: StatusTableViewCell.ViewModel(value: .feed(feed)),   //
+                            viewModel: StatusTableViewCell.ViewModel(
+                                value: .feed(feed),
+                                activeAuthenticationContext: context.authenticationService.activeAuthenticationContext.share().eraseToAnyPublisher()
+                            ),
                             configuration: configuration
                         )
                         return cell

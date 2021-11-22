@@ -102,7 +102,7 @@ class AuthenticationService: NSObject {
         activeAuthenticationIndex
             .map { authenticationIndex -> AuthenticationContext? in
                 guard let authenticationIndex = authenticationIndex else { return nil }
-                guard let authenticationContext = AuthenticationContext(authenticationIndex: authenticationIndex) else { return nil }
+                guard let authenticationContext = AuthenticationContext(authenticationIndex: authenticationIndex, appSecret: .default) else { return nil }
                 return authenticationContext
             }
             .assign(to: \.value, on: activeAuthenticationContext)

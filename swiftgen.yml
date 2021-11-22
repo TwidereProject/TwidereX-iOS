@@ -9,7 +9,10 @@ strings:
         bundle: Bundle.module
         publicAccess: true
 xcassets:
-  inputs: TwidereX/Resources/Assets.xcassets
+  inputs: TwidereSDK/Sources/TwidereAsset/Assets.xcassets
   outputs:
     templateName: swift5
-    output: TwidereX/Generated/Assets.swift
+    output: TwidereSDK/Sources/TwidereAsset/Generated/Assets.swift
+    params:
+      bundle: Bundle.module
+      publicAccess: true

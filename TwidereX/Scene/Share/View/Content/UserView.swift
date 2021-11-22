@@ -18,6 +18,8 @@ protocol UserViewDelegate: AnyObject {
 final class UserView: UIView {
     
     let logger = Logger(subsystem: "UserView", category: "UI")
+    
+    public static let avatarImageViewSize = CGSize(width: 44, height: 44)
 
     private var _disposeBag = Set<AnyCancellable>() // which lifetime same to view scope
     var disposeBag = Set<AnyCancellable>()          // clear when reuse
@@ -118,7 +120,7 @@ extension UserView {
         containerStackView.addArrangedSubview(contentStackView)
         
         // content: H - [ user avatar | info container | accessory container ]
-        authorProfileAvatarView.scale = 0.5
+        authorProfileAvatarView.dimention = UserView.avatarImageViewSize.width
         contentStackView.addArrangedSubview(authorProfileAvatarView)
         contentStackView.addArrangedSubview(infoContainerStackView)
         contentStackView.addArrangedSubview(accessoryContainerView)

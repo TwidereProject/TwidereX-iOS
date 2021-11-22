@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import TwidereAsset
 
 extension ComposeToolbarView {
     public enum Action: Hashable {
@@ -22,17 +23,17 @@ extension ComposeToolbarView.Action {
     public func image(of state: UIControl.State) -> UIImage? {
         switch self {
         case .media:
-            return UIImage(named: "photo", in: .module, with: nil)
+            return Asset.ObjectTools.photo.image
         case .emoji:
-            return state.contains(.selected) ? UIImage(named: "keyboard", in: .module, with: nil) : UIImage(named: "face.smiling", in: .module, with: nil)
+            return state.contains(.selected) ? Asset.Keyboard.keyboard.image : Asset.Human.faceSmiling.image
         case .poll:
-            return UIImage(named: "poll", in: .module, with: nil)
+            return Asset.ObjectTools.poll.image
         case .mention:
-            return UIImage(named: "at", in: .module, with: nil)
+            return Asset.Symbol.at.image
         case .hashtag:
-            return UIImage(named: "number", in: .module, with: nil)
+            return Asset.Symbol.number.image
         case .location:
-            return UIImage(named: "mappin", in: .module, with: nil)
+            return Asset.ObjectTools.mappin.image
         }
     }
 }

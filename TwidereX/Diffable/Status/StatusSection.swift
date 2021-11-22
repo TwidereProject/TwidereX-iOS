@@ -35,6 +35,8 @@ extension StatusSection {
             // data source should dispatch in main thread
             assert(Thread.isMainThread)
             
+            let activeAuthenticationContext = context.authenticationService.activeAuthenticationContext.share().eraseToAnyPublisher()
+            
             // configure cell with item
             switch item {
             case .feed(let record):
@@ -44,7 +46,10 @@ extension StatusSection {
                     configure(
                         tableView: tableView,
                         cell: cell,
-                        viewModel: StatusTableViewCell.ViewModel(value: .feed(feed)),
+                        viewModel: StatusTableViewCell.ViewModel(
+                            value: .feed(feed),
+                            activeAuthenticationContext: activeAuthenticationContext
+                        ),
                         configuration: configuration
                     )
                 }
@@ -70,7 +75,10 @@ extension StatusSection {
                         configure(
                             tableView: tableView,
                             cell: cell,
-                            viewModel: StatusTableViewCell.ViewModel(value: .twitterStatus(status)),
+                            viewModel: StatusTableViewCell.ViewModel(
+                                value: .twitterStatus(status),
+                                activeAuthenticationContext: activeAuthenticationContext
+                            ),
                             configuration: configuration
                         )
                     case .mastodon(let record):
@@ -78,7 +86,10 @@ extension StatusSection {
                         configure(
                             tableView: tableView,
                             cell: cell,
-                            viewModel: StatusTableViewCell.ViewModel(value: .mastodonStatus(status)),
+                            viewModel: StatusTableViewCell.ViewModel(
+                                value: .mastodonStatus(status),
+                                activeAuthenticationContext: activeAuthenticationContext
+                            ),
                             configuration: configuration
                         )
                     }   // end switch
@@ -96,7 +107,10 @@ extension StatusSection {
                             configure(
                                 tableView: tableView,
                                 cell: cell,
-                                viewModel: StatusThreadRootTableViewCell.ViewModel(value: .twitterStatus(status)),
+                                viewModel: StatusThreadRootTableViewCell.ViewModel(
+                                    value: .twitterStatus(status),
+                                    activeAuthenticationContext: activeAuthenticationContext
+                                ),
                                 configuration: configuration
                             )
                         case .mastodon(let record):
@@ -104,7 +118,10 @@ extension StatusSection {
                             configure(
                                 tableView: tableView,
                                 cell: cell,
-                                viewModel: StatusThreadRootTableViewCell.ViewModel(value: .mastodonStatus(status)),
+                                viewModel: StatusThreadRootTableViewCell.ViewModel(
+                                    value: .mastodonStatus(status),
+                                    activeAuthenticationContext: activeAuthenticationContext
+                                ),
                                 configuration: configuration
                             )
                         }
@@ -121,7 +138,10 @@ extension StatusSection {
                             configure(
                                 tableView: tableView,
                                 cell: cell,
-                                viewModel: StatusTableViewCell.ViewModel(value: .twitterStatus(status)),
+                                viewModel: StatusTableViewCell.ViewModel(
+                                    value: .twitterStatus(status),
+                                    activeAuthenticationContext: activeAuthenticationContext
+                                ),
                                 configuration: configuration
                             )
                         case .mastodon(let record):
@@ -129,7 +149,10 @@ extension StatusSection {
                             configure(
                                 tableView: tableView,
                                 cell: cell,
-                                viewModel: StatusTableViewCell.ViewModel(value: .mastodonStatus(status)),
+                                viewModel: StatusTableViewCell.ViewModel(
+                                    value: .mastodonStatus(status),
+                                    activeAuthenticationContext: activeAuthenticationContext
+                                ),
                                 configuration: configuration
                             )
                         }   // end switch
