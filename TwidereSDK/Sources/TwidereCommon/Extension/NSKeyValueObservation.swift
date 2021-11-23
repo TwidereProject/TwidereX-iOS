@@ -9,7 +9,7 @@
 import Foundation
 
 extension NSKeyValueObservation {
-    func store(in set: inout Set<NSKeyValueObservation>) {
+    public func store(in set: inout Set<NSKeyValueObservation>) {
         set.insert(self)
     }
 }

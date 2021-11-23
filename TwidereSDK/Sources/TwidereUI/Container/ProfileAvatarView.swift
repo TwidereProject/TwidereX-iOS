@@ -35,7 +35,7 @@ public final class ProfileAvatarView: UIView {
     
     let layoutDidChange = PassthroughSubject<Void, Never>()
     
-    public var dimention: CGFloat = 44.0 {
+    public var dimension: CGFloat = 44.0 {
         didSet {
             updateScale()
         }
@@ -118,10 +118,10 @@ extension ProfileAvatarView {
 extension ProfileAvatarView {
 
     func updateScale() {
-        self.avatarButtonWidthLayoutConstraint.constant = dimention
-        self.avatarButtonHeightLayoutConstraint.constant = dimention
+        self.avatarButtonWidthLayoutConstraint.constant = dimension
+        self.avatarButtonHeightLayoutConstraint.constant = dimension
         
-        let scale = dimention / ProfileAvatarView.primitiveAvatarButtonSize.width
+        let scale = dimension / ProfileAvatarView.primitiveAvatarButtonSize.width
         let badgeDimention = ProfileAvatarView.primitiveBadgeImageViewSize.width * scale
         self.badgeImageViewWidthLayoutConstraint.constant = badgeDimention
         self.badgeImageViewHeightLayoutConstraint.constant = badgeDimention

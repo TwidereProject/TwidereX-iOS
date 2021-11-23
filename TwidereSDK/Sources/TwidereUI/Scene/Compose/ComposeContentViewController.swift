@@ -10,12 +10,14 @@ import UIKit
 import Combine
 import MetaTextKit
 import PhotosUI
+import TwidereCore
 
 public final class ComposeContentViewController: UIViewController {
     
     let logger = Logger(subsystem: "ComposeContentViewController", category: "ViewController")
     
     var disposeBag = Set<AnyCancellable>()
+    var observations = Set<NSKeyValueObservation>()
     public var viewModel: ComposeContentViewModel!
         
     private(set) lazy var tableView: UITableView = {
@@ -35,6 +37,10 @@ extension ComposeContentViewController {
     
     public override func viewDidLoad() {
         super.viewDidLoad()
+        
+        view.backgroundColor = .systemBackground
+        composeToolbarBackgroundView.backgroundColor = .systemBackground
+        composeToolbarView.backgroundColor = .systemBackground
         
         tableView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(tableView)
@@ -68,8 +74,29 @@ extension ComposeContentViewController {
             composeToolbarBackgroundView.topAnchor.constraint(equalTo: composeToolbarView.topAnchor).priority(.defaultHigh),
         ])
         
-        composeToolbarBackgroundView.backgroundColor = .secondarySystemBackground
-        composeToolbarView.backgroundColor = .secondarySystemBackground
+        composeToolbarView
+            .observe(\.bounds, options: [.initial, .new]) { [weak self] toolbar, _ in
+                guard let self = self else { return }
+                self.viewModel.additionalSafeAreaInsets.bottom = toolbar.frame.height
+                self.viewModel.viewLayoutMarginDidUpdate.send()
+                print(toolbar.frame)
+            }
+            .store(in: &observations)
+        
+        
+        KeyboardResponderService.configure(
+            scrollView: tableView,
+            layoutNeedsUpdate: {
+                Publishers.CombineLatest(
+                    viewModel.viewDidAppear.eraseToAnyPublisher(),
+                    viewModel.viewLayoutMarginDidUpdate.eraseToAnyPublisher()
+                )
+                .map { _ in Void() }
+                .eraseToAnyPublisher()
+            }(),
+            additionalSafeAreaInsets: viewModel.$additionalSafeAreaInsets.eraseToAnyPublisher()
+        )
+        .store(in: &disposeBag)
         
         composeToolbarView.delegate = self
         viewModel.composeInputTableViewCell.metaText.delegate = self
@@ -97,6 +124,18 @@ extension ComposeContentViewController {
                 self.composeToolbarView.mediaButton.isEnabled = isMediaToolBarButtonEnabled
             }
             .store(in: &disposeBag)
+    }
+
+    public override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        viewModel.viewDidAppear.send()
+    }
+    
+    public override func viewLayoutMarginsDidChange() {
+        super.viewLayoutMarginsDidChange()
+        
+        viewModel.viewLayoutMarginDidUpdate.send()
     }
     
 }

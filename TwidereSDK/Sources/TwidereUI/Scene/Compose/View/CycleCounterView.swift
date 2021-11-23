@@ -9,7 +9,7 @@
 import UIKit
 import Combine
 
-final class CycleCounterView: UIView {
+public final class CycleCounterView: UIView {
     
     var disposeBag = Set<AnyCancellable>()
 
@@ -31,8 +31,8 @@ final class CycleCounterView: UIView {
         return shapeLayer
     }()
     
-    let strokeColor = CurrentValueSubject<UIColor, Never>(Asset.Colors.hightLight.color)
-    let progress = CurrentValueSubject<CGFloat, Never>(0.0)
+    @Published public var strokeColor = Asset.Colors.hightLight.color
+    @Published public var progress: CGFloat = 0.0
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -54,14 +54,14 @@ extension CycleCounterView {
         layer.addSublayer(backRingLayer)
         layer.addSublayer(frontRingLayer)
         
-        strokeColor
+        $strokeColor
             .receive(on: DispatchQueue.main)
             .sink { [weak self] strokeColor in
                 guard let self = self else { return }
                 self.frontRingLayer.strokeColor = strokeColor.cgColor
             }
             .store(in: &disposeBag)
-        progress
+        $progress
             .receive(on: DispatchQueue.main)
             .sink { [weak self] progress in
                 guard let self = self else { return }
@@ -71,7 +71,7 @@ extension CycleCounterView {
             .store(in: &disposeBag)
     }
     
-    override func layoutSubviews() {
+    public override func layoutSubviews() {
         super.layoutSubviews()
         updateLayerPath()
     }
@@ -93,7 +93,7 @@ extension CycleCounterView {
         frontRingLayer.path = UIBezierPath(arcCenter: .zero, radius: bounds.width * 0.5, startAngle: -0.5 * CGFloat.pi, endAngle: 1.5 * CGFloat.pi, clockwise: true).cgPath
     }
     
-    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+    public override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
         
         backRingLayer.fillColor = UIColor.clear.cgColor

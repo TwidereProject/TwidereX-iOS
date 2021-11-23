@@ -70,7 +70,7 @@ extension SearchMediaViewController {
         KeyboardResponderService
             .configure(
                 scrollView: collectionView,
-                viewDidAppear: viewModel.viewDidAppear.eraseToAnyPublisher()
+                layoutNeedsUpdate: viewModel.viewDidAppear.eraseToAnyPublisher()
             )
             .store(in: &disposeBag)
     }

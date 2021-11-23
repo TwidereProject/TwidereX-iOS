@@ -9,6 +9,8 @@ import os.log
 import UIKit
 import Combine
 import MetaTextKit
+import TwidereLocalization
+import UITextView_Placeholder
 
 public protocol ComposeInputTableViewCellDelegate: AnyObject {
     func composeInputTableViewCell(_ cell: ComposeInputTableViewCell, mentionPickButtonDidPressed button: UIButton)
@@ -29,7 +31,7 @@ final public class ComposeInputTableViewCell: UITableViewCell {
     
     public let avatarView: ProfileAvatarView = {
         let imageView = ProfileAvatarView()
-        imageView.dimention = ComposeInputTableViewCell.avatarImageViewSize.width
+        imageView.dimension = ComposeInputTableViewCell.avatarImageViewSize.width
         return imageView
     }()
     
@@ -51,22 +53,8 @@ final public class ComposeInputTableViewCell: UITableViewCell {
         metaText.textView.isScrollEnabled = false
         metaText.textView.keyboardType = .twitter
         metaText.textView.textDragInteraction?.isEnabled = false    // disable drag for link and attachment
-        metaText.textView.textContainer.lineFragmentPadding = 10    // leading inset
+        metaText.textView.textContainer.lineFragmentPadding = 0     // leading inset
         metaText.textView.font = UIFontMetrics(forTextStyle: .body).scaledFont(for: .systemFont(ofSize: 17, weight: .regular))
-//        metaText.textView.attributedPlaceholder = {
-//            var attributes = metaText.textAttributes
-//            attributes[.foregroundColor] = Asset.Colors.Label.secondary.color
-//            return NSAttributedString(
-//                string: L10n.Scene.Compose.contentInputPlaceholder,
-//                attributes: attributes
-//            )
-//        }()
-//        metaText.paragraphStyle = {
-//            let style = NSMutableParagraphStyle()
-//            style.lineSpacing = 5
-//            style.paragraphSpacing = 0
-//            return style
-//        }()
 //        metaText.textAttributes = [
 //            .font: UIFontMetrics(forTextStyle: .body).scaledFont(for: .systemFont(ofSize: 17, weight: .regular)),
 //            .foregroundColor: Asset.Colors.Label.primary.color,
@@ -75,6 +63,14 @@ final public class ComposeInputTableViewCell: UITableViewCell {
 //            .font: UIFontMetrics(forTextStyle: .body).scaledFont(for: .systemFont(ofSize: 17, weight: .semibold)),
 //            .foregroundColor: Asset.Colors.brandBlue.color,
 //        ]
+        metaText.textView.attributedPlaceholder = {
+            var attributes = metaText.textAttributes
+            attributes[.foregroundColor] = UIColor.secondaryLabel
+            return NSAttributedString(
+                string: L10n.Scene.Compose.placeholder,
+                attributes: attributes
+            )
+        }()
         return metaText
     }()
     

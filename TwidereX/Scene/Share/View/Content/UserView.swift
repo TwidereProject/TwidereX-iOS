@@ -120,7 +120,7 @@ extension UserView {
         containerStackView.addArrangedSubview(contentStackView)
         
         // content: H - [ user avatar | info container | accessory container ]
-        authorProfileAvatarView.dimention = UserView.avatarImageViewSize.width
+        authorProfileAvatarView.dimension = UserView.avatarImageViewSize.width
         contentStackView.addArrangedSubview(authorProfileAvatarView)
         contentStackView.addArrangedSubview(infoContainerStackView)
         contentStackView.addArrangedSubview(accessoryContainerView)

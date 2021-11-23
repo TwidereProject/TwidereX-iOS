@@ -23,6 +23,17 @@ final public class ComposeToolbarView: UIView {
     let logger = Logger(subsystem: "ComposeToolbarView", category: "View")
     public weak var delegate: ComposeToolbarViewDelegate?
     
+    public let supplementaryContainer: UIStackView = {
+        let stackView = UIStackView()
+        stackView.axis = .horizontal
+        stackView.isLayoutMarginsRelativeArrangement = true
+        stackView.layoutMargins = UIEdgeInsets(top: 13, left: 20, bottom: 13, right: 16)
+        // stackView.spacing = 16
+        return stackView
+    }()
+    
+    public let cycleCounterView = CycleCounterView()
+
     public let scrollView: UIScrollView = {
         let scrollView = UIScrollView()
         scrollView.showsVerticalScrollIndicator = false
@@ -93,14 +104,48 @@ final public class ComposeToolbarView: UIView {
 
 extension ComposeToolbarView {
     private func _init() {
+        // supplementary
+        supplementaryContainer.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(supplementaryContainer)
+        NSLayoutConstraint.activate([
+            supplementaryContainer.topAnchor.constraint(equalTo: topAnchor),
+            supplementaryContainer.leadingAnchor.constraint(equalTo: leadingAnchor),
+            trailingAnchor.constraint(equalTo: supplementaryContainer.trailingAnchor),
+        ])
+        
+        cycleCounterView.translatesAutoresizingMaskIntoConstraints = false
+        supplementaryContainer.addArrangedSubview(cycleCounterView)
+        NSLayoutConstraint.activate([
+            cycleCounterView.widthAnchor.constraint(equalToConstant: 18).priority(.required - 1),
+            cycleCounterView.heightAnchor.constraint(equalToConstant: 18).priority(.required - 1),
+        ])
+        let supplementaryContainerSpacer = UIView()
+        supplementaryContainer.addArrangedSubview(supplementaryContainerSpacer)
+        
+        // primary
         scrollView.translatesAutoresizingMaskIntoConstraints = false
         addSubview(scrollView)
         NSLayoutConstraint.activate([
-            scrollView.frameLayoutGuide.topAnchor.constraint(equalTo: topAnchor),
+            scrollView.frameLayoutGuide.topAnchor.constraint(equalTo: supplementaryContainer.bottomAnchor),
             scrollView.frameLayoutGuide.leadingAnchor.constraint(equalTo: leadingAnchor),
             scrollView.frameLayoutGuide.trailingAnchor.constraint(equalTo: trailingAnchor),
             scrollView.frameLayoutGuide.bottomAnchor.constraint(equalTo: bottomAnchor),
             scrollView.frameLayoutGuide.heightAnchor.constraint(equalTo: scrollView.contentLayoutGuide.heightAnchor).priority(.required - 1),
+        ])
+        
+        
+        // separator
+        let separatorLine = SeparatorLineView()
+        separatorLine.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(separatorLine)
+        defer {
+            bringSubviewToFront(separatorLine)
+        }
+        NSLayoutConstraint.activate([
+            separatorLine.leadingAnchor.constraint(equalTo: leadingAnchor),
+            separatorLine.trailingAnchor.constraint(equalTo: trailingAnchor),
+            scrollView.topAnchor.constraint(equalTo: separatorLine.bottomAnchor),
+            separatorLine.heightAnchor.constraint(equalToConstant: UIView.separatorLineHeight(of: self)).priority(.required - 1),
         ])
         
         container.translatesAutoresizingMaskIntoConstraints = false
@@ -129,8 +174,6 @@ extension ComposeToolbarView {
         mentionButton.addTarget(self, action: #selector(ComposeToolbarView.mentionButtonPressed(_:)), for: .touchUpInside)
         hashtagButton.addTarget(self, action: #selector(ComposeToolbarView.hashtagButtonPressed(_:)), for: .touchUpInside)
         localButton.addTarget(self, action: #selector(ComposeToolbarView.localButtonPressed(_:)), for: .touchUpInside)
-
-
     }
 }
 

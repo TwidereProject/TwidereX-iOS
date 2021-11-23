@@ -11,17 +11,17 @@ import UIKit
 extension UIView {
     
     @available(*, deprecated, message: "Use SeparatorLineView instead")
-    static var separatorLine: UIView {
+    public static var separatorLine: UIView {
         let line = UIView()
         line.backgroundColor = .separator
         return line
     }
     
-    static func separatorLineHeight(of view: UIView) -> CGFloat {
+    public static func separatorLineHeight(of view: UIView) -> CGFloat {
         return 1.0 / view.traitCollection.displayScale
     }
     
-    static var floatyButtonBottomMargin: CGFloat {
+    public static var floatyButtonBottomMargin: CGFloat {
         return 16
     }
     

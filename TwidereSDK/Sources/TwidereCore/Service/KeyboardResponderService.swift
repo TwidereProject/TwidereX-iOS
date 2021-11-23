@@ -9,7 +9,7 @@
 import UIKit
 import Combine
 
-final class KeyboardResponderService {
+public final class KeyboardResponderService {
     
     var disposeBag = Set<AnyCancellable>()
     
@@ -17,9 +17,9 @@ final class KeyboardResponderService {
     public static let shared = KeyboardResponderService()
     
     // output
-    let isShow = CurrentValueSubject<Bool, Never>(false)
-    let state = CurrentValueSubject<KeyboardState, Never>(.none)
-    let endFrame = CurrentValueSubject<CGRect, Never>(.zero)
+    public let isShow = CurrentValueSubject<Bool, Never>(false)
+    public let state = CurrentValueSubject<KeyboardState, Never>(.none)
+    public let endFrame = CurrentValueSubject<CGRect, Never>(.zero)
     
     private init() {
         NotificationCenter.default.publisher(for: UIResponder.keyboardWillShowNotification, object: nil)
@@ -78,7 +78,7 @@ extension KeyboardResponderService {
 }
 
 extension KeyboardResponderService {
-    enum KeyboardState {
+    public enum KeyboardState {
         case none
         case notLocal
         case notDock        // undock | split
@@ -88,23 +88,31 @@ extension KeyboardResponderService {
 }
 
 extension KeyboardResponderService {
-    static func configure(
+    public static func configure(
         scrollView: UIScrollView,
-        viewDidAppear: AnyPublisher<Void, Never>
+        layoutNeedsUpdate: AnyPublisher<Void, Never>,
+        additionalSafeAreaInsets: AnyPublisher<UIEdgeInsets, Never> = CurrentValueSubject(.zero).eraseToAnyPublisher()
     ) -> AnyCancellable {
-        return Publishers.CombineLatest4(
+        let tuple = Publishers.CombineLatest3(
             KeyboardResponderService.shared.isShow,
             KeyboardResponderService.shared.state,
-            KeyboardResponderService.shared.endFrame,
-            viewDidAppear       // make sure trigger again when view available
+            KeyboardResponderService.shared.endFrame
         )
-        .sink(receiveValue: { [weak scrollView] isShow, state, endFrame, _ in
+        
+        return Publishers.CombineLatest3(
+            tuple,
+            layoutNeedsUpdate,
+            additionalSafeAreaInsets
+        )
+        .sink(receiveValue: { [weak scrollView] tuple, _, additionalSafeAreaInsets in
             guard let scrollView = scrollView else { return }
             guard let view = scrollView.superview else { return }
             
+            let (isShow, state, endFrame) = tuple
+            
             guard isShow, state == .dock else {
-                scrollView.contentInset.bottom = 0.0
-                scrollView.verticalScrollIndicatorInsets.bottom = 0.0
+                scrollView.contentInset.bottom = additionalSafeAreaInsets.bottom
+                scrollView.verticalScrollIndicatorInsets.bottom = additionalSafeAreaInsets.bottom
                 return
             }
             
@@ -112,13 +120,13 @@ extension KeyboardResponderService {
             let contentFrame = view.convert(scrollView.frame, to: nil)
             let padding = contentFrame.maxY - endFrame.minY
             guard padding > 0 else {
-                scrollView.contentInset.bottom = 0.0
-                scrollView.verticalScrollIndicatorInsets.bottom = 0.0
+                scrollView.contentInset.bottom = additionalSafeAreaInsets.bottom
+                scrollView.verticalScrollIndicatorInsets.bottom = additionalSafeAreaInsets.bottom
                 return
             }
             
-            scrollView.contentInset.bottom = padding - scrollView.safeAreaInsets.bottom
-            scrollView.verticalScrollIndicatorInsets.bottom = padding - scrollView.safeAreaInsets.bottom
+            scrollView.contentInset.bottom = padding - scrollView.safeAreaInsets.bottom + additionalSafeAreaInsets.bottom
+            scrollView.verticalScrollIndicatorInsets.bottom = padding - scrollView.safeAreaInsets.bottom + additionalSafeAreaInsets.bottom
         })
     }
 }

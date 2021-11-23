@@ -63,7 +63,7 @@ extension NotificationHeaderInfo {
         case .favourite:
             return Asset.Health.heart.image.withRenderingMode(.alwaysTemplate)
         case .poll:
-            return Asset.ObjectTools.poll.image.withRenderingMode(.alwaysTemplate)
+            return Asset.ObjectTools.pollMini.image.withRenderingMode(.alwaysTemplate)
         case .status:
             return nil
         case ._other:

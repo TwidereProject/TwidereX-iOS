@@ -32,6 +32,9 @@ public final class ComposeContentViewModel {
     @Published public private(set) var availableActions: Set<ComposeToolbarView.Action> = Set()
     @Published public private(set) var isMediaToolBarButtonEnabled = true
     @Published public private(set) var shouldDismiss: Bool = true
+    let viewDidAppear = CurrentValueSubject<Void, Never>(Void())
+    let viewLayoutMarginDidUpdate = CurrentValueSubject<Void, Never>(Void())
+    @Published public var additionalSafeAreaInsets: UIEdgeInsets = .zero
     
     public init(
         inputContext: InputContext,
@@ -65,7 +68,7 @@ public final class ComposeContentViewModel {
         $attachmentViewModels
             .sink { [weak self] attachmentViewModels in
                 guard let self = self else { return }
-                // update itmes
+                // update items
                 if attachmentViewModels.isEmpty {
                     self.items.remove(.attachment)
                 } else {

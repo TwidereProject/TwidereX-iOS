@@ -8,19 +8,19 @@
 
 import UIKit
 
-final class SeparatorLineView: UIView {
+public final class SeparatorLineView: UIView {
     
-    override init(frame: CGRect) {
+    public override init(frame: CGRect) {
         super.init(frame: frame)
         _init()
     }
     
-    required init?(coder: NSCoder) {
+    public required init?(coder: NSCoder) {
         super.init(coder: coder)
         _init()
     }
     
-    override var intrinsicContentSize: CGSize {
+    public override var intrinsicContentSize: CGSize {
         let height = 1.0 / traitCollection.displayScale     // 1px
         return CGSize(width: UIView.layoutFittingExpandedSize.width, height: height)
     }

@@ -35,7 +35,7 @@ final class ProfileHeaderView: UIView {
     
     let avatarView: ProfileAvatarView = {
         let avatarView = ProfileAvatarView()
-        avatarView.dimention = ProfileHeaderView.avatarViewSize.width
+        avatarView.dimension = ProfileHeaderView.avatarViewSize.width
         return avatarView
     }()
     

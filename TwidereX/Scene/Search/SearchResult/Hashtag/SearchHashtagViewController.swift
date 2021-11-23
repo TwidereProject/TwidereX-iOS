@@ -68,7 +68,7 @@ extension SearchHashtagViewController {
         KeyboardResponderService
             .configure(
                 scrollView: tableView,
-                viewDidAppear: viewModel.viewDidAppear.eraseToAnyPublisher()
+                layoutNeedsUpdate: viewModel.viewDidAppear.eraseToAnyPublisher()
             )
             .store(in: &disposeBag)
     }
