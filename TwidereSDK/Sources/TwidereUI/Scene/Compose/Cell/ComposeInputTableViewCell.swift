@@ -9,6 +9,7 @@ import os.log
 import UIKit
 import Combine
 import MetaTextKit
+import TwidereAsset
 import TwidereLocalization
 import UITextView_Placeholder
 
@@ -19,7 +20,8 @@ public protocol ComposeInputTableViewCellDelegate: AnyObject {
 final public class ComposeInputTableViewCell: UITableViewCell {
     
     public static let avatarImageViewSize = CGSize(width: 44, height: 44)
-    
+
+    let logger = Logger(subsystem: "ComposeInputTableViewCell", category: "UI")
     var disposeBag = Set<AnyCancellable>()
     
     public weak var delegate: ComposeInputTableViewCellDelegate?
@@ -35,17 +37,17 @@ final public class ComposeInputTableViewCell: UITableViewCell {
         return imageView
     }()
     
-    // let conversationLinkUpper = UIView.separatorLine
+    let conversationLinkLineView = SeparatorLineView()
     
-//    let mentionPickButton: UIButton = {
-//        let button = UIButton(type: .custom)
-//        button.contentHorizontalAlignment = .leading
-//        button.titleLabel?.font = .preferredFont(forTextStyle: .footnote)
-//        button.titleLabel?.lineBreakMode = .byTruncatingTail
-//        button.setImage(Asset.Communication.textBubbleSmall.image.withRenderingMode(.alwaysTemplate), for: .normal)
-//        button.setTitleColor(Asset.Colors.hightLight.color, for: .normal)
-//        return button
-//    }()
+    let mentionPickButton: UIButton = {
+        let button = UIButton(type: .custom)
+        button.contentHorizontalAlignment = .leading
+        button.titleLabel?.font = .preferredFont(forTextStyle: .footnote)
+        button.titleLabel?.lineBreakMode = .byTruncatingTail
+        button.setImage(Asset.Communication.textBubbleSmall.image.withRenderingMode(.alwaysTemplate), for: .normal)
+        button.setTitleColor(Asset.Colors.hightLight.color, for: .normal)
+        return button
+    }()
     
     let metaText: MetaText = {
         let metaText = MetaText()
@@ -78,8 +80,9 @@ final public class ComposeInputTableViewCell: UITableViewCell {
     
     override public func prepareForReuse() {
         super.prepareForReuse()
-//        conversationLinkUpper.isHidden = true
+
         disposeBag.removeAll()
+        mentionPickButton.isHidden = true
     }
     
     override public init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
@@ -109,14 +112,14 @@ extension ComposeInputTableViewCell {
             avatarView.heightAnchor.constraint(equalToConstant: ComposeInputTableViewCell.avatarImageViewSize.height).priority(.required - 1),
         ])
         
-//        conversationLinkUpper.translatesAutoresizingMaskIntoConstraints = false
-//        contentView.addSubview(conversationLinkUpper)
-//        NSLayoutConstraint.activate([
-//            conversationLinkUpper.topAnchor.constraint(equalTo: contentView.topAnchor),
-//            conversationLinkUpper.centerXAnchor.constraint(equalTo: avatarImageView.centerXAnchor),
-//            conversationLinkUpper.widthAnchor.constraint(equalToConstant: 1),
-//            avatarImageView.topAnchor.constraint(equalTo: conversationLinkUpper.bottomAnchor, constant: 2),
-//        ])
+        conversationLinkLineView.translatesAutoresizingMaskIntoConstraints = false
+        contentView.addSubview(conversationLinkLineView)
+        NSLayoutConstraint.activate([
+            conversationLinkLineView.topAnchor.constraint(equalTo: contentView.topAnchor),
+            conversationLinkLineView.centerXAnchor.constraint(equalTo: avatarView.centerXAnchor),
+            conversationLinkLineView.widthAnchor.constraint(equalToConstant: 1),
+            avatarView.topAnchor.constraint(equalTo: conversationLinkLineView.bottomAnchor, constant: 2),
+        ])
         
         let containerStackView = UIStackView()
         containerStackView.axis = .vertical
@@ -129,36 +132,33 @@ extension ComposeInputTableViewCell {
             containerStackView.trailingAnchor.constraint(equalTo: contentView.layoutMarginsGuide.trailingAnchor),
             contentView.bottomAnchor.constraint(equalTo: containerStackView.bottomAnchor),
         ])
-        
-        #if DEBUG
-        containerStackView.backgroundColor = .green
-        #endif
-        
-//        containerStackView.addArrangedSubview(mentionPickButton)
-        
+    
+        containerStackView.addArrangedSubview(mentionPickButton)
+
         metaText.textView.translatesAutoresizingMaskIntoConstraints = false
         containerStackView.addArrangedSubview(metaText.textView)
         NSLayoutConstraint.activate([
             metaText.textView.bottomAnchor.constraint(greaterThanOrEqualTo: avatarView.bottomAnchor, constant: 16),
         ])
         
-//        conversationLinkUpper.isHidden = true
+        mentionPickButton.isHidden = true
+        conversationLinkLineView.isHidden = true
         
-//        mentionPickButton.addTarget(self, action: #selector(ComposeTweetContentTableViewCell.mentionPickButtonPressed(_:)), for: .touchUpInside)
+        mentionPickButton.addTarget(self, action: #selector(ComposeInputTableViewCell.mentionPickButtonPressed(_:)), for: .touchUpInside)
+    }
+    
+}
+
+extension ComposeInputTableViewCell {
+    func setMentionPickerButtonDisplay() {
+        mentionPickButton.isHidden = false
     }
     
 }
 
 extension ComposeInputTableViewCell {
     @objc private func mentionPickButtonPressed(_ sender: UIButton) {
-        // TODO:
+        logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public)")
+        delegate?.composeInputTableViewCell(self, mentionPickButtonDidPressed: sender)
     }
 }
-
-// MARK: - UITextViewDelegate
-//extension ComposeInputTableViewCell: UITextViewDelegate {
-//    public func textViewDidChange(_ textView: UITextView) {
-//        guard textView === composeTextView else { return }
-//        composeText.send(composeTextView.text ?? "")
-//    }
-//}

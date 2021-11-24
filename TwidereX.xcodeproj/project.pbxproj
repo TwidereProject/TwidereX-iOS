@@ -105,7 +105,6 @@
 		DB43488D251DFF0F005B599F /* ProfileBannerStatusItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB43488C251DFF0F005B599F /* ProfileBannerStatusItemView.swift */; };
 		DB434892251E09A8005B599F /* CALayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB434891251E09A8005B599F /* CALayer.swift */; };
 		DB44A56226C4FEAB004C8B78 /* WelcomeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB44A56126C4FEAB004C8B78 /* WelcomeViewModel.swift */; };
-		DB4BC7E7274CCAC6008D671E /* UITextView+Placeholder in Frameworks */ = {isa = PBXBuildFile; productRef = DB4BC7E6274CCAC6008D671E /* UITextView+Placeholder */; };
 		DB4BC7EB274CCCA3008D671E /* AlamofireImage in Frameworks */ = {isa = PBXBuildFile; productRef = DB4BC7EA274CCCA3008D671E /* AlamofireImage */; };
 		DB4BC7ED274CCCA3008D671E /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = DB4BC7EC274CCCA3008D671E /* Alamofire */; };
 		DB51DC1A2715581E00A0D8FB /* ProfileDashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB51DC192715581E00A0D8FB /* ProfileDashboardView.swift */; };
@@ -245,6 +244,8 @@
 		DB9EC532255A87A4005403AA /* SettingListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB9EC531255A87A4005403AA /* SettingListView.swift */; };
 		DB9EC537255A8CEE005403AA /* ViewStateStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB9EC536255A8CEE005403AA /* ViewStateStore.swift */; };
 		DBA122CB256C13B000928671 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = DBA122CA256C13B000928671 /* GoogleService-Info.plist */; };
+		DBA5DDB7274E1BBF00FF12E3 /* UITextView+Placeholder in Frameworks */ = {isa = PBXBuildFile; productRef = DBA5DDB6274E1BBF00FF12E3 /* UITextView+Placeholder */; };
+		DBA5DDB9274E1BED00FF12E3 /* UITextView+Placeholder in Frameworks */ = {isa = PBXBuildFile; productRef = DBA5DDB8274E1BED00FF12E3 /* UITextView+Placeholder */; };
 		DBA5FA192553DCBC00D2E98E /* TransitioningMath.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBA5FA182553DCBC00D2E98E /* TransitioningMath.swift */; };
 		DBA61AB62552596A006AC169 /* UserMediaTimelineViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBA61AB52552596A006AC169 /* UserMediaTimelineViewController.swift */; };
 		DBA6667D257DD37300E5F1AA /* DeveloperView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBA6667C257DD37300E5F1AA /* DeveloperView.swift */; };
@@ -970,6 +971,7 @@
 				DBAF13D12747BC9E00EDD839 /* TwidereCore in Frameworks */,
 				DBAF13DD2747BF0F00EDD839 /* TwitterSDK in Frameworks */,
 				DB4BC7ED274CCCA3008D671E /* Alamofire in Frameworks */,
+				DBA5DDB9274E1BED00FF12E3 /* UITextView+Placeholder in Frameworks */,
 				DB37F6A2274B55B20081603F /* TwidereAsset in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -993,7 +995,7 @@
 				DB3282DD26AFFD40002B721C /* TwitterMeta in Frameworks */,
 				DB2611B7251B2D42004BF309 /* CryptoSwift in Frameworks */,
 				DB5FD9B526D8EE7A00CF5439 /* MastodonMeta in Frameworks */,
-				DB4BC7E7274CCAC6008D671E /* UITextView+Placeholder in Frameworks */,
+				DBA5DDB7274E1BBF00FF12E3 /* UITextView+Placeholder in Frameworks */,
 				DB74A164256E148F00C5F3C9 /* CropViewController in Frameworks */,
 				DB94B6B126C64DAC00A2E8A1 /* Introspect in Frameworks */,
 				DB3282DB26AFFD40002B721C /* MetaTextKit in Frameworks */,
@@ -2538,6 +2540,7 @@
 				DB37F6A1274B55B20081603F /* TwidereAsset */,
 				DB4BC7EA274CCCA3008D671E /* AlamofireImage */,
 				DB4BC7EC274CCCA3008D671E /* Alamofire */,
+				DBA5DDB8274E1BED00FF12E3 /* UITextView+Placeholder */,
 			);
 			productName = AppShared;
 			productReference = DB94B6BB26C65CB000A2E8A1 /* AppShared.framework */;
@@ -2610,7 +2613,7 @@
 				DBECA7F92745010E000EA1CA /* CoverFlowStackCollectionViewLayout */,
 				DBECA7FB2745010E000EA1CA /* TabBarPager */,
 				DB096FD3274B7B0C00D56CFA /* Alamofire */,
-				DB4BC7E6274CCAC6008D671E /* UITextView+Placeholder */,
+				DBA5DDB6274E1BBF00FF12E3 /* UITextView+Placeholder */,
 			);
 			productName = TwidereX;
 			productReference = DBDA8E1E24FCF8A3006750DC /* TwidereX.app */;
@@ -2740,7 +2743,7 @@
 				DB30ADD426CF583900B2D2BE /* XCRemoteSwiftPackageReference "FLAnimatedImage" */,
 				DB7AB33C2744E3740035EB8A /* XCRemoteSwiftPackageReference "Floaty" */,
 				DB096FD2274B7B0C00D56CFA /* XCRemoteSwiftPackageReference "Alamofire" */,
-				DB4BC7E5274CCAC6008D671E /* XCRemoteSwiftPackageReference "UITextView-Placeholder" */,
+				DBA5DDB5274E1BBF00FF12E3 /* XCRemoteSwiftPackageReference "UITextView-Placeholder" */,
 			);
 			productRefGroup = DBDA8E1F24FCF8A3006750DC /* Products */;
 			projectDirPath = "";
@@ -4019,15 +4022,7 @@
 			repositoryURL = "https://github.com/TwidereProject/MetaTextKit.git";
 			requirement = {
 				kind = exactVersion;
-				version = 3.0.3;
-			};
-		};
-		DB4BC7E5274CCAC6008D671E /* XCRemoteSwiftPackageReference "UITextView-Placeholder" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/devxoul/UITextView-Placeholder.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 1.0.0;
+				version = 3.1.0;
 			};
 		};
 		DB6CF1C2269715CD001DE069 /* XCRemoteSwiftPackageReference "FPSIndicator" */ = {
@@ -4068,6 +4063,14 @@
 			requirement = {
 				kind = upToNextMajorVersion;
 				minimumVersion = 9.0.0;
+			};
+		};
+		DBA5DDB5274E1BBF00FF12E3 /* XCRemoteSwiftPackageReference "UITextView-Placeholder" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/MainasuK/UITextView-Placeholder.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.4.1;
 			};
 		};
 		DBBC3F3325835B8B005CF99E /* XCRemoteSwiftPackageReference "ActiveLabel" */ = {
@@ -4152,11 +4155,6 @@
 			isa = XCSwiftPackageProductDependency;
 			productName = TwidereAsset;
 		};
-		DB4BC7E6274CCAC6008D671E /* UITextView+Placeholder */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = DB4BC7E5274CCAC6008D671E /* XCRemoteSwiftPackageReference "UITextView-Placeholder" */;
-			productName = "UITextView+Placeholder";
-		};
 		DB4BC7EA274CCCA3008D671E /* AlamofireImage */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = DBE76D3C2502518D00DEB0FC /* XCRemoteSwiftPackageReference "AlamofireImage" */;
@@ -4191,6 +4189,16 @@
 			isa = XCSwiftPackageProductDependency;
 			package = DB94B6AF26C64DAC00A2E8A1 /* XCRemoteSwiftPackageReference "SwiftUI-Introspect" */;
 			productName = Introspect;
+		};
+		DBA5DDB6274E1BBF00FF12E3 /* UITextView+Placeholder */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = DBA5DDB5274E1BBF00FF12E3 /* XCRemoteSwiftPackageReference "UITextView-Placeholder" */;
+			productName = "UITextView+Placeholder";
+		};
+		DBA5DDB8274E1BED00FF12E3 /* UITextView+Placeholder */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = DBA5DDB5274E1BBF00FF12E3 /* XCRemoteSwiftPackageReference "UITextView-Placeholder" */;
+			productName = "UITextView+Placeholder";
 		};
 		DBAF13CE2747BC8E00EDD839 /* TwidereCommon */ = {
 			isa = XCSwiftPackageProductDependency;

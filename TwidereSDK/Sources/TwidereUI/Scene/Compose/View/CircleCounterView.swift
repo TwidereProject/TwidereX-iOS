@@ -1,5 +1,5 @@
 //
-//  CycleCounterView.swift
+//  CircleCounterView.swift
 //  TwidereX
 //
 //  Created by Cirno MainasuK on 2020-10-22.
@@ -9,7 +9,7 @@
 import UIKit
 import Combine
 
-public final class CycleCounterView: UIView {
+public final class CircleCounterView: UIView {
     
     var disposeBag = Set<AnyCancellable>()
 
@@ -46,7 +46,7 @@ public final class CycleCounterView: UIView {
     
 }
 
-extension CycleCounterView {
+extension CircleCounterView {
     
     private func _init() {
         updateLayerPath()
@@ -61,6 +61,7 @@ extension CycleCounterView {
                 self.frontRingLayer.strokeColor = strokeColor.cgColor
             }
             .store(in: &disposeBag)
+        
         $progress
             .receive(on: DispatchQueue.main)
             .sink { [weak self] progress in
@@ -78,7 +79,7 @@ extension CycleCounterView {
     
 }
 
-extension CycleCounterView {
+extension CircleCounterView {
     private func updateLayerPath() {
         guard bounds != .zero else { return }
         

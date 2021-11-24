@@ -20,14 +20,14 @@ final class ComposeViewController: UIViewController, NeedsDependency {
     
     var disposeBag = Set<AnyCancellable>()
     var viewModel: ComposeViewModel!
-    var composecContentViewModel: ComposeContentViewModel!
+    var composeContentViewModel: ComposeContentViewModel!
     
     private(set) lazy var sendBarButtonItem = UIBarButtonItem(image: Asset.Transportation.paperAirplane.image, style: .plain, target: self, action: #selector(ComposeViewController.sendBarButtonItemPressed(_:)))
     
     
     private(set) lazy var composeContentViewController: ComposeContentViewController = {
         let composeContentViewController = ComposeContentViewController()
-        composeContentViewController.viewModel = composecContentViewModel
+        composeContentViewController.viewModel = composeContentViewModel
         return composeContentViewController
     }()
 }
@@ -57,8 +57,15 @@ extension ComposeViewController {
         ])
         composeContentViewController.didMove(toParent: self)
         
+        
+        // bind compose bar button item
+        composeContentViewModel.$isTextInputValid
+            .receive(on: DispatchQueue.main)
+            .assign(to: \.isEnabled, on: sendBarButtonItem)
+            .store(in: &disposeBag)
+        
         // bind author
-        viewModel.$author.assign(to: &composecContentViewModel.$author)
+        viewModel.$author.assign(to: &composeContentViewModel.$author)
     }
     
 }
@@ -79,12 +86,12 @@ extension ComposeViewController {
 extension ComposeViewController: UIAdaptivePresentationControllerDelegate {
 
     func presentationControllerShouldDismiss(_ presentationController: UIPresentationController) -> Bool {
-        return composecContentViewModel.shouldDismiss
+        return composeContentViewModel.canDismissDirectly
     }
 
     func presentationControllerDidAttemptToDismiss(_ presentationController: UIPresentationController) {
         logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public)")
-        // TODO:
+        // TODO: show alert
     }
 
     func presentationControllerDidDismiss(_ presentationController: UIPresentationController) {

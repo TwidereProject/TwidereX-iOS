@@ -202,7 +202,7 @@ extension HomeTimelineViewController {
 }
 
 extension HomeTimelineViewController {
-//
+
 //    @objc private func avatarButtonPressed(_ sender: UIButton) {
 //        os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
 //        coordinator.present(scene: .drawerSidebar, from: self, transition: .custom(transitioningDelegate: drawerSidebarTransitionController))
@@ -222,7 +222,7 @@ extension HomeTimelineViewController {
         let composeViewModel = ComposeViewModel(context: context)
         let composeContentViewModel = ComposeContentViewModel(
             inputContext: .post,
-            contentContext: ComposeContentViewModel.ContentContext(
+            configurationContext: ComposeContentViewModel.ConfigurationContext(
                 dateTimeProvider: DateTimeSwiftProvider(),
                 twitterTextProvider: OfficialTwitterTextProvider()
             )

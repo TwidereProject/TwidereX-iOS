@@ -71,14 +71,15 @@ extension ComposeContentViewModel {
                 viewModel: ComposeReplyTableViewCell.ViewModel(
                     status: status,
                     statusViewConfigureContext: StatusView.ConfigurationContext(
-                        dateTimeProvider: contentContext.dateTimeProvider,
-                        twitterTextProvider: contentContext.twitterTextProvider,
+                        dateTimeProvider: configurationContext.dateTimeProvider,
+                        twitterTextProvider: configurationContext.twitterTextProvider,
                         activeAuthenticationContext: Just(nil).eraseToAnyPublisher()
                     )
                 )
             )
             return composeReplyTableViewCell
         case .input:
+            composeInputTableViewCell.conversationLinkLineView.isHidden = replyTo == nil
             return composeInputTableViewCell
         case .quote:
             let cell = UITableViewCell()

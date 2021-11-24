@@ -10,6 +10,8 @@ import SwiftUI
 import Combine
 import TwidereCore
 import TwitterMeta
+import MetaTextKit
+import MastodonMeta
 
 public final class ComposeContentViewModel {
     
@@ -19,28 +21,52 @@ public final class ComposeContentViewModel {
     public let composeInputTableViewCell = ComposeInputTableViewCell()
     public let composeAttachmentTableViewCell = ComposeAttachmentTableViewCell()
     
-    // input
-    public private(set) var replyTo: StatusObject?
-    public let contentContext: ContentContext
+    // Input
+    public let configurationContext: ConfigurationContext
+    
+    // text
+    @Published public private(set) var initialTextInput = ""
+    
+    // avatar
     @Published public var author: UserObject?
+    
+    // reply-to
+    public private(set) var replyTo: StatusObject?
+    
+    // attachment
     @Published public internal(set) var attachmentViewModels: [AttachmentViewModel] = []
     @Published public var maxMediaAttachmentLimit = 4
     
-    // output
+    // Output
     public var diffableDataSource: UITableViewDiffableDataSource<Section, Item>?
-    @Published public internal(set) var items: Set<Item> = [.input]
+    @Published public private(set) var items: Set<Item> = [.input]
+    
+    // text
+    @Published public var maxTextInputLimit = 500
+    @Published public var textInputLimitProgress: CGFloat = 0.0
+    @Published public var isTextInputEmpty = true
+    @Published public var isTextInputValid = true
+    @Published public var currentTextInput = ""
+    
+    // emoji
+    @Published public private(set) var emojiViewModel: MastodonEmojiService.EmojiViewModel? = nil
+    
+    // toolbar
     @Published public private(set) var availableActions: Set<ComposeToolbarView.Action> = Set()
     @Published public private(set) var isMediaToolBarButtonEnabled = true
-    @Published public private(set) var shouldDismiss: Bool = true
+    
+    // UI state
+    @Published public private(set) var isComposeBarButtonEnabled = true
+    @Published public private(set) var canDismissDirectly = true
+    @Published public var additionalSafeAreaInsets: UIEdgeInsets = .zero
     let viewDidAppear = CurrentValueSubject<Void, Never>(Void())
     let viewLayoutMarginDidUpdate = CurrentValueSubject<Void, Never>(Void())
-    @Published public var additionalSafeAreaInsets: UIEdgeInsets = .zero
     
     public init(
         inputContext: InputContext,
-        contentContext: ContentContext
+        configurationContext: ConfigurationContext
     ) {
-        self.contentContext = contentContext
+        self.configurationContext = configurationContext
         // end init
 
         switch inputContext {
@@ -85,7 +111,30 @@ public final class ComposeContentViewModel {
             }
             .store(in: &disposeBag)
         
-        // bind toolbar UI 
+        // bind toolbar
+        $author
+            .map { author -> Set<ComposeToolbarView.Action> in
+                var set = Set<ComposeToolbarView.Action>()
+                set.insert(.media)
+                set.insert(.mention)
+                set.insert(.hashtag)
+                set.insert(.media)
+                
+                switch author {
+                case .twitter:
+                    set.insert(.location)
+                case .mastodon:
+                    set.insert(.emoji)
+                    set.insert(.poll)
+                    set.insert(.contentWarning)
+                    set.insert(.mediaSensitive)
+                case .none:
+                    break
+                }
+                return set
+            }
+            .assign(to: &$availableActions)
+        
         Publishers.CombineLatest(
             $attachmentViewModels,
             $maxMediaAttachmentLimit
@@ -95,6 +144,23 @@ public final class ComposeContentViewModel {
         }
         .assign(to: &$isMediaToolBarButtonEnabled)
 
+        
+        // bind UI state
+        Publishers.CombineLatest(
+            $isTextInputEmpty,
+            $isTextInputValid
+        )
+        .map { !$0 && $1 }
+        .assign(to: &$isComposeBarButtonEnabled)
+        
+        Publishers.CombineLatest(
+            $initialTextInput,
+            $currentTextInput
+        )
+        .map { initialTextInput, currentTextInput in
+            return initialTextInput.trimmingCharacters(in: .whitespacesAndNewlines) == currentTextInput.trimmingCharacters(in: .whitespacesAndNewlines)
+        }
+        .assign(to: &$canDismissDirectly)
     }
     
 }
@@ -107,7 +173,7 @@ extension ComposeContentViewModel {
         case reply(status: StatusObject)
     }
     
-    public struct ContentContext {
+    public struct ConfigurationContext {
         public let dateTimeProvider: DateTimeProvider
         public let twitterTextProvider: TwitterTextProvider
         
@@ -120,6 +186,47 @@ extension ComposeContentViewModel {
         }
     }
 }
+
+extension ComposeContentViewModel {
+    func processEditing(textStorage: MetaTextStorage) -> MetaContent? {
+        guard let author = self.author else {
+            return nil
+        }
+        
+        let textInput = textStorage.string
+        self.currentTextInput = textInput
+
+        switch author {
+        case .twitter:
+            let content = TwitterContent(content: textInput)
+            let metaContent = TwitterMetaContent.convert(
+                content: content,
+                urlMaximumLength: .max,
+                twitterTextProvider: configurationContext.twitterTextProvider
+            )
+            
+            // set text limit
+            let parseResult = configurationContext.twitterTextProvider.parse(text: textInput)
+            textInputLimitProgress = {
+                guard parseResult.maxWeightedLength > 0 else { return .zero }
+                return CGFloat(parseResult.weightedLength) / CGFloat(parseResult.maxWeightedLength)
+            }()
+            maxTextInputLimit = parseResult.maxWeightedLength
+            isTextInputValid = parseResult.isValid
+            
+            return metaContent
+            
+        case .mastodon:
+            let content = MastodonContent(
+                content: textInput,
+                emojis: emojiViewModel?.emojis.asDictionary ?? [:]
+            )
+            let metaContent = MastodonMetaContent.convert(text: content)
+            return metaContent
+        }
+    }
+}
+
 
 //extension ComposeContentViewModel {
 //    public struct State: OptionSet {

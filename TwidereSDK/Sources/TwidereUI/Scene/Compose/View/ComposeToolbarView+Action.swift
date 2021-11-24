@@ -9,13 +9,15 @@ import UIKit
 import TwidereAsset
 
 extension ComposeToolbarView {
-    public enum Action: Hashable {
+    public enum Action: Hashable, CaseIterable {
         case media
         case emoji
         case poll
         case mention
         case hashtag
         case location
+        case contentWarning
+        case mediaSensitive
     }
 }
 
@@ -34,6 +36,39 @@ extension ComposeToolbarView.Action {
             return Asset.Symbol.number.image
         case .location:
             return Asset.ObjectTools.mappin.image
+        case .contentWarning:
+            return Asset.Indices.exclamationmarkOctagon.image
+        case .mediaSensitive:
+            return Asset.Human.eyeSlash.image
         }
     }
 }
+
+extension ComposeToolbarView {
+    public func configure(actions: Set<Action>) {
+        for action in Action.allCases {
+            let contains = actions.contains(action)
+            switch action {
+            case .media:
+                mediaButton.isHidden = !contains
+            case .emoji:
+                emojiButton.isHidden = !contains
+            case .poll:
+                pollButton.isHidden = !contains
+            case .mention:
+                mentionButton.isHidden = !contains
+            case .hashtag:
+                hashtagButton.isHidden = !contains
+            case .location:
+                localButton.isHidden = !contains
+            case .contentWarning:
+                // TODO:
+                break
+            case .mediaSensitive:
+                // TODO:
+                break
+            }
+        }
+    }
+}
+

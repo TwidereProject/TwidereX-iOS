@@ -18,11 +18,14 @@ public final class ComposeReplyTableViewCell: UITableViewCell {
     
     public let statusView = StatusView()
     
+    public let conversationLinkLineView = SeparatorLineView()
+    
     public override func prepareForReuse() {
         super.prepareForReuse()
         
-        statusView.prepareForReuse()
         disposeBag.removeAll()
+        statusView.prepareForReuse()
+        statusView.toolbar.isHidden = true
     }
     
     public override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
@@ -49,6 +52,16 @@ extension ComposeReplyTableViewCell {
             statusView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
         ])
         statusView.setup(style: .composeReply)
+        
+        conversationLinkLineView.translatesAutoresizingMaskIntoConstraints = false
+        contentView.addSubview(conversationLinkLineView)
+        NSLayoutConstraint.activate([
+            conversationLinkLineView.topAnchor.constraint(equalTo: statusView.authorAvatarButton.bottomAnchor, constant: 2),
+            conversationLinkLineView.centerXAnchor.constraint(equalTo: statusView.authorAvatarButton.centerXAnchor),
+            contentView.bottomAnchor.constraint(equalTo: conversationLinkLineView.bottomAnchor),
+            conversationLinkLineView.widthAnchor.constraint(equalToConstant: 1),
+        ])
+        
         statusView.toolbar.isHidden = true
     }
     

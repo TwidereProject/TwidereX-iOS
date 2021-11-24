@@ -410,15 +410,15 @@ extension StatusView {
             activeAuthenticationContext,
             status.publisher(for: \.likeBy)
         )
-            .map { authenticationContext, likeBy in
-                guard let authenticationContext = authenticationContext?.twitterAuthenticationContext else {
-                    return false
-                }
-                let userID = authenticationContext.userID
-                return likeBy.contains(where: { $0.id == userID })
+        .map { authenticationContext, likeBy in
+            guard let authenticationContext = authenticationContext?.twitterAuthenticationContext else {
+                return false
             }
-            .assign(to: \.isLike, on: viewModel)
-            .store(in: &disposeBag)
+            let userID = authenticationContext.userID
+            return likeBy.contains(where: { $0.id == userID })
+        }
+        .assign(to: \.isLike, on: viewModel)
+        .store(in: &disposeBag)
     }
 }
 

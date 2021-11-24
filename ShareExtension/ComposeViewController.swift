@@ -21,16 +21,16 @@ class ComposeViewController: UIViewController {
     
     private(set) lazy var sendBarButtonItem = UIBarButtonItem(image: Asset.Transportation.paperAirplane.image, style: .plain, target: self, action: #selector(ComposeViewController.sendBarButtonItemPressed(_:)))
     
-    let composecContentViewModel = ComposeContentViewModel(
+    let composeContentViewModel = ComposeContentViewModel(
         inputContext: .post,
-        contentContext: ComposeContentViewModel.ContentContext(
+        configurationContext: ComposeContentViewModel.ConfigurationContext(
             dateTimeProvider: DateTimeSwiftProvider(),
             twitterTextProvider: OfficialTwitterTextProvider()
         )
     )
     private(set) lazy var composeContentViewController: ComposeContentViewController = {
         let composeContentViewController = ComposeContentViewController()
-        composeContentViewController.viewModel = composecContentViewModel
+        composeContentViewController.viewModel = composeContentViewModel
         return composeContentViewController
     }()
     
@@ -97,7 +97,7 @@ extension ComposeViewController {
 extension ComposeViewController: UIAdaptivePresentationControllerDelegate {
 
     func presentationControllerShouldDismiss(_ presentationController: UIPresentationController) -> Bool {
-        return composecContentViewModel.shouldDismiss
+        return composeContentViewModel.canDismissDirectly
     }
 
     func presentationControllerDidAttemptToDismiss(_ presentationController: UIPresentationController) {

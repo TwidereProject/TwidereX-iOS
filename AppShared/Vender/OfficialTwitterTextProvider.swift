@@ -13,6 +13,20 @@ import twitter_text
 
 public class OfficialTwitterTextProvider: TwitterTextProvider {
     
+    public static let parser = TwitterTextParser.defaultParser()
+    
+    public func parse(text: String) -> ParseResult {
+        let result = OfficialTwitterTextProvider.parser.parseTweet(text)
+
+        return ParseResult(
+            isValid: result.isValid,
+            weightedLength: result.weightedLength,
+            maxWeightedLength: OfficialTwitterTextProvider.parser.maxWeightedTweetLength(),
+            entities: self.entities(in: text)
+        )
+    }
+    
+    
     public func entities(in text: String) -> [TwitterTextProviderEntity] {
         return TwitterText.entities(inText: text).compactMap { entity in
             switch entity.type {

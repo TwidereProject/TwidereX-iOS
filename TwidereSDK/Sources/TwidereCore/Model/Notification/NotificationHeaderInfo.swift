@@ -53,9 +53,9 @@ extension NotificationHeaderInfo {
     ) -> UIImage? {
         switch type {
         case .follow:
-            return Asset.Human.personExclamation.image.withRenderingMode(.alwaysTemplate)
+            return Asset.Human.personExclamationMini.image.withRenderingMode(.alwaysTemplate)
         case .followRequest:
-            return Asset.Human.personPlus.image.withRenderingMode(.alwaysTemplate)
+            return Asset.Human.personPlusMini.image.withRenderingMode(.alwaysTemplate)
         case .mention:
             return nil
         case .reblog:

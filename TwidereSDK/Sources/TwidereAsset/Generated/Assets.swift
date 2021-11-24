@@ -86,13 +86,14 @@ public enum Asset {
     public static let eyeSlash = ImageAsset(name: "Human/eye.slash")
     public static let eyeSlashLarge = ImageAsset(name: "Human/eye.slash.large")
     public static let faceSmiling = ImageAsset(name: "Human/face.smiling")
-    public static let personExclamation = ImageAsset(name: "Human/person.exclamation")
+    public static let personExclamationMini = ImageAsset(name: "Human/person.exclamation.mini")
     public static let person = ImageAsset(name: "Human/person")
-    public static let personPlus = ImageAsset(name: "Human/person.plus")
+    public static let personPlusMini = ImageAsset(name: "Human/person.plus.mini")
   }
   public enum Indices {
     public static let checkmarkCircle = ImageAsset(name: "Indices/checkmark.circle")
     public static let exclamationmarkCircle = ImageAsset(name: "Indices/exclamationmark.circle")
+    public static let exclamationmarkOctagon = ImageAsset(name: "Indices/exclamationmark.octagon")
     public static let infoCircle = ImageAsset(name: "Indices/info.circle")
   }
   public enum Keyboard {

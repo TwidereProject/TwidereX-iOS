@@ -7,6 +7,7 @@
 
 import os.log
 import UIKit
+import Combine
 import TwidereLocalization
 
 public protocol ComposeToolbarViewDelegate: AnyObject {
@@ -21,6 +22,8 @@ public protocol ComposeToolbarViewDelegate: AnyObject {
 final public class ComposeToolbarView: UIView {
     
     let logger = Logger(subsystem: "ComposeToolbarView", category: "View")
+    
+    var disposeBag = Set<AnyCancellable>()
     public weak var delegate: ComposeToolbarViewDelegate?
     
     public let supplementaryContainer: UIStackView = {
@@ -32,7 +35,7 @@ final public class ComposeToolbarView: UIView {
         return stackView
     }()
     
-    public let cycleCounterView = CycleCounterView()
+    public let circleCounterView = CircleCounterView()
 
     public let scrollView: UIScrollView = {
         let scrollView = UIScrollView()
@@ -90,6 +93,9 @@ final public class ComposeToolbarView: UIView {
         return button
     }()
     
+    // input
+    @Published public var availableActions: Set<Action> = Set(Action.allCases)
+    
     public override init(frame: CGRect) {
         super.init(frame: frame)
         _init()
@@ -113,11 +119,11 @@ extension ComposeToolbarView {
             trailingAnchor.constraint(equalTo: supplementaryContainer.trailingAnchor),
         ])
         
-        cycleCounterView.translatesAutoresizingMaskIntoConstraints = false
-        supplementaryContainer.addArrangedSubview(cycleCounterView)
+        circleCounterView.translatesAutoresizingMaskIntoConstraints = false
+        supplementaryContainer.addArrangedSubview(circleCounterView)
         NSLayoutConstraint.activate([
-            cycleCounterView.widthAnchor.constraint(equalToConstant: 18).priority(.required - 1),
-            cycleCounterView.heightAnchor.constraint(equalToConstant: 18).priority(.required - 1),
+            circleCounterView.widthAnchor.constraint(equalToConstant: 18).priority(.required - 1),
+            circleCounterView.heightAnchor.constraint(equalToConstant: 18).priority(.required - 1),
         ])
         let supplementaryContainerSpacer = UIView()
         supplementaryContainer.addArrangedSubview(supplementaryContainerSpacer)
@@ -174,6 +180,15 @@ extension ComposeToolbarView {
         mentionButton.addTarget(self, action: #selector(ComposeToolbarView.mentionButtonPressed(_:)), for: .touchUpInside)
         hashtagButton.addTarget(self, action: #selector(ComposeToolbarView.hashtagButtonPressed(_:)), for: .touchUpInside)
         localButton.addTarget(self, action: #selector(ComposeToolbarView.localButtonPressed(_:)), for: .touchUpInside)
+        
+        // bind actions
+        $availableActions
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] actions in
+                guard let self = self else { return }
+                self.configure(actions: actions)
+            }
+            .store(in: &disposeBag)
     }
 }
 

@@ -20,6 +20,15 @@
         }
       },
       {
+        "package": "AlamofireImage",
+        "repositoryURL": "https://github.com/Alamofire/AlamofireImage",
+        "state": {
+          "branch": null,
+          "revision": "98cbb00ce0ec5fc8e52a5b50a6bfc08d3e5aee10",
+          "version": "4.2.0"
+        }
+      },
+      {
         "package": "CommonOSLog",
         "repositoryURL": "https://github.com/MainasuK/CommonOSLog",
         "state": {
@@ -96,8 +105,8 @@
         "repositoryURL": "https://github.com/TwidereProject/MetaTextKit.git",
         "state": {
           "branch": null,
-          "revision": "b46401f7258a5981632cffa5e4cf9211b267cda7",
-          "version": "3.0.3"
+          "revision": "58e2082bb5c68b34b2a3f2a6596994692257cef5",
+          "version": "3.1.0"
         }
       },
       {
@@ -170,6 +179,15 @@
           "branch": null,
           "revision": "dad97167bf1be16aeecd109130900995dd01c515",
           "version": "2.6.0"
+        }
+      },
+      {
+        "package": "UITextView+Placeholder",
+        "repositoryURL": "https://github.com/MainasuK/UITextView-Placeholder.git",
+        "state": {
+          "branch": null,
+          "revision": "20f513ded04a040cdf5467f0891849b1763ede3b",
+          "version": "1.4.1"
         }
       }
     ]

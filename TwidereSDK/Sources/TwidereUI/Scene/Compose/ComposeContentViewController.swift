@@ -74,16 +74,16 @@ extension ComposeContentViewController {
             composeToolbarBackgroundView.topAnchor.constraint(equalTo: composeToolbarView.topAnchor).priority(.defaultHigh),
         ])
         
+        // bind keyboard
         composeToolbarView
             .observe(\.bounds, options: [.initial, .new]) { [weak self] toolbar, _ in
                 guard let self = self else { return }
                 self.viewModel.additionalSafeAreaInsets.bottom = toolbar.frame.height
                 self.viewModel.viewLayoutMarginDidUpdate.send()
-                print(toolbar.frame)
             }
             .store(in: &observations)
         
-        
+        // set tableView inset for keyboard
         KeyboardResponderService.configure(
             scrollView: tableView,
             layoutNeedsUpdate: {
@@ -98,10 +98,6 @@ extension ComposeContentViewController {
         )
         .store(in: &disposeBag)
         
-        composeToolbarView.delegate = self
-        viewModel.composeInputTableViewCell.metaText.delegate = self
-        viewModel.composeAttachmentTableViewCell.delegate = self
-        
 //        view.keyboardLayoutGuide.setConstraints([
 //
 //        ], activeWhenAwayFrom: .top)
@@ -109,11 +105,39 @@ extension ComposeContentViewController {
 //
 //        ], activeWhenNearEdge: .top)
         
+        // bind toolbar
+        viewModel.$textInputLimitProgress
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] progress in
+                guard let self = self else { return }
+                let strokeColor: UIColor = {
+                    if progress > 1.0 {
+                        return .systemRed
+                    } else if progress > 0.9 {
+                        return .systemOrange
+                    } else {
+                        return Asset.Colors.hightLight.color
+                    }
+                }()
+                
+                UIView.animate(withDuration: 0.1) { [weak self] in
+                    guard let self = self else { return }
+                    // set progress
+                    self.composeToolbarView.circleCounterView.progress = progress
+                    // set appearance
+                    self.composeToolbarView.circleCounterView.strokeColor = strokeColor
+                }
+            }
+            .store(in: &disposeBag)
+        
+        viewModel.$availableActions
+            .assign(to: &composeToolbarView.$availableActions)
+        
         viewModel.$attachmentViewModels
             .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in
                 guard let self = self else { return }
-                self.makeTableViewUpdate()
+                self.updateTableViewLayout()
             }
             .store(in: &disposeBag)
         
@@ -124,6 +148,11 @@ extension ComposeContentViewController {
                 self.composeToolbarView.mediaButton.isEnabled = isMediaToolBarButtonEnabled
             }
             .store(in: &disposeBag)
+        
+        
+        composeToolbarView.delegate = self
+        viewModel.composeInputTableViewCell.metaText.delegate = self
+        viewModel.composeAttachmentTableViewCell.delegate = self
     }
 
     public override func viewDidAppear(_ animated: Bool) {
@@ -153,7 +182,7 @@ extension ComposeContentViewController {
         return imagePicker
     }
     
-    private func makeTableViewUpdate() {
+    private func updateTableViewLayout() {
         UIView.setAnimationsEnabled(false)
         tableView.beginUpdates()
         tableView.endUpdates()
@@ -220,11 +249,11 @@ extension ComposeContentViewController: MetaTextDelegate {
         
         defer {
             DispatchQueue.main.async {
-                self.makeTableViewUpdate()
+                self.updateTableViewLayout()
             }
         }
         
-        return nil 
+        return viewModel.processEditing(textStorage: textStorage)
     }
 }
 

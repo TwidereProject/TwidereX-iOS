@@ -17,7 +17,9 @@ extension Mastodon.Entity {
     /// # Reference
     ///  [Document](https://docs.joinmastodon.org/entities/emoji/)
     public struct Emoji: Codable {
-        public let shortcode: String
+        public typealias Shortcode = String
+        
+        public let shortcode: Shortcode
         public let url: String
         public let staticURL: String
         public let visibleInPicker: Bool
@@ -31,5 +33,15 @@ extension Mastodon.Entity {
             case visibleInPicker = "visible_in_picker"
             case category
         }
+    }
+}
+
+extension Collection where Element == Mastodon.Entity.Emoji {
+    public var asDictionary: [Mastodon.Entity.Emoji.Shortcode: String] {
+        var dictionary: [Mastodon.Entity.Emoji.Shortcode: String] = [:]
+        for emoji in self {
+            dictionary[emoji.shortcode] = emoji.url
+        }
+        return dictionary
     }
 }

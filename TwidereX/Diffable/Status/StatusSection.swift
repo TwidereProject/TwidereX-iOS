@@ -35,7 +35,7 @@ extension StatusSection {
             // data source should dispatch in main thread
             assert(Thread.isMainThread)
             
-            let activeAuthenticationContext = context.authenticationService.activeAuthenticationContext.share().eraseToAnyPublisher()
+            let activeAuthenticationContext = context.authenticationService.activeAuthenticationContext.eraseToAnyPublisher()
             
             // configure cell with item
             switch item {

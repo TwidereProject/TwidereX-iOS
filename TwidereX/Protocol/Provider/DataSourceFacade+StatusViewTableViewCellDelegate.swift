@@ -112,7 +112,7 @@ extension StatusViewTableViewCellDelegate where Self: DataSourceProvider {
                 let composeViewModel = ComposeViewModel(context: context)
                 let composeContentViewModel = ComposeContentViewModel(
                     inputContext: .reply(status: status),
-                    contentContext: ComposeContentViewModel.ContentContext(
+                    configurationContext: ComposeContentViewModel.ConfigurationContext(
                         dateTimeProvider: DateTimeSwiftProvider(),
                         twitterTextProvider: OfficialTwitterTextProvider()
                     )

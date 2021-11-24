@@ -203,7 +203,7 @@ private extension SceneCoordinator {
         case .compose(let viewModel, let contentViewModel):
             let _viewController = ComposeViewController()
             _viewController.viewModel = viewModel
-            _viewController.composecContentViewModel = contentViewModel
+            _viewController.composeContentViewModel = contentViewModel
             viewController = _viewController
 //        case .mentionPick(let viewModel, let delegate):
 //            let _viewController = MentionPickViewController()
