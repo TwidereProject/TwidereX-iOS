@@ -11,6 +11,7 @@ import UIKit
 import Combine
 import CoreData
 import CoreDataStack
+import TwidereCommon
 
 class AppContext: ObservableObject {
     
@@ -37,7 +38,7 @@ class AppContext: ObservableObject {
         .share()
         .eraseToAnyPublisher()
 
-    init() {
+    init(appSecret: AppSecret) {
         let _coreDataStack = CoreDataStack()
         let _managedObjectContext = _coreDataStack.persistentContainer.viewContext
         let _backgroundManagedObjectContext = _coreDataStack.newTaskContext()
@@ -51,7 +52,8 @@ class AppContext: ObservableObject {
         authenticationService = AuthenticationService(
             managedObjectContext: _managedObjectContext,
             backgroundManagedObjectContext: _backgroundManagedObjectContext,
-            apiService: _apiService
+            apiService: _apiService,
+            appSecret: appSecret
         )
         
         documentStore = DocumentStore()

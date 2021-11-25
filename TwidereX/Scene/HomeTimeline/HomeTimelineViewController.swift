@@ -14,11 +14,12 @@ import Combine
 import CoreData
 import CoreDataStack
 import GameplayKit
-import TwidereUI
 import TwitterSDK
 import Floaty
 import AlamofireImage
 import AppShared
+import TwidereUI
+import TwidereComposeUI
 
 // DrawerSidebarTransitionableViewController, MediaPreviewableViewController
 final class HomeTimelineViewController: UIViewController, NeedsDependency {
@@ -223,6 +224,8 @@ extension HomeTimelineViewController {
         let composeContentViewModel = ComposeContentViewModel(
             inputContext: .post,
             configurationContext: ComposeContentViewModel.ConfigurationContext(
+                apiService: context.apiService,
+                authenticationService: context.authenticationService,
                 dateTimeProvider: DateTimeSwiftProvider(),
                 twitterTextProvider: OfficialTwitterTextProvider()
             )

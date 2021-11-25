@@ -113,7 +113,7 @@ extension WelcomeViewModel {
             }
             do {
                 let redirectedDomain = try await context.apiService.webFinger(domain: domain)
-                let applicationResponse = try await context.apiService.createMastodonApplication(domain: redirectedDomain)
+                let applicationResponse = try await context.apiService.createMastodonApplication(domain: redirectedDomain, callbackURI: MastodonAuthenticationController.callbackURL)
                 
                 let _authenticateInfo = MastodonAuthenticationController.MastodonAuthenticationInfo(
                     domain: redirectedDomain,

@@ -16,7 +16,7 @@ extension Persistence.TwitterUser {
     
     public struct PersistContextV2 {
         public let entity: Twitter.Entity.V2.User
-        public let user: TwitterUser?
+        public let me: TwitterUser?
         public let cache: Persistence.PersistCache<TwitterUser>?
         public let networkDate: Date
         public let log = OSLog.api

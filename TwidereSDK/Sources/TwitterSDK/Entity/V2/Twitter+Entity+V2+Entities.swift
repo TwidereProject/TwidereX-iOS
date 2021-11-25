@@ -64,6 +64,7 @@ extension Twitter.Entity.V2.Entities {
         public let start: Int
         public let end: Int
         public let username: String
+        public let id: Twitter.Entity.V2.User.ID?
     }
 
 }

@@ -27,6 +27,14 @@ extension TwitterEntity {
         )
     }
     
+    public convenience init(entity: Twitter.Entity.Tweet.Entities?) {
+        self.init(
+            urls: entity?.urls.map { urls in urls.compactMap { URLEntity(entity: $0) } },
+            hashtags: entity?.hashtags.map { hashtags in  hashtags.map { Hashtag(entity: $0) } },
+            mentions: entity?.userMentions.flatMap { mentions in mentions.map { Mention(entity: $0) } }
+        )
+    }
+    
     public convenience init(entity: Twitter.Entity.V2.Entities?) {
         self.init(
             urls: entity?.urls.map { urls in urls.map { URLEntity(entity: $0) } },
@@ -42,6 +50,21 @@ extension TwitterEntity.URLEntity {
             start: entity.indices?.first ?? 0,
             end: entity.indices?.last ?? 0,
             url: entity.url ?? "",
+            expandedURL: entity.expandedURL,
+            displayURL: entity.displayURL,
+            status: nil,
+            title: nil,
+            description: nil,
+            unwoundURL: nil
+        )
+    }
+    
+    public init?(entity: Twitter.Entity.Tweet.Entities.URL) {
+        guard let url = entity.url else { return nil }
+        self.init(
+            start: entity.indices?.first ?? 0,
+            end: entity.indices?.last ?? 0,
+            url: url,
             expandedURL: entity.expandedURL,
             displayURL: entity.displayURL,
             status: nil,
@@ -89,7 +112,7 @@ extension TwitterEntity.Mention {
         self.init(
             start: entity.indices?.first ?? 0,
             end: entity.indices?.last ?? 0,
-            username: entity.name ?? "",
+            username: entity.screenName ?? "",
             id: entity.idStr
         )
     }
@@ -99,7 +122,7 @@ extension TwitterEntity.Mention {
             start: entity.start,
             end: entity.end,
             username: entity.username,
-            id: nil
+            id: entity.id   // not exist in early access
         )
     }
 }

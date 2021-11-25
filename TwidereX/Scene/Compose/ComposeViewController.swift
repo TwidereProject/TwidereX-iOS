@@ -10,6 +10,7 @@ import os.log
 import UIKit
 import Combine
 import TwidereUI
+import TwidereComposeUI
 
 final class ComposeViewController: UIViewController, NeedsDependency {
     

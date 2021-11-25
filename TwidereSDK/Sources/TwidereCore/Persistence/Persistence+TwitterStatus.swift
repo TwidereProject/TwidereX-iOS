@@ -190,6 +190,11 @@ extension Persistence.TwitterStatus {
         twitterStatus status: TwitterStatus,
         context: PersistContext
     ) {
+        // prefer use V2 entities. only update entities when not exist
+        if status.entities == nil {
+            status.update(entities: TwitterEntity(entity: context.entity.entities))
+        }
+        
         context.entity.twitterAttachments.flatMap { status.update(attachments: $0) }
         context.entity.twitterLocation.flatMap { status.update(location:$0) }
         

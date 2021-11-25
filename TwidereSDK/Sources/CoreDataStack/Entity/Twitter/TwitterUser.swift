@@ -345,10 +345,10 @@ extension TwitterUser: AutoGenerateProperty {
 }
 
 // MARK: - AutoGenerateRelationship
-extension TwitterUser: AutoGenerateRelationship {
-    // sourcery:inline:TwitterUser.AutoUpdatableObject
-    // sourcery:end
-}
+//extension TwitterUser: AutoGenerateRelationship {
+//    // sourcery:inline:TwitterUser.AutoUpdatableObject
+//    // sourcery:end
+//}
 
 // MARK: - AutoUpdatableObject
 extension TwitterUser: AutoUpdatableObject {

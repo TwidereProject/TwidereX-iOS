@@ -131,7 +131,7 @@ extension Persistence.TwitterStatus {
                 in: managedObjectContext,
                 context: Persistence.TwitterUser.PersistContextV2(
                     entity: context.entity.author,
-                    user: context.user,
+                    me: context.user,
                     cache: context.userCache,
                     networkDate: context.networkDate
                 )
@@ -212,7 +212,7 @@ extension Persistence.TwitterStatus {
             twitterUser: status.author,
             context: Persistence.TwitterUser.PersistContextV2(
                 entity: context.entity.author,
-                user: context.user,
+                me: context.user,
                 cache: context.userCache,
                 networkDate: context.networkDate
             )
@@ -223,6 +223,8 @@ extension Persistence.TwitterStatus {
         twitterStatus status: TwitterStatus,
         context: PersistContextV2
     ) {
+        status.update(entities: TwitterEntity(entity: context.entity.status.entities))
+        
         context.entity.status.conversationID.flatMap { status.update(conversationID: $0) }
         context.dictionary.media(for: context.entity.status)
             .flatMap { media in

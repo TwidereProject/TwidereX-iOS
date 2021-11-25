@@ -13,6 +13,7 @@ import TwitterMeta
 import MastodonMeta
 import AlamofireImage
 import AppShared
+import TwidereCore
 
 extension ProfileHeaderView {
     class ViewModel: ObservableObject {

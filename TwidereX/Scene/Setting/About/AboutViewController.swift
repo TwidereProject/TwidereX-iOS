@@ -59,7 +59,7 @@ extension AboutViewController {
                 case .license:
                     let url = URL(string: "https://github.com/TwidereProject/TwidereX-iOS/blob/master/LICENSE")!
                     self.coordinator.present(scene: .safari(url: url), from: nil, transition: .safariPresent(animated: true, completion: nil))
-                case .privacyyPolicy:
+                case .privacyPolicy:
                     let url = URL(string: "https://github.com/TwidereProject/TwidereX-iOS/wiki/Privacy-Policy")!
                     self.coordinator.present(scene: .safari(url: url), from: nil, transition: .safariPresent(animated: true, completion: nil))
                 }

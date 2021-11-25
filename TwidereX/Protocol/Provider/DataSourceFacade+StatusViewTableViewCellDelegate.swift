@@ -7,8 +7,8 @@
 //
 
 import UIKit
-import TwidereUI
 import AppShared
+import TwidereComposeUI
 
 // MARK: - header
 extension StatusViewTableViewCellDelegate where Self: DataSourceProvider {
@@ -113,6 +113,8 @@ extension StatusViewTableViewCellDelegate where Self: DataSourceProvider {
                 let composeContentViewModel = ComposeContentViewModel(
                     inputContext: .reply(status: status),
                     configurationContext: ComposeContentViewModel.ConfigurationContext(
+                        apiService: context.apiService,
+                        authenticationService: context.authenticationService,
                         dateTimeProvider: DateTimeSwiftProvider(),
                         twitterTextProvider: OfficialTwitterTextProvider()
                     )

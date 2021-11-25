@@ -9,6 +9,8 @@ import UIKit
 import Combine
 import Firebase
 import Kingfisher
+import AppShared
+
 @_exported import TwidereUI
 //import Floaty
 
@@ -17,7 +19,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var disposeBag = Set<AnyCancellable>()
 
-    let appContext = AppContext()
+    let appContext = AppContext(appSecret: .default)
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         

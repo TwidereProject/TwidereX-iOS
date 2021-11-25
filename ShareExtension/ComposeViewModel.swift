@@ -12,6 +12,7 @@ import TwidereUI
 final class ComposeViewModel {
     
     // input
+    // let apiService = APIService(backgroundManagedObjectContext: <#T##NSManagedObjectContext#>)
     
     // output
     @Published var author: UserObject?

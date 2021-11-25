@@ -40,8 +40,8 @@ extension Twitter.Entity.Tweet.Entities {
     }
     
     public struct UserMention: Codable {
-        public let screenName: String?      // username
-        public let name: String?
+        public let screenName: String?      /// username
+        public let name: String?            /// nickname
         public let id: Int?
         public let idStr: String?
         public let indices: [Int]?
