@@ -5,22 +5,31 @@
 //  Created by MainasuK on 2021/11/17.
 //
 
+import os.log
 import UIKit
 import SwiftUI
 import Combine
+import CoreLocation
+import CoreDataStack
+import TwitterSDK
 import TwidereCore
 import TwitterMeta
 import MetaTextKit
 import MastodonMeta
-import CoreDataStack
 
-public final class ComposeContentViewModel {
+public final class ComposeContentViewModel: NSObject {
     
     var disposeBag = Set<AnyCancellable>()
     
     public let composeReplyTableViewCell = ComposeReplyTableViewCell()
     public let composeInputTableViewCell = ComposeInputTableViewCell()
     public let composeAttachmentTableViewCell = ComposeAttachmentTableViewCell()
+    
+    let locationManager: CLLocationManager = {
+        let locationManager = CLLocationManager()
+        locationManager.desiredAccuracy = kCLLocationAccuracyReduced
+        return locationManager
+    }()
     
     // Input
     public let configurationContext: ConfigurationContext
@@ -59,9 +68,16 @@ public final class ComposeContentViewModel {
     // emoji
     @Published public private(set) var emojiViewModel: MastodonEmojiService.EmojiViewModel? = nil
     
+    // location
+    public private(set) var didRequestLocationAuthorization = false
+    @Published public var isRequestLocation = false
+    @Published public private(set) var currentLocation: CLLocation?
+    @Published public internal(set) var currentPlace: Twitter.Entity.Place?
+    
     // toolbar
     @Published public private(set) var availableActions: Set<ComposeToolbarView.Action> = Set()
     @Published public private(set) var isMediaToolBarButtonEnabled = true
+    @Published public private(set) var isLocationToolBarButtonEnabled = CLLocationManager.locationServicesEnabled()
     
     // UI state
     @Published public private(set) var isComposeBarButtonEnabled = true
@@ -75,6 +91,7 @@ public final class ComposeContentViewModel {
         configurationContext: ConfigurationContext
     ) {
         self.configurationContext = configurationContext
+        super.init()
         // end init
 
         switch inputContext {
@@ -223,6 +240,19 @@ public final class ComposeContentViewModel {
             }
             .store(in: &disposeBag)
         
+        // location
+        $isRequestLocation
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] isRequestLocation in
+                guard let self = self else { return }
+                if isRequestLocation {
+                    self.requestLocationMarking()
+                } else {
+                    self.cancelLocationMarking()
+                }
+            }
+            .store(in: &disposeBag)
+        
         // bind toolbar
         $author
             .map { author -> Set<ComposeToolbarView.Action> in
@@ -273,6 +303,15 @@ public final class ComposeContentViewModel {
             return initialTextInput.trimmingCharacters(in: .whitespacesAndNewlines) == currentTextInput.trimmingCharacters(in: .whitespacesAndNewlines)
         }
         .assign(to: &$canDismissDirectly)
+        
+        // bind location
+        locationManager.delegate = self
+        
+    }
+    
+    deinit {
+        os_log("%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
+        locationManager.stopUpdatingLocation()
     }
     
 }
@@ -343,6 +382,85 @@ extension ComposeContentViewModel {
             return metaContent
         }
     }
+}
+
+extension ComposeContentViewModel {
+
+    var authorizationStatus: CLAuthorizationStatus {
+        return locationManager.authorizationStatus
+    }
+
+    func requestLocationAuthorizationIfNeeds(presentingViewController: UIViewController) -> Bool {
+        os_log("%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
+        switch authorizationStatus {
+        case .notDetermined:
+            didRequestLocationAuthorization = true
+            locationManager.requestWhenInUseAuthorization()
+            return false
+        case .authorizedAlways, .authorizedWhenInUse:
+            return true
+        case .restricted, .denied:
+            let alertController = UIAlertController(title: "Location Access Disabled", message: "Please enable location access to compose geo marked tweet", preferredStyle: .alert)
+            let openSettingsAction = UIAlertAction(title: "Open Settings", style: .default) { _ in
+                guard let url = URL(string: UIApplication.openSettingsURLString) else { return }
+                UIApplication.shared.open(url)
+            }
+            let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+            alertController.addAction(openSettingsAction)
+            alertController.addAction(cancelAction)
+            presentingViewController.present(alertController, animated: true, completion: nil)
+            return false
+        @unknown default:
+            return false
+        }
+    }
+
+    func requestLocationMarking() {
+        os_log("%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
+
+        switch authorizationStatus {
+        case .notDetermined:
+            break
+        case .authorizedAlways, .authorizedWhenInUse:
+            locationManager.startUpdatingLocation()
+        case .restricted, .denied:
+            break
+        @unknown default:
+            break
+        }
+    }
+
+    func cancelLocationMarking() {
+        os_log("%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
+        locationManager.stopUpdatingLocation()
+    }
+    
+}
+
+// MARK: - CLLocationManagerDelegate
+extension ComposeContentViewModel: CLLocationManagerDelegate {
+    
+    public func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
+        os_log("%{public}s[%{public}ld], %{public}s: status", ((#file as NSString).lastPathComponent), #line, #function, String(describing: manager.authorizationStatus))
+        switch manager.authorizationStatus {
+        case .authorizedAlways, .authorizedWhenInUse:
+            if didRequestLocationAuthorization {
+                isRequestLocation = true
+            }
+        default:
+            break
+        }
+    }
+    
+    public func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        let location = locations.first
+        currentLocation = location
+    }
+    
+    public func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
+        // do nothing
+    }
+    
 }
 
 

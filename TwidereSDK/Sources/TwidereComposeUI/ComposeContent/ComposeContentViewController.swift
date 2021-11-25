@@ -13,6 +13,7 @@ import PhotosUI
 import TwitterSDK
 import TwidereCore
 import TwidereAsset
+import CropViewController
 
 public final class ComposeContentViewController: UIViewController {
     
@@ -135,6 +136,7 @@ extension ComposeContentViewController {
         viewModel.$availableActions
             .assign(to: &composeToolbarView.$availableActions)
         
+        // attachment
         viewModel.$attachmentViewModels
             .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in
@@ -143,6 +145,7 @@ extension ComposeContentViewController {
             }
             .store(in: &disposeBag)
         
+        // media
         viewModel.$isMediaToolBarButtonEnabled
             .receive(on: DispatchQueue.main)
             .sink { [weak self] isMediaToolBarButtonEnabled in
@@ -150,6 +153,66 @@ extension ComposeContentViewController {
                 self.composeToolbarView.mediaButton.isEnabled = isMediaToolBarButtonEnabled
             }
             .store(in: &disposeBag)
+        
+        // location
+        viewModel.$isLocationToolBarButtonEnabled
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] isLocationToolBarButtonEnabled in
+                guard let self = self else { return }
+                self.composeToolbarView.localButton.isEnabled = isLocationToolBarButtonEnabled
+                
+            }
+            .store(in: &disposeBag)
+        
+        viewModel.$isRequestLocation
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] isRequestLocation in
+                guard let self = self else { return }
+                let tintColor = isRequestLocation ? Asset.Colors.hightLight.color : UIColor.secondaryLabel
+                UIView.animate(withDuration: 0.3) {
+                    self.composeToolbarView.localButton.tintColor = tintColor
+                }
+                
+            }
+            .store(in: &disposeBag)
+        
+        Publishers.CombineLatest(
+            viewModel.$isRequestLocation,
+            viewModel.$currentLocation
+        )
+        .asyncMap { [weak self] isRequestLocation, currentLocation -> Twitter.Entity.Place? in
+            guard let self = self else { return nil }
+            guard isRequestLocation, let currentLocation = currentLocation else { return nil }
+            
+            guard let authenticationContext = self.viewModel.configurationContext.authenticationService.activeAuthenticationContext.value,
+                  case let .twitter(twitterAuthenticationContext) = authenticationContext
+            else { return nil }
+            
+            do {
+                let response = try await self.viewModel.configurationContext.apiService.geoSearch(
+                    latitude: currentLocation.coordinate.latitude,
+                    longitude: currentLocation.coordinate.longitude,
+                    granularity: "city",
+                    twitterAuthenticationContext: twitterAuthenticationContext
+                )
+                let place = response.value.first
+                return place
+            } catch {
+                return nil
+            }
+        }
+        .receive(on: DispatchQueue.main)
+        .sink { [weak self] place in
+            guard let self = self else { return }
+            os_log("%{public}s[%{public}ld], %{public}s: current place: %s", ((#file as NSString).lastPathComponent), #line, #function, place?.fullName ?? "<nil>")
+            if let place = place {
+                self.viewModel.currentPlace = place
+            }
+            self.composeToolbarView.locationLabel.text = place?.fullName
+            self.composeToolbarView.locationLabel.isHidden = place == nil
+        }
+        .store(in: &disposeBag)
+        
         
         
         composeToolbarView.delegate = self
@@ -193,6 +256,12 @@ extension ComposeContentViewController {
     }
 }
 
+
+// MARK: - UITableViewDelegate
+extension ComposeContentViewController: UITableViewDelegate {
+
+}
+
 // MARK: - PHPickerViewControllerDelegate
 extension ComposeContentViewController: PHPickerViewControllerDelegate {
     public func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
@@ -205,9 +274,40 @@ extension ComposeContentViewController: PHPickerViewControllerDelegate {
     }
 }
 
-// MARK: - UITableViewDelegate
-extension ComposeContentViewController: UITableViewDelegate {
 
+// MARK: - UIImagePickerControllerDelegate & UINavigationControllerDelegate
+extension ComposeContentViewController: UIImagePickerControllerDelegate & UINavigationControllerDelegate {
+    public func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        guard let image = info[.originalImage] as? UIImage else { return }
+        guard let mediaType = info[.mediaType] as? String else { return }
+        
+        // TODO: check media type
+        guard mediaType == "public.image" else { return }
+        
+        let cropViewController = CropViewController(croppingStyle: .default, image: image)
+        cropViewController.delegate = self
+        cropViewController.modalPresentationStyle = .fullScreen
+        cropViewController.modalTransitionStyle = .crossDissolve
+        cropViewController.transitioningDelegate = nil
+        picker.dismiss(animated: true) {
+            self.present(cropViewController, animated: true, completion: nil)
+        }
+    }
+    
+    public func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+        os_log("%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
+        picker.dismiss(animated: true, completion: nil)
+    }
+}
+
+// MARK: - CropViewControllerDelegate
+extension ComposeContentViewController: CropViewControllerDelegate {
+    public func cropViewController(_ cropViewController: CropViewController, didCropToImage image: UIImage, withRect cropRect: CGRect, angle: Int) {
+        let attachmentViewModel = AttachmentViewModel(input: .image(image))
+        viewModel.attachmentViewModels.append(attachmentViewModel)
+        
+        cropViewController.dismiss(animated: true, completion: nil)
+    }
 }
 
 // MARK: - ComposeToolbarViewDelegate
@@ -216,7 +316,13 @@ extension ComposeContentViewController: ComposeToolbarViewDelegate {
     public func composeToolBarView(_ composeToolBarView: ComposeToolbarView, mediaButtonPressed button: UIButton, mediaSelectionType type: ComposeToolbarView.MediaSelectionType) {
         switch type {
         case .camera:
-            break
+            let picker = UIImagePickerController()
+            picker.sourceType = .camera
+            picker.delegate = self
+            DispatchQueue.main.async { [weak self] in
+                guard let self = self else { return }
+                self.present(picker, animated: true)
+            }
         case .photoLibrary:
             present(createPhotoLibraryPicker(), animated: true, completion: nil)
         case .browse:
@@ -233,15 +339,26 @@ extension ComposeContentViewController: ComposeToolbarViewDelegate {
     }
     
     public func composeToolBarView(_ composeToolBarView: ComposeToolbarView, mentionButtonPressed button: UIButton) {
-        
+        // TODO: mention scene
+        if !viewModel.composeInputTableViewCell.metaText.textStorage.string.hasSuffix(" ") {
+            viewModel.composeInputTableViewCell.metaText.textView.insertText(" @")
+        } else {
+            viewModel.composeInputTableViewCell.metaText.textView.insertText("@")
+        }
     }
     
     public func composeToolBarView(_ composeToolBarView: ComposeToolbarView, hashtagButtonPressed button: UIButton) {
-        
+        // TODO: hashtag scene
+        if !viewModel.composeInputTableViewCell.metaText.textStorage.string.hasSuffix(" ") {
+            viewModel.composeInputTableViewCell.metaText.textView.insertText(" #")
+        } else {
+            viewModel.composeInputTableViewCell.metaText.textView.insertText("#")
+        }
     }
     
     public func composeToolBarView(_ composeToolBarView: ComposeToolbarView, localButtonPressed button: UIButton) {
-        
+        guard viewModel.requestLocationAuthorizationIfNeeds(presentingViewController: self) else { return }
+        viewModel.isRequestLocation.toggle()
     }
 }
 

@@ -94,6 +94,13 @@ final public class ComposeToolbarView: UIView {
         return button
     }()
     
+    public private(set) lazy var locationLabel: UILabel = {
+        let label = UILabel()
+        label.font = UIFont.systemFont(ofSize: 14, weight: .medium)
+        label.textColor = .secondaryLabel
+        return label
+    }()
+    
     // input
     @Published public var availableActions: Set<Action> = Set(Action.allCases)
     
@@ -170,7 +177,9 @@ extension ComposeToolbarView {
         container.addArrangedSubview(mentionButton)
         container.addArrangedSubview(hashtagButton)
         container.addArrangedSubview(localButton)
-
+        container.addArrangedSubview(locationLabel)
+        locationLabel.isHidden = true
+        
         let spacer = UIView()
         container.addArrangedSubview(spacer)
 
@@ -202,6 +211,8 @@ extension ComposeToolbarView {
     
     private func createMediaContextMenu(button: UIButton) -> UIMenu {
         var children: [UIMenuElement] = []
+        
+        // photo library
         let photoLibraryAction = UIAction(
             title: L10n.Common.Controls.Ios.photoLibrary,
             image: UIImage(systemName: "rectangle.on.rectangle"),
@@ -217,20 +228,39 @@ extension ComposeToolbarView {
         }
         children.append(photoLibraryAction)
         
-//        if UIImagePickerController.isSourceTypeAvailable(.camera) {
-//            let cameraAction = UIAction(title: L10n.Scene.Compose.MediaSelection.camera, image: UIImage(systemName: "camera"), identifier: nil, discoverabilityTitle: nil, attributes: [], state: .off, handler: { [weak self] _ in
-//                guard let self = self else { return }
-//                os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: mediaSelectionType: .camera", ((#file as NSString).lastPathComponent), #line, #function)
-//                self.delegate?.composeToolbarView(self, cameraButtonDidPressed: self.mediaButton, mediaSelectionType: .camera)
-//            })
-//            children.append(cameraAction)
-//        }
-//        let browseAction = UIAction(title: L10n.Scene.Compose.MediaSelection.browse, image: UIImage(systemName: "ellipsis"), identifier: nil, discoverabilityTitle: nil, attributes: [], state: .off) { [weak self] _ in
-//            guard let self = self else { return }
-//            os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: mediaSelectionType: .browse", ((#file as NSString).lastPathComponent), #line, #function)
-//            self.delegate?.composeToolbarView(self, cameraButtonDidPressed: self.mediaButton, mediaSelectionType: .browse)
-//        }
-//        children.append(browseAction)
+        // camera
+        if UIImagePickerController.isSourceTypeAvailable(.camera) {
+            let cameraAction = UIAction(
+                title: L10n.Common.Controls.Actions.takePhoto,
+                image: UIImage(systemName: "camera"),
+                identifier: nil,
+                discoverabilityTitle: nil,
+                attributes: [],
+                state: .off
+            ) { [weak self, weak button] _ in
+                guard let self = self else { return }
+                guard let button = button else { return }
+                os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: mediaSelectionType: .camera", ((#file as NSString).lastPathComponent), #line, #function)
+                self.delegate?.composeToolBarView(self, mediaButtonPressed: button, mediaSelectionType: .camera)
+            }
+            children.append(cameraAction)
+        }
+        
+        // browse
+        let browseAction = UIAction(
+            title: "browse",    // TODO:
+            image: UIImage(systemName: "ellipsis"),
+            identifier: nil,
+            discoverabilityTitle: nil,
+            attributes: [],
+            state: .off
+        ) { [weak self, weak button] _ in
+            guard let self = self else { return }
+            guard let button = button else { return }
+            os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: mediaSelectionType: .browse", ((#file as NSString).lastPathComponent), #line, #function)
+            self.delegate?.composeToolBarView(self, mediaButtonPressed: button, mediaSelectionType: .browse)
+        }
+        children.append(browseAction)
         
         return UIMenu(title: "", image: nil, identifier: nil, options: .displayInline, children: children)
     }

@@ -12,25 +12,32 @@ extension Twitter.API.Geo {
     
     static let searchEndpointURL = Twitter.API.endpointURL.appendingPathComponent("geo/search.json")
     
-    public static func search(session: URLSession, authorization: Twitter.API.OAuth.Authorization, query: SearchQuery) -> AnyPublisher<Twitter.Response.Content<SearchResponse>, Error> {
-        let request = Twitter.API.request(url: searchEndpointURL, httpMethod: "GET", authorization: authorization, queryItems: query.queryItems)
-        return session.dataTaskPublisher(for: request)
-            .tryMap { data, response in
-                let value = try Twitter.API.decode(type: SearchResponse.self, from: data, response: response)
-                return Twitter.Response.Content(value: value, response: response)
-            }
-            .eraseToAnyPublisher()
+    public static func search(
+        session: URLSession,
+        query: SearchQuery,
+        authorization: Twitter.API.OAuth.Authorization
+    ) async throws -> Twitter.Response.Content<SearchResponse> {
+        let request = Twitter.API.request(
+            url: searchEndpointURL,
+            method: .GET,
+            query: query,
+            authorization: authorization
+        )
+        let (data, response) = try await session.data(for: request, delegate: nil)
+        let value = try Twitter.API.decode(type: SearchResponse.self, from: data, response: response)
+        return Twitter.Response.Content(value: value, response: response)
     }
     
-}
-
-extension Twitter.API.Geo {
-    public struct SearchQuery {
+    public struct SearchQuery: Query {
         public let latitude: Double
         public let longitude: Double
         public let granularity: String
         
-        public init(latitude: Double, longitude: Double, granularity: String) {
+        public init(
+            latitude: Double,
+            longitude: Double,
+            granularity: String
+        ) {
             self.latitude = latitude
             self.longitude = longitude
             self.granularity = granularity
@@ -44,6 +51,10 @@ extension Twitter.API.Geo {
             guard !items.isEmpty else { return nil }
             return items
         }
+        var encodedQueryItems: [URLQueryItem]? { nil }
+        var formQueryItems: [URLQueryItem]? { nil }
+        var contentType: String? { nil }
+        var body: Data? { nil }
     }
     
     public struct SearchResponse: Codable {

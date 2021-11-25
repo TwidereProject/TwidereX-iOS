@@ -241,6 +241,7 @@
 		DBBBBE8F2744FB42007ACB4B /* ComposeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBBBBE8E2744FB42007ACB4B /* ComposeViewModel.swift */; };
 		DBBC3F3525835B8B005CF99E /* ActiveLabel in Frameworks */ = {isa = PBXBuildFile; productRef = DBBC3F3425835B8B005CF99E /* ActiveLabel */; };
 		DBBF70F726D7B62F00971656 /* AccountListTableViewCell+ViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBBF70F626D7B62F00971656 /* AccountListTableViewCell+ViewModel.swift */; };
+		DBC1396D274F93D5000C9425 /* CropViewController in Frameworks */ = {isa = PBXBuildFile; productRef = DBC1396C274F93D5000C9425 /* CropViewController */; };
 		DBC17A5C26E0A4C1005C0D79 /* TimelineMiddleLoaderTableViewCell+ViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBC17A5B26E0A4C1005C0D79 /* TimelineMiddleLoaderTableViewCell+ViewModel.swift */; };
 		DBC747D4259DA03B00787EEF /* ListCheckmarkTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBC747D3259DA03B00787EEF /* ListCheckmarkTableViewCell.swift */; };
 		DBC747D9259DA07C00787EEF /* ListTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBC747D8259DA07C00787EEF /* ListTableViewCell.swift */; };
@@ -886,6 +887,7 @@
 				DB4BC7ED274CCCA3008D671E /* Alamofire in Frameworks */,
 				DBA5DDB9274E1BED00FF12E3 /* UITextView+Placeholder in Frameworks */,
 				DB37F6A2274B55B20081603F /* TwidereAsset in Frameworks */,
+				DBC1396D274F93D5000C9425 /* CropViewController in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2362,6 +2364,7 @@
 				DB4BC7EC274CCCA3008D671E /* Alamofire */,
 				DBA5DDB8274E1BED00FF12E3 /* UITextView+Placeholder */,
 				DB00923E274F55A20092F486 /* TwidereComposeUI */,
+				DBC1396C274F93D5000C9425 /* CropViewController */,
 			);
 			productName = AppShared;
 			productReference = DB94B6BB26C65CB000A2E8A1 /* AppShared.framework */;
@@ -3815,7 +3818,7 @@
 			repositoryURL = "https://github.com/TimOliver/TOCropViewController.git";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 2.5.5;
+				minimumVersion = 2.6.0;
 			};
 		};
 		DB7AB33C2744E3740035EB8A /* XCRemoteSwiftPackageReference "Floaty" */ = {
@@ -4013,6 +4016,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = DBBC3F3325835B8B005CF99E /* XCRemoteSwiftPackageReference "ActiveLabel" */;
 			productName = ActiveLabel;
+		};
+		DBC1396C274F93D5000C9425 /* CropViewController */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = DB74A162256E148F00C5F3C9 /* XCRemoteSwiftPackageReference "TOCropViewController" */;
+			productName = CropViewController;
 		};
 		DBD98488251CB88A00ED87A1 /* Tabman */ = {
 			isa = XCSwiftPackageProductDependency;

@@ -58,6 +58,7 @@ let package = Package(
         .package(url: "https://github.com/Alamofire/Alamofire.git", from: "5.4.0"),
         .package(url: "https://github.com/Alamofire/AlamofireImage.git", from: "4.1.0"),
         .package(url: "https://github.com/MainasuK/UITextView-Placeholder.git", from: "1.4.1"),
+        .package(url: "https://github.com/TimOliver/TOCropViewController.git", from: "2.6.0"),
     ],
     targets: [
         // Targets are the basic building blocks of a package. A target can define a module or a test suite.
@@ -127,6 +128,7 @@ let package = Package(
                 "TwidereCore",
                 .product(name: "FLAnimatedImage", package: "FLAnimatedImage"),
                 .product(name: "UITextView+Placeholder", package: "UITextView-Placeholder"),
+                .product(name: "TOCropViewController", package: "TOCropViewController"),
             ]
         ),
         .target(
