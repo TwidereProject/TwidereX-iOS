@@ -20,15 +20,8 @@ extension Data {
     }
 }
 
-extension AttachmentViewModel.Output {
-    var maxPayloadSizeInBytes: Int {
-        switch self {
-        case .image:        return 5 * 1024 * 1024      // 5 MiB
-//            case .gif:          return 15 * 1024 * 1024     // 15 MiB
-//            case .video:        return 15 * 1024 * 1024     // 15 MiB
-        }
-    }
-    
+// Twitter Only
+extension AttachmentViewModel {
     struct SliceResult {
         let chunks: [Data]
         let type: UTType
@@ -43,14 +36,16 @@ extension AttachmentViewModel.Output {
         
     }
     
-    func slice() -> SliceResult? {
+    static func slice(output: Output, sizeLimit: SizeLimit) -> SliceResult? {
         // needs execute in background
         assert(!Thread.isMainThread)
         
         // try png then use JPEG compress with Q=0.8
         // then slice into 1MiB chunks
-        switch self {
+        switch output {
         case .image(let data):
+            let maxPayloadSizeInBytes = sizeLimit.image
+            
             // use processed imageData to remove EXIF
             guard let image = UIImage(data: data),
                   var imageData = image.pngData()
@@ -106,16 +101,35 @@ extension AttachmentViewModel.Output {
 extension AttachmentViewModel {
     struct UploadContext {
         let apiService: APIService
-        let authenticationContext: TwitterAuthenticationContext
+        let authenticationContext: AuthenticationContext
+    }
+    
+    enum UploadResult {
+        case twitter(Twitter.Response.Content<Twitter.API.Media.InitResponse>)
     }
 }
 
 extension AttachmentViewModel {
     func upload(
         context: UploadContext
-    ) async throws -> Twitter.API.Media.InitResponse {
+    ) async throws -> UploadResult  {
+        switch context.authenticationContext {
+        case .twitter(let authenticationContext):
+            return try await uploadTwitterMedia(
+                context: context,
+                twitterAuthenticationContext: authenticationContext
+            )
+        case .mastodon(let authenticationContext):
+            fatalError()
+        }
+    }
+    
+    private func uploadTwitterMedia(
+        context: UploadContext,
+        twitterAuthenticationContext: TwitterAuthenticationContext
+    ) async throws -> UploadResult {
         guard let output = self.output,
-              let sliceResult = output.slice() else {
+              let sliceResult = AttachmentViewModel.slice(output: output, sizeLimit: sizeLimit) else {
             throw AppError.implicit(.badRequest)
         }
         
@@ -124,10 +138,10 @@ extension AttachmentViewModel {
         progress.completedUnitCount = 0
         
         // init
-        let mediaInitResponse = try await context.apiService.mediaInit(
+        let mediaInitResponse = try await context.apiService.twitterMediaInit(
             totalBytes: sliceResult.totalBytes,
             mediaType: sliceResult.type.preferredMIMEType ?? "",
-            twitterAuthenticationContext: context.authenticationContext
+            twitterAuthenticationContext: twitterAuthenticationContext
         )
         AttachmentViewModel.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): init media success: \(mediaInitResponse.value.mediaIDString)")
         let mediaID = mediaInitResponse.value.mediaIDString
@@ -136,11 +150,11 @@ extension AttachmentViewModel {
         // append
         let chunkCount = sliceResult.chunks.count
         for (i, chunk) in sliceResult.chunks.enumerated() {
-            _ = try await context.apiService.mediaAppend(
+            _ = try await context.apiService.twitterMediaAppend(
                 mediaID: mediaID,
                 chunk: chunk,
                 index: i,
-                twitterAuthenticationContext: context.authenticationContext
+                twitterAuthenticationContext: twitterAuthenticationContext
             )
             AttachmentViewModel.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): append chunk \(i)/\(chunkCount) success")
             progress.completedUnitCount += 1
@@ -148,9 +162,9 @@ extension AttachmentViewModel {
         
         var isFinalized = false
         repeat {
-            let mediaFinalizedResponse = try await context.apiService.mediaFinalize(
+            let mediaFinalizedResponse = try await context.apiService.TwitterMediaFinalize(
                 mediaID: mediaID,
-                twitterAuthenticationContext: context.authenticationContext
+                twitterAuthenticationContext: twitterAuthenticationContext
             )
             if let info = mediaFinalizedResponse.value.processingInfo {
                 assert(!Thread.isMainThread)
@@ -166,7 +180,6 @@ extension AttachmentViewModel {
         } while !isFinalized
         progress.completedUnitCount += 1
         
-        return mediaInitResponse.value
+        return .twitter(mediaInitResponse)
     }
-    
 }

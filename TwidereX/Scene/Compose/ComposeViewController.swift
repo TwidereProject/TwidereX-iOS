@@ -25,7 +25,6 @@ final class ComposeViewController: UIViewController, NeedsDependency {
     
     private(set) lazy var sendBarButtonItem = UIBarButtonItem(image: Asset.Transportation.paperAirplane.image, style: .plain, target: self, action: #selector(ComposeViewController.sendBarButtonItemPressed(_:)))
     
-    
     private(set) lazy var composeContentViewController: ComposeContentViewController = {
         let composeContentViewController = ComposeContentViewController()
         composeContentViewController.viewModel = composeContentViewModel

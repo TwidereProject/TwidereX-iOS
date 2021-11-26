@@ -107,6 +107,7 @@ extension Mastodon.API {
     public enum DomainBlock { }
     
     public enum V2 {
+        public enum Media { }
         public enum Search { }
     }
 }

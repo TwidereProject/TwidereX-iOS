@@ -22,6 +22,7 @@ final public class AttachmentViewModel {
     // input
     public let input: Input
     @Published var altDescription = ""
+    @Published var sizeLimit = SizeLimit()
     
     // output
     @Published var output: Output?
@@ -85,6 +86,22 @@ extension AttachmentViewModel {
         case image(Data)
         // case gif(Data)
         // case file(URL, mimeType: String)    // assert use file for video only
+    }
+    
+    public struct SizeLimit {
+        public let image: Int
+        public let gif: Int
+        public let video: Int
+        
+        public init(
+            image: Int = 5 * 1024 * 1024,           // 5 MiB,
+            gif: Int = 15 * 1024 * 1024,            // 15 MiB,
+            video: Int = 15 * 1024 * 1024           // 15 MiB
+        ) {
+            self.image = image
+            self.gif = gif
+            self.video = video
+        }
     }
     
     public enum AttachmentError: Error {

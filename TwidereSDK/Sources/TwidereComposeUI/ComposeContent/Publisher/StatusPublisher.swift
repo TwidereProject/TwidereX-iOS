@@ -10,5 +10,6 @@ import TwidereCore
 import TwidereCommon
 
 public protocol StatusPublisher {
+    var state: Published<StatusPublisherState>.Publisher { get }
     func publish(api: APIService, appSecret: AppSecret) async throws -> StatusPublishResult
 }

@@ -29,10 +29,9 @@ public final class TwitterStatusPublisher: NSObject, ProgressReporting {
     
     // Output
     let _progress = Progress()
-    public var progress: Progress {
-        return _progress
-    }
-    @Published var state: State = .pending
+    public var progress: Progress { _progress }
+    @Published var _state: StatusPublisherState = .pending
+    public var state: Published<StatusPublisherState>.Publisher { $_state }
     
     public init(
         apiService: APIService,
@@ -52,14 +51,6 @@ public final class TwitterStatusPublisher: NSObject, ProgressReporting {
         // end init
     }
     
-}
-
-extension TwitterStatusPublisher {
-    public enum State {
-        case pending
-        case failure(Error)
-        case success
-    }
 }
 
 extension TwitterStatusPublisher: StatusPublisher {
@@ -90,7 +81,7 @@ extension TwitterStatusPublisher: StatusPublisher {
         
         let uploadContext = AttachmentViewModel.UploadContext(
             apiService: api,
-            authenticationContext: authenticationContext
+            authenticationContext: .twitter(authenticationContext: authenticationContext)
         )
         
         var mediaIDs: [String] = []
@@ -99,10 +90,15 @@ extension TwitterStatusPublisher: StatusPublisher {
             progress.addChild(attachmentViewModel.progress, withPendingUnitCount: publishAttachmentTaskWeight)
             // upload media
             do {
-                let media = try await attachmentViewModel.upload(context: uploadContext)
-                mediaIDs.append(media.mediaIDString)
+                let result = try await attachmentViewModel.upload(context: uploadContext)
+                guard case let .twitter(response) = result else {
+                    assertionFailure()
+                    continue
+                }
+                let mediaID = response.value.mediaIDString
+                mediaIDs.append(mediaID)
             } catch {
-                state = .failure(error)
+                _state = .failure(error)
                 throw error
             }
         }
@@ -116,6 +112,7 @@ extension TwitterStatusPublisher: StatusPublisher {
             twitterAuthenticationContext: authenticationContext
         )
         progress.completedUnitCount += publishStatusTaskCount
+        _state = .success
         
         return .twitter(publishResponse)
     }
