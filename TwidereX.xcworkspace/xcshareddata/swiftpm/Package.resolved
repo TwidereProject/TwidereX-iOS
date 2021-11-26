@@ -20,15 +20,6 @@
         }
       },
       {
-        "package": "AlamofireImage",
-        "repositoryURL": "https://github.com/Alamofire/AlamofireImage",
-        "state": {
-          "branch": null,
-          "revision": "98cbb00ce0ec5fc8e52a5b50a6bfc08d3e5aee10",
-          "version": "4.2.0"
-        }
-      },
-      {
         "package": "CommonOSLog",
         "repositoryURL": "https://github.com/MainasuK/CommonOSLog",
         "state": {
@@ -89,6 +80,15 @@
           "branch": null,
           "revision": "f9e4922223dd0d3dfbf02ca70812cf5531fc0593",
           "version": "5.2.7"
+        }
+      },
+      {
+        "package": "KeyboardLayoutGuide",
+        "repositoryURL": "https://github.com/freshOS/KeyboardLayoutGuide.git",
+        "state": {
+          "branch": null,
+          "revision": "2a62a1a0b64e3c7db227c7da67e94292c1897903",
+          "version": "1.7.0"
         }
       },
       {

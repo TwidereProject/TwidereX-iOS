@@ -59,11 +59,11 @@ public final class ComposeContentViewModel: NSObject {
     @Published public private(set) var items: Set<Item> = [.input]
     
     // text
+    @Published public var currentTextInput = ""
     @Published public var maxTextInputLimit = 500
     @Published public var textInputLimitProgress: CGFloat = 0.0
     @Published public var isTextInputEmpty = true
     @Published public var isTextInputValid = true
-    @Published public var currentTextInput = ""
     
     // emoji
     @Published public private(set) var emojiViewModel: MastodonEmojiService.EmojiViewModel? = nil
@@ -143,8 +143,14 @@ public final class ComposeContentViewModel: NSObject {
             }
         }
         
+        // bind text
+        $currentTextInput
+            .map { $0.isEmpty }
+            .assign(to: &$isTextInputEmpty)
+        
         // bind author
         $author
+            .receive(on: DispatchQueue.main)
             .sink { [weak self] author in
                 guard let self = self else { return }
                 self.composeInputTableViewCell.configure(user: author)
@@ -288,11 +294,16 @@ public final class ComposeContentViewModel: NSObject {
 
         
         // bind UI state
-        Publishers.CombineLatest(
+        Publishers.CombineLatest3(
             $isTextInputEmpty,
-            $isTextInputValid
+            $isTextInputValid,
+            $attachmentViewModels
         )
-        .map { !$0 && $1 }
+        .map { isTextInputEmpty, isTextInputValid, attachmentViewModels in
+            guard isTextInputValid else { return false }
+            guard !isTextInputEmpty || !attachmentViewModels.isEmpty else { return false }
+            return true
+        }
         .assign(to: &$isComposeBarButtonEnabled)
         
         Publishers.CombineLatest(
@@ -463,7 +474,32 @@ extension ComposeContentViewModel: CLLocationManagerDelegate {
     
 }
 
-
+extension ComposeContentViewModel {
+    public func statusPublisher() throws -> StatusPublisher {
+        guard let author = self.author else {
+            throw AppError.implicit(.authenticationMissing)
+        }
+        
+        switch author {
+        case .twitter(let author):
+            return TwitterStatusPublisher(
+                apiService: configurationContext.apiService,
+                author: author,
+                replyTo: {
+                    guard case let .twitter(status) = replyTo else { return nil }
+                    return .init(objectID: status.objectID)
+                }(),
+                excludeReplyUserIDs: Array(excludeReplyTwitterUserIDs),
+                content: currentTextInput,
+                attachmentViewModels: attachmentViewModels,
+                place: currentPlace
+            )
+        case .mastodon(let author):
+            // TODO:
+            throw AppError.implicit(.authenticationMissing)
+        }   // end switch
+    }   // end func publisher()
+}
 //extension ComposeContentViewModel {
 //    public struct State: OptionSet {
 //

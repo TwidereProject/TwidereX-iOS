@@ -12,69 +12,28 @@ extension Twitter.API.Media {
     
     static let uploadEndpointURL = Twitter.API.uploadEndpointURL.appendingPathComponent("media/upload.json")
     
-    public static func `init`(session: URLSession, authorization: Twitter.API.OAuth.Authorization, query: InitQuery) -> AnyPublisher<Twitter.Response.Content<InitResponse>, Error> {
-        var request = Twitter.API.request(url: uploadEndpointURL, httpMethod: "POST", authorization: authorization, queryItems: query.queryItems)
-        request.httpMethod = "POST"
-        request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
-        return session.dataTaskPublisher(for: request)
-            .tryMap { data, response in
-                let value = try Twitter.API.decode(type: InitResponse.self, from: data, response: response)
-                return Twitter.Response.Content(value: value, response: response)
-            }
-            .eraseToAnyPublisher()
-    }
-    
-    public static func append(session: URLSession, authorization: Twitter.API.OAuth.Authorization, query: AppendQuery, mediaData: String) -> AnyPublisher<Twitter.Response.Content<AppendResponse>, Error> {
-        var request = Twitter.API.request(url: uploadEndpointURL, httpMethod: "POST", authorization: authorization, queryItems: query.queryItems, formQueryItems: [URLQueryItem(name: "media_data", value: mediaData)])
-        request.httpMethod = "POST"
-        request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
-        request.httpBody = ("media_data=" + mediaData.urlEncoded).data(using: .utf8)
-        request.timeoutInterval = 60    // shoudl > 17 Kb/s for 1 MiB chunk
-        return session.dataTaskPublisher(for: request)
-            .tryMap { data, response in
-                guard data.isEmpty else {
-                    do {
-                        _ = try Twitter.API.decode(type: AppendResponse.self, from: data, response: response)
-                    } catch {
-                        throw error
-                    }
-                    assertionFailure()
-                    return Twitter.Response.Content(value: AppendResponse(), response: response)
-                }
-                
-                return Twitter.Response.Content(value: AppendResponse(), response: response)
-            }
-            .eraseToAnyPublisher()
-    }
-    
-    public static func finalize(session: URLSession, authorization: Twitter.API.OAuth.Authorization, query: FinalizeQuery) -> AnyPublisher<Twitter.Response.Content<FinalizeResponse>, Error> {
-        var request = Twitter.API.request(url: uploadEndpointURL, httpMethod: "POST", authorization: authorization, queryItems: query.queryItems)
-        request.httpMethod = "POST"
-        request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
-        return session.dataTaskPublisher(for: request)
-            .tryMap { data, response in
-                let value = try Twitter.API.decode(type: FinalizeResponse.self, from: data, response: response)
-                return Twitter.Response.Content(value: value, response: response)
-            }
-            .eraseToAnyPublisher()
-    }
-    
-    public static func status(session: URLSession, authorization: Twitter.API.OAuth.Authorization, query: StatusQuery) -> AnyPublisher<Twitter.Response.Content<StatusResponse>, Error> {
-        var request = Twitter.API.request(url: uploadEndpointURL, httpMethod: "GET", authorization: authorization, queryItems: query.queryItems)
-        request.httpMethod = "GET"
-        return session.dataTaskPublisher(for: request)
-            .tryMap { data, response in
-                let value = try Twitter.API.decode(type: StatusResponse.self, from: data, response: response)
-                return Twitter.Response.Content(value: value, response: response)
-            }
-            .eraseToAnyPublisher()
-    }
     
 }
 
 extension Twitter.API.Media {
     
-    public struct InitQuery {
+    public static func `init`(
+        session: URLSession,
+        query: InitQuery,
+        authorization: Twitter.API.OAuth.Authorization
+    ) async throws -> Twitter.Response.Content<InitResponse> {
+        let request = Twitter.API.request(
+            url: uploadEndpointURL,
+            method: .POST,
+            query: query,
+            authorization: authorization
+        )
+        let (data, response) = try await session.data(for: request, delegate: nil)
+        let value = try Twitter.API.decode(type: InitResponse.self, from: data, response: response)
+        return Twitter.Response.Content(value: value, response: response)
+    }
+    
+    public struct InitQuery: Query {
         public let command = "INIT"
         public let totalBytes: Int
         public let mediaType: String
@@ -92,6 +51,10 @@ extension Twitter.API.Media {
             guard !items.isEmpty else { return nil }
             return items
         }
+        var encodedQueryItems: [URLQueryItem]? { nil }
+        var formQueryItems: [URLQueryItem]? { nil }
+        var contentType: String? { "application/x-www-form-urlencoded" }
+        var body: Data? { nil }
     }
     
     public struct InitResponse: Codable {
@@ -104,13 +67,52 @@ extension Twitter.API.Media {
         }
     }
     
-    public struct AppendQuery {
+}
+
+extension Twitter.API.Media {
+    
+    public static func append(
+        session: URLSession,
+        query: AppendQuery,
+        authorization: Twitter.API.OAuth.Authorization
+    ) async throws -> Twitter.Response.Content<AppendResponse> {
+        var request = Twitter.API.request(
+            url: uploadEndpointURL,
+            method: .POST,
+            query: query,
+            authorization: authorization
+        )
+        request.timeoutInterval = 60    // should > 17 Kb/s for 1 MiB chunk
+        
+        let (data, response) = try await session.data(for: request, delegate: nil)
+        guard data.isEmpty else {
+            // try parse and throw error
+            do {
+                _ = try Twitter.API.decode(type: AppendResponse.self, from: data, response: response)
+            } catch {
+                throw error
+            }
+            // error should parsed. return empty response here for edge case 
+            assertionFailure()
+            return Twitter.Response.Content(value: AppendResponse(), response: response)
+        }
+        
+        return Twitter.Response.Content(value: AppendResponse(), response: response)
+    }
+    
+    public struct AppendQuery: Query {
         public let command = "APPEND"
         public let mediaID: String
+        public let mediaData: String
         public let segmentIndex: Int
         
-        public init(mediaID: String, segmentIndex: Int) {
+        public init(
+            mediaID: String,
+            mediaData: String,
+            segmentIndex: Int
+        ) {
             self.mediaID = mediaID
+            self.mediaData = mediaData
             self.segmentIndex = segmentIndex
         }
         
@@ -122,13 +124,42 @@ extension Twitter.API.Media {
             guard !items.isEmpty else { return nil }
             return items
         }
+        var encodedQueryItems: [URLQueryItem]? { nil }
+        var formQueryItems: [URLQueryItem]? {
+            [URLQueryItem(name: "media_data", value: mediaData)]
+        }
+        var contentType: String? { "application/x-www-form-urlencoded" }
+        var body: Data? {
+            let content = "media_data=" + mediaData.urlEncoded
+            return content.data(using: .utf8)
+        }
     }
     
     public struct AppendResponse: Codable {
         // Void
     }
+    
+}
 
-    public struct FinalizeQuery {
+extension Twitter.API.Media {
+
+    public static func finalize(
+        session: URLSession,
+        query: FinalizeQuery,
+        authorization: Twitter.API.OAuth.Authorization
+    ) async throws -> Twitter.Response.Content<FinalizeResponse> {
+        let request = Twitter.API.request(
+            url: uploadEndpointURL,
+            method: .POST,
+            query: query,
+            authorization: authorization
+        )
+        let (data, response) = try await session.data(for: request, delegate: nil)
+        let value = try Twitter.API.decode(type: FinalizeResponse.self, from: data, response: response)
+        return Twitter.Response.Content(value: value, response: response)
+    }
+    
+    public struct FinalizeQuery: Query {
         public let command = "FINALIZE"
         public let mediaID: String
         
@@ -143,6 +174,10 @@ extension Twitter.API.Media {
             guard !items.isEmpty else { return nil }
             return items
         }
+        var encodedQueryItems: [URLQueryItem]? { nil }
+        var formQueryItems: [URLQueryItem]? { nil }
+        var contentType: String? { "application/x-www-form-urlencoded" }
+        var body: Data? { nil }
     }
     
     public struct FinalizeResponse: Codable {
@@ -169,7 +204,27 @@ extension Twitter.API.Media {
         }
     }
     
-    public struct StatusQuery {
+}
+
+extension Twitter.API.Media {
+
+    public static func status(
+        session: URLSession,
+        query: StatusQuery,
+        authorization: Twitter.API.OAuth.Authorization
+    ) async throws -> Twitter.Response.Content<StatusResponse> {
+        let request = Twitter.API.request(
+            url: uploadEndpointURL,
+            method: .GET,
+            query: query,
+            authorization: authorization
+        )
+        let (data, response) = try await session.data(for: request, delegate: nil)
+        let value = try Twitter.API.decode(type: StatusResponse.self, from: data, response: response)
+        return Twitter.Response.Content(value: value, response: response)
+    }
+    
+    public struct StatusQuery: Query {
         public let command = "STATUS"
         public let mediaID: String
         
@@ -184,6 +239,10 @@ extension Twitter.API.Media {
             guard !items.isEmpty else { return nil }
             return items
         }
+        var encodedQueryItems: [URLQueryItem]? { nil }
+        var formQueryItems: [URLQueryItem]? { nil }
+        var contentType: String? { nil }
+        var body: Data? { nil }
     }
     
     public struct StatusResponse: Codable {

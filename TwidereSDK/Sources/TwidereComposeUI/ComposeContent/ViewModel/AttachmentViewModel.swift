@@ -27,6 +27,7 @@ final public class AttachmentViewModel {
     @Published var output: Output?
     @Published var thumbnail: UIImage?      // original size image thumbnail
     @Published var error: Error?
+    let progress = Progress()
     
     public init(input: Input) {
         self.input = input
@@ -41,19 +42,19 @@ final public class AttachmentViewModel {
                 switch output {
                 case .image(let data):
                     return UIImage(data: data)
-                case .file(let url, _):
-                    guard FileManager.default.fileExists(atPath: url.path) else { return nil }
-                    let asset = AVURLAsset(url: url)
-                    let assetImageGenerator = AVAssetImageGenerator(asset: asset)
-                    assetImageGenerator.appliesPreferredTrackTransform = true   // fix orientation
-                    do {
-                        let cgImage = try assetImageGenerator.copyCGImage(at: CMTimeMake(value: 0, timescale: 1), actualTime: nil)
-                        let image = UIImage(cgImage: cgImage)
-                        return image
-                    } catch {
-                        AttachmentViewModel.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): thumbnail generate fail: \(error.localizedDescription)")
-                        return nil
-                    }
+//                case .file(let url, _):
+//                    guard FileManager.default.fileExists(atPath: url.path) else { return nil }
+//                    let asset = AVURLAsset(url: url)
+//                    let assetImageGenerator = AVAssetImageGenerator(asset: asset)
+//                    assetImageGenerator.appliesPreferredTrackTransform = true   // fix orientation
+//                    do {
+//                        let cgImage = try assetImageGenerator.copyCGImage(at: CMTimeMake(value: 0, timescale: 1), actualTime: nil)
+//                        let image = UIImage(cgImage: cgImage)
+//                        return image
+//                    } catch {
+//                        AttachmentViewModel.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): thumbnail generate fail: \(error.localizedDescription)")
+//                        return nil
+//                    }
                 case .none:
                     return nil
                 }
@@ -83,7 +84,7 @@ extension AttachmentViewModel {
     public enum Output {
         case image(Data)
         // case gif(Data)
-        case file(URL, mimeType: String)    // aasert use file for video only
+        // case file(URL, mimeType: String)    // assert use file for video only
     }
     
     public enum AttachmentError: Error {
@@ -131,16 +132,15 @@ extension AttachmentViewModel {
 
 }
 
-
 extension PHPickerResult {
-    func isImage() -> Bool {
+    fileprivate func isImage() -> Bool {
         return itemProvider.hasRepresentationConforming(
             toTypeIdentifier: UTType.image.identifier,
             fileOptions: []
         )
     }
     
-    func isMovie() -> Bool {
+    fileprivate func isMovie() -> Bool {
         return itemProvider.hasRepresentationConforming(
             toTypeIdentifier: UTType.movie.identifier,
             fileOptions: []

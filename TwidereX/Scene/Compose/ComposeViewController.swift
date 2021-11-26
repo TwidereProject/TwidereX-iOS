@@ -60,7 +60,7 @@ extension ComposeViewController {
         
         
         // bind compose bar button item
-        composeContentViewModel.$isTextInputValid
+        composeContentViewModel.$isComposeBarButtonEnabled
             .receive(on: DispatchQueue.main)
             .assign(to: \.isEnabled, on: sendBarButtonItem)
             .store(in: &disposeBag)
@@ -79,6 +79,19 @@ extension ComposeViewController {
     
     @objc private func sendBarButtonItemPressed(_ sender: UIBarButtonItem) {
         logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public)")
+        
+        do {
+            let statusPublisher = try composeContentViewModel.statusPublisher()
+            Task {
+                try await statusPublisher.publish(
+                    api: context.apiService,
+                    appSecret: .default
+                )
+            }
+        } catch {
+            assertionFailure()
+        }
+        
         self.dismiss(animated: true, completion: nil)
     }
 }

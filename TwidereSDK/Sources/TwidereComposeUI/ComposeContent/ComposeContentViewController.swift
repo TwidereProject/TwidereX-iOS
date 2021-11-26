@@ -14,6 +14,7 @@ import TwitterSDK
 import TwidereCore
 import TwidereAsset
 import CropViewController
+import KeyboardLayoutGuide
 
 public final class ComposeContentViewController: UIViewController {
     
@@ -33,7 +34,6 @@ public final class ComposeContentViewController: UIViewController {
     
     let composeToolbarBackgroundView = UIView()
     let composeToolbarView = ComposeToolbarView()
-    
 }
 
 extension ComposeContentViewController {
@@ -73,10 +73,11 @@ extension ComposeContentViewController {
         NSLayoutConstraint.activate([
             composeToolbarView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             composeToolbarView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            // Apple `keyboardLayoutGuide` has issue (FB9733654). Use KeyboardLayoutGuide package instead
             view.keyboardLayoutGuide.topAnchor.constraint(equalTo: composeToolbarView.bottomAnchor),
             composeToolbarBackgroundView.topAnchor.constraint(equalTo: composeToolbarView.topAnchor).priority(.defaultHigh),
         ])
-        
+
         // bind keyboard
         composeToolbarView
             .observe(\.bounds, options: [.initial, .new]) { [weak self] toolbar, _ in
@@ -213,8 +214,6 @@ extension ComposeContentViewController {
         }
         .store(in: &disposeBag)
         
-        
-        
         composeToolbarView.delegate = self
         viewModel.composeInputTableViewCell.delegate = self
         viewModel.composeInputTableViewCell.metaText.delegate = self
@@ -340,25 +339,28 @@ extension ComposeContentViewController: ComposeToolbarViewDelegate {
     
     public func composeToolBarView(_ composeToolBarView: ComposeToolbarView, mentionButtonPressed button: UIButton) {
         // TODO: mention scene
-        if !viewModel.composeInputTableViewCell.metaText.textStorage.string.hasSuffix(" ") {
-            viewModel.composeInputTableViewCell.metaText.textView.insertText(" @")
-        } else {
-            viewModel.composeInputTableViewCell.metaText.textView.insertText("@")
-        }
+        insertTextWithPrefixSpace(text: "@")
     }
     
     public func composeToolBarView(_ composeToolBarView: ComposeToolbarView, hashtagButtonPressed button: UIButton) {
         // TODO: hashtag scene
-        if !viewModel.composeInputTableViewCell.metaText.textStorage.string.hasSuffix(" ") {
-            viewModel.composeInputTableViewCell.metaText.textView.insertText(" #")
-        } else {
-            viewModel.composeInputTableViewCell.metaText.textView.insertText("#")
-        }
+        insertTextWithPrefixSpace(text: "#")
     }
     
     public func composeToolBarView(_ composeToolBarView: ComposeToolbarView, localButtonPressed button: UIButton) {
         guard viewModel.requestLocationAuthorizationIfNeeds(presentingViewController: self) else { return }
         viewModel.isRequestLocation.toggle()
+    }
+    
+    private func insertTextWithPrefixSpace(text: String) {
+        let string = viewModel.composeInputTableViewCell.metaText.textStorage.string
+        let isEmpty = string.isEmpty
+        let hasPrefix = string.hasPrefix(" ")
+        if hasPrefix || isEmpty {
+            viewModel.composeInputTableViewCell.metaText.textView.insertText(text)
+        } else {
+            viewModel.composeInputTableViewCell.metaText.textView.insertText(" " + text)
+        }
     }
 }
 
