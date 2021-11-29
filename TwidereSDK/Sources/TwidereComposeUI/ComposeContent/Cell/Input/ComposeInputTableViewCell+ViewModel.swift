@@ -66,6 +66,10 @@ extension ComposeInputTableViewCell {
 // MARK: - Mastodon
 extension ComposeInputTableViewCell {
     private func configure(mastodonUser user: MastodonUser) {
-        
+        // avatar
+        user.publisher(for: \.avatar)
+            .map { url in url.flatMap { URL(string: $0) } }
+            .assign(to: \.avatarImageURL, on: viewModel)
+            .store(in: &viewModel.configureDisposeBag)
     }
 }

@@ -14,6 +14,8 @@ import Combine
 class CombineTests: XCTestCase {
     
     var disposeBag = Set<AnyCancellable>()
+    
+    let logger = Logger(subsystem: "CombineTests", category: "UnitTest")
 
     
     /// Combine SDK issue test
@@ -72,7 +74,7 @@ class CombineTests: XCTestCase {
                 break
             }
         } receiveValue: { response in
-            os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: %ld", ((#file as NSString).lastPathComponent), #line, #function, response)
+            self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): \(response)")
         }
         .store(in: &disposeBag)
 

@@ -97,6 +97,15 @@ extension ComposeViewController {
 
 // MARK: - UIAdaptivePresentationControllerDelegate
 extension ComposeViewController: UIAdaptivePresentationControllerDelegate {
+    
+    func adaptivePresentationStyle(for controller: UIPresentationController, traitCollection: UITraitCollection) -> UIModalPresentationStyle {
+        switch traitCollection.userInterfaceIdiom {
+        case .phone:
+            return .fullScreen
+        default:
+            return .automatic
+        }
+    }
 
     func presentationControllerShouldDismiss(_ presentationController: UIPresentationController) -> Bool {
         return composeContentViewModel.canDismissDirectly

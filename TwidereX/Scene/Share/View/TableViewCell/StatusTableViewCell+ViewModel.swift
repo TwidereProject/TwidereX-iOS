@@ -35,7 +35,7 @@ extension StatusTableViewCell {
     func configure(
         tableView: UITableView,
         viewModel: ViewModel,
-        delegate: StatusViewTableViewCellDelegate
+        delegate: StatusViewTableViewCellDelegate?
     ) {
         if statusView.frame == .zero {
             // set status view width

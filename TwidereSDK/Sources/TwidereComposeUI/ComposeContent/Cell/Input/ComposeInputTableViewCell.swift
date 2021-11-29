@@ -21,6 +21,7 @@ public protocol ComposeInputTableViewCellDelegate: AnyObject {
 final public class ComposeInputTableViewCell: UITableViewCell {
     
     public static let avatarImageViewSize = CGSize(width: 44, height: 44)
+    public static let avatarImageViewTrailingSpacing: CGFloat = 10
 
     let logger = Logger(subsystem: "ComposeInputTableViewCell", category: "UI")
     var disposeBag = Set<AnyCancellable>()
@@ -129,7 +130,7 @@ extension ComposeInputTableViewCell {
         contentView.addSubview(containerStackView)
         NSLayoutConstraint.activate([
             containerStackView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 4),
-            containerStackView.leadingAnchor.constraint(equalTo: avatarView.trailingAnchor, constant: 10),
+            containerStackView.leadingAnchor.constraint(equalTo: avatarView.trailingAnchor, constant: ComposeInputTableViewCell.avatarImageViewTrailingSpacing),
             containerStackView.trailingAnchor.constraint(equalTo: contentView.layoutMarginsGuide.trailingAnchor),
             contentView.bottomAnchor.constraint(equalTo: containerStackView.bottomAnchor),
         ])

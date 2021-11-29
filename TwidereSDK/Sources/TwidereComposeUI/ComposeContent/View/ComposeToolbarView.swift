@@ -37,6 +37,13 @@ final public class ComposeToolbarView: UIView {
     }()
     
     public let circleCounterView = CircleCounterView()
+    
+    public let counterLabel: UILabel = {
+        let label = UILabel()
+        label.font = UIFont.systemFont(ofSize: 14, weight: .regular)
+        label.textColor = .systemRed
+        return label
+    }()
 
     public let scrollView: UIScrollView = {
         let scrollView = UIScrollView()
@@ -133,6 +140,9 @@ extension ComposeToolbarView {
             circleCounterView.widthAnchor.constraint(equalToConstant: 18).priority(.required - 1),
             circleCounterView.heightAnchor.constraint(equalToConstant: 18).priority(.required - 1),
         ])
+        supplementaryContainer.setCustomSpacing(11, after: circleCounterView)
+        supplementaryContainer.addArrangedSubview(counterLabel)
+        
         let supplementaryContainerSpacer = UIView()
         supplementaryContainer.addArrangedSubview(supplementaryContainerSpacer)
         
@@ -268,22 +278,27 @@ extension ComposeToolbarView {
 
 extension ComposeToolbarView {
     @objc private func emojiButtonPressed(_ sender: UIButton) {
+        logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public)")
         delegate?.composeToolBarView(self, emojiButtonPressed: sender)
     }
     
     @objc private func pollButtonPressed(_ sender: UIButton) {
+        logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public)")
         delegate?.composeToolBarView(self, pollButtonPressed: sender)
     }
     
     @objc private func mentionButtonPressed(_ sender: UIButton) {
+        logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public)")
         delegate?.composeToolBarView(self, mentionButtonPressed: sender)
     }
     
     @objc private func hashtagButtonPressed(_ sender: UIButton) {
+        logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public)")
         delegate?.composeToolBarView(self, hashtagButtonPressed: sender)
     }
     
     @objc private func localButtonPressed(_ sender: UIButton) {
+        logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public)")
         delegate?.composeToolBarView(self, localButtonPressed: sender)
     }
 }

@@ -66,14 +66,38 @@ extension UserTimelineViewModel.State {
     }
     
     class Fail: UserTimelineViewModel.State {
+        let logger = Logger(subsystem: "UserTimelineViewModel.State", category: "StateMachine")
+
+        var failureCount = 0
+        
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {
             switch stateClass {
-            case is Reloading.Type, is LoadingMore.Type:
+            case is Reloading.Type:
                 return true
+            case is LoadingMore.Type:
+                logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): get failureCount limit. Not allow enter State.LoadingMore")
+                return failureCount < 10        // prevent retry infinity loop
             case is Suspended.Type:
                 return true
             default:
                 return false
+            }
+        }
+        
+        override func didEnter(from previousState: GKState?) {
+            super.didEnter(from: previousState)
+            
+            failureCount += 1
+        }
+        
+        override func willExit(to nextState: GKState) {
+            super.willExit(to: nextState)
+            
+            switch nextState {
+            case is Reloading:
+                failureCount = 0        // reset count
+            default:
+                break
             }
         }
     }
@@ -201,6 +225,7 @@ extension UserTimelineViewModel.State {
                     logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): fetch success")
                     
                 } catch {
+                    // FIXME: handle Mastodon timeline error: {"error":"Record not found"}
                     logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): fetch failure: \(error.localizedDescription)")
                     stateMachine.enter(Fail.self)
                 }

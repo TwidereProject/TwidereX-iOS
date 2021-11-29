@@ -115,6 +115,7 @@ extension StatusViewTableViewCellDelegate where Self: DataSourceProvider {
                     configurationContext: ComposeContentViewModel.ConfigurationContext(
                         apiService: context.apiService,
                         authenticationService: context.authenticationService,
+                        mastodonEmojiService: context.mastodonEmojiService,
                         dateTimeProvider: DateTimeSwiftProvider(),
                         twitterTextProvider: OfficialTwitterTextProvider()
                     )

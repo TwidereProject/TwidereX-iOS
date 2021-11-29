@@ -22,8 +22,8 @@ extension StatusSection {
     static let logger = Logger(subsystem: "StatusSection", category: "Logic")
     
     struct Configuration {
-        let statusViewTableViewCellDelegate: StatusViewTableViewCellDelegate
-        let timelineMiddleLoaderTableViewCellDelegate: TimelineMiddleLoaderTableViewCellDelegate?
+        weak var statusViewTableViewCellDelegate: StatusViewTableViewCellDelegate?
+        weak var timelineMiddleLoaderTableViewCellDelegate: TimelineMiddleLoaderTableViewCellDelegate?
     }
 
     static func diffableDataSource(

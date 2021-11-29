@@ -12,6 +12,7 @@ import Combine
 import CoreData
 import CoreDataStack
 import TwidereCommon
+import TwidereCore
 
 class AppContext: ObservableObject {
     
@@ -26,6 +27,8 @@ class AppContext: ObservableObject {
     
     let apiService: APIService
     let authenticationService: AuthenticationService
+    
+    let mastodonEmojiService: MastodonEmojiService
     
     let documentStore: DocumentStore
     private var documentStoreSubscription: AnyCancellable!
@@ -55,6 +58,8 @@ class AppContext: ObservableObject {
             apiService: _apiService,
             appSecret: appSecret
         )
+        
+        mastodonEmojiService = MastodonEmojiService()
         
         documentStore = DocumentStore()
         documentStoreSubscription = documentStore.objectWillChange

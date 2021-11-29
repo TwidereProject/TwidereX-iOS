@@ -20,6 +20,15 @@
         }
       },
       {
+        "package": "AlamofireImage",
+        "repositoryURL": "https://github.com/Alamofire/AlamofireImage",
+        "state": {
+          "branch": null,
+          "revision": "98cbb00ce0ec5fc8e52a5b50a6bfc08d3e5aee10",
+          "version": "4.2.0"
+        }
+      },
+      {
         "package": "CommonOSLog",
         "repositoryURL": "https://github.com/MainasuK/CommonOSLog",
         "state": {
@@ -125,6 +134,15 @@
           "branch": null,
           "revision": "a72df4849408da7e5d3c1b586797b7c601c41d1b",
           "version": "5.12.1"
+        }
+      },
+      {
+        "package": "swift-collections",
+        "repositoryURL": "https://github.com/apple/swift-collections.git",
+        "state": {
+          "branch": null,
+          "revision": "48254824bb4248676bf7ce56014ff57b142b77eb",
+          "version": "1.0.2"
         }
       },
       {

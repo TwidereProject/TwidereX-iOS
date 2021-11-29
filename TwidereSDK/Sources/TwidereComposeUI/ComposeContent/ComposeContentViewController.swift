@@ -11,6 +11,7 @@ import Combine
 import MetaTextKit
 import PhotosUI
 import TwitterSDK
+import MastodonSDK
 import TwidereCore
 import TwidereAsset
 import CropViewController
@@ -34,6 +35,14 @@ public final class ComposeContentViewController: UIViewController {
     
     let composeToolbarBackgroundView = UIView()
     let composeToolbarView = ComposeToolbarView()
+    
+    let customEmojiPickerInputView: CustomEmojiPickerInputView = {
+        let inputView = CustomEmojiPickerInputView(
+            frame: CGRect(x: 0, y: 0, width: 0, height: 300),
+            inputViewStyle: .keyboard
+        )
+        return inputView
+    }()
 }
 
 extension ComposeContentViewController {
@@ -56,7 +65,11 @@ extension ComposeContentViewController {
         
         tableView.delegate = self
         viewModel.setupDiffableDataSource(
-            tableView: tableView
+            tableView: tableView,
+            customEmojiPickerInputView: customEmojiPickerInputView,
+            composeInputTableViewCellDelegate: self,
+            composeAttachmentTableViewCellDelegate: self,
+            composePollTableViewCellDelegate: self
         )
         
         composeToolbarBackgroundView.translatesAutoresizingMaskIntoConstraints = false
@@ -109,7 +122,7 @@ extension ComposeContentViewController {
 //
 //        ], activeWhenNearEdge: .top)
         
-        // bind toolbar
+        // bind counter
         viewModel.$textInputLimitProgress
             .receive(on: DispatchQueue.main)
             .sink { [weak self] progress in
@@ -134,11 +147,37 @@ extension ComposeContentViewController {
             }
             .store(in: &disposeBag)
         
+        Publishers.CombineLatest3(
+            viewModel.$currentTextInputWeightedLength,
+            viewModel.$currentContentWarningInputWeightedLength,
+            viewModel.$maxTextInputLimit
+        )
+        .receive(on: DispatchQueue.main)
+        .sink { [weak self] currentTextInputWeightedLength, currentContentWarningInputWeightedLength, maxTextInputLimit in
+            guard let self = self else { return }
+            let count = currentTextInputWeightedLength + currentContentWarningInputWeightedLength
+            let overflow = maxTextInputLimit - count
+            self.composeToolbarView.counterLabel.isHidden = overflow > 0
+            self.composeToolbarView.counterLabel.text = "-\(abs(overflow))"
+        }
+        .store(in: &disposeBag)
+        
+        
+        // bind toolbar
         viewModel.$availableActions
             .assign(to: &composeToolbarView.$availableActions)
         
         // attachment
         viewModel.$attachmentViewModels
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                guard let self = self else { return }
+                self.updateTableViewLayout()
+            }
+            .store(in: &disposeBag)
+        
+        // poll
+        viewModel.composePollTableViewCell.collectionViewHeightDidUpdate
             .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in
                 guard let self = self else { return }
@@ -214,10 +253,46 @@ extension ComposeContentViewController {
         }
         .store(in: &disposeBag)
         
+        // emoji
+        viewModel.$emojiViewModel
+            .map { viewModel -> AnyPublisher<[Mastodon.Entity.Emoji], Never> in
+                guard let viewModel = viewModel else {
+                    return Just([]).eraseToAnyPublisher()
+                }
+                return viewModel.$emojis.eraseToAnyPublisher()
+            }
+            .switchToLatest()
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] emojis in
+                guard let self = self else { return }
+                if emojis.isEmpty {
+                    self.customEmojiPickerInputView.activityIndicatorView.startAnimating()
+                } else {
+                    self.customEmojiPickerInputView.activityIndicatorView.stopAnimating()
+                }
+            }
+            .store(in: &disposeBag)
+        
+        Publishers.CombineLatest(
+            viewModel.$isCustomEmojiComposing,
+            viewModel.$emojiToolBarButtonImage
+        )
+        .receive(on: DispatchQueue.main)
+        .sink { [weak self] isCustomEmojiComposing, emojiToolBarButtonImage in
+            guard let self = self else { return }
+            self.composeToolbarView.emojiButton.setImage(emojiToolBarButtonImage, for: .normal)
+            self.composeToolbarView.emojiButton.tintColor = isCustomEmojiComposing ? Asset.Colors.hightLight.color : .secondaryLabel
+        }
+        .store(in: &disposeBag)
+        
+        
         composeToolbarView.delegate = self
-        viewModel.composeInputTableViewCell.delegate = self
-        viewModel.composeInputTableViewCell.metaText.delegate = self
-        viewModel.composeAttachmentTableViewCell.delegate = self
+    }
+    
+    public override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        viewModel.composeInputTableViewCell.metaText.textView.becomeFirstResponder()
     }
 
     public override func viewDidAppear(_ animated: Bool) {
@@ -330,11 +405,11 @@ extension ComposeContentViewController: ComposeToolbarViewDelegate {
     }
 
     public func composeToolBarView(_ composeToolBarView: ComposeToolbarView, emojiButtonPressed button: UIButton) {
-        
+        viewModel.isCustomEmojiComposing.toggle()
     }
     
     public func composeToolBarView(_ composeToolBarView: ComposeToolbarView, pollButtonPressed button: UIButton) {
-        
+        viewModel.isPollComposing.toggle()
     }
     
     public func composeToolBarView(_ composeToolBarView: ComposeToolbarView, mentionButtonPressed button: UIButton) {
@@ -434,5 +509,143 @@ extension ComposeContentViewController: ComposeAttachmentTableViewCellDelegate {
                 viewModel.attachmentViewModels.removeAll(where: { $0 === attachmentViewModel })
             }
         }   // end switch contextMenuAction { … }
+    }
+}
+
+// MARK: - ComposePollTableViewCellDelegate
+extension ComposeContentViewController: ComposePollTableViewCellDelegate {
+    public func composePollTableViewCell(_ cell: ComposePollTableViewCell, pollOptionCollectionViewCell collectionViewCell: ComposePollOptionCollectionViewCell, textFieldDidBeginEditing textField: UITextField) {
+
+    }
+    
+    public func composePollTableViewCell(_ cell: ComposePollTableViewCell, pollOptionCollectionViewCell collectionViewCell: ComposePollOptionCollectionViewCell, textFieldDidReturn: UITextField) {
+        guard let diffableDataSource = cell.diffableDataSource else { return }
+        guard let indexPath = cell.collectionView.indexPath(for: collectionViewCell) else { return }
+        guard let item = diffableDataSource.itemIdentifier(for: indexPath) else { return }
+        
+        let optionItems = diffableDataSource.snapshot().itemIdentifiers.filter { item in
+            switch item {
+            case .option:   return true
+            default:        return false
+            }
+        }
+        guard let index = optionItems.firstIndex(of: item) else { return }
+        let isLast = index == optionItems.count - 1
+        
+        if isLast {
+            // set action trigger
+            var cancellable: AnyCancellable?
+            cancellable = viewModel.pollCollectionViewDiffableDataSourceDidUpdate
+                .receive(on: DispatchQueue.main)
+                .sink { [weak self] _ in
+                    guard let self = self else { return }
+                    self.markLastPollOptionBecomeFirstResponser()
+                    
+                    if let cancellable = cancellable {
+                        self.disposeBag.remove(cancellable)
+                        self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): cleanup poll data source trigger")
+                    }
+                }
+            if let cancellable = cancellable {
+                self.disposeBag.insert(cancellable)
+            }
+            // do action
+            viewModel.createNewPollOptionIfNeeds()
+        } else {
+            // the `isLast` guard the `nextIndex` is always valid
+            let nextIndex = optionItems.index(after: index)
+            let nextItem = optionItems[nextIndex]
+            let cell = pollOptionCollectionViewCell(of: nextItem)
+            cell?.pollOptionView.textField.becomeFirstResponder()
+        }
+    }
+    
+    public func composePollTableViewCell(_ cell: ComposePollTableViewCell, pollOptionCollectionViewCell collectionViewCell: ComposePollOptionCollectionViewCell, textBeforeDeleteBackward text: String?) {
+        guard (text ?? "").isEmpty else { return }
+        guard let diffableDataSource = viewModel.composePollTableViewCell.diffableDataSource else { return }
+        guard let indexPath = viewModel.composePollTableViewCell.collectionView.indexPath(for: collectionViewCell) else { return }
+        guard let item = diffableDataSource.itemIdentifier(for: indexPath) else { return }
+        guard case let .option(option) = item else { return }
+        guard let indexOfPollOptions = viewModel.pollOptions.firstIndex(of: option) else { return }
+        guard let index = diffableDataSource.snapshot().itemIdentifiers.firstIndex(of: item) else { return }
+        
+        guard index > 0 else {
+            // do nothing when at the first
+            return
+        }
+        
+        let items = diffableDataSource.snapshot().itemIdentifiers
+        func cellBeforeRemoved() -> ComposePollOptionCollectionViewCell? {
+            guard index > 0 else { return nil }
+            let indexBeforeRemoved = items.index(before: index)
+            let itemBeforeRemoved = items[indexBeforeRemoved]
+            return pollOptionCollectionViewCell(of: itemBeforeRemoved)
+        }
+        func cellAfterRemoved() -> ComposePollOptionCollectionViewCell? {
+            guard index < items.count - 1 else { return nil }
+            let indexAfterRemoved = items.index(after: index)
+            let itemAfterRemoved = items[indexAfterRemoved]
+            return pollOptionCollectionViewCell(of: itemAfterRemoved)
+        }
+        
+        // move first responder
+        var cell = cellBeforeRemoved() ?? cellAfterRemoved()
+        cell?.pollOptionView.textField.becomeFirstResponder()
+        
+        guard items.count > 2 else {
+            // remove item when more then 2 options
+            return
+        }
+        viewModel.pollOptions.remove(at: index)
+    }
+}
+
+extension ComposeContentViewController {
+    
+    private func pollOptionCollectionViewCell(of item: PollItem) -> ComposePollOptionCollectionViewCell? {
+        guard case .option = item else { return nil }
+        guard let diffableDataSource = viewModel.composePollTableViewCell.diffableDataSource else { return nil }
+        guard let indexPath = diffableDataSource.indexPath(for: item),
+              let cell = viewModel.composePollTableViewCell.collectionView.cellForItem(at: indexPath) as? ComposePollOptionCollectionViewCell
+        else {
+            return nil
+        }
+
+        return cell
+    }
+    
+    private func firstPollOptionCollectionViewCell() -> ComposePollOptionCollectionViewCell? {
+        guard let diffableDataSource = viewModel.composePollTableViewCell.diffableDataSource else { return nil }
+        let items = diffableDataSource.snapshot().itemIdentifiers(inSection: .main)
+        let _firstItem = items.first { item -> Bool in
+            guard case .option = item else { return false }
+            return true
+        }
+
+        guard let firstItem = _firstItem else {
+            return nil
+        }
+
+        return pollOptionCollectionViewCell(of: firstItem)
+    }
+    
+    private func lastPollOptionCollectionViewCell() -> ComposePollOptionCollectionViewCell? {
+        guard let diffableDataSource = viewModel.composePollTableViewCell.diffableDataSource else { return nil }
+        let items = diffableDataSource.snapshot().itemIdentifiers(inSection: .main)
+        let _lastItem = items.last { item -> Bool in
+            guard case .option = item else { return false }
+            return true
+        }
+
+        guard let lastItem = _lastItem else { return nil }
+
+        return pollOptionCollectionViewCell(of: lastItem)
+    }
+    
+    private func markLastPollOptionBecomeFirstResponser() {
+        logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public)")
+        
+        guard let cell = lastPollOptionCollectionViewCell() else { return }
+        cell.pollOptionView.textField.becomeFirstResponder()
     }
 }

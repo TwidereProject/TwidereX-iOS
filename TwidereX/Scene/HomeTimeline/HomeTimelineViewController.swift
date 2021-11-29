@@ -226,6 +226,7 @@ extension HomeTimelineViewController {
             configurationContext: ComposeContentViewModel.ConfigurationContext(
                 apiService: context.apiService,
                 authenticationService: context.authenticationService,
+                mastodonEmojiService: context.mastodonEmojiService,
                 dateTimeProvider: DateTimeSwiftProvider(),
                 twitterTextProvider: OfficialTwitterTextProvider()
             )

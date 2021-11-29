@@ -13,17 +13,21 @@ import CoreLocation
 import CoreDataStack
 import TwitterSDK
 import TwidereCore
-import TwitterMeta
+import TwidereAsset
 import MetaTextKit
+import TwitterMeta
 import MastodonMeta
 
+// FIXME: make binding logic more generic
 public final class ComposeContentViewModel: NSObject {
     
+    let logger = Logger(subsystem: "ComposeContentViewModel", category: "ViewModel")
     var disposeBag = Set<AnyCancellable>()
     
     public let composeReplyTableViewCell = ComposeReplyTableViewCell()
     public let composeInputTableViewCell = ComposeInputTableViewCell()
     public let composeAttachmentTableViewCell = ComposeAttachmentTableViewCell()
+    public let composePollTableViewCell = ComposePollTableViewCell()
     
     let locationManager: CLLocationManager = {
         let locationManager = CLLocationManager()
@@ -33,6 +37,7 @@ public final class ComposeContentViewModel: NSObject {
     
     // Input
     public let configurationContext: ConfigurationContext
+    public let customEmojiPickerInputViewModel = CustomEmojiPickerInputView.ViewModel()
     
     // text
     @Published public private(set) var initialTextInput = ""
@@ -56,19 +61,41 @@ public final class ComposeContentViewModel: NSObject {
     
     // Output
     public var diffableDataSource: UITableViewDiffableDataSource<Section, Item>?
+    public var customEmojiDiffableDataSource: UICollectionViewDiffableDataSource<CustomEmojiPickerInputView.ViewModel.Section, CustomEmojiPickerInputView.ViewModel.Item>?
     @Published public private(set) var items: Set<Item> = [.input]
     
     // text
     @Published public var currentTextInput = ""
+    @Published public var currentTextInputWeightedLength = 0
+    @Published public var isContentWarningComposing = false
+    @Published public var currentContentWarningInput = ""               // Mastodon only
+    @Published public var currentContentWarningInputWeightedLength = 0  // Mastodon only, set 0 when not composing
     @Published public var maxTextInputLimit = 500
     @Published public var textInputLimitProgress: CGFloat = 0.0
     @Published public var isTextInputEmpty = true
     @Published public var isTextInputValid = true
     
-    // emoji
+    // emoji (Mastodon only)
+    @Published public internal(set) var isCustomEmojiComposing = false
+    @Published public private(set) var emojiToolBarButtonImage = Asset.Human.faceSmiling.image
     @Published public private(set) var emojiViewModel: MastodonEmojiService.EmojiViewModel? = nil
+    var emojiViewModelSubscription: AnyCancellable?
     
-    // location
+    // poll
+    @Published public var isPollComposing = false
+    @Published public var pollOptions: [PollItem.Option] = {
+        // initial with 2 options
+        var options: [PollItem.Option] = []
+        options.append(PollItem.Option())
+        options.append(PollItem.Option())
+        return options
+    }()
+    @Published public var pollExpireConfiguration = PollItem.ExpireConfiguration()
+    @Published public var pollMultipleConfiguration = PollItem.MultipleConfiguration()
+    @Published public var maxPollOptionLimit = 4
+    public let pollCollectionViewDiffableDataSourceDidUpdate = PassthroughSubject<Void, Never>()
+    
+    // location (Twitter only)
     public private(set) var didRequestLocationAuthorization = false
     @Published public var isRequestLocation = false
     @Published public private(set) var currentLocation: CLLocation?
@@ -147,6 +174,69 @@ public final class ComposeContentViewModel: NSObject {
         $currentTextInput
             .map { $0.isEmpty }
             .assign(to: &$isTextInputEmpty)
+        
+        Publishers.CombineLatest(
+            $currentTextInput,
+            $author
+        )
+        .sink { [weak self] currentTextInput, author in
+            guard let self = self else { return }
+            guard let author = author else { return }
+            switch author {
+            case .twitter:
+                let parseResult = configurationContext.twitterTextProvider.parse(text: currentTextInput)
+                self.textInputLimitProgress = {
+                    guard parseResult.maxWeightedLength > 0 else { return .zero }
+                    return CGFloat(parseResult.weightedLength) / CGFloat(parseResult.maxWeightedLength)
+                }()
+                self.currentTextInputWeightedLength = parseResult.weightedLength
+                self.maxTextInputLimit = parseResult.maxWeightedLength
+                self.isTextInputValid = parseResult.isValid
+            case .mastodon:
+                self.currentTextInputWeightedLength = currentTextInput.count
+            }
+        }
+        .store(in: &disposeBag)
+        
+        Publishers.CombineLatest3(
+            $isContentWarningComposing,
+            $currentContentWarningInput,
+            $author
+        )
+        .sink { [weak self] isContentWarningComposing, currentContentWarningInput, author in
+            guard let self = self else { return }
+            guard let author = author else { return }
+            switch author {
+            case .twitter:
+                self.currentContentWarningInputWeightedLength = 0
+            case .mastodon:
+                self.currentContentWarningInputWeightedLength = isContentWarningComposing ? currentContentWarningInput.count : 0
+            }
+        }
+        .store(in: &disposeBag)
+        
+        Publishers.CombineLatest4(
+            $currentTextInputWeightedLength,
+            $currentContentWarningInputWeightedLength,
+            $maxTextInputLimit,
+            $author
+        )
+        .sink { [weak self] currentTextInputWeightedLength, currentContentWarningInputWeightedLength, maxTextInputLimit, author in
+            guard let self = self else { return }
+            guard let author = author else { return }
+            switch author {
+            case .twitter:
+                break
+            case .mastodon:
+                let count = currentTextInputWeightedLength + currentContentWarningInputWeightedLength
+                self.isTextInputValid = count <= maxTextInputLimit
+                self.textInputLimitProgress = {
+                    guard maxTextInputLimit > 0 else { return .zero }
+                    return CGFloat(count) / CGFloat(maxTextInputLimit)
+                }()
+            }
+        }
+        .store(in: &disposeBag)
         
         // bind author
         $author
@@ -243,10 +333,70 @@ public final class ComposeContentViewModel: NSObject {
                 }
                 snapshot.appendItems(items, toSection: .main)
                 self.composeAttachmentTableViewCell.diffableDataSource.apply(snapshot)
+                
             }
             .store(in: &disposeBag)
         
-        // location
+        // bind emojis
+        $isCustomEmojiComposing
+            .assign(to: \.value, on: customEmojiPickerInputViewModel.isCustomEmojiComposing)
+            .store(in: &disposeBag)
+        
+        $isCustomEmojiComposing
+            .map { isComposing in
+                isComposing ? Asset.Keyboard.keyboard.image : Asset.Human.faceSmiling.image
+            }
+            .assign(to: &$emojiToolBarButtonImage)
+        
+        $author
+            .map { [weak self] author -> MastodonEmojiService.EmojiViewModel? in
+                guard let self = self else { return nil }
+                guard case let .mastodon(user) = author else { return nil }
+                let domain = user.domain
+                guard let emojiViewModel = self.configurationContext.mastodonEmojiService.dequeueEmojiViewModel(for: domain) else { return nil }
+                return emojiViewModel
+            }
+            .assign(to: &$emojiViewModel)
+        
+        // bind poll
+        $isPollComposing
+            .sink { [weak self] isPollComposing in
+                guard let self = self else { return }
+                if isPollComposing {
+                    self.items.insert(.poll)
+                } else {
+                    self.items.remove(.poll)
+                }
+            }
+            .store(in: &disposeBag)
+        
+        Publishers.CombineLatest3(
+            $pollOptions,
+            $pollExpireConfiguration,
+            $pollMultipleConfiguration
+        )
+        .receive(on: DispatchQueue.main)
+        .sink { [weak self] pollOptions, pollExpireConfiguration, pollMultipleConfiguration in
+            guard let self = self else { return }
+            var snapshot = NSDiffableDataSourceSnapshot<PollSection, PollItem>()
+            snapshot.appendSections([.main])
+            var items: [PollItem] = []
+            items.append(contentsOf: pollOptions.map { PollItem.option($0) })
+//            items.append(PollItem.expireConfiguration(pollExpireConfiguration))
+//            items.append(PollItem.multipleConfiguration(pollMultipleConfiguration))
+            snapshot.appendItems(items, toSection: .main)
+            self.composePollTableViewCell.diffableDataSource?.apply(snapshot, animatingDifferences: false) { [weak self] in
+                guard let self = self else { return }
+                self.pollCollectionViewDiffableDataSourceDidUpdate.send()
+            }
+            
+            var height = CGFloat(pollOptions.count) * ComposePollOptionCollectionViewCell.height
+            self.composePollTableViewCell.collectionViewHeightLayoutConstraint.constant = height
+            self.composePollTableViewCell.collectionViewHeightDidUpdate.send()
+        }
+        .store(in: &disposeBag)
+        
+        // bind location
         $isRequestLocation
             .receive(on: DispatchQueue.main)
             .sink { [weak self] isRequestLocation in
@@ -315,9 +465,8 @@ public final class ComposeContentViewModel: NSObject {
         }
         .assign(to: &$canDismissDirectly)
         
-        // bind location
+        // set delegate
         locationManager.delegate = self
-        
     }
     
     deinit {
@@ -338,17 +487,20 @@ extension ComposeContentViewModel {
     public struct ConfigurationContext {
         public let apiService: APIService
         public let authenticationService: AuthenticationService
+        public let mastodonEmojiService: MastodonEmojiService
         public let dateTimeProvider: DateTimeProvider
         public let twitterTextProvider: TwitterTextProvider
         
         public init(
             apiService: APIService,
             authenticationService: AuthenticationService,
+            mastodonEmojiService: MastodonEmojiService,
             dateTimeProvider: DateTimeProvider,
             twitterTextProvider: TwitterTextProvider
         ) {
             self.apiService = apiService
             self.authenticationService = authenticationService
+            self.mastodonEmojiService = mastodonEmojiService
             self.dateTimeProvider = dateTimeProvider
             self.twitterTextProvider = twitterTextProvider
         }
@@ -372,16 +524,6 @@ extension ComposeContentViewModel {
                 urlMaximumLength: .max,
                 twitterTextProvider: configurationContext.twitterTextProvider
             )
-            
-            // set text limit
-            let parseResult = configurationContext.twitterTextProvider.parse(text: textInput)
-            textInputLimitProgress = {
-                guard parseResult.maxWeightedLength > 0 else { return .zero }
-                return CGFloat(parseResult.weightedLength) / CGFloat(parseResult.maxWeightedLength)
-            }()
-            maxTextInputLimit = parseResult.maxWeightedLength
-            isTextInputValid = parseResult.isValid
-            
             return metaContent
             
         case .mastodon:
@@ -392,6 +534,15 @@ extension ComposeContentViewModel {
             let metaContent = MastodonMetaContent.convert(text: content)
             return metaContent
         }
+    }
+}
+
+extension ComposeContentViewModel {
+    func createNewPollOptionIfNeeds() {
+        logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public)")
+        
+        guard pollOptions.count < maxPollOptionLimit else { return }
+        pollOptions.append(PollItem.Option())
     }
 }
 
@@ -500,6 +651,7 @@ extension ComposeContentViewModel {
         }   // end switch
     }   // end func publisher()
 }
+
 //extension ComposeContentViewModel {
 //    public struct State: OptionSet {
 //

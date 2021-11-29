@@ -17,15 +17,13 @@ public final class MastodonEmojiService {
     public let workingQueue = DispatchQueue(label: "com.twidere.TwidereX.MastodonEmojiService.working-queue")
     private(set) var emojiViewModelDict: [String: EmojiViewModel] = [:]
     
-    public init() {
-        
-    }
+    public init() { }
     
 }
 
 extension MastodonEmojiService {
 
-    func dequeueEmojiViewModel(for domain: String) -> EmojiViewModel? {
+    public func dequeueEmojiViewModel(for domain: String) -> EmojiViewModel? {
         var _emojiViewModel: EmojiViewModel?
         workingQueue.sync {
             if let viewModel = emojiViewModelDict[domain] {
