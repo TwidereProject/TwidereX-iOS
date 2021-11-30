@@ -407,6 +407,8 @@ public enum L10n {
       public enum Actions {
         /// Add
         public static let add = L10n.tr("Localizable", "Common.Controls.Actions.Add")
+        /// Browse
+        public static let browse = L10n.tr("Localizable", "Common.Controls.Actions.Browse")
         /// Cancel
         public static let cancel = L10n.tr("Localizable", "Common.Controls.Actions.Cancel")
         /// Confirm
@@ -755,9 +757,23 @@ public enum L10n {
         /// Unlisted
         public static let unlisted = L10n.tr("Localizable", "Scene.Compose.Visibility.Unlisted")
       }
+      public enum VisibilityDescription {
+        /// Visible for mentioned users only
+        public static let direct = L10n.tr("Localizable", "Scene.Compose.VisibilityDescription.Direct")
+        /// Visible for followers only
+        public static let `private` = L10n.tr("Localizable", "Scene.Compose.VisibilityDescription.Private")
+        /// Visible for all, shown in public timelines
+        public static let `public` = L10n.tr("Localizable", "Scene.Compose.VisibilityDescription.Public")
+        /// Visible for all, but not in public timelines
+        public static let unlisted = L10n.tr("Localizable", "Scene.Compose.VisibilityDescription.Unlisted")
+      }
       public enum Vote {
         /// Multiple choice
         public static let multiple = L10n.tr("Localizable", "Scene.Compose.Vote.Multiple")
+        /// Choice %d
+        public static func placeholderIndex(_ p1: Int) -> String {
+          return L10n.tr("Localizable", "Scene.Compose.Vote.PlaceholderIndex", p1)
+        }
         public enum Expiration {
           /// 1 day
           public static let _1Day = L10n.tr("Localizable", "Scene.Compose.Vote.Expiration.1Day")
@@ -968,6 +984,8 @@ public enum L10n {
       public enum Tabs {
         /// All
         public static let all = L10n.tr("Localizable", "Scene.Notification.Tabs.All")
+        /// Mentions
+        public static let mentions = L10n.tr("Localizable", "Scene.Notification.Tabs.Mentions")
       }
     }
     public enum Profile {

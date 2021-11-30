@@ -167,6 +167,25 @@ extension ComposeContentViewController {
         viewModel.$availableActions
             .assign(to: &composeToolbarView.$availableActions)
         
+        // visibility
+        viewModel.$visibility
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] visibility in
+                guard let self = self else { return }
+                
+                self.composeToolbarView.setVisibilityButtonDisplay(visibility != nil)
+                
+                switch visibility {
+                case .mastodon(let visibility):
+                    self.composeToolbarView.visibilityButton.setImage(visibility.image, for: .normal)
+                    self.composeToolbarView.visibilityButton.setTitle(visibility.title, for: .normal)
+                case .none:
+                    break
+                }
+            }
+            .store(in: &disposeBag)
+        
+        
         // attachment
         viewModel.$attachmentViewModels
             .receive(on: DispatchQueue.main)
@@ -386,6 +405,10 @@ extension ComposeContentViewController: CropViewControllerDelegate {
 
 // MARK: - ComposeToolbarViewDelegate
 extension ComposeContentViewController: ComposeToolbarViewDelegate {
+    
+    public func composeToolBarView(_ composeToolBarView: ComposeToolbarView, visibilityButtonPressed button: UIButton, selectedVisibility visibility: Mastodon.Entity.Status.Visibility) {
+        viewModel.mastodonVisibility = visibility
+    }
     
     public func composeToolBarView(_ composeToolBarView: ComposeToolbarView, mediaButtonPressed button: UIButton, mediaSelectionType type: ComposeToolbarView.MediaSelectionType) {
         switch type {

@@ -8,6 +8,7 @@ PODS_ROOT='Pods'
 echo ${SRCROOT}
 
 # download translation resources
+mkdir -p ./Localization/Crowdin
 crowdin download --all
 
 # prepare resources
@@ -25,7 +26,8 @@ cd ${SRCROOT}/Localization/StringsConvertor
 sh ./scripts/build.sh
 
 # copy strings
-cp -R ${SRCROOT}/Localization/StringsConvertor/output/ ${SRCROOT}/TwidereX/Resources
+cp -R ${SRCROOT}/Localization/StringsConvertor/output/module/ ${SRCROOT}/TwidereSDK/Sources/TwidereLocalization/Resources
+cp -R ${SRCROOT}/Localization/StringsConvertor/output/main/ ${SRCROOT}/TwidereX/Resources
 
 # cleanup input & output
 sh ./scripts/cleanup.sh

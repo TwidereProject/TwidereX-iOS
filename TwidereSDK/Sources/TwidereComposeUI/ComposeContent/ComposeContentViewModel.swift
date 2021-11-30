@@ -12,6 +12,7 @@ import Combine
 import CoreLocation
 import CoreDataStack
 import TwitterSDK
+import MastodonSDK
 import TwidereCore
 import TwidereAsset
 import MetaTextKit
@@ -54,6 +55,10 @@ public final class ComposeContentViewModel: NSObject {
     public private(set) var primaryMentionPickItem: MentionPickViewModel.Item?
     public private(set) var secondaryMentionPickItems: [MentionPickViewModel.Item] = []
     @Published public internal(set) var excludeReplyTwitterUserIDs: Set<TwitterUser.ID> = Set()
+    
+    // visibility (Mastodon)
+    @Published public internal(set) var mastodonVisibility: Mastodon.Entity.Status.Visibility = .public
+    @Published public private(set) var visibility: Visibility? = nil
     
     // attachment
     @Published public internal(set) var attachmentViewModels: [AttachmentViewModel] = []
@@ -315,6 +320,42 @@ public final class ComposeContentViewModel: NSObject {
             }
             .store(in: &disposeBag)
         
+        // bind visibility
+        $author
+            .compactMap { $0 }
+            .first()
+            .sink { [weak self] author in
+                guard let self = self else { return }
+                
+                switch author {
+                case .twitter:
+                    break
+                case .mastodon(let author):
+                    // FIXME: correct reply status | direct message visibility
+                    self.mastodonVisibility = author.locked ? .private : .public
+                }
+            }
+            .store(in: &disposeBag)
+        
+        Publishers.CombineLatest(
+            $author,
+            $mastodonVisibility
+        )
+        .receive(on: DispatchQueue.main)
+        .map { [weak self] author, mastodonVisibility -> Visibility? in
+            guard let self = self else { return nil }
+            
+            switch author {
+            case .twitter:
+                return nil
+            case .mastodon(let author):
+                return .mastodon(mastodonVisibility)
+            case .none:
+                return nil
+            }
+        }
+        .assign(to: &$visibility)
+    
         // bind attachments
         $attachmentViewModels
             .sink { [weak self] attachmentViewModels in
@@ -505,6 +546,10 @@ extension ComposeContentViewModel {
             self.dateTimeProvider = dateTimeProvider
             self.twitterTextProvider = twitterTextProvider
         }
+    }
+    
+    public enum Visibility {
+        case mastodon(Mastodon.Entity.Status.Visibility)
     }
 }
 

@@ -26,7 +26,6 @@
 		DB02C777273520B8007EA0BF /* SearchHashtagViewModel+State.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB02C776273520B8007EA0BF /* SearchHashtagViewModel+State.swift */; };
 		DB02C77927352217007EA0BF /* SearchHashtagViewModel+Diffable.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB02C77827352217007EA0BF /* SearchHashtagViewModel+Diffable.swift */; };
 		DB02C77D27353479007EA0BF /* HashtagListFetchViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB02C77C27353479007EA0BF /* HashtagListFetchViewModel.swift */; };
-		DB02C7DD27354A56007EA0BF /* Localizable.stringsdict in Resources */ = {isa = PBXBuildFile; fileRef = DB02C7DB27354A55007EA0BF /* Localizable.stringsdict */; };
 		DB096FD4274B7B0C00D56CFA /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = DB096FD3274B7B0C00D56CFA /* Alamofire */; };
 		DB0B3B8E26C6639100501BB7 /* AppSecret.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB2611462518AC13004BF309 /* AppSecret.swift */; };
 		DB0D3A38255E4341000BB9FA /* UserLikeTimelineViewController+StatusProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB0D3A37255E4341000BB9FA /* UserLikeTimelineViewController+StatusProvider.swift */; };
@@ -232,8 +231,6 @@
 		DBBBBE642744E8CC007ACB4B /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = DBBBBE622744E8CC007ACB4B /* MainInterface.storyboard */; };
 		DBBBBE682744E8CC007ACB4B /* ShareExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = DBBBBE5E2744E8CC007ACB4B /* ShareExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		DBBBBE712744EC27007ACB4B /* AppShared.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DB94B6BB26C65CB000A2E8A1 /* AppShared.framework */; };
-		DBBBBE7C2744F34B007ACB4B /* Localizable.stringsdict in Resources */ = {isa = PBXBuildFile; fileRef = DB02C7DB27354A55007EA0BF /* Localizable.stringsdict */; };
-		DBBBBE7D2744F34D007ACB4B /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = DBDA8EA524FE107E006750DC /* Localizable.strings */; };
 		DBBBBE7E2744F351007ACB4B /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = DBC8E16D2578C64A00401E20 /* InfoPlist.strings */; };
 		DBBBBE802744F39C007ACB4B /* AppShared.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DB94B6BB26C65CB000A2E8A1 /* AppShared.framework */; };
 		DBBBBE872744F535007ACB4B /* AppShared.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DB94B6BB26C65CB000A2E8A1 /* AppShared.framework */; };
@@ -270,7 +267,6 @@
 		DBDA8E4424FCF8A7006750DC /* TwidereXUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBDA8E4324FCF8A7006750DC /* TwidereXUITests.swift */; };
 		DBDA8E9824FE075E006750DC /* MainTabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBDA8E9724FE075E006750DC /* MainTabBarController.swift */; };
 		DBDA8E9F24FE0FFF006750DC /* HomeTimelineViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBDA8E9E24FE0FFF006750DC /* HomeTimelineViewController.swift */; };
-		DBDA8EA324FE107E006750DC /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = DBDA8EA524FE107E006750DC /* Localizable.strings */; };
 		DBDAF240274F530300050319 /* AppContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB2C870F274F4B0100CE0398 /* AppContext.swift */; };
 		DBDAF241274F530600050319 /* DocumentStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB2C870E274F4B0100CE0398 /* DocumentStore.swift */; };
 		DBDAF242274F530600050319 /* ViewStateStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB2C870D274F4B0100CE0398 /* ViewStateStore.swift */; };
@@ -2597,8 +2593,6 @@
 			files = (
 				DBBBBE642744E8CC007ACB4B /* MainInterface.storyboard in Resources */,
 				DBBBBE7E2744F351007ACB4B /* InfoPlist.strings in Resources */,
-				DBBBBE7D2744F34D007ACB4B /* Localizable.strings in Resources */,
-				DBBBBE7C2744F34B007ACB4B /* Localizable.stringsdict in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2606,11 +2600,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DBDA8EA324FE107E006750DC /* Localizable.strings in Resources */,
 				DBC8E16B2578C64A00401E20 /* InfoPlist.strings in Resources */,
 				DB37F6A0274B556B0081603F /* Assets.xcassets in Resources */,
 				DBF3309925B988A500A678FB /* Settings.bundle in Resources */,
-				DB02C7DD27354A56007EA0BF /* Localizable.stringsdict in Resources */,
 				DBDA8E2E24FCF8A6006750DC /* LaunchScreen.storyboard in Resources */,
 				DB6B8B2E25AF235F00F20FD5 /* TwidereX.xctestplan in Resources */,
 				DB88AC3C250B26F40009E562 /* Preview Assets.xcassets in Resources */,

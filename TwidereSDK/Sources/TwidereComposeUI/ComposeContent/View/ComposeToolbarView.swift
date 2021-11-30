@@ -10,8 +10,10 @@ import UIKit
 import Combine
 import TwidereLocalization
 import TwidereUI
+import MastodonSDK
 
 public protocol ComposeToolbarViewDelegate: AnyObject {
+    func composeToolBarView(_ composeToolBarView: ComposeToolbarView, visibilityButtonPressed button: UIButton, selectedVisibility visibility: Mastodon.Entity.Status.Visibility)
     func composeToolBarView(_ composeToolBarView: ComposeToolbarView, mediaButtonPressed button: UIButton, mediaSelectionType type: ComposeToolbarView.MediaSelectionType)
     func composeToolBarView(_ composeToolBarView: ComposeToolbarView, emojiButtonPressed button: UIButton)
     func composeToolBarView(_ composeToolBarView: ComposeToolbarView, pollButtonPressed button: UIButton)
@@ -32,7 +34,7 @@ final public class ComposeToolbarView: UIView {
         stackView.axis = .horizontal
         stackView.isLayoutMarginsRelativeArrangement = true
         stackView.layoutMargins = UIEdgeInsets(top: 13, left: 20, bottom: 13, right: 16)
-        // stackView.spacing = 16
+        stackView.spacing = 11
         return stackView
     }()
     
@@ -44,6 +46,20 @@ final public class ComposeToolbarView: UIView {
         label.textColor = .systemRed
         return label
     }()
+    
+    public let visibilityButtonLeadingSeparatorLine = SeparatorLineView()
+    
+    public let visibilityButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setImage(Asset.ObjectTools.globe.image, for: .normal)
+        button.setTitle(L10n.Scene.Compose.Visibility.public, for: .normal)
+        button.setInsets(forContentPadding: .zero, imageTitlePadding: 8)
+        button.tintColor = Asset.Colors.hightLight.color
+        button.contentHorizontalAlignment = .leading
+        return button
+    }()
+    
+    public let supplementaryContainerSpacer = UIView()
 
     public let scrollView: UIScrollView = {
         let scrollView = UIScrollView()
@@ -137,13 +153,22 @@ extension ComposeToolbarView {
         circleCounterView.translatesAutoresizingMaskIntoConstraints = false
         supplementaryContainer.addArrangedSubview(circleCounterView)
         NSLayoutConstraint.activate([
-            circleCounterView.widthAnchor.constraint(equalToConstant: 18).priority(.required - 1),
-            circleCounterView.heightAnchor.constraint(equalToConstant: 18).priority(.required - 1),
+            circleCounterView.widthAnchor.constraint(equalToConstant: 18).priority(.required - 10),
+            circleCounterView.heightAnchor.constraint(equalToConstant: 18).priority(.required - 10),
         ])
-        supplementaryContainer.setCustomSpacing(11, after: circleCounterView)
         supplementaryContainer.addArrangedSubview(counterLabel)
         
-        let supplementaryContainerSpacer = UIView()
+        visibilityButtonLeadingSeparatorLine.translatesAutoresizingMaskIntoConstraints = false
+        supplementaryContainer.addArrangedSubview(visibilityButtonLeadingSeparatorLine)
+        NSLayoutConstraint.activate([
+            visibilityButtonLeadingSeparatorLine.widthAnchor.constraint(equalToConstant: UIView.separatorLineHeight(of: self)),
+            visibilityButtonLeadingSeparatorLine.heightAnchor.constraint(equalTo: supplementaryContainer.heightAnchor).priority(.defaultHigh),
+        ])
+        supplementaryContainer.addArrangedSubview(visibilityButtonLeadingSeparatorLine)
+        
+        supplementaryContainer.addArrangedSubview(visibilityButton)
+        visibilityButton.setContentCompressionResistancePriority(.required - 9, for: .vertical)
+        
         supplementaryContainer.addArrangedSubview(supplementaryContainerSpacer)
         
         // primary
@@ -193,6 +218,8 @@ extension ComposeToolbarView {
         let spacer = UIView()
         container.addArrangedSubview(spacer)
 
+        visibilityButton.menu = createMastodonVisibilityContextMenu(button: visibilityButton)
+        visibilityButton.showsMenuAsPrimaryAction = true
         mediaButton.menu = createMediaContextMenu(button: mediaButton)
         mediaButton.showsMenuAsPrimaryAction = true
         emojiButton.addTarget(self, action: #selector(ComposeToolbarView.emojiButtonPressed(_:)), for: .touchUpInside)
@@ -209,6 +236,79 @@ extension ComposeToolbarView {
                 self.configure(actions: actions)
             }
             .store(in: &disposeBag)
+    }
+}
+
+extension ComposeToolbarView {
+    
+    private func createMastodonVisibilityContextMenu(button: UIButton) -> UIMenu {
+        let options: [Mastodon.Entity.Status.Visibility] = [
+            .public,
+            .unlisted,
+            .private,
+            .direct
+        ]
+        
+        let actions = options
+            .map { option -> UIAction in
+                let action = UIAction(
+                    title: option.title,
+                    image: option.image,
+                    identifier: UIAction.Identifier(option.rawValue),
+                    discoverabilityTitle: nil,
+                    attributes: [],
+                    state: .off
+                ) { [weak self, weak button] _ in
+                    guard let self = self else { return }
+                    guard let button = button else { return }
+                    self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): did select visibility \(option.rawValue)")
+                    
+                    self.delegate?.composeToolBarView(self, visibilityButtonPressed: button, selectedVisibility: option)
+                }
+                action.subtitle = option.subtitle
+                return action
+            }
+        
+        return UIMenu(title: "", image: nil, identifier: nil, options: .displayInline, children: actions)
+    }
+    
+    public func setVisibilityButtonDisplay(_ display: Bool) {
+        visibilityButton.isHidden = !display
+        visibilityButtonLeadingSeparatorLine.isHidden = !display
+        supplementaryContainerSpacer.isHidden = display
+    }
+}
+
+extension Mastodon.Entity.Status.Visibility {
+    
+    var image: UIImage {
+        switch self {
+        case .public:       return Asset.ObjectTools.globe.image
+        case .unlisted:     return Asset.ObjectTools.lockOpen.image
+        case .private:      return Asset.ObjectTools.lock.image
+        case .direct:       return Asset.Communication.mail.image
+        case ._other:       return UIImage(systemName: "square.dashed")!
+        }
+    }
+    
+    var title: String {
+        switch self {
+        case .public:       return L10n.Scene.Compose.Visibility.public
+        case .unlisted:     return L10n.Scene.Compose.Visibility.unlisted
+        case .private:      return L10n.Scene.Compose.Visibility.private
+        case .direct:       return L10n.Scene.Compose.Visibility.direct
+        case ._other:       return ""
+        }
+    }
+    
+    var subtitle: String {
+        switch self {
+        case .public:       return L10n.Scene.Compose.VisibilityDescription.public
+        case .unlisted:     return L10n.Scene.Compose.VisibilityDescription.unlisted
+        case .private:      return L10n.Scene.Compose.VisibilityDescription.private
+        case .direct:       return L10n.Scene.Compose.VisibilityDescription.direct
+        case ._other:       return ""
+        }
     }
 }
 
