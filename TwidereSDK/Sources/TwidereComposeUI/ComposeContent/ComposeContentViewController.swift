@@ -514,6 +514,7 @@ extension ComposeContentViewController: ComposeAttachmentTableViewCellDelegate {
 
 // MARK: - ComposePollTableViewCellDelegate
 extension ComposeContentViewController: ComposePollTableViewCellDelegate {
+    
     public func composePollTableViewCell(_ cell: ComposePollTableViewCell, pollOptionCollectionViewCell collectionViewCell: ComposePollOptionCollectionViewCell, textFieldDidBeginEditing textField: UITextField) {
 
     }
@@ -565,16 +566,20 @@ extension ComposeContentViewController: ComposePollTableViewCellDelegate {
         guard let diffableDataSource = viewModel.composePollTableViewCell.diffableDataSource else { return }
         guard let indexPath = viewModel.composePollTableViewCell.collectionView.indexPath(for: collectionViewCell) else { return }
         guard let item = diffableDataSource.itemIdentifier(for: indexPath) else { return }
-        guard case let .option(option) = item else { return }
-        guard let indexOfPollOptions = viewModel.pollOptions.firstIndex(of: option) else { return }
-        guard let index = diffableDataSource.snapshot().itemIdentifiers.firstIndex(of: item) else { return }
+        guard case .option = item else { return }
         
+        let items = diffableDataSource.snapshot().itemIdentifiers.filter { item in
+            switch item {
+            case .option:       return true
+            default:            return false
+            }
+        }
+        guard let index = items.firstIndex(of: item) else { return }
         guard index > 0 else {
             // do nothing when at the first
             return
         }
         
-        let items = diffableDataSource.snapshot().itemIdentifiers
         func cellBeforeRemoved() -> ComposePollOptionCollectionViewCell? {
             guard index > 0 else { return nil }
             let indexBeforeRemoved = items.index(before: index)
@@ -589,7 +594,7 @@ extension ComposeContentViewController: ComposePollTableViewCellDelegate {
         }
         
         // move first responder
-        var cell = cellBeforeRemoved() ?? cellAfterRemoved()
+        let cell = cellBeforeRemoved() ?? cellAfterRemoved()
         cell?.pollOptionView.textField.becomeFirstResponder()
         
         guard items.count > 2 else {
@@ -598,6 +603,15 @@ extension ComposeContentViewController: ComposePollTableViewCellDelegate {
         }
         viewModel.pollOptions.remove(at: index)
     }
+    
+    public func composePollTableViewCell(_ cell: ComposePollTableViewCell, pollExpireConfigurationCollectionViewCell collectionViewCell: ComposePollExpireConfigurationCollectionViewCell, didSelectExpireConfigurationOption option: PollItem.ExpireConfiguration.Option) {
+        viewModel.pollExpireConfiguration.option = option
+    }
+    
+    public func composePollTableViewCell(_ cell: ComposePollTableViewCell, composePollMultipleConfigurationCollectionViewCell collectionViewCell: ComposePollMultipleConfigurationCollectionViewCell, multipleSelectionDidChange isMultiple: Bool) {
+        viewModel.pollMultipleConfiguration.isMultiple = isMultiple
+    }
+    
 }
 
 extension ComposeContentViewController {

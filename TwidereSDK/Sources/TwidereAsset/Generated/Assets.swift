@@ -92,9 +92,11 @@ public enum Asset {
   }
   public enum Indices {
     public static let checkmarkCircle = ImageAsset(name: "Indices/checkmark.circle")
+    public static let checkmarkSquare = ImageAsset(name: "Indices/checkmark.square")
     public static let exclamationmarkCircle = ImageAsset(name: "Indices/exclamationmark.circle")
     public static let exclamationmarkOctagon = ImageAsset(name: "Indices/exclamationmark.octagon")
     public static let infoCircle = ImageAsset(name: "Indices/info.circle")
+    public static let square = ImageAsset(name: "Indices/square")
   }
   public enum Keyboard {
     public static let keyboard = ImageAsset(name: "Keyboard/keyboard")
@@ -115,6 +117,7 @@ public enum Asset {
     public static let blockedBadge = ImageAsset(name: "Object&Tools/blocked.badge")
     public static let bookmarks = ImageAsset(name: "Object&Tools/bookmarks")
     public static let camera = ImageAsset(name: "Object&Tools/camera")
+    public static let clock = ImageAsset(name: "Object&Tools/clock")
     public static let clothes = ImageAsset(name: "Object&Tools/clothes")
     public static let gif = ImageAsset(name: "Object&Tools/gif")
     public static let globeMini = ImageAsset(name: "Object&Tools/globe.mini")

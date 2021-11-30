@@ -90,8 +90,8 @@ public final class ComposeContentViewModel: NSObject {
         options.append(PollItem.Option())
         return options
     }()
-    @Published public var pollExpireConfiguration = PollItem.ExpireConfiguration()
-    @Published public var pollMultipleConfiguration = PollItem.MultipleConfiguration()
+    public let pollExpireConfiguration = PollItem.ExpireConfiguration()
+    public let pollMultipleConfiguration = PollItem.MultipleConfiguration()
     @Published public var maxPollOptionLimit = 4
     public let pollCollectionViewDiffableDataSourceDidUpdate = PassthroughSubject<Void, Never>()
     
@@ -370,31 +370,32 @@ public final class ComposeContentViewModel: NSObject {
             }
             .store(in: &disposeBag)
         
-        Publishers.CombineLatest3(
-            $pollOptions,
-            $pollExpireConfiguration,
-            $pollMultipleConfiguration
-        )
-        .receive(on: DispatchQueue.main)
-        .sink { [weak self] pollOptions, pollExpireConfiguration, pollMultipleConfiguration in
-            guard let self = self else { return }
-            var snapshot = NSDiffableDataSourceSnapshot<PollSection, PollItem>()
-            snapshot.appendSections([.main])
-            var items: [PollItem] = []
-            items.append(contentsOf: pollOptions.map { PollItem.option($0) })
-//            items.append(PollItem.expireConfiguration(pollExpireConfiguration))
-//            items.append(PollItem.multipleConfiguration(pollMultipleConfiguration))
-            snapshot.appendItems(items, toSection: .main)
-            self.composePollTableViewCell.diffableDataSource?.apply(snapshot, animatingDifferences: false) { [weak self] in
+        $pollOptions
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] pollOptions in
                 guard let self = self else { return }
-                self.pollCollectionViewDiffableDataSourceDidUpdate.send()
+                
+                var snapshot = NSDiffableDataSourceSnapshot<PollSection, PollItem>()
+                snapshot.appendSections([.main])
+                
+                var items: [PollItem] = []
+                items.append(contentsOf: pollOptions.map { PollItem.option($0) })
+                items.append(PollItem.expireConfiguration(self.pollExpireConfiguration))
+                items.append(PollItem.multipleConfiguration(self.pollMultipleConfiguration))
+                snapshot.appendItems(items, toSection: .main)
+                
+                self.composePollTableViewCell.diffableDataSource?.apply(snapshot, animatingDifferences: false) { [weak self] in
+                    guard let self = self else { return }
+                    self.pollCollectionViewDiffableDataSourceDidUpdate.send()
+                }
+                
+                var height = CGFloat(pollOptions.count) * ComposePollOptionCollectionViewCell.height
+                height += ComposePollExpireConfigurationCollectionViewCell.height
+                height += ComposePollMultipleConfigurationCollectionViewCell.height
+                self.composePollTableViewCell.collectionViewHeightLayoutConstraint.constant = height
+                self.composePollTableViewCell.collectionViewHeightDidUpdate.send()
             }
-            
-            var height = CGFloat(pollOptions.count) * ComposePollOptionCollectionViewCell.height
-            self.composePollTableViewCell.collectionViewHeightLayoutConstraint.constant = height
-            self.composePollTableViewCell.collectionViewHeightDidUpdate.send()
-        }
-        .store(in: &disposeBag)
+            .store(in: &disposeBag)
         
         // bind location
         $isRequestLocation

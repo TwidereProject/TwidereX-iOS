@@ -49,20 +49,20 @@ extension PollItem {
 }
 
 public protocol PollItemExpireConfigurationDelegate: AnyObject {
-    func expireConfiguration(_ configuration: PollItem.ExpireConfiguration,  expiresOptionDidChanges expiresOption: PollItem.ExpireConfiguration.ExpiresOption)
+    func expireConfiguration(_ configuration: PollItem.ExpireConfiguration,  expiresOptionDidChanges expiresOption: PollItem.ExpireConfiguration.Option)
 }
 
 extension PollItem {
-    public final class ExpireConfiguration: Hashable {
+    public final class ExpireConfiguration: Hashable, ObservableObject {
         private let id = UUID()
         
         var disposeBag = Set<AnyCancellable>()
         public weak var delegate: PollItemExpireConfigurationDelegate?
 
-        @Published public var expiresOption: ExpiresOption = .oneDay
+        @Published public var option: Option = .oneDay
         
         public init() {
-            $expiresOption
+            $option
                 .sink { [weak self] expiresOption in
                     guard let self = self else { return }
                     self.delegate?.expireConfiguration(self, expiresOptionDidChanges: expiresOption)
@@ -72,14 +72,14 @@ extension PollItem {
 
         public static func == (lhs: ExpireConfiguration, rhs: ExpireConfiguration) -> Bool {
             return lhs.id == rhs.id
-                && lhs.expiresOption == rhs.expiresOption
+                && lhs.option == rhs.option
         }
 
         public func hash(into hasher: inout Hasher) {
             hasher.combine(id)
         }
 
-        public enum ExpiresOption: String, Hashable, CaseIterable {
+        public enum Option: String, Hashable, CaseIterable {
             case thirtyMinutes
             case oneHour
             case sixHours
@@ -117,7 +117,7 @@ public protocol PollItemMultipleConfigurationDelegate: AnyObject {
 }
 
 extension PollItem {
-    public final class MultipleConfiguration: Hashable {
+    public final class MultipleConfiguration: Hashable, ObservableObject {
         private let id = UUID()
         
         var disposeBag = Set<AnyCancellable>()

@@ -16,6 +16,10 @@ public protocol ComposePollTableViewCellDelegate: AnyObject {
     func composePollTableViewCell(_ cell: ComposePollTableViewCell, pollOptionCollectionViewCell collectionViewCell: ComposePollOptionCollectionViewCell, textFieldDidBeginEditing textField: UITextField)
     func composePollTableViewCell(_ cell: ComposePollTableViewCell, pollOptionCollectionViewCell collectionViewCell: ComposePollOptionCollectionViewCell, textFieldDidReturn: UITextField)
     func composePollTableViewCell(_ cell: ComposePollTableViewCell, pollOptionCollectionViewCell collectionViewCell: ComposePollOptionCollectionViewCell, textBeforeDeleteBackward text: String?)
+    
+    func composePollTableViewCell(_ cell: ComposePollTableViewCell, pollExpireConfigurationCollectionViewCell collectionViewCell: ComposePollExpireConfigurationCollectionViewCell, didSelectExpireConfigurationOption option: PollItem.ExpireConfiguration.Option)
+
+    func composePollTableViewCell(_ cell: ComposePollTableViewCell, composePollMultipleConfigurationCollectionViewCell collectionViewCell: ComposePollMultipleConfigurationCollectionViewCell, multipleSelectionDidChange isMultiple: Bool)
 }
 
 public final class ComposePollTableViewCell: UITableViewCell {
@@ -23,12 +27,6 @@ public final class ComposePollTableViewCell: UITableViewCell {
     var observations = Set<NSKeyValueObservation>()
     
     weak var delegate: ComposePollTableViewCellDelegate?
-
-//    weak var customEmojiPickerInputViewModel: CustomEmojiPickerInputViewModel?
-//    weak var delegate: ComposeStatusPollTableViewCellDelegate?
-//    weak var composeStatusPollOptionCollectionViewCellDelegate: ComposeStatusPollOptionCollectionViewCellDelegate?
-//    weak var composeStatusPollOptionAppendEntryCollectionViewCellDelegate: ComposeStatusPollOptionAppendEntryCollectionViewCellDelegate?
-//    weak var composeStatusPollExpiresOptionCollectionViewCellDelegate: ComposeStatusPollExpiresOptionCollectionViewCellDelegate?
 
     private static func createLayout() -> UICollectionViewLayout {
         let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .estimated(44))
@@ -44,8 +42,8 @@ public final class ComposePollTableViewCell: UITableViewCell {
         let collectionViewLayout = ComposePollTableViewCell.createLayout()
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: collectionViewLayout)
         collectionView.register(ComposePollOptionCollectionViewCell.self, forCellWithReuseIdentifier: String(describing: ComposePollOptionCollectionViewCell.self))
-//        collectionView.register(ComposeStatusPollOptionAppendEntryCollectionViewCell.self, forCellWithReuseIdentifier: String(describing: ComposeStatusPollOptionAppendEntryCollectionViewCell.self))
-//        collectionView.register(ComposeStatusPollExpiresOptionCollectionViewCell.self, forCellWithReuseIdentifier: String(describing: ComposeStatusPollExpiresOptionCollectionViewCell.self))
+        collectionView.register(ComposePollExpireConfigurationCollectionViewCell.self, forCellWithReuseIdentifier: String(describing: ComposePollExpireConfigurationCollectionViewCell.self))
+        collectionView.register(ComposePollMultipleConfigurationCollectionViewCell.self, forCellWithReuseIdentifier: String(describing: ComposePollMultipleConfigurationCollectionViewCell.self))
         collectionView.backgroundColor = .clear
         collectionView.alwaysBounceVertical = false
         collectionView.isScrollEnabled = false
@@ -72,6 +70,8 @@ public final class ComposePollTableViewCell: UITableViewCell {
 extension ComposePollTableViewCell {
     
     private func _init() {
+        selectionStyle = .none
+        
         let collectionViewLeadingMargin: CGFloat = ComposeInputTableViewCell.avatarImageViewSize.width
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(collectionView)
@@ -93,9 +93,27 @@ extension ComposePollTableViewCell {
                 cell.delegate = self
                 return cell
             case .expireConfiguration(let configuration):
-                return UICollectionViewCell()
+                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: ComposePollExpireConfigurationCollectionViewCell.self), for: indexPath) as! ComposePollExpireConfigurationCollectionViewCell
+                configuration.$option
+                    .receive(on: DispatchQueue.main)
+                    .sink { [weak cell] option in
+                        guard let cell = cell else { return }
+                        cell.button.setTitle(option.title, for: .normal)
+                    }
+                    .store(in: &cell.disposeBag)
+                cell.delegate = self
+                return cell
             case .multipleConfiguration(let configuration):
-                return UICollectionViewCell()
+                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: ComposePollMultipleConfigurationCollectionViewCell.self), for: indexPath) as! ComposePollMultipleConfigurationCollectionViewCell
+                configuration.$isMultiple
+                    .receive(on: DispatchQueue.main)
+                    .sink { [weak cell] isMultiple in
+                        guard let cell = cell else { return }
+                        cell.configure(isMultiple: isMultiple)
+                    }
+                    .store(in: &cell.disposeBag)
+                cell.delegate = self
+                return cell
             }
         }
     }
@@ -114,5 +132,19 @@ extension ComposePollTableViewCell: ComposePollOptionCollectionViewCellDelegate 
     
     public func composePollOptionCollectionViewCell(_ cell: ComposePollOptionCollectionViewCell, textField: DeleteBackwardResponseTextField, textBeforeDelete: String?) {
         delegate?.composePollTableViewCell(self, pollOptionCollectionViewCell: cell, textBeforeDeleteBackward: textBeforeDelete)
+    }
+}
+
+// MARK: - ComposePollExpireConfigurationCollectionViewCellDelegate
+extension ComposePollTableViewCell: ComposePollExpireConfigurationCollectionViewCellDelegate {
+    public func composePollExpireConfigurationCollectionViewCell(_ cell: ComposePollExpireConfigurationCollectionViewCell, didSelectExpireConfigurationOption option: PollItem.ExpireConfiguration.Option) {
+        delegate?.composePollTableViewCell(self, pollExpireConfigurationCollectionViewCell: cell, didSelectExpireConfigurationOption: option)
+    }
+}
+
+// MARK: - ComposePollMultipleConfigurationCollectionViewCellDelegate
+extension ComposePollTableViewCell: ComposePollMultipleConfigurationCollectionViewCellDelegate {
+    public func composePollMultipleConfigurationCollectionViewCell(_ cell: ComposePollMultipleConfigurationCollectionViewCell, multipleSelectionDidChange isMultiple: Bool) {
+        delegate?.composePollTableViewCell(self, composePollMultipleConfigurationCollectionViewCell: cell, multipleSelectionDidChange: isMultiple)
     }
 }
