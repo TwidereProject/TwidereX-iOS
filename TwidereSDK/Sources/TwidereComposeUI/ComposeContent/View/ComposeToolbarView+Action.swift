@@ -48,6 +48,7 @@ extension ComposeToolbarView {
     public func configure(actions: Set<Action>) {
         for action in Action.allCases {
             let contains = actions.contains(action)
+            
             switch action {
             case .media:
                 mediaButton.isHidden = !contains
@@ -62,11 +63,9 @@ extension ComposeToolbarView {
             case .location:
                 localButton.isHidden = !contains
             case .contentWarning:
-                // TODO:
-                break
+                contentWarningButton.isHidden = !contains
             case .mediaSensitive:
-                // TODO:
-                break
+                mediaSensitiveButton.isHidden = !contains
             }
         }
     }

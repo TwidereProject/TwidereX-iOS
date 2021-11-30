@@ -7,12 +7,12 @@
 
 import UIKit
 import Combine
+import Floaty
 import Firebase
 import Kingfisher
 import AppShared
 
 @_exported import TwidereUI
-//import Floaty
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -37,14 +37,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         ImageCache.default.diskStorage.config.sizeLimit = 500 * 1024 * 1024
         ImageCache.default.diskStorage.config.expiration = .days(7)
         
-//        Floaty.global.rtlMode = UIApplication.shared.userInterfaceLayoutDirection == .rightToLeft
-        
-//        NotificationCenter.default.publisher(for: UIContentSizeCategory.didChangeNotification)
-//            .sink { _ in
-//                // only trigger update
-//                UserDefaults.shared.useTheSystemFontSize = UserDefaults.shared.useTheSystemFontSize
-//            }
-//            .store(in: &disposeBag)
+        // enable FAB RTL support
+        Floaty.global.rtlMode = UIApplication.shared.userInterfaceLayoutDirection == .rightToLeft
         
         // configure appearance
         ThemeService.shared.apply(theme: ThemeService.shared.theme.value)

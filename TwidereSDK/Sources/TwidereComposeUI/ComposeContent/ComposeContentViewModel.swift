@@ -39,7 +39,7 @@ public final class ComposeContentViewModel: NSObject {
     // Input
     public let configurationContext: ConfigurationContext
     public let customEmojiPickerInputViewModel = CustomEmojiPickerInputView.ViewModel()
-    
+        
     // text
     @Published public private(set) var initialTextInput = ""
     
@@ -63,6 +63,7 @@ public final class ComposeContentViewModel: NSObject {
     // attachment
     @Published public internal(set) var attachmentViewModels: [AttachmentViewModel] = []
     @Published public var maxMediaAttachmentLimit = 4
+    @Published public internal(set) var isMediaSensitive = false        // Mastodon only
     
     // Output
     public var diffableDataSource: UITableViewDiffableDataSource<Section, Item>?
@@ -452,8 +453,11 @@ public final class ComposeContentViewModel: NSObject {
             .store(in: &disposeBag)
         
         // bind toolbar
-        $author
-            .map { author -> Set<ComposeToolbarView.Action> in
+        Publishers.CombineLatest(
+            $author,
+            $attachmentViewModels
+        )
+            .map { author, attachmentViewModels -> Set<ComposeToolbarView.Action> in
                 var set = Set<ComposeToolbarView.Action>()
                 set.insert(.media)
                 set.insert(.mention)
@@ -467,7 +471,9 @@ public final class ComposeContentViewModel: NSObject {
                     set.insert(.emoji)
                     set.insert(.poll)
                     set.insert(.contentWarning)
-                    set.insert(.mediaSensitive)
+                    if !attachmentViewModels.isEmpty {
+                        set.insert(.mediaSensitive)
+                    }
                 case .none:
                     break
                 }

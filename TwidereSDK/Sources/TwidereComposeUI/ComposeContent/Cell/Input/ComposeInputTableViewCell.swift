@@ -39,7 +39,55 @@ final public class ComposeInputTableViewCell: UITableViewCell {
         return imageView
     }()
     
-    let conversationLinkLineView = SeparatorLineView()
+    let conversationLinkLineView: SeparatorLineView = {
+        let separator = SeparatorLineView()
+        separator.backgroundColor = Asset.Colors.hightLight.color
+        return separator
+    }()
+    
+    let contentWarningContainer: UIStackView = {
+        let stackView = UIStackView()
+        stackView.axis = .horizontal
+        stackView.spacing = 8
+        return stackView
+    }()
+    
+    let contentWarningIndicatorImageView: UIImageView = {
+        let imageView = UIImageView()
+        imageView.image = Asset.Indices.exclamationmarkOctagon.image.withRenderingMode(.alwaysTemplate)
+        imageView.tintColor = .secondaryLabel
+        imageView.contentMode = .center
+        return imageView
+    }()
+    
+    let contentWarningMetaText: MetaText = {
+        let metaText = MetaText()
+        metaText.textView.backgroundColor = .clear
+        metaText.textView.isScrollEnabled = false
+        // metaText.textView.keyboardType = .default
+        metaText.textView.textDragInteraction?.isEnabled = false    // disable drag for link and attachment
+        metaText.textView.textContainer.lineFragmentPadding = 0     // leading inset
+        metaText.textView.font = UIFont.preferredFont(forTextStyle: .body)
+        metaText.textAttributes = [
+            .font: UIFont.preferredFont(forTextStyle: .body),
+            .foregroundColor: UIColor.label,
+        ]
+        metaText.linkAttributes = [
+            .font: UIFont.preferredFont(forTextStyle: .body),
+            .foregroundColor: Asset.Colors.hightLight.color,
+        ]
+        metaText.textView.attributedPlaceholder = {
+            var attributes = metaText.textAttributes
+            attributes[.foregroundColor] = UIColor.secondaryLabel
+            return NSAttributedString(
+                string: L10n.Scene.Compose.cwPlaceholder,
+                attributes: attributes
+            )
+        }()
+        return metaText
+    }()
+    
+    let contentWarningSeparatorLine = SeparatorLineView()
     
     let mentionPickButton: UIButton = {
         let button = UIButton(type: .custom)
@@ -51,22 +99,23 @@ final public class ComposeInputTableViewCell: UITableViewCell {
         return button
     }()
     
-    let metaText: MetaText = {
+    let contentMetaText: MetaText = {
         let metaText = MetaText()
+        metaText.textView.frame = CGRect(x: 0, y: 0, width: 300, height: 44)        // fix AutoLayout
         metaText.textView.backgroundColor = .clear
         metaText.textView.isScrollEnabled = false
         metaText.textView.keyboardType = .twitter
         metaText.textView.textDragInteraction?.isEnabled = false    // disable drag for link and attachment
         metaText.textView.textContainer.lineFragmentPadding = 0     // leading inset
-        metaText.textView.font = UIFontMetrics(forTextStyle: .body).scaledFont(for: .systemFont(ofSize: 17, weight: .regular))
-//        metaText.textAttributes = [
-//            .font: UIFontMetrics(forTextStyle: .body).scaledFont(for: .systemFont(ofSize: 17, weight: .regular)),
-//            .foregroundColor: Asset.Colors.Label.primary.color,
-//        ]
-//        metaText.linkAttributes = [
-//            .font: UIFontMetrics(forTextStyle: .body).scaledFont(for: .systemFont(ofSize: 17, weight: .semibold)),
-//            .foregroundColor: Asset.Colors.brandBlue.color,
-//        ]
+        metaText.textView.font = UIFont.preferredFont(forTextStyle: .body)
+        metaText.textAttributes = [
+            .font: UIFont.preferredFont(forTextStyle: .body),
+            .foregroundColor: UIColor.label,
+        ]
+        metaText.linkAttributes = [
+            .font: UIFont.preferredFont(forTextStyle: .body),
+            .foregroundColor: Asset.Colors.hightLight.color,
+        ]
         metaText.textView.attributedPlaceholder = {
             var attributes = metaText.textAttributes
             attributes[.foregroundColor] = UIColor.secondaryLabel
@@ -134,13 +183,30 @@ extension ComposeInputTableViewCell {
             containerStackView.trailingAnchor.constraint(equalTo: contentView.layoutMarginsGuide.trailingAnchor),
             contentView.bottomAnchor.constraint(equalTo: containerStackView.bottomAnchor),
         ])
+        
+        contentWarningContainer.addArrangedSubview(contentWarningIndicatorImageView)
+        contentWarningIndicatorImageView.setContentHuggingPriority(.required - 1, for: .horizontal)
+        
+        contentWarningContainer.addArrangedSubview(contentWarningMetaText.textView)
+        
+        contentWarningSeparatorLine.translatesAutoresizingMaskIntoConstraints = false
+        contentWarningContainer.addSubview(contentWarningSeparatorLine)
+        NSLayoutConstraint.activate([
+            contentWarningSeparatorLine.leadingAnchor.constraint(equalTo: contentWarningContainer.leadingAnchor),
+            contentWarningSeparatorLine.trailingAnchor.constraint(equalTo: contentWarningContainer.trailingAnchor),
+            contentWarningSeparatorLine.bottomAnchor.constraint(equalTo: contentWarningContainer.bottomAnchor),
+            contentWarningSeparatorLine.heightAnchor.constraint(equalToConstant: UIView.separatorLineHeight(of: contentView)),
+        ])
+        
+        containerStackView.addArrangedSubview(contentWarningContainer)
+        contentWarningContainer.setContentHuggingPriority(.required - 1, for: .vertical)
     
         containerStackView.addArrangedSubview(mentionPickButton)
 
-        metaText.textView.translatesAutoresizingMaskIntoConstraints = false
-        containerStackView.addArrangedSubview(metaText.textView)
+        contentMetaText.textView.translatesAutoresizingMaskIntoConstraints = false
+        containerStackView.addArrangedSubview(contentMetaText.textView)
         NSLayoutConstraint.activate([
-            metaText.textView.bottomAnchor.constraint(greaterThanOrEqualTo: avatarView.bottomAnchor, constant: 16),
+            contentMetaText.textView.bottomAnchor.constraint(greaterThanOrEqualTo: avatarView.bottomAnchor, constant: 16),
         ])
         
         mentionPickButton.isHidden = true

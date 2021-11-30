@@ -17,6 +17,7 @@ extension ComposeInputTableViewCell {
         var bindDisposeBag = Set<AnyCancellable>()
         
         @Published var avatarImageURL: URL?
+        @Published var isContentWarningDisplay: Bool = false
     }
 }
 

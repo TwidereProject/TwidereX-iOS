@@ -14,6 +14,9 @@ import MastodonSDK
 
 public protocol ComposeToolbarViewDelegate: AnyObject {
     func composeToolBarView(_ composeToolBarView: ComposeToolbarView, visibilityButtonPressed button: UIButton, selectedVisibility visibility: Mastodon.Entity.Status.Visibility)
+    func composeToolBarView(_ composeToolBarView: ComposeToolbarView, mediaSensitiveButtonPressed button: UIButton)
+    func composeToolBarView(_ composeToolBarView: ComposeToolbarView, contentWarningButtonPressed button: UIButton)
+    
     func composeToolBarView(_ composeToolBarView: ComposeToolbarView, mediaButtonPressed button: UIButton, mediaSelectionType type: ComposeToolbarView.MediaSelectionType)
     func composeToolBarView(_ composeToolBarView: ComposeToolbarView, emojiButtonPressed button: UIButton)
     func composeToolBarView(_ composeToolBarView: ComposeToolbarView, pollButtonPressed button: UIButton)
@@ -60,6 +63,20 @@ final public class ComposeToolbarView: UIView {
     }()
     
     public let supplementaryContainerSpacer = UIView()
+    
+    public let mediaSensitiveButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setImage(Asset.Human.eyeSlash.image, for: .normal)
+        button.tintColor = .secondaryLabel
+        return button
+    }()
+    
+    public let contentWarningButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setImage(Asset.Indices.exclamationmarkOctagon.image, for: .normal)
+        button.tintColor = .secondaryLabel
+        return button
+    }()
 
     public let scrollView: UIScrollView = {
         let scrollView = UIScrollView()
@@ -170,6 +187,8 @@ extension ComposeToolbarView {
         visibilityButton.setContentCompressionResistancePriority(.required - 9, for: .vertical)
         
         supplementaryContainer.addArrangedSubview(supplementaryContainerSpacer)
+        supplementaryContainer.addArrangedSubview(mediaSensitiveButton)
+        supplementaryContainer.addArrangedSubview(contentWarningButton)
         
         // primary
         scrollView.translatesAutoresizingMaskIntoConstraints = false
@@ -181,7 +200,6 @@ extension ComposeToolbarView {
             scrollView.frameLayoutGuide.bottomAnchor.constraint(equalTo: bottomAnchor),
             scrollView.frameLayoutGuide.heightAnchor.constraint(equalTo: scrollView.contentLayoutGuide.heightAnchor).priority(.required - 1),
         ])
-        
         
         // separator
         let separatorLine = SeparatorLineView()
@@ -220,6 +238,8 @@ extension ComposeToolbarView {
 
         visibilityButton.menu = createMastodonVisibilityContextMenu(button: visibilityButton)
         visibilityButton.showsMenuAsPrimaryAction = true
+        mediaSensitiveButton.addTarget(self, action: #selector(ComposeToolbarView.mediaSensitiveButtonPressed(_:)), for: .touchUpInside)
+        contentWarningButton.addTarget(self, action: #selector(ComposeToolbarView.contentWarningButtonPressed(_:)), for: .touchUpInside)
         mediaButton.menu = createMediaContextMenu(button: mediaButton)
         mediaButton.showsMenuAsPrimaryAction = true
         emojiButton.addTarget(self, action: #selector(ComposeToolbarView.emojiButtonPressed(_:)), for: .touchUpInside)
@@ -358,7 +378,7 @@ extension ComposeToolbarView {
         
         // browse
         let browseAction = UIAction(
-            title: "browse",    // TODO:
+            title: L10n.Common.Controls.Actions.browse,
             image: UIImage(systemName: "ellipsis"),
             identifier: nil,
             discoverabilityTitle: nil,
@@ -377,6 +397,17 @@ extension ComposeToolbarView {
 }
 
 extension ComposeToolbarView {
+    
+    @objc private func mediaSensitiveButtonPressed(_ sender: UIButton) {
+        logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public)")
+        delegate?.composeToolBarView(self, mediaSensitiveButtonPressed: sender)
+    }
+    
+    @objc private func contentWarningButtonPressed(_ sender: UIButton) {
+        logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public)")
+        delegate?.composeToolBarView(self, contentWarningButtonPressed: sender)
+    }
+    
     @objc private func emojiButtonPressed(_ sender: UIButton) {
         logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public)")
         delegate?.composeToolBarView(self, emojiButtonPressed: sender)

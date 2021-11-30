@@ -122,6 +122,16 @@ extension ComposeContentViewController {
 //
 //        ], activeWhenNearEdge: .top)
         
+        // bind content warning
+        viewModel.$isContentWarningComposing
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] isContentWarningComposing in
+                guard let self = self else { return }
+                self.viewModel.composeInputTableViewCell.contentWarningContainer.isHidden = !isContentWarningComposing
+                self.updateTableViewLayout()
+            }
+            .store(in: &disposeBag)
+        
         // bind counter
         viewModel.$textInputLimitProgress
             .receive(on: DispatchQueue.main)
@@ -185,6 +195,23 @@ extension ComposeContentViewController {
             }
             .store(in: &disposeBag)
         
+        // media sensitive
+        viewModel.$isMediaSensitive
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] isMediaSensitive in
+                guard let self = self else { return }
+                self.composeToolbarView.mediaSensitiveButton.tintColor = isMediaSensitive ? Asset.Colors.hightLight.color : .secondaryLabel
+            }
+            .store(in: &disposeBag)
+        
+        // content warning
+        viewModel.$isContentWarningComposing
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] isContentWarningComposing in
+                guard let self = self else { return }
+                self.composeToolbarView.contentWarningButton.tintColor = isContentWarningComposing ? Asset.Colors.hightLight.color : .secondaryLabel
+            }
+            .store(in: &disposeBag)
         
         // attachment
         viewModel.$attachmentViewModels
@@ -311,7 +338,7 @@ extension ComposeContentViewController {
     public override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        viewModel.composeInputTableViewCell.metaText.textView.becomeFirstResponder()
+        viewModel.composeInputTableViewCell.contentMetaText.textView.becomeFirstResponder()
     }
 
     public override func viewDidAppear(_ animated: Bool) {
@@ -410,6 +437,14 @@ extension ComposeContentViewController: ComposeToolbarViewDelegate {
         viewModel.mastodonVisibility = visibility
     }
     
+    public func composeToolBarView(_ composeToolBarView: ComposeToolbarView, mediaSensitiveButtonPressed button: UIButton) {
+        viewModel.isMediaSensitive.toggle()
+    }
+    
+    public func composeToolBarView(_ composeToolBarView: ComposeToolbarView, contentWarningButtonPressed button: UIButton) {
+        viewModel.isContentWarningComposing.toggle()
+    }
+    
     public func composeToolBarView(_ composeToolBarView: ComposeToolbarView, mediaButtonPressed button: UIButton, mediaSelectionType type: ComposeToolbarView.MediaSelectionType) {
         switch type {
         case .camera:
@@ -451,13 +486,13 @@ extension ComposeContentViewController: ComposeToolbarViewDelegate {
     }
     
     private func insertTextWithPrefixSpace(text: String) {
-        let string = viewModel.composeInputTableViewCell.metaText.textStorage.string
+        let string = viewModel.composeInputTableViewCell.contentMetaText.textStorage.string
         let isEmpty = string.isEmpty
         let hasPrefix = string.hasPrefix(" ")
         if hasPrefix || isEmpty {
-            viewModel.composeInputTableViewCell.metaText.textView.insertText(text)
+            viewModel.composeInputTableViewCell.contentMetaText.textView.insertText(text)
         } else {
-            viewModel.composeInputTableViewCell.metaText.textView.insertText(" " + text)
+            viewModel.composeInputTableViewCell.contentMetaText.textView.insertText(" " + text)
         }
     }
 }

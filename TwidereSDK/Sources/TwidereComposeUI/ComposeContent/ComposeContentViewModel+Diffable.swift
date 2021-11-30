@@ -40,7 +40,7 @@ extension ComposeContentViewModel {
     ) {
         // set delegate
         composeInputTableViewCell.delegate = composeInputTableViewCellDelegate
-        composeInputTableViewCell.metaText.delegate = composeInputTableViewCellDelegate
+        composeInputTableViewCell.contentMetaText.delegate = composeInputTableViewCellDelegate
         composeAttachmentTableViewCell.delegate = composeAttachmentTableViewCellDelegate
         composePollTableViewCell.delegate = composePollTableViewCellDelegate
         
@@ -48,7 +48,7 @@ extension ComposeContentViewModel {
         customEmojiPickerInputViewModel.customEmojiPickerInputView = customEmojiPickerInputView
         configureCustomEmojiPicker(
             viewModel: customEmojiPickerInputViewModel,
-            customEmojiReplaceableTextInput: composeInputTableViewCell.metaText.textView
+            customEmojiReplaceableTextInput: composeInputTableViewCell.contentMetaText.textView
         )
         
         // setup custom emoji data source
