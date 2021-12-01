@@ -17,8 +17,18 @@ import PhotosUI
 extension NSItemProvider {
     
     static let logger = Logger(subsystem: "NSItemProvider", category: "Logic")
+    
+    public struct ImageLoadResult {
+        public let data: Data
+        public let type: UTType?
+        
+        public  init(data: Data, type: UTType?) {
+            self.data = data
+            self.type = type
+        }
+    }
 
-    public func loadImageData() async throws -> Data? {
+    public func loadImageData() async throws -> ImageLoadResult? {
         try await withCheckedThrowingContinuation { continuation in
             loadFileRepresentation(forTypeIdentifier: UTType.image.identifier) { url, error in
                 if let error = error {
@@ -60,12 +70,13 @@ extension NSItemProvider {
                     assertionFailure()
                     return
                 }
-                
+            
                 let isPNG: Bool = {
                     guard let utType = cgImage.utType else { return false }
                     return (utType as String) == UTType.png.identifier
+                    
                 }()
-                
+                                
                 let destinationProperties = [
                     kCGImageDestinationLossyCompressionQuality: isPNG ? 1.0 : 0.75
                 ] as CFDictionary
@@ -75,8 +86,13 @@ extension NSItemProvider {
                 
                 let dataSize = ByteCountFormatter.string(fromByteCount: Int64(data.length), countStyle: .memory)
                 NSItemProvider.logger.debug("\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): load image \(dataSize)")
+                
+                let result = ImageLoadResult(
+                    data: data as Data,
+                    type: cgImage.utType.flatMap { UTType($0 as String) }
+                )
 
-                continuation.resume(with: .success(data as Data))
+                continuation.resume(with: .success(result))
             }
         }
     }

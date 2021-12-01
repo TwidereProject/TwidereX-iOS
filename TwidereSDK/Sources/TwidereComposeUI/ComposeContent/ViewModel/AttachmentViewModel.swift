@@ -10,6 +10,7 @@ import UIKit
 import Combine
 import PhotosUI
 import TwidereCommon
+import Kingfisher
 
 final public class AttachmentViewModel {
 
@@ -41,7 +42,7 @@ final public class AttachmentViewModel {
         $output
             .map { output -> UIImage? in
                 switch output {
-                case .image(let data):
+                case .image(let data, _):
                     return UIImage(data: data)
 //                case .file(let url, _):
 //                    guard FileManager.default.fileExists(atPath: url.path) else { return nil }
@@ -83,9 +84,14 @@ extension AttachmentViewModel {
     }
     
     public enum Output {
-        case image(Data)
+        case image(Data, imageKind: ImageKind)
         // case gif(Data)
         // case file(URL, mimeType: String)    // assert use file for video only
+        
+        public enum ImageKind {
+            case png
+            case jpg
+        }
     }
     
     public struct SizeLimit {
@@ -119,7 +125,7 @@ extension AttachmentViewModel {
                 error = AttachmentError.invalidAttachmentType
                 return
             }
-            output = .image(data)
+            output = .image(data, imageKind: .png)
         case .pickerResult(let pickerResult):
             Task {
                 do {
@@ -134,10 +140,32 @@ extension AttachmentViewModel {
     
     private static func load(pickerResult asset: PHPickerResult) async throws -> Output {
         if asset.isImage() {
-            guard let data = try await asset.itemProvider.loadImageData() else {
+            guard let result = try await asset.itemProvider.loadImageData() else {
                 throw AttachmentError.invalidAttachmentType
             }
-            return .image(data)
+            let imageKind: Output.ImageKind = {
+                if let type = result.type {
+                    if type == UTType.png {
+                        return .png
+                    }
+                    if type == UTType.jpeg {
+                        return .jpg
+                    }
+                }
+                
+                let imageData = result.data
+
+                if imageData.kf.imageFormat == .PNG {
+                    return .png
+                }
+                if imageData.kf.imageFormat == .JPEG {
+                    return .jpg
+                }
+                
+                assertionFailure("unknown image kind")
+                return .jpg
+            }()
+            return .image(result.data, imageKind: imageKind)
         } else if asset.isMovie() {
             // TODO:
             assertionFailure()

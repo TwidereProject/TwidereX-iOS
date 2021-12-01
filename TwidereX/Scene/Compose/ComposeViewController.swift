@@ -82,10 +82,15 @@ extension ComposeViewController {
         do {
             let statusPublisher = try composeContentViewModel.statusPublisher()
             Task {
-                try await statusPublisher.publish(
-                    api: context.apiService,
-                    appSecret: .default
-                )
+                do {
+                    try await statusPublisher.publish(
+                        api: context.apiService,
+                        appSecret: .default
+                    )
+                } catch {
+                    // TODO: handle error
+                    debugPrint(error)
+                }
             }
         } catch {
             assertionFailure()

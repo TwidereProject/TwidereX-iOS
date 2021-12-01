@@ -11,6 +11,7 @@ import Kingfisher
 import UniformTypeIdentifiers
 import TwidereCore
 import TwitterSDK
+import MastodonSDK
 
 extension Data {
     fileprivate func chunks(size: Int) -> [Data] {
@@ -43,7 +44,7 @@ extension AttachmentViewModel {
         // try png then use JPEG compress with Q=0.8
         // then slice into 1MiB chunks
         switch output {
-        case .image(let data):
+        case .image(let data, _):
             let maxPayloadSizeInBytes = sizeLimit.image
             
             // use processed imageData to remove EXIF
@@ -106,6 +107,7 @@ extension AttachmentViewModel {
     
     enum UploadResult {
         case twitter(Twitter.Response.Content<Twitter.API.Media.InitResponse>)
+        case mastodon(Mastodon.Response.Content<Mastodon.Entity.Attachment>)
     }
 }
 
@@ -120,7 +122,10 @@ extension AttachmentViewModel {
                 twitterAuthenticationContext: authenticationContext
             )
         case .mastodon(let authenticationContext):
-            fatalError()
+            return try await uploadMastodonMedia(
+                context: context,
+                mastodonAuthenticationContext: authenticationContext
+            )
         }
     }
     
@@ -181,5 +186,101 @@ extension AttachmentViewModel {
         progress.completedUnitCount += 1
         
         return .twitter(mediaInitResponse)
+    }
+    
+    private func uploadMastodonMedia(
+        context: UploadContext,
+        mastodonAuthenticationContext: MastodonAuthenticationContext
+    ) async throws -> UploadResult {
+        guard let output = self.output else {
+            throw AppError.implicit(.badRequest)
+        }
+        
+        let attachment = output.asAttachment
+        
+        let query = Mastodon.API.Media.UploadMediaQuery(
+            file: attachment,
+            thumbnail: nil,
+            description: nil,       // TODO:
+            focus: nil              // TODO:
+        )
+        
+        let attachmentUploadResponse: Mastodon.Response.Content<Mastodon.Entity.Attachment> = try await {
+            do {
+                AttachmentViewModel.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): [V2] upload attachment...")
+                return try await context.apiService.mastodonMediaUpload(
+                    query: query,
+                    mastodonAuthenticationContext: mastodonAuthenticationContext,
+                    needsFallback: false
+                )
+            } catch {
+                // check needs fallback
+                guard let apiError = error as? Mastodon.API.Error,
+                      apiError.httpResponseStatus == .notFound
+                else { throw error }
+                
+                AttachmentViewModel.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): [V1] upload attachment...")
+
+                return try await context.apiService.mastodonMediaUpload(
+                    query: query,
+                    mastodonAuthenticationContext: mastodonAuthenticationContext,
+                    needsFallback: true
+                )
+            }
+        }()
+        
+        
+        // check needs wait processing (until get the `url`)
+        if attachmentUploadResponse.statusCode == 202 {
+            // note:
+            // the Mastodon server append the attachments in order by upload time
+            // can not upload concurrency
+            let waitProcessRetryLimit = 10
+            var waitProcessRetryCount = 0
+            
+            repeat {
+                defer {
+                    // make sure always count + 1
+                    waitProcessRetryCount += 1
+                }
+                
+                AttachmentViewModel.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): check attachment process status")
+
+                let attachmentStatusResponse = try await context.apiService.mastodonMediaAttachment(
+                    attachmentID: attachmentUploadResponse.value.id,
+                    mastodonAuthenticationContext: mastodonAuthenticationContext
+                )
+                
+                if let url = attachmentStatusResponse.value.url {
+                    AttachmentViewModel.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): attachment process finish: \(url)")
+                    
+                    // escape here
+                    return .mastodon(attachmentStatusResponse)
+                    
+                } else {
+                    AttachmentViewModel.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): attachment processing. Retry \(waitProcessRetryCount)/\(waitProcessRetryLimit)")
+                    await Task.sleep(1_000_000_000 * 3)     // 3s
+                }
+            } while waitProcessRetryCount < waitProcessRetryLimit
+         
+            AttachmentViewModel.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): attachment processing result discard due to exceed retry limit")
+            throw AppError.implicit(.badRequest)
+        } else {
+            AttachmentViewModel.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): upload attachment success: \(attachmentUploadResponse.value.url ?? "<nil>")")
+
+            return .mastodon(attachmentUploadResponse)
+        }
+    }
+}
+
+extension AttachmentViewModel.Output {
+    var asAttachment: Mastodon.API.MediaAttachment {
+        switch self {
+        case .image(let data, let kind):
+            switch kind {
+            case .png:      return .png(data)
+            case .jpg:      return .jpeg(data)
+            }
+        }
     }
 }

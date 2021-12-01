@@ -724,33 +724,23 @@ extension ComposeContentViewModel {
                 place: currentPlace
             )
         case .mastodon(let author):
-            // TODO:
-            throw AppError.implicit(.authenticationMissing)
+            return MastodonStatusPublisher(
+                author: author,
+                replyTo: {
+                    guard case let .mastodon(status) = replyTo else { return nil }
+                    return .init(objectID: status.objectID)
+                }(),
+                isContentWarningComposing: isContentWarningComposing,
+                contentWarning: currentContentWarningInput,
+                content: currentTextInput,
+                isMediaSensitive: isMediaSensitive,
+                attachmentViewModels: attachmentViewModels,
+                isPollComposing: isPollComposing,
+                pollOptions: pollOptions,
+                pollExpireConfiguration: pollExpireConfiguration,
+                pollMultipleConfiguration: pollMultipleConfiguration,
+                visibility: mastodonVisibility
+            )
         }   // end switch
     }   // end func publisher()
 }
-
-//extension ComposeContentViewModel {
-//    public struct State: OptionSet {
-//
-//        public let rawValue: Int
-//
-//        public init(rawValue: Int) {
-//            self.rawValue = rawValue
-//        }
-//
-//        // FIXME: use stencil template generate
-//        public static let media = ComposeToolbarView.Action.media.option
-//        public static let emoji = ComposeToolbarView.Action.emoji.option
-//        public static let poll = ComposeToolbarView.Action.poll.option
-//        public static let mention = ComposeToolbarView.Action.mention.option
-//        public static let hashtag = ComposeToolbarView.Action.hashtag.option
-//        public static let location = ComposeToolbarView.Action.location.option
-//    }
-//}
-//
-//extension ComposeToolbarView.Action {
-//    public var option: ComposeContentViewModel.State {
-//        return ComposeContentViewModel.State(rawValue: 1 << rawValue)
-//    }
-//}

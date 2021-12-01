@@ -174,8 +174,10 @@ extension Twitter.API {
         do {
             return try Twitter.API.decoder.decode(type, from: data)
         } catch let decodeError {
+            #if DEBUG
             print(String(data: data, encoding: .utf8) ?? "<data>")
             debugPrint(decodeError)
+            #endif
 
             guard let httpURLResponse = response as? HTTPURLResponse else {
                 assertionFailure()

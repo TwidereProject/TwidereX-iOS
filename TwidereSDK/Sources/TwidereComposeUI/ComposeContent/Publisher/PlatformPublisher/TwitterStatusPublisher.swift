@@ -5,13 +5,16 @@
 //  Created by MainasuK on 2021-11-26.
 //
 
+import os.log
 import Foundation
 import TwidereCommon
-import TwitterSDK
 import TwidereCore
+import TwitterSDK
 import CoreDataStack
 
 public final class TwitterStatusPublisher: NSObject, ProgressReporting {
+    
+    let logger = Logger(subsystem: "TwitterStatusPublisher", category: "Publisher")
     
     // Input
     
@@ -53,6 +56,7 @@ public final class TwitterStatusPublisher: NSObject, ProgressReporting {
     
 }
 
+// MARK: - StatusPublisher
 extension TwitterStatusPublisher: StatusPublisher {
     public func publish(
         api: APIService,
@@ -79,6 +83,7 @@ extension TwitterStatusPublisher: StatusPublisher {
             throw AppError.implicit(.authenticationMissing)
         }
         
+        // Task: media
         let uploadContext = AttachmentViewModel.UploadContext(
             apiService: api,
             authenticationContext: .twitter(authenticationContext: authenticationContext)
@@ -103,6 +108,7 @@ extension TwitterStatusPublisher: StatusPublisher {
             }
         }
         
+        // Task: status
         let publishResponse = try await api.publishTwitterStatus(
             content: content,
             mediaIDs: mediaIDs.isEmpty ? nil : mediaIDs,
@@ -113,6 +119,7 @@ extension TwitterStatusPublisher: StatusPublisher {
         )
         progress.completedUnitCount += publishStatusTaskCount
         _state = .success
+        logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): status published: \(publishResponse.value.idStr)")
         
         return .twitter(publishResponse)
     }

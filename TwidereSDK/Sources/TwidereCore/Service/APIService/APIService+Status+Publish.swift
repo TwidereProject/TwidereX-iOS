@@ -1,6 +1,6 @@
 //
-//  APIService+Tweet.swift
-//  TwidereX
+//  APIService+Status+Publish.swift
+//
 //
 //  Created by Cirno MainasuK on 2020-10-23.
 //  Copyright © 2020 Twidere. All rights reserved.
@@ -9,10 +9,10 @@
 import os.log
 import UIKit
 import Combine
-import TwitterSDK
 import CoreData
 import CoreDataStack
-//import SwiftMessages
+import TwitterSDK
+import MastodonSDK
 
 extension APIService {
     
@@ -54,6 +54,30 @@ extension APIService {
         
         return response
     }
+    
+}
+
+extension APIService {
+    public func publishMastodonStatus(
+        query: Mastodon.API.Status.PublishStatusQuery,
+        mastodonAuthenticationContext: MastodonAuthenticationContext
+    ) async throws -> Mastodon.Response.Content<Mastodon.Entity.Status> {
+        let domain = mastodonAuthenticationContext.domain
+        let authorization = mastodonAuthenticationContext.authorization
+        
+        let response = try await Mastodon.API.Status.publish(
+            session: session,
+            domain: domain,
+            idempotencyKey: nil,    // TODO:
+            query: query,
+            authorization: authorization
+        )
+        
+        return response
+    }
+}
+
+extension APIService {
     
     @available(*, deprecated, message: "")
     func delete(

@@ -38,7 +38,7 @@ public final class SerialStream: NSObject {
         }
         
         output.delegate = self
-        output.schedule(in: .current, forMode: .default)
+        output.schedule(in: .main, forMode: .common)     // the current RunLoop with default mode not works with Swift async/await
         output.open()
         
         return Streams(input: input, output: output)
@@ -51,10 +51,13 @@ public final class SerialStream: NSObject {
         super.init()
         
         // Stream worker
-        writingTimerSubscriber = Timer.publish(every: 0.5, on: .current, in: .default)
+        writingTimerSubscriber = Timer.publish(every: 0.5, on: .main, in: .common)
             .autoconnect()
             .receive(on: workingQueue)
             .sink { [weak self] timer in
+                // timer on the main queue. Needs dispatch to working queue
+                assert(!Thread.isMainThread)
+                
                 guard let self = self else { return }
                 guard self.canWrite else { return }
                 os_log(.debug, "%{public}s[%{public}ld], %{public}s: writing…", ((#file as NSString).lastPathComponent), #line, #function)

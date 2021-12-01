@@ -7,7 +7,9 @@
 
 import Foundation
 import TwitterSDK
+import MastodonSDK
 
 public enum StatusPublishResult {
     case twitter(Twitter.Response.Content<Twitter.Entity.Tweet>)
+    case mastodon(Mastodon.Response.Content<Mastodon.Entity.Status>)
 }

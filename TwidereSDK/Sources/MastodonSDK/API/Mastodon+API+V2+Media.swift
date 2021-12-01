@@ -42,10 +42,10 @@ extension Mastodon.API.V2.Media {
         )
         request.timeoutInterval = 180    // should > 200 Kb/s for 40 MiB media attachment
         let serialStream = query.serialStream
-        request.httpBodyStream = serialStream.boundStreams.input
         defer {
             serialStream.boundStreams.output.close()
         }
+        request.httpBodyStream = serialStream.boundStreams.input
         let (data, response) = try await session.data(for: request, delegate: nil)
         let value = try Mastodon.API.decode(type: Mastodon.Entity.Attachment.self, from: data, response: response)
         return Mastodon.Response.Content(value: value, response: response)
