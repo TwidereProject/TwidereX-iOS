@@ -65,6 +65,7 @@ final public class ComposeInputTableViewCell: UITableViewCell {
         metaText.textView.backgroundColor = .clear
         metaText.textView.isScrollEnabled = false
         // metaText.textView.keyboardType = .default
+        metaText.textView.returnKeyType = .next
         metaText.textView.textDragInteraction?.isEnabled = false    // disable drag for link and attachment
         metaText.textView.textContainer.lineFragmentPadding = 0     // leading inset
         metaText.textView.font = UIFont.preferredFont(forTextStyle: .body)
@@ -230,3 +231,4 @@ extension ComposeInputTableViewCell {
         delegate?.composeInputTableViewCell(self, mentionPickButtonDidPressed: sender)
     }
 }
+

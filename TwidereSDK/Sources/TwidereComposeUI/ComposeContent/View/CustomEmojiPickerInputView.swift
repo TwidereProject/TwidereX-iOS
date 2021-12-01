@@ -5,9 +5,18 @@
 //  Created by MainasuK on 2021-11-28.
 //
 
+import os.log
 import UIKit
 
+public protocol CustomEmojiPickerInputViewDelegate: AnyObject {
+    func customEmojiPickerInputView(_ inputView: CustomEmojiPickerInputView, didSelectItemAt indexPath: IndexPath)
+}
+
 public final class CustomEmojiPickerInputView: UIInputView {
+    
+    let logger = Logger(subsystem: "CustomEmojiPickerInputView", category: "View")
+    
+    public weak var delegate: CustomEmojiPickerInputViewDelegate?
         
     public private(set) lazy var collectionView: UICollectionView = {
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: createLayout())
@@ -53,6 +62,8 @@ extension CustomEmojiPickerInputView {
         
         activityIndicatorView.hidesWhenStopped = true
         activityIndicatorView.startAnimating()
+        
+        collectionView.delegate = self
     }
 }
 
@@ -85,8 +96,20 @@ extension CustomEmojiPickerInputView {
     }
 }
 
+// MARK: - UIInputViewAudioFeedback
 extension CustomEmojiPickerInputView: UIInputViewAudioFeedback {
     public var enableInputClicksWhenVisible: Bool {
         return true
+    }
+}
+
+// MARK; - UICollectionViewDelegate
+extension CustomEmojiPickerInputView: UICollectionViewDelegate {
+    public func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): select item at \(indexPath.debugDescription)")
+
+        UIDevice.current.playInputClick()
+        
+        delegate?.customEmojiPickerInputView(self, didSelectItemAt: indexPath)
     }
 }

@@ -110,6 +110,7 @@ public final class ComposeContentViewModel: NSObject {
     // toolbar
     @Published public private(set) var availableActions: Set<ComposeToolbarView.Action> = Set()
     @Published public private(set) var isMediaToolBarButtonEnabled = true
+    @Published public private(set) var isPollToolBarButtonEnabled = true
     @Published public private(set) var isLocationToolBarButtonEnabled = CLLocationManager.locationServicesEnabled()
     
     // UI state
@@ -481,14 +482,20 @@ public final class ComposeContentViewModel: NSObject {
             }
             .assign(to: &$availableActions)
         
-        Publishers.CombineLatest(
+        Publishers.CombineLatest3(
             $attachmentViewModels,
-            $maxMediaAttachmentLimit
+            $maxMediaAttachmentLimit,
+            $isPollComposing
         )
-        .map { attachmentViewModels, maxMediaAttachmentLimit in
-            return attachmentViewModels.count < maxMediaAttachmentLimit
+        .map { attachmentViewModels, maxMediaAttachmentLimit, isPollComposing in
+            return !isPollComposing && attachmentViewModels.count < maxMediaAttachmentLimit
+                
         }
         .assign(to: &$isMediaToolBarButtonEnabled)
+        
+        $attachmentViewModels
+            .map { $0.isEmpty }
+            .assign(to: &$isPollToolBarButtonEnabled)
 
         
         // bind UI state
@@ -560,33 +567,52 @@ extension ComposeContentViewModel {
 }
 
 extension ComposeContentViewModel {
-    func processEditing(textStorage: MetaTextStorage) -> MetaContent? {
+    func metaText(_ metaText: MetaText, processEditing textStorage: MetaTextStorage) -> MetaContent? {
         guard let author = self.author else {
             return nil
         }
         
-        let textInput = textStorage.string
-        self.currentTextInput = textInput
-
-        switch author {
-        case .twitter:
-            let content = TwitterContent(content: textInput)
-            let metaContent = TwitterMetaContent.convert(
-                content: content,
-                urlMaximumLength: .max,
-                twitterTextProvider: configurationContext.twitterTextProvider
-            )
-            return metaContent
+        switch metaText.textView {
+        case composeInputTableViewCell.contentWarningMetaText.textView:
+            let textInput = textStorage.string.replacingOccurrences(of: "\n", with: " ")
+            self.currentContentWarningInput = textInput
             
-        case .mastodon:
             let content = MastodonContent(
                 content: textInput,
-                emojis: emojiViewModel?.emojis.asDictionary ?? [:]
+                emojis: [:] // emojiViewModel?.emojis.asDictionary ?? [:]
             )
             let metaContent = MastodonMetaContent.convert(text: content)
             return metaContent
+            
+        case composeInputTableViewCell.contentMetaText.textView:
+            let textInput = textStorage.string
+            self.currentTextInput = textInput
+            
+            switch author {
+            case .twitter:
+                let content = TwitterContent(content: textInput)
+                let metaContent = TwitterMetaContent.convert(
+                    content: content,
+                    urlMaximumLength: .max,
+                    twitterTextProvider: configurationContext.twitterTextProvider
+                )
+                return metaContent
+                
+            case .mastodon:
+                let content = MastodonContent(
+                    content: textInput,
+                    emojis: [:] // emojiViewModel?.emojis.asDictionary ?? [:]
+                )
+                let metaContent = MastodonMetaContent.convert(text: content)
+                return metaContent
+            }
+            
+        default:
+            assertionFailure()
+            return nil
         }
     }
+
 }
 
 extension ComposeContentViewModel {

@@ -27,6 +27,7 @@ public final class ComposePollTableViewCell: UITableViewCell {
     var observations = Set<NSKeyValueObservation>()
     
     weak var delegate: ComposePollTableViewCellDelegate?
+    weak var customEmojiPickerInputViewModel: CustomEmojiPickerInputView.ViewModel?
 
     private static func createLayout() -> UICollectionViewLayout {
         let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .estimated(44))
@@ -84,13 +85,18 @@ extension ComposePollTableViewCell {
             collectionViewHeightLayoutConstraint,
         ])
         
-        diffableDataSource = UICollectionViewDiffableDataSource(collectionView: collectionView) { collectionView, indexPath, item in
+        diffableDataSource = UICollectionViewDiffableDataSource(collectionView: collectionView) { [weak self] collectionView, indexPath, item in
+            guard let self = self else { return UICollectionViewCell() }
+            
             switch item {
             case .option(let option):
                 let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: ComposePollOptionCollectionViewCell.self), for: indexPath) as! ComposePollOptionCollectionViewCell
                 cell.pollOptionView.textField.text = option.option
                 cell.pollOptionView.textField.placeholder = "Choice \(indexPath.row + 1)"      // TODO: i18n
                 cell.delegate = self
+                
+                self.customEmojiPickerInputViewModel?.configure(textInput: cell.pollOptionView.textField)
+                
                 return cell
             case .expireConfiguration(let configuration):
                 let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: ComposePollExpireConfigurationCollectionViewCell.self), for: indexPath) as! ComposePollExpireConfigurationCollectionViewCell

@@ -14,6 +14,7 @@ import TwitterSDK
 import MastodonSDK
 import TwidereCore
 import TwidereAsset
+import MastodonMeta
 import CropViewController
 import KeyboardLayoutGuide
 
@@ -64,6 +65,7 @@ extension ComposeContentViewController {
         ])
         
         tableView.delegate = self
+        customEmojiPickerInputView.delegate = self
         viewModel.setupDiffableDataSource(
             tableView: tableView,
             customEmojiPickerInputView: customEmojiPickerInputView,
@@ -222,6 +224,14 @@ extension ComposeContentViewController {
             }
             .store(in: &disposeBag)
         
+        viewModel.$isMediaToolBarButtonEnabled
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] isMediaToolBarButtonEnabled in
+                guard let self = self else { return }
+                self.composeToolbarView.mediaButton.isEnabled = isMediaToolBarButtonEnabled
+            }
+            .store(in: &disposeBag)
+        
         // poll
         viewModel.composePollTableViewCell.collectionViewHeightDidUpdate
             .receive(on: DispatchQueue.main)
@@ -231,12 +241,11 @@ extension ComposeContentViewController {
             }
             .store(in: &disposeBag)
         
-        // media
-        viewModel.$isMediaToolBarButtonEnabled
+        viewModel.$isPollToolBarButtonEnabled
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] isMediaToolBarButtonEnabled in
+            .sink { [weak self] isPollToolBarButtonEnabled in
                 guard let self = self else { return }
-                self.composeToolbarView.mediaButton.isEnabled = isMediaToolBarButtonEnabled
+                self.composeToolbarView.pollButton.isEnabled = isPollToolBarButtonEnabled
             }
             .store(in: &disposeBag)
         
@@ -443,6 +452,14 @@ extension ComposeContentViewController: ComposeToolbarViewDelegate {
     
     public func composeToolBarView(_ composeToolBarView: ComposeToolbarView, contentWarningButtonPressed button: UIButton) {
         viewModel.isContentWarningComposing.toggle()
+        
+        if viewModel.isContentWarningComposing {
+            viewModel.composeInputTableViewCell.contentWarningMetaText.textView.becomeFirstResponder()
+        } else {
+            if viewModel.composeInputTableViewCell.contentWarningMetaText.textView.isFirstResponder {
+                viewModel.composeInputTableViewCell.contentMetaText.textView.becomeFirstResponder()
+            }
+        }
     }
     
     public func composeToolBarView(_ composeToolBarView: ComposeToolbarView, mediaButtonPressed button: UIButton, mediaSelectionType type: ComposeToolbarView.MediaSelectionType) {
@@ -497,9 +514,14 @@ extension ComposeContentViewController: ComposeToolbarViewDelegate {
     }
 }
 
-// MARK: - ComposeInputTableViewCellDelegate
-extension ComposeContentViewController: ComposeInputTableViewCellDelegate {
-    public func composeInputTableViewCell(_ cell: ComposeInputTableViewCell, mentionPickButtonDidPressed button: UIButton) {
+// MARK: - ComposeInputTableViewCellDelegate & MetaTextDelegate & UITextViewDelegate
+extension ComposeContentViewController: ComposeInputTableViewCellDelegate & MetaTextDelegate & UITextViewDelegate {
+    
+    // MARK: - ComposeInputTableViewCellDelegate
+    public func composeInputTableViewCell(
+        _ cell: ComposeInputTableViewCell,
+        mentionPickButtonDidPressed button: UIButton
+    ) {
         guard let primaryItem = viewModel.primaryMentionPickItem else { return }
         
         let mentionPickViewModel = MentionPickViewModel(
@@ -522,6 +544,67 @@ extension ComposeContentViewController: ComposeInputTableViewCellDelegate {
         }
         present(navigationController, animated: true, completion: nil)
     }
+
+    // MARK: - MetaTextDelegate
+    public func metaText(
+        _ metaText: MetaText,
+        processEditing textStorage: MetaTextStorage
+    ) -> MetaContent? {
+        logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public)")
+        
+        defer {
+            DispatchQueue.main.async {
+                self.updateTableViewLayout()
+            }
+        }
+        
+        // Two input sources
+        // 1. content warning
+        // 2. status text
+        return viewModel.metaText(metaText, processEditing: textStorage)
+    }
+ 
+    // MARK: - UITextViewDelegate
+    public func textView(
+        _ textView: UITextView,
+        shouldChangeTextIn range: NSRange,
+        replacementText text: String
+    ) -> Bool {
+        switch textView {
+        case viewModel.composeInputTableViewCell.contentWarningMetaText.textView:
+            let isReturn = text == "\n"
+            if isReturn {
+                viewModel.composeInputTableViewCell.contentMetaText.textView.becomeFirstResponder()
+            }
+            return !isReturn
+        case viewModel.composeInputTableViewCell.contentMetaText.textView:
+            return true
+        default:
+            assertionFailure()
+            return true
+        }
+    }
+    
+    public func textViewDidChange(_ textView: UITextView) {
+        switch textView {
+        case viewModel.composeInputTableViewCell.contentWarningMetaText.textView:
+            let _text = textView.textStorage.string
+            let text = _text.replacingOccurrences(of: "\n", with: " ")
+            
+            guard text != _text else { break }
+            
+            let content = MastodonContent(content: text, emojis: [:]) // viewModel.emojiViewModel?.emojis.asDictionary ?? [:]
+            let metaContent = MastodonMetaContent.convert(text: content)
+            viewModel.currentContentWarningInput = text
+            viewModel.composeInputTableViewCell.contentWarningMetaText.configure(content: metaContent)
+            
+        case viewModel.composeInputTableViewCell.contentMetaText.textView:
+            break
+        default:
+            assertionFailure()
+        }
+    }
+    
 }
 
 // MARK: - MentionPickViewControllerDelegate
@@ -539,21 +622,6 @@ extension ComposeContentViewController: MentionPickViewControllerDelegate {
         }
         
         viewModel.excludeReplyTwitterUserIDs = Set(excludeReplyTwitterUserIDs)
-    }
-}
-
-// MARK: - MetaTextDelegate
-extension ComposeContentViewController: MetaTextDelegate {
-    public func metaText(_ metaText: MetaText, processEditing textStorage: MetaTextStorage) -> MetaContent? {
-        logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public)")
-        
-        defer {
-            DispatchQueue.main.async {
-                self.updateTableViewLayout()
-            }
-        }
-        
-        return viewModel.processEditing(textStorage: textStorage)
     }
 }
 
@@ -719,5 +787,17 @@ extension ComposeContentViewController {
         
         guard let cell = lastPollOptionCollectionViewCell() else { return }
         cell.pollOptionView.textField.becomeFirstResponder()
+    }
+}
+
+// MARK: - CustomEmojiPickerInputViewDelegate
+extension ComposeContentViewController: CustomEmojiPickerInputViewDelegate {
+    public func customEmojiPickerInputView(_ inputView: CustomEmojiPickerInputView, didSelectItemAt indexPath: IndexPath) {
+        guard let diffableDataSource = viewModel.customEmojiDiffableDataSource else { return }
+        guard let item = diffableDataSource.itemIdentifier(for: indexPath) else { return }
+        switch item {
+        case .emoji(let emoji):
+            _ = viewModel.customEmojiPickerInputViewModel.insertText(":\(emoji.shortcode): ")       // suffix with a space
+        }
     }
 }

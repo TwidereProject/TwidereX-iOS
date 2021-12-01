@@ -34,22 +34,21 @@ extension ComposeContentViewModel {
     public func setupDiffableDataSource(
         tableView: UITableView,
         customEmojiPickerInputView: CustomEmojiPickerInputView,
-        composeInputTableViewCellDelegate: ComposeInputTableViewCellDelegate & MetaTextDelegate,
+        composeInputTableViewCellDelegate: ComposeInputTableViewCellDelegate & MetaTextDelegate & UITextViewDelegate,
         composeAttachmentTableViewCellDelegate: ComposeAttachmentTableViewCellDelegate,
         composePollTableViewCellDelegate: ComposePollTableViewCellDelegate
     ) {
         // set delegate
         composeInputTableViewCell.delegate = composeInputTableViewCellDelegate
         composeInputTableViewCell.contentMetaText.delegate = composeInputTableViewCellDelegate
+        composeInputTableViewCell.contentMetaText.textView.delegate = composeInputTableViewCellDelegate
+        composeInputTableViewCell.contentWarningMetaText.delegate = composeInputTableViewCellDelegate
+        composeInputTableViewCell.contentWarningMetaText.textView.delegate = composeInputTableViewCellDelegate
         composeAttachmentTableViewCell.delegate = composeAttachmentTableViewCellDelegate
         composePollTableViewCell.delegate = composePollTableViewCellDelegate
         
         // configure emoji picker
         customEmojiPickerInputViewModel.customEmojiPickerInputView = customEmojiPickerInputView
-        configureCustomEmojiPicker(
-            viewModel: customEmojiPickerInputViewModel,
-            customEmojiReplaceableTextInput: composeInputTableViewCell.contentMetaText.textView
-        )
         
         // setup custom emoji data source
         customEmojiPickerInputView.collectionView.register(CustomEmojiPickerItemCollectionViewCell.self, forCellWithReuseIdentifier: String(describing: CustomEmojiPickerItemCollectionViewCell.self))
@@ -134,9 +133,11 @@ extension ComposeContentViewModel {
             .store(in: &disposeBag)
         
         // setup data source
-        diffableDataSource = UITableViewDiffableDataSource(tableView: tableView) { tableView, indexPath, item in
+        diffableDataSource = UITableViewDiffableDataSource(tableView: tableView) { [weak self] tableView, indexPath, item in
             // data source should dispatch in main thread
             assert(Thread.isMainThread)
+            
+            guard let self = self else { return UITableViewCell() }
             return self.cell(for: item, tableView: tableView, at: indexPath)
         }
                 
@@ -181,8 +182,10 @@ extension ComposeContentViewModel {
             )
             return composeReplyTableViewCell
         case .input:
-            // without reuse
             composeInputTableViewCell.conversationLinkLineView.isHidden = replyTo == nil
+            customEmojiPickerInputViewModel.configure(textInput: composeInputTableViewCell.contentWarningMetaText.textView)
+            customEmojiPickerInputViewModel.configure(textInput: composeInputTableViewCell.contentMetaText.textView)
+            
             return composeInputTableViewCell
         case .quote:
             let cell = UITableViewCell()
@@ -191,24 +194,8 @@ extension ComposeContentViewModel {
         case .attachment:
             return composeAttachmentTableViewCell
         case .poll:
+            composePollTableViewCell.customEmojiPickerInputViewModel = customEmojiPickerInputViewModel
             return composePollTableViewCell
         }
-    }
-}
-
-extension ComposeContentViewModel {
-    private func configureCustomEmojiPicker(
-        viewModel: CustomEmojiPickerInputView.ViewModel,
-        customEmojiReplaceableTextInput: CustomEmojiReplaceableTextInput
-    ) {
-        viewModel.isCustomEmojiComposing
-            .receive(on: DispatchQueue.main)
-            .sink { [weak viewModel] isCustomEmojiComposing in
-                guard let viewModel = viewModel else { return }
-                customEmojiReplaceableTextInput.inputView = isCustomEmojiComposing ? viewModel.customEmojiPickerInputView : nil
-                customEmojiReplaceableTextInput.reloadInputViews()
-                viewModel.append(customEmojiReplaceableTextInput: customEmojiReplaceableTextInput)
-            }
-            .store(in: &disposeBag)
     }
 }
