@@ -97,9 +97,16 @@
 "Common.Alerts.ReportAndBlockUserSuccess.Title" = "أُبلغ عن %@ وحجب بسبب الازعاج";
 "Common.Alerts.ReportUserSuccess.Title" = "أُبلغ عن %@ بسبب الازعاج";
 "Common.Alerts.TooManyRequests.Title" = "طلبات كثيرة";
+"Common.Alerts.TootFail.DraftSavedMessage" = "Your toot has been saved to Drafts.";
+"Common.Alerts.TootFail.Message" = "الرجاء المحاولة مرة أخرى";
+"Common.Alerts.TootFail.Title" = "Failed to Toot";
+"Common.Alerts.TootPosted.Title" = "Toot Posted";
+"Common.Alerts.TootSending.Title" = "Sending toot";
 "Common.Alerts.TweetDeleted.Title" = "حذفت التغريدة";
+"Common.Alerts.TweetFail.DraftSavedMessage" = "Your tweet has been saved to Drafts.";
 "Common.Alerts.TweetFail.Message" = "الرجاء المحاولة مرة أخرى";
 "Common.Alerts.TweetFail.Title" = "تعذر إرسال التغريدة";
+"Common.Alerts.TweetPosted.Title" = "Tweet Posted";
 "Common.Alerts.TweetSending.Title" = "يُرسل التغريدة";
 "Common.Alerts.TweetSent.Title" = "أُرسلت التغريدة";
 "Common.Alerts.UnblockUserConfirm.Title" = "أتريد رفع الحجب عن %@ ؟";

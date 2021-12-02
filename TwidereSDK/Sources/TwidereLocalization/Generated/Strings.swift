@@ -350,15 +350,37 @@ public enum L10n {
         /// Too Many Requests
         public static let title = L10n.tr("Localizable", "Common.Alerts.TooManyRequests.Title")
       }
+      public enum TootFail {
+        /// Your toot has been saved to Drafts.
+        public static let draftSavedMessage = L10n.tr("Localizable", "Common.Alerts.TootFail.DraftSavedMessage")
+        /// Please try again
+        public static let message = L10n.tr("Localizable", "Common.Alerts.TootFail.Message")
+        /// Failed to Toot
+        public static let title = L10n.tr("Localizable", "Common.Alerts.TootFail.Title")
+      }
+      public enum TootPosted {
+        /// Toot Posted
+        public static let title = L10n.tr("Localizable", "Common.Alerts.TootPosted.Title")
+      }
+      public enum TootSending {
+        /// Sending toot
+        public static let title = L10n.tr("Localizable", "Common.Alerts.TootSending.Title")
+      }
       public enum TweetDeleted {
         /// Tweet Deleted
         public static let title = L10n.tr("Localizable", "Common.Alerts.TweetDeleted.Title")
       }
       public enum TweetFail {
+        /// Your tweet has been saved to Drafts.
+        public static let draftSavedMessage = L10n.tr("Localizable", "Common.Alerts.TweetFail.DraftSavedMessage")
         /// Please try again
         public static let message = L10n.tr("Localizable", "Common.Alerts.TweetFail.Message")
         /// Failed to Tweet
         public static let title = L10n.tr("Localizable", "Common.Alerts.TweetFail.Title")
+      }
+      public enum TweetPosted {
+        /// Tweet Posted
+        public static let title = L10n.tr("Localizable", "Common.Alerts.TweetPosted.Title")
       }
       public enum TweetSending {
         /// Sending tweet

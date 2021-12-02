@@ -97,9 +97,16 @@
 "Common.Alerts.ReportAndBlockUserSuccess.Title" = "%@ はスパムとして報告されブロックされました";
 "Common.Alerts.ReportUserSuccess.Title" = "%@ はスパムとして報告されました";
 "Common.Alerts.TooManyRequests.Title" = "リクエストが多すぎます";
+"Common.Alerts.TootFail.DraftSavedMessage" = "Your toot has been saved to Drafts.";
+"Common.Alerts.TootFail.Message" = "もう一度やり直してください";
+"Common.Alerts.TootFail.Title" = "Failed to Toot";
+"Common.Alerts.TootPosted.Title" = "Toot Posted";
+"Common.Alerts.TootSending.Title" = "Sending toot";
 "Common.Alerts.TweetDeleted.Title" = "ツイートを削除しました";
+"Common.Alerts.TweetFail.DraftSavedMessage" = "Your tweet has been saved to Drafts.";
 "Common.Alerts.TweetFail.Message" = "もう一度やり直してください";
 "Common.Alerts.TweetFail.Title" = "ツイートに失敗しました";
+"Common.Alerts.TweetPosted.Title" = "Tweet Posted";
 "Common.Alerts.TweetSending.Title" = "ツイートを送信中";
 "Common.Alerts.TweetSent.Title" = "ツイートを送信しました";
 "Common.Alerts.UnblockUserConfirm.Title" = "Do you want to unblock %@?";

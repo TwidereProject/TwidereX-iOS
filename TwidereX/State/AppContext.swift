@@ -29,6 +29,7 @@ class AppContext: ObservableObject {
     let authenticationService: AuthenticationService
     
     let mastodonEmojiService: MastodonEmojiService
+    let publisherService: PublisherService
     
     let documentStore: DocumentStore
     private var documentStoreSubscription: AnyCancellable!
@@ -60,6 +61,10 @@ class AppContext: ObservableObject {
         )
         
         mastodonEmojiService = MastodonEmojiService()
+        publisherService = PublisherService(
+            apiService: _apiService,
+            appSecret: appSecret
+        )
         
         documentStore = DocumentStore()
         documentStoreSubscription = documentStore.objectWillChange

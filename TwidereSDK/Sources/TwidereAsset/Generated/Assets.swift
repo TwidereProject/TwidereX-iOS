@@ -43,6 +43,18 @@ public enum Asset {
     public static let verifiedMask = ImageAsset(name: "Badge/verified.mask")
   }
   public enum Colors {
+    public enum Banner {
+      public static let actionBackground = ColorAsset(name: "Colors/Banner/action.background")
+      public static let actionLabel = ColorAsset(name: "Colors/Banner/action.label")
+      public static let errorBackground = ColorAsset(name: "Colors/Banner/error.background")
+      public static let errorLabel = ColorAsset(name: "Colors/Banner/error.label")
+      public static let infoBackground = ColorAsset(name: "Colors/Banner/info.background")
+      public static let infoLabel = ColorAsset(name: "Colors/Banner/info.label")
+      public static let successBackground = ColorAsset(name: "Colors/Banner/success.background")
+      public static let successLabel = ColorAsset(name: "Colors/Banner/success.label")
+      public static let warningBackground = ColorAsset(name: "Colors/Banner/warning.background")
+      public static let warningLabel = ColorAsset(name: "Colors/Banner/warning.label")
+    }
     public enum Theme {
       public static let daylight = ColorAsset(name: "Colors/Theme/daylight")
       public static let goldenSpirit = ColorAsset(name: "Colors/Theme/golden.spirit")

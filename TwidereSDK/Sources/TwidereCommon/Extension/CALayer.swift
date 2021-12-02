@@ -10,10 +10,17 @@ import UIKit
 
 extension CALayer {
     
-    func setupShadow(color: UIColor = .black, alpha: Float = 0.5,
-                         x: CGFloat = 0, y: CGFloat = 2,
-                         blur: CGFloat = 4, spread: CGFloat = 0,
-                         roundedRect: CGRect, byRoundingCorners corners: UIRectCorner, cornerRadii: CGSize) {
+    public func setupShadow(
+        color: UIColor = .black,
+        alpha: Float = 0.5,
+        x: CGFloat = 0,
+        y: CGFloat = 2,
+        blur: CGFloat = 4,
+        spread: CGFloat = 0,
+        roundedRect: CGRect,
+        byRoundingCorners corners: UIRectCorner,
+        cornerRadii: CGSize
+    ) {
         // assert(roundedRect != .zero)
         shadowColor        = color.cgColor
         shadowOpacity      = alpha

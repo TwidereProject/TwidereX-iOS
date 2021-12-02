@@ -97,9 +97,16 @@
 "Common.Alerts.ReportAndBlockUserSuccess.Title" = "%@는 스팸으로 신고받아 차단되었습니다.";
 "Common.Alerts.ReportUserSuccess.Title" = "%@는 스팸으로 신고됐습니다.";
 "Common.Alerts.TooManyRequests.Title" = "요청이 몰렸습니다.";
+"Common.Alerts.TootFail.DraftSavedMessage" = "Your toot has been saved to Drafts.";
+"Common.Alerts.TootFail.Message" = "다시 해보세요.";
+"Common.Alerts.TootFail.Title" = "Failed to Toot";
+"Common.Alerts.TootPosted.Title" = "Toot Posted";
+"Common.Alerts.TootSending.Title" = "Sending toot";
 "Common.Alerts.TweetDeleted.Title" = "트윗을 지웠습니다.";
+"Common.Alerts.TweetFail.DraftSavedMessage" = "Your tweet has been saved to Drafts.";
 "Common.Alerts.TweetFail.Message" = "다시 해보세요.";
 "Common.Alerts.TweetFail.Title" = "트윗이 올라가지 않았습니다.";
+"Common.Alerts.TweetPosted.Title" = "Tweet Posted";
 "Common.Alerts.TweetSending.Title" = "트윗을 보냅니다";
 "Common.Alerts.TweetSent.Title" = "트윗 보냄";
 "Common.Alerts.UnblockUserConfirm.Title" = "Do you want to unblock %@?";

@@ -97,9 +97,16 @@
 "Common.Alerts.ReportAndBlockUserSuccess.Title" = "%@ ha estat denunciat per publicitat abusiva i blocat";
 "Common.Alerts.ReportUserSuccess.Title" = "%@ ha estat denunciat per publicitat abusiva";
 "Common.Alerts.TooManyRequests.Title" = "Massa soŀlicituds";
+"Common.Alerts.TootFail.DraftSavedMessage" = "Your toot has been saved to Drafts.";
+"Common.Alerts.TootFail.Message" = "Si us plau, torna-ho a provar";
+"Common.Alerts.TootFail.Title" = "Failed to Toot";
+"Common.Alerts.TootPosted.Title" = "Toot Posted";
+"Common.Alerts.TootSending.Title" = "Sending toot";
 "Common.Alerts.TweetDeleted.Title" = "Piulada esborrada";
+"Common.Alerts.TweetFail.DraftSavedMessage" = "Your tweet has been saved to Drafts.";
 "Common.Alerts.TweetFail.Message" = "Si us plau, torna-ho a provar";
 "Common.Alerts.TweetFail.Title" = "Error al piular";
+"Common.Alerts.TweetPosted.Title" = "Tweet Posted";
 "Common.Alerts.TweetSending.Title" = "S'està enviant la piulada";
 "Common.Alerts.TweetSent.Title" = "Piulada enviada";
 "Common.Alerts.UnblockUserConfirm.Title" = "Do you want to unblock %@?";

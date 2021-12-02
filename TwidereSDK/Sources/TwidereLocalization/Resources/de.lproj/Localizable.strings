@@ -97,9 +97,16 @@
 "Common.Alerts.ReportAndBlockUserSuccess.Title" = "%@ wurde wegen Spam gemeldet und blockiert";
 "Common.Alerts.ReportUserSuccess.Title" = "%@ wurde wegen Spam gemeldet";
 "Common.Alerts.TooManyRequests.Title" = "Zu viele Anfragen";
+"Common.Alerts.TootFail.DraftSavedMessage" = "Your toot has been saved to Drafts.";
+"Common.Alerts.TootFail.Message" = "Bitte versuche es erneut";
+"Common.Alerts.TootFail.Title" = "Failed to Toot";
+"Common.Alerts.TootPosted.Title" = "Toot Posted";
+"Common.Alerts.TootSending.Title" = "Sending toot";
 "Common.Alerts.TweetDeleted.Title" = "Tweet gelöscht";
+"Common.Alerts.TweetFail.DraftSavedMessage" = "Your tweet has been saved to Drafts.";
 "Common.Alerts.TweetFail.Message" = "Bitte versuche es erneut";
 "Common.Alerts.TweetFail.Title" = "Tweet fehlgeschlagen";
+"Common.Alerts.TweetPosted.Title" = "Tweet Posted";
 "Common.Alerts.TweetSending.Title" = "Tweet wird gesendet";
 "Common.Alerts.TweetSent.Title" = "Tweet gesendet";
 "Common.Alerts.UnblockUserConfirm.Title" = "Do you want to unblock %@?";
