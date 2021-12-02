@@ -34,14 +34,14 @@ final class HomeTimelineViewController: UIViewController, NeedsDependency, Drawe
     var disposeBag = Set<AnyCancellable>()
     private(set) lazy var viewModel = HomeTimelineViewModel(context: context)
     
+    private(set) var drawerSidebarTransitionController: DrawerSidebarTransitionController!
+    let avatarBarButtonItem = AvatarBarButtonItem()
+    
     private(set) lazy var refreshControl: UIRefreshControl = {
         let refreshControl = UIRefreshControl()
         refreshControl.addTarget(self, action: #selector(HomeTimelineViewController.refreshControlValueChanged(_:)), for: .valueChanged)
         return refreshControl
     }()
-    
-    private(set) var drawerSidebarTransitionController: DrawerSidebarTransitionController!
-    let avatarBarButtonItem = AvatarBarButtonItem()
     
 //    let mediaPreviewTransitionController = MediaPreviewTransitionController()
     

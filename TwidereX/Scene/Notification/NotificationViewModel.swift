@@ -18,7 +18,7 @@ final class NotificationViewModel {
     let context: AppContext
     let _coordinator: SceneCoordinator  // only use for `setup`
     @Published var selectedScope: Scope? = nil
-
+    let viewDidAppear = CurrentValueSubject<Void, Never>(Void())
     
     // output
     @Published var scopes: [Scope] = []

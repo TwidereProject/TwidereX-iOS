@@ -28,10 +28,3 @@ final class DrawerSidebarViewModel {
     }
     
 }
-
-extension DrawerSidebarViewModel {
-    
-    func setupDiffableDataSource(for tableView: UITableView) {
-        
-    }
-}

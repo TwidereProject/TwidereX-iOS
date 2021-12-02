@@ -215,6 +215,7 @@
 		DBA7DD74256B96450008A95A /* UIFont.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBA7DD73256B96450008A95A /* UIFont.swift */; };
 		DBAA898E2758CF01001C273B /* DrawerSidebarHeaderView+ViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBAA898D2758CF01001C273B /* DrawerSidebarHeaderView+ViewModel.swift */; };
 		DBAA89902758DFC9001C273B /* AvatarBarButtonItem+ViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBAA898F2758DFC9001C273B /* AvatarBarButtonItem+ViewModel.swift */; };
+		DBAA89922758EF12001C273B /* DrawerSidebarViewModel+Diffable.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBAA89912758EF12001C273B /* DrawerSidebarViewModel+Diffable.swift */; };
 		DBAF13CF2747BC8E00EDD839 /* TwidereCommon in Frameworks */ = {isa = PBXBuildFile; productRef = DBAF13CE2747BC8E00EDD839 /* TwidereCommon */; };
 		DBAF13D12747BC9E00EDD839 /* TwidereCore in Frameworks */ = {isa = PBXBuildFile; productRef = DBAF13D02747BC9E00EDD839 /* TwidereCore */; };
 		DBAF13D52747BF0F00EDD839 /* CoreDataStack in Frameworks */ = {isa = PBXBuildFile; productRef = DBAF13D42747BF0F00EDD839 /* CoreDataStack */; };
@@ -728,6 +729,7 @@
 		DBA9B3C02587609200EA14ED /* MentionPickViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MentionPickViewModel.swift; sourceTree = "<group>"; };
 		DBAA898D2758CF01001C273B /* DrawerSidebarHeaderView+ViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DrawerSidebarHeaderView+ViewModel.swift"; sourceTree = "<group>"; };
 		DBAA898F2758DFC9001C273B /* AvatarBarButtonItem+ViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AvatarBarButtonItem+ViewModel.swift"; sourceTree = "<group>"; };
+		DBAA89912758EF12001C273B /* DrawerSidebarViewModel+Diffable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DrawerSidebarViewModel+Diffable.swift"; sourceTree = "<group>"; };
 		DBAC4A6625552A1E00140B23 /* MediaPreviewImageViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaPreviewImageViewModel.swift; sourceTree = "<group>"; };
 		DBB1FEC1269C34FE005BC761 /* AvatarImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvatarImageView.swift; sourceTree = "<group>"; };
 		DBB1FEC3269C3714005BC761 /* StatusSwiftUIView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusSwiftUIView.swift; sourceTree = "<group>"; };
@@ -2231,6 +2233,7 @@
 				DB761E522559353B0050DC01 /* View */,
 				DBEFDC8725591F5C0086F268 /* DrawerSidebarViewController.swift */,
 				DB761E69255946160050DC01 /* DrawerSidebarViewModel.swift */,
+				DBAA89912758EF12001C273B /* DrawerSidebarViewModel+Diffable.swift */,
 			);
 			path = Drawer;
 			sourceTree = "<group>";
@@ -3107,6 +3110,7 @@
 				DBC747D9259DA07C00787EEF /* ListTableViewCell.swift in Sources */,
 				DB7E23032552A6D100551314 /* UserLikeTimelineViewModel+Diffable.swift in Sources */,
 				DB8301F7273CED0400BF5224 /* NotificationTimelineViewController.swift in Sources */,
+				DBAA89922758EF12001C273B /* DrawerSidebarViewModel+Diffable.swift in Sources */,
 				DB5632AD26DCE93900FC893F /* StatusThreadViewModel+Diffable.swift in Sources */,
 				DBF639F7259B1728009E12C8 /* TimelineHeaderCollectionViewCell.swift in Sources */,
 				DBD0B49B2758B5A60015A388 /* DrawerSidebarViewController.swift in Sources */,

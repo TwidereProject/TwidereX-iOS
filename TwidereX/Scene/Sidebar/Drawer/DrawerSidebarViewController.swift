@@ -24,7 +24,7 @@ final class DrawerSidebarViewController: UIViewController, NeedsDependency {
 
     let headerView = DrawerSidebarHeaderView()    
     
-    let tableView: UITableView = {
+    let sidebarTableView: UITableView = {
         let tableView = UITableView()
         tableView.register(DrawerSidebarEntryTableViewCell.self, forCellReuseIdentifier: String(describing: DrawerSidebarEntryTableViewCell.self))
         tableView.tableFooterView = UIView()
@@ -32,9 +32,9 @@ final class DrawerSidebarViewController: UIViewController, NeedsDependency {
         return tableView
     }()
     
-    let pinnedTableViewSeparatorLine = SeparatorLineView()
+    let settingTableViewSeparatorLine = SeparatorLineView()
     
-    let pinnedTableView: UITableView = {
+    let settingTableView: UITableView = {
         let tableView = UITableView()
         tableView.register(DrawerSidebarEntryTableViewCell.self, forCellReuseIdentifier: String(describing: DrawerSidebarEntryTableViewCell.self))
         tableView.tableFooterView = UIView()
@@ -63,37 +63,31 @@ extension DrawerSidebarViewController {
             headerView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             headerView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
         ])
-//
-//        pinnedTableView.translatesAutoresizingMaskIntoConstraints = false
-//        view.addSubview(pinnedTableView)
-//        NSLayoutConstraint.activate([
-//            pinnedTableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-//            view.trailingAnchor.constraint(equalTo: pinnedTableView.trailingAnchor),
-//            view.layoutMarginsGuide.bottomAnchor.constraint(equalTo: pinnedTableView.bottomAnchor),
-//            pinnedTableView.heightAnchor.constraint(equalToConstant: 56).priority(.defaultHigh),
-//        ])
-//
-//        pinnedTableViewSeparatorLine.translatesAutoresizingMaskIntoConstraints = false
-//        view.addSubview(pinnedTableViewSeparatorLine)
-//        NSLayoutConstraint.activate([
-//            pinnedTableViewSeparatorLine.leadingAnchor.constraint(equalTo: view.layoutMarginsGuide.leadingAnchor),
-//            view.layoutMarginsGuide.trailingAnchor.constraint(equalTo: pinnedTableViewSeparatorLine.trailingAnchor),
-//            pinnedTableView.topAnchor.constraint(equalTo: pinnedTableViewSeparatorLine.bottomAnchor),
-//            pinnedTableViewSeparatorLine.heightAnchor.constraint(equalToConstant: UIView.separatorLineHeight(of: view)).priority(.defaultHigh),
-//        ])
-//
-//        tableView.delegate = self
-//        pinnedTableView.delegate = self
-//        tableViewDiffableDataSource = setupTableViewDiffableDataSource(tableView: tableView)
-//        pinnedTableViewDiffableDataSource = setupTableViewDiffableDataSource(tableView: pinnedTableView)
-//
-//        var pinnedTableViewDiffableDataSourceSnapshot = NSDiffableDataSourceSnapshot<SidebarSection, SidebarItem>()
-//        pinnedTableViewDiffableDataSourceSnapshot.appendSections([.main])
-//        pinnedTableViewDiffableDataSourceSnapshot.appendItems([.settings], toSection: .main)
-//        pinnedTableViewDiffableDataSource.apply(pinnedTableViewDiffableDataSourceSnapshot)
-        
-        
-//
+
+        settingTableView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(settingTableView)
+        NSLayoutConstraint.activate([
+            settingTableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            view.trailingAnchor.constraint(equalTo: settingTableView.trailingAnchor),
+            view.layoutMarginsGuide.bottomAnchor.constraint(equalTo: settingTableView.bottomAnchor),
+            settingTableView.heightAnchor.constraint(equalToConstant: 56).priority(.defaultHigh),
+        ])
+
+        settingTableViewSeparatorLine.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(settingTableViewSeparatorLine)
+        NSLayoutConstraint.activate([
+            settingTableViewSeparatorLine.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            view.trailingAnchor.constraint(equalTo: settingTableViewSeparatorLine.trailingAnchor),
+            settingTableView.topAnchor.constraint(equalTo: settingTableViewSeparatorLine.bottomAnchor),
+            settingTableViewSeparatorLine.heightAnchor.constraint(equalToConstant: UIView.separatorLineHeight(of: view)).priority(.defaultHigh),
+        ])
+
+        sidebarTableView.delegate = self
+        settingTableView.delegate = self
+        viewModel.setupDiffableDataSource(
+            sidebarTableView: sidebarTableView,
+            settingTableView: settingTableView
+        )
         
         context.authenticationService.activeAuthenticationContext
             .sink { [weak self] authenticationContext in
@@ -102,44 +96,12 @@ extension DrawerSidebarViewController {
                 self.headerView.configure(user: user)
             }
             .store(in: &disposeBag)
-//        context.authenticationService.activeAuthenticationIndex
-//            .receive(on: DispatchQueue.main)
-//            .sink { [weak self] activeAuthenticationIndex in
-//                guard let self = self else { return }
-//                let twitterUser = activeAuthenticationIndex?.twitterAuthentication?.twitterUser
-//                // bind avatar
-//                self.headerView.configure(withConfigurationInput: AvatarConfigurableViewConfiguration.Input(avatarImageURL: twitterUser?.avatarImageURL()))
-//                self.headerView.lockImageView.isHidden = twitterUser.flatMap { !$0.protected } ?? true
-//
-//                // bind name
-//                self.headerView.nameMetaLabel.setTitle(twitterUser?.name ?? "-", for: .normal)
-//                self.headerView.usernameLabel.setTitle(twitterUser.flatMap { "@" + $0.username } ?? "-", for: .normal)
-//
-//                // bind status
-////                self.headerView.profileBannerStatusView.followingStatusItemView.countLabel.text = twitterUser?.metrics?.followingCount.flatMap { "\($0.intValue)" } ?? "-"
-////                self.headerView.profileBannerStatusView.followersStatusItemView.countLabel.text = twitterUser?.metrics?.followersCount.flatMap { "\($0.intValue)" } ?? "-"
-////                self.headerView.profileBannerStatusView.listedStatusItemView.countLabel.text = twitterUser?.metrics?.listedCount.flatMap { "\($0.intValue)" } ?? "-"
-//            }
-//            .store(in: &disposeBag)
         
         headerView.delegate = self
     }
     
 }
 
-extension DrawerSidebarViewController {
-    
-//    func setupTableViewDiffableDataSource(tableView: UITableView) -> UITableViewDiffableDataSource<SidebarSection, SidebarItem> {
-//        return UITableViewDiffableDataSource<SidebarSection, SidebarItem>(tableView: tableView) { tableView, indexPath, item -> UITableViewCell? in
-//            let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: DrawerSidebarEntryTableViewCell.self), for: indexPath) as! DrawerSidebarEntryTableViewCell
-//            cell.entryView.iconImageView.image = item.image
-//            cell.entryView.iconImageView.tintColor = UIColor.label.withAlphaComponent(0.8)
-//            cell.entryView.titleLabel.text = item.title
-//            cell.entryView.titleLabel.textColor = UIColor.label.withAlphaComponent(0.8)
-//            return cell
-//        }
-//    }
-}
 
 // MARK: - DrawerSidebarHeaderViewDelegate
 extension DrawerSidebarViewController: DrawerSidebarHeaderViewDelegate {
@@ -178,19 +140,21 @@ extension DrawerSidebarViewController: DrawerSidebarHeaderViewDelegate {
 
 }
 
-//// MARK: - UITableViewDelegate
-//extension DrawerSidebarViewController: UITableViewDelegate {
-//
-//    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-//        if tableView === self.tableView {
-//
-//        }
-//
-//        if tableView === pinnedTableView {
-//            dismiss(animated: true) {
-//                self.coordinator.present(scene: .setting, from: nil, transition: .modal(animated: true, completion: nil))
-//            }
-//        }
-//    }
-//
-//}
+// MARK: - UITableViewDelegate
+extension DrawerSidebarViewController: UITableViewDelegate {
+
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        switch tableView {
+        case sidebarTableView:
+            break
+        case settingTableView:
+            dismiss(animated: true) {
+                self.coordinator.present(scene: .setting, from: nil, transition: .modal(animated: true, completion: nil))
+            }
+        default:
+            assertionFailure()
+            break
+        }
+    }
+
+}
