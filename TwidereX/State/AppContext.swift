@@ -11,6 +11,8 @@ import UIKit
 import Combine
 import CoreData
 import CoreDataStack
+import TwidereCommon
+import TwidereCore
 
 class AppContext: ObservableObject {
     
@@ -26,6 +28,9 @@ class AppContext: ObservableObject {
     let apiService: APIService
     let authenticationService: AuthenticationService
     
+    let mastodonEmojiService: MastodonEmojiService
+    let publisherService: PublisherService
+    
     let documentStore: DocumentStore
     private var documentStoreSubscription: AnyCancellable!
     
@@ -37,7 +42,7 @@ class AppContext: ObservableObject {
         .share()
         .eraseToAnyPublisher()
 
-    init() {
+    init(appSecret: AppSecret) {
         let _coreDataStack = CoreDataStack()
         let _managedObjectContext = _coreDataStack.persistentContainer.viewContext
         let _backgroundManagedObjectContext = _coreDataStack.newTaskContext()
@@ -51,7 +56,14 @@ class AppContext: ObservableObject {
         authenticationService = AuthenticationService(
             managedObjectContext: _managedObjectContext,
             backgroundManagedObjectContext: _backgroundManagedObjectContext,
-            apiService: _apiService
+            apiService: _apiService,
+            appSecret: appSecret
+        )
+        
+        mastodonEmojiService = MastodonEmojiService()
+        publisherService = PublisherService(
+            apiService: _apiService,
+            appSecret: appSecret
         )
         
         documentStore = DocumentStore()

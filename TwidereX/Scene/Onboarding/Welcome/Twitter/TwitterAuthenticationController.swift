@@ -14,6 +14,7 @@ import AuthenticationServices
 import WebKit
 import TwitterSDK
 import AppShared
+import TwidereCommon
 
 // Note:
 // use given request token to authenticate user

@@ -7,6 +7,8 @@
 //
 
 import UIKit
+import AppShared
+import TwidereComposeUI
 
 // MARK: - header
 extension StatusViewTableViewCellDelegate where Self: DataSourceProvider {
@@ -102,6 +104,32 @@ extension StatusViewTableViewCellDelegate where Self: DataSourceProvider {
             }
             
             switch action {
+            case .reply:
+                guard let status = status.object(in: context.managedObjectContext) else {
+                    assertionFailure()
+                    return
+                }
+                let composeViewModel = ComposeViewModel(context: context)
+                let composeContentViewModel = ComposeContentViewModel(
+                    inputContext: .reply(status: status),
+                    configurationContext: ComposeContentViewModel.ConfigurationContext(
+                        apiService: context.apiService,
+                        authenticationService: context.authenticationService,
+                        mastodonEmojiService: context.mastodonEmojiService,
+                        dateTimeProvider: DateTimeSwiftProvider(),
+                        twitterTextProvider: OfficialTwitterTextProvider()
+                    )
+                )
+                await coordinator.present(
+                    scene: .compose(
+                        viewModel: composeViewModel,
+                        contentViewModel: composeContentViewModel
+                    ),
+                    from: self,
+                    transition: .modal(
+                        animated: true, completion: nil
+                    )
+                )
             case .repost:
                 do {
                     try await DataSourceFacade.responseToStatusRepostAction(

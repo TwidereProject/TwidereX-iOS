@@ -9,6 +9,7 @@
 import os.log
 import SwiftUI
 import Introspect
+import TwidereAsset
 
 struct WelcomeView: View {
     
@@ -29,7 +30,9 @@ struct WelcomeView: View {
     var body: some View {
         VStack {
             HStack {
-                Image(Asset.Scene.Welcome.twidere.name)
+                // not use UIImage init method here
+                // only .init(_:bundle:) works with the dynamic Dark Mode asset
+                Image(Asset.Scene.Welcome.twidere.name, bundle: TwidereAsset.bundle)
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                     .frame(width: 48, height: 48)
@@ -126,7 +129,7 @@ struct TwitterAuthenticateButton: View {
                 primaryAction()
             } label: {
                 HStack {
-                    Image(Asset.Logo.twitter.name)
+                    Image(Asset.Logo.twitter.name, bundle: TwidereAsset.bundle)
                         .renderingMode(.template)
                     Spacer()
                     if isBusy {
@@ -144,7 +147,7 @@ struct TwitterAuthenticateButton: View {
             Button {
                 secondaryAction()
             } label: {
-                Image(Asset.Editing.ellipsis.name)
+                Image(Asset.Editing.ellipsis.name, bundle: TwidereAsset.bundle)
                     .renderingMode(.template)
                     .padding(.horizontal, 18)
             }
@@ -168,7 +171,7 @@ struct MastodonAuthenticateButton: View {
             primaryAction()
         } label: {
             HStack {
-                Image(Asset.Logo.mastodon.name)
+                Image(Asset.Logo.mastodon.name, bundle: TwidereAsset.bundle)
                     .renderingMode(.template)
                 Spacer()
                 if isBusy {
@@ -180,7 +183,7 @@ struct MastodonAuthenticateButton: View {
                         .frame(maxWidth: .infinity, alignment: .leading)
                 }
                 Spacer()
-                Image(Asset.Arrows.arrowRight.name)
+                Image(Asset.Arrows.arrowRight.name, bundle: TwidereAsset.bundle)
                     .renderingMode(.template)
             }
             .padding(.horizontal, 18)

@@ -56,6 +56,15 @@
         }
       },
       {
+        "package": "Floaty",
+        "repositoryURL": "https://github.com/kciter/Floaty.git",
+        "state": {
+          "branch": "master",
+          "revision": "1a6fd17ae1469c86baf830d9d5c93e6804cabe95",
+          "version": null
+        }
+      },
+      {
         "package": "FPSIndicator",
         "repositoryURL": "https://github.com/MainasuK/FPSIndicator.git",
         "state": {
@@ -83,12 +92,21 @@
         }
       },
       {
+        "package": "KeyboardLayoutGuide",
+        "repositoryURL": "https://github.com/freshOS/KeyboardLayoutGuide.git",
+        "state": {
+          "branch": null,
+          "revision": "2a62a1a0b64e3c7db227c7da67e94292c1897903",
+          "version": "1.7.0"
+        }
+      },
+      {
         "package": "Kingfisher",
         "repositoryURL": "https://github.com/onevcat/Kingfisher.git",
         "state": {
           "branch": null,
-          "revision": "d06df9adf50ed8cde5786d935836a5f445f780ba",
-          "version": "6.3.1"
+          "revision": "318e319998bf555c3e914d5c3adb6da05af86a32",
+          "version": "7.1.1"
         }
       },
       {
@@ -96,8 +114,8 @@
         "repositoryURL": "https://github.com/TwidereProject/MetaTextKit.git",
         "state": {
           "branch": null,
-          "revision": "b46401f7258a5981632cffa5e4cf9211b267cda7",
-          "version": "3.0.3"
+          "revision": "58e2082bb5c68b34b2a3f2a6596994692257cef5",
+          "version": "3.1.0"
         }
       },
       {
@@ -119,12 +137,21 @@
         }
       },
       {
+        "package": "swift-collections",
+        "repositoryURL": "https://github.com/apple/swift-collections.git",
+        "state": {
+          "branch": null,
+          "revision": "48254824bb4248676bf7ce56014ff57b142b77eb",
+          "version": "1.0.2"
+        }
+      },
+      {
         "package": "swift-nio",
         "repositoryURL": "https://github.com/apple/swift-nio.git",
         "state": {
           "branch": null,
-          "revision": "6aa9347d9bc5bbfe6a84983aec955c17ffea96ef",
-          "version": "2.33.0"
+          "revision": "addf69cfe60376c325397c8926589415576b1dd1",
+          "version": "2.34.0"
         }
       },
       {
@@ -150,8 +177,8 @@
         "repositoryURL": "https://github.com/SwiftyJSON/SwiftyJSON.git",
         "state": {
           "branch": null,
-          "revision": "2b6054efa051565954e1d2b9da831680026cd768",
-          "version": "5.0.0"
+          "revision": "b3dcd7dbd0d488e1a7077cb33b00f2083e382f07",
+          "version": "5.0.1"
         }
       },
       {
@@ -170,6 +197,15 @@
           "branch": null,
           "revision": "dad97167bf1be16aeecd109130900995dd01c515",
           "version": "2.6.0"
+        }
+      },
+      {
+        "package": "UITextView+Placeholder",
+        "repositoryURL": "https://github.com/MainasuK/UITextView-Placeholder.git",
+        "state": {
+          "branch": null,
+          "revision": "20f513ded04a040cdf5467f0891849b1763ede3b",
+          "version": "1.4.1"
         }
       }
     ]

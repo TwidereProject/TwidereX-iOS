@@ -15,7 +15,7 @@ final class ProfileHeaderView: UIView {
     
     var disposeBag = Set<AnyCancellable>()
     
-    static let avatarImageViewSize = CGSize(width: 88, height: 88)
+    static let avatarViewSize = CGSize(width: 88, height: 88)
     
     private(set) lazy var viewModel: ViewModel = {
         let viewModel = ViewModel()
@@ -33,7 +33,11 @@ final class ProfileHeaderView: UIView {
     }()
     var bannerImageViewTopLayoutConstraint: NSLayoutConstraint!
     
-    let avatarView = ProfileAvatarView()
+    let avatarView: ProfileAvatarView = {
+        let avatarView = ProfileAvatarView()
+        avatarView.dimension = ProfileHeaderView.avatarViewSize.width
+        return avatarView
+    }()
     
     let followsYouIndicatorLabel: UILabel = {
         let label = UILabel()

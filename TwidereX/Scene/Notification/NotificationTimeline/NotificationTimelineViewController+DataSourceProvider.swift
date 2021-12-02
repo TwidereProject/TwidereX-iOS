@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import TwidereCore
 
 extension NotificationTimelineViewController: DataSourceProvider {
     func item(from source: DataSourceItem.Source) async -> DataSourceItem? {

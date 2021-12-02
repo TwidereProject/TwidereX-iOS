@@ -7,16 +7,19 @@
 
 import UIKit
 import Combine
+import Floaty
 import Firebase
 import Kingfisher
-//import Floaty
+import AppShared
+
+@_exported import TwidereUI
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var disposeBag = Set<AnyCancellable>()
 
-    let appContext = AppContext()
+    let appContext = AppContext(appSecret: .default)
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         
@@ -34,14 +37,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         ImageCache.default.diskStorage.config.sizeLimit = 500 * 1024 * 1024
         ImageCache.default.diskStorage.config.expiration = .days(7)
         
-//        Floaty.global.rtlMode = UIApplication.shared.userInterfaceLayoutDirection == .rightToLeft
-        
-//        NotificationCenter.default.publisher(for: UIContentSizeCategory.didChangeNotification)
-//            .sink { _ in
-//                // only trigger update
-//                UserDefaults.shared.useTheSystemFontSize = UserDefaults.shared.useTheSystemFontSize
-//            }
-//            .store(in: &disposeBag)
+        // enable FAB RTL support
+        Floaty.global.rtlMode = UIApplication.shared.userInterfaceLayoutDirection == .rightToLeft
         
         // configure appearance
         ThemeService.shared.apply(theme: ThemeService.shared.theme.value)

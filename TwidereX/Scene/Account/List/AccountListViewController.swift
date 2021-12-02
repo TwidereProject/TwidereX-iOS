@@ -12,6 +12,7 @@ import AuthenticationServices
 import Combine
 import CoreDataStack
 import TwitterSDK
+import TwidereCommon
 
 protocol AccountListViewControllerDelegate: AnyObject {
     func signoutTwitterUser(id: TwitterUser.ID)

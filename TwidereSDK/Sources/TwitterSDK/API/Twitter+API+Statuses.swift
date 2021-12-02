@@ -11,56 +11,24 @@ import Combine
 extension Twitter.API.Statuses {
     
     static var updateEndpointURL = Twitter.API.endpointURL.appendingPathComponent("statuses/update.json")
-    static func retweetEndpointURL(tweetID: Twitter.Entity.Tweet.ID) -> URL { return Twitter.API.endpointURL.appendingPathComponent("statuses/retweet/\(tweetID).json") }
-    static func unretweetEndpointURL(tweetID: Twitter.Entity.Tweet.ID) -> URL { return Twitter.API.endpointURL.appendingPathComponent("statuses/unretweet/\(tweetID).json") }
-    static func destroyEndpointURL(tweetID: Twitter.Entity.Tweet.ID) -> URL { return Twitter.API.endpointURL.appendingPathComponent("statuses/destroy/\(tweetID).json") }
     
-    public static func update(session: URLSession, authorization: Twitter.API.OAuth.Authorization, query: UpdateQuery) -> AnyPublisher<Twitter.Response.Content<Twitter.Entity.Tweet>, Error> {
-        let url = updateEndpointURL
-        var request = Twitter.API.request(url: url, httpMethod: "POST", authorization: authorization, queryItems: query.queryItems, encodedQueryItems: query.encodedQueryItems)
-        request.httpMethod = "POST"
-        return session.dataTaskPublisher(for: request)
-            .tryMap { data, response in
-                let value = try Twitter.API.decode(type: Twitter.Entity.Tweet.self, from: data, response: response)
-                return Twitter.Response.Content(value: value, response: response)
-            }
-            .eraseToAnyPublisher()
+    public static func update(
+        session: URLSession,
+        query: UpdateQuery,
+        authorization: Twitter.API.OAuth.Authorization
+    ) async throws -> Twitter.Response.Content<Twitter.Entity.Tweet> {
+        let request = Twitter.API.request(
+            url: updateEndpointURL,
+            method: .POST,
+            query: query,
+            authorization: authorization
+        )
+        let (data, response) = try await session.data(for: request, delegate: nil)
+        let value = try Twitter.API.decode(type: Twitter.Entity.Tweet.self, from: data, response: response)
+        return Twitter.Response.Content(value: value, response: response)
     }
     
-    public static func retweet(session: URLSession, authorization: Twitter.API.OAuth.Authorization, retweetKind: RetweetKind, query: RetweetQuery) -> AnyPublisher<Twitter.Response.Content<Twitter.Entity.Tweet>, Error> {
-        let url: URL = {
-            switch retweetKind {
-            case .retweet: return retweetEndpointURL(tweetID: query.id)
-            case .unretweet: return unretweetEndpointURL(tweetID: query.id)
-            }
-        }()
-        var request = Twitter.API.request(url: url, httpMethod: "POST", authorization: authorization, queryItems: query.queryItems)
-        request.httpMethod = "POST"
-        return session.dataTaskPublisher(for: request)
-            .tryMap { data, response in
-                let value = try Twitter.API.decode(type: Twitter.Entity.Tweet.self, from: data, response: response)
-                return Twitter.Response.Content(value: value, response: response)
-            }
-            .eraseToAnyPublisher()
-    }
-    
-    public static func destroy(session: URLSession, authorization: Twitter.API.OAuth.Authorization, query: DestroyQuery) -> AnyPublisher<Twitter.Response.Content<Twitter.Entity.Tweet>, Error> {
-        let url = destroyEndpointURL(tweetID: query.id)
-        var request = Twitter.API.request(url: url, httpMethod: "POST", authorization: authorization, queryItems: query.queryItems)
-        request.httpMethod = "POST"
-        return session.dataTaskPublisher(for: request)
-            .tryMap { data, response in
-                let value = try Twitter.API.decode(type: Twitter.Entity.Tweet.self, from: data, response: response)
-                return Twitter.Response.Content(value: value, response: response)
-            }
-            .eraseToAnyPublisher()
-    }
-    
-}
-
-extension Twitter.API.Statuses {
-    
-    public struct UpdateQuery {
+    public struct UpdateQuery: Query {
         public let status: String
         public let inReplyToStatusID: Twitter.Entity.Tweet.ID?
         public let autoPopulateReplyMetadata: Bool?
@@ -102,15 +70,58 @@ extension Twitter.API.Statuses {
             guard !items.isEmpty else { return nil }
             return items
         }
-        
         var encodedQueryItems: [URLQueryItem]? {
             var items: [URLQueryItem] = []
             items.append(URLQueryItem(name: "status", value: status.urlEncoded))
             guard !items.isEmpty else { return nil }
             return items
         }
+        var formQueryItems: [URLQueryItem]? { nil }
+        var contentType: String? { nil }
+        var body: Data? { nil }
     }
     
+}
+
+extension Twitter.API.Statuses {
+
+    static func retweetEndpointURL(tweetID: Twitter.Entity.Tweet.ID) -> URL { return Twitter.API.endpointURL.appendingPathComponent("statuses/retweet/\(tweetID).json") }
+    static func unretweetEndpointURL(tweetID: Twitter.Entity.Tweet.ID) -> URL { return Twitter.API.endpointURL.appendingPathComponent("statuses/unretweet/\(tweetID).json") }
+    static func destroyEndpointURL(tweetID: Twitter.Entity.Tweet.ID) -> URL { return Twitter.API.endpointURL.appendingPathComponent("statuses/destroy/\(tweetID).json") }
+    
+    public static func retweet(session: URLSession, authorization: Twitter.API.OAuth.Authorization, retweetKind: RetweetKind, query: RetweetQuery) -> AnyPublisher<Twitter.Response.Content<Twitter.Entity.Tweet>, Error> {
+        let url: URL = {
+            switch retweetKind {
+            case .retweet: return retweetEndpointURL(tweetID: query.id)
+            case .unretweet: return unretweetEndpointURL(tweetID: query.id)
+            }
+        }()
+        var request = Twitter.API.request(url: url, httpMethod: "POST", authorization: authorization, queryItems: query.queryItems)
+        request.httpMethod = "POST"
+        return session.dataTaskPublisher(for: request)
+            .tryMap { data, response in
+                let value = try Twitter.API.decode(type: Twitter.Entity.Tweet.self, from: data, response: response)
+                return Twitter.Response.Content(value: value, response: response)
+            }
+            .eraseToAnyPublisher()
+    }
+    
+    public static func destroy(session: URLSession, authorization: Twitter.API.OAuth.Authorization, query: DestroyQuery) -> AnyPublisher<Twitter.Response.Content<Twitter.Entity.Tweet>, Error> {
+        let url = destroyEndpointURL(tweetID: query.id)
+        var request = Twitter.API.request(url: url, httpMethod: "POST", authorization: authorization, queryItems: query.queryItems)
+        request.httpMethod = "POST"
+        return session.dataTaskPublisher(for: request)
+            .tryMap { data, response in
+                let value = try Twitter.API.decode(type: Twitter.Entity.Tweet.self, from: data, response: response)
+                return Twitter.Response.Content(value: value, response: response)
+            }
+            .eraseToAnyPublisher()
+    }
+    
+}
+
+extension Twitter.API.Statuses {
+
     public enum RetweetKind {
         case retweet
         case unretweet

@@ -151,12 +151,12 @@ extension QuotePostView {
 }
 
 // MARK: - AvatarConfigurableView
-extension QuotePostView: AvatarConfigurableView {
-    static var configurableAvatarImageViewSize: CGSize { return avatarImageViewSize }
-    var configurableAvatarImageView: UIImageView? { return avatarImageView }
-    var configurableAvatarButton: UIButton? { return nil }
-    var configurableVerifiedBadgeImageView: UIImageView? { return verifiedBadgeImageView }
-}
+//extension QuotePostView: AvatarConfigurableView {
+//    static var configurableAvatarImageViewSize: CGSize { return avatarImageViewSize }
+//    var configurableAvatarImageView: UIImageView? { return avatarImageView }
+//    var configurableAvatarButton: UIButton? { return nil }
+//    var configurableVerifiedBadgeImageView: UIImageView? { return verifiedBadgeImageView }
+//}
 
 #if DEBUG
 import SwiftUI

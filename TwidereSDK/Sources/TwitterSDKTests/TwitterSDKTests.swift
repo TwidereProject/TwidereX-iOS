@@ -8,6 +8,7 @@
 import os.log
 import XCTest
 @testable import TwitterSDK
+import CommonOSLog
 
 final class TwitterSDKTests: XCTestCase {
     
@@ -25,10 +26,8 @@ extension TwitterSDKTests {
     var consumerSecret: String { "5jPoQ5kQvMJFDYRNE8bQ4rHuds4xJqhvgNJM4awaE8" }
     
     func testOAuthRequestToken() async throws {
-        let query = Twitter.API.OAuth.RequestTokenQuery(consumerKey: consumerKey, consumerSecret: consumerSecret)
-        let response = try await Twitter.API.OAuth.requestToken(session: URLSession.shared, query: query)
-        logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): response: \n\(response.debugDescription)")
-        
-
+//        let query = Twitter.API.OAuth.RequestTokenQuery(consumerKey: consumerKey, consumerSecret: consumerSecret)
+//        let response = try await Twitter.API.OAuth.requestToken(session: URLSession.shared, query: query)
+//        logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): response: \n\(response.debugDescription)")
     }
 }

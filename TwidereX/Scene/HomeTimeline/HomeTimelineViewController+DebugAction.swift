@@ -17,6 +17,8 @@ import ZIPFoundation
 import FLEX
 import MetaTextKit
 import MetaTextArea
+import TwidereUI
+import SwiftMessages
 
 extension HomeTimelineViewController {
     
@@ -79,11 +81,33 @@ extension HomeTimelineViewController {
                     guard let self = self else { return }
                     self.showStubTimelineAction(action)
                 }),
+                notificationBannerMenu,
                 UIAction(title: "Corner Smooth Preview", attributes: [], state: .off, handler: { [weak self] action in
                     guard let self = self else { return }
                     self.cornerSmoothPreview(action)
                 }),
             ]
+        )
+    }
+    
+    var notificationBannerMenu: UIMenu {
+        UIMenu(
+            title: "Notification Banner",
+            image: UIImage(systemName: "bell.square"),
+            identifier: nil,
+            options: [],
+            children: NotificationBannerView.Style.allCases.map { style in
+                UIAction(
+                    title: style.rawValue,
+                    image: style.iconImage,
+                    identifier: nil,
+                    discoverabilityTitle: nil,
+                    attributes: [],
+                    state: .off)
+                { action in
+                    self.showNotificationBanner(action, style: style)
+                }
+            }
         )
     }
     
@@ -459,6 +483,20 @@ extension HomeTimelineViewController {
 //            }
 //        }
     }
+    
+    private func showNotificationBanner(_ sender: UIAction, style: NotificationBannerView.Style) {
+        var config = SwiftMessages.defaultConfig
+        config.duration = .seconds(seconds: 3)
+        config.interactiveHide = true
+
+        let bannerView = NotificationBannerView()
+        bannerView.configure(style: style)
+        bannerView.titleLabel.text = "Title"
+        bannerView.messageLabel.text = "Message"
+
+        SwiftMessages.show(config: config, view: bannerView)
+    }
+
     
     @objc private func cornerSmoothPreview(_ sender: UIAction) {
         let cornerSmoothPreviewViewController = CornerSmoothPreviewViewController()

@@ -9,6 +9,7 @@
 import UIKit
 import Combine
 import CoreDataStack
+import TwidereUI
 
 enum UserSection {
     case main
@@ -25,6 +26,8 @@ extension UserSection {
         context: AppContext,
         configuration: Configuration
     ) -> UITableViewDiffableDataSource<UserSection, UserItem> {
+        tableView.register(UserMentionPickStyleTableViewCell.self, forCellReuseIdentifier: String(describing: UserMentionPickStyleTableViewCell.self))
+        
         return UITableViewDiffableDataSource<UserSection, UserItem>(tableView: tableView) { tableView, indexPath, item in
             // data source should dispatch in main thread
             assert(Thread.isMainThread)
@@ -80,6 +83,8 @@ extension UserSection {
             return tableView.dequeueReusableCell(withIdentifier: String(describing: UserFriendshipStyleTableViewCell.self), for: indexPath) as! UserFriendshipStyleTableViewCell
         case .notification:
             return tableView.dequeueReusableCell(withIdentifier: String(describing: UserFriendshipStyleTableViewCell.self), for: indexPath) as! UserFriendshipStyleTableViewCell
+        case .mentionPick:
+            return tableView.dequeueReusableCell(withIdentifier: String(describing: UserMentionPickStyleTableViewCell.self), for: indexPath) as! UserMentionPickStyleTableViewCell
         }
     }
     

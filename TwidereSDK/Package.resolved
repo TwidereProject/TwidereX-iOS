@@ -2,6 +2,69 @@
   "object": {
     "pins": [
       {
+        "package": "Alamofire",
+        "repositoryURL": "https://github.com/Alamofire/Alamofire.git",
+        "state": {
+          "branch": null,
+          "revision": "d120af1e8638c7da36c8481fd61a66c0c08dc4fc",
+          "version": "5.4.4"
+        }
+      },
+      {
+        "package": "AlamofireImage",
+        "repositoryURL": "https://github.com/Alamofire/AlamofireImage.git",
+        "state": {
+          "branch": null,
+          "revision": "98cbb00ce0ec5fc8e52a5b50a6bfc08d3e5aee10",
+          "version": "4.2.0"
+        }
+      },
+      {
+        "package": "CommonOSLog",
+        "repositoryURL": "https://github.com/MainasuK/CommonOSLog",
+        "state": {
+          "branch": null,
+          "revision": "c121624a30698e9886efe38aebb36ff51c01b6c2",
+          "version": "0.1.1"
+        }
+      },
+      {
+        "package": "FLAnimatedImage",
+        "repositoryURL": "https://github.com/Flipboard/FLAnimatedImage.git",
+        "state": {
+          "branch": null,
+          "revision": "e7f9fd4681ae41bf6f3056db08af4f401d61da52",
+          "version": "1.0.16"
+        }
+      },
+      {
+        "package": "Fuzi",
+        "repositoryURL": "https://github.com/cezheng/Fuzi.git",
+        "state": {
+          "branch": null,
+          "revision": "f08c8323da21e985f3772610753bcfc652c2103f",
+          "version": "3.1.3"
+        }
+      },
+      {
+        "package": "MetaTextKit",
+        "repositoryURL": "https://github.com/TwidereProject/MetaTextKit.git",
+        "state": {
+          "branch": null,
+          "revision": "b46401f7258a5981632cffa5e4cf9211b267cda7",
+          "version": "3.0.3"
+        }
+      },
+      {
+        "package": "SDWebImage",
+        "repositoryURL": "https://github.com/SDWebImage/SDWebImage.git",
+        "state": {
+          "branch": null,
+          "revision": "a72df4849408da7e5d3c1b586797b7c601c41d1b",
+          "version": "5.12.1"
+        }
+      },
+      {
         "package": "swift-nio",
         "repositoryURL": "https://github.com/apple/swift-nio.git",
         "state": {

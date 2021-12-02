@@ -13,16 +13,16 @@ enum AboutEntryType: Identifiable, Hashable, CaseIterable {
     case github
     case twitter
     case license
-    case privacyyPolicy
+    case privacyPolicy
     
     var id: AboutEntryType { return self }
     
-    var text: String {
+    public var text: String {
         switch self {
         case .github:           return "GitHub"
         case .twitter:          return "Twitter"
         case .license:          return "License"
-        case .privacyyPolicy:   return "Privacy Policy"
+        case .privacyPolicy:   return "Privacy Policy"
         }
     }
     
@@ -71,9 +71,9 @@ struct AboutView: View {
                     Text(AboutEntryType.license.text)
                 })
                 Button(action: {
-                    context.viewStateStore.aboutView.aboutEntryPublisher.send(.privacyyPolicy)
+                    context.viewStateStore.aboutView.aboutEntryPublisher.send(.privacyPolicy)
                 }, label: {
-                    Text(AboutEntryType.privacyyPolicy.text)
+                    Text(AboutEntryType.privacyPolicy.text)
                 })
             }
             Spacer()

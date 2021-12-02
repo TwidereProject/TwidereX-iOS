@@ -8,11 +8,12 @@
 
 import os.log
 import UIKit
-import Combine
-import TwitterSDK
-import SafariServices
-//import SwiftMessages
 import SwiftUI
+import Combine
+import SafariServices
+import SwiftMessages
+import TwitterSDK
+import TwidereUI
 
 class MainTabBarController: UITabBarController {
     
@@ -116,6 +117,38 @@ extension MainTabBarController {
 //        tabBarAppearance.configureWithDefaultBackground()
 //        tabBar.standardAppearance = tabBarAppearance
         
+        let feedbackGenerator = UINotificationFeedbackGenerator()
+
+        context.publisherService.statusPublishResult
+            .receive(on: DispatchQueue.main)
+            .sink { result in
+                switch result {
+                case .success(let result):
+                    var config = SwiftMessages.defaultConfig
+                    config.duration = .seconds(seconds: 3)
+                    config.interactiveHide = true
+                    let bannerView = NotificationBannerView()
+                    bannerView.configure(style: .success)
+                    switch result {
+                    case .twitter:
+                        bannerView.titleLabel.text = L10n.Common.Alerts.TweetPosted.title
+                        bannerView.messageLabel.isHidden = true
+                    case .mastodon:
+                        bannerView.titleLabel.text = L10n.Common.Alerts.TootPosted.title
+                        bannerView.messageLabel.isHidden = true
+                    }
+                    
+                    feedbackGenerator.prepare()
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                        SwiftMessages.show(config: config, view: bannerView)
+                        feedbackGenerator.notificationOccurred(.success)
+                    }
+                case .failure(let error):
+                    // TODO:
+                    break
+                }
+            }
+            .store(in: &disposeBag)
 //        context.apiService.error
 //            .receive(on: DispatchQueue.main)
 //            .sink { [weak self] error in

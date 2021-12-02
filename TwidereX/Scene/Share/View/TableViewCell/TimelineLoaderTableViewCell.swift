@@ -53,11 +53,11 @@ class TimelineLoaderTableViewCell: UITableViewCell {
         loadMoreButton.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(loadMoreButton)
         NSLayoutConstraint.activate([
-            loadMoreButton.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 8),
-            loadMoreButton.leadingAnchor.constraint(equalTo: contentView.readableContentGuide.leadingAnchor),
-            contentView.readableContentGuide.trailingAnchor.constraint(equalTo: loadMoreButton.trailingAnchor),
-            contentView.bottomAnchor.constraint(equalTo: loadMoreButton.bottomAnchor, constant: 8),
-            loadMoreButton.heightAnchor.constraint(equalToConstant: TimelineLoaderTableViewCell.cellHeight - 2 * 8).priority(.defaultHigh),
+            loadMoreButton.topAnchor.constraint(equalTo: contentView.topAnchor),
+            loadMoreButton.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+            contentView.trailingAnchor.constraint(equalTo: loadMoreButton.trailingAnchor),
+            contentView.bottomAnchor.constraint(equalTo: loadMoreButton.bottomAnchor),
+            loadMoreButton.heightAnchor.constraint(equalToConstant: TimelineLoaderTableViewCell.cellHeight).priority(.defaultHigh),
         ])
         
         activityIndicatorView.translatesAutoresizingMaskIntoConstraints = false

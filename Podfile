@@ -1,25 +1,28 @@
 source 'https://cdn.cocoapods.org/'
 platform :ios, '15.0'
 
+def common_pods
+  # Misc
+  pod 'DateToolsSwift', '~> 5.0.0'
+  # Twitter
+  pod 'twitter-text', '~> 3.1.0'
+end
+
 target 'TwidereX' do
   # Comment the next line if you don't want to use dynamic frameworks
   use_frameworks!
 
   # Pods for TwidereX
+  common_pods
   
   ## UI
-  pod 'Floaty', '~> 4.2.0'
   pod 'XLPagerTabStrip', '~> 9.0.0'
   
   # misc
   pod 'SwiftGen', '~> 6.3.0'
-  pod 'DateToolsSwift', '~> 5.0.0'
   pod 'Firebase/Analytics', '~> 8.2.0' 
   pod 'Firebase/Crashlytics', '~> 8.2.0'
   pod 'Sourcery'
-
-  # Twitter
-  pod 'twitter-text', '~> 3.1.0'
 
   # Debug
   pod 'FLEX', '~> 4.4.0', :configurations => ['Debug']
@@ -39,9 +42,10 @@ end
 target 'AppShared' do 
   # Comment the next line if you don't want to use dynamic frameworks
   use_frameworks!
+  common_pods
 end
 
-target 'CoreDataStack' do 
+target 'ShareExtension' do 
   # Comment the next line if you don't want to use dynamic frameworks
   use_frameworks!
 end

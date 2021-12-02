@@ -107,6 +107,7 @@ extension Mastodon.API {
     public enum DomainBlock { }
     
     public enum V2 {
+        public enum Media { }
         public enum Search { }
     }
 }
@@ -164,6 +165,7 @@ extension Mastodon.API {
         } catch let decodeError {
             #if DEBUG
             os_log(.info, "%{public}s[%{public}ld], %{public}s: decode fail. content %s", ((#file as NSString).lastPathComponent), #line, #function, String(data: data, encoding: .utf8) ?? "<nil>")
+            print(String(data: data, encoding: .utf8) ?? "<data>")
             debugPrint(decodeError)
             #endif
             
