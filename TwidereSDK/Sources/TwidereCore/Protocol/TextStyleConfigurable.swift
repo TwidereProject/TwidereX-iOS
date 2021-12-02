@@ -34,6 +34,8 @@ public enum TextStyle {
     case profileFieldValue
     case hashtagTitle
     case hashtagDescription
+    case sidebarAuthorName
+    case sidebarAuthorUsername
     
     case custom(Configuration)
     public struct Configuration {
@@ -69,6 +71,8 @@ extension TextStyle {
         case .profileFieldValue:        return 0
         case .hashtagTitle:             return 1
         case .hashtagDescription:       return 1
+        case .sidebarAuthorName:        return 1
+        case .sidebarAuthorUsername:    return 1
         case .custom:                   return 1
         }
     }
@@ -109,6 +113,10 @@ extension TextStyle {
             return .preferredFont(forTextStyle: .headline)
         case .hashtagDescription:
             return .preferredFont(forTextStyle: .subheadline)
+        case .sidebarAuthorName:
+            return .systemFont(ofSize: 16, weight: .regular)
+        case .sidebarAuthorUsername:
+            return .systemFont(ofSize: 14, weight: .regular)
         case .custom(let configuration):
             return configuration.font
         }
@@ -147,6 +155,10 @@ extension TextStyle {
         case .hashtagTitle:
             return .label
         case .hashtagDescription:
+            return .secondaryLabel
+        case .sidebarAuthorName:
+            return .label
+        case .sidebarAuthorUsername:
             return .secondaryLabel
         case .custom(let configuration):
             return configuration.textColor
@@ -200,6 +212,10 @@ extension MetaLabel: TextStyleConfigurable {
         case .hashtagTitle:
             break
         case .hashtagDescription:
+            break
+        case .sidebarAuthorName:
+            break
+        case .sidebarAuthorUsername:
             break
         case .custom:
             break

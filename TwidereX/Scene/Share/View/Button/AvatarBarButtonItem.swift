@@ -7,17 +7,24 @@
 //
 
 import UIKit
+import TwidereUI
 
 public final class AvatarBarButtonItem: UIBarButtonItem {
 
     public static let avatarButtonSize = CGSize(width: 30, height: 30)
+    
+    private(set) lazy var viewModel: ViewModel = {
+        let viewModel = ViewModel()
+        viewModel.bind(view: self)
+        return viewModel
+    }()
 
-    public let avatarButton: UIButton = {
-        let button = UIButton(type: .custom)
+    public let avatarButton: AvatarButton = {
+        let button = AvatarButton()
         button.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            button.widthAnchor.constraint(equalToConstant: avatarButtonSize.width).priority(.defaultHigh),
-            button.heightAnchor.constraint(equalToConstant: avatarButtonSize.height).priority(.defaultHigh),
+            button.widthAnchor.constraint(equalToConstant: avatarButtonSize.width).priority(.required - 1),
+            button.heightAnchor.constraint(equalToConstant: avatarButtonSize.height).priority(.required - 1),
         ])
         return button
     }()

@@ -21,8 +21,10 @@ import AppShared
 import TwidereUI
 import TwidereComposeUI
 
-// DrawerSidebarTransitionableViewController, MediaPreviewableViewController
-final class HomeTimelineViewController: UIViewController, NeedsDependency {
+// MediaPreviewableViewController
+final class HomeTimelineViewController: UIViewController, NeedsDependency, DrawerSidebarTransitionHostViewController {
+    
+//    var avatarBarButtonItem: AvatarBarButtonItem
     
     let logger = Logger(subsystem: "HomeTimelineViewController", category: "ViewController")
     
@@ -38,10 +40,11 @@ final class HomeTimelineViewController: UIViewController, NeedsDependency {
         return refreshControl
     }()
     
-//    private(set) var drawerSidebarTransitionController: DrawerSidebarTransitionController!
+    private(set) var drawerSidebarTransitionController: DrawerSidebarTransitionController!
+    let avatarBarButtonItem = AvatarBarButtonItem()
+    
 //    let mediaPreviewTransitionController = MediaPreviewTransitionController()
     
-//    let avatarBarButtonItem = AvatarBarButtonItem()
     
     private(set) lazy var tableView: UITableView = {
         let tableView = UITableView()
@@ -85,12 +88,28 @@ extension HomeTimelineViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        drawerSidebarTransitionController = DrawerSidebarTransitionController(hostViewController: self)
+
         view.backgroundColor = .systemBackground
-        
+
+        navigationItem.leftBarButtonItem = avatarBarButtonItem
+        avatarBarButtonItem.avatarButton.addTarget(self, action: #selector(HomeTimelineViewController.avatarButtonPressed(_:)), for: .touchUpInside)
+        Publishers.CombineLatest(
+            context.authenticationService.activeAuthenticationContext,
+            viewModel.viewDidAppear.eraseToAnyPublisher()
+        )
+        .receive(on: DispatchQueue.main)
+        .sink { [weak self] authenticationContext, _ in
+            guard let self = self else { return }
+            let user = authenticationContext?.user(in: self.context.managedObjectContext)
+            self.avatarBarButtonItem.configure(user: user)
+        }
+        .store(in: &disposeBag)
+
         #if DEBUG
-        navigationItem.leftBarButtonItem = debugActionBarButtonItem
+        navigationItem.rightBarButtonItem = debugActionBarButtonItem
         #endif
-        
+
         tableView.translatesAutoresizingMaskIntoConstraints = false
         tableView.frame = view.bounds
         view.addSubview(tableView)
@@ -100,7 +119,7 @@ extension HomeTimelineViewController {
             tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
         ])
-        
+
         view.addSubview(floatyButton)
         
         tableView.delegate = self
@@ -130,28 +149,6 @@ extension HomeTimelineViewController {
                 self.viewModel.loadOldestStateMachine.enter(HomeTimelineViewModel.LoadOldestState.Loading.self)
             }
             .store(in: &disposeBag)
-        
-//        navigationItem.leftBarButtonItem = avatarBarButtonItem
-//        avatarBarButtonItem.avatarButton.addTarget(self, action: #selector(HomeTimelineViewController.avatarButtonPressed(_:)), for: .touchUpInside)
-//
-//        drawerSidebarTransitionController = DrawerSidebarTransitionController(drawerSidebarTransitionableViewController: self)
-
-//        Publishers.CombineLatest3(
-//            context.authenticationService.activeAuthenticationIndex.eraseToAnyPublisher(),
-//            viewModel.avatarStyle.eraseToAnyPublisher(),
-//            viewModel.viewDidAppear.eraseToAnyPublisher()
-//        )
-//        .receive(on: DispatchQueue.main)
-//        .sink { [weak self] activeAuthenticationIndex, _, _ in
-//            guard let self = self else { return }
-//            guard let twitterUser = activeAuthenticationIndex?.twitterAuthentication?.twitterUser,
-//                  let avatarImageURL = twitterUser.avatarImageURL() else {
-//                self.avatarBarButtonItem.configure(withConfigurationInput: AvatarConfigurableViewConfiguration.Input(avatarImageURL: nil))
-//                return
-//            }
-//            self.avatarBarButtonItem.configure(withConfigurationInput: AvatarConfigurableViewConfiguration.Input(avatarImageURL: avatarImageURL))
-//        }
-//        .store(in: &disposeBag)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -163,9 +160,9 @@ extension HomeTimelineViewController {
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-//
-//        viewModel.viewDidAppear.send()
-//
+
+        viewModel.viewDidAppear.send()
+
 //        DispatchQueue.main.async { [weak self] in
 //            guard let self = self else { return }
 //            if (self.viewModel.fetchedResultsController.fetchedObjects ?? []).count == 0 {
@@ -173,7 +170,7 @@ extension HomeTimelineViewController {
 //            }
 //        }
     }
-    
+
 //    override func viewDidDisappear(_ animated: Bool) {
 //        super.viewDidDisappear(animated)
 //
@@ -182,7 +179,7 @@ extension HomeTimelineViewController {
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
-        
+
         coordinator.animate { _ in
             // do nothing
         } completion: { _ in
@@ -193,7 +190,7 @@ extension HomeTimelineViewController {
 
     override func viewSafeAreaInsetsDidChange() {
         super.viewSafeAreaInsetsDidChange()
-        
+
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
             self.floatyButton.paddingY = self.view.safeAreaInsets.bottom + UIView.floatyButtonBottomMargin
@@ -204,10 +201,11 @@ extension HomeTimelineViewController {
 
 extension HomeTimelineViewController {
 
-//    @objc private func avatarButtonPressed(_ sender: UIButton) {
-//        os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
-//        coordinator.present(scene: .drawerSidebar, from: self, transition: .custom(transitioningDelegate: drawerSidebarTransitionController))
-//    }
+    @objc private func avatarButtonPressed(_ sender: UIButton) {
+        logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public)")
+        let drawerSidebarViewModel = DrawerSidebarViewModel(context: context)
+        coordinator.present(scene: .drawerSidebar(viewModel: drawerSidebarViewModel), from: self, transition: .custom(transitioningDelegate: drawerSidebarTransitionController))
+    }
 
     @objc private func refreshControlValueChanged(_ sender: UIRefreshControl) {
         logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public)")

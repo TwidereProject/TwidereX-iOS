@@ -53,19 +53,21 @@ extension SceneCoordinator {
         
         // Status
         case statusThread(viewModel: StatusThreadViewModel)
+        case compose(viewModel: ComposeViewModel, contentViewModel: ComposeContentViewModel)
         
         // Hashtag
         case hashtagTimeline(viewModel: HashtagTimelineViewModel)
         
+        // Sidebar
+        case drawerSidebar(viewModel: DrawerSidebarViewModel)
+
         // TODO:
-        case compose(viewModel: ComposeViewModel, contentViewModel: ComposeContentViewModel)
 //        case mentionPick(viewModel: MentionPickViewModel, delegate: MentionPickViewControllerDelegate)
         // case tweetConversation(viewModel: TweetConversationViewModel)
 //        case searchDetail(viewModel: SearchDetailViewModel)
         case profile(viewModel: ProfileViewModel)
 //        case friendshipList(viewModel: FriendshipListViewModel)
 //        case mediaPreview(viewModel: MediaPreviewViewModel)
-//        case drawerSidebar
 
         case setting
         case displayPreference
@@ -238,8 +240,10 @@ private extension SceneCoordinator {
 //            let _viewController = MediaPreviewViewController()
 //            _viewController.viewModel = viewModel
 //            viewController = _viewController
-//        case .drawerSidebar:
-//            viewController = DrawerSidebarViewController()
+        case .drawerSidebar(let viewModel):
+            let _viewController = DrawerSidebarViewController()
+            _viewController.viewModel = viewModel
+            viewController = _viewController
         case .setting:
             viewController = SettingListViewController()
         case .displayPreference:

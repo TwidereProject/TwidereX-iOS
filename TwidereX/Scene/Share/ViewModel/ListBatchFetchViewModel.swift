@@ -6,6 +6,7 @@
 //  Copyright © 2021 Twidere. All rights reserved.
 //
 
+import os.log
 import Foundation
 import Combine
 import UIKit
@@ -37,10 +38,10 @@ final class ListBatchFetchViewModel {
             guard let self = self else { return }
             guard hasMore else { return }
             guard let scrollView = self.scrollView else { return }
-            
+
             // skip trigger if user interacting
             if scrollView.isDragging || scrollView.isTracking { return }
-            
+
             // send fetch request
             if scrollView.contentSize.height < scrollView.frame.height {
                 self.shouldFetch.send()
@@ -52,13 +53,17 @@ final class ListBatchFetchViewModel {
                 let visibleBottomY = contentOffset.y + frame.height
                 let offset = 2 * frame.height
                 let fetchThrottleOffsetY = contentSize.height - offset
-                
+
                 if visibleBottomY > fetchThrottleOffsetY {
                     self.shouldFetch.send()
                 }
             }
         }
         .store(in: &disposeBag)
+    }
+    
+    deinit {
+        os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
     }
     
 }

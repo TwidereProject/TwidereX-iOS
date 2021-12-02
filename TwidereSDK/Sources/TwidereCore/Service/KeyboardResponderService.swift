@@ -23,21 +23,24 @@ public final class KeyboardResponderService {
     
     private init() {
         NotificationCenter.default.publisher(for: UIResponder.keyboardWillShowNotification, object: nil)
-            .sink { notification in
+            .sink { [weak self] notification in
+                guard let self = self else { return }
                 self.isShow.value = true
                 self.updateInternalStatus(notification: notification)
             }
             .store(in: &disposeBag)
         
         NotificationCenter.default.publisher(for: UIResponder.keyboardDidHideNotification, object: nil)
-            .sink { notification in
+            .sink { [weak self] notification in
+                guard let self = self else { return }
                 self.isShow.value = false
                 self.updateInternalStatus(notification: notification)
             }
             .store(in: &disposeBag)
         
         NotificationCenter.default.publisher(for: UIResponder.keyboardDidChangeFrameNotification, object: nil)
-            .sink { notification in
+            .sink { [weak self] notification in
+                guard let self = self else { return }
                 self.updateInternalStatus(notification: notification)
             }
             .store(in: &disposeBag)

@@ -91,7 +91,7 @@ extension SearchViewController {
 //        setupSearchBar()
 //        avatarBarButtonItem.avatarButton.addTarget(self, action: #selector(SearchViewController.avatarButtonPressed(_:)), for: .touchUpInside)
 //
-//        drawerSidebarTransitionController = DrawerSidebarTransitionController(drawerSidebarTransitionableViewController: self)
+//        drawerSidebarTransitionController = DrawerSidebarTransitionController(hostViewController: self)
 //
 //        searchBarTapPublisher
 //            .sink { [weak self] _ in

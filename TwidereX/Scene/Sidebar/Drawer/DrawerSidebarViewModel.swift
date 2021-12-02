@@ -7,10 +7,26 @@
 //
 
 import UIKit
+import Combine
+import Meta
+import TwidereCore
 
 final class DrawerSidebarViewModel {
     
-    // var diffableDataSource = UITableView
+    var disposeBag = Set<AnyCancellable>()
+    
+    // input
+    let context: AppContext
+    
+    // output
+    var sidebarDiffableDataSource: UITableViewDiffableDataSource<SidebarSection, SidebarItem>?
+    var settingDiffableDataSource: UITableViewDiffableDataSource<SidebarSection, SidebarItem>?
+    
+    init(context: AppContext) {
+        self.context = context
+        // end init
+    }
+    
 }
 
 extension DrawerSidebarViewModel {

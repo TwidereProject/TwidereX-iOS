@@ -29,6 +29,7 @@ final class HomeTimelineViewModel: NSObject {
     let context: AppContext
     let fetchedResultsController: FeedFetchedResultsController
     let listBatchFetchViewModel = ListBatchFetchViewModel()
+    let viewDidAppear = CurrentValueSubject<Void, Never>(Void())
     
     // output
     var diffableDataSource: UITableViewDiffableDataSource<StatusSection, StatusItem>?

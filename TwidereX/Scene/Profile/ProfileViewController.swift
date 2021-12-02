@@ -231,7 +231,7 @@ extension ProfileViewController {
         tabBarPagerController.relayScrollView.refreshControl = refreshControl
         refreshControl.addTarget(self, action: #selector(ProfileViewController.refreshControlValueChanged(_:)), for: .valueChanged)
         
-//        drawerSidebarTransitionController = DrawerSidebarTransitionController(drawerSidebarTransitionableViewController: self)
+//        drawerSidebarTransitionController = DrawerSidebarTransitionController(hostViewController: self)
         
 //        let userTimelineViewModel = UserTimelineViewModel(context: context)
 //        viewModel.userIdentifier
