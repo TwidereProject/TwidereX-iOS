@@ -50,7 +50,7 @@ extension SearchUserViewModel {
                         var snapshot = NSDiffableDataSourceSnapshot<UserSection, UserItem>()
                         snapshot.appendSections([.main])
                         let newItems: [UserItem] = records.map {
-                            .user(record: $0, style: .friendship)
+                            .user(record: $0, style: .relationship)
                         }
                         snapshot.appendItems(newItems, toSection: .main)
                         return snapshot

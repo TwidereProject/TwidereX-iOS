@@ -50,6 +50,8 @@ extension SceneCoordinator {
         
         // Account
         case accountList(viewModel: AccountListViewModel)
+        case profile(viewModel: ProfileViewModel)
+        case friendshipList(viewModel: FriendshipListViewModel)
         
         // Status
         case statusThread(viewModel: StatusThreadViewModel)
@@ -65,7 +67,7 @@ extension SceneCoordinator {
 //        case mentionPick(viewModel: MentionPickViewModel, delegate: MentionPickViewControllerDelegate)
         // case tweetConversation(viewModel: TweetConversationViewModel)
 //        case searchDetail(viewModel: SearchDetailViewModel)
-        case profile(viewModel: ProfileViewModel)
+        
 //        case friendshipList(viewModel: FriendshipListViewModel)
 //        case mediaPreview(viewModel: MediaPreviewViewModel)
 
@@ -195,6 +197,21 @@ private extension SceneCoordinator {
             let _viewController = AccountListViewController()
             _viewController.viewModel = viewModel
             viewController = _viewController
+        case .friendshipList(let viewModel):
+            switch viewModel.kind {
+            case .following:
+                let _viewController = FollowingListViewController()
+                _viewController.viewModel = viewModel
+                viewController = _viewController
+            case .follower:
+                let _viewController = FollowerListViewController()
+                _viewController.viewModel = viewModel
+                viewController = _viewController
+            }
+        case .profile(let viewModel):
+            let _viewController = ProfileViewController()
+            _viewController.viewModel = viewModel
+            viewController = _viewController
         case .statusThread(let viewModel):
             let _viewController = StatusThreadViewController()
             _viewController.viewModel = viewModel
@@ -221,21 +238,7 @@ private extension SceneCoordinator {
 //            let _viewController = SearchDetailViewController()
 //            _viewController.viewModel = viewModel
 //            viewController = _viewController
-        case .profile(let viewModel):
-            let _viewController = ProfileViewController()
-            _viewController.viewModel = viewModel
-            viewController = _viewController
-//        case .friendshipList(let viewModel):
-//            switch viewModel.friendshipLookupKind {
-//            case .following:
-//                let _viewController = FollowingListViewController()
-//                _viewController.viewModel = viewModel
-//                viewController = _viewController
-//            case .followers:
-//                let _viewController = FollowerListViewController()
-//                _viewController.viewModel = viewModel
-//                viewController = _viewController
-//            }
+
 //        case .mediaPreview(let viewModel):
 //            let _viewController = MediaPreviewViewController()
 //            _viewController.viewModel = viewModel

@@ -55,15 +55,15 @@ final class ProfileViewController: UIViewController, NeedsDependency, DrawerSide
         let profilePagingViewController = ProfilePagingViewController()
         
         let userTimelineViewModel = UserTimelineViewModel(context: context)
-        viewModel.userIdentifier
+        viewModel.$userIdentifier
             .assign(to: &userTimelineViewModel.$userIdentifier)
         
         let userMediaTimelineViewModel = UserMediaTimelineViewModel(context: context)
-        viewModel.userIdentifier
+        viewModel.$userIdentifier
             .assign(to: &userMediaTimelineViewModel.$userIdentifier)
         
         let userLikeTimelineViewModel = UserLikeTimelineViewModel(context: context)
-        viewModel.userIdentifier
+        viewModel.$userIdentifier
             .assign(to: &userLikeTimelineViewModel.$userIdentifier)
         
         profilePagingViewController.viewModel = {
@@ -230,24 +230,7 @@ extension ProfileViewController {
         
         tabBarPagerController.relayScrollView.refreshControl = refreshControl
         refreshControl.addTarget(self, action: #selector(ProfileViewController.refreshControlValueChanged(_:)), for: .valueChanged)
-        
-//        drawerSidebarTransitionController = DrawerSidebarTransitionController(hostViewController: self)
-        
-//        let userTimelineViewModel = UserTimelineViewModel(context: context)
-//        viewModel.userIdentifier
-//            .assign(to: \.value, on: userTimelineViewModel.userIdentifier)
-//            .store(in: &disposeBag)
-
-//        let userMediaTimelineViewModel = UserMediaTimelineViewModel(context: context)
-//        viewModel.userIdentifier
-//            .assign(to: \.value, on: userMediaTimelineViewModel.userIdentifier)
-//            .store(in: &disposeBag)
-
-//        let userLikeTimelineViewModel = UserLikeTimelineViewModel(context: context)
-//        viewModel.userIdentifier
-//            .assign(to: \.value, on: userLikeTimelineViewModel.userIdentifier)
-//            .store(in: &disposeBag)
-        
+                
 //        profileSegmentedViewController.pagingViewController.viewModel = {
 //            let profilePagingViewModel = ProfilePagingViewModel(
 //                userTimelineViewModel: userTimelineViewModel,
@@ -641,11 +624,7 @@ extension ProfileViewController {
 
 // MARK: - ProfileHeaderViewControllerDelegate
 extension ProfileViewController: ProfileHeaderViewControllerDelegate {
-    func headerViewController(
-        _ viewController: ProfileHeaderViewController,
-        profileHeaderView: ProfileHeaderView, friendshipButtonDidPressed
-        button: UIButton
-    ) {
+    func headerViewController(_ viewController: ProfileHeaderViewController, profileHeaderView: ProfileHeaderView, friendshipButtonDidPressed button: UIButton) {
         guard let user = viewModel.user else { return }
         guard let authenticationContext = context.authenticationService.activeAuthenticationContext.value else { return }
         guard let relationshipOptionSet = viewModel.relationshipViewModel.optionSet else { return }
@@ -668,16 +647,29 @@ extension ProfileViewController: ProfileHeaderViewControllerDelegate {
         }   // end Task { … }
     }
     
-
+    func headerViewController(_ viewController: ProfileHeaderViewController, profileHeaderView: ProfileHeaderView, profileDashboardView dashboardView: ProfileDashboardView, followingMeterViewDidPressed meterView: ProfileDashboardMeterView) {
+        guard let userIdentifier = viewModel.userIdentifier else {
+            assertionFailure()
+            return
+        }
+        let friendshipListViewModel = FriendshipListViewModel(context: context, kind: .following, userIdentifier: userIdentifier)
+        coordinator.present(scene: .friendshipList(viewModel: friendshipListViewModel), from: presentingViewController, transition: .show)
+        dismiss(animated: true, completion: nil)
+    }
     
-//    func profileHeaderViewController(_ viewController: ProfileHeaderViewController, viewLayoutDidUpdate view: UIView) {
-//        guard let scrollView = (profileSegmentedViewController.pagingViewController.currentViewController as? UserTimelineViewController)?.scrollView else {
-//            // assertionFailure()
-//            return
-//        }
-//
-//        updateOverlayScrollViewContentSize(scrollView: scrollView)
-//    }
+    func headerViewController(_ viewController: ProfileHeaderViewController, profileHeaderView: ProfileHeaderView, profileDashboardView dashboardView: ProfileDashboardView, followersMeterViewDidPressed meterView: ProfileDashboardMeterView) {
+        guard let userIdentifier = viewModel.userIdentifier else {
+            assertionFailure()
+            return
+        }
+        let friendshipListViewModel = FriendshipListViewModel(context: context, kind: .follower, userIdentifier: userIdentifier)
+        coordinator.present(scene: .friendshipList(viewModel: friendshipListViewModel), from: presentingViewController, transition: .show)
+        dismiss(animated: true, completion: nil)
+    }
+    
+    func headerViewController(_ viewController: ProfileHeaderViewController, profileHeaderView: ProfileHeaderView, profileDashboardView dashboardView: ProfileDashboardView, listedMeterViewDidPressed meterView: ProfileDashboardMeterView) {
+        // TODO:
+    }
 }
 
 // MARK: - ProfilePagingViewControllerDelegate
@@ -796,7 +788,6 @@ extension ProfileViewController: ProfilePagingViewControllerDelegate {
 //
 //}
 
-
 //// MARK: - ScrollViewContainer
 //extension ProfileViewController: ScrollViewContainer {
 //    var scrollView: UIScrollView { return overlayScrollView }
@@ -837,18 +828,21 @@ extension ProfileViewController: TabBarPagerDataSource {
     }
 }
 
+// MARK: - IndicatorInfoProvider
 extension UserTimelineViewController: IndicatorInfoProvider {
     func indicatorInfo(for pagerTabStripController: PagerTabStripViewController) -> IndicatorInfo {
         return IndicatorInfo(image: Asset.TextFormatting.capitalFloatLeft.image.withRenderingMode(.alwaysTemplate))
     }
 }
 
+// MARK: - IndicatorInfoProvider
 extension UserMediaTimelineViewController: IndicatorInfoProvider {
     func indicatorInfo(for pagerTabStripController: PagerTabStripViewController) -> IndicatorInfo {
         return IndicatorInfo(image: Asset.ObjectTools.photo.image.withRenderingMode(.alwaysTemplate))
     }
 }
 
+// MARK: - IndicatorInfoProvider
 extension UserLikeTimelineViewController: IndicatorInfoProvider {
     func indicatorInfo(for pagerTabStripController: PagerTabStripViewController) -> IndicatorInfo {
         return IndicatorInfo(image: Asset.Health.heartFill.image.withRenderingMode(.alwaysTemplate))

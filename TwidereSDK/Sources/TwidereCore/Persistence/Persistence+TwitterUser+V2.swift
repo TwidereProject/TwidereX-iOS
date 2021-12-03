@@ -22,16 +22,29 @@ extension Persistence.TwitterUser {
         public let log = OSLog.api
     }
     
+    public struct PersistResultV2 {
+        public let user: TwitterUser
+        public let isNewInsertion: Bool
+        
+        public init(
+            user: TwitterUser,
+            isNewInsertion: Bool
+        ) {
+            self.user = user
+            self.isNewInsertion = isNewInsertion
+        }
+    }
+    
     public static func createOrMerge(
         in managedObjectContext: NSManagedObjectContext,
         context: PersistContextV2
-    ) -> (TwitterUser, Bool) {
+    ) -> PersistResultV2 {
         if let oldTwitterUser = fetch(in: managedObjectContext, context: context) {
             merge(twitterUser: oldTwitterUser, context: context)
-            return (oldTwitterUser, false)
+            return PersistResultV2(user: oldTwitterUser, isNewInsertion: false)
         } else {
             let user = create(in: managedObjectContext, context: context)
-            return (user, true)
+            return PersistResultV2(user: user, isNewInsertion: true)
         }
     }
     

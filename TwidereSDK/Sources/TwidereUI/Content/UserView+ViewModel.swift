@@ -29,6 +29,8 @@ extension UserView {
         @Published public var name: MetaContent? = PlaintextMetaContent(string: " ")
         @Published public var username: String? = " "
         
+        @Published public var followerCount: Int?
+        
         public enum Header {
             case none
             case notification(info: NotificationHeaderInfo)
@@ -90,6 +92,13 @@ extension UserView.ViewModel {
         $username
             .assign(to: \.text, on: userView.usernameLabel)
             .store(in: &disposeBag)
+        // follower count
+        $followerCount
+            .sink { followerCount in
+                let count = followerCount.flatMap { String($0) } ?? "-"
+                userView.followerCountLabel.text = L10n.Common.Controls.ProfileDashboard.followers + ": " + count
+            }
+            .store(in: &disposeBag)
         // relationship
         relationshipViewModel.$optionSet
             .map { $0?.relationship(except: [.muting]) }
@@ -148,6 +157,10 @@ extension UserView {
         user.publisher(for: \.username)
             .map { "@\($0)" as String? }
             .assign(to: \.username, on: viewModel)
+            .store(in: &disposeBag)
+        user.publisher(for: \.followersCount)
+            .map { Int($0) }
+            .assign(to: \.followerCount, on: viewModel)
             .store(in: &disposeBag)
     }
     

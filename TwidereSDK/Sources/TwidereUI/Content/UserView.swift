@@ -167,11 +167,15 @@ extension UserView {
         // headline: name | username
         // subheadline: follower count
         // accessory: follow button
-        case friendship
+        case relationship
         // header: notification
         // headline: name
         // subheadline: username
         // accessory: action button
+        case friendship
+        // headline: name | username
+        // subheadline: follower count
+        // accessory: menu
         case notification
         // headline: name
         // subheadline: username
@@ -181,6 +185,7 @@ extension UserView {
         public func layout(userView: UserView) {
             switch self {
             case .plain:            layoutPlain(userView: userView)
+            case .relationship:     layoutRelationship(userView: userView)
             case .friendship:       layoutFriendship(userView: userView)
             case .notification:     layoutNotification(userView: userView)
             case .mentionPick:      layoutMentionPick(userView: userView)
@@ -203,7 +208,7 @@ extension UserView.Style {
     }
     
     // FIXME: update layout
-    func layoutFriendship(userView: UserView) {
+    func layoutRelationship(userView: UserView) {
         userView.infoContainerStackView.addArrangedSubview(userView.nameLabel)
         userView.infoContainerStackView.addArrangedSubview(userView.usernameLabel)
         
@@ -212,6 +217,23 @@ extension UserView.Style {
         NSLayoutConstraint.activate([
             userView.friendshipButton.widthAnchor.constraint(equalToConstant: 80),  // maybe dynamic width for different language?
         ])
+        
+        userView.setNeedsLayout()
+    }
+    
+    func layoutFriendship(userView: UserView) {
+        // headline
+        let headlineStackView = UIStackView()
+        userView.infoContainerStackView.addArrangedSubview(headlineStackView)
+        headlineStackView.axis = .horizontal
+        headlineStackView.spacing = 6
+        headlineStackView.addArrangedSubview(userView.nameLabel)
+        headlineStackView.addArrangedSubview(userView.usernameLabel)
+        
+        // subheadline
+        userView.infoContainerStackView.addArrangedSubview(userView.followerCountLabel)
+        
+        // TODO: menu
         
         userView.setNeedsLayout()
     }

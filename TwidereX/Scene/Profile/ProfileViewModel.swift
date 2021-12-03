@@ -29,7 +29,7 @@ class ProfileViewModel: ObservableObject {
         
     // output
     @Published var userRecord: UserRecord?
-    let userIdentifier = CurrentValueSubject<UserIdentifier?, Never>(nil)
+    @Published var userIdentifier: UserIdentifier? = nil
     let relationshipViewModel = RelationshipViewModel()
 
 //    let suspended = CurrentValueSubject<Bool, Never>(false)
@@ -62,9 +62,8 @@ class ProfileViewModel: ObservableObject {
                     return nil
                 }
             }
-            .assign(to: \.value, on: userIdentifier)
-            .store(in: &disposeBag)
-
+            .assign(to: &$userIdentifier)
+            
         // bind active authentication
         context.authenticationService.activeAuthenticationContext
             .sink { [weak self] authenticationContext in
