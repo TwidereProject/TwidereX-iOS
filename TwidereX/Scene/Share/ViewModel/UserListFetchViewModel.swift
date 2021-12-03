@@ -177,16 +177,18 @@ extension UserListFetchViewModel {
     
     struct FriendshipListMastodonUserFetchContext {
         let authenticationContext: MastodonAuthenticationContext
-        let searchText: String
-        let offset: Int
-        let count: Int?
+        let kind: FriendshipListKind
+        let userID: Mastodon.Entity.Account.ID
+        let maxID: Mastodon.Entity.Account.ID?
+        let limit: Int?
         
-        func map(offset: Int) -> SearchMastodonUserFetchContext {
-            return SearchMastodonUserFetchContext(
+        func map(maxID: Mastodon.Entity.Account.ID) -> FriendshipListMastodonUserFetchContext {
+            return FriendshipListMastodonUserFetchContext(
                 authenticationContext: authenticationContext,
-                searchText: searchText,
-                offset: offset,
-                count: count
+                kind: kind,
+                userID: userID,
+                maxID: maxID,
+                limit: limit
             )
         }
     }
@@ -223,38 +225,35 @@ extension UserListFetchViewModel {
                 kind: fetchContext.kind
             )
         case .mastodon(let fetchContext):
-            fatalError()
-//            let searchText: String = try {
-//                let searchText = fetchContext.searchText
-//                guard !searchText.isEmpty, searchText.count < 512 else {
-//                    throw AppError.implicit(.badRequest)
-//                }
-//                return searchText
-//            }()
-//            let query = Mastodon.API.V2.Search.SearchQuery(
-//                type: .accounts,
-//                accountID: nil,
-//                q: searchText,
-//                limit: fetchContext.count ?? 20,
-//                offset: fetchContext.offset
-//            )
-//            logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): fetch at offset \(query.offset ?? -1)")
-//            let response = try await context.apiService.searchMastodon(
-//                query: query,
-//                authenticationContext: fetchContext.authenticationContext
-//            )
-//            let noMore = response.value.accounts.isEmpty
-//            let nextInput: SearchInput? = {
-//                if noMore { return nil }
-//                let count = response.value.accounts.count
-//                let fetchContext = fetchContext.map(offset: fetchContext.offset + count)
-//                return .mastodon(fetchContext)
-//            }()
-//            return SearchOutput(
-//                result: .mastodon(response.value.accounts),
-//                hasMore: !noMore,
-//                nextInput: nextInput
-//            )
+            let response = try await { () -> Mastodon.Response.Content<[Mastodon.Entity.Account]> in
+                let limit = fetchContext.limit ?? (fetchContext.maxID == nil ? 20 : 40)
+                switch fetchContext.kind {
+                case .following:
+                    let query = Mastodon.API.Account.FollowingQuery(maxID: fetchContext.maxID, limit: limit)
+                    return try await context.apiService.mastodonUserFollowingList(userID: fetchContext.userID, query: query, authenticationContext: fetchContext.authenticationContext)
+                case .follower:
+                    let query = Mastodon.API.Account.FollowerQuery(maxID: fetchContext.maxID, limit: limit)
+                    return try await context.apiService.mastodonUserFollowerList(userID: fetchContext.userID, query: query, authenticationContext: fetchContext.authenticationContext)
+                }
+            }()
+            let count = response.value.count
+            logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): fetch \(count) users")
+            let noMore: Bool = {
+                guard let last = response.value.last else { return true }
+                return last.id != fetchContext.userID
+            }()
+            let nextInput: FriendshipListInput? = {
+                if noMore { return nil }
+                guard let last = response.value.last else { return nil }
+                let fetchContext = fetchContext.map(maxID: last.id)
+                return .mastodon(fetchContext)
+            }()
+            return FriendshipListOutput(
+                result: .mastodon(response.value),
+                hasMore: !noMore,
+                nextInput: nextInput,
+                kind: fetchContext.kind
+            )
         }
     }
     

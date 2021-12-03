@@ -47,13 +47,15 @@ final class FriendshipListViewModel: NSObject {
     init(
         context: AppContext,
         kind: Kind,
-        userIdentifier: UserIdentifier
+        userIdentifier: UserIdentifier      // identifier for friend list owner user
     ) {
         self.context = context
         self.kind = kind
         self.userIdentifier = userIdentifier
         self.userRecordFetchedResultController = UserRecordFetchedResultController(managedObjectContext: context.managedObjectContext)
         super.init()
+        
+        userRecordFetchedResultController.userIdentifier = userIdentifier   // the domain will be set
     }
     
     // convenience init for current active user

@@ -28,7 +28,6 @@ extension APIService {
         )
         
         let managedObjectContext = backgroundManagedObjectContext
-        
         try await managedObjectContext.performChanges {
             guard let authentication = authenticationContext.authenticationRecord.object(in: managedObjectContext) else { return }
             let me = authentication.user
@@ -72,7 +71,6 @@ extension APIService {
         )
         
         let managedObjectContext = backgroundManagedObjectContext
-        
         try await managedObjectContext.performChanges {
             guard let authentication = authenticationContext.authenticationRecord.object(in: managedObjectContext) else { return }
             let me = authentication.user
@@ -94,6 +92,104 @@ extension APIService {
             
             // update relationship if the list for myself
             if query.userID == authenticationContext.userID {
+                for user in users {
+                    me.update(isFollow: true, by: user)
+                }
+            }
+        }   // end try await …
+        
+        return response
+    } // end func
+    
+}
+
+extension APIService {
+
+    public func mastodonUserFollowingList(
+        userID: Mastodon.Entity.Account.ID,
+        query: Mastodon.API.Account.FollowingQuery,
+        authenticationContext: MastodonAuthenticationContext
+    ) async throws -> Mastodon.Response.Content<[Mastodon.Entity.Account]> {
+        let domain = authenticationContext.domain
+        let authorization = authenticationContext.authorization
+        
+        let response = try await Mastodon.API.Account.following(
+            session: session,
+            domain: domain,
+            userID: userID,
+            query: query,
+            authorization: authorization
+        )
+        
+        let managedObjectContext = backgroundManagedObjectContext
+        try await managedObjectContext.performChanges {
+            guard let authentication = authenticationContext.authenticationRecord.object(in: managedObjectContext) else { return }
+            let me = authentication.user
+            
+            var users: [MastodonUser] = []
+            
+            for user in response.value {
+                let result = Persistence.MastodonUser.createOrMerge(
+                    in: managedObjectContext,
+                    context: Persistence.MastodonUser.PersistContext(
+                        domain: domain,
+                        entity: user,
+                        cache: nil,
+                        networkDate: response.networkDate
+                    )
+                )
+                users.append(result.user)
+            }   // end for … in …
+            
+            // update relationship if the list for myself
+            if userID == authenticationContext.userID {
+                for user in users {
+                    user.update(isFollow: true, by: me)
+                }
+            }
+        }   // end try await …
+        
+        return response
+    } // end func
+    
+    public func mastodonUserFollowerList(
+        userID: Mastodon.Entity.Account.ID,
+        query: Mastodon.API.Account.FollowerQuery,
+        authenticationContext: MastodonAuthenticationContext
+    ) async throws -> Mastodon.Response.Content<[Mastodon.Entity.Account]> {
+        let domain = authenticationContext.domain
+        let authorization = authenticationContext.authorization
+        
+        let response = try await Mastodon.API.Account.followers(
+            session: session,
+            domain: domain,
+            userID: userID,
+            query: query,
+            authorization: authorization
+        )
+        
+        let managedObjectContext = backgroundManagedObjectContext
+        try await managedObjectContext.performChanges {
+            guard let authentication = authenticationContext.authenticationRecord.object(in: managedObjectContext) else { return }
+            let me = authentication.user
+            
+            var users: [MastodonUser] = []
+            
+            for user in response.value {
+                let result = Persistence.MastodonUser.createOrMerge(
+                    in: managedObjectContext,
+                    context: Persistence.MastodonUser.PersistContext(
+                        domain: domain,
+                        entity: user,
+                        cache: nil,
+                        networkDate: response.networkDate
+                    )
+                )
+                users.append(result.user)
+            }   // end for … in …
+            
+            // update relationship if the list for myself
+            if userID == authenticationContext.userID {
                 for user in users {
                     me.update(isFollow: true, by: user)
                 }

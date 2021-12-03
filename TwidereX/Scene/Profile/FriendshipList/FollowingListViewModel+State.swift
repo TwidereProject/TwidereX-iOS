@@ -72,7 +72,13 @@ extension FriendshipListViewModel.State {
                             maxResults: nil
                         ))
                     case (.mastodon(let identifier), .mastodon(let authenticationContext)):
-                        fatalError()
+                        return UserListFetchViewModel.FriendshipListInput.mastodon(.init(
+                            authenticationContext: authenticationContext,
+                            kind: viewModel.kind,
+                            userID: identifier.id,
+                            maxID: nil,
+                            limit: nil
+                        ))
                     default:
                         assertionFailure()
                         return nil

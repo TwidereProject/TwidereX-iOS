@@ -158,6 +158,7 @@ extension UserView {
             .map { "@\($0)" as String? }
             .assign(to: \.username, on: viewModel)
             .store(in: &disposeBag)
+        // followersCount
         user.publisher(for: \.followersCount)
             .map { Int($0) }
             .assign(to: \.followerCount, on: viewModel)
@@ -192,6 +193,11 @@ extension UserView {
         user.publisher(for: \.username)
             .map { "@\($0)" as String? }
             .assign(to: \.username, on: viewModel)
+            .store(in: &disposeBag)
+        // followersCount
+        user.publisher(for: \.followersCount)
+            .map { Int($0) }
+            .assign(to: \.followerCount, on: viewModel)
             .store(in: &disposeBag)
     }
     
