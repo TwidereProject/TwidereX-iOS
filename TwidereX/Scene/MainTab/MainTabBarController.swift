@@ -121,7 +121,8 @@ extension MainTabBarController {
 
         context.publisherService.statusPublishResult
             .receive(on: DispatchQueue.main)
-            .sink { result in
+            .sink { [weak self] result in
+                guard let _ = self else { return }
                 switch result {
                 case .success(let result):
                     var config = SwiftMessages.defaultConfig

@@ -25,7 +25,7 @@ class ProfileViewModel: ObservableObject {
     @Published var user: UserObject?
 //    let twitterUser: CurrentValueSubject<TwitterUser?, Never>
 //    let currentTwitterUser = CurrentValueSubject<TwitterUser?, Never>(nil)
-//    let viewDidAppear = PassthroughSubject<Void, Never>()
+    let viewDidAppear = CurrentValueSubject<Void, Never>(Void())
         
     // output
     @Published var userRecord: UserRecord?

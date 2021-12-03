@@ -104,7 +104,8 @@ extension HomeTimelineViewController {
                     discoverabilityTitle: nil,
                     attributes: [],
                     state: .off)
-                { action in
+                { [weak self] action in
+                    guard let self = self else { return }
                     self.showNotificationBanner(action, style: style)
                 }
             }
@@ -191,6 +192,10 @@ extension HomeTimelineViewController {
                 UIAction(title: "Reload TableView", image: nil, attributes: [], handler: { [weak self] action in
                     guard let self = self else { return }
                     self.reloadTableView(action)
+                }),
+                UIAction(title: "Reload App", image: nil, attributes: [], handler: { [weak self] action in
+                    guard let self = self else { return }
+                    self.coordinator.setup()
                 }),
             ]
         )

@@ -14,7 +14,7 @@ import TabBarPager
 import XLPagerTabStrip
 
 // TODO: DrawerSidebarTransitionableViewController
-final class ProfileViewController: UIViewController, NeedsDependency {
+final class ProfileViewController: UIViewController, NeedsDependency, DrawerSidebarTransitionHostViewController {
     
     let logger = Logger(subsystem: "ProfileViewController", category: "ViewController")
     
@@ -24,9 +24,9 @@ final class ProfileViewController: UIViewController, NeedsDependency {
     var disposeBag = Set<AnyCancellable>()
     var viewModel: ProfileViewModel!
     
-//    private(set) var drawerSidebarTransitionController: DrawerSidebarTransitionController!
-    
+    private(set) var drawerSidebarTransitionController: DrawerSidebarTransitionController!
     let avatarBarButtonItem = AvatarBarButtonItem()
+    
     let unmuteMenuBarButtonItem: UIBarButtonItem = {
         let barButtonItem = UIBarButtonItem(image: Asset.ObjectTools.speakerXmark.image.withRenderingMode(.alwaysTemplate), style: .plain, target: nil, action: nil)
         barButtonItem.tintColor = .systemRed
@@ -83,21 +83,6 @@ final class ProfileViewController: UIViewController, NeedsDependency {
         return profilePagingViewController
     }()
     
-//    private(set) lazy var profileSegmentedViewController = ProfileSegmentedViewController()
-    
-//    private(set) lazy var bar: TMBar = {
-//        let bar = TMBarView<TMHorizontalBarLayout, TMTabItemBarButton, TMLineBarIndicator>()
-//        bar.layout.contentMode = .fit
-//        bar.indicator.weight = .custom(value: 2)
-//        bar.backgroundView.style = .flat(color: .systemBackground)
-//        bar.buttons.customize { barItem in
-//            barItem.shrinksImageWhenUnselected = false
-//            barItem.selectedTintColor = Asset.Colors.hightLight.color
-//            barItem.tintColor = .secondaryLabel
-//        }
-//        return bar
-//    }()
-    
     private var contentOffsets: [Int: CGFloat] = [:]
     var currentPostTimelineTableViewContentSizeObservation: NSKeyValueObservation?
     
@@ -112,11 +97,26 @@ extension ProfileViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        drawerSidebarTransitionController = DrawerSidebarTransitionController(hostViewController: self)
+
         view.backgroundColor = .systemBackground
+        
         if navigationController?.viewControllers.first == self {
             navigationItem.leftBarButtonItem = avatarBarButtonItem
+            avatarBarButtonItem.avatarButton.addTarget(self, action: #selector(ProfileViewController.avatarButtonPressed(_:)), for: .touchUpInside)
+            
+            Publishers.CombineLatest(
+                context.authenticationService.activeAuthenticationContext,
+                viewModel.viewDidAppear.eraseToAnyPublisher()
+            )
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] authenticationContext, _ in
+                guard let self = self else { return }
+                let user = authenticationContext?.user(in: self.context.managedObjectContext)
+                self.avatarBarButtonItem.configure(user: user)
+            }
+            .store(in: &disposeBag)
         }
-        avatarBarButtonItem.avatarButton.addTarget(self, action: #selector(ProfileViewController.avatarButtonPressed(_:)), for: .touchUpInside)
         
         unmuteMenuBarButtonItem.target = self
         unmuteMenuBarButtonItem.action = #selector(ProfileViewController.unmuteBarButtonItemPressed(_:))
@@ -231,7 +231,7 @@ extension ProfileViewController {
         tabBarPagerController.relayScrollView.refreshControl = refreshControl
         refreshControl.addTarget(self, action: #selector(ProfileViewController.refreshControlValueChanged(_:)), for: .valueChanged)
         
-//        drawerSidebarTransitionController = DrawerSidebarTransitionController(drawerSidebarTransitionableViewController: self)
+//        drawerSidebarTransitionController = DrawerSidebarTransitionController(hostViewController: self)
         
 //        let userTimelineViewModel = UserTimelineViewModel(context: context)
 //        viewModel.userIdentifier
@@ -528,7 +528,7 @@ extension ProfileViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-//        viewModel.viewDidAppear.send()
+        viewModel.viewDidAppear.send()
         
         // set overlay scroll view initial content size
 //        guard let currentViewController = profileSegmentedViewController.pagingViewController.currentViewController as? ScrollViewContainer else { return }
@@ -545,6 +545,12 @@ extension ProfileViewController {
 
 extension ProfileViewController {
     
+    @objc private func avatarButtonPressed(_ sender: UIButton) {
+        logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public)")
+        let drawerSidebarViewModel = DrawerSidebarViewModel(context: context)
+        coordinator.present(scene: .drawerSidebar(viewModel: drawerSidebarViewModel), from: self, transition: .custom(transitioningDelegate: drawerSidebarTransitionController))
+    }
+    
     @objc private func refreshControlValueChanged(_ sender: UIRefreshControl) {
         os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
         
@@ -560,11 +566,6 @@ extension ProfileViewController {
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
             sender.endRefreshing()
         }
-    }
-    
-    @objc private func avatarButtonPressed(_ sender: UIButton) {
-        os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
-//        coordinator.present(scene: .drawerSidebar, from: self, transition: .custom(transitioningDelegate: drawerSidebarTransitionController))
     }
     
     @objc private func unmuteBarButtonItemPressed(_ sender: UIBarButtonItem) {

@@ -9,16 +9,9 @@
 import os.log
 import UIKit
 import Combine
-//import AlamofireImage
-
-//final class HeightFixedSearchBar: UISearchBar {
-//    override var intrinsicContentSize: CGSize {
-//        return CGSize(width: CGFloat.greatestFiniteMagnitude, height: 44)
-//    }
-//}
 
 // DrawerSidebarTransitionableViewController
-final class SearchViewController: UIViewController, NeedsDependency {
+final class SearchViewController: UIViewController, NeedsDependency, DrawerSidebarTransitionHostViewController {
     
     let logger = Logger(subsystem: "SearchViewController", category: "ViewController")
     
@@ -41,20 +34,10 @@ final class SearchViewController: UIViewController, NeedsDependency {
         return searchController
     }()
     
-//    private(set) var drawerSidebarTransitionController: DrawerSidebarTransitionController!
-//    private var searchDetailTransitionController = SearchDetailTransitionController()
+    private(set) var drawerSidebarTransitionController: DrawerSidebarTransitionController!
+    let avatarBarButtonItem = AvatarBarButtonItem()
 
     var disposeBag = Set<AnyCancellable>()
-//    let viewModel = SearchViewModel()
-    
-//    let avatarBarButtonItem = AvatarBarButtonItem()
-
-//    let searchBar: UISearchBar = {
-//        let searchBar = HeightFixedSearchBar()
-//        searchBar.placeholder = L10n.Scene.Search.SearchBar.placeholder
-//        return searchBar
-//    }()
-//    let searchBarTapPublisher = PassthroughSubject<Void, Never>()
     
     deinit {
         os_log("%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
@@ -67,6 +50,9 @@ extension SearchViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        drawerSidebarTransitionController = DrawerSidebarTransitionController(hostViewController: self)
+
+        view.backgroundColor = .systemBackground
         navigationItem.searchController = searchController
         navigationItem.hidesSearchBarWhenScrolling = false
         
@@ -91,7 +77,7 @@ extension SearchViewController {
 //        setupSearchBar()
 //        avatarBarButtonItem.avatarButton.addTarget(self, action: #selector(SearchViewController.avatarButtonPressed(_:)), for: .touchUpInside)
 //
-//        drawerSidebarTransitionController = DrawerSidebarTransitionController(drawerSidebarTransitionableViewController: self)
+//        drawerSidebarTransitionController = DrawerSidebarTransitionController(hostViewController: self)
 //
 //        searchBarTapPublisher
 //            .sink { [weak self] _ in

@@ -459,18 +459,18 @@ extension MentionTimelineViewController: TimelineMiddleLoaderTableViewCellDelega
     }
 }
 
-// MARK: - AVPlayerViewControllerDelegate
-extension MentionTimelineViewController: AVPlayerViewControllerDelegate {
-    
-    func playerViewController(_ playerViewController: AVPlayerViewController, willBeginFullScreenPresentationWithAnimationCoordinator coordinator: UIViewControllerTransitionCoordinator) {
-        handlePlayerViewController(playerViewController, willBeginFullScreenPresentationWithAnimationCoordinator: coordinator)
-    }
-    
-    func playerViewController(_ playerViewController: AVPlayerViewController, willEndFullScreenPresentationWithAnimationCoordinator coordinator: UIViewControllerTransitionCoordinator) {
-        handlePlayerViewController(playerViewController, willEndFullScreenPresentationWithAnimationCoordinator: coordinator)
-    }
-    
-}
+//// MARK: - AVPlayerViewControllerDelegate
+//extension MentionTimelineViewController: AVPlayerViewControllerDelegate {
+//
+//    func playerViewController(_ playerViewController: AVPlayerViewController, willBeginFullScreenPresentationWithAnimationCoordinator coordinator: UIViewControllerTransitionCoordinator) {
+//        handlePlayerViewController(playerViewController, willBeginFullScreenPresentationWithAnimationCoordinator: coordinator)
+//    }
+//
+//    func playerViewController(_ playerViewController: AVPlayerViewController, willEndFullScreenPresentationWithAnimationCoordinator coordinator: UIViewControllerTransitionCoordinator) {
+//        handlePlayerViewController(playerViewController, willEndFullScreenPresentationWithAnimationCoordinator: coordinator)
+//    }
+//
+//}
 
 // MARK: - TimelinePostTableViewCellDelegate
 //extension MentionTimelineViewController: TimelinePostTableViewCellDelegate {

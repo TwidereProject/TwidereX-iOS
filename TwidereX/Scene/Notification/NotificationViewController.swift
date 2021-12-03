@@ -12,7 +12,7 @@ import Combine
 import Tabman
 import Pageboy
 
-final class NotificationViewController: TabmanViewController, NeedsDependency {
+final class NotificationViewController: TabmanViewController, NeedsDependency, DrawerSidebarTransitionHostViewController {
 
     let logger = Logger(subsystem: "NotificationViewController", category: "ViewController")
     
@@ -21,6 +21,9 @@ final class NotificationViewController: TabmanViewController, NeedsDependency {
     
     var disposeBag = Set<AnyCancellable>()
     private(set) lazy var viewModel = NotificationViewModel(context: context, coordinator: coordinator)
+    
+    private(set) var drawerSidebarTransitionController: DrawerSidebarTransitionController!
+    let avatarBarButtonItem = AvatarBarButtonItem()
     
     private(set) lazy var pageSegmentedControl = UISegmentedControl()
     
@@ -49,6 +52,25 @@ final class NotificationViewController: TabmanViewController, NeedsDependency {
 extension NotificationViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        isScrollEnabled = false     // inner pan gesture untouchable. workaround to prevent swipe conflict
+        drawerSidebarTransitionController = DrawerSidebarTransitionController(hostViewController: self)
+
+        view.backgroundColor = .systemBackground
+        
+        navigationItem.leftBarButtonItem = avatarBarButtonItem
+        avatarBarButtonItem.avatarButton.addTarget(self, action: #selector(NotificationViewController.avatarButtonPressed(_:)), for: .touchUpInside)
+        Publishers.CombineLatest(
+            context.authenticationService.activeAuthenticationContext,
+            viewModel.viewDidAppear.eraseToAnyPublisher()
+        )
+        .receive(on: DispatchQueue.main)
+        .sink { [weak self] authenticationContext, _ in
+            guard let self = self else { return }
+            let user = authenticationContext?.user(in: self.context.managedObjectContext)
+            self.avatarBarButtonItem.configure(user: user)
+        }
+        .store(in: &disposeBag)
         
         dataSource = viewModel
         viewModel.$viewControllers
@@ -84,7 +106,24 @@ extension NotificationViewController {
         pageSegmentedControl.addTarget(self, action: #selector(NotificationViewController.pageSegmentedControlValueChanged(_:)), for: .valueChanged)
     }
     
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        viewModel.viewDidAppear.send()
+    }
+    
 }
+
+extension NotificationViewController {
+
+    @objc private func avatarButtonPressed(_ sender: UIButton) {
+        logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public)")
+        let drawerSidebarViewModel = DrawerSidebarViewModel(context: context)
+        coordinator.present(scene: .drawerSidebar(viewModel: drawerSidebarViewModel), from: self, transition: .custom(transitioningDelegate: drawerSidebarTransitionController))
+    }
+    
+}
+
 
 #if DEBUG
 extension NotificationViewController {

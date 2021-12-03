@@ -18,7 +18,7 @@ enum UserSection {
 extension UserSection {
     
     struct Configuration {
-        let userTableViewCellDelegate: UserTableViewCellDelegate?
+        weak var userTableViewCellDelegate: UserTableViewCellDelegate?
     }
     
     static func diffableDataSource(

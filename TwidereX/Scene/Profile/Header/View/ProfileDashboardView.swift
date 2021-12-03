@@ -11,9 +11,9 @@ import UIKit
 import Combine
 
 protocol ProfileDashboardViewDelegate: AnyObject {
-    func profileDashboardView(_ view: ProfileDashboardView, followingMeterViewDidPressed meterView: ProfileDashboardMeterView)
-    func profileDashboardView(_ view: ProfileDashboardView, followersMeterViewDidPressed meterView: ProfileDashboardMeterView)
-    func profileDashboardView(_ view: ProfileDashboardView, listedMeterViewDidPressed meterView: ProfileDashboardMeterView)
+    func profileDashboardView(_ dashboardView: ProfileDashboardView, followingMeterViewDidPressed meterView: ProfileDashboardMeterView)
+    func profileDashboardView(_ dashboardView: ProfileDashboardView, followersMeterViewDidPressed meterView: ProfileDashboardMeterView)
+    func profileDashboardView(_ dashboardView: ProfileDashboardView, listedMeterViewDidPressed meterView: ProfileDashboardMeterView)
 }
 
 final class ProfileDashboardView: UIView {
@@ -26,6 +26,7 @@ final class ProfileDashboardView: UIView {
     // Mastodon
     // following | follower
     
+    @Published var isAllowAdaptiveLayout = true
     
     let followingMeterView = ProfileDashboardMeterView()
     let separatorLine1 = SeparatorLineView()
@@ -92,32 +93,37 @@ extension ProfileDashboardView {
             statusItemView.addGestureRecognizer(tapGestureRecognizer)
         }
         
-        UIContentSizeCategory.publisher
-            .sink { [weak self] category in
-                guard let self = self else { return }
-                if category >= .accessibilityLarge {
-                    containerStackView.axis = .vertical
-                    containerStackView.spacing = 10
-                    containerStackView.alignment = .leading // set leading
-                    meterViews.forEach { meterView in
-                        meterView.container.axis = .horizontal
-                        meterView.container.distribution = .fill
-                    }
-                    self.separatorLine1.alpha = 0
-                    self.separatorLine2.alpha = 0
-                } else {
-                    containerStackView.axis = .horizontal
-                    containerStackView.spacing = 0
-                    containerStackView.alignment = .fill    // restore default
-                    meterViews.forEach { meterView in
-                        meterView.container.axis = .vertical
-                        meterView.container.distribution = .fillEqually
-                    }
-                    self.separatorLine1.alpha = 1
-                    self.separatorLine2.alpha = 1
+        Publishers.CombineLatest(
+            UIContentSizeCategory.publisher,
+            $isAllowAdaptiveLayout
+        )
+        .sink { [weak self] category, isAllowAdaptiveLayout in
+            guard let self = self else { return }
+            
+            if isAllowAdaptiveLayout, category >= .accessibilityLarge {
+                containerStackView.axis = .vertical
+                containerStackView.spacing = 10
+                containerStackView.alignment = .leading // set leading
+                meterViews.forEach { meterView in
+                    meterView.container.axis = .horizontal
+                    meterView.container.distribution = .fill
                 }
+                self.separatorLine1.alpha = 0
+                self.separatorLine2.alpha = 0
+            } else {
+                containerStackView.axis = .horizontal
+                containerStackView.spacing = 0
+                containerStackView.alignment = .fill    // restore default
+                meterViews.forEach { meterView in
+                    meterView.container.axis = .vertical
+                    meterView.container.distribution = .fillEqually
+                }
+                self.separatorLine1.alpha = 1
+                self.separatorLine2.alpha = 1
             }
-            .store(in: &_disposeBag)
+        }
+        .store(in: &_disposeBag)
+        
     }
 }
 

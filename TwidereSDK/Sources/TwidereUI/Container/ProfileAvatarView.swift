@@ -122,9 +122,9 @@ extension ProfileAvatarView {
         self.avatarButtonHeightLayoutConstraint.constant = dimension
         
         let scale = dimension / ProfileAvatarView.primitiveAvatarButtonSize.width
-        let badgeDimention = ProfileAvatarView.primitiveBadgeImageViewSize.width * scale
-        self.badgeImageViewWidthLayoutConstraint.constant = badgeDimention
-        self.badgeImageViewHeightLayoutConstraint.constant = badgeDimention
+        let badgeDimension = ProfileAvatarView.primitiveBadgeImageViewSize.width * scale
+        self.badgeImageViewWidthLayoutConstraint.constant = badgeDimension
+        self.badgeImageViewHeightLayoutConstraint.constant = badgeDimension
         
         self.setNeedsLayout()
     }

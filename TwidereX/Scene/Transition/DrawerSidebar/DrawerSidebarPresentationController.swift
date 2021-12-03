@@ -13,20 +13,6 @@ final class DrawerSidebarPresentationController: UIPresentationController {
 
     override var shouldRemovePresentersView: Bool { return true }
     
-    override var overrideTraitCollection: UITraitCollection? {
-        get {
-            if UserDefaults.shared.useTheSystemFontSize {
-                return nil
-            } else {
-                let customContentSizeCatagory = UserDefaults.shared.customContentSizeCatagory
-                return UITraitCollection(preferredContentSizeCategory: customContentSizeCatagory)
-            }
-        }
-        set {
-            
-        }
-    }
-
     deinit {
         os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s:", ((#file as NSString).lastPathComponent), #line, #function)
     }

@@ -64,7 +64,8 @@ public final class CoreDataStack {
         
         // Observe Core Data remote change notifications on the queue where the changes were made.
         NotificationCenter.default.publisher(for: .NSPersistentStoreRemoteChange)
-            .sink { notification in
+            .sink { [weak self] notification in
+                guard let self = self else { return }
                 Task {
                     do {
                         try await self.processRemoteStoreChange()
