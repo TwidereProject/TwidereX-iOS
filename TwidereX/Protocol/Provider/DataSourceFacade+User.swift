@@ -8,6 +8,8 @@
 
 import UIKit
 import CoreDataStack
+import TwidereAsset
+import TwidereLocalization
 
 extension DataSourceFacade {
     static func createMenuForUser(
@@ -25,10 +27,18 @@ extension DataSourceFacade {
         
         let isMyself = relationshipOptionSet.contains(.isMyself)
         
-        // block
-        if isMyself {
-            
-        } else {
+        if !isMyself {
+            // mute
+            let isMuting = relationshipOptionSet.contains(.muting)
+            let muteAction = await createMenuMuteActionForUser(
+                provider: provider,
+                record: user,
+                authenticationContext: authenticationContext,
+                isMuting: isMuting
+            )
+            children.append(muteAction)
+
+            // block
             let isBlocking = relationshipOptionSet.contains(.blocking)
             let blockAction = await createMenuBlockActionForUser(
                 provider: provider,
@@ -37,6 +47,14 @@ extension DataSourceFacade {
                 isBlocking: isBlocking
             )
             children.append(blockAction)
+            
+            // report
+            let reportAction = await createMenuReportActionForUser(
+                provider: provider,
+                record: user,
+                authenticationContext: authenticationContext
+            )
+            children.append(reportAction)
         }
         
         return await UIMenu(title: "", options: [], children: children)
@@ -62,6 +80,28 @@ extension DataSourceFacade {
 
 extension DataSourceFacade {
     
+    // mute // unmute
+    private static func createMenuMuteActionForUser(
+        provider: DataSourceProvider,
+        record: UserRecord,
+        authenticationContext: AuthenticationContext,
+        isMuting: Bool
+    ) async -> UIAction {
+        let title = isMuting ? L10n.Common.Controls.Friendship.Actions.unmute : L10n.Common.Controls.Friendship.Actions.mute
+        let image = isMuting ? UIImage(systemName: "speaker.wave.2") : UIImage(systemName: "speaker.slash")
+        let muteAction = await UIAction(title: title, image: image, attributes: [], state: .off) { [weak provider] _ in
+            guard let provider = provider else { return }
+            Task {
+                await DataSourceFacade.presentUserMuteAlert(
+                    provider: provider,
+                    user: record,
+                    authenticationContext: authenticationContext
+                )
+            }
+        }
+        return muteAction
+    }
+    
     // block / unblock
     private static func createMenuBlockActionForUser(
         provider: DataSourceProvider,
@@ -82,6 +122,65 @@ extension DataSourceFacade {
             }
         }
         return blockAction
+    }
+
+    private static func createMenuReportActionForUser(
+        provider: DataSourceProvider,
+        record: UserRecord,
+        authenticationContext: AuthenticationContext
+    ) async -> UIMenuElement {
+        let reportAction = await UIAction(
+            title: L10n.Common.Controls.Friendship.Actions.report,
+            image: UIImage(systemName: "flag"),
+            identifier: nil,
+            discoverabilityTitle: nil,
+            attributes: .destructive,
+            state: .off
+        ) { [weak provider] _ in
+            guard let provider = provider else { return }
+            Task {
+                await DataSourceFacade.presentUserReportAlert(
+                    provider: provider,
+                    user: record,
+                    performBlock: false,
+                    authenticationContext: authenticationContext
+                )
+            }
+        }
+        
+        switch record {
+        case .twitter:
+            let reportAndBlockAction = await UIAction(
+                title: L10n.Common.Controls.Friendship.Actions.reportAndBlock,
+                image: UIImage(systemName: "flag.badge.ellipsis"),
+                identifier: nil,
+                discoverabilityTitle: nil,
+                attributes: .destructive,
+                state: .off
+            ) { [weak provider] _ in
+                guard let provider = provider else { return }
+                Task {
+                    await DataSourceFacade.presentUserReportAlert(
+                        provider: provider,
+                        user: record,
+                        performBlock: true,
+                        authenticationContext: authenticationContext
+                    )
+                }
+            }
+            return await UIMenu(
+                title: L10n.Common.Controls.Friendship.Actions.report,
+                image: UIImage(systemName: "flag"),
+                identifier: nil,
+                options: [],
+                children: [
+                    reportAction,
+                    reportAndBlockAction
+                ]
+            )
+        case .mastodon:
+            return reportAction
+        }
     }
 
 }

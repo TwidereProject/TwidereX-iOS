@@ -8,6 +8,8 @@
 
 import UIKit
 import TwidereUI
+import MetaTextArea
+import Meta
 
 protocol StatusViewContainerTableViewCell: UITableViewCell {
     var delegate: StatusViewTableViewCellDelegate? { get }
@@ -21,6 +23,8 @@ protocol StatusViewTableViewCellDelegate: AnyObject {
     // avatar button
     func tableViewCell(_ cell: UITableViewCell, statusView: StatusView, authorAvatarButtonDidPressed button: AvatarButton)
     func tableViewCell(_ cell: UITableViewCell, statusView: StatusView, quoteStatusView: StatusView, authorAvatarButtonDidPressed button: AvatarButton)
+    // content
+    func tableViewCell(_ cell: UITableViewCell, statusView: StatusView, metaTextAreaView: MetaTextAreaView, didSelectMeta meta: Meta)
     // media
     func tableViewCell(_ cell: UITableViewCell, statusView: StatusView, mediaGridContainerView containerView: MediaGridContainerView, didTapMediaView mediaView: MediaView, at index: Int)
     func tableViewCell(_ cell: UITableViewCell, statusView: StatusView, quoteStatusView: StatusView, mediaGridContainerView containerView: MediaGridContainerView, didTapMediaView mediaView: MediaView, at index: Int)
@@ -41,6 +45,10 @@ extension StatusViewDelegate where Self: StatusViewContainerTableViewCell {
     }
     func statusView(_ statusView: StatusView, quoteStatusView: StatusView, authorAvatarButtonDidPressed button: AvatarButton) {
         delegate?.tableViewCell(self, statusView: statusView, quoteStatusView: quoteStatusView, authorAvatarButtonDidPressed: button)
+    }
+    
+    func statusView(_ statusView: StatusView, metaTextAreaView: MetaTextAreaView, didSelectMeta meta: Meta) {
+        delegate?.tableViewCell(self, statusView: statusView, metaTextAreaView: metaTextAreaView, didSelectMeta: meta)
     }
     
     func statusView(_ statusView: StatusView, mediaGridContainerView containerView: MediaGridContainerView, didTapMediaView mediaView: MediaView, at index: Int) {

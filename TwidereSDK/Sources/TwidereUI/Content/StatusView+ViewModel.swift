@@ -17,43 +17,47 @@ import TwidereCore
 import TwitterMeta
 import MastodonMeta
 import Meta
-// import DateToolsSwift
 
 extension StatusView {
-    final class ViewModel: ObservableObject {
+    public final class ViewModel: ObservableObject {
         var disposeBag = Set<AnyCancellable>()
+        var observations = Set<NSKeyValueObservation>()
         var objects = Set<NSManagedObject>()
         
-        @Published var platform: Platform = .none
+        @Published public var platform: Platform = .none
         
-        @Published var header: Header = .none
+        @Published public var header: Header = .none
         
-        @Published var authorAvatarImageURL: URL?
-        @Published var authorName: MetaContent?
-        @Published var authorUsername: String?
+        @Published public var authorAvatarImageURL: URL?
+        @Published public var authorName: MetaContent?
+        @Published public var authorUsername: String?
         
-        @Published var content: MetaContent?
-        @Published var mediaViewConfigurations: [MediaView.Configuration] = []
-        @Published var location: String?
+        @Published public var protected: Bool = false
         
-        @Published var isRepost: Bool = false
-        @Published var isLike: Bool = false
+        @Published public var content: MetaContent?
+        @Published public var mediaViewConfigurations: [MediaView.Configuration] = []
+        @Published public var location: String?
         
-        @Published var replyCount: Int = 0
-        @Published var repostCount: Int = 0
-        @Published var likeCount: Int = 0
+        @Published public var isRepost: Bool = false
+        @Published public var isLike: Bool = false
         
-        @Published var dateTimeProvider: DateTimeProvider?
-        @Published var timestamp: Date?
+        @Published public var replyCount: Int = 0
+        @Published public var repostCount: Int = 0
+        @Published public var likeCount: Int = 0
         
-        enum Header {
+        @Published public var visibility: StatusVisibility?
+        
+        @Published public var dateTimeProvider: DateTimeProvider?
+        @Published public var timestamp: Date?
+        
+       public enum Header {
             case none
             case repost(info: RepostInfo)
             case notification(info: NotificationHeaderInfo)
             // TODO: replyTo
             
-            struct RepostInfo {
-                let authorNameMetaContent: MetaContent
+            public struct RepostInfo {
+                public let authorNameMetaContent: MetaContent
             }
         }
     }
@@ -100,6 +104,28 @@ extension StatusView.ViewModel {
                 statusView.authorAvatarButton.avatarImageView.configure(configuration: configuration)
             }
             .store(in: &disposeBag)
+        UserDefaults.shared
+            .observe(\.avatarStyle, options: [.initial, .new]) { defaults, _ in
+                let avatarStyle = defaults.avatarStyle
+                let animator = UIViewPropertyAnimator(duration: 0.3, timingParameters: UISpringTimingParameters())
+                animator.addAnimations { [weak statusView] in
+                    guard let statusView = statusView else { return }
+                    switch avatarStyle {
+                    case .circle:
+                        statusView.authorAvatarButton.avatarImageView.configure(cornerConfiguration: .init(corner: .circle))
+                    case .roundedSquare:
+                        statusView.authorAvatarButton.avatarImageView.configure(cornerConfiguration: .init(corner: .scale(ratio: 4)))
+                    }
+                }
+                animator.startAnimation()
+            }
+            .store(in: &observations)
+        // lock
+        $protected
+            .sink { protected in
+                statusView.lockImageView.isHidden = !protected
+            }
+            .store(in: &disposeBag)
         // name
         $authorName
             .sink { metaContent in
@@ -116,14 +142,34 @@ extension StatusView.ViewModel {
             }
             .assign(to: \.text, on: statusView.authorUsernameLabel)
             .store(in: &disposeBag)
+        // visibility
+        $visibility
+            .sink { visibility in
+                guard let visibility = visibility,
+                      let image = visibility.inlineImage
+                else { return }
+                
+                statusView.visibilityImageView.image = image
+                statusView.setVisibilityDisplay()
+            }
+            .store(in: &disposeBag)
         // timestamp
         Publishers.CombineLatest(
             $timestamp,
             $dateTimeProvider
         )
         .sink { timestamp, dateTimeProvider in
-            let text = dateTimeProvider?.shortTimeAgoSinceNow(to: timestamp)
-            statusView.timestampLabel.text = text
+            switch statusView.style {
+            case .plain:
+                let formatter = DateFormatter()
+                formatter.dateStyle = .medium
+                formatter.timeStyle = .medium
+                let text = timestamp.flatMap { formatter.string(from: $0) }
+                statusView.timestampLabel.text = text
+            default:
+                let text = dateTimeProvider?.shortTimeAgoSinceNow(to: timestamp)
+                statusView.timestampLabel.text = text
+            }
         }
         .store(in: &disposeBag)
     }
@@ -327,6 +373,10 @@ extension StatusView {
             .map { _ in author.avatarImageURL() }
             .assign(to: \.authorAvatarImageURL, on: viewModel)
             .store(in: &disposeBag)
+        // lock
+        author.publisher(for: \.protected)
+            .assign(to: \.protected, on: viewModel)
+            .store(in: &disposeBag)
         // author name
         author.publisher(for: \.name)
             .map { PlaintextMetaContent(string: $0) }
@@ -514,6 +564,12 @@ extension StatusView {
             .map { $0 as String? }
             .assign(to: \.authorUsername, on: viewModel)
             .store(in: &disposeBag)
+        // protected
+        author.publisher(for: \.locked)
+            .assign(to: \.protected, on: viewModel)
+            .store(in: &disposeBag)
+        // visibility
+        viewModel.visibility = status.visibility.asStatusVisibility
         // timestamp
         viewModel.dateTimeProvider = dateTimeProvider
         (status.repost ?? status).publisher(for: \.createdAt)

@@ -9,6 +9,8 @@
 import UIKit
 import AppShared
 import TwidereComposeUI
+import MetaTextArea
+import Meta
 
 // MARK: - header
 extension StatusViewTableViewCellDelegate where Self: DataSourceProvider {
@@ -58,6 +60,36 @@ extension StatusViewTableViewCellDelegate where Self: DataSourceProvider {
     }
 
 }
+
+// MARK: - content
+extension StatusViewTableViewCellDelegate where Self: DataSourceProvider {
+    func tableViewCell(_ cell: UITableViewCell, statusView: StatusView, metaTextAreaView: MetaTextAreaView, didSelectMeta meta: Meta) {
+        Task {
+            let source = DataSourceItem.Source(tableViewCell: cell, indexPath: nil)
+            guard let item = await item(from: source) else {
+                assertionFailure()
+                return
+            }
+            guard case let .status(status) = item else {
+                assertionFailure("only works for status data provider")
+                return
+            }
+            
+            switch meta {
+            case .url: break
+            case .hashtag: break
+            case .mention(_, let mention, _):
+                await DataSourceFacade.coordinateToProfileScene(
+                    provider: self,
+                    username: mention
+                )
+            case .email: break
+            case .emoji: break
+            }
+        }
+    }
+}
+
 
 // MARK: - media
 extension StatusViewTableViewCellDelegate where Self: DataSourceProvider {

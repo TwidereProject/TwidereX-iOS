@@ -53,13 +53,33 @@ extension StatusThreadViewController {
             tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
         ])
         
+        tableView.delegate = self
         viewModel.setupDiffableDataSource(
             tableView: tableView,
             statusViewTableViewCellDelegate: self
         )
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        tableView.deselectRow(with: transitionCoordinator, animated: animated)
+    }
+    
 }
+
+// MARK: - UITableViewDelegate
+extension StatusThreadViewController: UITableViewDelegate, AutoGenerateTableViewDelegate {
+    // sourcery:inline:StatusThreadViewController.AutoGenerateTableViewDelegate
+
+    // Generated using Sourcery
+    // DO NOT EDIT
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        aspectTableView(tableView, didSelectRowAt: indexPath)
+    }
+    // sourcery:end
+}
+
 
 // MARK: - StatusViewTableViewCellDelegate
 extension StatusThreadViewController: StatusViewTableViewCellDelegate { }

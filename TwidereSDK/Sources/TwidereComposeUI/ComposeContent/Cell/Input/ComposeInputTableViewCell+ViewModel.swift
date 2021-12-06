@@ -15,6 +15,7 @@ extension ComposeInputTableViewCell {
     public class ViewModel {
         var configureDisposeBag = Set<AnyCancellable>()
         var bindDisposeBag = Set<AnyCancellable>()
+        var observations = Set<NSKeyValueObservation>()
         
         @Published var avatarImageURL: URL?
         @Published var isContentWarningDisplay: Bool = false
@@ -34,6 +35,22 @@ extension ComposeInputTableViewCell.ViewModel {
                 )
             }
             .store(in: &bindDisposeBag)
+        UserDefaults.shared
+            .observe(\.avatarStyle, options: [.initial, .new]) { defaults, _ in
+                let avatarStyle = defaults.avatarStyle
+                let animator = UIViewPropertyAnimator(duration: 0.3, timingParameters: UISpringTimingParameters())
+                animator.addAnimations { [weak cell] in
+                    guard let cell = cell else { return }
+                    switch avatarStyle {
+                    case .circle:
+                        cell.avatarView.avatarStyle = .circle
+                    case .roundedSquare:
+                        cell.avatarView.avatarStyle = .roundedRect
+                    }
+                }
+                animator.startAnimation()
+            }
+            .store(in: &observations)
     }
 }
 

@@ -319,6 +319,8 @@
 		DBF63A38259D7CCB009E12C8 /* CornerSmoothPreviewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBF63A37259D7CCB009E12C8 /* CornerSmoothPreviewViewController.swift */; };
 		DBF69EE02549705A00E2A915 /* ViewControllerAnimatedTransitioning.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBF69EDE2549705A00E2A915 /* ViewControllerAnimatedTransitioning.swift */; };
 		DBF69EE12549705A00E2A915 /* ViewControllerAnimatedTransitioningDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBF69EDF2549705A00E2A915 /* ViewControllerAnimatedTransitioningDelegate.swift */; };
+		DBF739CF275C247F00BF6AB5 /* DataSourceFacade+Mute.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBF739CE275C247F00BF6AB5 /* DataSourceFacade+Mute.swift */; };
+		DBF739D1275C3EF300BF6AB5 /* DataSourceFacade+Report.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBF739D0275C3EF300BF6AB5 /* DataSourceFacade+Report.swift */; };
 		DBFA4A1125A5641000D51703 /* ProfileViewController+UserProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBFA4A1025A5640E00D51703 /* ProfileViewController+UserProvider.swift */; };
 		DBFA4A2025A5924C00D51703 /* HomeTimelineViewModel+Diffable.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBFA4A1F25A5924C00D51703 /* HomeTimelineViewModel+Diffable.swift */; };
 		DBFCC44725667C620016698E /* UILabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBFCC44625667C620016698E /* UILabel.swift */; };
@@ -874,6 +876,9 @@
 		DBF69EEE25498A4800E2A915 /* SearchDetailPagingViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchDetailPagingViewModel.swift; sourceTree = "<group>"; };
 		DBF69EF325498ADC00E2A915 /* SearchTimelineViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchTimelineViewController.swift; sourceTree = "<group>"; };
 		DBF69EF925498B1500E2A915 /* SearchTimelineViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchTimelineViewModel.swift; sourceTree = "<group>"; };
+		DBF739CE275C247F00BF6AB5 /* DataSourceFacade+Mute.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DataSourceFacade+Mute.swift"; sourceTree = "<group>"; };
+		DBF739D0275C3EF300BF6AB5 /* DataSourceFacade+Report.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DataSourceFacade+Report.swift"; sourceTree = "<group>"; };
+		DBF739D2275D2F9800BF6AB5 /* MetaTextKit */ = {isa = PBXFileReference; lastKnownFileType = folder; name = MetaTextKit; path = ../MetaTextKit; sourceTree = "<group>"; };
 		DBFA4A0125A45DEE00D51703 /* UserProviderFacade.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserProviderFacade.swift; sourceTree = "<group>"; };
 		DBFA4A0625A4621C00D51703 /* UserProvider+SearchUserTableViewCellDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UserProvider+SearchUserTableViewCellDelegate.swift"; sourceTree = "<group>"; };
 		DBFA4A0B25A4628D00D51703 /* SearchUserViewController+UserProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SearchUserViewController+UserProvider.swift"; sourceTree = "<group>"; };
@@ -1321,7 +1326,9 @@
 				DB86433B26E898C5000C9879 /* DataSourceFacade+Like.swift */,
 				DB71C7D0271EB09A00BE3819 /* DataSourceFacade+Friendship.swift */,
 				DB3B906C26E8DB6E0010F64C /* DataSourceFacade+Profile.swift */,
+				DBF739CE275C247F00BF6AB5 /* DataSourceFacade+Mute.swift */,
 				DB262A322721377800D18EF3 /* DataSourceFacade+Block.swift */,
+				DBF739D0275C3EF300BF6AB5 /* DataSourceFacade+Report.swift */,
 				DB56329B26DCC23700FC893F /* DataSourceProvider.swift */,
 				DB5632A626DCC84C00FC893F /* DataSourceProvider+UITableViewDelegate.swift */,
 			);
@@ -1974,6 +1981,7 @@
 		DBDA8E1524FCF8A3006750DC = {
 			isa = PBXGroup;
 			children = (
+				DBF739D2275D2F9800BF6AB5 /* MetaTextKit */,
 				DB33E5B42719637400EC2225 /* CoverFlowStackCollectionViewLayout */,
 				DB51DC372716AEF000A0D8FB /* TabBarPager */,
 				DB43239D251491EB004FAAEC /* TwidereSDK */,
@@ -2971,6 +2979,7 @@
 				DB94887D2599F70600C3E111 /* TimelineHeaderTableViewCell.swift in Sources */,
 				DBE71B7F26B7D68500DFAB8E /* StubTimelineCollectionViewCell.swift in Sources */,
 				DB213FA627392ABC009ABD74 /* HashtagTimelineViewController.swift in Sources */,
+				DBF739CF275C247F00BF6AB5 /* DataSourceFacade+Mute.swift in Sources */,
 				DB761E5D255940EF0050DC01 /* DrawerSidebarEntryTableViewCell.swift in Sources */,
 				DBDAF242274F530600050319 /* ViewStateStore.swift in Sources */,
 				DB7E22F02552A3D500551314 /* UserLikeTimelineViewController.swift in Sources */,
@@ -3028,6 +3037,7 @@
 				DB5632A726DCC84C00FC893F /* DataSourceProvider+UITableViewDelegate.swift in Sources */,
 				DBB47DAD26EB440C001590F7 /* ProfileFieldCollectionViewCell.swift in Sources */,
 				DB3B905F26E8A9650010F64C /* StatusThreadViewController+DataSourceProvider.swift in Sources */,
+				DBF739D1275C3EF300BF6AB5 /* DataSourceFacade+Report.swift in Sources */,
 				DB213FAF273930BF009ABD74 /* HashtagTimelineViewModel+State.swift in Sources */,
 				DB969A66253064FE0053CB31 /* DispatchQueue.swift in Sources */,
 				DB262A3D27228B4800D18EF3 /* SearchResultViewController.swift in Sources */,

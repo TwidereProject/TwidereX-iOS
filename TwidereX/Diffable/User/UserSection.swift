@@ -27,6 +27,7 @@ extension UserSection {
         configuration: Configuration
     ) -> UITableViewDiffableDataSource<UserSection, UserItem> {
         let cellTypes = [
+            UserAccountStyleTableViewCell.self,
             UserRelationshipStyleTableViewCell.self,
             UserFriendshipStyleTableViewCell.self,
             UserMentionPickStyleTableViewCell.self,
@@ -45,10 +46,20 @@ extension UserSection {
             // configure cell with item
             switch item {
             case .authenticationIndex(let record):
-                let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: AccountListTableViewCell.self), for: indexPath) as! AccountListTableViewCell
+                let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: UserAccountStyleTableViewCell.self), for: indexPath) as! UserAccountStyleTableViewCell
                 context.managedObjectContext.performAndWait {
                     guard let authenticationIndex = record.object(in: context.managedObjectContext) else { return }
-                    configure(cell: cell, authenticationIndex: authenticationIndex)
+                    guard let me = authenticationIndex.user else { return }
+                    let viewModel = UserTableViewCell.ViewModel(
+                        user: me,
+                        me: me,
+                        notification: nil
+                    )
+                    configure(
+                        cell: cell,
+                        viewModel: viewModel,
+                        configuration: configuration
+                    )
                 }
                 return cell
             case .user(let record, let style):
@@ -87,9 +98,8 @@ extension UserSection {
         style: UserView.Style
     ) -> UserTableViewCell {
         switch style {
-        case .plain:
-            // FIXME: add plain style cell
-            return tableView.dequeueReusableCell(withIdentifier: String(describing: UserRelationshipStyleTableViewCell.self), for: indexPath) as! UserRelationshipStyleTableViewCell
+        case .account:
+            return tableView.dequeueReusableCell(withIdentifier: String(describing: UserAccountStyleTableViewCell.self), for: indexPath) as! UserAccountStyleTableViewCell
         case .relationship:
             return tableView.dequeueReusableCell(withIdentifier: String(describing: UserRelationshipStyleTableViewCell.self), for: indexPath) as! UserRelationshipStyleTableViewCell
         case .friendship:

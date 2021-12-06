@@ -236,6 +236,8 @@ extension ProfileHeaderView {
             dashboardView.trailingAnchor.constraint(equalTo: container.trailingAnchor),
         ])
         
+        friendshipButton.addTarget(self, action: #selector(ProfileHeaderView.friendshipButtonDidPressed(_:)), for: .touchUpInside)
+        
         dashboardView.delegate = self
     }
 }

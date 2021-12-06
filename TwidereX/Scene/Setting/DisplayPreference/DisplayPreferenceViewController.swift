@@ -20,7 +20,7 @@ final class DisplayPreferenceViewController: UIViewController, NeedsDependency {
 
     private(set) lazy var tableView: UITableView = {
         let tableView = ControlContainableTableView(frame: .zero, style: .grouped)
-        tableView.register(TimelinePostTableViewCell.self, forCellReuseIdentifier: String(describing: TimelinePostTableViewCell.self))
+        tableView.register(StatusTableViewCell.self, forCellReuseIdentifier: String(describing: StatusTableViewCell.self))
         tableView.register(SwitchTableViewCell.self, forCellReuseIdentifier: String(describing: SwitchTableViewCell.self))
         tableView.register(SlideTableViewCell.self, forCellReuseIdentifier: String(describing: SlideTableViewCell.self))
         tableView.register(ListEntryTableViewCell.self, forCellReuseIdentifier: String(describing: ListEntryTableViewCell.self))
@@ -39,20 +39,20 @@ extension DisplayPreferenceViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-//        title = L10n.Scene.Settings.Display.title
-//
-//        tableView.translatesAutoresizingMaskIntoConstraints = false
-//        view.addSubview(tableView)
-//        NSLayoutConstraint.activate([
-//            tableView.topAnchor.constraint(equalTo: view.topAnchor),
-//            tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-//            tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-//            tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-//        ])
-//
-//        tableView.delegate = self
-//        tableView.dataSource = viewModel
-//
+        title = L10n.Scene.Settings.Display.title
+
+        tableView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(tableView)
+        NSLayoutConstraint.activate([
+            tableView.topAnchor.constraint(equalTo: view.topAnchor),
+            tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+        ])
+
+        tableView.delegate = self
+        tableView.dataSource = viewModel
+
 //        tableView.addGestureRecognizer(textFontSizeSliderPanGestureRecognizer)
 //        textFontSizeSliderPanGestureRecognizer.addTarget(self, action: #selector(DisplayPreferenceViewController.sliderPanGestureRecoginzerHandler(_:)))
 //        textFontSizeSliderPanGestureRecognizer.delegate = self
@@ -69,26 +69,26 @@ extension DisplayPreferenceViewController {
 // MARK: - UITableViewDelegate
 extension DisplayPreferenceViewController: UITableViewDelegate {
 
-//    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-//        let sectionData = viewModel.sections[section]
-//        let header = sectionData.header
-//        let headerView = TableViewSectionTextHeaderView()
-//        headerView.headerLabel.text = header
-//        return headerView
-//    }
-//
-//    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-//        let section = viewModel.sections[indexPath.section]
-//        let setting = section.settings[indexPath.row]
-//
-//        switch setting {
-//        case .avatarStyle(let avatarStyle):
-//            UserDefaults.shared.avatarStyle = avatarStyle
-//            tableView.deselectRow(at: indexPath, animated: true)
-//        default:
-//            break
-//        }
-//    }
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        let sectionData = viewModel.sections[section]
+        let header = sectionData.header
+        let headerView = TableViewSectionTextHeaderView()
+        headerView.headerLabel.text = header
+        return headerView
+    }
+
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let section = viewModel.sections[indexPath.section]
+        let setting = section.settings[indexPath.row]
+
+        switch setting {
+        case .avatarStyle(let avatarStyle):
+            UserDefaults.shared.avatarStyle = avatarStyle
+            tableView.deselectRow(at: indexPath, animated: true)
+        default:
+            break
+        }
+    }
     
 }
 

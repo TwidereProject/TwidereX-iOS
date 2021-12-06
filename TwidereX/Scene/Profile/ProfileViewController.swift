@@ -159,7 +159,7 @@ extension ProfileViewController {
             context.authenticationService.activeAuthenticationContext
         )
         .receive(on: DispatchQueue.main)
-        .sink { [weak self] _, userRecord, authenticationContext in
+        .sink { [weak self] optionSet, userRecord, authenticationContext in
             guard let self = self else { return }
             guard let userRecord = userRecord,
                   let authenticationContext = authenticationContext
@@ -170,17 +170,24 @@ extension ProfileViewController {
             }
             Task {
                 do {
-                    self.moreMenuBarButtonItem.menu = try await DataSourceFacade.createMenuForUser(
+                    let menu = try await DataSourceFacade.createMenuForUser(
                         provider: self,
                         user: userRecord,
                         authenticationContext: authenticationContext
                     )
-                    self.navigationItem.rightBarButtonItems = [
-                        self.moreMenuBarButtonItem
-                    ]
+                    self.moreMenuBarButtonItem.menu = menu
+                    
+                    self.navigationItem.rightBarButtonItems = {
+                        var items: [UIBarButtonItem] = []
+                        if !menu.children.isEmpty {
+                            items.append(self.moreMenuBarButtonItem)
+                        }
+                        return items
+                    }()
                 } catch {
                     self.moreMenuBarButtonItem.menu = nil
                     self.navigationItem.rightBarButtonItems = []
+                    assertionFailure()
                 }
             }
         }

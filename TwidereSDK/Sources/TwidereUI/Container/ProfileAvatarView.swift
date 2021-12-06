@@ -174,12 +174,14 @@ extension ProfileAvatarView {
         case .none:
             badgeImageView.image = nil
         case .circle:
-            badgeImageView.image = nil
+            break
         case .verified:
             badgeImageView.image = Asset.Badge.verified.image
         case .robot:
             badgeImageView.image = Asset.Badge.robot.image
         }
+        
+        let cornerRadiusRatio: CGFloat = 4
         
         // mask outline
         let outlineMaskLayer = CAShapeLayer()
@@ -191,10 +193,22 @@ extension ProfileAvatarView {
             case .circle:
                 path = UIBezierPath(ovalIn: containerFrame)
             case .roundedRect:
-                path = UIBezierPath(roundedRect: containerFrame, cornerRadius: containerFrame.width / 3)
+                path = UIBezierPath(roundedRect: containerFrame, cornerRadius: containerFrame.width / cornerRadiusRatio)
             }
             return path.cgPath
         }()
         avatarContainerView.layer.mask = outlineMaskLayer
+        
+        let cornerConfiguration: AvatarImageView.CornerConfiguration = {
+            switch avatarStyle {
+            case .circle:
+                return .init(corner: .circle)
+            case .roundedRect:
+                return .init(corner: .fixed(radius: cornerRadiusRatio))
+            }
+        }()
+        
+        // set imageView corner
+        avatarButton.avatarImageView.configure(cornerConfiguration: cornerConfiguration)
     }
 }

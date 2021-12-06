@@ -110,15 +110,6 @@
         }
       },
       {
-        "package": "MetaTextKit",
-        "repositoryURL": "https://github.com/TwidereProject/MetaTextKit.git",
-        "state": {
-          "branch": null,
-          "revision": "58e2082bb5c68b34b2a3f2a6596994692257cef5",
-          "version": "3.1.0"
-        }
-      },
-      {
         "package": "Pageboy",
         "repositoryURL": "https://github.com/uias/Pageboy",
         "state": {
@@ -150,8 +141,8 @@
         "repositoryURL": "https://github.com/apple/swift-nio.git",
         "state": {
           "branch": null,
-          "revision": "addf69cfe60376c325397c8926589415576b1dd1",
-          "version": "2.34.0"
+          "revision": "37e7a33de45bac894c0b08b56a2f755ebe4884e6",
+          "version": "2.35.0"
         }
       },
       {

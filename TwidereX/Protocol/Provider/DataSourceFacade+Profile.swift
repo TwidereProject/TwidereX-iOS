@@ -43,4 +43,17 @@ extension DataSourceFacade {
             transition: .show
         )
     }
+    
+    static func coordinateToProfileScene(
+        provider: DataSourceProvider,
+        username: String
+    ) async {
+//        fatalError()
+        let profileViewModel = ProfileViewModel(context: provider.context)
+        await provider.coordinator.present(
+            scene: .profile(viewModel: profileViewModel),
+            from: provider,
+            transition: .show
+        )
+    }
 }

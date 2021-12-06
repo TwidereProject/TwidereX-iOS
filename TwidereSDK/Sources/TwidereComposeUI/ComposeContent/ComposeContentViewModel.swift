@@ -58,7 +58,7 @@ public final class ComposeContentViewModel: NSObject {
     
     // visibility (Mastodon)
     @Published public internal(set) var mastodonVisibility: Mastodon.Entity.Status.Visibility = .public
-    @Published public private(set) var visibility: Visibility? = nil
+    @Published public private(set) var visibility: StatusVisibility? = nil
     
     // attachment
     @Published public internal(set) var attachmentViewModels: [AttachmentViewModel] = []
@@ -344,7 +344,7 @@ public final class ComposeContentViewModel: NSObject {
             $mastodonVisibility
         )
         .receive(on: DispatchQueue.main)
-        .map { [weak self] author, mastodonVisibility -> Visibility? in
+        .map { [weak self] author, mastodonVisibility -> StatusVisibility? in
             guard let self = self else { return nil }
             
             switch author {
@@ -559,10 +559,6 @@ extension ComposeContentViewModel {
             self.dateTimeProvider = dateTimeProvider
             self.twitterTextProvider = twitterTextProvider
         }
-    }
-    
-    public enum Visibility {
-        case mastodon(Mastodon.Entity.Status.Visibility)
     }
 }
 

@@ -77,6 +77,7 @@ public enum Asset {
     public static let ellipsesBubble = ImageAsset(name: "Communication/ellipses.bubble")
     public static let ellipsisBubblePlus = ImageAsset(name: "Communication/ellipsis.bubble.plus")
     public static let mail = ImageAsset(name: "Communication/mail")
+    public static let mailMiniInline = ImageAsset(name: "Communication/mail.mini.inline")
     public static let textBubbleSmall = ImageAsset(name: "Communication/text.bubble.small")
   }
   public enum Editing {
@@ -134,11 +135,14 @@ public enum Asset {
     public static let gif = ImageAsset(name: "Object&Tools/gif")
     public static let globe = ImageAsset(name: "Object&Tools/globe")
     public static let globeMini = ImageAsset(name: "Object&Tools/globe.mini")
+    public static let globeMiniInline = ImageAsset(name: "Object&Tools/globe.mini.inline")
     public static let house = ImageAsset(name: "Object&Tools/house")
     public static let icRoundRefresh = ImageAsset(name: "Object&Tools/ic.round.refresh")
     public static let lock = ImageAsset(name: "Object&Tools/lock")
     public static let lockMini = ImageAsset(name: "Object&Tools/lock.mini")
+    public static let lockMiniInline = ImageAsset(name: "Object&Tools/lock.mini.inline")
     public static let lockOpen = ImageAsset(name: "Object&Tools/lock.open")
+    public static let lockOpenMiniInline = ImageAsset(name: "Object&Tools/lock.open.mini.inline")
     public static let magnifyingglass = ImageAsset(name: "Object&Tools/magnifyingglass")
     public static let mappin = ImageAsset(name: "Object&Tools/mappin")
     public static let mappinMini = ImageAsset(name: "Object&Tools/mappin.mini")

@@ -44,6 +44,8 @@ final class StatusThreadRootTableViewCell: UITableViewCell {
 extension StatusThreadRootTableViewCell {
     
     private func _init() {
+        selectionStyle = .none
+        
         statusView.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(statusView)
         NSLayoutConstraint.activate([

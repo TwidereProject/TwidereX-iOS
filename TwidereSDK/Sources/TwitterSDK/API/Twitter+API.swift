@@ -57,6 +57,7 @@ extension Twitter.API {
             public enum Block { }
             public enum Follow { } 
             public enum Like { }
+            public enum Mute { }
             public enum Retweet { }
         }
         public enum UserLookup { } 
