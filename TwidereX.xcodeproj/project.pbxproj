@@ -155,6 +155,8 @@
 		DB761E4E255935380050DC01 /* DrawerSidebarHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB761E4D255935380050DC01 /* DrawerSidebarHeaderView.swift */; };
 		DB761E5D255940EF0050DC01 /* DrawerSidebarEntryTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB761E5C255940EF0050DC01 /* DrawerSidebarEntryTableViewCell.swift */; };
 		DB761E62255942050050DC01 /* DrawerSidebarEntryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB761E61255942050050DC01 /* DrawerSidebarEntryView.swift */; };
+		DB76A64B275DF9FA00A50673 /* TwitterStatusThreadReplyViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB76A64A275DF9FA00A50673 /* TwitterStatusThreadReplyViewModel.swift */; };
+		DB76A64D275DFA0600A50673 /* TwitterStatusThreadReplyViewModel+State.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB76A64C275DFA0600A50673 /* TwitterStatusThreadReplyViewModel+State.swift */; };
 		DB7AB33E2744E3740035EB8A /* Floaty in Frameworks */ = {isa = PBXBuildFile; productRef = DB7AB33D2744E3740035EB8A /* Floaty */; };
 		DB7E22F02552A3D500551314 /* UserLikeTimelineViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB7E22EF2552A3D500551314 /* UserLikeTimelineViewController.swift */; };
 		DB7E22F92552A40000551314 /* UserLikeTimelineViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB7E22F82552A40000551314 /* UserLikeTimelineViewModel.swift */; };
@@ -650,6 +652,8 @@
 		DB761E5C255940EF0050DC01 /* DrawerSidebarEntryTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawerSidebarEntryTableViewCell.swift; sourceTree = "<group>"; };
 		DB761E61255942050050DC01 /* DrawerSidebarEntryView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DrawerSidebarEntryView.swift; sourceTree = "<group>"; };
 		DB761E69255946160050DC01 /* DrawerSidebarViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawerSidebarViewModel.swift; sourceTree = "<group>"; };
+		DB76A64A275DF9FA00A50673 /* TwitterStatusThreadReplyViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwitterStatusThreadReplyViewModel.swift; sourceTree = "<group>"; };
+		DB76A64C275DFA0600A50673 /* TwitterStatusThreadReplyViewModel+State.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TwitterStatusThreadReplyViewModel+State.swift"; sourceTree = "<group>"; };
 		DB7E22EF2552A3D500551314 /* UserLikeTimelineViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserLikeTimelineViewController.swift; sourceTree = "<group>"; };
 		DB7E22F82552A40000551314 /* UserLikeTimelineViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserLikeTimelineViewModel.swift; sourceTree = "<group>"; };
 		DB7E22FD2552A6A700551314 /* UserLikeTimelineViewModel+State.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UserLikeTimelineViewModel+State.swift"; sourceTree = "<group>"; };
@@ -1354,6 +1358,8 @@
 			isa = PBXGroup;
 			children = (
 				DB5632BB26DF503800FC893F /* TwitterStatusThreadLeafViewModel.swift */,
+				DB76A64A275DF9FA00A50673 /* TwitterStatusThreadReplyViewModel.swift */,
+				DB76A64C275DFA0600A50673 /* TwitterStatusThreadReplyViewModel+State.swift */,
 			);
 			path = Twitter;
 			sourceTree = "<group>";
@@ -3078,6 +3084,7 @@
 				DBE76D1C2500E5E000DEB0FC /* TimelinePostTableViewCell.swift in Sources */,
 				DBC17A5C26E0A4C1005C0D79 /* TimelineMiddleLoaderTableViewCell+ViewModel.swift in Sources */,
 				DBF63A04259B4811009E12C8 /* TouchBlockingCollectionView.swift in Sources */,
+				DB76A64B275DF9FA00A50673 /* TwitterStatusThreadReplyViewModel.swift in Sources */,
 				DB262A392721621900D18EF3 /* DataSourceFacade+User.swift in Sources */,
 				DB3B906526E8BF1F0010F64C /* ProfileHeaderView+ViewModel.swift in Sources */,
 				DB51DC3B2716F82000A0D8FB /* CellFrameCacheContainer.swift in Sources */,
@@ -3157,6 +3164,7 @@
 				DB2C8743274F4B7D00CE0398 /* SettingListView.swift in Sources */,
 				DB925700251C8F29004FEFB5 /* UserTimelineViewController.swift in Sources */,
 				DB8761C5274552FB00BA7EE2 /* HashtagItem.swift in Sources */,
+				DB76A64D275DFA0600A50673 /* TwitterStatusThreadReplyViewModel+State.swift in Sources */,
 				DBF639EA259B11F6009E12C8 /* UserTimelineViewModel+Diffable.swift in Sources */,
 				DBC8E050257653E100401E20 /* SavePhotoActivity.swift in Sources */,
 				DBF63A13259C36D8009E12C8 /* ListEntryTableViewCell.swift in Sources */,

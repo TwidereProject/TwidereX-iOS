@@ -29,26 +29,43 @@ extension StatusThreadViewModel {
         
         var snapshot = NSDiffableDataSourceSnapshot<StatusSection, StatusItem>()
         snapshot.appendSections([.main])
-        if let root = self.root.value {
+        if hasReplyTo {
+            snapshot.appendItems([.topLoader], toSection: .main)
+        }
+        if let root = self.root.value, case let .root(status) = root {
+            switch status {
+            case .twitter(let record):
+                if twitterStatusThreadReplyViewModel.root == nil {
+                    twitterStatusThreadReplyViewModel.root = record
+                }
+            case .mastodon:
+                break
+            }
+            
             let item = StatusItem.thread(root)
-            snapshot.appendItems([item], toSection: .main)
+            snapshot.appendItems([item, .bottomLoader], toSection: .main)
+        } else {
+            root.eraseToAnyPublisher()
+                .sink { [weak self] root in
+                    guard let self = self else { return }
+                    
+                    guard case .root(let status) = root else { return }
+                    guard case let .twitter(record) = status else { return }
+
+                    guard self.twitterStatusThreadReplyViewModel.root == nil else { return }
+                    self.twitterStatusThreadReplyViewModel.root = record
+                }
+                .store(in: &disposeBag)
         }
         diffableDataSource?.apply(snapshot)
         
         // trigger thread loading
         loadThreadStateMachine.enter(LoadThreadState.Prepare.self)
         
-        let replies = mastodonStatusThreadViewModel.ancestors.eraseToAnyPublisher()
-        let leafs = Publishers.CombineLatest(
-            twitterStatusThreadLeafViewModel.items,
-            mastodonStatusThreadViewModel.descendants
-        )
-        .map { $0 + $1 }
-        
         Publishers.CombineLatest3(
             root,
-            replies,
-            leafs
+            $replies,
+            $leafs
         )
         .receive(on: DispatchQueue.main)
         .sink { [weak self] root, replies, leafs in
@@ -59,24 +76,54 @@ extension StatusThreadViewModel {
                 let oldSnapshot = diffableDataSource.snapshot()
 
                 var newSnapshot = NSDiffableDataSourceSnapshot<StatusSection, StatusItem>()
-                // root
                 newSnapshot.appendSections([.main])
-                if let root = self.root.value {
+
+                // top loader
+                if self.hasReplyTo, case let .root(record) = root {
+                    switch record {
+                    case .twitter:
+                        let state = self.twitterStatusThreadReplyViewModel.stateMachine.currentState
+                        if state is TwitterStatusThreadReplyViewModel.State.NoMore {
+                            // do nothing
+                        } else {
+                            newSnapshot.appendItems([.topLoader], toSection: .main)
+                        }
+                    case .mastodon:
+                        let state = self.loadThreadStateMachine.currentState
+                        if state is LoadThreadState.NoMore {
+                            // do nothing
+                        } else {
+                            newSnapshot.appendItems([.topLoader], toSection: .main)
+                        }
+                    }
+                }
+                // replies
+                newSnapshot.appendItems(replies.reversed(), toSection: .main)
+                // root
+                if let root = root {
                     let item = StatusItem.thread(root)
                     newSnapshot.appendItems([item], toSection: .main)
                 }
                 // leafs
                 newSnapshot.appendItems(leafs, toSection: .main)
-                
+                // bottom loader
                 if let currentState = self.loadThreadStateMachine.currentState {
                     switch currentState {
                     case is LoadThreadState.Prepare,
-                        is LoadThreadState.Idle,
-                        is LoadThreadState.Loading:
+                         is LoadThreadState.Idle,
+                         is LoadThreadState.Loading:
                         newSnapshot.appendItems([.bottomLoader], toSection: .main)
                     default:
                         break
                     }
+                }
+                
+                let hasChanges = newSnapshot.itemIdentifiers != oldSnapshot.itemIdentifiers
+                if !hasChanges {
+                    self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): snapshot not changes")
+                    return
+                } else {
+                    self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): snapshot has changes")
                 }
                 
                 guard let difference = await self.calculateReloadSnapshotDifference(
@@ -88,13 +135,13 @@ extension StatusThreadViewModel {
                     self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): applied new snapshot")
                     return
                 }
-                
-                await self.updateSnapshotUsingReloadData(snapshot: newSnapshot)
-                await tableView.scrollToRow(at: difference.targetIndexPath, at: .top, animated: false)
-                var contentOffset = await tableView.contentOffset
-                contentOffset.y = await tableView.contentOffset.y - difference.sourceDistanceToTableViewTopEdge
-                await tableView.setContentOffset(contentOffset, animated: false)
-                self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): applied new snapshot")
+                                
+                await self.updateSnapshotUsingReloadData(
+                    tableView: tableView,
+                    oldSnapshot: oldSnapshot,
+                    newSnapshot: newSnapshot,
+                    difference: difference
+                )
             }
         }
         .store(in: &disposeBag)
@@ -107,44 +154,107 @@ extension StatusThreadViewModel {
         await self.diffableDataSource?.apply(snapshot, animatingDifferences: animatingDifferences)
     }
     
+    // Some UI tweaks to present replies and conversation smoothly
     @MainActor private func updateSnapshotUsingReloadData(
-        snapshot: NSDiffableDataSourceSnapshot<StatusSection, StatusItem>
+        tableView: UITableView,
+        oldSnapshot: NSDiffableDataSourceSnapshot<StatusSection, StatusItem>,
+        newSnapshot: NSDiffableDataSourceSnapshot<StatusSection, StatusItem>,
+        difference: StatusThreadViewModel.Difference // <StatusItem>
     ) async {
-        await self.diffableDataSource?.applySnapshotUsingReloadData(snapshot)
+        let replies: [StatusItem] = {
+            newSnapshot.itemIdentifiers.filter { item in
+                guard case let .thread(thread) = item else { return false }
+                guard case .reply = thread else { return true }
+                return true
+            }
+        }()
+        // additional margin for .topLoader
+        let oldTopMargin: CGFloat = {
+            let marginHeight = TimelineTopLoaderTableViewCell.cellHeight
+            if oldSnapshot.itemIdentifiers.contains(.topLoader) {
+                return TimelineTopLoaderTableViewCell.cellHeight
+            }
+            if !replies.isEmpty {
+                return marginHeight
+            }
+            return .zero
+        }()
+        
+        await self.diffableDataSource?.applySnapshotUsingReloadData(newSnapshot)
+        
+        // set bottom inset. Make root item pin to top.
+        if let item = root.value.flatMap({ StatusItem.thread($0) }),
+           let index = newSnapshot.indexOfItem(item),
+           let cell = tableView.cellForRow(at: IndexPath(row: index, section: 0))
+        {
+            // always set bottom inset due to lazy reply loading
+            // otherwise tableView will jump when insert replies
+            let bottomSpacing = tableView.safeAreaLayoutGuide.layoutFrame.height - cell.frame.height - oldTopMargin
+            let additionalInset = round(tableView.contentSize.height - cell.frame.maxY)
+            tableView.contentInset.bottom = max(0, bottomSpacing - additionalInset)
+        }
+        
+        // set scroll position
+        tableView.scrollToRow(at: difference.targetIndexPath, at: .top, animated: false)
+        tableView.contentOffset.y = {
+            var offset: CGFloat = tableView.contentOffset.y - difference.sourceDistanceToTableViewTopEdge
+            if tableView.contentInset.bottom != 0.0 {
+                // needs restore top margin if bottom inset adjusted
+                offset += oldTopMargin
+            }
+            return offset
+        }()
+        self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): applied new snapshot")
     }
 }
 
 extension StatusThreadViewModel {
-    struct Difference<T> {
-        let item: T
+    struct Difference {
+        let item: StatusItem
         let sourceIndexPath: IndexPath
         let sourceDistanceToTableViewTopEdge: CGFloat
         let targetIndexPath: IndexPath
     }
-    
-    @MainActor private func calculateReloadSnapshotDifference<S: Hashable, T: Hashable>(
+
+    @MainActor private func calculateReloadSnapshotDifference(
         tableView: UITableView,
-        oldSnapshot: NSDiffableDataSourceSnapshot<S, T>,
-        newSnapshot: NSDiffableDataSourceSnapshot<S, T>
-    ) -> Difference<T>? {
-        guard let sourceIndexPath = (tableView.indexPathsForVisibleRows ?? []).sorted().first else { return nil }
+        oldSnapshot: NSDiffableDataSourceSnapshot<StatusSection, StatusItem>,
+        newSnapshot: NSDiffableDataSourceSnapshot<StatusSection, StatusItem>
+    ) -> Difference? {
+        guard oldSnapshot.numberOfItems != 0 else { return nil }
+        guard let indexPathsForVisibleRows = tableView.indexPathsForVisibleRows?.sorted() else { return nil }
+
+        // find index of the first visible item exclude .topLoader
+        var _index: Int?
+        let items = oldSnapshot.itemIdentifiers(inSection: .main)
+        for (i, item) in items.enumerated() {
+            if case .topLoader = item { continue }
+            guard indexPathsForVisibleRows.contains(where: { $0.row == i }) else { continue }
+
+            _index = i
+            break
+        }
+
+        guard let index = _index else { return nil }
+        let sourceIndexPath = IndexPath(row: index, section: 0)
+
         let rectForSourceItemCell = tableView.rectForRow(at: sourceIndexPath)
         let sourceDistanceToTableViewTopEdge = tableView.convert(rectForSourceItemCell, to: nil).origin.y - tableView.safeAreaInsets.top
-        
+
         guard sourceIndexPath.section < oldSnapshot.numberOfSections,
               sourceIndexPath.row < oldSnapshot.numberOfItems(inSection: oldSnapshot.sectionIdentifiers[sourceIndexPath.section])
         else { return nil }
-        
+
         let sectionIdentifier = oldSnapshot.sectionIdentifiers[sourceIndexPath.section]
         let item = oldSnapshot.itemIdentifiers(inSection: sectionIdentifier)[sourceIndexPath.row]
-        
+
         guard let targetIndexPathRow = newSnapshot.indexOfItem(item),
               let newSectionIdentifier = newSnapshot.sectionIdentifier(containingItem: item),
               let targetIndexPathSection = newSnapshot.indexOfSection(newSectionIdentifier)
         else { return nil }
-        
+
         let targetIndexPath = IndexPath(row: targetIndexPathRow, section: targetIndexPathSection)
-        
+
         return Difference(
             item: item,
             sourceIndexPath: sourceIndexPath,

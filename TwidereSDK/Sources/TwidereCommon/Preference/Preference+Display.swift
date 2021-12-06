@@ -7,20 +7,12 @@
 //
 
 import UIKit
-import TwidereLocalization
 
 extension UserDefaults {
 
     @objc public enum AvatarStyle: Int, CaseIterable {
         case circle
         case roundedSquare
-
-        public var text: String {
-            switch self {
-            case .circle:           return L10n.Scene.Settings.Display.Text.circle
-            case .roundedSquare:    return L10n.Scene.Settings.Display.Text.roundedSquare
-            }
-        }
     }
 
     @objc dynamic public var avatarStyle: AvatarStyle {

@@ -66,6 +66,11 @@ extension StatusThreadViewController {
         tableView.deselectRow(with: transitionCoordinator, animated: animated)
     }
     
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        viewModel.viewDidAppear.send()
+    }
 }
 
 // MARK: - UITableViewDelegate

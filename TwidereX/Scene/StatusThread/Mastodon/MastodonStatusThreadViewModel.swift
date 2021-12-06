@@ -110,10 +110,42 @@ extension MastodonStatusThreadViewModel {
         let statusID: ID
         let children: [Node]
         
-        init(statusID: ID, children: [MastodonStatusThreadViewModel.Node]) {
+        init(
+            statusID: ID,
+            children: [MastodonStatusThreadViewModel.Node]
+        ) {
             self.statusID = statusID
             self.children = children
         }
+    }
+}
+
+extension MastodonStatusThreadViewModel.Node {
+    static func replyToThread(
+        for replyToID: Mastodon.Entity.Status.ID?,
+        from statuses: [Mastodon.Entity.Status]
+    ) -> [MastodonStatusThreadViewModel.Node] {
+        guard let replyToID = replyToID else {
+            return []
+        }
+        
+        var dict: [Mastodon.Entity.Status.ID: Mastodon.Entity.Status] = [:]
+        for status in statuses {
+            dict[status.id] = status
+        }
+        
+        var nextID: Mastodon.Entity.Status.ID? = replyToID
+        var nodes: [MastodonStatusThreadViewModel.Node] = []
+        while let _nextID = nextID {
+            guard let status = dict[_nextID] else { break }
+            nodes.append(MastodonStatusThreadViewModel.Node(
+                statusID: _nextID,
+                children: []
+            ))
+            nextID = status.inReplyToID
+        }
+        
+        return nodes
     }
 }
 

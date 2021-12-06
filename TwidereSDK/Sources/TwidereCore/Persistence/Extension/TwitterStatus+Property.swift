@@ -22,6 +22,8 @@ extension TwitterStatus.Property {
             likeCount: entity.favoriteCount.flatMap(Int64.init) ?? 0,
             replyCount: 0,
             repostCount: entity.retweetCount.flatMap(Int64.init) ?? 0,
+            replyToStatusID: entity.inReplyToStatusIDStr,
+            replyToUserID: entity.inReplyToUserIDStr,
             createdAt: entity.createdAt,
             updatedAt: networkDate
         )
@@ -115,6 +117,8 @@ extension TwitterStatus.Property {
             likeCount: status.publicMetrics.flatMap { Int64($0.likeCount) } ?? 0,
             replyCount: status.publicMetrics.flatMap { Int64($0.replyCount) } ?? 0,
             repostCount: status.publicMetrics.flatMap { Int64($0.retweetCount) } ?? 0,
+            replyToStatusID: status.repliedToID,
+            replyToUserID: status.inReplyToUserID,
             createdAt: status.createdAt,
             updatedAt: networkDate
         )

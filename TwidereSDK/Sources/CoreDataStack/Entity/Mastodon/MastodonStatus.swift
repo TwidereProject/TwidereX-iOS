@@ -49,6 +49,11 @@ final public class MastodonStatus: NSManagedObject {
     @NSManaged public private(set) var language: String?
     
     // sourcery: autoUpdatableObject, autoGenerateProperty
+    @NSManaged public private(set) var replyToStatusID: MastodonStatus.ID?
+    // sourcery: autoUpdatableObject, autoGenerateProperty
+    @NSManaged public private(set) var replyToUserID: MastodonStatus.ID?
+    
+    // sourcery: autoUpdatableObject, autoGenerateProperty
     @NSManaged public private(set) var createdAt: Date
     // sourcery: autoUpdatableObject, autoGenerateProperty
     @NSManaged public private(set) var updatedAt: Date
@@ -194,6 +199,8 @@ extension MastodonStatus: AutoGenerateProperty {
         public let  url: String?
         public let  text: String?
         public let  language: String?
+        public let  replyToStatusID: MastodonStatus.ID?
+        public let  replyToUserID: MastodonStatus.ID?
         public let  createdAt: Date
         public let  updatedAt: Date
         public let  attachments: [MastodonAttachment]
@@ -211,6 +218,8 @@ extension MastodonStatus: AutoGenerateProperty {
     		url: String?,
     		text: String?,
     		language: String?,
+    		replyToStatusID: MastodonStatus.ID?,
+    		replyToUserID: MastodonStatus.ID?,
     		createdAt: Date,
     		updatedAt: Date,
     		attachments: [MastodonAttachment],
@@ -227,6 +236,8 @@ extension MastodonStatus: AutoGenerateProperty {
     		self.url = url
     		self.text = text
     		self.language = language
+    		self.replyToStatusID = replyToStatusID
+    		self.replyToUserID = replyToUserID
     		self.createdAt = createdAt
     		self.updatedAt = updatedAt
     		self.attachments = attachments
@@ -246,6 +257,8 @@ extension MastodonStatus: AutoGenerateProperty {
     	self.url = property.url
     	self.text = property.text
     	self.language = property.language
+    	self.replyToStatusID = property.replyToStatusID
+    	self.replyToUserID = property.replyToUserID
     	self.createdAt = property.createdAt
     	self.updatedAt = property.updatedAt
     	self.attachments = property.attachments
@@ -261,6 +274,8 @@ extension MastodonStatus: AutoGenerateProperty {
     	update(url: property.url)
     	update(text: property.text)
     	update(language: property.language)
+    	update(replyToStatusID: property.replyToStatusID)
+    	update(replyToUserID: property.replyToUserID)
     	update(createdAt: property.createdAt)
     	update(updatedAt: property.updatedAt)
     	update(attachments: property.attachments)
@@ -339,6 +354,16 @@ extension MastodonStatus: AutoUpdatableObject {
     public func update(language: String?) {
     	if self.language != language {
     		self.language = language
+    	}
+    }
+    public func update(replyToStatusID: MastodonStatus.ID?) {
+    	if self.replyToStatusID != replyToStatusID {
+    		self.replyToStatusID = replyToStatusID
+    	}
+    }
+    public func update(replyToUserID: MastodonStatus.ID?) {
+    	if self.replyToUserID != replyToUserID {
+    		self.replyToUserID = replyToUserID
     	}
     }
     public func update(createdAt: Date) {

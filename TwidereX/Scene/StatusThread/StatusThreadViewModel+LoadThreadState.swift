@@ -146,7 +146,8 @@ extension StatusThreadViewModel.LoadThreadState {
                 let status = _status.repost ?? _status
                 return StatusThreadViewModel.ThreadContext.MastodonContext(
                     domain: status.domain,
-                    contextID: status.id
+                    contextID: status.id,
+                    replyToStatusID: status.replyToStatusID
                 )
             }
             
@@ -200,9 +201,6 @@ extension StatusThreadViewModel.LoadThreadState {
     class Loading: StatusThreadViewModel.LoadThreadState {
         override var name: String { "Loading" }
 
-//        var needsFallback = false
-//
-//        var maxID: String?          // v1
         var nextToken: String?      // v2
 
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {
@@ -235,24 +233,6 @@ extension StatusThreadViewModel.LoadThreadState {
                     await append(response: response)
                 }
             }
-            
-//            guard let activeTwitterAuthenticationBox = viewModel.context.authenticationService.activeTwitterAuthenticationBox.value else
-//            {
-//                assertionFailure()
-//                stateMachine.enter(Fail.self)
-//                return
-//            }
-//            guard let conversationMeta = viewModel.conversationMeta.value else {
-//                assertionFailure()
-//                stateMachine.enter(Fail.self)
-//                return
-//            }
-//
-//            if !needsFallback {
-//                loadingConversation(viewModel: viewModel, twitterAuthenticationBox: activeTwitterAuthenticationBox, conversationMeta: conversationMeta, stateMachine: stateMachine)
-//            } else {
-//                loadingConversationFallback(viewModel: viewModel, twitterAuthenticationBox: activeTwitterAuthenticationBox, conversationMeta: conversationMeta, stateMachine: stateMachine)
-//            }
         }
 
         // fetch thread via V2 API
@@ -332,123 +312,6 @@ extension StatusThreadViewModel.LoadThreadState {
             )
         }
         
-//        func loadingConversation(
-//            viewModel: TweetConversationViewModel,
-//            twitterAuthenticationBox: AuthenticationService.TwitterAuthenticationBox,
-//            conversationMeta: TweetConversationViewModel.ConversationMeta,
-//            stateMachine: GKStateMachine
-//        ) {
-//            let sevenDaysAgo = Date(timeInterval: -((7 * 24 * 60 * 60) - (5 * 60)), since: Date())
-//            var sinceID: Twitter.Entity.V2.Tweet.ID?
-//            var startTime: Date?
-//            if conversationMeta.createdAt < sevenDaysAgo {
-//                startTime = sevenDaysAgo
-//            } else {
-//                sinceID = conversationMeta.tweetID
-//            }
-//
-//            viewModel.context.apiService.tweetsRecentSearch(
-//                conversationID: conversationMeta.conversationID,
-//                authorID: conversationMeta.authorID,
-//                sinceID: sinceID,
-//                startTime: startTime,
-//                nextToken: self.nextToken,
-//                twitterAuthenticationBox: twitterAuthenticationBox
-//            )
-//                .receive(on: DispatchQueue.main)
-//                .sink { completion in
-//                    switch completion {
-//                    case .failure(let error):
-//                        os_log("%{public}s[%{public}ld], %{public}s: fetch conversation %s fail: %s", ((#file as NSString).lastPathComponent), #line, #function, conversationMeta.conversationID, error.localizedDescription)
-//                        if let responseError = error as? Twitter.API.Error.ResponseError,
-//                           case .rateLimitExceeded = responseError.twitterAPIError {
-//                            self.needsFallback = true
-//                            stateMachine.enter(Idle.self)
-//                            stateMachine.enter(Loading.self)
-//                        } else {
-//                            stateMachine.enter(Fail.self)
-//                        }
-//                    case .finished:
-//                        break
-//                    }
-//                } receiveValue: { [weak self] response in
-//                    guard let self = self else { return }
-//                    let content = response.value
-//                    os_log("%{public}s[%{public}ld], %{public}s: fetch conversation %s success. results count %ld", ((#file as NSString).lastPathComponent), #line, #function, conversationMeta.conversationID, content.meta.resultCount)
-//
-//                    var hasMore = content.meta.resultCount != 0
-//                    if let nextToken = content.meta.nextToken {
-//                        self.nextToken = nextToken
-//                    } else {
-//                        hasMore = false
-//                    }
-//
-//                    let childrenForConversationRoot = TweetConversationViewModel.ConversationNode.children(for: conversationMeta.tweetID, from: content)
-//                    let nodes = viewModel.conversationNodes.value
-//
-//                    if hasMore {
-//                        stateMachine.enter(Idle.self)
-//                    } else {
-//                        stateMachine.enter(NoMore.self)
-//                    }
-//                    viewModel.conversationNodes.value = nodes + childrenForConversationRoot
-//                }
-//                .store(in: &viewModel.disposeBag)
-//        }
-//
-//        // Fetch conversation via Twitter v1 API
-//        func loadingConversationFallback(
-//            viewModel: TweetConversationViewModel,
-//            twitterAuthenticationBox: AuthenticationService.TwitterAuthenticationBox,
-//            conversationMeta: TweetConversationViewModel.ConversationMeta,
-//            stateMachine: GKStateMachine
-//        ) {
-//            viewModel.context.apiService.tweetsSearch(
-//                conversationRootTweetID: conversationMeta.tweetID,
-//                authorUsername: conversationMeta.authorUsrename,
-//                maxID: maxID,
-//                twitterAuthenticationBox: twitterAuthenticationBox
-//            )
-//                .receive(on: DispatchQueue.main)
-//                .sink { completion in
-//                    switch completion {
-//                    case .failure(let error):
-//                        os_log("%{public}s[%{public}ld], %{public}s: fetch conversation %s fail: %s", ((#file as NSString).lastPathComponent), #line, #function, conversationMeta.conversationID, error.localizedDescription)
-//                        stateMachine.enter(Fail.self)
-//                    case .finished:
-//                        break
-//                    }
-//                } receiveValue: { [weak self] response in
-//                    guard let self = self else { return }
-//                    os_log("%{public}s[%{public}ld], %{public}s: fetch conversation %s success. results count %ld", ((#file as NSString).lastPathComponent), #line, #function, conversationMeta.conversationID, response.value.searchMetadata.count)
-//                    let content = response.value
-//
-//                    let components = URLComponents(string: response.value.searchMetadata.nextResults)
-//                    if let maxID = components?.queryItems?.first(where: { $0.name == "max_id" })?.value {
-//                        self.maxID = maxID
-//                    }
-//
-//                    let childrenForConversationRoot = TweetConversationViewModel.ConversationNode.children(for: conversationMeta.tweetID, from: content)
-//
-//                    var hasMore = false
-//                    var nodes = viewModel.conversationNodes.value
-//                    for child in childrenForConversationRoot {
-//                        guard !nodes.contains(where: { $0.tweet.id == child.tweet.id }) else { continue }
-//                        nodes.append(child)
-//                        hasMore = true
-//                    }
-//
-//                    if hasMore {
-//                        stateMachine.enter(Idle.self)
-//                    } else {
-//                        stateMachine.enter(NoMore.self)
-//                    }
-//                    viewModel.conversationNodes.value = nodes
-//                }
-//                .store(in: &viewModel.disposeBag)
-//
-//        }
-        
         struct MastodonContextResponse {
             let domain: String
             let ancestorNodes: [MastodonStatusThreadViewModel.Node]
@@ -481,8 +344,8 @@ extension StatusThreadViewModel.LoadThreadState {
                     statusID: mastodonContext.contextID,
                     authenticationContext: authenticationContext
                 )
-                let ancestorNodes = MastodonStatusThreadViewModel.Node.children(
-                    of: mastodonContext.contextID,
+                let ancestorNodes = MastodonStatusThreadViewModel.Node.replyToThread(
+                    for: mastodonContext.replyToStatusID,
                     from: response.value.ancestors
                 )
                 let descendantNodes = MastodonStatusThreadViewModel.Node.children(
@@ -512,32 +375,27 @@ extension StatusThreadViewModel.LoadThreadState {
     class Fail: StatusThreadViewModel.LoadThreadState {
         override var name: String { "Fail" }
         
-//        override func isValidNextState(_ stateClass: AnyClass) -> Bool {
-//            return stateClass == Loading.self
-//        }
-//
-//        override func didEnter(from previousState: GKState?) {
-//            super.didEnter(from: previousState)
-//            guard let viewModel = viewModel else { return }
-//
-//            // trigger diffable data source update
-//            viewModel.conversationItems.value = viewModel.conversationItems.value
-//        }
+        override func isValidNextState(_ stateClass: AnyClass) -> Bool {
+            return stateClass == Loading.self
+        }
+
+        override func didEnter(from previousState: GKState?) {
+            super.didEnter(from: previousState)
+            guard let viewModel = viewModel else { return }
+        }
     }
     
     class NoMore: StatusThreadViewModel.LoadThreadState {
         override var name: String { "NoMore" }
-//        override func isValidNextState(_ stateClass: AnyClass) -> Bool {
-//            return false
-//        }
-//
-//        override func didEnter(from previousState: GKState?) {
-//            super.didEnter(from: previousState)
-//            guard let viewModel = viewModel else { return }
-//
-//            // trigger diffable data source update
-//            viewModel.conversationItems.value = viewModel.conversationItems.value
-//        }
+        
+        override func isValidNextState(_ stateClass: AnyClass) -> Bool {
+            return false
+        }
+
+        override func didEnter(from previousState: GKState?) {
+            super.didEnter(from: previousState)
+            guard let viewModel = viewModel else { return }
+        }
     }
     
 }

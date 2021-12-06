@@ -127,9 +127,7 @@ extension StatusSection {
                         }
                     }
                     return cell
-                case .reply(let status):
-                    fatalError()
-                case .leaf(let status):
+                case .reply(let status), .leaf(let status):
                     let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: StatusTableViewCell.self), for: indexPath) as! StatusTableViewCell
                     context.managedObjectContext.performAndWait {
                         switch status {
