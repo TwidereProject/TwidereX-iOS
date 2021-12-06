@@ -1,20 +1,21 @@
 //
-//  UserFriendshipStyleTableViewCell.swift
-//  
+//  UserRelationshipStyleTableViewCell.swift
+//  TwidereX
 //
-//  Created by MainasuK on 2021-12-3.
+//  Created by Cirno MainasuK on 2021-10-26.
+//  Copyright © 2021 Twidere. All rights reserved.
 //
 
 import UIKit
 
-public final class UserFriendshipStyleTableViewCell: UserTableViewCell {
+public final class UserRelationshipStyleTableViewCell: UserTableViewCell {
     
     let separator = SeparatorLineView()
     
     public override func _init() {
         super._init()
         
-        userView.setup(style: .friendship)
+        userView.setup(style: .relationship)
 
         separator.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(separator)

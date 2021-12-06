@@ -127,11 +127,21 @@ extension DrawerSidebarViewController: DrawerSidebarHeaderViewDelegate {
     }
     
     func drawerSidebarHeaderView(_ headerView: DrawerSidebarHeaderView, profileDashboardView: ProfileDashboardView, followingMeterViewDidPressed meterView: ProfileDashboardMeterView) {
-        // TODO:
+        guard let friendshipListViewModel = FriendshipListViewModel(context: context, kind: .following) else {
+            assertionFailure()
+            return
+        }
+        coordinator.present(scene: .friendshipList(viewModel: friendshipListViewModel), from: presentingViewController, transition: .show)
+        dismiss(animated: true, completion: nil)
     }
     
     func drawerSidebarHeaderView(_ headerView: DrawerSidebarHeaderView, profileDashboardView: ProfileDashboardView, followersMeterViewDidPressed meterView: ProfileDashboardMeterView) {
-        // TODO:
+        guard let friendshipListViewModel = FriendshipListViewModel(context: context, kind: .follower) else {
+            assertionFailure()
+            return
+        }
+        coordinator.present(scene: .friendshipList(viewModel: friendshipListViewModel), from: presentingViewController, transition: .show)
+        dismiss(animated: true, completion: nil)
     }
     
     func drawerSidebarHeaderView(_ headerView: DrawerSidebarHeaderView, profileDashboardView: ProfileDashboardView, listedMeterViewDidPressed meterView: ProfileDashboardMeterView) {

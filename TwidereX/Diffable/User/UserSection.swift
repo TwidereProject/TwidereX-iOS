@@ -26,7 +26,17 @@ extension UserSection {
         context: AppContext,
         configuration: Configuration
     ) -> UITableViewDiffableDataSource<UserSection, UserItem> {
-        tableView.register(UserMentionPickStyleTableViewCell.self, forCellReuseIdentifier: String(describing: UserMentionPickStyleTableViewCell.self))
+        let cellTypes = [
+            UserRelationshipStyleTableViewCell.self,
+            UserFriendshipStyleTableViewCell.self,
+            UserMentionPickStyleTableViewCell.self,
+            UserNotificationStyleTableViewCell.self,
+            TimelineBottomLoaderTableViewCell.self,
+        ]
+            
+        cellTypes.forEach { type in
+            tableView.register(type, forCellReuseIdentifier: String(describing: type))
+        }
         
         return UITableViewDiffableDataSource<UserSection, UserItem>(tableView: tableView) { tableView, indexPath, item in
             // data source should dispatch in main thread
@@ -78,11 +88,14 @@ extension UserSection {
     ) -> UserTableViewCell {
         switch style {
         case .plain:
-            return tableView.dequeueReusableCell(withIdentifier: String(describing: UserFriendshipStyleTableViewCell.self), for: indexPath) as! UserFriendshipStyleTableViewCell
+            // FIXME: add plain style cell
+            return tableView.dequeueReusableCell(withIdentifier: String(describing: UserRelationshipStyleTableViewCell.self), for: indexPath) as! UserRelationshipStyleTableViewCell
+        case .relationship:
+            return tableView.dequeueReusableCell(withIdentifier: String(describing: UserRelationshipStyleTableViewCell.self), for: indexPath) as! UserRelationshipStyleTableViewCell
         case .friendship:
             return tableView.dequeueReusableCell(withIdentifier: String(describing: UserFriendshipStyleTableViewCell.self), for: indexPath) as! UserFriendshipStyleTableViewCell
         case .notification:
-            return tableView.dequeueReusableCell(withIdentifier: String(describing: UserFriendshipStyleTableViewCell.self), for: indexPath) as! UserFriendshipStyleTableViewCell
+            return tableView.dequeueReusableCell(withIdentifier: String(describing: UserNotificationStyleTableViewCell.self), for: indexPath) as! UserNotificationStyleTableViewCell
         case .mentionPick:
             return tableView.dequeueReusableCell(withIdentifier: String(describing: UserMentionPickStyleTableViewCell.self), for: indexPath) as! UserMentionPickStyleTableViewCell
         }

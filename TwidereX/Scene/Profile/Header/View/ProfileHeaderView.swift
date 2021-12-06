@@ -6,16 +6,29 @@
 //  Copyright © 2021 Twidere. All rights reserved.
 //
 
+import os.log
 import UIKit
 import Combine
 import MetaTextKit
 import MetaTextArea
+import TwidereUI
+
+protocol ProfileHeaderViewDelegate: AnyObject {
+    func profileHeaderView(_ headerView: ProfileHeaderView, friendshipButtonPressed button: UIButton)
+
+    func profileHeaderView(_ headerView: ProfileHeaderView, profileDashboardView dashboardView: ProfileDashboardView, followingMeterViewDidPressed meterView: ProfileDashboardMeterView)
+    func profileHeaderView(_ headerView: ProfileHeaderView, profileDashboardView dashboardView: ProfileDashboardView, followersMeterViewDidPressed meterView: ProfileDashboardMeterView)
+    func profileHeaderView(_ headerView: ProfileHeaderView, profileDashboardView dashboardView: ProfileDashboardView, listedMeterViewDidPressed meterView: ProfileDashboardMeterView)
+}
 
 final class ProfileHeaderView: UIView {
     
+    let logger = Logger(subsystem: "ProfileHeaderView", category: "View")
     var disposeBag = Set<AnyCancellable>()
     
     static let avatarViewSize = CGSize(width: 88, height: 88)
+    
+    weak var delegate: ProfileHeaderViewDelegate?
     
     private(set) lazy var viewModel: ViewModel = {
         let viewModel = ViewModel()
@@ -222,5 +235,29 @@ extension ProfileHeaderView {
             dashboardView.leadingAnchor.constraint(equalTo: container.leadingAnchor),
             dashboardView.trailingAnchor.constraint(equalTo: container.trailingAnchor),
         ])
+        
+        dashboardView.delegate = self
+    }
+}
+
+extension ProfileHeaderView {
+    @objc private func friendshipButtonDidPressed(_ sender: UIButton) {
+        logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public)")
+        delegate?.profileHeaderView(self, friendshipButtonPressed: sender)
+    }
+}
+
+// MARK: - ProfileDashboardViewDelegate
+extension ProfileHeaderView: ProfileDashboardViewDelegate {
+    func profileDashboardView(_ dashboardView: ProfileDashboardView, followingMeterViewDidPressed meterView: ProfileDashboardMeterView) {
+        delegate?.profileHeaderView(self, profileDashboardView: dashboardView, followingMeterViewDidPressed: meterView)
+    }
+    
+    func profileDashboardView(_ dashboardView: ProfileDashboardView, followersMeterViewDidPressed meterView: ProfileDashboardMeterView) {
+        delegate?.profileHeaderView(self, profileDashboardView: dashboardView, followersMeterViewDidPressed: meterView)
+    }
+    
+    func profileDashboardView(_ dashboardView: ProfileDashboardView, listedMeterViewDidPressed meterView: ProfileDashboardMeterView) {
+        delegate?.profileHeaderView(self, profileDashboardView: dashboardView, listedMeterViewDidPressed: meterView)
     }
 }

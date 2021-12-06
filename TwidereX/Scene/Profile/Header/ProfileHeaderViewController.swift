@@ -12,6 +12,10 @@ import TabBarPager
 
 protocol ProfileHeaderViewControllerDelegate: AnyObject {
     func headerViewController(_ viewController: ProfileHeaderViewController, profileHeaderView: ProfileHeaderView, friendshipButtonDidPressed button: UIButton)
+    
+    func headerViewController(_ viewController: ProfileHeaderViewController, profileHeaderView: ProfileHeaderView, profileDashboardView dashboardView: ProfileDashboardView, followingMeterViewDidPressed meterView: ProfileDashboardMeterView)
+    func headerViewController(_ viewController: ProfileHeaderViewController, profileHeaderView: ProfileHeaderView, profileDashboardView dashboardView: ProfileDashboardView, followersMeterViewDidPressed meterView: ProfileDashboardMeterView)
+    func headerViewController(_ viewController: ProfileHeaderViewController, profileHeaderView: ProfileHeaderView, profileDashboardView dashboardView: ProfileDashboardView, listedMeterViewDidPressed meterView: ProfileDashboardMeterView)
 }
 
 final class ProfileHeaderViewController: UIViewController {
@@ -65,7 +69,7 @@ extension ProfileHeaderViewController {
             }
             .store(in: &disposeBag)
         
-        headerView.friendshipButton.addTarget(self, action: #selector(ProfileHeaderViewController.friendshipButtonDidPressed(_:)), for: .touchUpInside)
+        headerView.delegate = self
     }
     
     override func viewDidLayoutSubviews() {
@@ -85,3 +89,22 @@ extension ProfileHeaderViewController {
 
 // MARK: - TabBarPagerHeader
 extension ProfileHeaderViewController: TabBarPagerHeader { }
+
+// MARK: - ProfileHeaderViewDelegate
+extension ProfileHeaderViewController: ProfileHeaderViewDelegate {
+    func profileHeaderView(_ headerView: ProfileHeaderView, friendshipButtonPressed button: UIButton) {
+        delegate?.headerViewController(self, profileHeaderView: headerView, friendshipButtonDidPressed: button)
+    }
+    
+    func profileHeaderView(_ headerView: ProfileHeaderView, profileDashboardView dashboardView: ProfileDashboardView, followingMeterViewDidPressed meterView: ProfileDashboardMeterView) {
+        delegate?.headerViewController(self, profileHeaderView: headerView, profileDashboardView: dashboardView, followingMeterViewDidPressed: meterView)
+    }
+    
+    func profileHeaderView(_ headerView: ProfileHeaderView, profileDashboardView dashboardView: ProfileDashboardView, followersMeterViewDidPressed meterView: ProfileDashboardMeterView) {
+        delegate?.headerViewController(self, profileHeaderView: headerView, profileDashboardView: dashboardView, followersMeterViewDidPressed: meterView)
+    }
+    
+    func profileHeaderView(_ headerView: ProfileHeaderView, profileDashboardView dashboardView: ProfileDashboardView, listedMeterViewDidPressed meterView: ProfileDashboardMeterView) {
+        delegate?.headerViewController(self, profileHeaderView: headerView, profileDashboardView: dashboardView, listedMeterViewDidPressed: meterView)
+    }
+}

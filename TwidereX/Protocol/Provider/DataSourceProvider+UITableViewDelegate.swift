@@ -15,7 +15,6 @@ extension UITableViewDelegate where Self: DataSourceProvider {
         Task {
             let source = DataSourceItem.Source(tableViewCell: nil, indexPath: indexPath)
             guard let item = await item(from: source) else {
-                assertionFailure()
                 return
             }
             switch item {

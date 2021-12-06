@@ -127,7 +127,7 @@ extension Persistence.TwitterStatus {
             merge(twitterStatus: oldStatus, context: context)
             return (oldStatus, false)
         } else {
-            let (author, _) = Persistence.TwitterUser.createOrMerge(
+            let result = Persistence.TwitterUser.createOrMerge(
                 in: managedObjectContext,
                 context: Persistence.TwitterUser.PersistContextV2(
                     entity: context.entity.author,
@@ -136,6 +136,7 @@ extension Persistence.TwitterStatus {
                     networkDate: context.networkDate
                 )
             )
+            let author = result.user
             let relationship = TwitterStatus.Relationship(
                 author: author,
                 repost: repost,
