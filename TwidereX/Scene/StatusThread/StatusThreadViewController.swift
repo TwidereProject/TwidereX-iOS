@@ -10,7 +10,7 @@ import os.log
 import UIKit
 import Combine
 
-final class StatusThreadViewController: UIViewController, NeedsDependency {
+final class StatusThreadViewController: UIViewController, NeedsDependency, MediaPreviewTransitionHostViewController {
 
     let logger = Logger(subsystem: "StatusThreadViewController", category: "ViewController")
     
@@ -19,6 +19,8 @@ final class StatusThreadViewController: UIViewController, NeedsDependency {
 
     var disposeBag = Set<AnyCancellable>()
     var viewModel: StatusThreadViewModel!
+    
+    let mediaPreviewTransitionController = MediaPreviewTransitionController()
     
     private(set) lazy var tableView: UITableView = {
         let tableView = UITableView()

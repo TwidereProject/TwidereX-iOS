@@ -164,7 +164,7 @@ extension StatusThreadViewModel {
         let replies: [StatusItem] = {
             newSnapshot.itemIdentifiers.filter { item in
                 guard case let .thread(thread) = item else { return false }
-                guard case .reply = thread else { return true }
+                guard case .reply = thread else { return false }
                 return true
             }
         }()

@@ -21,8 +21,7 @@ import AppShared
 import TwidereUI
 import TwidereComposeUI
 
-// MediaPreviewableViewController
-final class HomeTimelineViewController: UIViewController, NeedsDependency, DrawerSidebarTransitionHostViewController {
+final class HomeTimelineViewController: UIViewController, NeedsDependency, DrawerSidebarTransitionHostViewController, MediaPreviewTransitionHostViewController {
     
 //    var avatarBarButtonItem: AvatarBarButtonItem
     
@@ -37,14 +36,13 @@ final class HomeTimelineViewController: UIViewController, NeedsDependency, Drawe
     private(set) var drawerSidebarTransitionController: DrawerSidebarTransitionController!
     let avatarBarButtonItem = AvatarBarButtonItem()
     
+    let mediaPreviewTransitionController = MediaPreviewTransitionController()
+    
     private(set) lazy var refreshControl: UIRefreshControl = {
         let refreshControl = UIRefreshControl()
         refreshControl.addTarget(self, action: #selector(HomeTimelineViewController.refreshControlValueChanged(_:)), for: .valueChanged)
         return refreshControl
     }()
-    
-//    let mediaPreviewTransitionController = MediaPreviewTransitionController()
-    
     
     private(set) lazy var tableView: UITableView = {
         let tableView = UITableView()

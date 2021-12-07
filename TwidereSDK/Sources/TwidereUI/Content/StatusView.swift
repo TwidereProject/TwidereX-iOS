@@ -24,7 +24,7 @@ public protocol StatusViewDelegate: AnyObject {
     func statusView(_ statusView: StatusView, mediaGridContainerView containerView: MediaGridContainerView, didTapMediaView mediaView: MediaView, at index: Int)
     func statusView(_ statusView: StatusView, quoteStatusView: StatusView, mediaGridContainerView containerView: MediaGridContainerView, didTapMediaView mediaView: MediaView, at index: Int)
     
-    func statusView(_ statusView: StatusView, statusToolbar: StatusToolbar, actionDidPressed action: StatusToolbar.Action)
+    func statusView(_ statusView: StatusView, statusToolbar: StatusToolbar, actionDidPressed action: StatusToolbar.Action, button: UIButton)
 }
 
 public final class StatusView: UIView {
@@ -754,8 +754,8 @@ extension StatusView: MediaGridContainerViewDelegate {
 
 // MARK: - StatusToolbarDelegate
 extension StatusView: StatusToolbarDelegate {
-    public func statusToolbar(_ statusToolbar: StatusToolbar, actionDidPressed action: StatusToolbar.Action) {
-        delegate?.statusView(self, statusToolbar: statusToolbar, actionDidPressed: action)
+    public func statusToolbar(_ statusToolbar: StatusToolbar, actionDidPressed action: StatusToolbar.Action, button: UIButton) {
+        delegate?.statusView(self, statusToolbar: statusToolbar, actionDidPressed: action, button: button)
     }
 }
 
@@ -802,7 +802,7 @@ extension StatusView: StatusViewDelegate {
         assertionFailure()
     }
     
-    public func statusView(_ statusView: StatusView, statusToolbar: StatusToolbar, actionDidPressed action: StatusToolbar.Action) {
+    public func statusView(_ statusView: StatusView, statusToolbar: StatusToolbar, actionDidPressed action: StatusToolbar.Action, button: UIButton) {
         assertionFailure()
     }
     

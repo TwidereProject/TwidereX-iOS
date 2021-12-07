@@ -13,7 +13,7 @@ import CoreDataStack
 import GameplayKit
 import TabBarPager
 
-final class UserLikeTimelineViewController: UIViewController, NeedsDependency {
+final class UserLikeTimelineViewController: UIViewController, NeedsDependency, MediaPreviewTransitionHostViewController {
     
     let logger = Logger(subsystem: "UserLikeTimelineViewController", category: "ViewController")
     
@@ -23,7 +23,7 @@ final class UserLikeTimelineViewController: UIViewController, NeedsDependency {
     var disposeBag = Set<AnyCancellable>()
     var viewModel: UserLikeTimelineViewModel!
     
-//    let mediaPreviewTransitionController = MediaPreviewTransitionController()
+    let mediaPreviewTransitionController = MediaPreviewTransitionController()
     
     lazy var tableView: UITableView = {
         let tableView = UITableView()

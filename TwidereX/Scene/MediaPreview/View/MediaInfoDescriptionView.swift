@@ -8,11 +8,16 @@
 
 import os.log
 import UIKit
+import Combine
 import ActiveLabel
+import MetaTextKit
+import MetaTextArea
+import TwidereUI
 
-protocol MediaInfoDescriptionViewDelegate: class {
-    func mediaInfoDescriptionView(_ mediaInfoDescriptionView: MediaInfoDescriptionView, avatarImageViewDidPressed imageView: UIImageView)
-    func mediaInfoDescriptionView(_ mediaInfoDescriptionView: MediaInfoDescriptionView, activeLabelDidPressed activeLabel: ActiveLabel)
+protocol MediaInfoDescriptionViewDelegate: AnyObject {
+    func mediaInfoDescriptionView(_ mediaInfoDescriptionView: MediaInfoDescriptionView, avatarButtonDidPressed button: UIButton)
+    func mediaInfoDescriptionView(_ mediaInfoDescriptionView: MediaInfoDescriptionView, contentTextViewDidPressed textView: MetaTextAreaView)
+    func mediaInfoDescriptionView(_ mediaInfoDescriptionView: MediaInfoDescriptionView, statusToolbar: StatusToolbar, actionDidPressed action: StatusToolbar.Action, button: UIButton)
 }
 
 final class MediaInfoDescriptionView: UIView {
@@ -21,36 +26,47 @@ final class MediaInfoDescriptionView: UIView {
     
     weak var delegate: MediaInfoDescriptionViewDelegate?
     
-    let avatarImageView = UIImageView()
-    
-    let verifiedBadgeImageView: UIImageView = {
-        let imageView = UIImageView()
-        imageView.image = Asset.ObjectTools.verifiedBadgeSmall.image
-        return imageView
+    var disposeBag = Set<AnyCancellable>()
+    private(set) lazy var viewModel: ViewModel = {
+        let viewModel = ViewModel()
+        viewModel.bind(view: self)
+        return viewModel
     }()
     
-    let nameLabel: UILabel = {
-        let label = UILabel()
-        label.font = .preferredFont(forTextStyle: .headline)
-        label.text = "Alice"
+    let avatarView: ProfileAvatarView = {
+        let avatarView = ProfileAvatarView()
+        avatarView.dimension = 32
+        return avatarView
+    }()
+    
+    let nameMetaLabel: MetaLabel = {
+        let label = MetaLabel(style: .mediaDescriptionAuthorName)
+        label.configure(content: PlaintextMetaContent(string: "Alice"))
         return label
     }()
     
-    let activeLabel: ActiveLabel = {
-        let activeLabel = ActiveLabel(style: .default)
-        activeLabel.numberOfLines = 2
-        activeLabel.lineBreakMode = .byTruncatingTail
-        return activeLabel
+    let contentTextView: MetaTextAreaView = {
+        let textView = MetaTextAreaView()
+        textView.textAttributes = [
+            .font: UIFont.preferredFont(forTextStyle: .caption1),
+            .foregroundColor: UIColor.white.withAlphaComponent(0.8),
+        ]
+        textView.linkAttributes = [
+            .font: UIFont.preferredFont(forTextStyle: .caption1),
+            .foregroundColor: Asset.Colors.hightLight.color,
+        ]
+        textView.textContainer.maximumNumberOfLines = 2
+        textView.textLayoutManager.textContainer?.maximumNumberOfLines = 2
+        return textView
     }()
     
-    let actionToolbarContainer: ActionToolbarContainer = {
-        let actionToolbarContainer = ActionToolbarContainer()
-        actionToolbarContainer.configure(for: .plain)
-        return actionToolbarContainer
+    let toolbar: StatusToolbar = {
+        let toolbar = StatusToolbar()
+        toolbar.setup(style: .plain)
+        return toolbar
     }()
     
-    let avatarImageViewTapGestureRecognizer = UITapGestureRecognizer.singleTapGestureRecognizer
-    let activelabelTapGestureRecognizer = UITapGestureRecognizer.singleTapGestureRecognizer
+    let contentTextViewTapGestureRecognizer = UITapGestureRecognizer.singleTapGestureRecognizer
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -69,81 +85,69 @@ extension MediaInfoDescriptionView {
     private func _init() {
         backgroundColor = UIColor.systemBackground.withAlphaComponent(0.5)
         
-        // container: [video control | active label | bottom container]
-        let containserStackView = UIStackView()
-        containserStackView.axis = .vertical
-        containserStackView.spacing = 8
-        containserStackView.translatesAutoresizingMaskIntoConstraints = false
-        addSubview(containserStackView)
+        // container: [ video control | content | bottom container ]
+        let containerStackView = UIStackView()
+        containerStackView.axis = .vertical
+        containerStackView.spacing = 8
+        containerStackView.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(containerStackView)
         NSLayoutConstraint.activate([
-            containserStackView.topAnchor.constraint(equalTo: topAnchor, constant: 8),
-            containserStackView.leadingAnchor.constraint(equalTo: readableContentGuide.leadingAnchor),
-            readableContentGuide.trailingAnchor.constraint(equalTo: containserStackView.trailingAnchor),
-            safeAreaLayoutGuide.bottomAnchor.constraint(equalTo: containserStackView.bottomAnchor, constant: 8),
+            containerStackView.topAnchor.constraint(equalTo: topAnchor, constant: 8),
+            containerStackView.leadingAnchor.constraint(equalTo: readableContentGuide.leadingAnchor),
+            readableContentGuide.trailingAnchor.constraint(equalTo: containerStackView.trailingAnchor),
+            safeAreaLayoutGuide.bottomAnchor.constraint(equalTo: containerStackView.bottomAnchor, constant: 8),
         ])
         
-        activeLabel.translatesAutoresizingMaskIntoConstraints = false
-        containserStackView.addArrangedSubview(activeLabel)
-        activeLabel.setContentHuggingPriority(.defaultHigh + 1, for: .vertical)
         
-        // bottom container: [avatar | name | (padding) | action toolbar ]
+        // FIXME: contentTextView line limit should set to 2
+        // containerStackView.addArrangedSubview(contentTextView)
+        // contentTextView.setContentHuggingPriority(.defaultHigh + 1, for: .vertical)
+        
+        // bottom container: [ avatar | name | (padding) | toolbar ]
         let bottomContainerStackView = UIStackView()
-        containserStackView.addArrangedSubview(bottomContainerStackView)
+        containerStackView.addArrangedSubview(bottomContainerStackView)
         bottomContainerStackView.axis = .horizontal
         bottomContainerStackView.spacing = 8
+        bottomContainerStackView.alignment = .center
         
-        avatarImageView.translatesAutoresizingMaskIntoConstraints = false
-        bottomContainerStackView.addArrangedSubview(avatarImageView)
+        bottomContainerStackView.addArrangedSubview(avatarView)
+        bottomContainerStackView.addArrangedSubview(nameMetaLabel)
+        toolbar.translatesAutoresizingMaskIntoConstraints = false
+        bottomContainerStackView.addArrangedSubview(toolbar)
         NSLayoutConstraint.activate([
-            avatarImageView.widthAnchor.constraint(equalToConstant: MediaInfoDescriptionView.avatarImageViewSize.width).priority(.required - 1),
-            avatarImageView.heightAnchor.constraint(equalToConstant: MediaInfoDescriptionView.avatarImageViewSize.height).priority(.required - 1),
-        ])
-        verifiedBadgeImageView.translatesAutoresizingMaskIntoConstraints = false
-        avatarImageView.addSubview(verifiedBadgeImageView)
-        NSLayoutConstraint.activate([
-            avatarImageView.trailingAnchor.constraint(equalTo: verifiedBadgeImageView.trailingAnchor),
-            avatarImageView.bottomAnchor.constraint(equalTo: verifiedBadgeImageView.bottomAnchor),
-            verifiedBadgeImageView.widthAnchor.constraint(equalToConstant: 10).priority(.defaultHigh),
-            verifiedBadgeImageView.heightAnchor.constraint(equalToConstant: 10).priority(.defaultHigh),
+            toolbar.widthAnchor.constraint(equalToConstant: 180).priority(.defaultHigh),
         ])
         
-        bottomContainerStackView.addArrangedSubview(nameLabel)
-        actionToolbarContainer.translatesAutoresizingMaskIntoConstraints = false
-        bottomContainerStackView.addArrangedSubview(actionToolbarContainer)
-        NSLayoutConstraint.activate([
-            actionToolbarContainer.widthAnchor.constraint(equalToConstant: 180).priority(.defaultHigh),
-        ])
+        avatarView.avatarButton.addTarget(self, action: #selector(MediaInfoDescriptionView.avatarButtonDidPressed(_:)), for: .touchUpInside)
         
-        avatarImageViewTapGestureRecognizer.addTarget(self, action: #selector(MediaInfoDescriptionView.avatarImageViewTapGestureRecognizerHandler(_:)))
-        avatarImageView.isUserInteractionEnabled = true
-        avatarImageView.addGestureRecognizer(avatarImageViewTapGestureRecognizer)
+        contentTextViewTapGestureRecognizer.addTarget(self, action: #selector(MediaInfoDescriptionView.contentTextViewDidPressed(_:)))
+        contentTextView.addGestureRecognizer(contentTextViewTapGestureRecognizer)
         
-        activelabelTapGestureRecognizer.addTarget(self, action: #selector(MediaInfoDescriptionView.activeLabelTapGestureRecognizerHandler(_:)))
-        activeLabel.addGestureRecognizer(activelabelTapGestureRecognizer)
+        toolbar.delegate = self
     }
     
 }
 
 extension MediaInfoDescriptionView {
     
-    @objc private func avatarImageViewTapGestureRecognizerHandler(_ sender: UITapGestureRecognizer) {
+    @objc private func avatarButtonDidPressed(_ sender: UIButton) {
         os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
-        delegate?.mediaInfoDescriptionView(self, avatarImageViewDidPressed: avatarImageView)
+        delegate?.mediaInfoDescriptionView(self, avatarButtonDidPressed: sender)
     }
     
-    @objc private func activeLabelTapGestureRecognizerHandler(_ sender: UITapGestureRecognizer) {
+    @objc private func contentTextViewDidPressed(_ sender: UITapGestureRecognizer) {
         os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
-        delegate?.mediaInfoDescriptionView(self, activeLabelDidPressed: activeLabel)
+        assert(sender.view === contentTextView)
+        delegate?.mediaInfoDescriptionView(self, contentTextViewDidPressed: contentTextView)
     }
 
 }
 
-// MARK: - AvatarConfigurableView
-extension MediaInfoDescriptionView: AvatarConfigurableView {
-    static var configurableAvatarImageViewSize: CGSize { return avatarImageViewSize }
-    var configurableAvatarImageView: UIImageView? { return avatarImageView }
-    var configurableAvatarButton: UIButton? { return nil }
-    var configurableVerifiedBadgeImageView: UIImageView? { return verifiedBadgeImageView }
+// MARK: - StatusToolbarDelegate
+extension MediaInfoDescriptionView: StatusToolbarDelegate {
+    func statusToolbar(_ statusToolbar: StatusToolbar, actionDidPressed action: StatusToolbar.Action, button: UIButton) {
+        delegate?.mediaInfoDescriptionView(self, statusToolbar: statusToolbar, actionDidPressed: action, button: button)
+    }
 }
 
 #if DEBUG

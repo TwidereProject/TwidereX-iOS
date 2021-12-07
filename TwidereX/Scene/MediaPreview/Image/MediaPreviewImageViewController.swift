@@ -10,7 +10,7 @@ import os.log
 import UIKit
 import Combine
 
-protocol MediaPreviewImageViewControllerDelegate: class {
+protocol MediaPreviewImageViewControllerDelegate: AnyObject {
     func mediaPreviewImageViewController(_ viewController: MediaPreviewImageViewController, tapGestureRecognizerDidTrigger tapGestureRecognizer: UITapGestureRecognizer)
     func mediaPreviewImageViewController(_ viewController: MediaPreviewImageViewController, longPressGestureRecognizerDidTrigger longPressGestureRecognizer: UILongPressGestureRecognizer)
 }
@@ -65,16 +65,20 @@ extension MediaPreviewImageViewController {
         previewImageView.addGestureRecognizer(longPressGestureRecognizer)
         
         switch viewModel.item {
-        case .tweet(let meta):
-            progressBarView.isHidden = meta.thumbnail != nil
+        case .remote(let imageContext):
+            progressBarView.isHidden = imageContext.thumbnail != nil
+            guard let assetURL = imageContext.assetURL else {
+                assertionFailure()
+                return
+            }
             previewImageView.imageView.af.setImage(
-                withURL: meta.url,
-                placeholderImage: meta.thumbnail,
+                withURL: assetURL,
+                placeholderImage: imageContext.thumbnail,
                 filter: nil,
                 progress: { [weak self] progress in
                     guard let self = self else { return }
                     self.progressBarView.progress.value = CGFloat(progress.fractionCompleted)
-                    os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: load %s progress: %.2f", ((#file as NSString).lastPathComponent), #line, #function, meta.url.debugDescription, progress.fractionCompleted)
+                    os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: load %s progress: %.2f", ((#file as NSString).lastPathComponent), #line, #function, assetURL.debugDescription, progress.fractionCompleted)
                 },
                 imageTransition: .crossDissolve(0.3),
                 runImageTransitionIfCached: false,
@@ -91,11 +95,11 @@ extension MediaPreviewImageViewController {
                     }
                 }
             )
-            os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: setImage url: %s", ((#file as NSString).lastPathComponent), #line, #function, meta.url.debugDescription)
-        case .local(let meta):
+            os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: setImage url: %s", ((#file as NSString).lastPathComponent), #line, #function, assetURL.debugDescription)
+        case .local(let imageContext):
             progressBarView.isHidden = true
-            previewImageView.imageView.image = meta.image
-            self.previewImageView.setup(image: meta.image, container: self.previewImageView, forceUpdate: true)
+            previewImageView.imageView.image = imageContext.image
+            self.previewImageView.setup(image: imageContext.image, container: self.previewImageView, forceUpdate: true)
         }
     }
     
@@ -113,4 +117,21 @@ extension MediaPreviewImageViewController {
         delegate?.mediaPreviewImageViewController(self, longPressGestureRecognizerDidTrigger: sender)
     }
     
+}
+
+// MARK: - ShareActivityProvider
+extension MediaPreviewImageViewController: ShareActivityProvider {
+    var activities: [Any] {
+        return []
+    }
+    
+    var applicationActivities: [UIActivity] {
+        switch viewModel.item {
+        case .remote(let previewContext):
+            guard let url = previewContext.assetURL else { return [] }
+            return [SavePhotoActivity(context: viewModel.context, url: url)]
+        case .local:
+            return []
+        }
+    }
 }

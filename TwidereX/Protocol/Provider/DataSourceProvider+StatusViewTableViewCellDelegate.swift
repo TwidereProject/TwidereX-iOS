@@ -1,6 +1,6 @@
 //
-//  DataSourceFacade+StatusViewTableViewCellDelegate.swift
-//  DataSourceFacade+StatusViewTableViewCellDelegate
+//  DataSourceProvider+StatusViewTableViewCellDelegate.swift
+//
 //
 //  Created by Cirno MainasuK on 2021-9-6.
 //  Copyright © 2021 Twidere. All rights reserved.
@@ -92,7 +92,7 @@ extension StatusViewTableViewCellDelegate where Self: DataSourceProvider {
 
 
 // MARK: - media
-extension StatusViewTableViewCellDelegate where Self: DataSourceProvider {
+extension StatusViewTableViewCellDelegate where Self: DataSourceProvider & MediaPreviewTransitionHostViewController {
     func tableViewCell(
         _ cell: UITableViewCell,
         statusView: StatusView,
@@ -100,7 +100,28 @@ extension StatusViewTableViewCellDelegate where Self: DataSourceProvider {
         didTapMediaView mediaView: MediaView,
         at index: Int
     ) {
-        // TODO:
+        Task {
+            let source = DataSourceItem.Source(tableViewCell: cell, indexPath: nil)
+            guard let item = await item(from: source) else {
+                assertionFailure()
+                return
+            }
+            guard case let .status(status) = item else {
+                assertionFailure("only works for status data provider")
+                return
+            }
+            await DataSourceFacade.coordinateToMediaPreviewScene(
+                provider: self,
+                target: .status,
+                status: status,
+                mediaPreviewContext: DataSourceFacade.MediaPreviewContext(
+                    statusView: statusView,
+                    containerView: containerView,
+                    mediaView: mediaView,
+                    index: index
+                )
+            )
+        }
     }
     
     func tableViewCell(
@@ -121,7 +142,8 @@ extension StatusViewTableViewCellDelegate where Self: DataSourceProvider {
         _ cell: UITableViewCell,
         statusView: StatusView,
         statusToolbar: StatusToolbar,
-        actionDidPressed action: StatusToolbar.Action
+        actionDidPressed action: StatusToolbar.Action,
+        button: UIButton
     ) {
         guard let authenticationContext = context.authenticationService.activeAuthenticationContext.value else { return }
         Task {
@@ -135,56 +157,13 @@ extension StatusViewTableViewCellDelegate where Self: DataSourceProvider {
                 return
             }
             
-            switch action {
-            case .reply:
-                guard let status = status.object(in: context.managedObjectContext) else {
-                    assertionFailure()
-                    return
-                }
-                let composeViewModel = ComposeViewModel(context: context)
-                let composeContentViewModel = ComposeContentViewModel(
-                    inputContext: .reply(status: status),
-                    configurationContext: ComposeContentViewModel.ConfigurationContext(
-                        apiService: context.apiService,
-                        authenticationService: context.authenticationService,
-                        mastodonEmojiService: context.mastodonEmojiService,
-                        dateTimeProvider: DateTimeSwiftProvider(),
-                        twitterTextProvider: OfficialTwitterTextProvider()
-                    )
-                )
-                await coordinator.present(
-                    scene: .compose(
-                        viewModel: composeViewModel,
-                        contentViewModel: composeContentViewModel
-                    ),
-                    from: self,
-                    transition: .modal(
-                        animated: true, completion: nil
-                    )
-                )
-            case .repost:
-                do {
-                    try await DataSourceFacade.responseToStatusRepostAction(
-                        provider: self,
-                        status: status,
-                        authenticationContext: authenticationContext
-                    )
-                } catch {
-                    logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): update repost failure: \(error.localizedDescription)")
-                }
-            case .like:
-                do {
-                    try await DataSourceFacade.responseToStatusLikeAction(
-                        provider: self,
-                        status: status,
-                        authenticationContext: authenticationContext
-                    )
-                } catch {
-                    logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): update like failure: \(error.localizedDescription)")
-                }
-            default:
-                break
-            }   // end switch action
+            await DataSourceFacade.responseToStatusToolbar(
+                provider: self,
+                status: status,
+                action: action,
+                sender: button,
+                authenticationContext: authenticationContext
+            )
         }   // end Task
     }   // end func
 }

@@ -117,7 +117,7 @@ extension Persistence.TwitterUser {
         user.update(profileBannerURL: context.entity.profileBannerURL)
         user.update(bioEntities: TwitterEntity(entity: context.entity.entities?.description))
         user.update(urlEntities: TwitterEntity(entity: context.entity.entities?.url))
-        
+
         // relationship
         if let me = context.me {
             if let following = context.entity.following {

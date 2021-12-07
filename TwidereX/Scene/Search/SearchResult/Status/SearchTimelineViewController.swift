@@ -11,8 +11,7 @@ import UIKit
 import Combine
 import CoreDataStack
 
-// MediaPreviewableViewController
-final class SearchTimelineViewController: UIViewController, NeedsDependency {
+final class SearchTimelineViewController: UIViewController, NeedsDependency, MediaPreviewTransitionHostViewController {
     
     let logger = Logger(subsystem: "SearchTimelineViewController", category: "ViewController")
     
@@ -22,7 +21,7 @@ final class SearchTimelineViewController: UIViewController, NeedsDependency {
     var disposeBag = Set<AnyCancellable>()
     var viewModel: SearchTimelineViewModel!
     
-    // let mediaPreviewTransitionController = MediaPreviewTransitionController()
+    let mediaPreviewTransitionController = MediaPreviewTransitionController()
     
     lazy var tableView: UITableView = {
         let tableView = UITableView()

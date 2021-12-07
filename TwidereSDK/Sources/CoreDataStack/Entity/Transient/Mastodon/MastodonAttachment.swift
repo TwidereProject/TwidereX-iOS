@@ -9,7 +9,7 @@
 import Foundation
 import CoreGraphics
 
-final public class MastodonAttachment: NSObject, Codable {
+public final class MastodonAttachment: NSObject, Codable {
     public typealias ID = String
     
     public let id: ID

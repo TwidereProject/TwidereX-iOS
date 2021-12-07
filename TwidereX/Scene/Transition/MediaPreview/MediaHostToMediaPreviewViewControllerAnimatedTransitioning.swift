@@ -11,7 +11,6 @@ import UIKit
 
 final class MediaHostToMediaPreviewViewControllerAnimatedTransitioning: ViewControllerAnimatedTransitioning {
     
-    
     let transitionItem: MediaPreviewTransitionItem
     let panGestureRecognizer: UIPanGestureRecognizer
 
@@ -101,11 +100,11 @@ extension MediaHostToMediaPreviewViewControllerAnimatedTransitioning {
         switch operation {
         case .pop:
             guard let mediaPreviewViewController =  transitionContext.viewController(forKey: .from) as? MediaPreviewViewController,
-                  let mediaPreviewImageViewController = mediaPreviewViewController.pagingViewConttroller.currentViewController as? MediaPreviewImageViewController else {
+                  let mediaPreviewImageViewController = mediaPreviewViewController.pageViewController.currentViewController as? MediaPreviewImageViewController else {
                 transitionContext.completeTransition(false)
                 return
             }
-            
+
             let imageView = mediaPreviewImageViewController.previewImageView.imageView
             let _snapshot: UIView? = {
                 if imageView.image == nil {
@@ -121,14 +120,14 @@ extension MediaHostToMediaPreviewViewControllerAnimatedTransitioning {
                 return
             }
             mediaPreviewImageViewController.view.insertSubview(snapshot, aboveSubview: mediaPreviewImageViewController.previewImageView)
-            
+
             snapshot.center = transitionContext.containerView.center
 
             transitionItem.imageView = imageView
             transitionItem.snapshotTransitioning = snapshot
             transitionItem.initialFrame = snapshot.frame
             transitionItem.targetFrame = snapshot.frame
-            
+
             panGestureRecognizer.addTarget(self, action: #selector(MediaHostToMediaPreviewViewControllerAnimatedTransitioning.updatePanGestureInteractive(_:)))
             popInteractiveTransition(using: transitionContext)
         default:

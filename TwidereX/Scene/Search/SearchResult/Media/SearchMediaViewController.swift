@@ -12,7 +12,7 @@ import Combine
 import CoreData
 import CoreDataStack
 
-// MediaPreviewableViewController
+// MediaPreviewTransitionHostViewController
 final class SearchMediaViewController: UIViewController, NeedsDependency {
     
     weak var context: AppContext! { willSet { precondition(!isViewLoaded) } }

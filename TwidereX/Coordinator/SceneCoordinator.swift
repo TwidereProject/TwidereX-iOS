@@ -60,16 +60,18 @@ extension SceneCoordinator {
         // Hashtag
         case hashtagTimeline(viewModel: HashtagTimelineViewModel)
         
+        // MediaPreview
+        case mediaPreview(viewModel: MediaPreviewViewModel)
+
         // Sidebar
         case drawerSidebar(viewModel: DrawerSidebarViewModel)
 
+        
         // TODO:
-//        case mentionPick(viewModel: MentionPickViewModel, delegate: MentionPickViewControllerDelegate)
         // case tweetConversation(viewModel: TweetConversationViewModel)
 //        case searchDetail(viewModel: SearchDetailViewModel)
         
 //        case friendshipList(viewModel: FriendshipListViewModel)
-//        case mediaPreview(viewModel: MediaPreviewViewModel)
 
         case setting
         case displayPreference
@@ -225,24 +227,16 @@ private extension SceneCoordinator {
             _viewController.viewModel = viewModel
             _viewController.composeContentViewModel = contentViewModel
             viewController = _viewController
-//        case .mentionPick(let viewModel, let delegate):
-//            let _viewController = MentionPickViewController()
-//            _viewController.viewModel = viewModel
-//            _viewController.delegate = delegate
-//            viewController = _viewController
-//        case .tweetConversation(let viewModel):
-//            let _viewController = TweetConversationViewController()
-//            _viewController.viewModel = viewModel
-//            viewController = _viewController
+
 //        case .searchDetail(let viewModel):
 //            let _viewController = SearchDetailViewController()
 //            _viewController.viewModel = viewModel
 //            viewController = _viewController
 
-//        case .mediaPreview(let viewModel):
-//            let _viewController = MediaPreviewViewController()
-//            _viewController.viewModel = viewModel
-//            viewController = _viewController
+        case .mediaPreview(let viewModel):
+            let _viewController = MediaPreviewViewController()
+            _viewController.viewModel = viewModel
+            viewController = _viewController
         case .drawerSidebar(let viewModel):
             let _viewController = DrawerSidebarViewController()
             _viewController.viewModel = viewModel

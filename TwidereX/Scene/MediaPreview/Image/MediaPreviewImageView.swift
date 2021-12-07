@@ -199,7 +199,7 @@ extension MediaPreviewImageView {
 
         let center = scrollViewCenter
 
-        //if image is smaller than the scrollView visible size - fix the image center accordingly
+        // if image is smaller than the scrollView visible size - fix the image center accordingly
         if contentSize.width < scrollViewSize.width {
             imageCenter.x = center.x
         }

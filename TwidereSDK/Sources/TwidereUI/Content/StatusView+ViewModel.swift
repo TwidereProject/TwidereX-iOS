@@ -51,6 +51,9 @@ extension StatusView {
         @Published public var dateTimeProvider: DateTimeProvider?
         @Published public var timestamp: Date?
         
+        @Published public var sharePlaintextContent: String?
+        @Published public var shareStatusURL: String?
+        
        public enum Header {
             case none
             case repost(info: RepostInfo)
@@ -266,12 +269,13 @@ extension StatusView.ViewModel {
                 statusView.toolbar.setupReply(count: count, isEnabled: true)
             }
             .store(in: &disposeBag)
-        Publishers.CombineLatest(
+        Publishers.CombineLatest3(
             $isRepost,
-            $repostCount
+            $repostCount,
+            $protected
         )
-        .sink { isRepost, count in
-            statusView.toolbar.setupRepost(count: count, isRepost: isRepost, isLocked: false)
+        .sink { isRepost, count, protected in
+            statusView.toolbar.setupRepost(count: count, isRepost: isRepost, isLocked: protected)
         }
         .store(in: &disposeBag)
         Publishers.CombineLatest(
@@ -280,6 +284,18 @@ extension StatusView.ViewModel {
         )
         .sink { isLike, count in
             statusView.toolbar.setupLike(count: count, isLike: isLike)
+        }
+        .store(in: &disposeBag)
+        Publishers.CombineLatest(
+            $sharePlaintextContent,
+            $shareStatusURL
+        )
+        .sink { sharePlaintextContent, shareStatusURL in
+            statusView.toolbar.setupMenu(menuContext: .init(
+                shareText: sharePlaintextContent,
+                shareLink: shareStatusURL,
+                displayDeleteAction: false
+            ))
         }
         .store(in: &disposeBag)
     }
@@ -301,7 +317,6 @@ extension StatusView {
             self.activeAuthenticationContext = activeAuthenticationContext
         }
     }
-    
 }
 
 extension StatusView {
@@ -441,13 +456,14 @@ extension StatusView {
         twitterTextProvider: TwitterTextProvider
     ) {
         let status = status.repost ?? status
-        let content = TwitterContent(content: status.text)
+        let content = TwitterContent(content: status.displayText)
         let metaContent = TwitterMetaContent.convert(
             content: content,
             urlMaximumLength: 20,
             twitterTextProvider: twitterTextProvider
         )
         viewModel.content = metaContent
+        viewModel.sharePlaintextContent = status.displayText
     }
     
     private func configureMedia(twitterStatus status: TwitterStatus) {
@@ -481,7 +497,8 @@ extension StatusView {
             .map(Int.init)
             .assign(to: \.likeCount, on: viewModel)
             .store(in: &disposeBag)
-
+        viewModel.shareStatusURL = status.statusURL.absoluteString
+        
         // relationship
         Publishers.CombineLatest(
             activeAuthenticationContext,
@@ -625,6 +642,7 @@ extension StatusView {
         do {
             let metaContent = try MastodonMetaContent.convert(document: content)
             viewModel.content = metaContent
+            viewModel.sharePlaintextContent = metaContent.original
         } catch {
             assertionFailure(error.localizedDescription)
             viewModel.content = PlaintextMetaContent(string: "")
@@ -654,6 +672,7 @@ extension StatusView {
             .map(Int.init)
             .assign(to: \.likeCount, on: viewModel)
             .store(in: &disposeBag)
+        viewModel.shareStatusURL = status.url ?? status.uri
         
         // relationship
         Publishers.CombineLatest(

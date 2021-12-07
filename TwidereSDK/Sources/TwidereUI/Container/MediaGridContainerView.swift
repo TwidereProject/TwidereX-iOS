@@ -24,7 +24,7 @@ public final class MediaGridContainerView: UIView {
     
     // lazy var is required here to setup gesture recognizer target-action
     // Swift not doesn't emit compiler error if without `lazy` here
-    private(set) lazy var mediaViews: [MediaView] = {
+    private(set) lazy var _mediaViews: [MediaView] = {
         var mediaViews: [MediaView] = []
         for i in 0..<MediaGridContainerView.maxCount {
             // init media view
@@ -61,8 +61,8 @@ extension MediaGridContainerView {
 
 extension MediaGridContainerView {
     @objc private func mediaViewTapGestureRecognizerHandler(_ sender: UITapGestureRecognizer) {
-        guard let index = mediaViews.firstIndex(where: { $0.container === sender.view }) else { return }
-        let mediaView = mediaViews[index]
+        guard let index = _mediaViews.firstIndex(where: { $0.container === sender.view }) else { return }
+        let mediaView = _mediaViews[index]
         delegate?.mediaGridContainerView(self, didTapMediaView: mediaView, at: index)
         logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): \(index)")
     }
@@ -72,20 +72,20 @@ extension MediaGridContainerView {
 
     public func dequeueMediaView(adaptiveLayout layout: AdaptiveLayout) -> MediaView {
         prepareForReuse()
-        let mediaView = mediaViews[0]
+        let mediaView = _mediaViews[0]
         layout.layout(in: self, mediaView: mediaView)
         return mediaView
     }
     
     public func dequeueMediaView(gridLayout layout: GridLayout) -> [MediaView] {
         prepareForReuse()
-        let mediaViews = Array(mediaViews[0..<layout.count])
+        let mediaViews = Array(_mediaViews[0..<layout.count])
         layout.layout(in: self, mediaViews: mediaViews)
         return mediaViews
     }
     
     public func prepareForReuse() {
-        mediaViews.forEach { view in
+        _mediaViews.forEach { view in
             view.removeFromSuperview()
             view.removeConstraints(view.constraints)
             view.prepareForReuse()
@@ -98,6 +98,24 @@ extension MediaGridContainerView {
         removeConstraints(constraints)
     }
 
+}
+
+extension MediaGridContainerView {
+    
+    public var mediaViews: [MediaView] {
+        _mediaViews.filter { $0.superview != nil }
+    }
+    
+    public func setAlpha(_ alpha: CGFloat) {
+        _mediaViews.forEach { $0.alpha = alpha }
+    }
+    
+    public func setAlpha(_ alpha: CGFloat, index: Int) {
+        if index < _mediaViews.count {
+            _mediaViews[index].alpha = alpha
+        }
+    }
+    
 }
 
 extension MediaGridContainerView {

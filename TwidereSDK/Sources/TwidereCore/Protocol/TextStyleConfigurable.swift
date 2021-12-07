@@ -33,6 +33,7 @@ public enum TextStyle {
     case profileAuthorBio
     case profileFieldKey
     case profileFieldValue
+    case mediaDescriptionAuthorName
     case hashtagTitle
     case hashtagDescription
     case sidebarAuthorName
@@ -56,26 +57,27 @@ public enum TextStyle {
 extension TextStyle {
     public var numberOfLines: Int {
         switch self {
-        case .statusHeader:             return 1
-        case .statusAuthorName:         return 1
-        case .statusAuthorUsername:     return 1
-        case .statusTimestamp:          return 1
-        case .statusLocation:           return 1
-        case .statusContent:            return 0
-        case .statusMetrics:            return 1
-        case .userAuthorName:           return 1
-        case .userAuthorUsername:       return 1
-        case .userDescription:          return 1
-        case .profileAuthorName:        return 0
-        case .profileAuthorUsername:    return 1
-        case .profileAuthorBio:         return 0
-        case .profileFieldKey:          return 1
-        case .profileFieldValue:        return 0
-        case .hashtagTitle:             return 1
-        case .hashtagDescription:       return 1
-        case .sidebarAuthorName:        return 1
-        case .sidebarAuthorUsername:    return 1
-        case .custom:                   return 1
+        case .statusHeader:                 return 1
+        case .statusAuthorName:             return 1
+        case .statusAuthorUsername:         return 1
+        case .statusTimestamp:              return 1
+        case .statusLocation:               return 1
+        case .statusContent:                return 0
+        case .statusMetrics:                return 1
+        case .userAuthorName:               return 1
+        case .userAuthorUsername:           return 1
+        case .userDescription:              return 1
+        case .profileAuthorName:            return 0
+        case .profileAuthorUsername:        return 1
+        case .profileAuthorBio:             return 0
+        case .profileFieldKey:              return 1
+        case .profileFieldValue:            return 0
+        case .mediaDescriptionAuthorName:   return 1
+        case .hashtagTitle:                 return 1
+        case .hashtagDescription:           return 1
+        case .sidebarAuthorName:            return 1
+        case .sidebarAuthorUsername:        return 1
+        case .custom:                       return 1
         }
     }
 }
@@ -113,6 +115,8 @@ extension TextStyle {
             return .preferredFont(forTextStyle: .footnote)
         case .profileFieldValue:
             return .preferredFont(forTextStyle: .footnote)
+        case .mediaDescriptionAuthorName:
+            return .preferredFont(forTextStyle: .headline)
         case .hashtagTitle:
             return .preferredFont(forTextStyle: .headline)
         case .hashtagDescription:
@@ -157,6 +161,8 @@ extension TextStyle {
         case .profileFieldKey:
             return .secondaryLabel
         case .profileFieldValue:
+            return .label
+        case .mediaDescriptionAuthorName:
             return .label
         case .hashtagTitle:
             return .label
@@ -216,6 +222,8 @@ extension MetaLabel: TextStyleConfigurable {
         case .profileFieldKey:
             break
         case .profileFieldValue:
+            break
+        case .mediaDescriptionAuthorName:
             break
         case .hashtagTitle:
             break
