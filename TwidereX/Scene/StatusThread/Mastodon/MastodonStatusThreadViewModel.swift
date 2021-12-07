@@ -56,10 +56,17 @@ extension MastodonStatusThreadViewModel {
         }
         
         var newItems: [StatusItem] = []
-        for node in nodes {
+        for (i, node) in nodes.enumerated() {
             guard let status = dictionary[node.statusID] else { continue }
+            let isLast = i == nodes.count - 1
+            
             let record = ManagedObjectRecord<MastodonStatus>(objectID: status.objectID)
-            let item = StatusItem.thread(.leaf(status: .mastodon(record: record)))
+            let context = StatusItem.Thread.Context(
+                status: .mastodon(record: record),
+                displayUpperConversationLink: !isLast,
+                displayBottomConversationLink: true
+            )
+            let item = StatusItem.thread(.leaf(context: context))
             newItems.append(item)
         }
         
@@ -92,12 +99,33 @@ extension MastodonStatusThreadViewModel {
             guard let status = dictionary[node.statusID] else { continue }
             // first tier
             let record = ManagedObjectRecord<MastodonStatus>(objectID: status.objectID)
-            let item = StatusItem.thread(.leaf(status: .mastodon(record: record)))
+            let context = StatusItem.Thread.Context(
+                status: .mastodon(record: record)
+            )
+            let item = StatusItem.thread(.leaf(context: context))
             newItems.append(item)
-            // TODO: second tier
+            
+            // second tier
+            if let child = node.children.first {
+                guard let secondaryStatus = dictionary[child.statusID] else { continue }
+                let secondaryRecord = ManagedObjectRecord<MastodonStatus>(objectID: secondaryStatus.objectID)
+                let secondaryContext = StatusItem.Thread.Context(
+                    status: .mastodon(record: secondaryRecord),
+                    displayUpperConversationLink: true
+                )
+                let secondaryItem = StatusItem.thread(.leaf(context: secondaryContext))
+                newItems.append(secondaryItem)
+                
+                // update first tier context
+                context.displayBottomConversationLink = true
+            }
         }
         
-        let items = self.descendants.value + newItems
+        var items = self.descendants.value
+        for item in newItems {
+            guard !items.contains(item) else { continue }
+            items.append(item)
+        }
         self.descendants.value = items
     }
     

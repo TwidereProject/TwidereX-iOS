@@ -29,7 +29,7 @@ final class ListBatchFetchViewModel {
     // output
     let shouldFetch = PassthroughSubject<Void, Never>()
     
-    init() {
+    init(direction: Direction = .bottom) {
         Publishers.CombineLatest(
             hasMore,
             timerPublisher
@@ -50,12 +50,19 @@ final class ListBatchFetchViewModel {
                 let contentOffset = scrollView.contentOffset
                 let contentSize = scrollView.contentSize
                 
-                let visibleBottomY = contentOffset.y + frame.height
-                let offset = 2 * frame.height
-                let fetchThrottleOffsetY = contentSize.height - offset
-
-                if visibleBottomY > fetchThrottleOffsetY {
-                    self.shouldFetch.send()
+                switch direction {
+                case .top:
+                    if contentOffset.y < frame.height / 2 {
+                        self.shouldFetch.send()
+                    }
+                case .bottom:
+                    let visibleBottomY = contentOffset.y + frame.height
+                    let offset = 2 * frame.height
+                    let fetchThrottleOffsetY = contentSize.height - offset
+                    
+                    if visibleBottomY > fetchThrottleOffsetY {
+                        self.shouldFetch.send()
+                    }
                 }
             }
         }
@@ -64,6 +71,14 @@ final class ListBatchFetchViewModel {
     
     deinit {
         os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
+    }
+    
+}
+
+extension ListBatchFetchViewModel {
+    enum Direction {
+        case top
+        case bottom
     }
     
 }

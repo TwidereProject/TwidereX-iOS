@@ -113,6 +113,8 @@ public final class StatusView: UIView {
     }()
     public let locationLabel = PlainLabel(style: .statusAuthorUsername)
 
+    // metrics
+    let metricsDashboardView = StatusMetricsDashboardView()
     
     // toolbar
     public let toolbar = StatusToolbar()
@@ -215,6 +217,7 @@ extension StatusView {
             statusView.mediaGridContainerView.isHidden = true
             statusView.quoteStatusView?.isHidden = true
             statusView.locationContainer.isHidden = true
+            statusView.metricsDashboardView.isHidden = true
         }
     }
 }
@@ -478,9 +481,8 @@ extension StatusView.Style {
         statusView.locationMapPinImageView.setContentHuggingPriority(.defaultLow, for: .vertical)
         statusView.locationMapPinImageView.setContentHuggingPriority(.defaultLow, for: .horizontal)
         
-        // timestampLabel
-        statusView.containerStackView.addArrangedSubview(statusView.timestampLabel)
-        statusView.timestampLabel.textAlignment = .center
+        // metrics
+        statusView.containerStackView.addArrangedSubview(statusView.metricsDashboardView)
         
         // toolbar
         statusView.containerStackView.addArrangedSubview(statusView.toolbar)
@@ -691,6 +693,10 @@ extension StatusView {
     
     public func setLocationDisplay() {
         locationContainer.isHidden = false
+    }
+    
+    public func setMetricsDisplay() {
+        metricsDashboardView.isHidden = false
     }
     
     // content text Width

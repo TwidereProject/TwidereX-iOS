@@ -58,6 +58,22 @@ extension StatusThreadViewController {
             tableView: tableView,
             statusViewTableViewCellDelegate: self
         )
+        viewModel.topListBatchFetchViewModel.setup(scrollView: tableView)
+        viewModel.bottomListBatchFetchViewModel.setup(scrollView: tableView)
+        viewModel.topListBatchFetchViewModel.shouldFetch
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                guard let self = self else { return }
+                self.viewModel.twitterStatusThreadReplyViewModel.stateMachine.enter(TwitterStatusThreadReplyViewModel.State.Loading.self)
+            }
+            .store(in: &disposeBag)
+        viewModel.bottomListBatchFetchViewModel.shouldFetch
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                guard let self = self else { return }
+                self.viewModel.loadThreadStateMachine.enter(StatusThreadViewModel.LoadThreadState.Loading.self)
+            }
+            .store(in: &disposeBag)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -75,6 +91,20 @@ extension StatusThreadViewController {
 
 // MARK: - UITableViewDelegate
 extension StatusThreadViewController: UITableViewDelegate, AutoGenerateTableViewDelegate {
+    
+    func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
+        guard let diffableDataSource = viewModel.diffableDataSource else { return indexPath }
+        guard let item = diffableDataSource.itemIdentifier(for: indexPath) else { return indexPath }
+        guard case let .thread(thread) = item else { return indexPath }
+        
+        switch thread {
+        case .root:
+            return nil
+        case .reply, .leaf:
+            return indexPath
+        }
+    }
+    
     // sourcery:inline:StatusThreadViewController.AutoGenerateTableViewDelegate
 
     // Generated using Sourcery
@@ -83,6 +113,8 @@ extension StatusThreadViewController: UITableViewDelegate, AutoGenerateTableView
         aspectTableView(tableView, didSelectRowAt: indexPath)
     }
     // sourcery:end
+    
+    
 }
 
 

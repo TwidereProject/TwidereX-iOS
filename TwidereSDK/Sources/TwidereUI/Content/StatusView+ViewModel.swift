@@ -43,6 +43,7 @@ extension StatusView {
         
         @Published public var replyCount: Int = 0
         @Published public var repostCount: Int = 0
+        @Published public var quoteCount: Int = 0
         @Published public var likeCount: Int = 0
         
         @Published public var visibility: StatusVisibility?
@@ -159,16 +160,37 @@ extension StatusView.ViewModel {
             $dateTimeProvider
         )
         .sink { timestamp, dateTimeProvider in
-            switch statusView.style {
-            case .plain:
+            statusView.timestampLabel.text = dateTimeProvider?.shortTimeAgoSinceNow(to: timestamp)
+            statusView.metricsDashboardView.timestampLabel.text = {
                 let formatter = DateFormatter()
                 formatter.dateStyle = .medium
                 formatter.timeStyle = .medium
                 let text = timestamp.flatMap { formatter.string(from: $0) }
-                statusView.timestampLabel.text = text
+                return text
+            }()
+        }
+        .store(in: &disposeBag)
+        // dashboard
+        Publishers.CombineLatest4(
+            $replyCount,
+            $repostCount,
+            $quoteCount,
+            $likeCount
+        )
+        .sink { replyCount, repostCount, quoteCount, likeCount in
+            switch statusView.style {
+            case .plain:
+                statusView.setMetricsDisplay()
+
+                statusView.metricsDashboardView.setupReply(count: replyCount)
+                statusView.metricsDashboardView.setupRepost(count: repostCount)
+                statusView.metricsDashboardView.setupQuote(count: quoteCount)
+                statusView.metricsDashboardView.setupLike(count: likeCount)
+                
+                let needsDashboardDisplay = replyCount > 0 || repostCount > 0 || quoteCount > 0 || likeCount > 0
+                statusView.metricsDashboardView.dashboardContainer.isHidden = !needsDashboardDisplay
             default:
-                let text = dateTimeProvider?.shortTimeAgoSinceNow(to: timestamp)
-                statusView.timestampLabel.text = text
+                break
             }
         }
         .store(in: &disposeBag)
@@ -310,6 +332,26 @@ extension StatusView {
             )
         }
     }
+    
+    public func configure(
+        statusObject object: StatusObject,
+        configurationContext: ConfigurationContext
+    ) {
+        switch object {
+        case .twitter(let status):
+            configure(
+                twitterStatus: status,
+                configurationContext: configurationContext
+            )
+        case .mastodon(let status):
+            configure(
+                mastodonStatus: status,
+                notification: nil,
+                configurationContext: configurationContext
+            )
+        }
+    }
+    
 }
 
 // MARK: - Twitter
@@ -318,7 +360,6 @@ extension StatusView {
     public func configure(
         twitterStatus status: TwitterStatus,
         configurationContext: ConfigurationContext
-        
     ) {
         viewModel.objects.insert(status)
         

@@ -44,7 +44,7 @@ extension TwitterStatusThreadReplyViewModel.State {
 
         override var name: String { "Prepare" }
         
-        static let throat = 1
+        static let throat = 20
         var previousResolvedNodeCount: Int? = nil
         
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {

@@ -17,6 +17,8 @@ final class StatusThreadRootTableViewCell: UITableViewCell {
     let logger = Logger(subsystem: "StatusThreadRootTableViewCell", category: "UI")
     
     weak var delegate: StatusViewTableViewCellDelegate?
+    
+    let conversationLinkLineView = SeparatorLineView()
     let statusView = StatusView()
     let toolbarSeparator = SeparatorLineView()
     let separator = SeparatorLineView()
@@ -26,6 +28,7 @@ final class StatusThreadRootTableViewCell: UITableViewCell {
         
         statusView.prepareForReuse()
         disposeBag.removeAll()
+        conversationLinkLineView.isHidden = true
     }
     
     
@@ -56,7 +59,16 @@ extension StatusThreadRootTableViewCell {
         ])
         statusView.setup(style: .plain)
         statusView.toolbar.setup(style: .plain)
-        statusView.delegate = self
+        
+        conversationLinkLineView.translatesAutoresizingMaskIntoConstraints = false
+        contentView.addSubview(conversationLinkLineView)
+        NSLayoutConstraint.activate([
+            conversationLinkLineView.topAnchor.constraint(equalTo: contentView.topAnchor),
+            conversationLinkLineView.centerXAnchor.constraint(equalTo: statusView.authorAvatarButton.centerXAnchor),
+            conversationLinkLineView.widthAnchor.constraint(equalToConstant: 1),
+            statusView.authorAvatarButton.topAnchor.constraint(equalTo: conversationLinkLineView.bottomAnchor, constant: 2),
+        ])
+        conversationLinkLineView.isHidden = true
         
         toolbarSeparator.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(toolbarSeparator)
@@ -74,6 +86,15 @@ extension StatusThreadRootTableViewCell {
             separator.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
         ])
         
+        statusView.delegate = self
+    }
+    
+}
+
+extension StatusThreadRootTableViewCell {
+
+    func setConversationLinkLineViewDisplay() {
+        conversationLinkLineView.isHidden = false
     }
     
 }

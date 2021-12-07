@@ -16,6 +16,7 @@ import AppShared
 extension StatusThreadRootTableViewCell {
     final class ViewModel {
         enum Value {
+            case statusObject(StatusObject)
             case twitterStatus(TwitterStatus)
             case mastodonStatus(MastodonStatus)
         }
@@ -55,6 +56,11 @@ extension StatusThreadRootTableViewCell {
         )
         
         switch viewModel.value {
+        case .statusObject(let object):
+            statusView.configure(
+                statusObject: object,
+                configurationContext: configurationContext
+            )
         case .twitterStatus(let status):
             statusView.configure(
                 twitterStatus: status,

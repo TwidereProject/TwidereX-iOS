@@ -26,6 +26,8 @@ final class StatusThreadViewModel {
     let twitterStatusThreadReplyViewModel: TwitterStatusThreadReplyViewModel
     let twitterStatusThreadLeafViewModel: TwitterStatusThreadLeafViewModel
     let mastodonStatusThreadViewModel: MastodonStatusThreadViewModel
+    let topListBatchFetchViewModel = ListBatchFetchViewModel(direction: .top)
+    let bottomListBatchFetchViewModel = ListBatchFetchViewModel(direction: .bottom)
     let viewDidAppear = PassthroughSubject<Void, Never>()
 
     // output
@@ -69,8 +71,8 @@ final class StatusThreadViewModel {
         
         // TODO: handle lazy thread loading
         hasReplyTo = {
-            guard case let .root(record) = optionalRoot else { return false }
-            guard let status = record.object(in: context.managedObjectContext) else { return false }
+            guard case let .root(threadContext) = optionalRoot else { return false }
+            guard let status = threadContext.status.object(in: context.managedObjectContext) else { return false }
             switch status {
             case .twitter(let _status):
                 let status = _status.repost ?? _status

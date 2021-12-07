@@ -66,10 +66,15 @@ final class TwitterStatusThreadReplyViewModel {
         $nodes
             .map { nodes in
                 var items: [StatusItem] = []
-                for node in nodes {
+                for (i, node) in nodes.enumerated() {
                     guard case let .success(record) = node.status else { continue }
-                    let status = StatusRecord.twitter(record: record)
-                    let thread = StatusItem.Thread.reply(status: status)
+                    let isLast = i == nodes.count - 1
+                    let context = StatusItem.Thread.Context(
+                        status: .twitter(record: record),
+                        displayUpperConversationLink: !isLast,
+                        displayBottomConversationLink: true
+                    )
+                    let thread = StatusItem.Thread.reply(context: context)
                     items.append(.thread(thread))
                 }
                 return items

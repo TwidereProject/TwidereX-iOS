@@ -16,6 +16,7 @@ extension StatusTableViewCell {
     final class ViewModel {
         enum Value {
             case feed(Feed)
+            case statusObject(StatusObject)
             case twitterStatus(TwitterStatus)
             case mastodonStatus(MastodonStatus)
         }
@@ -61,6 +62,12 @@ extension StatusTableViewCell {
                 configurationContext: configurationContext
             )
             configureSeparator(style: feed.hasMore ? .edge : .inset)
+        case .statusObject(let object):
+            statusView.configure(
+                statusObject: object,
+                configurationContext: configurationContext
+            )
+            configureSeparator(style: .inset)
         case .twitterStatus(let status):
             statusView.configure(
                 twitterStatus: status,
@@ -78,6 +85,7 @@ extension StatusTableViewCell {
         
         self.delegate = delegate
     }
+
 }
 
 

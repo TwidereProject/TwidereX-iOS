@@ -22,8 +22,10 @@ extension StatusThreadViewController: DataSourceProvider {
         
         guard case let .thread(thread) = item else { return nil }
         switch thread {
-        case .reply(let status), .root(let status), .leaf(let status):
-            return .status(status)
+        case .reply(let threadContext),
+             .root(let threadContext),
+             .leaf(let threadContext):
+            return .status(threadContext.status)
         }
     }
     

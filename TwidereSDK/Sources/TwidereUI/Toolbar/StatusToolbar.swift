@@ -8,6 +8,7 @@
 
 import os.log
 import UIKit
+import TwidereCore
 
 public protocol StatusToolbarDelegate: AnyObject {
     func statusToolbar(_ statusToolbar: StatusToolbar, actionDidPressed action: StatusToolbar.Action)

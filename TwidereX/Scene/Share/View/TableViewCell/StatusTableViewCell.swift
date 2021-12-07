@@ -17,7 +17,10 @@ class StatusTableViewCell: UITableViewCell {
     let logger = Logger(subsystem: "StatusTableViewCell", category: "UI")
     
     weak var delegate: StatusViewTableViewCellDelegate?
+    
+    let topConversationLinkLineView = SeparatorLineView()
     let statusView = StatusView()
+    let bottomConversationLinkLineView = SeparatorLineView()
     let separator = SeparatorLineView()
     
     override func prepareForReuse() {
@@ -25,6 +28,8 @@ class StatusTableViewCell: UITableViewCell {
         
         statusView.prepareForReuse()
         disposeBag.removeAll()
+        topConversationLinkLineView.isHidden = true
+        bottomConversationLinkLineView.isHidden = true
     }
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
@@ -52,7 +57,40 @@ extension StatusTableViewCell {
         ])
         statusView.setup(style: .inline)
         statusView.toolbar.setup(style: .inline)
+        
+        topConversationLinkLineView.translatesAutoresizingMaskIntoConstraints = false
+        contentView.addSubview(topConversationLinkLineView)
+        NSLayoutConstraint.activate([
+            topConversationLinkLineView.topAnchor.constraint(equalTo: contentView.topAnchor),
+            topConversationLinkLineView.centerXAnchor.constraint(equalTo: statusView.authorAvatarButton.centerXAnchor),
+            topConversationLinkLineView.widthAnchor.constraint(equalToConstant: 1),
+            statusView.authorAvatarButton.topAnchor.constraint(equalTo: topConversationLinkLineView.bottomAnchor, constant: 2),
+        ])
+        topConversationLinkLineView.isHidden = true
+        
+        bottomConversationLinkLineView.translatesAutoresizingMaskIntoConstraints = false
+        contentView.addSubview(bottomConversationLinkLineView)
+        NSLayoutConstraint.activate([
+            bottomConversationLinkLineView.topAnchor.constraint(equalTo: statusView.authorAvatarButton.bottomAnchor, constant: 2),
+            bottomConversationLinkLineView.centerXAnchor.constraint(equalTo: statusView.authorAvatarButton.centerXAnchor),
+            bottomConversationLinkLineView.widthAnchor.constraint(equalToConstant: 1),
+            contentView.bottomAnchor.constraint(equalTo: bottomConversationLinkLineView.bottomAnchor),
+        ])
+        bottomConversationLinkLineView.isHidden = true
+        
         statusView.delegate = self
+    }
+    
+}
+
+extension StatusTableViewCell {
+
+    func setTopConversationLinkLineViewDisplay() {
+        topConversationLinkLineView.isHidden = false
+    }
+    
+    func setBottomConversationLinkLineViewDisplay() {
+        bottomConversationLinkLineView.isHidden = false
     }
     
 }

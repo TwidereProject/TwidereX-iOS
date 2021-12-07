@@ -24,6 +24,7 @@ public enum TextStyle {
     case statusTimestamp
     case statusLocation
     case statusContent
+    case statusMetrics
     case userAuthorName
     case userAuthorUsername
     case userDescription
@@ -61,6 +62,7 @@ extension TextStyle {
         case .statusTimestamp:          return 1
         case .statusLocation:           return 1
         case .statusContent:            return 0
+        case .statusMetrics:            return 1
         case .userAuthorName:           return 1
         case .userAuthorUsername:       return 1
         case .userDescription:          return 1
@@ -93,6 +95,8 @@ extension TextStyle {
             return .preferredFont(forTextStyle: .caption1)
         case .statusContent:
             return .preferredFont(forTextStyle: .body)
+        case .statusMetrics:
+            return .preferredFont(forTextStyle: .footnote)
         case .userAuthorName:
             return .preferredFont(forTextStyle: .headline)
         case .userAuthorUsername:
@@ -136,6 +140,8 @@ extension TextStyle {
             return .secondaryLabel
         case .statusContent:
             return .label.withAlphaComponent(0.8)
+        case .statusMetrics:
+            return .secondaryLabel
         case .userAuthorName:
             return .label
         case .userAuthorUsername:
@@ -193,6 +199,8 @@ extension MetaLabel: TextStyleConfigurable {
         case .statusLocation:
             break
         case .statusContent:
+            break
+        case .statusMetrics:
             break
         case .userAuthorName:
             break

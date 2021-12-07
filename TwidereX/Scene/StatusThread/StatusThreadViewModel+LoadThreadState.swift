@@ -48,14 +48,14 @@ extension StatusThreadViewModel.LoadThreadState {
             super.didEnter(from: previousState)
             
             guard let viewModel = viewModel, let stateMachine = stateMachine else { return }
-            guard case let .root(status) = viewModel.root.value else {
+            guard case let .root(threadContext) = viewModel.root.value else {
                 assertionFailure()
                 stateMachine.enter(PrepareFail.self)
                 return
             }
             
             Task {
-                switch status {
+                switch threadContext.status {
                 case .twitter(let record):
                     await prepareTwitterStatusThread(record: record)
                 case .mastodon(let record):
@@ -235,6 +235,7 @@ extension StatusThreadViewModel.LoadThreadState {
             }
         }
 
+        // TODO: group into `StatusListFetchViewModel`
         // fetch thread via V2 API
         func fetch(
             twitterConversation: StatusThreadViewModel.ThreadContext.TwitterConversation
@@ -263,7 +264,7 @@ extension StatusThreadViewModel.LoadThreadState {
                     authorID: twitterConversation.authorID,
                     sinceID: sinceID,
                     startTime: startTime,
-                    nextToken: nil, // TODO:
+                    nextToken: nextToken,
                     authenticationContext: authenticationContext
                 )
                 let nodes = TwitterStatusThreadLeafViewModel.Node.children(

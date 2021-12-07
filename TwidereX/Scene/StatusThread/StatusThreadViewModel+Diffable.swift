@@ -32,8 +32,8 @@ extension StatusThreadViewModel {
         if hasReplyTo {
             snapshot.appendItems([.topLoader], toSection: .main)
         }
-        if let root = self.root.value, case let .root(status) = root {
-            switch status {
+        if let root = self.root.value, case let .root(threadContext) = root {
+            switch threadContext.status {
             case .twitter(let record):
                 if twitterStatusThreadReplyViewModel.root == nil {
                     twitterStatusThreadReplyViewModel.root = record
@@ -49,8 +49,8 @@ extension StatusThreadViewModel {
                 .sink { [weak self] root in
                     guard let self = self else { return }
                     
-                    guard case .root(let status) = root else { return }
-                    guard case let .twitter(record) = status else { return }
+                    guard case .root(let threadContext) = root else { return }
+                    guard case let .twitter(record) = threadContext.status else { return }
 
                     guard self.twitterStatusThreadReplyViewModel.root == nil else { return }
                     self.twitterStatusThreadReplyViewModel.root = record
@@ -79,8 +79,8 @@ extension StatusThreadViewModel {
                 newSnapshot.appendSections([.main])
 
                 // top loader
-                if self.hasReplyTo, case let .root(record) = root {
-                    switch record {
+                if self.hasReplyTo, case let .root(threadContext) = root {
+                    switch threadContext.status {
                     case .twitter:
                         let state = self.twitterStatusThreadReplyViewModel.stateMachine.currentState
                         if state is TwitterStatusThreadReplyViewModel.State.NoMore {
