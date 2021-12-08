@@ -38,6 +38,9 @@ extension HashtagTimelineViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        // FIXME: use meta label
+        title = viewModel.hashtag
 
         tableView.translatesAutoresizingMaskIntoConstraints = false
         tableView.frame = view.bounds

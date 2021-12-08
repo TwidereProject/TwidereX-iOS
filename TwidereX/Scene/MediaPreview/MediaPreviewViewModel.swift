@@ -61,9 +61,25 @@ final class MediaPreviewViewModel: NSObject {
                         )
                         viewControllers.append(viewController)
                     case .video:
-                        viewControllers.append(UIViewController())
+                        let viewController = MediaPreviewVideoViewController()
+                        viewController.viewModel = MediaPreviewVideoViewModel(
+                            context: context,
+                            item: .video(.init(
+                                assetURL: attachment.assetURL,
+                                previewURL: attachment.previewURL
+                            ))
+                        )
+                        viewControllers.append(viewController)
                     case .gif:
-                        viewControllers.append(UIViewController())
+                        let viewController = MediaPreviewVideoViewController()
+                        viewController.viewModel = MediaPreviewVideoViewModel(
+                            context: context,
+                            item: .gif(.init(
+                                assetURL: attachment.assetURL,
+                                previewURL: attachment.previewURL
+                            ))
+                        )
+                        viewControllers.append(viewController)
                     case .audio:
                         viewControllers.append(UIViewController())
                     }

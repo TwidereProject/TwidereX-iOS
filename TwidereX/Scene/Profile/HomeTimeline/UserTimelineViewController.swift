@@ -79,6 +79,7 @@ extension UserTimelineViewController {
         // trigger loading
         viewModel.$userIdentifier
             .removeDuplicates()
+            .receive(on: DispatchQueue.main)        // <- required here due to trigger upstream on willSet
             .sink { [weak self] _ in
                 guard let self = self else { return }
                 self.viewModel.stateMachine.enter(UserTimelineViewModel.State.Reloading.self)

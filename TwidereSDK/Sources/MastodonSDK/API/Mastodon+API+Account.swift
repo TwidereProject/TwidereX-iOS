@@ -8,6 +8,49 @@
 import Foundation
 
 extension Mastodon.API.Account {
+
+    static func accountsInfoEndpointURL(domain: String, id: Mastodon.Entity.Account.ID) -> URL {
+        return Mastodon.API.endpointURL(domain: domain)
+            .appendingPathComponent("accounts")
+            .appendingPathComponent(id)
+    }
+
+    /// Retrieve information
+    ///
+    /// View information about a profile.
+    ///
+    /// - Since: 0.0.0
+    /// - Version: 3.4.2
+    /// # Last Update
+    ///   2021/12/8
+    /// # Reference
+    ///   [Document](https://docs.joinmastodon.org/methods/accounts/)
+    /// - Parameters:
+    ///   - session: `URLSession`
+    ///   - domain: Mastodon instance domain. e.g. "example.com"
+    ///   - query: `AccountInfoQuery` with account query information,
+    ///   - authorization: user token
+    /// - Returns: `Account` nested in the response
+    public static func account(
+        session: URLSession,
+        domain: String,
+        userID: Mastodon.Entity.Account.ID,
+        authorization: Mastodon.API.OAuth.Authorization?
+    ) async throws -> Mastodon.Response.Content<Mastodon.Entity.Account> {
+        let request = Mastodon.API.request(
+            url: accountsInfoEndpointURL(domain: domain, id: userID),
+            method: .GET,
+            query: nil,
+            authorization: authorization
+        )
+        let (data, response) = try await session.data(for: request, delegate: nil)
+        let value = try Mastodon.API.decode(type: Mastodon.Entity.Account.self, from: data, response: response)
+        return Mastodon.Response.Content(value: value, response: response)
+    }
+    
+}
+
+extension Mastodon.API.Account {
     
     static func accountStatusesEndpointURL(domain: String, accountID: Mastodon.Entity.Account.ID) -> URL {
         return Mastodon.API.endpointURL(domain: domain).appendingPathComponent("accounts/\(accountID)/statuses")
@@ -26,7 +69,7 @@ extension Mastodon.API.Account {
     ///   - domain: Mastodon instance domain. e.g. "example.com"
     ///   - query: `AccountStatusesQuery` with query parameters
     ///   - authorization: User token
-    /// - Returns: `AnyPublisher` contains `Token` nested in the response
+    /// - Returns: `[Status]` nested in the response
     public static func statuses(
         session: URLSession,
         domain: String,

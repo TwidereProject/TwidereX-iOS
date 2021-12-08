@@ -100,33 +100,20 @@ extension MediaHostToMediaPreviewViewControllerAnimatedTransitioning {
         switch operation {
         case .pop:
             guard let mediaPreviewViewController =  transitionContext.viewController(forKey: .from) as? MediaPreviewViewController,
-                  let mediaPreviewImageViewController = mediaPreviewViewController.pageViewController.currentViewController as? MediaPreviewImageViewController else {
+                  let mediaPreviewTransitionViewController = mediaPreviewViewController.pageViewController.currentViewController as? MediaPreviewTransitionViewController,
+                  let mediaPreviewTransitionContext = mediaPreviewTransitionViewController.mediaPreviewTransitionContext
+            else {
                 transitionContext.completeTransition(false)
                 return
             }
 
-            let imageView = mediaPreviewImageViewController.previewImageView.imageView
-            let _snapshot: UIView? = {
-                if imageView.image == nil {
-                    transitionItem.snapshotRaw = mediaPreviewImageViewController.progressBarView
-                    return mediaPreviewImageViewController.progressBarView.snapshotView(afterScreenUpdates: false)
-                } else {
-                    transitionItem.snapshotRaw = imageView
-                    return imageView.snapshotView(afterScreenUpdates: false)
-                }
-            }()
-            guard let snapshot = _snapshot else {
-                transitionContext.completeTransition(false)
-                return
-            }
-            mediaPreviewImageViewController.view.insertSubview(snapshot, aboveSubview: mediaPreviewImageViewController.previewImageView)
+            mediaPreviewTransitionViewController.view.addSubview(mediaPreviewTransitionContext.snapshot)
+            mediaPreviewTransitionContext.snapshot.center = transitionContext.containerView.center
 
-            snapshot.center = transitionContext.containerView.center
-
-            transitionItem.imageView = imageView
-            transitionItem.snapshotTransitioning = snapshot
-            transitionItem.initialFrame = snapshot.frame
-            transitionItem.targetFrame = snapshot.frame
+            transitionItem.transitionView = mediaPreviewTransitionContext.transitionView
+            transitionItem.snapshotTransitioning = mediaPreviewTransitionContext.snapshot
+            transitionItem.initialFrame = mediaPreviewTransitionContext.snapshot.frame
+            transitionItem.targetFrame = mediaPreviewTransitionContext.snapshot.frame
 
             panGestureRecognizer.addTarget(self, action: #selector(MediaHostToMediaPreviewViewControllerAnimatedTransitioning.updatePanGestureInteractive(_:)))
             popInteractiveTransition(using: transitionContext)
@@ -145,7 +132,7 @@ extension MediaHostToMediaPreviewViewControllerAnimatedTransitioning {
         let animator = popInteractiveTransitionAnimator
 
         let blurEffect = fromVC.visualEffectView.effect
-        self.transitionItem.imageView?.isHidden = true
+        self.transitionItem.transitionView?.isHidden = true
         self.transitionItem.snapshotRaw?.alpha = 0.0
         animator.addAnimations {
             self.transitionItem.snapshotTransitioning?.alpha = 0.4
@@ -156,7 +143,7 @@ extension MediaHostToMediaPreviewViewControllerAnimatedTransitioning {
         }
 
         animator.addCompletion { position in
-            self.transitionItem.imageView?.isHidden = position == .end
+            self.transitionItem.transitionView?.isHidden = position == .end
             self.transitionItem.snapshotRaw?.alpha = position == .start ? 1.0 : 0.0
             self.transitionItem.snapshotTransitioning?.removeFromSuperview()
             fromVC.visualEffectView.effect = position == .end ? nil : blurEffect
@@ -194,7 +181,7 @@ extension MediaHostToMediaPreviewViewControllerAnimatedTransitioning {
     }
 
     private func convert(_ velocity: CGPoint, for item: MediaPreviewTransitionItem?) -> CGVector {
-        guard let currentFrame = item?.imageView?.frame, let targetFrame = item?.targetFrame else {
+        guard let currentFrame = item?.transitionView?.frame, let targetFrame = item?.targetFrame else {
             return CGVector.zero
         }
 

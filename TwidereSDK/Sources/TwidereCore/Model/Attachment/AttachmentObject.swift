@@ -49,4 +49,13 @@ extension AttachmentObject {
             return mastodonAttachment.assetURL.flatMap { URL(string: $0) }
         }
     }
+    
+    public var previewURL: URL? {
+        switch self {
+        case .twitter(let twitterAttachment):
+            return twitterAttachment.previewURL.flatMap { URL(string: $0) }
+        case .mastodon(let mastodonAttachment):
+            return mastodonAttachment.previewURL.flatMap { URL(string: $0) }
+        }
+    }
 }

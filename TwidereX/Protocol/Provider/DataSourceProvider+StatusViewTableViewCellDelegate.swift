@@ -76,12 +76,18 @@ extension StatusViewTableViewCellDelegate where Self: DataSourceProvider {
             }
             
             switch meta {
-            case .url: break
-            case .hashtag: break
-            case .mention(_, let mention, _):
+            case .url(_, _, let url, _):
+                guard let url = URL(string: url) else { return }
+                await coordinator.present(scene: .safari(url: url), from: nil, transition: .safariPresent(animated: true, completion: nil))
+            case .hashtag(_, let hashtag, _):
+                let hashtagViewModel = HashtagTimelineViewModel(context: context, hashtag: hashtag)
+                await coordinator.present(scene: .hashtagTimeline(viewModel: hashtagViewModel), from: self, transition: .show)
+            case .mention(_, let mention, let userInfo):
                 await DataSourceFacade.coordinateToProfileScene(
                     provider: self,
-                    username: mention
+                    status: status,
+                    mention: mention,
+                    userInfo: userInfo
                 )
             case .email: break
             case .emoji: break

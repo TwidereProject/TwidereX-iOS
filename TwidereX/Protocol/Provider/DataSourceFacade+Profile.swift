@@ -7,6 +7,8 @@
 //
 
 import Foundation
+import TwidereCore
+import CoreDataStack
 
 extension DataSourceFacade {
     static func coordinateToProfileScene(
@@ -46,14 +48,74 @@ extension DataSourceFacade {
     
     static func coordinateToProfileScene(
         provider: DataSourceProvider,
-        username: String
+        profileContext: RemoteProfileViewModel.ProfileContext
     ) async {
-//        fatalError()
-        let profileViewModel = ProfileViewModel(context: provider.context)
+
+        let profileViewModel = RemoteProfileViewModel(
+            context: provider.context,
+            profileContext: profileContext
+        )
         await provider.coordinator.present(
             scene: .profile(viewModel: profileViewModel),
             from: provider,
             transition: .show
         )
     }
+    
+    static func coordinateToProfileScene(
+        provider: DataSourceProvider,
+        status: StatusRecord,
+        mention: String,        // username,
+        userInfo: [AnyHashable: Any]?
+    ) async {
+        let _profileContext: RemoteProfileViewModel.ProfileContext? = await provider.context.managedObjectContext.perform {
+            guard let object = status.object(in: provider.context.managedObjectContext) else { return nil }
+            switch object {
+            case .twitter(let status):
+                let status = status.repost ?? status
+                let mentions = status.entities?.mentions ?? []
+                let _userID: TwitterUser.ID? = mentions.first(where: { $0.username == mention })?.id
+
+                if let userID = _userID {
+                    let request = TwitterUser.sortedFetchRequest
+                    request.predicate = TwitterUser.predicate(id: userID)
+                    request.fetchLimit = 1
+                    let _user = try? provider.context.managedObjectContext.fetch(request).first
+                    
+                    if let user = _user {
+                        return .record(record: .twitter(record: .init(objectID: user.objectID)))
+                    } else {
+                        return .twitter(.userID(userID))
+                    }
+                } else {
+                    return .twitter(.username(mention))
+                }
+
+            case .mastodon(let status):
+                // TODO:
+                return nil
+            }
+        }
+        
+        guard let profileContext = _profileContext else {
+            // FIXME:
+            switch status {
+            case .twitter:
+                break
+            case .mastodon:
+                let href = userInfo?["href"] as? String
+                guard let url = href.flatMap({ URL(string: $0) }) else { return }
+                await provider.coordinator.present(scene: .safari(url: url), from: provider, transition: .safariPresent(animated: true, completion: nil))
+            }
+            return
+        }
+        
+        await coordinateToProfileScene(
+            provider: provider,
+            profileContext: profileContext
+        )
+    }
+
+    
+    
 }

@@ -138,7 +138,7 @@ extension MentionPickViewModel {
                 }
             }
         
-        let response = try await apiService.users(
+        let response = try await apiService.twitterUsers(
             usernames: usernames,
             twitterAuthenticationContext: twitterAuthenticationContext
         )

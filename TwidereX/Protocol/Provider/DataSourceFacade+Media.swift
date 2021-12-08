@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import AVKit
 import TwidereUI
 
 extension DataSourceFacade {
@@ -54,6 +55,18 @@ extension DataSourceFacade {
         }
         let thumbnails = await mediaPreviewContext.containerView.mediaViews.parallelMap { mediaView in
             return await mediaView.thumbnail()
+        }
+        
+        // FIXME:
+        if let first = attachments.first,
+           let assetURL = first.assetURL,
+           first.kind == .video || first.kind == .audio
+        {
+            let playerViewController = AVPlayerViewController()
+            playerViewController.player = AVPlayer(url: assetURL)
+            playerViewController.player?.play()
+            provider.present(playerViewController, animated: true, completion: nil)
+            return
         }
         
         let mediaPreviewViewModel = MediaPreviewViewModel(

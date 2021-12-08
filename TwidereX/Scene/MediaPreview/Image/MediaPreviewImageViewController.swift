@@ -31,6 +31,7 @@ final class MediaPreviewImageViewController: UIViewController {
         os_log("%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
         previewImageView.imageView.af.cancelImageRequest()
     }
+    
 }
 
 extension MediaPreviewImageViewController {
@@ -129,9 +130,35 @@ extension MediaPreviewImageViewController: ShareActivityProvider {
         switch viewModel.item {
         case .remote(let previewContext):
             guard let url = previewContext.assetURL else { return [] }
-            return [SavePhotoActivity(context: viewModel.context, url: url)]
+            return [
+                SavePhotoActivity(context: viewModel.context, url: url, resourceType: .photo)
+            ]
         case .local:
             return []
         }
+    }
+}
+
+// MARK: - MediaPreviewTransitionViewController
+extension MediaPreviewImageViewController: MediaPreviewTransitionViewController {
+    var mediaPreviewTransitionContext: MediaPreviewTransitionContext? {
+        let imageView = previewImageView.imageView
+        let _snapshot: UIView? = {
+            if imageView.image == nil {
+                return progressBarView.snapshotView(afterScreenUpdates: false)
+            } else {
+                return imageView.snapshotView(afterScreenUpdates: false)
+            }
+        }()
+        
+        guard let snapshot = _snapshot else {
+            return nil
+        }
+
+        return MediaPreviewTransitionContext(
+            transitionView: imageView,
+            snapshot: snapshot,
+            snapshotTransitioning: snapshot
+        )
     }
 }

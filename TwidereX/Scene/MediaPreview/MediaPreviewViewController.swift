@@ -278,6 +278,10 @@ extension MediaPreviewViewController: MediaPreviewingViewController {
             
             return allowInteractiveDismiss
         }
+        
+        if let mediaPreviewVideoViewController = pageViewController.currentViewController as? MediaPreviewVideoViewController {
+            return true
+        }
 
         return false
     }

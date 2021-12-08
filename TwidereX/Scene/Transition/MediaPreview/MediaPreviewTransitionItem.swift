@@ -16,7 +16,7 @@ class MediaPreviewTransitionItem: Identifiable {
     weak var transitionHostViewController: MediaPreviewTransitionHostViewController?
 
     // TODO:
-    var imageView: UIImageView?
+    var transitionView: UIView?
     var snapshotRaw: UIView?
     var snapshotTransitioning: UIView?
     var initialFrame: CGRect? = nil

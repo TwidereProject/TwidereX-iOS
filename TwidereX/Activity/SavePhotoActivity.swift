@@ -8,6 +8,7 @@
 
 import os.log
 import UIKit
+import Photos
 import AlamofireImage
 import TwidereCore
 import SwiftMessages
@@ -16,10 +17,16 @@ final class SavePhotoActivity: UIActivity {
     
     weak var context: AppContext?
     let url: URL
+    let resourceType: PHAssetResourceType
     
-    init(context: AppContext, url: URL) {
+    init(
+        context: AppContext,
+        url: URL,
+        resourceType: PHAssetResourceType
+    ) {
         self.context = context
         self.url = url
+        self.resourceType = resourceType
     }
     
     override var activityType: UIActivity.ActivityType? {
@@ -56,7 +63,10 @@ final class SavePhotoActivity: UIActivity {
 
             do {
                 await impactFeedbackGenerator.impactOccurred()
-                try await context.photoLibraryService.save(source: .url(url))
+                try await context.photoLibraryService.save(
+                    source: .remote(url: url),
+                    resourceType: self.resourceType
+                )
                 await self.presentSuccessNotification()
                 await notificationFeedbackGenerator.notificationOccurred(.success)
                 

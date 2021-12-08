@@ -287,6 +287,8 @@ extension StatusToolbar {
             return UIMenu(title: "", options: [], children: children)
         }()
         
+        // TODO: add delete action
+        
         menuButton.showsMenuAsPrimaryAction = true
     }
     

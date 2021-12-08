@@ -25,35 +25,35 @@ extension PhotoLibraryService {
         case badPayload
     }
     
-    public enum ImageSource {
-        case url(URL)               // remote
-        case image(UIImage)
+    public enum Source {
+        case image(UIImage)      // local image
+        case remote(url: URL)    // remote resources
     }
     
 }
 
 extension PhotoLibraryService {
     
-    public func save(source: ImageSource) async throws {
+    public func save(source: Source, resourceType: PHAssetResourceType) async throws {
         guard PHPhotoLibrary.authorizationStatus(for: .addOnly) != .denied else {
             throw PhotoLibraryError.noPermission
         }
                 
         do {
-            guard let imageData = try await imageData(from: source) else {
+            guard let data = try await data(from: source) else {
                 throw PhotoLibraryError.badPayload
             }
             
-            try await save(data: imageData)
+            try await save(data: data, from: source, resourceType: resourceType)
             
         } catch {
             throw error
         }
     }
     
-    func imageData(from source: ImageSource) async throws -> Data? {
+    func data(from source: Source) async throws -> Data? {
         switch source {
-        case .url(let url):
+        case .remote(let url):
             let data: Data = try await withCheckedThrowingContinuation { continuation in
                 AF.request(url).responseData { response in
                     switch response.result {
@@ -70,13 +70,45 @@ extension PhotoLibraryService {
         }
     }
     
-    func save(data: Data) async throws {
-        try await PHPhotoLibrary.shared().performChanges {
-            PHAssetCreationRequest.forAsset().addResource(
-                with: .photo,
-                data: data,
-                options: nil
-            )
+    func save(data: Data, from source: Source, resourceType: PHAssetResourceType) async throws {
+        assert(PHAssetCreationRequest.supportsAssetResourceTypes([resourceType.rawValue as NSNumber]))
+        do {
+            switch resourceType {
+            case .video:
+                let temporaryDirectory = FileManager.default.temporaryDirectory
+                let downloadDirectory = temporaryDirectory.appendingPathComponent("Download", isDirectory: true)
+                try? FileManager.default.createDirectory(at: downloadDirectory, withIntermediateDirectories: true, attributes: nil)
+                let pathExtension: String = {
+                    switch source {
+                    case .remote(let url):  return url.pathExtension
+                    case .image:            return "png"
+                    }
+                }()
+                let assetURL = downloadDirectory.appendingPathComponent(UUID().uuidString, isDirectory: false).appendingPathExtension(pathExtension)
+                try data.write(to: assetURL)
+                
+                let options = PHAssetResourceCreationOptions()
+                options.shouldMoveFile = true
+                try await PHPhotoLibrary.shared().performChanges {
+                    PHAssetCreationRequest.forAsset().addResource(
+                        with: resourceType,
+                        fileURL: assetURL,
+                        options: nil
+                    )
+                }
+            default:
+                try await PHPhotoLibrary.shared().performChanges {
+                    PHAssetCreationRequest.forAsset().addResource(
+                        with: resourceType,
+                        data: data,
+                        options: nil
+                    )
+                }
+            }   // end switch
+            
+        } catch {
+            debugPrint(error)
+            throw error
         }
     }
     
