@@ -7,21 +7,57 @@
 //
 
 import UIKit
+import TwidereUI
 
 class MediaPreviewTransitionItem: Identifiable {
     
-    let id: String
-    
+    let id: UUID
+    let source: Source
+    weak var transitionHostViewController: MediaPreviewTransitionHostViewController?
+
     // TODO:
-    var imageView: UIImageView?
+    var transitionView: UIView?
     var snapshotRaw: UIView?
     var snapshotTransitioning: UIView?
     var initialFrame: CGRect? = nil
     var targetFrame: CGRect? = nil
     var touchOffset: CGVector = CGVector.zero
 
-    init(id: String) {
+    init(
+        id: UUID = UUID(),
+        source: Source,
+        transitionHostViewController: MediaPreviewTransitionHostViewController
+    ) {
         self.id = id
+        self.source = source
+        self.transitionHostViewController = transitionHostViewController
     }
     
+}
+
+extension MediaPreviewTransitionItem {
+    enum Source {
+        case attachments(MediaGridContainerView)
+        case profileAvatar(ProfileHeaderView)
+        case profileBanner(ProfileHeaderView)
+        
+        func updateAppearance(
+            position: UIViewAnimatingPosition,
+            index: Int?
+        ) {
+            let alpha: CGFloat = position == .end ? 1 : 0
+            switch self {
+            case .attachments(let mediaGridContainerView):
+                if let index = index {
+                    mediaGridContainerView.setAlpha(0, index: index)
+                } else {
+                    mediaGridContainerView.setAlpha(alpha)
+                }
+            case .profileAvatar(let profileHeaderView):
+                profileHeaderView.avatarView.avatarButton.alpha = alpha
+            case .profileBanner:
+                break    // keep source
+            }
+        }
+    }
 }

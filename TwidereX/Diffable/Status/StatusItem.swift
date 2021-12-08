@@ -8,6 +8,7 @@
 
 import Foundation
 import CoreDataStack
+import TwidereCore
 
 enum StatusItem: Hashable {
     case feed(record: ManagedObjectRecord<Feed>)
@@ -20,8 +21,38 @@ enum StatusItem: Hashable {
  
 extension StatusItem {
     enum Thread: Hashable {
-        case root(status: StatusRecord)
-        case reply(status: StatusRecord)
-        case leaf(status: StatusRecord)
+        case root(context: Context)
+        case reply(context: Context)
+        case leaf(context: Context)
+    }
+}
+
+extension StatusItem.Thread {
+    class Context: Hashable {
+        let status: StatusRecord
+        var displayUpperConversationLink: Bool
+        var displayBottomConversationLink: Bool
+        
+        init(
+            status: StatusRecord,
+            displayUpperConversationLink: Bool = false,
+            displayBottomConversationLink: Bool = false
+        ) {
+            self.status = status
+            self.displayUpperConversationLink = displayUpperConversationLink
+            self.displayBottomConversationLink = displayBottomConversationLink
+        }
+        
+        static func == (lhs: StatusItem.Thread.Context, rhs: StatusItem.Thread.Context) -> Bool {
+            return lhs.status == rhs.status
+            && lhs.displayUpperConversationLink == rhs.displayUpperConversationLink
+            && lhs.displayBottomConversationLink == rhs.displayBottomConversationLink
+        }
+        
+        func hash(into hasher: inout Hasher) {
+            hasher.combine(status)
+            hasher.combine(displayUpperConversationLink)
+            hasher.combine(displayBottomConversationLink)
+        }
     }
 }

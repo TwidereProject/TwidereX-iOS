@@ -18,7 +18,8 @@ import MastodonSDK
 extension UserView {
     public final class ViewModel: ObservableObject {
         var disposeBag = Set<AnyCancellable>()
-        
+        var observations = Set<NSKeyValueObservation>()
+
         let relationshipViewModel = RelationshipViewModel()
         
         @Published public var platform: Platform = .none
@@ -26,15 +27,25 @@ extension UserView {
         @Published public var header: Header = .none
         
         @Published public var avatarImageURL: URL?
+        @Published public var avatarBadge: AvatarBadge = .none
+        // TODO: verified | bot
+        
         @Published public var name: MetaContent? = PlaintextMetaContent(string: " ")
         @Published public var username: String? = " "
+        
+        @Published public var protected: Bool = false
         
         @Published public var followerCount: Int?
         
         public enum Header {
             case none
             case notification(info: NotificationHeaderInfo)
-            
+        }
+        
+        public enum AvatarBadge {
+            case none
+            case platform
+            case user   // verified | bot
         }
     }
 }
@@ -48,6 +59,45 @@ extension UserView.ViewModel {
                 userView.authorProfileAvatarView.avatarButton.avatarImageView.configure(configuration: configuration)
             }
             .store(in: &disposeBag)
+        Publishers.CombineLatest(
+            $avatarBadge,
+            $platform
+        )
+        .sink { avatarBadge, platform in
+            switch avatarBadge {
+            case .none:
+                userView.authorProfileAvatarView.badge = .none
+            case .platform:
+                let badge: UIImage? = {
+                    switch platform {
+                    case .none:     return nil
+                    case .twitter:  return Asset.Badge.circleTwitter.image
+                    case .mastodon: return Asset.Badge.circleMastodon.image
+                    }
+                }()
+                userView.authorProfileAvatarView.badge = badge != nil ? .circle : .none
+                userView.authorProfileAvatarView.badgeImageView.image = badge
+            case .user:
+                userView.authorProfileAvatarView.badge = .none
+            }
+        }
+        .store(in: &disposeBag)
+        UserDefaults.shared
+            .observe(\.avatarStyle, options: [.initial, .new]) { defaults, _ in
+                let avatarStyle = defaults.avatarStyle
+                let animator = UIViewPropertyAnimator(duration: 0.3, timingParameters: UISpringTimingParameters())
+                animator.addAnimations { [weak userView] in
+                    guard let userView = userView else { return }
+                    switch avatarStyle {
+                    case .circle:
+                        userView.authorProfileAvatarView.avatarStyle = .circle
+                    case .roundedSquare:
+                        userView.authorProfileAvatarView.avatarStyle = .roundedRect
+                    }
+                }
+                animator.startAnimation()
+            }
+            .store(in: &observations)
 //        // badge
 //        $platform
 //            .sink { platform in
@@ -91,6 +141,11 @@ extension UserView.ViewModel {
         // username
         $username
             .assign(to: \.text, on: userView.usernameLabel)
+            .store(in: &disposeBag)
+        // protected
+        $protected
+            .map { !$0 }
+            .assign(to: \.isHidden, on: userView.lockImageView)
             .store(in: &disposeBag)
         // follower count
         $followerCount
@@ -143,6 +198,8 @@ extension UserView {
 
 extension UserView {
     private func configure(twitterUser user: TwitterUser) {
+        // platform
+        viewModel.platform = .twitter
         // avatar
         user.publisher(for: \.profileImageURL)
             .map { _ in user.avatarImageURL() }
@@ -158,6 +215,10 @@ extension UserView {
             .map { "@\($0)" as String? }
             .assign(to: \.username, on: viewModel)
             .store(in: &disposeBag)
+        // protected
+        user.publisher(for: \.protected)
+            .assign(to: \.protected, on: viewModel)
+            .store(in: &disposeBag)
         // followersCount
         user.publisher(for: \.followersCount)
             .map { Int($0) }
@@ -169,6 +230,8 @@ extension UserView {
 
 extension UserView {
     private func configure(mastodonUser user: MastodonUser) {
+        // platform
+        viewModel.platform = .mastodon
         // avatar
         Publishers.CombineLatest3(
             UserDefaults.shared.publisher(for: \.preferredStaticAvatar),
@@ -193,6 +256,10 @@ extension UserView {
         user.publisher(for: \.username)
             .map { "@\($0)" as String? }
             .assign(to: \.username, on: viewModel)
+            .store(in: &disposeBag)
+        // protected
+        user.publisher(for: \.locked)
+            .assign(to: \.protected, on: viewModel)
             .store(in: &disposeBag)
         // followersCount
         user.publisher(for: \.followersCount)

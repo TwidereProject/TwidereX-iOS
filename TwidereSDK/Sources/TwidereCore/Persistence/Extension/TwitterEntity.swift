@@ -27,10 +27,23 @@ extension TwitterEntity {
         )
     }
     
-    public convenience init(entity: Twitter.Entity.Tweet.Entities?) {
+    public convenience init(
+        entity: Twitter.Entity.Tweet.Entities?,
+        extendedEntity: Twitter.Entity.ExtendedEntities?
+    ) {
+        let urls: [URLEntity]? = {
+            var properties: [URLEntity] = []
+            let entities = entity?.urls.map { urls in urls.compactMap { URLEntity(entity: $0) } } ?? []
+            properties.append(contentsOf: entities)
+            let extendedEntities = extendedEntity?.media?.compactMap { media in URLEntity(entity: media) } ?? []
+            properties.append(contentsOf: extendedEntities)
+            guard !properties.isEmpty else { return nil }
+            return properties
+        }()
+            
         self.init(
-            urls: entity?.urls.map { urls in urls.compactMap { URLEntity(entity: $0) } },
-            hashtags: entity?.hashtags.map { hashtags in  hashtags.map { Hashtag(entity: $0) } },
+            urls: urls,
+            hashtags: entity?.hashtags.map { hashtags in hashtags.map { Hashtag(entity: $0) } },
             mentions: entity?.userMentions.flatMap { mentions in mentions.map { Mention(entity: $0) } }
         )
     }
@@ -60,6 +73,21 @@ extension TwitterEntity.URLEntity {
     }
     
     public init?(entity: Twitter.Entity.Tweet.Entities.URL) {
+        guard let url = entity.url else { return nil }
+        self.init(
+            start: entity.indices?.first ?? 0,
+            end: entity.indices?.last ?? 0,
+            url: url,
+            expandedURL: entity.expandedURL,
+            displayURL: entity.displayURL,
+            status: nil,
+            title: nil,
+            description: nil,
+            unwoundURL: nil
+        )
+    }
+    
+    public init?(entity: Twitter.Entity.ExtendedEntities.Media) {
         guard let url = entity.url else { return nil }
         self.init(
             start: entity.indices?.first ?? 0,

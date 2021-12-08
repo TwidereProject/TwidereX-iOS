@@ -27,6 +27,10 @@ final public class TwitterStatus: NSManagedObject {
     
     // sourcery: autoUpdatableObject
     @NSManaged public private(set) var conversationID: TwitterStatus.ID?
+    // sourcery: autoUpdatableObject, autoGenerateProperty
+    @NSManaged public private(set) var replyToStatusID: TwitterStatus.ID?
+    // sourcery: autoUpdatableObject, autoGenerateProperty
+    @NSManaged public private(set) var replyToUserID: TwitterUser.ID?
 
     // sourcery: autoUpdatableObject, autoGenerateProperty
     @NSManaged public private(set) var createdAt: Date
@@ -43,10 +47,13 @@ final public class TwitterStatus: NSManagedObject {
     @NSManaged public private(set) var repost: TwitterStatus?
     // sourcery: autoGenerateRelationship
     @NSManaged public private(set) var quote: TwitterStatus?
+    // sourcery: autoUpdatableObject
+    @NSManaged public private(set) var replyTo: TwitterStatus?
     
     // one-to-many relationship
     @NSManaged public private(set) var repostFrom: Set<TwitterStatus>
     @NSManaged public private(set) var quoteFrom: Set<TwitterStatus>
+    @NSManaged public private(set) var replyFrom: Set<TwitterStatus>
     
     // many-to-many relationship
     @NSManaged public private(set) var likeBy: Set<TwitterUser>
@@ -181,6 +188,8 @@ extension TwitterStatus: AutoGenerateProperty {
         public let  likeCount: Int64
         public let  replyCount: Int64
         public let  repostCount: Int64
+        public let  replyToStatusID: TwitterStatus.ID?
+        public let  replyToUserID: TwitterUser.ID?
         public let  createdAt: Date
         public let  updatedAt: Date
 
@@ -190,6 +199,8 @@ extension TwitterStatus: AutoGenerateProperty {
     		likeCount: Int64,
     		replyCount: Int64,
     		repostCount: Int64,
+    		replyToStatusID: TwitterStatus.ID?,
+    		replyToUserID: TwitterUser.ID?,
     		createdAt: Date,
     		updatedAt: Date
     	) {
@@ -198,6 +209,8 @@ extension TwitterStatus: AutoGenerateProperty {
     		self.likeCount = likeCount
     		self.replyCount = replyCount
     		self.repostCount = repostCount
+    		self.replyToStatusID = replyToStatusID
+    		self.replyToUserID = replyToUserID
     		self.createdAt = createdAt
     		self.updatedAt = updatedAt
     	}
@@ -209,6 +222,8 @@ extension TwitterStatus: AutoGenerateProperty {
     	self.likeCount = property.likeCount
     	self.replyCount = property.replyCount
     	self.repostCount = property.repostCount
+    	self.replyToStatusID = property.replyToStatusID
+    	self.replyToUserID = property.replyToUserID
     	self.createdAt = property.createdAt
     	self.updatedAt = property.updatedAt
     }
@@ -217,6 +232,8 @@ extension TwitterStatus: AutoGenerateProperty {
     	update(text: property.text)
     	update(likeCount: property.likeCount)
     	update(repostCount: property.repostCount)
+    	update(replyToStatusID: property.replyToStatusID)
+    	update(replyToUserID: property.replyToUserID)
     	update(createdAt: property.createdAt)
     	update(updatedAt: property.updatedAt)
     }
@@ -279,6 +296,16 @@ extension TwitterStatus: AutoUpdatableObject {
     		self.conversationID = conversationID
     	}
     }
+    public func update(replyToStatusID: TwitterStatus.ID?) {
+    	if self.replyToStatusID != replyToStatusID {
+    		self.replyToStatusID = replyToStatusID
+    	}
+    }
+    public func update(replyToUserID: TwitterUser.ID?) {
+    	if self.replyToUserID != replyToUserID {
+    		self.replyToUserID = replyToUserID
+    	}
+    }
     public func update(createdAt: Date) {
     	if self.createdAt != createdAt {
     		self.createdAt = createdAt
@@ -287,6 +314,11 @@ extension TwitterStatus: AutoUpdatableObject {
     public func update(updatedAt: Date) {
     	if self.updatedAt != updatedAt {
     		self.updatedAt = updatedAt
+    	}
+    }
+    public func update(replyTo: TwitterStatus?) {
+    	if self.replyTo != replyTo {
+    		self.replyTo = replyTo
     	}
     }
     public func update(attachments: [TwitterAttachment]) {

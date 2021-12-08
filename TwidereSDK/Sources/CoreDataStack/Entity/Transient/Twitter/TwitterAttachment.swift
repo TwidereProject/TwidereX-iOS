@@ -9,7 +9,7 @@
 import Foundation
 import CoreGraphics
 
-final public class TwitterAttachment: NSObject, Codable {
+public final class TwitterAttachment: NSObject, Codable {
     public let kind: Kind
     public let size: CGSize
     public let assetURL: String?

@@ -8,9 +8,10 @@
 
 import os.log
 import UIKit
+import TwidereCore
 
 public protocol StatusToolbarDelegate: AnyObject {
-    func statusToolbar(_ statusToolbar: StatusToolbar, actionDidPressed action: StatusToolbar.Action)
+    func statusToolbar(_ statusToolbar: StatusToolbar, actionDidPressed action: StatusToolbar.Action, button: UIButton)
 }
 
 public final class StatusToolbar: UIView {
@@ -175,7 +176,7 @@ extension StatusToolbar {
         }
         
         logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): \(action.rawValue) button pressed")
-        delegate?.statusToolbar(self, actionDidPressed: action)
+        delegate?.statusToolbar(self, actionDidPressed: action, button: sender)
     }
     
 }
@@ -237,6 +238,58 @@ extension StatusToolbar {
         likeButton.tintColor = tintColor
         likeButton.setTitleColor(tintColor, for: .normal)
         likeButton.setTitleColor(tintColor.withAlphaComponent(0.8), for: .highlighted)
+    }
+    
+    public struct MenuContext {
+        let shareText: String?
+        let shareLink: String?
+        let displayDeleteAction: Bool
+    }
+    
+    public func setupMenu(menuContext: MenuContext) {
+        menuButton.menu = {
+            var children: [UIMenuElement] = [
+                UIAction(
+                    title: L10n.Common.Controls.Status.Actions.copyText.capitalized,
+                    image: UIImage(systemName: "doc.on.doc"),
+                    identifier: nil,
+                    discoverabilityTitle: nil,
+                    attributes: [],
+                    state: .off
+                ) { _ in
+                    guard let text = menuContext.shareText else { return }
+                    UIPasteboard.general.string = text
+                },
+                UIAction(
+                    title: L10n.Common.Controls.Status.Actions.copyLink.capitalized,
+                    image: UIImage(systemName: "link"),
+                    identifier: nil,
+                    discoverabilityTitle: nil,
+                    attributes: [],
+                    state: .off
+                ) { _ in
+                    guard let text = menuContext.shareLink else { return }
+                    UIPasteboard.general.string = text
+                },
+                UIAction(
+                    title: L10n.Common.Controls.Status.Actions.shareLink.capitalized,
+                    image: UIImage(systemName: "square.and.arrow.up"),
+                    identifier: nil,
+                    discoverabilityTitle: nil,
+                    attributes: [],
+                    state: .off
+                ) { [weak self] _ in
+                    guard let self = self else { return }
+                    self.delegate?.statusToolbar(self, actionDidPressed: .menu, button: self.menuButton)
+                }
+            ]
+            
+            return UIMenu(title: "", options: [], children: children)
+        }()
+        
+        // TODO: add delete action
+        
+        menuButton.showsMenuAsPrimaryAction = true
     }
     
 }

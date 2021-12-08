@@ -75,7 +75,7 @@ extension NotificationBannerView {
         containerBackgroundView.translatesAutoresizingMaskIntoConstraints = false
         addSubview(containerBackgroundView)
         NSLayoutConstraint.activate([
-            containerBackgroundView.topAnchor.constraint(equalTo: topAnchor, constant: 16),
+            containerBackgroundView.topAnchor.constraint(equalTo: layoutMarginsGuide.topAnchor, constant: 16),      // use margin guide to prevent overlap the status bar
             containerBackgroundView.leadingAnchor.constraint(equalTo: readableContentGuide.leadingAnchor),
             containerBackgroundView.trailingAnchor.constraint(equalTo: readableContentGuide.trailingAnchor),
             bottomAnchor.constraint(equalTo: containerBackgroundView.bottomAnchor, constant: 16),

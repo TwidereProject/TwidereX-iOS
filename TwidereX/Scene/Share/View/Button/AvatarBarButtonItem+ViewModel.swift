@@ -15,6 +15,7 @@ extension AvatarBarButtonItem {
     public class ViewModel: ObservableObject {
         var configureDisposeBag = Set<AnyCancellable>()
         var bindDisposeBag = Set<AnyCancellable>()
+        var observations = Set<NSKeyValueObservation>()
         
         @Published var avatarURL: URL?
     }
@@ -22,12 +23,29 @@ extension AvatarBarButtonItem {
 
 extension AvatarBarButtonItem.ViewModel {
     func bind(view: AvatarBarButtonItem) {
+        // avatar
         $avatarURL
             .sink { avatarURL in
                 let configuration = AvatarImageView.Configuration(url: avatarURL)
                 view.avatarButton.avatarImageView.configure(configuration: configuration)
             }
             .store(in: &bindDisposeBag)
+        UserDefaults.shared
+            .observe(\.avatarStyle, options: [.initial, .new]) { defaults, _ in
+                let avatarStyle = defaults.avatarStyle
+                let animator = UIViewPropertyAnimator(duration: 0.3, timingParameters: UISpringTimingParameters())
+                animator.addAnimations { [weak view] in
+                    guard let view = view else { return }
+                    switch avatarStyle {
+                    case .circle:
+                        view.avatarButton.avatarImageView.configure(cornerConfiguration: .init(corner: .circle))
+                    case .roundedSquare:
+                        view.avatarButton.avatarImageView.configure(cornerConfiguration: .init(corner: .scale(ratio: 4)))
+                    }
+                }
+                animator.startAnimation()
+            }
+            .store(in: &observations)
     }
 }
 

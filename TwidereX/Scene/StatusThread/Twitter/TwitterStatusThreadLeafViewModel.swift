@@ -57,11 +57,33 @@ extension TwitterStatusThreadLeafViewModel {
             guard let status = dictionary[node.statusID] else { continue }
             // first tier
             let record = ManagedObjectRecord<TwitterStatus>(objectID: status.objectID)
-            let item = StatusItem.thread(.leaf(status: .twitter(record: record)))
+            let context = StatusItem.Thread.Context(
+                status: .twitter(record: record)
+            )
+            let item = StatusItem.thread(.leaf(context: context))
             newItems.append(item)
+            
+            // second tier
+            if let child = node.children.first {
+                guard let secondaryStatus = dictionary[child.statusID] else { continue }
+                let secondaryRecord = ManagedObjectRecord<TwitterStatus>(objectID: secondaryStatus.objectID)
+                let secondaryContext = StatusItem.Thread.Context(
+                    status: .twitter(record: secondaryRecord),
+                    displayUpperConversationLink: true
+                )
+                let secondaryItem = StatusItem.thread(.leaf(context: secondaryContext))
+                newItems.append(secondaryItem)
+                
+                // update first tier context
+                context.displayBottomConversationLink = true
+            }
         }
         
-        let items = self.items.value + newItems
+        var items = self.items.value
+        for item in newItems {
+            guard !items.contains(item) else { continue }
+            items.append(item)
+        }
         self.items.value = items
     }
     

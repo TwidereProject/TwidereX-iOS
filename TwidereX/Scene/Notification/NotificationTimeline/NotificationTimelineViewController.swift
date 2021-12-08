@@ -10,7 +10,7 @@ import os.log
 import UIKit
 import Combine
 
-final class NotificationTimelineViewController: UIViewController, NeedsDependency {
+final class NotificationTimelineViewController: UIViewController, NeedsDependency, MediaPreviewTransitionHostViewController {
 
     let logger = Logger(subsystem: "NotificationTimelineViewController", category: "ViewController")
     
@@ -19,6 +19,8 @@ final class NotificationTimelineViewController: UIViewController, NeedsDependenc
     
     var disposeBag = Set<AnyCancellable>()
     var viewModel: NotificationTimelineViewModel!
+    
+    let mediaPreviewTransitionController = MediaPreviewTransitionController()
     
     private(set) lazy var refreshControl: UIRefreshControl = {
         let refreshControl = UIRefreshControl()

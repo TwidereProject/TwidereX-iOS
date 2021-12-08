@@ -9,6 +9,27 @@
 import UIKit
 
 extension UserDefaults {
+
+    @objc public enum AvatarStyle: Int, CaseIterable {
+        case circle
+        case roundedSquare
+    }
+
+    @objc dynamic public var avatarStyle: AvatarStyle {
+        get {
+            guard let rawValue: Int = self[#function] else {
+                return .circle
+            }
+            return AvatarStyle(rawValue: rawValue) ?? .circle
+        }
+        set {
+            self[#function] = newValue.rawValue
+        }
+    }
+
+}
+
+extension UserDefaults {
     
     @objc dynamic public var preferredStaticAvatar: Bool {
         get {

@@ -10,7 +10,7 @@ import os.log
 import UIKit
 import Combine
 
-final class HashtagTimelineViewController: UIViewController, NeedsDependency {
+final class HashtagTimelineViewController: UIViewController, NeedsDependency, MediaPreviewTransitionHostViewController {
     
     let logger = Logger(subsystem: "HashtagTimelineViewController", category: "ViewController")
     
@@ -19,6 +19,8 @@ final class HashtagTimelineViewController: UIViewController, NeedsDependency {
     
     var disposeBag = Set<AnyCancellable>()
     var viewModel: HashtagTimelineViewModel!
+    
+    let mediaPreviewTransitionController = MediaPreviewTransitionController()
     
     private(set) lazy var tableView: UITableView = {
         let tableView = UITableView()
@@ -36,6 +38,9 @@ extension HashtagTimelineViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        // FIXME: use meta label
+        title = viewModel.hashtag
 
         tableView.translatesAutoresizingMaskIntoConstraints = false
         tableView.frame = view.bounds

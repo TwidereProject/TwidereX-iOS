@@ -97,68 +97,16 @@ extension StatusSection {
                 return cell
 
             case .thread(let thread):
-                switch thread {
-                case .root(let status):
-                    let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: StatusThreadRootTableViewCell.self), for: indexPath) as! StatusThreadRootTableViewCell
-                    context.managedObjectContext.performAndWait {
-                        switch status {
-                        case .twitter(let record):
-                            guard let status = record.object(in: context.managedObjectContext) else { return }
-                            configure(
-                                tableView: tableView,
-                                cell: cell,
-                                viewModel: StatusThreadRootTableViewCell.ViewModel(
-                                    value: .twitterStatus(status),
-                                    activeAuthenticationContext: activeAuthenticationContext
-                                ),
-                                configuration: configuration
-                            )
-                        case .mastodon(let record):
-                            guard let status = record.object(in: context.managedObjectContext) else { return }
-                            configure(
-                                tableView: tableView,
-                                cell: cell,
-                                viewModel: StatusThreadRootTableViewCell.ViewModel(
-                                    value: .mastodonStatus(status),
-                                    activeAuthenticationContext: activeAuthenticationContext
-                                ),
-                                configuration: configuration
-                            )
-                        }
-                    }
-                    return cell
-                case .reply(let status):
-                    fatalError()
-                case .leaf(let status):
-                    let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: StatusTableViewCell.self), for: indexPath) as! StatusTableViewCell
-                    context.managedObjectContext.performAndWait {
-                        switch status {
-                        case .twitter(let record):
-                            guard let status = record.object(in: context.managedObjectContext) else { return }
-                            configure(
-                                tableView: tableView,
-                                cell: cell,
-                                viewModel: StatusTableViewCell.ViewModel(
-                                    value: .twitterStatus(status),
-                                    activeAuthenticationContext: activeAuthenticationContext
-                                ),
-                                configuration: configuration
-                            )
-                        case .mastodon(let record):
-                            guard let status = record.object(in: context.managedObjectContext) else { return }
-                            configure(
-                                tableView: tableView,
-                                cell: cell,
-                                viewModel: StatusTableViewCell.ViewModel(
-                                    value: .mastodonStatus(status),
-                                    activeAuthenticationContext: activeAuthenticationContext
-                                ),
-                                configuration: configuration
-                            )
-                        }   // end switch
-                    }
-                    return cell
-                }
+                return StatusSection.dequeueConfiguredReusableCell(
+                    tableView: tableView,
+                    indexPath: indexPath,
+                    configuration: ThreadCellRegistrationConfiguration(
+                        thread: thread,
+                        managedObjectContext: context.managedObjectContext,
+                        activeAuthenticationContext: activeAuthenticationContext,
+                        configuration: configuration
+                    )
+                )
                 
             case .topLoader:
                 let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: TimelineBottomLoaderTableViewCell.self), for: indexPath) as! TimelineBottomLoaderTableViewCell
@@ -172,6 +120,63 @@ extension StatusSection {
             }   // end switch
         }
     }
+}
+
+extension StatusSection {
+    
+    struct ThreadCellRegistrationConfiguration {
+        let thread: StatusItem.Thread
+        let managedObjectContext: NSManagedObjectContext
+        let activeAuthenticationContext: AnyPublisher<AuthenticationContext?, Never>
+        let configuration: Configuration
+    }
+
+    static func dequeueConfiguredReusableCell(
+        tableView: UITableView,
+        indexPath: IndexPath,
+        configuration: ThreadCellRegistrationConfiguration
+    ) -> UITableViewCell {
+        switch configuration.thread {
+        case .root(let context):
+            let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: StatusThreadRootTableViewCell.self), for: indexPath) as! StatusThreadRootTableViewCell
+            configuration.managedObjectContext.performAndWait {
+                guard let status = context.status.object(in: configuration.managedObjectContext) else { return }
+                cell.configure(
+                    tableView: tableView,
+                    viewModel: StatusThreadRootTableViewCell.ViewModel(
+                        value: .statusObject(status),
+                        activeAuthenticationContext: configuration.activeAuthenticationContext
+                    ),
+                    delegate: configuration.configuration.statusViewTableViewCellDelegate
+                )
+            }
+            if context.displayUpperConversationLink {
+                cell.setConversationLinkLineViewDisplay()
+            }
+            return cell
+        case .reply(let context), .leaf(let context):
+            let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: StatusTableViewCell.self), for: indexPath) as! StatusTableViewCell
+            configuration.managedObjectContext.performAndWait {
+                guard let status = context.status.object(in: configuration.managedObjectContext) else { return }
+                cell.configure(
+                    tableView: tableView,
+                    viewModel: StatusTableViewCell.ViewModel(
+                        value: .statusObject(status),
+                        activeAuthenticationContext: configuration.activeAuthenticationContext
+                    ),
+                    delegate: configuration.configuration.statusViewTableViewCellDelegate
+                )
+            }
+            if context.displayUpperConversationLink {
+                cell.setTopConversationLinkLineViewDisplay()
+            }
+            if context.displayBottomConversationLink {
+                cell.setBottomConversationLinkLineViewDisplay()
+            }
+            return cell
+        }
+    }
+    
 }
 
 extension StatusSection {

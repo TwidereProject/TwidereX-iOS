@@ -73,6 +73,15 @@ public final class MediaView: UIView {
 }
 
 extension MediaView {
+    
+    @MainActor
+    public func thumbnail() async -> UIImage? {
+        return imageView.image
+    }
+    
+}
+
+extension MediaView {
     private func _init() {
         // lazy load content later
     }
@@ -180,6 +189,9 @@ extension MediaView {
     }
     
     public func prepareForReuse() {
+        // reset appearance
+        alpha = 1
+        
         // reset image
         imageView.removeFromSuperview()
         imageView.removeConstraints(imageView.constraints)

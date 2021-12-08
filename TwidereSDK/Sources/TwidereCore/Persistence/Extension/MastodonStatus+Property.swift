@@ -29,6 +29,8 @@ extension MastodonStatus.Property {
             url: entity.url,
             text: entity.text,
             language: entity.language,
+            replyToStatusID: entity.inReplyToID,
+            replyToUserID: entity.inReplyToAccountID,
             createdAt: entity.createdAt,
             updatedAt: networkDate,
             attachments: entity.mastodonAttachments,

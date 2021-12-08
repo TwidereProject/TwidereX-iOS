@@ -39,11 +39,7 @@ final public class ComposeInputTableViewCell: UITableViewCell {
         return imageView
     }()
     
-    let conversationLinkLineView: SeparatorLineView = {
-        let separator = SeparatorLineView()
-        separator.backgroundColor = Asset.Colors.hightLight.color
-        return separator
-    }()
+    let conversationLinkLineView = SeparatorLineView()
     
     let contentWarningContainer: UIStackView = {
         let stackView = UIStackView()

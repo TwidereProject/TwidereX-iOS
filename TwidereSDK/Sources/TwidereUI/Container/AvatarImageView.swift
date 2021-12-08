@@ -13,6 +13,7 @@ import AlamofireImage
 public class AvatarImageView: FLAnimatedImageView {
     public var imageViewSize: CGSize?
     public var configuration = Configuration(url: nil)
+    public var cornerConfiguration = CornerConfiguration()
 }
 
 extension AvatarImageView {
@@ -20,16 +21,20 @@ extension AvatarImageView {
     override public func layoutSubviews() {
         super.layoutSubviews()
         
-        setup(corner: configuration.corner)
+        setup(corner: cornerConfiguration.corner)
     }
     
-    private func setup(corner: Configuration.Corner) {
+    private func setup(corner: CornerConfiguration.Corner) {
         layer.masksToBounds = true
-        switch configuration.corner {
+        switch corner {
         case .circle:
             layer.cornerCurve = .circular
             layer.cornerRadius = frame.width / 2
-        case .roundRect(let radius):
+        case .fixed(let radius):
+            layer.cornerCurve = .continuous
+            layer.cornerRadius = radius
+        case .scale(let ratio):
+            let radius = CGFloat(Int(bounds.width) / ratio)  // even number from quoter of width
             layer.cornerCurve = .continuous
             layer.cornerRadius = radius
         }
@@ -44,21 +49,13 @@ extension AvatarImageView {
     public struct Configuration {
         public let url: URL?
         public let placeholder: UIImage?
-        public let corner: Corner
         
         public init(
             url: URL?,
-            placeholder: UIImage = AvatarImageView.placeholder,
-            corner: Corner = .circle
+            placeholder: UIImage = AvatarImageView.placeholder
         ) {
             self.url = url
             self.placeholder = placeholder
-            self.corner = corner
-        }
-        
-        public enum Corner {
-            case circle
-            case roundRect(radius: CGFloat)
         }
     }
     
@@ -68,7 +65,6 @@ extension AvatarImageView {
         af.cancelImageRequest()
         
         self.configuration = configuration
-        setup(corner: configuration.corner)
         
         guard let url = configuration.url else {
             image = configuration.placeholder
@@ -97,4 +93,25 @@ extension AvatarImageView {
         }
     }
     
+}
+
+extension AvatarImageView {
+    public struct CornerConfiguration {
+        public let corner: Corner
+
+        public init(corner: Corner = .circle) {
+            self.corner = corner
+        }
+        
+        public enum Corner {
+            case circle
+            case fixed(radius: CGFloat)
+            case scale(ratio: Int = 4)      //  width / ratio
+        }
+    }
+    
+    public func configure(cornerConfiguration: CornerConfiguration) {
+        self.cornerConfiguration = cornerConfiguration
+        setup(corner: cornerConfiguration.corner)
+    }
 }

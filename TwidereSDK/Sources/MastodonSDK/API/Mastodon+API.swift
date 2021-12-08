@@ -97,14 +97,14 @@ extension Mastodon.API {
     public enum Onboarding { }
     public enum Poll { }
     public enum Reblog { }
+    public enum Report { }
+    public enum DomainBlock { }
     public enum Status { }
     public enum Timeline { }
     public enum Trends { }
     public enum Suggestion { }
     public enum Notification { }
     public enum Subscription { }
-    public enum Report { }
-    public enum DomainBlock { }
     
     public enum V2 {
         public enum Media { }

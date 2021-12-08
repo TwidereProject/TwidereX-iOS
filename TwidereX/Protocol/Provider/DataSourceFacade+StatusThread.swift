@@ -16,19 +16,37 @@ extension DataSourceFacade {
         target: StatusTarget,
         status: StatusRecord
     ) async {
-        let _redirectRecord = await DataSourceFacade.status(
-            managedObjectContext: provider.context.managedObjectContext,
-            status: status,
-            target: target
-        )
-        let _root: StatusItem.Thread? = _redirectRecord.flatMap { redirectedRecord in
-            switch redirectedRecord {
+        let _root: StatusItem.Thread? = await {
+            let _redirectRecord = await DataSourceFacade.status(
+                managedObjectContext: provider.context.managedObjectContext,
+                status: status,
+                target: target
+            )
+            guard let redirectRecord = _redirectRecord else { return nil }
+
+            switch redirectRecord {
             case .twitter(let record):
-                return StatusItem.Thread.root(status: .twitter(record: record))
+                let context = StatusItem.Thread.Context(
+                    status: .twitter(record: record),
+                    displayUpperConversationLink: await provider.context.managedObjectContext.perform {
+                        guard let status = record.object(in: provider.context.managedObjectContext) else { return false }
+                        return status.replyToStatusID != nil
+                    },
+                    displayBottomConversationLink: false
+                )
+                return StatusItem.Thread.root(context: context)
             case .mastodon(let record):
-                return StatusItem.Thread.root(status: .mastodon(record: record))
+                let context = StatusItem.Thread.Context(
+                    status: .mastodon(record: record),
+                    displayUpperConversationLink: await provider.context.managedObjectContext.perform {
+                        guard let status = record.object(in: provider.context.managedObjectContext) else { return false }
+                        return status.replyToStatusID != nil
+                    },
+                    displayBottomConversationLink: false
+                )
+                return StatusItem.Thread.root(context: context)
             }
-        }
+        }()
         guard let root = _root else {
             assertionFailure()
             return

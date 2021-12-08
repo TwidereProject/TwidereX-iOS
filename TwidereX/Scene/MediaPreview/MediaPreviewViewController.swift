@@ -11,30 +11,35 @@ import UIKit
 import Combine
 import CoreData
 import CoreDataStack
+import AppShared
 import AlamofireImage
 import Kingfisher
 import Pageboy
+import ActiveLabel
+import MetaTextArea
 
-protocol MediaPreviewViewControllerDelegate: class {
+protocol MediaPreviewViewControllerDelegate: AnyObject {
     func mediaPreviewViewController(_ viewController: MediaPreviewViewController, longPressGestureRecognizerTriggered longPressGestureRecognizer: UILongPressGestureRecognizer)
 }
 
 final class MediaPreviewViewController: UIViewController, NeedsDependency {
+    
+    let logger = Logger(subsystem: "MediaPreviewViewController", category: "ViewController")
 
     weak var context: AppContext! { willSet { precondition(!isViewLoaded) } }
     weak var coordinator: SceneCoordinator! { willSet { precondition(!isViewLoaded) } }
 
     var disposeBag = Set<AnyCancellable>()
     var viewModel: MediaPreviewViewModel!
-    weak var delegate: MediaPreviewViewControllerDelegate?
-    
+//    weak var delegate: MediaPreviewViewControllerDelegate?
+
     // TODO: adapt Reduce Transparency preference
     let visualEffectView = UIVisualEffectView(effect: UIBlurEffect(style: .systemMaterial))
-    
-    let pagingViewConttroller = MediaPreviewPagingViewController()
-        
+
+    let pageViewController = PageboyViewController()
+
     let mediaInfoDescriptionView = MediaInfoDescriptionView()
-    
+
     let closeButtonBackground: UIVisualEffectView = {
         let backgroundView = UIVisualEffectView(effect: UIBlurEffect(style: .systemUltraThinMaterial))
         backgroundView.alpha = 0.9
@@ -43,18 +48,18 @@ final class MediaPreviewViewController: UIViewController, NeedsDependency {
         backgroundView.layer.cornerCurve = .continuous
         return backgroundView
     }()
-    
+
     let closeButtonBackgroundVisualEffectView = UIVisualEffectView(effect: UIVibrancyEffect(blurEffect: UIBlurEffect(style: .systemUltraThinMaterial)))
-    
+
     let closeButton: UIButton = {
-        let button = HitTestExpandedButton(type: .custom)
+        let button = HitTestExpandedButton(type: .system)
         button.imageView?.tintColor = .label
         button.setImage(Asset.Editing.xmarkRound.image.withRenderingMode(.alwaysTemplate), for: .normal)
         return button
     }()
-    
+
     let pageControlBackgroundVisualEffectView = UIVisualEffectView(effect: UIVibrancyEffect(blurEffect: UIBlurEffect(style: .systemMaterial), style: .label))
-    
+
     let pageControl: UIPageControl = {
         let pageControl = UIPageControl()
         return pageControl
@@ -70,23 +75,23 @@ extension MediaPreviewViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+
         overrideUserInterfaceStyle = .dark
-                
+
         visualEffectView.frame = view.bounds
         view.addSubview(visualEffectView)
-        
-        pagingViewConttroller.view.translatesAutoresizingMaskIntoConstraints = false
-        addChild(pagingViewConttroller)
-        visualEffectView.contentView.addSubview(pagingViewConttroller.view)
+
+        pageViewController.view.translatesAutoresizingMaskIntoConstraints = false
+        addChild(pageViewController)
+        visualEffectView.contentView.addSubview(pageViewController.view)
         NSLayoutConstraint.activate([
-            visualEffectView.topAnchor.constraint(equalTo: pagingViewConttroller.view.topAnchor),
-            visualEffectView.bottomAnchor.constraint(equalTo: pagingViewConttroller.view.bottomAnchor),
-            visualEffectView.leadingAnchor.constraint(equalTo: pagingViewConttroller.view.leadingAnchor),
-            visualEffectView.trailingAnchor.constraint(equalTo: pagingViewConttroller.view.trailingAnchor),
+            pageViewController.view.topAnchor.constraint(equalTo: visualEffectView.topAnchor),
+            pageViewController.view.bottomAnchor.constraint(equalTo: visualEffectView.bottomAnchor),
+            pageViewController.view.leadingAnchor.constraint(equalTo: visualEffectView.leadingAnchor),
+            pageViewController.view.trailingAnchor.constraint(equalTo: visualEffectView.trailingAnchor),
         ])
-        pagingViewConttroller.didMove(toParent: self)
-        
+        pageViewController.didMove(toParent: self)
+
         mediaInfoDescriptionView.translatesAutoresizingMaskIntoConstraints = false
         visualEffectView.contentView.addSubview(mediaInfoDescriptionView)
         NSLayoutConstraint.activate([
@@ -112,14 +117,14 @@ extension MediaPreviewViewController {
             closeButtonBackgroundVisualEffectView.trailingAnchor.constraint(equalTo: closeButton.trailingAnchor, constant: 4),
             closeButtonBackgroundVisualEffectView.bottomAnchor.constraint(equalTo: closeButton.bottomAnchor, constant: 4),
         ])
-        
+
         pageControlBackgroundVisualEffectView.translatesAutoresizingMaskIntoConstraints = false
         visualEffectView.contentView.addSubview(pageControlBackgroundVisualEffectView)
         NSLayoutConstraint.activate([
             pageControlBackgroundVisualEffectView.centerXAnchor.constraint(equalTo: mediaInfoDescriptionView.centerXAnchor),
             mediaInfoDescriptionView.topAnchor.constraint(equalTo: pageControlBackgroundVisualEffectView.bottomAnchor, constant: 8),
         ])
-        
+
         pageControl.translatesAutoresizingMaskIntoConstraints = false
         pageControlBackgroundVisualEffectView.contentView.addSubview(pageControl)
         NSLayoutConstraint.activate([
@@ -128,104 +133,89 @@ extension MediaPreviewViewController {
             pageControl.trailingAnchor.constraint(equalTo: pageControlBackgroundVisualEffectView.trailingAnchor),
             pageControl.bottomAnchor.constraint(equalTo: pageControlBackgroundVisualEffectView.bottomAnchor),
         ])
+
+//
+//        switch viewModel.rootItem {
+//        case .tweet(let meta):
+//            pageControl.numberOfPages = viewModel.viewControllers.count
+//            if case let .tweet(meta) = viewModel.rootItem {
+//                pageControl.currentPage = meta.initialIndex
+//            }
+//            pageControl.isHidden = viewModel.viewControllers.count == 1
+//            mediaInfoDescriptionView.actionToolbarContainer.delegate = self
+//            let managedObjectContext = self.context.managedObjectContext
+//            managedObjectContext.perform {
+//                let tweet = managedObjectContext.object(with: meta.tweetObjectID) as! Tweet
+//                let targetTweet = tweet.retweet ?? tweet
+//                let activeTwitterAuthenticationBox = self.context.authenticationService.activeTwitterAuthenticationBox.value
+//                let requestTwitterUserID = activeTwitterAuthenticationBox?.twitterUserID ?? ""
+//                MediaPreviewViewController.configure(actionToolbarContainer: self.mediaInfoDescriptionView.actionToolbarContainer, tweet: targetTweet, requestTwitterUserID: requestTwitterUserID)
+//
+//                // observe model change
+//                ManagedObjectObserver.observe(object: tweet.retweet ?? tweet)
+//                    .receive(on: DispatchQueue.main)
+//                    .sink { _ in
+//                        // do nothing
+//                    } receiveValue: { [weak self] change in
+//                        guard let self = self else { return }
+//                        guard case let .update(object) = change.changeType,
+//                              let newTweet = object as? Tweet else { return }
+//                        let targetTweet = newTweet.retweet ?? newTweet
+//                        let activeTwitterAuthenticationBox = self.context.authenticationService.activeTwitterAuthenticationBox.value
+//                        let requestTwitterUserID = activeTwitterAuthenticationBox?.twitterUserID ?? ""
+//
+//                        MediaPreviewViewController.configure(actionToolbarContainer: self.mediaInfoDescriptionView.actionToolbarContainer, tweet: targetTweet, requestTwitterUserID: requestTwitterUserID)
+//                    }
+//                    .store(in: &self.disposeBag)
+//            }
+//        case .local(let meta):
+//            pageControl.isHidden = true
+//            mediaInfoDescriptionView.isHidden = true
+//        }
         
-        mediaInfoDescriptionView.delegate = self
+        if let status = viewModel.status {
+            mediaInfoDescriptionView.configure(
+                statusObject: status,
+                configurationContext: MediaInfoDescriptionView.ConfigurationContext(
+                    dateTimeProvider: DateTimeSwiftProvider(),
+                    twitterTextProvider: OfficialTwitterTextProvider(),
+                    activeAuthenticationContext: context.authenticationService.activeAuthenticationContext.eraseToAnyPublisher()
+                )
+            )
+        } else {
+            mediaInfoDescriptionView.isHidden = true
+        }
         
-        Publishers.CombineLatest3(
-            viewModel.avatarImageURL.eraseToAnyPublisher(),
-            viewModel.isVerified.eraseToAnyPublisher(),
-            viewModel.avatarStyle.eraseToAnyPublisher()
-        )
-        .receive(on: DispatchQueue.main)
-            .sink { [weak self] avatarImageURL, isVerified, _ in
-                guard let self = self else { return }
-                self.mediaInfoDescriptionView.configure(withConfigurationInput: AvatarConfigurableViewConfiguration.Input(avatarImageURL: avatarImageURL, verified: isVerified))
-            }
-            .store(in: &disposeBag)
-        viewModel.name
-            .receive(on: DispatchQueue.main)
-            .assign(to: \.text, on: mediaInfoDescriptionView.nameLabel)
-            .store(in: &disposeBag)
-        viewModel.content
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] content in
-                guard let self = self else { return }
-                self.mediaInfoDescriptionView.activeLabel.text = content
-            }
-            .store(in: &disposeBag)
-        
-        closeButton.addTarget(self, action: #selector(MediaPreviewViewController.closeButtonPressed(_:)), for: .touchUpInside)
+        pageControl.numberOfPages = viewModel.viewControllers.count
+        pageControl.isHidden = viewModel.viewControllers.count == 1
+        pageControl.isUserInteractionEnabled = false
         
         viewModel.mediaPreviewImageViewControllerDelegate = self
         
-        pagingViewConttroller.interPageSpacing = 10
-        pagingViewConttroller.delegate = self
-        pagingViewConttroller.dataSource = viewModel
+        pageViewController.interPageSpacing = 10
+        pageViewController.delegate = self
+        pageViewController.dataSource = viewModel
         
-        switch viewModel.rootItem {
-        case .tweet(let meta):
-            pageControl.numberOfPages = viewModel.viewControllers.count
-            if case let .tweet(meta) = viewModel.rootItem {
-                pageControl.currentPage = meta.initialIndex
-            }
-            pageControl.isHidden = viewModel.viewControllers.count == 1
-            mediaInfoDescriptionView.actionToolbarContainer.delegate = self
-            let managedObjectContext = self.context.managedObjectContext
-            managedObjectContext.perform {
-                let tweet = managedObjectContext.object(with: meta.tweetObjectID) as! Tweet
-                let targetTweet = tweet.retweet ?? tweet
-                let activeTwitterAuthenticationBox = self.context.authenticationService.activeTwitterAuthenticationBox.value
-                let requestTwitterUserID = activeTwitterAuthenticationBox?.twitterUserID ?? ""
-                MediaPreviewViewController.configure(actionToolbarContainer: self.mediaInfoDescriptionView.actionToolbarContainer, tweet: targetTweet, requestTwitterUserID: requestTwitterUserID)
-                
-                // observe model change
-                ManagedObjectObserver.observe(object: tweet.retweet ?? tweet)
-                    .receive(on: DispatchQueue.main)
-                    .sink { _ in
-                        // do nothing
-                    } receiveValue: { [weak self] change in
-                        guard let self = self else { return }
-                        guard case let .update(object) = change.changeType,
-                              let newTweet = object as? Tweet else { return }
-                        let targetTweet = newTweet.retweet ?? newTweet
-                        let activeTwitterAuthenticationBox = self.context.authenticationService.activeTwitterAuthenticationBox.value
-                        let requestTwitterUserID = activeTwitterAuthenticationBox?.twitterUserID ?? ""
-                        
-                        MediaPreviewViewController.configure(actionToolbarContainer: self.mediaInfoDescriptionView.actionToolbarContainer, tweet: targetTweet, requestTwitterUserID: requestTwitterUserID)
-                    }
-                    .store(in: &self.disposeBag)
-            }
-        case .local(let meta):
-            pageControl.isHidden = true
-            mediaInfoDescriptionView.isHidden = true
-        }
+        mediaInfoDescriptionView.delegate = self
+        
+        closeButton.addTarget(self, action: #selector(MediaPreviewViewController.closeButtonPressed(_:)), for: .touchUpInside)
     }
-    
+
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        
+
         visualEffectView.frame = view.bounds
     }
     
 }
 
 extension MediaPreviewViewController {
-    private static func configure(actionToolbarContainer: ActionToolbarContainer, tweet: Tweet, requestTwitterUserID: TwitterUser.ID) {
-        let isRetweeted = tweet.retweetBy.flatMap({ $0.contains(where: { $0.id == requestTwitterUserID }) }) ?? false
-        actionToolbarContainer.isRetweetButtonHighlight = isRetweeted
-        
-        let isLike = tweet.likeBy.flatMap({ $0.contains(where: { $0.id == requestTwitterUserID }) }) ?? false
-        actionToolbarContainer.isLikeButtonHighlight = isLike
-    }
-}
 
-extension MediaPreviewViewController {
-    
     @objc private func closeButtonPressed(_ sender: UIButton) {
         os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
         dismiss(animated: true, completion: nil)
     }
-    
+
 }
 
 // MARK: - PageboyViewControllerDelegate
@@ -238,7 +228,7 @@ extension MediaPreviewViewController: PageboyViewControllerDelegate {
     ) {
         // do nothing
     }
-    
+
     func pageboyViewController(
         _ pageboyViewController: PageboyViewController,
         didScrollTo position: CGPoint,
@@ -247,7 +237,7 @@ extension MediaPreviewViewController: PageboyViewControllerDelegate {
     ) {
         // do nothing
     }
-    
+
     func pageboyViewController(
         _ pageboyViewController: PageboyViewController,
         didScrollToPageAt index: PageboyViewController.PageIndex,
@@ -257,7 +247,7 @@ extension MediaPreviewViewController: PageboyViewControllerDelegate {
         // update page control
         pageControl.currentPage = index
     }
-    
+
     func pageboyViewController(
         _ pageboyViewController: PageboyViewController,
         didReloadWith currentViewController: UIViewController,
@@ -268,67 +258,72 @@ extension MediaPreviewViewController: PageboyViewControllerDelegate {
 
 }
 
-// MARK: - ActionToolbarContainerDelegate
-extension MediaPreviewViewController: ActionToolbarContainerDelegate {
-    func actionToolbarContainer(_ actionToolbarContainer: ActionToolbarContainer, menuButtonDidPressed sender: UIButton) {
-        let currentIndex = pagingViewConttroller.currentIndex
-        tweet()
-            .sink { [weak self] tweet in
-                guard let tweet = tweet else { return }
-                guard let self = self else { return }
-                var applicationActivities: [UIActivity] = [
-                    SafariActivity(sceneCoordinator: self.coordinator)
-                ]
-                let media = Array(tweet.media ?? Set()).sorted(by: { $0.index.compare($1.index) == .orderedAscending })
-                if let currentIndex = currentIndex, currentIndex < media.count,
-                   let urlString = media[currentIndex].url, let url = URL(string: urlString) {
-                    applicationActivities.append(SavePhotoActivity(context: self.context, url: url))
-                }
-                
-                let activityViewController = UIActivityViewController(
-                    activityItems: tweet.activityItems,
-                    applicationActivities: applicationActivities
-                )
-                activityViewController.popoverPresentationController?.sourceView = sender
-                self.present(activityViewController, animated: true, completion: nil)
-            }
-            .store(in: &disposeBag)
-    }
-}
-
 // MARK: - MediaPreviewingViewController
 extension MediaPreviewViewController: MediaPreviewingViewController {
-    
-    func isInteractiveDismissable() -> Bool {
-        if let mediaPreviewImageViewController = pagingViewConttroller.currentViewController as? MediaPreviewImageViewController {
+
+    func isInteractiveDismissible() -> Bool {
+        if let mediaPreviewImageViewController = pageViewController.currentViewController as? MediaPreviewImageViewController {
             let previewImageView = mediaPreviewImageViewController.previewImageView
+            
             // TODO: allow zooming pan dismiss
             guard previewImageView.zoomScale == previewImageView.minimumZoomScale else {
                 return false
             }
-            
+
             let safeAreaInsets = previewImageView.safeAreaInsets
             let statusBarFrameHeight = view.window?.windowScene?.statusBarManager?.statusBarFrame.height ?? 0
-            return previewImageView.contentOffset.y <= -(safeAreaInsets.top - statusBarFrameHeight)
+            
+            let allowInteractiveDismiss = previewImageView.contentOffset.y <= -(safeAreaInsets.top - statusBarFrameHeight)
+            logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): allow interactive dismiss: \(allowInteractiveDismiss)")
+            
+            return allowInteractiveDismiss
         }
         
+        if let mediaPreviewVideoViewController = pageViewController.currentViewController as? MediaPreviewVideoViewController {
+            return true
+        }
+
         return false
     }
-    
+
 }
 
 // MARK: - MediaPreviewImageViewControllerDelegate
 extension MediaPreviewViewController: MediaPreviewImageViewControllerDelegate {
-    
+
     func mediaPreviewImageViewController(_ viewController: MediaPreviewImageViewController, tapGestureRecognizerDidTrigger tapGestureRecognizer: UITapGestureRecognizer) {
-        
+        // do nothing
     }
-    
+
     func mediaPreviewImageViewController(_ viewController: MediaPreviewImageViewController, longPressGestureRecognizerDidTrigger longPressGestureRecognizer: UILongPressGestureRecognizer) {
-        delegate?.mediaPreviewViewController(self, longPressGestureRecognizerTriggered: longPressGestureRecognizer)
+        // trigger menu button action
+        mediaInfoDescriptionView.toolbar.delegate?.statusToolbar(
+            mediaInfoDescriptionView.toolbar,
+            actionDidPressed: .menu,
+            button: mediaInfoDescriptionView.toolbar.menuButton
+        )
     }
-    
+
 }
 
 // MARK: - MediaInfoDescriptionViewDelegate
 extension MediaPreviewViewController: MediaInfoDescriptionViewDelegate { }
+
+// MARK: - ShareActivityProvider
+extension MediaPreviewViewController: ShareActivityProvider {
+    var activities: [Any] {
+        if let provider = pageViewController.currentViewController as? ShareActivityProvider {
+            return provider.activities
+        }
+        
+        return []
+    }
+    
+    var applicationActivities: [UIActivity] {
+        if let provider = pageViewController.currentViewController as? ShareActivityProvider {
+            return provider.applicationActivities
+        }
+        
+        return []
+    }
+}

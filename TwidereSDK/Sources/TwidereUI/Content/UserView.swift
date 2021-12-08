@@ -79,6 +79,15 @@ public final class UserView: UIView {
     // username
     public let usernameLabel = PlainLabel(style: .userAuthorUsername)
     
+    // lock
+    public let lockImageView: UIImageView = {
+        let imageView = UIImageView()
+        imageView.tintColor = .secondaryLabel
+        imageView.contentMode = .scaleAspectFill
+        imageView.image = Asset.ObjectTools.lockMiniInline.image.withRenderingMode(.alwaysTemplate)
+        return imageView
+    }()
+    
     // followerCount
     public let followerCountLabel = PlainLabel(style: .userDescription)
     
@@ -160,31 +169,31 @@ extension UserView {
 
 extension UserView {
     public enum Style {
-        // headline: name | username
-        // subheadline: follower count
-        // accessory: none
-        case plain
-        // headline: name | username
+        // headline: name | lock
+        // subheadline: username
+        // accessory: menu
+        case account
+        // headline: name | lock | username
         // subheadline: follower count
         // accessory: follow button
         case relationship
-        // header: notification
-        // headline: name
+        // headline: name | lock
         // subheadline: username
         // accessory: action button
         case friendship
-        // headline: name | username
+        // header: notification
+        // headline: name | lock | username
         // subheadline: follower count
         // accessory: menu
         case notification
-        // headline: name
+        // headline: name | lock
         // subheadline: username
         // accessory: checkmark button
         case mentionPick
         
         public func layout(userView: UserView) {
             switch self {
-            case .plain:            layoutPlain(userView: userView)
+            case .account:          layoutAccount(userView: userView)
             case .relationship:     layoutRelationship(userView: userView)
             case .friendship:       layoutFriendship(userView: userView)
             case .notification:     layoutNotification(userView: userView)
@@ -200,8 +209,21 @@ extension UserView {
 
 extension UserView.Style {
     // FIXME: update layout
-    func layoutPlain(userView: UserView) {
-        userView.infoContainerStackView.addArrangedSubview(userView.nameLabel)
+    func layoutAccount(userView: UserView) {
+        let headlineStackView = UIStackView()
+        userView.infoContainerStackView.addArrangedSubview(headlineStackView)
+        headlineStackView.axis = .horizontal
+        headlineStackView.spacing = 6
+        headlineStackView.addArrangedSubview(userView.nameLabel)
+        userView.lockImageView.translatesAutoresizingMaskIntoConstraints = false
+        headlineStackView.addArrangedSubview(userView.lockImageView)
+        NSLayoutConstraint.activate([
+            userView.lockImageView.heightAnchor.constraint(equalTo: userView.nameLabel.heightAnchor).priority(.required - 10),
+        ])
+        userView.lockImageView.setContentHuggingPriority(.defaultLow, for: .horizontal)
+        userView.lockImageView.setContentCompressionResistancePriority(.required - 10, for: .horizontal)
+        headlineStackView.addArrangedSubview(UIView())  // padding
+        
         userView.infoContainerStackView.addArrangedSubview(userView.usernameLabel)
         
         userView.setNeedsLayout()
@@ -209,7 +231,20 @@ extension UserView.Style {
     
     // FIXME: update layout
     func layoutRelationship(userView: UserView) {
-        userView.infoContainerStackView.addArrangedSubview(userView.nameLabel)
+        let headlineStackView = UIStackView()
+        userView.infoContainerStackView.addArrangedSubview(headlineStackView)
+        headlineStackView.axis = .horizontal
+        headlineStackView.spacing = 6
+        headlineStackView.addArrangedSubview(userView.nameLabel)
+        userView.lockImageView.translatesAutoresizingMaskIntoConstraints = false
+        headlineStackView.addArrangedSubview(userView.lockImageView)
+        NSLayoutConstraint.activate([
+            userView.lockImageView.heightAnchor.constraint(equalTo: userView.nameLabel.heightAnchor).priority(.required - 10),
+        ])
+        userView.lockImageView.setContentHuggingPriority(.defaultLow, for: .horizontal)
+        userView.lockImageView.setContentCompressionResistancePriority(.required - 10, for: .horizontal)
+        headlineStackView.addArrangedSubview(UIView())  // padding
+        
         userView.infoContainerStackView.addArrangedSubview(userView.usernameLabel)
         
         userView.friendshipButton.translatesAutoresizingMaskIntoConstraints = false
@@ -228,7 +263,15 @@ extension UserView.Style {
         headlineStackView.axis = .horizontal
         headlineStackView.spacing = 6
         headlineStackView.addArrangedSubview(userView.nameLabel)
+        userView.lockImageView.translatesAutoresizingMaskIntoConstraints = false
+        headlineStackView.addArrangedSubview(userView.lockImageView)
+        NSLayoutConstraint.activate([
+            userView.lockImageView.heightAnchor.constraint(equalTo: userView.nameLabel.heightAnchor).priority(.required - 10),
+        ])
+        userView.lockImageView.setContentHuggingPriority(.defaultLow, for: .horizontal)
+        userView.lockImageView.setContentCompressionResistancePriority(.required - 10, for: .horizontal)
         headlineStackView.addArrangedSubview(userView.usernameLabel)
+        headlineStackView.addArrangedSubview(UIView())  // padding
         
         // subheadline
         userView.infoContainerStackView.addArrangedSubview(userView.followerCountLabel)
@@ -258,7 +301,20 @@ extension UserView.Style {
         userView.headerIconImageView.setContentHuggingPriority(.defaultLow, for: .vertical)
         userView.headerIconImageView.setContentHuggingPriority(.defaultLow, for: .horizontal)
 
-        userView.infoContainerStackView.addArrangedSubview(userView.nameLabel)
+        let headlineStackView = UIStackView()
+        userView.infoContainerStackView.addArrangedSubview(headlineStackView)
+        headlineStackView.axis = .horizontal
+        headlineStackView.spacing = 6
+        headlineStackView.addArrangedSubview(userView.nameLabel)
+        userView.lockImageView.translatesAutoresizingMaskIntoConstraints = false
+        headlineStackView.addArrangedSubview(userView.lockImageView)
+        NSLayoutConstraint.activate([
+            userView.lockImageView.heightAnchor.constraint(equalTo: userView.nameLabel.heightAnchor).priority(.required - 10),
+        ])
+        userView.lockImageView.setContentHuggingPriority(.defaultLow, for: .horizontal)
+        userView.lockImageView.setContentCompressionResistancePriority(.required - 10, for: .horizontal)
+        headlineStackView.addArrangedSubview(UIView())  // padding
+        
         userView.infoContainerStackView.addArrangedSubview(userView.usernameLabel)
         
         // set header label align to author name
@@ -270,7 +326,21 @@ extension UserView.Style {
     }
     
     func layoutMentionPick(userView: UserView) {
-        userView.infoContainerStackView.addArrangedSubview(userView.nameLabel)
+        let headlineStackView = UIStackView()
+        userView.infoContainerStackView.addArrangedSubview(headlineStackView)
+        headlineStackView.axis = .horizontal
+        headlineStackView.spacing = 6
+        headlineStackView.addArrangedSubview(userView.nameLabel)
+        userView.lockImageView.translatesAutoresizingMaskIntoConstraints = false
+        headlineStackView.addArrangedSubview(userView.lockImageView)
+        NSLayoutConstraint.activate([
+            userView.lockImageView.heightAnchor.constraint(equalTo: userView.nameLabel.heightAnchor).priority(.required - 10),
+        ])
+        userView.lockImageView.setContentHuggingPriority(.defaultLow, for: .horizontal)
+        userView.lockImageView.setContentCompressionResistancePriority(.required - 10, for: .horizontal)
+        headlineStackView.addArrangedSubview(UIView())  // padding
+
+
         userView.infoContainerStackView.addArrangedSubview(userView.usernameLabel)
         
         userView.accessoryContainerView.addArrangedSubview(userView.checkmarkButton)
@@ -299,7 +369,7 @@ struct UserView_Preview: PreviewProvider {
     static var previews: some View {
         UIViewPreview {
             let userView = UserView()
-            userView.setup(style: .plain)
+            userView.setup(style: .account)
             return userView
         }
     }

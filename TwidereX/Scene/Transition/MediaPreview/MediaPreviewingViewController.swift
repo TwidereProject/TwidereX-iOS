@@ -8,6 +8,6 @@
 
 import Foundation
 
-protocol MediaPreviewingViewController: class {
-    func isInteractiveDismissable() -> Bool
+protocol MediaPreviewingViewController: AnyObject {
+    func isInteractiveDismissible() -> Bool
 }
