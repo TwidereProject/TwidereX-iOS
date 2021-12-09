@@ -36,6 +36,10 @@ extension StatusView {
         
         @Published public var content: MetaContent?
         @Published public var mediaViewConfigurations: [MediaView.Configuration] = []
+        
+        @Published public var pollItems: [PollItem] = []
+        @Published public var isVotable: Bool = false
+        
         @Published public var location: String?
         
         @Published public var isRepost: Bool = false
@@ -63,7 +67,7 @@ extension StatusView {
             public struct RepostInfo {
                 public let authorNameMetaContent: MetaContent
             }
-        }
+       }
     }
 }
 
@@ -73,6 +77,7 @@ extension StatusView.ViewModel {
         bindAuthor(statusView: statusView)
         bindContent(statusView: statusView)
         bindMedia(statusView: statusView)
+        bindPoll(statusView: statusView)
         bindLocation(statusView: statusView)
         bindToolbar(statusView: statusView)
     }
@@ -244,6 +249,27 @@ extension StatusView.ViewModel {
                 if needsDisplay {
                     statusView.setMediaDisplay()
                 }
+            }
+            .store(in: &disposeBag)
+    }
+    
+    private func bindPoll(statusView: StatusView) {
+        $pollItems
+            .sink { items in
+                guard !items.isEmpty else { return }
+                
+                var snapshot = NSDiffableDataSourceSnapshot<PollSection, PollItem>()
+                snapshot.appendSections([.main])
+                snapshot.appendItems(items, toSection: .main)
+                statusView.pollTableViewDiffableDataSource?.applySnapshotUsingReloadData(snapshot)
+                
+                statusView.pollTableViewHeightLayoutConstraint.constant = CGFloat(items.count) * PollOptionTableViewCell.height
+                statusView.setPollDisplay()
+            }
+            .store(in: &disposeBag)
+        $isVotable
+            .sink { isVotable in
+                statusView.pollTableView.allowsSelection = isVotable
             }
             .store(in: &disposeBag)
     }
@@ -543,6 +569,7 @@ extension StatusView {
         configureAuthor(mastodonStatus: status, dateTimeProvider: configurationContext.dateTimeProvider)
         configureContent(mastodonStatus: status)
         configureMedia(mastodonStatus: status)
+        configurePoll(mastodonStatus: status, activeAuthenticationContext: configurationContext.activeAuthenticationContext)
         configureToolbar(mastodonStatus: status, activeAuthenticationContext: configurationContext.activeAuthenticationContext)
     }
     
@@ -655,6 +682,38 @@ extension StatusView {
             .store(in: &disposeBag)
     }
     
+    private func configurePoll(
+        mastodonStatus status: MastodonStatus,
+        activeAuthenticationContext: AnyPublisher<AuthenticationContext?, Never>
+    ) {
+        status.publisher(for: \.poll)
+            .sink { poll in
+                guard let poll = poll else {
+                    self.viewModel.pollItems = []
+                    return
+                }
+                
+                let options = poll.options.sorted(by: { $0.index < $1.index })
+                let items: [PollItem] = options.map { .option(record: .init(objectID: $0.objectID)) }
+                self.viewModel.pollItems = items
+            }
+            .store(in: &disposeBag)
+        
+        Publishers.CombineLatest(
+            status.publisher(for: \.poll),
+            activeAuthenticationContext
+        )
+        .map { poll, authenticationContext in
+            guard let poll = poll else { return false }
+            guard case let .mastodon(authenticationContext) = authenticationContext else { return false }
+            let domain = authenticationContext.domain
+            let userID = authenticationContext.userID
+            let isVoted = poll.voteBy.contains(where: { $0.domain == domain && $0.id == userID })
+            return !isVoted && !poll.expired
+        }
+        .assign(to: &viewModel.$isVotable)
+    }
+    
     private func configureToolbar(
         mastodonStatus status: MastodonStatus,
         activeAuthenticationContext: AnyPublisher<AuthenticationContext?, Never>
@@ -694,16 +753,16 @@ extension StatusView {
             activeAuthenticationContext,
             status.publisher(for: \.likeBy)
         )
-            .map { authenticationContext, likeBy in
-                guard let authenticationContext = authenticationContext?.mastodonAuthenticationContext else {
-                    return false
-                }
-                let domain = authenticationContext.domain
-                let userID = authenticationContext.userID
-                return likeBy.contains(where: { $0.id == userID && $0.domain == domain })
+        .map { authenticationContext, likeBy in
+            guard let authenticationContext = authenticationContext?.mastodonAuthenticationContext else {
+                return false
             }
-            .assign(to: \.isLike, on: viewModel)
-            .store(in: &disposeBag)
+            let domain = authenticationContext.domain
+            let userID = authenticationContext.userID
+            return likeBy.contains(where: { $0.id == userID && $0.domain == domain })
+        }
+        .assign(to: \.isLike, on: viewModel)
+        .store(in: &disposeBag)
     }
         
 }

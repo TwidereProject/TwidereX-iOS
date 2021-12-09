@@ -142,6 +142,13 @@ extension StatusViewTableViewCellDelegate where Self: DataSourceProvider & Media
     }
 }
 
+// poll
+extension StatusViewTableViewCellDelegate where Self: DataSourceProvider {
+    func tableViewCell(_ cell: UITableViewCell, statusView: StatusView, pollTableView tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): TODO")
+    }
+}
+
 // MARK: - toolbar
 extension StatusViewTableViewCellDelegate where Self: DataSourceProvider {
     func tableViewCell(

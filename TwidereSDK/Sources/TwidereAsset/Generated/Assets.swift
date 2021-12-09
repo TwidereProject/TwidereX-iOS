@@ -104,8 +104,11 @@ public enum Asset {
     public static let personPlusMini = ImageAsset(name: "Human/person.plus.mini")
   }
   public enum Indices {
+    public static let checkmarkCircleFill = ImageAsset(name: "Indices/checkmark.circle.fill")
     public static let checkmarkCircle = ImageAsset(name: "Indices/checkmark.circle")
+    public static let checkmarkSquareFill = ImageAsset(name: "Indices/checkmark.square.fill")
     public static let checkmarkSquare = ImageAsset(name: "Indices/checkmark.square")
+    public static let circle = ImageAsset(name: "Indices/circle")
     public static let exclamationmarkCircle = ImageAsset(name: "Indices/exclamationmark.circle")
     public static let exclamationmarkOctagon = ImageAsset(name: "Indices/exclamationmark.octagon")
     public static let infoCircle = ImageAsset(name: "Indices/info.circle")

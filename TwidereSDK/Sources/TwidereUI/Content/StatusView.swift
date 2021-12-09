@@ -12,6 +12,7 @@ import UIKit
 import MetaTextKit
 import MetaTextArea
 import TwidereCommon
+import TwidereCore
 
 public protocol StatusViewDelegate: AnyObject {
     func statusView(_ statusView: StatusView, headerDidPressed header: UIView)
@@ -22,6 +23,7 @@ public protocol StatusViewDelegate: AnyObject {
     func statusView(_ statusView: StatusView, metaTextAreaView: MetaTextAreaView, didSelectMeta meta: Meta)
     
     func statusView(_ statusView: StatusView, mediaGridContainerView containerView: MediaGridContainerView, didTapMediaView mediaView: MediaView, at index: Int)
+    func statusView(_ statusView: StatusView, pollTableView tableView: UITableView, didSelectRowAt indexPath: IndexPath)
     func statusView(_ statusView: StatusView, quoteStatusView: StatusView, mediaGridContainerView containerView: MediaGridContainerView, didTapMediaView mediaView: MediaView, at index: Int)
     
     func statusView(_ statusView: StatusView, statusToolbar: StatusToolbar, actionDidPressed action: StatusToolbar.Action, button: UIButton)
@@ -89,6 +91,20 @@ public final class StatusView: UIView {
     
     // media
     public let mediaGridContainerView = MediaGridContainerView()
+    
+    // poll
+    public let pollTableView: UITableView = {
+        let tableView = UITableView(frame: CGRect(x: 0, y: 0, width: 100, height: 100))
+        tableView.register(PollOptionTableViewCell.self, forCellReuseIdentifier: String(describing: PollOptionTableViewCell.self))
+        tableView.isScrollEnabled = false
+        tableView.estimatedRowHeight = 36
+        tableView.tableFooterView = UIView()
+        tableView.backgroundColor = .clear
+        tableView.separatorStyle = .none
+        return tableView
+    }()
+    public var pollTableViewHeightLayoutConstraint: NSLayoutConstraint!
+    public var pollTableViewDiffableDataSource: UITableViewDiffableDataSource<PollSection, PollItem>?
     
     // quote
     public private(set) var quoteStatusView: StatusView? {
@@ -171,6 +187,13 @@ extension StatusView {
         contentTextView.delegate = self
         // media grid
         mediaGridContainerView.delegate = self
+        // poll
+        pollTableView.translatesAutoresizingMaskIntoConstraints = false
+        pollTableViewHeightLayoutConstraint = pollTableView.heightAnchor.constraint(equalToConstant: 36).priority(.required - 10)
+        NSLayoutConstraint.activate([
+            pollTableViewHeightLayoutConstraint,
+        ])
+        pollTableView.delegate = self
         // toolbar
         toolbar.delegate = self
         
@@ -215,6 +238,7 @@ extension StatusView {
             statusView.lockImageView.isHidden = true
             statusView.visibilityImageView.isHidden = true
             statusView.mediaGridContainerView.isHidden = true
+            statusView.pollTableView.isHidden = true
             statusView.quoteStatusView?.isHidden = true
             statusView.locationContainer.isHidden = true
             statusView.metricsDashboardView.isHidden = true
@@ -322,6 +346,9 @@ extension StatusView.Style {
         // mediaGridContainerView
         statusView.mediaGridContainerView.translatesAutoresizingMaskIntoConstraints = false
         contentContainerView.addArrangedSubview(statusView.mediaGridContainerView)
+        
+        // pollTableView
+        contentContainerView.addArrangedSubview(statusView.pollTableView)
         
         // quoteStatusView
         let quoteStatusView = StatusView()
@@ -687,6 +714,10 @@ extension StatusView {
         mediaGridContainerView.isHidden = false
     }
     
+    public func setPollDisplay() {
+        pollTableView.isHidden = false
+    }
+    
     public func setQuoteDisplay() {
         quoteStatusView?.isHidden = false
     }
@@ -798,6 +829,10 @@ extension StatusView: StatusViewDelegate {
         delegate?.statusView(self, quoteStatusView: statusView, mediaGridContainerView: containerView, didTapMediaView: mediaView, at: index)
     }
     
+    public func statusView(_ statusView: StatusView, pollTableView tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        assertionFailure()
+    }
+    
     public func statusView(_ statusView: StatusView, quoteStatusView: StatusView, mediaGridContainerView containerView: MediaGridContainerView, didTapMediaView mediaView: MediaView, at index: Int) {
         assertionFailure()
     }
@@ -806,4 +841,18 @@ extension StatusView: StatusViewDelegate {
         assertionFailure()
     }
     
+}
+
+// MARK: - UITableViewDelegate
+extension StatusView: UITableViewDelegate {
+    public func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): select \(indexPath.debugDescription)")
+        
+        switch tableView {
+        case pollTableView:
+            delegate?.statusView(self, pollTableView: tableView, didSelectRowAt: indexPath)
+        default:
+            assertionFailure()
+        }
+    }
 }

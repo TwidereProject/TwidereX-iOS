@@ -184,6 +184,7 @@ extension ComposeToolbarView {
         supplementaryContainer.addArrangedSubview(visibilityButtonLeadingSeparatorLine)
         
         supplementaryContainer.addArrangedSubview(visibilityButton)
+        visibilityButton.setContentHuggingPriority(.defaultLow - 10, for: .horizontal)
         visibilityButton.setContentCompressionResistancePriority(.required - 9, for: .vertical)
         
         supplementaryContainer.addArrangedSubview(supplementaryContainerSpacer)

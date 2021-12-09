@@ -16,7 +16,6 @@ import GameplayKit
 import AlamofireImage
 import Kingfisher
 import DateToolsSwift
-import ActiveLabel
 
 final class HomeTimelineViewModel: NSObject {
     

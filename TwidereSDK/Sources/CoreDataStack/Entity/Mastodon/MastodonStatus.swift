@@ -58,6 +58,10 @@ final public class MastodonStatus: NSManagedObject {
     // sourcery: autoUpdatableObject, autoGenerateProperty
     @NSManaged public private(set) var updatedAt: Date
     
+    // one-to-one relationship
+    // sourcery: autoGenerateRelationship
+    @NSManaged public private(set) var poll: MastodonPoll?
+    
     // one-to-many relationship
     @NSManaged public private(set) var feeds: Set<Feed>
     @NSManaged public private(set) var repostFrom: Set<MastodonStatus>
@@ -291,19 +295,23 @@ extension MastodonStatus: AutoGenerateRelationship {
     // Generated using Sourcery
     // DO NOT EDIT
     public struct Relationship {
+    	public let poll: MastodonPoll?
     	public let author: MastodonUser
     	public let repost: MastodonStatus?
 
     	public init(
+    		poll: MastodonPoll?,
     		author: MastodonUser,
     		repost: MastodonStatus?
     	) {
+    		self.poll = poll
     		self.author = author
     		self.repost = repost
     	}
     }
 
     public func configure(relationship: Relationship) {
+    	self.poll = relationship.poll
     	self.author = relationship.author
     	self.repost = relationship.repost
     }

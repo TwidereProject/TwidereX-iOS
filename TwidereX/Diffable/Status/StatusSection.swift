@@ -12,6 +12,8 @@ import Combine
 import CoreData
 import CoreDataStack
 import MetaTextKit
+import TwidereUI
+import AppShared
 
 enum StatusSection: Hashable {
     case main
@@ -41,6 +43,14 @@ extension StatusSection {
             switch item {
             case .feed(let record):
                 let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: StatusTableViewCell.self), for: indexPath) as! StatusTableViewCell
+                setupStatusPollDataSource(
+                    managedObjectContext: context.managedObjectContext,
+                    statusView: cell.statusView,
+                    configurationContext: PollOptionView.ConfigurationContext(
+                        dateTimeProvider: DateTimeSwiftProvider(),
+                        activeAuthenticationContext: activeAuthenticationContext
+                    )
+                )
                 context.managedObjectContext.performAndWait {
                     guard let feed = record.object(in: context.managedObjectContext) else { return }
                     configure(
@@ -68,6 +78,14 @@ extension StatusSection {
                 
             case .status(let status):
                 let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: StatusTableViewCell.self), for: indexPath) as! StatusTableViewCell
+                setupStatusPollDataSource(
+                    managedObjectContext: context.managedObjectContext,
+                    statusView: cell.statusView,
+                    configurationContext: PollOptionView.ConfigurationContext(
+                        dateTimeProvider: DateTimeSwiftProvider(),
+                        activeAuthenticationContext: activeAuthenticationContext
+                    )
+                )
                 context.managedObjectContext.performAndWait {
                     switch status {
                     case .twitter(let record):
@@ -139,6 +157,14 @@ extension StatusSection {
         switch configuration.thread {
         case .root(let context):
             let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: StatusThreadRootTableViewCell.self), for: indexPath) as! StatusThreadRootTableViewCell
+            setupStatusPollDataSource(
+                managedObjectContext: configuration.managedObjectContext,
+                statusView: cell.statusView,
+                configurationContext: PollOptionView.ConfigurationContext(
+                    dateTimeProvider: DateTimeSwiftProvider(),
+                    activeAuthenticationContext: configuration.activeAuthenticationContext
+                )
+            )
             configuration.managedObjectContext.performAndWait {
                 guard let status = context.status.object(in: configuration.managedObjectContext) else { return }
                 cell.configure(
@@ -156,6 +182,14 @@ extension StatusSection {
             return cell
         case .reply(let context), .leaf(let context):
             let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: StatusTableViewCell.self), for: indexPath) as! StatusTableViewCell
+            setupStatusPollDataSource(
+                managedObjectContext: configuration.managedObjectContext,
+                statusView: cell.statusView,
+                configurationContext: PollOptionView.ConfigurationContext(
+                    dateTimeProvider: DateTimeSwiftProvider(),
+                    activeAuthenticationContext: configuration.activeAuthenticationContext
+                )
+            )
             configuration.managedObjectContext.performAndWait {
                 guard let status = context.status.object(in: configuration.managedObjectContext) else { return }
                 cell.configure(
@@ -175,6 +209,33 @@ extension StatusSection {
             }
             return cell
         }
+    }
+    
+    public static func setupStatusPollDataSource(
+        managedObjectContext: NSManagedObjectContext,
+        statusView: StatusView,
+        configurationContext: PollOptionView.ConfigurationContext
+    ) {
+        statusView.pollTableViewDiffableDataSource = UITableViewDiffableDataSource<PollSection, PollItem>(tableView: statusView.pollTableView) { tableView, indexPath, item in
+            switch item {
+            case .option(let record):
+                let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: PollOptionTableViewCell.self), for: indexPath) as! PollOptionTableViewCell
+                managedObjectContext.performAndWait {
+                    guard let option = record.object(in: managedObjectContext) else {
+                        assertionFailure()
+                        return
+                    }
+                    cell.optionView.configure(
+                        pollOption: option,
+                        configurationContext: configurationContext
+                    )
+                }
+                return cell
+            }
+        }
+        var _snapshot = NSDiffableDataSourceSnapshot<PollSection, PollItem>()
+        _snapshot.appendSections([.main])
+        statusView.pollTableViewDiffableDataSource?.apply(_snapshot)
     }
     
 }

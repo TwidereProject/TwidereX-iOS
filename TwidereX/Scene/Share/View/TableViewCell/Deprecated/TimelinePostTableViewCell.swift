@@ -9,7 +9,6 @@ import os.log
 import UIKit
 import AVKit
 import Combine
-import ActiveLabel
 
 protocol TimelinePostTableViewCellDelegate: class {
     var playerViewControllerDelegate: AVPlayerViewControllerDelegate? { get }

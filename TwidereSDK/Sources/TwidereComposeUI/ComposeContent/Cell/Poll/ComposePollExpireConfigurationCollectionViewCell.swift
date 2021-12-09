@@ -13,7 +13,7 @@ import TwidereAsset
 import TwidereLocalization
 
 public protocol ComposePollExpireConfigurationCollectionViewCellDelegate: AnyObject {
-    func composePollExpireConfigurationCollectionViewCell(_ cell: ComposePollExpireConfigurationCollectionViewCell, didSelectExpireConfigurationOption option: PollItem.ExpireConfiguration.Option)
+    func composePollExpireConfigurationCollectionViewCell(_ cell: ComposePollExpireConfigurationCollectionViewCell, didSelectExpireConfigurationOption option: PollComposeItem.ExpireConfiguration.Option)
 }
 
 public final class ComposePollExpireConfigurationCollectionViewCell: UICollectionViewCell {
@@ -84,7 +84,7 @@ extension ComposePollExpireConfigurationCollectionViewCell {
         chevronImageView.setContentHuggingPriority(.required - 1, for: .horizontal)
         chevronImageView.setContentCompressionResistancePriority(.required - 1, for: .horizontal)
         
-        let children = PollItem.ExpireConfiguration.Option.allCases.map { option -> UIAction in
+        let children = PollComposeItem.ExpireConfiguration.Option.allCases.map { option -> UIAction in
             UIAction(
                 title: option.title,
                 image: nil,
@@ -105,7 +105,7 @@ extension ComposePollExpireConfigurationCollectionViewCell {
 
 extension ComposePollExpireConfigurationCollectionViewCell {
 
-    private func expireOptionActionHandler(_ sender: UIAction, option: PollItem.ExpireConfiguration.Option) {
+    private func expireOptionActionHandler(_ sender: UIAction, option: PollComposeItem.ExpireConfiguration.Option) {
         logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): select \(option.title)")
         
         delegate?.composePollExpireConfigurationCollectionViewCell(self, didSelectExpireConfigurationOption: option)
