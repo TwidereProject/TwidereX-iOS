@@ -579,6 +579,7 @@
 		DB5FAFFC2727B940006520FA /* UserListFetchViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserListFetchViewModel.swift; sourceTree = "<group>"; };
 		DB5FD9B226D8D94600CF5439 /* StatusTableViewCell+ViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "StatusTableViewCell+ViewModel.swift"; sourceTree = "<group>"; };
 		DB5FD9B626D8EFF700CF5439 /* UserBriefInfoView+ViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UserBriefInfoView+ViewModel.swift"; sourceTree = "<group>"; };
+		DB60C1A82762394E00628235 /* AuthenticationServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AuthenticationServices.framework; path = System/Library/Frameworks/AuthenticationServices.framework; sourceTree = SDKROOT; };
 		DB657A7225AC4DF6001339B6 /* TweetFetchedResultsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TweetFetchedResultsController.swift; sourceTree = "<group>"; };
 		DB657A7A25AD574D001339B6 /* UIBarButtonItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIBarButtonItem.swift; sourceTree = "<group>"; };
 		DB6760F8254AD026006C6798 /* SearchMediaViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchMediaViewModel.swift; sourceTree = "<group>"; };
@@ -2292,6 +2293,7 @@
 		F30A8D6C372DFF6B5AEEE327 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				DB60C1A82762394E00628235 /* AuthenticationServices.framework */,
 				DBBBBE762744EC65007ACB4B /* UIKit.framework */,
 				8564534D30DC2640CEB8344E /* Pods_TwidereX.framework */,
 				038E5A2895D82A5D7BA40C73 /* Pods_TwidereX_TwidereXUITests.framework */,

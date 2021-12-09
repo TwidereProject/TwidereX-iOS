@@ -176,6 +176,7 @@ extension WelcomeViewController: WelcomeViewModelDelegate {
             .store(in: &authenticationController.disposeBag)
         
         self.twitterAuthenticationController = authenticationController
+        assert(authenticationController.authenticationSession != nil)
         authenticationController.authenticationSession?.prefersEphemeralWebBrowserSession = true
         authenticationController.authenticationSession?.presentationContextProvider = self
         authenticationController.authenticationSession?.start()
