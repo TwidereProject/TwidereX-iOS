@@ -19,7 +19,22 @@ extension StatusViewTableViewCellDelegate where Self: DataSourceProvider {
         statusView: StatusView,
         headerDidPressed header: UIView
     ) {
-        
+        Task {
+            let source = DataSourceItem.Source(tableViewCell: cell, indexPath: nil)
+            guard let item = await item(from: source) else {
+                assertionFailure()
+                return
+            }
+            guard case let .status(status) = item else {
+                assertionFailure("only works for status data provider")
+                return
+            }
+            await DataSourceFacade.coordinateToProfileScene(
+                provider: self,
+                target: .repost,
+                status: status
+            )
+        }
     }
 
 }
@@ -56,7 +71,22 @@ extension StatusViewTableViewCellDelegate where Self: DataSourceProvider {
         quoteStatusView: StatusView,
         authorAvatarButtonDidPressed button: AvatarButton
     ) {
-        
+        Task {
+            let source = DataSourceItem.Source(tableViewCell: cell, indexPath: nil)
+            guard let item = await item(from: source) else {
+                assertionFailure()
+                return
+            }
+            guard case let .status(status) = item else {
+                assertionFailure("only works for status data provider")
+                return
+            }
+            await DataSourceFacade.coordinateToProfileScene(
+                provider: self,
+                target: .quote,
+                status: status
+            )
+        }
     }
 
 }
@@ -75,23 +105,35 @@ extension StatusViewTableViewCellDelegate where Self: DataSourceProvider {
                 return
             }
             
-            switch meta {
-            case .url(_, _, let url, _):
-                guard let url = URL(string: url) else { return }
-                await coordinator.present(scene: .safari(url: url), from: nil, transition: .safariPresent(animated: true, completion: nil))
-            case .hashtag(_, let hashtag, _):
-                let hashtagViewModel = HashtagTimelineViewModel(context: context, hashtag: hashtag)
-                await coordinator.present(scene: .hashtagTimeline(viewModel: hashtagViewModel), from: self, transition: .show)
-            case .mention(_, let mention, let userInfo):
-                await DataSourceFacade.coordinateToProfileScene(
-                    provider: self,
-                    status: status,
-                    mention: mention,
-                    userInfo: userInfo
-                )
-            case .email: break
-            case .emoji: break
+            await DataSourceFacade.responseToMetaTextAreaView(
+                provider: self,
+                target: .status,
+                status: status,
+                metaTextAreaView: metaTextAreaView,
+                didSelectMeta: meta
+            )
+        }
+    }
+    
+    func tableViewCell(_ cell: UITableViewCell, statusView: StatusView, quoteStatusView: StatusView, metaTextAreaView: MetaTextAreaView, didSelectMeta meta: Meta) {
+        Task {
+            let source = DataSourceItem.Source(tableViewCell: cell, indexPath: nil)
+            guard let item = await item(from: source) else {
+                assertionFailure()
+                return
             }
+            guard case let .status(status) = item else {
+                assertionFailure("only works for status data provider")
+                return
+            }
+            
+            await DataSourceFacade.responseToMetaTextAreaView(
+                provider: self,
+                target: .quote,
+                status: status,
+                metaTextAreaView: metaTextAreaView,
+                didSelectMeta: meta
+            )
         }
     }
 }
@@ -138,9 +180,97 @@ extension StatusViewTableViewCellDelegate where Self: DataSourceProvider & Media
         didTapMediaView mediaView: MediaView,
         at index: Int
     ) {
-        
+        Task {
+            let source = DataSourceItem.Source(tableViewCell: cell, indexPath: nil)
+            guard let item = await item(from: source) else {
+                assertionFailure()
+                return
+            }
+            guard case let .status(status) = item else {
+                assertionFailure("only works for status data provider")
+                return
+            }
+            await DataSourceFacade.coordinateToMediaPreviewScene(
+                provider: self,
+                target: .quote,
+                status: status,
+                mediaPreviewContext: DataSourceFacade.MediaPreviewContext(
+                    statusView: statusView,
+                    containerView: containerView,
+                    mediaView: mediaView,
+                    index: index
+                )
+            )
+        }
     }
 }
+
+// poll
+extension StatusViewTableViewCellDelegate where Self: DataSourceProvider {
+    func tableViewCell(_ cell: UITableViewCell, statusView: StatusView, pollTableView tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        Task {
+            let source = DataSourceItem.Source(tableViewCell: cell, indexPath: nil)
+            guard let item = await item(from: source) else {
+                assertionFailure()
+                return
+            }
+            guard case let .status(status) = item else {
+                assertionFailure("only works for status data provider")
+                return
+            }
+            await DataSourceFacade.responseToStatusPollOption(
+                provider: self,
+                target: .status,
+                status: status,
+                didSelectRowAt: indexPath
+            )
+        }
+    }
+    
+    func tableViewCell(_ cell: UITableViewCell, statusView: StatusView, pollVoteButtonDidPressed button: UIButton) {
+        Task {
+            let source = DataSourceItem.Source(tableViewCell: cell, indexPath: nil)
+            guard let item = await item(from: source) else {
+                assertionFailure()
+                return
+            }
+            guard case let .status(status) = item else {
+                assertionFailure("only works for status data provider")
+                return
+            }
+            await DataSourceFacade.responseToStatusPollOption(
+                provider: self,
+                target: .status,
+                status: status,
+                voteButtonDidPressed: button
+            )
+        }
+    }
+}
+
+// MARK: - quote
+extension StatusViewTableViewCellDelegate where Self: DataSourceProvider {
+    func tableViewCell(_ cell: UITableViewCell, statusView: StatusView, quoteStatusViewDidPressed quoteStatusView: StatusView) {
+        Task {
+            let source = DataSourceItem.Source(tableViewCell: cell, indexPath: nil)
+            guard let item = await item(from: source) else {
+                return
+            }
+            
+            guard case let .status(status) = item else {
+                assertionFailure("only works for status data provider")
+                return
+            }
+            
+            await DataSourceFacade.coordinateToStatusThreadScene(
+                provider: self,
+                target: .quote,
+                status: status
+            )
+        }
+    }
+}
+
 
 // MARK: - toolbar
 extension StatusViewTableViewCellDelegate where Self: DataSourceProvider {

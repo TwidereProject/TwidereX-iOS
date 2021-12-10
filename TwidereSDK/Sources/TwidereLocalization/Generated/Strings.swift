@@ -1349,6 +1349,14 @@ public enum L10n {
   }
 
   public enum Count {
+    /// Plural format key: "%#@count_people@"
+    public static func people(_ p1: Int) -> String {
+      return L10n.tr("Localizable", "count.people", p1)
+    }
+    /// Plural format key: "%#@count_vote@"
+    public static func vote(_ p1: Int) -> String {
+      return L10n.tr("Localizable", "count.vote", p1)
+    }
     public enum People {
       /// Plural format key: "%#@count_people_talking@"
       public static func talking(_ p1: Int) -> String {

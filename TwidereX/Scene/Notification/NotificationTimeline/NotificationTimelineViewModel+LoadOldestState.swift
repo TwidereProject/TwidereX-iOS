@@ -20,6 +20,7 @@ extension NotificationTimelineViewModel {
         }
         
         override func didEnter(from previousState: GKState?) {
+            super.didEnter(from: previousState)
             os_log("%{public}s[%{public}ld], %{public}s: enter %s, previous: %s", ((#file as NSString).lastPathComponent), #line, #function, self.debugDescription, previousState.debugDescription)
         }
     }
@@ -84,7 +85,7 @@ extension NotificationTimelineViewModel.LoadOldestState {
                 }
 
                 guard let input = _input else {
-                    stateMachine.enter(Fail.self)
+                    await enter(state: Fail.self)
                     return
                 }
 
@@ -92,16 +93,21 @@ extension NotificationTimelineViewModel.LoadOldestState {
                     logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): fetch…")
                     let output = try await NotificationListFetchViewModel.notificationTimeline(context: viewModel.context, input: input)
                     if output.hasMore {
-                        stateMachine.enter(Idle.self)
+                        await enter(state: Idle.self)
                     } else {
-                        stateMachine.enter(NoMore.self)
+                        await enter(state: NoMore.self)
                     }
                     logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): fetch success")
                 } catch {
                     logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): fetch failure: \(error.localizedDescription)")
-                    stateMachine.enter(Fail.self)
+                    await enter(state: Fail.self)
                 }
             }
+        }
+        
+        @MainActor
+        func enter(state: NotificationTimelineViewModel.LoadOldestState.Type) {
+            stateMachine?.enter(state)
         }
 
     }

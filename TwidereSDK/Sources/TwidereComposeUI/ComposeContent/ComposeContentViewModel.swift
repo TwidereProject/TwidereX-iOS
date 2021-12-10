@@ -89,15 +89,15 @@ public final class ComposeContentViewModel: NSObject {
     
     // poll
     @Published public var isPollComposing = false
-    @Published public var pollOptions: [PollItem.Option] = {
+    @Published public var pollOptions: [PollComposeItem.Option] = {
         // initial with 2 options
-        var options: [PollItem.Option] = []
-        options.append(PollItem.Option())
-        options.append(PollItem.Option())
+        var options: [PollComposeItem.Option] = []
+        options.append(PollComposeItem.Option())
+        options.append(PollComposeItem.Option())
         return options
     }()
-    public let pollExpireConfiguration = PollItem.ExpireConfiguration()
-    public let pollMultipleConfiguration = PollItem.MultipleConfiguration()
+    public let pollExpireConfiguration = PollComposeItem.ExpireConfiguration()
+    public let pollMultipleConfiguration = PollComposeItem.MultipleConfiguration()
     @Published public var maxPollOptionLimit = 4
     public let pollCollectionViewDiffableDataSourceDidUpdate = PassthroughSubject<Void, Never>()
     
@@ -418,13 +418,13 @@ public final class ComposeContentViewModel: NSObject {
             .sink { [weak self] pollOptions in
                 guard let self = self else { return }
                 
-                var snapshot = NSDiffableDataSourceSnapshot<PollSection, PollItem>()
+                var snapshot = NSDiffableDataSourceSnapshot<PollComposeSection, PollComposeItem>()
                 snapshot.appendSections([.main])
                 
-                var items: [PollItem] = []
-                items.append(contentsOf: pollOptions.map { PollItem.option($0) })
-                items.append(PollItem.expireConfiguration(self.pollExpireConfiguration))
-                items.append(PollItem.multipleConfiguration(self.pollMultipleConfiguration))
+                var items: [PollComposeItem] = []
+                items.append(contentsOf: pollOptions.map { PollComposeItem.option($0) })
+                items.append(PollComposeItem.expireConfiguration(self.pollExpireConfiguration))
+                items.append(PollComposeItem.multipleConfiguration(self.pollMultipleConfiguration))
                 snapshot.appendItems(items, toSection: .main)
                 
                 self.composePollTableViewCell.diffableDataSource?.apply(snapshot, animatingDifferences: false) { [weak self] in
@@ -616,7 +616,7 @@ extension ComposeContentViewModel {
         logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public)")
         
         guard pollOptions.count < maxPollOptionLimit else { return }
-        pollOptions.append(PollItem.Option())
+        pollOptions.append(PollComposeItem.Option())
     }
 }
 

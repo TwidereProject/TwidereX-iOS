@@ -12,6 +12,7 @@ import UIKit
 import MetaTextKit
 import MetaTextArea
 import TwidereCommon
+import TwidereCore
 
 public protocol StatusViewDelegate: AnyObject {
     func statusView(_ statusView: StatusView, headerDidPressed header: UIView)
@@ -20,9 +21,15 @@ public protocol StatusViewDelegate: AnyObject {
     func statusView(_ statusView: StatusView, quoteStatusView: StatusView, authorAvatarButtonDidPressed button: AvatarButton)
     
     func statusView(_ statusView: StatusView, metaTextAreaView: MetaTextAreaView, didSelectMeta meta: Meta)
+    func statusView(_ statusView: StatusView, quoteStatusView: StatusView, metaTextAreaView: MetaTextAreaView, didSelectMeta meta: Meta)
     
     func statusView(_ statusView: StatusView, mediaGridContainerView containerView: MediaGridContainerView, didTapMediaView mediaView: MediaView, at index: Int)
     func statusView(_ statusView: StatusView, quoteStatusView: StatusView, mediaGridContainerView containerView: MediaGridContainerView, didTapMediaView mediaView: MediaView, at index: Int)
+
+    func statusView(_ statusView: StatusView, pollTableView tableView: UITableView, didSelectRowAt indexPath: IndexPath)
+    func statusView(_ statusView: StatusView, pollVoteButtonDidPressed button: UIButton)
+    
+    func statusView(_ statusView: StatusView, quoteStatusViewDidPressed quoteStatusView: StatusView)
     
     func statusView(_ statusView: StatusView, statusToolbar: StatusToolbar, actionDidPressed action: StatusToolbar.Action, button: UIButton)
 }
@@ -90,11 +97,46 @@ public final class StatusView: UIView {
     // media
     public let mediaGridContainerView = MediaGridContainerView()
     
+    // poll
+    public let pollTableView: UITableView = {
+        let tableView = UITableView(frame: CGRect(x: 0, y: 0, width: 100, height: 100))
+        tableView.register(PollOptionTableViewCell.self, forCellReuseIdentifier: String(describing: PollOptionTableViewCell.self))
+        tableView.isScrollEnabled = false
+        tableView.estimatedRowHeight = 36
+        tableView.tableFooterView = UIView()
+        tableView.backgroundColor = .clear
+        tableView.separatorStyle = .none
+        return tableView
+    }()
+    public var pollTableViewHeightLayoutConstraint: NSLayoutConstraint!
+    public var pollTableViewDiffableDataSource: UITableViewDiffableDataSource<PollSection, PollItem>?
+    
+    public let pollVoteInfoContainerView = UIStackView()
+    public let pollVoteDescriptionLabel = PlainLabel(style: .pollVoteDescription)
+    public let pollVoteButton: HitTestExpandedButton = {
+        let button = HitTestExpandedButton(type: .system)
+        button.setTitle(L10n.Common.Controls.Status.Actions.vote, for: .normal)
+        button.setTitleColor(Asset.Colors.hightLight.color, for: .normal)
+        button.setTitleColor(.secondaryLabel, for: .disabled)
+        return button
+    }()
+    public let pollVoteActivityIndicatorView: UIActivityIndicatorView = {
+        let activityIndicatorView = UIActivityIndicatorView(style: .medium)
+        activityIndicatorView.hidesWhenStopped = true
+        activityIndicatorView.tintColor = .secondaryLabel
+        return activityIndicatorView
+    }()
+    
     // quote
     public private(set) var quoteStatusView: StatusView? {
         didSet {
             if let quoteStatusView = quoteStatusView {
                 quoteStatusView.delegate = self
+                
+                let quoteTapGestureRecognizer = UITapGestureRecognizer.singleTapGestureRecognizer
+                quoteTapGestureRecognizer.delegate = self
+                quoteTapGestureRecognizer.addTarget(self, action: #selector(StatusView.quoteStatusViewDidPressed(_:)))
+                quoteStatusView.addGestureRecognizer(quoteTapGestureRecognizer)
             }
         }
     }
@@ -148,6 +190,10 @@ extension StatusView {
         viewModel.authorAvatarImageURL = nil
         authorAvatarButton.avatarImageView.cancelTask()
         mediaGridContainerView.prepareForReuse()
+        if var snapshot = pollTableViewDiffableDataSource?.snapshot() {
+            snapshot.deleteAllItems()
+            pollTableViewDiffableDataSource?.applySnapshotUsingReloadData(snapshot)
+        }
         Style.prepareForReuse(statusView: self)
     }
     
@@ -162,6 +208,7 @@ extension StatusView {
         ])
         
         // header
+        headerTextLabel.isUserInteractionEnabled = false
         let headerTapGestureRecognizer = UITapGestureRecognizer.singleTapGestureRecognizer
         headerTapGestureRecognizer.addTarget(self, action: #selector(StatusView.headerTapGestureRecognizerHandler(_:)))
         headerContainerView.addGestureRecognizer(headerTapGestureRecognizer)
@@ -171,6 +218,14 @@ extension StatusView {
         contentTextView.delegate = self
         // media grid
         mediaGridContainerView.delegate = self
+        // poll
+        pollTableView.translatesAutoresizingMaskIntoConstraints = false
+        pollTableViewHeightLayoutConstraint = pollTableView.heightAnchor.constraint(equalToConstant: 36).priority(.required - 10)
+        NSLayoutConstraint.activate([
+            pollTableViewHeightLayoutConstraint,
+        ])
+        pollTableView.delegate = self
+        pollVoteButton.addTarget(self, action: #selector(StatusView.pollVoteButtonDidPressed(_:)), for: .touchUpInside)
         // toolbar
         toolbar.delegate = self
         
@@ -215,6 +270,9 @@ extension StatusView {
             statusView.lockImageView.isHidden = true
             statusView.visibilityImageView.isHidden = true
             statusView.mediaGridContainerView.isHidden = true
+            statusView.pollTableView.isHidden = true
+            statusView.pollVoteInfoContainerView.isHidden = true
+            statusView.pollVoteActivityIndicatorView.isHidden = true
             statusView.quoteStatusView?.isHidden = true
             statusView.locationContainer.isHidden = true
             statusView.metricsDashboardView.isHidden = true
@@ -322,6 +380,20 @@ extension StatusView.Style {
         // mediaGridContainerView
         statusView.mediaGridContainerView.translatesAutoresizingMaskIntoConstraints = false
         contentContainerView.addArrangedSubview(statusView.mediaGridContainerView)
+        
+        // pollTableView
+        contentContainerView.addArrangedSubview(statusView.pollTableView)
+        
+        statusView.pollVoteInfoContainerView.axis = .horizontal
+        statusView.pollVoteInfoContainerView.addArrangedSubview(statusView.pollVoteDescriptionLabel)
+        statusView.pollVoteInfoContainerView.addArrangedSubview(UIView())       // spacer
+        statusView.pollVoteInfoContainerView.addArrangedSubview(statusView.pollVoteButton)
+        statusView.pollVoteButton.setContentHuggingPriority(.required - 10, for: .horizontal)
+        statusView.pollVoteButton.setContentCompressionResistancePriority(.required - 9, for: .horizontal)
+        statusView.pollVoteInfoContainerView.addArrangedSubview(statusView.pollVoteActivityIndicatorView)
+        statusView.pollVoteInfoContainerView.setContentHuggingPriority(.required - 11, for: .horizontal)
+        statusView.pollVoteInfoContainerView.setContentCompressionResistancePriority(.required - 10, for: .horizontal)
+        contentContainerView.addArrangedSubview(statusView.pollVoteInfoContainerView)
         
         // quoteStatusView
         let quoteStatusView = StatusView()
@@ -455,6 +527,20 @@ extension StatusView.Style {
         
         // mediaGridContainerView
         statusView.containerStackView.addArrangedSubview(statusView.mediaGridContainerView)
+        
+        // pollTableView
+        statusView.containerStackView.addArrangedSubview(statusView.pollTableView)
+        
+        statusView.pollVoteInfoContainerView.axis = .horizontal
+        statusView.pollVoteInfoContainerView.addArrangedSubview(statusView.pollVoteDescriptionLabel)
+        statusView.pollVoteInfoContainerView.addArrangedSubview(UIView())       // spacer
+        statusView.pollVoteInfoContainerView.addArrangedSubview(statusView.pollVoteButton)
+        statusView.pollVoteButton.setContentHuggingPriority(.required - 10, for: .horizontal)
+        statusView.pollVoteButton.setContentCompressionResistancePriority(.required - 9, for: .horizontal)
+        statusView.pollVoteInfoContainerView.addArrangedSubview(statusView.pollVoteActivityIndicatorView)
+        statusView.pollVoteInfoContainerView.setContentHuggingPriority(.required - 11, for: .horizontal)
+        statusView.pollVoteInfoContainerView.setContentCompressionResistancePriority(.required - 10, for: .horizontal)
+        statusView.containerStackView.addArrangedSubview(statusView.pollVoteInfoContainerView)
 
         // quoteStatusView
         let quoteStatusView = StatusView()
@@ -687,6 +773,11 @@ extension StatusView {
         mediaGridContainerView.isHidden = false
     }
     
+    public func setPollDisplay() {
+        pollTableView.isHidden = false
+        pollVoteInfoContainerView.isHidden = false
+    }
+    
     public func setQuoteDisplay() {
         quoteStatusView?.isHidden = false
     }
@@ -734,6 +825,23 @@ extension StatusView {
     @objc private func authorAvatarButtonDidPressed(_ button: UIButton) {
         logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public)")
         delegate?.statusView(self, authorAvatarButtonDidPressed: authorAvatarButton)
+    }
+    
+    @objc private func pollVoteButtonDidPressed(_ sender: UIButton) {
+        logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public)")
+        delegate?.statusView(self, pollVoteButtonDidPressed: sender)
+    }
+    
+    @objc private func quoteStatusViewDidPressed(_ sender: UITapGestureRecognizer) {
+        logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public)")
+        guard let quoteStatusView = quoteStatusView else { return }
+        delegate?.statusView(self, quoteStatusViewDidPressed: quoteStatusView)
+    }
+    
+    @objc private func quoteAuthorAvatarButtonDidPressed(_ sender: UITapGestureRecognizer) {
+        logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public)")
+        guard let quoteStatusView = quoteStatusView else { return }
+        delegate?.statusView(self, quoteStatusView: quoteStatusView, authorAvatarButtonDidPressed: quoteStatusView.authorAvatarButton)
     }
 }
 
@@ -786,7 +894,11 @@ extension StatusView: StatusViewDelegate {
             return
         }
         
-        // TODO:
+        delegate?.statusView(self, quoteStatusView: statusView, metaTextAreaView: metaTextAreaView, didSelectMeta: meta)
+    }
+    
+    public func statusView(_ statusView: StatusView, quoteStatusView: StatusView, metaTextAreaView: MetaTextAreaView, didSelectMeta meta: Meta) {
+        assertionFailure()
     }
     
     public func statusView(_ statusView: StatusView, mediaGridContainerView containerView: MediaGridContainerView, didTapMediaView mediaView: MediaView, at index: Int) {
@@ -798,7 +910,19 @@ extension StatusView: StatusViewDelegate {
         delegate?.statusView(self, quoteStatusView: statusView, mediaGridContainerView: containerView, didTapMediaView: mediaView, at: index)
     }
     
+    public func statusView(_ statusView: StatusView, pollTableView tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        assertionFailure()
+    }
+    
+    public func statusView(_ statusView: StatusView, pollVoteButtonDidPressed button: UIButton) {
+        assertionFailure()
+    }
+    
     public func statusView(_ statusView: StatusView, quoteStatusView: StatusView, mediaGridContainerView containerView: MediaGridContainerView, didTapMediaView mediaView: MediaView, at index: Int) {
+        assertionFailure()
+    }
+    
+    public func statusView(_ statusView: StatusView, quoteStatusViewDidPressed quoteStatusView: StatusView) {
         assertionFailure()
     }
     
@@ -806,4 +930,29 @@ extension StatusView: StatusViewDelegate {
         assertionFailure()
     }
     
+}
+
+// MARK: - UITableViewDelegate
+extension StatusView: UITableViewDelegate {
+    public func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): select \(indexPath.debugDescription)")
+        
+        switch tableView {
+        case pollTableView:
+            delegate?.statusView(self, pollTableView: tableView, didSelectRowAt: indexPath)
+        default:
+            assertionFailure()
+        }
+    }
+}
+
+// MARK: - UIGestureRecognizerDelegate
+extension StatusView: UIGestureRecognizerDelegate {
+    public func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
+        if let view = touch.view, view is AvatarButton {
+            return false
+        }
+        
+        return true
+    }
 }

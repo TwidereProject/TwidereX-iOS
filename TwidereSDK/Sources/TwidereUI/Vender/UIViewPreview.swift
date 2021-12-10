@@ -6,9 +6,15 @@ import SwiftUI
 public struct UIViewPreview<View: UIView>: UIViewRepresentable {
     public let view: View
     public let width: CGFloat?
-    public init(width: CGFloat? = nil, _ builder: @escaping () -> View) {
+    public let height: CGFloat?
+    public init(
+        width: CGFloat? = nil,
+        height: CGFloat? = nil,
+        _ builder: @escaping () -> View
+    ) {
         self.view = builder()
         self.width = width
+        self.height = height
     }
     // MARK: - UIViewRepresentable
     public func makeUIView(context: Context) -> UIView {
@@ -22,6 +28,12 @@ public struct UIViewPreview<View: UIView>: UIViewRepresentable {
         if let width = width {
             NSLayoutConstraint.activate([
                 view.widthAnchor.constraint(equalToConstant: width),
+            ])
+        }
+        
+        if let height = height {
+            NSLayoutConstraint.activate([
+                view.heightAnchor.constraint(equalToConstant: height),
             ])
         }
     }

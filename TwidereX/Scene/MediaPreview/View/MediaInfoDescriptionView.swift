@@ -9,7 +9,6 @@
 import os.log
 import UIKit
 import Combine
-import ActiveLabel
 import MetaTextKit
 import MetaTextArea
 import TwidereUI

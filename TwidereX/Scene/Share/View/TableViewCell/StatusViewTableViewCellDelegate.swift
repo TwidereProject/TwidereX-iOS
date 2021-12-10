@@ -25,9 +25,15 @@ protocol StatusViewTableViewCellDelegate: AnyObject {
     func tableViewCell(_ cell: UITableViewCell, statusView: StatusView, quoteStatusView: StatusView, authorAvatarButtonDidPressed button: AvatarButton)
     // content
     func tableViewCell(_ cell: UITableViewCell, statusView: StatusView, metaTextAreaView: MetaTextAreaView, didSelectMeta meta: Meta)
+    func tableViewCell(_ cell: UITableViewCell, statusView: StatusView, quoteStatusView: StatusView, metaTextAreaView: MetaTextAreaView, didSelectMeta meta: Meta)
     // media
     func tableViewCell(_ cell: UITableViewCell, statusView: StatusView, mediaGridContainerView containerView: MediaGridContainerView, didTapMediaView mediaView: MediaView, at index: Int)
     func tableViewCell(_ cell: UITableViewCell, statusView: StatusView, quoteStatusView: StatusView, mediaGridContainerView containerView: MediaGridContainerView, didTapMediaView mediaView: MediaView, at index: Int)
+    // poll
+    func tableViewCell(_ cell: UITableViewCell, statusView: StatusView, pollTableView tableView: UITableView, didSelectRowAt indexPath: IndexPath)
+    func tableViewCell(_ cell: UITableViewCell, statusView: StatusView, pollVoteButtonDidPressed button: UIButton)
+    // quote
+    func tableViewCell(_ cell: UITableViewCell, statusView: StatusView, quoteStatusViewDidPressed quoteStatusView: StatusView)
     // toolbar
     func tableViewCell(_ cell: UITableViewCell, statusView: StatusView, statusToolbar: StatusToolbar, actionDidPressed action: StatusToolbar.Action, button: UIButton)
 }
@@ -50,6 +56,9 @@ extension StatusViewDelegate where Self: StatusViewContainerTableViewCell {
     func statusView(_ statusView: StatusView, metaTextAreaView: MetaTextAreaView, didSelectMeta meta: Meta) {
         delegate?.tableViewCell(self, statusView: statusView, metaTextAreaView: metaTextAreaView, didSelectMeta: meta)
     }
+    func statusView(_ statusView: StatusView, quoteStatusView: StatusView, metaTextAreaView: MetaTextAreaView, didSelectMeta meta: Meta) {
+        delegate?.tableViewCell(self, statusView: statusView, quoteStatusView: quoteStatusView, metaTextAreaView: metaTextAreaView, didSelectMeta: meta)
+    }
     
     func statusView(_ statusView: StatusView, mediaGridContainerView containerView: MediaGridContainerView, didTapMediaView mediaView: MediaView, at index: Int) {
         delegate?.tableViewCell(self, statusView: statusView, mediaGridContainerView: containerView, didTapMediaView: mediaView, at: index)
@@ -57,7 +66,19 @@ extension StatusViewDelegate where Self: StatusViewContainerTableViewCell {
     func statusView(_ statusView: StatusView, quoteStatusView: StatusView, mediaGridContainerView containerView: MediaGridContainerView, didTapMediaView mediaView: MediaView, at index: Int) {
         delegate?.tableViewCell(self, statusView: statusView, quoteStatusView: quoteStatusView, mediaGridContainerView: containerView, didTapMediaView: mediaView, at: index)
     }
+        
+    func statusView(_ statusView: StatusView, pollTableView tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        delegate?.tableViewCell(self, statusView: statusView, pollTableView: tableView, didSelectRowAt: indexPath)
+    }
     
+    func statusView(_ statusView: StatusView, pollVoteButtonDidPressed button: UIButton) {
+        delegate?.tableViewCell(self, statusView: statusView, pollVoteButtonDidPressed: button)
+    }
+    
+    func statusView(_ statusView: StatusView, quoteStatusViewDidPressed quoteStatusView: StatusView) {
+        delegate?.tableViewCell(self, statusView: statusView, quoteStatusViewDidPressed: quoteStatusView)
+    }
+
     func statusView(_ statusView: StatusView, statusToolbar: StatusToolbar, actionDidPressed action: StatusToolbar.Action, button: UIButton) {
         delegate?.tableViewCell(self, statusView: statusView, statusToolbar: statusToolbar, actionDidPressed: action, button: button)
     }

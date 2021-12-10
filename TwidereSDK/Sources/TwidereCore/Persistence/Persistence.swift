@@ -20,6 +20,8 @@ extension Persistence {
     public enum MastodonUser { }
     public enum MastodonStatus { }
     public enum MastodonNotification { }
+    public enum MastodonPoll { }
+    public enum MastodonPollOption { }
 }
 
 extension Persistence {
@@ -31,3 +33,4 @@ extension Persistence {
         }
     }
 }
+

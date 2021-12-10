@@ -13,9 +13,10 @@ import CoreGraphics
 import MastodonSDK
 
 extension MastodonStatus.Property {
-    public init(domain: String,
-         entity: Mastodon.Entity.Status,
-         networkDate: Date
+    public init(
+        domain: String,
+        entity: Mastodon.Entity.Status,
+        networkDate: Date
     ) {
         self.init(
             id: entity.id,
