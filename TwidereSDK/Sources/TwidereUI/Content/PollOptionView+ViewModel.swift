@@ -42,7 +42,7 @@ extension PollOptionView {
         
         // output
         @Published public var corner: Corner = .none
-        @Published public var backgroundColor: UIColor = .clear
+        @Published public var stripProgressTinitColor: UIColor = .clear
         @Published public var selectImageTintColor: UIColor = Asset.Colors.hightLight.color
         @Published public var isReveal: Bool = false
         
@@ -69,10 +69,10 @@ extension PollOptionView {
                 if isReveal {
                     return Asset.Colors.hightLight.color.withAlphaComponent(0.2)
                 }
-                
-                return Asset.Colors.hightLight.color.withAlphaComponent(0.08)
+
+                return .clear
             }
-            .assign(to: &$backgroundColor)
+            .assign(to: &$stripProgressTinitColor)
             // selectImageTintColor
             $isSelect
                 .map { isSelect in
@@ -139,9 +139,9 @@ extension PollOptionView.ViewModel {
             }
             .store(in: &disposeBag)
         // backgroundColor
-        $backgroundColor
+        $stripProgressTinitColor
             .map { $0 as UIColor? }
-            .assign(to: \.backgroundColor, on: view.containerView)
+            .assign(to: \.tintColor, on: view.stripProgressView)
             .store(in: &disposeBag)
         // selectionImageView
         Publishers.CombineLatest4(
@@ -168,11 +168,13 @@ extension PollOptionView.ViewModel {
             }
             
             if isReveal {
-                guard let isSelect = isSelect else {
-                    // the server not return selection state
+                guard isSelect == true else {
+                    // not display image when isReveal:
+                    // - the server not return selection state
+                    // - the user not select
                     return nil
                 }
-                return image(isMultiple: isMultiple, isSelect: isSelect)
+                return image(isMultiple: isMultiple, isSelect: true)
             } else {
                 return image(isMultiple: isMultiple, isSelect: false)
             }

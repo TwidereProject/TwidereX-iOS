@@ -30,7 +30,13 @@ public final class PollOptionView: UIView {
         return viewModel
     }()
     
-    let containerView = UIView()
+    let containerView: UIView = {
+        let view = UIView()
+        view.backgroundColor = Asset.Colors.hightLight.color.withAlphaComponent(0.08)
+        return view
+    }()
+    
+    let stripProgressView = StripProgressView()
     
     let selectionImageView: UIImageView = {
         let imageView = UIImageView()
@@ -72,13 +78,14 @@ extension PollOptionView {
     public override func layoutSubviews() {
         super.layoutSubviews()
         
-        setupContainerCorner()
+        setupCorner()
     }
     
-    func setupContainerCorner() {
+    func setupCorner() {
         switch viewModel.corner {
         case .none:
             containerView.layer.masksToBounds = false
+            stripProgressView.cornerRadius = 0
         case .radius(let radius):
             containerView.layer.masksToBounds = true
             guard radius < bounds.height / 2 else {
@@ -86,10 +93,13 @@ extension PollOptionView {
             }
             containerView.layer.cornerCurve = .continuous
             containerView.layer.cornerRadius = radius
+            stripProgressView.cornerRadius = radius
         case .circle:
+            let radius = bounds.height / 2
             containerView.layer.masksToBounds = true
             containerView.layer.cornerCurve = .circular
-            containerView.layer.cornerRadius = bounds.height / 2
+            containerView.layer.cornerRadius = radius
+            stripProgressView.cornerRadius = radius
         }
     }
     
@@ -137,6 +147,16 @@ extension PollOptionView.Style {
             view.containerView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             view.containerView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
         ])
+        
+        view.stripProgressView.translatesAutoresizingMaskIntoConstraints = false
+        view.containerView.addSubview(view.stripProgressView)
+        NSLayoutConstraint.activate([
+            view.stripProgressView.topAnchor.constraint(equalTo: view.containerView.topAnchor),
+            view.stripProgressView.leadingAnchor.constraint(equalTo: view.containerView.leadingAnchor),
+            view.stripProgressView.trailingAnchor.constraint(equalTo: view.containerView.trailingAnchor),
+            view.stripProgressView.bottomAnchor.constraint(equalTo: view.containerView.bottomAnchor),
+        ])
+        view.stripProgressView.setProgress(0.5, animated: false)
         
         view.selectionImageView.translatesAutoresizingMaskIntoConstraints = false
         view.containerView.addSubview(view.selectionImageView)

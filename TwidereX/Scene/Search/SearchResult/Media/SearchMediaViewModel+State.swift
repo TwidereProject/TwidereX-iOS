@@ -20,6 +20,7 @@ extension SearchMediaViewModel {
         }
         
         override func didEnter(from previousState: GKState?) {
+            super.didEnter(from: previousState)
             os_log("%{public}s[%{public}ld], %{public}s: enter %s, previous: %s", ((#file as NSString).lastPathComponent), #line, #function, self.debugDescription, previousState.debugDescription)
         }
     }
@@ -124,9 +125,9 @@ extension SearchMediaViewModel.State {
                     
                     nextInput = output.nextInput
                     if output.hasMore {
-                        stateMachine.enter(Idle.self)
+                        await enter(state: Idle.self)
                     } else {
-                        stateMachine.enter(NoMore.self)
+                        await enter(state: NoMore.self)
                     }
                     
                     switch output.result {
@@ -145,10 +146,15 @@ extension SearchMediaViewModel.State {
                     guard viewModel.searchText == searchText else { return }
                     
                     logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): fetch failure: \(error.localizedDescription)")
-                    stateMachine.enter(Fail.self)
+                    await enter(state: Fail.self)
                 }
             }   // end currentTask = Task { … }
         }   // end didEnter(from:)
+        
+        @MainActor
+        func enter(state: SearchMediaViewModel.State.Type) {
+            stateMachine?.enter(state)
+        }
     }
     
     class Fail: SearchMediaViewModel.State {
