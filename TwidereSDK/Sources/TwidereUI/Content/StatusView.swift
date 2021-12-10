@@ -21,11 +21,15 @@ public protocol StatusViewDelegate: AnyObject {
     func statusView(_ statusView: StatusView, quoteStatusView: StatusView, authorAvatarButtonDidPressed button: AvatarButton)
     
     func statusView(_ statusView: StatusView, metaTextAreaView: MetaTextAreaView, didSelectMeta meta: Meta)
+    func statusView(_ statusView: StatusView, quoteStatusView: StatusView, metaTextAreaView: MetaTextAreaView, didSelectMeta meta: Meta)
     
     func statusView(_ statusView: StatusView, mediaGridContainerView containerView: MediaGridContainerView, didTapMediaView mediaView: MediaView, at index: Int)
+    func statusView(_ statusView: StatusView, quoteStatusView: StatusView, mediaGridContainerView containerView: MediaGridContainerView, didTapMediaView mediaView: MediaView, at index: Int)
+
     func statusView(_ statusView: StatusView, pollTableView tableView: UITableView, didSelectRowAt indexPath: IndexPath)
     func statusView(_ statusView: StatusView, pollVoteButtonDidPressed button: UIButton)
-    func statusView(_ statusView: StatusView, quoteStatusView: StatusView, mediaGridContainerView containerView: MediaGridContainerView, didTapMediaView mediaView: MediaView, at index: Int)
+    
+    func statusView(_ statusView: StatusView, quoteStatusViewDidPressed quoteStatusView: StatusView)
     
     func statusView(_ statusView: StatusView, statusToolbar: StatusToolbar, actionDidPressed action: StatusToolbar.Action, button: UIButton)
 }
@@ -128,6 +132,11 @@ public final class StatusView: UIView {
         didSet {
             if let quoteStatusView = quoteStatusView {
                 quoteStatusView.delegate = self
+                
+                let quoteTapGestureRecognizer = UITapGestureRecognizer.singleTapGestureRecognizer
+                quoteTapGestureRecognizer.delegate = self
+                quoteTapGestureRecognizer.addTarget(self, action: #selector(StatusView.quoteStatusViewDidPressed(_:)))
+                quoteStatusView.addGestureRecognizer(quoteTapGestureRecognizer)
             }
         }
     }
@@ -199,6 +208,7 @@ extension StatusView {
         ])
         
         // header
+        headerTextLabel.isUserInteractionEnabled = false
         let headerTapGestureRecognizer = UITapGestureRecognizer.singleTapGestureRecognizer
         headerTapGestureRecognizer.addTarget(self, action: #selector(StatusView.headerTapGestureRecognizerHandler(_:)))
         headerContainerView.addGestureRecognizer(headerTapGestureRecognizer)
@@ -821,6 +831,18 @@ extension StatusView {
         logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public)")
         delegate?.statusView(self, pollVoteButtonDidPressed: sender)
     }
+    
+    @objc private func quoteStatusViewDidPressed(_ sender: UITapGestureRecognizer) {
+        logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public)")
+        guard let quoteStatusView = quoteStatusView else { return }
+        delegate?.statusView(self, quoteStatusViewDidPressed: quoteStatusView)
+    }
+    
+    @objc private func quoteAuthorAvatarButtonDidPressed(_ sender: UITapGestureRecognizer) {
+        logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public)")
+        guard let quoteStatusView = quoteStatusView else { return }
+        delegate?.statusView(self, quoteStatusView: quoteStatusView, authorAvatarButtonDidPressed: quoteStatusView.authorAvatarButton)
+    }
 }
 
 // MARK: - MetaTextAreaViewDelegate
@@ -872,7 +894,11 @@ extension StatusView: StatusViewDelegate {
             return
         }
         
-        // TODO:
+        delegate?.statusView(self, quoteStatusView: statusView, metaTextAreaView: metaTextAreaView, didSelectMeta: meta)
+    }
+    
+    public func statusView(_ statusView: StatusView, quoteStatusView: StatusView, metaTextAreaView: MetaTextAreaView, didSelectMeta meta: Meta) {
+        assertionFailure()
     }
     
     public func statusView(_ statusView: StatusView, mediaGridContainerView containerView: MediaGridContainerView, didTapMediaView mediaView: MediaView, at index: Int) {
@@ -896,6 +922,10 @@ extension StatusView: StatusViewDelegate {
         assertionFailure()
     }
     
+    public func statusView(_ statusView: StatusView, quoteStatusViewDidPressed quoteStatusView: StatusView) {
+        assertionFailure()
+    }
+    
     public func statusView(_ statusView: StatusView, statusToolbar: StatusToolbar, actionDidPressed action: StatusToolbar.Action, button: UIButton) {
         assertionFailure()
     }
@@ -913,5 +943,16 @@ extension StatusView: UITableViewDelegate {
         default:
             assertionFailure()
         }
+    }
+}
+
+// MARK: - UIGestureRecognizerDelegate
+extension StatusView: UIGestureRecognizerDelegate {
+    public func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
+        if let view = touch.view, view is AvatarButton {
+            return false
+        }
+        
+        return true
     }
 }
