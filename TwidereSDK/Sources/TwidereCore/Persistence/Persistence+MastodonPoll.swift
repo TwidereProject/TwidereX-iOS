@@ -165,12 +165,15 @@ extension Persistence.MastodonPoll {
             if let voted = context.entity.voted {
                 poll.update(isVote: voted, by: me)
             }
+            
+            let ownVotes = context.entity.ownVotes ?? []
             for option in options {
                 let index = Int(option.index)
-                let isVote = (context.entity.ownVotes ?? []).contains(index)
+                let isVote = ownVotes.contains(index)
                 option.update(isVote: isVote, by: me)
             }
         }
+        
         poll.update(updatedAt: context.networkDate)
     }
     

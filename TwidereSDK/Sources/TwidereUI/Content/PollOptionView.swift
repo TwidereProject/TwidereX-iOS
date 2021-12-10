@@ -30,11 +30,7 @@ public final class PollOptionView: UIView {
         return viewModel
     }()
     
-    let containerView: UIView = {
-        let view = UIView()
-        view.backgroundColor = Asset.Colors.hightLight.color.withAlphaComponent(0.08)
-        return view
-    }()
+    let containerView = UIView()
     
     let stripProgressView = StripProgressView()
     
@@ -56,6 +52,11 @@ public final class PollOptionView: UIView {
         textField.textAlignment = UIApplication.shared.userInterfaceLayoutDirection == .leftToRight ? .left : .right
         return textField
     }()
+    
+    public func prepareForReuse() {
+        viewModel.percentage = nil
+        stripProgressView.setProgress(0, animated: false)
+    }
     
     public override init(frame: CGRect) {
         super.init(frame: frame)
@@ -147,6 +148,7 @@ extension PollOptionView.Style {
             view.containerView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             view.containerView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
         ])
+        view.containerView.backgroundColor = Asset.Colors.hightLight.color.withAlphaComponent(0.08)
         
         view.stripProgressView.translatesAutoresizingMaskIntoConstraints = false
         view.containerView.addSubview(view.stripProgressView)
@@ -156,7 +158,6 @@ extension PollOptionView.Style {
             view.stripProgressView.trailingAnchor.constraint(equalTo: view.containerView.trailingAnchor),
             view.stripProgressView.bottomAnchor.constraint(equalTo: view.containerView.bottomAnchor),
         ])
-        view.stripProgressView.setProgress(0.5, animated: false)
         
         view.selectionImageView.translatesAutoresizingMaskIntoConstraints = false
         view.containerView.addSubview(view.selectionImageView)

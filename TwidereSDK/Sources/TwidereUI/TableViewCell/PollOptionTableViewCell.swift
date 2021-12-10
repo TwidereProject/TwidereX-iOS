@@ -18,6 +18,7 @@ public final class PollOptionTableViewCell: UITableViewCell {
         super.prepareForReuse()
         
         optionView.disposeBag.removeAll()
+        optionView.prepareForReuse()
     }
     
     public override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {

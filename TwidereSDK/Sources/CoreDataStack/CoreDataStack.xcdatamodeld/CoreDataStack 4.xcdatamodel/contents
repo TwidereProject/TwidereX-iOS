@@ -54,9 +54,10 @@
         <attribute name="expired" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
         <attribute name="expiresAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="id" attributeType="String"/>
+        <attribute name="isVoting" transient="YES" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
         <attribute name="multiple" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
         <attribute name="updatedAt" attributeType="Date" usesScalarValueType="NO"/>
-        <attribute name="votersCount" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="votersCount" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="votesCount" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <relationship name="options" toMany="YES" deletionRule="Nullify" destinationEntity="MastodonPollOption" inverseName="poll" inverseEntity="MastodonPollOption"/>
         <relationship name="status" maxCount="1" deletionRule="Nullify" destinationEntity="MastodonStatus" inverseName="poll" inverseEntity="MastodonStatus"/>
@@ -65,6 +66,7 @@
     <entity name="MastodonPollOption" representedClassName="CoreDataStack.MastodonPollOption" syncable="YES">
         <attribute name="createdAt" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="index" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="isSelected" transient="YES" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
         <attribute name="title" attributeType="String"/>
         <attribute name="updatedAt" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="votesCount" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
@@ -215,12 +217,12 @@
         <element name="Feed" positionX="-54" positionY="-144" width="128" height="164"/>
         <element name="MastodonAuthentication" positionX="-63" positionY="-153" width="128" height="194"/>
         <element name="MastodonNotification" positionX="90" positionY="-18" width="128" height="164"/>
+        <element name="MastodonPoll" positionX="90" positionY="-18" width="128" height="224"/>
+        <element name="MastodonPollOption" positionX="99" positionY="-9" width="128" height="149"/>
         <element name="MastodonStatus" positionX="-63" positionY="-171" width="128" height="419"/>
         <element name="MastodonUser" positionX="-63" positionY="-153" width="128" height="569"/>
         <element name="TwitterAuthentication" positionX="-109.453125" positionY="275.71875" width="128" height="209"/>
         <element name="TwitterStatus" positionX="-63" positionY="-153" width="128" height="389"/>
         <element name="TwitterUser" positionX="281.5234375" positionY="201.703125" width="128" height="494"/>
-        <element name="MastodonPoll" positionX="90" positionY="-18" width="128" height="209"/>
-        <element name="MastodonPollOption" positionX="99" positionY="-9" width="128" height="134"/>
     </elements>
 </model>

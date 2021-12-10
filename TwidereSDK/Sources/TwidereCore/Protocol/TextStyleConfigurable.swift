@@ -28,6 +28,7 @@ public enum TextStyle {
     case userAuthorName
     case pollOptionTitle
     case pollOptionPercentage
+    case pollVoteDescription
     case userAuthorUsername
     case userDescription
     case profileAuthorName
@@ -68,6 +69,7 @@ extension TextStyle {
         case .statusMetrics:                return 1
         case .pollOptionTitle:              return 1
         case .pollOptionPercentage:         return 1
+        case .pollVoteDescription:          return 1
         case .userAuthorName:               return 1
         case .userAuthorUsername:           return 1
         case .userDescription:              return 1
@@ -107,6 +109,8 @@ extension TextStyle {
             return .systemFont(ofSize: 15, weight: .regular)
         case .pollOptionPercentage:
             return .systemFont(ofSize: 12, weight: .regular)
+        case .pollVoteDescription:
+            return .systemFont(ofSize: 14, weight: .regular)
         case .userAuthorName:
             return .preferredFont(forTextStyle: .headline)
         case .userAuthorUsername:
@@ -159,6 +163,8 @@ extension TextStyle {
         case .pollOptionTitle:
             return .secondaryLabel
         case .pollOptionPercentage:
+            return .secondaryLabel
+        case .pollVoteDescription:
             return .secondaryLabel
         case .userAuthorUsername:
             return .secondaryLabel
@@ -223,6 +229,8 @@ extension MetaLabel: TextStyleConfigurable {
         case .pollOptionTitle:
             break
         case .pollOptionPercentage:
+            break
+        case .pollVoteDescription:
             break
         case .userAuthorName:
             break

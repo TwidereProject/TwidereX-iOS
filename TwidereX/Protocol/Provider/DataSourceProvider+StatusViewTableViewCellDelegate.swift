@@ -145,7 +145,43 @@ extension StatusViewTableViewCellDelegate where Self: DataSourceProvider & Media
 // poll
 extension StatusViewTableViewCellDelegate where Self: DataSourceProvider {
     func tableViewCell(_ cell: UITableViewCell, statusView: StatusView, pollTableView tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): TODO")
+        Task {
+            let source = DataSourceItem.Source(tableViewCell: cell, indexPath: nil)
+            guard let item = await item(from: source) else {
+                assertionFailure()
+                return
+            }
+            guard case let .status(status) = item else {
+                assertionFailure("only works for status data provider")
+                return
+            }
+            await DataSourceFacade.responseToStatusPollOption(
+                provider: self,
+                target: .status,
+                status: status,
+                didSelectRowAt: indexPath
+            )
+        }
+    }
+    
+    func tableViewCell(_ cell: UITableViewCell, statusView: StatusView, pollVoteButtonDidPressed button: UIButton) {
+        Task {
+            let source = DataSourceItem.Source(tableViewCell: cell, indexPath: nil)
+            guard let item = await item(from: source) else {
+                assertionFailure()
+                return
+            }
+            guard case let .status(status) = item else {
+                assertionFailure("only works for status data provider")
+                return
+            }
+            await DataSourceFacade.responseToStatusPollOption(
+                provider: self,
+                target: .status,
+                status: status,
+                voteButtonDidPressed: button
+            )
+        }
     }
 }
 

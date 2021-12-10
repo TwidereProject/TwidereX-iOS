@@ -21,7 +21,7 @@ extension MastodonPoll.Property {
             expired: entity.expired,
             multiple: entity.multiple,
             votesCount: Int64(entity.votesCount),
-            votersCount: Int64(entity.votersCount ?? 0),
+            votersCount: Int64(entity.votersCount ?? -1),
             expiresAt: entity.expiresAt,
             createdAt: networkDate,
             updatedAt: networkDate

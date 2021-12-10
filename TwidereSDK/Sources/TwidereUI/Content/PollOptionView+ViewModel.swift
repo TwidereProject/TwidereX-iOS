@@ -51,7 +51,7 @@ extension PollOptionView {
             $isMultiple
                 .map { $0 ? .radius(8) : .circle }
                 .assign(to: &$corner)
-            // backgroundColor
+            // stripProgressTinitColor
             Publishers.CombineLatest4(
                 $style,
                 $isSelect,
@@ -63,23 +63,30 @@ extension PollOptionView {
                 if isSelect == true {
                     return Asset.Colors.hightLight.color.withAlphaComponent(0.75)
                 }
-                if isExpire {
-                    return .systemGray6
-                }
                 if isReveal {
-                    return Asset.Colors.hightLight.color.withAlphaComponent(0.2)
+                    return Asset.Colors.hightLight.color.withAlphaComponent(0.20)
                 }
 
                 return .clear
             }
             .assign(to: &$stripProgressTinitColor)
             // selectImageTintColor
-            $isSelect
-                .map { isSelect in
-                    guard let isSelect = isSelect else { return .clear }
-                    return isSelect ? .white : Asset.Colors.hightLight.color
+            Publishers.CombineLatest(
+                $isSelect,
+                $isReveal
+            )
+            .map { isSelect, isReveal in
+                guard let isSelect = isSelect else {
+                    return .clear       // none selection state
                 }
-                .assign(to: &$selectImageTintColor)
+                
+                if isReveal {
+                    return isSelect ? .white : .clear
+                } else {
+                    return Asset.Colors.hightLight.color
+                }
+            }
+            .assign(to: &$selectImageTintColor)
             // isReveal
             Publishers.CombineLatest3(
                 $isExpire,
@@ -121,6 +128,11 @@ extension PollOptionView.ViewModel {
         // percentage
         $percentage
             .sink { percentage in
+                let oldPercentage = self.percentage
+                
+                let animated = oldPercentage != nil && percentage != nil
+                view.stripProgressView.setProgress(percentage ?? 0, animated: animated)
+                
                 guard let percentage = percentage,
                       let string = PollOptionView.percentageFormatter.string(from: NSNumber(value: percentage * 100))
                 else {
@@ -176,13 +188,14 @@ extension PollOptionView.ViewModel {
                 }
                 return image(isMultiple: isMultiple, isSelect: true)
             } else {
-                return image(isMultiple: isMultiple, isSelect: false)
+                return image(isMultiple: isMultiple, isSelect: isSelect == true)
             }
         }
         .sink { image in
             view.selectionImageView.image = image
         }
         .store(in: &disposeBag)
+        // selectImageTintColor
         $selectImageTintColor
             .assign(to: \.tintColor, on: view.selectionImageView)
             .store(in: &disposeBag)
@@ -235,13 +248,14 @@ extension PollOptionView {
         viewModel.isMultiple = option.poll.multiple
         // isSelect, isPollVoted, isMyPoll
         Publishers.CombineLatest4(
-            option.poll.publisher(for: \.options),
-            option.poll.publisher(for: \.voteBy),
+            option.publisher(for: \.poll),
             option.publisher(for: \.voteBy),
+            option.publisher(for: \.isSelected),
             configurationContext.activeAuthenticationContext
         )
-        .sink { [weak self] options, pollVoteBy, optionVoteBy, activeAuthenticationContext in
+        .sink { [weak self] poll, optionVoteBy, isSelected, activeAuthenticationContext in
             guard let self = self else { return }
+            
             let domain: String
             let userID: String
             switch activeAuthenticationContext {
@@ -253,19 +267,26 @@ extension PollOptionView {
                 userID = authenticationContext.userID
             }
             
+            let options = poll.options
+            let pollVoteBy = poll.voteBy
+            
             let isMyPoll = option.poll.status.author.domain == domain
                         && option.poll.status.author.id == userID
             
             let votedOptions = options.filter { option in
                 option.voteBy.contains(where: { $0.id == userID && $0.domain == domain })
             }
-            let isVotedOption = votedOptions.contains(option)
-            let isVotedPoll = pollVoteBy.contains(where: { $0.id == userID && $0.domain == domain })
+            let isRemoteVotedOption = votedOptions.contains(option)
+            let isRemoteVotedPoll = pollVoteBy.contains(where: { $0.id == userID && $0.domain == domain })
+            
+            let isLocalVotedOption = isSelected
             
             let isSelect: Bool? = {
-                if !votedOptions.isEmpty {
-                    return isVotedOption ? true : false
-                } else if isVotedPoll, votedOptions.isEmpty {
+                if isLocalVotedOption {
+                    return true
+                } else if !votedOptions.isEmpty {
+                    return isRemoteVotedOption ? true : false
+                } else if isRemoteVotedPoll, votedOptions.isEmpty {
                     // the poll voted. But server not mark voted options
                     return nil
                 } else {
@@ -273,7 +294,7 @@ extension PollOptionView {
                 }
             }()
             self.viewModel.isSelect = isSelect
-            self.viewModel.isPollVoted = isVotedPoll
+            self.viewModel.isPollVoted = isRemoteVotedPoll
             self.viewModel.isMyPoll = isMyPoll
         }
         .store(in: &disposeBag)

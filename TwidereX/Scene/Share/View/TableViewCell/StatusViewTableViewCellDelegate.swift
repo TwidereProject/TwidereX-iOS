@@ -30,6 +30,7 @@ protocol StatusViewTableViewCellDelegate: AnyObject {
     func tableViewCell(_ cell: UITableViewCell, statusView: StatusView, quoteStatusView: StatusView, mediaGridContainerView containerView: MediaGridContainerView, didTapMediaView mediaView: MediaView, at index: Int)
     // poll
     func tableViewCell(_ cell: UITableViewCell, statusView: StatusView, pollTableView tableView: UITableView, didSelectRowAt indexPath: IndexPath)
+    func tableViewCell(_ cell: UITableViewCell, statusView: StatusView, pollVoteButtonDidPressed button: UIButton)
     // toolbar
     func tableViewCell(_ cell: UITableViewCell, statusView: StatusView, statusToolbar: StatusToolbar, actionDidPressed action: StatusToolbar.Action, button: UIButton)
 }
@@ -62,6 +63,10 @@ extension StatusViewDelegate where Self: StatusViewContainerTableViewCell {
         
     func statusView(_ statusView: StatusView, pollTableView tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         delegate?.tableViewCell(self, statusView: statusView, pollTableView: tableView, didSelectRowAt: indexPath)
+    }
+    
+    func statusView(_ statusView: StatusView, pollVoteButtonDidPressed button: UIButton) {
+        delegate?.tableViewCell(self, statusView: statusView, pollVoteButtonDidPressed: button)
     }
 
     func statusView(_ statusView: StatusView, statusToolbar: StatusToolbar, actionDidPressed action: StatusToolbar.Action, button: UIButton) {

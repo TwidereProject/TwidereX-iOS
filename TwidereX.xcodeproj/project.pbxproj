@@ -17,6 +17,7 @@
 		DB01092026E60756005F67D7 /* DataSourceFacade+StatusThread.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB01091F26E60756005F67D7 /* DataSourceFacade+StatusThread.swift */; };
 		DB01092226E608B7005F67D7 /* DataSourceFacade+Repost.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB01092126E608B7005F67D7 /* DataSourceFacade+Repost.swift */; };
 		DB01092426E6199C005F67D7 /* DataSourceProvider+StatusViewTableViewCellDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB01092326E6199C005F67D7 /* DataSourceProvider+StatusViewTableViewCellDelegate.swift */; };
+		DB01A9A2276347B60055FABC /* DataSourceFacade+Poll.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB01A9A1276347B60055FABC /* DataSourceFacade+Poll.swift */; };
 		DB02C76D27350D71007EA0BF /* SearchHashtagViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB02C76C27350D71007EA0BF /* SearchHashtagViewController.swift */; };
 		DB02C77027350D8A007EA0BF /* SearchHashtagViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB02C76F27350D8A007EA0BF /* SearchHashtagViewModel.swift */; };
 		DB02C77227351B7D007EA0BF /* HashtagTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB02C77127351B7D007EA0BF /* HashtagTableViewCell.swift */; };
@@ -440,6 +441,7 @@
 		DB01091F26E60756005F67D7 /* DataSourceFacade+StatusThread.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DataSourceFacade+StatusThread.swift"; sourceTree = "<group>"; };
 		DB01092126E608B7005F67D7 /* DataSourceFacade+Repost.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DataSourceFacade+Repost.swift"; sourceTree = "<group>"; };
 		DB01092326E6199C005F67D7 /* DataSourceProvider+StatusViewTableViewCellDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DataSourceProvider+StatusViewTableViewCellDelegate.swift"; sourceTree = "<group>"; };
+		DB01A9A1276347B60055FABC /* DataSourceFacade+Poll.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DataSourceFacade+Poll.swift"; sourceTree = "<group>"; };
 		DB02C76C27350D71007EA0BF /* SearchHashtagViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchHashtagViewController.swift; sourceTree = "<group>"; };
 		DB02C76F27350D8A007EA0BF /* SearchHashtagViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchHashtagViewModel.swift; sourceTree = "<group>"; };
 		DB02C77127351B7D007EA0BF /* HashtagTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HashtagTableViewCell.swift; sourceTree = "<group>"; };
@@ -1268,6 +1270,7 @@
 				DB262A322721377800D18EF3 /* DataSourceFacade+Block.swift */,
 				DBF739D0275C3EF300BF6AB5 /* DataSourceFacade+Report.swift */,
 				DB76A654275F30E800A50673 /* DataSourceFacade+Media.swift */,
+				DB01A9A1276347B60055FABC /* DataSourceFacade+Poll.swift */,
 				DB56329B26DCC23700FC893F /* DataSourceProvider.swift */,
 				DB5632A626DCC84C00FC893F /* DataSourceProvider+UITableViewDelegate.swift */,
 				DB01092326E6199C005F67D7 /* DataSourceProvider+StatusViewTableViewCellDelegate.swift */,
@@ -2962,6 +2965,7 @@
 				DB1D7B5525B5A87200397DCD /* TwitterAuthenticationOptionViewModel.swift in Sources */,
 				DB98DC0E2507862D0087E30F /* TimelineMiddleLoaderTableViewCell.swift in Sources */,
 				DBA210382759EA91000B7CB2 /* FollowingListViewController+DataSourceProvider.swift in Sources */,
+				DB01A9A2276347B60055FABC /* DataSourceFacade+Poll.swift in Sources */,
 				DB830212273D2CAE00BF5224 /* NotificationListFetchViewModel.swift in Sources */,
 				DB2FFF3E258B78B0003DBC19 /* AVPlayer.swift in Sources */,
 				DBCB4047255B683B00DD8D8F /* AccountListTableViewCell.swift in Sources */,

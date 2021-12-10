@@ -18,6 +18,9 @@ public final class MastodonPollOption: NSManagedObject {
     // sourcery: autoUpdatableObject, autoGenerateProperty
     @NSManaged public private(set) var votesCount: Int64
     
+    // sourcery: autoUpdatableObject
+    @NSManaged public private(set) var isSelected: Bool
+    
     // sourcery: autoGenerateProperty
     @NSManaged public private(set) var createdAt: Date
     // sourcery: autoUpdatableObject, autoGenerateProperty
@@ -111,6 +114,11 @@ extension MastodonPollOption: AutoUpdatableObject {
     public func update(votesCount: Int64) {
     	if self.votesCount != votesCount {
     		self.votesCount = votesCount
+    	}
+    }
+    public func update(isSelected: Bool) {
+    	if self.isSelected != isSelected {
+    		self.isSelected = isSelected
     	}
     }
     public func update(updatedAt: Date) {

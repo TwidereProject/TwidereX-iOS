@@ -39,6 +39,12 @@ extension StatusView {
         
         @Published public var pollItems: [PollItem] = []
         @Published public var isVotable: Bool = false
+        @Published public var isVoting: Bool = false
+        @Published public var isVoteButtonEnabled: Bool = false
+        @Published public var voterCount: Int?
+        @Published public var voteCount = 0
+        @Published public var expireAt: Date?
+        @Published public var expired: Bool = false
         
         @Published public var location: String?
         
@@ -58,7 +64,12 @@ extension StatusView {
         @Published public var sharePlaintextContent: String?
         @Published public var shareStatusURL: String?
         
-       public enum Header {
+        let timestampUpdatePublisher = Timer.publish(every: 1.0, on: .main, in: .common)
+            .autoconnect()
+            .share()
+            .eraseToAnyPublisher()
+        
+        public enum Header {
             case none
             case repost(info: RepostInfo)
             case notification(info: NotificationHeaderInfo)
@@ -67,7 +78,7 @@ extension StatusView {
             public struct RepostInfo {
                 public let authorNameMetaContent: MetaContent
             }
-       }
+        }
     }
 }
 
@@ -178,6 +189,72 @@ extension StatusView.ViewModel {
             }()
         }
         .store(in: &disposeBag)
+        // poll
+        let pollVoteDescription = Publishers.CombineLatest(
+            $voterCount,
+            $voteCount
+        )
+        .map { voterCount, voteCount -> String in
+            var description = ""
+            if let voterCount = voterCount {
+                description += L10n.Count.people(voterCount)
+            } else {
+                description += L10n.Count.vote(voteCount)
+            }
+            return description
+        }
+        let pollCountdownDescription = Publishers.CombineLatest3(
+            $expireAt,
+            $expired,
+            timestampUpdatePublisher.prepend(Date()).eraseToAnyPublisher()
+        )
+        .map { expireAt, expired, _ -> String? in
+            guard !expired else {
+                return L10n.Common.Controls.Status.Poll.expired
+            }
+            
+            guard let expireAt = expireAt,
+                  let timeLeft = expireAt.localizedTimeLeft
+            else {
+                return nil
+            }
+            
+            return timeLeft
+        }
+        Publishers.CombineLatest(
+            pollVoteDescription,
+            pollCountdownDescription
+        )
+        .sink { pollVoteDescription, pollCountdownDescription in
+            let description = [
+                pollVoteDescription,
+                pollCountdownDescription
+            ]
+            .compactMap { $0 }
+            .joined(separator: " · ")
+            
+            statusView.pollVoteDescriptionLabel.text = description
+        }
+        .store(in: &disposeBag)
+        Publishers.CombineLatest(
+            $isVotable,
+            $isVoting
+        )
+        .sink { isVotable, isVoting in
+            guard isVotable else {
+                statusView.pollVoteButton.isHidden = true
+                statusView.pollVoteActivityIndicatorView.isHidden = true
+                return
+            }
+            
+            statusView.pollVoteButton.isHidden = isVoting
+            statusView.pollVoteActivityIndicatorView.isHidden = !isVoting
+            statusView.pollVoteActivityIndicatorView.startAnimating()
+        }
+        .store(in: &disposeBag)
+        $isVoteButtonEnabled
+            .assign(to: \.isEnabled, on: statusView.pollVoteButton)
+            .store(in: &disposeBag)
         // dashboard
         Publishers.CombineLatest4(
             $replyCount,
@@ -686,8 +763,10 @@ extension StatusView {
         mastodonStatus status: MastodonStatus,
         activeAuthenticationContext: AnyPublisher<AuthenticationContext?, Never>
     ) {
+        // pollItems
         status.publisher(for: \.poll)
-            .sink { poll in
+            .sink { [weak self] poll in
+                guard let self = self else { return }
                 guard let poll = poll else {
                     self.viewModel.pollItems = []
                     return
@@ -698,20 +777,54 @@ extension StatusView {
                 self.viewModel.pollItems = items
             }
             .store(in: &disposeBag)
-        
-        Publishers.CombineLatest(
-            status.publisher(for: \.poll),
-            activeAuthenticationContext
-        )
-        .map { poll, authenticationContext in
-            guard let poll = poll else { return false }
-            guard case let .mastodon(authenticationContext) = authenticationContext else { return false }
-            let domain = authenticationContext.domain
-            let userID = authenticationContext.userID
-            let isVoted = poll.voteBy.contains(where: { $0.domain == domain && $0.id == userID })
-            return !isVoted && !poll.expired
+        // isVoteButtonEnabled
+        status.poll?.publisher(for: \.updatedAt)
+            .sink { [weak self] _ in
+                guard let self = self else { return }
+                guard let poll = status.poll else { return }
+                let options = poll.options
+                let hasSelectedOption = options.contains(where: { $0.isSelected })
+                self.viewModel.isVoteButtonEnabled = hasSelectedOption
+            }
+            .store(in: &disposeBag)
+        // isVotable
+        if let poll = status.poll {
+            Publishers.CombineLatest3(
+                poll.publisher(for: \.voteBy),
+                poll.publisher(for: \.expired),
+                activeAuthenticationContext
+            )
+            .map { voteBy, expired, authenticationContext in
+                guard case let .mastodon(authenticationContext) = authenticationContext else { return false }
+                let domain = authenticationContext.domain
+                let userID = authenticationContext.userID
+                let isVoted = voteBy.contains(where: { $0.domain == domain && $0.id == userID })
+                return !isVoted && !expired
+            }
+            .assign(to: &viewModel.$isVotable)
         }
-        .assign(to: &viewModel.$isVotable)
+        // votesCount
+        status.poll?.publisher(for: \.votesCount)
+            .map { Int($0) }
+            .assign(to: \.voteCount, on: viewModel)
+            .store(in: &disposeBag)
+        // voterCount
+        status.poll?.publisher(for: \.votersCount)
+            .map { Int($0) }
+            .assign(to: \.voterCount, on: viewModel)
+            .store(in: &disposeBag)
+        // expireAt
+        status.poll?.publisher(for: \.expiresAt)
+            .assign(to: \.expireAt, on: viewModel)
+            .store(in: &disposeBag)
+        // expired
+        status.poll?.publisher(for: \.expired)
+            .assign(to: \.expired, on: viewModel)
+            .store(in: &disposeBag)
+        // isVoting
+        status.poll?.publisher(for: \.isVoting)
+            .assign(to: \.isVoting, on: viewModel)
+            .store(in: &disposeBag)
     }
     
     private func configureToolbar(
