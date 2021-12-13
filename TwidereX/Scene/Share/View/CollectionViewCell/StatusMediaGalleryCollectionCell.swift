@@ -6,12 +6,21 @@
 //  Copyright © 2021 Twidere. All rights reserved.
 //
 
+import os.log
 import UIKit
 import Combine
 import TabBarPager
 import CoverFlowStackCollectionViewLayout
 
+protocol StatusMediaGalleryCollectionCellDelegate: AnyObject {
+    func statusMediaGalleryCollectionCell(_ cell: StatusMediaGalleryCollectionCell, coverFlowCollectionView: UICollectionView, didSelectItemAt indexPath: IndexPath)
+}
+
 final class StatusMediaGalleryCollectionCell: UICollectionViewCell {
+    
+    let logger = Logger(subsystem: "StatusMediaGalleryCollectionCell", category: "Cell")
+    
+    weak var delegate: StatusMediaGalleryCollectionCellDelegate?
     
     var disposeBag = Set<AnyCancellable>()
     private(set) lazy var viewModel: ViewModel = {
@@ -78,11 +87,23 @@ extension StatusMediaGalleryCollectionCell {
             collectionView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
         ])
         
+        // delegate interaction to collection view
+        mediaView.isUserInteractionEnabled = false
+
+        collectionView.delegate = self
         let configuration = CoverFlowStackSection.Configuration()
         diffableDataSource = CoverFlowStackSection.diffableDataSource(
             collectionView: collectionView,
             configuration: configuration
-        )
+        )        
     }
     
+}
+
+// MARK: - UICollectionViewDelegate
+extension StatusMediaGalleryCollectionCell: UICollectionViewDelegate {
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): did select \(indexPath.debugDescription)")
+        delegate?.statusMediaGalleryCollectionCell(self, coverFlowCollectionView: collectionView, didSelectItemAt: indexPath)
+    }
 }

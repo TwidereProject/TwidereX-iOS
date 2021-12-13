@@ -28,8 +28,7 @@ final class TwitterStatusThreadReplyViewModel {
     // output
     @Published var items: [StatusItem] = []
     
-    
-    private(set) lazy var stateMachine: GKStateMachine = {
+    @MainActor private(set) lazy var stateMachine: GKStateMachine = {
         // exclude timeline middle fetcher state
         let stateMachine = GKStateMachine(states: [
             State.Initial(viewModel: self),
@@ -57,8 +56,10 @@ final class TwitterStatusThreadReplyViewModel {
             guard let self = self else { return }
             guard root != nil else { return }
             
-            if self.stateMachine.currentState is State.Initial {
-                self.stateMachine.enter(State.Prepare.self)
+            Task {
+                if await self.stateMachine.currentState is State.Initial {
+                    await self.stateMachine.enter(State.Prepare.self)
+                }
             }
         }
         .store(in: &disposeBag)

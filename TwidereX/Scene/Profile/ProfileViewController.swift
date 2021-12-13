@@ -12,6 +12,9 @@ import CoreData
 import CoreDataStack
 import TabBarPager
 import XLPagerTabStrip
+import MetaTextKit
+import MetaTextArea
+import Meta
 
 // TODO: DrawerSidebarTransitionableViewController
 final class ProfileViewController: UIViewController, NeedsDependency, DrawerSidebarTransitionHostViewController {
@@ -631,6 +634,7 @@ extension ProfileViewController {
 
 // MARK: - ProfileHeaderViewControllerDelegate
 extension ProfileViewController: ProfileHeaderViewControllerDelegate {
+    
     func headerViewController(_ viewController: ProfileHeaderViewController, profileHeaderView: ProfileHeaderView, friendshipButtonDidPressed button: UIButton) {
         guard let user = viewModel.user else { return }
         guard let authenticationContext = context.authenticationService.activeAuthenticationContext.value else { return }
@@ -652,6 +656,32 @@ extension ProfileViewController: ProfileHeaderViewControllerDelegate {
                 )
             }
         }   // end Task { … }
+    }
+    
+    func headerViewController(_ viewController: ProfileHeaderViewController, profileHeaderView: ProfileHeaderView, metaTextAreaView: MetaTextAreaView, didSelectMeta meta: Meta) {
+        guard let user = viewModel.user else { return }
+        let record = UserRecord(object: user)
+        
+        Task {
+            await DataSourceFacade.responseToMetaTextAreaView(
+                provider: self,
+                user: record,
+                didSelectMeta: meta
+            )
+        }
+    }
+    
+    func headerViewController(_ viewController: ProfileHeaderViewController, profileHeaderView: ProfileHeaderView, metaLabel: MetaLabel, didSelectMeta meta: Meta) {
+        guard let user = viewModel.user else { return }
+        let record = UserRecord(object: user)
+        
+        Task {
+            await DataSourceFacade.responseToMetaTextAreaView(
+                provider: self,
+                user: record,
+                didSelectMeta: meta
+            )
+        }
     }
     
     func headerViewController(_ viewController: ProfileHeaderViewController, profileHeaderView: ProfileHeaderView, profileDashboardView dashboardView: ProfileDashboardView, followingMeterViewDidPressed meterView: ProfileDashboardMeterView) {

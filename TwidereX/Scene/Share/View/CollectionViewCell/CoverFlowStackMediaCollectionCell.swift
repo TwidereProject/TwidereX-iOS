@@ -52,6 +52,9 @@ extension CoverFlowStackMediaCollectionCell {
             mediaView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
             mediaView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
         ])
+        
+        // delegate user interactive to collection view
+        mediaView.isUserInteractionEnabled = false
     }
 
 }

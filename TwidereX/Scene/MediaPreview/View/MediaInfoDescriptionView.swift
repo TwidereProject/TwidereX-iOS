@@ -16,12 +16,15 @@ import TwidereUI
 protocol MediaInfoDescriptionViewDelegate: AnyObject {
     func mediaInfoDescriptionView(_ mediaInfoDescriptionView: MediaInfoDescriptionView, avatarButtonDidPressed button: UIButton)
     func mediaInfoDescriptionView(_ mediaInfoDescriptionView: MediaInfoDescriptionView, contentTextViewDidPressed textView: MetaTextAreaView)
+    func mediaInfoDescriptionView(_ mediaInfoDescriptionView: MediaInfoDescriptionView, nameMetaLabelDidPressed metaLabel: MetaLabel)
     func mediaInfoDescriptionView(_ mediaInfoDescriptionView: MediaInfoDescriptionView, statusToolbar: StatusToolbar, actionDidPressed action: StatusToolbar.Action, button: UIButton)
 }
 
 final class MediaInfoDescriptionView: UIView {
     
     static let avatarImageViewSize = CGSize(width: 32, height: 32)
+    
+    let logger = Logger(subsystem: "MediaInfoDescriptionView", category: "View")
     
     weak var delegate: MediaInfoDescriptionViewDelegate?
     
@@ -66,6 +69,7 @@ final class MediaInfoDescriptionView: UIView {
     }()
     
     let contentTextViewTapGestureRecognizer = UITapGestureRecognizer.singleTapGestureRecognizer
+    let nameMetaLabelTapGestureRecognizer = UITapGestureRecognizer.singleTapGestureRecognizer
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -120,7 +124,11 @@ extension MediaInfoDescriptionView {
         avatarView.avatarButton.addTarget(self, action: #selector(MediaInfoDescriptionView.avatarButtonDidPressed(_:)), for: .touchUpInside)
         
         contentTextViewTapGestureRecognizer.addTarget(self, action: #selector(MediaInfoDescriptionView.contentTextViewDidPressed(_:)))
+        contentTextView.isUserInteractionEnabled = false
         contentTextView.addGestureRecognizer(contentTextViewTapGestureRecognizer)
+        
+        nameMetaLabelTapGestureRecognizer.addTarget(self, action: #selector(MediaInfoDescriptionView.nameMetaLabelDidPressed(_:)))
+        nameMetaLabel.addGestureRecognizer(nameMetaLabelTapGestureRecognizer)
         
         toolbar.delegate = self
     }
@@ -130,14 +138,20 @@ extension MediaInfoDescriptionView {
 extension MediaInfoDescriptionView {
     
     @objc private func avatarButtonDidPressed(_ sender: UIButton) {
-        os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
+        logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public)")
         delegate?.mediaInfoDescriptionView(self, avatarButtonDidPressed: sender)
     }
     
     @objc private func contentTextViewDidPressed(_ sender: UITapGestureRecognizer) {
-        os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
+        logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public)")
         assert(sender.view === contentTextView)
         delegate?.mediaInfoDescriptionView(self, contentTextViewDidPressed: contentTextView)
+    }
+    
+    @objc private func nameMetaLabelDidPressed(_ sender: UITapGestureRecognizer) {
+        logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public)")
+        assert(sender.view === nameMetaLabel)
+        delegate?.mediaInfoDescriptionView(self, nameMetaLabelDidPressed: nameMetaLabel)
     }
 
 }

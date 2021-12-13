@@ -35,7 +35,7 @@ final class HomeTimelineViewModel: NSObject {
     var didLoadLatest = PassthroughSubject<Void, Never>()
 
     // bottom loader
-    private(set) lazy var loadOldestStateMachine: GKStateMachine = {
+    @MainActor private(set) lazy var loadOldestStateMachine: GKStateMachine = {
         // exclude timeline middle fetcher state
         let stateMachine = GKStateMachine(states: [
             LoadOldestState.Initial(viewModel: self),

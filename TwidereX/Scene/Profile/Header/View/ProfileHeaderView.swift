@@ -15,6 +15,10 @@ import TwidereUI
 
 protocol ProfileHeaderViewDelegate: AnyObject {
     func profileHeaderView(_ headerView: ProfileHeaderView, friendshipButtonPressed button: UIButton)
+    
+    func profileHeaderView(_ headerView: ProfileHeaderView, metaTextAreaView: MetaTextAreaView, didSelectMeta meta: Meta)
+    func profileHeaderView(_ headerView: ProfileHeaderView, metaLabel: MetaLabel, didSelectMeta meta: Meta)
+
 
     func profileHeaderView(_ headerView: ProfileHeaderView, profileDashboardView dashboardView: ProfileDashboardView, followingMeterViewDidPressed meterView: ProfileDashboardMeterView)
     func profileHeaderView(_ headerView: ProfileHeaderView, profileDashboardView dashboardView: ProfileDashboardView, followersMeterViewDidPressed meterView: ProfileDashboardMeterView)
@@ -238,6 +242,8 @@ extension ProfileHeaderView {
         
         friendshipButton.addTarget(self, action: #selector(ProfileHeaderView.friendshipButtonDidPressed(_:)), for: .touchUpInside)
         
+        bioTextAreaView.delegate = self
+        fieldListView.delegate = self
         dashboardView.delegate = self
     }
 }
@@ -246,6 +252,21 @@ extension ProfileHeaderView {
     @objc private func friendshipButtonDidPressed(_ sender: UIButton) {
         logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public)")
         delegate?.profileHeaderView(self, friendshipButtonPressed: sender)
+    }
+}
+
+// MARK: - MetaTextAreaViewDelegate
+extension ProfileHeaderView: MetaTextAreaViewDelegate {
+    func metaTextAreaView(_ metaTextAreaView: MetaTextAreaView, didSelectMeta meta: Meta) {
+        logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): did select meta: \(meta.debugDescription)")
+        delegate?.profileHeaderView(self, metaTextAreaView: metaTextAreaView, didSelectMeta: meta)
+    }
+}
+
+// MARK: - ProfileFieldListViewDelegate
+extension ProfileHeaderView: ProfileFieldListViewDelegate {
+    func profileFieldListView(_ profileFieldListView: ProfileFieldListView, profileFieldCollectionViewCell: ProfileFieldCollectionViewCell, profileFieldContentView: ProfileFieldContentView, metaLabel: MetaLabel, didSelectMeta meta: Meta) {
+        delegate?.profileHeaderView(self, metaLabel: metaLabel, didSelectMeta: meta)
     }
 }
 

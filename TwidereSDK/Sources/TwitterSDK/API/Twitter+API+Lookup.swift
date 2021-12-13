@@ -12,24 +12,23 @@ extension Twitter.API.Lookup {
     
     static let statusesLookupEndpointURL = Twitter.API.endpointURL.appendingPathComponent("statuses/lookup.json")
     
-    public static func tweets(session: URLSession, authorization: Twitter.API.OAuth.Authorization, query: Query) -> AnyPublisher<Twitter.Response.Content<[Twitter.Entity.Tweet]>, Error> {
-        let request = Twitter.API.request(url: statusesLookupEndpointURL, httpMethod: "GET", authorization: authorization, queryItems: query.queryItems)
-        return session.dataTaskPublisher(for: request)
-            .tryMap { data, response in
-                do {
-                    let value = try Twitter.API.decode(type: [Twitter.Entity.Tweet].self, from: data, response: response)
-                    return Twitter.Response.Content(value: value, response: response)
-                } catch {
-                    debugPrint(error)
-                    throw error
-                }
-            }
-            .eraseToAnyPublisher()
+    public static func tweets(
+        session: URLSession,
+        query: LookupQuery,
+        authorization: Twitter.API.OAuth.Authorization
+    ) async throws -> Twitter.Response.Content<[Twitter.Entity.Tweet]> {
+        let request = Twitter.API.request(
+            url: statusesLookupEndpointURL,
+            method: .GET,
+            query: query,
+            authorization: authorization
+        )
+        let (data, response) = try await session.data(for: request, delegate: nil)
+        let value = try Twitter.API.decode(type: [Twitter.Entity.Tweet].self, from: data, response: response)
+        return Twitter.Response.Content(value: value, response: response)
     }
-}
 
-extension Twitter.API.Lookup {
-    public struct Query {
+    public struct LookupQuery: Query {
         public let ids: [String]
         
         public init(ids: [String]) {
@@ -49,5 +48,9 @@ extension Twitter.API.Lookup {
             guard !items.isEmpty else { return nil }
             return items
         }
+        var encodedQueryItems: [URLQueryItem]? { nil }
+        var formQueryItems: [URLQueryItem]? { nil }
+        var contentType: String? { nil }
+        var body: Data? { nil }
     }
 }

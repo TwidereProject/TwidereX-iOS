@@ -120,6 +120,7 @@ public enum Asset {
   public enum Logo {
     public static let githubCircle = ImageAsset(name: "Logo/github.circle")
     public static let mastodon = ImageAsset(name: "Logo/mastodon")
+    public static let twitterCircle = ImageAsset(name: "Logo/twitter.circle")
     public static let twitter = ImageAsset(name: "Logo/twitter")
   }
   public enum Media {
@@ -158,6 +159,9 @@ public enum Asset {
     public static let speakerXmark = ImageAsset(name: "Object&Tools/speaker.xmark")
   }
   public enum Scene {
+    public enum About {
+      public static let twidereLarge = ImageAsset(name: "Scene/About/twidere.large")
+    }
     public enum Preference {
       public static let twidereAvatar = ImageAsset(name: "Scene/Preference/twidere.avatar")
     }

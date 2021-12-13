@@ -14,8 +14,8 @@ import CoreData
 import CoreDataStack
 import GameplayKit
 import TwitterSDK
-//import Floaty
 import AlamofireImage
+//import Floaty
 
 final class MentionTimelineViewController: UIViewController, NeedsDependency, DrawerSidebarTransitionableViewController {
     

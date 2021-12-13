@@ -51,14 +51,38 @@ extension DataSourceFacade {
             assertionFailure()
             return
         }
+        
+        await coordinateToStatusThreadScene(
+            provider: provider,
+            root: root
+        )
+    }
+    
+    @MainActor
+    static func coordinateToStatusThreadScene(
+        provider: DataSourceProvider,
+        root: StatusItem.Thread
+    ) async {
         let statusThreadViewModel = StatusThreadViewModel(
             context: provider.context,
             root: root
         )
-        await provider.coordinator.present(
-            scene: .statusThread(viewModel: statusThreadViewModel),
-            from: provider,
-            transition: .show
-        )
+        
+        if provider.navigationController == nil {
+            let from = provider.presentingViewController ?? provider
+            provider.dismiss(animated: true) {
+                provider.coordinator.present(
+                    scene: .statusThread(viewModel: statusThreadViewModel),
+                    from: from,
+                    transition: .show
+                )
+            }
+        } else {
+            provider.coordinator.present(
+                scene: .statusThread(viewModel: statusThreadViewModel),
+                from: provider,
+                transition: .show
+            )
+        }
     }
 }

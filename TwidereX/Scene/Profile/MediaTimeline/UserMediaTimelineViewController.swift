@@ -13,13 +13,15 @@ import CoreData
 import CoreDataStack
 import TabBarPager
 
-final class UserMediaTimelineViewController: UIViewController, NeedsDependency {
+final class UserMediaTimelineViewController: UIViewController, NeedsDependency, MediaPreviewTransitionHostViewController {
     
     weak var context: AppContext! { willSet { precondition(!isViewLoaded) } }
     weak var coordinator: SceneCoordinator! { willSet { precondition(!isViewLoaded) } }
     
-//    let mediaPreviewTransitionController = MediaPreviewTransitionController()
+    let mediaPreviewTransitionController = MediaPreviewTransitionController()
 
+    let logger = Logger(subsystem: "UserMediaTimelineViewController", category: "ViewController")
+    
     var disposeBag = Set<AnyCancellable>()
     var viewModel: UserMediaTimelineViewModel!
     
@@ -94,9 +96,8 @@ extension UserMediaTimelineViewController {
 
         collectionView.delegate = self
         viewModel.setupDiffableDataSource(
-            collectionView: collectionView
-//            mediaCollectionViewCellDelegate: self,
-//            timelineHeaderCollectionViewCellDelegate: self
+            collectionView: collectionView,
+            statusMediaGalleryCollectionCellDelegate: self
         )
         
         // setup batch fetch
@@ -143,11 +144,64 @@ extension UserMediaTimelineViewController {
 
 // MARK: - UICollectionViewDelegate
 extension UserMediaTimelineViewController: UICollectionViewDelegate {
-    
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: %s", ((#file as NSString).lastPathComponent), #line, #function, indexPath.debugDescription)
+        logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): did select \(indexPath.debugDescription)")
+        guard let cell = collectionView.cellForItem(at: indexPath) as? StatusMediaGalleryCollectionCell else { return }
+        Task {
+            let source = DataSourceItem.Source(collectionViewCell: nil, indexPath: indexPath)
+            guard let item = await item(from: source) else {
+                assertionFailure()
+                return
+            }
+            guard case let .status(status) = item else {
+                assertionFailure("only works for status data provider")
+                return
+            }
+            await DataSourceFacade.coordinateToMediaPreviewScene(
+                provider: self,
+                target: .status,
+                status: status,
+                mediaPreviewContext: DataSourceFacade.MediaPreviewContext(
+                    containerView: .mediaView(cell.mediaView),
+                    mediaView: cell.mediaView,
+                    index: 0        // <-- only one attachment
+                )
+            )
+        }
     }
-    
+}
+
+// MARK: - StatusMediaGalleryCollectionCellDelegate
+extension UserMediaTimelineViewController: StatusMediaGalleryCollectionCellDelegate {
+    func statusMediaGalleryCollectionCell(_ cell: StatusMediaGalleryCollectionCell, coverFlowCollectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        Task {
+            let source = DataSourceItem.Source(collectionViewCell: cell, indexPath: nil)
+            guard let item = await item(from: source) else {
+                assertionFailure()
+                return
+            }
+            guard case let .status(status) = item else {
+                assertionFailure("only works for status data provider")
+                return
+            }
+            
+            guard let cell = coverFlowCollectionView.cellForItem(at: indexPath) as? CoverFlowStackMediaCollectionCell else {
+                assertionFailure()
+                return
+            }
+            
+            await DataSourceFacade.coordinateToMediaPreviewScene(
+                provider: self,
+                target: .status,
+                status: status,
+                mediaPreviewContext: DataSourceFacade.MediaPreviewContext(
+                    containerView: .mediaView(cell.mediaView),
+                    mediaView: cell.mediaView,
+                    index: indexPath.row
+                )
+            )
+        }
+    }
 }
 
 // MARK: - CustomScrollViewContainerController
@@ -159,15 +213,6 @@ extension UserMediaTimelineViewController: ScrollViewContainer {
 extension UserMediaTimelineViewController: TabBarPage {
     var pageScrollView: UIScrollView {
         collectionView
-    }
-}
-
-// MARK: - MediaCollectionViewCellDelegate
-extension UserMediaTimelineViewController: MediaCollectionViewCellDelegate {
-    func mediaCollectionViewCell(_ cell: SearchMediaCollectionViewCell, collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-//        // discard nest collectionView and indexPath
-//        guard let indexPath = self.collectionView.indexPath(for: cell) else { return }
-//        handleCollectionView(self.collectionView, didSelectItemAt: indexPath)
     }
 }
 

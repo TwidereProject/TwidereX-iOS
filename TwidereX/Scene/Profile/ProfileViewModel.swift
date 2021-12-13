@@ -23,8 +23,6 @@ class ProfileViewModel: ObservableObject {
     let context: AppContext
     @Published var me: UserObject?
     @Published var user: UserObject?
-//    let twitterUser: CurrentValueSubject<TwitterUser?, Never>
-//    let currentTwitterUser = CurrentValueSubject<TwitterUser?, Never>(nil)
     let viewDidAppear = CurrentValueSubject<Void, Never>(Void())
         
     // output
@@ -33,8 +31,6 @@ class ProfileViewModel: ObservableObject {
     let relationshipViewModel = RelationshipViewModel()
 
 //    let suspended = CurrentValueSubject<Bool, Never>(false)
-//
-//    let avatarStyle = CurrentValueSubject<UserDefaults.AvatarStyle, Never>(UserDefaults.shared.avatarStyle)
     
     init(context: AppContext) {
         self.context = context
@@ -86,14 +82,6 @@ class ProfileViewModel: ObservableObject {
             }
             .store(in: &disposeBag)
 
-        // bind avatar style
-//        UserDefaults.shared
-//            .observe(\.avatarStyle) { [weak self] defaults, _ in
-//                guard let self = self else { return }
-//                self.avatarStyle.value = defaults.avatarStyle
-//            }
-//            .store(in: &observations)
-
         // observe friendship
         Publishers.CombineLatest(
             $userRecord,
@@ -108,118 +96,7 @@ class ProfileViewModel: ObservableObject {
         }
         .store(in: &disposeBag)
     }
-    
-//    convenience init(context: AppContext, twitterUser: TwitterUser) {
-//        self.init(context: context, optionalTwitterUser: twitterUser)
-//
-//        guard let activeTwitterAuthenticationBox = context.authenticationService.activeTwitterAuthenticationBox.value else {
-//            return
-//        }
-//        let userID = twitterUser.id
-//        let username = twitterUser.username
-//        context.apiService.users(userIDs: [userID], twitterAuthenticationBox: activeTwitterAuthenticationBox)
-//            .retry(3)
-//            .receive(on: DispatchQueue.main)
-//            .sink { completion in
-//                switch completion {
-//                case .failure(let error):
-//                    os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: user lookup %s fail: %s", ((#file as NSString).lastPathComponent), #line, #function, userID, error.localizedDescription)
-//                case .finished:
-//                    os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: user lookup %s success", ((#file as NSString).lastPathComponent), #line, #function, userID)
-//                }
-//            } receiveValue: { [weak self] response in
-//                guard let self = self else { return }
-//                self.updateAccountSuspendedState(content: response.value, username: username)
-//            }
-//            .store(in: &disposeBag)
-//    }
-//
-//    convenience init(context: AppContext, userID: TwitterUser.ID, username: String) {
-//        self.init(context: context, optionalTwitterUser: nil)
-//
-//        guard let activeTwitterAuthenticationBox = context.authenticationService.activeTwitterAuthenticationBox.value else {
-//            return
-//        }
-//        context.apiService.users(userIDs: [userID], twitterAuthenticationBox: activeTwitterAuthenticationBox)
-//            .retry(3)
-//            .receive(on: DispatchQueue.main)
-//            .sink { completion in
-//                switch completion {
-//                case .failure(let error):
-//                    os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: user lookup %s fail: %s", ((#file as NSString).lastPathComponent), #line, #function, userID, error.localizedDescription)
-//                case .finished:
-//                    os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: user lookup %s success", ((#file as NSString).lastPathComponent), #line, #function, userID)
-//                }
-//            } receiveValue: { [weak self] response in
-//                guard let self = self else { return }
-//                self.updateAccountSuspendedState(content: response.value, username: username)
-//
-//                let managedObjectContext = context.managedObjectContext
-//                let request = TwitterUser.sortedFetchRequest
-//                request.fetchLimit = 1
-//                request.predicate = TwitterUser.predicate(idStr: userID)
-//                do {
-//                    guard let twitterUser = try managedObjectContext.fetch(request).first else {
-//                        return
-//                    }
-//                    self.twitterUser.value = twitterUser
-//                } catch {
-//                    assertionFailure(error.localizedDescription)
-//                }
-//            }
-//            .store(in: &disposeBag)
-//    }
-//
-//    convenience init(context: AppContext, username: String) {
-//        self.init(context: context, optionalTwitterUser: nil)
-//
-//        guard let activeTwitterAuthenticationBox = context.authenticationService.activeTwitterAuthenticationBox.value else {
-//            return
-//        }
-//        context.apiService.users(usernames: [username], twitterAuthenticationBox: activeTwitterAuthenticationBox)
-//            .retry(3)
-//            .receive(on: DispatchQueue.main)
-//            .sink { completion in
-//                switch completion {
-//                case .failure(let error):
-//                    os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: user lookup %s fail: %s", ((#file as NSString).lastPathComponent), #line, #function, username, error.localizedDescription)
-//                case .finished:
-//                    os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: user lookup %s success", ((#file as NSString).lastPathComponent), #line, #function, username)
-//                }
-//            } receiveValue: { [weak self] response in
-//                guard let self = self else { return }
-//                self.updateAccountSuspendedState(content: response.value, username: username)
-//
-//                let dictContent = Twitter.Response.V2.DictContent(
-//                    tweets: [],
-//                    users: response.value.data ?? [],
-//                    media: [],
-//                    places: []
-//                )
-//                let persistedUser = dictContent.userDict.values.first(where: { user in
-//                    user.username.lowercased() == username.lowercased()
-//                })
-//                guard let user = persistedUser else {
-//                    assertionFailure()
-//                    return
-//                }
-//
-//                let managedObjectContext = context.managedObjectContext
-//                let request = TwitterUser.sortedFetchRequest
-//                request.fetchLimit = 1
-//                request.predicate = TwitterUser.predicate(username: user.username)
-//                do {
-//                    guard let twitterUser = try managedObjectContext.fetch(request).first else {
-//                        return
-//                    }
-//                    self.twitterUser.value = twitterUser
-//                } catch {
-//                    assertionFailure(error.localizedDescription)
-//                }
-//            }
-//            .store(in: &disposeBag)
-//    }
-    
+
     deinit {
         os_log("%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
     }

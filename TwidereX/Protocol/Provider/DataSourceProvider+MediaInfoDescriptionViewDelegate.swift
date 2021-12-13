@@ -12,6 +12,7 @@ import TwidereCommon
 import TwidereCore
 import TwidereUI
 import AppShared
+import MetaTextKit
 
 extension MediaInfoDescriptionViewDelegate where Self: DataSourceProvider {
     func mediaInfoDescriptionView(_ mediaInfoDescriptionView: MediaInfoDescriptionView, avatarButtonDidPressed button: UIButton) {
@@ -51,6 +52,26 @@ extension MediaInfoDescriptionViewDelegate where Self: DataSourceProvider {
             }
         }
     }
+    
+    func mediaInfoDescriptionView(_ mediaInfoDescriptionView: MediaInfoDescriptionView, nameMetaLabelDidPressed metaLabel: MetaLabel) {
+        Task {
+            let source = DataSourceItem.Source(tableViewCell: nil, indexPath: nil)
+            guard let item = await item(from: source) else {
+                return
+            }
+            switch item {
+            case .status(let status):
+                await DataSourceFacade.coordinateToStatusThreadScene(
+                    provider: self,
+                    target: .repost,    // keep repost wrapper
+                    status: status
+                )
+            default:
+                assertionFailure()
+            }
+        }
+    }
+
     
     func mediaInfoDescriptionView(_ mediaInfoDescriptionView: MediaInfoDescriptionView, statusToolbar: StatusToolbar, actionDidPressed action: StatusToolbar.Action, button: UIButton) {
         guard let authenticationContext = context.authenticationService.activeAuthenticationContext.value else { return }

@@ -226,9 +226,13 @@ extension StatusToolbar {
         let text = metricText(count: count)
         switch style {
         case .inline:
+            let image: UIImage = isLike ? Asset.Health.heartFillMini.image : Asset.Health.heartMini.image
+            likeButton.setImage(image.withRenderingMode(.alwaysTemplate), for: .normal)
             likeButton.setTitle(text, for: .normal)
         case .plain:
-            break
+            let image: UIImage = isLike ? Asset.Health.heartFill.image : Asset.Health.heart.image
+            likeButton.setImage(image.withRenderingMode(.alwaysTemplate), for: .normal)
+            // no title
         case .none:
             break
         }

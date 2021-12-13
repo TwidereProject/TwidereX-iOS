@@ -40,7 +40,9 @@ extension HashtagTimelineViewController {
         super.viewDidLoad()
         
         // FIXME: use meta label
-        title = viewModel.hashtag
+        if !viewModel.hashtag.isEmpty {
+            title = "#" + viewModel.hashtag
+        }
 
         tableView.translatesAutoresizingMaskIntoConstraints = false
         tableView.frame = view.bounds

@@ -39,7 +39,7 @@ final class StatusThreadViewModel {
     @Published var hasReplyTo = false
     
     // thread
-    private(set) lazy var loadThreadStateMachine: GKStateMachine = {
+    @MainActor private(set) lazy var loadThreadStateMachine: GKStateMachine = {
         let stateMachine = GKStateMachine(states: [
             LoadThreadState.Initial(viewModel: self),
             LoadThreadState.Prepare(viewModel: self),

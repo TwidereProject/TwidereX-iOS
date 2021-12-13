@@ -6,10 +6,20 @@
 //  Copyright © 2021 Twidere. All rights reserved.
 //
 
+import os.log
 import UIKit
+import MetaTextKit
 import Meta
 
+protocol ProfileFieldListViewDelegate: AnyObject {
+    func profileFieldListView(_ profileFieldListView: ProfileFieldListView, profileFieldCollectionViewCell: ProfileFieldCollectionViewCell, profileFieldContentView: ProfileFieldContentView, metaLabel: MetaLabel, didSelectMeta meta: Meta)
+}
+
 final class ProfileFieldListView: UIView {
+    
+    let logger = Logger(subsystem: "ProfileFieldListView", category: "View")
+    
+    weak var delegate: ProfileFieldListViewDelegate?
 
     var collectionViewHeightLayoutConstraint: NSLayoutConstraint!
     var collectionViewHeightObservation: NSKeyValueObservation?
@@ -89,13 +99,16 @@ extension ProfileFieldListView {
             self.collectionViewHeightLayoutConstraint.constant = collectionView.contentSize.height
         })
         
-        let cellRegistration = UICollectionView.CellRegistration<ProfileFieldCollectionViewCell, Item> { (cell, indexPath, item) in
+        let cellRegistration = UICollectionView.CellRegistration<ProfileFieldCollectionViewCell, Item> { [weak self] (cell, indexPath, item) in
+            guard let self = self else { return }
             cell.item = item
             cell.setNeedsUpdateConfiguration()
+            cell.delegate = self
         }
         
         dataSource = UICollectionViewDiffableDataSource(collectionView: collectionView) { collectionView, indexPath, item in
             let cell = collectionView.dequeueConfiguredReusableCell(using: cellRegistration, for: indexPath, item: item)
+            cell.delegate = self
             return cell
         }
     }
@@ -110,5 +123,12 @@ extension ProfileFieldListView {
             guard let self = self else { return }
             self.collectionView.sizeToFit()
         }
+    }
+}
+
+// MARK: - ProfileFieldCollectionViewCellDelegate
+extension ProfileFieldListView: ProfileFieldCollectionViewCellDelegate {
+    func profileFieldCollectionViewCell(_ cell: ProfileFieldCollectionViewCell, profileFieldContentView: ProfileFieldContentView, metaLabel: MetaLabel, didSelectMeta meta: Meta) {
+        delegate?.profileFieldListView(self, profileFieldCollectionViewCell: cell, profileFieldContentView: profileFieldContentView, metaLabel: metaLabel, didSelectMeta: meta)
     }
 }

@@ -10,12 +10,17 @@ import os.log
 import UIKit
 import MetaTextKit
 
+protocol ProfileFieldContentViewDelegate: AnyObject {
+    func profileFieldContentView(_ contentView: ProfileFieldContentView, metaLabel: MetaLabel, didSelectMeta meta: Meta)
+}
+
 // Ref: https://swiftsenpai.com/development/uicollectionview-list-custom-cell/
 final class ProfileFieldContentView: UIView, UIContentView {
     
     static let verticalMargin: CGFloat = 4
     
     let logger = Logger(subsystem: "ProfileFieldContentView", category: "UI")
+    weak var delegate: ProfileFieldContentViewDelegate?
     
     let container: UIStackView = {
         let stackView = UIStackView()
@@ -104,6 +109,8 @@ extension ProfileFieldContentView {
         keyMetaLabel.setContentCompressionResistancePriority(.required - 9, for: .horizontal)
         valueMetaLabel.setContentHuggingPriority(.required - 10, for: .horizontal)
         valueMetaLabel.setContentCompressionResistancePriority(.required - 10, for: .horizontal)
+        
+        valueMetaLabel.linkDelegate = self
     }
     
     private func apply(configuration: ContentConfiguration) {
@@ -173,5 +180,13 @@ extension ProfileFieldContentView {
         func hash(into hasher: inout Hasher) {
             hasher.combine(item)
         }
+    }
+}
+
+// MARK: - MetaLabelDelegate
+extension ProfileFieldContentView: MetaLabelDelegate {
+    func metaLabel(_ metaLabel: MetaLabel, didSelectMeta meta: Meta) {
+        logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): did select meta: \(meta.debugDescription)")
+        delegate?.profileFieldContentView(self, metaLabel: metaLabel, didSelectMeta: meta)
     }
 }

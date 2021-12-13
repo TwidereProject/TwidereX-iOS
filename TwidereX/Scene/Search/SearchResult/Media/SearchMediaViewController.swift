@@ -12,16 +12,17 @@ import Combine
 import CoreData
 import CoreDataStack
 
-// MediaPreviewTransitionHostViewController
-final class SearchMediaViewController: UIViewController, NeedsDependency {
+final class SearchMediaViewController: UIViewController, NeedsDependency, MediaPreviewTransitionHostViewController {
     
     weak var context: AppContext! { willSet { precondition(!isViewLoaded) } }
     weak var coordinator: SceneCoordinator! { willSet { precondition(!isViewLoaded) } }
     
+    let logger = Logger(subsystem: "SearchMediaViewController", category: "ViewController")
+    
     var disposeBag = Set<AnyCancellable>()
     var viewModel: SearchMediaViewModel!
     
-    // let mediaPreviewTransitionController = MediaPreviewTransitionController()
+    let mediaPreviewTransitionController = MediaPreviewTransitionController()
 
     private(set) lazy var collectionView: UICollectionView = {
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UserMediaTimelineViewController.createCollectionViewLayout())
@@ -50,9 +51,8 @@ extension SearchMediaViewController {
         
         collectionView.delegate = self
         viewModel.setupDiffableDataSource(
-            collectionView: collectionView
-            //            mediaCollectionViewCellDelegate: self,
-            //            timelineHeaderCollectionViewCellDelegate: self
+            collectionView: collectionView,
+            statusMediaGalleryCollectionCellDelegate: self
         )
         
         // setup batch fetch
@@ -139,36 +139,64 @@ extension SearchMediaViewController {
     
 }
 
-// MARK: - UIScrollViewDelegate
-//extension SearchMediaViewController {
-//    func scrollViewDidScroll(_ scrollView: UIScrollView) {
-//        guard scrollView === collectionView else { return }
-//        let cells = collectionView.visibleCells.compactMap { $0 as? ActivityIndicatorCollectionViewCell }
-//        guard let loaderCollectionViewCell = cells.first else { return }
-//
-//        if let tabBar = tabBarController?.tabBar, let window = view.window {
-//            let loaderCollectionViewCellFrameInWindow = collectionView.convert(loaderCollectionViewCell.frame, to: nil)
-//            let windowHeight = window.frame.height
-//            let loaderAppear = (loaderCollectionViewCellFrameInWindow.origin.y + 0.8 * loaderCollectionViewCell.frame.height) < (windowHeight - tabBar.frame.height)
-//            if loaderAppear {
-//                viewModel.stateMachine.enter(SearchMediaViewModel.State.Loading.self)
-//            }
-//        } else {
-//            viewModel.stateMachine.enter(SearchMediaViewModel.State.Loading.self)
-//        }
-//    }
-//}
-
 // MARK: - UICollectionViewDelegate
-extension SearchMediaViewController: UICollectionViewDelegate { }
-
-// MARK: - MediaCollectionViewCellDelegate
-extension SearchMediaViewController: MediaCollectionViewCellDelegate {
-    
-    func mediaCollectionViewCell(_ cell: SearchMediaCollectionViewCell, collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        // discard nest collectionView and indexPath
-//        guard let indexPath = self.collectionView.indexPath(for: cell) else { return }
-//        handleCollectionView(self.collectionView, didSelectItemAt: indexPath)
+extension SearchMediaViewController: UICollectionViewDelegate {
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): did select \(indexPath.debugDescription)")
+        guard let cell = collectionView.cellForItem(at: indexPath) as? StatusMediaGalleryCollectionCell else { return }
+        Task {
+            let source = DataSourceItem.Source(collectionViewCell: nil, indexPath: indexPath)
+            guard let item = await item(from: source) else {
+                assertionFailure()
+                return
+            }
+            guard case let .status(status) = item else {
+                assertionFailure("only works for status data provider")
+                return
+            }
+            await DataSourceFacade.coordinateToMediaPreviewScene(
+                provider: self,
+                target: .status,
+                status: status,
+                mediaPreviewContext: DataSourceFacade.MediaPreviewContext(
+                    containerView: .mediaView(cell.mediaView),
+                    mediaView: cell.mediaView,
+                    index: 0        // <-- only one attachment
+                )
+            )
+        }
     }
-    
+}
+
+// MARK: - StatusMediaGalleryCollectionCellDelegate
+extension SearchMediaViewController: StatusMediaGalleryCollectionCellDelegate {
+    func statusMediaGalleryCollectionCell(_ cell: StatusMediaGalleryCollectionCell, coverFlowCollectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        Task {
+            let source = DataSourceItem.Source(collectionViewCell: cell, indexPath: nil)
+            guard let item = await item(from: source) else {
+                assertionFailure()
+                return
+            }
+            guard case let .status(status) = item else {
+                assertionFailure("only works for status data provider")
+                return
+            }
+            
+            guard let cell = coverFlowCollectionView.cellForItem(at: indexPath) as? CoverFlowStackMediaCollectionCell else {
+                assertionFailure()
+                return
+            }
+            
+            await DataSourceFacade.coordinateToMediaPreviewScene(
+                provider: self,
+                target: .status,
+                status: status,
+                mediaPreviewContext: DataSourceFacade.MediaPreviewContext(
+                    containerView: .mediaView(cell.mediaView),
+                    mediaView: cell.mediaView,
+                    index: indexPath.row
+                )
+            )
+        }
+    }
 }

@@ -28,6 +28,7 @@ extension StatusView {
         
         @Published public var header: Header = .none
         
+        @Published public var authorAvatarImage: UIImage?
         @Published public var authorAvatarImageURL: URL?
         @Published public var authorName: MetaContent?
         @Published public var authorUsername: String?
@@ -118,12 +119,21 @@ extension StatusView.ViewModel {
     
     private func bindAuthor(statusView: StatusView) {
         // avatar
-        $authorAvatarImageURL
-            .sink { url in
-                let configuration = AvatarImageView.Configuration(url: url)
-                statusView.authorAvatarButton.avatarImageView.configure(configuration: configuration)
-            }
-            .store(in: &disposeBag)
+        Publishers.CombineLatest(
+            $authorAvatarImage,
+            $authorAvatarImageURL
+        )
+        .sink { image, url in
+            let configuration: AvatarImageView.Configuration = {
+                if let image = image {
+                    return AvatarImageView.Configuration(image: image)
+                } else {
+                    return AvatarImageView.Configuration(url: url)
+                }
+            }()
+            statusView.authorAvatarButton.avatarImageView.configure(configuration: configuration)
+        }
+        .store(in: &disposeBag)
         UserDefaults.shared
             .observe(\.avatarStyle, options: [.initial, .new]) { defaults, _ in
                 let avatarStyle = defaults.avatarStyle
@@ -174,11 +184,12 @@ extension StatusView.ViewModel {
             }
             .store(in: &disposeBag)
         // timestamp
-        Publishers.CombineLatest(
+        Publishers.CombineLatest3(
             $timestamp,
-            $dateTimeProvider
+            $dateTimeProvider,
+            timestampUpdatePublisher.prepend(Date()).eraseToAnyPublisher()
         )
-        .sink { timestamp, dateTimeProvider in
+        .sink { timestamp, dateTimeProvider, _ in
             statusView.timestampLabel.text = dateTimeProvider?.shortTimeAgoSinceNow(to: timestamp)
             statusView.metricsDashboardView.timestampLabel.text = {
                 let formatter = DateFormatter()

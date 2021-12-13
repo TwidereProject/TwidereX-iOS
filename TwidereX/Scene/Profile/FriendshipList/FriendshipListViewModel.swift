@@ -30,7 +30,7 @@ final class FriendshipListViewModel: NSObject {
     
     // output
     var diffableDataSource: UITableViewDiffableDataSource<UserSection, UserItem>!
-    private(set) lazy var stateMachine: GKStateMachine = {
+    @MainActor private(set) lazy var stateMachine: GKStateMachine = {
         let stateMachine = GKStateMachine(states: [
             State.Initial(viewModel: self),
             State.Fail(viewModel: self),

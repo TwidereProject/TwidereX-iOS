@@ -7,8 +7,16 @@
 //
 
 import UIKit
+import MetaTextKit
+import Meta
+
+protocol ProfileFieldCollectionViewCellDelegate: AnyObject {
+    func profileFieldCollectionViewCell(_ cell: ProfileFieldCollectionViewCell, profileFieldContentView: ProfileFieldContentView, metaLabel: MetaLabel, didSelectMeta meta: Meta)
+}
 
 final class ProfileFieldCollectionViewCell: UICollectionViewListCell {
+    
+    weak var delegate: ProfileFieldCollectionViewCellDelegate?
     
     var item: ProfileFieldListView.Item?
     
@@ -39,6 +47,20 @@ extension ProfileFieldCollectionViewCell {
         // disable selection
         newBackgroundConfiguration.backgroundColor = .clear
         backgroundConfiguration = newBackgroundConfiguration
+        
+        guard let contentView = self.contentView as? ProfileFieldContentView else {
+            assertionFailure()
+            return
+        }
+        contentView.delegate = self
     }
     
 }
+
+// MARK: - ProfileFieldContentViewDelegate
+extension ProfileFieldCollectionViewCell: ProfileFieldContentViewDelegate {
+    func profileFieldContentView(_ contentView: ProfileFieldContentView, metaLabel: MetaLabel, didSelectMeta meta: Meta) {
+        delegate?.profileFieldCollectionViewCell(self, profileFieldContentView: contentView, metaLabel: metaLabel, didSelectMeta: meta)
+    }
+}
+ 

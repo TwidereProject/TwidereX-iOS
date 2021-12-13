@@ -9,7 +9,7 @@
 import UIKit
 
 extension SearchHashtagViewModel {
-    func setupDiffableDataSource(
+    @MainActor func setupDiffableDataSource(
         tableView: UITableView
     ) {
         let configuration = HashtagSection.Configuration()

@@ -57,6 +57,13 @@ extension AvatarImageView {
             self.url = url
             self.placeholder = placeholder
         }
+        
+        public init(
+            image: UIImage
+        ) {
+            self.url = nil
+            self.placeholder = image
+        }
     }
     
     public func configure(configuration: Configuration) {

@@ -13,7 +13,8 @@ import CoreData
 import CoreDataStack
 
 extension StatusThreadViewModel {
-    func setupDiffableDataSource(
+    
+    @MainActor func setupDiffableDataSource(
         tableView: UITableView,
         statusViewTableViewCellDelegate: StatusViewTableViewCellDelegate
     ) {
@@ -126,7 +127,7 @@ extension StatusThreadViewModel {
                     self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): snapshot has changes")
                 }
                 
-                guard let difference = await self.calculateReloadSnapshotDifference(
+                guard let difference = self.calculateReloadSnapshotDifference(
                     tableView: tableView,
                     oldSnapshot: oldSnapshot,
                     newSnapshot: newSnapshot

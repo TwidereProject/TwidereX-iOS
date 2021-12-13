@@ -9,9 +9,11 @@
 import os.log
 import UIKit
 import Combine
+import AppShared
 import TwidereAsset
 import TwidereLocalization
 import TwidereUI
+import TwitterMeta
 
 final class DisplayPreferenceViewModel: NSObject {
     
@@ -138,39 +140,16 @@ extension DisplayPreferenceViewModel {
     static func configure(cell: StatusTableViewCell) {
         cell.selectionStyle = .none
         
-        cell.statusView.authorAvatarButton.avatarImageView.image = Asset.Scene.Preference.twidereAvatar.image
+        cell.statusView.viewModel.authorAvatarImage = Asset.Scene.Preference.twidereAvatar.image
         cell.statusView.viewModel.authorName = PlaintextMetaContent(string: "Twidere")
         cell.statusView.viewModel.authorUsername = "TwidereProject"
-//        cell.statusView.viewModel.
         cell.statusView.viewModel.protected = false
-//        cell.timelinePostView.dateLabel.text = "5m"
-        cell.statusView.viewModel.content = PlaintextMetaContent(string: L10n.Scene.Settings.Display.Preview.thankForUsingTwidereX)
+        cell.statusView.viewModel.timestamp = Date()
+        cell.statusView.viewModel.dateTimeProvider = DateTimeSwiftProvider()
+        let content = TwitterContent(content: L10n.Scene.Settings.Display.Preview.thankForUsingTwidereX)
+        cell.statusView.viewModel.content = TwitterMetaContent.convert(content: content, urlMaximumLength: 16, twitterTextProvider: OfficialTwitterTextProvider())
+        cell.statusView.isUserInteractionEnabled = false
         cell.separator.isHidden = true
     }
-    
-    
-//    static func configureFontSizeSlider(cell: SlideTableViewCell) {
-//        cell.leadingLabel.font = .systemFont(ofSize: 12)
-//        cell.leadingLabel.text = "Aa"
-//
-//        cell.trailingLabel.font = .systemFont(ofSize: 18)
-//        cell.trailingLabel.text = "Aa"
-//
-//        // disable the superview of slider to prevent user directly control
-//        cell.container.isUserInteractionEnabled = false
-//        cell.slider.minimumValue = 0
-//        cell.slider.maximumValue = Float(UserDefaults.contentSizeCategory.count - 1)
-//        if let index = UserDefaults.contentSizeCategory.firstIndex(of: UserDefaults.shared.customContentSizeCatagory) {
-//            cell.slider.value = Float(index)
-//        }
-//
-//        UserDefaults.shared.publisher(for: \.useTheSystemFontSize)
-//            .receive(on: DispatchQueue.main)
-//            .sink(receiveValue: { useTheSystemFontSize in
-//                cell.slider.tintColor = useTheSystemFontSize ? .secondaryLabel : .systemBlue
-//                cell.slider.isUserInteractionEnabled = !useTheSystemFontSize
-//            })
-//            .store(in: &cell.disposeBag)
-//    }
-    
+
 }

@@ -33,7 +33,7 @@ class TwitterMediaService {
     var mediaType: MediaType = .jpeg
     var mediaID: String? = nil
     
-    private(set) lazy var uploadStateMachine: GKStateMachine = {
+    @MainActor private(set) lazy var uploadStateMachine: GKStateMachine = {
         let stateMachine = GKStateMachine(states: [
             TwitterMediaService.UploadState.Init(service: self),
             TwitterMediaService.UploadState.Append(service: self),
