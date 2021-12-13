@@ -38,7 +38,7 @@ let package = Package(
         .package(url: "https://github.com/SDWebImage/SDWebImage.git", from: "5.12.1"),
         .package(url: "https://github.com/MainasuK/UITextView-Placeholder.git", from: "1.4.1"),
         .package(url: "https://github.com/TimOliver/TOCropViewController.git", from: "2.6.0"),
-        .package(url: "https://github.com/freshOS/KeyboardLayoutGuide.git", from: "1.7.0"),
+        .package(url: "https://github.com/MainasuK/KeyboardLayoutGuide.git", branch: "fix/iOS15"),
         .package(url: "https://github.com/apple/swift-collections.git", from: "1.0.2"),
         .package(url: "https://github.com/SwiftKickMobile/SwiftMessages.git", from: "9.0.5"),
     ],

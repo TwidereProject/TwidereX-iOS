@@ -242,6 +242,22 @@ extension HomeTimelineViewController: UITableViewDelegate, AutoGenerateTableView
         aspectTableView(tableView, didSelectRowAt: indexPath)
     }
 
+    func tableView(_ tableView: UITableView, contextMenuConfigurationForRowAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
+        return aspectTableView(tableView, contextMenuConfigurationForRowAt: indexPath, point: point)
+    }
+
+    func tableView(_ tableView: UITableView, previewForHighlightingContextMenuWithConfiguration configuration: UIContextMenuConfiguration) -> UITargetedPreview? {
+        return aspectTableView(tableView, previewForHighlightingContextMenuWithConfiguration: configuration)
+    }
+
+    func tableView(_ tableView: UITableView, previewForDismissingContextMenuWithConfiguration configuration: UIContextMenuConfiguration) -> UITargetedPreview? {
+        return aspectTableView(tableView, previewForDismissingContextMenuWithConfiguration: configuration)
+    }
+
+    func tableView(_ tableView: UITableView, willPerformPreviewActionForMenuWith configuration: UIContextMenuConfiguration, animator: UIContextMenuInteractionCommitAnimating) {
+        aspectTableView(tableView, willPerformPreviewActionForMenuWith: configuration, animator: animator)
+    }
+
     // sourcery:end
     
 //    func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
@@ -254,10 +270,6 @@ extension HomeTimelineViewController: UITableViewDelegate, AutoGenerateTableView
 //        // os_log("%{public}s[%{public}ld], %{public}s: cache cell frame %s", ((#file as NSString).lastPathComponent), #line, #function, frame.debugDescription)
 //
 //        return ceil(frame.height)
-//    }
-//
-//    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-//        handleTableView(tableView, didSelectRowAt: indexPath)
 //    }
 //
 //    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
@@ -274,87 +286,8 @@ extension HomeTimelineViewController: UITableViewDelegate, AutoGenerateTableView
 //        let frame = cell.frame
 //        viewModel.cellFrameCache.setObject(NSValue(cgRect: frame), forKey: NSNumber(value: key))
 //    }
-//
-//    func tableView(_ tableView: UITableView, contextMenuConfigurationForRowAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
-//        return handleTableView(tableView, contextMenuConfigurationForRowAt: indexPath, point: point)
-//    }
-//
-//    func tableView(_ tableView: UITableView, previewForHighlightingContextMenuWithConfiguration configuration: UIContextMenuConfiguration) -> UITargetedPreview? {
-//        return handleTableView(tableView, previewForDismissingContextMenuWithConfiguration: configuration)
-//    }
-//
-//    func tableView(_ tableView: UITableView, previewForDismissingContextMenuWithConfiguration configuration: UIContextMenuConfiguration) -> UITargetedPreview? {
-//        return handleTableView(tableView, previewForDismissingContextMenuWithConfiguration: configuration)
-//    }
-//
-//    func tableView(_ tableView: UITableView, willPerformPreviewActionForMenuWith configuration: UIContextMenuConfiguration, animator: UIContextMenuInteractionCommitAnimating) {
-//        handleTableView(tableView, willPerformPreviewActionForMenuWith: configuration, animator: animator)
-//    }
 
 }
-
-//// MARK: - TimelineMiddleLoaderTableViewCellDelegate
-//extension HomeTimelineViewController: TimelineMiddleLoaderTableViewCellDelegate {
-//
-//    func configure(cell: TimelineMiddleLoaderTableViewCell, upperTimelineIndexObjectID: NSManagedObjectID) {
-//        viewModel.loadMiddleSateMachineList
-//            .receive(on: DispatchQueue.main)
-//            .sink { [weak self] ids in
-//                guard let self = self else { return }
-//                if let stateMachine = ids[upperTimelineIndexObjectID] {
-//                    guard let state = stateMachine.currentState else {
-//                        assertionFailure()
-//                        return
-//                    }
-//
-//                    // make success state same as loading due to snapshot updating delay
-//                    let isLoading = state is HomeTimelineViewModel.LoadMiddleState.Loading || state is HomeTimelineViewModel.LoadMiddleState.Success
-//                    cell.loadMoreButton.isHidden = isLoading
-//                    if isLoading {
-//                        cell.activityIndicatorView.startAnimating()
-//                    } else {
-//                        cell.activityIndicatorView.stopAnimating()
-//                    }
-//                } else {
-//                    cell.loadMoreButton.isHidden = false
-//                    cell.activityIndicatorView.stopAnimating()
-//                }
-//            }
-//            .store(in: &cell.disposeBag)
-//
-//        var dict = viewModel.loadMiddleSateMachineList.value
-//        if let _ = dict[upperTimelineIndexObjectID] {
-//            // do nothing
-//        } else {
-//            let stateMachine = GKStateMachine(states: [
-//                HomeTimelineViewModel.LoadMiddleState.Initial(viewModel: viewModel, upperTimelineIndexObjectID: upperTimelineIndexObjectID),
-//                HomeTimelineViewModel.LoadMiddleState.Loading(viewModel: viewModel, upperTimelineIndexObjectID: upperTimelineIndexObjectID),
-//                HomeTimelineViewModel.LoadMiddleState.Fail(viewModel: viewModel, upperTimelineIndexObjectID: upperTimelineIndexObjectID),
-//                HomeTimelineViewModel.LoadMiddleState.Success(viewModel: viewModel, upperTimelineIndexObjectID: upperTimelineIndexObjectID),
-//            ])
-//            stateMachine.enter(HomeTimelineViewModel.LoadMiddleState.Initial.self)
-//            dict[upperTimelineIndexObjectID] = stateMachine
-//            viewModel.loadMiddleSateMachineList.value = dict
-//        }
-//    }
-//
-//    func timelineMiddleLoaderTableViewCell(_ cell: TimelineMiddleLoaderTableViewCell, loadMoreButtonDidPressed button: UIButton) {
-//        guard let diffableDataSource = viewModel.diffableDataSource else { return }
-//        guard let indexPath = tableView.indexPath(for: cell) else { return }
-//        guard let item = diffableDataSource.itemIdentifier(for: indexPath) else { return }
-//
-//        switch item {
-//        case .middleLoader(let upper):
-//            guard let stateMachine = viewModel.loadMiddleSateMachineList.value[upper] else {
-//                assertionFailure()
-//                return
-//            }
-//            stateMachine.enter(HomeTimelineViewModel.LoadMiddleState.Loading.self)
-//        default:
-//            assertionFailure()
-//        }
-//    }
-//}
 
 //// MARK: - ScrollViewContainer
 //extension HomeTimelineViewController: ScrollViewContainer {

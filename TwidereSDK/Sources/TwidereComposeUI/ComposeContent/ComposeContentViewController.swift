@@ -89,7 +89,7 @@ extension ComposeContentViewController {
             composeToolbarView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             composeToolbarView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             // Apple `keyboardLayoutGuide` has issue (FB9733654). Use KeyboardLayoutGuide package instead
-            view.keyboardLayoutGuide.topAnchor.constraint(equalTo: composeToolbarView.bottomAnchor),
+            view.keyboardLayoutGuideWithSafeArea.topAnchor.constraint(equalTo: composeToolbarView.bottomAnchor),
             composeToolbarBackgroundView.topAnchor.constraint(equalTo: composeToolbarView.topAnchor).priority(.defaultHigh),
         ])
 

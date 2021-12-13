@@ -163,7 +163,6 @@ extension StatusViewTableViewCellDelegate where Self: DataSourceProvider & Media
                 target: .status,
                 status: status,
                 mediaPreviewContext: DataSourceFacade.MediaPreviewContext(
-//                    statusView: statusView,
                     containerView: .mediaGridContainerView(containerView),
                     mediaView: mediaView,
                     index: index

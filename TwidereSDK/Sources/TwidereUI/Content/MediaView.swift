@@ -21,7 +21,7 @@ public final class MediaView: UIView {
     
     public let container = TouchBlockingView()
     
-    private(set) var configuration: Configuration?
+    public private(set) var configuration: Configuration?
     
     private(set) lazy var imageView: UIImageView = {
         let imageView = UIImageView()
@@ -76,6 +76,10 @@ extension MediaView {
     
     @MainActor
     public func thumbnail() async -> UIImage? {
+        return imageView.image
+    }
+    
+    public func thumbnail() -> UIImage? {
         return imageView.image
     }
     
