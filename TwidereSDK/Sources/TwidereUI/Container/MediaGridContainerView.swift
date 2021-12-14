@@ -12,6 +12,8 @@ import func AVFoundation.AVMakeRect
 
 public protocol MediaGridContainerViewDelegate: AnyObject {
     func mediaGridContainerView(_ container: MediaGridContainerView, didTapMediaView mediaView: MediaView, at index: Int)
+    func mediaGridContainerView(_ container: MediaGridContainerView, toggleContentWarningOverlayViewDisplay contentWarningOverlayView: ContentWarningOverlayView)
+
 }
 
 public final class MediaGridContainerView: UIView {
@@ -21,6 +23,11 @@ public final class MediaGridContainerView: UIView {
     let logger = Logger(subsystem: "MediaGridContainerView", category: "UI")
     
     public weak var delegate: MediaGridContainerViewDelegate?
+    public private(set) lazy var viewModel: ViewModel = {
+        let viewModel = ViewModel()
+        viewModel.bind(view: self)
+        return viewModel
+    }()
     
     // lazy var is required here to setup gesture recognizer target-action
     // Swift not doesn't emit compiler error if without `lazy` here
@@ -41,6 +48,29 @@ public final class MediaGridContainerView: UIView {
         return mediaViews
     }()
     
+    
+    let sensitiveToggleButtonBlurVisualEffectView: UIVisualEffectView = {
+        let visualEffectView = UIVisualEffectView(effect: ContentWarningOverlayView.blurVisualEffect)
+        visualEffectView.layer.masksToBounds = true
+        visualEffectView.layer.cornerRadius = 6
+        visualEffectView.layer.cornerCurve = .continuous
+        return visualEffectView
+    }()
+    let sensitiveToggleButtonVibrancyVisualEffectView = UIVisualEffectView(effect: UIVibrancyEffect(blurEffect: ContentWarningOverlayView.blurVisualEffect))
+    let sensitiveToggleButton: HitTestExpandedButton = {
+        let button = HitTestExpandedButton(type: .system)
+        button.setImage(Asset.Human.eyeSlashMini.image.withRenderingMode(.alwaysTemplate), for: .normal)
+        return button
+    }()
+    
+    public let contentWarningOverlayView: ContentWarningOverlayView = {
+        let overlay = ContentWarningOverlayView()
+        overlay.layer.masksToBounds = true
+        overlay.layer.cornerRadius = MediaView.cornerRadius
+        overlay.layer.cornerCurve = .continuous
+        return overlay
+    }()
+    
     public override init(frame: CGRect) {
         super.init(frame: frame)
         _init()
@@ -50,12 +80,13 @@ public final class MediaGridContainerView: UIView {
         super.init(coder: coder)
         _init()
     }
-    
+
 }
 
 extension MediaGridContainerView {
     private func _init() {
-        
+        sensitiveToggleButton.addTarget(self, action: #selector(MediaGridContainerView.sensitiveToggleButtonDidPressed(_:)), for: .touchUpInside)
+        contentWarningOverlayView.delegate = self
     }
 }
 
@@ -66,21 +97,43 @@ extension MediaGridContainerView {
         delegate?.mediaGridContainerView(self, didTapMediaView: mediaView, at: index)
         logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): \(index)")
     }
+    
+    
+    @objc private func sensitiveToggleButtonDidPressed(_ sender: UIButton) {
+        logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public)")
+        delegate?.mediaGridContainerView(self, toggleContentWarningOverlayViewDisplay: contentWarningOverlayView)
+    }
 }
 
 extension MediaGridContainerView {
 
     public func dequeueMediaView(adaptiveLayout layout: AdaptiveLayout) -> MediaView {
         prepareForReuse()
+        
         let mediaView = _mediaViews[0]
         layout.layout(in: self, mediaView: mediaView)
+        
+        layoutSensitiveToggleButton()
+        bringSubviewToFront(sensitiveToggleButtonBlurVisualEffectView)
+
+        layoutContentOverlayView(on: mediaView)
+        bringSubviewToFront(contentWarningOverlayView)
+        
         return mediaView
     }
     
     public func dequeueMediaView(gridLayout layout: GridLayout) -> [MediaView] {
         prepareForReuse()
+        
         let mediaViews = Array(_mediaViews[0..<layout.count])
         layout.layout(in: self, mediaViews: mediaViews)
+        
+        layoutSensitiveToggleButton()
+        bringSubviewToFront(sensitiveToggleButtonBlurVisualEffectView)
+
+        layoutContentOverlayView(on: self)
+        bringSubviewToFront(contentWarningOverlayView)
+        
         return mediaViews
     }
     
@@ -98,6 +151,47 @@ extension MediaGridContainerView {
         removeConstraints(constraints)
     }
 
+}
+
+extension MediaGridContainerView {
+    private func layoutSensitiveToggleButton() {
+        sensitiveToggleButtonBlurVisualEffectView.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(sensitiveToggleButtonBlurVisualEffectView)
+        NSLayoutConstraint.activate([
+            sensitiveToggleButtonBlurVisualEffectView.topAnchor.constraint(equalTo: topAnchor, constant: 8),
+            sensitiveToggleButtonBlurVisualEffectView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 8),
+        ])
+        
+        sensitiveToggleButtonVibrancyVisualEffectView.translatesAutoresizingMaskIntoConstraints = false
+        sensitiveToggleButtonBlurVisualEffectView.contentView.addSubview(sensitiveToggleButtonVibrancyVisualEffectView)
+        NSLayoutConstraint.activate([
+            sensitiveToggleButtonVibrancyVisualEffectView.topAnchor.constraint(equalTo: sensitiveToggleButtonBlurVisualEffectView.contentView.topAnchor),
+            sensitiveToggleButtonVibrancyVisualEffectView.leadingAnchor.constraint(equalTo: sensitiveToggleButtonBlurVisualEffectView.contentView.leadingAnchor),
+            sensitiveToggleButtonVibrancyVisualEffectView.trailingAnchor.constraint(equalTo: sensitiveToggleButtonBlurVisualEffectView.contentView.trailingAnchor),
+            sensitiveToggleButtonVibrancyVisualEffectView.bottomAnchor.constraint(equalTo: sensitiveToggleButtonBlurVisualEffectView.contentView.bottomAnchor),
+        ])
+        
+        sensitiveToggleButton.translatesAutoresizingMaskIntoConstraints = false
+        sensitiveToggleButtonVibrancyVisualEffectView.contentView.addSubview(sensitiveToggleButton)
+        NSLayoutConstraint.activate([
+            sensitiveToggleButton.topAnchor.constraint(equalTo: sensitiveToggleButtonVibrancyVisualEffectView.contentView.topAnchor, constant: 4),
+            sensitiveToggleButton.leadingAnchor.constraint(equalTo: sensitiveToggleButtonVibrancyVisualEffectView.contentView.leadingAnchor, constant: 4),
+            sensitiveToggleButtonVibrancyVisualEffectView.contentView.trailingAnchor.constraint(equalTo: sensitiveToggleButton.trailingAnchor, constant: 4),
+            sensitiveToggleButtonVibrancyVisualEffectView.contentView.bottomAnchor.constraint(equalTo: sensitiveToggleButton.bottomAnchor, constant: 4),
+        ])
+    }
+    
+    private func layoutContentOverlayView(on view: UIView) {
+        contentWarningOverlayView.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(contentWarningOverlayView)       // should add to container
+        NSLayoutConstraint.activate([
+            contentWarningOverlayView.topAnchor.constraint(equalTo: view.topAnchor),
+            contentWarningOverlayView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            contentWarningOverlayView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            contentWarningOverlayView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+        ])
+    }
+    
 }
 
 extension MediaGridContainerView {
@@ -234,5 +328,12 @@ extension MediaGridContainerView {
                 view.heightAnchor.constraint(equalToConstant: containerHeight).priority(.required - 1),
             ])
         }
+    }
+}
+
+// MARK: - ContentWarningOverlayViewDelegate
+extension MediaGridContainerView: ContentWarningOverlayViewDelegate {
+    public func contentWarningOverlayViewDidPressed(_ contentWarningOverlayView: ContentWarningOverlayView) {
+        delegate?.mediaGridContainerView(self, toggleContentWarningOverlayViewDisplay: contentWarningOverlayView)
     }
 }

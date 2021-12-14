@@ -36,6 +36,11 @@ final class SearchTimelineViewController: UIViewController, NeedsDependency, Med
         os_log("%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
     }
 
+
+// sourcery:inline:auto:SearchTimelineViewController.AutoGenerateProtocolDelegate
+
+// Hello
+// sourcery:end
 }
 
 extension SearchTimelineViewController {

@@ -13,6 +13,7 @@ import MetaTextKit
 import MetaTextArea
 import TwidereCommon
 import TwidereCore
+import NIOPosix
 
 public protocol StatusViewDelegate: AnyObject {
     func statusView(_ statusView: StatusView, headerDidPressed header: UIView)
@@ -20,10 +21,13 @@ public protocol StatusViewDelegate: AnyObject {
     func statusView(_ statusView: StatusView, authorAvatarButtonDidPressed button: AvatarButton)
     func statusView(_ statusView: StatusView, quoteStatusView: StatusView, authorAvatarButtonDidPressed button: AvatarButton)
     
+    func statusView(_ statusView: StatusView, expandContentButtonDidPressed button: UIButton)
+    
     func statusView(_ statusView: StatusView, metaTextAreaView: MetaTextAreaView, didSelectMeta meta: Meta)
     func statusView(_ statusView: StatusView, quoteStatusView: StatusView, metaTextAreaView: MetaTextAreaView, didSelectMeta meta: Meta)
     
     func statusView(_ statusView: StatusView, mediaGridContainerView containerView: MediaGridContainerView, didTapMediaView mediaView: MediaView, at index: Int)
+    func statusView(_ statusView: StatusView, mediaGridContainerView containerView: MediaGridContainerView, toggleContentWarningOverlayViewDisplay contentWarningOverlayView: ContentWarningOverlayView)
     func statusView(_ statusView: StatusView, quoteStatusView: StatusView, mediaGridContainerView containerView: MediaGridContainerView, didTapMediaView mediaView: MediaView, at index: Int)
 
     func statusView(_ statusView: StatusView, pollTableView tableView: UITableView, didSelectRowAt indexPath: IndexPath)
@@ -90,6 +94,25 @@ public final class StatusView: UIView {
         return imageView
     }()
     public let timestampLabel = PlainLabel(style: .statusTimestamp)
+    
+    // spoiler
+    public let spoilerContentTextView = MetaTextAreaView()
+    
+    public let expandContentButtonContainer: UIStackView = {
+        let stackView = UIStackView()
+        stackView.axis = .horizontal
+        stackView.alignment = .leading
+        return stackView
+    }()
+    public let expandContentButton: HitTestExpandedButton = {
+        let button = HitTestExpandedButton(type: .system)
+        button.setImage(Asset.Editing.ellipsisLarge.image.withRenderingMode(.alwaysTemplate), for: .normal)
+        button.layer.masksToBounds = true
+        button.layer.cornerRadius = 10
+        button.layer.cornerCurve = .circular
+        button.backgroundColor = .tertiarySystemFill
+        return button
+    }()
     
     // content
     public let contentTextView = MetaTextAreaView()
@@ -214,6 +237,8 @@ extension StatusView {
         headerContainerView.addGestureRecognizer(headerTapGestureRecognizer)
         // avatar button
         authorAvatarButton.addTarget(self, action: #selector(StatusView.authorAvatarButtonDidPressed(_:)), for: .touchUpInside)
+        // expand content
+        expandContentButton.addTarget(self, action: #selector(StatusView.expandContentButtonDidPressed(_:)), for: .touchUpInside)
         // content
         contentTextView.delegate = self
         // media grid
@@ -269,6 +294,8 @@ extension StatusView {
             statusView.headerContainerView.isHidden = true
             statusView.lockImageView.isHidden = true
             statusView.visibilityImageView.isHidden = true
+            statusView.spoilerContentTextView.isHidden = true
+            statusView.expandContentButtonContainer.isHidden = true
             statusView.mediaGridContainerView.isHidden = true
             statusView.pollTableView.isHidden = true
             statusView.pollVoteInfoContainerView.isHidden = true
@@ -372,8 +399,18 @@ extension StatusView.Style {
             statusView.headerTextLabel.leadingAnchor.constraint(equalTo: statusView.authorNameLabel.leadingAnchor),
         ])
         
+        // spoilerContentTextView
+        contentContainerView.addArrangedSubview(statusView.spoilerContentTextView)
+        statusView.spoilerContentTextView.setContentHuggingPriority(.required - 9, for: .vertical)
+        statusView.spoilerContentTextView.setContentCompressionResistancePriority(.required - 10, for: .vertical)
+        
+        contentContainerView.addArrangedSubview(statusView.expandContentButtonContainer)
+        statusView.expandContentButton.translatesAutoresizingMaskIntoConstraints = false
+        statusView.expandContentButtonContainer.addArrangedSubview(statusView.expandContentButton)
+        statusView.expandContentButtonContainer.addArrangedSubview(UIView())
+        
         // contentTextView
-        statusView.contentTextView.translatesAutoresizingMaskIntoConstraints = false
+        // statusView.contentTextView.translatesAutoresizingMaskIntoConstraints = false
         contentContainerView.addArrangedSubview(statusView.contentTextView)
         statusView.contentTextView.setContentHuggingPriority(.required - 10, for: .vertical)
         
@@ -521,6 +558,16 @@ extension StatusView.Style {
         
         // authorUsernameLabel
         authorInfoSubHeadlineContentStackView.addArrangedSubview(statusView.authorUsernameLabel)
+        
+        // spoilerContentTextView
+        statusView.containerStackView.addArrangedSubview(statusView.spoilerContentTextView)
+        statusView.spoilerContentTextView.setContentCompressionResistancePriority(.required - 10, for: .vertical)
+        statusView.spoilerContentTextView.setContentHuggingPriority(.required - 9, for: .vertical)
+        
+        statusView.containerStackView.addArrangedSubview(statusView.expandContentButtonContainer)
+        statusView.expandContentButton.translatesAutoresizingMaskIntoConstraints = false
+        statusView.expandContentButtonContainer.addArrangedSubview(statusView.expandContentButton)
+        statusView.expandContentButtonContainer.addArrangedSubview(UIView())
 
         // contentTextView
         statusView.containerStackView.addArrangedSubview(statusView.contentTextView)
@@ -714,6 +761,16 @@ extension StatusView.Style {
         statusView.timestampLabel.setContentHuggingPriority(.required - 9, for: .horizontal)
         statusView.timestampLabel.setContentCompressionResistancePriority(.required - 9, for: .horizontal)
         
+        // spoilerContentTextView
+        contentContainerView.addArrangedSubview(statusView.spoilerContentTextView)
+        statusView.spoilerContentTextView.setContentCompressionResistancePriority(.required - 10, for: .vertical)
+        statusView.spoilerContentTextView.setContentHuggingPriority(.required - 9, for: .vertical)
+        
+        contentContainerView.addArrangedSubview(statusView.expandContentButtonContainer)
+        statusView.expandContentButton.translatesAutoresizingMaskIntoConstraints = false
+        statusView.expandContentButtonContainer.addArrangedSubview(statusView.expandContentButton)
+        statusView.expandContentButtonContainer.addArrangedSubview(UIView())
+        
         // contentTextView
         statusView.contentTextView.translatesAutoresizingMaskIntoConstraints = false
         contentContainerView.addArrangedSubview(statusView.contentTextView)
@@ -769,6 +826,11 @@ extension StatusView {
         visibilityImageView.isHidden = false
     }
     
+    public func setSpoilerDisplay() {
+        spoilerContentTextView.isHidden = false
+        expandContentButtonContainer.isHidden = false
+    }
+    
     public func setMediaDisplay() {
         mediaGridContainerView.isHidden = false
     }
@@ -822,9 +884,14 @@ extension StatusView {
         delegate?.statusView(self, headerDidPressed: headerContainerView)
     }
     
-    @objc private func authorAvatarButtonDidPressed(_ button: UIButton) {
+    @objc private func authorAvatarButtonDidPressed(_ sender: UIButton) {
         logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public)")
         delegate?.statusView(self, authorAvatarButtonDidPressed: authorAvatarButton)
+    }
+    
+    @objc private func expandContentButtonDidPressed(_ sender: UIButton) {
+        logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public)")
+        delegate?.statusView(self, expandContentButtonDidPressed: sender)
     }
     
     @objc private func pollVoteButtonDidPressed(_ sender: UIButton) {
@@ -857,6 +924,10 @@ extension StatusView: MetaTextAreaViewDelegate {
 extension StatusView: MediaGridContainerViewDelegate {
     public func mediaGridContainerView(_ container: MediaGridContainerView, didTapMediaView mediaView: MediaView, at index: Int) {
         delegate?.statusView(self, mediaGridContainerView: container, didTapMediaView: mediaView, at: index)
+    }
+    
+    public func mediaGridContainerView(_ container: MediaGridContainerView, toggleContentWarningOverlayViewDisplay contentWarningOverlayView: ContentWarningOverlayView) {
+        delegate?.statusView(self, mediaGridContainerView: container, toggleContentWarningOverlayViewDisplay: contentWarningOverlayView)
     }
 }
 
@@ -897,6 +968,10 @@ extension StatusView: StatusViewDelegate {
         delegate?.statusView(self, quoteStatusView: statusView, metaTextAreaView: metaTextAreaView, didSelectMeta: meta)
     }
     
+    public func statusView(_ statusView: StatusView, expandContentButtonDidPressed button: UIButton) {
+        assertionFailure()
+    }
+    
     public func statusView(_ statusView: StatusView, quoteStatusView: StatusView, metaTextAreaView: MetaTextAreaView, didSelectMeta meta: Meta) {
         assertionFailure()
     }
@@ -919,6 +994,10 @@ extension StatusView: StatusViewDelegate {
     }
     
     public func statusView(_ statusView: StatusView, quoteStatusView: StatusView, mediaGridContainerView containerView: MediaGridContainerView, didTapMediaView mediaView: MediaView, at index: Int) {
+        assertionFailure()
+    }
+    
+    public func statusView(_ statusView: StatusView, mediaGridContainerView containerView: MediaGridContainerView, toggleContentWarningOverlayViewDisplay contentWarningOverlayView: ContentWarningOverlayView) {
         assertionFailure()
     }
     

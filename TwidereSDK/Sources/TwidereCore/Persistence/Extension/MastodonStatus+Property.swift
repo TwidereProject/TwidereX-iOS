@@ -27,6 +27,8 @@ extension MastodonStatus.Property {
             replyCount: entity.repliesCount.flatMap(Int64.init) ?? 0,
             repostCount: Int64(entity.reblogsCount),
             visibility: entity.mastodonVisibility,
+            isMediaSensitive: entity.sensitive ?? false,
+            spoilerText: entity.spoilerText,
             url: entity.url,
             text: entity.text,
             language: entity.language,

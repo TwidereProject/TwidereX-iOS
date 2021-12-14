@@ -309,18 +309,18 @@ extension StatusSection {
         )
     }
     
-    static func configure(
-        tableView: UITableView,
-        cell: StatusThreadRootTableViewCell,
-        viewModel: StatusThreadRootTableViewCell.ViewModel,
-        configuration: Configuration
-    ) {
-        cell.configure(
-            tableView: tableView,
-            viewModel: viewModel,
-            delegate: configuration.statusViewTableViewCellDelegate
-        )
-    }
+//    static func configure(
+//        tableView: UITableView,
+//        cell: StatusThreadRootTableViewCell,
+//        viewModel: StatusThreadRootTableViewCell.ViewModel,
+//        configuration: Configuration
+//    ) {
+//        cell.configure(
+//            tableView: tableView,
+//            viewModel: viewModel,
+//            delegate: configuration.statusViewTableViewCellDelegate
+//        )
+//    }
     
     static func configure(
         cell: TimelineMiddleLoaderTableViewCell,

@@ -447,6 +447,7 @@ extension ComposeContentViewController: ComposeToolbarViewDelegate {
     }
     
     public func composeToolBarView(_ composeToolBarView: ComposeToolbarView, mediaSensitiveButtonPressed button: UIButton) {
+        guard !viewModel.isContentWarningComposing else { return }
         viewModel.isMediaSensitive.toggle()
     }
     

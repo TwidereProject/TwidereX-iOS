@@ -41,6 +41,11 @@ final class UserTimelineViewController: UIViewController, NeedsDependency, Media
         os_log("%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
     }
     
+
+// sourcery:inline:auto:UserTimelineViewController.AutoGenerateProtocolDelegate
+
+// Hello
+// sourcery:end
 }
 
 extension UserTimelineViewController {

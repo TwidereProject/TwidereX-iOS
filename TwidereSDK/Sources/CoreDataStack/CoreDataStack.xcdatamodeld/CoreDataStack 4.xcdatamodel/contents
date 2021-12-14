@@ -80,6 +80,9 @@
         <attribute name="domain" attributeType="String"/>
         <attribute name="emojis" optional="YES" attributeType="Binary"/>
         <attribute name="id" attributeType="String"/>
+        <attribute name="isContentReveal" transient="YES" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="isMediaSensitive" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="isMediaSensitiveToggled" transient="YES" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
         <attribute name="language" optional="YES" attributeType="String"/>
         <attribute name="likeCount" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="replyCount" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
@@ -219,7 +222,7 @@
         <element name="MastodonNotification" positionX="90" positionY="-18" width="128" height="164"/>
         <element name="MastodonPoll" positionX="90" positionY="-18" width="128" height="224"/>
         <element name="MastodonPollOption" positionX="99" positionY="-9" width="128" height="149"/>
-        <element name="MastodonStatus" positionX="-63" positionY="-171" width="128" height="419"/>
+        <element name="MastodonStatus" positionX="-63" positionY="-171" width="128" height="464"/>
         <element name="MastodonUser" positionX="-63" positionY="-153" width="128" height="569"/>
         <element name="TwitterAuthentication" positionX="-109.453125" positionY="275.71875" width="128" height="209"/>
         <element name="TwitterStatus" positionX="-63" positionY="-153" width="128" height="389"/>

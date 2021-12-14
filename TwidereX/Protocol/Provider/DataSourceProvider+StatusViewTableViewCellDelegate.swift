@@ -91,6 +91,29 @@ extension StatusViewTableViewCellDelegate where Self: DataSourceProvider {
 
 }
 
+// MARK: - spoiler
+extension StatusViewTableViewCellDelegate where Self: DataSourceProvider {
+    func tableViewCell(_ cell: UITableViewCell, statusView: StatusView, expandContentButtonDidPressed button: UIButton) {
+        Task {
+            let source = DataSourceItem.Source(tableViewCell: cell, indexPath: nil)
+            guard let item = await item(from: source) else {
+                assertionFailure()
+                return
+            }
+            guard case let .status(status) = item else {
+                assertionFailure("only works for status data provider")
+                return
+            }
+            
+            try await DataSourceFacade.responseToExpandContentAction(
+                provider: self,
+                target: .status,
+                status: status
+            )
+        }
+    }
+}
+
 // MARK: - content
 extension StatusViewTableViewCellDelegate where Self: DataSourceProvider {
     func tableViewCell(_ cell: UITableViewCell, statusView: StatusView, metaTextAreaView: MetaTextAreaView, didSelectMeta meta: Meta) {
@@ -194,11 +217,29 @@ extension StatusViewTableViewCellDelegate where Self: DataSourceProvider & Media
                 target: .quote,
                 status: status,
                 mediaPreviewContext: DataSourceFacade.MediaPreviewContext(
-//                    statusView: statusView,
                     containerView: .mediaGridContainerView(containerView),
                     mediaView: mediaView,
                     index: index
                 )
+            )
+        }
+    }
+    
+    func tableViewCell(_ cell: UITableViewCell, statusView: StatusView, mediaGridContainerView containerView: MediaGridContainerView, toggleContentWarningOverlayViewDisplay contentWarningOverlayView: ContentWarningOverlayView) {
+        Task {
+            let source = DataSourceItem.Source(tableViewCell: cell, indexPath: nil)
+            guard let item = await item(from: source) else {
+                assertionFailure()
+                return
+            }
+            guard case let .status(status) = item else {
+                assertionFailure("only works for status data provider")
+                return
+            }
+            try await DataSourceFacade.responseToToggleMediaSensitiveAction(
+                provider: self,
+                target: .status,
+                status: status
             )
         }
     }

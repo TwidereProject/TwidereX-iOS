@@ -73,7 +73,13 @@ public final class ComposeContentViewModel: NSObject {
     // text
     @Published public var currentTextInput = ""
     @Published public var currentTextInputWeightedLength = 0
-    @Published public var isContentWarningComposing = false
+    @Published public var isContentWarningComposing = false {           // Mastodon only
+        didSet {
+            if isContentWarningComposing {
+                isMediaSensitive = true
+            }
+        }
+    }
     @Published public var currentContentWarningInput = ""               // Mastodon only
     @Published public var currentContentWarningInputWeightedLength = 0  // Mastodon only, set 0 when not composing
     @Published public var maxTextInputLimit = 500

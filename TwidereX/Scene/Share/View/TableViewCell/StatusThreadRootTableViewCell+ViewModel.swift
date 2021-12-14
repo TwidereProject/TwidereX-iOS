@@ -74,6 +74,18 @@ extension StatusThreadRootTableViewCell {
             )
         }
         
+        
+        statusView.viewModel.contentRevealChangePublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [weak tableView] _ in
+                guard let tableView = tableView else { return }
+                UIView.setAnimationsEnabled(false)
+                tableView.beginUpdates()
+                tableView.endUpdates()
+                UIView.setAnimationsEnabled(true)
+            }
+            .store(in: &disposeBag)
+        
         self.delegate = delegate
     }
 }

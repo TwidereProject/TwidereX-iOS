@@ -36,6 +36,6 @@ extension DataSourceItem {
 }
 
 protocol DataSourceProvider: NeedsDependency & UIViewController {
-    var logger: Logger { get }
+    var logger: Logger { get } 
     func item(from source: DataSourceItem.Source) async -> DataSourceItem?
 }

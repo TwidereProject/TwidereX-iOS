@@ -45,7 +45,14 @@ extension UITableViewDelegate where Self: DataSourceProvider & MediaPreviewTrans
         
         guard let cell = tableView.cellForRow(at: indexPath) as? StatusViewContainerTableViewCell else { return nil }
         
+        // TODO:
+        // this must call before check `isContentWarningOverlayDisplay`. otherwise, will get BadAccess exception
         let mediaViews = cell.statusView.mediaGridContainerView.mediaViews
+        
+        if cell.statusView.mediaGridContainerView.viewModel.isContentWarningOverlayDisplay == true {
+           return nil
+        }
+        
         for (i, mediaView) in mediaViews.enumerated() {
             let pointInMediaView = mediaView.convert(point, from: tableView)
             guard mediaView.point(inside: pointInMediaView, with: nil) else {

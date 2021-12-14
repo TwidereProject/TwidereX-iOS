@@ -77,102 +77,77 @@ extension DataSourceFacade {
 }
 
 extension DataSourceFacade {
-//    struct StatusMenuContext {
-//        let text: String
-//        let url: String
-//    }
-//
-//    static func createMenu(
-//        dependency: NeedsDependency,
-//        status: StatusRecord,
-//        button: UIButton
-//    ) -> UIMenu {
-//        var children: [UIMenuElement] = [
-//            UIAction(
-//                title: L10n.Common.Controls.Status.Actions.copyText.capitalized,
-//                image: UIImage(systemName: "doc.on.doc"),
-//                identifier: nil,
-//                discoverabilityTitle: nil,
-//                attributes: [],
-//                state: .off
-//            ) { [weak dependency] _ in
-//                guard let dependency = dependency else { return }
-//                Task {
-//                    let _text: String? = await dependency.context.managedObjectContext.perform {
-//                        guard let object = status.object(in: dependency.context.managedObjectContext) else { return nil }
-//                        return object.plaintextContent
-//                    }
-//                    guard let text = _text else { return }
-//                    UIPasteboard.general.string = text
-//                }
-//            },
-//            UIAction(
-//                title: L10n.Common.Controls.Status.Actions.copyLink.capitalized,
-//                image: UIImage(systemName: "link"),
-//                identifier: nil,
-//                discoverabilityTitle: nil,
-//                attributes: [],
-//                state: .off
-//            ) { [weak dependency] _ in
-//                guard let dependency = dependency else { return }
-//                Task {
-//                    let _url: URL? = await dependency.context.managedObjectContext.perform {
-//                        guard let object = status.object(in: dependency.context.managedObjectContext) else { return nil }
-//                        return object.statusURL
-//                    }
-//                    guard let url = _url else { return }
-//                    UIPasteboard.general.string = url.absoluteString
-//                }
-//            },
-//            UIAction(
-//                title: L10n.Common.Controls.Status.Actions.shareLink.capitalized,
-//                image: UIImage(systemName: "square.and.arrow.up"),
-//                identifier: nil,
-//                discoverabilityTitle: nil,
-//                attributes: [],
-//                state: .off
-//            ) { [weak dependency, weak button] _ in
-//                guard let sender = button else { return }
-//                guard let dependency = dependency else { return }
-//                Task {
-//                    let activityViewController = await DataSourceFacade.createActivityViewController(
-//                        dependency: dependency,
-//                        status: status
-//                    )
-//                    await dependency.coordinator.present(
-//                        scene: .activityViewController(activityViewController: activityViewController, sourceView: sender),
-//                        from: nil,
-//                        transition: .activityViewControllerPresent(animated: true, completion: nil)
-//                    )
-//                }
-//            }
-//        ]
-//
-////        if let activeTwitterAuthenticationBox = dependency.context.authenticationService.activeTwitterAuthenticationBox.value {
-////            let activeTwitterUserID = activeTwitterAuthenticationBox.twitterUserID
-////            if tweet.author.id == activeTwitterUserID || tweet.retweet?.author.id == activeTwitterUserID {
-////                let deleteTweetAction = UIAction(title: L10n.Common.Controls.Actions.confirm, image: nil, identifier: nil, discoverabilityTitle: nil, attributes: .destructive, state: .off) { [weak dependency] _ in
-////                    guard let dependency = dependency else { return }
-////                    guard let activeTwitterAuthenticationBox = dependency.context.authenticationService.activeTwitterAuthenticationBox.value else {
-////                        return
-////                    }
-////                    dependency.context.apiService.delete(
-////                        tweetObjectID: tweet.objectID,
-////                        twitterAuthenticationBox: activeTwitterAuthenticationBox
-////                    )
-////                    .sink { completion in
-////
-////                    } receiveValue: { response in
-////
-////                    }
-////                    .store(in: &dependency.context.disposeBag)
-////                }
-////                let deleteTweetMenu = UIMenu(title: L10n.Common.Controls.Status.Actions.deleteTweet.capitalized, image: UIImage(systemName: "trash"), identifier: nil, options: .destructive, children: [deleteTweetAction])
-////                children.append(deleteTweetMenu)
-////            }
-////        }
-//
-//        return UIMenu(title: "", options: [], children: children)
-//    }
 
+    static func responseToExpandContentAction(
+        provider: DataSourceProvider,
+        target: StatusTarget,
+        status: StatusRecord
+    ) async throws {
+        let _redirectRecord = await DataSourceFacade.status(
+            managedObjectContext: provider.context.managedObjectContext,
+            status: status,
+            target: target
+        )
+        guard let redirectRecord = _redirectRecord else { return }
+        
+        try await responseToExpandContentAction(
+            provider: provider,
+            status: redirectRecord
+        )
+    }
+    
+    @MainActor
+    static func responseToExpandContentAction(
+        provider: DataSourceProvider,
+        status: StatusRecord
+    ) async throws {
+        try await provider.context.managedObjectContext.performChanges {
+            guard let object = status.object(in: provider.context.managedObjectContext) else { return }
+            switch object {
+            case .twitter:
+                break
+            case .mastodon(let status):
+                status.update(isContentReveal: !status.isContentReveal)
+            }
+        }
+    }
+    
+}
+
+extension DataSourceFacade {
+
+    static func responseToToggleMediaSensitiveAction(
+        provider: DataSourceProvider,
+        target: StatusTarget,
+        status: StatusRecord
+    ) async throws {
+        let _redirectRecord = await DataSourceFacade.status(
+            managedObjectContext: provider.context.managedObjectContext,
+            status: status,
+            target: target
+        )
+        guard let redirectRecord = _redirectRecord else { return }
+        
+        try await responseToToggleMediaSensitiveAction(
+            provider: provider,
+            status: redirectRecord
+        )
+    }
+    
+    @MainActor
+    static func responseToToggleMediaSensitiveAction(
+        provider: DataSourceProvider,
+        status: StatusRecord
+    ) async throws {
+        try await provider.context.managedObjectContext.performChanges {
+            guard let object = status.object(in: provider.context.managedObjectContext) else { return }
+            switch object {
+            case .twitter:
+                break
+            case .mastodon(let status):
+                status.update(isMediaSensitiveToggled: !status.isMediaSensitiveToggled)
+            }
+        }
+    }
+    
 }

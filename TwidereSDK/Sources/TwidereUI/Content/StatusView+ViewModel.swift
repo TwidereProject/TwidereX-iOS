@@ -24,6 +24,8 @@ extension StatusView {
         var observations = Set<NSKeyValueObservation>()
         var objects = Set<NSManagedObject>()
         
+        let logger = Logger(subsystem: "StatusView", category: "ViewModel")
+        
         @Published public var platform: Platform = .none
         
         @Published public var header: Header = .none
@@ -35,8 +37,16 @@ extension StatusView {
         
         @Published public var protected: Bool = false
         
+        @Published public var spoilerContent: MetaContent?
         @Published public var content: MetaContent?
         @Published public var mediaViewConfigurations: [MediaView.Configuration] = []
+        
+        @Published public var isContentReveal: Bool = true
+        @Published public var isMediaSensitive: Bool = false
+        @Published public var isMediaSensitiveToggled: Bool = false
+        @Published public var isMediaReveal: Bool = false
+        
+        @Published public var isMediaSensitiveSwitchable = false
         
         @Published public var pollItems: [PollItem] = []
         @Published public var isVotable: Bool = false
@@ -70,6 +80,8 @@ extension StatusView {
             .share()
             .eraseToAnyPublisher()
         
+        public let contentRevealChangePublisher = PassthroughSubject<Void, Never>()
+        
         public enum Header {
             case none
             case repost(info: RepostInfo)
@@ -79,6 +91,15 @@ extension StatusView {
             public struct RepostInfo {
                 public let authorNameMetaContent: MetaContent
             }
+        }
+        
+        init() {
+            Publishers.CombineLatest(
+                $isMediaSensitive,
+                $isMediaSensitiveToggled
+            )
+            .map { $1 ? !$0 : $0 }
+            .assign(to: &$isMediaReveal)
         }
     }
 }
@@ -302,11 +323,41 @@ extension StatusView.ViewModel {
                 statusView.contentTextView.configure(content: content)
             }
             .store(in: &disposeBag)
+        $spoilerContent
+            .sink { metaContent in
+                guard let metaContent = metaContent else {
+                    statusView.spoilerContentTextView.reset()
+                    return
+                }
+                statusView.spoilerContentTextView.configure(content: metaContent)
+                statusView.setSpoilerDisplay()
+            }
+            .store(in: &disposeBag)
+        
+        Publishers.CombineLatest(
+            $isContentReveal,
+            $spoilerContent
+        )
+        .sink { [weak self] isContentReveal, spoilerContent in
+            guard let self = self else { return }
+            guard spoilerContent != nil else {
+                // ignore reveal state when no spoiler exists
+                statusView.contentTextView.isHidden = false
+                return
+            }
+            
+            statusView.contentTextView.isHidden = !isContentReveal
+            self.contentRevealChangePublisher.send()
+        }
+        .store(in: &disposeBag)
     }
     
     private func bindMedia(statusView: StatusView) {
         $mediaViewConfigurations
-            .sink { configurations in
+            .sink { [weak self] configurations in
+                guard let self = self else { return }
+                self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): configure media")
+                
                 let maxSize = CGSize(
                     width: statusView.contentMaxLayoutWidth,
                     height: statusView.contentMaxLayoutWidth
@@ -337,6 +388,16 @@ extension StatusView.ViewModel {
                 if needsDisplay {
                     statusView.setMediaDisplay()
                 }
+            }
+            .store(in: &disposeBag)
+        $isMediaReveal
+            .sink { isMediaReveal in
+                statusView.mediaGridContainerView.viewModel.isContentWarningOverlayDisplay = isMediaReveal
+            }
+            .store(in: &disposeBag)
+        $isMediaSensitiveSwitchable
+            .sink { isMediaSensitiveSwitchable in
+                statusView.mediaGridContainerView.viewModel.isSensitiveToggleButtonDisplay = isMediaSensitiveSwitchable
             }
             .store(in: &disposeBag)
     }
@@ -576,11 +637,19 @@ extension StatusView {
             urlMaximumLength: 20,
             twitterTextProvider: twitterTextProvider
         )
+        viewModel.isContentReveal = true
+        viewModel.spoilerContent = nil
         viewModel.content = metaContent
         viewModel.sharePlaintextContent = status.displayText
     }
     
     private func configureMedia(twitterStatus status: TwitterStatus) {
+        let status = status.repost ?? status
+        
+        mediaGridContainerView.viewModel.resetContentWarningOverlay()
+        viewModel.isMediaSensitive = false
+        viewModel.isMediaSensitiveToggled = false
+        viewModel.isMediaSensitiveSwitchable = false
         MediaView.configuration(twitterStatus: status)
             .assign(to: \.mediaViewConfigurations, on: viewModel)
             .store(in: &disposeBag)
@@ -753,8 +822,8 @@ extension StatusView {
     
     private func configureContent(mastodonStatus status: MastodonStatus) {
         let status = status.repost ?? status
-        let content = MastodonContent(content: status.content, emojis: status.emojis.asDictionary)
         do {
+            let content = MastodonContent(content: status.content, emojis: status.emojis.asDictionary)
             let metaContent = try MastodonMetaContent.convert(document: content)
             viewModel.content = metaContent
             viewModel.sharePlaintextContent = metaContent.original
@@ -762,11 +831,39 @@ extension StatusView {
             assertionFailure(error.localizedDescription)
             viewModel.content = PlaintextMetaContent(string: "")
         }
+        
+        if let spoilerText = status.spoilerText, !spoilerText.isEmpty {
+            do {
+                let content = MastodonContent(content: spoilerText, emojis: status.emojis.asDictionary)
+                let metaContent = try MastodonMetaContent.convert(document: content)
+                viewModel.spoilerContent = metaContent
+            } catch {
+                assertionFailure()
+                viewModel.spoilerContent = nil
+            }
+        } else {
+            viewModel.spoilerContent = nil
+        }
+        
+        status.publisher(for: \.isContentReveal)
+            .assign(to: \.isContentReveal, on: viewModel)
+            .store(in: &disposeBag)
     }
     
     private func configureMedia(mastodonStatus status: MastodonStatus) {
+        let status = status.repost ?? status
+        
+        mediaGridContainerView.viewModel.resetContentWarningOverlay()
+        viewModel.isMediaSensitiveSwitchable = true
+        
         MediaView.configuration(mastodonStatus: status)
             .assign(to: \.mediaViewConfigurations, on: viewModel)
+            .store(in: &disposeBag)
+        status.publisher(for: \.isMediaSensitive)
+            .assign(to: \.isMediaSensitive, on: viewModel)
+            .store(in: &disposeBag)
+        status.publisher(for: \.isMediaSensitiveToggled)
+            .assign(to: \.isMediaSensitiveToggled, on: viewModel)
             .store(in: &disposeBag)
     }
     

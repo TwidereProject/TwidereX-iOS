@@ -42,6 +42,16 @@ final public class MastodonStatus: NSManagedObject {
     }
     
     // sourcery: autoUpdatableObject, autoGenerateProperty
+    @NSManaged public private(set) var isMediaSensitive: Bool
+    
+    // sourcery: autoUpdatableObject
+    @NSManaged public private(set) var isContentReveal: Bool
+    // sourcery: autoUpdatableObject
+    @NSManaged public private(set) var isMediaSensitiveToggled: Bool
+    
+    // sourcery: autoUpdatableObject, autoGenerateProperty
+    @NSManaged public private(set) var spoilerText: String?
+    // sourcery: autoUpdatableObject, autoGenerateProperty
     @NSManaged public private(set) var url: String?
     // sourcery: autoUpdatableObject, autoGenerateProperty
     @NSManaged public private(set) var text: String?
@@ -200,6 +210,8 @@ extension MastodonStatus: AutoGenerateProperty {
         public let  replyCount: Int64
         public let  repostCount: Int64
         public let  visibility: MastodonVisibility
+        public let  isMediaSensitive: Bool
+        public let  spoilerText: String?
         public let  url: String?
         public let  text: String?
         public let  language: String?
@@ -219,6 +231,8 @@ extension MastodonStatus: AutoGenerateProperty {
     		replyCount: Int64,
     		repostCount: Int64,
     		visibility: MastodonVisibility,
+    		isMediaSensitive: Bool,
+    		spoilerText: String?,
     		url: String?,
     		text: String?,
     		language: String?,
@@ -237,6 +251,8 @@ extension MastodonStatus: AutoGenerateProperty {
     		self.replyCount = replyCount
     		self.repostCount = repostCount
     		self.visibility = visibility
+    		self.isMediaSensitive = isMediaSensitive
+    		self.spoilerText = spoilerText
     		self.url = url
     		self.text = text
     		self.language = language
@@ -258,6 +274,8 @@ extension MastodonStatus: AutoGenerateProperty {
     	self.replyCount = property.replyCount
     	self.repostCount = property.repostCount
     	self.visibility = property.visibility
+    	self.isMediaSensitive = property.isMediaSensitive
+    	self.spoilerText = property.spoilerText
     	self.url = property.url
     	self.text = property.text
     	self.language = property.language
@@ -275,6 +293,8 @@ extension MastodonStatus: AutoGenerateProperty {
     	update(replyCount: property.replyCount)
     	update(repostCount: property.repostCount)
     	update(visibility: property.visibility)
+    	update(isMediaSensitive: property.isMediaSensitive)
+    	update(spoilerText: property.spoilerText)
     	update(url: property.url)
     	update(text: property.text)
     	update(language: property.language)
@@ -347,6 +367,26 @@ extension MastodonStatus: AutoUpdatableObject {
     public func update(visibility: MastodonVisibility) {
     	if self.visibility != visibility {
     		self.visibility = visibility
+    	}
+    }
+    public func update(isMediaSensitive: Bool) {
+    	if self.isMediaSensitive != isMediaSensitive {
+    		self.isMediaSensitive = isMediaSensitive
+    	}
+    }
+    public func update(isContentReveal: Bool) {
+    	if self.isContentReveal != isContentReveal {
+    		self.isContentReveal = isContentReveal
+    	}
+    }
+    public func update(isMediaSensitiveToggled: Bool) {
+    	if self.isMediaSensitiveToggled != isMediaSensitiveToggled {
+    		self.isMediaSensitiveToggled = isMediaSensitiveToggled
+    	}
+    }
+    public func update(spoilerText: String?) {
+    	if self.spoilerText != spoilerText {
+    		self.spoilerText = spoilerText
     	}
     }
     public func update(url: String?) {
