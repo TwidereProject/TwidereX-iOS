@@ -32,11 +32,6 @@ final class HashtagTimelineViewController: UIViewController, NeedsDependency, Me
         return tableView
     }()
     
-
-// sourcery:inline:auto:HashtagTimelineViewController.AutoGenerateProtocolDelegate
-
-// Hello
-// sourcery:end
 }
 
 extension HashtagTimelineViewController {

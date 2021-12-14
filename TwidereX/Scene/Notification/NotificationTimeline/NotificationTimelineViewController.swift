@@ -40,11 +40,6 @@ final class NotificationTimelineViewController: UIViewController, NeedsDependenc
         return tableView
     }()
 
-
-// sourcery:inline:auto:NotificationTimelineViewController.AutoGenerateProtocolDelegate
-
-// Hello
-// sourcery:end
 }
 
 extension NotificationTimelineViewController {

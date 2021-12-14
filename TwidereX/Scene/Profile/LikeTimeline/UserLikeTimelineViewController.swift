@@ -40,11 +40,6 @@ final class UserLikeTimelineViewController: UIViewController, NeedsDependency, M
         os_log("%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
     }
     
-
-// sourcery:inline:auto:UserLikeTimelineViewController.AutoGenerateProtocolDelegate
-
-// Hello
-// sourcery:end
 }
 
 extension UserLikeTimelineViewController {

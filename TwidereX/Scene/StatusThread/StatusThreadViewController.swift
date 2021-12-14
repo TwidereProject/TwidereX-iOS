@@ -37,11 +37,6 @@ final class StatusThreadViewController: UIViewController, NeedsDependency, Media
         os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s:", ((#file as NSString).lastPathComponent), #line, #function)
     }
     
-
-// sourcery:inline:auto:StatusThreadViewController.AutoGenerateProtocolDelegate
-
-// Hello
-// sourcery:end
 }
 
 extension StatusThreadViewController {

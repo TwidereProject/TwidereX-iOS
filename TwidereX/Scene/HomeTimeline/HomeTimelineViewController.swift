@@ -79,11 +79,7 @@ final class HomeTimelineViewController: UIViewController, NeedsDependency, Drawe
     deinit {
         os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s:", ((#file as NSString).lastPathComponent), #line, #function)
     }
-
-// sourcery:inline:auto:HomeTimelineViewController.AutoGenerateProtocolDelegate
-
-// Hello
-// sourcery:end
+    
 }
 
 extension HomeTimelineViewController {
