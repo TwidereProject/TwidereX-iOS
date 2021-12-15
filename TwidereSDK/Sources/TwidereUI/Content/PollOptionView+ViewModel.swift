@@ -17,9 +17,10 @@ extension PollOptionView {
     
     static let percentageFormatter: NumberFormatter = {
         let formatter = NumberFormatter()
+        formatter.numberStyle = .percent
         formatter.maximumFractionDigits = 1
         formatter.minimumIntegerDigits = 1
-        formatter.minimumSignificantDigits = 1
+        formatter.roundingMode = .down
         return formatter
     }()
     
@@ -134,13 +135,13 @@ extension PollOptionView.ViewModel {
                 view.stripProgressView.setProgress(percentage ?? 0, animated: animated)
                 
                 guard let percentage = percentage,
-                      let string = PollOptionView.percentageFormatter.string(from: NSNumber(value: percentage * 100))
+                      let string = PollOptionView.percentageFormatter.string(from: NSNumber(value: percentage))
                 else {
                     view.percentageMetaLabel.configure(content: PlaintextMetaContent(string: ""))
                     return
                 }
                 
-                view.percentageMetaLabel.configure(content: PlaintextMetaContent(string: string + "%"))
+                view.percentageMetaLabel.configure(content: PlaintextMetaContent(string: string))
             }
             .store(in: &disposeBag)
         // corner

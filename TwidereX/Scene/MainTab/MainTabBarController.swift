@@ -208,10 +208,13 @@ extension MainTabBarController: UITabBarControllerDelegate {
         
         guard currentTab.rawValue == tabBarController.selectedIndex,
               let navigationController = viewController as? UINavigationController,
-              navigationController.viewControllers.count == 1,
-              let scrollViewContainer = navigationController.topViewController as? ScrollViewContainer
+              navigationController.viewControllers.count == 1
         else { return }
         
+        let _scrollViewContainer = (navigationController.topViewController as? ScrollViewContainer) ?? (navigationController.topMost as? ScrollViewContainer)
+        guard let scrollViewContainer = _scrollViewContainer else {
+            return
+        }
         scrollViewContainer.scrollToTop(animated: true)
     }
 }

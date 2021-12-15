@@ -825,11 +825,6 @@ extension ProfileViewController: ProfilePagingViewControllerDelegate {
 //
 //}
 
-//// MARK: - ScrollViewContainer
-//extension ProfileViewController: ScrollViewContainer {
-//    var scrollView: UIScrollView { return overlayScrollView }
-//}
-
 // MARK: - TabBarPagerDelegate
 extension ProfileViewController: TabBarPagerDelegate {
     
@@ -883,5 +878,12 @@ extension UserMediaTimelineViewController: IndicatorInfoProvider {
 extension UserLikeTimelineViewController: IndicatorInfoProvider {
     func indicatorInfo(for pagerTabStripController: PagerTabStripViewController) -> IndicatorInfo {
         return IndicatorInfo(image: Asset.Health.heartFill.image.withRenderingMode(.alwaysTemplate))
+    }
+}
+
+// MARK: - ScrollViewContainer
+extension ProfileViewController: ScrollViewContainer {
+    var scrollView: UIScrollView {
+        return tabBarPagerController.relayScrollView
     }
 }

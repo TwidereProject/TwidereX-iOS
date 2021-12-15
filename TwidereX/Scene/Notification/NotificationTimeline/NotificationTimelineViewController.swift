@@ -154,3 +154,10 @@ extension NotificationTimelineViewController: StatusViewTableViewCellDelegate { 
 
 // MARK: - UserTableViewCellDelegate
 extension NotificationTimelineViewController: UserTableViewCellDelegate { }
+
+// MARK: - ScrollViewContainer
+extension NotificationTimelineViewController: ScrollViewContainer {
+    var scrollView: UIScrollView {
+        return tableView
+    }
+}
