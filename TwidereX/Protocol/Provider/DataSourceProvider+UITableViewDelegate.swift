@@ -92,14 +92,20 @@ extension UITableViewDelegate where Self: DataSourceProvider & MediaPreviewTrans
                         ) { [weak self] _ in
                             guard let self = self else { return }
                             Task {
+                                let impactFeedbackGenerator = UIImpactFeedbackGenerator(style: .light)
+                                let notificationFeedbackGenerator = UINotificationFeedbackGenerator()
+                                
                                 do {
+                                    impactFeedbackGenerator.impactOccurred()
                                     try await self.context.photoLibraryService.save(
                                         source: .remote(url: assetURL),
                                         resourceType: resourceType
                                     )
                                     self.context.photoLibraryService.presentSuccessNotification()
+                                    notificationFeedbackGenerator.notificationOccurred(.success)
                                 } catch {
                                     self.context.photoLibraryService.presentFailureNotification(error: error)
+                                    notificationFeedbackGenerator.notificationOccurred(.error)
                                 }
                             }
                         }
