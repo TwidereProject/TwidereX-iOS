@@ -756,6 +756,10 @@ extension StatusView.Style {
         statusView.authorUsernameLabel.setContentCompressionResistancePriority(.required - 11, for: .horizontal)
         // padding
         authorContentStackView.addArrangedSubview(UIView())
+        // visibilityImageView
+        authorContentStackView.addArrangedSubview(statusView.visibilityImageView)
+        statusView.visibilityImageView.setContentHuggingPriority(.required - 9, for: .horizontal)
+        statusView.visibilityImageView.setContentCompressionResistancePriority(.required - 9, for: .horizontal)
         // timestampLabel
         authorContentStackView.addArrangedSubview(statusView.timestampLabel)
         statusView.timestampLabel.setContentHuggingPriority(.required - 9, for: .horizontal)

@@ -145,9 +145,9 @@ public final class ComposeContentViewModel: NSObject {
             replyTo = status
             items.insert(.replyTo)
             
-            // set mention
             switch status {
             case .twitter(let status):
+                // set mention
                 self.primaryMentionPickItem = .twitterUser(
                     username: status.author.username,
                     attribute: MentionPickViewModel.Item.Attribute(
@@ -178,8 +178,12 @@ public final class ComposeContentViewModel: NSObject {
                     }
                     return items
                 }()
-            case .mastodon:
-                break
+            case .mastodon(let status):
+                // set content warning
+                if let spoilerText = status.spoilerText {
+                    isContentWarningComposing = true
+                    currentContentWarningInput = spoilerText
+                }
             }
         }
         
@@ -339,8 +343,23 @@ public final class ComposeContentViewModel: NSObject {
                 case .twitter:
                     break
                 case .mastodon(let author):
-                    // FIXME: correct reply status | direct message visibility
-                    self.mastodonVisibility = author.locked ? .private : .public
+                    self.mastodonVisibility = {
+                        var defaultVisibility: Mastodon.Entity.Status.Visibility  = author.locked ? .private : .public
+                        if case let .reply(object) = inputContext,
+                           case let .mastodon(status) = object {
+                            switch status.visibility {
+                            case .direct:
+                                defaultVisibility = .direct
+                            case .unlisted:
+                                defaultVisibility = author.locked ? .private : .unlisted
+                            case .private:
+                                defaultVisibility = .private
+                            case .public, ._other:
+                                break
+                            }
+                        }
+                        return defaultVisibility
+                    }()
                 }
             }
             .store(in: &disposeBag)
