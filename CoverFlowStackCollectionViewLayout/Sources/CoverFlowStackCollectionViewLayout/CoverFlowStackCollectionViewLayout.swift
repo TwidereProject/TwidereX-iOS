@@ -105,6 +105,8 @@ extension CoverFlowStackCollectionViewLayout {
                 let start = viewPortRect.maxX - attribute.frame.width
                 let minX = lerp(v0: start, v1: end, t: timingCurve)
                 attribute.frame.origin.x = minX
+                // set alpha
+                attribute.alpha = lerp(v0: 0.5, v1: 1, t: timingCurve)
             } else {
                 // C: bottom cover
                 // timing curve
@@ -120,7 +122,7 @@ extension CoverFlowStackCollectionViewLayout {
                 // set offsetX
                 attribute.frame.origin.x = viewPortRect.maxX - attribute.frame.width
                 // set alpha
-                attribute.alpha = t
+                attribute.alpha = lerp(v0: 0, v1: 0.5, t: t)
             }
         }   // end for
         

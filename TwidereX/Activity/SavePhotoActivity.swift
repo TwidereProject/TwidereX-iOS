@@ -34,7 +34,7 @@ final class SavePhotoActivity: UIActivity {
     }
     
     override var activityTitle: String? {
-        return L10n.Common.Controls.Actions.savePhoto.localizedCapitalized
+        return L10n.Common.Controls.Actions.save.localizedCapitalized
     }
     
     override var activityImage: UIImage? {

@@ -15,21 +15,21 @@ public protocol ContentWarningOverlayViewDelegate: AnyObject {
 
 public final class ContentWarningOverlayView: UIView {
     
-    static let blurVisualEffect = UIBlurEffect(style: .systemUltraThinMaterial)
+    public static let blurVisualEffect = UIBlurEffect(style: .systemUltraThinMaterial)
     
     let logger = Logger(subsystem: "ContentWarningOverlayView", category: "View")
     
-    weak var delegate: ContentWarningOverlayViewDelegate?
+    public weak var delegate: ContentWarningOverlayViewDelegate?
     
-    let blurVisualEffectView = UIVisualEffectView(effect: ContentWarningOverlayView.blurVisualEffect)
-    let vibrancyVisualEffectView = UIVisualEffectView(effect: UIVibrancyEffect(blurEffect: ContentWarningOverlayView.blurVisualEffect))
+    public let blurVisualEffectView = UIVisualEffectView(effect: ContentWarningOverlayView.blurVisualEffect)
+    public let vibrancyVisualEffectView = UIVisualEffectView(effect: UIVibrancyEffect(blurEffect: ContentWarningOverlayView.blurVisualEffect))
     let alertImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.image = Asset.Indices.exclamationmarkTriangleLarge.image.withRenderingMode(.alwaysTemplate)
         return imageView
     }()
     
-    let tapGestureRecognizer = UITapGestureRecognizer.singleTapGestureRecognizer
+    public let tapGestureRecognizer = UITapGestureRecognizer.singleTapGestureRecognizer
     
     override init(frame: CGRect) {
         super.init(frame: frame)

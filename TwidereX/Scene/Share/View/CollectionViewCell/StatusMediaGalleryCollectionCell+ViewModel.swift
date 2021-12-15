@@ -16,13 +16,51 @@ extension StatusMediaGalleryCollectionCell {
         var disposeBag = Set<AnyCancellable>()
 
         @Published var mediaViewConfigurations: [MediaView.Configuration] = []
+
+        // input
+        @Published public var isMediaSensitive: Bool = false
+        @Published public var isMediaSensitiveToggled: Bool = false
+        @Published public var isMediaSensitiveSwitchable = false
+
+        // output
+        @Published public var isMediaReveal: Bool = false
+        @Published public var isSensitiveToggleButtonDisplay: Bool = false
+        @Published public var isContentWarningOverlayDisplay: Bool? = nil
+        
+        init() {
+            Publishers.CombineLatest(
+                $isMediaSensitive,
+                $isMediaSensitiveToggled
+            )
+            .map { $1 ? !$0 : $0 }
+            .assign(to: &$isMediaReveal)
+            $isMediaReveal
+                .sink { [weak self] isMediaReveal in
+                    guard let self = self else { return }
+                    self.isContentWarningOverlayDisplay = isMediaReveal
+                }
+                .store(in: &disposeBag)
+            $isMediaSensitiveSwitchable
+                .sink { [weak self] isMediaSensitiveSwitchable in
+                    guard let self = self else { return }
+                    self.isSensitiveToggleButtonDisplay = isMediaSensitiveSwitchable
+                }
+                .store(in: &disposeBag)
+        }
     }
 }
 
 extension StatusMediaGalleryCollectionCell.ViewModel {
+    
+    func resetContentWarningOverlay() {
+        isContentWarningOverlayDisplay = nil
+    }
+    
     func bind(cell: StatusMediaGalleryCollectionCell) {
         $mediaViewConfigurations
-            .sink { configurations in
+            .sink { [weak self] configurations in
+                guard let self = self else { return }
+                
                 switch configurations.count {
                 case 0:
                     cell.mediaView.isHidden = true
@@ -42,6 +80,28 @@ extension StatusMediaGalleryCollectionCell.ViewModel {
                 }
             }
             .store(in: &disposeBag)
+        $isSensitiveToggleButtonDisplay
+            .sink { isDisplay in
+                cell.sensitiveToggleButtonBlurVisualEffectView.isHidden = !isDisplay
+            }
+            .store(in: &disposeBag)
+        $isContentWarningOverlayDisplay
+            .sink { isDisplay in
+                let isDisplay = isDisplay ?? false
+                
+                let withAnimation = self.isContentWarningOverlayDisplay != nil
+                if withAnimation {
+                    UIView.animate(withDuration: 0.33, delay: 0, options: .curveEaseInOut) {
+                        cell.contentWarningOverlayView.blurVisualEffectView.alpha = isDisplay ? 1 : 0
+                    }
+                } else {
+                    cell.contentWarningOverlayView.blurVisualEffectView.alpha = isDisplay ? 1 : 0
+                }
+                
+                cell.contentWarningOverlayView.isUserInteractionEnabled = isDisplay
+                cell.contentWarningOverlayView.tapGestureRecognizer.isEnabled = isDisplay
+            }
+            .store(in: &disposeBag)
     }
 }
 
@@ -57,14 +117,31 @@ extension StatusMediaGalleryCollectionCell {
     }
 
     private func configure(twitterStatus status: TwitterStatus) {
+        let status = status.repost ?? status
+
+        viewModel.resetContentWarningOverlay()
+        viewModel.isMediaSensitive = false
+        viewModel.isMediaSensitiveToggled = false
+        viewModel.isMediaSensitiveSwitchable = false
         MediaView.configuration(twitterStatus: status)
             .assign(to: \.mediaViewConfigurations, on: viewModel)
             .store(in: &disposeBag)
     }
     
     private func configure(mastodonStatus status: MastodonStatus) {
+        let status = status.repost ?? status
+
+        viewModel.resetContentWarningOverlay()
+        viewModel.isMediaSensitiveSwitchable = true
+        
         MediaView.configuration(mastodonStatus: status)
             .assign(to: \.mediaViewConfigurations, on: viewModel)
+            .store(in: &disposeBag)
+        status.publisher(for: \.isMediaSensitive)
+            .assign(to: \.isMediaSensitive, on: viewModel)
+            .store(in: &disposeBag)
+        status.publisher(for: \.isMediaSensitiveToggled)
+            .assign(to: \.isMediaSensitiveToggled, on: viewModel)
             .store(in: &disposeBag)
     }
 }

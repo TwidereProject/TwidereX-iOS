@@ -13,7 +13,6 @@ import func AVFoundation.AVMakeRect
 public protocol MediaGridContainerViewDelegate: AnyObject {
     func mediaGridContainerView(_ container: MediaGridContainerView, didTapMediaView mediaView: MediaView, at index: Int)
     func mediaGridContainerView(_ container: MediaGridContainerView, toggleContentWarningOverlayViewDisplay contentWarningOverlayView: ContentWarningOverlayView)
-
 }
 
 public final class MediaGridContainerView: UIView {
@@ -93,12 +92,11 @@ extension MediaGridContainerView {
 extension MediaGridContainerView {
     @objc private func mediaViewTapGestureRecognizerHandler(_ sender: UITapGestureRecognizer) {
         guard let index = _mediaViews.firstIndex(where: { $0.container === sender.view }) else { return }
+        logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): \(index)")
         let mediaView = _mediaViews[index]
         delegate?.mediaGridContainerView(self, didTapMediaView: mediaView, at: index)
-        logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): \(index)")
     }
-    
-    
+
     @objc private func sensitiveToggleButtonDidPressed(_ sender: UIButton) {
         logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public)")
         delegate?.mediaGridContainerView(self, toggleContentWarningOverlayViewDisplay: contentWarningOverlayView)

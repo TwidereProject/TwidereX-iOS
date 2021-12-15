@@ -202,6 +202,26 @@ extension UserMediaTimelineViewController: StatusMediaGalleryCollectionCellDeleg
             )
         }
     }
+    
+    func statusMediaGalleryCollectionCell(_ cell: StatusMediaGalleryCollectionCell, toggleContentWarningOverlayViewDisplay contentWarningOverlayView: ContentWarningOverlayView) {
+        Task {
+            let source = DataSourceItem.Source(collectionViewCell: cell, indexPath: nil)
+            guard let item = await item(from: source) else {
+                assertionFailure()
+                return
+            }
+            guard case let .status(status) = item else {
+                assertionFailure("only works for status data provider")
+                return
+            }
+            
+            try await DataSourceFacade.responseToToggleMediaSensitiveAction(
+                provider: self,
+                target: .status,
+                status: status
+            )
+        }
+    }
 }
 
 // MARK: - CustomScrollViewContainerController
