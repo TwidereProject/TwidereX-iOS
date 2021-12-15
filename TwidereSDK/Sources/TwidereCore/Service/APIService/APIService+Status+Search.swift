@@ -20,80 +20,6 @@ extension APIService {
     static let defaultSearchCount = 20
     static let conversationSearchCount = 50
     
-    // conversation tweet search
-//    func tweetsSearch(
-//        conversationRootTweetID: Twitter.Entity.Tweet.ID,
-//        authorUsername: String,
-//        maxID: String?,
-//        twitterAuthenticationBox: AuthenticationService.TwitterAuthenticationBox
-//    ) -> AnyPublisher<Twitter.Response.Content<Twitter.API.Search.Content>, Error> {
-//        let query = Twitter.API.Timeline.TimelineQuery(
-//            count: APIService.conversationSearchCount,
-//            maxID: maxID,
-//            sinceID: conversationRootTweetID,
-//            query: "to:\(authorUsername) OR from:\(authorUsername) -filter:retweets"
-//        )
-//        return _tweetsSearch(
-//            query: query,
-//            twitterAuthenticationBox: twitterAuthenticationBox
-//        )
-//    }
-    
-    // global tweet search
-//    func tweetsSearch(
-//        searchText: String,
-//        maxID: String?,
-//        twitterAuthenticationBox: AuthenticationService.TwitterAuthenticationBox
-//    ) -> AnyPublisher<Twitter.Response.Content<Twitter.API.Search.Content>, Error> {
-//        let query = Twitter.API.Timeline.TimelineQuery(
-//            count: APIService.defaultSearchCount,
-//            maxID: maxID,
-//            query: searchText
-//        )
-//        return _tweetsSearch(
-//            query: query,
-//            twitterAuthenticationBox: twitterAuthenticationBox
-//        )
-//    }
-
-//    private func _tweetsSearch(
-//        query: Twitter.API.Timeline.TimelineQuery,
-//        twitterAuthenticationBox: AuthenticationService.TwitterAuthenticationBox
-//    ) -> AnyPublisher<Twitter.Response.Content<Twitter.API.Search.Content>, Error> {
-//        let requestTwitterUserID = twitterAuthenticationBox.twitterUserID
-//        let authorization = twitterAuthenticationBox.twitterAuthorization
-//
-//        return Twitter.API.Search.tweets(
-//            session: session,
-//            authorization: authorization,
-//            query: query
-//        )
-//        .map { response -> AnyPublisher<Twitter.Response.Content<Twitter.API.Search.Content>, Error> in
-//            let log = OSLog.api
-//            let persistResponse = response.map { $0.statuses ?? [] }
-//            return APIService.Persist.persistTweets(
-//                managedObjectContext: self.backgroundManagedObjectContext,
-//                query: query,
-//                response: persistResponse,
-//                persistType: .searchList,
-//                requestTwitterUserID: requestTwitterUserID,
-//                log: log
-//            )
-//            .setFailureType(to: Error.self)
-//            .tryMap { result -> Twitter.Response.Content<Twitter.API.Search.Content> in
-//                switch result {
-//                case .success:
-//                    return response
-//                case .failure(let error):
-//                    throw error
-//                }
-//            }
-//            .eraseToAnyPublisher()
-//        }
-//        .switchToLatest()
-//        .eraseToAnyPublisher()
-//    }
-    
 }
 
 // MARK: - Twitter
@@ -162,15 +88,16 @@ extension APIService {
         }
         #endif
         
+        let content = response.value
+        let dictionary = Twitter.Response.V2.DictContent(
+            tweets: [content.data, content.includes?.tweets].compactMap { $0 }.flatMap { $0 },
+            users: content.includes?.users ?? [],
+            media: content.includes?.media ?? [],
+            places: content.includes?.places ?? []
+        )
+
         let managedObjectContext = backgroundManagedObjectContext
         try await managedObjectContext.performChanges {
-            let content = response.value
-            let dictionary = Twitter.Response.V2.DictContent(
-                tweets: [content.data, content.includes?.tweets].compactMap { $0 }.flatMap { $0 },
-                users: content.includes?.users ?? [],
-                media: content.includes?.media ?? [],
-                places: content.includes?.places ?? []
-            )
             let user = authenticationContext.authenticationRecord.object(in: managedObjectContext)?.user
             // let statusCache = Persistence.PersistCache<TwitterStatus>()
             // let userCache = Persistence.PersistCache<TwitterUser>()
@@ -186,6 +113,34 @@ extension APIService {
                 )
             )
         }   // end .performChanges { … }
+        
+        // query and update entity video/GIF attribute from V1 API
+        do {
+            let statusIDs: [Twitter.Entity.Tweet.ID] = {
+                var statusIDs: Set<Twitter.Entity.Tweet.ID> = Set()
+                for status in response.value.data ?? [] {
+                    guard let mediaKeys = status.attachments?.mediaKeys else { continue }
+                    for mediaKey in mediaKeys {
+                        guard let media = dictionary.mediaDict[mediaKey],
+                              media.attachmentKind == .video || media.attachmentKind == .animatedGIF
+                        else { continue }
+                        
+                        statusIDs.insert(status.id)
+                    }
+                }
+                return Array(statusIDs)
+            }()
+            if !statusIDs.isEmpty {
+                logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): fetch \(statusIDs.count) missing assetURL from V1 API…")
+                _ = try await twitterStatusV1(
+                    statusIDs: statusIDs,
+                    authenticationContext: authenticationContext
+                )
+                logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): fetch missing assetURL from V1 API success")
+            }
+        } catch {
+            logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): fetch missing assetURL from V1 API fail: \(error.localizedDescription)")
+        }
         
         return response
     }

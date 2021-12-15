@@ -85,37 +85,7 @@ extension DataSourceFacade {
                     provider?.present(playerViewController, animated: true, completion: nil)
                 }
             } else {
-                guard case let .twitter(record) = status,
-                      let status = record.object(in: provider.context.managedObjectContext),
-                      case let .twitter(authenticationContext) = provider.context.authenticationService.activeAuthenticationContext.value
-                else {
-                    assertionFailure()
-                    return
-                }
-                
-                let statusID = status.id
-                do {
-                    let response = try await provider.context.apiService.twitterStatusV1(
-                        statusIDs: [statusID],
-                        authenticationContext: authenticationContext
-                    )
-                    guard let status = response.value.first else { return }
-                    guard let url = status.extendedEntities?.media?.first?.assetURL,
-                          let assetURL = URL(string: url)
-                    else { return }
-                    
-                    Task { @MainActor [weak provider] in
-                        let playerViewController = AVPlayerViewController()
-                        playerViewController.player = AVPlayer(url: assetURL)
-                        assert(playerViewController.player != nil)
-                        playerViewController.player?.isMuted = true
-                        playerViewController.player?.play()
-                        provider?.present(playerViewController, animated: true, completion: nil)
-                    }
-                } catch {
-                    // do nothing
-                    return
-                }
+                // do nothing
             }
             return
         }
