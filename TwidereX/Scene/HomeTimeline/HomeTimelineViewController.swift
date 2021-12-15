@@ -23,8 +23,6 @@ import TwidereComposeUI
 
 final class HomeTimelineViewController: UIViewController, NeedsDependency, DrawerSidebarTransitionHostViewController, MediaPreviewTransitionHostViewController {
     
-//    var avatarBarButtonItem: AvatarBarButtonItem
-    
     let logger = Logger(subsystem: "HomeTimelineViewController", category: "ViewController")
     
     weak var context: AppContext! { willSet { precondition(!isViewLoaded) } }
@@ -53,6 +51,13 @@ final class HomeTimelineViewController: UIViewController, NeedsDependency, Drawe
         tableView.rowHeight = UITableView.automaticDimension
         tableView.separatorStyle = .none
         return tableView
+    }()
+    
+    let publishProgressView: UIProgressView = {
+        let progressView = UIProgressView()
+        progressView.progressViewStyle = .bar
+        progressView.tintColor = Asset.Colors.hightLight.color
+        return progressView
     }()
     
     private lazy var floatyButton: Floaty = {
@@ -118,6 +123,31 @@ extension HomeTimelineViewController {
             tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
         ])
+        
+        publishProgressView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(publishProgressView)
+        NSLayoutConstraint.activate([
+            publishProgressView.topAnchor.constraint(equalTo: view.layoutMarginsGuide.topAnchor),
+            publishProgressView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            publishProgressView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+        ])
+        
+        context.publisherService.$currentPublishProgress
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] progress in
+                guard let self = self else { return }
+                let progress = Float(progress)
+                let withAnimation = progress > self.publishProgressView.progress
+                self.publishProgressView.setProgress(progress, animated: withAnimation)
+                
+                if progress == 1 {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [weak self] in
+                        guard let self = self else { return }
+                        self.publishProgressView.setProgress(0, animated: false)
+                    }
+                }
+            }
+            .store(in: &disposeBag)
 
         view.addSubview(floatyButton)
         

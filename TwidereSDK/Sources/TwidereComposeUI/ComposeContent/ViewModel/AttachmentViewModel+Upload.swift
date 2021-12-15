@@ -205,6 +205,10 @@ extension AttachmentViewModel {
             focus: nil              // TODO:
         )
         
+        // init + N * append + finalize
+        progress.totalUnitCount = 1 + 10
+        progress.completedUnitCount = 0
+        
         let attachmentUploadResponse: Mastodon.Response.Content<Mastodon.Entity.Attachment> = try await {
             do {
                 AttachmentViewModel.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): [V2] upload attachment...")
@@ -228,6 +232,7 @@ extension AttachmentViewModel {
                 )
             }
         }()
+        progress.completedUnitCount += 1
         
         
         // check needs wait processing (until get the `url`)
@@ -250,11 +255,13 @@ extension AttachmentViewModel {
                     attachmentID: attachmentUploadResponse.value.id,
                     mastodonAuthenticationContext: mastodonAuthenticationContext
                 )
+                progress.completedUnitCount += 1
                 
                 if let url = attachmentStatusResponse.value.url {
                     AttachmentViewModel.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): attachment process finish: \(url)")
                     
                     // escape here
+                    progress.completedUnitCount = 11
                     return .mastodon(attachmentStatusResponse)
                     
                 } else {
