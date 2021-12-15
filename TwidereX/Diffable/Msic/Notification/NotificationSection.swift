@@ -8,6 +8,7 @@
 
 
 import UIKit
+import AppShared
 
 enum NotificationSection: Hashable {
     case main
@@ -29,6 +30,8 @@ extension NotificationSection {
             // data source should dispatch in main thread
             assert(Thread.isMainThread)
             
+            let activeAuthenticationContext = context.authenticationService.activeAuthenticationContext.eraseToAnyPublisher()
+            
             // configure cell with item
             switch item {
             case .feed(let record):
@@ -41,6 +44,15 @@ extension NotificationSection {
                     switch feed.objectContent {
                     case .status:
                         let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: StatusTableViewCell.self), for: indexPath) as! StatusTableViewCell
+                        StatusSection.setupStatusPollDataSource(
+                            context: context,
+                            managedObjectContext: context.managedObjectContext,
+                            statusView: cell.statusView,
+                            configurationContext: PollOptionView.ConfigurationContext(
+                                dateTimeProvider: DateTimeSwiftProvider(),
+                                activeAuthenticationContext: activeAuthenticationContext
+                            )
+                        )
                         configure(
                             tableView: tableView,
                             cell: cell,
