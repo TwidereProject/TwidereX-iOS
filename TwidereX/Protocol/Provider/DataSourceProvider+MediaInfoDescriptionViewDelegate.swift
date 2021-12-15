@@ -95,4 +95,10 @@ extension MediaInfoDescriptionViewDelegate where Self: DataSourceProvider {
             )
         }   // end Task
     }   // end func
+    
+    func mediaInfoDescriptionView(_ mediaInfoDescriptionView: MediaInfoDescriptionView, statusToolbar: StatusToolbar, menuActionDidPressed action: StatusToolbar.MenuAction, menuButton button: UIButton) {
+        guard let authenticationContext = context.authenticationService.activeAuthenticationContext.value else { return }
+
+    }
+
 }

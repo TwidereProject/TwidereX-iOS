@@ -36,6 +36,7 @@ public protocol StatusViewDelegate: AnyObject {
     func statusView(_ statusView: StatusView, quoteStatusViewDidPressed quoteStatusView: StatusView)
     
     func statusView(_ statusView: StatusView, statusToolbar: StatusToolbar, actionDidPressed action: StatusToolbar.Action, button: UIButton)
+    func statusView(_ statusView: StatusView, statusToolbar: StatusToolbar, menuActionDidPressed action: StatusToolbar.MenuAction, menuButton button: UIButton)
 }
 
 public final class StatusView: UIView {
@@ -940,6 +941,10 @@ extension StatusView: StatusToolbarDelegate {
     public func statusToolbar(_ statusToolbar: StatusToolbar, actionDidPressed action: StatusToolbar.Action, button: UIButton) {
         delegate?.statusView(self, statusToolbar: statusToolbar, actionDidPressed: action, button: button)
     }
+    
+    public func statusToolbar(_ statusToolbar: StatusToolbar, menuActionDidPressed action: StatusToolbar.MenuAction, menuButton button: UIButton) {
+        
+    }
 }
 
 // MARK: - StatusViewDelegate
@@ -1010,6 +1015,10 @@ extension StatusView: StatusViewDelegate {
     }
     
     public func statusView(_ statusView: StatusView, statusToolbar: StatusToolbar, actionDidPressed action: StatusToolbar.Action, button: UIButton) {
+        assertionFailure()
+    }
+    
+    public func statusView(_ statusView: StatusView, statusToolbar: StatusToolbar, menuActionDidPressed action: StatusToolbar.MenuAction, menuButton button: UIButton) {
         assertionFailure()
     }
     

@@ -342,4 +342,16 @@ extension StatusViewTableViewCellDelegate where Self: DataSourceProvider {
             )
         }   // end Task
     }   // end func
+    
+    func tableViewCell(
+        _ cell: UITableViewCell,
+        statusView: StatusView,
+        statusToolbar: StatusToolbar,
+        menuActionDidPressed action: StatusToolbar.MenuAction,
+        menuButton button: UIButton
+    ) {
+        guard let authenticationContext = context.authenticationService.activeAuthenticationContext.value else { return }
+
+    }
+
 }

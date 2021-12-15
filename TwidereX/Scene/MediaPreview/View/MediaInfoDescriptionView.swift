@@ -18,6 +18,7 @@ protocol MediaInfoDescriptionViewDelegate: AnyObject {
     func mediaInfoDescriptionView(_ mediaInfoDescriptionView: MediaInfoDescriptionView, contentTextViewDidPressed textView: MetaTextAreaView)
     func mediaInfoDescriptionView(_ mediaInfoDescriptionView: MediaInfoDescriptionView, nameMetaLabelDidPressed metaLabel: MetaLabel)
     func mediaInfoDescriptionView(_ mediaInfoDescriptionView: MediaInfoDescriptionView, statusToolbar: StatusToolbar, actionDidPressed action: StatusToolbar.Action, button: UIButton)
+    func mediaInfoDescriptionView(_ mediaInfoDescriptionView: MediaInfoDescriptionView, statusToolbar: StatusToolbar, menuActionDidPressed action: StatusToolbar.MenuAction, menuButton button: UIButton)
 }
 
 final class MediaInfoDescriptionView: UIView {
@@ -160,6 +161,10 @@ extension MediaInfoDescriptionView {
 extension MediaInfoDescriptionView: StatusToolbarDelegate {
     func statusToolbar(_ statusToolbar: StatusToolbar, actionDidPressed action: StatusToolbar.Action, button: UIButton) {
         delegate?.mediaInfoDescriptionView(self, statusToolbar: statusToolbar, actionDidPressed: action, button: button)
+    }
+    
+    func statusToolbar(_ statusToolbar: StatusToolbar, menuActionDidPressed action: StatusToolbar.MenuAction, menuButton button: UIButton) {
+        delegate?.mediaInfoDescriptionView(self, statusToolbar: statusToolbar, menuActionDidPressed: action, menuButton: button)
     }
 }
 

@@ -12,6 +12,7 @@ import TwidereCore
 
 public protocol StatusToolbarDelegate: AnyObject {
     func statusToolbar(_ statusToolbar: StatusToolbar, actionDidPressed action: StatusToolbar.Action, button: UIButton)
+    func statusToolbar(_ statusToolbar: StatusToolbar, menuActionDidPressed action: StatusToolbar.MenuAction, menuButton button: UIButton)
 }
 
 public final class StatusToolbar: UIView {
@@ -143,6 +144,10 @@ extension StatusToolbar {
         case repost
         case like
         case menu
+    }
+    
+    public enum MenuAction: String, CaseIterable {
+        case remove
     }
 
     public enum Style {
@@ -288,10 +293,24 @@ extension StatusToolbar {
                 }
             ]
             
+            if menuContext.displayDeleteAction {
+                let removeAction = UIAction(
+                    title: L10n.Common.Controls.Actions.remove,
+                    image: nil,
+                    identifier: nil,
+                    discoverabilityTitle: nil,
+                    attributes: .destructive,
+                    state: .off
+                ) { [weak self] _ in
+                    guard let self = self else { return }
+                    self.delegate?.statusToolbar(self, menuActionDidPressed: .remove, menuButton: self.menuButton)
+                }
+                children.append(removeAction)
+            }
+            
             return UIMenu(title: "", options: [], children: children)
         }()
         
-        // TODO: add delete action
         
         menuButton.showsMenuAsPrimaryAction = true
     }

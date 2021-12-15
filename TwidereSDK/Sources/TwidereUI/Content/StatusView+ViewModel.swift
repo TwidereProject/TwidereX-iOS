@@ -75,6 +75,8 @@ extension StatusView {
         @Published public var sharePlaintextContent: String?
         @Published public var shareStatusURL: String?
         
+        @Published public var isDeletable = false
+        
         let timestampUpdatePublisher = Timer.publish(every: 1.0, on: .main, in: .common)
             .autoconnect()
             .share()
@@ -461,15 +463,17 @@ extension StatusView.ViewModel {
             statusView.toolbar.setupLike(count: count, isLike: isLike)
         }
         .store(in: &disposeBag)
-        Publishers.CombineLatest(
+        
+        Publishers.CombineLatest3(
             $sharePlaintextContent,
-            $shareStatusURL
+            $shareStatusURL,
+            $isDeletable
         )
-        .sink { sharePlaintextContent, shareStatusURL in
+        .sink { sharePlaintextContent, shareStatusURL, isDeletable in
             statusView.toolbar.setupMenu(menuContext: .init(
                 shareText: sharePlaintextContent,
                 shareLink: shareStatusURL,
-                displayDeleteAction: false
+                displayDeleteAction: isDeletable
             ))
         }
         .store(in: &disposeBag)
@@ -710,6 +714,17 @@ extension StatusView {
         }
         .assign(to: \.isLike, on: viewModel)
         .store(in: &disposeBag)
+        
+        let authorUserID = status.author.id
+        activeAuthenticationContext
+            .map { authenticationContext in
+                guard let authenticationContext = authenticationContext?.twitterAuthenticationContext else {
+                    return false
+                }
+                return authenticationContext.userID == authorUserID
+            }
+            .assign(to: \.isDeletable, on: viewModel)
+            .store(in: &disposeBag)
     }
 }
 
@@ -940,6 +955,7 @@ extension StatusView {
         activeAuthenticationContext: AnyPublisher<AuthenticationContext?, Never>
     ) {
         let status = status.repost ?? status
+        
         status.publisher(for: \.replyCount)
             .map(Int.init)
             .assign(to: \.replyCount, on: viewModel)
@@ -984,6 +1000,17 @@ extension StatusView {
         }
         .assign(to: \.isLike, on: viewModel)
         .store(in: &disposeBag)
+        
+        let authorUserID = status.author.id
+        activeAuthenticationContext
+            .map { authenticationContext in
+                guard let authenticationContext = authenticationContext?.mastodonAuthenticationContext else {
+                    return false
+                }
+                return authenticationContext.userID == authorUserID
+            }
+            .assign(to: \.isDeletable, on: viewModel)
+            .store(in: &disposeBag)
     }
         
 }
