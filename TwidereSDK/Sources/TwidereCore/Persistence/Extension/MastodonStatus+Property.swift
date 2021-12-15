@@ -82,7 +82,7 @@ extension Mastodon.Entity.Attachment {
         case .image:    return .image
         case .gifv:     return .gifv
         case .video:    return .video
-        case .audio:    return nil  // TODO
+        case .audio:    return .audio
         case ._other:   return nil
         }
     }
