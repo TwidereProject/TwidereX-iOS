@@ -30,6 +30,8 @@ final class HomeTimelineViewModel: NSObject {
     let listBatchFetchViewModel = ListBatchFetchViewModel()
     let viewDidAppear = CurrentValueSubject<Void, Never>(Void())
     @Published var isLoadingLatest = false
+    @Published var lastAutomaticFetchTimestamp: Date?
+
     
     // output
     var diffableDataSource: UITableViewDiffableDataSource<StatusSection, StatusItem>?

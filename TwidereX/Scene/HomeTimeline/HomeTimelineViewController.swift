@@ -162,6 +162,26 @@ extension HomeTimelineViewController {
 
         viewModel.viewDidAppear.send()
 
+        if !viewModel.isLoadingLatest {
+            let now = Date()
+            if let timestamp = viewModel.lastAutomaticFetchTimestamp {
+                if now.timeIntervalSince(timestamp) > 60 {
+                    logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): auto fetch lastest timeline…")
+                    Task {
+                        await viewModel.loadLatest()
+                    }
+                    viewModel.lastAutomaticFetchTimestamp = now
+                } else {
+                    logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): auto fetch lastest timeline skip. Reason: updated in recent 60s")
+                }
+            } else {
+                Task {
+                    await viewModel.loadLatest()
+                }
+                viewModel.lastAutomaticFetchTimestamp = now
+            }
+            
+        }
 //        DispatchQueue.main.async { [weak self] in
 //            guard let self = self else { return }
 //            if (self.viewModel.fetchedResultsController.fetchedObjects ?? []).count == 0 {

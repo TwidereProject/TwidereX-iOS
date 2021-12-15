@@ -14,6 +14,9 @@ import AlamofireImage
 import SwiftMessages
 
 public final class PhotoLibraryService: NSObject {
+    
+    let logger = Logger(subsystem: "PhotoLibraryService", category: "Serivce")
+    
     public override init() {
         super.init()
     }
@@ -55,6 +58,7 @@ extension PhotoLibraryService {
     func data(from source: Source) async throws -> Data? {
         switch source {
         case .remote(let url):
+            logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): download media: \(url.absoluteString)")
             let data: Data = try await withCheckedThrowingContinuation { continuation in
                 AF.request(url).responseData { response in
                     switch response.result {
