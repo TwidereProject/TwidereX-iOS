@@ -290,30 +290,30 @@ extension HomeTimelineViewController: UITableViewDelegate, AutoGenerateTableView
 
 }
 
-//// MARK: - ScrollViewContainer
-//extension HomeTimelineViewController: ScrollViewContainer {
-//
-//    var scrollView: UIScrollView { return tableView }
-//
-//    func scrollToTop(animated: Bool) {
-//        if scrollView.contentOffset.y < scrollView.frame.height,
-//           viewModel.loadLatestStateMachine.canEnterState(HomeTimelineViewModel.LoadLatestState.Loading.self),
-//           (scrollView.contentOffset.y + scrollView.adjustedContentInset.top) == 0.0,
-//           !refreshControl.isRefreshing {
-//            scrollView.scrollRectToVisible(CGRect(origin: CGPoint(x: 0, y: -refreshControl.frame.height), size: CGSize(width: 1, height: 1)), animated: animated)
-//            DispatchQueue.main.async { [weak self] in
-//                guard let self = self else { return }
-//                self.refreshControl.beginRefreshing()
-//                self.refreshControl.sendActions(for: .valueChanged)
-//            }
-//        } else {
-//            let indexPath = IndexPath(row: 0, section: 0)
-//            guard viewModel.diffableDataSource?.itemIdentifier(for: indexPath) != nil else { return }
-//            tableView.scrollToRow(at: indexPath, at: .top, animated: true)
-//        }
-//    }
-//
-//}
+// MARK: - ScrollViewContainer
+extension HomeTimelineViewController: ScrollViewContainer {
+
+    var scrollView: UIScrollView { return tableView }
+
+    func scrollToTop(animated: Bool) {
+        if scrollView.contentOffset.y < scrollView.frame.height,
+           !viewModel.isLoadingLatest,
+           (scrollView.contentOffset.y + scrollView.adjustedContentInset.top) == 0.0,
+           !refreshControl.isRefreshing {
+            scrollView.scrollRectToVisible(CGRect(origin: CGPoint(x: 0, y: -refreshControl.frame.height), size: CGSize(width: 1, height: 1)), animated: animated)
+            DispatchQueue.main.async { [weak self] in
+                guard let self = self else { return }
+                self.refreshControl.beginRefreshing()
+                self.refreshControl.sendActions(for: .valueChanged)
+            }
+        } else {
+            let indexPath = IndexPath(row: 0, section: 0)
+            guard viewModel.diffableDataSource?.itemIdentifier(for: indexPath) != nil else { return }
+            tableView.scrollToRow(at: indexPath, at: .top, animated: true)
+        }
+    }
+
+}
 
 // MARK: - StatusViewTableViewCellDelegate
 extension HomeTimelineViewController: StatusViewTableViewCellDelegate { }
