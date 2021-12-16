@@ -16,6 +16,26 @@ final public class ManagedObjectObserver {
 
 extension ManagedObjectObserver {
     
+    public static func observe(context: NSManagedObjectContext) -> AnyPublisher<Changes, Error> {
+        
+        return NotificationCenter.default.publisher(for: .NSManagedObjectContextObjectsDidChange, object: context)
+            .tryMap { notification in
+                guard let notification = ManagedObjectContextObjectsDidChangeNotification(notification: notification) else {
+                    throw Error.notManagedObjectChangeNotification
+                }
+                
+                let changeTypes = ManagedObjectObserver.changeTypes(in: notification)
+                return Changes(
+                    changeTypes: changeTypes,
+                    changeNotification: notification
+                )
+            }
+            .mapError { error -> Error in
+                return (error as? Error) ?? .unknown(error)
+            }
+            .eraseToAnyPublisher()
+    }
+    
     public static func observe(object: NSManagedObject) -> AnyPublisher<Change, Error> {
         guard let context = object.managedObjectContext else {
             return Fail(error: .noManagedObjectContext).eraseToAnyPublisher()
@@ -42,10 +62,26 @@ extension ManagedObjectObserver {
 }
 
 extension ManagedObjectObserver {
+    private static func changeTypes(in notification: ManagedObjectContextObjectsDidChangeNotification) -> [ChangeType] {
+        var changeTypes: [ChangeType] = []
+        
+        let deleted = notification.deletedObjects.union(notification.invalidedObjects)
+        for object in deleted {
+            changeTypes.append(.delete(object))
+        }
+        
+        let updated = notification.updatedObjects.union(notification.refreshedObjects)
+        for object in updated {
+            changeTypes.append(.update(object))
+        }
+        
+        return changeTypes
+    }
+    
     private static func changeType(of object: NSManagedObject, in notification: ManagedObjectContextObjectsDidChangeNotification) -> ChangeType? {
         let deleted = notification.deletedObjects.union(notification.invalidedObjects)
         if notification.invalidatedAllObjects || deleted.contains(where: { $0 === object }) {
-            return .delete
+            return .delete(object)
         }
         
         let updated = notification.updatedObjects.union(notification.refreshedObjects)
@@ -58,6 +94,16 @@ extension ManagedObjectObserver {
 }
 
 extension ManagedObjectObserver {
+    public struct Changes {
+        public let changeTypes: [ChangeType]
+        public let changeNotification: ManagedObjectContextObjectsDidChangeNotification
+                
+        init(changeTypes: [ManagedObjectObserver.ChangeType], changeNotification: ManagedObjectContextObjectsDidChangeNotification) {
+            self.changeTypes = changeTypes
+            self.changeNotification = changeNotification
+        }
+    }
+    
     public struct Change {
         public let changeType: ChangeType?
         public let changeNotification: ManagedObjectContextObjectsDidChangeNotification
@@ -66,10 +112,10 @@ extension ManagedObjectObserver {
             self.changeType = changeType
             self.changeNotification = changeNotification
         }
-        
     }
+    
     public enum ChangeType {
-        case delete
+        case delete(NSManagedObject)
         case update(NSManagedObject)
     }
     

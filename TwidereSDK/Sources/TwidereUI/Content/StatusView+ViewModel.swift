@@ -340,6 +340,7 @@ extension StatusView.ViewModel {
             $isContentReveal,
             $spoilerContent
         )
+        .receive(on: DispatchQueue.main)
         .sink { [weak self] isContentReveal, spoilerContent in
             guard let self = self else { return }
             guard spoilerContent != nil else {

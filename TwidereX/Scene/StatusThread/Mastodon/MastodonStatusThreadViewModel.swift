@@ -20,13 +20,55 @@ final class MastodonStatusThreadViewModel {
     
     // input
     let context: AppContext
-    
+    @Published private(set) var deletedObjectIDs: Set<NSManagedObjectID> = Set()
+
     // output
+    @Published var _ancestors: [StatusItem] = []
     let ancestors = CurrentValueSubject<[StatusItem], Never>([])
+    
+    @Published var _descendants: [StatusItem] = []
     let descendants = CurrentValueSubject<[StatusItem], Never>([])
     
     init(context: AppContext) {
         self.context = context
+        
+        Publishers.CombineLatest(
+            $_ancestors,
+            $deletedObjectIDs
+        )
+        .sink { [weak self] items, deletedObjectIDs in
+            guard let self = self else { return }
+            let newItems = items.filter { item in
+                switch item {
+                case .thread(let thread):
+                    return !deletedObjectIDs.contains(thread.statusRecord.objectID)
+                default:
+                    assertionFailure()
+                    return false
+                }
+            }
+            self.ancestors.value = newItems
+        }
+        .store(in: &disposeBag)
+        
+        Publishers.CombineLatest(
+            $_descendants,
+            $deletedObjectIDs
+        )
+        .sink { [weak self] items, deletedObjectIDs in
+            guard let self = self else { return }
+            let newItems = items.filter { item in
+                switch item {
+                case .thread(let thread):
+                    return !deletedObjectIDs.contains(thread.statusRecord.objectID)
+                default:
+                    assertionFailure()
+                    return false
+                }
+            }
+            self.descendants.value = newItems
+        }
+        .store(in: &disposeBag)
     }
     
     deinit {
@@ -70,8 +112,8 @@ extension MastodonStatusThreadViewModel {
             newItems.append(item)
         }
         
-        let items = self.ancestors.value + newItems
-        self.ancestors.value = items
+        let items = self._ancestors + newItems
+        self._ancestors = items
     }
     
     func appendDescendant(
@@ -121,12 +163,12 @@ extension MastodonStatusThreadViewModel {
             }
         }
         
-        var items = self.descendants.value
+        var items = self._descendants
         for item in newItems {
             guard !items.contains(item) else { continue }
             items.append(item)
         }
-        self.descendants.value = items
+        self._descendants = items
     }
     
 }
@@ -223,4 +265,14 @@ extension MastodonStatusThreadViewModel.Node {
         )
     }
     
+}
+
+extension MastodonStatusThreadViewModel {
+    func delete(objectIDs: [NSManagedObjectID]) {
+        var set = deletedObjectIDs
+        for objectID in objectIDs {
+            set.insert(objectID)
+        }
+        self.deletedObjectIDs = set
+    }
 }

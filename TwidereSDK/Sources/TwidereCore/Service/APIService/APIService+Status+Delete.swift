@@ -26,7 +26,10 @@ extension APIService {
                 authenticationContext: authenticationContext
             )
         case (.mastodon(let record), .mastodon(let authenticationContext)):
-            assertionFailure()
+            _ = try await deleteMastodonStatus(
+                record: record,
+                authenticationContext: authenticationContext
+            )
         default:
             assertionFailure()
             return
@@ -57,6 +60,45 @@ extension APIService {
         
         try await managedObjectContext.performChanges {
             guard response.value.data.deleted else { return }
+            guard let status = record.object(in: managedObjectContext) else { return }
+
+            for feed in status.feeds {
+                managedObjectContext.delete(feed)
+            }
+            for repostFrom in status.repostFrom {
+                managedObjectContext.delete(repostFrom)
+            }
+            managedObjectContext.delete(status)
+        }
+        
+        return response
+    }
+    
+    public func deleteMastodonStatus(
+        record: ManagedObjectRecord<MastodonStatus>,
+        authenticationContext: MastodonAuthenticationContext
+    ) async throws -> Mastodon.Response.Content<Mastodon.Entity.Status> {
+        let domain = authenticationContext.domain
+        let authorization = authenticationContext.authorization
+        let managedObjectContext = backgroundManagedObjectContext
+
+        let _statusID: Mastodon.Entity.Status.ID? = await managedObjectContext.perform {
+            guard let status = record.object(in: managedObjectContext) else { return nil }
+            return status.id
+        }
+        
+        guard let statusID = _statusID else {
+            throw AppError.implicit(.badRequest)
+        }
+        
+        let response = try await Mastodon.API.Status.delete(
+            session: session,
+            domain: domain,
+            query: Mastodon.API.Status.DeleteStatusQuery(id: statusID),
+            authorization: authorization
+        )
+        
+        try await managedObjectContext.performChanges {
             guard let status = record.object(in: managedObjectContext) else { return }
 
             for feed in status.feeds {

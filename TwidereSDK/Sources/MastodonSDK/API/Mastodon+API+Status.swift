@@ -111,6 +111,63 @@ extension Mastodon.API.Status {
     }
 }
 
+
+extension Mastodon.API.Status {
+    
+    static func statusEndpointURL(domain: String, statusID: Mastodon.Entity.Status.ID) -> URL {
+        return Mastodon.API.endpointURL(domain: domain)
+            .appendingPathComponent("statuses")
+            .appendingPathComponent(statusID)
+    }
+    
+    /// Delete status
+    ///
+    /// Delete one of your own statuses.
+    ///
+    /// - Since: 0.0.0
+    /// - Version: 3.4.2
+    /// # Last Update
+    ///   2021/12/16
+    /// # Reference
+    ///   [Document](https://docs.joinmastodon.org/methods/statuses/)
+    /// - Parameters:
+    ///   - session: `URLSession`
+    ///   - domain: Mastodon instance domain. e.g. "example.com"
+    ///   - query: `DeleteStatusQuery`
+    ///   - authorization: User token
+    /// - Returns: `Status` nested in the response
+    public static func delete(
+        session: URLSession,
+        domain: String,
+        query: DeleteStatusQuery,
+        authorization: Mastodon.API.OAuth.Authorization?
+    ) async throws -> Mastodon.Response.Content<Mastodon.Entity.Status> {
+        let request = Mastodon.API.request(
+            url: statusEndpointURL(domain: domain, statusID: query.id),
+            method: .DELETE,
+            query: query,
+            authorization: authorization
+        )
+        let (data, response) = try await session.data(for: request, delegate: nil)
+        let value = try Mastodon.API.decode(type: Mastodon.Entity.Status.self, from: data, response: response)
+        return Mastodon.Response.Content(value: value, response: response)
+    }
+    
+    public struct DeleteStatusQuery: JSONEncodeQuery {
+        
+        public let id: Mastodon.Entity.Status.ID
+        
+        public init(
+            id: Mastodon.Entity.Status.ID
+        ) {
+            self.id = id
+        }
+        
+        var queryItems: [URLQueryItem]? { nil }
+    }
+    
+}
+
 extension Mastodon.API.Status {
     
     static func statusContextEndpointURL(domain: String, statusID: Mastodon.Entity.Status.ID) -> URL {

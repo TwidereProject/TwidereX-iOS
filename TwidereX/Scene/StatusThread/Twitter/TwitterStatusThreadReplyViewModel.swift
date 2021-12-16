@@ -23,6 +23,7 @@ final class TwitterStatusThreadReplyViewModel {
     let context: AppContext
     @Published var root: ManagedObjectRecord<TwitterStatus>?
     @Published var nodes: [TwitterStatusReplyNode] = []
+    @Published private(set) var deletedObjectIDs: Set<NSManagedObjectID> = Set()
     let viewDidAppear = PassthroughSubject<Void, Never>()
     
     // output
@@ -64,23 +65,27 @@ final class TwitterStatusThreadReplyViewModel {
         }
         .store(in: &disposeBag)
         
-        $nodes
-            .map { nodes in
-                var items: [StatusItem] = []
-                for (i, node) in nodes.enumerated() {
-                    guard case let .success(record) = node.status else { continue }
-                    let isLast = i == nodes.count - 1
-                    let context = StatusItem.Thread.Context(
-                        status: .twitter(record: record),
-                        displayUpperConversationLink: !isLast,
-                        displayBottomConversationLink: true
-                    )
-                    let thread = StatusItem.Thread.reply(context: context)
-                    items.append(.thread(thread))
-                }
-                return items
+        Publishers.CombineLatest(
+            $nodes,
+            $deletedObjectIDs
+        )
+        .map { nodes, deletedObjectIDs in
+            var items: [StatusItem] = []
+            for (i, node) in nodes.enumerated() {
+                guard case let .success(record) = node.status else { continue }
+                guard !deletedObjectIDs.contains(record.objectID) else { continue }
+                let isLast = i == nodes.count - 1
+                let context = StatusItem.Thread.Context(
+                    status: .twitter(record: record),
+                    displayUpperConversationLink: !isLast,
+                    displayBottomConversationLink: true
+                )
+                let thread = StatusItem.Thread.reply(context: context)
+                items.append(.thread(thread))
             }
-            .assign(to: &$items)
+            return items
+        }
+        .assign(to: &$items)
     }
     
     deinit {
@@ -115,5 +120,15 @@ extension TwitterStatusThreadReplyViewModel {
         public var debugDescription: String {
             return "twitter status [\(statusID)] -> \(replyToStatusID ?? "<nil>"), \(status)"
         }
+    }
+}
+
+extension TwitterStatusThreadReplyViewModel {
+    func delete(objectIDs: [NSManagedObjectID]) {
+        var set = deletedObjectIDs
+        for objectID in objectIDs {
+            set.insert(objectID)
+        }
+        self.deletedObjectIDs = set
     }
 }

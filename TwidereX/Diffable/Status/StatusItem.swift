@@ -24,6 +24,15 @@ extension StatusItem {
         case root(context: Context)
         case reply(context: Context)
         case leaf(context: Context)
+        
+        public var statusRecord: StatusRecord {
+            switch self {
+            case .root(let threadContext),
+                .reply(let threadContext),
+                .leaf(let threadContext):
+                return threadContext.status
+            }
+        }
     }
 }
 

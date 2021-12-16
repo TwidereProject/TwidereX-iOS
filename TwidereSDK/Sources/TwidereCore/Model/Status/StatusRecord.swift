@@ -27,4 +27,13 @@ extension StatusRecord {
             return .mastodon(object: status)
         }
     }
+    
+    public var objectID: NSManagedObjectID {
+        switch self {
+        case .twitter(let record):
+            return record.objectID
+        case .mastodon(let record):
+            return record.objectID
+        }
+    }
 }
