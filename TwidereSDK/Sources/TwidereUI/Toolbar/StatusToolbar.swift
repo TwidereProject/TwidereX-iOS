@@ -295,8 +295,8 @@ extension StatusToolbar {
             
             if menuContext.displayDeleteAction {
                 let removeAction = UIAction(
-                    title: L10n.Common.Controls.Actions.remove,
-                    image: nil,
+                    title: L10n.Common.Controls.Actions.delete,
+                    image: UIImage(systemName: "minus.circle"),
                     identifier: nil,
                     discoverabilityTitle: nil,
                     attributes: .destructive,

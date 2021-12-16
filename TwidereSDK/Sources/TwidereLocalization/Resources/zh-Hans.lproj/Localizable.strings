@@ -49,8 +49,14 @@
 "Common.Alerts.BlockUserConfirm.Title" = "是否要屏蔽 %@？";
 "Common.Alerts.BlockUserSuccess.Title" = "%@ 已被屏蔽";
 "Common.Alerts.CancelFollowRequest.Message" = "取消关注 %@ 的请求？";
+"Common.Alerts.DeleteTootConfirm.Message" = "您想要删除此噗文吗？";
+"Common.Alerts.DeleteTootConfirm.Title" = "删除噗文";
+"Common.Alerts.DeleteTweetConfirm.Message" = "您想要删除此推文吗？";
+"Common.Alerts.DeleteTweetConfirm.Title" = "删除推文";
 "Common.Alerts.FailedToBlockUser.Message" = "请重试";
 "Common.Alerts.FailedToBlockUser.Title" = "屏蔽 %@ 失败";
+"Common.Alerts.FailedToDeleteToot.Message" = "请重试";
+"Common.Alerts.FailedToDeleteToot.Title" = "删除噗文失败";
 "Common.Alerts.FailedToDeleteTweet.Message" = "请重试";
 "Common.Alerts.FailedToDeleteTweet.Title" = "删除推文失败";
 "Common.Alerts.FailedToFollowing.Message" = "请重试";
@@ -97,6 +103,7 @@
 "Common.Alerts.ReportAndBlockUserSuccess.Title" = "%@ 已被举报为垃圾信息用户并被屏蔽";
 "Common.Alerts.ReportUserSuccess.Title" = "%@ 已被举报为垃圾信息用户";
 "Common.Alerts.TooManyRequests.Title" = "请求次数过多";
+"Common.Alerts.TootDeleted.Title" = "噗文已删除";
 "Common.Alerts.TootFail.DraftSavedMessage" = "你的嘟文已保存到草稿箱。";
 "Common.Alerts.TootFail.Message" = "请重试";
 "Common.Alerts.TootFail.Title" = "嘟文发送失败";
@@ -119,6 +126,7 @@
 "Common.Controls.Actions.Browse" = "浏览";
 "Common.Controls.Actions.Cancel" = "取消";
 "Common.Controls.Actions.Confirm" = "确认";
+"Common.Controls.Actions.Delete" = "删除";
 "Common.Controls.Actions.Edit" = "编辑";
 "Common.Controls.Actions.Ok" = "好的";
 "Common.Controls.Actions.OpenInSafari" = "在 Safari 中打开";

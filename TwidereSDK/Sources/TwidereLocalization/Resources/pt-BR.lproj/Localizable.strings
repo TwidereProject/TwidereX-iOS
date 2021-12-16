@@ -49,8 +49,14 @@
 "Common.Alerts.BlockUserConfirm.Title" = "Você quer bloquear %@?";
 "Common.Alerts.BlockUserSuccess.Title" = "%@ foi bloqueado";
 "Common.Alerts.CancelFollowRequest.Message" = "Cancelar pedido para seguir %@?";
+"Common.Alerts.DeleteTootConfirm.Message" = "Do you want to delete this toot?";
+"Common.Alerts.DeleteTootConfirm.Title" = "Delete Toot";
+"Common.Alerts.DeleteTweetConfirm.Message" = "Do you want to delete this tweet?";
+"Common.Alerts.DeleteTweetConfirm.Title" = "Delete Tweet";
 "Common.Alerts.FailedToBlockUser.Message" = "Por favor, tente novamente";
 "Common.Alerts.FailedToBlockUser.Title" = "Falha ao bloquear %@";
+"Common.Alerts.FailedToDeleteToot.Message" = "Por favor, tente novamente";
+"Common.Alerts.FailedToDeleteToot.Title" = "Failed to Delete Toot";
 "Common.Alerts.FailedToDeleteTweet.Message" = "Por favor, tente novamente";
 "Common.Alerts.FailedToDeleteTweet.Title" = "Falha ao Excluir Tweet";
 "Common.Alerts.FailedToFollowing.Message" = "Por favor, tente novamente";
@@ -97,6 +103,7 @@
 "Common.Alerts.ReportAndBlockUserSuccess.Title" = "%@ foi reportado por spam e bloqueado";
 "Common.Alerts.ReportUserSuccess.Title" = "%@ foi reportado por spam";
 "Common.Alerts.TooManyRequests.Title" = "Muitas solicitações";
+"Common.Alerts.TootDeleted.Title" = "Toot Deleted";
 "Common.Alerts.TootFail.DraftSavedMessage" = "Seu toot foi salvo nos Rascunhos.";
 "Common.Alerts.TootFail.Message" = "Por favor, tente novamente";
 "Common.Alerts.TootFail.Title" = "O Toot Falhou";
@@ -119,6 +126,7 @@
 "Common.Controls.Actions.Browse" = "Navegar";
 "Common.Controls.Actions.Cancel" = "Cancelar";
 "Common.Controls.Actions.Confirm" = "Confirmar";
+"Common.Controls.Actions.Delete" = "Delete";
 "Common.Controls.Actions.Edit" = "Editar";
 "Common.Controls.Actions.Ok" = "OK";
 "Common.Controls.Actions.OpenInSafari" = "Abrir no Safari";

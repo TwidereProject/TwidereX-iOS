@@ -49,8 +49,14 @@
 "Common.Alerts.BlockUserConfirm.Title" = "Do you want to block %@?";
 "Common.Alerts.BlockUserSuccess.Title" = "%@ はブロックされました";
 "Common.Alerts.CancelFollowRequest.Message" = "%@ のフォローリクエストをキャンセルしますか？";
+"Common.Alerts.DeleteTootConfirm.Message" = "Do you want to delete this toot?";
+"Common.Alerts.DeleteTootConfirm.Title" = "Delete Toot";
+"Common.Alerts.DeleteTweetConfirm.Message" = "Do you want to delete this tweet?";
+"Common.Alerts.DeleteTweetConfirm.Title" = "Delete Tweet";
 "Common.Alerts.FailedToBlockUser.Message" = "もう一度やり直してください";
 "Common.Alerts.FailedToBlockUser.Title" = "%@ のブロックに失敗";
+"Common.Alerts.FailedToDeleteToot.Message" = "もう一度やり直してください";
+"Common.Alerts.FailedToDeleteToot.Title" = "Failed to Delete Toot";
 "Common.Alerts.FailedToDeleteTweet.Message" = "もう一度やり直してください";
 "Common.Alerts.FailedToDeleteTweet.Title" = "ツイートの削除に失敗しました";
 "Common.Alerts.FailedToFollowing.Message" = "もう一度やり直してください";
@@ -97,6 +103,7 @@
 "Common.Alerts.ReportAndBlockUserSuccess.Title" = "%@ はスパムとして報告されブロックされました";
 "Common.Alerts.ReportUserSuccess.Title" = "%@ はスパムとして報告されました";
 "Common.Alerts.TooManyRequests.Title" = "リクエストが多すぎます";
+"Common.Alerts.TootDeleted.Title" = "Toot Deleted";
 "Common.Alerts.TootFail.DraftSavedMessage" = "Your toot has been saved to Drafts.";
 "Common.Alerts.TootFail.Message" = "もう一度やり直してください";
 "Common.Alerts.TootFail.Title" = "Failed to Toot";
@@ -119,6 +126,7 @@
 "Common.Controls.Actions.Browse" = "Browse";
 "Common.Controls.Actions.Cancel" = "キャンセル";
 "Common.Controls.Actions.Confirm" = "確認";
+"Common.Controls.Actions.Delete" = "Delete";
 "Common.Controls.Actions.Edit" = "編集";
 "Common.Controls.Actions.Ok" = "OK";
 "Common.Controls.Actions.OpenInSafari" = "Safari で開く";

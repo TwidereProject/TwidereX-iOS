@@ -53,6 +53,9 @@ extension Twitter.API {
         public enum FollowLookup { }
         public enum Lookup { }
         public enum Search { }
+        public enum Status {
+            public enum Delete { }
+        }
         public enum User {
             public enum Block { }
             public enum Follow { } 

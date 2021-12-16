@@ -13,9 +13,9 @@
         <key>NSStringFormatValueTypeKey</key>
         <string>ld</string>
         <key>one</key>
-        <string>1 vote</string>
+        <string>1 voto</string>
         <key>other</key>
-        <string>%ld votes</string>
+        <string>%ld votos</string>
       </dict>
     </dict>
     <key>count.people</key>
@@ -29,9 +29,9 @@
         <key>NSStringFormatValueTypeKey</key>
         <string>ld</string>
         <key>one</key>
-        <string>1 people</string>
+        <string>1 persona</string>
         <key>other</key>
-        <string>%ld people</string>
+        <string>%ld personas</string>
       </dict>
     </dict>
     <key>count.people.talking</key>

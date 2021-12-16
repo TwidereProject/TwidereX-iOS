@@ -11,6 +11,7 @@ import TwidereCore
 import SwiftMessages
 
 extension PhotoLibraryService {
+    
     @MainActor
     public func presentSuccessNotification() {
         os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: save image success", ((#file as NSString).lastPathComponent), #line, #function)
@@ -38,6 +39,6 @@ extension PhotoLibraryService {
         
         SwiftMessages.show(config: config, view: bannerView)
     }
-    
+
 }
 

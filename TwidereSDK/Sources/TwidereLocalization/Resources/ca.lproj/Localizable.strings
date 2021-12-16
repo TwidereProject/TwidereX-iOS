@@ -49,8 +49,14 @@
 "Common.Alerts.BlockUserConfirm.Title" = "Do you want to block %@?";
 "Common.Alerts.BlockUserSuccess.Title" = "%@ ha estat blocat";
 "Common.Alerts.CancelFollowRequest.Message" = "Canceŀlar la petició de seguiment a %@?";
+"Common.Alerts.DeleteTootConfirm.Message" = "Do you want to delete this toot?";
+"Common.Alerts.DeleteTootConfirm.Title" = "Delete Toot";
+"Common.Alerts.DeleteTweetConfirm.Message" = "Do you want to delete this tweet?";
+"Common.Alerts.DeleteTweetConfirm.Title" = "Delete Tweet";
 "Common.Alerts.FailedToBlockUser.Message" = "Si us plau, torna-ho a provar";
 "Common.Alerts.FailedToBlockUser.Title" = "Error al blocar %@";
+"Common.Alerts.FailedToDeleteToot.Message" = "Si us plau, torna-ho a provar";
+"Common.Alerts.FailedToDeleteToot.Title" = "Failed to Delete Toot";
 "Common.Alerts.FailedToDeleteTweet.Message" = "Si us plau, torna-ho a provar";
 "Common.Alerts.FailedToDeleteTweet.Title" = "Error al esborrar piulada";
 "Common.Alerts.FailedToFollowing.Message" = "Si us plau, torna-ho a provar";
@@ -97,6 +103,7 @@
 "Common.Alerts.ReportAndBlockUserSuccess.Title" = "%@ ha estat denunciat per publicitat abusiva i blocat";
 "Common.Alerts.ReportUserSuccess.Title" = "%@ ha estat denunciat per publicitat abusiva";
 "Common.Alerts.TooManyRequests.Title" = "Massa soŀlicituds";
+"Common.Alerts.TootDeleted.Title" = "Toot Deleted";
 "Common.Alerts.TootFail.DraftSavedMessage" = "Your toot has been saved to Drafts.";
 "Common.Alerts.TootFail.Message" = "Si us plau, torna-ho a provar";
 "Common.Alerts.TootFail.Title" = "Failed to Toot";
@@ -119,6 +126,7 @@
 "Common.Controls.Actions.Browse" = "Browse";
 "Common.Controls.Actions.Cancel" = "Canceŀla";
 "Common.Controls.Actions.Confirm" = "Confirma";
+"Common.Controls.Actions.Delete" = "Delete";
 "Common.Controls.Actions.Edit" = "Edita";
 "Common.Controls.Actions.Ok" = "D'acord";
 "Common.Controls.Actions.OpenInSafari" = "Obrir en Safari";

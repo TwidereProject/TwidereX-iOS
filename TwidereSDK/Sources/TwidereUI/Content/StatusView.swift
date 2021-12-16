@@ -943,7 +943,7 @@ extension StatusView: StatusToolbarDelegate {
     }
     
     public func statusToolbar(_ statusToolbar: StatusToolbar, menuActionDidPressed action: StatusToolbar.MenuAction, menuButton button: UIButton) {
-        
+        delegate?.statusView(self, statusToolbar: statusToolbar, menuActionDidPressed: action, menuButton: button)
     }
 }
 
