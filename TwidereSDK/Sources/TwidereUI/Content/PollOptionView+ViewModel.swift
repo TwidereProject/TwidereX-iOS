@@ -53,22 +53,22 @@ extension PollOptionView {
                 .map { $0 ? .radius(8) : .circle }
                 .assign(to: &$corner)
             // stripProgressTinitColor
-            Publishers.CombineLatest4(
+            Publishers.CombineLatest3(
                 $style,
                 $isSelect,
-                $isExpire,
                 $isReveal
             )
-            .map { style, isSelect, isExpire, isReveal -> UIColor in
+            .map { style, isSelect, isReveal -> UIColor in
                 guard case .plain = style else { return .clear }
+                guard isReveal else {
+                    return .clear
+                }
+                
                 if isSelect == true {
                     return Asset.Colors.hightLight.color.withAlphaComponent(0.75)
-                }
-                if isReveal {
+                } else {
                     return Asset.Colors.hightLight.color.withAlphaComponent(0.20)
                 }
-
-                return .clear
             }
             .assign(to: &$stripProgressTinitColor)
             // selectImageTintColor
@@ -127,23 +127,31 @@ extension PollOptionView.ViewModel {
             }
             .store(in: &disposeBag)
         // percentage
-        $percentage
-            .sink { percentage in
-                let oldPercentage = self.percentage
-                
-                let animated = oldPercentage != nil && percentage != nil
-                view.stripProgressView.setProgress(percentage ?? 0, animated: animated)
-                
-                guard let percentage = percentage,
-                      let string = PollOptionView.percentageFormatter.string(from: NSNumber(value: percentage))
-                else {
-                    view.percentageMetaLabel.configure(content: PlaintextMetaContent(string: ""))
-                    return
-                }
-                
-                view.percentageMetaLabel.configure(content: PlaintextMetaContent(string: string))
+        Publishers.CombineLatest(
+            $isReveal,
+            $percentage
+        )
+        .sink { isReveal, percentage in
+            guard isReveal else {
+                view.percentageMetaLabel.configure(content: PlaintextMetaContent(string: ""))
+                return
             }
-            .store(in: &disposeBag)
+            
+            let oldPercentage = self.percentage
+            
+            let animated = oldPercentage != nil && percentage != nil
+            view.stripProgressView.setProgress(percentage ?? 0, animated: animated)
+            
+            guard let percentage = percentage,
+                  let string = PollOptionView.percentageFormatter.string(from: NSNumber(value: percentage))
+            else {
+                view.percentageMetaLabel.configure(content: PlaintextMetaContent(string: ""))
+                return
+            }
+            
+            view.percentageMetaLabel.configure(content: PlaintextMetaContent(string: string))
+        }
+        .store(in: &disposeBag)
         // corner
         $corner
             .removeDuplicates()
