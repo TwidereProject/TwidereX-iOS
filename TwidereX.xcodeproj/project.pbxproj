@@ -251,7 +251,6 @@
 		DBBBBE592744E800007ACB4B /* ComposeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBBBBE582744E800007ACB4B /* ComposeViewController.swift */; };
 		DBBBBE612744E8CC007ACB4B /* ComposeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBBBBE602744E8CC007ACB4B /* ComposeViewController.swift */; };
 		DBBBBE642744E8CC007ACB4B /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = DBBBBE622744E8CC007ACB4B /* MainInterface.storyboard */; };
-		DBBBBE682744E8CC007ACB4B /* ShareExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = DBBBBE5E2744E8CC007ACB4B /* ShareExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		DBBBBE7E2744F351007ACB4B /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = DBC8E16D2578C64A00401E20 /* InfoPlist.strings */; };
 		DBBBBE8D2744F9D9007ACB4B /* ComposeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBBBBE8C2744F9D9007ACB4B /* ComposeViewModel.swift */; };
 		DBBBBE8F2744FB42007ACB4B /* ComposeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBBBBE8E2744FB42007ACB4B /* ComposeViewModel.swift */; };
@@ -335,13 +334,6 @@
 			remoteGlobalIDString = DB94B6BA26C65CB000A2E8A1;
 			remoteInfo = AppShared;
 		};
-		DBBBBE662744E8CC007ACB4B /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = DBDA8E1624FCF8A3006750DC /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = DBBBBE5D2744E8CC007ACB4B;
-			remoteInfo = ShareExtension;
-		};
 		DBBBBE732744EC27007ACB4B /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = DBDA8E1624FCF8A3006750DC /* Project object */;
@@ -388,17 +380,6 @@
 			files = (
 			);
 			name = "Embed Frameworks";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		DBBBBE6C2744E8CC007ACB4B /* Embed App Extensions */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 13;
-			files = (
-				DBBBBE682744E8CC007ACB4B /* ShareExtension.appex in Embed App Extensions */,
-			);
-			name = "Embed App Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		DBFC0AEB276118240011E99B /* Embed Frameworks */ = {
@@ -2405,14 +2386,12 @@
 				DB14DF30259484C40029FEBE /* ShellScript */,
 				DB5632A026DCC52F00FC893F /* ShellScript */,
 				DB51DC3227169C3F00A0D8FB /* ShellScript */,
-				DBBBBE6C2744E8CC007ACB4B /* Embed App Extensions */,
 				DBFC0AEB276118240011E99B /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 				DB94B6C026C65CB000A2E8A1 /* PBXTargetDependency */,
-				DBBBBE672744E8CC007ACB4B /* PBXTargetDependency */,
 			);
 			name = TwidereX;
 			packageProductDependencies = (
@@ -3141,11 +3120,6 @@
 			isa = PBXTargetDependency;
 			target = DB94B6BA26C65CB000A2E8A1 /* AppShared */;
 			targetProxy = DB94B6BF26C65CB000A2E8A1 /* PBXContainerItemProxy */;
-		};
-		DBBBBE672744E8CC007ACB4B /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = DBBBBE5D2744E8CC007ACB4B /* ShareExtension */;
-			targetProxy = DBBBBE662744E8CC007ACB4B /* PBXContainerItemProxy */;
 		};
 		DBBBBE742744EC27007ACB4B /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
