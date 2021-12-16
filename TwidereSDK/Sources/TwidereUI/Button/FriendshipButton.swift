@@ -47,7 +47,11 @@ extension FriendshipButton {
         configuration.background = background(for: relationship)
         self.configuration = configuration
         
+        titleLabel?.font = .systemFont(ofSize: 14, weight: .medium)        // FIXME:
         titleLabel?.numberOfLines = 1
+        titleLabel?.adjustsFontSizeToFitWidth = true
+        titleLabel?.minimumScaleFactor = 0.5
+        titleLabel?.lineBreakMode = .byClipping
     }
     
 }
