@@ -97,7 +97,18 @@ public final class StatusView: UIView {
     public let timestampLabel = PlainLabel(style: .statusTimestamp)
     
     // spoiler
-    public let spoilerContentTextView = MetaTextAreaView()
+    public let spoilerContentTextView: MetaTextAreaView = {
+        let textView = MetaTextAreaView()
+        textView.textAttributes = [
+            .font: UIFont.preferredFont(forTextStyle: .body),
+            .foregroundColor: UIColor.label.withAlphaComponent(0.8),
+        ]
+        textView.linkAttributes = [
+            .font: UIFont.preferredFont(forTextStyle: .body),
+            .foregroundColor: Asset.Colors.Theme.daylight.color
+        ]
+        return textView
+    }()
     
     public let expandContentButtonContainer: UIStackView = {
         let stackView = UIStackView()
@@ -116,7 +127,18 @@ public final class StatusView: UIView {
     }()
     
     // content
-    public let contentTextView = MetaTextAreaView()
+    public let contentTextView: MetaTextAreaView = {
+        let textView = MetaTextAreaView()
+        textView.textAttributes = [
+            .font: UIFont.preferredFont(forTextStyle: .body),
+            .foregroundColor: UIColor.label.withAlphaComponent(0.8),
+        ]
+        textView.linkAttributes = [
+            .font: UIFont.preferredFont(forTextStyle: .body),
+            .foregroundColor: Asset.Colors.Theme.daylight.color
+        ]
+        return textView
+    }()
     
     // media
     public let mediaGridContainerView = MediaGridContainerView()
