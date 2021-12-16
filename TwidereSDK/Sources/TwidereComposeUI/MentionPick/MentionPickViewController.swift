@@ -101,4 +101,8 @@ extension MentionPickViewController: UITableViewDelegate {
 }
 
 // MARK: - UserTableViewCellDelegate
-extension MentionPickViewController: UserTableViewCellDelegate { }
+extension MentionPickViewController: UserTableViewCellDelegate {
+    public func userTableViewCell(_ cell: UserTableViewCell, menuActionDidPressed action: UserView.MenuAction, menuButton button: UIButton) {
+        // do nothing
+    }
+}

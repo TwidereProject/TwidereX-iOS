@@ -23,6 +23,8 @@ final class AccountListViewController: UIViewController, NeedsDependency {
     weak var context: AppContext! { willSet { precondition(!isViewLoaded) } }
     weak var coordinator: SceneCoordinator! { willSet { precondition(!isViewLoaded) } }
     
+    let logger = Logger(subsystem: "AccountListViewController", category: "ViewController")
+    
     var disposeBag = Set<AnyCancellable>()
     var viewModel: AccountListViewModel!
     

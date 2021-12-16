@@ -877,14 +877,18 @@ extension StatusView {
             .store(in: &disposeBag)
         
         // set directly without delay
+        viewModel.isMediaSensitiveToggled = status.isMediaSensitiveToggled
         viewModel.isMediaSensitive = status.isMediaSensitive
+        mediaGridContainerView.configureOverlayDisplay(
+            isDisplay: status.isMediaSensitiveToggled ? !status.isMediaSensitive : !status.isMediaSensitive,
+            animated: false
+        )
+        
         status.publisher(for: \.isMediaSensitive)
             .receive(on: DispatchQueue.main)
             .assign(to: \.isMediaSensitive, on: viewModel)
             .store(in: &disposeBag)
         
-        // set directly without delay
-        viewModel.isMediaSensitiveToggled = status.isMediaSensitiveToggled
         status.publisher(for: \.isMediaSensitiveToggled)
             .receive(on: DispatchQueue.main)
             .assign(to: \.isMediaSensitiveToggled, on: viewModel)

@@ -690,8 +690,7 @@ extension ProfileViewController: ProfileHeaderViewControllerDelegate {
             return
         }
         let friendshipListViewModel = FriendshipListViewModel(context: context, kind: .following, userIdentifier: userIdentifier)
-        coordinator.present(scene: .friendshipList(viewModel: friendshipListViewModel), from: presentingViewController, transition: .show)
-        dismiss(animated: true, completion: nil)
+        coordinator.present(scene: .friendshipList(viewModel: friendshipListViewModel), from: self, transition: .show)
     }
     
     func headerViewController(_ viewController: ProfileHeaderViewController, profileHeaderView: ProfileHeaderView, profileDashboardView dashboardView: ProfileDashboardView, followersMeterViewDidPressed meterView: ProfileDashboardMeterView) {
@@ -700,8 +699,7 @@ extension ProfileViewController: ProfileHeaderViewControllerDelegate {
             return
         }
         let friendshipListViewModel = FriendshipListViewModel(context: context, kind: .follower, userIdentifier: userIdentifier)
-        coordinator.present(scene: .friendshipList(viewModel: friendshipListViewModel), from: presentingViewController, transition: .show)
-        dismiss(animated: true, completion: nil)
+        coordinator.present(scene: .friendshipList(viewModel: friendshipListViewModel), from: self, transition: .show)
     }
     
     func headerViewController(_ viewController: ProfileHeaderViewController, profileHeaderView: ProfileHeaderView, profileDashboardView dashboardView: ProfileDashboardView, listedMeterViewDidPressed meterView: ProfileDashboardMeterView) {

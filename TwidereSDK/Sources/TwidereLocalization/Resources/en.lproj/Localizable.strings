@@ -102,6 +102,8 @@
 "Common.Alerts.RateLimitExceeded.Title" = "Rate Limit Exceeded";
 "Common.Alerts.ReportAndBlockUserSuccess.Title" = "%@ has been reported for spam and blocked";
 "Common.Alerts.ReportUserSuccess.Title" = "%@ has been reported for spam";
+"Common.Alerts.SignOutUserConfirm.Message" = "Do you want to sign out?";
+"Common.Alerts.SignOutUserConfirm.Title" = "Sign out";
 "Common.Alerts.TooManyRequests.Title" = "Too Many Requests";
 "Common.Alerts.TootDeleted.Title" = "Toot Deleted";
 "Common.Alerts.TootFail.DraftSavedMessage" = "Your toot has been saved to Drafts.";
@@ -136,6 +138,7 @@
 "Common.Controls.Actions.SavePhoto" = "Save photo";
 "Common.Controls.Actions.ShareMedia" = "Share media";
 "Common.Controls.Actions.SignIn" = "Sign in";
+"Common.Controls.Actions.SignOut" = "Sign out";
 "Common.Controls.Actions.TakePhoto" = "Take photo";
 "Common.Controls.Actions.Yes" = "Yes";
 "Common.Controls.Friendship.Actions.Block" = "Block";

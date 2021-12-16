@@ -17,6 +17,8 @@
 		DB01092026E60756005F67D7 /* DataSourceFacade+StatusThread.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB01091F26E60756005F67D7 /* DataSourceFacade+StatusThread.swift */; };
 		DB01092226E608B7005F67D7 /* DataSourceFacade+Repost.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB01092126E608B7005F67D7 /* DataSourceFacade+Repost.swift */; };
 		DB01092426E6199C005F67D7 /* DataSourceProvider+StatusViewTableViewCellDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB01092326E6199C005F67D7 /* DataSourceProvider+StatusViewTableViewCellDelegate.swift */; };
+		DB01739C276B56C100AB844C /* DataSourceProvider+UserViewTableViewCellDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB01739B276B56C100AB844C /* DataSourceProvider+UserViewTableViewCellDelegate.swift */; };
+		DB01739E276B576B00AB844C /* AccountListViewController+DataSourceProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB01739D276B576B00AB844C /* AccountListViewController+DataSourceProvider.swift */; };
 		DB01A9A2276347B60055FABC /* DataSourceFacade+Poll.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB01A9A1276347B60055FABC /* DataSourceFacade+Poll.swift */; };
 		DB01A9A427637FE60055FABC /* DataSourceFacade+Meta.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB01A9A327637FE60055FABC /* DataSourceFacade+Meta.swift */; };
 		DB02C76D27350D71007EA0BF /* SearchHashtagViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB02C76C27350D71007EA0BF /* SearchHashtagViewController.swift */; };
@@ -442,6 +444,8 @@
 		DB01091F26E60756005F67D7 /* DataSourceFacade+StatusThread.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DataSourceFacade+StatusThread.swift"; sourceTree = "<group>"; };
 		DB01092126E608B7005F67D7 /* DataSourceFacade+Repost.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DataSourceFacade+Repost.swift"; sourceTree = "<group>"; };
 		DB01092326E6199C005F67D7 /* DataSourceProvider+StatusViewTableViewCellDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DataSourceProvider+StatusViewTableViewCellDelegate.swift"; sourceTree = "<group>"; };
+		DB01739B276B56C100AB844C /* DataSourceProvider+UserViewTableViewCellDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DataSourceProvider+UserViewTableViewCellDelegate.swift"; sourceTree = "<group>"; };
+		DB01739D276B576B00AB844C /* AccountListViewController+DataSourceProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AccountListViewController+DataSourceProvider.swift"; sourceTree = "<group>"; };
 		DB01A9A1276347B60055FABC /* DataSourceFacade+Poll.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DataSourceFacade+Poll.swift"; sourceTree = "<group>"; };
 		DB01A9A327637FE60055FABC /* DataSourceFacade+Meta.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DataSourceFacade+Meta.swift"; sourceTree = "<group>"; };
 		DB02C76C27350D71007EA0BF /* SearchHashtagViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchHashtagViewController.swift; sourceTree = "<group>"; };
@@ -1287,6 +1291,7 @@
 				DB56329B26DCC23700FC893F /* DataSourceProvider.swift */,
 				DB5632A626DCC84C00FC893F /* DataSourceProvider+UITableViewDelegate.swift */,
 				DB01092326E6199C005F67D7 /* DataSourceProvider+StatusViewTableViewCellDelegate.swift */,
+				DB01739B276B56C100AB844C /* DataSourceProvider+UserViewTableViewCellDelegate.swift */,
 				DB76A65E275F587300A50673 /* DataSourceProvider+MediaInfoDescriptionViewDelegate.swift */,
 			);
 			path = Provider;
@@ -1875,6 +1880,7 @@
 			children = (
 				DBCB404B255B683F00DD8D8F /* View */,
 				DBCB402D255B670C00DD8D8F /* AccountListViewController.swift */,
+				DB01739D276B576B00AB844C /* AccountListViewController+DataSourceProvider.swift */,
 				DBCB4052255B6EB100DD8D8F /* AccountListViewModel.swift */,
 				DB5A2287255B9155006CA5B2 /* AccountListViewModel+Diffable.swift */,
 			);
@@ -3064,6 +3070,7 @@
 				DB5632C126DF7E7A00FC893F /* ListBatchFetchViewModel.swift in Sources */,
 				DB51DC5027181DE500A0D8FB /* CoverFlowStackMediaCollectionCell+ViewModel.swift in Sources */,
 				DBDA8E2424FCF8A3006750DC /* SceneDelegate.swift in Sources */,
+				DB01739E276B576B00AB844C /* AccountListViewController+DataSourceProvider.swift in Sources */,
 				DB6B8B5F25AF30B900F20FD5 /* ContextMenuAction.swift in Sources */,
 				DB76A66D2760721400A50673 /* MediaPreviewVideoViewModel.swift in Sources */,
 				DBA61AB62552596A006AC169 /* UserMediaTimelineViewController.swift in Sources */,
@@ -3077,6 +3084,7 @@
 				DB5632AD26DCE93900FC893F /* StatusThreadViewModel+Diffable.swift in Sources */,
 				DBF639F7259B1728009E12C8 /* TimelineHeaderCollectionViewCell.swift in Sources */,
 				DBD0B49B2758B5A60015A388 /* DrawerSidebarViewController.swift in Sources */,
+				DB01739C276B56C100AB844C /* DataSourceProvider+UserViewTableViewCellDelegate.swift in Sources */,
 				DB51DC222715786700A0D8FB /* StatusListFetchViewModel.swift in Sources */,
 				DB2C873F274F4B7D00CE0398 /* DisplayPreferenceViewController.swift in Sources */,
 				DB7274EF273BB25200577D95 /* NotificationViewController.swift in Sources */,

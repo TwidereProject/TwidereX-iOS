@@ -184,3 +184,59 @@ extension DataSourceFacade {
     }
 
 }
+
+extension DataSourceFacade {
+    @MainActor
+    static func responseToUserSignOut(
+        provider: DataSourceProvider,
+        user: UserRecord
+    ) async throws  {
+        let alertController = UIAlertController(
+            title: L10n.Common.Alerts.SignOutUserConfirm.title,
+            message: L10n.Common.Alerts.SignOutUserConfirm.message,
+            preferredStyle: .alert
+        )
+        let signOutAction = UIAlertAction(
+            title: L10n.Common.Controls.Actions.signOut,
+            style: .destructive
+        ) { [weak provider] _ in
+            guard let provider = provider else { return }
+            Task {
+                var isSignOut = false
+                
+                let managedObjectContext = provider.context.backgroundManagedObjectContext
+                try await managedObjectContext.performChanges {
+                    guard let object = user.object(in: managedObjectContext) else { return }
+                    switch object {
+                    case .twitter(let user):
+                        guard let authentication = user.twitterAuthentication else {
+                            return
+                        }
+                        managedObjectContext.delete(authentication.authenticationIndex)
+                        managedObjectContext.delete(authentication)
+                        isSignOut = true
+                    case .mastodon(let user):
+                        guard let authentication = user.mastodonAuthentication else {
+                            return
+                        }
+                        managedObjectContext.delete(authentication.authenticationIndex)
+                        managedObjectContext.delete(authentication)
+                        isSignOut = true
+                    }
+                }
+                
+                guard isSignOut else { return }
+                provider.coordinator.setup()
+                provider.coordinator.setupWelcomeIfNeeds()
+            }   // end Task
+        }
+        alertController.addAction(signOutAction)
+        let cancelAction = UIAlertAction.cancel
+        alertController.addAction(cancelAction)
+        provider.coordinator.present(
+            scene: .alertController(alertController: alertController),
+            from: provider,
+            transition: .alertController(animated: true, completion: nil)
+        )
+    }
+}

@@ -67,22 +67,10 @@ extension DataSourceFacade {
             context: provider.context,
             root: root
         )
-        
-        if provider.navigationController == nil {
-            let from = provider.presentingViewController ?? provider
-            provider.dismiss(animated: true) {
-                provider.coordinator.present(
-                    scene: .statusThread(viewModel: statusThreadViewModel),
-                    from: from,
-                    transition: .show
-                )
-            }
-        } else {
-            provider.coordinator.present(
-                scene: .statusThread(viewModel: statusThreadViewModel),
-                from: provider,
-                transition: .show
-            )
-        }
+        provider.coordinator.present(
+            scene: .statusThread(viewModel: statusThreadViewModel),
+            from: provider,
+            transition: .show
+        )
     }
 }

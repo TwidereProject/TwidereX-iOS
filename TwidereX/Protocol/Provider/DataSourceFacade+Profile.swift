@@ -41,23 +41,11 @@ extension DataSourceFacade {
             context: provider.context,
             userRecord: user
         )
-
-        if provider.navigationController == nil {
-            let from = provider.presentingViewController ?? provider
-            provider.dismiss(animated: true) {
-                provider.coordinator.present(
-                    scene: .profile(viewModel: profileViewModel),
-                    from: from,
-                    transition: .show
-                )
-            }
-        } else {
-            provider.coordinator.present(
-                scene: .profile(viewModel: profileViewModel),
-                from: provider,
-                transition: .show
-            )
-        }
+        provider.coordinator.present(
+            scene: .profile(viewModel: profileViewModel),
+            from: provider,
+            transition: .show
+        )
     }
     
 }
@@ -173,23 +161,11 @@ extension DataSourceFacade {
             context: provider.context,
             profileContext: profileContext
         )
-        
-        if provider.navigationController == nil {
-            let from = provider.presentingViewController ?? provider
-            provider.dismiss(animated: true) {
-                provider.coordinator.present(
-                    scene: .profile(viewModel: profileViewModel),
-                    from: from,
-                    transition: .show
-                )
-            }
-        } else {
-            provider.coordinator.present(
-                scene: .profile(viewModel: profileViewModel),
-                from: provider,
-                transition: .show
-            )
-        }
+        provider.coordinator.present(
+            scene: .profile(viewModel: profileViewModel),
+            from: provider,
+            transition: .show
+        )
     }
     
 }

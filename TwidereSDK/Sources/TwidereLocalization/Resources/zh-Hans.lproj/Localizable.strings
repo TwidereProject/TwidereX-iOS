@@ -102,6 +102,8 @@
 "Common.Alerts.RateLimitExceeded.Title" = "超出用量限制";
 "Common.Alerts.ReportAndBlockUserSuccess.Title" = "%@ 已被举报为垃圾信息用户并被屏蔽";
 "Common.Alerts.ReportUserSuccess.Title" = "%@ 已被举报为垃圾信息用户";
+"Common.Alerts.SignOutUserConfirm.Message" = "确定要登出吗？";
+"Common.Alerts.SignOutUserConfirm.Title" = "登出";
 "Common.Alerts.TooManyRequests.Title" = "请求次数过多";
 "Common.Alerts.TootDeleted.Title" = "噗文已删除";
 "Common.Alerts.TootFail.DraftSavedMessage" = "你的嘟文已保存到草稿箱。";
@@ -136,6 +138,7 @@
 "Common.Controls.Actions.SavePhoto" = "保存照片";
 "Common.Controls.Actions.ShareMedia" = "共享媒体";
 "Common.Controls.Actions.SignIn" = "登录";
+"Common.Controls.Actions.SignOut" = "登出";
 "Common.Controls.Actions.TakePhoto" = "拍摄照片";
 "Common.Controls.Actions.Yes" = "确定";
 "Common.Controls.Friendship.Actions.Block" = "屏蔽";

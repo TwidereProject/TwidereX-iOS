@@ -102,6 +102,8 @@
 "Common.Alerts.RateLimitExceeded.Title" = "Taxa d'ús excedida";
 "Common.Alerts.ReportAndBlockUserSuccess.Title" = "%@ ha estat denunciat per publicitat abusiva i blocat";
 "Common.Alerts.ReportUserSuccess.Title" = "%@ ha estat denunciat per publicitat abusiva";
+"Common.Alerts.SignOutUserConfirm.Message" = "Do you want to sign out?";
+"Common.Alerts.SignOutUserConfirm.Title" = "Sign out";
 "Common.Alerts.TooManyRequests.Title" = "Massa soŀlicituds";
 "Common.Alerts.TootDeleted.Title" = "Toot Deleted";
 "Common.Alerts.TootFail.DraftSavedMessage" = "Your toot has been saved to Drafts.";
@@ -136,6 +138,7 @@
 "Common.Controls.Actions.SavePhoto" = "Desa la foto";
 "Common.Controls.Actions.ShareMedia" = "Share media";
 "Common.Controls.Actions.SignIn" = "Iniciar sessió";
+"Common.Controls.Actions.SignOut" = "Sign out";
 "Common.Controls.Actions.TakePhoto" = "Fes una foto";
 "Common.Controls.Actions.Yes" = "Sí";
 "Common.Controls.Friendship.Actions.Block" = "Bloca";

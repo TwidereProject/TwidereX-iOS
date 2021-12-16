@@ -102,6 +102,8 @@
 "Common.Alerts.RateLimitExceeded.Title" = "한도를 넘어서 제한이 걸렸습니다.";
 "Common.Alerts.ReportAndBlockUserSuccess.Title" = "%@는 스팸으로 신고받아 차단되었습니다.";
 "Common.Alerts.ReportUserSuccess.Title" = "%@는 스팸으로 신고됐습니다.";
+"Common.Alerts.SignOutUserConfirm.Message" = "Do you want to sign out?";
+"Common.Alerts.SignOutUserConfirm.Title" = "Sign out";
 "Common.Alerts.TooManyRequests.Title" = "요청이 몰렸습니다.";
 "Common.Alerts.TootDeleted.Title" = "Toot Deleted";
 "Common.Alerts.TootFail.DraftSavedMessage" = "Your toot has been saved to Drafts.";
@@ -136,6 +138,7 @@
 "Common.Controls.Actions.SavePhoto" = "사진 저장하기";
 "Common.Controls.Actions.ShareMedia" = "미디어 공유하기";
 "Common.Controls.Actions.SignIn" = "로그인";
+"Common.Controls.Actions.SignOut" = "Sign out";
 "Common.Controls.Actions.TakePhoto" = "사진 찍기";
 "Common.Controls.Actions.Yes" = "네";
 "Common.Controls.Friendship.Actions.Block" = "차단하기";

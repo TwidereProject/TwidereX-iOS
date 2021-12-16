@@ -102,6 +102,8 @@
 "Common.Alerts.RateLimitExceeded.Title" = "レート制限を超えました";
 "Common.Alerts.ReportAndBlockUserSuccess.Title" = "%@ はスパムとして報告されブロックされました";
 "Common.Alerts.ReportUserSuccess.Title" = "%@ はスパムとして報告されました";
+"Common.Alerts.SignOutUserConfirm.Message" = "Do you want to sign out?";
+"Common.Alerts.SignOutUserConfirm.Title" = "Sign out";
 "Common.Alerts.TooManyRequests.Title" = "リクエストが多すぎます";
 "Common.Alerts.TootDeleted.Title" = "Toot Deleted";
 "Common.Alerts.TootFail.DraftSavedMessage" = "Your toot has been saved to Drafts.";
@@ -136,6 +138,7 @@
 "Common.Controls.Actions.SavePhoto" = "写真を保存";
 "Common.Controls.Actions.ShareMedia" = "メディアを共有";
 "Common.Controls.Actions.SignIn" = "サインイン";
+"Common.Controls.Actions.SignOut" = "Sign out";
 "Common.Controls.Actions.TakePhoto" = "写真を撮影";
 "Common.Controls.Actions.Yes" = "はい";
 "Common.Controls.Friendship.Actions.Block" = "ブロック";

@@ -102,6 +102,8 @@
 "Common.Alerts.RateLimitExceeded.Title" = "اجتزت الحد المسموح به";
 "Common.Alerts.ReportAndBlockUserSuccess.Title" = "أُبلغ عن %@ وحجب بسبب الازعاج";
 "Common.Alerts.ReportUserSuccess.Title" = "أُبلغ عن %@ بسبب الازعاج";
+"Common.Alerts.SignOutUserConfirm.Message" = "Do you want to sign out?";
+"Common.Alerts.SignOutUserConfirm.Title" = "Sign out";
 "Common.Alerts.TooManyRequests.Title" = "طلبات كثيرة";
 "Common.Alerts.TootDeleted.Title" = "Toot Deleted";
 "Common.Alerts.TootFail.DraftSavedMessage" = "Your toot has been saved to Drafts.";
@@ -136,6 +138,7 @@
 "Common.Controls.Actions.SavePhoto" = "احفظ الصورة";
 "Common.Controls.Actions.ShareMedia" = "شارك وسيطًا";
 "Common.Controls.Actions.SignIn" = "لِج";
+"Common.Controls.Actions.SignOut" = "Sign out";
 "Common.Controls.Actions.TakePhoto" = "التقط صورة";
 "Common.Controls.Actions.Yes" = "نعم";
 "Common.Controls.Friendship.Actions.Block" = "احجب";

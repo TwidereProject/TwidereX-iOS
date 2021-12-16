@@ -102,6 +102,8 @@
 "Common.Alerts.RateLimitExceeded.Title" = "Kappungsgrenze überschritten";
 "Common.Alerts.ReportAndBlockUserSuccess.Title" = "%@ wurde wegen Spam gemeldet und blockiert";
 "Common.Alerts.ReportUserSuccess.Title" = "%@ wurde wegen Spam gemeldet";
+"Common.Alerts.SignOutUserConfirm.Message" = "Do you want to sign out?";
+"Common.Alerts.SignOutUserConfirm.Title" = "Sign out";
 "Common.Alerts.TooManyRequests.Title" = "Zu viele Anfragen";
 "Common.Alerts.TootDeleted.Title" = "Toot Deleted";
 "Common.Alerts.TootFail.DraftSavedMessage" = "Your toot has been saved to Drafts.";
@@ -136,6 +138,7 @@
 "Common.Controls.Actions.SavePhoto" = "Foto speichern";
 "Common.Controls.Actions.ShareMedia" = "Share media";
 "Common.Controls.Actions.SignIn" = "Einloggen";
+"Common.Controls.Actions.SignOut" = "Sign out";
 "Common.Controls.Actions.TakePhoto" = "Foto aufnehmen";
 "Common.Controls.Actions.Yes" = "Yes";
 "Common.Controls.Friendship.Actions.Block" = "Blockieren";

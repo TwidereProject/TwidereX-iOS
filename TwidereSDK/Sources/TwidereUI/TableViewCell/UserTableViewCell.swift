@@ -11,7 +11,7 @@ import UIKit
 import Combine
 
 public protocol UserTableViewCellDelegate: AnyObject {
-    // TODO:
+    func userTableViewCell(_ cell: UserTableViewCell, menuActionDidPressed action: UserView.MenuAction, menuButton button: UIButton)
 }
 
 public class UserTableViewCell: UITableViewCell {
@@ -51,6 +51,15 @@ public class UserTableViewCell: UITableViewCell {
             userView.trailingAnchor.constraint(equalTo: contentView.readableContentGuide.trailingAnchor),
             contentView.bottomAnchor.constraint(equalTo: userView.bottomAnchor, constant: 16).priority(.defaultHigh),
         ])
+        
+        userView.delegate = self
     }
     
+}
+
+// MARK: - UserViewDelegate
+extension UserTableViewCell: UserViewDelegate {
+    func userView(_ userView: UserView, menuActionDidPressed action: UserView.MenuAction, menuButton button: UIButton) {
+        delegate?.userTableViewCell(self, menuActionDidPressed: action, menuButton: button)
+    }
 }

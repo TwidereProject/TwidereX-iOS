@@ -364,6 +364,12 @@ public enum L10n {
           return L10n.tr("Localizable", "Common.Alerts.ReportUserSuccess.Title", String(describing: p1))
         }
       }
+      public enum SignOutUserConfirm {
+        /// Do you want to sign out?
+        public static let message = L10n.tr("Localizable", "Common.Alerts.SignOutUserConfirm.Message")
+        /// Sign out
+        public static let title = L10n.tr("Localizable", "Common.Alerts.SignOutUserConfirm.Title")
+      }
       public enum TooManyRequests {
         /// Too Many Requests
         public static let title = L10n.tr("Localizable", "Common.Alerts.TooManyRequests.Title")
@@ -477,6 +483,8 @@ public enum L10n {
         public static let shareMedia = L10n.tr("Localizable", "Common.Controls.Actions.ShareMedia")
         /// Sign in
         public static let signIn = L10n.tr("Localizable", "Common.Controls.Actions.SignIn")
+        /// Sign out
+        public static let signOut = L10n.tr("Localizable", "Common.Controls.Actions.SignOut")
         /// Take photo
         public static let takePhoto = L10n.tr("Localizable", "Common.Controls.Actions.TakePhoto")
         /// Yes

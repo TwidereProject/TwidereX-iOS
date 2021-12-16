@@ -13,7 +13,6 @@ import CoreDataStack
 
 extension AvatarBarButtonItem {
     public class ViewModel: ObservableObject {
-        var configureDisposeBag = Set<AnyCancellable>()
         var bindDisposeBag = Set<AnyCancellable>()
         var observations = Set<NSKeyValueObservation>()
         
@@ -51,13 +50,15 @@ extension AvatarBarButtonItem.ViewModel {
 
 extension AvatarBarButtonItem {
     func configure(user: UserObject?) {
+        reset()
+        
         switch user {
         case .twitter(let object):
             configure(twitterUser: object)
         case .mastodon(let object):
             configure(mastodonUser: object)
         case .none:
-            reset()
+            break
         }
     }
 
@@ -67,22 +68,31 @@ extension AvatarBarButtonItem {
     
     func reset() {
         viewModel.avatarURL = nil
+        disposeBag.removeAll()
     }
     
     func configure(twitterUser user: TwitterUser) {
+        guard user.managedObjectContext != nil else {
+            return
+        }
+        
         // avatar
         user.publisher(for: \.profileImageURL)
             .map { _ in user.avatarImageURL() }
             .assign(to: \.avatarURL, on: viewModel)
-            .store(in: &viewModel.configureDisposeBag)
+            .store(in: &disposeBag)
     }
     
     func configure(mastodonUser user: MastodonUser) {
+        guard user.managedObjectContext != nil else {
+            return
+        }
+        
         // avatar
         user.publisher(for: \.avatar)
             .map { avatar in avatar.flatMap { URL(string: $0) } }
             .assign(to: \.avatarURL, on: viewModel)
-            .store(in: &viewModel.configureDisposeBag)
+            .store(in: &disposeBag)
     }
 
 }

@@ -87,9 +87,11 @@ extension StatusMediaGalleryCollectionCell.ViewModel {
             .store(in: &disposeBag)
         $isContentWarningOverlayDisplay
             .sink { isDisplay in
-                let isDisplay = isDisplay ?? false
+                assert(Thread.isMainThread)
                 
+                let isDisplay = isDisplay ?? false
                 let withAnimation = self.isContentWarningOverlayDisplay != nil
+                
                 if withAnimation {
                     UIView.animate(withDuration: 0.33, delay: 0, options: .curveEaseInOut) {
                         cell.contentWarningOverlayView.blurVisualEffectView.alpha = isDisplay ? 1 : 0
