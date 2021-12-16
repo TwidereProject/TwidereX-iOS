@@ -138,9 +138,11 @@ extension StatusMediaGalleryCollectionCell {
             .assign(to: \.mediaViewConfigurations, on: viewModel)
             .store(in: &disposeBag)
         status.publisher(for: \.isMediaSensitive)
+            .receive(on: DispatchQueue.main)
             .assign(to: \.isMediaSensitive, on: viewModel)
             .store(in: &disposeBag)
         status.publisher(for: \.isMediaSensitiveToggled)
+            .receive(on: DispatchQueue.main)
             .assign(to: \.isMediaSensitiveToggled, on: viewModel)
             .store(in: &disposeBag)
     }

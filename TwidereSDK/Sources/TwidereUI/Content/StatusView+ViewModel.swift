@@ -875,10 +875,18 @@ extension StatusView {
         MediaView.configuration(mastodonStatus: status)
             .assign(to: \.mediaViewConfigurations, on: viewModel)
             .store(in: &disposeBag)
+        
+        // set directly without delay
+        viewModel.isMediaSensitive = status.isMediaSensitive
         status.publisher(for: \.isMediaSensitive)
+            .receive(on: DispatchQueue.main)
             .assign(to: \.isMediaSensitive, on: viewModel)
             .store(in: &disposeBag)
+        
+        // set directly without delay
+        viewModel.isMediaSensitiveToggled = status.isMediaSensitiveToggled
         status.publisher(for: \.isMediaSensitiveToggled)
+            .receive(on: DispatchQueue.main)
             .assign(to: \.isMediaSensitiveToggled, on: viewModel)
             .store(in: &disposeBag)
     }

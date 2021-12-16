@@ -29,8 +29,8 @@ extension MediaGridContainerView.ViewModel {
             }
             .store(in: &disposeBag)
         $isContentWarningOverlayDisplay
-            .receive(on: DispatchQueue.main)
             .sink { isDisplay in
+                assert(Thread.isMainThread)
                 let isDisplay = isDisplay ?? false
                 
                 let withAnimation = self.isContentWarningOverlayDisplay != nil
