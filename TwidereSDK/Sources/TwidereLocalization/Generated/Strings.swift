@@ -1047,6 +1047,12 @@ public enum L10n {
       public static let hideReply = L10n.tr("Localizable", "Scene.Profile.HideReply")
       /// Me
       public static let title = L10n.tr("Localizable", "Scene.Profile.Title")
+      public enum Fields {
+        /// Joined in %@
+        public static func joinedInDate(_ p1: Any) -> String {
+          return L10n.tr("Localizable", "Scene.Profile.Fields.JoinedInDate", String(describing: p1))
+        }
+      }
       public enum Filter {
         /// All tweets
         public static let all = L10n.tr("Localizable", "Scene.Profile.Filter.All")
@@ -1240,8 +1246,12 @@ public enum L10n {
           public enum Input {
             /// Alternative Twitter front-end focused on privacy.
             public static let description = L10n.tr("Localizable", "Scene.Settings.Misc.Nitter.Input.Description")
+            /// Nitter instance URL is invalid, e.g. https://nitter.net
+            public static let invalid = L10n.tr("Localizable", "Scene.Settings.Misc.Nitter.Input.Invalid")
             /// Nitter Instance
             public static let placeholder = L10n.tr("Localizable", "Scene.Settings.Misc.Nitter.Input.Placeholder")
+            /// Instance URL
+            public static let value = L10n.tr("Localizable", "Scene.Settings.Misc.Nitter.Input.Value")
           }
         }
         public enum Proxy {

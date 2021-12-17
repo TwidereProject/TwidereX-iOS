@@ -104,6 +104,7 @@ public enum Asset {
     public static let faceSmiling = ImageAsset(name: "Human/face.smiling")
     public static let personExclamationMini = ImageAsset(name: "Human/person.exclamation.mini")
     public static let person = ImageAsset(name: "Human/person")
+    public static let personMini = ImageAsset(name: "Human/person.mini")
     public static let personPlusMini = ImageAsset(name: "Human/person.plus.mini")
   }
   public enum Indices {

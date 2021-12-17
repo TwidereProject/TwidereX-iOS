@@ -310,6 +310,7 @@
 "Scene.Notification.Tabs.All" = "All";
 "Scene.Notification.Tabs.Mentions" = "Erwähnungen";
 "Scene.Notification.Title" = "Notification";
+"Scene.Profile.Fields.JoinedInDate" = "Joined in %@";
 "Scene.Profile.Filter.All" = "All tweets";
 "Scene.Profile.Filter.ExcludeReplies" = "Exclude replies";
 "Scene.Profile.HideReply" = "Antwort ausblenden";
@@ -379,7 +380,9 @@ Still in early stage.";
 "Scene.Settings.Misc.Nitter.Dialog.Usage.ProjectButton" = "Project URL";
 "Scene.Settings.Misc.Nitter.Dialog.Usage.Title" = "Using Third-party data provider in";
 "Scene.Settings.Misc.Nitter.Input.Description" = "Alternative Twitter front-end focused on privacy.";
+"Scene.Settings.Misc.Nitter.Input.Invalid" = "Nitter instance URL is invalid, e.g. https://nitter.net";
 "Scene.Settings.Misc.Nitter.Input.Placeholder" = "Nitter Instance";
+"Scene.Settings.Misc.Nitter.Input.Value" = "Instance URL";
 "Scene.Settings.Misc.Nitter.Title" = "Third-party Twitter data provider";
 "Scene.Settings.Misc.Proxy.Enable.Description" = "Use proxy for all network requests";
 "Scene.Settings.Misc.Proxy.Enable.Title" = "Proxy";

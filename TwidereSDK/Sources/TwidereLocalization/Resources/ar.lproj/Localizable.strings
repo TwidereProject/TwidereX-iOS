@@ -310,6 +310,7 @@
 "Scene.Notification.Tabs.All" = "الكل";
 "Scene.Notification.Tabs.Mentions" = "الذِكر";
 "Scene.Notification.Title" = "التنبيهات";
+"Scene.Profile.Fields.JoinedInDate" = "Joined in %@";
 "Scene.Profile.Filter.All" = "كل التغريدات";
 "Scene.Profile.Filter.ExcludeReplies" = "استثني الردود";
 "Scene.Profile.HideReply" = "اخف الرد";
@@ -379,7 +380,9 @@
 "Scene.Settings.Misc.Nitter.Dialog.Usage.ProjectButton" = "رابط المشروع";
 "Scene.Settings.Misc.Nitter.Dialog.Usage.Title" = "استخدم الأطراف الخارجية الموفرة لبيانات في";
 "Scene.Settings.Misc.Nitter.Input.Description" = "واجهة بديلة لتوتر تركز على الخصوصية.";
+"Scene.Settings.Misc.Nitter.Input.Invalid" = "Nitter instance URL is invalid, e.g. https://nitter.net";
 "Scene.Settings.Misc.Nitter.Input.Placeholder" = "مثيلات خوادم Nitter";
+"Scene.Settings.Misc.Nitter.Input.Value" = "Instance URL";
 "Scene.Settings.Misc.Nitter.Title" = "الأطراف الخارجية الموفرة لبيانات تويتر";
 "Scene.Settings.Misc.Proxy.Enable.Description" = "استخدام الوكيل لجميع طلبات الشبكة";
 "Scene.Settings.Misc.Proxy.Enable.Title" = "الوكيل";
