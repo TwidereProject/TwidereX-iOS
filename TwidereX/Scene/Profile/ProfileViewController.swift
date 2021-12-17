@@ -10,14 +10,14 @@ import UIKit
 import Combine
 import CoreData
 import CoreDataStack
-import TabBarPager
-import XLPagerTabStrip
-import MetaTextKit
-import MetaTextArea
-import Meta
-import Floaty
 import AppShared
+import Floaty
+import Meta
+import MetaTextArea
+import MetaTextKit
+import TabBarPager
 import TwidereComposeUI
+import XLPagerTabStrip
 
 final class ProfileViewController: UIViewController, NeedsDependency, DrawerSidebarTransitionHostViewController {
     

@@ -138,7 +138,7 @@ public final class ComposeContentViewModel: NSObject {
         case .post:
             break
         case .hashtag(let hashtag):
-            break
+            currentTextInput = "#" + hashtag + " "
         case .mention(let user):
             // set content text
             switch user {
