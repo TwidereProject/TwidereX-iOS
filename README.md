@@ -9,9 +9,9 @@ Next generation of Twidere for iOS.
 
 ## Requirements
 
-- Xcode 12.2+
-- Swift 5.3+
-- iOS 13+
+- Xcode 13.0+
+- Swift 5.5+
+- iOS 15+
 
 
 ## Quick Start
