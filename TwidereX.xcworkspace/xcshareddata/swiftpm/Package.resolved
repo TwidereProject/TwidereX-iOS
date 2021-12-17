@@ -11,15 +11,6 @@
         }
       },
       {
-        "package": "AlamofireImage",
-        "repositoryURL": "https://github.com/Alamofire/AlamofireImage",
-        "state": {
-          "branch": null,
-          "revision": "98cbb00ce0ec5fc8e52a5b50a6bfc08d3e5aee10",
-          "version": "4.2.0"
-        }
-      },
-      {
         "package": "CommonOSLog",
         "repositoryURL": "https://github.com/MainasuK/CommonOSLog",
         "state": {
@@ -143,15 +134,6 @@
           "branch": null,
           "revision": "213eb6887e526e0dfac526a2eae559a1893ebbac",
           "version": "2.36.0"
-        }
-      },
-      {
-        "package": "SwiftMessages",
-        "repositoryURL": "https://github.com/SwiftKickMobile/SwiftMessages",
-        "state": {
-          "branch": null,
-          "revision": "1e49de7b3780b69927bc3e61903d8ec0693a3dc5",
-          "version": "9.0.5"
         }
       },
       {
