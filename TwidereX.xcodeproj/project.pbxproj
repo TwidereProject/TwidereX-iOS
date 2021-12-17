@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		02F6D779D988FB3601DEB108 /* Pods_TwidereX_TwidereXUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 038E5A2895D82A5D7BA40C73 /* Pods_TwidereX_TwidereXUITests.framework */; };
 		44CCAE5E7B79E0C359E367E5 /* Pods_TwidereX.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8564534D30DC2640CEB8344E /* Pods_TwidereX.framework */; };
-		9081B6100A725C63D02298F7 /* Pods_ShareExtension.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3548CDFB25C75B60D4296901 /* Pods_ShareExtension.framework */; };
 		AF66F7A022E93DE9E329F6A3 /* Pods_TwidereXTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 62DC6A6809A00EA057395C07 /* Pods_TwidereXTests.framework */; };
 		DB004BF626CE4A7F00F5C574 /* StatusCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB004BF526CE4A7F00F5C574 /* StatusCollectionViewCell.swift */; };
 		DB01091526E5EB64005F67D7 /* MastodonStatusThreadViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB01091426E5EB64005F67D7 /* MastodonStatusThreadViewModel.swift */; };
@@ -396,16 +395,13 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		00FCA929DC087ADCAB53FB62 /* Pods-ShareExtension.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ShareExtension.release.xcconfig"; path = "Target Support Files/Pods-ShareExtension/Pods-ShareExtension.release.xcconfig"; sourceTree = "<group>"; };
 		038E5A2895D82A5D7BA40C73 /* Pods_TwidereX_TwidereXUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_TwidereX_TwidereXUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		06C6C02930FE7CBB4E13D99E /* Pods-AppShared.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AppShared.release.xcconfig"; path = "Target Support Files/Pods-AppShared/Pods-AppShared.release.xcconfig"; sourceTree = "<group>"; };
 		11A96C051C6ACCB3A9B716BB /* Pods-CoreDataStack.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-CoreDataStack.debug.xcconfig"; path = "Target Support Files/Pods-CoreDataStack/Pods-CoreDataStack.debug.xcconfig"; sourceTree = "<group>"; };
 		120596A33EFEAC5EEDF6B0FC /* Pods-TwitterAPI-TwitterAPITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TwitterAPI-TwitterAPITests.debug.xcconfig"; path = "Target Support Files/Pods-TwitterAPI-TwitterAPITests/Pods-TwitterAPI-TwitterAPITests.debug.xcconfig"; sourceTree = "<group>"; };
 		17256F5127E8AA2E9B5A25FA /* Pods-TwitterAPI.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TwitterAPI.debug.xcconfig"; path = "Target Support Files/Pods-TwitterAPI/Pods-TwitterAPI.debug.xcconfig"; sourceTree = "<group>"; };
-		1FD864AF23F8D4BAC2805D81 /* Pods-ShareExtension.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ShareExtension.debug.xcconfig"; path = "Target Support Files/Pods-ShareExtension/Pods-ShareExtension.debug.xcconfig"; sourceTree = "<group>"; };
 		2504A7AE733D038B91122765 /* Pods-TwidereXTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TwidereXTests.release.xcconfig"; path = "Target Support Files/Pods-TwidereXTests/Pods-TwidereXTests.release.xcconfig"; sourceTree = "<group>"; };
 		2E41729E598B3379FC09BC03 /* Pods-TwidereX-TwidereXUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TwidereX-TwidereXUITests.debug.xcconfig"; path = "Target Support Files/Pods-TwidereX-TwidereXUITests/Pods-TwidereX-TwidereXUITests.debug.xcconfig"; sourceTree = "<group>"; };
-		3548CDFB25C75B60D4296901 /* Pods_ShareExtension.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_ShareExtension.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		3CFF05E953F47DC2B0B5AC95 /* Pods-TwidereXTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TwidereXTests.debug.xcconfig"; path = "Target Support Files/Pods-TwidereXTests/Pods-TwidereXTests.debug.xcconfig"; sourceTree = "<group>"; };
 		4423B1DC6D103908A7B752AF /* Pods-TwidereX.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TwidereX.release.xcconfig"; path = "Target Support Files/Pods-TwidereX/Pods-TwidereX.release.xcconfig"; sourceTree = "<group>"; };
 		44D01BA9E21B7F374DBDA38A /* Pods-TwidereX-TwidereXUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TwidereX-TwidereXUITests.release.xcconfig"; path = "Target Support Files/Pods-TwidereX-TwidereXUITests/Pods-TwidereX-TwidereXUITests.release.xcconfig"; sourceTree = "<group>"; };
@@ -862,7 +858,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9081B6100A725C63D02298F7 /* Pods_ShareExtension.framework in Frameworks */,
 				DBFC0AE6276118080011E99B /* AppShared.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -928,8 +923,6 @@
 				06C6C02930FE7CBB4E13D99E /* Pods-AppShared.release.xcconfig */,
 				11A96C051C6ACCB3A9B716BB /* Pods-CoreDataStack.debug.xcconfig */,
 				8810A335C578F294D7BB74AE /* Pods-CoreDataStack.release.xcconfig */,
-				1FD864AF23F8D4BAC2805D81 /* Pods-ShareExtension.debug.xcconfig */,
-				00FCA929DC087ADCAB53FB62 /* Pods-ShareExtension.release.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -2305,7 +2298,6 @@
 				A4649F84FF237A9295846A9E /* Pods_TwitterAPI_TwitterAPITests.framework */,
 				84835D7E14A262E389DD4AB3 /* Pods_AppShared.framework */,
 				765E576F8ECB1EC1A3937771 /* Pods_CoreDataStack.framework */,
-				3548CDFB25C75B60D4296901 /* Pods_ShareExtension.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -2352,7 +2344,6 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = DBBBBE692744E8CC007ACB4B /* Build configuration list for PBXNativeTarget "ShareExtension" */;
 			buildPhases = (
-				6721069EC98E68D60CB30431 /* [CP] Check Pods Manifest.lock */,
 				DBBBBE5A2744E8CC007ACB4B /* Sources */,
 				DBBBBE5B2744E8CC007ACB4B /* Frameworks */,
 				DBBBBE5C2744E8CC007ACB4B /* Resources */,
@@ -2365,8 +2356,6 @@
 				DBBBBE892744F535007ACB4B /* PBXTargetDependency */,
 			);
 			name = ShareExtension;
-			packageProductDependencies = (
-			);
 			productName = ShareExtension;
 			productReference = DBBBBE5E2744E8CC007ACB4B /* ShareExtension.appex */;
 			productType = "com.apple.product-type.app-extension";
@@ -2503,19 +2492,19 @@
 			packageReferences = (
 				DBE76D32250214A700DEB0FC /* XCRemoteSwiftPackageReference "CommonOSLog" */,
 				DBE76D3C2502518D00DEB0FC /* XCRemoteSwiftPackageReference "AlamofireImage" */,
-				DBEA4F822511F7460007FEC5 /* XCRemoteSwiftPackageReference "Kanna" */,
-				DB2611B5251B2D42004BF309 /* XCRemoteSwiftPackageReference "CryptoSwift" */,
-				DBD98487251CB88A00ED87A1 /* XCRemoteSwiftPackageReference "Tabman" */,
-				DB2924C92546B958003899A7 /* XCRemoteSwiftPackageReference "Kingfisher" */,
+				DBEA4F822511F7460007FEC5 /* XCRemoteSwiftPackageReference "Kanna.git" */,
+				DB2611B5251B2D42004BF309 /* XCRemoteSwiftPackageReference "CryptoSwift.git" */,
+				DBD98487251CB88A00ED87A1 /* XCRemoteSwiftPackageReference "Tabman.git" */,
+				DB2924C92546B958003899A7 /* XCRemoteSwiftPackageReference "Kingfisher.git" */,
 				DB9EC4DF255A6317005403AA /* XCRemoteSwiftPackageReference "SwiftMessages" */,
-				DB74A162256E148F00C5F3C9 /* XCRemoteSwiftPackageReference "TOCropViewController" */,
-				DB6CF1C2269715CD001DE069 /* XCRemoteSwiftPackageReference "FPSIndicator" */,
-				DB3282D926AFFD40002B721C /* XCRemoteSwiftPackageReference "MetaTextKit" */,
-				DB94B6AF26C64DAC00A2E8A1 /* XCRemoteSwiftPackageReference "SwiftUI-Introspect" */,
-				DB30ADD426CF583900B2D2BE /* XCRemoteSwiftPackageReference "FLAnimatedImage" */,
-				DB7AB33C2744E3740035EB8A /* XCRemoteSwiftPackageReference "Floaty" */,
-				DB096FD2274B7B0C00D56CFA /* XCRemoteSwiftPackageReference "Alamofire" */,
-				DBA5DDB5274E1BBF00FF12E3 /* XCRemoteSwiftPackageReference "UITextView-Placeholder" */,
+				DB74A162256E148F00C5F3C9 /* XCRemoteSwiftPackageReference "TOCropViewController.git" */,
+				DB6CF1C2269715CD001DE069 /* XCRemoteSwiftPackageReference "FPSIndicator.git" */,
+				DB3282D926AFFD40002B721C /* XCRemoteSwiftPackageReference "MetaTextKit.git" */,
+				DB94B6AF26C64DAC00A2E8A1 /* XCRemoteSwiftPackageReference "SwiftUI-Introspect.git" */,
+				DB30ADD426CF583900B2D2BE /* XCRemoteSwiftPackageReference "FLAnimatedImage.git" */,
+				DB7AB33C2744E3740035EB8A /* XCRemoteSwiftPackageReference "Floaty.git" */,
+				DB096FD2274B7B0C00D56CFA /* XCRemoteSwiftPackageReference "Alamofire.git" */,
+				DBA5DDB5274E1BBF00FF12E3 /* XCRemoteSwiftPackageReference "UITextView-Placeholder.git" */,
 			);
 			productRefGroup = DBDA8E1F24FCF8A3006750DC /* Products */;
 			projectDirPath = "";
@@ -2635,28 +2624,6 @@
 			);
 			outputPaths = (
 				"$(DERIVED_FILE_DIR)/Pods-AppShared-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		6721069EC98E68D60CB30431 /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-ShareExtension-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -3275,7 +3242,6 @@
 		};
 		DBBBBE6A2744E8CC007ACB4B /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 1FD864AF23F8D4BAC2805D81 /* Pods-ShareExtension.debug.xcconfig */;
 			buildSettings = {
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
 				CODE_SIGN_STYLE = Automatic;
@@ -3302,7 +3268,6 @@
 		};
 		DBBBBE6B2744E8CC007ACB4B /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 00FCA929DC087ADCAB53FB62 /* Pods-ShareExtension.release.xcconfig */;
 			buildSettings = {
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
 				CODE_SIGN_STYLE = Automatic;
@@ -3653,7 +3618,7 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		DB096FD2274B7B0C00D56CFA /* XCRemoteSwiftPackageReference "Alamofire" */ = {
+		DB096FD2274B7B0C00D56CFA /* XCRemoteSwiftPackageReference "Alamofire.git" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/Alamofire/Alamofire.git";
 			requirement = {
@@ -3661,7 +3626,7 @@
 				minimumVersion = 5.0.0;
 			};
 		};
-		DB2611B5251B2D42004BF309 /* XCRemoteSwiftPackageReference "CryptoSwift" */ = {
+		DB2611B5251B2D42004BF309 /* XCRemoteSwiftPackageReference "CryptoSwift.git" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/krzyzanowskim/CryptoSwift.git";
 			requirement = {
@@ -3669,7 +3634,7 @@
 				minimumVersion = 1.3.2;
 			};
 		};
-		DB2924C92546B958003899A7 /* XCRemoteSwiftPackageReference "Kingfisher" */ = {
+		DB2924C92546B958003899A7 /* XCRemoteSwiftPackageReference "Kingfisher.git" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/onevcat/Kingfisher.git";
 			requirement = {
@@ -3677,7 +3642,7 @@
 				minimumVersion = 7.1.1;
 			};
 		};
-		DB30ADD426CF583900B2D2BE /* XCRemoteSwiftPackageReference "FLAnimatedImage" */ = {
+		DB30ADD426CF583900B2D2BE /* XCRemoteSwiftPackageReference "FLAnimatedImage.git" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/Flipboard/FLAnimatedImage.git";
 			requirement = {
@@ -3685,7 +3650,7 @@
 				minimumVersion = 1.0.0;
 			};
 		};
-		DB3282D926AFFD40002B721C /* XCRemoteSwiftPackageReference "MetaTextKit" */ = {
+		DB3282D926AFFD40002B721C /* XCRemoteSwiftPackageReference "MetaTextKit.git" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/TwidereProject/MetaTextKit.git";
 			requirement = {
@@ -3693,7 +3658,7 @@
 				version = 3.2.0;
 			};
 		};
-		DB6CF1C2269715CD001DE069 /* XCRemoteSwiftPackageReference "FPSIndicator" */ = {
+		DB6CF1C2269715CD001DE069 /* XCRemoteSwiftPackageReference "FPSIndicator.git" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/MainasuK/FPSIndicator.git";
 			requirement = {
@@ -3701,7 +3666,7 @@
 				minimumVersion = 1.0.0;
 			};
 		};
-		DB74A162256E148F00C5F3C9 /* XCRemoteSwiftPackageReference "TOCropViewController" */ = {
+		DB74A162256E148F00C5F3C9 /* XCRemoteSwiftPackageReference "TOCropViewController.git" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/TimOliver/TOCropViewController.git";
 			requirement = {
@@ -3709,7 +3674,7 @@
 				minimumVersion = 2.6.0;
 			};
 		};
-		DB7AB33C2744E3740035EB8A /* XCRemoteSwiftPackageReference "Floaty" */ = {
+		DB7AB33C2744E3740035EB8A /* XCRemoteSwiftPackageReference "Floaty.git" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/kciter/Floaty.git";
 			requirement = {
@@ -3717,7 +3682,7 @@
 				kind = branch;
 			};
 		};
-		DB94B6AF26C64DAC00A2E8A1 /* XCRemoteSwiftPackageReference "SwiftUI-Introspect" */ = {
+		DB94B6AF26C64DAC00A2E8A1 /* XCRemoteSwiftPackageReference "SwiftUI-Introspect.git" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/siteline/SwiftUI-Introspect.git";
 			requirement = {
@@ -3733,7 +3698,7 @@
 				minimumVersion = 9.0.0;
 			};
 		};
-		DBA5DDB5274E1BBF00FF12E3 /* XCRemoteSwiftPackageReference "UITextView-Placeholder" */ = {
+		DBA5DDB5274E1BBF00FF12E3 /* XCRemoteSwiftPackageReference "UITextView-Placeholder.git" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/MainasuK/UITextView-Placeholder.git";
 			requirement = {
@@ -3741,7 +3706,7 @@
 				minimumVersion = 1.4.1;
 			};
 		};
-		DBD98487251CB88A00ED87A1 /* XCRemoteSwiftPackageReference "Tabman" */ = {
+		DBD98487251CB88A00ED87A1 /* XCRemoteSwiftPackageReference "Tabman.git" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/uias/Tabman.git";
 			requirement = {
@@ -3765,7 +3730,7 @@
 				minimumVersion = 4.1.0;
 			};
 		};
-		DBEA4F822511F7460007FEC5 /* XCRemoteSwiftPackageReference "Kanna" */ = {
+		DBEA4F822511F7460007FEC5 /* XCRemoteSwiftPackageReference "Kanna.git" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/tid-kijyun/Kanna.git";
 			requirement = {
@@ -3778,22 +3743,22 @@
 /* Begin XCSwiftPackageProductDependency section */
 		DB2611B6251B2D42004BF309 /* CryptoSwift */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = DB2611B5251B2D42004BF309 /* XCRemoteSwiftPackageReference "CryptoSwift" */;
+			package = DB2611B5251B2D42004BF309 /* XCRemoteSwiftPackageReference "CryptoSwift.git" */;
 			productName = CryptoSwift;
 		};
 		DB2924CA2546B958003899A7 /* Kingfisher */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = DB2924C92546B958003899A7 /* XCRemoteSwiftPackageReference "Kingfisher" */;
+			package = DB2924C92546B958003899A7 /* XCRemoteSwiftPackageReference "Kingfisher.git" */;
 			productName = Kingfisher;
 		};
 		DB30ADD526CF583900B2D2BE /* FLAnimatedImage */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = DB30ADD426CF583900B2D2BE /* XCRemoteSwiftPackageReference "FLAnimatedImage" */;
+			package = DB30ADD426CF583900B2D2BE /* XCRemoteSwiftPackageReference "FLAnimatedImage.git" */;
 			productName = FLAnimatedImage;
 		};
 		DB3282DA26AFFD40002B721C /* MetaTextKit */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = DB3282D926AFFD40002B721C /* XCRemoteSwiftPackageReference "MetaTextKit" */;
+			package = DB3282D926AFFD40002B721C /* XCRemoteSwiftPackageReference "MetaTextKit.git" */;
 			productName = MetaTextKit;
 		};
 		DB6B2EC727612E0700A9B9D2 /* CoverFlowStackCollectionViewLayout */ = {
@@ -3806,27 +3771,27 @@
 		};
 		DB6CF1C3269715CD001DE069 /* FPSIndicator */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = DB6CF1C2269715CD001DE069 /* XCRemoteSwiftPackageReference "FPSIndicator" */;
+			package = DB6CF1C2269715CD001DE069 /* XCRemoteSwiftPackageReference "FPSIndicator.git" */;
 			productName = FPSIndicator;
 		};
 		DB74A163256E148F00C5F3C9 /* CropViewController */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = DB74A162256E148F00C5F3C9 /* XCRemoteSwiftPackageReference "TOCropViewController" */;
+			package = DB74A162256E148F00C5F3C9 /* XCRemoteSwiftPackageReference "TOCropViewController.git" */;
 			productName = CropViewController;
 		};
 		DB7AB33D2744E3740035EB8A /* Floaty */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = DB7AB33C2744E3740035EB8A /* XCRemoteSwiftPackageReference "Floaty" */;
+			package = DB7AB33C2744E3740035EB8A /* XCRemoteSwiftPackageReference "Floaty.git" */;
 			productName = Floaty;
 		};
 		DB94B6B026C64DAC00A2E8A1 /* Introspect */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = DB94B6AF26C64DAC00A2E8A1 /* XCRemoteSwiftPackageReference "SwiftUI-Introspect" */;
+			package = DB94B6AF26C64DAC00A2E8A1 /* XCRemoteSwiftPackageReference "SwiftUI-Introspect.git" */;
 			productName = Introspect;
 		};
 		DBA5DDB6274E1BBF00FF12E3 /* UITextView+Placeholder */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = DBA5DDB5274E1BBF00FF12E3 /* XCRemoteSwiftPackageReference "UITextView-Placeholder" */;
+			package = DBA5DDB5274E1BBF00FF12E3 /* XCRemoteSwiftPackageReference "UITextView-Placeholder.git" */;
 			productName = "UITextView+Placeholder";
 		};
 		DBB0E3C22760FB1200F1D45F /* TwidereSDK */ = {
@@ -3835,7 +3800,7 @@
 		};
 		DBD98488251CB88A00ED87A1 /* Tabman */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = DBD98487251CB88A00ED87A1 /* XCRemoteSwiftPackageReference "Tabman" */;
+			package = DBD98487251CB88A00ED87A1 /* XCRemoteSwiftPackageReference "Tabman.git" */;
 			productName = Tabman;
 		};
 		DBE76D33250214A700DEB0FC /* CommonOSLog */ = {
@@ -3845,12 +3810,12 @@
 		};
 		DBEA4F832511F7460007FEC5 /* Kanna */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = DBEA4F822511F7460007FEC5 /* XCRemoteSwiftPackageReference "Kanna" */;
+			package = DBEA4F822511F7460007FEC5 /* XCRemoteSwiftPackageReference "Kanna.git" */;
 			productName = Kanna;
 		};
 		DBFC0ADB276108590011E99B /* CropViewController */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = DB74A162256E148F00C5F3C9 /* XCRemoteSwiftPackageReference "TOCropViewController" */;
+			package = DB74A162256E148F00C5F3C9 /* XCRemoteSwiftPackageReference "TOCropViewController.git" */;
 			productName = CropViewController;
 		};
 		DBFC0ADD276108610011E99B /* AlamofireImage */ = {
@@ -3860,7 +3825,7 @@
 		};
 		DBFC0ADF276108610011E99B /* Alamofire */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = DB096FD2274B7B0C00D56CFA /* XCRemoteSwiftPackageReference "Alamofire" */;
+			package = DB096FD2274B7B0C00D56CFA /* XCRemoteSwiftPackageReference "Alamofire.git" */;
 			productName = Alamofire;
 		};
 /* End XCSwiftPackageProductDependency section */
