@@ -140,7 +140,13 @@ public final class ComposeContentViewModel: NSObject {
         case .hashtag(let hashtag):
             break
         case .mention(let user):
-            break
+            // set content text
+            switch user {
+            case .twitter(let user):
+                currentTextInput = "@" + user.username + " "
+            case .mastodon(let user):
+                currentTextInput = "@" + user.acct + " "
+            }
         case .reply(let status):
             replyTo = status
             items.insert(.replyTo)
@@ -180,7 +186,7 @@ public final class ComposeContentViewModel: NSObject {
                 }()
             case .mastodon(let status):
                 // set content warning
-                if let spoilerText = status.spoilerText {
+                if let spoilerText = status.spoilerText, !spoilerText.isEmpty {
                     isContentWarningComposing = true
                     currentContentWarningInput = spoilerText
                 }

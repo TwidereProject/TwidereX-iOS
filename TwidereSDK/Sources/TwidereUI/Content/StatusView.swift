@@ -699,10 +699,12 @@ extension StatusView.Style {
             statusView.authorAvatarButton.heightAnchor.constraint(equalTo: statusView.authorNameLabel.heightAnchor, multiplier: 1.0).priority(.required - 10),
             statusView.authorAvatarButton.widthAnchor.constraint(equalTo: statusView.authorNameLabel.heightAnchor, multiplier: 1.0).priority(.required - 10),
         ])
+        // low priority for intrinsic size hugging
         statusView.authorAvatarButton.setContentHuggingPriority(.defaultLow - 10, for: .vertical)
         statusView.authorAvatarButton.setContentHuggingPriority(.defaultLow - 10, for: .horizontal)
-        statusView.authorAvatarButton.setContentCompressionResistancePriority(.defaultLow - 10, for: .vertical)
-        statusView.authorAvatarButton.setContentCompressionResistancePriority(.defaultLow - 10, for: .horizontal)
+        // high priority but lower then layout constraint for size compression
+        statusView.authorAvatarButton.setContentCompressionResistancePriority(.required - 11, for: .vertical)
+        statusView.authorAvatarButton.setContentCompressionResistancePriority(.required - 11, for: .horizontal)
         statusView.authorNameLabel.setContentCompressionResistancePriority(.required - 1, for: .vertical)
         statusView.authorNameLabel.setContentHuggingPriority(.required - 1, for: .vertical)
 
