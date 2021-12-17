@@ -872,7 +872,7 @@ extension StatusView {
             .assign(to: \.isContentReveal, on: viewModel)
             .store(in: &disposeBag)
         
-        viewModel.source = nil
+        viewModel.source = status.source
     }
     
     private func configureMedia(mastodonStatus status: MastodonStatus) {
