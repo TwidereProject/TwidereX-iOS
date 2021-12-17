@@ -93,7 +93,12 @@ public final class UserView: UIView {
     public let followerCountLabel = PlainLabel(style: .userDescription)
     
     // friendship control
-    public let friendshipButton = FriendshipButton()
+    public let friendshipButton: FriendshipButton = {
+        let button = FriendshipButton()
+        button.titleFont = UIFontMetrics(forTextStyle: .headline)
+            .scaledFont(for: UIFont.systemFont(ofSize: 13, weight: .semibold))
+        return button
+    }()
     
     // checkmark control
     public let checkmarkButton: UIButton = {
@@ -269,9 +274,11 @@ extension UserView.Style {
         userView.friendshipButton.translatesAutoresizingMaskIntoConstraints = false
         userView.accessoryContainerView.addArrangedSubview(userView.friendshipButton)
         NSLayoutConstraint.activate([
-            userView.friendshipButton.heightAnchor.constraint(equalToConstant: 35).priority(.required - 1),
-            userView.friendshipButton.widthAnchor.constraint(equalToConstant: 80).priority(.required - 1),  // maybe dynamic width for different language?
+//            userView.friendshipButton.heightAnchor.constraint(equalToConstant: 34).priority(.required - 1),
+            userView.friendshipButton.widthAnchor.constraint(greaterThanOrEqualToConstant: 80).priority(.required - 1),
         ])
+        userView.friendshipButton.setContentHuggingPriority(.required - 10, for: .horizontal)
+        userView.friendshipButton.setContentCompressionResistancePriority(.required - 10, for: .horizontal)
         
         userView.setNeedsLayout()
     }

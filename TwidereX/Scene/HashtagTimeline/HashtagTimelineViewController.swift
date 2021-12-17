@@ -9,6 +9,9 @@
 import os.log
 import UIKit
 import Combine
+import AppShared
+import Floaty
+import TwidereComposeUI
 
 final class HashtagTimelineViewController: UIViewController, NeedsDependency, MediaPreviewTransitionHostViewController {
     
@@ -32,6 +35,30 @@ final class HashtagTimelineViewController: UIViewController, NeedsDependency, Me
         return tableView
     }()
     
+    private lazy var floatyButton: Floaty = {
+        let button = Floaty()
+        button.plusColor = .white
+        button.buttonColor = ThemeService.shared.theme.value.accentColor
+        button.buttonImage = Asset.Editing.featherPen.image
+        button.handleFirstItemDirectly = true
+        
+        let composeItem: FloatyItem = {
+            let item = FloatyItem()
+            item.title = L10n.Scene.Compose.Title.compose
+            item.handler = { [weak self] item in
+                guard let self = self else { return }
+                self.floatyButtonPressed(item)
+            }
+            return item
+        }()
+        button.addItem(item: composeItem)
+        
+        return button
+    }()
+    
+    deinit {
+        os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
+    }
 }
 
 extension HashtagTimelineViewController {
@@ -53,6 +80,8 @@ extension HashtagTimelineViewController {
             tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
         ])
+        
+        view.addSubview(floatyButton)
         
         tableView.delegate = self
         viewModel.setupDiffableDataSource(
@@ -77,6 +106,36 @@ extension HashtagTimelineViewController {
         tableView.deselectRow(with: transitionCoordinator, animated: animated)
     }
     
+    override func viewSafeAreaInsetsDidChange() {
+        super.viewSafeAreaInsetsDidChange()
+        
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            self.floatyButton.paddingY = self.view.safeAreaInsets.bottom + UIView.floatyButtonBottomMargin
+        }
+    }
+    
+}
+
+extension HashtagTimelineViewController {
+    @objc private func floatyButtonPressed(_ sender: FloatyItem) {
+        logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public)")
+        
+        let hashtag = viewModel.hashtag
+        
+        let composeViewModel = ComposeViewModel(context: context)
+        let composeContentViewModel = ComposeContentViewModel(
+            inputContext: .hashtag(hashtag: hashtag),
+            configurationContext: ComposeContentViewModel.ConfigurationContext(
+                apiService: context.apiService,
+                authenticationService: context.authenticationService,
+                mastodonEmojiService: context.mastodonEmojiService,
+                dateTimeProvider: DateTimeSwiftProvider(),
+                twitterTextProvider: OfficialTwitterTextProvider()
+            )
+        )
+        coordinator.present(scene: .compose(viewModel: composeViewModel, contentViewModel: composeContentViewModel), from: self, transition: .modal(animated: true, completion: nil))
+    }
 }
 
 // MARK: - UITableViewDelegate

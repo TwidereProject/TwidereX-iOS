@@ -12,6 +12,10 @@ import TwidereCore
 public final class FriendshipButton: UIButton {
         
     private(set) var relationship: Relationship = .follow
+    
+    public var titleFont: UIFont = .preferredFont(forTextStyle: .headline) {
+        didSet { setNeedsUpdateConfiguration() }
+    }
 
     public override init(frame: CGRect) {
         super.init(frame: frame)
@@ -42,16 +46,14 @@ extension FriendshipButton {
         
         var configuration = UIButton.Configuration.plain()
         configuration.cornerStyle = .capsule    // why capsule
-        configuration.title = relationship.title
+        configuration.attributedTitle = {
+            var attributedString = AttributedString(relationship.title)
+            attributedString.font = titleFont
+            return attributedString
+        }()
         configuration.baseForegroundColor = baseForegroundColor(for: relationship)
         configuration.background = background(for: relationship)
         self.configuration = configuration
-        
-        titleLabel?.font = .systemFont(ofSize: 14, weight: .medium)        // FIXME:
-        titleLabel?.numberOfLines = 1
-        titleLabel?.adjustsFontSizeToFitWidth = true
-        titleLabel?.minimumScaleFactor = 0.5
-        titleLabel?.lineBreakMode = .byClipping
     }
     
 }

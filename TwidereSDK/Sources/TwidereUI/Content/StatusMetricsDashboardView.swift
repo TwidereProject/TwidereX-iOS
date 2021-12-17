@@ -23,8 +23,15 @@ public final class StatusMetricsDashboardView: UIView {
     public weak var delegate: StatusMetricsDashboardViewDelegate?
     
     public let container = UIStackView()
-    
+    public let metaContainer = UIStackView()
+
     public let timestampLabel: PlainLabel = {
+        let label = PlainLabel(style: .statusMetrics)
+        label.textAlignment = .center
+        return label
+    }()
+    
+    let sourceLabel: PlainLabel = {
         let label = PlainLabel(style: .statusMetrics)
         label.textAlignment = .center
         return label
@@ -62,7 +69,11 @@ extension StatusMetricsDashboardView {
         container.distribution = .fill
         container.alignment = .center
         
-        container.addArrangedSubview(timestampLabel)
+        metaContainer.axis = .horizontal
+        metaContainer.spacing = 4
+        container.addArrangedSubview(metaContainer)
+        metaContainer.addArrangedSubview(timestampLabel)
+        metaContainer.addArrangedSubview(sourceLabel)
         
         dashboardContainer.axis = .horizontal
         dashboardContainer.spacing = 8

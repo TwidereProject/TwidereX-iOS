@@ -182,9 +182,15 @@ extension ComposeContentViewModel {
             )
             return composeReplyTableViewCell
         case .input:
+            // show link line if repy exists
             composeInputTableViewCell.conversationLinkLineView.isHidden = replyTo == nil
+            // configure content warning input
             let contentWarningMetaContent = Meta.convert(from: .mastodon(string: currentContentWarningInput, emojis: emojiViewModel?.emojis.asDictionary ?? [:]))
             composeInputTableViewCell.contentWarningMetaText.configure(content: contentWarningMetaContent)
+            // configure content
+            let contentMetaContent = Meta.convert(from: .plaintext(string: currentTextInput))
+            composeInputTableViewCell.contentMetaText.configure(content: contentMetaContent)
+            // setup emoji picker input viewModel
             customEmojiPickerInputViewModel.configure(textInput: composeInputTableViewCell.contentWarningMetaText.textView)
             customEmojiPickerInputViewModel.configure(textInput: composeInputTableViewCell.contentMetaText.textView)
             

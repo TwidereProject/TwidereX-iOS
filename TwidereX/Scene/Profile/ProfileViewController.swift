@@ -10,13 +10,15 @@ import UIKit
 import Combine
 import CoreData
 import CoreDataStack
-import TabBarPager
-import XLPagerTabStrip
-import MetaTextKit
-import MetaTextArea
+import AppShared
+import Floaty
 import Meta
+import MetaTextArea
+import MetaTextKit
+import TabBarPager
+import TwidereComposeUI
+import XLPagerTabStrip
 
-// TODO: DrawerSidebarTransitionableViewController
 final class ProfileViewController: UIViewController, NeedsDependency, DrawerSidebarTransitionHostViewController {
     
     let logger = Logger(subsystem: "ProfileViewController", category: "ViewController")
@@ -30,11 +32,6 @@ final class ProfileViewController: UIViewController, NeedsDependency, DrawerSide
     private(set) var drawerSidebarTransitionController: DrawerSidebarTransitionController!
     let avatarBarButtonItem = AvatarBarButtonItem()
     
-    let unmuteMenuBarButtonItem: UIBarButtonItem = {
-        let barButtonItem = UIBarButtonItem(image: Asset.ObjectTools.speakerXmark.image.withRenderingMode(.alwaysTemplate), style: .plain, target: nil, action: nil)
-        barButtonItem.tintColor = .systemRed
-        return barButtonItem
-    }()
     let moreMenuBarButtonItem: UIBarButtonItem = {
         let barButtonItem = UIBarButtonItem(image: Asset.Editing.ellipsis.image.withRenderingMode(.alwaysTemplate), style: .plain, target: nil, action: nil)
         return barButtonItem
@@ -86,9 +83,27 @@ final class ProfileViewController: UIViewController, NeedsDependency, DrawerSide
         return profilePagingViewController
     }()
     
-    private var contentOffsets: [Int: CGFloat] = [:]
-    var currentPostTimelineTableViewContentSizeObservation: NSKeyValueObservation?
-    
+    private lazy var floatyButton: Floaty = {
+        let button = Floaty()
+        button.plusColor = .white
+        button.buttonColor = ThemeService.shared.theme.value.accentColor
+        button.buttonImage = Asset.Arrows.arrowshapeTurnUpLeftFill.image.withTintColor(.white)
+        button.handleFirstItemDirectly = true
+        
+        let composeItem: FloatyItem = {
+            let item = FloatyItem()
+            item.title = L10n.Scene.Compose.Title.reply
+            item.handler = { [weak self] item in
+                guard let self = self else { return }
+                self.floatyButtonPressed(item)
+            }
+            return item
+        }()
+        button.addItem(item: composeItem)
+        
+        return button
+    }()
+        
     deinit {
         os_log("%{public}s[%{public}ld], %{public}s: deinit", ((#file as NSString).lastPathComponent), #line, #function)
     }
@@ -121,9 +136,6 @@ extension ProfileViewController {
             .store(in: &disposeBag)
         }
         
-        unmuteMenuBarButtonItem.target = self
-        unmuteMenuBarButtonItem.action = #selector(ProfileViewController.unmuteBarButtonItemPressed(_:))
-        
         addChild(tabBarPagerController)
         tabBarPagerController.view.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(tabBarPagerController.view)
@@ -134,6 +146,16 @@ extension ProfileViewController {
             tabBarPagerController.view.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             tabBarPagerController.view.bottomAnchor.constraint(equalTo: view.bottomAnchor),
         ])
+        
+        view.addSubview(floatyButton)
+        viewModel.relationshipViewModel.$isMyself
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] isMyself in
+                guard let self = self else { return }
+                let image = isMyself ? Asset.Editing.featherPen.image : Asset.Arrows.arrowshapeTurnUpLeftFill.image.withTintColor(.white)
+                self.floatyButton.buttonImage = image
+            }
+            .store(in: &disposeBag)
         
         tabBarPagerController.delegate = self
         tabBarPagerController.dataSource = self
@@ -217,6 +239,15 @@ extension ProfileViewController {
         super.viewDidDisappear(animated)
     }
     
+    override func viewSafeAreaInsetsDidChange() {
+        super.viewSafeAreaInsetsDidChange()
+        
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            self.floatyButton.paddingY = self.view.safeAreaInsets.bottom + UIView.floatyButtonBottomMargin
+        }
+    }
+    
 }
 
 extension ProfileViewController {
@@ -228,7 +259,7 @@ extension ProfileViewController {
     }
     
     @objc private func refreshControlValueChanged(_ sender: UIRefreshControl) {
-        os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
+        logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): <#message#>")
         
         let currentPage = profilePagingViewController.currentPage
         if let currentPage = currentPage as? UserTimelineViewController {
@@ -244,76 +275,25 @@ extension ProfileViewController {
         }
     }
     
-    @objc private func unmuteBarButtonItemPressed(_ sender: UIBarButtonItem) {
-        os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
-//        guard let twitterUser = viewModel.twitterUser.value else {
-//            assertionFailure()
-//            return
-//        }
-//
-//        UserProviderFacade.toggleMuteUser(
-//            context: context,
-//            twitterUser: twitterUser,
-//            muted: viewModel.muted.value
-//        )
-//        .sink { _ in
-//            // do nothing
-//        } receiveValue: { _ in
-//            // do nothing
-//        }
-//        .store(in: &disposeBag)
-    }
-    
-    @objc private func moreMenuBarButtonItemPressed(_ sender: UIBarButtonItem) {
-        os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
-//        guard let twitterUser = viewModel.twitterUser.value else {
-//            assertionFailure()
-//            return
-//        }
-//
-//        let moreMenuAlertController = UserProviderFacade.createMoreMenuAlertControllerForUser(
-//            twitterUser: twitterUser,
-//            muted: viewModel.muted.value,
-//            blocked: viewModel.blocked.value,
-//            sender: sender,
-//            dependency: self
-//        )
-//        present(moreMenuAlertController, animated: true, completion: nil)
+    @objc private func floatyButtonPressed(_ sender: FloatyItem) {
+        logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public)")
+        guard let user = viewModel.user else { return }
+        
+        let composeViewModel = ComposeViewModel(context: context)
+        let composeContentViewModel = ComposeContentViewModel(
+            inputContext: .mention(user: user),
+            configurationContext: ComposeContentViewModel.ConfigurationContext(
+                apiService: context.apiService,
+                authenticationService: context.authenticationService,
+                mastodonEmojiService: context.mastodonEmojiService,
+                dateTimeProvider: DateTimeSwiftProvider(),
+                twitterTextProvider: OfficialTwitterTextProvider()
+            )
+        )
+        coordinator.present(scene: .compose(viewModel: composeViewModel, contentViewModel: composeContentViewModel), from: self, transition: .modal(animated: true, completion: nil))
     }
     
 }
-
-// MARK: - UIScrollViewDelegate
-//extension ProfileViewController: UIScrollViewDelegate {
-//
-//    func scrollViewDidScroll(_ scrollView: UIScrollView) {
-//        // elastically banner
-//        if overlayScrollView.contentOffset.y < -overlayScrollView.safeAreaInsets.top {
-//            let offset = overlayScrollView.contentOffset.y - (-overlayScrollView.safeAreaInsets.top)
-//            profileHeaderViewController.headerView.bannerImageViewTopLayoutConstraint.constant = offset
-//        } else {
-//            profileHeaderViewController.headerView.bannerImageViewTopLayoutConstraint.constant = 0
-//        }
-//
-//        contentOffsets[profileSegmentedViewController.pagingViewController.currentIndex!] = scrollView.contentOffset.y
-//
-//        let topMaxContentOffsetY = profileSegmentedViewController.view.frame.minY - ProfileHeaderViewController.headerMinHeight - containerScrollView.safeAreaInsets.top
-//        if scrollView.contentOffset.y < topMaxContentOffsetY {
-//            self.containerScrollView.contentOffset.y = scrollView.contentOffset.y
-//            for postTimelineView in profileSegmentedViewController.pagingViewController.viewModel.viewControllers {
-//                postTimelineView.scrollView.contentOffset.y = 0
-//            }
-//            contentOffsets.removeAll()
-//        } else {
-//            containerScrollView.contentOffset.y = topMaxContentOffsetY
-//            if let customScrollViewContainerController = profileSegmentedViewController.pagingViewController.currentViewController as? ScrollViewContainer {
-//                let contentOffsetY = scrollView.contentOffset.y - containerScrollView.contentOffset.y
-//                customScrollViewContainerController.scrollView.contentOffset.y = contentOffsetY
-//            }
-//        }
-//    }
-//
-//}
 
 // MARK: - ProfileHeaderViewControllerDelegate
 extension ProfileViewController: ProfileHeaderViewControllerDelegate {

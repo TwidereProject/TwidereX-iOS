@@ -6,8 +6,8 @@
         "repositoryURL": "https://github.com/Alamofire/Alamofire.git",
         "state": {
           "branch": null,
-          "revision": "d120af1e8638c7da36c8481fd61a66c0c08dc4fc",
-          "version": "5.4.4"
+          "revision": "f82c23a8a7ef8dc1a49a8bfc6a96883e79121864",
+          "version": "5.5.0"
         }
       },
       {
@@ -92,6 +92,15 @@
         }
       },
       {
+        "package": "MetaTextKit",
+        "repositoryURL": "https://github.com/TwidereProject/MetaTextKit.git",
+        "state": {
+          "branch": null,
+          "revision": "334ecaa79bed63422b7395e78f269b36e009674a",
+          "version": "3.2.0"
+        }
+      },
+      {
         "package": "Pageboy",
         "repositoryURL": "https://github.com/uias/Pageboy",
         "state": {
@@ -123,8 +132,8 @@
         "repositoryURL": "https://github.com/apple/swift-nio.git",
         "state": {
           "branch": null,
-          "revision": "37e7a33de45bac894c0b08b56a2f755ebe4884e6",
-          "version": "2.35.0"
+          "revision": "213eb6887e526e0dfac526a2eae559a1893ebbac",
+          "version": "2.36.0"
         }
       },
       {

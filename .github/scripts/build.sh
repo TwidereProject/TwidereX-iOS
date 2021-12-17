@@ -7,7 +7,6 @@ set -eo pipefail
 
 xcodebuild -workspace TwidereX.xcworkspace \
 	-scheme TwidereX \
-	-disableAutomaticPackageResolution \
 	-destination "platform=iOS Simulator,name=iPhone SE (2nd generation)" \
 	clean \
 	build | xcpretty

@@ -32,6 +32,7 @@ extension MastodonStatus.Property {
             url: entity.url,
             text: entity.text,
             language: entity.language,
+            source: entity.application?.name,
             replyToStatusID: entity.inReplyToID,
             replyToUserID: entity.inReplyToAccountID,
             createdAt: entity.createdAt,
