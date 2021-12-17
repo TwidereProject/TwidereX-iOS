@@ -37,6 +37,7 @@ class MediaPreviewTransitionItem: Identifiable {
 
 extension MediaPreviewTransitionItem {
     enum Source {
+        case attachment(MediaView)
         case attachments(MediaGridContainerView)
         case profileAvatar(ProfileHeaderView)
         case profileBanner(ProfileHeaderView)
@@ -47,6 +48,8 @@ extension MediaPreviewTransitionItem {
         ) {
             let alpha: CGFloat = position == .end ? 1 : 0
             switch self {
+            case .attachment(let mediaView):
+                mediaView.alpha = alpha
             case .attachments(let mediaGridContainerView):
                 if let index = index {
                     mediaGridContainerView.setAlpha(0, index: index)

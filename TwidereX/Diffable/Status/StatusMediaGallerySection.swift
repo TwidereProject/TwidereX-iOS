@@ -18,7 +18,7 @@ enum StatusMediaGallerySection: Int, Hashable {
 extension StatusMediaGallerySection {
         
     struct Configuration {
-
+        weak var statusMediaGalleryCollectionCellDelegate: StatusMediaGalleryCollectionCellDelegate?
     }
     
     static func diffableDataSource(
@@ -41,7 +41,6 @@ extension StatusMediaGallerySection {
                 )
             }
         }
-        
         
         let activityIndicatorCell = UICollectionView.CellRegistration<ActivityIndicatorCollectionViewCell, String> { cell, IndexPath, _ in
             cell.activityIndicatorView.startAnimating()
@@ -71,5 +70,6 @@ extension StatusMediaGallerySection {
         configuration: Configuration
     ) {
         cell.configure(status: status)
+        cell.delegate = configuration.statusMediaGalleryCollectionCellDelegate
     }
 }

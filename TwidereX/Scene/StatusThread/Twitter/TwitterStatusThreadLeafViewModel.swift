@@ -19,12 +19,33 @@ final class TwitterStatusThreadLeafViewModel {
     
     // input
     let context: AppContext
-    
+    @Published private(set) var deletedObjectIDs: Set<NSManagedObjectID> = Set()
+
     // output
+    @Published private var _items: [StatusItem] = []
     let items = CurrentValueSubject<[StatusItem], Never>([])
     
     init(context: AppContext) {
         self.context = context
+        
+        Publishers.CombineLatest(
+            $_items,
+            $deletedObjectIDs
+        )
+        .sink { [weak self] items, deletedObjectIDs in
+            guard let self = self else { return }
+            let newItems = items.filter { item in
+                switch item {
+                case .thread(let thread):
+                    return !deletedObjectIDs.contains(thread.statusRecord.objectID)
+                default:
+                    assertionFailure()
+                    return false
+                }
+            }
+            self.items.value = newItems
+        }
+        .store(in: &disposeBag)
     }
     
     deinit {
@@ -35,6 +56,7 @@ final class TwitterStatusThreadLeafViewModel {
 
 extension TwitterStatusThreadLeafViewModel {
     
+    // FIXME: handle node remove
     func append(nodes: [Node]) {
         let childrenIDs = nodes
             .map { node in [node.statusID, node.children.first?.statusID].compactMap { $0 } }
@@ -79,12 +101,12 @@ extension TwitterStatusThreadLeafViewModel {
             }
         }
         
-        var items = self.items.value
+        var items = self._items
         for item in newItems {
             guard !items.contains(item) else { continue }
             items.append(item)
         }
-        self.items.value = items
+        self._items = items
     }
     
 }
@@ -201,4 +223,14 @@ extension TwitterStatusThreadLeafViewModel.Node {
         )
     }
 
+}
+
+extension TwitterStatusThreadLeafViewModel {
+    func delete(objectIDs: [NSManagedObjectID]) {
+        var set = deletedObjectIDs
+        for objectID in objectIDs {
+            set.insert(objectID)
+        }
+        self.deletedObjectIDs = set
+    }
 }

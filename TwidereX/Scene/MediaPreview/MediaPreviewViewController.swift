@@ -15,7 +15,6 @@ import AppShared
 import AlamofireImage
 import Kingfisher
 import Pageboy
-import ActiveLabel
 import MetaTextArea
 
 protocol MediaPreviewViewControllerDelegate: AnyObject {

@@ -23,8 +23,6 @@ import TwidereComposeUI
 
 final class HomeTimelineViewController: UIViewController, NeedsDependency, DrawerSidebarTransitionHostViewController, MediaPreviewTransitionHostViewController {
     
-//    var avatarBarButtonItem: AvatarBarButtonItem
-    
     let logger = Logger(subsystem: "HomeTimelineViewController", category: "ViewController")
     
     weak var context: AppContext! { willSet { precondition(!isViewLoaded) } }
@@ -55,6 +53,13 @@ final class HomeTimelineViewController: UIViewController, NeedsDependency, Drawe
         return tableView
     }()
     
+    let publishProgressView: UIProgressView = {
+        let progressView = UIProgressView()
+        progressView.progressViewStyle = .bar
+        progressView.tintColor = Asset.Colors.hightLight.color
+        return progressView
+    }()
+    
     private lazy var floatyButton: Floaty = {
         let button = Floaty()
         button.plusColor = .white
@@ -79,6 +84,7 @@ final class HomeTimelineViewController: UIViewController, NeedsDependency, Drawe
     deinit {
         os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s:", ((#file as NSString).lastPathComponent), #line, #function)
     }
+    
 }
 
 extension HomeTimelineViewController {
@@ -117,6 +123,31 @@ extension HomeTimelineViewController {
             tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
         ])
+        
+        publishProgressView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(publishProgressView)
+        NSLayoutConstraint.activate([
+            publishProgressView.topAnchor.constraint(equalTo: view.layoutMarginsGuide.topAnchor),
+            publishProgressView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            publishProgressView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+        ])
+        
+        context.publisherService.$currentPublishProgress
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] progress in
+                guard let self = self else { return }
+                let progress = Float(progress)
+                let withAnimation = progress > self.publishProgressView.progress
+                self.publishProgressView.setProgress(progress, animated: withAnimation)
+                
+                if progress == 1 {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [weak self] in
+                        guard let self = self else { return }
+                        self.publishProgressView.setProgress(0, animated: false)
+                    }
+                }
+            }
+            .store(in: &disposeBag)
 
         view.addSubview(floatyButton)
         
@@ -161,6 +192,26 @@ extension HomeTimelineViewController {
 
         viewModel.viewDidAppear.send()
 
+        if !viewModel.isLoadingLatest {
+            let now = Date()
+            if let timestamp = viewModel.lastAutomaticFetchTimestamp {
+                if now.timeIntervalSince(timestamp) > 60 {
+                    logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): auto fetch lastest timeline…")
+                    Task {
+                        await viewModel.loadLatest()
+                    }
+                    viewModel.lastAutomaticFetchTimestamp = now
+                } else {
+                    logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): auto fetch lastest timeline skip. Reason: updated in recent 60s")
+                }
+            } else {
+                Task {
+                    await viewModel.loadLatest()
+                }
+                viewModel.lastAutomaticFetchTimestamp = now
+            }
+            
+        }
 //        DispatchQueue.main.async { [weak self] in
 //            guard let self = self else { return }
 //            if (self.viewModel.fetchedResultsController.fetchedObjects ?? []).count == 0 {
@@ -242,6 +293,22 @@ extension HomeTimelineViewController: UITableViewDelegate, AutoGenerateTableView
         aspectTableView(tableView, didSelectRowAt: indexPath)
     }
 
+    func tableView(_ tableView: UITableView, contextMenuConfigurationForRowAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
+        return aspectTableView(tableView, contextMenuConfigurationForRowAt: indexPath, point: point)
+    }
+
+    func tableView(_ tableView: UITableView, previewForHighlightingContextMenuWithConfiguration configuration: UIContextMenuConfiguration) -> UITargetedPreview? {
+        return aspectTableView(tableView, previewForHighlightingContextMenuWithConfiguration: configuration)
+    }
+
+    func tableView(_ tableView: UITableView, previewForDismissingContextMenuWithConfiguration configuration: UIContextMenuConfiguration) -> UITargetedPreview? {
+        return aspectTableView(tableView, previewForDismissingContextMenuWithConfiguration: configuration)
+    }
+
+    func tableView(_ tableView: UITableView, willPerformPreviewActionForMenuWith configuration: UIContextMenuConfiguration, animator: UIContextMenuInteractionCommitAnimating) {
+        aspectTableView(tableView, willPerformPreviewActionForMenuWith: configuration, animator: animator)
+    }
+
     // sourcery:end
     
 //    func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
@@ -254,10 +321,6 @@ extension HomeTimelineViewController: UITableViewDelegate, AutoGenerateTableView
 //        // os_log("%{public}s[%{public}ld], %{public}s: cache cell frame %s", ((#file as NSString).lastPathComponent), #line, #function, frame.debugDescription)
 //
 //        return ceil(frame.height)
-//    }
-//
-//    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-//        handleTableView(tableView, didSelectRowAt: indexPath)
 //    }
 //
 //    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
@@ -274,112 +337,33 @@ extension HomeTimelineViewController: UITableViewDelegate, AutoGenerateTableView
 //        let frame = cell.frame
 //        viewModel.cellFrameCache.setObject(NSValue(cgRect: frame), forKey: NSNumber(value: key))
 //    }
-//
-//    func tableView(_ tableView: UITableView, contextMenuConfigurationForRowAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
-//        return handleTableView(tableView, contextMenuConfigurationForRowAt: indexPath, point: point)
-//    }
-//
-//    func tableView(_ tableView: UITableView, previewForHighlightingContextMenuWithConfiguration configuration: UIContextMenuConfiguration) -> UITargetedPreview? {
-//        return handleTableView(tableView, previewForDismissingContextMenuWithConfiguration: configuration)
-//    }
-//
-//    func tableView(_ tableView: UITableView, previewForDismissingContextMenuWithConfiguration configuration: UIContextMenuConfiguration) -> UITargetedPreview? {
-//        return handleTableView(tableView, previewForDismissingContextMenuWithConfiguration: configuration)
-//    }
-//
-//    func tableView(_ tableView: UITableView, willPerformPreviewActionForMenuWith configuration: UIContextMenuConfiguration, animator: UIContextMenuInteractionCommitAnimating) {
-//        handleTableView(tableView, willPerformPreviewActionForMenuWith: configuration, animator: animator)
-//    }
 
 }
 
-//// MARK: - TimelineMiddleLoaderTableViewCellDelegate
-//extension HomeTimelineViewController: TimelineMiddleLoaderTableViewCellDelegate {
-//
-//    func configure(cell: TimelineMiddleLoaderTableViewCell, upperTimelineIndexObjectID: NSManagedObjectID) {
-//        viewModel.loadMiddleSateMachineList
-//            .receive(on: DispatchQueue.main)
-//            .sink { [weak self] ids in
-//                guard let self = self else { return }
-//                if let stateMachine = ids[upperTimelineIndexObjectID] {
-//                    guard let state = stateMachine.currentState else {
-//                        assertionFailure()
-//                        return
-//                    }
-//
-//                    // make success state same as loading due to snapshot updating delay
-//                    let isLoading = state is HomeTimelineViewModel.LoadMiddleState.Loading || state is HomeTimelineViewModel.LoadMiddleState.Success
-//                    cell.loadMoreButton.isHidden = isLoading
-//                    if isLoading {
-//                        cell.activityIndicatorView.startAnimating()
-//                    } else {
-//                        cell.activityIndicatorView.stopAnimating()
-//                    }
-//                } else {
-//                    cell.loadMoreButton.isHidden = false
-//                    cell.activityIndicatorView.stopAnimating()
-//                }
-//            }
-//            .store(in: &cell.disposeBag)
-//
-//        var dict = viewModel.loadMiddleSateMachineList.value
-//        if let _ = dict[upperTimelineIndexObjectID] {
-//            // do nothing
-//        } else {
-//            let stateMachine = GKStateMachine(states: [
-//                HomeTimelineViewModel.LoadMiddleState.Initial(viewModel: viewModel, upperTimelineIndexObjectID: upperTimelineIndexObjectID),
-//                HomeTimelineViewModel.LoadMiddleState.Loading(viewModel: viewModel, upperTimelineIndexObjectID: upperTimelineIndexObjectID),
-//                HomeTimelineViewModel.LoadMiddleState.Fail(viewModel: viewModel, upperTimelineIndexObjectID: upperTimelineIndexObjectID),
-//                HomeTimelineViewModel.LoadMiddleState.Success(viewModel: viewModel, upperTimelineIndexObjectID: upperTimelineIndexObjectID),
-//            ])
-//            stateMachine.enter(HomeTimelineViewModel.LoadMiddleState.Initial.self)
-//            dict[upperTimelineIndexObjectID] = stateMachine
-//            viewModel.loadMiddleSateMachineList.value = dict
-//        }
-//    }
-//
-//    func timelineMiddleLoaderTableViewCell(_ cell: TimelineMiddleLoaderTableViewCell, loadMoreButtonDidPressed button: UIButton) {
-//        guard let diffableDataSource = viewModel.diffableDataSource else { return }
-//        guard let indexPath = tableView.indexPath(for: cell) else { return }
-//        guard let item = diffableDataSource.itemIdentifier(for: indexPath) else { return }
-//
-//        switch item {
-//        case .middleLoader(let upper):
-//            guard let stateMachine = viewModel.loadMiddleSateMachineList.value[upper] else {
-//                assertionFailure()
-//                return
-//            }
-//            stateMachine.enter(HomeTimelineViewModel.LoadMiddleState.Loading.self)
-//        default:
-//            assertionFailure()
-//        }
-//    }
-//}
+// MARK: - ScrollViewContainer
+extension HomeTimelineViewController: ScrollViewContainer {
 
-//// MARK: - ScrollViewContainer
-//extension HomeTimelineViewController: ScrollViewContainer {
-//
-//    var scrollView: UIScrollView { return tableView }
-//
-//    func scrollToTop(animated: Bool) {
-//        if scrollView.contentOffset.y < scrollView.frame.height,
-//           viewModel.loadLatestStateMachine.canEnterState(HomeTimelineViewModel.LoadLatestState.Loading.self),
-//           (scrollView.contentOffset.y + scrollView.adjustedContentInset.top) == 0.0,
-//           !refreshControl.isRefreshing {
-//            scrollView.scrollRectToVisible(CGRect(origin: CGPoint(x: 0, y: -refreshControl.frame.height), size: CGSize(width: 1, height: 1)), animated: animated)
-//            DispatchQueue.main.async { [weak self] in
-//                guard let self = self else { return }
-//                self.refreshControl.beginRefreshing()
-//                self.refreshControl.sendActions(for: .valueChanged)
-//            }
-//        } else {
-//            let indexPath = IndexPath(row: 0, section: 0)
-//            guard viewModel.diffableDataSource?.itemIdentifier(for: indexPath) != nil else { return }
-//            tableView.scrollToRow(at: indexPath, at: .top, animated: true)
-//        }
-//    }
-//
-//}
+    var scrollView: UIScrollView { return tableView }
+
+    func scrollToTop(animated: Bool) {
+        if scrollView.contentOffset.y < scrollView.frame.height,
+           !viewModel.isLoadingLatest,
+           (scrollView.contentOffset.y + scrollView.adjustedContentInset.top) == 0.0,
+           !refreshControl.isRefreshing {
+            scrollView.scrollRectToVisible(CGRect(origin: CGPoint(x: 0, y: -refreshControl.frame.height), size: CGSize(width: 1, height: 1)), animated: animated)
+            DispatchQueue.main.async { [weak self] in
+                guard let self = self else { return }
+                self.refreshControl.beginRefreshing()
+                self.refreshControl.sendActions(for: .valueChanged)
+            }
+        } else {
+            let indexPath = IndexPath(row: 0, section: 0)
+            guard viewModel.diffableDataSource?.itemIdentifier(for: indexPath) != nil else { return }
+            tableView.scrollToRow(at: indexPath, at: .top, animated: true)
+        }
+    }
+
+}
 
 // MARK: - StatusViewTableViewCellDelegate
 extension HomeTimelineViewController: StatusViewTableViewCellDelegate { }

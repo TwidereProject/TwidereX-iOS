@@ -32,8 +32,10 @@ extension MastodonEmojiService {
                 let viewModel = EmojiViewModel(domain: domain, service: self)
                 _emojiViewModel = viewModel
                 
-                // trigger loading
-                viewModel.stateMachine.enter(EmojiViewModel.State.Loading.self)
+                Task {
+                    // trigger loading
+                    await viewModel.stateMachine.enter(EmojiViewModel.State.Loading.self)                    
+                }
             }
         }
         return _emojiViewModel

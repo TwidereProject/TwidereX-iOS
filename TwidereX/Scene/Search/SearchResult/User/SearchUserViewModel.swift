@@ -30,7 +30,7 @@ final class SearchUserViewModel {
 
     // output
     var diffableDataSource: UITableViewDiffableDataSource<UserSection, UserItem>?
-    private(set) lazy var stateMachine: GKStateMachine = {
+    @MainActor private(set) lazy var stateMachine: GKStateMachine = {
         let stateMachine = GKStateMachine(states: [
             State.Initial(viewModel: self),
             State.Idle(viewModel: self),
@@ -54,7 +54,9 @@ final class SearchUserViewModel {
             .sink { [weak self] searchText in
                 guard let self = self else { return }
                 self.logger.debug("\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): search \(searchText)")
-                self.stateMachine.enter(SearchUserViewModel.State.Reset.self)
+                Task {
+                    await self.stateMachine.enter(SearchUserViewModel.State.Reset.self)                    
+                }
             }
             .store(in: &disposeBag)
         

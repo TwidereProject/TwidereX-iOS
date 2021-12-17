@@ -19,12 +19,23 @@ enum DataSourceItem: Hashable {
 
 extension DataSourceItem {
     struct Source {
+        let collectionViewCell: UICollectionViewCell?
         let tableViewCell: UITableViewCell?
         let indexPath: IndexPath?
+        
+        internal init(
+            collectionViewCell: UICollectionViewCell? = nil,
+            tableViewCell: UITableViewCell? = nil,
+            indexPath: IndexPath? = nil
+        ) {
+            self.collectionViewCell = collectionViewCell
+            self.tableViewCell = tableViewCell
+            self.indexPath = indexPath
+        }
     }
 }
 
 protocol DataSourceProvider: NeedsDependency & UIViewController {
-    var logger: Logger { get }
+    var logger: Logger { get } 
     func item(from source: DataSourceItem.Source) async -> DataSourceItem?
 }

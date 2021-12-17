@@ -6,11 +6,13 @@
 //  Copyright © 2021 Twidere. All rights reserved.
 //
 
+import os.log
 import UIKit
 import AppShared
 import TwidereCore
 import TwidereUI
 import TwidereComposeUI
+import SwiftMessages
 
 extension DataSourceFacade {
     @MainActor
@@ -77,102 +79,199 @@ extension DataSourceFacade {
 }
 
 extension DataSourceFacade {
-//    struct StatusMenuContext {
-//        let text: String
-//        let url: String
-//    }
-//
-//    static func createMenu(
-//        dependency: NeedsDependency,
-//        status: StatusRecord,
-//        button: UIButton
-//    ) -> UIMenu {
-//        var children: [UIMenuElement] = [
-//            UIAction(
-//                title: L10n.Common.Controls.Status.Actions.copyText.capitalized,
-//                image: UIImage(systemName: "doc.on.doc"),
-//                identifier: nil,
-//                discoverabilityTitle: nil,
-//                attributes: [],
-//                state: .off
-//            ) { [weak dependency] _ in
-//                guard let dependency = dependency else { return }
-//                Task {
-//                    let _text: String? = await dependency.context.managedObjectContext.perform {
-//                        guard let object = status.object(in: dependency.context.managedObjectContext) else { return nil }
-//                        return object.plaintextContent
-//                    }
-//                    guard let text = _text else { return }
-//                    UIPasteboard.general.string = text
-//                }
-//            },
-//            UIAction(
-//                title: L10n.Common.Controls.Status.Actions.copyLink.capitalized,
-//                image: UIImage(systemName: "link"),
-//                identifier: nil,
-//                discoverabilityTitle: nil,
-//                attributes: [],
-//                state: .off
-//            ) { [weak dependency] _ in
-//                guard let dependency = dependency else { return }
-//                Task {
-//                    let _url: URL? = await dependency.context.managedObjectContext.perform {
-//                        guard let object = status.object(in: dependency.context.managedObjectContext) else { return nil }
-//                        return object.statusURL
-//                    }
-//                    guard let url = _url else { return }
-//                    UIPasteboard.general.string = url.absoluteString
-//                }
-//            },
-//            UIAction(
-//                title: L10n.Common.Controls.Status.Actions.shareLink.capitalized,
-//                image: UIImage(systemName: "square.and.arrow.up"),
-//                identifier: nil,
-//                discoverabilityTitle: nil,
-//                attributes: [],
-//                state: .off
-//            ) { [weak dependency, weak button] _ in
-//                guard let sender = button else { return }
-//                guard let dependency = dependency else { return }
-//                Task {
-//                    let activityViewController = await DataSourceFacade.createActivityViewController(
-//                        dependency: dependency,
-//                        status: status
-//                    )
-//                    await dependency.coordinator.present(
-//                        scene: .activityViewController(activityViewController: activityViewController, sourceView: sender),
-//                        from: nil,
-//                        transition: .activityViewControllerPresent(animated: true, completion: nil)
-//                    )
-//                }
-//            }
-//        ]
-//
-////        if let activeTwitterAuthenticationBox = dependency.context.authenticationService.activeTwitterAuthenticationBox.value {
-////            let activeTwitterUserID = activeTwitterAuthenticationBox.twitterUserID
-////            if tweet.author.id == activeTwitterUserID || tweet.retweet?.author.id == activeTwitterUserID {
-////                let deleteTweetAction = UIAction(title: L10n.Common.Controls.Actions.confirm, image: nil, identifier: nil, discoverabilityTitle: nil, attributes: .destructive, state: .off) { [weak dependency] _ in
-////                    guard let dependency = dependency else { return }
-////                    guard let activeTwitterAuthenticationBox = dependency.context.authenticationService.activeTwitterAuthenticationBox.value else {
-////                        return
-////                    }
-////                    dependency.context.apiService.delete(
-////                        tweetObjectID: tweet.objectID,
-////                        twitterAuthenticationBox: activeTwitterAuthenticationBox
-////                    )
-////                    .sink { completion in
-////
-////                    } receiveValue: { response in
-////
-////                    }
-////                    .store(in: &dependency.context.disposeBag)
-////                }
-////                let deleteTweetMenu = UIMenu(title: L10n.Common.Controls.Status.Actions.deleteTweet.capitalized, image: UIImage(systemName: "trash"), identifier: nil, options: .destructive, children: [deleteTweetAction])
-////                children.append(deleteTweetMenu)
-////            }
-////        }
-//
-//        return UIMenu(title: "", options: [], children: children)
-//    }
 
+    static func responseToExpandContentAction(
+        provider: DataSourceProvider,
+        target: StatusTarget,
+        status: StatusRecord
+    ) async throws {
+        let _redirectRecord = await DataSourceFacade.status(
+            managedObjectContext: provider.context.managedObjectContext,
+            status: status,
+            target: target
+        )
+        guard let redirectRecord = _redirectRecord else { return }
+        
+        try await responseToExpandContentAction(
+            provider: provider,
+            status: redirectRecord
+        )
+    }
+    
+    @MainActor
+    static func responseToExpandContentAction(
+        provider: DataSourceProvider,
+        status: StatusRecord
+    ) async throws {
+        try await provider.context.backgroundManagedObjectContext.performChanges {
+            guard let object = status.object(in: provider.context.managedObjectContext) else { return }
+            switch object {
+            case .twitter:
+                break
+            case .mastodon(let status):
+                status.update(isContentReveal: !status.isContentReveal)
+            }
+        }
+    }
+    
+}
+
+extension DataSourceFacade {
+
+    static func responseToToggleMediaSensitiveAction(
+        provider: DataSourceProvider,
+        target: StatusTarget,
+        status: StatusRecord
+    ) async throws {
+        let _redirectRecord = await DataSourceFacade.status(
+            managedObjectContext: provider.context.managedObjectContext,
+            status: status,
+            target: target
+        )
+        guard let redirectRecord = _redirectRecord else { return }
+        
+        try await responseToToggleMediaSensitiveAction(
+            provider: provider,
+            status: redirectRecord
+        )
+    }
+    
+    @MainActor
+    static func responseToToggleMediaSensitiveAction(
+        provider: DataSourceProvider,
+        status: StatusRecord
+    ) async throws {
+        try await provider.context.backgroundManagedObjectContext.performChanges {
+            guard let object = status.object(in: provider.context.managedObjectContext) else { return }
+            switch object {
+            case .twitter:
+                break
+            case .mastodon(let status):
+                status.update(isMediaSensitiveToggled: !status.isMediaSensitiveToggled)
+            }
+        }
+    }
+    
+}
+
+extension DataSourceFacade {
+
+    static func responseToRemoveStatusAction(
+        provider: DataSourceProvider,
+        target: StatusTarget,
+        status: StatusRecord,
+        authenticationContext: AuthenticationContext
+    ) async throws {
+        let _redirectRecord = await DataSourceFacade.status(
+            managedObjectContext: provider.context.managedObjectContext,
+            status: status,
+            target: target
+        )
+        guard let redirectRecord = _redirectRecord else { return }
+        
+        try await responseToRemoveStatusAction(
+            provider: provider,
+            status: redirectRecord,
+            authenticationContext: authenticationContext
+        )
+    }
+    
+    @MainActor
+    static func responseToRemoveStatusAction(
+        provider: DataSourceProvider,
+        status: StatusRecord,
+        authenticationContext: AuthenticationContext
+    ) async throws {
+        let title: String = {
+            switch status {
+            case .twitter:      return L10n.Common.Alerts.DeleteTweetConfirm.title
+            case .mastodon:     return L10n.Common.Alerts.DeleteTootConfirm.title
+            }
+        }()
+        let message: String = {
+            switch status {
+            case .twitter:      return L10n.Common.Alerts.DeleteTweetConfirm.message
+            case .mastodon:     return L10n.Common.Alerts.DeleteTootConfirm.message
+            }
+        }()
+        let alertController = UIAlertController(
+            title: title,
+            message: message,
+            preferredStyle: .alert
+        )
+        let deleteAction = UIAlertAction(
+            title: L10n.Common.Controls.Actions.delete,
+            style: .destructive
+        ) { [weak provider] _ in
+            guard let provider = provider else { return }
+            Task {
+                do {
+                    try await provider.context.apiService.deleteStatus(
+                        record: status,
+                        authenticationContext: authenticationContext
+                    )
+                    let title: String = {
+                        switch status {
+                        case .twitter:      return L10n.Common.Alerts.TweetDeleted.title
+                        case .mastodon:     return L10n.Common.Alerts.TootDeleted.title
+                        }
+                    }()
+                    presentStatusDeleteSuccessNotification(title: title)
+                } catch {
+                    let title: String = {
+                        switch status {
+                        case .twitter:      return L10n.Common.Alerts.FailedToDeleteTweet.title
+                        case .mastodon:     return L10n.Common.Alerts.FailedToDeleteToot.title
+                        }
+                    }()
+                    let message: String = {
+                        switch status {
+                        case .twitter:      return L10n.Common.Alerts.FailedToDeleteTweet.message
+                        case .mastodon:     return L10n.Common.Alerts.FailedToDeleteToot.message
+                        }
+                    }()
+                    presentStatusDeleteFailureNotification(title: title, message: message, error: error)
+                }
+            }
+        }
+        alertController.addAction(deleteAction)
+        let cancelAction = UIAlertAction.cancel
+        alertController.addAction(cancelAction)
+        provider.coordinator.present(
+            scene: .alertController(alertController: alertController),
+            from: provider,
+            transition: .alertController(animated: true, completion: nil)
+        )
+    }
+    
+    @MainActor
+    private static func presentStatusDeleteSuccessNotification(title: String) {
+        os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: delete status success", ((#file as NSString).lastPathComponent), #line, #function)
+        var config = SwiftMessages.defaultConfig
+        config.duration = .seconds(seconds: 3)
+        config.interactiveHide = true
+        let bannerView = NotificationBannerView()
+        bannerView.configure(style: .success)
+        bannerView.titleLabel.text = title
+        bannerView.messageLabel.isHidden = true
+        SwiftMessages.show(config: config, view: bannerView)
+    }
+    
+    @MainActor
+    public static func presentStatusDeleteFailureNotification(
+        title: String,
+        message: String,
+        error: Error
+    ) {
+        os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: delete status fail: %s", ((#file as NSString).lastPathComponent), #line, #function, error.localizedDescription)
+        var config = SwiftMessages.defaultConfig
+        config.duration = .seconds(seconds: 3)
+        config.interactiveHide = true
+        let bannerView = NotificationBannerView()
+        bannerView.configure(style: .warning)
+        bannerView.titleLabel.text = title
+        bannerView.messageLabel.text = message
+        SwiftMessages.show(config: config, view: bannerView)
+    }
+    
 }

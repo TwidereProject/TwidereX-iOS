@@ -51,7 +51,7 @@ extension HashtagTimelineViewModel {
                         return snapshot
                     }()
 
-                    if let currentState = self.stateMachine.currentState {
+                    if let currentState = await self.stateMachine.currentState {
                         switch currentState {
                         case is State.NoMore:
                             break

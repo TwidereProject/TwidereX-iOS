@@ -187,8 +187,20 @@ extension NotificationTimelineViewModel {
                 )
                 
             case (.mastodonNotification(let mastodonNotification), .mastodon(let authenticationContext)):
-                // TODO:
-                assertionFailure()
+                _ = try await context.apiService.mastodonNotificationTimeline(
+                    query: Mastodon.API.Notification.NotificationsQuery(
+                        maxID: mastodonNotification.id,
+                        excludeTypes: {
+                            switch scope {
+                            case .all:
+                                return nil
+                            case .mentions:
+                                return [.follow, .followRequest, .reblog, .favourite, .poll]
+                            }
+                        }()
+                    ),
+                    authenticationContext: authenticationContext
+                )
             default:
                 assertionFailure()
             }

@@ -12,6 +12,7 @@ import TwidereCore
 
 public protocol StatusToolbarDelegate: AnyObject {
     func statusToolbar(_ statusToolbar: StatusToolbar, actionDidPressed action: StatusToolbar.Action, button: UIButton)
+    func statusToolbar(_ statusToolbar: StatusToolbar, menuActionDidPressed action: StatusToolbar.MenuAction, menuButton button: UIButton)
 }
 
 public final class StatusToolbar: UIView {
@@ -144,6 +145,10 @@ extension StatusToolbar {
         case like
         case menu
     }
+    
+    public enum MenuAction: String, CaseIterable {
+        case remove
+    }
 
     public enum Style {
         case inline
@@ -226,9 +231,13 @@ extension StatusToolbar {
         let text = metricText(count: count)
         switch style {
         case .inline:
+            let image: UIImage = isLike ? Asset.Health.heartFillMini.image : Asset.Health.heartMini.image
+            likeButton.setImage(image.withRenderingMode(.alwaysTemplate), for: .normal)
             likeButton.setTitle(text, for: .normal)
         case .plain:
-            break
+            let image: UIImage = isLike ? Asset.Health.heartFill.image : Asset.Health.heart.image
+            likeButton.setImage(image.withRenderingMode(.alwaysTemplate), for: .normal)
+            // no title
         case .none:
             break
         }
@@ -284,10 +293,24 @@ extension StatusToolbar {
                 }
             ]
             
+            if menuContext.displayDeleteAction {
+                let removeAction = UIAction(
+                    title: L10n.Common.Controls.Actions.delete,
+                    image: UIImage(systemName: "minus.circle"),
+                    identifier: nil,
+                    discoverabilityTitle: nil,
+                    attributes: .destructive,
+                    state: .off
+                ) { [weak self] _ in
+                    guard let self = self else { return }
+                    self.delegate?.statusToolbar(self, menuActionDidPressed: .remove, menuButton: self.menuButton)
+                }
+                children.append(removeAction)
+            }
+            
             return UIMenu(title: "", options: [], children: children)
         }()
         
-        // TODO: add delete action
         
         menuButton.showsMenuAsPrimaryAction = true
     }

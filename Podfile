@@ -22,7 +22,7 @@ target 'TwidereX' do
   pod 'SwiftGen', '~> 6.3.0'
   pod 'Firebase/Analytics', '~> 8.2.0' 
   pod 'Firebase/Crashlytics', '~> 8.2.0'
-  pod 'Sourcery'
+  pod 'Sourcery', '~> 1.6.1'
 
   # Debug
   pod 'FLEX', '~> 4.4.0', :configurations => ['Debug']

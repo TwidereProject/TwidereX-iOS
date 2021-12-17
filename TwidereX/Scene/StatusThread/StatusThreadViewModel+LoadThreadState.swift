@@ -22,6 +22,7 @@ extension StatusThreadViewModel {
         }
         
         override func didEnter(from previousState: GKState?) {
+            super.didEnter(from: previousState)
             os_log("%{public}s[%{public}ld], %{public}s: enter %s, previous: %s", ((#file as NSString).lastPathComponent), #line, #function, name, (previousState as? NamingState)?.name ?? previousState?.description ?? "nil")
             // guard let viewModel = viewModel, let stateMachine = stateMachine else { return }
         }
@@ -96,7 +97,7 @@ extension StatusThreadViewModel.LoadThreadState {
             if twitterConversation.conversationID == nil {
                 // fetch conversationID if not exist
                 guard let authenticationContext = viewModel.context.authenticationService.activeAuthenticationContext.value?.twitterAuthenticationContext else {
-                    stateMachine.enter(PrepareFail.self)
+                    await enter(state: PrepareFail.self)
                     return
                 }
                 do {
@@ -107,7 +108,7 @@ extension StatusThreadViewModel.LoadThreadState {
                     )
                     guard let conversationID = response.value.data?.first?.conversationID else {
                         assertionFailure()
-                        stateMachine.enter(PrepareFail.self)
+                        await enter(state: PrepareFail.self)
                         return
                     }
                     logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): fetch conversationID: \(conversationID)")
@@ -119,18 +120,18 @@ extension StatusThreadViewModel.LoadThreadState {
                         conversationID: conversationID
                     )
                     viewModel.threadContext.value = .twitter(newTwitterConversation)
-                    stateMachine.enter(Idle.self)
-                    stateMachine.enter(Loading.self)
+                    await enter(state: Idle.self)
+                    await enter(state: Loading.self)
                 } catch {
                     logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): fetch conversationID failure: \(error.localizedDescription)")
-                    stateMachine.enter(PrepareFail.self)
+                    await enter(state: PrepareFail.self)
                 }
             } else {
                 // use cached conversationID
                 logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): fetch cached conversationID: \(twitterConversation.conversationID ?? "<nil>")")
                 viewModel.threadContext.value = .twitter(twitterConversation)
-                stateMachine.enter(Idle.self)
-                stateMachine.enter(Loading.self)
+                await enter(state: Idle.self)
+                await enter(state: Loading.self)
             }
         }
         
@@ -152,14 +153,19 @@ extension StatusThreadViewModel.LoadThreadState {
             }
             
             guard let mastodonContext = _mastodonContext else {
-                stateMachine.enter(PrepareFail.self)
+                await enter(state: PrepareFail.self)
                 return
             }
             
             logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): fetch cached contextID: \(mastodonContext.contextID)")
             viewModel.threadContext.value = .mastodon(mastodonContext)
-            stateMachine.enter(Idle.self)
-            stateMachine.enter(Loading.self)
+            await enter(state: Idle.self)
+            await enter(state: Loading.self)
+        }
+        
+        @MainActor
+        func enter(state: StatusThreadViewModel.LoadThreadState.Type) {
+            stateMachine?.enter(state)
         }
         
     }   // end class Prepare { … }
@@ -244,7 +250,7 @@ extension StatusThreadViewModel.LoadThreadState {
             guard let authenticationContext = viewModel.context.authenticationService.activeAuthenticationContext.value?.twitterAuthenticationContext,
                   let conversationID = twitterConversation.conversationID
             else {
-                stateMachine.enter(Fail.self)
+                await enter(state: Fail.self)
                 return []
             }
             
@@ -280,14 +286,14 @@ extension StatusThreadViewModel.LoadThreadState {
                 }
 
                 if hasMore {
-                    stateMachine.enter(Idle.self)
+                    await enter(state: Idle.self)
                 } else {
-                    stateMachine.enter(NoMore.self)
+                    await enter(state: NoMore.self)
                 }
                 
                 return nodes
             } catch {
-                stateMachine.enter(Fail.self)
+                await enter(state: Fail.self)
                 return []
             }
         }
@@ -332,7 +338,7 @@ extension StatusThreadViewModel.LoadThreadState {
             }
             guard let authenticationContext = viewModel.context.authenticationService.activeAuthenticationContext.value?.mastodonAuthenticationContext
             else {
-                stateMachine.enter(Fail.self)
+                await enter(state: Fail.self)
                 return MastodonContextResponse(
                     domain: "",
                     ancestorNodes: [],
@@ -355,7 +361,7 @@ extension StatusThreadViewModel.LoadThreadState {
                 )
 
                 // update state
-                stateMachine.enter(NoMore.self)
+                await enter(state: NoMore.self)
                 
                 return MastodonContextResponse(
                     domain: mastodonContext.domain,
@@ -363,13 +369,18 @@ extension StatusThreadViewModel.LoadThreadState {
                     descendantNodes: descendantNodes
                 )
             } catch {
-                stateMachine.enter(Fail.self)
+                await enter(state: Fail.self)
                 return MastodonContextResponse(
                     domain: "",
                     ancestorNodes: [],
                     descendantNodes: []
                 )
             }
+        }
+        
+        @MainActor
+        func enter(state: StatusThreadViewModel.LoadThreadState.Type) {
+            stateMachine?.enter(state)
         }
     }
     

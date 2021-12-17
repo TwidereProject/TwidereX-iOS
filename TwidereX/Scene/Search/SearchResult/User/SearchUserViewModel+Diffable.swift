@@ -14,7 +14,7 @@ import AlamofireImage
 import Kingfisher
 
 extension SearchUserViewModel {
-    func setupDiffableDataSource(
+    @MainActor func setupDiffableDataSource(
         tableView: UITableView,
         userTableViewCellDelegate: UserTableViewCellDelegate
     ) {
@@ -32,7 +32,7 @@ extension SearchUserViewModel {
         diffableDataSource?.apply(snapshot)
         
         userRecordFetchedResultController.records
-            .receive(on: DispatchQueue.main)
+            .receive(on: DispatchQueue.global())
             .sink { [weak self] records in
                 guard let self = self else { return }
                 guard let _ = self.diffableDataSource else { return }

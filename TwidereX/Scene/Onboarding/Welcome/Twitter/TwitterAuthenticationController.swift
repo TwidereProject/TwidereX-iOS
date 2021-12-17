@@ -48,12 +48,10 @@ final class TwitterAuthenticationController: NeedsDependency {
         self.coordinator = coordinator
         self.appSecret = appSecret
         
-        Task {
-            await setup(
-                authenticateURL: authenticateURL,
-                requestTokenExchange: requestTokenExchange
-            )
-        }
+        setup(
+            authenticateURL: authenticateURL,
+            requestTokenExchange: requestTokenExchange
+        )
     }
     
     deinit {
@@ -64,17 +62,22 @@ final class TwitterAuthenticationController: NeedsDependency {
 
 extension TwitterAuthenticationController {
 
-    @MainActor
     private func setup(
         authenticateURL: URL,
         requestTokenExchange: Twitter.API.OAuth.OAuthRequestTokenResponseExchange
-    ) async {
+    ) {
         switch requestTokenExchange {
             // use PIN-based OAuth via WKWebView (when set callback as "oob")
         case .pin(let response):
             let twitterPinBasedAuthenticationViewModel = TwitterPinBasedAuthenticationViewModel(authenticateURL: authenticateURL)
             setupPINAuthenticate(requestTokenResponse: response, appSecret: appSecret, pinCodePublisher: twitterPinBasedAuthenticationViewModel.pinCodePublisher)
-            twitterPinBasedAuthenticationViewController = coordinator.present(scene: .twitterPinBasedAuthentication(viewModel: twitterPinBasedAuthenticationViewModel), from: nil, transition: .modal(animated: true, completion: nil))
+            Task {
+                await twitterPinBasedAuthenticationViewController = coordinator.present(
+                    scene: .twitterPinBasedAuthentication(viewModel: twitterPinBasedAuthenticationViewModel),
+                    from: nil,
+                    transition: .modal(animated: true, completion: nil)
+                )
+            }
             // use standard OAuth via system AuthenticationServices
         case .custom(_, let append):
             setupCustomAuthenticate(authenticateURL: authenticateURL, append: append)
@@ -90,7 +93,10 @@ extension TwitterAuthenticationController {
         authenticateURL: URL,
         append: Twitter.API.OAuth.CustomRequestTokenResponseAppend
     ) {
-        authenticationSession = ASWebAuthenticationSession(url: authenticateURL, callbackURLScheme: AppCommon.scheme) { [weak self] callback, error in
+        authenticationSession = ASWebAuthenticationSession(
+            url: authenticateURL,
+            callbackURLScheme: AppCommon.scheme
+        ) { [weak self] callback, error in
             guard let self = self else { return }
             os_log("%{public}s[%{public}ld], %{public}s: callback: %s, error: %s", ((#file as NSString).lastPathComponent), #line, #function, callback?.debugDescription ?? "<nil>", error.debugDescription)
             

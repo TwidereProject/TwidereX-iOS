@@ -11,8 +11,12 @@ import UIKit
 import Photos
 import Alamofire
 import AlamofireImage
+import SwiftMessages
 
 public final class PhotoLibraryService: NSObject {
+    
+    let logger = Logger(subsystem: "PhotoLibraryService", category: "Serivce")
+    
     public override init() {
         super.init()
     }
@@ -54,6 +58,7 @@ extension PhotoLibraryService {
     func data(from source: Source) async throws -> Data? {
         switch source {
         case .remote(let url):
+            logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): download media: \(url.absoluteString)")
             let data: Data = try await withCheckedThrowingContinuation { continuation in
                 AF.request(url).responseData { response in
                     switch response.result {
@@ -111,38 +116,5 @@ extension PhotoLibraryService {
             throw error
         }
     }
-    
-//    @objc private func image(_ image: UIImage, didFinishSavingWithError error: Error?, contextInfo: UnsafeRawPointer) {
-//        let feedbackGenerator = UINotificationFeedbackGenerator()
-//        feedbackGenerator.prepare()
-//
-//        if let error = error {
-//            os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: save image fail: %s", ((#file as NSString).lastPathComponent), #line, #function, error.localizedDescription)
-//            var config = SwiftMessages.defaultConfig
-//            config.duration = .seconds(seconds: 3)
-//            config.interactiveHide = true
-//            let bannerView = NotificationBannerView()
-//            bannerView.configure(for: .warning)
-//            bannerView.titleLabel.text = L10n.Common.Alerts.PhotoSaveFail.title
-//            bannerView.messageLabel.text = L10n.Common.Alerts.PhotoSaveFail.message
-//            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-//                SwiftMessages.show(config: config, view: bannerView)
-//                feedbackGenerator.notificationOccurred(.error)
-//            }
-//        } else {
-//            os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: save image success", ((#file as NSString).lastPathComponent), #line, #function)
-//            var config = SwiftMessages.defaultConfig
-//            config.duration = .seconds(seconds: 3)
-//            config.interactiveHide = true
-//            let bannerView = NotificationBannerView()
-//            bannerView.configure(for: .normal)
-//            bannerView.titleLabel.text = L10n.Common.Alerts.PhotoSaved.title
-//            bannerView.messageLabel.isHidden = true
-//            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-//                SwiftMessages.show(config: config, view: bannerView)
-//                feedbackGenerator.notificationOccurred(.success)
-//            }
-//        }
-//    }
     
 }

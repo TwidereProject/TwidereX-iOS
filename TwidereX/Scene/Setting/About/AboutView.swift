@@ -7,6 +7,7 @@
 //
 
 import SwiftUI
+import TwidereAsset
 
 enum AboutEntryType: Identifiable, Hashable, CaseIterable {
     
@@ -22,7 +23,7 @@ enum AboutEntryType: Identifiable, Hashable, CaseIterable {
         case .github:           return "GitHub"
         case .twitter:          return "Twitter"
         case .license:          return "License"
-        case .privacyPolicy:   return "Privacy Policy"
+        case .privacyPolicy:    return "Privacy Policy"
         }
     }
     
@@ -35,7 +36,8 @@ struct AboutView: View {
     var body: some View {
         VStack {
             VStack {
-                Image(uiImage: Asset.Scene.Welcome.twidere.image)
+                Image(Asset.Scene.About.twidereLarge.name, bundle: TwidereAsset.bundle)    // needs set bundle for package asset
+                    .renderingMode(.original)
                     .padding(44)
                 Text("Twidere X")
                     .font(.headline)
@@ -51,13 +53,15 @@ struct AboutView: View {
                 Button(action: {
                     context.viewStateStore.aboutView.aboutEntryPublisher.send(.twitter)
                 }, label: {
-                    Image(uiImage: Asset.Logo.twitter.image.withRenderingMode(.alwaysTemplate))
+                    Image(Asset.Logo.twitterCircle.name, bundle: TwidereAsset.bundle)
+                        .renderingMode(.template)
                         .foregroundColor(.secondary)
                 })
                 Button(action: {
                     context.viewStateStore.aboutView.aboutEntryPublisher.send(.github)
                 }, label: {
-                    Image(uiImage: Asset.Logo.githubCircle.image.withRenderingMode(.alwaysTemplate))
+                    Image(Asset.Logo.githubCircle.name, bundle: TwidereAsset.bundle)
+                        .renderingMode(.template)
                         .foregroundColor(.secondary)
                 })
             }

@@ -44,6 +44,7 @@ extension StatusTableViewCell {
             let contentMaxLayoutWidth = statusView.contentMaxLayoutWidth
             statusView.quoteStatusView?.frame.size.width = contentMaxLayoutWidth
             // set preferredMaxLayoutWidth for content
+            statusView.spoilerContentTextView.preferredMaxLayoutWidth = contentMaxLayoutWidth
             statusView.contentTextView.preferredMaxLayoutWidth = contentMaxLayoutWidth
             statusView.quoteStatusView?.contentTextView.preferredMaxLayoutWidth = statusView.quoteStatusView?.contentMaxLayoutWidth
             logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): did layout for new cell")
@@ -82,6 +83,18 @@ extension StatusTableViewCell {
             )
             configureSeparator(style: .inset)
         }
+        
+        
+        statusView.viewModel.contentRevealChangePublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [weak tableView] _ in
+                guard let tableView = tableView else { return }
+                UIView.setAnimationsEnabled(false)
+                tableView.beginUpdates()
+                tableView.endUpdates()
+                UIView.setAnimationsEnabled(true)
+            }
+            .store(in: &disposeBag)
         
         self.delegate = delegate
     }

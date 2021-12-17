@@ -24,18 +24,39 @@ extension StatusView {
         var observations = Set<NSKeyValueObservation>()
         var objects = Set<NSManagedObject>()
         
+        let logger = Logger(subsystem: "StatusView", category: "ViewModel")
+        
         @Published public var platform: Platform = .none
         
         @Published public var header: Header = .none
         
+        @Published public var authorAvatarImage: UIImage?
         @Published public var authorAvatarImageURL: URL?
         @Published public var authorName: MetaContent?
         @Published public var authorUsername: String?
         
         @Published public var protected: Bool = false
         
+        @Published public var spoilerContent: MetaContent?
         @Published public var content: MetaContent?
         @Published public var mediaViewConfigurations: [MediaView.Configuration] = []
+        
+        @Published public var isContentReveal: Bool = true
+        @Published public var isMediaSensitive: Bool = false
+        @Published public var isMediaSensitiveToggled: Bool = false
+        @Published public var isMediaReveal: Bool = false
+        
+        @Published public var isMediaSensitiveSwitchable = false
+        
+        @Published public var pollItems: [PollItem] = []
+        @Published public var isVotable: Bool = false
+        @Published public var isVoting: Bool = false
+        @Published public var isVoteButtonEnabled: Bool = false
+        @Published public var voterCount: Int?
+        @Published public var voteCount = 0
+        @Published public var expireAt: Date?
+        @Published public var expired: Bool = false
+        
         @Published public var location: String?
         
         @Published public var isRepost: Bool = false
@@ -54,7 +75,16 @@ extension StatusView {
         @Published public var sharePlaintextContent: String?
         @Published public var shareStatusURL: String?
         
-       public enum Header {
+        @Published public var isDeletable = false
+        
+        let timestampUpdatePublisher = Timer.publish(every: 1.0, on: .main, in: .common)
+            .autoconnect()
+            .share()
+            .eraseToAnyPublisher()
+        
+        public let contentRevealChangePublisher = PassthroughSubject<Void, Never>()
+        
+        public enum Header {
             case none
             case repost(info: RepostInfo)
             case notification(info: NotificationHeaderInfo)
@@ -63,6 +93,15 @@ extension StatusView {
             public struct RepostInfo {
                 public let authorNameMetaContent: MetaContent
             }
+        }
+        
+        init() {
+            Publishers.CombineLatest(
+                $isMediaSensitive,
+                $isMediaSensitiveToggled
+            )
+            .map { $1 ? !$0 : $0 }
+            .assign(to: &$isMediaReveal)
         }
     }
 }
@@ -73,6 +112,7 @@ extension StatusView.ViewModel {
         bindAuthor(statusView: statusView)
         bindContent(statusView: statusView)
         bindMedia(statusView: statusView)
+        bindPoll(statusView: statusView)
         bindLocation(statusView: statusView)
         bindToolbar(statusView: statusView)
     }
@@ -102,12 +142,21 @@ extension StatusView.ViewModel {
     
     private func bindAuthor(statusView: StatusView) {
         // avatar
-        $authorAvatarImageURL
-            .sink { url in
-                let configuration = AvatarImageView.Configuration(url: url)
-                statusView.authorAvatarButton.avatarImageView.configure(configuration: configuration)
-            }
-            .store(in: &disposeBag)
+        Publishers.CombineLatest(
+            $authorAvatarImage,
+            $authorAvatarImageURL
+        )
+        .sink { image, url in
+            let configuration: AvatarImageView.Configuration = {
+                if let image = image {
+                    return AvatarImageView.Configuration(image: image)
+                } else {
+                    return AvatarImageView.Configuration(url: url)
+                }
+            }()
+            statusView.authorAvatarButton.avatarImageView.configure(configuration: configuration)
+        }
+        .store(in: &disposeBag)
         UserDefaults.shared
             .observe(\.avatarStyle, options: [.initial, .new]) { defaults, _ in
                 let avatarStyle = defaults.avatarStyle
@@ -158,11 +207,12 @@ extension StatusView.ViewModel {
             }
             .store(in: &disposeBag)
         // timestamp
-        Publishers.CombineLatest(
+        Publishers.CombineLatest3(
             $timestamp,
-            $dateTimeProvider
+            $dateTimeProvider,
+            timestampUpdatePublisher.prepend(Date()).eraseToAnyPublisher()
         )
-        .sink { timestamp, dateTimeProvider in
+        .sink { timestamp, dateTimeProvider, _ in
             statusView.timestampLabel.text = dateTimeProvider?.shortTimeAgoSinceNow(to: timestamp)
             statusView.metricsDashboardView.timestampLabel.text = {
                 let formatter = DateFormatter()
@@ -173,6 +223,72 @@ extension StatusView.ViewModel {
             }()
         }
         .store(in: &disposeBag)
+        // poll
+        let pollVoteDescription = Publishers.CombineLatest(
+            $voterCount,
+            $voteCount
+        )
+        .map { voterCount, voteCount -> String in
+            var description = ""
+            if let voterCount = voterCount {
+                description += L10n.Count.people(voterCount)
+            } else {
+                description += L10n.Count.vote(voteCount)
+            }
+            return description
+        }
+        let pollCountdownDescription = Publishers.CombineLatest3(
+            $expireAt,
+            $expired,
+            timestampUpdatePublisher.prepend(Date()).eraseToAnyPublisher()
+        )
+        .map { expireAt, expired, _ -> String? in
+            guard !expired else {
+                return L10n.Common.Controls.Status.Poll.expired
+            }
+            
+            guard let expireAt = expireAt,
+                  let timeLeft = expireAt.localizedTimeLeft
+            else {
+                return nil
+            }
+            
+            return timeLeft
+        }
+        Publishers.CombineLatest(
+            pollVoteDescription,
+            pollCountdownDescription
+        )
+        .sink { pollVoteDescription, pollCountdownDescription in
+            let description = [
+                pollVoteDescription,
+                pollCountdownDescription
+            ]
+            .compactMap { $0 }
+            .joined(separator: " · ")
+            
+            statusView.pollVoteDescriptionLabel.text = description
+        }
+        .store(in: &disposeBag)
+        Publishers.CombineLatest(
+            $isVotable,
+            $isVoting
+        )
+        .sink { isVotable, isVoting in
+            guard isVotable else {
+                statusView.pollVoteButton.isHidden = true
+                statusView.pollVoteActivityIndicatorView.isHidden = true
+                return
+            }
+            
+            statusView.pollVoteButton.isHidden = isVoting
+            statusView.pollVoteActivityIndicatorView.isHidden = !isVoting
+            statusView.pollVoteActivityIndicatorView.startAnimating()
+        }
+        .store(in: &disposeBag)
+        $isVoteButtonEnabled
+            .assign(to: \.isEnabled, on: statusView.pollVoteButton)
+            .store(in: &disposeBag)
         // dashboard
         Publishers.CombineLatest4(
             $replyCount,
@@ -209,11 +325,42 @@ extension StatusView.ViewModel {
                 statusView.contentTextView.configure(content: content)
             }
             .store(in: &disposeBag)
+        $spoilerContent
+            .sink { metaContent in
+                guard let metaContent = metaContent else {
+                    statusView.spoilerContentTextView.reset()
+                    return
+                }
+                statusView.spoilerContentTextView.configure(content: metaContent)
+                statusView.setSpoilerDisplay()
+            }
+            .store(in: &disposeBag)
+        
+        Publishers.CombineLatest(
+            $isContentReveal,
+            $spoilerContent
+        )
+        .receive(on: DispatchQueue.main)
+        .sink { [weak self] isContentReveal, spoilerContent in
+            guard let self = self else { return }
+            guard spoilerContent != nil else {
+                // ignore reveal state when no spoiler exists
+                statusView.contentTextView.isHidden = false
+                return
+            }
+            
+            statusView.contentTextView.isHidden = !isContentReveal
+            self.contentRevealChangePublisher.send()
+        }
+        .store(in: &disposeBag)
     }
     
     private func bindMedia(statusView: StatusView) {
         $mediaViewConfigurations
-            .sink { configurations in
+            .sink { [weak self] configurations in
+                guard let self = self else { return }
+                self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): configure media")
+                
                 let maxSize = CGSize(
                     width: statusView.contentMaxLayoutWidth,
                     height: statusView.contentMaxLayoutWidth
@@ -244,6 +391,37 @@ extension StatusView.ViewModel {
                 if needsDisplay {
                     statusView.setMediaDisplay()
                 }
+            }
+            .store(in: &disposeBag)
+        $isMediaReveal
+            .sink { isMediaReveal in
+                statusView.mediaGridContainerView.viewModel.isContentWarningOverlayDisplay = isMediaReveal
+            }
+            .store(in: &disposeBag)
+        $isMediaSensitiveSwitchable
+            .sink { isMediaSensitiveSwitchable in
+                statusView.mediaGridContainerView.viewModel.isSensitiveToggleButtonDisplay = isMediaSensitiveSwitchable
+            }
+            .store(in: &disposeBag)
+    }
+    
+    private func bindPoll(statusView: StatusView) {
+        $pollItems
+            .sink { items in
+                guard !items.isEmpty else { return }
+                
+                var snapshot = NSDiffableDataSourceSnapshot<PollSection, PollItem>()
+                snapshot.appendSections([.main])
+                snapshot.appendItems(items, toSection: .main)
+                statusView.pollTableViewDiffableDataSource?.applySnapshotUsingReloadData(snapshot)
+                
+                statusView.pollTableViewHeightLayoutConstraint.constant = CGFloat(items.count) * PollOptionTableViewCell.height
+                statusView.setPollDisplay()
+            }
+            .store(in: &disposeBag)
+        $isVotable
+            .sink { isVotable in
+                statusView.pollTableView.allowsSelection = isVotable
             }
             .store(in: &disposeBag)
     }
@@ -286,15 +464,17 @@ extension StatusView.ViewModel {
             statusView.toolbar.setupLike(count: count, isLike: isLike)
         }
         .store(in: &disposeBag)
-        Publishers.CombineLatest(
+        
+        Publishers.CombineLatest3(
             $sharePlaintextContent,
-            $shareStatusURL
+            $shareStatusURL,
+            $isDeletable
         )
-        .sink { sharePlaintextContent, shareStatusURL in
+        .sink { sharePlaintextContent, shareStatusURL, isDeletable in
             statusView.toolbar.setupMenu(menuContext: .init(
                 shareText: sharePlaintextContent,
                 shareLink: shareStatusURL,
-                displayDeleteAction: false
+                displayDeleteAction: isDeletable
             ))
         }
         .store(in: &disposeBag)
@@ -462,11 +642,19 @@ extension StatusView {
             urlMaximumLength: 20,
             twitterTextProvider: twitterTextProvider
         )
+        viewModel.isContentReveal = true
+        viewModel.spoilerContent = nil
         viewModel.content = metaContent
         viewModel.sharePlaintextContent = status.displayText
     }
     
     private func configureMedia(twitterStatus status: TwitterStatus) {
+        let status = status.repost ?? status
+        
+        mediaGridContainerView.viewModel.resetContentWarningOverlay()
+        viewModel.isMediaSensitive = false
+        viewModel.isMediaSensitiveToggled = false
+        viewModel.isMediaSensitiveSwitchable = false
         MediaView.configuration(twitterStatus: status)
             .assign(to: \.mediaViewConfigurations, on: viewModel)
             .store(in: &disposeBag)
@@ -527,6 +715,17 @@ extension StatusView {
         }
         .assign(to: \.isLike, on: viewModel)
         .store(in: &disposeBag)
+        
+        let authorUserID = status.author.id
+        activeAuthenticationContext
+            .map { authenticationContext in
+                guard let authenticationContext = authenticationContext?.twitterAuthenticationContext else {
+                    return false
+                }
+                return authenticationContext.userID == authorUserID
+            }
+            .assign(to: \.isDeletable, on: viewModel)
+            .store(in: &disposeBag)
     }
 }
 
@@ -543,6 +742,7 @@ extension StatusView {
         configureAuthor(mastodonStatus: status, dateTimeProvider: configurationContext.dateTimeProvider)
         configureContent(mastodonStatus: status)
         configureMedia(mastodonStatus: status)
+        configurePoll(mastodonStatus: status, activeAuthenticationContext: configurationContext.activeAuthenticationContext)
         configureToolbar(mastodonStatus: status, activeAuthenticationContext: configurationContext.activeAuthenticationContext)
     }
     
@@ -638,8 +838,8 @@ extension StatusView {
     
     private func configureContent(mastodonStatus status: MastodonStatus) {
         let status = status.repost ?? status
-        let content = MastodonContent(content: status.content, emojis: status.emojis.asDictionary)
         do {
+            let content = MastodonContent(content: status.content, emojis: status.emojis.asDictionary)
             let metaContent = try MastodonMetaContent.convert(document: content)
             viewModel.content = metaContent
             viewModel.sharePlaintextContent = metaContent.original
@@ -647,11 +847,119 @@ extension StatusView {
             assertionFailure(error.localizedDescription)
             viewModel.content = PlaintextMetaContent(string: "")
         }
+        
+        if let spoilerText = status.spoilerText, !spoilerText.isEmpty {
+            do {
+                let content = MastodonContent(content: spoilerText, emojis: status.emojis.asDictionary)
+                let metaContent = try MastodonMetaContent.convert(document: content)
+                viewModel.spoilerContent = metaContent
+            } catch {
+                assertionFailure()
+                viewModel.spoilerContent = nil
+            }
+        } else {
+            viewModel.spoilerContent = nil
+        }
+        
+        status.publisher(for: \.isContentReveal)
+            .assign(to: \.isContentReveal, on: viewModel)
+            .store(in: &disposeBag)
     }
     
     private func configureMedia(mastodonStatus status: MastodonStatus) {
+        let status = status.repost ?? status
+        
+        mediaGridContainerView.viewModel.resetContentWarningOverlay()
+        viewModel.isMediaSensitiveSwitchable = true
+        
         MediaView.configuration(mastodonStatus: status)
             .assign(to: \.mediaViewConfigurations, on: viewModel)
+            .store(in: &disposeBag)
+        
+        // set directly without delay
+        viewModel.isMediaSensitiveToggled = status.isMediaSensitiveToggled
+        viewModel.isMediaSensitive = status.isMediaSensitive
+        mediaGridContainerView.configureOverlayDisplay(
+            isDisplay: status.isMediaSensitiveToggled ? !status.isMediaSensitive : !status.isMediaSensitive,
+            animated: false
+        )
+        
+        status.publisher(for: \.isMediaSensitive)
+            .receive(on: DispatchQueue.main)
+            .assign(to: \.isMediaSensitive, on: viewModel)
+            .store(in: &disposeBag)
+        
+        status.publisher(for: \.isMediaSensitiveToggled)
+            .receive(on: DispatchQueue.main)
+            .assign(to: \.isMediaSensitiveToggled, on: viewModel)
+            .store(in: &disposeBag)
+    }
+    
+    private func configurePoll(
+        mastodonStatus status: MastodonStatus,
+        activeAuthenticationContext: AnyPublisher<AuthenticationContext?, Never>
+    ) {
+        // pollItems
+        status.publisher(for: \.poll)
+            .sink { [weak self] poll in
+                guard let self = self else { return }
+                guard let poll = poll else {
+                    self.viewModel.pollItems = []
+                    return
+                }
+                
+                let options = poll.options.sorted(by: { $0.index < $1.index })
+                let items: [PollItem] = options.map { .option(record: .init(objectID: $0.objectID)) }
+                self.viewModel.pollItems = items
+            }
+            .store(in: &disposeBag)
+        // isVoteButtonEnabled
+        status.poll?.publisher(for: \.updatedAt)
+            .sink { [weak self] _ in
+                guard let self = self else { return }
+                guard let poll = status.poll else { return }
+                let options = poll.options
+                let hasSelectedOption = options.contains(where: { $0.isSelected })
+                self.viewModel.isVoteButtonEnabled = hasSelectedOption
+            }
+            .store(in: &disposeBag)
+        // isVotable
+        if let poll = status.poll {
+            Publishers.CombineLatest3(
+                poll.publisher(for: \.voteBy),
+                poll.publisher(for: \.expired),
+                activeAuthenticationContext
+            )
+            .map { voteBy, expired, authenticationContext in
+                guard case let .mastodon(authenticationContext) = authenticationContext else { return false }
+                let domain = authenticationContext.domain
+                let userID = authenticationContext.userID
+                let isVoted = voteBy.contains(where: { $0.domain == domain && $0.id == userID })
+                return !isVoted && !expired
+            }
+            .assign(to: &viewModel.$isVotable)
+        }
+        // votesCount
+        status.poll?.publisher(for: \.votesCount)
+            .map { Int($0) }
+            .assign(to: \.voteCount, on: viewModel)
+            .store(in: &disposeBag)
+        // voterCount
+        status.poll?.publisher(for: \.votersCount)
+            .map { Int($0) }
+            .assign(to: \.voterCount, on: viewModel)
+            .store(in: &disposeBag)
+        // expireAt
+        status.poll?.publisher(for: \.expiresAt)
+            .assign(to: \.expireAt, on: viewModel)
+            .store(in: &disposeBag)
+        // expired
+        status.poll?.publisher(for: \.expired)
+            .assign(to: \.expired, on: viewModel)
+            .store(in: &disposeBag)
+        // isVoting
+        status.poll?.publisher(for: \.isVoting)
+            .assign(to: \.isVoting, on: viewModel)
             .store(in: &disposeBag)
     }
     
@@ -660,6 +968,7 @@ extension StatusView {
         activeAuthenticationContext: AnyPublisher<AuthenticationContext?, Never>
     ) {
         let status = status.repost ?? status
+        
         status.publisher(for: \.replyCount)
             .map(Int.init)
             .assign(to: \.replyCount, on: viewModel)
@@ -694,15 +1003,26 @@ extension StatusView {
             activeAuthenticationContext,
             status.publisher(for: \.likeBy)
         )
-            .map { authenticationContext, likeBy in
+        .map { authenticationContext, likeBy in
+            guard let authenticationContext = authenticationContext?.mastodonAuthenticationContext else {
+                return false
+            }
+            let domain = authenticationContext.domain
+            let userID = authenticationContext.userID
+            return likeBy.contains(where: { $0.id == userID && $0.domain == domain })
+        }
+        .assign(to: \.isLike, on: viewModel)
+        .store(in: &disposeBag)
+        
+        let authorUserID = status.author.id
+        activeAuthenticationContext
+            .map { authenticationContext in
                 guard let authenticationContext = authenticationContext?.mastodonAuthenticationContext else {
                     return false
                 }
-                let domain = authenticationContext.domain
-                let userID = authenticationContext.userID
-                return likeBy.contains(where: { $0.id == userID && $0.domain == domain })
+                return authenticationContext.userID == authorUserID
             }
-            .assign(to: \.isLike, on: viewModel)
+            .assign(to: \.isDeletable, on: viewModel)
             .store(in: &disposeBag)
     }
         

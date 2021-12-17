@@ -136,7 +136,15 @@ extension SceneCoordinator {
         
         switch transition {
         case .show:
-            presentingViewController.show(viewController, sender: sender)
+            if presentingViewController.navigationController == nil,
+               let from = presentingViewController.presentingViewController
+            {
+                presentingViewController.dismiss(animated: true) {
+                    self.present(scene: scene, from: from, transition: .show)
+                }
+            } else {
+                presentingViewController.show(viewController, sender: sender)
+            }
             
         case .showDetail:
             let navigationController = UINavigationController(rootViewController: viewController)

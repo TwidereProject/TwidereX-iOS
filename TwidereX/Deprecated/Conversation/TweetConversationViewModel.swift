@@ -40,7 +40,7 @@ final class TweetConversationViewModel: NSObject {
     
     // output
     var diffableDataSource: UITableViewDiffableDataSource<ConversationSection, ConversationItem>?
-    private(set) lazy var loadConversationStateMachine: GKStateMachine = {
+    @MainActor private(set) lazy var loadConversationStateMachine: GKStateMachine = {
         let stateMachine = GKStateMachine(states: [
             LoadConversationState.Initial(viewModel: self),
             LoadConversationState.Prepare(viewModel: self),
@@ -54,7 +54,7 @@ final class TweetConversationViewModel: NSObject {
         stateMachine.enter(LoadConversationState.Initial.self)
         return stateMachine
     }()
-    private(set) lazy var loadReplyStateMachine: GKStateMachine = {
+    @MainActor private(set) lazy var loadReplyStateMachine: GKStateMachine = {
         // exclude timeline middle fetcher state
         let stateMachine = GKStateMachine(states: [
             LoadReplyState.Initial(viewModel: self),

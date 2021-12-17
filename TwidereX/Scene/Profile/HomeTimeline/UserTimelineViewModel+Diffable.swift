@@ -54,9 +54,13 @@ extension UserTimelineViewModel {
                         return snapshot
                     }()
                     
-                    if let currentState = self.stateMachine.currentState {
+                    if let currentState = await self.stateMachine.currentState {
                         switch currentState {
-                        case is State.Reloading, is State.Idle, is State.LoadingMore, is State.Fail:
+                        case is State.Initial,
+                             is State.Reloading,
+                             is State.Idle,
+                             is State.LoadingMore,
+                             is State.Fail:
                             newSnapshot.appendItems([.bottomLoader], toSection: .main)
                         case is State.NotAuthorized:
                             break
@@ -67,7 +71,7 @@ extension UserTimelineViewModel {
                         case is State.NoMore:
                             break
                         default:
-                            break
+                            assertionFailure("not handle \(currentState.debugDescription)")
                         }
                     }
                     

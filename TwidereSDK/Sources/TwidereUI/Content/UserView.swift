@@ -12,7 +12,8 @@ import Combine
 import MetaTextKit
 
 protocol UserViewDelegate: AnyObject {
-    func statusView(_ statusView: StatusView, authorAvatarButtonDidPressed button: AvatarButton)
+    // func userView(_ userView: UserView, authorAvatarButtonDidPressed button: AvatarButton)
+    func userView(_ userView: UserView, menuActionDidPressed action: UserView.MenuAction, menuButton button: UIButton)
 }
 
 public final class UserView: UIView {
@@ -26,7 +27,7 @@ public final class UserView: UIView {
     
     weak var delegate: UserViewDelegate?
     
-    private var style: Style?
+    private(set) var style: Style?
     
     public private(set) lazy var viewModel: ViewModel = {
         let viewModel = ViewModel()
@@ -102,6 +103,14 @@ public final class UserView: UIView {
         return button
     }()
     
+    // menu control
+    public let menuButton: HitTestExpandedButton = {
+        let button = HitTestExpandedButton()
+        button.setImage(UIImage(systemName: "ellipsis.circle"), for: .normal)
+        button.tintColor = Asset.Colors.hightLight.color
+        return button
+    }()
+    
     // activity indicator
     public let activityIndicatorView: UIActivityIndicatorView = {
         let activityIndicatorView = UIActivityIndicatorView(style: .medium)
@@ -125,6 +134,13 @@ public final class UserView: UIView {
     public required init?(coder: NSCoder) {
         super.init(coder: coder)
         _init()
+    }
+    
+}
+
+extension UserView {
+    public enum MenuAction: Hashable {
+        case signOut
     }
     
 }
@@ -226,6 +242,9 @@ extension UserView.Style {
         
         userView.infoContainerStackView.addArrangedSubview(userView.usernameLabel)
         
+        userView.accessoryContainerView.addArrangedSubview(userView.menuButton)
+        userView.menuButton.setContentHuggingPriority(.required - 9, for: .horizontal)
+        
         userView.setNeedsLayout()
     }
     
@@ -250,7 +269,8 @@ extension UserView.Style {
         userView.friendshipButton.translatesAutoresizingMaskIntoConstraints = false
         userView.accessoryContainerView.addArrangedSubview(userView.friendshipButton)
         NSLayoutConstraint.activate([
-            userView.friendshipButton.widthAnchor.constraint(equalToConstant: 80),  // maybe dynamic width for different language?
+            userView.friendshipButton.heightAnchor.constraint(equalToConstant: 35).priority(.required - 1),
+            userView.friendshipButton.widthAnchor.constraint(equalToConstant: 80).priority(.required - 1),  // maybe dynamic width for different language?
         ])
         
         userView.setNeedsLayout()

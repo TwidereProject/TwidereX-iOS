@@ -11,15 +11,38 @@ import GameplayKit
 import TwitterSDK
 
 extension UserTimelineViewModel {
-    class State: GKState {
+    
+    class State: GKState, NamingState {
+        
         weak var viewModel: UserTimelineViewModel?
+        
+        var name: String {
+            String(describing: Self.self)
+        }
+        
+        let logger = Logger(subsystem: "UserTimelineViewModel.State", category: "StateMachine")
+        let id = UUID()
         
         init(viewModel: UserTimelineViewModel) {
             self.viewModel = viewModel
+            super.init()
+            
+            self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): [\(self.id.uuidString)] \(self.name)")
+        }
+        
+        @MainActor
+        func enter(state: UserTimelineViewModel.State.Type) {
+            stateMachine?.enter(state)
         }
         
         override func didEnter(from previousState: GKState?) {
-            os_log("%{public}s[%{public}ld], %{public}s: enter %s, previous: %s", ((#file as NSString).lastPathComponent), #line, #function, self.debugDescription, previousState.debugDescription)
+            super.didEnter(from: previousState)
+            let previousState = previousState as? UserTimelineViewModel.State
+            logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): [\(self.id.uuidString)] enter \(self.name), previous: \(previousState?.name  ?? "<nil>")")
+        }
+        
+        deinit {
+            logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): [\(self.id.uuidString)] \(self.name)")
         }
     }
 }
@@ -36,6 +59,10 @@ extension UserTimelineViewModel.State {
             default:
                 return false
             }
+        }
+        
+        override func didEnter(from previousState: GKState?) {
+            super.didEnter(from: previousState)
         }
     }
     
@@ -66,7 +93,6 @@ extension UserTimelineViewModel.State {
     }
     
     class Fail: UserTimelineViewModel.State {
-        let logger = Logger(subsystem: "UserTimelineViewModel.State", category: "StateMachine")
 
         var failureCount = 0
         
@@ -116,7 +142,6 @@ extension UserTimelineViewModel.State {
     }
     
     class LoadingMore: UserTimelineViewModel.State {
-        let logger = Logger(subsystem: "UserTimelineViewModel.State", category: "StateMachine")
         
         var nextInput: StatusListFetchViewModel.Input?
         
@@ -205,9 +230,9 @@ extension UserTimelineViewModel.State {
                     
                     nextInput = output.nextInput
                     if output.hasMore {
-                        stateMachine.enter(Idle.self)
+                        await self.enter(state: Idle.self)
                     } else {
-                        stateMachine.enter(NoMore.self)
+                        await self.enter(state: NoMore.self)
                     }
                     
                     switch output.result {
@@ -227,10 +252,11 @@ extension UserTimelineViewModel.State {
                 } catch {
                     // FIXME: handle Mastodon timeline error: {"error":"Record not found"}
                     logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): fetch failure: \(error.localizedDescription)")
-                    stateMachine.enter(Fail.self)
+                    await self.enter(state: Fail.self)
                 }
             }   // end Task
         }   // end didEnter(from:)
+        
     }   // end class LoadingMore
         
     class NotAuthorized: UserTimelineViewModel.State {

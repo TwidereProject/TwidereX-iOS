@@ -22,6 +22,7 @@ extension TwitterStatusThreadReplyViewModel {
         }
         
         override func didEnter(from previousState: GKState?) {
+            super.didEnter(from: previousState)
             os_log("%{public}s[%{public}ld], %{public}s: enter %s, previous: %s", ((#file as NSString).lastPathComponent), #line, #function, name, (previousState as? NamingState)?.name ?? previousState?.description ?? "nil")
         }
     }
@@ -62,6 +63,7 @@ extension TwitterStatusThreadReplyViewModel.State {
             }
             
             Task {
+                var nextState: TwitterStatusThreadReplyViewModel.State.Type?
                 let managedObjectContext = viewModel.context.backgroundManagedObjectContext
                 try await managedObjectContext.performChanges {
                     guard let _status = record.object(in: managedObjectContext) else {
@@ -146,30 +148,40 @@ extension TwitterStatusThreadReplyViewModel.State {
                         }
                     }
                     
+                    let _nextState: TwitterStatusThreadReplyViewModel.State.Type
                     if pendingNodes.isEmpty {
-                        stateMachine.enter(NoMore.self)
+                        _nextState = NoMore.self
                     } else {
                         if replyNodes.count > Prepare.throat {
                             // stop reply auto lookup
-                            stateMachine.enter(Idle.self)
+                            _nextState = Idle.self
                         } else {
                             let resolvedNodeCount = replyNodes.count - pendingNodes.count
                             if let previousResolvedNodeCount = self.previousResolvedNodeCount {
                                 if previousResolvedNodeCount == resolvedNodeCount {
-                                    stateMachine.enter(Fail.self)
+                                    _nextState = Fail.self
                                 } else {
-                                    stateMachine.enter(Loading.self)
+                                    _nextState = Loading.self
                                 }
                             } else {
                                 self.previousResolvedNodeCount = resolvedNodeCount
-                                stateMachine.enter(Loading.self)
+                                _nextState = Loading.self
                             }
                         }
                     }   // end if … else …
-
+                    nextState = _nextState
                 }   // end try await managedObjectContext.performChanges
+                
+                guard let nextState = nextState else { return }
+                await enter(state: nextState)
+                
             }   // end Task
         }   // end didEnter
+        
+        @MainActor
+        func enter(state: TwitterStatusThreadReplyViewModel.State.Type) {
+            stateMachine?.enter(state)
+        }
     }
     
     class Idle: TwitterStatusThreadReplyViewModel.State {
@@ -224,15 +236,21 @@ extension TwitterStatusThreadReplyViewModel.State {
                     )
                     
                     logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): fetch reply success: \(statusIDs.debugDescription)")
-                    stateMachine.enter(Prepare.self)
+                    await enter(state: Prepare.self)
                 } catch {
                     logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): fetch reply fail: \(error.localizedDescription)")
-                    stateMachine.enter(Fail.self)
+                    await enter(state: Fail.self)
                     // FIXME: needs retry logic here
                 }
             }
         }
-    }
+        
+        @MainActor
+        func enter(state: TwitterStatusThreadReplyViewModel.State.Type) {
+            stateMachine?.enter(state)
+        }
+        
+    }   // end class Loading
     
     class Fail: TwitterStatusThreadReplyViewModel.State {
         override var name: String { "Fail" }

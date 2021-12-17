@@ -14,6 +14,7 @@ import TwitterSDK
 import MastodonSDK
 import CoreData
 import CoreDataStack
+import TwidereCore
 
 final class StatusThreadViewModel {
     
@@ -39,7 +40,7 @@ final class StatusThreadViewModel {
     @Published var hasReplyTo = false
     
     // thread
-    private(set) lazy var loadThreadStateMachine: GKStateMachine = {
+    @MainActor private(set) lazy var loadThreadStateMachine: GKStateMachine = {
         let stateMachine = GKStateMachine(states: [
             LoadThreadState.Initial(viewModel: self),
             LoadThreadState.Prepare(viewModel: self),
@@ -82,6 +83,21 @@ final class StatusThreadViewModel {
                 return status.replyToStatusID != nil
             }
         }()
+        
+        ManagedObjectObserver.observe(context: context.managedObjectContext)
+            .sink(receiveCompletion: { completion in
+                // do nohting
+            }, receiveValue: { [weak self] changes in
+                guard let self = self else { return }
+                
+                let objectIDs: [NSManagedObjectID] = changes.changeTypes.compactMap { changeType in
+                    guard case let .delete(object) = changeType else { return nil }
+                    return object.objectID
+                }
+                
+                self.delete(objectIDs: objectIDs)
+            })
+            .store(in: &disposeBag)
         
         Publishers.CombineLatest(
             twitterStatusThreadReplyViewModel.$items,
@@ -130,5 +146,21 @@ extension StatusThreadViewModel {
             let contextID: Mastodon.Entity.Status.ID
             let replyToStatusID: Mastodon.Entity.Status.ID?
         }
+    }
+}
+
+extension StatusThreadViewModel {
+    func delete(objectIDs: [NSManagedObjectID]) {
+        if let root = root.value,
+           case let .root(threadContext) = root,
+           objectIDs.contains(threadContext.status.objectID)
+        {
+            self.root.value = nil
+            self.twitterStatusThreadReplyViewModel.root = nil
+        }
+        
+        self.twitterStatusThreadReplyViewModel.delete(objectIDs: objectIDs)
+        self.twitterStatusThreadLeafViewModel.delete(objectIDs: objectIDs)
+        self.mastodonStatusThreadViewModel.delete(objectIDs: objectIDs)
     }
 }

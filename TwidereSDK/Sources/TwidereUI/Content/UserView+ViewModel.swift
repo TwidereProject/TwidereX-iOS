@@ -186,6 +186,29 @@ extension UserView {
         
         viewModel.relationshipViewModel.user = user
         viewModel.relationshipViewModel.me = me
+        
+        // menu
+        switch style {
+        case .account:
+            menuButton.showsMenuAsPrimaryAction = true
+            menuButton.menu = {
+                let children = [
+                    UIAction(
+                        title: L10n.Common.Controls.Actions.signOut,
+                        image: UIImage(systemName: "person.crop.circle.badge.minus"),
+                        attributes: .destructive,
+                        state: .off) { [weak self] _ in
+                            guard let self = self else { return }
+                            self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): sign out user…")
+                            self.delegate?.userView(self, menuActionDidPressed: .signOut, menuButton: self.menuButton)
+                        }
+                ]
+                return UIMenu(title: "", image: nil, options: [], children: children)
+            }()
+        default:
+            menuButton.showsMenuAsPrimaryAction = true
+            menuButton.menu = nil
+        }
     }
     
     public func configure(notification: NotificationObject) {

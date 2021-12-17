@@ -7,9 +7,12 @@
 //
 
 import UIKit
+import Combine
 import TwidereUI
 
 public final class AvatarBarButtonItem: UIBarButtonItem {
+    
+    var disposeBag = Set<AnyCancellable>()
 
     public static let avatarButtonSize = CGSize(width: 30, height: 30)
     

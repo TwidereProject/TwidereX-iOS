@@ -10,6 +10,7 @@ import UIKit
 import Combine
 import CoreData
 import CoreDataStack
+import Photos
 
 extension MediaView {
     public enum Configuration: Hashable {
@@ -22,6 +23,28 @@ extension MediaView {
             case .image(let info):      return info.aspectRadio
             case .gif(let info):        return info.aspectRadio
             case .video(let info):      return info.aspectRadio
+            }
+        }
+        
+        public var assetURL: String? {
+            switch self {
+            case .image(let info):
+                return info.assetURL
+            case .gif(let info):
+                return info.assetURL
+            case .video(let info):
+                return info.assetURL
+            }
+        }
+        
+        public var resourceType: PHAssetResourceType {
+            switch self {
+            case .image:
+                return .photo
+            case .gif:
+                return .video
+            case .video:
+                return .video
             }
         }
         

@@ -17,12 +17,14 @@ import TwidereUI
 
 class MainTabBarController: UITabBarController {
     
-    var disposeBag = Set<AnyCancellable>()
+    let logger = Logger(subsystem: "MainTabBarController", category: "TabBar")
     
+    var disposeBag = Set<AnyCancellable>()
+        
     weak var context: AppContext!
     weak var coordinator: SceneCoordinator!
-    
-    let doubleTapGestureRecognizer = UITapGestureRecognizer.doubleTapGestureRecognizer
+
+    @Published var currentTab: Tab = .home
     
     enum Tab: Int, CaseIterable {
         case home
@@ -167,15 +169,7 @@ extension MainTabBarController {
 //            }
 //            .store(in: &disposeBag)
         
-        doubleTapGestureRecognizer.addTarget(self, action: #selector(MainTabBarController.doubleTapGestureRecognizerHandler(_:)))
-        doubleTapGestureRecognizer.delaysTouchesEnded = false
-        tabBar.addGestureRecognizer(doubleTapGestureRecognizer)
-        
         delegate = self
-        
-        #if DEBUG
-        // selectedIndex = 1
-        #endif
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -188,22 +182,39 @@ extension MainTabBarController {
         
 }
 
-extension MainTabBarController {
-    @objc private func doubleTapGestureRecognizerHandler(_ sender: UITapGestureRecognizer) {
-        os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
-        switch sender.state {
-        case .ended:
-            guard let scrollViewContainer = selectedViewController?.topMost as? ScrollViewContainer else { return }
-            scrollViewContainer.scrollToTop(animated: true)
-        default:
-            break
-        }
-    }
-}
+//extension MainTabBarController {
+//    @objc private func doubleTapGestureRecognizerHandler(_ sender: UITapGestureRecognizer) {
+//        os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
+//        switch sender.state {
+//        case .ended:
+//            guard let scrollViewContainer = selectedViewController?.topMost as? ScrollViewContainer else { return }
+//            scrollViewContainer.scrollToTop(animated: true)
+//        default:
+//            break
+//        }
+//    }
+//}
 
 // MARK: - UITabBarControllerDelegate
 extension MainTabBarController: UITabBarControllerDelegate {
-    override func tabBar(_ tabBar: UITabBar, didSelect item: UITabBarItem) {
-        os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: didSelect item: %s", ((#file as NSString).lastPathComponent), #line, #function, item.debugDescription)
+    func tabBarController(_ tabBarController: UITabBarController, didSelect viewController: UIViewController) {
+        logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public)")
+        
+        defer {
+            if let tab = Tab(rawValue: tabBarController.selectedIndex) {
+                currentTab = tab
+            }
+        }
+        
+        guard currentTab.rawValue == tabBarController.selectedIndex,
+              let navigationController = viewController as? UINavigationController,
+              navigationController.viewControllers.count == 1
+        else { return }
+        
+        let _scrollViewContainer = (navigationController.topViewController as? ScrollViewContainer) ?? (navigationController.topMost as? ScrollViewContainer)
+        guard let scrollViewContainer = _scrollViewContainer else {
+            return
+        }
+        scrollViewContainer.scrollToTop(animated: true)
     }
 }

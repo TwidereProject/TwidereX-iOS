@@ -23,6 +23,7 @@ extension MastodonEmojiService {
         weak var service: MastodonEmojiService?
         
         // output
+        @MainActor
         private(set) lazy var stateMachine: GKStateMachine = {
             // exclude timeline middle fetcher state
             let stateMachine = GKStateMachine(states: [

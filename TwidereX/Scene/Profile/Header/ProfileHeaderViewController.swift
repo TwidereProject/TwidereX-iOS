@@ -9,9 +9,16 @@ import os.log
 import UIKit
 import Combine
 import TabBarPager
+import MetaTextKit
+import MetaTextArea
+import Meta
 
 protocol ProfileHeaderViewControllerDelegate: AnyObject {
     func headerViewController(_ viewController: ProfileHeaderViewController, profileHeaderView: ProfileHeaderView, friendshipButtonDidPressed button: UIButton)
+    
+    func headerViewController(_ viewController: ProfileHeaderViewController, profileHeaderView: ProfileHeaderView, metaTextAreaView: MetaTextAreaView, didSelectMeta meta: Meta)
+    func headerViewController(_ viewController: ProfileHeaderViewController, profileHeaderView: ProfileHeaderView, metaLabel: MetaLabel, didSelectMeta meta: Meta)
+
     
     func headerViewController(_ viewController: ProfileHeaderViewController, profileHeaderView: ProfileHeaderView, profileDashboardView dashboardView: ProfileDashboardView, followingMeterViewDidPressed meterView: ProfileDashboardMeterView)
     func headerViewController(_ viewController: ProfileHeaderViewController, profileHeaderView: ProfileHeaderView, profileDashboardView dashboardView: ProfileDashboardView, followersMeterViewDidPressed meterView: ProfileDashboardMeterView)
@@ -92,8 +99,17 @@ extension ProfileHeaderViewController: TabBarPagerHeader { }
 
 // MARK: - ProfileHeaderViewDelegate
 extension ProfileHeaderViewController: ProfileHeaderViewDelegate {
+    
     func profileHeaderView(_ headerView: ProfileHeaderView, friendshipButtonPressed button: UIButton) {
         delegate?.headerViewController(self, profileHeaderView: headerView, friendshipButtonDidPressed: button)
+    }
+    
+    func profileHeaderView(_ headerView: ProfileHeaderView, metaTextAreaView: MetaTextAreaView, didSelectMeta meta: Meta) {
+        delegate?.headerViewController(self, profileHeaderView: headerView, metaTextAreaView: metaTextAreaView, didSelectMeta: meta)
+    }
+    
+    func profileHeaderView(_ headerView: ProfileHeaderView, metaLabel: MetaLabel, didSelectMeta meta: Meta) {
+        delegate?.headerViewController(self, profileHeaderView: headerView, metaLabel: metaLabel, didSelectMeta: meta)
     }
     
     func profileHeaderView(_ headerView: ProfileHeaderView, profileDashboardView dashboardView: ProfileDashboardView, followingMeterViewDidPressed meterView: ProfileDashboardMeterView) {

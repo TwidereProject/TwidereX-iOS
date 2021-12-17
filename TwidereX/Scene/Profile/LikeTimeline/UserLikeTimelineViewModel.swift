@@ -30,7 +30,7 @@ class UserLikeTimelineViewModel: NSObject {
     
     // output
     var diffableDataSource: UITableViewDiffableDataSource<StatusSection, StatusItem>?
-    private(set) lazy var stateMachine: GKStateMachine = {
+    @MainActor private(set) lazy var stateMachine: GKStateMachine = {
         let stateMachine = GKStateMachine(states: [
             State.Initial(viewModel: self),
             State.Reloading(viewModel: self),

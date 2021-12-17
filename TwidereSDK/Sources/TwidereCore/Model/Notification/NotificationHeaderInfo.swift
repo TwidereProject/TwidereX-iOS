@@ -73,25 +73,7 @@ extension NotificationHeaderInfo {
     }
     
     public static func iconImageTintColor(type: MastodonNotificationType) -> UIColor? {
-        switch type {
-        case .follow:
-            return .systemOrange
-        case .followRequest:
-            return Asset.Colors.Theme.daylight.color
-        case .mention:
-            return nil
-        case .reblog:
-            return Asset.Colors.Theme.daylight.color
-        case .favourite:
-            return Asset.Colors.Tint.pink.color
-        case .poll:
-            return Asset.Colors.Theme.daylight.color
-        case .status:
-            return nil
-        case ._other:
-            assertionFailure()
-            return nil
-        }
+        return .label
     }
     
     public static func textMetaContent(

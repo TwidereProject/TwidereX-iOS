@@ -184,6 +184,7 @@ extension ComposeToolbarView {
         supplementaryContainer.addArrangedSubview(visibilityButtonLeadingSeparatorLine)
         
         supplementaryContainer.addArrangedSubview(visibilityButton)
+        visibilityButton.setContentHuggingPriority(.defaultLow - 10, for: .horizontal)
         visibilityButton.setContentCompressionResistancePriority(.required - 9, for: .vertical)
         
         supplementaryContainer.addArrangedSubview(supplementaryContainerSpacer)
@@ -303,10 +304,10 @@ extension Mastodon.Entity.Status.Visibility {
     
     var image: UIImage {
         switch self {
-        case .public:       return Asset.ObjectTools.globe.image
-        case .unlisted:     return Asset.ObjectTools.lockOpen.image
-        case .private:      return Asset.ObjectTools.lock.image
-        case .direct:       return Asset.Communication.mail.image
+        case .public:       return Asset.ObjectTools.globe.image.withRenderingMode(.alwaysTemplate)
+        case .unlisted:     return Asset.ObjectTools.lockOpen.image.withRenderingMode(.alwaysTemplate)
+        case .private:      return Asset.ObjectTools.lock.image.withRenderingMode(.alwaysTemplate)
+        case .direct:       return Asset.Communication.mail.image.withRenderingMode(.alwaysTemplate)
         case ._other:       return UIImage(systemName: "square.dashed")!
         }
     }

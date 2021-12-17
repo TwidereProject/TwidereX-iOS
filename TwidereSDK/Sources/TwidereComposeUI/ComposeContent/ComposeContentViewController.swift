@@ -89,7 +89,7 @@ extension ComposeContentViewController {
             composeToolbarView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             composeToolbarView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             // Apple `keyboardLayoutGuide` has issue (FB9733654). Use KeyboardLayoutGuide package instead
-            view.keyboardLayoutGuide.topAnchor.constraint(equalTo: composeToolbarView.bottomAnchor),
+            view.keyboardLayoutGuideWithSafeArea.topAnchor.constraint(equalTo: composeToolbarView.bottomAnchor),
             composeToolbarBackgroundView.topAnchor.constraint(equalTo: composeToolbarView.topAnchor).priority(.defaultHigh),
         ])
 
@@ -447,6 +447,7 @@ extension ComposeContentViewController: ComposeToolbarViewDelegate {
     }
     
     public func composeToolBarView(_ composeToolBarView: ComposeToolbarView, mediaSensitiveButtonPressed button: UIButton) {
+        guard !viewModel.isContentWarningComposing else { return }
         viewModel.isMediaSensitive.toggle()
     }
     
@@ -730,7 +731,7 @@ extension ComposeContentViewController: ComposePollTableViewCellDelegate {
         viewModel.pollOptions.remove(at: index)
     }
     
-    public func composePollTableViewCell(_ cell: ComposePollTableViewCell, pollExpireConfigurationCollectionViewCell collectionViewCell: ComposePollExpireConfigurationCollectionViewCell, didSelectExpireConfigurationOption option: PollItem.ExpireConfiguration.Option) {
+    public func composePollTableViewCell(_ cell: ComposePollTableViewCell, pollExpireConfigurationCollectionViewCell collectionViewCell: ComposePollExpireConfigurationCollectionViewCell, didSelectExpireConfigurationOption option: PollComposeItem.ExpireConfiguration.Option) {
         viewModel.pollExpireConfiguration.option = option
     }
     
@@ -742,7 +743,7 @@ extension ComposeContentViewController: ComposePollTableViewCellDelegate {
 
 extension ComposeContentViewController {
     
-    private func pollOptionCollectionViewCell(of item: PollItem) -> ComposePollOptionCollectionViewCell? {
+    private func pollOptionCollectionViewCell(of item: PollComposeItem) -> ComposePollOptionCollectionViewCell? {
         guard case .option = item else { return nil }
         guard let diffableDataSource = viewModel.composePollTableViewCell.diffableDataSource else { return nil }
         guard let indexPath = diffableDataSource.indexPath(for: item),

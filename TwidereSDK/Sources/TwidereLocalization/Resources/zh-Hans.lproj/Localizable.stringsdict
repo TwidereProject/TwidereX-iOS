@@ -2,6 +2,34 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
   <dict>
+    <key>count.vote</key>
+    <dict>
+      <key>NSStringLocalizedFormatKey</key>
+      <string>%#@count_vote@</string>
+      <key>count_vote</key>
+      <dict>
+        <key>NSStringFormatSpecTypeKey</key>
+        <string>NSStringPluralRuleType</string>
+        <key>NSStringFormatValueTypeKey</key>
+        <string>ld</string>
+        <key>other</key>
+        <string>%ld 票</string>
+      </dict>
+    </dict>
+    <key>count.people</key>
+    <dict>
+      <key>NSStringLocalizedFormatKey</key>
+      <string>%#@count_people@</string>
+      <key>count_people</key>
+      <dict>
+        <key>NSStringFormatSpecTypeKey</key>
+        <string>NSStringPluralRuleType</string>
+        <key>NSStringFormatValueTypeKey</key>
+        <string>ld</string>
+        <key>other</key>
+        <string>%ld 人</string>
+      </dict>
+    </dict>
     <key>count.people.talking</key>
     <dict>
       <key>NSStringLocalizedFormatKey</key>

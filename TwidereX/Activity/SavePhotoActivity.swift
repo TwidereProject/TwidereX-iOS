@@ -34,7 +34,7 @@ final class SavePhotoActivity: UIActivity {
     }
     
     override var activityTitle: String? {
-        return L10n.Common.Controls.Actions.savePhoto.localizedCapitalized
+        return L10n.Common.Controls.Actions.save.localizedCapitalized
     }
     
     override var activityImage: UIImage? {
@@ -67,13 +67,13 @@ final class SavePhotoActivity: UIActivity {
                     source: .remote(url: url),
                     resourceType: self.resourceType
                 )
-                await self.presentSuccessNotification()
+                await context.photoLibraryService.presentSuccessNotification()
                 await notificationFeedbackGenerator.notificationOccurred(.success)
                 
                 self.activityDidFinish(true)
                 
             } catch {
-                await self.presentFailureNotification(error: error)
+                await context.photoLibraryService.presentFailureNotification(error: error)
                 await notificationFeedbackGenerator.notificationOccurred(.error)
                 
                 self.activityDidFinish(false)
@@ -93,34 +93,6 @@ final class SavePhotoActivity: UIActivity {
 //            }
 //        })
     }
-    
-    @MainActor
-    func presentSuccessNotification() {
-        os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: save image success", ((#file as NSString).lastPathComponent), #line, #function)
-        var config = SwiftMessages.defaultConfig
-        config.duration = .seconds(seconds: 3)
-        config.interactiveHide = true
-        let bannerView = NotificationBannerView()
-        bannerView.configure(style: .success)
-        bannerView.titleLabel.text = L10n.Common.Alerts.PhotoSaved.title
-        bannerView.messageLabel.isHidden = true
-        
-        SwiftMessages.show(config: config, view: bannerView)
-    }
-    
-    @MainActor
-    func presentFailureNotification(error: Error) {
-        os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: save image fail: %s", ((#file as NSString).lastPathComponent), #line, #function, error.localizedDescription)
-        var config = SwiftMessages.defaultConfig
-        config.duration = .seconds(seconds: 3)
-        config.interactiveHide = true
-        let bannerView = NotificationBannerView()
-        bannerView.configure(style: .warning)
-        bannerView.titleLabel.text = L10n.Common.Alerts.PhotoSaveFail.title
-        bannerView.messageLabel.text = L10n.Common.Alerts.PhotoSaveFail.message
-        
-        SwiftMessages.show(config: config, view: bannerView)
-    }
-    
+
 }
 

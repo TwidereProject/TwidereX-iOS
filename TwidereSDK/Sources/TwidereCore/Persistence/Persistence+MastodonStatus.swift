@@ -94,6 +94,20 @@ extension Persistence.MastodonStatus {
                 isNewInsertionAuthor: false
             )
         } else {
+            let poll: MastodonPoll? = {
+                guard let entity = context.entity.poll else { return nil }
+                let result = Persistence.MastodonPoll.createOrMerge(
+                    in: managedObjectContext,
+                    context: Persistence.MastodonPoll.PersistContext(
+                        domain: context.domain,
+                        entity: entity,
+                        me: context.me,
+                        networkDate: context.networkDate
+                    )
+                )
+                return result.poll
+            }()
+            
             let authorResult = Persistence.MastodonUser.createOrMerge(
                 in: managedObjectContext,
                 context: Persistence.MastodonUser.PersistContext(
@@ -106,6 +120,7 @@ extension Persistence.MastodonStatus {
             let author = authorResult.user
                 
             let relationship = MastodonStatus.Relationship(
+                poll: poll,
                 author: author,
                 repost: repost
             )
@@ -177,6 +192,17 @@ extension Persistence.MastodonStatus {
             networkDate: context.networkDate
         )
         status.update(property: property)
+        if let poll = status.poll, let entity = context.entity.poll {
+            Persistence.MastodonPoll.merge(
+                poll: poll,
+                context: Persistence.MastodonPoll.PersistContext(
+                    domain: context.domain,
+                    entity: entity,
+                    me: context.me,
+                    networkDate: context.networkDate
+                )
+            )
+        }
         update(status: status, context: context)
     }
     
@@ -184,7 +210,7 @@ extension Persistence.MastodonStatus {
         status: MastodonStatus,
         context: PersistContext
     ) {
-        // update relationship
+        // update friendships
         if let user = context.me {
             context.entity.reblogged.flatMap { status.update(isRepost: $0, by: user) }
             context.entity.favourited.flatMap { status.update(isLike: $0, by: user) }

@@ -16,7 +16,6 @@ import GameplayKit
 import AlamofireImage
 import Kingfisher
 import DateToolsSwift
-import ActiveLabel
 
 final class HomeTimelineViewModel: NSObject {
     
@@ -30,13 +29,16 @@ final class HomeTimelineViewModel: NSObject {
     let fetchedResultsController: FeedFetchedResultsController
     let listBatchFetchViewModel = ListBatchFetchViewModel()
     let viewDidAppear = CurrentValueSubject<Void, Never>(Void())
+    @Published var isLoadingLatest = false
+    @Published var lastAutomaticFetchTimestamp: Date?
+
     
     // output
     var diffableDataSource: UITableViewDiffableDataSource<StatusSection, StatusItem>?
     var didLoadLatest = PassthroughSubject<Void, Never>()
 
     // bottom loader
-    private(set) lazy var loadOldestStateMachine: GKStateMachine = {
+    @MainActor private(set) lazy var loadOldestStateMachine: GKStateMachine = {
         // exclude timeline middle fetcher state
         let stateMachine = GKStateMachine(states: [
             LoadOldestState.Initial(viewModel: self),

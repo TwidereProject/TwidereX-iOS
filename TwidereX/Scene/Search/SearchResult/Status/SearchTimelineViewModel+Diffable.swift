@@ -12,7 +12,7 @@ import CoreData
 import CoreDataStack
 
 extension SearchTimelineViewModel {
-    func setupDiffableDataSource(
+    @MainActor func setupDiffableDataSource(
         tableView: UITableView,
         statusViewTableViewCellDelegate: StatusViewTableViewCellDelegate
     ) {

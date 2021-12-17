@@ -53,7 +53,7 @@ extension UserLikeTimelineViewModel {
                         return snapshot
                     }()
                     
-                    if let currentState = self.stateMachine.currentState {
+                    if let currentState = await self.stateMachine.currentState {
                         switch currentState {
                         case is State.Reloading, is State.Idle, is State.LoadingMore, is State.Fail:
                             newSnapshot.appendItems([.bottomLoader], toSection: .main)

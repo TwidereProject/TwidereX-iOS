@@ -48,6 +48,31 @@
         <relationship name="feeds" toMany="YES" deletionRule="Nullify" destinationEntity="Feed" inverseName="mastodonNotification" inverseEntity="Feed"/>
         <relationship name="status" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="MastodonStatus" inverseName="notifications" inverseEntity="MastodonStatus"/>
     </entity>
+    <entity name="MastodonPoll" representedClassName="CoreDataStack.MastodonPoll" syncable="YES">
+        <attribute name="createdAt" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="domain" attributeType="String"/>
+        <attribute name="expired" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="expiresAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="id" attributeType="String"/>
+        <attribute name="isVoting" transient="YES" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="multiple" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="updatedAt" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="votersCount" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="votesCount" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <relationship name="options" toMany="YES" deletionRule="Nullify" destinationEntity="MastodonPollOption" inverseName="poll" inverseEntity="MastodonPollOption"/>
+        <relationship name="status" maxCount="1" deletionRule="Nullify" destinationEntity="MastodonStatus" inverseName="poll" inverseEntity="MastodonStatus"/>
+        <relationship name="voteBy" toMany="YES" deletionRule="Nullify" destinationEntity="MastodonUser" inverseName="votePolls" inverseEntity="MastodonUser"/>
+    </entity>
+    <entity name="MastodonPollOption" representedClassName="CoreDataStack.MastodonPollOption" syncable="YES">
+        <attribute name="createdAt" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="index" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="isSelected" transient="YES" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="title" attributeType="String"/>
+        <attribute name="updatedAt" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="votesCount" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <relationship name="poll" maxCount="1" deletionRule="Nullify" destinationEntity="MastodonPoll" inverseName="options" inverseEntity="MastodonPoll"/>
+        <relationship name="voteBy" toMany="YES" deletionRule="Nullify" destinationEntity="MastodonUser" inverseName="votePollOptions" inverseEntity="MastodonUser"/>
+    </entity>
     <entity name="MastodonStatus" representedClassName="CoreDataStack.MastodonStatus" syncable="YES">
         <attribute name="attachments" optional="YES" attributeType="Binary"/>
         <attribute name="content" attributeType="String"/>
@@ -55,6 +80,9 @@
         <attribute name="domain" attributeType="String"/>
         <attribute name="emojis" optional="YES" attributeType="Binary"/>
         <attribute name="id" attributeType="String"/>
+        <attribute name="isContentReveal" transient="YES" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="isMediaSensitive" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="isMediaSensitiveToggled" transient="YES" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
         <attribute name="language" optional="YES" attributeType="String"/>
         <attribute name="likeCount" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="replyCount" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
@@ -71,6 +99,7 @@
         <relationship name="feeds" toMany="YES" deletionRule="Nullify" destinationEntity="Feed" inverseName="mastodonStatus" inverseEntity="Feed"/>
         <relationship name="likeBy" toMany="YES" deletionRule="Nullify" destinationEntity="MastodonUser" inverseName="like" inverseEntity="MastodonUser"/>
         <relationship name="notifications" toMany="YES" deletionRule="Nullify" destinationEntity="MastodonNotification" inverseName="status" inverseEntity="MastodonNotification"/>
+        <relationship name="poll" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="MastodonPoll" inverseName="status" inverseEntity="MastodonPoll"/>
         <relationship name="repost" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="MastodonStatus" inverseName="repostFrom" inverseEntity="MastodonStatus"/>
         <relationship name="repostBy" toMany="YES" deletionRule="Nullify" destinationEntity="MastodonUser" inverseName="reposts" inverseEntity="MastodonUser"/>
         <relationship name="repostFrom" toMany="YES" deletionRule="Nullify" destinationEntity="MastodonStatus" inverseName="repost" inverseEntity="MastodonStatus"/>
@@ -110,6 +139,8 @@
         <relationship name="notifications" toMany="YES" deletionRule="Nullify" destinationEntity="MastodonNotification" inverseName="account" inverseEntity="MastodonNotification"/>
         <relationship name="reposts" toMany="YES" deletionRule="Nullify" destinationEntity="MastodonStatus" inverseName="repostBy" inverseEntity="MastodonStatus"/>
         <relationship name="statuses" toMany="YES" deletionRule="Nullify" destinationEntity="MastodonStatus" inverseName="author" inverseEntity="MastodonStatus"/>
+        <relationship name="votePollOptions" toMany="YES" deletionRule="Nullify" destinationEntity="MastodonPollOption" inverseName="voteBy" inverseEntity="MastodonPollOption"/>
+        <relationship name="votePolls" toMany="YES" deletionRule="Nullify" destinationEntity="MastodonPoll" inverseName="voteBy" inverseEntity="MastodonPoll"/>
     </entity>
     <entity name="TwitterAuthentication" representedClassName="CoreDataStack.TwitterAuthentication" syncable="YES">
         <attribute name="accessToken" attributeType="String"/>
@@ -189,8 +220,10 @@
         <element name="Feed" positionX="-54" positionY="-144" width="128" height="164"/>
         <element name="MastodonAuthentication" positionX="-63" positionY="-153" width="128" height="194"/>
         <element name="MastodonNotification" positionX="90" positionY="-18" width="128" height="164"/>
-        <element name="MastodonStatus" positionX="-63" positionY="-171" width="128" height="404"/>
-        <element name="MastodonUser" positionX="-63" positionY="-153" width="128" height="539"/>
+        <element name="MastodonPoll" positionX="90" positionY="-18" width="128" height="224"/>
+        <element name="MastodonPollOption" positionX="99" positionY="-9" width="128" height="149"/>
+        <element name="MastodonStatus" positionX="-63" positionY="-171" width="128" height="464"/>
+        <element name="MastodonUser" positionX="-63" positionY="-153" width="128" height="569"/>
         <element name="TwitterAuthentication" positionX="-109.453125" positionY="275.71875" width="128" height="209"/>
         <element name="TwitterStatus" positionX="-63" positionY="-153" width="128" height="389"/>
         <element name="TwitterUser" positionX="281.5234375" positionY="201.703125" width="128" height="494"/>

@@ -7,7 +7,7 @@
 //
 
 import UIKit
-import ActiveLabel
+import MetaTextKit
 
 final class TimelineHeaderView: UIView {
         
@@ -26,7 +26,7 @@ final class TimelineHeaderView: UIView {
         return label
     }()
     
-    let messageLabel = ActiveLabel(style: .timelineHeaderView)
+    let messageLabel = MetaLabel(style: .statusHeader)  // FIXME:
     
     override init(frame: CGRect) {
         super.init(frame: frame)

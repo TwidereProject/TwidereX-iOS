@@ -1,5 +1,6 @@
 sources:
   - .
+  - ../TwidereSDK/Sources
 templates:
   - ./Template
 output:

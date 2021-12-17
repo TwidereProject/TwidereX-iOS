@@ -11,43 +11,20 @@ let package = Package(
         .macOS(.v12),
     ],
     products: [
-        // Products define the executables and libraries a package produces, and make them visible to other packages.
         .library(
-            name: "CoreDataStack",
-            targets: ["CoreDataStack"]
+            name: "TwidereSDK",
+            targets: [
+                "TwitterSDK",
+                "MastodonSDK",
+                "CoreDataStack",
+                "TwidereAsset",
+                "TwidereCommon",
+                "TwidereCore",
+                "TwidereLocalization",
+                "TwidereUI",
+                "TwidereComposeUI",
+            ]
         ),
-        .library(
-            name: "TwitterSDK",
-            targets: ["TwitterSDK"]
-        ),
-        .library(
-            name: "MastodonSDK",
-            targets: ["MastodonSDK"]
-        ),
-        .library(
-            name: "TwidereAsset",
-            targets: ["TwidereAsset"]
-        ),
-        .library(
-            name: "TwidereCommon",
-            targets: ["TwidereCommon"]
-        ),
-        .library(
-            name: "TwidereCore",
-            targets: ["TwidereCore"]
-        ),
-        .library(
-            name: "TwidereLocalization",
-            targets: ["TwidereLocalization"]
-        ),
-        .library(
-            name: "TwidereUI",
-            targets: ["TwidereUI"]
-        ),
-        .library(
-            name: "TwidereComposeUI",
-            targets: ["TwidereComposeUI"]
-        )
     ],
     dependencies: [
         .package(url: "https://github.com/SwiftyJSON/SwiftyJSON.git", from: "5.0.0"),
@@ -61,7 +38,7 @@ let package = Package(
         .package(url: "https://github.com/SDWebImage/SDWebImage.git", from: "5.12.1"),
         .package(url: "https://github.com/MainasuK/UITextView-Placeholder.git", from: "1.4.1"),
         .package(url: "https://github.com/TimOliver/TOCropViewController.git", from: "2.6.0"),
-        .package(url: "https://github.com/freshOS/KeyboardLayoutGuide.git", from: "1.7.0"),
+        .package(url: "https://github.com/MainasuK/KeyboardLayoutGuide.git", branch: "fix/iOS15"),
         .package(url: "https://github.com/apple/swift-collections.git", from: "1.0.2"),
         .package(url: "https://github.com/SwiftKickMobile/SwiftMessages.git", from: "9.0.5"),
     ],
@@ -122,9 +99,6 @@ let package = Package(
                 .product(name: "Alamofire", package: "Alamofire"),
                 .product(name: "AlamofireImage", package: "AlamofireImage"),
                 .product(name: "MetaTextKit", package: "MetaTextKit"),
-                .product(name: "MetaTextArea", package: "MetaTextKit"),
-                .product(name: "TwitterMeta", package: "MetaTextKit"),
-                .product(name: "MastodonMeta", package: "MetaTextKit"),
             ]
         ),
         .target(

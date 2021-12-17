@@ -32,9 +32,9 @@ public final class MastodonStatusPublisher: NSObject, ProgressReporting {
     public let attachmentViewModels: [AttachmentViewModel]
     // poll
     public let isPollComposing: Bool
-    public let pollOptions: [PollItem.Option]
-    public let pollExpireConfiguration: PollItem.ExpireConfiguration
-    public let pollMultipleConfiguration: PollItem.MultipleConfiguration
+    public let pollOptions: [PollComposeItem.Option]
+    public let pollExpireConfiguration: PollComposeItem.ExpireConfiguration
+    public let pollMultipleConfiguration: PollComposeItem.MultipleConfiguration
     // visibility
     public let visibility: Mastodon.Entity.Status.Visibility
     
@@ -53,9 +53,9 @@ public final class MastodonStatusPublisher: NSObject, ProgressReporting {
         isMediaSensitive: Bool,
         attachmentViewModels: [AttachmentViewModel],
         isPollComposing: Bool,
-        pollOptions: [PollItem.Option],
-        pollExpireConfiguration: PollItem.ExpireConfiguration,
-        pollMultipleConfiguration: PollItem.MultipleConfiguration,
+        pollOptions: [PollComposeItem.Option],
+        pollExpireConfiguration: PollComposeItem.ExpireConfiguration,
+        pollMultipleConfiguration: PollComposeItem.MultipleConfiguration,
         visibility: Mastodon.Entity.Status.Visibility
     ) {
         self.author = author

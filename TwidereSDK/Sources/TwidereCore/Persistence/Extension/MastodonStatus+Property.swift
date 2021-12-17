@@ -13,9 +13,10 @@ import CoreGraphics
 import MastodonSDK
 
 extension MastodonStatus.Property {
-    public init(domain: String,
-         entity: Mastodon.Entity.Status,
-         networkDate: Date
+    public init(
+        domain: String,
+        entity: Mastodon.Entity.Status,
+        networkDate: Date
     ) {
         self.init(
             id: entity.id,
@@ -26,6 +27,8 @@ extension MastodonStatus.Property {
             replyCount: entity.repliesCount.flatMap(Int64.init) ?? 0,
             repostCount: Int64(entity.reblogsCount),
             visibility: entity.mastodonVisibility,
+            isMediaSensitive: entity.sensitive ?? false,
+            spoilerText: entity.spoilerText,
             url: entity.url,
             text: entity.text,
             language: entity.language,
@@ -79,7 +82,7 @@ extension Mastodon.Entity.Attachment {
         case .image:    return .image
         case .gifv:     return .gifv
         case .video:    return .video
-        case .audio:    return nil  // TODO
+        case .audio:    return .audio
         case ._other:   return nil
         }
     }

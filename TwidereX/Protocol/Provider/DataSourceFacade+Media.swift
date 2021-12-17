@@ -13,10 +13,28 @@ import TwidereUI
 extension DataSourceFacade {
     
     struct MediaPreviewContext {
-        let statusView: StatusView
-        let containerView: MediaGridContainerView
+        // let statusView: StatusView
+        let containerView: ContainerView
         let mediaView: MediaView
         let index: Int
+        
+        enum ContainerView {
+            case mediaView(MediaView)
+            case mediaGridContainerView(MediaGridContainerView)
+        }
+        
+        func thumbnails() async -> [UIImage?] {
+            switch containerView {
+            case .mediaView(let mediaView):
+                let thumbnail = await mediaView.thumbnail()
+                return [thumbnail]
+            case .mediaGridContainerView(let mediaGridContainerView):
+                let thumbnails = await mediaGridContainerView.mediaViews.parallelMap { mediaView in
+                    return await mediaView.thumbnail()
+                }
+                return thumbnails
+            }
+        }
     }
     
     static func coordinateToMediaPreviewScene(
@@ -43,7 +61,6 @@ extension DataSourceFacade {
 
 extension DataSourceFacade {
     
-    @MainActor
     static func coordinateToMediaPreviewScene(
         provider: DataSourceProvider & MediaPreviewTransitionHostViewController,
         status: StatusRecord,
@@ -53,34 +70,64 @@ extension DataSourceFacade {
             guard let status = status.object(in: provider.context.managedObjectContext) else { return [] }
             return status.attachments
         }
-        let thumbnails = await mediaPreviewContext.containerView.mediaViews.parallelMap { mediaView in
-            return await mediaView.thumbnail()
-        }
+        let thumbnails = await mediaPreviewContext.thumbnails()
         
         // FIXME:
         if let first = attachments.first,
-           let assetURL = first.assetURL,
            first.kind == .video || first.kind == .audio
         {
-            let playerViewController = AVPlayerViewController()
-            playerViewController.player = AVPlayer(url: assetURL)
-            playerViewController.player?.play()
-            provider.present(playerViewController, animated: true, completion: nil)
+            if let assetURL = first.assetURL {
+                Task { @MainActor [weak provider] in
+                    let playerViewController = AVPlayerViewController()
+                    playerViewController.player = AVPlayer(url: assetURL)
+                    playerViewController.player?.isMuted = true
+                    playerViewController.player?.play()
+                    provider?.present(playerViewController, animated: true, completion: nil)
+                }
+            } else {
+                // do nothing
+            }
             return
         }
         
-        let mediaPreviewViewModel = MediaPreviewViewModel(
-            context: provider.context,
-            item: .statusAttachment(.init(
+        let source: MediaPreviewTransitionItem.Source = {
+            switch mediaPreviewContext.containerView {
+            case .mediaView(let mediaView):
+                return .attachment(mediaView)
+            case .mediaGridContainerView(let mediaGridContainerView):
+                return .attachments(mediaGridContainerView)
+            }
+        }()
+        
+        await coordinateToMediaPreviewScene(
+            provider: provider,
+            status: status,
+            mediaPreviewItem: .statusAttachment(.init(
                 status: status,
                 attachments: attachments,
                 initialIndex: mediaPreviewContext.index,
                 preloadThumbnails: thumbnails
             )),
-            transitionItem: MediaPreviewTransitionItem(
-                source: .attachments(mediaPreviewContext.containerView),
+            mediaPreviewTransitionItem: MediaPreviewTransitionItem(
+                source: source,
                 transitionHostViewController: provider
-            )
+            ),
+            mediaPreviewContext: mediaPreviewContext
+        )
+    }
+    
+    @MainActor
+    static func coordinateToMediaPreviewScene(
+        provider: DataSourceProvider & MediaPreviewTransitionHostViewController,
+        status: StatusRecord,
+        mediaPreviewItem: MediaPreviewViewModel.Item,
+        mediaPreviewTransitionItem: MediaPreviewTransitionItem,
+        mediaPreviewContext: MediaPreviewContext
+    ) async {
+        let mediaPreviewViewModel = MediaPreviewViewModel(
+            context: provider.context,
+            item: mediaPreviewItem,
+            transitionItem: mediaPreviewTransitionItem
         )
         provider.coordinator.present(
             scene: .mediaPreview(viewModel: mediaPreviewViewModel),

@@ -2,30 +2,12 @@
   "object": {
     "pins": [
       {
-        "package": "ActiveLabel",
-        "repositoryURL": "https://github.com/TwidereProject/ActiveLabel.swift",
-        "state": {
-          "branch": null,
-          "revision": "58bfd297d926550c1964e9ec11a245439e150b6b",
-          "version": "2.0.0"
-        }
-      },
-      {
         "package": "Alamofire",
         "repositoryURL": "https://github.com/Alamofire/Alamofire.git",
         "state": {
           "branch": null,
           "revision": "d120af1e8638c7da36c8481fd61a66c0c08dc4fc",
           "version": "5.4.4"
-        }
-      },
-      {
-        "package": "AlamofireImage",
-        "repositoryURL": "https://github.com/Alamofire/AlamofireImage",
-        "state": {
-          "branch": null,
-          "revision": "98cbb00ce0ec5fc8e52a5b50a6bfc08d3e5aee10",
-          "version": "4.2.0"
         }
       },
       {
@@ -93,11 +75,11 @@
       },
       {
         "package": "KeyboardLayoutGuide",
-        "repositoryURL": "https://github.com/freshOS/KeyboardLayoutGuide.git",
+        "repositoryURL": "https://github.com/MainasuK/KeyboardLayoutGuide.git",
         "state": {
-          "branch": null,
-          "revision": "2a62a1a0b64e3c7db227c7da67e94292c1897903",
-          "version": "1.7.0"
+          "branch": "fix/iOS15",
+          "revision": "c66690d0c53817254265431f429b29bff7a29ba8",
+          "version": null
         }
       },
       {
@@ -105,8 +87,8 @@
         "repositoryURL": "https://github.com/onevcat/Kingfisher.git",
         "state": {
           "branch": null,
-          "revision": "318e319998bf555c3e914d5c3adb6da05af86a32",
-          "version": "7.1.1"
+          "revision": "0c02c46cfdc0656ce74fd0963a75e5000a0b7f23",
+          "version": "7.1.2"
         }
       },
       {
@@ -143,15 +125,6 @@
           "branch": null,
           "revision": "37e7a33de45bac894c0b08b56a2f755ebe4884e6",
           "version": "2.35.0"
-        }
-      },
-      {
-        "package": "SwiftMessages",
-        "repositoryURL": "https://github.com/SwiftKickMobile/SwiftMessages",
-        "state": {
-          "branch": null,
-          "revision": "1e49de7b3780b69927bc3e61903d8ec0693a3dc5",
-          "version": "9.0.5"
         }
       },
       {

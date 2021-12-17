@@ -15,44 +15,6 @@ import TwitterSDK
 import MastodonSDK
 
 extension APIService {
-//    func likeList(
-//        count: Int = 200,
-//        userID: String,
-//        maxID: String? = nil,
-//        twitterAuthenticationBox: AuthenticationService.TwitterAuthenticationBox
-//    ) -> AnyPublisher<Twitter.Response.Content<[Twitter.Entity.Tweet]>, Error> {
-//        let authorization = twitterAuthenticationBox.twitterAuthorization
-//        let requestTwitterUserID = twitterAuthenticationBox.twitterUserID
-//        let query = Twitter.API.Timeline.TimelineQuery(count: count, userID: userID, maxID: maxID)
-//        return Twitter.API.Favorites.list(session: session, authorization: authorization, query: query)
-//            .map { response -> AnyPublisher<Twitter.Response.Content<[Twitter.Entity.Tweet]>, Error> in
-//                let log = OSLog.api
-//                
-//                return APIService.Persist.persistTweets(
-//                    managedObjectContext: self.backgroundManagedObjectContext,
-//                    query: query,
-//                    response: response,
-//                    persistType: .likeList,
-//                    requestTwitterUserID: requestTwitterUserID,
-//                    log: log
-//                )
-//                .setFailureType(to: Error.self)
-//                .tryMap { result -> Twitter.Response.Content<[Twitter.Entity.Tweet]> in
-//                    switch result {
-//                    case .success:
-//                        return response
-//                    case .failure(let error):
-//                        throw error
-//                    }
-//                }
-//                .eraseToAnyPublisher()
-//            }
-//            .switchToLatest()
-//            .eraseToAnyPublisher()
-//    }
-}
-
-extension APIService {
     
     /// update status like state
     ///

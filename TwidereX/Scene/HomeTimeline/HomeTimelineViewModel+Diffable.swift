@@ -177,6 +177,10 @@ extension HomeTimelineViewModel {
 
     // load lastest
     func loadLatest() async {
+        isLoadingLatest = true
+        defer {
+            isLoadingLatest = false
+        }
         guard let authenticationContext = context.authenticationService.activeAuthenticationContext.value else { return }
         do {
             switch authenticationContext {

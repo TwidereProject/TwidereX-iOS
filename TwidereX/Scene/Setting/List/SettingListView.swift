@@ -104,7 +104,10 @@ struct SettingListView: View {
     var body: some View {
         List {
             Section(
-                header: Text(verbatim: L10n.Scene.Settings.SectionHeader.general).padding(.top, UITableView.groupedTableViewPaddingHeaderViewHeight)
+                // grouped tableView get header padding since iOS 15.
+                // no more top padding manually
+                // seealso: 'UITableView.sectionHeaderTopPadding'
+                header: Text(verbatim: L10n.Scene.Settings.SectionHeader.general)
             ) {
                 ForEach(SettingListView.generalSection) { entry in
                     Button(action: {

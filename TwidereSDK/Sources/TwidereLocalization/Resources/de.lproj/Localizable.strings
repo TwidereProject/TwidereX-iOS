@@ -49,8 +49,14 @@
 "Common.Alerts.BlockUserConfirm.Title" = "Do you want to block %@?";
 "Common.Alerts.BlockUserSuccess.Title" = "%@ wurde blockiert";
 "Common.Alerts.CancelFollowRequest.Message" = "Follow Anfrage für %@ abbrechen?";
+"Common.Alerts.DeleteTootConfirm.Message" = "Do you want to delete this toot?";
+"Common.Alerts.DeleteTootConfirm.Title" = "Delete Toot";
+"Common.Alerts.DeleteTweetConfirm.Message" = "Do you want to delete this tweet?";
+"Common.Alerts.DeleteTweetConfirm.Title" = "Delete Tweet";
 "Common.Alerts.FailedToBlockUser.Message" = "Bitte versuche es erneut";
 "Common.Alerts.FailedToBlockUser.Title" = "Fehler beim Blockieren von %@";
+"Common.Alerts.FailedToDeleteToot.Message" = "Bitte versuche es erneut";
+"Common.Alerts.FailedToDeleteToot.Title" = "Failed to Delete Toot";
 "Common.Alerts.FailedToDeleteTweet.Message" = "Bitte versuche es erneut";
 "Common.Alerts.FailedToDeleteTweet.Title" = "Tweet konnte nicht gelöscht werden";
 "Common.Alerts.FailedToFollowing.Message" = "Bitte versuche es erneut";
@@ -96,7 +102,10 @@
 "Common.Alerts.RateLimitExceeded.Title" = "Kappungsgrenze überschritten";
 "Common.Alerts.ReportAndBlockUserSuccess.Title" = "%@ wurde wegen Spam gemeldet und blockiert";
 "Common.Alerts.ReportUserSuccess.Title" = "%@ wurde wegen Spam gemeldet";
+"Common.Alerts.SignOutUserConfirm.Message" = "Do you want to sign out?";
+"Common.Alerts.SignOutUserConfirm.Title" = "Sign out";
 "Common.Alerts.TooManyRequests.Title" = "Zu viele Anfragen";
+"Common.Alerts.TootDeleted.Title" = "Toot Deleted";
 "Common.Alerts.TootFail.DraftSavedMessage" = "Your toot has been saved to Drafts.";
 "Common.Alerts.TootFail.Message" = "Bitte versuche es erneut";
 "Common.Alerts.TootFail.Title" = "Failed to Toot";
@@ -119,6 +128,7 @@
 "Common.Controls.Actions.Browse" = "Browse";
 "Common.Controls.Actions.Cancel" = "Abbrechen";
 "Common.Controls.Actions.Confirm" = "Bestätigen";
+"Common.Controls.Actions.Delete" = "Delete";
 "Common.Controls.Actions.Edit" = "Bearbeiten";
 "Common.Controls.Actions.Ok" = "Ok";
 "Common.Controls.Actions.OpenInSafari" = "In Safari öffnen";
@@ -128,6 +138,7 @@
 "Common.Controls.Actions.SavePhoto" = "Foto speichern";
 "Common.Controls.Actions.ShareMedia" = "Share media";
 "Common.Controls.Actions.SignIn" = "Einloggen";
+"Common.Controls.Actions.SignOut" = "Sign out";
 "Common.Controls.Actions.TakePhoto" = "Foto aufnehmen";
 "Common.Controls.Actions.Yes" = "Yes";
 "Common.Controls.Friendship.Actions.Block" = "Blockieren";

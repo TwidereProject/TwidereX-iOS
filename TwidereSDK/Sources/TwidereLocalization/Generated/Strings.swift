@@ -174,6 +174,18 @@ public enum L10n {
           return L10n.tr("Localizable", "Common.Alerts.CancelFollowRequest.Message", String(describing: p1))
         }
       }
+      public enum DeleteTootConfirm {
+        /// Do you want to delete this toot?
+        public static let message = L10n.tr("Localizable", "Common.Alerts.DeleteTootConfirm.Message")
+        /// Delete Toot
+        public static let title = L10n.tr("Localizable", "Common.Alerts.DeleteTootConfirm.Title")
+      }
+      public enum DeleteTweetConfirm {
+        /// Do you want to delete this tweet?
+        public static let message = L10n.tr("Localizable", "Common.Alerts.DeleteTweetConfirm.Message")
+        /// Delete Tweet
+        public static let title = L10n.tr("Localizable", "Common.Alerts.DeleteTweetConfirm.Title")
+      }
       public enum FailedToBlockUser {
         /// Please try again
         public static let message = L10n.tr("Localizable", "Common.Alerts.FailedToBlockUser.Message")
@@ -181,6 +193,12 @@ public enum L10n {
         public static func title(_ p1: Any) -> String {
           return L10n.tr("Localizable", "Common.Alerts.FailedToBlockUser.Title", String(describing: p1))
         }
+      }
+      public enum FailedToDeleteToot {
+        /// Please try again
+        public static let message = L10n.tr("Localizable", "Common.Alerts.FailedToDeleteToot.Message")
+        /// Failed to Delete Toot
+        public static let title = L10n.tr("Localizable", "Common.Alerts.FailedToDeleteToot.Title")
       }
       public enum FailedToDeleteTweet {
         /// Please try again
@@ -346,9 +364,19 @@ public enum L10n {
           return L10n.tr("Localizable", "Common.Alerts.ReportUserSuccess.Title", String(describing: p1))
         }
       }
+      public enum SignOutUserConfirm {
+        /// Do you want to sign out?
+        public static let message = L10n.tr("Localizable", "Common.Alerts.SignOutUserConfirm.Message")
+        /// Sign out
+        public static let title = L10n.tr("Localizable", "Common.Alerts.SignOutUserConfirm.Title")
+      }
       public enum TooManyRequests {
         /// Too Many Requests
         public static let title = L10n.tr("Localizable", "Common.Alerts.TooManyRequests.Title")
+      }
+      public enum TootDeleted {
+        /// Toot Deleted
+        public static let title = L10n.tr("Localizable", "Common.Alerts.TootDeleted.Title")
       }
       public enum TootFail {
         /// Your toot has been saved to Drafts.
@@ -435,6 +463,8 @@ public enum L10n {
         public static let cancel = L10n.tr("Localizable", "Common.Controls.Actions.Cancel")
         /// Confirm
         public static let confirm = L10n.tr("Localizable", "Common.Controls.Actions.Confirm")
+        /// Delete
+        public static let delete = L10n.tr("Localizable", "Common.Controls.Actions.Delete")
         /// Edit
         public static let edit = L10n.tr("Localizable", "Common.Controls.Actions.Edit")
         /// OK
@@ -453,6 +483,8 @@ public enum L10n {
         public static let shareMedia = L10n.tr("Localizable", "Common.Controls.Actions.ShareMedia")
         /// Sign in
         public static let signIn = L10n.tr("Localizable", "Common.Controls.Actions.SignIn")
+        /// Sign out
+        public static let signOut = L10n.tr("Localizable", "Common.Controls.Actions.SignOut")
         /// Take photo
         public static let takePhoto = L10n.tr("Localizable", "Common.Controls.Actions.TakePhoto")
         /// Yes
@@ -1349,6 +1381,14 @@ public enum L10n {
   }
 
   public enum Count {
+    /// Plural format key: "%#@count_people@"
+    public static func people(_ p1: Int) -> String {
+      return L10n.tr("Localizable", "count.people", p1)
+    }
+    /// Plural format key: "%#@count_vote@"
+    public static func vote(_ p1: Int) -> String {
+      return L10n.tr("Localizable", "count.vote", p1)
+    }
     public enum People {
       /// Plural format key: "%#@count_people_talking@"
       public static func talking(_ p1: Int) -> String {

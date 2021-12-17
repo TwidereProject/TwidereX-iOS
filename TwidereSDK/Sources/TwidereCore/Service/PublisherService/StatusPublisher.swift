@@ -8,7 +8,7 @@
 import Foundation
 import TwidereCommon
 
-public protocol StatusPublisher: AnyObject {
+public protocol StatusPublisher: ProgressReporting {
     var state: Published<StatusPublisherState>.Publisher { get }
     func publish(api: APIService, appSecret: AppSecret) async throws -> StatusPublishResult
 }

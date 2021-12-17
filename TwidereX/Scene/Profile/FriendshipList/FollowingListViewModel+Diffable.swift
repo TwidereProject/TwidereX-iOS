@@ -57,7 +57,7 @@ extension FriendshipListViewModel {
                         return snapshot
                     }()
                     
-                    if let currentState = self.stateMachine.currentState {
+                    if let currentState = await self.stateMachine.currentState {
                         switch currentState {
                         case is State.Initial, is State.Idle, is State.Loading, is State.Fail:
                             newSnapshot.appendItems([.bottomLoader], toSection: .main)

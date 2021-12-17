@@ -176,9 +176,15 @@ extension WelcomeViewController: WelcomeViewModelDelegate {
             .store(in: &authenticationController.disposeBag)
         
         self.twitterAuthenticationController = authenticationController
-        authenticationController.authenticationSession?.prefersEphemeralWebBrowserSession = true
-        authenticationController.authenticationSession?.presentationContextProvider = self
-        authenticationController.authenticationSession?.start()
+        switch exchange {
+        case .pin:
+            break
+        case .custom:
+            assert(authenticationController.authenticationSession != nil )
+            authenticationController.authenticationSession?.prefersEphemeralWebBrowserSession = true
+            authenticationController.authenticationSession?.presentationContextProvider = self
+            authenticationController.authenticationSession?.start()
+        }
     }
     
     // For PIN-Based OAuth Mastodon authentication (AuthenticationServices)

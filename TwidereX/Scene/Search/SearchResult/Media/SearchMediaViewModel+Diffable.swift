@@ -12,10 +12,13 @@ import CoreData
 import CoreDataStack
 
 extension SearchMediaViewModel {
-    func setupDiffableDataSource(
-        collectionView: UICollectionView
+    @MainActor func setupDiffableDataSource(
+        collectionView: UICollectionView,
+        statusMediaGalleryCollectionCellDelegate: StatusMediaGalleryCollectionCellDelegate
     ) {
-        let configuration = StatusMediaGallerySection.Configuration()
+        let configuration = StatusMediaGallerySection.Configuration(
+            statusMediaGalleryCollectionCellDelegate: statusMediaGalleryCollectionCellDelegate
+        )
         diffableDataSource = StatusMediaGallerySection.diffableDataSource(
             collectionView: collectionView,
             context: context,

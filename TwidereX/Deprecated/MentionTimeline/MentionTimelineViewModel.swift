@@ -31,7 +31,7 @@ final class MentionTimelineViewModel: NSObject {
     
     // output
     // top loader
-    private(set) lazy var loadLatestStateMachine: GKStateMachine = {
+    @MainActor private(set) lazy var loadLatestStateMachine: GKStateMachine = {
         // exclude timeline middle fetcher state
         let stateMachine = GKStateMachine(states: [
             LoadLatestState.Initial(viewModel: self),

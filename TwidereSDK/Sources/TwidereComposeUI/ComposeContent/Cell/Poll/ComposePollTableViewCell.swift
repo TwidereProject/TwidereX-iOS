@@ -17,7 +17,7 @@ public protocol ComposePollTableViewCellDelegate: AnyObject {
     func composePollTableViewCell(_ cell: ComposePollTableViewCell, pollOptionCollectionViewCell collectionViewCell: ComposePollOptionCollectionViewCell, textFieldDidReturn: UITextField)
     func composePollTableViewCell(_ cell: ComposePollTableViewCell, pollOptionCollectionViewCell collectionViewCell: ComposePollOptionCollectionViewCell, textBeforeDeleteBackward text: String?)
     
-    func composePollTableViewCell(_ cell: ComposePollTableViewCell, pollExpireConfigurationCollectionViewCell collectionViewCell: ComposePollExpireConfigurationCollectionViewCell, didSelectExpireConfigurationOption option: PollItem.ExpireConfiguration.Option)
+    func composePollTableViewCell(_ cell: ComposePollTableViewCell, pollExpireConfigurationCollectionViewCell collectionViewCell: ComposePollExpireConfigurationCollectionViewCell, didSelectExpireConfigurationOption option: PollComposeItem.ExpireConfiguration.Option)
 
     func composePollTableViewCell(_ cell: ComposePollTableViewCell, composePollMultipleConfigurationCollectionViewCell collectionViewCell: ComposePollMultipleConfigurationCollectionViewCell, multipleSelectionDidChange isMultiple: Bool)
 }
@@ -54,7 +54,7 @@ public final class ComposePollTableViewCell: UITableViewCell {
     public internal(set) var collectionViewHeightLayoutConstraint: NSLayoutConstraint!
     let collectionViewHeightDidUpdate = PassthroughSubject<Void, Never>()
     
-    public private(set) var diffableDataSource: UICollectionViewDiffableDataSource<PollSection, PollItem>?
+    public private(set) var diffableDataSource: UICollectionViewDiffableDataSource<PollComposeSection, PollComposeItem>?
     
     public override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -94,7 +94,8 @@ extension ComposePollTableViewCell {
                 cell.pollOptionView.textField.text = option.option
                 cell.pollOptionView.textField.placeholder = "Choice \(indexPath.row + 1)"      // TODO: i18n
                 cell.delegate = self
-                
+                cell.pollOptionView.viewModel.$content
+                    .assign(to: &option.$option)
                 self.customEmojiPickerInputViewModel?.configure(textInput: cell.pollOptionView.textField)
                 
                 return cell
@@ -143,7 +144,7 @@ extension ComposePollTableViewCell: ComposePollOptionCollectionViewCellDelegate 
 
 // MARK: - ComposePollExpireConfigurationCollectionViewCellDelegate
 extension ComposePollTableViewCell: ComposePollExpireConfigurationCollectionViewCellDelegate {
-    public func composePollExpireConfigurationCollectionViewCell(_ cell: ComposePollExpireConfigurationCollectionViewCell, didSelectExpireConfigurationOption option: PollItem.ExpireConfiguration.Option) {
+    public func composePollExpireConfigurationCollectionViewCell(_ cell: ComposePollExpireConfigurationCollectionViewCell, didSelectExpireConfigurationOption option: PollComposeItem.ExpireConfiguration.Option) {
         delegate?.composePollTableViewCell(self, pollExpireConfigurationCollectionViewCell: cell, didSelectExpireConfigurationOption: option)
     }
 }

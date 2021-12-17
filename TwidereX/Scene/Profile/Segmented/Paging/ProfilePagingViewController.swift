@@ -69,6 +69,9 @@ extension ProfilePagingViewController {
         changeCurrentIndexProgressive = { [weak self] (oldCell: ButtonBarViewCell?, newCell: ButtonBarViewCell?, progressPercentage: CGFloat, changeCurrentIndex: Bool, animated: Bool) -> Void in
             guard let _ = self else { return }
             guard changeCurrentIndex == true else { return }
+            oldCell?.imageView.contentMode = .center
+            newCell?.imageView.contentMode = .center
+            
             oldCell?.imageView.tintColor = .secondaryLabel
             newCell?.imageView.tintColor = .systemBlue
         }

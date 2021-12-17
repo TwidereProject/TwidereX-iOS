@@ -83,6 +83,7 @@ public enum Asset {
   public enum Editing {
     public static let ellipsisCircleFill = ImageAsset(name: "Editing/ellipsis.circle.fill")
     public static let ellipsis = ImageAsset(name: "Editing/ellipsis")
+    public static let ellipsisLarge = ImageAsset(name: "Editing/ellipsis.large")
     public static let ellipsisMini = ImageAsset(name: "Editing/ellipsis.mini")
     public static let featherPen = ImageAsset(name: "Editing/feather.pen")
     public static let sliderHorizontal3 = ImageAsset(name: "Editing/slider.horizontal.3")
@@ -98,16 +99,21 @@ public enum Asset {
   public enum Human {
     public static let eyeSlash = ImageAsset(name: "Human/eye.slash")
     public static let eyeSlashLarge = ImageAsset(name: "Human/eye.slash.large")
+    public static let eyeSlashMini = ImageAsset(name: "Human/eye.slash.mini")
     public static let faceSmiling = ImageAsset(name: "Human/face.smiling")
     public static let personExclamationMini = ImageAsset(name: "Human/person.exclamation.mini")
     public static let person = ImageAsset(name: "Human/person")
     public static let personPlusMini = ImageAsset(name: "Human/person.plus.mini")
   }
   public enum Indices {
+    public static let checkmarkCircleFill = ImageAsset(name: "Indices/checkmark.circle.fill")
     public static let checkmarkCircle = ImageAsset(name: "Indices/checkmark.circle")
+    public static let checkmarkSquareFill = ImageAsset(name: "Indices/checkmark.square.fill")
     public static let checkmarkSquare = ImageAsset(name: "Indices/checkmark.square")
+    public static let circle = ImageAsset(name: "Indices/circle")
     public static let exclamationmarkCircle = ImageAsset(name: "Indices/exclamationmark.circle")
     public static let exclamationmarkOctagon = ImageAsset(name: "Indices/exclamationmark.octagon")
+    public static let exclamationmarkTriangleLarge = ImageAsset(name: "Indices/exclamationmark.triangle.large")
     public static let infoCircle = ImageAsset(name: "Indices/info.circle")
     public static let square = ImageAsset(name: "Indices/square")
   }
@@ -117,6 +123,7 @@ public enum Asset {
   public enum Logo {
     public static let githubCircle = ImageAsset(name: "Logo/github.circle")
     public static let mastodon = ImageAsset(name: "Logo/mastodon")
+    public static let twitterCircle = ImageAsset(name: "Logo/twitter.circle")
     public static let twitter = ImageAsset(name: "Logo/twitter")
   }
   public enum Media {
@@ -155,6 +162,9 @@ public enum Asset {
     public static let speakerXmark = ImageAsset(name: "Object&Tools/speaker.xmark")
   }
   public enum Scene {
+    public enum About {
+      public static let twidereLarge = ImageAsset(name: "Scene/About/twidere.large")
+    }
     public enum Preference {
       public static let twidereAvatar = ImageAsset(name: "Scene/Preference/twidere.avatar")
     }

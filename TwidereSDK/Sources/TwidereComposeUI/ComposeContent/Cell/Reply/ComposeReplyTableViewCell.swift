@@ -44,6 +44,8 @@ public final class ComposeReplyTableViewCell: UITableViewCell {
 extension ComposeReplyTableViewCell {
     
     private func _init() {
+        selectionStyle = .none
+        
         statusView.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(statusView)
         NSLayoutConstraint.activate([

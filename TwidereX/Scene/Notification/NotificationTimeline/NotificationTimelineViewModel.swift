@@ -29,7 +29,7 @@ final class NotificationTimelineViewModel {
     var diffableDataSource: UITableViewDiffableDataSource<NotificationSection, NotificationItem>?
     var didLoadLatest = PassthroughSubject<Void, Never>()
     
-    private(set) lazy var loadOldestStateMachine: GKStateMachine = {
+    @MainActor private(set) lazy var loadOldestStateMachine: GKStateMachine = {
         // exclude timeline middle fetcher state
         let stateMachine = GKStateMachine(states: [
             LoadOldestState.Initial(viewModel: self),
