@@ -148,6 +148,14 @@ extension ProfileViewController {
         ])
         
         view.addSubview(floatyButton)
+        viewModel.relationshipViewModel.$isMyself
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] isMyself in
+                guard let self = self else { return }
+                let image = isMyself ? Asset.Editing.featherPen.image : Asset.Arrows.arrowshapeTurnUpLeftFill.image.withTintColor(.white)
+                self.floatyButton.buttonImage = image
+            }
+            .store(in: &disposeBag)
         
         tabBarPagerController.delegate = self
         tabBarPagerController.dataSource = self

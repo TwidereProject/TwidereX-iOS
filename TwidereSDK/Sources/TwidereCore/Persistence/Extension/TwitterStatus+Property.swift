@@ -11,6 +11,7 @@ import CoreData
 import CoreDataStack
 import CoreGraphics
 import TwitterSDK
+import Fuzi
 
 // MARK: - V1
 
@@ -22,6 +23,16 @@ extension TwitterStatus.Property {
             likeCount: entity.favoriteCount.flatMap(Int64.init) ?? 0,
             replyCount: 0,
             repostCount: entity.retweetCount.flatMap(Int64.init) ?? 0,
+            source: entity.source.flatMap { source in
+                do {
+                    let document = try HTMLDocument(string: source)
+                    let content = document.body?.stringValue
+                    return content
+                } catch {
+                    assertionFailure(error.localizedDescription)
+                    return nil
+                }
+            },
             replyToStatusID: entity.inReplyToStatusIDStr,
             replyToUserID: entity.inReplyToUserIDStr,
             createdAt: entity.createdAt,
@@ -117,6 +128,7 @@ extension TwitterStatus.Property {
             likeCount: status.publicMetrics.flatMap { Int64($0.likeCount) } ?? 0,
             replyCount: status.publicMetrics.flatMap { Int64($0.replyCount) } ?? 0,
             repostCount: status.publicMetrics.flatMap { Int64($0.retweetCount) } ?? 0,
+            source: status.source,
             replyToStatusID: status.repliedToID,
             replyToUserID: status.inReplyToUserID,
             createdAt: status.createdAt,

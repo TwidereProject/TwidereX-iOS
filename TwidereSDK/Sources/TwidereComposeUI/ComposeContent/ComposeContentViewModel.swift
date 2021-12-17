@@ -667,7 +667,7 @@ extension ComposeContentViewModel {
         case .authorizedAlways, .authorizedWhenInUse:
             return true
         case .restricted, .denied:
-            let alertController = UIAlertController(title: "Location Access Disabled", message: "Please enable location access to compose geo marked tweet", preferredStyle: .alert)
+            let alertController = UIAlertController(title: "Location Access Disabled", message: "Please enable location access to compose geo marked tweet", preferredStyle: .alert)    // FIXME: i18n
             let openSettingsAction = UIAlertAction(title: "Open Settings", style: .default) { _ in
                 guard let url = URL(string: UIApplication.openSettingsURLString) else { return }
                 UIApplication.shared.open(url)

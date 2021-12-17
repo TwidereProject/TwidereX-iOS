@@ -199,7 +199,7 @@ public final class StatusView: UIView {
         imageView.tintColor = .secondaryLabel
         return imageView
     }()
-    public let locationLabel = PlainLabel(style: .statusAuthorUsername)
+    public let locationLabel = PlainLabel(style: .statusLocation)
 
     // metrics
     let metricsDashboardView = StatusMetricsDashboardView()
@@ -463,7 +463,7 @@ extension StatusView.Style {
         
         // location content: H - [ locationMapPinImageView | locationLabel ]
         contentContainerView.addArrangedSubview(statusView.locationContainer)
-        
+
         statusView.locationMapPinImageView.translatesAutoresizingMaskIntoConstraints = false
         statusView.locationLabel.translatesAutoresizingMaskIntoConstraints = false
         
@@ -618,16 +618,29 @@ extension StatusView.Style {
         statusView.quoteStatusView = quoteStatusView
         statusView.containerStackView.addArrangedSubview(quoteStatusView)
         
-        // location content: H - [ locationMapPinImageView | locationLabel ]
+        // location content: H - [ padding | locationMapPinImageView | locationLabel | padding ]
         statusView.containerStackView.addArrangedSubview(statusView.locationContainer)
         
         statusView.locationMapPinImageView.translatesAutoresizingMaskIntoConstraints = false
         statusView.locationLabel.translatesAutoresizingMaskIntoConstraints = false
         
+        // locationLeadingPadding
+        let locationLeadingPadding = UIView()
+        locationLeadingPadding.translatesAutoresizingMaskIntoConstraints = false
+        statusView.locationContainer.addArrangedSubview(locationLeadingPadding)
         // locationMapPinImageView
         statusView.locationContainer.addArrangedSubview(statusView.locationMapPinImageView)
         // locationLabel
         statusView.locationContainer.addArrangedSubview(statusView.locationLabel)
+        // locationTrailingPadding
+        let locationTrailingPadding = UIView()
+        locationTrailingPadding.translatesAutoresizingMaskIntoConstraints = false
+        statusView.locationContainer.addArrangedSubview(locationTrailingPadding)
+        
+        // center alignment
+        NSLayoutConstraint.activate([
+            locationLeadingPadding.widthAnchor.constraint(equalTo: locationTrailingPadding.widthAnchor).priority(.defaultHigh),
+        ])
         
         NSLayoutConstraint.activate([
             statusView.locationMapPinImageView.heightAnchor.constraint(equalTo: statusView.locationLabel.heightAnchor, multiplier: 1.0).priority(.required - 1),
@@ -639,6 +652,16 @@ extension StatusView.Style {
         
         // metrics
         statusView.containerStackView.addArrangedSubview(statusView.metricsDashboardView)
+        
+        UIContentSizeCategory.publisher
+            .sink { category in
+                if category >= .extraExtraLarge {
+                    statusView.metricsDashboardView.metaContainer.axis = .vertical
+                } else {
+                    statusView.metricsDashboardView.metaContainer.axis = .horizontal
+                }
+            }
+            .store(in: &statusView._disposeBag)
         
         // toolbar
         statusView.containerStackView.addArrangedSubview(statusView.toolbar)

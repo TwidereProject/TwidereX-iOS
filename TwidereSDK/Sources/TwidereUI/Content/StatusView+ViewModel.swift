@@ -58,6 +58,7 @@ extension StatusView {
         @Published public var expired: Bool = false
         
         @Published public var location: String?
+        @Published public var source: String?
         
         @Published public var isRepost: Bool = false
         @Published public var isLike: Bool = false
@@ -353,6 +354,11 @@ extension StatusView.ViewModel {
             self.contentRevealChangePublisher.send()
         }
         .store(in: &disposeBag)
+        $source
+            .sink { source in
+                statusView.metricsDashboardView.sourceLabel.text = source ?? ""
+            }
+            .store(in: &disposeBag)
     }
     
     private func bindMedia(statusView: StatusView) {
@@ -646,6 +652,7 @@ extension StatusView {
         viewModel.spoilerContent = nil
         viewModel.content = metaContent
         viewModel.sharePlaintextContent = status.displayText
+        viewModel.source = status.source
     }
     
     private func configureMedia(twitterStatus status: TwitterStatus) {
@@ -864,6 +871,8 @@ extension StatusView {
         status.publisher(for: \.isContentReveal)
             .assign(to: \.isContentReveal, on: viewModel)
             .store(in: &disposeBag)
+        
+        viewModel.source = nil
     }
     
     private func configureMedia(mastodonStatus status: MastodonStatus) {
