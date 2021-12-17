@@ -30,13 +30,6 @@
         "identifier" : "DBDA8E3E24FCF8A7006750DC",
         "name" : "TwidereXUITests"
       }
-    },
-    {
-      "target" : {
-        "containerPath" : "container:TwidereX.xcodeproj",
-        "identifier" : "DBE76C97250093CA00DEB0FC",
-        "name" : "CoreDataStackTests"
-      }
     }
   ],
   "version" : 1

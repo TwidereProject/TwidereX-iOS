@@ -12,48 +12,75 @@ import CoreData
 import CoreDataStack
 
 extension UserMediaTimelineViewModel {
-    func setupDiffableDataSource(
+    @MainActor func setupDiffableDataSource(
         collectionView: UICollectionView,
-        mediaCollectionViewCellDelegate: MediaCollectionViewCellDelegate,
-        timelineHeaderCollectionViewCellDelegate: TimelineHeaderCollectionViewCellDelegate
+        statusMediaGalleryCollectionCellDelegate: StatusMediaGalleryCollectionCellDelegate
     ) {
-        diffableDataSource = MediaSection.collectionViewDiffableDataSource(
-            collectionView: collectionView,
-            managedObjectContext: fetchedResultsController.managedObjectContext,
-            mediaCollectionViewCellDelegate: mediaCollectionViewCellDelegate, timelineHeaderCollectionViewCellDelegate: timelineHeaderCollectionViewCellDelegate
+        let configuration = StatusMediaGallerySection.Configuration(
+            statusMediaGalleryCollectionCellDelegate: statusMediaGalleryCollectionCellDelegate
         )
-        items.value = []
-    }
-}
+        diffableDataSource = StatusMediaGallerySection.diffableDataSource(
+            collectionView: collectionView,
+            context: context,
+            configuration: configuration
+        )
 
-// MARK: - NSFetchedResultsControllerDelegate
-extension UserMediaTimelineViewModel: NSFetchedResultsControllerDelegate {
-    func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChangeContentWith snapshot: NSDiffableDataSourceSnapshotReference) {
-        os_log("%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
+        var snapshot = NSDiffableDataSourceSnapshot<StatusMediaGallerySection, StatusItem>()
+        snapshot.appendSections([.main])
+        diffableDataSource?.apply(snapshot)
         
-        guard diffableDataSource != nil else { return }
-        let oldSnapshot = diffableDataSource.snapshot()
-
-        var oldSnapshotAttributeDict: [NSManagedObjectID : Item.PhotoAttribute] = [:]
-        for item in oldSnapshot.itemIdentifiers {
-            guard case let .photoTweet(objectID, attribute) = item else { continue }
-            oldSnapshotAttributeDict[objectID] = attribute
-        }
-
-        let tweets = fetchedResultsController.fetchedObjects ?? []
-        guard tweets.count == tweetIDs.value.count else { return }
-
-        var items: [Item] = []
-        for tweet in tweets {
-            guard tweet.deletedAt == nil else { continue }
-            let mediaArray = Array(tweet.media ?? Set())
-            let photoMedia = mediaArray.filter { $0.type == "photo" }
-            guard !photoMedia.isEmpty else { continue }
-            let attribute = oldSnapshotAttributeDict[tweet.objectID] ?? Item.PhotoAttribute(index: 0)
-            let item = Item.photoTweet(objectID: tweet.objectID, attribute: attribute)
-            items.append(item)
-        }
-
-        self.items.value = items
+        statusRecordFetchedResultController.records
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] records in
+                guard let self = self else { return }
+                guard let _ = self.diffableDataSource else { return }
+                
+                let recordsCount = records.count
+                self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): incoming \(recordsCount) objects")
+                Task {
+                    let start = CACurrentMediaTime()
+                    defer {
+                        let end = CACurrentMediaTime()
+                        self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): cost \(end - start, format: .fixed(precision: 4))s to process \(recordsCount) feeds")
+                    }
+                    
+                    var newSnapshot: NSDiffableDataSourceSnapshot<StatusMediaGallerySection, StatusItem> = {
+                        var snapshot = NSDiffableDataSourceSnapshot<StatusMediaGallerySection, StatusItem>()
+                        snapshot.appendSections([.main, .footer])
+                        let newItems: [StatusItem] = records.map { .status($0) }
+                        snapshot.appendItems(newItems, toSection: .main)
+                        return snapshot
+                    }()
+                    
+                    if let currentState = self.stateMachine.currentState {
+                        switch currentState {
+                        case is State.Reloading, is State.Idle, is State.LoadingMore, is State.Fail:
+                            newSnapshot.appendItems([.bottomLoader], toSection: .footer)
+                        case is State.NotAuthorized:
+                            break
+                        case is State.Blocked:
+                            break
+                        case is State.Suspended:
+                            break
+                        case is State.NoMore:
+                            break
+                        default:
+                            assertionFailure()
+                            break
+                        }
+                    }
+                    
+                    await self.updateDataSource(snapshot: newSnapshot, animatingDifferences: false)
+                    self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): applied new snapshot")
+                }
+            }
+            .store(in: &disposeBag)
+    }   // end func setupDiffableDataSource
+    
+    @MainActor private func updateDataSource(
+        snapshot: NSDiffableDataSourceSnapshot<StatusMediaGallerySection, StatusItem>,
+        animatingDifferences: Bool
+    ) async {
+        await diffableDataSource?.apply(snapshot, animatingDifferences: animatingDifferences)
     }
 }

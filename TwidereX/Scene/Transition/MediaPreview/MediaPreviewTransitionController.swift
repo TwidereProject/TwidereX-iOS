@@ -55,19 +55,25 @@ extension MediaPreviewTransitionController: UIGestureRecognizerDelegate {
     }
 
     func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
-        if gestureRecognizer === panGestureRecognizer {
+        switch gestureRecognizer {
+        case panGestureRecognizer:
             guard let mediaPreviewViewController = self.mediaPreviewViewController else { return false }
-            return mediaPreviewViewController.isInteractiveDismissable()
+            return mediaPreviewViewController.isInteractiveDismissible()
+        default:
+            assertionFailure()
+            return false
         }
-        
-        return false
     }
 }
 
 // MARK: - UIViewControllerTransitioningDelegate
 extension MediaPreviewTransitionController: UIViewControllerTransitioningDelegate {
     
-    func animationController(forPresented presented: UIViewController, presenting: UIViewController, source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+    func animationController(
+        forPresented presented: UIViewController,
+        presenting: UIViewController,
+        source: UIViewController
+    ) -> UIViewControllerAnimatedTransitioning? {
         guard let mediaPreviewViewController = presented as? MediaPreviewViewController else {
             assertionFailure()
             return nil
@@ -75,10 +81,9 @@ extension MediaPreviewTransitionController: UIViewControllerTransitioningDelegat
         self.mediaPreviewViewController = mediaPreviewViewController
         self.mediaPreviewViewController?.view.addGestureRecognizer(panGestureRecognizer)
         
-        let transitionItem = MediaPreviewTransitionItem(id: UUID().uuidString)
         return MediaHostToMediaPreviewViewControllerAnimatedTransitioning(
             operation: .push,
-            transitionItem: transitionItem,
+            transitionItem: mediaPreviewViewController.viewModel.transitionItem,
             panGestureRecognizer: panGestureRecognizer
         )
     }
@@ -93,10 +98,10 @@ extension MediaPreviewTransitionController: UIViewControllerTransitioningDelegat
             assertionFailure()
             return nil
         }
-        let transitionItem = MediaPreviewTransitionItem(id: UUID().uuidString)
+        
         return MediaHostToMediaPreviewViewControllerAnimatedTransitioning(
             operation: .pop,
-            transitionItem: transitionItem,
+            transitionItem: mediaPreviewViewController.viewModel.transitionItem,
             panGestureRecognizer: panGestureRecognizer
         )
     }

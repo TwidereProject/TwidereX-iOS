@@ -8,6 +8,7 @@
 import os.log
 import Foundation
 import GameplayKit
+import CoreDataStack
 
 extension HomeTimelineViewModel {
     class LoadOldestState: GKState {
@@ -18,8 +19,8 @@ extension HomeTimelineViewModel {
         }
         
         override func didEnter(from previousState: GKState?) {
+            super.didEnter(from: previousState)
             os_log("%{public}s[%{public}ld], %{public}s: enter %s, previous: %s", ((#file as NSString).lastPathComponent), #line, #function, self.debugDescription, previousState.debugDescription)
-            viewModel?.loadOldestStateMachinePublisher.send(self)
         }
     }
 }
@@ -28,12 +29,14 @@ extension HomeTimelineViewModel.LoadOldestState {
     class Initial: HomeTimelineViewModel.LoadOldestState {
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {
             guard let viewModel = viewModel else { return false }
-            guard !(viewModel.fetchedResultsController.fetchedObjects ?? []).isEmpty else { return false } 
+            guard !viewModel.fetchedResultsController.records.value.isEmpty else { return false }
             return stateClass == Loading.self
         }
     }
     
     class Loading: HomeTimelineViewModel.LoadOldestState {
+        let logger = Logger(subsystem: "HomeTimelineViewModel.LoadOldestState", category: "StateMachine")
+        
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {
             return stateClass == Fail.self || stateClass == Idle.self || stateClass == NoMore.self
         }
@@ -41,44 +44,88 @@ extension HomeTimelineViewModel.LoadOldestState {
         override func didEnter(from previousState: GKState?) {
             super.didEnter(from: previousState)
             guard let viewModel = viewModel, let stateMachine = stateMachine else { return }
-            guard let activeTwitterAuthenticationBox = viewModel.context.authenticationService.activeTwitterAuthenticationBox.value else {
-                assertionFailure()
+            
+            guard let feed = viewModel.fetchedResultsController.records.value.last else {
                 stateMachine.enter(Fail.self)
                 return
             }
             
-            guard let last = viewModel.fetchedResultsController.fetchedObjects?.last,
-                  let tweet = last.tweet else {
-                stateMachine.enter(Idle.self)
+            Task {
+                await fetch(anchor: feed)
+            }
+        }
+
+        private func fetch(anchor record: ManagedObjectRecord<Feed>) async {
+            guard let viewModel = viewModel, let stateMachine = stateMachine else { return }
+            
+            guard let authenticationContext = viewModel.context.authenticationService.activeAuthenticationContext.value else {
+                await enter(state: Fail.self)
                 return
             }
             
-            // TODO: only set large count when using Wi-Fi
-            let maxID = tweet.id
-            viewModel.context.apiService.twitterHomeTimeline(count: 200, maxID: maxID, twitterAuthenticationBox: activeTwitterAuthenticationBox)
-                .delay(for: .seconds(1), scheduler: DispatchQueue.main)
-                .receive(on: DispatchQueue.main)
-                .sink { completion in
-                    switch completion {
-                    case .failure(let error):
-                        // TODO: handle error
-                        os_log("%{public}s[%{public}ld], %{public}s: fetch tweets failed. %s", ((#file as NSString).lastPathComponent), #line, #function, error.localizedDescription)
-                    case .finished:
-                        // handle isFetchingLatestTimeline in fetch controller delegate
-                        break
-                    }
-                } receiveValue: { response in
-                    let tweets = response.value
-                    // enter no more state when no new tweets
-                    if tweets.isEmpty || (tweets.count == 1 && tweets[0].idStr == maxID) {
-                        stateMachine.enter(NoMore.self)
-                    } else {
-                        stateMachine.enter(Idle.self)
-                    }
+            // generate input from timeline last feed entry
+            let managedObjectContext = viewModel.context.managedObjectContext
+            let _input: StatusListFetchViewModel.Input? = await managedObjectContext.perform {
+                guard let feed = record.object(in: managedObjectContext) else { return nil }
+                switch (feed.content, authenticationContext) {
+                case (.twitter(let status), .twitter(let authenticationContext)):
+                    return StatusListFetchViewModel.Input(
+                        fetchContext: .twitter(.init(
+                            authenticationContext: authenticationContext,
+                            searchText: nil,
+                            maxID: status.id,
+                            nextToken: nil,
+                            count: 100,
+                            excludeReplies: false,
+                            onlyMedia: false,
+                            userIdentifier: nil
+                        ))
+                    )
+                case (.mastodon(let status), .mastodon(let authenticationContext)):
+                    return StatusListFetchViewModel.Input(
+                        fetchContext: .mastodon(.init(
+                            authenticationContext: authenticationContext,
+                            searchText: nil,
+                            offset: nil,
+                            maxID: status.id,
+                            count: 100,
+                            excludeReplies: false,
+                            excludeReblogs: false,
+                            onlyMedia: false,
+                            userIdentifier: nil
+                        ))
+                    )
+                default:
+                    return nil
                 }
-                .store(in: &viewModel.disposeBag)
+            }
+
+            guard let input = _input else {
+                await enter(state: Fail.self)
+                return
+            }
+
+            do {
+                logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): fetch…")
+                let output = try await StatusListFetchViewModel.homeTimeline(context: viewModel.context, input: input)
+                if output.hasMore {
+                    await enter(state: Idle.self)
+                } else {
+                    await enter(state: NoMore.self)
+                }
+                logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): fetch success")
+            } catch {
+                logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): fetch failure: \(error.localizedDescription)")
+                await enter(state: Fail.self)
+            }
         }
-    }
+        
+        @MainActor
+        func enter(state: HomeTimelineViewModel.LoadOldestState.Type) {
+            stateMachine?.enter(state)
+        }
+        
+    }   // end class Loading
     
     class Fail: HomeTimelineViewModel.LoadOldestState {
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {

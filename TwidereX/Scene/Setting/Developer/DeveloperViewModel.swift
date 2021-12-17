@@ -11,7 +11,7 @@ import Foundation
 import SwiftUI
 import Combine
 import SwiftyJSON
-import TwitterAPI
+import TwitterSDK
 
 final class DeveloperViewModel: ObservableObject {
     

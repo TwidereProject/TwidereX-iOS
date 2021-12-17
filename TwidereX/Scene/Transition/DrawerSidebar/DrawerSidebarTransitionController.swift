@@ -9,15 +9,15 @@
 import os.log
 import UIKit
 
-protocol DrawerSidebarTransitionableViewController: UIViewController & NeedsDependency {
+protocol DrawerSidebarTransitionHostViewController: UIViewController & NeedsDependency {
     var drawerSidebarTransitionController: DrawerSidebarTransitionController! { get }
     var avatarBarButtonItem: AvatarBarButtonItem { get }
 }
 
 final class DrawerSidebarTransitionController: NSObject {
     
-    weak var drawerSidebarTransitionableViewController: DrawerSidebarTransitionableViewController?
-    weak var drawerSidebarViewController: DrawerSidebarViewController?
+    weak var hostViewController: DrawerSidebarTransitionHostViewController?
+    weak var sidebarViewController: DrawerSidebarViewController?
     
     private var screenEdgePanGestureRecognizer: UIScreenEdgePanGestureRecognizer = {
         let gestureRecognizer = UIScreenEdgePanGestureRecognizer()
@@ -37,15 +37,16 @@ final class DrawerSidebarTransitionController: NSObject {
     
     var wantsInteractive = false
     
-    init(drawerSidebarTransitionableViewController: DrawerSidebarTransitionableViewController) {
-        self.drawerSidebarTransitionableViewController = drawerSidebarTransitionableViewController
+    init(hostViewController: DrawerSidebarTransitionHostViewController) {
+        self.hostViewController = hostViewController
         super.init()
                 
         // edge pan present gesture
         screenEdgePanGestureRecognizer.delegate = self
         screenEdgePanGestureRecognizer.addTarget(self, action: #selector(DrawerSidebarTransitionController.edgePan(_:)))
-        drawerSidebarTransitionableViewController.view.addGestureRecognizer(screenEdgePanGestureRecognizer)
-        if let interactivePopGestureRecognizer = drawerSidebarTransitionableViewController.navigationController?.interactivePopGestureRecognizer {
+        hostViewController.view.addGestureRecognizer(screenEdgePanGestureRecognizer)
+        
+        if let interactivePopGestureRecognizer = hostViewController.navigationController?.interactivePopGestureRecognizer {
             screenEdgePanGestureRecognizer.require(toFail: interactivePopGestureRecognizer)
         }
         
@@ -68,18 +69,14 @@ extension DrawerSidebarTransitionController {
 extension DrawerSidebarTransitionController: UIViewControllerTransitioningDelegate {
     
     func animationController(forPresented presented: UIViewController, presenting: UIViewController, source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
-        if #available(iOS 14.0, *) {
-            guard !UIAccessibility.prefersCrossFadeTransitions else { return nil }
-        } else {
-            // do nothing
-        }
+        guard !UIAccessibility.prefersCrossFadeTransitions else { return nil }
         
         guard let drawerSidebarViewController = presented as? DrawerSidebarViewController else {
             assertionFailure()
             return nil
         }
 
-        self.drawerSidebarViewController = drawerSidebarViewController
+        self.sidebarViewController = drawerSidebarViewController
         drawerSidebarViewController.view.addGestureRecognizer(panGestureRecognizer)
         return DrawerSidebarAnimatedTransitioning(
             operation: .push,
@@ -103,11 +100,7 @@ extension DrawerSidebarTransitionController: UIViewControllerTransitioningDelega
     }
     
     func animationController(forDismissed dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
-        if #available(iOS 14.0, *) {
-            guard !UIAccessibility.prefersCrossFadeTransitions else { return nil }
-        } else {
-            // do nothing
-        }
+        guard !UIAccessibility.prefersCrossFadeTransitions else { return nil }
         
         return DrawerSidebarAnimatedTransitioning(
             operation: .pop,
@@ -138,9 +131,11 @@ extension DrawerSidebarTransitionController: UIViewControllerTransitioningDelega
 
 extension DrawerSidebarTransitionController {
 
+    @MainActor
     @objc private func edgePan(_ sender: UIPanGestureRecognizer) {
         guard let transitionType = transitionType else { return }
         guard sender.state == .began else { return }
+        guard let hostViewController = hostViewController else { return }
 
         // check transition is not on the fly
         guard interactiveTransitioning == nil else {
@@ -150,9 +145,9 @@ extension DrawerSidebarTransitionController {
         switch transitionType {
         case .present:
             wantsInteractive = true
-            drawerSidebarTransitionableViewController?.coordinator.present(
-                scene: .drawerSidebar,
-                from: drawerSidebarTransitionableViewController,
+            hostViewController.coordinator.present(
+                scene: .drawerSidebar(viewModel: DrawerSidebarViewModel(context: hostViewController.context)),
+                from: hostViewController,
                 transition: .custom(transitioningDelegate: self)
             )
 
@@ -177,7 +172,7 @@ extension DrawerSidebarTransitionController {
             break
         case .dismiss:
             wantsInteractive = true
-            drawerSidebarViewController?.dismiss(animated: true, completion: nil)
+            sidebarViewController?.dismiss(animated: true, completion: nil)
         }
     }
 
@@ -187,7 +182,7 @@ extension DrawerSidebarTransitionController {
 extension DrawerSidebarTransitionController: UIGestureRecognizerDelegate {
 
     func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
-        if drawerSidebarTransitionableViewController?.navigationController?.topViewController is DrawerSidebarTransitionableViewController {
+        if hostViewController?.navigationController?.topViewController is DrawerSidebarTransitionHostViewController {
             if (gestureRecognizer is UIPanGestureRecognizer && otherGestureRecognizer.view is UITableView) ||
                (otherGestureRecognizer is UIPanGestureRecognizer && gestureRecognizer.view is UITableView) {
                 // disable tableView scroll when pan
@@ -213,12 +208,12 @@ extension DrawerSidebarTransitionController: UIGestureRecognizerDelegate {
             return wantsInteractive
         }
         
-        if gestureRecognizer === screenEdgePanGestureRecognizer, drawerSidebarTransitionableViewController != nil {
+        if gestureRecognizer === screenEdgePanGestureRecognizer, hostViewController != nil {
             transitionType = .present
             return true
         }
         
-        if gestureRecognizer === panGestureRecognizer, drawerSidebarViewController != nil {
+        if gestureRecognizer === panGestureRecognizer, sidebarViewController != nil {
             transitionType = .dismiss
             return true
         }

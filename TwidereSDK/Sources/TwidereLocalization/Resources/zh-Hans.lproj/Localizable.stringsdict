@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+  <dict>
+    <key>count.vote</key>
+    <dict>
+      <key>NSStringLocalizedFormatKey</key>
+      <string>%#@count_vote@</string>
+      <key>count_vote</key>
+      <dict>
+        <key>NSStringFormatSpecTypeKey</key>
+        <string>NSStringPluralRuleType</string>
+        <key>NSStringFormatValueTypeKey</key>
+        <string>ld</string>
+        <key>other</key>
+        <string>%ld 票</string>
+      </dict>
+    </dict>
+    <key>count.people</key>
+    <dict>
+      <key>NSStringLocalizedFormatKey</key>
+      <string>%#@count_people@</string>
+      <key>count_people</key>
+      <dict>
+        <key>NSStringFormatSpecTypeKey</key>
+        <string>NSStringPluralRuleType</string>
+        <key>NSStringFormatValueTypeKey</key>
+        <string>ld</string>
+        <key>other</key>
+        <string>%ld 人</string>
+      </dict>
+    </dict>
+    <key>count.people.talking</key>
+    <dict>
+      <key>NSStringLocalizedFormatKey</key>
+      <string>%#@count_people_talking@</string>
+      <key>count_people_talking</key>
+      <dict>
+        <key>NSStringFormatSpecTypeKey</key>
+        <string>NSStringPluralRuleType</string>
+        <key>NSStringFormatValueTypeKey</key>
+        <string>ld</string>
+        <key>other</key>
+        <string>%ld 人正在讨论</string>
+      </dict>
+    </dict>
+    <key>date.year.left</key>
+    <dict>
+      <key>NSStringLocalizedFormatKey</key>
+      <string>%#@count_year_left@</string>
+      <key>count_year_left</key>
+      <dict>
+        <key>NSStringFormatSpecTypeKey</key>
+        <string>NSStringPluralRuleType</string>
+        <key>NSStringFormatValueTypeKey</key>
+        <string>ld</string>
+        <key>other</key>
+        <string>剩余 %ld 年</string>
+      </dict>
+    </dict>
+    <key>date.month.left</key>
+    <dict>
+      <key>NSStringLocalizedFormatKey</key>
+      <string>%#@count_month_left@</string>
+      <key>count_month_left</key>
+      <dict>
+        <key>NSStringFormatSpecTypeKey</key>
+        <string>NSStringPluralRuleType</string>
+        <key>NSStringFormatValueTypeKey</key>
+        <string>ld</string>
+        <key>other</key>
+        <string>剩余 %ld 个月</string>
+      </dict>
+    </dict>
+    <key>date.day.left</key>
+    <dict>
+      <key>NSStringLocalizedFormatKey</key>
+      <string>%#@count_day_left@</string>
+      <key>count_day_left</key>
+      <dict>
+        <key>NSStringFormatSpecTypeKey</key>
+        <string>NSStringPluralRuleType</string>
+        <key>NSStringFormatValueTypeKey</key>
+        <string>ld</string>
+        <key>other</key>
+        <string>剩余 %ld 天</string>
+      </dict>
+    </dict>
+    <key>date.hour.left</key>
+    <dict>
+      <key>NSStringLocalizedFormatKey</key>
+      <string>%#@count_hour_left@</string>
+      <key>count_hour_left</key>
+      <dict>
+        <key>NSStringFormatSpecTypeKey</key>
+        <string>NSStringPluralRuleType</string>
+        <key>NSStringFormatValueTypeKey</key>
+        <string>ld</string>
+        <key>other</key>
+        <string>剩余 %ld 小时</string>
+      </dict>
+    </dict>
+    <key>date.minute.left</key>
+    <dict>
+      <key>NSStringLocalizedFormatKey</key>
+      <string>%#@count_minute_left@</string>
+      <key>count_minute_left</key>
+      <dict>
+        <key>NSStringFormatSpecTypeKey</key>
+        <string>NSStringPluralRuleType</string>
+        <key>NSStringFormatValueTypeKey</key>
+        <string>ld</string>
+        <key>other</key>
+        <string>剩余 %ld 分钟</string>
+      </dict>
+    </dict>
+    <key>date.second.left</key>
+    <dict>
+      <key>NSStringLocalizedFormatKey</key>
+      <string>%#@count_second_left@</string>
+      <key>count_second_left</key>
+      <dict>
+        <key>NSStringFormatSpecTypeKey</key>
+        <string>NSStringPluralRuleType</string>
+        <key>NSStringFormatValueTypeKey</key>
+        <string>ld</string>
+        <key>other</key>
+        <string>剩余 %ld 秒</string>
+      </dict>
+    </dict>
+  </dict>
+</plist>

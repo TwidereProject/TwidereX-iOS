@@ -66,3 +66,22 @@ extension UIViewController {
     }
     
 }
+
+extension UIViewController {
+    
+    /// https://stackoverflow.com/a/27301207/3797903
+    var isModal: Bool {
+        let presentingIsModal = presentingViewController != nil
+        let presentingIsNavigation = navigationController != nil && navigationController?.presentingViewController?.presentedViewController == navigationController
+        let presentingIsTabBar = tabBarController?.presentingViewController is UITabBarController
+        
+        return presentingIsModal || presentingIsNavigation || presentingIsTabBar
+    }
+    
+}
+
+extension UIViewController {
+    var isDisplaying: Bool {
+        return view.window != nil 
+    }
+}

@@ -10,34 +10,41 @@ import UIKit
 import Combine
 import CoreData
 
-protocol TimelineMiddleLoaderTableViewCellDelegate: class {
-    func configure(cell: TimelineMiddleLoaderTableViewCell, upperTimelineIndexObjectID: NSManagedObjectID)
+protocol TimelineMiddleLoaderTableViewCellDelegate: AnyObject {
     func timelineMiddleLoaderTableViewCell(_ cell: TimelineMiddleLoaderTableViewCell, loadMoreButtonDidPressed button: UIButton)
 }
 
 final class TimelineMiddleLoaderTableViewCell: TimelineLoaderTableViewCell {
-    
+        
     weak var delegate: TimelineMiddleLoaderTableViewCellDelegate?
+    
+    private(set) lazy var viewModel: ViewModel = {
+        let viewModel = ViewModel()
+        viewModel.bind(cell: self)
+        return viewModel
+    }()
     
     override func _init() {
         super._init()
         
         backgroundColor = .secondarySystemBackground
         
-        let separatorLine = UIView.separatorLine
+        let separatorLine = SeparatorLineView()
         separatorLine.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(separatorLine)
         NSLayoutConstraint.activate([
             separatorLine.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
             contentView.trailingAnchor.constraint(equalTo: separatorLine.trailingAnchor),
             contentView.bottomAnchor.constraint(equalTo: separatorLine.bottomAnchor),
-            separatorLine.heightAnchor.constraint(equalToConstant: UIView.separatorLineHeight(of: separatorLine))
+            separatorLine.heightAnchor.constraint(equalToConstant: UIView.separatorLineHeight(of: contentView)),
         ])
         
         loadMoreButton.isHidden = false
-        loadMoreButton.setImage(Asset.Arrows.arrowTriangle2Circlepath.image.withRenderingMode(.alwaysTemplate), for: .normal)
-        loadMoreButton.setInsets(forContentPadding: .zero, imageTitlePadding: 4)
         loadMoreButton.addTarget(self, action: #selector(TimelineMiddleLoaderTableViewCell.loadMoreButtonDidPressed(_:)), for: .touchUpInside)
+    }
+    
+    deinit {
+        viewModel.disposeBag.removeAll()
     }
     
 }

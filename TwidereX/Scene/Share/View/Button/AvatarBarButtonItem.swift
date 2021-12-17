@@ -7,27 +7,37 @@
 //
 
 import UIKit
+import Combine
+import TwidereUI
 
-final class AvatarBarButtonItem: UIBarButtonItem {
+public final class AvatarBarButtonItem: UIBarButtonItem {
+    
+    var disposeBag = Set<AnyCancellable>()
 
-    static let avatarButtonSize = CGSize(width: 30, height: 30)
+    public static let avatarButtonSize = CGSize(width: 30, height: 30)
+    
+    private(set) lazy var viewModel: ViewModel = {
+        let viewModel = ViewModel()
+        viewModel.bind(view: self)
+        return viewModel
+    }()
 
-    let avatarButton: UIButton = {
-        let button = UIButton(type: .custom)
+    public let avatarButton: AvatarButton = {
+        let button = AvatarButton()
         button.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            button.widthAnchor.constraint(equalToConstant: avatarButtonSize.width).priority(.defaultHigh),
-            button.heightAnchor.constraint(equalToConstant: avatarButtonSize.height).priority(.defaultHigh),
+            button.widthAnchor.constraint(equalToConstant: avatarButtonSize.width).priority(.required - 1),
+            button.heightAnchor.constraint(equalToConstant: avatarButtonSize.height).priority(.required - 1),
         ])
         return button
     }()
     
-    override init() {
+    public override init() {
         super.init()
         _init()
     }
     
-    required init?(coder: NSCoder) {
+    public required init?(coder: NSCoder) {
         super.init(coder: coder)
         _init()
     }
@@ -40,11 +50,4 @@ extension AvatarBarButtonItem {
         customView = avatarButton
     }
     
-}
-
-extension AvatarBarButtonItem: AvatarConfigurableView {
-    static var configurableAvatarImageViewSize: CGSize { return avatarButtonSize }
-    var configurableAvatarImageView: UIImageView? { return nil }
-    var configurableAvatarButton: UIButton? { return avatarButton }
-    var configurableVerifiedBadgeImageView: UIImageView? { return nil }
 }

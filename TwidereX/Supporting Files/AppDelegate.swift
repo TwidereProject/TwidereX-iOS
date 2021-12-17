@@ -7,15 +7,19 @@
 
 import UIKit
 import Combine
-import Firebase
 import Floaty
+import Firebase
+import Kingfisher
+import AppShared
+
+@_exported import TwidereUI
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var disposeBag = Set<AnyCancellable>()
 
-    let appContext = AppContext()
+    let appContext = AppContext(appSecret: .default)
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         
@@ -26,15 +30,18 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Update app version info. See: `Settings.bundle`
         UserDefaults.standard.setValue(UIApplication.appVersion(), forKey: "TwidereX.appVersion")
         UserDefaults.standard.setValue(UIApplication.appBuild(), forKey: "TwidereX.appBundle")
+
+        // Setup Kingfisher cache
+        ImageCache.default.memoryStorage.config.totalCostLimit = 50 * 1024 * 1024   // 50MB
+        ImageCache.default.memoryStorage.config.expiration = .seconds(600)
+        ImageCache.default.diskStorage.config.sizeLimit = 500 * 1024 * 1024
+        ImageCache.default.diskStorage.config.expiration = .days(7)
         
+        // enable FAB RTL support
         Floaty.global.rtlMode = UIApplication.shared.userInterfaceLayoutDirection == .rightToLeft
         
-        NotificationCenter.default.publisher(for: UIContentSizeCategory.didChangeNotification)
-            .sink { _ in
-                // only trigger update
-                UserDefaults.shared.useTheSystemFontSize = UserDefaults.shared.useTheSystemFontSize
-            }
-            .store(in: &disposeBag)
+        // configure appearance
+        ThemeService.shared.apply(theme: ThemeService.shared.theme.value)
 
         return true
     }

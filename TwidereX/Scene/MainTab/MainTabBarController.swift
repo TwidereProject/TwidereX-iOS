@@ -8,30 +8,34 @@
 
 import os.log
 import UIKit
+import SwiftUI
 import Combine
-import TwitterAPI
 import SafariServices
 import SwiftMessages
+import TwitterSDK
+import TwidereUI
 
 class MainTabBarController: UITabBarController {
     
-    var disposeBag = Set<AnyCancellable>()
+    let logger = Logger(subsystem: "MainTabBarController", category: "TabBar")
     
+    var disposeBag = Set<AnyCancellable>()
+        
     weak var context: AppContext!
     weak var coordinator: SceneCoordinator!
-    
-    let doubleTapGestureRecognizer = UITapGestureRecognizer.doubleTapGestureRecognizer
+
+    @Published var currentTab: Tab = .home
     
     enum Tab: Int, CaseIterable {
-        case timeline
-        case mention
+        case home
+        case notification
         case search
         case me
         
         var title: String {
             switch self {
-            case .timeline:     return L10n.Scene.Timeline.title
-            case .mention:      return L10n.Scene.Mentions.title
+            case .home:         return L10n.Scene.Timeline.title
+            case .notification: return L10n.Scene.Notification.title
             case .search:       return L10n.Scene.Search.title
             case .me:           return L10n.Scene.Profile.title
             }
@@ -39,23 +43,27 @@ class MainTabBarController: UITabBarController {
         
         var image: UIImage {
             switch self {
-            case .timeline:     return Asset.ObjectTools.house.image.withRenderingMode(.alwaysTemplate)
-            case .mention:      return Asset.Communication.ellipsesBubble.image.withRenderingMode(.alwaysTemplate)
-            case .search:       return Asset.ObjectTools.magnifyingglass.image.withRenderingMode(.alwaysTemplate)
-            case .me:           return Asset.Human.person.image.withRenderingMode(.alwaysTemplate)
+            case .home:
+                return Asset.ObjectTools.house.image.withRenderingMode(.alwaysTemplate)
+            case .notification:
+                return Asset.ObjectTools.bell.image.withRenderingMode(.alwaysTemplate)
+            case .search:
+                return Asset.ObjectTools.magnifyingglass.image.withRenderingMode(.alwaysTemplate)
+            case .me:
+                return Asset.Human.person.image.withRenderingMode(.alwaysTemplate)
             }
         }
         
         func viewController(context: AppContext, coordinator: SceneCoordinator) -> UIViewController {
             let viewController: UIViewController
             switch self {
-            case .timeline:
+            case .home:
                 let _viewController = HomeTimelineViewController()
                 _viewController.context = context
                 _viewController.coordinator = coordinator
                 viewController = _viewController
-            case .mention:
-                let _viewController = MentionTimelineViewController()
+            case .notification:
+                let _viewController = NotificationViewController()
                 _viewController.context = context
                 _viewController.coordinator = coordinator
                 viewController = _viewController
@@ -106,35 +114,62 @@ extension MainTabBarController {
         setViewControllers(viewControllers, animated: false)
         selectedIndex = 0
         
-        // TODO: custom accent color
-        let tabBarAppearance = UITabBarAppearance()
-        tabBarAppearance.configureWithDefaultBackground()
-        tabBar.standardAppearance = tabBarAppearance
+//        // TODO: custom accent color
+//        let tabBarAppearance = UITabBarAppearance()
+//        tabBarAppearance.configureWithDefaultBackground()
+//        tabBar.standardAppearance = tabBarAppearance
         
-        context.apiService.error
+        let feedbackGenerator = UINotificationFeedbackGenerator()
+
+        context.publisherService.statusPublishResult
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] error in
+            .sink { [weak self] result in
                 guard let _ = self else { return }
-                switch error {
-                case .implicit:
+                switch result {
+                case .success(let result):
+                    var config = SwiftMessages.defaultConfig
+                    config.duration = .seconds(seconds: 3)
+                    config.interactiveHide = true
+                    let bannerView = NotificationBannerView()
+                    bannerView.configure(style: .success)
+                    switch result {
+                    case .twitter:
+                        bannerView.titleLabel.text = L10n.Common.Alerts.TweetPosted.title
+                        bannerView.messageLabel.isHidden = true
+                    case .mastodon:
+                        bannerView.titleLabel.text = L10n.Common.Alerts.TootPosted.title
+                        bannerView.messageLabel.isHidden = true
+                    }
+                    
+                    feedbackGenerator.prepare()
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                        SwiftMessages.show(config: config, view: bannerView)
+                        feedbackGenerator.notificationOccurred(.success)
+                    }
+                case .failure(let error):
+                    // TODO:
                     break
-                case .explicit(let reason):
-                    let messageConfig = reason.messageConfig
-                    let notifyBannerView = reason.notifyBannerView
-                    SwiftMessages.show(config: messageConfig, view: notifyBannerView)
                 }
             }
             .store(in: &disposeBag)
-        
-        doubleTapGestureRecognizer.addTarget(self, action: #selector(MainTabBarController.doubleTapGestureRecognizerHandler(_:)))
-        doubleTapGestureRecognizer.delaysTouchesEnded = false
-        tabBar.addGestureRecognizer(doubleTapGestureRecognizer)
+//        context.apiService.error
+//            .receive(on: DispatchQueue.main)
+//            .sink { [weak self] error in
+//                guard let _ = self else { return }
+//                switch error {
+//                case .implicit:
+//                    break
+//                case .explicit(let reason):
+//                    break
+//                    // FIXME:
+////                    let messageConfig = reason.messageConfig
+////                    let notifyBannerView = reason.notifyBannerView
+////                    SwiftMessages.show(config: messageConfig, view: notifyBannerView)
+//                }
+//            }
+//            .store(in: &disposeBag)
         
         delegate = self
-        
-        #if DEBUG
-        // selectedIndex = 1
-        #endif
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -147,22 +182,39 @@ extension MainTabBarController {
         
 }
 
-extension MainTabBarController {
-    @objc private func doubleTapGestureRecognizerHandler(_ sender: UITapGestureRecognizer) {
-        os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
-        switch sender.state {
-        case .ended:
-            guard let scrollViewContainer = selectedViewController?.topMost as? ScrollViewContainer else { return }
-            scrollViewContainer.scrollToTop(animated: true)
-        default:
-            break
-        }
-    }
-}
+//extension MainTabBarController {
+//    @objc private func doubleTapGestureRecognizerHandler(_ sender: UITapGestureRecognizer) {
+//        os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
+//        switch sender.state {
+//        case .ended:
+//            guard let scrollViewContainer = selectedViewController?.topMost as? ScrollViewContainer else { return }
+//            scrollViewContainer.scrollToTop(animated: true)
+//        default:
+//            break
+//        }
+//    }
+//}
 
 // MARK: - UITabBarControllerDelegate
 extension MainTabBarController: UITabBarControllerDelegate {
-    override func tabBar(_ tabBar: UITabBar, didSelect item: UITabBarItem) {
-        os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: didSelect item: %s", ((#file as NSString).lastPathComponent), #line, #function, item.debugDescription)
+    func tabBarController(_ tabBarController: UITabBarController, didSelect viewController: UIViewController) {
+        logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public)")
+        
+        defer {
+            if let tab = Tab(rawValue: tabBarController.selectedIndex) {
+                currentTab = tab
+            }
+        }
+        
+        guard currentTab.rawValue == tabBarController.selectedIndex,
+              let navigationController = viewController as? UINavigationController,
+              navigationController.viewControllers.count == 1
+        else { return }
+        
+        let _scrollViewContainer = (navigationController.topViewController as? ScrollViewContainer) ?? (navigationController.topMost as? ScrollViewContainer)
+        guard let scrollViewContainer = _scrollViewContainer else {
+            return
+        }
+        scrollViewContainer.scrollToTop(animated: true)
     }
 }

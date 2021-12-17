@@ -10,9 +10,13 @@ import os.log
 import UIKit
 import Combine
 import GameplayKit
+import TwidereAsset
+import TwidereLocalization
 
 final class FollowerListViewController: UIViewController, NeedsDependency {
     
+    let logger = Logger(subsystem: "FollowerListViewController", category: "ViewController")
+
     weak var context: AppContext! { willSet { precondition(!isViewLoaded) } }
     weak var coordinator: SceneCoordinator! { willSet { precondition(!isViewLoaded) } }
     
@@ -22,8 +26,6 @@ final class FollowerListViewController: UIViewController, NeedsDependency {
     let emptyStateView = EmptyStateView()
     let tableView: UITableView = {
         let tableView = ControlContainableTableView()
-        tableView.register(FriendshipTableViewCell.self, forCellReuseIdentifier: String(describing: FriendshipTableViewCell.self))
-        tableView.register(TimelineBottomLoaderTableViewCell.self, forCellReuseIdentifier: String(describing: TimelineBottomLoaderTableViewCell.self))
         tableView.backgroundColor = .clear
         tableView.rowHeight = UITableView.automaticDimension
         tableView.separatorStyle = .none
@@ -63,10 +65,18 @@ extension FollowerListViewController {
         ])
         
         tableView.delegate = self
-        viewModel.setupDiffableDataSource(for: tableView)
-        viewModel.stateMachine.enter(FriendshipListViewModel.State.Loading.self)
+        viewModel.setupDiffableDataSource(tableView: tableView)
+        viewModel.listBatchFetchViewModel.setup(scrollView: tableView)
+        viewModel.listBatchFetchViewModel.shouldFetch
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                guard let self = self else { return }
+                guard self.isDisplaying else { return }
+                self.viewModel.stateMachine.enter(FriendshipListViewModel.State.Loading.self)
+            }
+            .store(in: &disposeBag)
         
-        viewModel.isPermissionDenied
+        viewModel.$isPermissionDenied
             .receive(on: DispatchQueue.main)
             .sink { [weak self] isPermissionDenied in
                 guard let self = self else { return }
@@ -87,27 +97,16 @@ extension FollowerListViewController {
     
 }
 
-// MARK: - UIScrollViewDelegate
-extension FollowerListViewController {
-    func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        handleScrollViewDidScroll(scrollView)
-    }
-}
-
 // MARK: - UITableViewDelegate
-extension FollowerListViewController: UITableViewDelegate {
+extension FollowerListViewController: UITableViewDelegate, AutoGenerateTableViewDelegate {
+    // sourcery:inline:FollowerListViewController.AutoGenerateTableViewDelegate
+
+    // Generated using Sourcery
+    // DO NOT EDIT
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        handleTableView(tableView, didSelectRowAt: indexPath)
+        aspectTableView(tableView, didSelectRowAt: indexPath)
     }
+
+    // sourcery:end
 }
 
-// MARK: - LoadMoreConfigurableTableViewContainer
-extension FollowerListViewController: LoadMoreConfigurableTableViewContainer {
-    
-    typealias BottomLoaderTableViewCell = TimelineBottomLoaderTableViewCell
-    typealias LoadingState = FriendshipListViewModel.State.Loading
-    
-    var loadMoreConfigurableTableView: UITableView { return tableView }
-    var loadMoreConfigurableStateMachine: GKStateMachine { return viewModel.stateMachine }
-    
-}

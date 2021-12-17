@@ -56,8 +56,15 @@ final class SafariActivity: UIActivity {
             return
         }
         
-        sceneCoordinator?.present(scene: .safari(url: url as URL), from: nil, transition: .safariPresent(animated: true, completion: nil))
-        activityDidFinish(true)
+        Task {
+            await openSafari(url: url as URL)
+            activityDidFinish(true)
+        }
+    }
+    
+    @MainActor
+    func openSafari(url: URL) {
+        sceneCoordinator?.present(scene: .safari(url: url), from: nil, transition: .safariPresent(animated: true, completion: nil))
     }
     
 }

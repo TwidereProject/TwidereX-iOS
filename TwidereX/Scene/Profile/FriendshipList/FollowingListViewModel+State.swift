@@ -9,7 +9,7 @@
 import os.log
 import Foundation
 import GameplayKit
-import TwitterAPI
+import TwitterSDK
 
 extension FriendshipListViewModel {
     class State: GKState {
@@ -20,6 +20,7 @@ extension FriendshipListViewModel {
         }
         
         override func didEnter(from previousState: GKState?) {
+            super.didEnter(from: previousState)
             os_log("%{public}s[%{public}ld], %{public}s: enter %s, previous: %s", ((#file as NSString).lastPathComponent), #line, #function, self.debugDescription, previousState.debugDescription)
         }
     }
@@ -39,69 +40,101 @@ extension FriendshipListViewModel.State {
     }
     
     class Loading: FriendshipListViewModel.State {
-        var nextToken: String?
+        let logger = Logger(subsystem: "FriendshipListViewModel.State", category: "StateMachine")
+        
+        var nextInput: UserListFetchViewModel.FriendshipListInput?
         
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {
-            return stateClass == Fail.self || stateClass == Idle.self || stateClass == NoMore.self || stateClass == PermissionDenied.self
+            return stateClass == Fail.self
+                || stateClass == Idle.self
+                || stateClass == NoMore.self
+                || stateClass == PermissionDenied.self
         }
         
         override func didEnter(from previousState: GKState?) {
             super.didEnter(from: previousState)
+            
             guard let viewModel = viewModel, let stateMachine = stateMachine else { return }
-            guard let twitterAuthenticationBox = viewModel.context.authenticationService.activeTwitterAuthenticationBox.value else {
+            guard let authenticationContext = viewModel.context.authenticationService.activeAuthenticationContext.value
+            else {
+                stateMachine.enter(Fail.self)
+                return
+            }
+
+            if nextInput == nil {
+                nextInput = {
+                    switch (viewModel.userIdentifier, authenticationContext) {
+                    case (.twitter(let identifier), .twitter(let authenticationContext)):
+                        return UserListFetchViewModel.FriendshipListInput.twitter(.init(
+                            authenticationContext: authenticationContext,
+                            kind: viewModel.kind,
+                            userID: identifier.id,
+                            paginationToken: nil,
+                            maxResults: nil
+                        ))
+                    case (.mastodon(let identifier), .mastodon(let authenticationContext)):
+                        return UserListFetchViewModel.FriendshipListInput.mastodon(.init(
+                            authenticationContext: authenticationContext,
+                            kind: viewModel.kind,
+                            userID: identifier.id,
+                            maxID: nil,
+                            limit: nil
+                        ))
+                    default:
+                        assertionFailure()
+                        return nil
+                    }
+                }()
+            }
+            
+            guard let input = nextInput else {
                 stateMachine.enter(Fail.self)
                 return
             }
             
-            // trigger data source update
-            if previousState is Initial {
-                viewModel.orderedTwitterUserFetchedResultsController.userIDs.value = []
-            }
-            
-            viewModel.context.apiService.friendshipList(
-                kind: viewModel.friendshipLookupKind,
-                userID: viewModel.userID,
-                maxResults: nextToken == nil ? 200 : 1000,      // small batch at the first time fetching
-                paginationToken: nextToken,
-                twitterAuthenticationBox: twitterAuthenticationBox
-            )
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] completion in
-                guard let self = self else { return }
-                switch completion {
-                case .failure(let error):
-                    os_log("%{public}s[%{public}ld], %{public}s: fetch following listfail: %s", ((#file as NSString).lastPathComponent), #line, #function, error.localizedDescription)
-                    if PermissionDenied.canEnter(for: error) {
-                        stateMachine.enter(PermissionDenied.self)
+            Task {
+                do {
+                    logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): fetch…")
+                    
+                    let output = try await UserListFetchViewModel.friendshipList(
+                        context: viewModel.context,
+                        input: input
+                    )
+                    
+                    nextInput = output.nextInput
+                    if output.hasMore {
+                        await enter(state: Idle.self)
                     } else {
-                        stateMachine.enter(Fail.self)
+                        await enter(state: NoMore.self)
                     }
-                case .finished:
-                    break
+                    
+                    switch output.result {
+                    case .twitter(let users):
+                        let userIDs = users.map { $0.idStr }
+                        viewModel.userRecordFetchedResultController.twitterUserFetchedResultsController.append(userIDs: userIDs)
+                    case .twitterV2(let users):
+                        let userIDs = users.map { $0.id }
+                        viewModel.userRecordFetchedResultController.twitterUserFetchedResultsController.append(userIDs: userIDs)
+                    case .mastodon(let users):
+                        let userIDs = users.map { $0.id }
+                        viewModel.userRecordFetchedResultController.mastodonUserFetchedResultController.append(userIDs: userIDs)
+                    }
+                } catch {
+                    logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): fetch failure: \(error.localizedDescription)")
+                    if PermissionDenied.canEnter(for: error) {
+                        await enter(state: PermissionDenied.self)
+                    } else {
+                        await enter(state: Fail.self)
+                    }
                 }
-            } receiveValue: { [weak self] response in
-                guard let self = self else { return }
-                
-                var userIDs = viewModel.orderedTwitterUserFetchedResultsController.userIDs.value
-                let users = response.value.data ?? []
-                for user in users {
-                    guard !userIDs.contains(user.id) else { continue }
-                    userIDs.append(user.id)
-                }
-                
-                if let nextToken = response.value.meta.nextToken {
-                    self.nextToken = nextToken
-                    stateMachine.enter(Idle.self)
-                } else {
-                    self.nextToken = nil
-                    stateMachine.enter(NoMore.self)
-                }
-                
-                viewModel.orderedTwitterUserFetchedResultsController.userIDs.value = userIDs
-            }
-            .store(in: &viewModel.disposeBag)
+            }   // end Task { … }
+        }   // end func didEnter
+        
+        @MainActor
+        func enter(state: FriendshipListViewModel.State.Type) {
+            stateMachine?.enter(state)
         }
-    }
+    }   // end class Loading
     
     class Fail: FriendshipListViewModel.State {
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {
@@ -129,7 +162,7 @@ extension FriendshipListViewModel.State {
             guard let viewModel = viewModel else { return }
             
             // trigger items update
-            viewModel.orderedTwitterUserFetchedResultsController.userIDs.value = []
+            viewModel.userRecordFetchedResultController.reset()
         }
     }
     

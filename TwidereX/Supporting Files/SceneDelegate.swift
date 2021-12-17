@@ -6,19 +6,22 @@
 //
 
 import UIKit
-import CoreDataStack
+import Combine
+import FPSIndicator
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
+    
+    var disposeBag = Set<AnyCancellable>()
 
     var window: UIWindow?
     var coordinator: SceneCoordinator?
 
+    #if DEBUG
+    var fpsIndicator: FPSIndicator?
+    #endif
+
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         guard let windowScene = scene as? UIWindowScene else { return }
-        
-        // #if DEBUG
-        // let window = TestWindow(windowScene: windowScene)
-        // #endif
 
         let window = UIWindow(windowScene: windowScene)
         self.window = window
@@ -30,25 +33,34 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         }
         #endif
         
-        let appContext = AppContext.shared
-        let sceneCoordinator = SceneCoordinator(scene: scene, sceneDelegate: self, appContext: appContext)
+        // set tint color
+        window.tintColor = ThemeService.shared.theme.value.accentColor
+        
+        ThemeService.shared.theme
+            .receive(on: DispatchQueue.main)
+            .dropFirst()
+            .sink { [weak self] theme in
+                guard let self = self else { return }
+                guard let window = self.window else { return }
+                window.tintColor = theme.accentColor
+                window.subviews.forEach { view in
+                    view.removeFromSuperview()
+                    window.addSubview(view)
+                }
+            }
+            .store(in: &disposeBag)
+        
+        let sceneCoordinator = SceneCoordinator(scene: scene, sceneDelegate: self, context: AppContext.shared)
         self.coordinator = sceneCoordinator
         
         sceneCoordinator.setup()
-        
-        do {
-            let request = AuthenticationIndex.sortedFetchRequest
-            if try appContext.managedObjectContext.fetch(request).isEmpty {
-                DispatchQueue.main.async {
-                    let authenticationViewModel = AuthenticationViewModel(isAuthenticationIndexExist: false)
-                    sceneCoordinator.present(scene: .authentication(viewModel: authenticationViewModel), from: nil, transition: .modal(animated: false, completion: nil))
-                }
-            }
-        } catch {
-            assertionFailure(error.localizedDescription)
-        }
+        sceneCoordinator.setupWelcomeIfNeeds()
         
         window.makeKeyAndVisible()
+
+        #if DEBUG
+        fpsIndicator = FPSIndicator(windowScene: windowScene)
+        #endif
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {
@@ -86,21 +98,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 extension SceneDelegate {
     static var isXcodeUnitTest: Bool {
         return ProcessInfo().environment["XCInjectBundleInto"] != nil
-    }
-}
-#endif
-
-#if DEBUG
-class TestWindow: UIWindow {
-    override func sendEvent(_ event: UIEvent) {
-        event.allTouches?.forEach({ (touch) in
-            let location = touch.location(in: self)
-            if let view = hitTest(location, with: event) {
-                print(view)
-            }
-        })
-        
-        super.sendEvent(event)
     }
 }
 #endif

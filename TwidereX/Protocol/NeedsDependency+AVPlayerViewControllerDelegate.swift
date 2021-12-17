@@ -12,11 +12,11 @@ import AVKit
 extension NeedsDependency where Self: AVPlayerViewControllerDelegate {
     
     func handlePlayerViewController(_ playerViewController: AVPlayerViewController, willBeginFullScreenPresentationWithAnimationCoordinator coordinator: UIViewControllerTransitionCoordinator) {
-        context.videoPlaybackService.playerViewModel(for: playerViewController)?.isFullScreenPresentationing = true
+//        context.videoPlaybackService.playerViewModel(for: playerViewController)?.isFullScreenPresentationing = true
     }
     
     func handlePlayerViewController(_ playerViewController: AVPlayerViewController, willEndFullScreenPresentationWithAnimationCoordinator coordinator: UIViewControllerTransitionCoordinator) {
-        context.videoPlaybackService.playerViewModel(for: playerViewController)?.isFullScreenPresentationing = false
+//        context.videoPlaybackService.playerViewModel(for: playerViewController)?.isFullScreenPresentationing = false
     }
 
 }

@@ -7,22 +7,23 @@
 //
 
 import SwiftUI
+import TwidereAsset
 
 enum AboutEntryType: Identifiable, Hashable, CaseIterable {
     
     case github
     case twitter
     case license
-    case privacyyPolicy
+    case privacyPolicy
     
     var id: AboutEntryType { return self }
     
-    var text: String {
+    public var text: String {
         switch self {
         case .github:           return "GitHub"
         case .twitter:          return "Twitter"
         case .license:          return "License"
-        case .privacyyPolicy:   return "Privacy Policy"
+        case .privacyPolicy:    return "Privacy Policy"
         }
     }
     
@@ -35,7 +36,8 @@ struct AboutView: View {
     var body: some View {
         VStack {
             VStack {
-                Image(uiImage: Asset.Logo.twidere.image)
+                Image(Asset.Scene.About.twidereLarge.name, bundle: TwidereAsset.bundle)    // needs set bundle for package asset
+                    .renderingMode(.original)
                     .padding(44)
                 Text("Twidere X")
                     .font(.headline)
@@ -51,13 +53,15 @@ struct AboutView: View {
                 Button(action: {
                     context.viewStateStore.aboutView.aboutEntryPublisher.send(.twitter)
                 }, label: {
-                    Image(uiImage: Asset.Logo.twitterCircle.image.withRenderingMode(.alwaysTemplate))
+                    Image(Asset.Logo.twitterCircle.name, bundle: TwidereAsset.bundle)
+                        .renderingMode(.template)
                         .foregroundColor(.secondary)
                 })
                 Button(action: {
                     context.viewStateStore.aboutView.aboutEntryPublisher.send(.github)
                 }, label: {
-                    Image(uiImage: Asset.Logo.githubCircle.image.withRenderingMode(.alwaysTemplate))
+                    Image(Asset.Logo.githubCircle.name, bundle: TwidereAsset.bundle)
+                        .renderingMode(.template)
                         .foregroundColor(.secondary)
                 })
             }
@@ -71,9 +75,9 @@ struct AboutView: View {
                     Text(AboutEntryType.license.text)
                 })
                 Button(action: {
-                    context.viewStateStore.aboutView.aboutEntryPublisher.send(.privacyyPolicy)
+                    context.viewStateStore.aboutView.aboutEntryPublisher.send(.privacyPolicy)
                 }, label: {
-                    Text(AboutEntryType.privacyyPolicy.text)
+                    Text(AboutEntryType.privacyPolicy.text)
                 })
             }
             Spacer()

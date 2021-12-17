@@ -9,14 +9,19 @@
 import os.log
 import UIKit
 import Combine
+import AppShared
+import TwidereAsset
+import TwidereLocalization
+import TwidereUI
+import TwitterMeta
 
 final class DisplayPreferenceViewModel: NSObject {
     
     var disposeBag = Set<AnyCancellable>()
-    
+
     // input
-    let customContentSizeCatagory: CurrentValueSubject<UIContentSizeCategory, Never>
-    
+//    let customContentSizeCatagory: CurrentValueSubject<UIContentSizeCategory, Never>
+
     // output
     let sections: [Section] = [
         Section(header: L10n.Scene.Settings.Display.SectionHeader.preview, settings: [.preview]),
@@ -30,20 +35,20 @@ final class DisplayPreferenceViewModel: NSObject {
         ]),
     ]
     let fontSizeSlideTableViewCell = SlideTableViewCell()
-    
+
     override init() {
-        customContentSizeCatagory = CurrentValueSubject(UserDefaults.shared.customContentSizeCatagory)
+//        customContentSizeCatagory = CurrentValueSubject(UserDefaults.shared.customContentSizeCatagory)
         super.init()
-        
-        let feedbackGenerator = UIImpactFeedbackGenerator(style: .light)
-        customContentSizeCatagory
-            .dropFirst()
-            .removeDuplicates()
-            .sink { customContentSizeCatagory in
-                feedbackGenerator.impactOccurred()
-                UserDefaults.shared.customContentSizeCatagory = customContentSizeCatagory
-            }
-            .store(in: &disposeBag)
+
+//        let feedbackGenerator = UIImpactFeedbackGenerator(style: .light)
+//        customContentSizeCatagory
+//            .dropFirst()
+//            .removeDuplicates()
+//            .sink { customContentSizeCatagory in
+//                feedbackGenerator.impactOccurred()
+//                UserDefaults.shared.customContentSizeCatagory = customContentSizeCatagory
+//            }
+//            .store(in: &disposeBag)
     }
     
     
@@ -53,16 +58,16 @@ extension DisplayPreferenceViewModel {
     
     enum Setting {
         case preview
-        
-        case useTheSystemFontSizeSwitch
-        case fontSizeSlider
-        
+
+//        case useTheSystemFontSizeSwitch
+//        case fontSizeSlider
+
         // Avatar Style
         case avatarStyle(UserDefaults.AvatarStyle)
-            
+
         case dateFormat
     }
-    
+
     struct Section {
         let header: String
         let settings: [Setting]
@@ -87,29 +92,29 @@ extension DisplayPreferenceViewModel: UITableViewDataSource {
         let section = sections[indexPath.section]
         switch section.settings[indexPath.row] {
         case .preview:
-            let _cell = tableView.dequeueReusableCell(withIdentifier: String(describing: TimelinePostTableViewCell.self), for: indexPath) as! TimelinePostTableViewCell
+            let _cell = tableView.dequeueReusableCell(withIdentifier: String(describing: StatusTableViewCell.self), for: indexPath) as! StatusTableViewCell
             DisplayPreferenceViewModel.configure(cell: _cell)
             cell = _cell
-        case .useTheSystemFontSizeSwitch:
-            let _cell = tableView.dequeueReusableCell(withIdentifier: String(describing: SwitchTableViewCell.self), for: indexPath) as! SwitchTableViewCell
-            _cell.textLabel?.text = L10n.Scene.Settings.Display.Text.useTheSystemFontSize
-            UserDefaults.shared.publisher(for: \.useTheSystemFontSize)
-                .receive(on: DispatchQueue.main)
-                .sink(receiveValue: { useTheSystemFontSize in
-                    guard _cell.switcher.isOn != useTheSystemFontSize else { return }
-                    _cell.switcher.setOn(useTheSystemFontSize, animated: true)
-                })
-                .store(in: &_cell.disposeBag)
-            _cell.switcherPublisher
-                .removeDuplicates()
-                .assign(to: \.useTheSystemFontSize, on: UserDefaults.shared)
-                .store(in: &_cell.disposeBag)
-            cell = _cell
-        case .fontSizeSlider:
-            let _cell = fontSizeSlideTableViewCell      // prevent dequeue new cell instance
-            _cell.disposeBag.removeAll()
-            DisplayPreferenceViewModel.configureFontSizeSlider(cell: _cell)
-            cell = _cell
+//        case .useTheSystemFontSizeSwitch:
+//            let _cell = tableView.dequeueReusableCell(withIdentifier: String(describing: SwitchTableViewCell.self), for: indexPath) as! SwitchTableViewCell
+//            _cell.textLabel?.text = L10n.Scene.Settings.Display.Text.useTheSystemFontSize
+//            UserDefaults.shared.publisher(for: \.useTheSystemFontSize)
+//                .receive(on: DispatchQueue.main)
+//                .sink(receiveValue: { useTheSystemFontSize in
+//                    guard _cell.switcher.isOn != useTheSystemFontSize else { return }
+//                    _cell.switcher.setOn(useTheSystemFontSize, animated: true)
+//                })
+//                .store(in: &_cell.disposeBag)
+//            _cell.switcherPublisher
+//                .removeDuplicates()
+//                .assign(to: \.useTheSystemFontSize, on: UserDefaults.shared)
+//                .store(in: &_cell.disposeBag)
+//            cell = _cell
+//        case .fontSizeSlider:
+//            let _cell = fontSizeSlideTableViewCell      // prevent dequeue new cell instance
+//            _cell.disposeBag.removeAll()
+//            DisplayPreferenceViewModel.configureFontSizeSlider(cell: _cell)
+//            cell = _cell
         case .avatarStyle(let avatarStyle):
             let _cell = tableView.dequeueReusableCell(withIdentifier: String(describing: ListCheckmarkTableViewCell.self), for: indexPath) as! ListCheckmarkTableViewCell
             _cell.titleLabel.text = avatarStyle.text
@@ -132,58 +137,19 @@ extension DisplayPreferenceViewModel: UITableViewDataSource {
 
 extension DisplayPreferenceViewModel {
     
-    static func configure(cell: TimelinePostTableViewCell) {
+    static func configure(cell: StatusTableViewCell) {
         cell.selectionStyle = .none
-        // set avatar
-        cell.timelinePostView.avatarImageView.image = Asset.Logo.twidereAvatar.image
-        UserDefaults.shared
-            .observe(\.avatarStyle, options: [.initial, .new]) { defaults, _ in
-                let avatarStyle = defaults.avatarStyle
-                let animator = UIViewPropertyAnimator(duration: 0.3, timingParameters: UISpringTimingParameters())
-                animator.addAnimations { [weak cell] in
-                    guard let cell = cell else { return }
-                    cell.timelinePostView.avatarImageView.layer.masksToBounds = true
-                    cell.timelinePostView.avatarImageView.layer.cornerRadius = AvatarConfigurableViewConfiguration.cornerRadius(for: TimelinePostView.avatarImageViewSize, avatarStyle: avatarStyle)
-                    switch avatarStyle {
-                    case .circle:               cell.timelinePostView.avatarImageView.layer.cornerCurve = .circular
-                    case .roundedSquare:        cell.timelinePostView.avatarImageView.layer.cornerCurve = .continuous
-                    }
-                }
-                animator.startAnimation()
-            }
-            .store(in: &cell.observations)
         
-        cell.timelinePostView.nameLabel.text = "Twidere"
-        cell.timelinePostView.usernameLabel.text = "@TwidereProject"
-        cell.timelinePostView.lockImageView.isHidden = true
-        cell.timelinePostView.dateLabel.text = "5m"
-        cell.timelinePostView.activeTextLabel.configure(with: L10n.Scene.Settings.Display.Preview.thankForUsingTwidereX)
-        cell.separatorLine.isHidden = true
+        cell.statusView.viewModel.authorAvatarImage = Asset.Scene.Preference.twidereAvatar.image
+        cell.statusView.viewModel.authorName = PlaintextMetaContent(string: "Twidere")
+        cell.statusView.viewModel.authorUsername = "TwidereProject"
+        cell.statusView.viewModel.protected = false
+        cell.statusView.viewModel.timestamp = Date()
+        cell.statusView.viewModel.dateTimeProvider = DateTimeSwiftProvider()
+        let content = TwitterContent(content: L10n.Scene.Settings.Display.Preview.thankForUsingTwidereX)
+        cell.statusView.viewModel.content = TwitterMetaContent.convert(content: content, urlMaximumLength: 16, twitterTextProvider: OfficialTwitterTextProvider())
+        cell.statusView.isUserInteractionEnabled = false
+        cell.separator.isHidden = true
     }
-    
-    
-    static func configureFontSizeSlider(cell: SlideTableViewCell) {
-        cell.leadingLabel.font = .systemFont(ofSize: 12)
-        cell.leadingLabel.text = "Aa"
 
-        cell.trailingLabel.font = .systemFont(ofSize: 18)
-        cell.trailingLabel.text = "Aa"
-        
-        // disable the superview of slider to prevent user directly control
-        cell.container.isUserInteractionEnabled = false
-        cell.slider.minimumValue = 0
-        cell.slider.maximumValue = Float(UserDefaults.contentSizeCategory.count - 1)
-        if let index = UserDefaults.contentSizeCategory.firstIndex(of: UserDefaults.shared.customContentSizeCatagory) {
-            cell.slider.value = Float(index)
-        }
-        
-        UserDefaults.shared.publisher(for: \.useTheSystemFontSize)
-            .receive(on: DispatchQueue.main)
-            .sink(receiveValue: { useTheSystemFontSize in
-                cell.slider.tintColor = useTheSystemFontSize ? .secondaryLabel : .systemBlue
-                cell.slider.isUserInteractionEnabled = !useTheSystemFontSize
-            })
-            .store(in: &cell.disposeBag)
-    }
-    
 }

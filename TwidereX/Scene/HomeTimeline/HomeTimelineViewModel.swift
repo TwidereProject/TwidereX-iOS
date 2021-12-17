@@ -16,40 +16,29 @@ import GameplayKit
 import AlamofireImage
 import Kingfisher
 import DateToolsSwift
-import ActiveLabel
 
 final class HomeTimelineViewModel: NSObject {
     
+    let logger = Logger(subsystem: "HomeTimelineViewModel", category: "ViewModel")
+
     var disposeBag = Set<AnyCancellable>()
     var observations = Set<NSKeyValueObservation>()
     
     // input
     let context: AppContext
-    let timelinePredicate = CurrentValueSubject<NSPredicate?, Never>(nil)
-    let fetchedResultsController: NSFetchedResultsController<TimelineIndex>
-    let isFetchingLatestTimeline = CurrentValueSubject<Bool, Never>(false)
-    let viewDidAppear = PassthroughSubject<Void, Never>()
-    
-    weak var contentOffsetAdjustableTimelineViewControllerDelegate: ContentOffsetAdjustableTimelineViewControllerDelegate?
-    weak var tableView: UITableView?
-    weak var timelineMiddleLoaderTableViewCellDelegate: TimelineMiddleLoaderTableViewCellDelegate?
+    let fetchedResultsController: FeedFetchedResultsController
+    let listBatchFetchViewModel = ListBatchFetchViewModel()
+    let viewDidAppear = CurrentValueSubject<Void, Never>(Void())
+    @Published var isLoadingLatest = false
+    @Published var lastAutomaticFetchTimestamp: Date?
+
     
     // output
-    // top loader
-    private(set) lazy var loadLatestStateMachine: GKStateMachine = {
-        // exclude timeline middle fetcher state
-        let stateMachine = GKStateMachine(states: [
-            LoadLatestState.Initial(viewModel: self),
-            LoadLatestState.Loading(viewModel: self),
-            LoadLatestState.Fail(viewModel: self),
-            LoadLatestState.Idle(viewModel: self),
-        ])
-        stateMachine.enter(LoadLatestState.Initial.self)
-        return stateMachine
-    }()
-    lazy var loadLatestStateMachinePublisher = CurrentValueSubject<LoadLatestState?, Never>(nil)
+    var diffableDataSource: UITableViewDiffableDataSource<StatusSection, StatusItem>?
+    var didLoadLatest = PassthroughSubject<Void, Never>()
+
     // bottom loader
-    private(set) lazy var loadoldestStateMachine: GKStateMachine = {
+    @MainActor private(set) lazy var loadOldestStateMachine: GKStateMachine = {
         // exclude timeline middle fetcher state
         let stateMachine = GKStateMachine(states: [
             LoadOldestState.Initial(viewModel: self),
@@ -61,88 +50,34 @@ final class HomeTimelineViewModel: NSObject {
         stateMachine.enter(LoadOldestState.Initial.self)
         return stateMachine
     }()
-    lazy var loadOldestStateMachinePublisher = CurrentValueSubject<LoadOldestState?, Never>(nil)
-    // middle loader
-    let loadMiddleSateMachineList = CurrentValueSubject<[NSManagedObjectID: GKStateMachine], Never>([:])    // TimelineIndex.objectID : middle loading state machine
-    var diffableDataSource: UITableViewDiffableDataSource<TimelineSection, Item>?
-    var cellFrameCache = NSCache<NSNumber, NSValue>()
-    let avatarStyle = CurrentValueSubject<UserDefaults.AvatarStyle, Never>(UserDefaults.shared.avatarStyle)
     
     init(context: AppContext) {
         self.context  = context
-        self.fetchedResultsController = {
-            let fetchRequest = TimelineIndex.sortedFetchRequest
-            fetchRequest.fetchBatchSize = 12        // 8 (row-per-screen) * 1.5 (magic batch scale)
-            fetchRequest.returnsObjectsAsFaults = false
-            // not Prefetching relationship save lots time cost (save ~2s when 30K entries)
-            // fetchRequest.relationshipKeyPathsForPrefetching = [#keyPath(TimelineIndex.tweet)]
-            let controller = NSFetchedResultsController(
-                fetchRequest: fetchRequest,
-                managedObjectContext: context.managedObjectContext,
-                sectionNameKeyPath: nil,
-                cacheName: nil
-            )
-            
-            return controller
-        }()
+        self.fetchedResultsController = FeedFetchedResultsController(managedObjectContext: context.managedObjectContext)
         super.init()
         
-        fetchedResultsController.delegate = self
-        
-        timelinePredicate
-            .receive(on: DispatchQueue.main)
-            .compactMap { $0 }
-            .first()    // set once
-            .sink { [weak self] predicate in
+        context.authenticationService.activeAuthenticationContext
+            .sink { [weak self] authenticationContext in
                 guard let self = self else { return }
-                self.fetchedResultsController.fetchRequest.predicate = predicate
-                do {
-                    self.diffableDataSource?.defaultRowAnimation = .fade
-                    let start = CACurrentMediaTime()
-                    try self.fetchedResultsController.performFetch()
-                    let end = CACurrentMediaTime()
-                    os_log("%{public}s[%{public}ld], %{public}s: fetch initial timeline cost %.2fs", ((#file as NSString).lastPathComponent), #line, #function, end - start)
-
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 3) { [weak self] in
-                        guard let self = self else { return }
-                        self.diffableDataSource?.defaultRowAnimation = .automatic
-                    }
-                } catch {
-                    assertionFailure(error.localizedDescription)
+                let emptyFeedPredicate = Feed.predicate(kind: .none, acct: Feed.Acct.none)
+                guard let authenticationContext = authenticationContext else {
+                    self.fetchedResultsController.predicate.value = emptyFeedPredicate
+                    return
                 }
+                
+                let predicate: NSPredicate
+                switch authenticationContext {
+                case .twitter(let authenticationContext):
+                    let userID = authenticationContext.userID
+                    predicate = Feed.predicate(kind: .home, acct: Feed.Acct.twitter(userID: userID))
+                case .mastodon(let authenticationContext):
+                    let domain = authenticationContext.domain
+                    let userID = authenticationContext.userID
+                    predicate = Feed.predicate(kind: .home, acct: Feed.Acct.mastodon(domain: domain, userID: userID))
+                }
+                self.fetchedResultsController.predicate.value = predicate
             }
             .store(in: &disposeBag)
-        
-        context.authenticationService.activeAuthenticationIndex
-            .sink { [weak self] activeAuthenticationIndex in
-                guard let self = self else { return }
-                guard let activeAuthenticationIndex = activeAuthenticationIndex else { return }
-                    switch activeAuthenticationIndex.platform {
-                    case .twitter:
-                        guard let twitterAuthentication = activeAuthenticationIndex.twitterAuthentication else { return }
-                        let activeTwitterUserID = twitterAuthentication.userID
-                        let predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [
-                            TimelineIndex.predicate(userID: activeTwitterUserID),
-                            TimelineIndex.predicate(platform: .twitter),
-                            TimelineIndex.notDeleted()
-                        ])
-                        self.timelinePredicate.value = predicate
-                    case .mastodon:
-                        // TODO:
-                        break
-                    case .none:
-                        // do nothing
-                        break
-                    }
-            }
-            .store(in: &disposeBag)
-        
-        UserDefaults.shared
-            .observe(\.avatarStyle) { [weak self] defaults, _ in
-                guard let self = self else { return }
-                self.avatarStyle.value = defaults.avatarStyle
-            }
-            .store(in: &observations)
     }
     
     deinit {
