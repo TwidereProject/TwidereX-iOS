@@ -28,6 +28,7 @@ public enum Asset {
     public static let arrowTriangle2Circlepath = ImageAsset(name: "Arrows/arrow.triangle.2.circlepath")
     public static let arrowTurnUpLeft = ImageAsset(name: "Arrows/arrow.turn.up.left")
     public static let arrowTurnUpLeftMini = ImageAsset(name: "Arrows/arrow.turn.up.left.mini")
+    public static let arrowshapeTurnUpLeftFill = ImageAsset(name: "Arrows/arrowshape.turn.up.left.fill")
     public static let squareAndArrowUp = ImageAsset(name: "Arrows/square.and.arrow.up")
     public static let squareAndArrowUpMini = ImageAsset(name: "Arrows/square.and.arrow.up.mini")
     public static let tablerChevronDown = ImageAsset(name: "Arrows/tabler.chevron.down")
@@ -103,6 +104,7 @@ public enum Asset {
     public static let faceSmiling = ImageAsset(name: "Human/face.smiling")
     public static let personExclamationMini = ImageAsset(name: "Human/person.exclamation.mini")
     public static let person = ImageAsset(name: "Human/person")
+    public static let personMini = ImageAsset(name: "Human/person.mini")
     public static let personPlusMini = ImageAsset(name: "Human/person.plus.mini")
   }
   public enum Indices {

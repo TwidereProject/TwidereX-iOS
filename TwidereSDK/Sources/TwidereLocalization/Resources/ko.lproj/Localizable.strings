@@ -310,6 +310,7 @@
 "Scene.Notification.Tabs.All" = "모두";
 "Scene.Notification.Tabs.Mentions" = "답글";
 "Scene.Notification.Title" = "알림";
+"Scene.Profile.Fields.JoinedInDate" = "Joined in %@";
 "Scene.Profile.Filter.All" = "모든 트윗";
 "Scene.Profile.Filter.ExcludeReplies" = "답글 빼기";
 "Scene.Profile.HideReply" = "답글 숨기기";
@@ -379,7 +380,9 @@
 "Scene.Settings.Misc.Nitter.Dialog.Usage.ProjectButton" = "프로젝트 소개 보기";
 "Scene.Settings.Misc.Nitter.Dialog.Usage.Title" = "다음의 제3 트위터 정보 제공자를 사용 중";
 "Scene.Settings.Misc.Nitter.Input.Description" = "개인정보보호에 초점을 둔 트위터 프론트엔드 대체 기능";
+"Scene.Settings.Misc.Nitter.Input.Invalid" = "Nitter instance URL is invalid, e.g. https://nitter.net";
 "Scene.Settings.Misc.Nitter.Input.Placeholder" = "Nitter 인스턴스";
+"Scene.Settings.Misc.Nitter.Input.Value" = "Instance URL";
 "Scene.Settings.Misc.Nitter.Title" = "제3의 트위터 정보 제공자";
 "Scene.Settings.Misc.Proxy.Enable.Description" = "모든 네트워크 연결에 프록시 쓰기";
 "Scene.Settings.Misc.Proxy.Enable.Title" = "프록시";

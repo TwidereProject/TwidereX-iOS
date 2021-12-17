@@ -310,6 +310,7 @@
 "Scene.Notification.Tabs.All" = "全部";
 "Scene.Notification.Tabs.Mentions" = "提及";
 "Scene.Notification.Title" = "通知";
+"Scene.Profile.Fields.JoinedInDate" = "%@ 加入";
 "Scene.Profile.Filter.All" = "所有推文";
 "Scene.Profile.Filter.ExcludeReplies" = "不包括回复";
 "Scene.Profile.HideReply" = "隐藏回复";
@@ -379,7 +380,9 @@
 "Scene.Settings.Misc.Nitter.Dialog.Usage.ProjectButton" = "项目地址";
 "Scene.Settings.Misc.Nitter.Dialog.Usage.Title" = "使用第三方数据提供商用于";
 "Scene.Settings.Misc.Nitter.Input.Description" = "着力于隐私的 Twitter 前端替换选择";
+"Scene.Settings.Misc.Nitter.Input.Invalid" = "Nitter 实例地址无效，例如 https://nitter.net";
 "Scene.Settings.Misc.Nitter.Input.Placeholder" = "Nitter 实例";
+"Scene.Settings.Misc.Nitter.Input.Value" = "实例地址";
 "Scene.Settings.Misc.Nitter.Title" = "第三方 Twitter 数据提供方";
 "Scene.Settings.Misc.Proxy.Enable.Description" = "为所有网络请求使用代理";
 "Scene.Settings.Misc.Proxy.Enable.Title" = "代理";

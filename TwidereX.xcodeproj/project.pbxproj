@@ -73,7 +73,6 @@
 		DB30ADD626CF583900B2D2BE /* FLAnimatedImage in Frameworks */ = {isa = PBXBuildFile; productRef = DB30ADD526CF583900B2D2BE /* FLAnimatedImage */; };
 		DB30ADDC26CFC7EE00B2D2BE /* StatusTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB30ADDB26CFC7EE00B2D2BE /* StatusTableViewCell.swift */; };
 		DB30ADDD26CFD3CC00B2D2BE /* HomeTimelineViewController+DebugAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBB2513D2599DBAB0064A876 /* HomeTimelineViewController+DebugAction.swift */; };
-		DB3282DB26AFFD40002B721C /* MetaTextKit in Frameworks */ = {isa = PBXBuildFile; productRef = DB3282DA26AFFD40002B721C /* MetaTextKit */; };
 		DB33A4A925A319A0003CED7D /* ActionToolbarContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB33A4A825A319A0003CED7D /* ActionToolbarContainer.swift */; };
 		DB34029D2521BE8B009EFADF /* MeProfileViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB34029C2521BE8B009EFADF /* MeProfileViewModel.swift */; };
 		DB3402B72521D389009EFADF /* UserTimelineViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB3402B62521D389009EFADF /* UserTimelineViewModel.swift */; };
@@ -874,7 +873,6 @@
 				DB6B2EC827612E0700A9B9D2 /* CoverFlowStackCollectionViewLayout in Frameworks */,
 				DBFC0ADE276108610011E99B /* AlamofireImage in Frameworks */,
 				DB94B6B126C64DAC00A2E8A1 /* Introspect in Frameworks */,
-				DB3282DB26AFFD40002B721C /* MetaTextKit in Frameworks */,
 				DB6CF1C4269715CD001DE069 /* FPSIndicator in Frameworks */,
 				DB2924CB2546B958003899A7 /* Kingfisher in Frameworks */,
 				DBFC0AE0276108610011E99B /* Alamofire in Frameworks */,
@@ -2389,7 +2387,6 @@
 				DB2924CA2546B958003899A7 /* Kingfisher */,
 				DB74A163256E148F00C5F3C9 /* CropViewController */,
 				DB6CF1C3269715CD001DE069 /* FPSIndicator */,
-				DB3282DA26AFFD40002B721C /* MetaTextKit */,
 				DB94B6B026C64DAC00A2E8A1 /* Introspect */,
 				DB30ADD526CF583900B2D2BE /* FLAnimatedImage */,
 				DB7AB33D2744E3740035EB8A /* Floaty */,
@@ -2492,19 +2489,18 @@
 			packageReferences = (
 				DBE76D32250214A700DEB0FC /* XCRemoteSwiftPackageReference "CommonOSLog" */,
 				DBE76D3C2502518D00DEB0FC /* XCRemoteSwiftPackageReference "AlamofireImage" */,
-				DBEA4F822511F7460007FEC5 /* XCRemoteSwiftPackageReference "Kanna.git" */,
-				DB2611B5251B2D42004BF309 /* XCRemoteSwiftPackageReference "CryptoSwift.git" */,
-				DBD98487251CB88A00ED87A1 /* XCRemoteSwiftPackageReference "Tabman.git" */,
-				DB2924C92546B958003899A7 /* XCRemoteSwiftPackageReference "Kingfisher.git" */,
+				DBEA4F822511F7460007FEC5 /* XCRemoteSwiftPackageReference "Kanna" */,
+				DB2611B5251B2D42004BF309 /* XCRemoteSwiftPackageReference "CryptoSwift" */,
+				DBD98487251CB88A00ED87A1 /* XCRemoteSwiftPackageReference "Tabman" */,
+				DB2924C92546B958003899A7 /* XCRemoteSwiftPackageReference "Kingfisher" */,
 				DB9EC4DF255A6317005403AA /* XCRemoteSwiftPackageReference "SwiftMessages" */,
-				DB74A162256E148F00C5F3C9 /* XCRemoteSwiftPackageReference "TOCropViewController.git" */,
-				DB6CF1C2269715CD001DE069 /* XCRemoteSwiftPackageReference "FPSIndicator.git" */,
-				DB3282D926AFFD40002B721C /* XCRemoteSwiftPackageReference "MetaTextKit.git" */,
-				DB94B6AF26C64DAC00A2E8A1 /* XCRemoteSwiftPackageReference "SwiftUI-Introspect.git" */,
-				DB30ADD426CF583900B2D2BE /* XCRemoteSwiftPackageReference "FLAnimatedImage.git" */,
-				DB7AB33C2744E3740035EB8A /* XCRemoteSwiftPackageReference "Floaty.git" */,
-				DB096FD2274B7B0C00D56CFA /* XCRemoteSwiftPackageReference "Alamofire.git" */,
-				DBA5DDB5274E1BBF00FF12E3 /* XCRemoteSwiftPackageReference "UITextView-Placeholder.git" */,
+				DB74A162256E148F00C5F3C9 /* XCRemoteSwiftPackageReference "TOCropViewController" */,
+				DB6CF1C2269715CD001DE069 /* XCRemoteSwiftPackageReference "FPSIndicator" */,
+				DB94B6AF26C64DAC00A2E8A1 /* XCRemoteSwiftPackageReference "SwiftUI-Introspect" */,
+				DB30ADD426CF583900B2D2BE /* XCRemoteSwiftPackageReference "FLAnimatedImage" */,
+				DB7AB33C2744E3740035EB8A /* XCRemoteSwiftPackageReference "Floaty" */,
+				DB096FD2274B7B0C00D56CFA /* XCRemoteSwiftPackageReference "Alamofire" */,
+				DBA5DDB5274E1BBF00FF12E3 /* XCRemoteSwiftPackageReference "UITextView-Placeholder" */,
 			);
 			productRefGroup = DBDA8E1F24FCF8A3006750DC /* Products */;
 			projectDirPath = "";
@@ -3181,11 +3177,11 @@
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 67;
+				CURRENT_PROJECT_VERSION = 68;
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = 7LFDZ96332;
 				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 67;
+				DYLIB_CURRENT_VERSION = 68;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				INFOPLIST_FILE = ShareExtension/Info.plist;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2021 Twidere. All rights reserved.";
@@ -3215,11 +3211,11 @@
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 67;
+				CURRENT_PROJECT_VERSION = 68;
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = 7LFDZ96332;
 				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 67;
+				DYLIB_CURRENT_VERSION = 68;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				INFOPLIST_FILE = ShareExtension/Info.plist;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2021 Twidere. All rights reserved.";
@@ -3245,7 +3241,7 @@
 			buildSettings = {
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 67;
+				CURRENT_PROJECT_VERSION = 68;
 				DEVELOPMENT_TEAM = 7LFDZ96332;
 				INFOPLIST_FILE = ShareExtension/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = ShareExtension;
@@ -3271,7 +3267,7 @@
 			buildSettings = {
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 67;
+				CURRENT_PROJECT_VERSION = 68;
 				DEVELOPMENT_TEAM = 7LFDZ96332;
 				INFOPLIST_FILE = ShareExtension/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = ShareExtension;
@@ -3421,7 +3417,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = TwidereX/TwidereX.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 67;
+				CURRENT_PROJECT_VERSION = 68;
 				DEVELOPMENT_ASSET_PATHS = "TwidereX/Resources/Preview\\ Assets.xcassets";
 				DEVELOPMENT_TEAM = 7LFDZ96332;
 				INFOPLIST_FILE = TwidereX/Info.plist;
@@ -3447,7 +3443,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = TwidereX/TwidereX.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 67;
+				CURRENT_PROJECT_VERSION = 68;
 				DEVELOPMENT_ASSET_PATHS = "TwidereX/Resources/Preview\\ Assets.xcassets";
 				DEVELOPMENT_TEAM = 7LFDZ96332;
 				INFOPLIST_FILE = TwidereX/Info.plist;
@@ -3470,7 +3466,7 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 67;
+				CURRENT_PROJECT_VERSION = 68;
 				DEVELOPMENT_TEAM = 7LFDZ96332;
 				INFOPLIST_FILE = TwidereXTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -3494,7 +3490,7 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 67;
+				CURRENT_PROJECT_VERSION = 68;
 				DEVELOPMENT_TEAM = 7LFDZ96332;
 				INFOPLIST_FILE = TwidereXTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -3517,7 +3513,7 @@
 			baseConfigurationReference = 2E41729E598B3379FC09BC03 /* Pods-TwidereX-TwidereXUITests.debug.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 67;
+				CURRENT_PROJECT_VERSION = 68;
 				DEVELOPMENT_TEAM = 7LFDZ96332;
 				INFOPLIST_FILE = TwidereXUITests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -3540,7 +3536,7 @@
 			baseConfigurationReference = 44D01BA9E21B7F374DBDA38A /* Pods-TwidereX-TwidereXUITests.release.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 67;
+				CURRENT_PROJECT_VERSION = 68;
 				DEVELOPMENT_TEAM = 7LFDZ96332;
 				INFOPLIST_FILE = TwidereXUITests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -3618,7 +3614,7 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		DB096FD2274B7B0C00D56CFA /* XCRemoteSwiftPackageReference "Alamofire.git" */ = {
+		DB096FD2274B7B0C00D56CFA /* XCRemoteSwiftPackageReference "Alamofire" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/Alamofire/Alamofire.git";
 			requirement = {
@@ -3626,7 +3622,7 @@
 				minimumVersion = 5.0.0;
 			};
 		};
-		DB2611B5251B2D42004BF309 /* XCRemoteSwiftPackageReference "CryptoSwift.git" */ = {
+		DB2611B5251B2D42004BF309 /* XCRemoteSwiftPackageReference "CryptoSwift" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/krzyzanowskim/CryptoSwift.git";
 			requirement = {
@@ -3634,7 +3630,7 @@
 				minimumVersion = 1.3.2;
 			};
 		};
-		DB2924C92546B958003899A7 /* XCRemoteSwiftPackageReference "Kingfisher.git" */ = {
+		DB2924C92546B958003899A7 /* XCRemoteSwiftPackageReference "Kingfisher" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/onevcat/Kingfisher.git";
 			requirement = {
@@ -3642,7 +3638,7 @@
 				minimumVersion = 7.1.1;
 			};
 		};
-		DB30ADD426CF583900B2D2BE /* XCRemoteSwiftPackageReference "FLAnimatedImage.git" */ = {
+		DB30ADD426CF583900B2D2BE /* XCRemoteSwiftPackageReference "FLAnimatedImage" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/Flipboard/FLAnimatedImage.git";
 			requirement = {
@@ -3650,15 +3646,7 @@
 				minimumVersion = 1.0.0;
 			};
 		};
-		DB3282D926AFFD40002B721C /* XCRemoteSwiftPackageReference "MetaTextKit.git" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/TwidereProject/MetaTextKit.git";
-			requirement = {
-				kind = exactVersion;
-				version = 3.2.0;
-			};
-		};
-		DB6CF1C2269715CD001DE069 /* XCRemoteSwiftPackageReference "FPSIndicator.git" */ = {
+		DB6CF1C2269715CD001DE069 /* XCRemoteSwiftPackageReference "FPSIndicator" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/MainasuK/FPSIndicator.git";
 			requirement = {
@@ -3666,7 +3654,7 @@
 				minimumVersion = 1.0.0;
 			};
 		};
-		DB74A162256E148F00C5F3C9 /* XCRemoteSwiftPackageReference "TOCropViewController.git" */ = {
+		DB74A162256E148F00C5F3C9 /* XCRemoteSwiftPackageReference "TOCropViewController" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/TimOliver/TOCropViewController.git";
 			requirement = {
@@ -3674,7 +3662,7 @@
 				minimumVersion = 2.6.0;
 			};
 		};
-		DB7AB33C2744E3740035EB8A /* XCRemoteSwiftPackageReference "Floaty.git" */ = {
+		DB7AB33C2744E3740035EB8A /* XCRemoteSwiftPackageReference "Floaty" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/kciter/Floaty.git";
 			requirement = {
@@ -3682,7 +3670,7 @@
 				kind = branch;
 			};
 		};
-		DB94B6AF26C64DAC00A2E8A1 /* XCRemoteSwiftPackageReference "SwiftUI-Introspect.git" */ = {
+		DB94B6AF26C64DAC00A2E8A1 /* XCRemoteSwiftPackageReference "SwiftUI-Introspect" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/siteline/SwiftUI-Introspect.git";
 			requirement = {
@@ -3698,7 +3686,7 @@
 				minimumVersion = 9.0.0;
 			};
 		};
-		DBA5DDB5274E1BBF00FF12E3 /* XCRemoteSwiftPackageReference "UITextView-Placeholder.git" */ = {
+		DBA5DDB5274E1BBF00FF12E3 /* XCRemoteSwiftPackageReference "UITextView-Placeholder" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/MainasuK/UITextView-Placeholder.git";
 			requirement = {
@@ -3706,7 +3694,7 @@
 				minimumVersion = 1.4.1;
 			};
 		};
-		DBD98487251CB88A00ED87A1 /* XCRemoteSwiftPackageReference "Tabman.git" */ = {
+		DBD98487251CB88A00ED87A1 /* XCRemoteSwiftPackageReference "Tabman" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/uias/Tabman.git";
 			requirement = {
@@ -3730,7 +3718,7 @@
 				minimumVersion = 4.1.0;
 			};
 		};
-		DBEA4F822511F7460007FEC5 /* XCRemoteSwiftPackageReference "Kanna.git" */ = {
+		DBEA4F822511F7460007FEC5 /* XCRemoteSwiftPackageReference "Kanna" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/tid-kijyun/Kanna.git";
 			requirement = {
@@ -3743,23 +3731,18 @@
 /* Begin XCSwiftPackageProductDependency section */
 		DB2611B6251B2D42004BF309 /* CryptoSwift */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = DB2611B5251B2D42004BF309 /* XCRemoteSwiftPackageReference "CryptoSwift.git" */;
+			package = DB2611B5251B2D42004BF309 /* XCRemoteSwiftPackageReference "CryptoSwift" */;
 			productName = CryptoSwift;
 		};
 		DB2924CA2546B958003899A7 /* Kingfisher */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = DB2924C92546B958003899A7 /* XCRemoteSwiftPackageReference "Kingfisher.git" */;
+			package = DB2924C92546B958003899A7 /* XCRemoteSwiftPackageReference "Kingfisher" */;
 			productName = Kingfisher;
 		};
 		DB30ADD526CF583900B2D2BE /* FLAnimatedImage */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = DB30ADD426CF583900B2D2BE /* XCRemoteSwiftPackageReference "FLAnimatedImage.git" */;
+			package = DB30ADD426CF583900B2D2BE /* XCRemoteSwiftPackageReference "FLAnimatedImage" */;
 			productName = FLAnimatedImage;
-		};
-		DB3282DA26AFFD40002B721C /* MetaTextKit */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = DB3282D926AFFD40002B721C /* XCRemoteSwiftPackageReference "MetaTextKit.git" */;
-			productName = MetaTextKit;
 		};
 		DB6B2EC727612E0700A9B9D2 /* CoverFlowStackCollectionViewLayout */ = {
 			isa = XCSwiftPackageProductDependency;
@@ -3771,27 +3754,27 @@
 		};
 		DB6CF1C3269715CD001DE069 /* FPSIndicator */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = DB6CF1C2269715CD001DE069 /* XCRemoteSwiftPackageReference "FPSIndicator.git" */;
+			package = DB6CF1C2269715CD001DE069 /* XCRemoteSwiftPackageReference "FPSIndicator" */;
 			productName = FPSIndicator;
 		};
 		DB74A163256E148F00C5F3C9 /* CropViewController */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = DB74A162256E148F00C5F3C9 /* XCRemoteSwiftPackageReference "TOCropViewController.git" */;
+			package = DB74A162256E148F00C5F3C9 /* XCRemoteSwiftPackageReference "TOCropViewController" */;
 			productName = CropViewController;
 		};
 		DB7AB33D2744E3740035EB8A /* Floaty */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = DB7AB33C2744E3740035EB8A /* XCRemoteSwiftPackageReference "Floaty.git" */;
+			package = DB7AB33C2744E3740035EB8A /* XCRemoteSwiftPackageReference "Floaty" */;
 			productName = Floaty;
 		};
 		DB94B6B026C64DAC00A2E8A1 /* Introspect */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = DB94B6AF26C64DAC00A2E8A1 /* XCRemoteSwiftPackageReference "SwiftUI-Introspect.git" */;
+			package = DB94B6AF26C64DAC00A2E8A1 /* XCRemoteSwiftPackageReference "SwiftUI-Introspect" */;
 			productName = Introspect;
 		};
 		DBA5DDB6274E1BBF00FF12E3 /* UITextView+Placeholder */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = DBA5DDB5274E1BBF00FF12E3 /* XCRemoteSwiftPackageReference "UITextView-Placeholder.git" */;
+			package = DBA5DDB5274E1BBF00FF12E3 /* XCRemoteSwiftPackageReference "UITextView-Placeholder" */;
 			productName = "UITextView+Placeholder";
 		};
 		DBB0E3C22760FB1200F1D45F /* TwidereSDK */ = {
@@ -3800,7 +3783,7 @@
 		};
 		DBD98488251CB88A00ED87A1 /* Tabman */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = DBD98487251CB88A00ED87A1 /* XCRemoteSwiftPackageReference "Tabman.git" */;
+			package = DBD98487251CB88A00ED87A1 /* XCRemoteSwiftPackageReference "Tabman" */;
 			productName = Tabman;
 		};
 		DBE76D33250214A700DEB0FC /* CommonOSLog */ = {
@@ -3810,12 +3793,12 @@
 		};
 		DBEA4F832511F7460007FEC5 /* Kanna */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = DBEA4F822511F7460007FEC5 /* XCRemoteSwiftPackageReference "Kanna.git" */;
+			package = DBEA4F822511F7460007FEC5 /* XCRemoteSwiftPackageReference "Kanna" */;
 			productName = Kanna;
 		};
 		DBFC0ADB276108590011E99B /* CropViewController */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = DB74A162256E148F00C5F3C9 /* XCRemoteSwiftPackageReference "TOCropViewController.git" */;
+			package = DB74A162256E148F00C5F3C9 /* XCRemoteSwiftPackageReference "TOCropViewController" */;
 			productName = CropViewController;
 		};
 		DBFC0ADD276108610011E99B /* AlamofireImage */ = {
@@ -3825,7 +3808,7 @@
 		};
 		DBFC0ADF276108610011E99B /* Alamofire */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = DB096FD2274B7B0C00D56CFA /* XCRemoteSwiftPackageReference "Alamofire.git" */;
+			package = DB096FD2274B7B0C00D56CFA /* XCRemoteSwiftPackageReference "Alamofire" */;
 			productName = Alamofire;
 		};
 /* End XCSwiftPackageProductDependency section */

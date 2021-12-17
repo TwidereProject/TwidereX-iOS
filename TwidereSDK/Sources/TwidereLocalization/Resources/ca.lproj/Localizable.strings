@@ -310,6 +310,7 @@
 "Scene.Notification.Tabs.All" = "Tot";
 "Scene.Notification.Tabs.Mentions" = "Mencions";
 "Scene.Notification.Title" = "Notificació";
+"Scene.Profile.Fields.JoinedInDate" = "Joined in %@";
 "Scene.Profile.Filter.All" = "Totes les piulades";
 "Scene.Profile.Filter.ExcludeReplies" = "Amaga les respostes";
 "Scene.Profile.HideReply" = "Amaga la resposta";
@@ -379,7 +380,9 @@ Encara en una fase inicial.";
 "Scene.Settings.Misc.Nitter.Dialog.Usage.ProjectButton" = "URL del projecte";
 "Scene.Settings.Misc.Nitter.Dialog.Usage.Title" = "Using Third-party data provider in";
 "Scene.Settings.Misc.Nitter.Input.Description" = "Alternative Twitter front-end focused on privacy.";
+"Scene.Settings.Misc.Nitter.Input.Invalid" = "Nitter instance URL is invalid, e.g. https://nitter.net";
 "Scene.Settings.Misc.Nitter.Input.Placeholder" = "Nitter Instance";
+"Scene.Settings.Misc.Nitter.Input.Value" = "Instance URL";
 "Scene.Settings.Misc.Nitter.Title" = "Third-party Twitter data provider";
 "Scene.Settings.Misc.Proxy.Enable.Description" = "Use proxy for all network requests";
 "Scene.Settings.Misc.Proxy.Enable.Title" = "Proxy";

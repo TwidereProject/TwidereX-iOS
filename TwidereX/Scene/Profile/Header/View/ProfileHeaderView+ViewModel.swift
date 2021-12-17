@@ -20,6 +20,13 @@ extension ProfileHeaderView {
         var configureDisposeBag = Set<AnyCancellable>()
         var bindDisposeBag = Set<AnyCancellable>()
         
+        static let joinDateFormatter: DateFormatter = {
+            let formatter = DateFormatter()
+            formatter.dateStyle = .long
+            formatter.timeStyle = .none
+            return formatter
+        }()
+        
         @Published var bannerImageURL: URL?
         @Published var avatarImageURL: URL?
                 
@@ -300,7 +307,22 @@ extension ProfileHeaderView {
                 fields.append(item)
                 index += 1
             }
-            
+            if let createdAt = user.createdAt {
+                let value: PlaintextMetaContent = {
+                    let dateString = ProfileHeaderView.ViewModel.joinDateFormatter.string(from: createdAt)
+                    let string = L10n.Scene.Profile.Fields.joinedInDate(dateString)
+                    return PlaintextMetaContent(string: string)
+                }()
+                let item = ProfileFieldListView.Item(
+                    index: index,
+                    updateAt: now,
+                    symbol: Asset.Human.personMini.image,
+                    key: nil,
+                    value: value
+                )
+                fields.append(item)
+                index += 1
+            }
             guard !fields.isEmpty else { return nil }
             return fields
         }

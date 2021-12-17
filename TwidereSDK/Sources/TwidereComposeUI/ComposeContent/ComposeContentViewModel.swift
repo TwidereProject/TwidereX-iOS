@@ -138,9 +138,15 @@ public final class ComposeContentViewModel: NSObject {
         case .post:
             break
         case .hashtag(let hashtag):
-            break
+            currentTextInput = "#" + hashtag + " "
         case .mention(let user):
-            break
+            // set content text
+            switch user {
+            case .twitter(let user):
+                currentTextInput = "@" + user.username + " "
+            case .mastodon(let user):
+                currentTextInput = "@" + user.acct + " "
+            }
         case .reply(let status):
             replyTo = status
             items.insert(.replyTo)
@@ -180,7 +186,7 @@ public final class ComposeContentViewModel: NSObject {
                 }()
             case .mastodon(let status):
                 // set content warning
-                if let spoilerText = status.spoilerText {
+                if let spoilerText = status.spoilerText, !spoilerText.isEmpty {
                     isContentWarningComposing = true
                     currentContentWarningInput = spoilerText
                 }
@@ -661,7 +667,7 @@ extension ComposeContentViewModel {
         case .authorizedAlways, .authorizedWhenInUse:
             return true
         case .restricted, .denied:
-            let alertController = UIAlertController(title: "Location Access Disabled", message: "Please enable location access to compose geo marked tweet", preferredStyle: .alert)
+            let alertController = UIAlertController(title: "Location Access Disabled", message: "Please enable location access to compose geo marked tweet", preferredStyle: .alert)    // FIXME: i18n
             let openSettingsAction = UIAlertAction(title: "Open Settings", style: .default) { _ in
                 guard let url = URL(string: UIApplication.openSettingsURLString) else { return }
                 UIApplication.shared.open(url)

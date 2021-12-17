@@ -137,7 +137,10 @@ extension UITableViewDelegate where Self: DataSourceProvider & MediaPreviewTrans
             let mediaViews = cell.statusView.mediaGridContainerView.mediaViews
             guard index < mediaViews.count else { return nil }
             let mediaView = mediaViews[index]
-            return UITargetedPreview(view: mediaView, parameters: UIPreviewParameters())
+            let parameters = UIPreviewParameters()
+            parameters.backgroundColor = .clear
+            parameters.visiblePath = UIBezierPath(roundedRect: mediaView.bounds, cornerRadius: MediaView.cornerRadius)
+            return UITargetedPreview(view: mediaView, parameters: parameters)
         } else {
             return nil
         }

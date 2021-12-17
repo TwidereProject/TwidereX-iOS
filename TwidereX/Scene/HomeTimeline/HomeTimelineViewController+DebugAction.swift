@@ -123,6 +123,10 @@ extension HomeTimelineViewController {
                     guard let self = self else { return }
                     self.moveToFirst(action, category: .gap)
                 }),
+                UIAction(title: "First Quote", image: nil, attributes: [], handler: { [weak self] action in
+                    guard let self = self else { return }
+                    self.moveToFirst(action, category: .quote)
+                }),
 //                UIAction(title: "First Protected Tweet", image: nil, attributes: [], handler: { [weak self] action in
 //                    guard let self = self else { return }
 //                    self.moveToFirstProtectedTweet(action)
@@ -220,6 +224,7 @@ extension HomeTimelineViewController {
     
     enum StatusCategory {
         case gap
+        case quote
         case gif
         case video
         case location
@@ -233,6 +238,8 @@ extension HomeTimelineViewController {
                 guard let feed = record.object(in: AppContext.shared.managedObjectContext) else { return false }
                 if let status = feed.twitterStatus {
                     switch self {
+                    case .quote:
+                        return status.quote != nil
                     case .gif:
                         return status.attachments.contains(where: { attachment in attachment.kind == .animatedGIF })
                     case .video:
