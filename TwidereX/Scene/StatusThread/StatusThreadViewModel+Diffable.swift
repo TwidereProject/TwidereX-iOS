@@ -65,15 +65,15 @@ extension StatusThreadViewModel {
         
         Publishers.CombineLatest3(
             root,
-            $replies,
-            $leafs
+            $replies.removeDuplicates(),
+            $leafs.removeDuplicates()
         )
         .receive(on: DispatchQueue.main)
         .sink { [weak self] root, replies, leafs in
             guard let self = self else { return }
             guard let diffableDataSource = self.diffableDataSource else { return }
 
-            Task {
+            Task { @MainActor in
                 let oldSnapshot = diffableDataSource.snapshot()
 
                 var newSnapshot = NSDiffableDataSourceSnapshot<StatusSection, StatusItem>()
@@ -133,10 +133,12 @@ extension StatusThreadViewModel {
                     newSnapshot: newSnapshot
                 ) else {
                     await self.updateDataSource(snapshot: newSnapshot, animatingDifferences: false)
-                    self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): applied new snapshot")
+                    self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): applied new snapshot without tweak")
                     return
                 }
-                                
+                
+                self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): [Snapshot] oldSnapshot: \(oldSnapshot.itemIdentifiers.debugDescription)")
+                self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): [Snapshot] newSnapshot: \(newSnapshot.itemIdentifiers.debugDescription)")
                 await self.updateSnapshotUsingReloadData(
                     tableView: tableView,
                     oldSnapshot: oldSnapshot,
@@ -172,16 +174,19 @@ extension StatusThreadViewModel {
         // additional margin for .topLoader
         let oldTopMargin: CGFloat = {
             let marginHeight = TimelineTopLoaderTableViewCell.cellHeight
-            if oldSnapshot.itemIdentifiers.contains(.topLoader) {
-                return TimelineTopLoaderTableViewCell.cellHeight
-            }
-            if !replies.isEmpty {
+            if oldSnapshot.itemIdentifiers.contains(.topLoader) || !replies.isEmpty {
                 return marginHeight
             }
             return .zero
         }()
         
         await self.diffableDataSource?.applySnapshotUsingReloadData(newSnapshot)
+
+        // note:
+        // tweak the content offset and bottom inset
+        // make the table view stable when data reload
+        // the keypoint is set the bottom inset to make the root padding with "TopLoaderHeight" to top edge
+        // and restore the "TopLoaderHeight" when bottom inset adjusted
         
         // set bottom inset. Make root item pin to top.
         if let item = root.value.flatMap({ StatusItem.thread($0) }),
@@ -192,9 +197,11 @@ extension StatusThreadViewModel {
             // otherwise tableView will jump when insert replies
             let bottomSpacing = tableView.safeAreaLayoutGuide.layoutFrame.height - cell.frame.height - oldTopMargin
             let additionalInset = round(tableView.contentSize.height - cell.frame.maxY)
+            print("additionalInset: \(additionalInset)")
             tableView.contentInset.bottom = max(0, bottomSpacing - additionalInset)
+            self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): content inset bottom: \(tableView.contentInset.bottom)")
         }
-        
+
         // set scroll position
         tableView.scrollToRow(at: difference.targetIndexPath, at: .top, animated: false)
         tableView.contentOffset.y = {
@@ -225,13 +232,15 @@ extension StatusThreadViewModel {
         guard oldSnapshot.numberOfItems != 0 else { return nil }
         guard let indexPathsForVisibleRows = tableView.indexPathsForVisibleRows?.sorted() else { return nil }
 
-        // find index of the first visible item exclude .topLoader
+        // find index of the first visible item in both old and new snapshot
         var _index: Int?
         let items = oldSnapshot.itemIdentifiers(inSection: .main)
         for (i, item) in items.enumerated() {
-            if case .topLoader = item { continue }
-            guard indexPathsForVisibleRows.contains(where: { $0.row == i }) else { continue }
-
+            guard let indexPath = indexPathsForVisibleRows.first(where: { $0.row == i }) else { continue }
+            guard newSnapshot.indexOfItem(item) != nil else { continue }
+            let rectForCell = tableView.rectForRow(at: indexPath)
+            let distanceToTableViewTopEdge = tableView.convert(rectForCell, to: nil).origin.y - tableView.safeAreaInsets.top
+            guard distanceToTableViewTopEdge >= 0 else { continue }
             _index = i
             break
         }
