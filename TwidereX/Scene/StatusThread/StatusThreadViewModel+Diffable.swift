@@ -65,10 +65,10 @@ extension StatusThreadViewModel {
         
         Publishers.CombineLatest3(
             root,
-            $replies.removeDuplicates(),
-            $leafs.removeDuplicates()
+            $replies,
+            $leafs
         )
-        .receive(on: DispatchQueue.main)
+        .throttle(for: 0.3, scheduler: DispatchQueue.main, latest: true)
         .sink { [weak self] root, replies, leafs in
             guard let self = self else { return }
             guard let diffableDataSource = self.diffableDataSource else { return }
