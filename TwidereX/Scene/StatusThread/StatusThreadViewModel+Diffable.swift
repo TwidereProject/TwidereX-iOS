@@ -197,7 +197,7 @@ extension StatusThreadViewModel {
             // otherwise tableView will jump when insert replies
             let bottomSpacing = tableView.safeAreaLayoutGuide.layoutFrame.height - cell.frame.height - oldTopMargin
             let additionalInset = round(tableView.contentSize.height - cell.frame.maxY)
-            print("additionalInset: \(additionalInset)")
+            
             tableView.contentInset.bottom = max(0, bottomSpacing - additionalInset)
             self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): content inset bottom: \(tableView.contentInset.bottom)")
         }
