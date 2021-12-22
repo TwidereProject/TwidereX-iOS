@@ -25,6 +25,16 @@ extension TwitterStatusThreadReplyViewModel {
             super.didEnter(from: previousState)
             os_log("%{public}s[%{public}ld], %{public}s: enter %s, previous: %s", ((#file as NSString).lastPathComponent), #line, #function, name, (previousState as? NamingState)?.name ?? previousState?.description ?? "nil")
         }
+        
+        @MainActor
+        func enter(state: TwitterStatusThreadReplyViewModel.State.Type) {
+            stateMachine?.enter(state)
+        }
+        
+        @MainActor
+        func apply(nodes: [TwitterStatusReplyNode]) {
+            self.viewModel?.nodes = nodes
+        }
     }
 }
 
@@ -64,6 +74,7 @@ extension TwitterStatusThreadReplyViewModel.State {
             
             Task {
                 var nextState: TwitterStatusThreadReplyViewModel.State.Type?
+                var nodes: [TwitterStatusThreadReplyViewModel.TwitterStatusReplyNode] = []
                 let managedObjectContext = viewModel.context.backgroundManagedObjectContext
                 try await managedObjectContext.performChanges {
                     guard let _status = record.object(in: managedObjectContext) else {
@@ -138,9 +149,8 @@ extension TwitterStatusThreadReplyViewModel.State {
                         }   // end do { … } catch { … }
                     }   // end if let replyToStatusID = last.replyToStatusID { … }
                     
-                    self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): prepare reply nodes: \(replyNodes.debugDescription)")
-                    viewModel.nodes = replyNodes
-                    
+                    nodes = replyNodes
+                                        
                     let pendingNodes = replyNodes.filter { node in
                         switch node.status {
                         case .notDetermined, .fail:     return true
@@ -172,16 +182,20 @@ extension TwitterStatusThreadReplyViewModel.State {
                     nextState = _nextState
                 }   // end try await managedObjectContext.performChanges
                 
-                guard let nextState = nextState else { return }
+                guard let nextState = nextState else {
+                    assertionFailure()
+                    return
+                }
                 await enter(state: nextState)
+                
+                // set nodes after state update
+                self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): prepare reply nodes: \(nodes.debugDescription)")
+                await apply(nodes: nodes)
+
                 
             }   // end Task
         }   // end didEnter
-        
-        @MainActor
-        func enter(state: TwitterStatusThreadReplyViewModel.State.Type) {
-            stateMachine?.enter(state)
-        }
+
     }
     
     class Idle: TwitterStatusThreadReplyViewModel.State {
@@ -243,11 +257,6 @@ extension TwitterStatusThreadReplyViewModel.State {
                     // FIXME: needs retry logic here
                 }
             }
-        }
-        
-        @MainActor
-        func enter(state: TwitterStatusThreadReplyViewModel.State.Type) {
-            stateMachine?.enter(state)
         }
         
     }   // end class Loading
