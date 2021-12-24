@@ -35,11 +35,16 @@
 		DB1D7B4325B5938400397DCD /* TwitterAuthenticationOptionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB1D7B4225B5938300397DCD /* TwitterAuthenticationOptionViewController.swift */; };
 		DB1D7B5025B5A43F00397DCD /* ListTextFieldTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB1D7B4F25B5A43F00397DCD /* ListTextFieldTableViewCell.swift */; };
 		DB1D7B5525B5A87200397DCD /* TwitterAuthenticationOptionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB1D7B5425B5A87200397DCD /* TwitterAuthenticationOptionViewModel.swift */; };
+		DB1E48122772CE380074F6A0 /* SearchViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB36F375257F79DB0028F81E /* SearchViewModel.swift */; };
+		DB1E48142772CE850074F6A0 /* SearchViewModel+Diffable.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB1E48132772CE850074F6A0 /* SearchViewModel+Diffable.swift */; };
+		DB1E48162772CEC20074F6A0 /* SearchSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB1E48152772CEC20074F6A0 /* SearchSection.swift */; };
+		DB1E48192772CECC0074F6A0 /* SearchItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB1E48182772CECC0074F6A0 /* SearchItem.swift */; };
 		DB213FA627392ABC009ABD74 /* HashtagTimelineViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB213FA527392ABC009ABD74 /* HashtagTimelineViewController.swift */; };
 		DB213FA927392B81009ABD74 /* HashtagTimelineViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB213FA827392B81009ABD74 /* HashtagTimelineViewModel.swift */; };
 		DB213FAB27392C44009ABD74 /* HashtagTimelineViewModel+Diffable.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB213FAA27392C44009ABD74 /* HashtagTimelineViewModel+Diffable.swift */; };
 		DB213FAD27392E7D009ABD74 /* HashtagTimelineViewController+DataSourceProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB213FAC27392E7D009ABD74 /* HashtagTimelineViewController+DataSourceProvider.swift */; };
 		DB213FAF273930BF009ABD74 /* HashtagTimelineViewModel+State.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB213FAE273930BF009ABD74 /* HashtagTimelineViewModel+State.swift */; };
+		DB25C4C32775D7B300EC1435 /* SearchHistoryTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB25C4C22775D7B300EC1435 /* SearchHistoryTableViewCell.swift */; };
 		DB2611B7251B2D42004BF309 /* CryptoSwift in Frameworks */ = {isa = PBXBuildFile; productRef = DB2611B6251B2D42004BF309 /* CryptoSwift */; };
 		DB262A332721377800D18EF3 /* DataSourceFacade+Block.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB262A322721377800D18EF3 /* DataSourceFacade+Block.swift */; };
 		DB262A3727213FBE00D18EF3 /* UIAlertAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB262A3627213FBE00D18EF3 /* UIAlertAction.swift */; };
@@ -452,6 +457,9 @@
 		DB1D7B4A25B5A21A00397DCD /* AuthenticationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationViewModel.swift; sourceTree = "<group>"; };
 		DB1D7B4F25B5A43F00397DCD /* ListTextFieldTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListTextFieldTableViewCell.swift; sourceTree = "<group>"; };
 		DB1D7B5425B5A87200397DCD /* TwitterAuthenticationOptionViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwitterAuthenticationOptionViewModel.swift; sourceTree = "<group>"; };
+		DB1E48132772CE850074F6A0 /* SearchViewModel+Diffable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SearchViewModel+Diffable.swift"; sourceTree = "<group>"; };
+		DB1E48152772CEC20074F6A0 /* SearchSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchSection.swift; sourceTree = "<group>"; };
+		DB1E48182772CECC0074F6A0 /* SearchItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchItem.swift; sourceTree = "<group>"; };
 		DB213FA527392ABC009ABD74 /* HashtagTimelineViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HashtagTimelineViewController.swift; sourceTree = "<group>"; };
 		DB213FA827392B81009ABD74 /* HashtagTimelineViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HashtagTimelineViewModel.swift; sourceTree = "<group>"; };
 		DB213FAA27392C44009ABD74 /* HashtagTimelineViewModel+Diffable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "HashtagTimelineViewModel+Diffable.swift"; sourceTree = "<group>"; };
@@ -462,6 +470,7 @@
 		DB25BA07253D7D6E00A5420F /* APIService+Persist+DictContent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "APIService+Persist+DictContent.swift"; sourceTree = "<group>"; };
 		DB25BA0F253D7F4D00A5420F /* APIService+CoreData+V2+Tweet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "APIService+CoreData+V2+Tweet.swift"; sourceTree = "<group>"; };
 		DB25BA1E253DACD100A5420F /* APIService+CoreData+V2+TwitterUser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "APIService+CoreData+V2+TwitterUser.swift"; sourceTree = "<group>"; };
+		DB25C4C22775D7B300EC1435 /* SearchHistoryTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchHistoryTableViewCell.swift; sourceTree = "<group>"; };
 		DB2611462518AC13004BF309 /* AppSecret.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSecret.swift; sourceTree = "<group>"; };
 		DB262A322721377800D18EF3 /* DataSourceFacade+Block.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DataSourceFacade+Block.swift"; sourceTree = "<group>"; };
 		DB262A3627213FBE00D18EF3 /* UIAlertAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIAlertAction.swift; sourceTree = "<group>"; };
@@ -1040,6 +1049,15 @@
 			path = Option;
 			sourceTree = "<group>";
 		};
+		DB1E48172772CEC40074F6A0 /* Search */ = {
+			isa = PBXGroup;
+			children = (
+				DB1E48152772CEC20074F6A0 /* SearchSection.swift */,
+				DB1E48182772CECC0074F6A0 /* SearchItem.swift */,
+			);
+			path = Search;
+			sourceTree = "<group>";
+		};
 		DB213FA727392AC3009ABD74 /* HashtagTimeline */ = {
 			isa = PBXGroup;
 			children = (
@@ -1452,6 +1470,7 @@
 				DB8761BA2745515F00BA7EE2 /* CoverFlowStack */,
 				DB8761D12745553A00BA7EE2 /* Media */,
 				DBD0B49E2758B5F70015A388 /* Sidebar */,
+				DB1E48172772CEC40074F6A0 /* Search */,
 			);
 			path = Msic;
 			sourceTree = "<group>";
@@ -2223,6 +2242,8 @@
 			children = (
 				DBF69E8E2549601900E2A915 /* SearchViewController.swift */,
 				DB36F375257F79DB0028F81E /* SearchViewModel.swift */,
+				DB1E48132772CE850074F6A0 /* SearchViewModel+Diffable.swift */,
+				DB25C4C22775D7B300EC1435 /* SearchHistoryTableViewCell.swift */,
 			);
 			path = Search;
 			sourceTree = "<group>";
@@ -2865,6 +2886,7 @@
 				DB51DC412717FCAA00A0D8FB /* StatusMediaGalleryCollectionCell.swift in Sources */,
 				DB262A4F272692F900D18EF3 /* SearchMediaViewModel+Diffable.swift in Sources */,
 				DB3B906126E8AB480010F64C /* StatusViewTableViewCellDelegate.swift in Sources */,
+				DB1E48122772CE380074F6A0 /* SearchViewModel.swift in Sources */,
 				DB76A662275F65FF00A50673 /* DataSourceFacade+Model.swift in Sources */,
 				DB2EBBF0255D368200956CAA /* TableViewEntryRow.swift in Sources */,
 				DB30ADDC26CFC7EE00B2D2BE /* StatusTableViewCell.swift in Sources */,
@@ -2916,6 +2938,7 @@
 				DB262A3D27228B4800D18EF3 /* SearchResultViewController.swift in Sources */,
 				DBB3780027686E3000B77A02 /* AutoGenerateProtocolDelegate.swift in Sources */,
 				DB5FB0122727FD4A006520FA /* SearchUserViewModel+State.swift in Sources */,
+				DB1E48192772CECC0074F6A0 /* SearchItem.swift in Sources */,
 				DB43488D251DFF0F005B599F /* ProfileBannerStatusItemView.swift in Sources */,
 				DBE76D1E2500E65D00DEB0FC /* HomeTimelineViewModel.swift in Sources */,
 				DBDAF240274F530300050319 /* AppContext.swift in Sources */,
@@ -2940,6 +2963,8 @@
 				DBAA89902758DFC9001C273B /* AvatarBarButtonItem+ViewModel.swift in Sources */,
 				DB262A4E2726928F00D18EF3 /* SearchMediaViewModel.swift in Sources */,
 				DB9EC4EA255A6BC7005403AA /* TwitterAccountUnlockViewController.swift in Sources */,
+				DB1E48142772CE850074F6A0 /* SearchViewModel+Diffable.swift in Sources */,
+				DB25C4C32775D7B300EC1435 /* SearchHistoryTableViewCell.swift in Sources */,
 				DB71C7D1271EB09A00BE3819 /* DataSourceFacade+Friendship.swift in Sources */,
 				DBCE2E912591A06300926D09 /* UINavigationController.swift in Sources */,
 				DB915406254FC8CE00613473 /* FollowActionButton.swift in Sources */,
@@ -3006,6 +3031,7 @@
 				DB1BF29925663EFA00B5F490 /* DisplayPreference.swift in Sources */,
 				DB76A668275F896E00A50673 /* ShareActivityProvider.swift in Sources */,
 				DB1BF2AC25664A0700B5F490 /* SlideTableViewCell.swift in Sources */,
+				DB1E48162772CEC20074F6A0 /* SearchSection.swift in Sources */,
 				DB8EBE7A276648FA005CF76A /* UserMediaTimelineViewController+DataSourceProvider.swift in Sources */,
 				DB5632C126DF7E7A00FC893F /* ListBatchFetchViewModel.swift in Sources */,
 				DB51DC5027181DE500A0D8FB /* CoverFlowStackMediaCollectionCell+ViewModel.swift in Sources */,

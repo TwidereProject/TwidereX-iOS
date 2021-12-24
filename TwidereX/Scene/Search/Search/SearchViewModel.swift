@@ -7,26 +7,53 @@
 //
 
 import os.log
-import Foundation
+import UIKit
 import Combine
+import TwidereCore
 
 final class SearchViewModel {
     
+    let logger = Logger(subsystem: "SearchViewModel", category: "ViewModel")
+    
+    var disposeBag = Set<AnyCancellable>()
     var observations = Set<NSKeyValueObservation>()
     
     // input
+    let context: AppContext
+    let savedSearchService: SavedSearchService
     let viewDidAppear = PassthroughSubject<Void, Never>()
+    let savedSearchFetchedResultController: SavedSearchFetchedResultController
     
     // output
-    let avatarStyle = CurrentValueSubject<UserDefaults.AvatarStyle, Never>(UserDefaults.shared.avatarStyle)
+    var diffableDataSource: UITableViewDiffableDataSource<SearchSection, SearchItem>?
+    @Published var isSavedSearchFetched = false
 
-    init() {
-        UserDefaults.shared
-            .observe(\.avatarStyle) { [weak self] defaults, _ in
+    init(context: AppContext) {
+        self.context = context
+        self.savedSearchService = SavedSearchService(apiService: context.apiService)
+        self.savedSearchFetchedResultController = SavedSearchFetchedResultController(managedObjectContext: context.managedObjectContext)
+        // end init
+        
+        context.authenticationService.activeAuthenticationContext
+            .map { $0?.userIdentifier }
+            .assign(to: \.userIdentifier, on: savedSearchFetchedResultController)
+            .store(in: &disposeBag)
+        
+        viewDidAppear
+            .sink { [weak self] _ in
                 guard let self = self else { return }
-                self.avatarStyle.value = defaults.avatarStyle
+                guard let authenticationContext = self.context.authenticationService.activeAuthenticationContext.value else { return }
+                
+                Task {
+                    do {
+                        try await self.savedSearchService.fetchList(authenticationContext: authenticationContext)
+                    } catch {
+                        // do nothing
+                    }
+                    self.isSavedSearchFetched = true
+                }
             }
-            .store(in: &observations)
+            .store(in: &disposeBag)
     }
     
     deinit {
