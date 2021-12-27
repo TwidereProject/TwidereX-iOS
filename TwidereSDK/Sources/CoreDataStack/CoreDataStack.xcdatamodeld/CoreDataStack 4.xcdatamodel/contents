@@ -157,6 +157,13 @@
         <relationship name="authenticationIndex" maxCount="1" deletionRule="Nullify" destinationEntity="AuthenticationIndex" inverseName="twitterAuthentication" inverseEntity="AuthenticationIndex"/>
         <relationship name="user" maxCount="1" deletionRule="Nullify" destinationEntity="TwitterUser" inverseName="twitterAuthentication" inverseEntity="TwitterUser"/>
     </entity>
+    <entity name="TwitterSavedSearch" representedClassName="CoreDataStack.TwitterSavedSearch" syncable="YES">
+        <attribute name="createdAt" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="id" attributeType="String"/>
+        <attribute name="name" attributeType="String"/>
+        <attribute name="query" attributeType="String"/>
+        <relationship name="user" maxCount="1" deletionRule="Nullify" destinationEntity="TwitterUser" inverseName="savedSearches" inverseEntity="TwitterUser"/>
+    </entity>
     <entity name="TwitterStatus" representedClassName="CoreDataStack.TwitterStatus" syncable="YES">
         <attribute name="attachments" optional="YES" attributeType="Binary"/>
         <attribute name="conversationID" optional="YES" attributeType="String"/>
@@ -214,6 +221,7 @@
         <relationship name="muting" toMany="YES" deletionRule="Nullify" destinationEntity="TwitterUser" inverseName="mutingBy" inverseEntity="TwitterUser"/>
         <relationship name="mutingBy" toMany="YES" deletionRule="Nullify" destinationEntity="TwitterUser" inverseName="muting" inverseEntity="TwitterUser"/>
         <relationship name="reposts" toMany="YES" deletionRule="Nullify" destinationEntity="TwitterStatus" inverseName="repostBy" inverseEntity="TwitterStatus"/>
+        <relationship name="savedSearches" toMany="YES" deletionRule="Cascade" destinationEntity="TwitterSavedSearch" inverseName="user" inverseEntity="TwitterSavedSearch"/>
         <relationship name="statuses" toMany="YES" deletionRule="Nullify" destinationEntity="TwitterStatus" inverseName="author" inverseEntity="TwitterStatus"/>
         <relationship name="twitterAuthentication" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="TwitterAuthentication" inverseName="user" inverseEntity="TwitterAuthentication"/>
     </entity>
@@ -228,6 +236,7 @@
         <element name="MastodonUser" positionX="-63" positionY="-153" width="128" height="569"/>
         <element name="TwitterAuthentication" positionX="-109.453125" positionY="275.71875" width="128" height="209"/>
         <element name="TwitterStatus" positionX="-63" positionY="-153" width="128" height="404"/>
-        <element name="TwitterUser" positionX="281.5234375" positionY="201.703125" width="128" height="494"/>
+        <element name="TwitterUser" positionX="281.5234375" positionY="201.703125" width="128" height="509"/>
+        <element name="TwitterSavedSearch" positionX="90" positionY="-18" width="128" height="104"/>
     </elements>
 </model>

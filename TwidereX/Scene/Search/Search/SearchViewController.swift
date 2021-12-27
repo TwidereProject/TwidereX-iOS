@@ -18,6 +18,9 @@ final class SearchViewController: UIViewController, NeedsDependency, DrawerSideb
     weak var context: AppContext! { willSet { precondition(!isViewLoaded) } }
     weak var coordinator: SceneCoordinator! { willSet { precondition(!isViewLoaded) } }
     
+    var disposeBag = Set<AnyCancellable>()
+    var viewModel: SearchViewModel!
+    
     private(set) lazy var searchResultViewModel = SearchResultViewModel(context: context, coordinator: coordinator)
     private(set) lazy var searchResultViewController: SearchResultViewController = {
         let searchResultViewController = SearchResultViewController()
@@ -37,7 +40,14 @@ final class SearchViewController: UIViewController, NeedsDependency, DrawerSideb
     private(set) var drawerSidebarTransitionController: DrawerSidebarTransitionController!
     let avatarBarButtonItem = AvatarBarButtonItem()
 
-    var disposeBag = Set<AnyCancellable>()
+    private(set) lazy var tableView: UITableView = {
+        let style: UITableView.Style = UIDevice.current.userInterfaceIdiom == .phone ? .grouped : .insetGrouped
+        let tableView = UITableView(frame: .zero, style: style)
+        tableView.backgroundColor = .systemGroupedBackground
+        tableView.rowHeight = UITableView.automaticDimension
+        tableView.sectionHeaderTopPadding = 14
+        return tableView
+    }()
     
     deinit {
         os_log("%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
@@ -52,7 +62,7 @@ extension SearchViewController {
         
         drawerSidebarTransitionController = DrawerSidebarTransitionController(hostViewController: self)
 
-        view.backgroundColor = .systemBackground
+        view.backgroundColor = .systemGroupedBackground
         navigationItem.searchController = searchController
         navigationItem.hidesSearchBarWhenScrolling = false
         
@@ -72,40 +82,46 @@ extension SearchViewController {
                 self.searchController.searchBar.selectedScopeButtonIndex = currentPageIndex
             }
             .store(in: &disposeBag)
-
-//        navigationItem.leftBarButtonItem = avatarBarButtonItem
-//        setupSearchBar()
-//        avatarBarButtonItem.avatarButton.addTarget(self, action: #selector(SearchViewController.avatarButtonPressed(_:)), for: .touchUpInside)
-//
-//        drawerSidebarTransitionController = DrawerSidebarTransitionController(hostViewController: self)
-//
-//        searchBarTapPublisher
-//            .sink { [weak self] _ in
-//                guard let self = self else { return }
-//                let searchDetailViewModel = SearchDetailViewModel()
-//                searchDetailViewModel.needsBecomeFirstResponder = true
-//                self.navigationController?.delegate = self.searchDetailTransitionController
-//                self.coordinator.present(scene: .searchDetail(viewModel: searchDetailViewModel), from: self, transition: .customPush)
-//            }
-//            .store(in: &disposeBag)
-//        Publishers.CombineLatest3(
-//            context.authenticationService.activeAuthenticationIndex.eraseToAnyPublisher(),
-//            viewModel.avatarStyle.eraseToAnyPublisher(),
-//            viewModel.viewDidAppear.eraseToAnyPublisher()
-//        )
-//        .receive(on: DispatchQueue.main)
-//        .sink { [weak self] activeAuthenticationIndex, _, _ in
-//            guard let self = self else { return }
-//            guard let twitterUser = activeAuthenticationIndex?.twitterAuthentication?.twitterUser,
-//                  let avatarImageURL = twitterUser.avatarImageURL() else {
-//                self.avatarBarButtonItem.configure(withConfigurationInput: AvatarConfigurableViewConfiguration.Input(avatarImageURL: nil))
-//                return
-//            }
-//            self.avatarBarButtonItem.configure(withConfigurationInput: AvatarConfigurableViewConfiguration.Input(avatarImageURL: avatarImageURL))
-//        }
-//        .store(in: &disposeBag)
         
+        tableView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(tableView)
+        NSLayoutConstraint.activate([
+            tableView.topAnchor.constraint(equalTo: view.topAnchor),
+            tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+        ])
         
+        tableView.delegate = self
+        viewModel.setupDiffableDataSource(
+            tableView: tableView
+        )
+        
+        Publishers.CombineLatest3(
+            viewModel.$savedSearchTexts,
+            searchResultViewModel.$searchText,
+            context.authenticationService.activeAuthenticationContext
+        )
+        .receive(on: DispatchQueue.main)
+        .sink { [weak self] texts, searchText, activeAuthenticationContext in
+            guard let self = self else { return }
+            let text = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
+            guard !text.isEmpty,
+                  !texts.contains(text)
+            else {
+                self.searchController.searchBar.showsBookmarkButton = false
+                return
+            }
+            switch activeAuthenticationContext {
+            case .twitter:
+                self.searchController.searchBar.showsBookmarkButton = true
+            case .mastodon:
+                self.searchController.searchBar.showsBookmarkButton = false
+            case nil:
+                self.searchController.searchBar.showsBookmarkButton = false
+            }
+        }
+        .store(in: &disposeBag)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -119,17 +135,124 @@ extension SearchViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-//        viewModel.viewDidAppear.send()
+        viewModel.viewDidAppear.send()
+    }
+    
+}
+
+// MARK: - UITableViewDelegate
+extension SearchViewController: UITableViewDelegate {
+    
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        guard let diffableDataSource = viewModel.diffableDataSource else { return nil }
+        guard let section = diffableDataSource.sectionIdentifier(for: section) else { return nil }
+    
+        let container = UIView()
+        container.preservesSuperviewLayoutMargins = true
+        
+        let label = UILabel()
+        label.font = .preferredFont(forTextStyle: .subheadline)
+        label.textColor = .secondaryLabel
+        label.text = {
+            switch section {
+            case .history:
+                return L10n.Scene.Search.savedSearch
+            case .trend:
+                return L10n.Scene.Trends.worldWide
+            }
+        }()
+        
+        label.translatesAutoresizingMaskIntoConstraints = false
+        container.addSubview(label)
+        NSLayoutConstraint.activate([
+            label.topAnchor.constraint(equalTo: container.topAnchor),
+            label.leadingAnchor.constraint(equalTo: container.readableContentGuide.leadingAnchor),
+            label.trailingAnchor.constraint(equalTo: container.readableContentGuide.trailingAnchor),
+            container.bottomAnchor.constraint(equalTo: label.bottomAnchor, constant: 6),
+        ])
+        
+        return container
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        defer {
+            tableView.deselectRow(at: indexPath, animated: true)
+        }
+        
+        guard let diffableDataSource = viewModel.diffableDataSource else { return }
+        guard let item = diffableDataSource.itemIdentifier(for: indexPath) else { return }
+        
+        Task {
+            let managedObjectContext = self.context.managedObjectContext
+            switch item {
+            case .history(let record):
+                let _query: String? = await managedObjectContext.perform {
+                    guard let object = record.object(in: managedObjectContext) else { return nil }
+                    return object.query
+                }
+                guard let query = _query else { return }
+                self.searchText(query)
+                
+            case .trend:
+                break
+            case .showMore:
+                coordinator.present(
+                    scene: .savedSearch(viewModel: viewModel.savedSearchViewModel),
+                    from: self,
+                    transition: .show
+                )
+            default:
+                break
+            }
+            
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public)")
+        
+        guard let diffableDataSource = self.viewModel.diffableDataSource,
+              case let .history(record) = diffableDataSource.itemIdentifier(for: indexPath),
+              let authenticationContext = self.viewModel.context.authenticationService.activeAuthenticationContext.value
+        else { return nil }
+        
+        let deleteAction = UIContextualAction(
+            style: .destructive,
+            title: L10n.Common.Controls.Actions.delete,
+            handler: { [weak self] _, _, completionHandler in
+                guard let self = self else {
+                    completionHandler(false)
+                    return
+                }
+                
+                Task {
+                    do {
+                        try await DataSourceFacade.responseToDeleteSavedSearch(
+                            dependency: self,
+                            savedSearch: record,
+                            authenticationContext: authenticationContext
+                        )
+                        completionHandler(true)
+                    } catch {
+                        completionHandler(false)
+                    }
+                }
+            }
+        )   // end deleteAction
+        
+        return UISwipeActionsConfiguration(actions: [
+            deleteAction
+        ])
     }
     
 }
 
 extension SearchViewController {
-    
-//    @objc private func avatarButtonPressed(_ sender: UIButton) {
-//        os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
-//        coordinator.present(scene: .drawerSidebar, from: self, transition: .custom(transitioningDelegate: drawerSidebarTransitionController))
-//    }
-    
-}
 
+    @MainActor
+    private func searchText(_ text: String) {
+        searchController.isActive = true
+        searchController.searchBar.text = text
+    }
+
+}

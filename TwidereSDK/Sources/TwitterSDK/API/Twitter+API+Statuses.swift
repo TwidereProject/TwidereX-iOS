@@ -10,7 +10,9 @@ import Combine
 
 extension Twitter.API.Statuses {
     
-    static var updateEndpointURL = Twitter.API.endpointURL.appendingPathComponent("statuses/update.json")
+    static let updateEndpointURL = Twitter.API.endpointURL
+        .appendingPathComponent("statuses")
+        .appendingPathComponent("update.json")
     
     public static func update(
         session: URLSession,

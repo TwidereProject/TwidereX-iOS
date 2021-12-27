@@ -14,7 +14,7 @@ import CoreData
 import CoreDataStack
 import TwitterSDK
 
-final public class StatusRecordFetchedResultController {
+public final class StatusRecordFetchedResultController {
     
     private var disposeBag = Set<AnyCancellable>()
     

@@ -11,7 +11,7 @@ extension Mastodon.API.OAuth {
     
     public static let authorizationField = "Authorization"
     
-    public struct Authorization {
+    public struct Authorization: Hashable {
         public let accessToken: String
         
         public init(accessToken: String) {

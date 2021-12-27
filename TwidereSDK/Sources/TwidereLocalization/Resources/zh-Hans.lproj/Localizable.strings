@@ -161,6 +161,7 @@
 "Common.Controls.Friendship.UserIsFollowingYou" = "%@ 正在关注你";
 "Common.Controls.Friendship.UserIsNotFollowingYou" = "%@ 尚未关注你";
 "Common.Controls.Ios.PhotoLibrary" = "照片库";
+"Common.Controls.List.NoResults" = "无结果";
 "Common.Controls.ProfileDashboard.Followers" = "关注者";
 "Common.Controls.ProfileDashboard.Following" = "已关注";
 "Common.Controls.ProfileDashboard.Listed" = "列表中";

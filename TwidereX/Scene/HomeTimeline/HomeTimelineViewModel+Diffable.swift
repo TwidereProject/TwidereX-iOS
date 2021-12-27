@@ -42,7 +42,7 @@ extension HomeTimelineViewModel {
                     let start = CACurrentMediaTime()
                     defer {
                         let end = CACurrentMediaTime()
-                        self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): cost \(end - start, format: .fixed(precision: 4 ))s to process \(records.count) feeds")
+                        self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): cost \(end - start, format: .fixed(precision: 4))s to process \(records.count) feeds")
                     }
                     let oldSnapshot = diffableDataSource.snapshot()
                     var newSnapshot: NSDiffableDataSourceSnapshot<StatusSection, StatusItem> = {

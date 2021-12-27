@@ -13,7 +13,7 @@ import TwidereCommon
 import TwitterSDK
 import MastodonSDK
 
-public enum AuthenticationContext {
+public enum AuthenticationContext: Hashable {
     case twitter(authenticationContext: TwitterAuthenticationContext)
     case mastodon(authenticationContext: MastodonAuthenticationContext)
     
@@ -70,7 +70,7 @@ extension AuthenticationContext {
     }
 }
         
-public struct TwitterAuthenticationContext {
+public struct TwitterAuthenticationContext: Hashable {
     public let authenticationRecord: ManagedObjectRecord<TwitterAuthentication>
     public let userID: TwitterUser.ID
     public let authorization: Twitter.API.OAuth.Authorization
@@ -84,7 +84,7 @@ public struct TwitterAuthenticationContext {
     }
 }
 
-public struct MastodonAuthenticationContext {
+public struct MastodonAuthenticationContext: Hashable {
     public let authenticationRecord: ManagedObjectRecord<MastodonAuthentication>
     public let domain: String
     public let userID: MastodonUser.ID

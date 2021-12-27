@@ -161,6 +161,7 @@
 "Common.Controls.Friendship.UserIsFollowingYou" = "%@さんはあなたをフォローしています";
 "Common.Controls.Friendship.UserIsNotFollowingYou" = "%@さんはあなたをフォローしていません";
 "Common.Controls.Ios.PhotoLibrary" = "フォトライブラリ";
+"Common.Controls.List.NoResults" = "No results";
 "Common.Controls.ProfileDashboard.Followers" = "フォロワー";
 "Common.Controls.ProfileDashboard.Following" = "フォロー中";
 "Common.Controls.ProfileDashboard.Listed" = "リスト";

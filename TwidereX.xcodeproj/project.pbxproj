@@ -35,11 +35,23 @@
 		DB1D7B4325B5938400397DCD /* TwitterAuthenticationOptionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB1D7B4225B5938300397DCD /* TwitterAuthenticationOptionViewController.swift */; };
 		DB1D7B5025B5A43F00397DCD /* ListTextFieldTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB1D7B4F25B5A43F00397DCD /* ListTextFieldTableViewCell.swift */; };
 		DB1D7B5525B5A87200397DCD /* TwitterAuthenticationOptionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB1D7B5425B5A87200397DCD /* TwitterAuthenticationOptionViewModel.swift */; };
+		DB1E48122772CE380074F6A0 /* SearchViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB36F375257F79DB0028F81E /* SearchViewModel.swift */; };
+		DB1E48142772CE850074F6A0 /* SearchViewModel+Diffable.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB1E48132772CE850074F6A0 /* SearchViewModel+Diffable.swift */; };
+		DB1E48162772CEC20074F6A0 /* SearchSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB1E48152772CEC20074F6A0 /* SearchSection.swift */; };
+		DB1E48192772CECC0074F6A0 /* SearchItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB1E48182772CECC0074F6A0 /* SearchItem.swift */; };
 		DB213FA627392ABC009ABD74 /* HashtagTimelineViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB213FA527392ABC009ABD74 /* HashtagTimelineViewController.swift */; };
 		DB213FA927392B81009ABD74 /* HashtagTimelineViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB213FA827392B81009ABD74 /* HashtagTimelineViewModel.swift */; };
 		DB213FAB27392C44009ABD74 /* HashtagTimelineViewModel+Diffable.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB213FAA27392C44009ABD74 /* HashtagTimelineViewModel+Diffable.swift */; };
 		DB213FAD27392E7D009ABD74 /* HashtagTimelineViewController+DataSourceProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB213FAC27392E7D009ABD74 /* HashtagTimelineViewController+DataSourceProvider.swift */; };
 		DB213FAF273930BF009ABD74 /* HashtagTimelineViewModel+State.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB213FAE273930BF009ABD74 /* HashtagTimelineViewModel+State.swift */; };
+		DB25C4C32775D7B300EC1435 /* SearchHistoryTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB25C4C22775D7B300EC1435 /* SearchHistoryTableViewCell.swift */; };
+		DB25C4C527798E1A00EC1435 /* DataSourceFacade+SavedSearch.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB25C4C427798E1A00EC1435 /* DataSourceFacade+SavedSearch.swift */; };
+		DB25C4C8277994B800EC1435 /* CenterFootnoteLabelTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB25C4C7277994B800EC1435 /* CenterFootnoteLabelTableViewCell.swift */; };
+		DB25C4CA277999BE00EC1435 /* ButtonTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB25C4C9277999BE00EC1435 /* ButtonTableViewCell.swift */; };
+		DB25C4CC27799FE600EC1435 /* SavedSearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB25C4CB27799FE600EC1435 /* SavedSearchViewController.swift */; };
+		DB25C4CF2779A06D00EC1435 /* SavedSearchViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB25C4CE2779A06D00EC1435 /* SavedSearchViewModel.swift */; };
+		DB25C4D12779A37E00EC1435 /* SavedSearchViewModel+Diffable.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB25C4D02779A37E00EC1435 /* SavedSearchViewModel+Diffable.swift */; };
+		DB25C4D32779ADD800EC1435 /* SearchResultContainerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB25C4D22779ADD800EC1435 /* SearchResultContainerViewController.swift */; };
 		DB2611B7251B2D42004BF309 /* CryptoSwift in Frameworks */ = {isa = PBXBuildFile; productRef = DB2611B6251B2D42004BF309 /* CryptoSwift */; };
 		DB262A332721377800D18EF3 /* DataSourceFacade+Block.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB262A322721377800D18EF3 /* DataSourceFacade+Block.swift */; };
 		DB262A3727213FBE00D18EF3 /* UIAlertAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB262A3627213FBE00D18EF3 /* UIAlertAction.swift */; };
@@ -452,6 +464,9 @@
 		DB1D7B4A25B5A21A00397DCD /* AuthenticationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationViewModel.swift; sourceTree = "<group>"; };
 		DB1D7B4F25B5A43F00397DCD /* ListTextFieldTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListTextFieldTableViewCell.swift; sourceTree = "<group>"; };
 		DB1D7B5425B5A87200397DCD /* TwitterAuthenticationOptionViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwitterAuthenticationOptionViewModel.swift; sourceTree = "<group>"; };
+		DB1E48132772CE850074F6A0 /* SearchViewModel+Diffable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SearchViewModel+Diffable.swift"; sourceTree = "<group>"; };
+		DB1E48152772CEC20074F6A0 /* SearchSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchSection.swift; sourceTree = "<group>"; };
+		DB1E48182772CECC0074F6A0 /* SearchItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchItem.swift; sourceTree = "<group>"; };
 		DB213FA527392ABC009ABD74 /* HashtagTimelineViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HashtagTimelineViewController.swift; sourceTree = "<group>"; };
 		DB213FA827392B81009ABD74 /* HashtagTimelineViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HashtagTimelineViewModel.swift; sourceTree = "<group>"; };
 		DB213FAA27392C44009ABD74 /* HashtagTimelineViewModel+Diffable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "HashtagTimelineViewModel+Diffable.swift"; sourceTree = "<group>"; };
@@ -462,6 +477,14 @@
 		DB25BA07253D7D6E00A5420F /* APIService+Persist+DictContent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "APIService+Persist+DictContent.swift"; sourceTree = "<group>"; };
 		DB25BA0F253D7F4D00A5420F /* APIService+CoreData+V2+Tweet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "APIService+CoreData+V2+Tweet.swift"; sourceTree = "<group>"; };
 		DB25BA1E253DACD100A5420F /* APIService+CoreData+V2+TwitterUser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "APIService+CoreData+V2+TwitterUser.swift"; sourceTree = "<group>"; };
+		DB25C4C22775D7B300EC1435 /* SearchHistoryTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchHistoryTableViewCell.swift; sourceTree = "<group>"; };
+		DB25C4C427798E1A00EC1435 /* DataSourceFacade+SavedSearch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DataSourceFacade+SavedSearch.swift"; sourceTree = "<group>"; };
+		DB25C4C7277994B800EC1435 /* CenterFootnoteLabelTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CenterFootnoteLabelTableViewCell.swift; sourceTree = "<group>"; };
+		DB25C4C9277999BE00EC1435 /* ButtonTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonTableViewCell.swift; sourceTree = "<group>"; };
+		DB25C4CB27799FE600EC1435 /* SavedSearchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SavedSearchViewController.swift; sourceTree = "<group>"; };
+		DB25C4CE2779A06D00EC1435 /* SavedSearchViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SavedSearchViewModel.swift; sourceTree = "<group>"; };
+		DB25C4D02779A37E00EC1435 /* SavedSearchViewModel+Diffable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SavedSearchViewModel+Diffable.swift"; sourceTree = "<group>"; };
+		DB25C4D22779ADD800EC1435 /* SearchResultContainerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchResultContainerViewController.swift; sourceTree = "<group>"; };
 		DB2611462518AC13004BF309 /* AppSecret.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSecret.swift; sourceTree = "<group>"; };
 		DB262A322721377800D18EF3 /* DataSourceFacade+Block.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DataSourceFacade+Block.swift"; sourceTree = "<group>"; };
 		DB262A3627213FBE00D18EF3 /* UIAlertAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIAlertAction.swift; sourceTree = "<group>"; };
@@ -1040,6 +1063,15 @@
 			path = Option;
 			sourceTree = "<group>";
 		};
+		DB1E48172772CEC40074F6A0 /* Search */ = {
+			isa = PBXGroup;
+			children = (
+				DB1E48152772CEC20074F6A0 /* SearchSection.swift */,
+				DB1E48182772CECC0074F6A0 /* SearchItem.swift */,
+			);
+			path = Search;
+			sourceTree = "<group>";
+		};
 		DB213FA727392AC3009ABD74 /* HashtagTimeline */ = {
 			isa = PBXGroup;
 			children = (
@@ -1064,6 +1096,24 @@
 			path = Persist;
 			sourceTree = "<group>";
 		};
+		DB25C4C62779949F00EC1435 /* Cell */ = {
+			isa = PBXGroup;
+			children = (
+				DB25C4C22775D7B300EC1435 /* SearchHistoryTableViewCell.swift */,
+			);
+			path = Cell;
+			sourceTree = "<group>";
+		};
+		DB25C4CD27799FEB00EC1435 /* SavedSearch */ = {
+			isa = PBXGroup;
+			children = (
+				DB25C4CB27799FE600EC1435 /* SavedSearchViewController.swift */,
+				DB25C4CE2779A06D00EC1435 /* SavedSearchViewModel.swift */,
+				DB25C4D02779A37E00EC1435 /* SavedSearchViewModel+Diffable.swift */,
+			);
+			path = SavedSearch;
+			sourceTree = "<group>";
+		};
 		DB262A3E27228DF700D18EF3 /* SearchResult */ = {
 			isa = PBXGroup;
 			children = (
@@ -1072,6 +1122,7 @@
 				DB676170254C021D006C6798 /* User */,
 				DB02C76E27350D75007EA0BF /* Hashtag */,
 				DB262A3C27228B4800D18EF3 /* SearchResultViewController.swift */,
+				DB25C4D22779ADD800EC1435 /* SearchResultContainerViewController.swift */,
 				DB262A412722970000D18EF3 /* SearchResultViewModel.swift */,
 			);
 			path = SearchResult;
@@ -1248,6 +1299,7 @@
 				DB3B906A26E8D3AB0010F64C /* DataSourceFacade+Status.swift */,
 				DB01091F26E60756005F67D7 /* DataSourceFacade+StatusThread.swift */,
 				DB262A382721621800D18EF3 /* DataSourceFacade+User.swift */,
+				DB25C4C427798E1A00EC1435 /* DataSourceFacade+SavedSearch.swift */,
 				DB01092126E608B7005F67D7 /* DataSourceFacade+Repost.swift */,
 				DB86433B26E898C5000C9879 /* DataSourceFacade+Like.swift */,
 				DB76A663275F688D00A50673 /* DataSourceFacade+Share.swift */,
@@ -1452,6 +1504,7 @@
 				DB8761BA2745515F00BA7EE2 /* CoverFlowStack */,
 				DB8761D12745553A00BA7EE2 /* Media */,
 				DBD0B49E2758B5F70015A388 /* Sidebar */,
+				DB1E48172772CEC40074F6A0 /* Search */,
 			);
 			path = Msic;
 			sourceTree = "<group>";
@@ -1705,6 +1758,8 @@
 				DB5FD9B226D8D94600CF5439 /* StatusTableViewCell+ViewModel.swift */,
 				DB5632AF26DCED1300FC893F /* StatusThreadRootTableViewCell.swift */,
 				DB5632B126DCF1CD00FC893F /* StatusThreadRootTableViewCell+ViewModel.swift */,
+				DB25C4C7277994B800EC1435 /* CenterFootnoteLabelTableViewCell.swift */,
+				DB25C4C9277999BE00EC1435 /* ButtonTableViewCell.swift */,
 			);
 			path = TableViewCell;
 			sourceTree = "<group>";
@@ -2214,6 +2269,7 @@
 				DBF69EA725496C9000E2A915 /* Deprecated */,
 				DBF69EA325496C8A00E2A915 /* Search */,
 				DB262A3E27228DF700D18EF3 /* SearchResult */,
+				DB25C4CD27799FEB00EC1435 /* SavedSearch */,
 			);
 			path = Search;
 			sourceTree = "<group>";
@@ -2221,8 +2277,10 @@
 		DBF69EA325496C8A00E2A915 /* Search */ = {
 			isa = PBXGroup;
 			children = (
+				DB25C4C62779949F00EC1435 /* Cell */,
 				DBF69E8E2549601900E2A915 /* SearchViewController.swift */,
 				DB36F375257F79DB0028F81E /* SearchViewModel.swift */,
+				DB1E48132772CE850074F6A0 /* SearchViewModel+Diffable.swift */,
 			);
 			path = Search;
 			sourceTree = "<group>";
@@ -2839,8 +2897,10 @@
 				DB262A4A2722AAA700D18EF3 /* SearchTimelineViewModel+State.swift in Sources */,
 				DB213FAB27392C44009ABD74 /* HashtagTimelineViewModel+Diffable.swift in Sources */,
 				DB98DC10250787420087E30F /* TimelineBottomLoaderTableViewCell.swift in Sources */,
+				DB25C4D32779ADD800EC1435 /* SearchResultContainerViewController.swift in Sources */,
 				DB02C777273520B8007EA0BF /* SearchHashtagViewModel+State.swift in Sources */,
 				DBDAF243274F530B00050319 /* SceneCoordinator.swift in Sources */,
+				DB25C4CC27799FE600EC1435 /* SavedSearchViewController.swift in Sources */,
 				DB830200273D04D000BF5224 /* NotificationTimelineViewModel+Diffable.swift in Sources */,
 				DB01091A26E60693005F67D7 /* ContentOffsetAdjustableTimelineViewControllerDelegate.swift in Sources */,
 				DBCB4060255CAC0300DD8D8F /* TwitterAuthenticationController.swift in Sources */,
@@ -2865,6 +2925,7 @@
 				DB51DC412717FCAA00A0D8FB /* StatusMediaGalleryCollectionCell.swift in Sources */,
 				DB262A4F272692F900D18EF3 /* SearchMediaViewModel+Diffable.swift in Sources */,
 				DB3B906126E8AB480010F64C /* StatusViewTableViewCellDelegate.swift in Sources */,
+				DB1E48122772CE380074F6A0 /* SearchViewModel.swift in Sources */,
 				DB76A662275F65FF00A50673 /* DataSourceFacade+Model.swift in Sources */,
 				DB2EBBF0255D368200956CAA /* TableViewEntryRow.swift in Sources */,
 				DB30ADDC26CFC7EE00B2D2BE /* StatusTableViewCell.swift in Sources */,
@@ -2889,6 +2950,7 @@
 				DBAA898E2758CF01001C273B /* DrawerSidebarHeaderView+ViewModel.swift in Sources */,
 				DB02C77927352217007EA0BF /* SearchHashtagViewModel+Diffable.swift in Sources */,
 				DB262A4327229BE700D18EF3 /* SearchTimelineViewController.swift in Sources */,
+				DB25C4CA277999BE00EC1435 /* ButtonTableViewCell.swift in Sources */,
 				DBF63A38259D7CCB009E12C8 /* CornerSmoothPreviewViewController.swift in Sources */,
 				DB02C77527351DA2007EA0BF /* HashtagTableViewCell+ViewModel.swift in Sources */,
 				DB86433C26E898C5000C9879 /* DataSourceFacade+Like.swift in Sources */,
@@ -2916,6 +2978,7 @@
 				DB262A3D27228B4800D18EF3 /* SearchResultViewController.swift in Sources */,
 				DBB3780027686E3000B77A02 /* AutoGenerateProtocolDelegate.swift in Sources */,
 				DB5FB0122727FD4A006520FA /* SearchUserViewModel+State.swift in Sources */,
+				DB1E48192772CECC0074F6A0 /* SearchItem.swift in Sources */,
 				DB43488D251DFF0F005B599F /* ProfileBannerStatusItemView.swift in Sources */,
 				DBE76D1E2500E65D00DEB0FC /* HomeTimelineViewModel.swift in Sources */,
 				DBDAF240274F530300050319 /* AppContext.swift in Sources */,
@@ -2933,6 +2996,7 @@
 				DBCB4047255B683B00DD8D8F /* AccountListTableViewCell.swift in Sources */,
 				DB8EBE8027667C80005CF76A /* SearchMediaViewController+DataSourceProvider.swift in Sources */,
 				DBF639FC259B333A009E12C8 /* EmptyStateView.swift in Sources */,
+				DB25C4C527798E1A00EC1435 /* DataSourceFacade+SavedSearch.swift in Sources */,
 				DBA210332759D79C000B7CB2 /* FollowingListViewController.swift in Sources */,
 				DBFCC44725667C620016698E /* UILabel.swift in Sources */,
 				DB76A653275F1C4F00A50673 /* MediaPreviewViewController.swift in Sources */,
@@ -2940,11 +3004,14 @@
 				DBAA89902758DFC9001C273B /* AvatarBarButtonItem+ViewModel.swift in Sources */,
 				DB262A4E2726928F00D18EF3 /* SearchMediaViewModel.swift in Sources */,
 				DB9EC4EA255A6BC7005403AA /* TwitterAccountUnlockViewController.swift in Sources */,
+				DB1E48142772CE850074F6A0 /* SearchViewModel+Diffable.swift in Sources */,
+				DB25C4C32775D7B300EC1435 /* SearchHistoryTableViewCell.swift in Sources */,
 				DB71C7D1271EB09A00BE3819 /* DataSourceFacade+Friendship.swift in Sources */,
 				DBCE2E912591A06300926D09 /* UINavigationController.swift in Sources */,
 				DB915406254FC8CE00613473 /* FollowActionButton.swift in Sources */,
 				DB8761C0274552F800BA7EE2 /* StatusSection.swift in Sources */,
 				DB01092426E6199C005F67D7 /* DataSourceProvider+StatusViewTableViewCellDelegate.swift in Sources */,
+				DB25C4C8277994B800EC1435 /* CenterFootnoteLabelTableViewCell.swift in Sources */,
 				DBA210352759D7B1000B7CB2 /* FollowingListViewModel+Diffable.swift in Sources */,
 				DB2C8744274F4B7D00CE0398 /* SettingListViewController.swift in Sources */,
 				DB02C77027350D8A007EA0BF /* SearchHashtagViewModel.swift in Sources */,
@@ -2976,6 +3043,7 @@
 				DB56329726DCBE1600FC893F /* StatusThreadViewController.swift in Sources */,
 				DBDA8E9F24FE0FFF006750DC /* HomeTimelineViewController.swift in Sources */,
 				DB76A65F275F587300A50673 /* DataSourceProvider+MediaInfoDescriptionViewDelegate.swift in Sources */,
+				DB25C4CF2779A06D00EC1435 /* SavedSearchViewModel.swift in Sources */,
 				DB925705251C8FCB004FEFB5 /* ProfileSegmentedViewController.swift in Sources */,
 				DB74A16E256E50E300C5F3C9 /* UIColor.swift in Sources */,
 				DB676161254BE580006C6798 /* MediaPreviewCollectionViewCell.swift in Sources */,
@@ -3006,6 +3074,7 @@
 				DB1BF29925663EFA00B5F490 /* DisplayPreference.swift in Sources */,
 				DB76A668275F896E00A50673 /* ShareActivityProvider.swift in Sources */,
 				DB1BF2AC25664A0700B5F490 /* SlideTableViewCell.swift in Sources */,
+				DB1E48162772CEC20074F6A0 /* SearchSection.swift in Sources */,
 				DB8EBE7A276648FA005CF76A /* UserMediaTimelineViewController+DataSourceProvider.swift in Sources */,
 				DB5632C126DF7E7A00FC893F /* ListBatchFetchViewModel.swift in Sources */,
 				DB51DC5027181DE500A0D8FB /* CoverFlowStackMediaCollectionCell+ViewModel.swift in Sources */,
@@ -3024,6 +3093,7 @@
 				DB5632AD26DCE93900FC893F /* StatusThreadViewModel+Diffable.swift in Sources */,
 				DBF639F7259B1728009E12C8 /* TimelineHeaderCollectionViewCell.swift in Sources */,
 				DBD0B49B2758B5A60015A388 /* DrawerSidebarViewController.swift in Sources */,
+				DB25C4D12779A37E00EC1435 /* SavedSearchViewModel+Diffable.swift in Sources */,
 				DB01739C276B56C100AB844C /* DataSourceProvider+UserViewTableViewCellDelegate.swift in Sources */,
 				DB51DC222715786700A0D8FB /* StatusListFetchViewModel.swift in Sources */,
 				DB2C873F274F4B7D00CE0398 /* DisplayPreferenceViewController.swift in Sources */,
