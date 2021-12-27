@@ -20,24 +20,17 @@ final class SearchViewModel {
     
     // input
     let context: AppContext
-    let savedSearchService: SavedSearchService
+    let savedSearchViewModel: SavedSearchViewModel
     let viewDidAppear = PassthroughSubject<Void, Never>()
-    let savedSearchFetchedResultController: SavedSearchFetchedResultController
     
     // output
     var diffableDataSource: UITableViewDiffableDataSource<SearchSection, SearchItem>?
-    @Published var isSavedSearchFetched = false
+    @Published var savedSearchTexts = Set<String>()
 
     init(context: AppContext) {
         self.context = context
-        self.savedSearchService = SavedSearchService(apiService: context.apiService)
-        self.savedSearchFetchedResultController = SavedSearchFetchedResultController(managedObjectContext: context.managedObjectContext)
+        self.savedSearchViewModel = SavedSearchViewModel(context: context)
         // end init
-        
-        context.authenticationService.activeAuthenticationContext
-            .map { $0?.userIdentifier }
-            .assign(to: \.userIdentifier, on: savedSearchFetchedResultController)
-            .store(in: &disposeBag)
         
         viewDidAppear
             .sink { [weak self] _ in
@@ -46,12 +39,27 @@ final class SearchViewModel {
                 
                 Task {
                     do {
-                        try await self.savedSearchService.fetchList(authenticationContext: authenticationContext)
+                        try await self.savedSearchViewModel.savedSearchService.fetchList(authenticationContext: authenticationContext)
                     } catch {
                         // do nothing
                     }
-                    self.isSavedSearchFetched = true
+                    self.savedSearchViewModel.isSavedSearchFetched = true
                 }
+            }
+            .store(in: &disposeBag)
+        
+        savedSearchViewModel.savedSearchFetchedResultController
+            .$records
+            .sink { [weak self] records in
+                guard let self = self else { return }
+                let texts: [String] = records.compactMap { record in
+                    guard let object = record.object(in: self.context.managedObjectContext) else { return nil }
+                    switch object {
+                    case .twitter(let savedSearch):
+                        return savedSearch.query
+                    }
+                }
+                self.savedSearchTexts = Set(texts)
             }
             .store(in: &disposeBag)
     }

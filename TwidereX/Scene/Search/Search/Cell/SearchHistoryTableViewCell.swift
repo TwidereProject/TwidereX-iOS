@@ -11,7 +11,7 @@ import MetaTextKit
 
 final class SearchHistoryTableViewCell: UITableViewCell {
     
-    let metaLabel = MetaLabel(style: .statusContent)
+    let metaLabel = MetaLabel(style: .searchHistoryTitle)
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)

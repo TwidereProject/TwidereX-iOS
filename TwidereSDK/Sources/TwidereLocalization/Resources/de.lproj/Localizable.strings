@@ -161,6 +161,7 @@
 "Common.Controls.Friendship.UserIsFollowingYou" = "%@ folgt dir";
 "Common.Controls.Friendship.UserIsNotFollowingYou" = "%@ folgt dir nicht";
 "Common.Controls.Ios.PhotoLibrary" = "Fo­to­ga­le­rie";
+"Common.Controls.List.NoResults" = "No results";
 "Common.Controls.ProfileDashboard.Followers" = "Follower";
 "Common.Controls.ProfileDashboard.Following" = "Folgen";
 "Common.Controls.ProfileDashboard.Listed" = "Listet";

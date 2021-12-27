@@ -96,6 +96,32 @@ extension SearchViewController {
         viewModel.setupDiffableDataSource(
             tableView: tableView
         )
+        
+        Publishers.CombineLatest3(
+            viewModel.$savedSearchTexts,
+            searchResultViewModel.$searchText,
+            context.authenticationService.activeAuthenticationContext
+        )
+        .receive(on: DispatchQueue.main)
+        .sink { [weak self] texts, searchText, activeAuthenticationContext in
+            guard let self = self else { return }
+            let text = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
+            guard !text.isEmpty,
+                  !texts.contains(text)
+            else {
+                self.searchController.searchBar.showsBookmarkButton = false
+                return
+            }
+            switch activeAuthenticationContext {
+            case .twitter:
+                self.searchController.searchBar.showsBookmarkButton = true
+            case .mastodon:
+                self.searchController.searchBar.showsBookmarkButton = false
+            case nil:
+                self.searchController.searchBar.showsBookmarkButton = false
+            }
+        }
+        .store(in: &disposeBag)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -111,15 +137,6 @@ extension SearchViewController {
         
         viewModel.viewDidAppear.send()
     }
-    
-}
-
-extension SearchViewController {
-    
-//    @objc private func avatarButtonPressed(_ sender: UIButton) {
-//        os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
-//        coordinator.present(scene: .drawerSidebar, from: self, transition: .custom(transitioningDelegate: drawerSidebarTransitionController))
-//    }
     
 }
 
@@ -178,11 +195,54 @@ extension SearchViewController: UITableViewDelegate {
                 
             case .trend:
                 break
-            case .loader:
+            case .showMore:
+                coordinator.present(
+                    scene: .savedSearch(viewModel: viewModel.savedSearchViewModel),
+                    from: self,
+                    transition: .show
+                )
+            default:
                 break
             }
             
         }
+    }
+    
+    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public)")
+        
+        guard let diffableDataSource = self.viewModel.diffableDataSource,
+              case let .history(record) = diffableDataSource.itemIdentifier(for: indexPath),
+              let authenticationContext = self.viewModel.context.authenticationService.activeAuthenticationContext.value
+        else { return nil }
+        
+        let deleteAction = UIContextualAction(
+            style: .destructive,
+            title: L10n.Common.Controls.Actions.delete,
+            handler: { [weak self] _, _, completionHandler in
+                guard let self = self else {
+                    completionHandler(false)
+                    return
+                }
+                
+                Task {
+                    do {
+                        try await DataSourceFacade.responseToDeleteSavedSearch(
+                            dependency: self,
+                            savedSearch: record,
+                            authenticationContext: authenticationContext
+                        )
+                        completionHandler(true)
+                    } catch {
+                        completionHandler(false)
+                    }
+                }
+            }
+        )   // end deleteAction
+        
+        return UISwipeActionsConfiguration(actions: [
+            deleteAction
+        ])
     }
     
 }

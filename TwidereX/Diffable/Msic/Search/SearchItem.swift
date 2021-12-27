@@ -13,4 +13,6 @@ enum SearchItem: Hashable {
     case history(record: SavedSearchRecord)
     case trend
     case loader(id: UUID)
+    case noResults
+    case showMore
 }

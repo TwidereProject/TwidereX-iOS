@@ -544,6 +544,10 @@ public enum L10n {
         /// Photo Library
         public static let photoLibrary = L10n.tr("Localizable", "Common.Controls.Ios.PhotoLibrary")
       }
+      public enum List {
+        /// No results
+        public static let noResults = L10n.tr("Localizable", "Common.Controls.List.NoResults")
+      }
       public enum ProfileDashboard {
         /// Followers
         public static let followers = L10n.tr("Localizable", "Common.Controls.ProfileDashboard.Followers")

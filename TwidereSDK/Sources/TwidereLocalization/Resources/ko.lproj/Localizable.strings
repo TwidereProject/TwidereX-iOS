@@ -161,6 +161,7 @@
 "Common.Controls.Friendship.UserIsFollowingYou" = "%@가 날 팔로우하고 있음";
 "Common.Controls.Friendship.UserIsNotFollowingYou" = "%@가 날 팔로우하지 않음";
 "Common.Controls.Ios.PhotoLibrary" = "갤러리";
+"Common.Controls.List.NoResults" = "No results";
 "Common.Controls.ProfileDashboard.Followers" = "팔로워";
 "Common.Controls.ProfileDashboard.Following" = "팔로우 중";
 "Common.Controls.ProfileDashboard.Listed" = "담긴 리스트";

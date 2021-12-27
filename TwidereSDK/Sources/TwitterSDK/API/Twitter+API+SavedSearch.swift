@@ -46,7 +46,7 @@ extension Twitter.API.SavedSearch {
         authorization: Twitter.API.OAuth.Authorization
     ) async throws -> Twitter.Response.Content<Twitter.Entity.SavedSearch> {
         let request = Twitter.API.request(
-            url: listEndpointURL,
+            url: createEndpointURL,
             method: .POST,
             query: query,
             authorization: authorization
@@ -87,10 +87,11 @@ extension Twitter.API.SavedSearch {
     // doc: https://developer.twitter.com/en/docs/twitter-api/v1/accounts-and-users/manage-account-settings/api-reference/post-saved_searches-destroy-id
     public static func destroy(
         session: URLSession,
+        id: Twitter.Entity.SavedSearch.ID,
         authorization: Twitter.API.OAuth.Authorization
     ) async throws -> Twitter.Response.Content<Twitter.Entity.SavedSearch> {
         let request = Twitter.API.request(
-            url: listEndpointURL,
+            url: destroyEndpointURL(id: id),
             method: .POST,
             query: nil,
             authorization: authorization
