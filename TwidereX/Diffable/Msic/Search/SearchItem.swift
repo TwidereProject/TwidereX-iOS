@@ -11,8 +11,8 @@ import TwidereCore
 
 enum SearchItem: Hashable {
     case history(record: SavedSearchRecord)
-    case trend
-    case loader(id: UUID)
-    case noResults
-    case showMore
+    case trend(trend: TrendObject)
+    case loader(id: UUID = UUID())
+    case noResults(id: UUID = UUID())
+    case showMore(id: UUID = UUID())
 }

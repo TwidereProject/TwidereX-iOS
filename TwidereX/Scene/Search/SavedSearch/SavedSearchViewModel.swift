@@ -8,8 +8,8 @@
 
 import os.log
 import UIKit
-import TwidereCore
 import Combine
+import TwidereCore
 
 final class SavedSearchViewModel {
     

@@ -8,6 +8,7 @@
 
 import UIKit
 import Meta
+import TwidereCore
 
 enum SearchSection: Hashable, CaseIterable {
     case history
@@ -27,6 +28,7 @@ extension SearchSection {
     ) -> UITableViewDiffableDataSource<SearchSection, SearchItem> {
         tableView.register(TimelineBottomLoaderTableViewCell.self, forCellReuseIdentifier: String(describing: TimelineBottomLoaderTableViewCell.self))
         tableView.register(SearchHistoryTableViewCell.self, forCellReuseIdentifier: String(describing: SearchHistoryTableViewCell.self))
+        tableView.register(TrendTableViewCell.self, forCellReuseIdentifier: String(describing: TrendTableViewCell.self))
         tableView.register(CenterFootnoteLabelTableViewCell.self, forCellReuseIdentifier: String(describing: CenterFootnoteLabelTableViewCell.self))
         tableView.register(ButtonTableViewCell.self, forCellReuseIdentifier: String(describing: ButtonTableViewCell.self))
         
@@ -39,8 +41,10 @@ extension SearchSection {
                     configure(cell: cell, object: object)
                 }
                 return cell
-            case .trend:
-                return UITableViewCell()
+            case .trend(let object):
+                let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: TrendTableViewCell.self), for: indexPath) as! TrendTableViewCell
+                configure(cell: cell, object: object)
+                return cell
             case .loader:
                 let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: TimelineBottomLoaderTableViewCell.self), for: indexPath) as! TimelineBottomLoaderTableViewCell
                 return cell
@@ -75,6 +79,17 @@ extension SearchSection {
         switch object {
         case .twitter(let history):
             let metaContent = Meta.convert(from: .plaintext(string: history.name))
+            cell.metaLabel.configure(content: metaContent)
+        }
+    }
+    
+    private static func configure(
+        cell: TrendTableViewCell,
+        object: TrendObject
+    ) {
+        switch object {
+        case .twitter(let trend):
+            let metaContent = Meta.convert(from: .plaintext(string: trend.name))
             cell.metaLabel.configure(content: metaContent)
         }
     }

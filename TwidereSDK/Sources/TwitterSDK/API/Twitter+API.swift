@@ -47,6 +47,7 @@ extension Twitter.API {
     public enum Statuses {
         public enum Timeline { }
     }
+    public enum Trend { }
     public enum Users { }
     
     // V2
@@ -253,7 +254,12 @@ extension JSONDecoder.DateDecodingStrategy {
         formatterV2.formatOptions.insert(.withFractionalSeconds)
         if let date = formatterV2.date(from: string) {
             return date
-        }        
+        }
+        
+        let formatterV3 = ISO8601DateFormatter()
+        if let date = formatterV3.date(from: string) {
+            return date
+        }
         
         throw DecodingError.dataCorruptedError(in: container, debugDescription: "Invalid date: \(string)")
     }
