@@ -161,6 +161,7 @@ public enum Asset {
     public static let photos = ImageAsset(name: "Object&Tools/photos")
     public static let poll = ImageAsset(name: "Object&Tools/poll")
     public static let pollMini = ImageAsset(name: "Object&Tools/poll.mini")
+    public static let seedingMini = ImageAsset(name: "Object&Tools/seeding.mini")
     public static let speakerXmark = ImageAsset(name: "Object&Tools/speaker.xmark")
   }
   public enum Scene {

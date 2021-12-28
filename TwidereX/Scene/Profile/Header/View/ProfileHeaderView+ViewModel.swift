@@ -316,7 +316,7 @@ extension ProfileHeaderView {
                 let item = ProfileFieldListView.Item(
                     index: index,
                     updateAt: now,
-                    symbol: Asset.Human.personMini.image,
+                    symbol: Asset.ObjectTools.seedingMini.image,
                     key: nil,
                     value: value
                 )

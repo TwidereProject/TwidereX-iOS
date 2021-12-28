@@ -39,6 +39,9 @@ public enum TextStyle {
     case mediaDescriptionAuthorName
     case hashtagTitle
     case hashtagDescription
+    case searchHistoryTitle
+    case searchTrendTitle
+    case searchTrendSubtitle
     case sidebarAuthorName
     case sidebarAuthorUsername
     
@@ -81,6 +84,9 @@ extension TextStyle {
         case .mediaDescriptionAuthorName:   return 1
         case .hashtagTitle:                 return 1
         case .hashtagDescription:           return 1
+        case .searchHistoryTitle:           return 1
+        case .searchTrendTitle:             return 1
+        case .searchTrendSubtitle:          return 1
         case .sidebarAuthorName:            return 1
         case .sidebarAuthorUsername:        return 1
         case .custom:                       return 1
@@ -132,6 +138,12 @@ extension TextStyle {
         case .hashtagTitle:
             return .preferredFont(forTextStyle: .headline)
         case .hashtagDescription:
+            return .preferredFont(forTextStyle: .subheadline)
+        case .searchHistoryTitle:
+            return UIFontMetrics(forTextStyle: .headline).scaledFont(for: .preferredFont(forTextStyle: .body))
+        case .searchTrendTitle:
+            return UIFontMetrics(forTextStyle: .headline).scaledFont(for: .preferredFont(forTextStyle: .body))
+        case .searchTrendSubtitle:
             return .preferredFont(forTextStyle: .subheadline)
         case .sidebarAuthorName:
             return .systemFont(ofSize: 16, weight: .regular)
@@ -185,6 +197,12 @@ extension TextStyle {
         case .hashtagTitle:
             return .label
         case .hashtagDescription:
+            return .secondaryLabel
+        case .searchHistoryTitle:
+            return .label
+        case .searchTrendTitle:
+            return .label
+        case .searchTrendSubtitle:
             return .secondaryLabel
         case .sidebarAuthorName:
             return .label
@@ -252,6 +270,12 @@ extension MetaLabel: TextStyleConfigurable {
         case .hashtagTitle:
             break
         case .hashtagDescription:
+            break
+        case .searchHistoryTitle:
+            break
+        case .searchTrendTitle:
+            break
+        case .searchTrendSubtitle:
             break
         case .sidebarAuthorName:
             break

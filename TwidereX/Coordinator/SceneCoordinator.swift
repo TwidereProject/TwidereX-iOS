@@ -66,6 +66,10 @@ extension SceneCoordinator {
         // Sidebar
         case drawerSidebar(viewModel: DrawerSidebarViewModel)
 
+        // Search
+        case savedSearch(viewModel: SavedSearchViewModel)
+        case trend(viewModel: TrendViewModel)
+        case searchResult(viewModel: SearchResultViewModel)
         
         // TODO:
         // case tweetConversation(viewModel: TweetConversationViewModel)
@@ -137,6 +141,7 @@ extension SceneCoordinator {
         switch transition {
         case .show:
             if presentingViewController.navigationController == nil,
+               !(presentingViewController is UINavigationController),
                let from = presentingViewController.presentingViewController
             {
                 presentingViewController.dismiss(animated: true) {
@@ -248,6 +253,24 @@ private extension SceneCoordinator {
         case .drawerSidebar(let viewModel):
             let _viewController = DrawerSidebarViewController()
             _viewController.viewModel = viewModel
+            viewController = _viewController
+        case .savedSearch(let viewModel):
+            let _viewController = SavedSearchViewController()
+            _viewController.viewModel = viewModel
+            viewController = _viewController
+        case .trend(let viewModel):
+            let _viewController = TrendViewController()
+            _viewController.viewModel = viewModel
+            viewController = _viewController
+        case .searchResult(let viewModel):
+            let searchResultViewController = SearchResultViewController()
+            searchResultViewController.context = context
+            searchResultViewController.coordinator = self
+            searchResultViewController.viewModel = viewModel
+            let _viewController = SearchResultContainerViewController()
+            _viewController.searchText = viewModel.searchText
+            _viewController.searchResultViewModel = viewModel
+            _viewController.searchResultViewController = searchResultViewController
             viewController = _viewController
         case .setting:
             viewController = SettingListViewController()

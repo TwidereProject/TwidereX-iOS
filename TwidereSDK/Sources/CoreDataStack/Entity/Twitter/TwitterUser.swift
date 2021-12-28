@@ -8,7 +8,7 @@
 import Foundation
 import CoreData
 
-final public class TwitterUser: NSManagedObject {
+public final class TwitterUser: NSManagedObject {
     
     public typealias ID = String
     
@@ -55,7 +55,7 @@ final public class TwitterUser: NSManagedObject {
 
     // one-to-many relationship
     @NSManaged public private(set) var statuses: Set<TwitterStatus>
-//    @NSManaged public private(set) var inReplyFrom: Set<Tweet>
+    @NSManaged public private(set) var savedSearches: Set<TwitterSavedSearch>
 
     // many-to-many relationship
     @NSManaged public private(set) var like: Set<TwitterStatus>
@@ -137,85 +137,10 @@ extension TwitterUser {
     ) -> TwitterUser {
         let object: TwitterUser = context.insertObject()
         object.configure(property: property)
-        
-//        if let followingBy = followingBy {
-//            object.mutableSetValue(forKey: #keyPath(TwitterUser.followingBy)).add(followingBy)
-//        }
-//        if let followRequestSentFrom = followRequestSentFrom {
-//            object.mutableSetValue(forKey: #keyPath(TwitterUser.followRequestSentFrom)).add(followRequestSentFrom)
-//        }
-        
         return object
     }
     
-//    public func update(entitiesURLProperties: [TwitterUserEntitiesURL.Property]) {
-//        guard let entities = entities else { return }
-//        let oldURLs = Set((entities.urls ?? Set()).compactMap { $0.url })
-//        let newURLs = Set(entitiesURLProperties.compactMap { $0.url })
-//        if oldURLs != newURLs {
-//            entities.mutableSetValue(forKey: #keyPath(TwitterUserEntities.urls)).removeAllObjects()
-//            let urls = entitiesURLProperties.map { property in
-//                TwitterUserEntitiesURL.insert(into: managedObjectContext!, property: property)
-//            }
-//            entities.mutableSetValue(forKey: #keyPath(TwitterUserEntities.urls)).addObjects(from: urls)
-//        }
-//    }
-    
-    public func setupMetricsIfNeeds() {
-//        if metrics == nil {
-//            metrics = TwitterUserMetrics.insert(
-//                into: managedObjectContext!,
-//                property: .init(followersCount: nil, followingCount: nil, listedCount: nil, tweetCount: nil)
-//            )
-//        }
-    }
-    
-    public func didUpdate(at networkDate: Date) {
-        self.updatedAt = networkDate
-    }
-    
 }
-
-//extension TwitterUser {
-//    public struct Property: NetworkUpdatable {
-//        public let id: ID
-//        public let name: String
-//        public let username: String
-//
-//        public let bioDescription: String?
-//        public let createdAt: Date?
-//        public let location: String?
-//        public let pinnedTweetID: Tweet.ID?
-//        public let profileBannerURL: String?
-//        public let profileImageURL: String?
-//        public let protected: Bool
-//        public let url: String?
-//        public let verified: Bool
-//
-//        public var networkDate: Date
-//
-//        public init(id: TwitterUser.ID, name: String, username: String, bioDescription: String?, createdAt: Date?, location: String?, pinnedTweetID: Tweet.ID?, profileBannerURL: String?, profileImageURL: String?, protected: Bool, url: String?, verified: Bool, networkDate: Date) {
-//            self.id = id
-//            self.name = name
-//            self.username = username
-//            self.bioDescription = bioDescription?
-//                .replacingOccurrences(of: "&amp;", with: "&")
-//                .replacingOccurrences(of: "&lt;", with: "<")
-//                .replacingOccurrences(of: "&gt;", with: ">")
-//                .replacingOccurrences(of: "&quot;", with: "\"")
-//                .replacingOccurrences(of: "&apos;", with: "'")
-//            self.createdAt = createdAt
-//            self.location = location
-//            self.pinnedTweetID = pinnedTweetID
-//            self.profileBannerURL = profileBannerURL
-//            self.profileImageURL = profileImageURL
-//            self.protected = protected
-//            self.url = url
-//            self.verified = verified
-//            self.networkDate = networkDate
-//        }
-//    }
-//}
 
 extension TwitterUser: Managed {
     public static var defaultSortDescriptors: [NSSortDescriptor] {

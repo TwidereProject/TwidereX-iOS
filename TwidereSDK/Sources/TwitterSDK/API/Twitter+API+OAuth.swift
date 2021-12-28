@@ -371,7 +371,7 @@ extension Twitter.API.OAuth {
         }
     }
     
-    public struct Authorization {
+    public struct Authorization: Hashable {
         public let consumerKey: String
         public let consumerSecret: String
         public let accessToken: String

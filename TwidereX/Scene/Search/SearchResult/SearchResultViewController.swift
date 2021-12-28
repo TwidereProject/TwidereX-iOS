@@ -16,12 +16,18 @@ protocol DeselectRowTransitionCoordinator {
     func deselectRow(with coordinator: UIViewControllerTransitionCoordinator, animated: Bool)
 }
 
+protocol SearchResultViewControllerDelegate: AnyObject {
+    func searchResultViewController(_ searchResultViewController: SearchResultViewController, searchBarCancelButtonClicked searchBar: UISearchBar)
+}
+
 final class SearchResultViewController: TabmanViewController, NeedsDependency {
     
     let logger = Logger(subsystem: "SearchResultViewController", category: "ViewController")
     
     weak var context: AppContext! { willSet { precondition(!isViewLoaded) } }
     weak var coordinator: SceneCoordinator! { willSet { precondition(!isViewLoaded) } }
+    
+    weak var searchResultDelegate: SearchResultViewControllerDelegate?
     
     var disposeBag = Set<AnyCancellable>()
     var viewModel: SearchResultViewModel!
@@ -41,6 +47,12 @@ final class SearchResultViewController: TabmanViewController, NeedsDependency {
         
         logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): index: \(index)")
         viewModel.currentPageIndex = index        
+    }
+    
+    var searchController: UISearchController? {
+        didSet {
+            navigationItem.searchController = searchController
+        }
     }
     
     deinit {
@@ -109,5 +121,25 @@ extension SearchResultViewController: UISearchBarDelegate {
         guard selectedScope < scopes.count else { return }
         let scope = scopes[selectedScope]
         viewModel.selectedScope = scope
+    }
+    
+    func searchBarBookmarkButtonClicked(_ searchBar: UISearchBar) {
+        logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public)")
+        guard let searchText = searchBar.text?.trimmingCharacters(in: .whitespacesAndNewlines), !searchText.isEmpty else { return }
+        guard let authenticationContext = context.authenticationService.activeAuthenticationContext.value else { return }
+        
+        Task {
+            try await DataSourceFacade.responseToCreateSavedSearch(
+                dependency: self,
+                searchText: searchText,
+                authenticationContext: authenticationContext
+            )
+        }
+    }
+    
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public)")
+        
+        searchResultDelegate?.searchResultViewController(self, searchBarCancelButtonClicked: searchBar)
     }
 }

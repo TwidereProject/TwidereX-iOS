@@ -71,6 +71,7 @@ class MainTabBarController: UITabBarController {
                 let _viewController = SearchViewController()
                 _viewController.context = context
                 _viewController.coordinator = coordinator
+                _viewController.viewModel = SearchViewModel(context: context)
                 viewController = _viewController
             case .me:
                 let _viewController = ProfileViewController()

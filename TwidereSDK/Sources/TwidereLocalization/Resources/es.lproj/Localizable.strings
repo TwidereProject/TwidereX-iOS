@@ -161,6 +161,7 @@
 "Common.Controls.Friendship.UserIsFollowingYou" = "%@ te sigue";
 "Common.Controls.Friendship.UserIsNotFollowingYou" = "%@ no te sigue";
 "Common.Controls.Ios.PhotoLibrary" = "Galería de fotos";
+"Common.Controls.List.NoResults" = "No results";
 "Common.Controls.ProfileDashboard.Followers" = "Seguidores";
 "Common.Controls.ProfileDashboard.Following" = "Siguiendo";
 "Common.Controls.ProfileDashboard.Listed" = "Listado";
@@ -310,7 +311,7 @@
 "Scene.Notification.Tabs.All" = "Todo";
 "Scene.Notification.Tabs.Mentions" = "Menciones";
 "Scene.Notification.Title" = "Notificación";
-"Scene.Profile.Fields.JoinedInDate" = "Joined in %@";
+"Scene.Profile.Fields.JoinedInDate" = "Se unió en %@";
 "Scene.Profile.Filter.All" = "Todos los tweets";
 "Scene.Profile.Filter.ExcludeReplies" = "Excluir respuestas";
 "Scene.Profile.HideReply" = "Ocultar respuesta";
@@ -380,9 +381,9 @@ Todavía en fase temprana.";
 "Scene.Settings.Misc.Nitter.Dialog.Usage.ProjectButton" = "URL del proyecto";
 "Scene.Settings.Misc.Nitter.Dialog.Usage.Title" = "Usando proveedor de datos de terceros en";
 "Scene.Settings.Misc.Nitter.Input.Description" = "Front-end alternativo de Twitter enfocado en la privacidad.";
-"Scene.Settings.Misc.Nitter.Input.Invalid" = "Nitter instance URL is invalid, e.g. https://nitter.net";
+"Scene.Settings.Misc.Nitter.Input.Invalid" = "La URL de la instancia de Nitter no es válida, ej. https://nitter.net";
 "Scene.Settings.Misc.Nitter.Input.Placeholder" = "Instancia de Nitter";
-"Scene.Settings.Misc.Nitter.Input.Value" = "Instance URL";
+"Scene.Settings.Misc.Nitter.Input.Value" = "URL de la instancia";
 "Scene.Settings.Misc.Nitter.Title" = "Proveedor de datos de terceros de Twitter";
 "Scene.Settings.Misc.Proxy.Enable.Description" = "Usar proxy para todas las peticiones de red";
 "Scene.Settings.Misc.Proxy.Enable.Title" = "Proxy";
