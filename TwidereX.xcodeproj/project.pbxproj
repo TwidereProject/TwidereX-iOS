@@ -148,6 +148,10 @@
 		DB6B8B2E25AF235F00F20FD5 /* TwidereX.xctestplan in Resources */ = {isa = PBXBuildFile; fileRef = DB6B8B2C25AF235F00F20FD5 /* TwidereX.xctestplan */; };
 		DB6B8B2F25AF235F00F20FD5 /* TwidereX-Performance.xctestplan in Resources */ = {isa = PBXBuildFile; fileRef = DB6B8B2D25AF235F00F20FD5 /* TwidereX-Performance.xctestplan */; };
 		DB6B8B5F25AF30B900F20FD5 /* ContextMenuAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB6B8B5E25AF30B900F20FD5 /* ContextMenuAction.swift */; };
+		DB6BCD6B277ADBF300847054 /* TrendViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB6BCD6A277ADBF300847054 /* TrendViewController.swift */; };
+		DB6BCD6E277ADC0900847054 /* TrendViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB6BCD6D277ADC0900847054 /* TrendViewModel.swift */; };
+		DB6BCD70277AEAC700847054 /* TrendTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB6BCD6F277AEAC700847054 /* TrendTableViewCell.swift */; };
+		DB6BCD72277AEED600847054 /* TrendViewModel+Diffable.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB6BCD71277AEED600847054 /* TrendViewModel+Diffable.swift */; };
 		DB6CF1C4269715CD001DE069 /* FPSIndicator in Frameworks */ = {isa = PBXBuildFile; productRef = DB6CF1C3269715CD001DE069 /* FPSIndicator */; };
 		DB6D672C2566349600B70DC0 /* SwitchTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB6D672B2566349600B70DC0 /* SwitchTableViewCell.swift */; };
 		DB6DF3E0252060AA00E8A273 /* ProfileViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB6DF3DF252060AA00E8A273 /* ProfileViewModel.swift */; };
@@ -601,6 +605,10 @@
 		DB6B8B2C25AF235F00F20FD5 /* TwidereX.xctestplan */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = TwidereX.xctestplan; sourceTree = "<group>"; };
 		DB6B8B2D25AF235F00F20FD5 /* TwidereX-Performance.xctestplan */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "TwidereX-Performance.xctestplan"; sourceTree = "<group>"; };
 		DB6B8B5E25AF30B900F20FD5 /* ContextMenuAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContextMenuAction.swift; sourceTree = "<group>"; };
+		DB6BCD6A277ADBF300847054 /* TrendViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrendViewController.swift; sourceTree = "<group>"; };
+		DB6BCD6D277ADC0900847054 /* TrendViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrendViewModel.swift; sourceTree = "<group>"; };
+		DB6BCD6F277AEAC700847054 /* TrendTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrendTableViewCell.swift; sourceTree = "<group>"; };
+		DB6BCD71277AEED600847054 /* TrendViewModel+Diffable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TrendViewModel+Diffable.swift"; sourceTree = "<group>"; };
 		DB6CF1BE26970A21001DE069 /* HomeTimelineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeTimelineView.swift; sourceTree = "<group>"; };
 		DB6CF1C026970DAA001DE069 /* HomeTimelineStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeTimelineStore.swift; sourceTree = "<group>"; };
 		DB6D672B2566349600B70DC0 /* SwitchTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwitchTableViewCell.swift; sourceTree = "<group>"; };
@@ -1100,6 +1108,7 @@
 			isa = PBXGroup;
 			children = (
 				DB25C4C22775D7B300EC1435 /* SearchHistoryTableViewCell.swift */,
+				DB6BCD6F277AEAC700847054 /* TrendTableViewCell.swift */,
 			);
 			path = Cell;
 			sourceTree = "<group>";
@@ -1379,6 +1388,16 @@
 				DB578CD7254C0FB500745336 /* SearchUserViewModel+State.swift */,
 			);
 			path = User;
+			sourceTree = "<group>";
+		};
+		DB6BCD6C277ADBF600847054 /* Trend */ = {
+			isa = PBXGroup;
+			children = (
+				DB6BCD6A277ADBF300847054 /* TrendViewController.swift */,
+				DB6BCD6D277ADC0900847054 /* TrendViewModel.swift */,
+				DB6BCD71277AEED600847054 /* TrendViewModel+Diffable.swift */,
+			);
+			path = Trend;
 			sourceTree = "<group>";
 		};
 		DB7274F0273BB25A00577D95 /* Notification */ = {
@@ -2270,6 +2289,7 @@
 				DBF69EA325496C8A00E2A915 /* Search */,
 				DB262A3E27228DF700D18EF3 /* SearchResult */,
 				DB25C4CD27799FEB00EC1435 /* SavedSearch */,
+				DB6BCD6C277ADBF600847054 /* Trend */,
 			);
 			path = Search;
 			sourceTree = "<group>";
@@ -2896,6 +2916,7 @@
 				DB76A659275F498F00A50673 /* MediaPreviewImageView.swift in Sources */,
 				DB262A4A2722AAA700D18EF3 /* SearchTimelineViewModel+State.swift in Sources */,
 				DB213FAB27392C44009ABD74 /* HashtagTimelineViewModel+Diffable.swift in Sources */,
+				DB6BCD72277AEED600847054 /* TrendViewModel+Diffable.swift in Sources */,
 				DB98DC10250787420087E30F /* TimelineBottomLoaderTableViewCell.swift in Sources */,
 				DB25C4D32779ADD800EC1435 /* SearchResultContainerViewController.swift in Sources */,
 				DB02C777273520B8007EA0BF /* SearchHashtagViewModel+State.swift in Sources */,
@@ -2954,9 +2975,11 @@
 				DBF63A38259D7CCB009E12C8 /* CornerSmoothPreviewViewController.swift in Sources */,
 				DB02C77527351DA2007EA0BF /* HashtagTableViewCell+ViewModel.swift in Sources */,
 				DB86433C26E898C5000C9879 /* DataSourceFacade+Like.swift in Sources */,
+				DB6BCD70277AEAC700847054 /* TrendTableViewCell.swift in Sources */,
 				DB914C4A26C3AC7C00E85F1A /* ContentOffsetFixedCollectionView.swift in Sources */,
 				DBD0B4A02758B6010015A388 /* SidebarItem.swift in Sources */,
 				DB76A67127609A8700A50673 /* RemoteProfileViewModel.swift in Sources */,
+				DB6BCD6B277ADBF300847054 /* TrendViewController.swift in Sources */,
 				DB76A656275F354800A50673 /* MediaPreviewViewModel.swift in Sources */,
 				DB262A502726938600D18EF3 /* SearchMediaViewModel+State.swift in Sources */,
 				DB969A2F252490090053CB31 /* UserTimelineViewModel+State.swift in Sources */,
@@ -3060,6 +3083,7 @@
 				DBE71B7D26B7C5FD00DFAB8E /* StubTimelineViewModel.swift in Sources */,
 				DB3402B72521D389009EFADF /* UserTimelineViewModel.swift in Sources */,
 				DB76A658275F498F00A50673 /* MediaPreviewImageViewModel.swift in Sources */,
+				DB6BCD6E277ADC0900847054 /* TrendViewModel.swift in Sources */,
 				DB51DC4E27181D7500A0D8FB /* CoverFlowStackMediaCollectionCell.swift in Sources */,
 				DBED96D8253F5D7800C5383A /* NamingState.swift in Sources */,
 				DB6DF3E0252060AA00E8A273 /* ProfileViewModel.swift in Sources */,

@@ -23,36 +23,82 @@ extension SearchViewModel {
         
         var snapshot = NSDiffableDataSourceSnapshot<SearchSection, SearchItem>()
         snapshot.appendSections([.history, .trend])
-        snapshot.appendItems([.loader(id: UUID())], toSection: .history)
-        snapshot.appendItems([.loader(id: UUID())], toSection: .trend)
+        snapshot.appendItems([.loader()], toSection: .history)
+        snapshot.appendItems([.loader()], toSection: .trend)
         diffableDataSource?.apply(snapshot)
         
-        Publishers.CombineLatest(
+        let historyItems: AnyPublisher<[SearchItem], Never> = Publishers.CombineLatest(
             savedSearchViewModel.savedSearchFetchedResultController.$records,
             savedSearchViewModel.$isSavedSearchFetched
         )
+        .map { records, isSavedSearchFetched in
+            self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): incoming \(records.count) saved search records")
+            
+            let limit = 3
+            var items: [SearchItem] = records.prefix(limit).map { .history(record: $0) }
+            if records.isEmpty {
+                if isSavedSearchFetched {
+                    items.append(.noResults())
+                } else {
+                    items.append(.loader())
+                }
+            } else if records.count > limit {
+                items.append(.showMore())
+            }
+            return items
+        }
+        .eraseToAnyPublisher()
+        
+        let trendItems: AnyPublisher<[SearchItem], Never> = Publishers.CombineLatest3(
+            trendViewModel.trendService.$trendGroupRecords,
+            trendViewModel.$placeID,
+            trendViewModel.$isTrendFetched
+        )
+        .map { trendGroupRecords, placeID, isTrendFetched in
+            let limit = 5
+            let trends: [TrendObject] = trendGroupRecords[placeID]?.trends ?? []
+            self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): incoming \(trends.count) trend items")
+            
+            var items: [SearchItem] = trends.prefix(limit).map { .trend(trend: $0) }
+            if trends.isEmpty {
+                if isTrendFetched {
+                    items.append(.noResults())
+                } else {
+                    items.append(.loader())
+                }
+            } else if trends.count > limit {
+                items.append(.showMore())
+            }
+            return items
+        }
+        .eraseToAnyPublisher()
+        
+        Publishers.CombineLatest3(
+            historyItems,
+            trendItems,
+            context.authenticationService.activeAuthenticationContext
+        )
         .throttle(for: 0.3, scheduler: DispatchQueue.main, latest: true)
-        .sink { [weak self] savedSearchRecords, isSavedSearchFetched in
+        .sink { [weak self] historyItems, trendItems, authenticationContext in
             guard let self = self else { return }
             guard let diffableDataSource = self.diffableDataSource else { return }
             
-            self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): incoming \(savedSearchRecords.count) saved search records")
+            guard let authenticationContext = authenticationContext,
+                  case .twitter = authenticationContext     // FIXME: add Mastodon supports
+            else {
+                let snapshot = NSDiffableDataSourceSnapshot<SearchSection, SearchItem>()
+                diffableDataSource.applySnapshotUsingReloadData(snapshot)
+                return
+            }
             
             var snapshot = NSDiffableDataSourceSnapshot<SearchSection, SearchItem>()
             snapshot.appendSections([.history, .trend])
             
             // history
-            let historyItems: [SearchItem] = savedSearchRecords.map { .history(record: $0) }
-            snapshot.appendItems(Array(historyItems.prefix(3)), toSection: .history)
-            if historyItems.isEmpty {
-                if isSavedSearchFetched {
-                    snapshot.appendItems([.noResults], toSection: .history)
-                } else {
-                    snapshot.appendItems([.loader(id: UUID())], toSection: .history)
-                }
-            } else if historyItems.count > 3 {
-                snapshot.appendItems([.showMore], toSection: .history)
-            }
+            snapshot.appendItems(historyItems, toSection: .history)
+
+            // trend
+            snapshot.appendItems(trendItems, toSection: .trend)
             
             diffableDataSource.apply(snapshot, animatingDifferences: false, completion: nil)
         }

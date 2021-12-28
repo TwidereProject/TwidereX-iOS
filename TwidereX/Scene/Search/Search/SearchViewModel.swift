@@ -21,6 +21,7 @@ final class SearchViewModel {
     // input
     let context: AppContext
     let savedSearchViewModel: SavedSearchViewModel
+    let trendViewModel: TrendViewModel
     let viewDidAppear = PassthroughSubject<Void, Never>()
     
     // output
@@ -30,6 +31,7 @@ final class SearchViewModel {
     init(context: AppContext) {
         self.context = context
         self.savedSearchViewModel = SavedSearchViewModel(context: context)
+        self.trendViewModel = TrendViewModel(context: context)
         // end init
         
         viewDidAppear
@@ -40,16 +42,37 @@ final class SearchViewModel {
                 Task {
                     do {
                         try await self.savedSearchViewModel.savedSearchService.fetchList(authenticationContext: authenticationContext)
+                        self.savedSearchViewModel.isSavedSearchFetched = true
                     } catch {
                         // do nothing
                     }
-                    self.savedSearchViewModel.isSavedSearchFetched = true
                 }
             }
             .store(in: &disposeBag)
         
-        savedSearchViewModel.savedSearchFetchedResultController
-            .$records
+        Publishers.CombineLatest(
+            trendViewModel.$placeID,
+            viewDidAppear
+        )
+        .sink { [weak self] placeID, _ in
+            guard let self = self else { return }
+            guard let authenticationContext = self.context.authenticationService.activeAuthenticationContext.value else { return }
+            
+            Task {
+                do {
+                    try await self.trendViewModel.trendService.fetchTrend(
+                        placeID: placeID,
+                        authenticationContext: authenticationContext
+                    )
+                    self.trendViewModel.isTrendFetched = true
+                } catch {
+                    // do nothing
+                }
+            }
+        }
+        .store(in: &disposeBag)
+        
+        savedSearchViewModel.savedSearchFetchedResultController.$records
             .sink { [weak self] records in
                 guard let self = self else { return }
                 let texts: [String] = records.compactMap { record in

@@ -43,9 +43,9 @@ extension SavedSearchViewModel {
             snapshot.appendItems(historyItems, toSection: .history)
             if historyItems.isEmpty {
                 if isSavedSearchFetched {
-                    snapshot.appendItems([.noResults], toSection: .history)
+                    snapshot.appendItems([.noResults()], toSection: .history)
                 } else {
-                    snapshot.appendItems([.loader(id: UUID())], toSection: .history)
+                    snapshot.appendItems([.loader()], toSection: .history)
                 }
             }
             

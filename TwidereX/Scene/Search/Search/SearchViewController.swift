@@ -180,6 +180,7 @@ extension SearchViewController: UITableViewDelegate {
         }
         
         guard let diffableDataSource = viewModel.diffableDataSource else { return }
+        guard let section = diffableDataSource.sectionIdentifier(for: indexPath.section) else { return }
         guard let item = diffableDataSource.itemIdentifier(for: indexPath) else { return }
         
         Task {
@@ -193,14 +194,26 @@ extension SearchViewController: UITableViewDelegate {
                 guard let query = _query else { return }
                 self.searchText(query)
                 
-            case .trend:
-                break
+            case .trend(let object):
+                switch object {
+                case .twitter(let trend):
+                    self.searchText(trend.name)
+                }
             case .showMore:
-                coordinator.present(
-                    scene: .savedSearch(viewModel: viewModel.savedSearchViewModel),
-                    from: self,
-                    transition: .show
-                )
+                switch section {
+                case .history:
+                    coordinator.present(
+                        scene: .savedSearch(viewModel: viewModel.savedSearchViewModel),
+                        from: self,
+                        transition: .show
+                    )
+                case .trend:
+                    coordinator.present(
+                        scene: .trend(viewModel: viewModel.trendViewModel),
+                        from: self,
+                        transition: .show
+                    )
+                }
             default:
                 break
             }

@@ -35,6 +35,26 @@ extension DataSourceFacade {
     }
     
     @MainActor
+    static func coordinateToSearchResult(
+        dependency: NeedsDependency & UIViewController,
+        trend object: TrendObject
+    ) {
+        switch object {
+        case .twitter(let trend):
+            let searchResultViewModel = SearchResultViewModel(
+                context: dependency.context,
+                coordinator: dependency.coordinator
+            )
+            searchResultViewModel.searchText = trend.name
+            dependency.coordinator.present(
+                scene: .searchResult(viewModel: searchResultViewModel),
+                from: dependency,
+                transition: .modal(animated: true, completion: nil)
+            )
+        }
+    }
+    
+    @MainActor
     static func responseToCreateSavedSearch(
         dependency: NeedsDependency,
         searchText: String,
