@@ -42,6 +42,7 @@ public enum TextStyle {
     case searchHistoryTitle
     case searchTrendTitle
     case searchTrendSubtitle
+    case searchTrendCount
     case sidebarAuthorName
     case sidebarAuthorUsername
     
@@ -87,6 +88,7 @@ extension TextStyle {
         case .searchHistoryTitle:           return 1
         case .searchTrendTitle:             return 1
         case .searchTrendSubtitle:          return 1
+        case .searchTrendCount:             return 1
         case .sidebarAuthorName:            return 1
         case .sidebarAuthorUsername:        return 1
         case .custom:                       return 1
@@ -145,6 +147,8 @@ extension TextStyle {
             return UIFontMetrics(forTextStyle: .headline).scaledFont(for: .preferredFont(forTextStyle: .body))
         case .searchTrendSubtitle:
             return .preferredFont(forTextStyle: .subheadline)
+        case .searchTrendCount:
+            return .preferredFont(forTextStyle: .footnote)
         case .sidebarAuthorName:
             return .systemFont(ofSize: 16, weight: .regular)
         case .sidebarAuthorUsername:
@@ -206,6 +210,8 @@ extension TextStyle {
             return .secondaryLabel
         case .sidebarAuthorName:
             return .label
+        case .searchTrendCount:
+            return .secondaryLabel
         case .sidebarAuthorUsername:
             return .secondaryLabel
         case .custom(let configuration):
@@ -276,6 +282,8 @@ extension MetaLabel: TextStyleConfigurable {
         case .searchTrendTitle:
             break
         case .searchTrendSubtitle:
+            break
+        case .searchTrendCount:
             break
         case .sidebarAuthorName:
             break
