@@ -181,21 +181,21 @@ extension TwitterUser: AutoGenerateProperty {
     // Generated using Sourcery
     // DO NOT EDIT
     public struct Property {
-        public let  id: ID
-        public let  name: String
-        public let  username: String
-        public let  bio: String?
-        public let  createdAt: Date?
-        public let  location: String?
-        public let  profileImageURL: String?
-        public let  protected: Bool
-        public let  url: String?
-        public let  verified: Bool
-        public let  statusesCount: Int64
-        public let  followingCount: Int64
-        public let  followersCount: Int64
-        public let  listedCount: Int64
-        public let  updatedAt: Date
+        public let id: ID
+        public let name: String
+        public let username: String
+        public let bio: String?
+        public let createdAt: Date?
+        public let location: String?
+        public let profileImageURL: String?
+        public let protected: Bool
+        public let url: String?
+        public let verified: Bool
+        public let statusesCount: Int64
+        public let followingCount: Int64
+        public let followersCount: Int64
+        public let listedCount: Int64
+        public let updatedAt: Date
 
     	public init(
     		id: ID,

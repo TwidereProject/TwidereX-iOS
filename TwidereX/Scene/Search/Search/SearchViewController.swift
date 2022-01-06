@@ -49,6 +49,14 @@ final class SearchViewController: UIViewController, NeedsDependency, DrawerSideb
         return tableView
     }()
     
+    let historySectionHeaderView: SearchTableSectionHeaderView = {
+        let header = SearchTableSectionHeaderView()
+        header.label.text = L10n.Scene.Search.savedSearch
+        return header
+    }()
+    
+    let trendSectionHeaderView = SearchTableSectionHeaderView()
+    
     deinit {
         os_log("%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
     }
@@ -97,6 +105,21 @@ extension SearchViewController {
             tableView: tableView
         )
         
+        viewModel.trendViewModel.$trendGroupIndex
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] trendGroupIndex in
+                guard let self = self else { return }
+                switch trendGroupIndex {
+                case .none:
+                    self.trendSectionHeaderView.label.text = " "
+                case .twitter:      // TODO: add region
+                    self.trendSectionHeaderView.label.text = L10n.Scene.Trends.worldWide
+                case .mastodon:
+                    self.trendSectionHeaderView.label.text = L10n.Scene.Trends.now
+                }
+            }
+            .store(in: &disposeBag)
+        
         Publishers.CombineLatest3(
             viewModel.$savedSearchTexts,
             searchResultViewModel.$searchText,
@@ -113,10 +136,8 @@ extension SearchViewController {
                 return
             }
             switch activeAuthenticationContext {
-            case .twitter:
+            case .twitter, .mastodon:
                 self.searchController.searchBar.showsBookmarkButton = true
-            case .mastodon:
-                self.searchController.searchBar.showsBookmarkButton = false
             case nil:
                 self.searchController.searchBar.showsBookmarkButton = false
             }
@@ -147,31 +168,12 @@ extension SearchViewController: UITableViewDelegate {
         guard let diffableDataSource = viewModel.diffableDataSource else { return nil }
         guard let section = diffableDataSource.sectionIdentifier(for: section) else { return nil }
     
-        let container = UIView()
-        container.preservesSuperviewLayoutMargins = true
-        
-        let label = UILabel()
-        label.font = .preferredFont(forTextStyle: .subheadline)
-        label.textColor = .secondaryLabel
-        label.text = {
-            switch section {
-            case .history:
-                return L10n.Scene.Search.savedSearch
-            case .trend:
-                return L10n.Scene.Trends.worldWide
-            }
-        }()
-        
-        label.translatesAutoresizingMaskIntoConstraints = false
-        container.addSubview(label)
-        NSLayoutConstraint.activate([
-            label.topAnchor.constraint(equalTo: container.topAnchor),
-            label.leadingAnchor.constraint(equalTo: container.readableContentGuide.leadingAnchor),
-            label.trailingAnchor.constraint(equalTo: container.readableContentGuide.trailingAnchor),
-            container.bottomAnchor.constraint(equalTo: label.bottomAnchor, constant: 6),
-        ])
-        
-        return container
+        switch section {
+        case .history:
+            return historySectionHeaderView
+        case .trend:
+            return trendSectionHeaderView
+        }
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -198,6 +200,13 @@ extension SearchViewController: UITableViewDelegate {
                 switch object {
                 case .twitter(let trend):
                     self.searchText(trend.name)
+                case .mastodon(let tag):
+                    let hashtagTimelineViewModel = HashtagTimelineViewModel(context: context, hashtag: tag.name)
+                    coordinator.present(
+                        scene: .hashtagTimeline(viewModel: hashtagTimelineViewModel),
+                        from: self,
+                        transition: .show
+                    )
                 }
             case .showMore:
                 switch section {

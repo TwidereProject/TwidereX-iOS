@@ -23,6 +23,7 @@ extension Persistence {
     public enum MastodonNotification { }
     public enum MastodonPoll { }
     public enum MastodonPollOption { }
+    public enum MastodonSavedSearch { }
 }
 
 extension Persistence {

@@ -63,11 +63,11 @@ extension MastodonPollOption: AutoGenerateProperty {
     // Generated using Sourcery
     // DO NOT EDIT
     public struct Property {
-        public let  index: Int64
-        public let  title: String
-        public let  votesCount: Int64
-        public let  createdAt: Date
-        public let  updatedAt: Date
+        public let index: Int64
+        public let title: String
+        public let votesCount: Int64
+        public let createdAt: Date
+        public let updatedAt: Date
 
     	public init(
     		index: Int64,

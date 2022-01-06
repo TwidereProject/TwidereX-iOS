@@ -1,21 +1,16 @@
 //
-//  TwitterSavedSearch.swift
+//  MastodonSavedSearch.swift
 //  
 //
-//  Created by MainasuK on 2021-12-22.
+//  Created by MainasuK on 2022-1-6.
 //
 
 import Foundation
 import CoreData
 
-public final class TwitterSavedSearch: NSManagedObject {
+public final class MastodonSavedSearch: NSManagedObject {
     
-    public typealias ID = String
-    
-    // sourcery: autoGenerateProperty
-    @NSManaged public private(set) var id: ID
-    // sourcery: autoUpdatableObject, autoGenerateProperty
-    @NSManaged public private(set) var name: String
+
     // sourcery: autoUpdatableObject, autoGenerateProperty
     @NSManaged public private(set) var query: String
     // sourcery: autoUpdatableObject, autoGenerateProperty
@@ -23,19 +18,19 @@ public final class TwitterSavedSearch: NSManagedObject {
     
     // many-to-one relationship
     // sourcery: autoGenerateRelationship
-    @NSManaged public private(set) var user: TwitterUser
+    @NSManaged public private(set) var user: MastodonUser
     
 }
 
-extension TwitterSavedSearch {
+extension MastodonSavedSearch {
 
     @discardableResult
     public static func insert(
         into context: NSManagedObjectContext,
         property: Property,
         relationship: Relationship
-    ) -> TwitterSavedSearch {
-        let object: TwitterSavedSearch = context.insertObject()
+    ) -> MastodonSavedSearch {
+        let object: MastodonSavedSearch = context.insertObject()
         object.configure(property: property)
         object.configure(relationship: relationship)
         return object
@@ -43,67 +38,61 @@ extension TwitterSavedSearch {
     
 }
 
-extension TwitterSavedSearch: Managed {
+extension MastodonSavedSearch: Managed {
     public static var defaultSortDescriptors: [NSSortDescriptor] {
-        return [NSSortDescriptor(keyPath: \TwitterSavedSearch.createdAt, ascending: false)]
+        return [NSSortDescriptor(keyPath: \MastodonSavedSearch.createdAt, ascending: false)]
     }
 }
 
-extension TwitterSavedSearch {
+extension MastodonSavedSearch {
     
-    public static func hasTwitterUserPredicate() -> NSPredicate {
-        return NSPredicate(format: "%K != nil", #keyPath(TwitterSavedSearch.user))
+    public static func hasMastodonUserPredicate() -> NSPredicate {
+        return NSPredicate(format: "%K != nil", #keyPath(MastodonSavedSearch.user))
     }
     
-    public static func predicate(userID: TwitterUser.ID) -> NSPredicate {
+    public static func predicate(userID: MastodonUser.ID, domain: String) -> NSPredicate {
         return NSCompoundPredicate(andPredicateWithSubpredicates: [
-            hasTwitterUserPredicate(),
-            NSPredicate(format: "%K == %@", #keyPath(TwitterSavedSearch.user.id), userID)
+            hasMastodonUserPredicate(),
+            NSPredicate(format: "%K == %@", #keyPath(MastodonSavedSearch.user.id), userID),
+            NSPredicate(format: "%K == %@", #keyPath(MastodonSavedSearch.user.domain), domain),
         ])
     }
     
-    public static func predicate(id: ID) -> NSPredicate {
+    public static func predicate(userID: MastodonUser.ID, domain: String, query: String) -> NSPredicate {
         return NSCompoundPredicate(andPredicateWithSubpredicates: [
-            NSPredicate(format: "%K == %@", #keyPath(TwitterSavedSearch.id), id)
+            hasMastodonUserPredicate(),
+            predicate(userID: userID, domain: domain),
+            NSPredicate(format: "%K == %@", #keyPath(MastodonSavedSearch.query), query),
         ])
     }
-    
+
 }
 
 // MARK: - TwitterSavedSearch
-extension TwitterSavedSearch: AutoGenerateProperty {
-    // sourcery:inline:TwitterSavedSearch.AutoGenerateProperty
+extension MastodonSavedSearch: AutoGenerateProperty {
+    // sourcery:inline:MastodonSavedSearch.AutoGenerateProperty
 
     // Generated using Sourcery
     // DO NOT EDIT
     public struct Property {
-        public let id: ID
-        public let name: String
         public let query: String
         public let createdAt: Date
 
     	public init(
-    		id: ID,
-    		name: String,
     		query: String,
     		createdAt: Date
     	) {
-    		self.id = id
-    		self.name = name
     		self.query = query
     		self.createdAt = createdAt
     	}
     }
 
     public func configure(property: Property) {
-    	self.id = property.id
-    	self.name = property.name
     	self.query = property.query
     	self.createdAt = property.createdAt
     }
 
     public func update(property: Property) {
-    	update(name: property.name)
     	update(query: property.query)
     	update(createdAt: property.createdAt)
     }
@@ -111,16 +100,16 @@ extension TwitterSavedSearch: AutoGenerateProperty {
 }
 
 // MARK: - AutoGenerateRelationship
-extension TwitterSavedSearch: AutoGenerateRelationship {
-    // sourcery:inline:TwitterSavedSearch.AutoGenerateRelationship
+extension MastodonSavedSearch: AutoGenerateRelationship {
+    // sourcery:inline:MastodonSavedSearch.AutoGenerateRelationship
 
     // Generated using Sourcery
     // DO NOT EDIT
     public struct Relationship {
-    	public let user: TwitterUser
+    	public let user: MastodonUser
 
     	public init(
-    		user: TwitterUser
+    		user: MastodonUser
     	) {
     		self.user = user
     	}
@@ -133,16 +122,11 @@ extension TwitterSavedSearch: AutoGenerateRelationship {
 }
 
 // MARK: - AutoUpdatableObject
-extension TwitterSavedSearch: AutoUpdatableObject {
-    // sourcery:inline:TwitterSavedSearch.AutoUpdatableObject
+extension MastodonSavedSearch: AutoUpdatableObject {
+    // sourcery:inline:MastodonSavedSearch.AutoUpdatableObject
 
     // Generated using Sourcery
     // DO NOT EDIT
-    public func update(name: String) {
-    	if self.name != name {
-    		self.name = name
-    	}
-    }
     public func update(query: String) {
     	if self.query != query {
     		self.query = query

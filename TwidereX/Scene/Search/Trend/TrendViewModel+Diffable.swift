@@ -26,10 +26,10 @@ extension TrendViewModel {
         
         let trendItems: AnyPublisher<[SearchItem], Never> = Publishers.CombineLatest(
             trendService.$trendGroupRecords,
-            $placeID
+            $trendGroupIndex
         )
-        .map { trendGroupRecords, placeID in
-            let trendItems: [SearchItem] = trendGroupRecords[placeID]
+        .map { trendGroupRecords, trendGroupIndex in
+            let trendItems: [SearchItem] = trendGroupRecords[trendGroupIndex]
                 .flatMap { group in
                     return group.trends.map { .trend(trend: $0) }
                 } ?? []

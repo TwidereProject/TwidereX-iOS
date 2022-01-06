@@ -73,6 +73,11 @@
         <relationship name="poll" maxCount="1" deletionRule="Nullify" destinationEntity="MastodonPoll" inverseName="options" inverseEntity="MastodonPoll"/>
         <relationship name="voteBy" toMany="YES" deletionRule="Nullify" destinationEntity="MastodonUser" inverseName="votePollOptions" inverseEntity="MastodonUser"/>
     </entity>
+    <entity name="MastodonSavedSearch" representedClassName="CoreDataStack.MastodonSavedSearch" syncable="YES">
+        <attribute name="createdAt" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="query" attributeType="String"/>
+        <relationship name="user" maxCount="1" deletionRule="Nullify" destinationEntity="MastodonUser" inverseName="savedSearches" inverseEntity="MastodonUser"/>
+    </entity>
     <entity name="MastodonStatus" representedClassName="CoreDataStack.MastodonStatus" syncable="YES">
         <attribute name="attachments" optional="YES" attributeType="Binary"/>
         <attribute name="content" attributeType="String"/>
@@ -139,6 +144,7 @@
         <relationship name="mutingBy" toMany="YES" deletionRule="Nullify" destinationEntity="MastodonUser" inverseName="muting" inverseEntity="MastodonUser"/>
         <relationship name="notifications" toMany="YES" deletionRule="Nullify" destinationEntity="MastodonNotification" inverseName="account" inverseEntity="MastodonNotification"/>
         <relationship name="reposts" toMany="YES" deletionRule="Nullify" destinationEntity="MastodonStatus" inverseName="repostBy" inverseEntity="MastodonStatus"/>
+        <relationship name="savedSearches" toMany="YES" deletionRule="Nullify" destinationEntity="MastodonSavedSearch" inverseName="user" inverseEntity="MastodonSavedSearch"/>
         <relationship name="statuses" toMany="YES" deletionRule="Nullify" destinationEntity="MastodonStatus" inverseName="author" inverseEntity="MastodonStatus"/>
         <relationship name="votePollOptions" toMany="YES" deletionRule="Nullify" destinationEntity="MastodonPollOption" inverseName="voteBy" inverseEntity="MastodonPollOption"/>
         <relationship name="votePolls" toMany="YES" deletionRule="Nullify" destinationEntity="MastodonPoll" inverseName="voteBy" inverseEntity="MastodonPoll"/>
@@ -233,10 +239,11 @@
         <element name="MastodonPoll" positionX="90" positionY="-18" width="128" height="224"/>
         <element name="MastodonPollOption" positionX="99" positionY="-9" width="128" height="149"/>
         <element name="MastodonStatus" positionX="-63" positionY="-171" width="128" height="479"/>
-        <element name="MastodonUser" positionX="-63" positionY="-153" width="128" height="569"/>
+        <element name="MastodonUser" positionX="-63" positionY="-153" width="128" height="584"/>
         <element name="TwitterAuthentication" positionX="-109.453125" positionY="275.71875" width="128" height="209"/>
+        <element name="TwitterSavedSearch" positionX="90" positionY="-18" width="128" height="104"/>
         <element name="TwitterStatus" positionX="-63" positionY="-153" width="128" height="404"/>
         <element name="TwitterUser" positionX="281.5234375" positionY="201.703125" width="128" height="509"/>
-        <element name="TwitterSavedSearch" positionX="90" positionY="-18" width="128" height="104"/>
+        <element name="MastodonSavedSearch" positionX="90" positionY="-18" width="128" height="74"/>
     </elements>
 </model>

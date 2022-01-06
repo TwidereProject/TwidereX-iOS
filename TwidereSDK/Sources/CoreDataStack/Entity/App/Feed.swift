@@ -118,11 +118,11 @@ extension Feed: AutoGenerateProperty {
     // Generated using Sourcery
     // DO NOT EDIT
     public struct Property {
-        public let  acct: Acct
-        public let  kind: Kind
-        public let  hasMore: Bool
-        public let  createdAt: Date
-        public let  updatedAt: Date
+        public let acct: Acct
+        public let kind: Kind
+        public let hasMore: Bool
+        public let createdAt: Date
+        public let updatedAt: Date
 
     	public init(
     		acct: Acct,

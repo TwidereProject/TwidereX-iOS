@@ -17,21 +17,18 @@ extension DataSourceFacade {
         dependency: NeedsDependency & UIViewController,
         savedSearch: SavedSearchRecord
     ) {
-        guard let object = savedSearch.object(in: dependency.context.managedObjectContext) else { return }
+        guard let savedResult = savedSearch.object(in: dependency.context.managedObjectContext) else { return }
 
-        switch object {
-        case .twitter(let savedResult):
-            let searchResultViewModel = SearchResultViewModel(
-                context: dependency.context,
-                coordinator: dependency.coordinator
-            )
-            searchResultViewModel.searchText = savedResult.query
-            dependency.coordinator.present(
-                scene: .searchResult(viewModel: searchResultViewModel),
-                from: dependency,
-                transition: .modal(animated: true, completion: nil)
-            )
-        }
+        let searchResultViewModel = SearchResultViewModel(
+            context: dependency.context,
+            coordinator: dependency.coordinator
+        )
+        searchResultViewModel.searchText = savedResult.query
+        dependency.coordinator.present(
+            scene: .searchResult(viewModel: searchResultViewModel),
+            from: dependency,
+            transition: .modal(animated: true, completion: nil)
+        )
     }
     
     @MainActor
@@ -39,19 +36,16 @@ extension DataSourceFacade {
         dependency: NeedsDependency & UIViewController,
         trend object: TrendObject
     ) {
-        switch object {
-        case .twitter(let trend):
-            let searchResultViewModel = SearchResultViewModel(
-                context: dependency.context,
-                coordinator: dependency.coordinator
-            )
-            searchResultViewModel.searchText = trend.name
-            dependency.coordinator.present(
-                scene: .searchResult(viewModel: searchResultViewModel),
-                from: dependency,
-                transition: .modal(animated: true, completion: nil)
-            )
-        }
+        let searchResultViewModel = SearchResultViewModel(
+            context: dependency.context,
+            coordinator: dependency.coordinator
+        )
+        searchResultViewModel.searchText = object.query
+        dependency.coordinator.present(
+            scene: .searchResult(viewModel: searchResultViewModel),
+            from: dependency,
+            transition: .modal(animated: true, completion: nil)
+        )
     }
     
     @MainActor
@@ -81,8 +75,28 @@ extension DataSourceFacade {
                 throw error
             }
         case .mastodon(let authenticationContext):
-            assertionFailure("TODO")
-            break
+            do {
+                impactFeedbackGenerator.impactOccurred()
+                let managedObjectContext = dependency.context.backgroundManagedObjectContext
+                try await managedObjectContext.performChanges {
+                    guard let me = authenticationContext.authenticationRecord.object(in: managedObjectContext)?.user else {
+                        throw AppError.implicit(.authenticationMissing)
+                    }
+                    _ = Persistence.MastodonSavedSearch.createOrMerge(
+                        in: managedObjectContext,
+                        context: Persistence.MastodonSavedSearch.PersistContext(
+                            entity: searchText,
+                            me: me,
+                            networkDate: Date()
+                        )
+                    )
+                }
+                notificationFeedbackGenerator.notificationOccurred(.success)
+
+            } catch {
+                notificationFeedbackGenerator.notificationOccurred(.error)
+                throw error
+            }
         }
     }
     
@@ -110,9 +124,24 @@ extension DataSourceFacade {
                 notificationFeedbackGenerator.notificationOccurred(.error)
                 throw error
             }
+        case (.mastodon(let record), .mastodon(let authenticationContext)):
+            do {
+                impactFeedbackGenerator.impactOccurred()
+                let managedObjectContext = dependency.context.backgroundManagedObjectContext
+                try await managedObjectContext.performChanges {
+                    guard let object = record.object(in: managedObjectContext) else { return }
+                    managedObjectContext.delete(object)
+                }
+                notificationFeedbackGenerator.notificationOccurred(.success)
+
+            } catch {
+                SwiftMessages.presentFailureNotification(error: error)
+                notificationFeedbackGenerator.notificationOccurred(.error)
+                throw error
+            }
         default:
-            assertionFailure("TODO")
-            break
+            assertionFailure()
+            return
         }
     }
     

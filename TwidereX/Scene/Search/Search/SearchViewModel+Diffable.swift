@@ -10,7 +10,6 @@ import UIKit
 import Combine
 import TwidereCore
 
-
 extension SearchViewModel {
     func setupDiffableDataSource(
         tableView: UITableView
@@ -51,12 +50,12 @@ extension SearchViewModel {
         
         let trendItems: AnyPublisher<[SearchItem], Never> = Publishers.CombineLatest3(
             trendViewModel.trendService.$trendGroupRecords,
-            trendViewModel.$placeID,
+            trendViewModel.$trendGroupIndex,
             trendViewModel.$isTrendFetched
         )
-        .map { trendGroupRecords, placeID, isTrendFetched in
+        .map { trendGroupRecords, trendGroupIndex, isTrendFetched in
             let limit = 5
-            let trends: [TrendObject] = trendGroupRecords[placeID]?.trends ?? []
+            let trends: [TrendObject] = trendGroupRecords[trendGroupIndex]?.trends ?? []
             self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): incoming \(trends.count) trend items")
             
             var items: [SearchItem] = trends.prefix(limit).map { .trend(trend: $0) }
@@ -83,9 +82,7 @@ extension SearchViewModel {
             guard let self = self else { return }
             guard let diffableDataSource = self.diffableDataSource else { return }
             
-            guard let authenticationContext = authenticationContext,
-                  case .twitter = authenticationContext     // FIXME: add Mastodon supports
-            else {
+            guard let authenticationContext = authenticationContext else {
                 let snapshot = NSDiffableDataSourceSnapshot<SearchSection, SearchItem>()
                 diffableDataSource.applySnapshotUsingReloadData(snapshot)
                 return

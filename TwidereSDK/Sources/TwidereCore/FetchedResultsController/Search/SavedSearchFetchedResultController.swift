@@ -18,6 +18,7 @@ public final class SavedSearchFetchedResultController {
     private var disposeBag = Set<AnyCancellable>()
     
     public let twitterSavedSearchFetchedResultController: TwitterSavedSearchFetchedResultController
+    public let mastodonSavedSearchFetchedResultController: MastodonSavedSearchFetchedResultController
     
     // input
     @Published public var userIdentifier: UserIdentifier?
@@ -27,6 +28,7 @@ public final class SavedSearchFetchedResultController {
     
     public init(managedObjectContext: NSManagedObjectContext) {
         self.twitterSavedSearchFetchedResultController = TwitterSavedSearchFetchedResultController(managedObjectContext: managedObjectContext)
+        self.mastodonSavedSearchFetchedResultController = MastodonSavedSearchFetchedResultController(managedObjectContext: managedObjectContext)
         // end init
         
         $userIdentifier
@@ -34,31 +36,37 @@ public final class SavedSearchFetchedResultController {
                 guard let self = self else { return }
                 switch identifier {
                 case .twitter(let identifier):
+                    self.mastodonSavedSearchFetchedResultController.reset()
                     self.twitterSavedSearchFetchedResultController.userID = identifier.id
                 case .mastodon(let identifier):
-                    self.twitterSavedSearchFetchedResultController.userID = ""
-                    // TODO:
+                    self.twitterSavedSearchFetchedResultController.reset()
+                    self.mastodonSavedSearchFetchedResultController.userID = identifier.id
+                    self.mastodonSavedSearchFetchedResultController.domain = identifier.domain
                 case nil:
                     self.reset()
                 }
             }
             .store(in: &disposeBag)
         
-        twitterSavedSearchFetchedResultController.records
-            .map { twitterRecords in
-                var records: [SavedSearchRecord] = []
-                records.append(contentsOf: twitterRecords.map { .twitter(record: $0) })
-                return records
-            }
-            .assign(to: \.records, on: self)
-            .store(in: &disposeBag)
-
+        Publishers.CombineLatest(
+            twitterSavedSearchFetchedResultController.records,
+            mastodonSavedSearchFetchedResultController.records
+        )
+        .map { twitterRecords, mastodonRecords in
+            var records: [SavedSearchRecord] = []
+            records.append(contentsOf: twitterRecords.map { .twitter(record: $0) })
+            records.append(contentsOf: mastodonRecords.map { .mastodon(record: $0) })
+            return records
+        }
+        .assign(to: \.records, on: self)
+        .store(in: &disposeBag)
     }
 
 }
 
 extension SavedSearchFetchedResultController {
     public func reset() {
-        twitterSavedSearchFetchedResultController.userID = ""
+        twitterSavedSearchFetchedResultController.reset()
+        mastodonSavedSearchFetchedResultController.reset()
     }
 }

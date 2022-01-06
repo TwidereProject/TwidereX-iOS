@@ -80,6 +80,9 @@ extension SearchSection {
         case .twitter(let history):
             let metaContent = Meta.convert(from: .plaintext(string: history.name))
             cell.metaLabel.configure(content: metaContent)
+        case .mastodon(let history):
+            let metaContent = Meta.convert(from: .plaintext(string: history.query))
+            cell.metaLabel.configure(content: metaContent)
         }
     }
     
@@ -90,6 +93,9 @@ extension SearchSection {
         switch object {
         case .twitter(let trend):
             let metaContent = Meta.convert(from: .plaintext(string: trend.name))
+            cell.metaLabel.configure(content: metaContent)
+        case .mastodon(let tag):
+            let metaContent = Meta.convert(from: .plaintext(string: "#" + tag.name))
             cell.metaLabel.configure(content: metaContent)
         }
     }

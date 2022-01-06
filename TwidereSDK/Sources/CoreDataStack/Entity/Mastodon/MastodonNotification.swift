@@ -119,12 +119,12 @@ extension MastodonNotification: AutoGenerateProperty {
     // Generated using Sourcery
     // DO NOT EDIT
     public struct Property {
-        public let  domain: String
-        public let  id: ID
-        public let  userID: String
-        public let  notificationType: MastodonNotificationType
-        public let  createdAt: Date
-        public let  updatedAt: Date
+        public let domain: String
+        public let id: ID
+        public let userID: String
+        public let notificationType: MastodonNotificationType
+        public let createdAt: Date
+        public let updatedAt: Date
 
     	public init(
     		domain: String,

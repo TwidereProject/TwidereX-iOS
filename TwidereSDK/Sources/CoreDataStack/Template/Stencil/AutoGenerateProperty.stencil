@@ -7,7 +7,7 @@ public struct Property {
     {% for variable in type.variables|instance where
     variable|annotated:"autoGenerateProperty"
     %}
-    public let  {{variable.name}}: {{variable.typeName}}
+    public let {{variable.name}}: {{variable.typeName}}
     {% endfor %}
 
 	public init(
