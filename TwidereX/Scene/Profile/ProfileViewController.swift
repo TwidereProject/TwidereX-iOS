@@ -281,7 +281,13 @@ extension ProfileViewController {
         
         let composeViewModel = ComposeViewModel(context: context)
         let composeContentViewModel = ComposeContentViewModel(
-            inputContext: .mention(user: user),
+            inputContext: {
+                if user == viewModel.me {
+                    return .post
+                } else {
+                    return .mention(user: user)
+                }
+            }(),
             configurationContext: ComposeContentViewModel.ConfigurationContext(
                 apiService: context.apiService,
                 authenticationService: context.authenticationService,
