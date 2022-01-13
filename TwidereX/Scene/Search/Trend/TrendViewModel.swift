@@ -20,7 +20,7 @@ final class TrendViewModel {
     // input
     let context: AppContext
     let trendService: TrendService
-    @Published var placeID: Int = 1
+    @Published var trendGroupIndex: TrendService.TrendGroupIndex = .none
 
     // output
     var diffableDataSource: UITableViewDiffableDataSource<SearchSection, SearchItem>?
@@ -30,6 +30,23 @@ final class TrendViewModel {
         self.context = context
         self.trendService = TrendService(apiService: context.apiService)
         // end init
+        
+        context.authenticationService.activeAuthenticationContext
+            .removeDuplicates()
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] authenticationContext in
+                guard let self = self else { return }
+                
+                switch authenticationContext {
+                case .twitter:
+                    self.trendGroupIndex = .twitter(placeID: 1)         // default world wide
+                case .mastodon(let authenticationContext):
+                    self.trendGroupIndex = .mastodon(domain: authenticationContext.domain)
+                case nil:
+                    self.trendGroupIndex = .none
+                }
+            }
+            .store(in: &disposeBag)
     }
     
 }

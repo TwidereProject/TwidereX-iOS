@@ -104,15 +104,15 @@ extension MastodonPoll: AutoGenerateProperty {
     // Generated using Sourcery
     // DO NOT EDIT
     public struct Property {
-        public let  domain: String
-        public let  id: ID
-        public let  expired: Bool
-        public let  multiple: Bool
-        public let  votesCount: Int64
-        public let  votersCount: Int64
-        public let  expiresAt: Date?
-        public let  createdAt: Date
-        public let  updatedAt: Date
+        public let domain: String
+        public let id: ID
+        public let expired: Bool
+        public let multiple: Bool
+        public let votesCount: Int64
+        public let votersCount: Int64
+        public let expiresAt: Date?
+        public let createdAt: Date
+        public let updatedAt: Date
 
     	public init(
     		domain: String,

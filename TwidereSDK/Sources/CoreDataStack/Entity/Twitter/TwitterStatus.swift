@@ -186,16 +186,16 @@ extension TwitterStatus: AutoGenerateProperty {
     // Generated using Sourcery
     // DO NOT EDIT
     public struct Property {
-        public let  id: ID
-        public let  text: String
-        public let  likeCount: Int64
-        public let  replyCount: Int64
-        public let  repostCount: Int64
-        public let  source: String?
-        public let  replyToStatusID: TwitterStatus.ID?
-        public let  replyToUserID: TwitterUser.ID?
-        public let  createdAt: Date
-        public let  updatedAt: Date
+        public let id: ID
+        public let text: String
+        public let likeCount: Int64
+        public let replyCount: Int64
+        public let repostCount: Int64
+        public let source: String?
+        public let replyToStatusID: TwitterStatus.ID?
+        public let replyToUserID: TwitterUser.ID?
+        public let createdAt: Date
+        public let updatedAt: Date
 
     	public init(
     		id: ID,

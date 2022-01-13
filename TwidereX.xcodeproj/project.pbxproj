@@ -27,6 +27,8 @@
 		DB02C777273520B8007EA0BF /* SearchHashtagViewModel+State.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB02C776273520B8007EA0BF /* SearchHashtagViewModel+State.swift */; };
 		DB02C77927352217007EA0BF /* SearchHashtagViewModel+Diffable.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB02C77827352217007EA0BF /* SearchHashtagViewModel+Diffable.swift */; };
 		DB02C77D27353479007EA0BF /* HashtagListFetchViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB02C77C27353479007EA0BF /* HashtagListFetchViewModel.swift */; };
+		DB06180D2786E2710030EE79 /* SearchTableSectionHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB06180C2786E2710030EE79 /* SearchTableSectionHeaderView.swift */; };
+		DB0618102786EC870030EE79 /* LineChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB06180F2786EC870030EE79 /* LineChartView.swift */; };
 		DB0B3B8E26C6639100501BB7 /* AppSecret.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB2611462518AC13004BF309 /* AppSecret.swift */; };
 		DB0D3A38255E4341000BB9FA /* UserLikeTimelineViewController+StatusProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB0D3A37255E4341000BB9FA /* UserLikeTimelineViewController+StatusProvider.swift */; };
 		DB12BEE727329F55002AA635 /* SearchUserViewController+DataSourceProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB12BEE627329F55002AA635 /* SearchUserViewController+DataSourceProvider.swift */; };
@@ -447,6 +449,8 @@
 		DB02C776273520B8007EA0BF /* SearchHashtagViewModel+State.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SearchHashtagViewModel+State.swift"; sourceTree = "<group>"; };
 		DB02C77827352217007EA0BF /* SearchHashtagViewModel+Diffable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SearchHashtagViewModel+Diffable.swift"; sourceTree = "<group>"; };
 		DB02C77C27353479007EA0BF /* HashtagListFetchViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HashtagListFetchViewModel.swift; sourceTree = "<group>"; };
+		DB06180C2786E2710030EE79 /* SearchTableSectionHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchTableSectionHeaderView.swift; sourceTree = "<group>"; };
+		DB06180F2786EC870030EE79 /* LineChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LineChartView.swift; sourceTree = "<group>"; };
 		DB0849AF251375E9009E0CD7 /* ConversationPostView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationPostView.swift; sourceTree = "<group>"; };
 		DB0849B12513760D009E0CD7 /* ConversationPostTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationPostTableViewCell.swift; sourceTree = "<group>"; };
 		DB0D0ABF25944F75007A23C8 /* UserProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserProvider.swift; sourceTree = "<group>"; };
@@ -1023,6 +1027,15 @@
 				DBF639F1259B13BB009E12C8 /* TimelineHeaderView.swift */,
 			);
 			path = Content;
+			sourceTree = "<group>";
+		};
+		DB06180E2786E28C0030EE79 /* View */ = {
+			isa = PBXGroup;
+			children = (
+				DB06180C2786E2710030EE79 /* SearchTableSectionHeaderView.swift */,
+				DB06180F2786EC870030EE79 /* LineChartView.swift */,
+			);
+			path = View;
 			sourceTree = "<group>";
 		};
 		DB10B34B254AB350002D86F3 /* Media */ = {
@@ -2297,6 +2310,7 @@
 		DBF69EA325496C8A00E2A915 /* Search */ = {
 			isa = PBXGroup;
 			children = (
+				DB06180E2786E28C0030EE79 /* View */,
 				DB25C4C62779949F00EC1435 /* Cell */,
 				DBF69E8E2549601900E2A915 /* SearchViewController.swift */,
 				DB36F375257F79DB0028F81E /* SearchViewModel.swift */,
@@ -2906,6 +2920,7 @@
 				DBBBBE592744E800007ACB4B /* ComposeViewController.swift in Sources */,
 				DB76A64F275F1C3200A50673 /* MediaPreviewingViewController.swift in Sources */,
 				DB42411626C3EB9100B6C5F8 /* ReadabilityPadding.swift in Sources */,
+				DB06180D2786E2710030EE79 /* SearchTableSectionHeaderView.swift in Sources */,
 				DB2C8740274F4B7D00CE0398 /* DisplayPreferenceViewModel.swift in Sources */,
 				DBCE2E992591A44000926D09 /* UIViewAnimatingPosition.swift in Sources */,
 				DB262A422722970000D18EF3 /* SearchResultViewModel.swift in Sources */,
@@ -3039,6 +3054,7 @@
 				DB2C8744274F4B7D00CE0398 /* SettingListViewController.swift in Sources */,
 				DB02C77027350D8A007EA0BF /* SearchHashtagViewModel.swift in Sources */,
 				DB5632B226DCF1CD00FC893F /* StatusThreadRootTableViewCell+ViewModel.swift in Sources */,
+				DB0618102786EC870030EE79 /* LineChartView.swift in Sources */,
 				DB8761CC2745530200BA7EE2 /* CoverFlowStackItem.swift in Sources */,
 				DB2C8741274F4B7D00CE0398 /* AboutView.swift in Sources */,
 				DB8761C2274552F800BA7EE2 /* UserSection.swift in Sources */,
@@ -3271,11 +3287,11 @@
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 70;
+				CURRENT_PROJECT_VERSION = 72;
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = 7LFDZ96332;
 				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 70;
+				DYLIB_CURRENT_VERSION = 72;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				INFOPLIST_FILE = ShareExtension/Info.plist;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2021 Twidere. All rights reserved.";
@@ -3305,11 +3321,11 @@
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 70;
+				CURRENT_PROJECT_VERSION = 72;
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = 7LFDZ96332;
 				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 70;
+				DYLIB_CURRENT_VERSION = 72;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				INFOPLIST_FILE = ShareExtension/Info.plist;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2021 Twidere. All rights reserved.";
@@ -3335,7 +3351,7 @@
 			buildSettings = {
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 70;
+				CURRENT_PROJECT_VERSION = 72;
 				DEVELOPMENT_TEAM = 7LFDZ96332;
 				INFOPLIST_FILE = ShareExtension/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = ShareExtension;
@@ -3361,7 +3377,7 @@
 			buildSettings = {
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 70;
+				CURRENT_PROJECT_VERSION = 72;
 				DEVELOPMENT_TEAM = 7LFDZ96332;
 				INFOPLIST_FILE = ShareExtension/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = ShareExtension;
@@ -3511,7 +3527,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = TwidereX/TwidereX.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 70;
+				CURRENT_PROJECT_VERSION = 72;
 				DEVELOPMENT_ASSET_PATHS = "TwidereX/Resources/Preview\\ Assets.xcassets";
 				DEVELOPMENT_TEAM = 7LFDZ96332;
 				INFOPLIST_FILE = TwidereX/Info.plist;
@@ -3537,7 +3553,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = TwidereX/TwidereX.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 70;
+				CURRENT_PROJECT_VERSION = 72;
 				DEVELOPMENT_ASSET_PATHS = "TwidereX/Resources/Preview\\ Assets.xcassets";
 				DEVELOPMENT_TEAM = 7LFDZ96332;
 				INFOPLIST_FILE = TwidereX/Info.plist;
@@ -3560,7 +3576,7 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 70;
+				CURRENT_PROJECT_VERSION = 72;
 				DEVELOPMENT_TEAM = 7LFDZ96332;
 				INFOPLIST_FILE = TwidereXTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -3584,7 +3600,7 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 70;
+				CURRENT_PROJECT_VERSION = 72;
 				DEVELOPMENT_TEAM = 7LFDZ96332;
 				INFOPLIST_FILE = TwidereXTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -3607,7 +3623,7 @@
 			baseConfigurationReference = 2E41729E598B3379FC09BC03 /* Pods-TwidereX-TwidereXUITests.debug.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 70;
+				CURRENT_PROJECT_VERSION = 72;
 				DEVELOPMENT_TEAM = 7LFDZ96332;
 				INFOPLIST_FILE = TwidereXUITests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -3630,7 +3646,7 @@
 			baseConfigurationReference = 44D01BA9E21B7F374DBDA38A /* Pods-TwidereX-TwidereXUITests.release.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 70;
+				CURRENT_PROJECT_VERSION = 72;
 				DEVELOPMENT_TEAM = 7LFDZ96332;
 				INFOPLIST_FILE = TwidereXUITests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (

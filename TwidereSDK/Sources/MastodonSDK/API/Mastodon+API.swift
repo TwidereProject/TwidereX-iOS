@@ -101,7 +101,7 @@ extension Mastodon.API {
     public enum DomainBlock { }
     public enum Status { }
     public enum Timeline { }
-    public enum Trends { }
+    public enum Trend { }
     public enum Suggestion { }
     public enum Notification { }
     public enum Subscription { }

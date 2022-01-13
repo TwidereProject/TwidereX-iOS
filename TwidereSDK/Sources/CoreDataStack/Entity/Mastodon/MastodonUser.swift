@@ -215,27 +215,27 @@ extension MastodonUser: AutoGenerateProperty {
     // Generated using Sourcery
     // DO NOT EDIT
     public struct Property {
-        public let  domain: String
-        public let  id: ID
-        public let  acct: String
-        public let  username: String
-        public let  displayName: String
-        public let  note: String?
-        public let  url: String?
-        public let  avatar: String?
-        public let  avatarStatic: String?
-        public let  header: String?
-        public let  headerStatic: String?
-        public let  statusesCount: Int64
-        public let  followingCount: Int64
-        public let  followersCount: Int64
-        public let  locked: Bool
-        public let  bot: Bool
-        public let  suspended: Bool
-        public let  createdAt: Date
-        public let  updatedAt: Date
-        public let  emojis: [MastodonEmoji]
-        public let  fields: [MastodonField]
+        public let domain: String
+        public let id: ID
+        public let acct: String
+        public let username: String
+        public let displayName: String
+        public let note: String?
+        public let url: String?
+        public let avatar: String?
+        public let avatarStatic: String?
+        public let header: String?
+        public let headerStatic: String?
+        public let statusesCount: Int64
+        public let followingCount: Int64
+        public let followersCount: Int64
+        public let locked: Bool
+        public let bot: Bool
+        public let suspended: Bool
+        public let createdAt: Date
+        public let updatedAt: Date
+        public let emojis: [MastodonEmoji]
+        public let fields: [MastodonField]
 
     	public init(
     		domain: String,

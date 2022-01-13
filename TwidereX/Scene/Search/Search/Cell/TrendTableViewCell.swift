@@ -10,10 +10,40 @@ import Foundation
 
 import UIKit
 import MetaTextKit
+import TwidereCore
 
 final class TrendTableViewCell: UITableViewCell {
     
-    let metaLabel = MetaLabel(style: .searchHistoryTitle)
+    let container: UIStackView = {
+        let stackView = UIStackView()
+        stackView.axis = .horizontal
+        stackView.spacing = 16
+        return stackView
+    }()
+    
+    let infoContainer: UIStackView = {
+        let stackView = UIStackView()
+        stackView.axis = .vertical
+        return stackView
+    }()
+    
+    let lineChartContainer: UIStackView = {
+        let stackView = UIStackView()
+        stackView.axis = .vertical
+        return stackView
+    }()
+    
+    let primaryLabel = MetaLabel(style: .searchTrendTitle)
+    let secondaryLabel = PlainLabel(style: .searchTrendSubtitle)
+    let supplementaryLabel = PlainLabel(style: .searchTrendCount)
+    let lineChartView = LineChartView()
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        
+        accessoryType = .none
+        resetDisplay()
+    }
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -30,18 +60,72 @@ final class TrendTableViewCell: UITableViewCell {
 extension TrendTableViewCell {
     
     private func _init() {
-        accessoryType = .disclosureIndicator
-        
-        metaLabel.translatesAutoresizingMaskIntoConstraints = false
-        contentView.addSubview(metaLabel)
+        container.translatesAutoresizingMaskIntoConstraints = false
+        contentView.addSubview(container)
         NSLayoutConstraint.activate([
-            metaLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 11),
-            metaLabel.leadingAnchor.constraint(equalTo: contentView.readableContentGuide.leadingAnchor),
-            metaLabel.trailingAnchor.constraint(equalTo: contentView.readableContentGuide.trailingAnchor),
-            contentView.bottomAnchor.constraint(equalTo: metaLabel.bottomAnchor, constant: 11),
+            container.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 11),
+            container.leadingAnchor.constraint(equalTo: contentView.readableContentGuide.leadingAnchor),
+            container.trailingAnchor.constraint(equalTo: contentView.readableContentGuide.trailingAnchor),
+            contentView.bottomAnchor.constraint(equalTo: container.bottomAnchor, constant: 11),
+        ])
+
+        // container: H - [ info container | padding | supplementary | line chart container ]
+        container.addArrangedSubview(infoContainer)
+        
+        // info container: V - [ primary | secondary ]
+        infoContainer.addArrangedSubview(primaryLabel)
+        infoContainer.addArrangedSubview(secondaryLabel)
+        
+        // padding
+        let padding = UIView()
+        container.addArrangedSubview(padding)
+        
+        // supplementary
+        container.addArrangedSubview(supplementaryLabel)
+        supplementaryLabel.setContentHuggingPriority(.required - 1, for: .horizontal)
+        
+        // line chart
+        container.addArrangedSubview(lineChartContainer)
+        
+        let lineChartViewTopPadding = UIView()
+        let lineChartViewBottomPadding = UIView()
+        lineChartViewTopPadding.translatesAutoresizingMaskIntoConstraints = false
+        lineChartViewBottomPadding.translatesAutoresizingMaskIntoConstraints = false
+        lineChartView.translatesAutoresizingMaskIntoConstraints = false
+        lineChartContainer.addArrangedSubview(lineChartViewTopPadding)
+        lineChartContainer.addArrangedSubview(lineChartView)
+        lineChartContainer.addArrangedSubview(lineChartViewBottomPadding)
+        NSLayoutConstraint.activate([
+            lineChartView.widthAnchor.constraint(equalToConstant: 66),
+            lineChartView.heightAnchor.constraint(equalToConstant: 27),
+            lineChartViewTopPadding.heightAnchor.constraint(equalTo: lineChartViewBottomPadding.heightAnchor),
         ])
         
-        metaLabel.isUserInteractionEnabled = false
+        primaryLabel.isUserInteractionEnabled = false
+        
+        resetDisplay()
+    }
+    
+}
+
+extension TrendTableViewCell {
+    
+    func resetDisplay() {
+        secondaryLabel.isHidden = true
+        supplementaryLabel.isHidden = true
+        lineChartContainer.isHidden = true
+    }
+
+    func setSecondaryLabelDisplay() {
+        secondaryLabel.isHidden = false
+    }
+    
+    func setSupplementaryLabelDisplay() {
+        supplementaryLabel.isHidden = false
+    }
+    
+    func setLineChartViewDisplay() {
+        lineChartContainer.isHidden = false
     }
     
 }

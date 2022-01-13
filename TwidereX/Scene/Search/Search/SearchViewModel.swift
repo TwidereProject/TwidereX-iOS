@@ -51,17 +51,17 @@ final class SearchViewModel {
             .store(in: &disposeBag)
         
         Publishers.CombineLatest(
-            trendViewModel.$placeID,
+            trendViewModel.$trendGroupIndex,
             viewDidAppear
         )
-        .sink { [weak self] placeID, _ in
+        .sink { [weak self] trendGroupIndex, _ in
             guard let self = self else { return }
             guard let authenticationContext = self.context.authenticationService.activeAuthenticationContext.value else { return }
             
             Task {
                 do {
                     try await self.trendViewModel.trendService.fetchTrend(
-                        placeID: placeID,
+                        index: trendGroupIndex,
                         authenticationContext: authenticationContext
                     )
                     self.trendViewModel.isTrendFetched = true
@@ -79,6 +79,8 @@ final class SearchViewModel {
                     guard let object = record.object(in: self.context.managedObjectContext) else { return nil }
                     switch object {
                     case .twitter(let savedSearch):
+                        return savedSearch.query
+                    case .mastodon(let savedSearch):
                         return savedSearch.query
                     }
                 }

@@ -1,8 +1,8 @@
 //
-//  Persistence+TwitterSavedSearch.swift
+//  Persistence+MastodonSavedSearch.swift
 //  
 //
-//  Created by MainasuK on 2021-12-24.
+//  Created by MainasuK on 2022-1-6.
 //
 
 import CoreData
@@ -11,17 +11,17 @@ import Foundation
 import TwitterSDK
 import os.log
 
-extension Persistence.TwitterSavedSearch {
+extension Persistence.MastodonSavedSearch {
     
     public struct PersistContext {
-        public let entity: Twitter.Entity.SavedSearch
-        public let me: TwitterUser
+        public let entity: String
+        public let me: MastodonUser
         public let networkDate: Date
         public let log = OSLog.api
         
         public init(
-            entity: Twitter.Entity.SavedSearch,
-            me: TwitterUser,
+            entity: String,
+            me: MastodonUser,
             networkDate: Date
         ) {
             self.entity = entity
@@ -31,11 +31,11 @@ extension Persistence.TwitterSavedSearch {
     }
     
     public struct PersistResult {
-        public let savedSearch: TwitterSavedSearch
+        public let savedSearch: MastodonSavedSearch
         public let isNewInsertion: Bool
         
         public init(
-            savedSearch: TwitterSavedSearch,
+            savedSearch: MastodonSavedSearch,
             isNewInsertion: Bool
         ) {
             self.savedSearch = savedSearch
@@ -57,7 +57,7 @@ extension Persistence.TwitterSavedSearch {
             let object = create(
                 in: managedObjectContext,
                 context: context,
-                relationship: TwitterSavedSearch.Relationship(user: context.me)
+                relationship: MastodonSavedSearch.Relationship(user: context.me)
             )
             return PersistResult(
                 savedSearch: object,
@@ -68,15 +68,19 @@ extension Persistence.TwitterSavedSearch {
     
 }
 
-extension Persistence.TwitterSavedSearch {
+extension Persistence.MastodonSavedSearch {
     
     public static func fetch(
         in managedObjectContext: NSManagedObjectContext,
         context: PersistContext
-    ) -> TwitterSavedSearch? {
+    ) -> MastodonSavedSearch? {
         do {
-            let request = TwitterSavedSearch.sortedFetchRequest
-            request.predicate = TwitterSavedSearch.predicate(id: context.entity.idStr)
+            let request = MastodonSavedSearch.sortedFetchRequest
+            request.predicate = MastodonSavedSearch.predicate(
+                userID: context.me.id,
+                domain: context.me.domain,
+                query: context.entity
+            )
             request.fetchLimit = 1
             return try managedObjectContext.fetch(request).first
         } catch {
@@ -89,12 +93,13 @@ extension Persistence.TwitterSavedSearch {
     public static func create(
         in managedObjectContext: NSManagedObjectContext,
         context: PersistContext,
-        relationship: TwitterSavedSearch.Relationship
-    ) -> TwitterSavedSearch {
-        let property = TwitterSavedSearch.Property(
-            entity: context.entity
+        relationship: MastodonSavedSearch.Relationship
+    ) -> MastodonSavedSearch {
+        let property = MastodonSavedSearch.Property(
+            query: context.entity,
+            createdAt: context.networkDate
         )
-        let object = TwitterSavedSearch.insert(
+        let object = MastodonSavedSearch.insert(
             into: managedObjectContext,
             property: property,
             relationship: relationship
@@ -104,18 +109,19 @@ extension Persistence.TwitterSavedSearch {
     }
     
     public static func merge(
-        object: TwitterSavedSearch,
+        object: MastodonSavedSearch,
         context: PersistContext
     ) {
-        let property = TwitterSavedSearch.Property(
-            entity: context.entity
+        let property = MastodonSavedSearch.Property(
+            query: context.entity,
+            createdAt: context.networkDate
         )
         object.update(property: property)
         update(object: object, context: context)
     }
     
     private static func update(
-        object: TwitterSavedSearch,
+        object: MastodonSavedSearch,
         context: PersistContext
     ) {
         // do nothing

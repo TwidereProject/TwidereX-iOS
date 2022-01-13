@@ -7,6 +7,7 @@
 
 import Foundation
 import TwitterSDK
+import MastodonSDK
 
 extension APIService {
     public func twitterTrend(
@@ -18,6 +19,20 @@ extension APIService {
             session: session,
             query: query,
             authorization: authenticationContext.authorization
+        )
+        return response
+    }
+}
+
+extension APIService {
+    public func mastodonTrend(
+        authenticationContext: MastodonAuthenticationContext
+    ) async throws -> Mastodon.Response.Content<[Mastodon.Entity.Tag]> {
+        let query = Mastodon.API.Trend.TrendQuery(limit: 10)
+        let response = try await Mastodon.API.Trend.tags(
+            session: session,
+            domain: authenticationContext.domain,
+            query: query
         )
         return response
     }

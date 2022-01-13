@@ -80,6 +80,9 @@ extension SearchSection {
         case .twitter(let history):
             let metaContent = Meta.convert(from: .plaintext(string: history.name))
             cell.metaLabel.configure(content: metaContent)
+        case .mastodon(let history):
+            let metaContent = Meta.convert(from: .plaintext(string: history.query))
+            cell.metaLabel.configure(content: metaContent)
         }
     }
     
@@ -90,7 +93,27 @@ extension SearchSection {
         switch object {
         case .twitter(let trend):
             let metaContent = Meta.convert(from: .plaintext(string: trend.name))
-            cell.metaLabel.configure(content: metaContent)
+            cell.primaryLabel.configure(content: metaContent)
+            cell.accessoryType = .disclosureIndicator
+        case .mastodon(let tag):
+            let metaContent = Meta.convert(from: .plaintext(string: "#" + tag.name))
+            
+            cell.primaryLabel.configure(content: metaContent)
+            cell.secondaryLabel.text = L10n.Scene.Trends.accounts(tag.talkingPeopleCount ?? 0)
+            cell.setSecondaryLabelDisplay()
+            
+            cell.supplementaryLabel.text = tag.history?.first?.uses ?? " "
+            cell.setSupplementaryLabelDisplay()
+            
+            cell.lineChartView.data = (tag.history ?? [])
+                .sorted(by: { $0.day < $1.day })        // latest last
+                .map { entry in
+                    guard let point = Int(entry.accounts) else {
+                        return .zero
+                    }
+                    return CGFloat(point)
+                }
+            cell.setLineChartViewDisplay()
         }
     }
 }

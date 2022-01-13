@@ -1,8 +1,8 @@
 //
-//  TwitterSavedSearchFetchedResultController.swift
+//  MastodonSavedSearchFetchedResultController.swift
 //  
 //
-//  Created by MainasuK on 2021-12-22.
+//  Created by MainasuK on 2022-1-6.
 //
 
 import os.log
@@ -13,25 +13,26 @@ import CoreData
 import CoreDataStack
 import TwitterSDK
 
-public final class TwitterSavedSearchFetchedResultController: NSObject {
+public final class MastodonSavedSearchFetchedResultController: NSObject {
     
-    let logger = Logger(subsystem: "TwitterSavedSearchFetchedResultController", category: "FetchedResultController")
+    let logger = Logger(subsystem: "MastodonSavedSearchFetchedResultController", category: "FetchedResultController")
     
     var disposeBag = Set<AnyCancellable>()
 
-    let fetchedResultsController: NSFetchedResultsController<TwitterSavedSearch>
+    let fetchedResultsController: NSFetchedResultsController<MastodonSavedSearch>
 
     // input
-    @Published public var userID: TwitterUser.ID = ""
+    @Published public var userID: MastodonUser.ID = ""
+    @Published public var domain: String = ""
     
     // output
     private let _objectIDs = PassthroughSubject<[NSManagedObjectID], Never>()
-    public let records = CurrentValueSubject<[ManagedObjectRecord<TwitterSavedSearch>], Never>([])
+    public let records = CurrentValueSubject<[ManagedObjectRecord<MastodonSavedSearch>], Never>([])
     
     public init(managedObjectContext: NSManagedObjectContext) {
         self.fetchedResultsController = {
-            let fetchRequest = TwitterSavedSearch.sortedFetchRequest
-            fetchRequest.predicate = TwitterSavedSearch.predicate(userID: "")
+            let fetchRequest = MastodonSavedSearch.sortedFetchRequest
+            fetchRequest.predicate = MastodonSavedSearch.predicate(userID: "", domain: "")
             fetchRequest.returnsObjectsAsFaults = false
             fetchRequest.fetchBatchSize = 15
             let controller = NSFetchedResultsController(
@@ -54,32 +55,36 @@ public final class TwitterSavedSearchFetchedResultController: NSObject {
         
         fetchedResultsController.delegate = self
         
-        $userID
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] userID in
-                guard let self = self else { return }
-                let predicate = TwitterSavedSearch.predicate(userID: userID)
-                self.fetchedResultsController.fetchRequest.predicate = predicate
-                
-                do {
-                    try self.fetchedResultsController.performFetch()
-                } catch {
-                    assertionFailure(error.localizedDescription)
-                }
+        Publishers.CombineLatest(
+            $userID,
+            $domain
+        )
+        .receive(on: DispatchQueue.main)
+        .sink { [weak self] userID, domain in
+            guard let self = self else { return }
+            let predicate = MastodonSavedSearch.predicate(userID: userID, domain: domain)
+            self.fetchedResultsController.fetchRequest.predicate = predicate
+            
+            do {
+                try self.fetchedResultsController.performFetch()
+            } catch {
+                assertionFailure(error.localizedDescription)
             }
-            .store(in: &disposeBag)
+        }
+        .store(in: &disposeBag)
     }
     
 }
 
-extension TwitterSavedSearchFetchedResultController {
+extension MastodonSavedSearchFetchedResultController {
     func reset() {
         userID = ""
+        domain = ""
     }
 }
 
 // MARK: - NSFetchedResultsControllerDelegate
-extension TwitterSavedSearchFetchedResultController: NSFetchedResultsControllerDelegate {
+extension MastodonSavedSearchFetchedResultController: NSFetchedResultsControllerDelegate {
     public func controller(
         _ controller: NSFetchedResultsController<NSFetchRequestResult>,
         didChangeContentWith snapshot: NSDiffableDataSourceSnapshotReference

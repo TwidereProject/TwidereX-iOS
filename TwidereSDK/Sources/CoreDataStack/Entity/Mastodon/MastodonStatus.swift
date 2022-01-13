@@ -205,26 +205,26 @@ extension MastodonStatus: AutoGenerateProperty {
     // Generated using Sourcery
     // DO NOT EDIT
     public struct Property {
-        public let  id: ID
-        public let  domain: String
-        public let  uri: String
-        public let  content: String
-        public let  likeCount: Int64
-        public let  replyCount: Int64
-        public let  repostCount: Int64
-        public let  visibility: MastodonVisibility
-        public let  isMediaSensitive: Bool
-        public let  spoilerText: String?
-        public let  url: String?
-        public let  text: String?
-        public let  language: String?
-        public let  source: String?
-        public let  replyToStatusID: MastodonStatus.ID?
-        public let  replyToUserID: MastodonStatus.ID?
-        public let  createdAt: Date
-        public let  updatedAt: Date
-        public let  attachments: [MastodonAttachment]
-        public let  emojis: [MastodonEmoji]
+        public let id: ID
+        public let domain: String
+        public let uri: String
+        public let content: String
+        public let likeCount: Int64
+        public let replyCount: Int64
+        public let repostCount: Int64
+        public let visibility: MastodonVisibility
+        public let isMediaSensitive: Bool
+        public let spoilerText: String?
+        public let url: String?
+        public let text: String?
+        public let language: String?
+        public let source: String?
+        public let replyToStatusID: MastodonStatus.ID?
+        public let replyToUserID: MastodonStatus.ID?
+        public let createdAt: Date
+        public let updatedAt: Date
+        public let attachments: [MastodonAttachment]
+        public let emojis: [MastodonEmoji]
 
     	public init(
     		id: ID,

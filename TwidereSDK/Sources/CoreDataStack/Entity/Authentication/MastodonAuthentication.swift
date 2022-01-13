@@ -102,13 +102,13 @@ extension MastodonAuthentication: AutoGenerateProperty {
     // Generated using Sourcery
     // DO NOT EDIT
     public struct Property {
-        public let  domain: String
-        public let  userID: String
-        public let  appAccessToken: String
-        public let  userAccessToken: String
-        public let  clientID: String
-        public let  clientSecret: String
-        public let  updatedAt: Date
+        public let domain: String
+        public let userID: String
+        public let appAccessToken: String
+        public let userAccessToken: String
+        public let clientID: String
+        public let clientSecret: String
+        public let updatedAt: Date
 
     	public init(
     		domain: String,
