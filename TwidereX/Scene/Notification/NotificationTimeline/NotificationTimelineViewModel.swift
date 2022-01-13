@@ -53,7 +53,7 @@ final class NotificationTimelineViewModel {
                 guard let self = self else { return }
                 let emptyFeedPredicate = Feed.nonePredicate()
                 guard let authenticationContext = authenticationContext else {
-                    self.fetchedResultsController.predicate.value = emptyFeedPredicate
+                    self.fetchedResultsController.predicate = emptyFeedPredicate
                     return
                 }
                 
@@ -61,7 +61,7 @@ final class NotificationTimelineViewModel {
                     authenticationContext: authenticationContext,
                     scope: scope
                 )
-                self.fetchedResultsController.predicate.value = predicate
+                self.fetchedResultsController.predicate = predicate
             }
             .store(in: &disposeBag)
     }
@@ -110,8 +110,7 @@ extension NotificationTimelineViewModel {
             let userID = authenticationContext.userID
             predicate = Feed.predicate(
                 kind: .notification,
-                acct: Feed.Acct.twitter(userID: userID),
-                since: nil
+                acct: Feed.Acct.twitter(userID: userID)
             )
         case .mastodon(let authenticationContext):
             let domain = authenticationContext.domain
@@ -124,8 +123,7 @@ extension NotificationTimelineViewModel {
                         acct: Feed.Acct.mastodon(
                             domain: domain,
                             userID: userID
-                        ),
-                        since: nil
+                        )
                     )
                 case .mentions:
                     return NSCompoundPredicate(andPredicateWithSubpredicates: [
@@ -134,8 +132,7 @@ extension NotificationTimelineViewModel {
                             acct: Feed.Acct.mastodon(
                                 domain: domain,
                                 userID: userID
-                            ),
-                            since: nil
+                            )
                         ),
                         Feed.mastodonNotificationTypePredicate(types: scope.includeTypes ?? [])
                     ])

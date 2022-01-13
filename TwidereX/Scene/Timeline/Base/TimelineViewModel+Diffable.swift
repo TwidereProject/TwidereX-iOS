@@ -8,124 +8,20 @@
 
 import os.log
 import UIKit
+import Combine
 import CoreData
 import CoreDataStack
 
 extension TimelineViewModel {
     
-    func setupDiffableDataSource(
-        tableView: UITableView,
-        statusViewTableViewCellDelegate: StatusViewTableViewCellDelegate,
-        timelineMiddleLoaderTableViewCellDelegate: TimelineMiddleLoaderTableViewCellDelegate
-    ) {
-        let configuration = StatusSection.Configuration(
-            statusViewTableViewCellDelegate: statusViewTableViewCellDelegate,
-            timelineMiddleLoaderTableViewCellDelegate: timelineMiddleLoaderTableViewCellDelegate
-        )
-        diffableDataSource = StatusSection.diffableDataSource(
-            tableView: tableView,
-            context: context,
-            configuration: configuration
-        )
-        
-        var snapshot = NSDiffableDataSourceSnapshot<StatusSection, StatusItem>()
-        snapshot.appendSections([.main])
-        diffableDataSource?.apply(snapshot)
-        
-        fetchedResultsController.records
-            .receive(on: DispatchQueue.main, options: nil)
-            .sink { [weak self] records in
-                guard let self = self else { return }
-                guard let diffableDataSource = self.diffableDataSource else { return }
-                self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): incoming \(records.count) objects")
-                Task {
-                    let start = CACurrentMediaTime()
-                    defer {
-                        let end = CACurrentMediaTime()
-                        self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): cost \(end - start, format: .fixed(precision: 4))s to process \(records.count) feeds")
-                    }
-                    let oldSnapshot = diffableDataSource.snapshot()
-                    var newSnapshot: NSDiffableDataSourceSnapshot<StatusSection, StatusItem> = {
-                        let newItems = records.map { record in
-                            StatusItem.feed(record: record)
-                        }
-                        var snapshot = NSDiffableDataSourceSnapshot<StatusSection, StatusItem>()
-                        snapshot.appendSections([.main])
-                        snapshot.appendItems(newItems, toSection: .main)
-                        return snapshot
-                    }()
-
-                    let parentManagedObjectContext = self.context.managedObjectContext
-                    let managedObjectContext = NSManagedObjectContext(concurrencyType: .privateQueueConcurrencyType)
-                    managedObjectContext.parent = parentManagedObjectContext
-                    await managedObjectContext.perform {
-                        let anchors: [Feed] = {
-                            let request = Feed.sortedFetchRequest
-                            request.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [
-                                Feed.hasMorePredicate(),
-                                self.fetchedResultsController.predicate.value,
-                            ])
-                            do {
-                                return try managedObjectContext.fetch(request)
-                            } catch {
-                                assertionFailure(error.localizedDescription)
-                                return []
-                            }
-                        }()
-                        
-                        let itemIdentifiers = newSnapshot.itemIdentifiers
-                        for (index, item) in itemIdentifiers.enumerated() {
-                            guard case let .feed(record) = item else { continue }
-                            guard anchors.contains(where: { feed in feed.objectID == record.objectID }) else { continue }
-                            let isLast = index + 1 == itemIdentifiers.count
-                            if isLast {
-                                newSnapshot.insertItems([.bottomLoader], afterItem: item)
-                            } else {
-                                newSnapshot.insertItems([.feedLoader(record: record)], afterItem: item)
-                            }
-                        }
-                    }
-
-                    let hasChanges = newSnapshot.itemIdentifiers != oldSnapshot.itemIdentifiers
-                    if !hasChanges {
-                        self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): snapshot not changes")
-                        self.didLoadLatest.send()
-                        return
-                    } else {
-                        self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): snapshot has changes")
-                    }
-
-                    guard let difference = await self.calculateReloadSnapshotDifference(
-                        tableView: tableView,
-                        oldSnapshot: oldSnapshot,
-                        newSnapshot: newSnapshot
-                    ) else {
-                        await self.updateDataSource(snapshot: newSnapshot, animatingDifferences: false)
-                        self.didLoadLatest.send()
-                        self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): applied new snapshot")
-                        return
-                    }
-                    
-                    await self.updateSnapshotUsingReloadData(snapshot: newSnapshot)
-                    await tableView.scrollToRow(at: difference.targetIndexPath, at: .top, animated: false)
-                    var contentOffset = await tableView.contentOffset
-                    contentOffset.y = await tableView.contentOffset.y - difference.sourceDistanceToTableViewTopEdge
-                    await tableView.setContentOffset(contentOffset, animated: false)
-                    self.didLoadLatest.send()
-                    self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): applied new snapshot")
-                }   // end Task
-            }
-            .store(in: &disposeBag)
-    }
-    
-    @MainActor private func updateDataSource(
+    @MainActor func updateDataSource(
         snapshot: NSDiffableDataSourceSnapshot<StatusSection, StatusItem>,
         animatingDifferences: Bool
     ) async {
         await self.diffableDataSource?.apply(snapshot, animatingDifferences: animatingDifferences)
     }
     
-    @MainActor private func updateSnapshotUsingReloadData(
+    @MainActor func updateSnapshotUsingReloadData(
         snapshot: NSDiffableDataSourceSnapshot<StatusSection, StatusItem>
     ) async {
         await self.diffableDataSource?.applySnapshotUsingReloadData(snapshot)
@@ -141,7 +37,7 @@ extension TimelineViewModel {
         let targetIndexPath: IndexPath
     }
     
-    @MainActor private func calculateReloadSnapshotDifference<S: Hashable, T: Hashable>(
+    @MainActor func calculateReloadSnapshotDifference<S: Hashable, T: Hashable>(
         tableView: UITableView,
         oldSnapshot: NSDiffableDataSourceSnapshot<S, T>,
         newSnapshot: NSDiffableDataSourceSnapshot<S, T>
@@ -190,11 +86,21 @@ extension TimelineViewModel {
                     authenticationContext: authenticationContext
                 )
             case .mastodon(let authenticationContext):
-                _ = try await context.apiService.mastodonTimeline(
-                    kind: kind,
-                    maxID: nil,
-                    authenticationContext: authenticationContext
-                )
+                switch kind {
+                case .home:
+                    _ =  try await context.apiService.mastodonHomeTimeline(
+                        maxID: nil,
+                        authenticationContext: authenticationContext
+                    )
+                case .federated(let local):
+                    let response = try await context.apiService.mastodonPublicTimeline(
+                        local: local,
+                        maxID: nil,
+                        authenticationContext: authenticationContext
+                    )
+                    let statusIDs = response.value.map { $0.id }
+                    statusRecordFetchedResultController.mastodonStatusFetchedResultController.prepend(statusIDs: statusIDs)
+                }
             }
         } catch {
             self.didLoadLatest.send()
@@ -240,15 +146,27 @@ extension TimelineViewModel {
                     authenticationContext: authenticationContext
                 )
             case (.mastodon(let status), .mastodon(let authenticationContext)):
-                _ = try await context.apiService.mastodonTimeline(
-                    kind: kind,
-                    maxID: status.id,
-                    authenticationContext: authenticationContext
-                )
+                switch kind {
+                case .home:
+                    _ = try await context.apiService.mastodonHomeTimeline(
+                        maxID: status.id,
+                        authenticationContext: authenticationContext
+                    )
+                case .federated:
+                    assertionFailure()
+                }
             default:
                 assertionFailure()
             }
         } catch {
+            do {
+                // restore state
+                try await managedObjectContext.performChanges {
+                    feed.update(isLoadingMore: false)
+                }
+            } catch {
+                assertionFailure(error.localizedDescription)
+            }
             logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): fetch more failure: \(error.localizedDescription)")
         }
         

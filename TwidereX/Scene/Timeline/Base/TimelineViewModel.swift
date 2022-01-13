@@ -24,8 +24,9 @@ class TimelineViewModel {
     
     // input
     let context: AppContext
-    let kind: Feed.Kind
+    let kind: Kind
     let fetchedResultsController: FeedFetchedResultsController
+    let statusRecordFetchedResultController: StatusRecordFetchedResultController
     let listBatchFetchViewModel = ListBatchFetchViewModel()
     let viewDidAppear = CurrentValueSubject<Void, Never>(Void())
     @Published var isLoadingLatest = false
@@ -54,42 +55,20 @@ class TimelineViewModel {
     
     init(
         context: AppContext,
-        kind: Feed.Kind
+        kind: Kind
     ) {
         self.context  = context
         self.kind = kind
         self.fetchedResultsController = FeedFetchedResultsController(managedObjectContext: context.managedObjectContext)
+        self.statusRecordFetchedResultController = StatusRecordFetchedResultController(managedObjectContext: context.managedObjectContext)
         // end init
+    }
+    
+}
 
-        context.authenticationService.activeAuthenticationContext
-            .sink { [weak self] authenticationContext in
-                guard let self = self else { return }
-                let emptyFeedPredicate = Feed.predicate(kind: .none, acct: .none, since: nil)
-                guard let authenticationContext = authenticationContext else {
-                    self.fetchedResultsController.predicate.value = emptyFeedPredicate
-                    return
-                }
-                
-                let predicate: NSPredicate
-                switch authenticationContext {
-                case .twitter(let authenticationContext):
-                    predicate = Feed.predicate(
-                        kind: .home,
-                        acct: Feed.Acct.twitter(userID: authenticationContext.userID),
-                        since: nil
-                    )
-                case .mastodon(let authenticationContext):
-                    predicate = Feed.predicate(
-                        kind: kind,
-                        acct: Feed.Acct.mastodon(
-                            domain: authenticationContext.domain,
-                            userID: authenticationContext.userID
-                        ),
-                        since: kind != .home ? self.now : nil
-                    )
-                }
-                self.fetchedResultsController.predicate.value = predicate
-            }
-            .store(in: &disposeBag)
+extension TimelineViewModel {
+    enum Kind {
+        case home
+        case federated(local: Bool)
     }
 }

@@ -38,7 +38,7 @@ extension APIService {
         try await persistMastodonTimelineResponse(
             response: response,
             persistContext: TimelinePersistContext(
-                kind: local ? .local : .public,
+                kind: .none,
                 maxID: maxID,
                 authenticationContext: authenticationContext
             )

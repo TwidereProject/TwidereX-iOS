@@ -89,6 +89,14 @@ final public class MastodonStatusFetchedResultController: NSObject {
 }
 
 extension MastodonStatusFetchedResultController {
+    
+    public func prepend(statusIDs: [Mastodon.Entity.Status.ID]) {
+        var result = self.statusIDs.value
+        let statusIDs = statusIDs.filter { !result.contains($0) }
+        result = statusIDs + result
+        self.statusIDs.value = result
+    }
+    
     public func append(statusIDs: [Mastodon.Entity.Status.ID]) {
         var result = self.statusIDs.value
         for statusID in statusIDs where !result.contains(statusID) {
@@ -96,6 +104,7 @@ extension MastodonStatusFetchedResultController {
         }
         self.statusIDs.value = result
     }
+    
 }
 
 // MARK: - NSFetchedResultsControllerDelegate

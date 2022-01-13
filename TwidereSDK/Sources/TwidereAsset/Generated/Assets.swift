@@ -102,6 +102,7 @@ public enum Asset {
     public static let eyeSlashLarge = ImageAsset(name: "Human/eye.slash.large")
     public static let eyeSlashMini = ImageAsset(name: "Human/eye.slash.mini")
     public static let faceSmiling = ImageAsset(name: "Human/face.smiling")
+    public static let person2 = ImageAsset(name: "Human/person.2")
     public static let personExclamationMini = ImageAsset(name: "Human/person.exclamation.mini")
     public static let person = ImageAsset(name: "Human/person")
     public static let personMini = ImageAsset(name: "Human/person.mini")
@@ -170,6 +171,9 @@ public enum Asset {
     }
     public enum Preference {
       public static let twidereAvatar = ImageAsset(name: "Scene/Preference/twidere.avatar")
+    }
+    public enum Sidebar {
+      public static let entryCellHighlightedBackground = ColorAsset(name: "Scene/Sidebar/entry.cell.highlighted.background")
     }
     public enum Status {
       public enum Toolbar {

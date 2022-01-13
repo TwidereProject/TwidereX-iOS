@@ -26,7 +26,7 @@ extension TimelineViewController: DataSourceProvider {
             let item: DataSourceItem? = await managedObjectContext.perform {
                 guard let feed = record.object(in: managedObjectContext) else { return nil }
                 switch feed.kind {
-                case .home, .local, .public:
+                case .home:
                     if let status = feed.twitterStatus {
                         return .status(.twitter(record: .init(objectID: status.objectID)))
                     } else if let status = feed.mastodonStatus {
@@ -39,6 +39,8 @@ extension TimelineViewController: DataSourceProvider {
                 }   // end switch
             }
             return item
+        case .status(let record):
+            return .status(record)
         default:
             return nil
         }

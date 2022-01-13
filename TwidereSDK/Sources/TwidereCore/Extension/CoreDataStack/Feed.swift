@@ -19,7 +19,7 @@ extension Feed {
     
     public var content: Content {
         switch kind {
-        case .home, .local, .public:
+        case .home:
             if let status = twitterStatus {
                 return .twitter(status)
             } else if let status = mastodonStatus {
@@ -53,7 +53,7 @@ extension Feed {
     
     public var objectContent: ObjectContent {
         switch kind {
-        case .home, .local, .public:
+        case .home:
             if let status = twitterStatus {
                 return .status(.twitter(object: status))
             } else if let status = mastodonStatus {

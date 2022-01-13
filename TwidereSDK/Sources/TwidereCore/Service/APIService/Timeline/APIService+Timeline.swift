@@ -61,7 +61,7 @@ extension APIService {
                 #if DEBUG
                 result.log()
                 #endif
-            }
+            }   // end for … in
             
             // locate anchor status
             let anchorStatus: MastodonStatus? = {
@@ -84,41 +84,44 @@ extension APIService {
                 feed.update(hasMore: false)
             }
             
-            // persist relationship
-            let sortedStatuses = statusArray.sorted(by: { $0.createdAt < $1.createdAt })
-            let oldestStatus = sortedStatuses.first
-            for status in sortedStatuses {
-                switch persistContext.kind {
-                case .home:
+            switch persistContext.kind {
+            case .home:
+                // persist relationship
+                let sortedStatuses = statusArray.sorted(by: { $0.createdAt < $1.createdAt })
+                let oldestStatus = sortedStatuses.first
+                for status in sortedStatuses {
                     // set friendship
                     if let me = me {
                         status.author.update(isFollow: true, by: me)
                     }
-                default:
-                    break
-                }
-                
-                // attach to Feed
-                let _feed = status.feed(kind: persistContext.kind, acct: acct)
-                if let feed = _feed {
-                    feed.update(updatedAt: response.networkDate)
-                } else {
-                    let feedProperty = Feed.Property(
-                        acct: acct,
-                        kind: persistContext.kind,
-                        hasMore: false,
-                        createdAt: status.createdAt,
-                        updatedAt: response.networkDate
-                    )
-                    let feed = Feed.insert(into: managedObjectContext, property: feedProperty)
-                    status.attach(feed: feed)
                     
-                    // set hasMore on oldest status if is new feed
-                    if status === oldestStatus {
-                        feed.update(hasMore: true)
+                    // attach to Feed
+                    let _feed = status.feed(kind: persistContext.kind, acct: acct)
+                    if let feed = _feed {
+                        feed.update(updatedAt: response.networkDate)
+                    } else {
+                        let feedProperty = Feed.Property(
+                            acct: acct,
+                            kind: persistContext.kind,
+                            hasMore: false,
+                            createdAt: status.createdAt,
+                            updatedAt: response.networkDate
+                        )
+                        let feed = Feed.insert(into: managedObjectContext, property: feedProperty)
+                        status.attach(feed: feed)
+                        
+                        // set hasMore on oldest status if is new feed
+                        if status === oldestStatus {
+                            feed.update(hasMore: true)
+                        }
                     }
-                }
+                }   // end for … in
+
+            default:
+                break
             }
-        }
-    }
+
+            
+        }   // end managedObjectContext.performChanges
+    }   // end func
 }

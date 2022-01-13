@@ -19,8 +19,8 @@ final class DrawerSidebarEntryView: UIView {
     
     let titleLabel: UILabel = {
         let label = UILabel()
-        label.font = .preferredFont(forTextStyle: .body)
-        label.textColor = .label
+        label.font = UIFontMetrics(forTextStyle: .headline).scaledFont(for: .systemFont(ofSize: 17, weight: .semibold))
+        label.textColor = .secondaryLabel
         return label
     }()
     
@@ -43,7 +43,7 @@ extension DrawerSidebarEntryView {
         addSubview(iconImageView)
         NSLayoutConstraint.activate([
             iconImageView.topAnchor.constraint(equalTo: topAnchor,constant: 16),
-            iconImageView.leadingAnchor.constraint(equalTo: layoutMarginsGuide.leadingAnchor, constant: 8),
+            iconImageView.leadingAnchor.constraint(equalTo: layoutMarginsGuide.leadingAnchor),
             bottomAnchor.constraint(equalTo: iconImageView.bottomAnchor, constant: 16),
         ])
         iconImageView.setContentHuggingPriority(.defaultHigh, for: .horizontal)

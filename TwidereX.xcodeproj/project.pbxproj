@@ -146,11 +146,12 @@
 		DB676161254BE580006C6798 /* MediaPreviewCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB676160254BE580006C6798 /* MediaPreviewCollectionViewCell.swift */; };
 		DB676180254C042C006C6798 /* FriendshipTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB67617F254C042C006C6798 /* FriendshipTableViewCell.swift */; };
 		DB697DF3278FDDF7004EF2F7 /* TimelineViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB697DF2278FDDF7004EF2F7 /* TimelineViewModel.swift */; };
-		DB697DF7278FE278004EF2F7 /* LocalTimelineViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB697DF6278FE278004EF2F7 /* LocalTimelineViewModel.swift */; };
-		DB697DF9278FE2B5004EF2F7 /* PublicTimelineViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB697DF8278FE2B5004EF2F7 /* PublicTimelineViewModel.swift */; };
-		DB697DFB278FE343004EF2F7 /* LocalTimelineViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB697DFA278FE343004EF2F7 /* LocalTimelineViewController.swift */; };
-		DB697DFD278FE3B0004EF2F7 /* PublicTimelineViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB697DFC278FE3B0004EF2F7 /* PublicTimelineViewController.swift */; };
 		DB697DFF278FE416004EF2F7 /* TimelineViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB697DFE278FE416004EF2F7 /* TimelineViewController.swift */; };
+		DB697E0727901FD4004EF2F7 /* DrawerSidebarEntryCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB697E0627901FD4004EF2F7 /* DrawerSidebarEntryCollectionViewCell.swift */; };
+		DB697E0927904BFB004EF2F7 /* FederatedTimelineViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB697E0827904BFB004EF2F7 /* FederatedTimelineViewController.swift */; };
+		DB697E0C27904C56004EF2F7 /* FederatedTimelineViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB697E0B27904C56004EF2F7 /* FederatedTimelineViewModel.swift */; };
+		DB697E0E27904CD0004EF2F7 /* HomeTimelineViewModel+Diffable.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB697E0D27904CD0004EF2F7 /* HomeTimelineViewModel+Diffable.swift */; };
+		DB697E10279050FC004EF2F7 /* FederatedTimelineViewModel+Diffable.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB697E0F279050FC004EF2F7 /* FederatedTimelineViewModel+Diffable.swift */; };
 		DB6B2EC827612E0700A9B9D2 /* CoverFlowStackCollectionViewLayout in Frameworks */ = {isa = PBXBuildFile; productRef = DB6B2EC727612E0700A9B9D2 /* CoverFlowStackCollectionViewLayout */; };
 		DB6B2ECA27612E0A00A9B9D2 /* TabBarPager in Frameworks */ = {isa = PBXBuildFile; productRef = DB6B2EC927612E0A00A9B9D2 /* TabBarPager */; };
 		DB6B8B2E25AF235F00F20FD5 /* TwidereX.xctestplan in Resources */ = {isa = PBXBuildFile; fileRef = DB6B8B2C25AF235F00F20FD5 /* TwidereX.xctestplan */; };
@@ -612,11 +613,12 @@
 		DB67617A254C0279006C6798 /* SearchUserViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchUserViewModel.swift; sourceTree = "<group>"; };
 		DB67617F254C042C006C6798 /* FriendshipTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendshipTableViewCell.swift; sourceTree = "<group>"; };
 		DB697DF2278FDDF7004EF2F7 /* TimelineViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimelineViewModel.swift; sourceTree = "<group>"; };
-		DB697DF6278FE278004EF2F7 /* LocalTimelineViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalTimelineViewModel.swift; sourceTree = "<group>"; };
-		DB697DF8278FE2B5004EF2F7 /* PublicTimelineViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublicTimelineViewModel.swift; sourceTree = "<group>"; };
-		DB697DFA278FE343004EF2F7 /* LocalTimelineViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalTimelineViewController.swift; sourceTree = "<group>"; };
-		DB697DFC278FE3B0004EF2F7 /* PublicTimelineViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublicTimelineViewController.swift; sourceTree = "<group>"; };
 		DB697DFE278FE416004EF2F7 /* TimelineViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimelineViewController.swift; sourceTree = "<group>"; };
+		DB697E0627901FD4004EF2F7 /* DrawerSidebarEntryCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawerSidebarEntryCollectionViewCell.swift; sourceTree = "<group>"; };
+		DB697E0827904BFB004EF2F7 /* FederatedTimelineViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FederatedTimelineViewController.swift; sourceTree = "<group>"; };
+		DB697E0B27904C56004EF2F7 /* FederatedTimelineViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FederatedTimelineViewModel.swift; sourceTree = "<group>"; };
+		DB697E0D27904CD0004EF2F7 /* HomeTimelineViewModel+Diffable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "HomeTimelineViewModel+Diffable.swift"; sourceTree = "<group>"; };
+		DB697E0F279050FC004EF2F7 /* FederatedTimelineViewModel+Diffable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FederatedTimelineViewModel+Diffable.swift"; sourceTree = "<group>"; };
 		DB6B8B2C25AF235F00F20FD5 /* TwidereX.xctestplan */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = TwidereX.xctestplan; sourceTree = "<group>"; };
 		DB6B8B2D25AF235F00F20FD5 /* TwidereX-Performance.xctestplan */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "TwidereX-Performance.xctestplan"; sourceTree = "<group>"; };
 		DB6B8B5E25AF30B900F20FD5 /* ContextMenuAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContextMenuAction.swift; sourceTree = "<group>"; };
@@ -1417,28 +1419,9 @@
 			children = (
 				DB697E02278FE517004EF2F7 /* Base */,
 				DBDA8EA024FE1002006750DC /* Home */,
-				DB697E01278FE500004EF2F7 /* Local */,
-				DB697E00278FE4F7004EF2F7 /* Public */,
+				DB697E0A27904C3F004EF2F7 /* Federated */,
 			);
 			path = Timeline;
-			sourceTree = "<group>";
-		};
-		DB697E00278FE4F7004EF2F7 /* Public */ = {
-			isa = PBXGroup;
-			children = (
-				DB697DFC278FE3B0004EF2F7 /* PublicTimelineViewController.swift */,
-				DB697DF8278FE2B5004EF2F7 /* PublicTimelineViewModel.swift */,
-			);
-			path = Public;
-			sourceTree = "<group>";
-		};
-		DB697E01278FE500004EF2F7 /* Local */ = {
-			isa = PBXGroup;
-			children = (
-				DB697DFA278FE343004EF2F7 /* LocalTimelineViewController.swift */,
-				DB697DF6278FE278004EF2F7 /* LocalTimelineViewModel.swift */,
-			);
-			path = Local;
 			sourceTree = "<group>";
 		};
 		DB697E02278FE517004EF2F7 /* Base */ = {
@@ -1451,6 +1434,25 @@
 				DB3FC03025525BFD003A2F8A /* TimelineViewModel+LoadOldestState.swift */,
 			);
 			path = Base;
+			sourceTree = "<group>";
+		};
+		DB697E0527901A12004EF2F7 /* Cell */ = {
+			isa = PBXGroup;
+			children = (
+				DB761E5C255940EF0050DC01 /* DrawerSidebarEntryTableViewCell.swift */,
+				DB697E0627901FD4004EF2F7 /* DrawerSidebarEntryCollectionViewCell.swift */,
+			);
+			path = Cell;
+			sourceTree = "<group>";
+		};
+		DB697E0A27904C3F004EF2F7 /* Federated */ = {
+			isa = PBXGroup;
+			children = (
+				DB697E0827904BFB004EF2F7 /* FederatedTimelineViewController.swift */,
+				DB697E0B27904C56004EF2F7 /* FederatedTimelineViewModel.swift */,
+				DB697E0F279050FC004EF2F7 /* FederatedTimelineViewModel+Diffable.swift */,
+			);
+			path = Federated;
 			sourceTree = "<group>";
 		};
 		DB6BCD6C277ADBF600847054 /* Trend */ = {
@@ -1509,7 +1511,6 @@
 				DB761E4D255935380050DC01 /* DrawerSidebarHeaderView.swift */,
 				DBAA898D2758CF01001C273B /* DrawerSidebarHeaderView+ViewModel.swift */,
 				DB761E61255942050050DC01 /* DrawerSidebarEntryView.swift */,
-				DB761E5C255940EF0050DC01 /* DrawerSidebarEntryTableViewCell.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -2193,6 +2194,7 @@
 			isa = PBXGroup;
 			children = (
 				DBDA8E9E24FE0FFF006750DC /* HomeTimelineViewController.swift */,
+				DB697E0D27904CD0004EF2F7 /* HomeTimelineViewModel+Diffable.swift */,
 				DBB2513D2599DBAB0064A876 /* HomeTimelineViewController+DebugAction.swift */,
 				DBE76D1D2500E65D00DEB0FC /* HomeTimelineViewModel.swift */,
 			);
@@ -2314,6 +2316,7 @@
 		DBEFDC8D25591F650086F268 /* Drawer */ = {
 			isa = PBXGroup;
 			children = (
+				DB697E0527901A12004EF2F7 /* Cell */,
 				DB761E522559353B0050DC01 /* View */,
 				DBEFDC8725591F5C0086F268 /* DrawerSidebarViewController.swift */,
 				DB761E69255946160050DC01 /* DrawerSidebarViewModel.swift */,
@@ -2936,6 +2939,7 @@
 				DB262A482722A64900D18EF3 /* SearchTimelineViewController+DataSourceProvider.swift in Sources */,
 				DB89F58C257A2A57005ECD04 /* TimelineTopLoaderTableViewCell.swift in Sources */,
 				DB76A65D275F52D500A50673 /* MediaInfoDescriptionView+ViewModel.swift in Sources */,
+				DB697E0927904BFB004EF2F7 /* FederatedTimelineViewController.swift in Sources */,
 				DB76A664275F688D00A50673 /* DataSourceFacade+Share.swift in Sources */,
 				DB761E4E255935380050DC01 /* DrawerSidebarHeaderView.swift in Sources */,
 				DBCB402E255B670C00DD8D8F /* AccountListViewController.swift in Sources */,
@@ -3005,7 +3009,6 @@
 				DB8761CB2745530200BA7EE2 /* CoverFlowStackSection.swift in Sources */,
 				DB8AC0F825401BA200E636BE /* UIViewController.swift in Sources */,
 				DB434888251DFE2D005B599F /* ProfileBannerStatusView.swift in Sources */,
-				DB697DF7278FE278004EF2F7 /* LocalTimelineViewModel.swift in Sources */,
 				DBBBBE8F2744FB42007ACB4B /* ComposeViewModel.swift in Sources */,
 				DB761E62255942050050DC01 /* DrawerSidebarEntryView.swift in Sources */,
 				DB92570A251C8FE0004FEFB5 /* ProfileHeaderViewController.swift in Sources */,
@@ -3014,12 +3017,14 @@
 				DBB3780327687CA200B77A02 /* AutoGenerateProtocolRelayDelegate.swift in Sources */,
 				DB89F591257A2A70005ECD04 /* TimelineLoaderTableViewCell.swift in Sources */,
 				DB747FF9251C496A000C4BD7 /* ProfileViewController.swift in Sources */,
+				DB697E0C27904C56004EF2F7 /* FederatedTimelineViewModel.swift in Sources */,
 				DB01A9A427637FE60055FABC /* DataSourceFacade+Meta.swift in Sources */,
 				DB30ADDD26CFD3CC00B2D2BE /* HomeTimelineViewController+DebugAction.swift in Sources */,
 				DBA5FA192553DCBC00D2E98E /* TransitioningMath.swift in Sources */,
 				DB56329C26DCC23700FC893F /* DataSourceProvider.swift in Sources */,
 				DB44A56226C4FEAB004C8B78 /* WelcomeViewModel.swift in Sources */,
 				DBC8E04B2576337F00401E20 /* DisposeBagCollectable.swift in Sources */,
+				DB697E0727901FD4004EF2F7 /* DrawerSidebarEntryCollectionViewCell.swift in Sources */,
 				DB71C7C6271D304900BE3819 /* UserLikeTimelineViewController+DataSourceProvider.swift in Sources */,
 				DBAA898E2758CF01001C273B /* DrawerSidebarHeaderView+ViewModel.swift in Sources */,
 				DB02C77927352217007EA0BF /* SearchHashtagViewModel+Diffable.swift in Sources */,
@@ -3089,7 +3094,6 @@
 				DB01092426E6199C005F67D7 /* DataSourceProvider+StatusViewTableViewCellDelegate.swift in Sources */,
 				DB25C4C8277994B800EC1435 /* CenterFootnoteLabelTableViewCell.swift in Sources */,
 				DBA210352759D7B1000B7CB2 /* FollowingListViewModel+Diffable.swift in Sources */,
-				DB697DFD278FE3B0004EF2F7 /* PublicTimelineViewController.swift in Sources */,
 				DB2C8744274F4B7D00CE0398 /* SettingListViewController.swift in Sources */,
 				DB02C77027350D8A007EA0BF /* SearchHashtagViewModel.swift in Sources */,
 				DB5632B226DCF1CD00FC893F /* StatusThreadRootTableViewCell+ViewModel.swift in Sources */,
@@ -3113,12 +3117,14 @@
 				DB51DC1A2715581E00A0D8FB /* ProfileDashboardView.swift in Sources */,
 				DB2C873D274F4B7D00CE0398 /* DeveloperViewModel.swift in Sources */,
 				DBD0B4972758B57F0015A388 /* DrawerSidebarTransitionController.swift in Sources */,
+				DB697E10279050FC004EF2F7 /* FederatedTimelineViewModel+Diffable.swift in Sources */,
 				DB8761C7274552FF00BA7EE2 /* NotificationSection.swift in Sources */,
 				DB76A657275F498F00A50673 /* MediaPreviewImageViewController.swift in Sources */,
 				DB5632B026DCED1300FC893F /* StatusThreadRootTableViewCell.swift in Sources */,
 				DB8761C4274552FB00BA7EE2 /* HashtagData.swift in Sources */,
 				DBDA8E2224FCF8A3006750DC /* AppDelegate.swift in Sources */,
 				DB56329726DCBE1600FC893F /* StatusThreadViewController.swift in Sources */,
+				DB697E0E27904CD0004EF2F7 /* HomeTimelineViewModel+Diffable.swift in Sources */,
 				DBDA8E9F24FE0FFF006750DC /* HomeTimelineViewController.swift in Sources */,
 				DB76A65F275F587300A50673 /* DataSourceProvider+MediaInfoDescriptionViewDelegate.swift in Sources */,
 				DB25C4CF2779A06D00EC1435 /* SavedSearchViewModel.swift in Sources */,
@@ -3134,7 +3140,6 @@
 				DBBF70F726D7B62F00971656 /* AccountListTableViewCell+ViewModel.swift in Sources */,
 				DBB47DA926EB3AA2001590F7 /* ProfileFieldListView.swift in Sources */,
 				DBC747D4259DA03B00787EEF /* ListCheckmarkTableViewCell.swift in Sources */,
-				DB697DFB278FE343004EF2F7 /* LocalTimelineViewController.swift in Sources */,
 				DBF69EE12549705A00E2A915 /* ViewControllerAnimatedTransitioningDelegate.swift in Sources */,
 				DBE71B7D26B7C5FD00DFAB8E /* StubTimelineViewModel.swift in Sources */,
 				DB3402B72521D389009EFADF /* UserTimelineViewModel.swift in Sources */,
@@ -3143,7 +3148,6 @@
 				DB51DC4E27181D7500A0D8FB /* CoverFlowStackMediaCollectionCell.swift in Sources */,
 				DBED96D8253F5D7800C5383A /* NamingState.swift in Sources */,
 				DB6DF3E0252060AA00E8A273 /* ProfileViewModel.swift in Sources */,
-				DB697DF9278FE2B5004EF2F7 /* PublicTimelineViewModel.swift in Sources */,
 				DB262A332721377800D18EF3 /* DataSourceFacade+Block.swift in Sources */,
 				DB697DFF278FE416004EF2F7 /* TimelineViewController.swift in Sources */,
 				DB657A7B25AD574D001339B6 /* UIBarButtonItem.swift in Sources */,

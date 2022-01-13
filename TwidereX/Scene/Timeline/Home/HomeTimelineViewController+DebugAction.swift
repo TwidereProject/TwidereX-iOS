@@ -226,13 +226,13 @@ extension HomeTimelineViewController {
     }
     
     @objc private func showLocalTimelineAction(_ sender: UIAction) {
-        let localTimelineViewModel = LocalTimelineViewModel(context: context)
-        coordinator.present(scene: .localTimeline(viewModel: localTimelineViewModel), from: self, transition: .show)
+        let federatedTimelineViewModel = FederatedTimelineViewModel(context: context, local: true)
+        coordinator.present(scene: .federatedTimeline(viewModel: federatedTimelineViewModel), from: self, transition: .show)
     }
     
     @objc private func showPublicTimelineAction(_ sender: UIAction) {
-        let publicTimelineViewModel = PublicTimelineViewModel(context: context)
-        coordinator.present(scene: .publicTimeline(viewModel: publicTimelineViewModel), from: self, transition: .show)
+        let federatedTimelineViewModel = FederatedTimelineViewModel(context: context, local: false)
+        coordinator.present(scene: .federatedTimeline(viewModel: federatedTimelineViewModel), from: self, transition: .show)
     }
     
     @objc private func showAccountListAction(_ sender: UIAction) {

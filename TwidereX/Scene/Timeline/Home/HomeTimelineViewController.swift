@@ -8,18 +8,7 @@
 
 import os.log
 import UIKit
-import SwiftUI
-import AVKit
-import Combine
-import CoreData
-import CoreDataStack
-import GameplayKit
-import TwitterSDK
-import Floaty
-import AlamofireImage
-import AppShared
-import TwidereUI
-import TwidereComposeUI
+import TwidereLocalization
 
 final class HomeTimelineViewController: TimelineViewController {
 
@@ -33,10 +22,23 @@ extension HomeTimelineViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        title = L10n.Scene.Timeline.title
     
         #if DEBUG
         navigationItem.rightBarButtonItem = debugActionBarButtonItem
         #endif
+        
+        guard let viewModel = self.viewModel as? HomeTimelineViewModel else {
+            assertionFailure()
+            return
+        }
+        
+        viewModel.setupDiffableDataSource(
+            tableView: tableView,
+            statusViewTableViewCellDelegate: self,
+            timelineMiddleLoaderTableViewCellDelegate: self
+        )
     }
     
 }

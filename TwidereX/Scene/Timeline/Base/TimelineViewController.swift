@@ -152,11 +152,7 @@ extension TimelineViewController {
         view.addSubview(floatyButton)
         
         tableView.delegate = self
-        viewModel.setupDiffableDataSource(
-            tableView: tableView,
-            statusViewTableViewCellDelegate: self,
-            timelineMiddleLoaderTableViewCellDelegate: self
-        )
+        
         // setup refresh control
         tableView.refreshControl = refreshControl
         viewModel.didLoadLatest
@@ -212,19 +208,8 @@ extension TimelineViewController {
             }
             
         }
-//        DispatchQueue.main.async { [weak self] in
-//            guard let self = self else { return }
-//            if (self.viewModel.fetchedResultsController.fetchedObjects ?? []).count == 0 {
-//                self.viewModel.loadLatestStateMachine.enter(HomeTimelineViewModel.LoadLatestState.Loading.self)
-//            }
-//        }
     }
 
-//    override func viewDidDisappear(_ animated: Bool) {
-//        super.viewDidDisappear(animated)
-//
-//        context.videoPlaybackService.viewDidDisappear(from: self)
-//    }
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)

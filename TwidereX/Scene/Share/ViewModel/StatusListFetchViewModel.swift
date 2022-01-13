@@ -6,6 +6,7 @@
 //  Copyright © 2021 Twidere. All rights reserved.
 //
 
+import os.log
 import Foundation
 import CoreDataStack
 import TwitterSDK
@@ -13,6 +14,8 @@ import MastodonSDK
 import TwidereCore
 
 enum StatusListFetchViewModel {
+    
+    static let logger = Logger(subsystem: "StatusListFetchViewModel", category: "ViewModel")
     
     enum Result {
         case twitter([Twitter.Entity.Tweet]) // v1
@@ -196,13 +199,15 @@ extension StatusListFetchViewModel {
                 count: fetchContext.count ?? 100,
                 authenticationContext: authenticationContext
             )
-            let noMore = response.value.isEmpty || (response.value.count == 1 && response.value[0].id == fetchContext.maxID)
+            let _maxID = response.link?.maxID
+            let noMore = response.value.isEmpty || (response.value.count == 1 && response.value[0].id == fetchContext.maxID) || _maxID == nil || _maxID == fetchContext.maxID
             let nextInput: Input? = {
                 if noMore { return nil }
-                guard let maxID = response.value.last?.id else { return nil }
+                guard let maxID = _maxID else { return nil }
                 let fetchContext = fetchContext.map(maxID: maxID)
                 return Input(fetchContext: .mastodon(fetchContext))
             }()
+            logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): hasMore: \(!noMore)")
             return Output(
                 result: .mastodon(response.value),
                 hasMore: !noMore,
