@@ -78,15 +78,27 @@ extension Feed {
         return NSPredicate(format: "%K == %@", #keyPath(Feed.acctRaw), acct.rawValue)
     }
     
-    public static func predicate(kind: Kind, acct: Acct) -> NSPredicate {
-        return NSCompoundPredicate(andPredicateWithSubpredicates: [
+    static func predicate(since: Date) -> NSPredicate {
+        return NSPredicate(format: "%K > %@", #keyPath(Feed.updatedAt), since as NSDate)
+    }
+    
+    public static func predicate(
+        kind: Kind,
+        acct: Acct,
+        since: Date?
+    ) -> NSPredicate {
+        var predicates = [
             Feed.predicate(kind: kind),
             Feed.predicate(acct: acct)
-        ])
+        ]
+        if let since = since {
+            predicates.append(predicate(since: since))
+        }
+        return NSCompoundPredicate(andPredicateWithSubpredicates: predicates)
     }
     
     public static func nonePredicate() -> NSPredicate {
-        return predicate(kind: .none, acct: .none)
+        return predicate(kind: .none, acct: .none, since: nil)
     }
     
     public static func hasMorePredicate() -> NSPredicate {

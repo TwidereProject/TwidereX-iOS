@@ -61,6 +61,8 @@ class MainTabBarController: UITabBarController {
                 let _viewController = HomeTimelineViewController()
                 _viewController.context = context
                 _viewController.coordinator = coordinator
+                _viewController.viewModel = HomeTimelineViewModel(context: context)
+                _viewController.viewModel.needsSetupAvatarBarButtonItem = true
                 viewController = _viewController
             case .notification:
                 let _viewController = NotificationViewController()

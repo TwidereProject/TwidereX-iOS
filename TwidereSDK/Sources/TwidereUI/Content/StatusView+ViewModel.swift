@@ -224,96 +224,6 @@ extension StatusView.ViewModel {
             }()
         }
         .store(in: &disposeBag)
-        // poll
-        let pollVoteDescription = Publishers.CombineLatest(
-            $voterCount,
-            $voteCount
-        )
-        .map { voterCount, voteCount -> String in
-            var description = ""
-            if let voterCount = voterCount {
-                description += L10n.Count.people(voterCount)
-            } else {
-                description += L10n.Count.vote(voteCount)
-            }
-            return description
-        }
-        let pollCountdownDescription = Publishers.CombineLatest3(
-            $expireAt,
-            $expired,
-            timestampUpdatePublisher.prepend(Date()).eraseToAnyPublisher()
-        )
-        .map { expireAt, expired, _ -> String? in
-            guard !expired else {
-                return L10n.Common.Controls.Status.Poll.expired
-            }
-            
-            guard let expireAt = expireAt,
-                  let timeLeft = expireAt.localizedTimeLeft
-            else {
-                return nil
-            }
-            
-            return timeLeft
-        }
-        Publishers.CombineLatest(
-            pollVoteDescription,
-            pollCountdownDescription
-        )
-        .sink { pollVoteDescription, pollCountdownDescription in
-            let description = [
-                pollVoteDescription,
-                pollCountdownDescription
-            ]
-            .compactMap { $0 }
-            .joined(separator: " · ")
-            
-            statusView.pollVoteDescriptionLabel.text = description
-        }
-        .store(in: &disposeBag)
-        Publishers.CombineLatest(
-            $isVotable,
-            $isVoting
-        )
-        .sink { isVotable, isVoting in
-            guard isVotable else {
-                statusView.pollVoteButton.isHidden = true
-                statusView.pollVoteActivityIndicatorView.isHidden = true
-                return
-            }
-            
-            statusView.pollVoteButton.isHidden = isVoting
-            statusView.pollVoteActivityIndicatorView.isHidden = !isVoting
-            statusView.pollVoteActivityIndicatorView.startAnimating()
-        }
-        .store(in: &disposeBag)
-        $isVoteButtonEnabled
-            .assign(to: \.isEnabled, on: statusView.pollVoteButton)
-            .store(in: &disposeBag)
-        // dashboard
-        Publishers.CombineLatest4(
-            $replyCount,
-            $repostCount,
-            $quoteCount,
-            $likeCount
-        )
-        .sink { replyCount, repostCount, quoteCount, likeCount in
-            switch statusView.style {
-            case .plain:
-                statusView.setMetricsDisplay()
-
-                statusView.metricsDashboardView.setupReply(count: replyCount)
-                statusView.metricsDashboardView.setupRepost(count: repostCount)
-                statusView.metricsDashboardView.setupQuote(count: quoteCount)
-                statusView.metricsDashboardView.setupLike(count: likeCount)
-                
-                let needsDashboardDisplay = replyCount > 0 || repostCount > 0 || quoteCount > 0 || likeCount > 0
-                statusView.metricsDashboardView.dashboardContainer.isHidden = !needsDashboardDisplay
-            default:
-                break
-            }
-        }
-        .store(in: &disposeBag)
     }
     
     private func bindContent(statusView: StatusView) {
@@ -359,6 +269,30 @@ extension StatusView.ViewModel {
                 statusView.metricsDashboardView.sourceLabel.text = source ?? ""
             }
             .store(in: &disposeBag)
+        // dashboard
+        Publishers.CombineLatest4(
+            $replyCount,
+            $repostCount,
+            $quoteCount,
+            $likeCount
+        )
+        .sink { replyCount, repostCount, quoteCount, likeCount in
+            switch statusView.style {
+            case .plain:
+                statusView.setMetricsDisplay()
+
+                statusView.metricsDashboardView.setupReply(count: replyCount)
+                statusView.metricsDashboardView.setupRepost(count: repostCount)
+                statusView.metricsDashboardView.setupQuote(count: quoteCount)
+                statusView.metricsDashboardView.setupLike(count: likeCount)
+                
+                let needsDashboardDisplay = replyCount > 0 || repostCount > 0 || quoteCount > 0 || likeCount > 0
+                statusView.metricsDashboardView.dashboardContainer.isHidden = !needsDashboardDisplay
+            default:
+                break
+            }
+        }
+        .store(in: &disposeBag)
     }
     
     private func bindMedia(statusView: StatusView) {
@@ -429,6 +363,72 @@ extension StatusView.ViewModel {
             .sink { isVotable in
                 statusView.pollTableView.allowsSelection = isVotable
             }
+            .store(in: &disposeBag)
+        // poll
+        let pollVoteDescription = Publishers.CombineLatest(
+            $voterCount,
+            $voteCount
+        )
+        .map { voterCount, voteCount -> String in
+            var description = ""
+            if let voterCount = voterCount {
+                description += L10n.Count.people(voterCount)
+            } else {
+                description += L10n.Count.vote(voteCount)
+            }
+            return description
+        }
+        let pollCountdownDescription = Publishers.CombineLatest3(
+            $expireAt,
+            $expired,
+            timestampUpdatePublisher.prepend(Date()).eraseToAnyPublisher()
+        )
+        .map { expireAt, expired, _ -> String? in
+            guard !expired else {
+                return L10n.Common.Controls.Status.Poll.expired
+            }
+            
+            guard let expireAt = expireAt,
+                  let timeLeft = expireAt.localizedTimeLeft
+            else {
+                return nil
+            }
+            
+            return timeLeft
+        }
+        Publishers.CombineLatest(
+            pollVoteDescription,
+            pollCountdownDescription
+        )
+        .sink { pollVoteDescription, pollCountdownDescription in
+            let description = [
+                pollVoteDescription,
+                pollCountdownDescription
+            ]
+            .compactMap { $0 }
+            .joined(separator: " · ")
+            
+            statusView.pollVoteDescriptionLabel.text = description
+        }
+        .store(in: &disposeBag)
+        Publishers.CombineLatest(
+            $isVotable,
+            $isVoting
+        )
+        .sink { isVotable, isVoting in
+            guard isVotable else {
+                statusView.pollVoteButton.isHidden = true
+                statusView.pollVoteActivityIndicatorView.isHidden = true
+                return
+            }
+            
+            statusView.pollVoteButton.isHidden = isVoting
+            statusView.pollVoteActivityIndicatorView.isHidden = !isVoting
+            statusView.pollVoteActivityIndicatorView.startAnimating()
+        }
+        .store(in: &disposeBag)
+        $isVoteButtonEnabled
+            .assign(to: \.isEnabled, on: statusView.pollVoteButton)
             .store(in: &disposeBag)
     }
     
@@ -813,8 +813,8 @@ extension StatusView {
             author.publisher(for: \.emojis)
         )
         .map { _, emojis in
-            let content = MastodonContent(content: author.name, emojis: emojis.asDictionary)
             do {
+                let content = MastodonContent(content: author.name, emojis: emojis.asDictionary)
                 let metaContent = try MastodonMetaContent.convert(document: content)
                 return metaContent
             } catch {
@@ -908,6 +908,8 @@ extension StatusView {
         mastodonStatus status: MastodonStatus,
         activeAuthenticationContext: AnyPublisher<AuthenticationContext?, Never>
     ) {
+        let status = status.repost ?? status
+        
         // pollItems
         status.publisher(for: \.poll)
             .sink { [weak self] poll in

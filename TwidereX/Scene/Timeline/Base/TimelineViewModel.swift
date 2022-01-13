@@ -1,42 +1,40 @@
 //
-//  HomeTimelineViewModel.swift
+//  TimelineViewModel.swift
 //  TwidereX
 //
-//  Created by Cirno MainasuK on 2020-9-3.
+//  Created by MainasuK on 2022-1-13.
+//  Copyright © 2022 Twidere. All rights reserved.
 //
 
 import os.log
-import func AVFoundation.AVMakeRect
 import UIKit
-import AVKit
 import Combine
-import CoreData
 import CoreDataStack
 import GameplayKit
-import AlamofireImage
-import Kingfisher
-import DateToolsSwift
+import TwidereCore
 
-final class HomeTimelineViewModel: NSObject {
+class TimelineViewModel {
     
-    let logger = Logger(subsystem: "HomeTimelineViewModel", category: "ViewModel")
+    let logger = Logger(subsystem: "TimelineViewModel", category: "ViewModel")
 
     var disposeBag = Set<AnyCancellable>()
     var observations = Set<NSKeyValueObservation>()
     
+    let now = Date()
+    
     // input
     let context: AppContext
+    let kind: Feed.Kind
     let fetchedResultsController: FeedFetchedResultsController
     let listBatchFetchViewModel = ListBatchFetchViewModel()
     let viewDidAppear = CurrentValueSubject<Void, Never>(Void())
     @Published var isLoadingLatest = false
     @Published var lastAutomaticFetchTimestamp: Date?
-
     
     // output
     var diffableDataSource: UITableViewDiffableDataSource<StatusSection, StatusItem>?
-    var didLoadLatest = PassthroughSubject<Void, Never>()
-
+    let didLoadLatest = PassthroughSubject<Void, Never>()
+    
     // bottom loader
     @MainActor private(set) lazy var loadOldestStateMachine: GKStateMachine = {
         // exclude timeline middle fetcher state
@@ -51,15 +49,22 @@ final class HomeTimelineViewModel: NSObject {
         return stateMachine
     }()
     
-    init(context: AppContext) {
+    // UI
+    @Published var needsSetupAvatarBarButtonItem = false
+    
+    init(
+        context: AppContext,
+        kind: Feed.Kind
+    ) {
         self.context  = context
+        self.kind = kind
         self.fetchedResultsController = FeedFetchedResultsController(managedObjectContext: context.managedObjectContext)
-        super.init()
-        
+        // end init
+
         context.authenticationService.activeAuthenticationContext
             .sink { [weak self] authenticationContext in
                 guard let self = self else { return }
-                let emptyFeedPredicate = Feed.predicate(kind: .none, acct: Feed.Acct.none)
+                let emptyFeedPredicate = Feed.predicate(kind: .none, acct: .none, since: nil)
                 guard let authenticationContext = authenticationContext else {
                     self.fetchedResultsController.predicate.value = emptyFeedPredicate
                     return
@@ -68,20 +73,23 @@ final class HomeTimelineViewModel: NSObject {
                 let predicate: NSPredicate
                 switch authenticationContext {
                 case .twitter(let authenticationContext):
-                    let userID = authenticationContext.userID
-                    predicate = Feed.predicate(kind: .home, acct: Feed.Acct.twitter(userID: userID))
+                    predicate = Feed.predicate(
+                        kind: .home,
+                        acct: Feed.Acct.twitter(userID: authenticationContext.userID),
+                        since: nil
+                    )
                 case .mastodon(let authenticationContext):
-                    let domain = authenticationContext.domain
-                    let userID = authenticationContext.userID
-                    predicate = Feed.predicate(kind: .home, acct: Feed.Acct.mastodon(domain: domain, userID: userID))
+                    predicate = Feed.predicate(
+                        kind: kind,
+                        acct: Feed.Acct.mastodon(
+                            domain: authenticationContext.domain,
+                            userID: authenticationContext.userID
+                        ),
+                        since: kind != .home ? self.now : nil
+                    )
                 }
                 self.fetchedResultsController.predicate.value = predicate
             }
             .store(in: &disposeBag)
     }
-    
-    deinit {
-        os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s:", ((#file as NSString).lastPathComponent), #line, #function)
-    }
-    
 }

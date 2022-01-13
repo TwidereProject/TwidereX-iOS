@@ -108,17 +108,35 @@ extension NotificationTimelineViewModel {
         switch authenticationContext {
         case .twitter(let authenticationContext):
             let userID = authenticationContext.userID
-            predicate = Feed.predicate(kind: .notification, acct: Feed.Acct.twitter(userID: userID))
+            predicate = Feed.predicate(
+                kind: .notification,
+                acct: Feed.Acct.twitter(userID: userID),
+                since: nil
+            )
         case .mastodon(let authenticationContext):
             let domain = authenticationContext.domain
             let userID = authenticationContext.userID
             predicate = {
                 switch scope {
                 case .all:
-                    return Feed.predicate(kind: .notification, acct: Feed.Acct.mastodon(domain: domain, userID: userID))
+                    return Feed.predicate(
+                        kind: .notification,
+                        acct: Feed.Acct.mastodon(
+                            domain: domain,
+                            userID: userID
+                        ),
+                        since: nil
+                    )
                 case .mentions:
                     return NSCompoundPredicate(andPredicateWithSubpredicates: [
-                        Feed.predicate(kind: .notification, acct: Feed.Acct.mastodon(domain: domain, userID: userID)),
+                        Feed.predicate(
+                            kind: .notification,
+                            acct: Feed.Acct.mastodon(
+                                domain: domain,
+                                userID: userID
+                            ),
+                            since: nil
+                        ),
                         Feed.mastodonNotificationTypePredicate(types: scope.includeTypes ?? [])
                     ])
                 }

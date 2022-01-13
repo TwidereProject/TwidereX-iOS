@@ -1,5 +1,5 @@
 //
-//  HomeTimelineViewModel+Diffable.swift
+//  TimelineViewModel+Diffable.swift
 //  TwidereX
 //
 //  Created by Cirno MainasuK on 2021-1-6.
@@ -11,7 +11,7 @@ import UIKit
 import CoreData
 import CoreDataStack
 
-extension HomeTimelineViewModel {
+extension TimelineViewModel {
     
     func setupDiffableDataSource(
         tableView: UITableView,
@@ -133,7 +133,7 @@ extension HomeTimelineViewModel {
     
 }
 
-extension HomeTimelineViewModel {
+extension TimelineViewModel {
     struct Difference<T> {
         let item: T
         let sourceIndexPath: IndexPath
@@ -173,7 +173,7 @@ extension HomeTimelineViewModel {
     }
 }
 
-extension HomeTimelineViewModel {
+extension TimelineViewModel {
 
     // load lastest
     func loadLatest() async {
@@ -190,7 +190,8 @@ extension HomeTimelineViewModel {
                     authenticationContext: authenticationContext
                 )
             case .mastodon(let authenticationContext):
-                _ =  try await context.apiService.mastodonHomeTimeline(
+                _ = try await context.apiService.mastodonTimeline(
+                    kind: kind,
                     maxID: nil,
                     authenticationContext: authenticationContext
                 )
@@ -239,7 +240,8 @@ extension HomeTimelineViewModel {
                     authenticationContext: authenticationContext
                 )
             case (.mastodon(let status), .mastodon(let authenticationContext)):
-                _ = try await context.apiService.mastodonHomeTimeline(
+                _ = try await context.apiService.mastodonTimeline(
+                    kind: kind,
                     maxID: status.id,
                     authenticationContext: authenticationContext
                 )

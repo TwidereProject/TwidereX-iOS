@@ -23,7 +23,7 @@ extension DataSourceItem {
         let tableViewCell: UITableViewCell?
         let indexPath: IndexPath?
         
-        internal init(
+        init(
             collectionViewCell: UICollectionViewCell? = nil,
             tableViewCell: UITableViewCell? = nil,
             indexPath: IndexPath? = nil

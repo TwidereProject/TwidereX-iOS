@@ -48,7 +48,8 @@ final public class FeedFetchedResultsController: NSObject {
         self.predicate = CurrentValueSubject(
             Feed.predicate(
                 kind: .none,
-                acct: .none
+                acct: .none,
+                since: nil
             )
         )
         super.init()

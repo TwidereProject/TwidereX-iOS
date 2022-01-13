@@ -123,7 +123,7 @@
 		DB56329C26DCC23700FC893F /* DataSourceProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB56329B26DCC23700FC893F /* DataSourceProvider.swift */; };
 		DB5632A226DCC70700FC893F /* AutoGenerateTableViewDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB5632A126DCC70700FC893F /* AutoGenerateTableViewDelegate.swift */; };
 		DB5632A726DCC84C00FC893F /* DataSourceProvider+UITableViewDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB5632A626DCC84C00FC893F /* DataSourceProvider+UITableViewDelegate.swift */; };
-		DB5632A926DCC96C00FC893F /* HomeTimelineViewController+DataSourceProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB5632A826DCC96C00FC893F /* HomeTimelineViewController+DataSourceProvider.swift */; };
+		DB5632A926DCC96C00FC893F /* TimelineViewController+DataSourceProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB5632A826DCC96C00FC893F /* TimelineViewController+DataSourceProvider.swift */; };
 		DB5632AB26DCCD3900FC893F /* DataSourceFacade.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB5632AA26DCCD3900FC893F /* DataSourceFacade.swift */; };
 		DB5632AD26DCE93900FC893F /* StatusThreadViewModel+Diffable.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB5632AC26DCE93900FC893F /* StatusThreadViewModel+Diffable.swift */; };
 		DB5632B026DCED1300FC893F /* StatusThreadRootTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB5632AF26DCED1300FC893F /* StatusThreadRootTableViewCell.swift */; };
@@ -131,7 +131,7 @@
 		DB5632B426DDE3F300FC893F /* StatusThreadViewModel+LoadThreadState.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB5632B326DDE3F300FC893F /* StatusThreadViewModel+LoadThreadState.swift */; };
 		DB5632BC26DF503800FC893F /* TwitterStatusThreadLeafViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB5632BB26DF503800FC893F /* TwitterStatusThreadLeafViewModel.swift */; };
 		DB5632C126DF7E7A00FC893F /* ListBatchFetchViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB5632C026DF7E7A00FC893F /* ListBatchFetchViewModel.swift */; };
-		DB5632C226DF8DE100FC893F /* HomeTimelineViewModel+LoadOldestState.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB3FC03025525BFD003A2F8A /* HomeTimelineViewModel+LoadOldestState.swift */; };
+		DB5632C226DF8DE100FC893F /* TimelineViewModel+LoadOldestState.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB3FC03025525BFD003A2F8A /* TimelineViewModel+LoadOldestState.swift */; };
 		DB578CCD254C0BDB00745336 /* UserBriefInfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB578CCC254C0BDB00745336 /* UserBriefInfoView.swift */; };
 		DB5A2288255B9155006CA5B2 /* AccountListViewModel+Diffable.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB5A2287255B9155006CA5B2 /* AccountListViewModel+Diffable.swift */; };
 		DB5FAFFD2727B940006520FA /* UserListFetchViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB5FAFFC2727B940006520FA /* UserListFetchViewModel.swift */; };
@@ -145,6 +145,12 @@
 		DB67610D254AD681006C6798 /* ActivityIndicatorCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB67610C254AD681006C6798 /* ActivityIndicatorCollectionViewCell.swift */; };
 		DB676161254BE580006C6798 /* MediaPreviewCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB676160254BE580006C6798 /* MediaPreviewCollectionViewCell.swift */; };
 		DB676180254C042C006C6798 /* FriendshipTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB67617F254C042C006C6798 /* FriendshipTableViewCell.swift */; };
+		DB697DF3278FDDF7004EF2F7 /* TimelineViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB697DF2278FDDF7004EF2F7 /* TimelineViewModel.swift */; };
+		DB697DF7278FE278004EF2F7 /* LocalTimelineViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB697DF6278FE278004EF2F7 /* LocalTimelineViewModel.swift */; };
+		DB697DF9278FE2B5004EF2F7 /* PublicTimelineViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB697DF8278FE2B5004EF2F7 /* PublicTimelineViewModel.swift */; };
+		DB697DFB278FE343004EF2F7 /* LocalTimelineViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB697DFA278FE343004EF2F7 /* LocalTimelineViewController.swift */; };
+		DB697DFD278FE3B0004EF2F7 /* PublicTimelineViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB697DFC278FE3B0004EF2F7 /* PublicTimelineViewController.swift */; };
+		DB697DFF278FE416004EF2F7 /* TimelineViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB697DFE278FE416004EF2F7 /* TimelineViewController.swift */; };
 		DB6B2EC827612E0700A9B9D2 /* CoverFlowStackCollectionViewLayout in Frameworks */ = {isa = PBXBuildFile; productRef = DB6B2EC727612E0700A9B9D2 /* CoverFlowStackCollectionViewLayout */; };
 		DB6B2ECA27612E0A00A9B9D2 /* TabBarPager in Frameworks */ = {isa = PBXBuildFile; productRef = DB6B2EC927612E0A00A9B9D2 /* TabBarPager */; };
 		DB6B8B2E25AF235F00F20FD5 /* TwidereX.xctestplan in Resources */ = {isa = PBXBuildFile; fileRef = DB6B8B2C25AF235F00F20FD5 /* TwidereX.xctestplan */; };
@@ -331,7 +337,7 @@
 		DBF69EE12549705A00E2A915 /* ViewControllerAnimatedTransitioningDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBF69EDF2549705A00E2A915 /* ViewControllerAnimatedTransitioningDelegate.swift */; };
 		DBF739CF275C247F00BF6AB5 /* DataSourceFacade+Mute.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBF739CE275C247F00BF6AB5 /* DataSourceFacade+Mute.swift */; };
 		DBF739D1275C3EF300BF6AB5 /* DataSourceFacade+Report.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBF739D0275C3EF300BF6AB5 /* DataSourceFacade+Report.swift */; };
-		DBFA4A2025A5924C00D51703 /* HomeTimelineViewModel+Diffable.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBFA4A1F25A5924C00D51703 /* HomeTimelineViewModel+Diffable.swift */; };
+		DBFA4A2025A5924C00D51703 /* TimelineViewModel+Diffable.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBFA4A1F25A5924C00D51703 /* TimelineViewModel+Diffable.swift */; };
 		DBFC0ADC276108590011E99B /* CropViewController in Frameworks */ = {isa = PBXBuildFile; productRef = DBFC0ADB276108590011E99B /* CropViewController */; };
 		DBFC0ADE276108610011E99B /* AlamofireImage in Frameworks */ = {isa = PBXBuildFile; productRef = DBFC0ADD276108610011E99B /* AlamofireImage */; };
 		DBFC0AE0276108610011E99B /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = DBFC0ADF276108610011E99B /* Alamofire */; };
@@ -462,7 +468,6 @@
 		DB12BEE627329F55002AA635 /* SearchUserViewController+DataSourceProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SearchUserViewController+DataSourceProvider.swift"; sourceTree = "<group>"; };
 		DB1A1D6A2559A0A50049DA6D /* StatusProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusProvider.swift; sourceTree = "<group>"; };
 		DB1A1D722559A3C10049DA6D /* StatusProvider+TimelinePostTableViewCellDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "StatusProvider+TimelinePostTableViewCellDelegate.swift"; sourceTree = "<group>"; };
-		DB1A1D832559AAFD0049DA6D /* HomeTimelineViewController+StatusProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "HomeTimelineViewController+StatusProvider.swift"; sourceTree = "<group>"; };
 		DB1A1D9A2559AC640049DA6D /* TweetConversationViewController+StatusProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TweetConversationViewController+StatusProvider.swift"; sourceTree = "<group>"; };
 		DB1A1DA8255B5C780049DA6D /* MediaPreviewTransitionHostViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaPreviewTransitionHostViewController.swift; sourceTree = "<group>"; };
 		DB1BF29825663EFA00B5F490 /* DisplayPreference.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisplayPreference.swift; sourceTree = "<group>"; };
@@ -544,7 +549,7 @@
 		DB3B906826E8D1D80010F64C /* LocalProfileViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalProfileViewModel.swift; sourceTree = "<group>"; };
 		DB3B906A26E8D3AB0010F64C /* DataSourceFacade+Status.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DataSourceFacade+Status.swift"; sourceTree = "<group>"; };
 		DB3B906C26E8DB6E0010F64C /* DataSourceFacade+Profile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DataSourceFacade+Profile.swift"; sourceTree = "<group>"; };
-		DB3FC03025525BFD003A2F8A /* HomeTimelineViewModel+LoadOldestState.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "HomeTimelineViewModel+LoadOldestState.swift"; sourceTree = "<group>"; };
+		DB3FC03025525BFD003A2F8A /* TimelineViewModel+LoadOldestState.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "TimelineViewModel+LoadOldestState.swift"; sourceTree = "<group>"; };
 		DB3FC03F25527053003A2F8A /* UserMediaTimelineViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserMediaTimelineViewModel.swift; sourceTree = "<group>"; };
 		DB3FC044255270D6003A2F8A /* UserMediaTimelineViewModel+State.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UserMediaTimelineViewModel+State.swift"; sourceTree = "<group>"; };
 		DB3FC0492552711C003A2F8A /* UserMediaTimelineViewModel+Diffable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UserMediaTimelineViewModel+Diffable.swift"; sourceTree = "<group>"; };
@@ -578,7 +583,7 @@
 		DB56329D26DCC47D00FC893F /* AutoGenerateTableViewDelegate.stencil */ = {isa = PBXFileReference; lastKnownFileType = text; path = AutoGenerateTableViewDelegate.stencil; sourceTree = "<group>"; };
 		DB5632A126DCC70700FC893F /* AutoGenerateTableViewDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutoGenerateTableViewDelegate.swift; sourceTree = "<group>"; };
 		DB5632A626DCC84C00FC893F /* DataSourceProvider+UITableViewDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DataSourceProvider+UITableViewDelegate.swift"; sourceTree = "<group>"; };
-		DB5632A826DCC96C00FC893F /* HomeTimelineViewController+DataSourceProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "HomeTimelineViewController+DataSourceProvider.swift"; sourceTree = "<group>"; };
+		DB5632A826DCC96C00FC893F /* TimelineViewController+DataSourceProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TimelineViewController+DataSourceProvider.swift"; sourceTree = "<group>"; };
 		DB5632AA26DCCD3900FC893F /* DataSourceFacade.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataSourceFacade.swift; sourceTree = "<group>"; };
 		DB5632AC26DCE93900FC893F /* StatusThreadViewModel+Diffable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "StatusThreadViewModel+Diffable.swift"; sourceTree = "<group>"; };
 		DB5632AF26DCED1300FC893F /* StatusThreadRootTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusThreadRootTableViewCell.swift; sourceTree = "<group>"; };
@@ -606,6 +611,12 @@
 		DB67616B254C021A006C6798 /* SearchUserViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchUserViewController.swift; sourceTree = "<group>"; };
 		DB67617A254C0279006C6798 /* SearchUserViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchUserViewModel.swift; sourceTree = "<group>"; };
 		DB67617F254C042C006C6798 /* FriendshipTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendshipTableViewCell.swift; sourceTree = "<group>"; };
+		DB697DF2278FDDF7004EF2F7 /* TimelineViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimelineViewModel.swift; sourceTree = "<group>"; };
+		DB697DF6278FE278004EF2F7 /* LocalTimelineViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalTimelineViewModel.swift; sourceTree = "<group>"; };
+		DB697DF8278FE2B5004EF2F7 /* PublicTimelineViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublicTimelineViewModel.swift; sourceTree = "<group>"; };
+		DB697DFA278FE343004EF2F7 /* LocalTimelineViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalTimelineViewController.swift; sourceTree = "<group>"; };
+		DB697DFC278FE3B0004EF2F7 /* PublicTimelineViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublicTimelineViewController.swift; sourceTree = "<group>"; };
+		DB697DFE278FE416004EF2F7 /* TimelineViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimelineViewController.swift; sourceTree = "<group>"; };
 		DB6B8B2C25AF235F00F20FD5 /* TwidereX.xctestplan */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = TwidereX.xctestplan; sourceTree = "<group>"; };
 		DB6B8B2D25AF235F00F20FD5 /* TwidereX-Performance.xctestplan */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "TwidereX-Performance.xctestplan"; sourceTree = "<group>"; };
 		DB6B8B5E25AF30B900F20FD5 /* ContextMenuAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContextMenuAction.swift; sourceTree = "<group>"; };
@@ -704,7 +715,6 @@
 		DB94B6BD26C65CB000A2E8A1 /* AppShared.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppShared.h; sourceTree = "<group>"; };
 		DB969A0B252475F00053CB31 /* APIService+Persist+Tweets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "APIService+Persist+Tweets.swift"; sourceTree = "<group>"; };
 		DB969A2E252490090053CB31 /* UserTimelineViewModel+State.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UserTimelineViewModel+State.swift"; sourceTree = "<group>"; };
-		DB969A3825305EEE0053CB31 /* HomeTimelineViewModel+LoadLatestState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "HomeTimelineViewModel+LoadLatestState.swift"; sourceTree = "<group>"; };
 		DB969A65253064FE0053CB31 /* DispatchQueue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DispatchQueue.swift; sourceTree = "<group>"; };
 		DB97D1F4256CF7710056F8C2 /* ProgressBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressBarView.swift; sourceTree = "<group>"; };
 		DB98DC0D2507862D0087E30F /* TimelineMiddleLoaderTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimelineMiddleLoaderTableViewCell.swift; sourceTree = "<group>"; };
@@ -726,7 +736,6 @@
 		DBA5FA252553ED1000D2E98E /* MediaPreviewViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaPreviewViewModel.swift; sourceTree = "<group>"; };
 		DBA5FA2D2553F06B00D2E98E /* MediaInfoDescriptionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaInfoDescriptionView.swift; sourceTree = "<group>"; };
 		DBA61AB52552596A006AC169 /* UserMediaTimelineViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserMediaTimelineViewController.swift; sourceTree = "<group>"; };
-		DBA6B1A325340B3F005FB0B4 /* HomeTimelineViewModel+LoadMiddleState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "HomeTimelineViewModel+LoadMiddleState.swift"; sourceTree = "<group>"; };
 		DBA6B1B625355C1E005FB0B4 /* UIAlertController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIAlertController.swift; sourceTree = "<group>"; };
 		DBA7DD73256B96450008A95A /* UIFont.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIFont.swift; sourceTree = "<group>"; };
 		DBA9B3A525875B6B00EA14ED /* MentionPickViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MentionPickViewController.swift; sourceTree = "<group>"; };
@@ -870,7 +879,7 @@
 		DBFA4A0625A4621C00D51703 /* UserProvider+SearchUserTableViewCellDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UserProvider+SearchUserTableViewCellDelegate.swift"; sourceTree = "<group>"; };
 		DBFA4A0B25A4628D00D51703 /* SearchUserViewController+UserProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SearchUserViewController+UserProvider.swift"; sourceTree = "<group>"; };
 		DBFA4A1025A5640E00D51703 /* ProfileViewController+UserProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ProfileViewController+UserProvider.swift"; sourceTree = "<group>"; };
-		DBFA4A1F25A5924C00D51703 /* HomeTimelineViewModel+Diffable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "HomeTimelineViewModel+Diffable.swift"; sourceTree = "<group>"; };
+		DBFA4A1F25A5924C00D51703 /* TimelineViewModel+Diffable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TimelineViewModel+Diffable.swift"; sourceTree = "<group>"; };
 		DBFA4A2A25A5A69100D51703 /* SearchTimelineViewModel+Diffable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SearchTimelineViewModel+Diffable.swift"; sourceTree = "<group>"; };
 		DBFCC44625667C620016698E /* UILabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UILabel.swift; sourceTree = "<group>"; };
 		DBFCC46225668B860016698E /* DrawerSidebarPresentationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawerSidebarPresentationController.swift; sourceTree = "<group>"; };
@@ -1403,6 +1412,47 @@
 			path = User;
 			sourceTree = "<group>";
 		};
+		DB697DEB278FDB8A004EF2F7 /* Timeline */ = {
+			isa = PBXGroup;
+			children = (
+				DB697E02278FE517004EF2F7 /* Base */,
+				DBDA8EA024FE1002006750DC /* Home */,
+				DB697E01278FE500004EF2F7 /* Local */,
+				DB697E00278FE4F7004EF2F7 /* Public */,
+			);
+			path = Timeline;
+			sourceTree = "<group>";
+		};
+		DB697E00278FE4F7004EF2F7 /* Public */ = {
+			isa = PBXGroup;
+			children = (
+				DB697DFC278FE3B0004EF2F7 /* PublicTimelineViewController.swift */,
+				DB697DF8278FE2B5004EF2F7 /* PublicTimelineViewModel.swift */,
+			);
+			path = Public;
+			sourceTree = "<group>";
+		};
+		DB697E01278FE500004EF2F7 /* Local */ = {
+			isa = PBXGroup;
+			children = (
+				DB697DFA278FE343004EF2F7 /* LocalTimelineViewController.swift */,
+				DB697DF6278FE278004EF2F7 /* LocalTimelineViewModel.swift */,
+			);
+			path = Local;
+			sourceTree = "<group>";
+		};
+		DB697E02278FE517004EF2F7 /* Base */ = {
+			isa = PBXGroup;
+			children = (
+				DB697DFE278FE416004EF2F7 /* TimelineViewController.swift */,
+				DB5632A826DCC96C00FC893F /* TimelineViewController+DataSourceProvider.swift */,
+				DB697DF2278FDDF7004EF2F7 /* TimelineViewModel.swift */,
+				DBFA4A1F25A5924C00D51703 /* TimelineViewModel+Diffable.swift */,
+				DB3FC03025525BFD003A2F8A /* TimelineViewModel+LoadOldestState.swift */,
+			);
+			path = Base;
+			sourceTree = "<group>";
+		};
 		DB6BCD6C277ADBF600847054 /* Trend */ = {
 			isa = PBXGroup;
 			children = (
@@ -1906,16 +1956,6 @@
 			path = ShareExtension;
 			sourceTree = "<group>";
 		};
-		DBC17A5D26E0C878005C0D79 /* Deprecated */ = {
-			isa = PBXGroup;
-			children = (
-				DB1A1D832559AAFD0049DA6D /* HomeTimelineViewController+StatusProvider.swift */,
-				DB969A3825305EEE0053CB31 /* HomeTimelineViewModel+LoadLatestState.swift */,
-				DBA6B1A325340B3F005FB0B4 /* HomeTimelineViewModel+LoadMiddleState.swift */,
-			);
-			path = Deprecated;
-			sourceTree = "<group>";
-		};
 		DBC8DFF52574B32A00401E20 /* ViewController */ = {
 			isa = PBXGroup;
 			children = (
@@ -2106,10 +2146,10 @@
 				DBDA8E9624FE075E006750DC /* MainTab */,
 				DB42411026C3E4C900B6C5F8 /* Onboarding */,
 				DBCB4032255B670F00DD8D8F /* Account */,
-				DBDA8EA024FE1002006750DC /* HomeTimeline */,
-				DB56329826DCBE1900FC893F /* StatusThread */,
+				DB697DEB278FDB8A004EF2F7 /* Timeline */,
 				DB213FA727392AC3009ABD74 /* HashtagTimeline */,
 				DBE71B7B26B7AF6100DFAB8E /* StubTimeline */,
+				DB56329826DCBE1900FC893F /* StatusThread */,
 				DB7274F0273BB25A00577D95 /* Notification */,
 				DB747FFD251C496E000C4BD7 /* Profile */,
 				DB8AC1122540501A00E636BE /* Compose */,
@@ -2149,18 +2189,14 @@
 			path = Resources;
 			sourceTree = "<group>";
 		};
-		DBDA8EA024FE1002006750DC /* HomeTimeline */ = {
+		DBDA8EA024FE1002006750DC /* Home */ = {
 			isa = PBXGroup;
 			children = (
-				DBC17A5D26E0C878005C0D79 /* Deprecated */,
 				DBDA8E9E24FE0FFF006750DC /* HomeTimelineViewController.swift */,
-				DB5632A826DCC96C00FC893F /* HomeTimelineViewController+DataSourceProvider.swift */,
 				DBB2513D2599DBAB0064A876 /* HomeTimelineViewController+DebugAction.swift */,
 				DBE76D1D2500E65D00DEB0FC /* HomeTimelineViewModel.swift */,
-				DBFA4A1F25A5924C00D51703 /* HomeTimelineViewModel+Diffable.swift */,
-				DB3FC03025525BFD003A2F8A /* HomeTimelineViewModel+LoadOldestState.swift */,
 			);
-			path = HomeTimeline;
+			path = Home;
 			sourceTree = "<group>";
 		};
 		DBE71B7B26B7AF6100DFAB8E /* StubTimeline */ = {
@@ -2884,6 +2920,7 @@
 				DBA7DD74256B96450008A95A /* UIFont.swift in Sources */,
 				DB3FC045255270D6003A2F8A /* UserMediaTimelineViewModel+State.swift in Sources */,
 				DB76A652275F1C3200A50673 /* MediaPreviewTransitionItem.swift in Sources */,
+				DB697DF3278FDDF7004EF2F7 /* TimelineViewModel.swift in Sources */,
 				DBDAF241274F530600050319 /* DocumentStore.swift in Sources */,
 				DB83020D273D160400BF5224 /* NotificationTimelineViewModel+LoadOldestState.swift in Sources */,
 				DB262A3727213FBE00D18EF3 /* UIAlertAction.swift in Sources */,
@@ -2909,7 +2946,7 @@
 				DBD0B4992758B58F0015A388 /* DrawerSidebarAnimatedTransitioning.swift in Sources */,
 				DB02C76D27350D71007EA0BF /* SearchHashtagViewController.swift in Sources */,
 				DB2C873E274F4B7D00CE0398 /* DeveloperViewController.swift in Sources */,
-				DBFA4A2025A5924C00D51703 /* HomeTimelineViewModel+Diffable.swift in Sources */,
+				DBFA4A2025A5924C00D51703 /* TimelineViewModel+Diffable.swift in Sources */,
 				DB925749251C9D48004FEFB5 /* ProfilePagingViewModel.swift in Sources */,
 				DB213FA927392B81009ABD74 /* HashtagTimelineViewModel.swift in Sources */,
 				DB0D3A38255E4341000BB9FA /* UserLikeTimelineViewController+StatusProvider.swift in Sources */,
@@ -2952,7 +2989,7 @@
 				DB578CCD254C0BDB00745336 /* UserBriefInfoView.swift in Sources */,
 				DBA21039275A0E77000B7CB2 /* FollowerListViewController.swift in Sources */,
 				DB676180254C042C006C6798 /* FriendshipTableViewCell.swift in Sources */,
-				DB5632C226DF8DE100FC893F /* HomeTimelineViewModel+LoadOldestState.swift in Sources */,
+				DB5632C226DF8DE100FC893F /* TimelineViewModel+LoadOldestState.swift in Sources */,
 				DBCE2EE32593319000926D09 /* AvatarConfigurableView.swift in Sources */,
 				DB3B906326E8BBD70010F64C /* ProfileHeaderView.swift in Sources */,
 				DB02C77227351B7D007EA0BF /* HashtagTableViewCell.swift in Sources */,
@@ -2968,6 +3005,7 @@
 				DB8761CB2745530200BA7EE2 /* CoverFlowStackSection.swift in Sources */,
 				DB8AC0F825401BA200E636BE /* UIViewController.swift in Sources */,
 				DB434888251DFE2D005B599F /* ProfileBannerStatusView.swift in Sources */,
+				DB697DF7278FE278004EF2F7 /* LocalTimelineViewModel.swift in Sources */,
 				DBBBBE8F2744FB42007ACB4B /* ComposeViewModel.swift in Sources */,
 				DB761E62255942050050DC01 /* DrawerSidebarEntryView.swift in Sources */,
 				DB92570A251C8FE0004FEFB5 /* ProfileHeaderViewController.swift in Sources */,
@@ -3051,6 +3089,7 @@
 				DB01092426E6199C005F67D7 /* DataSourceProvider+StatusViewTableViewCellDelegate.swift in Sources */,
 				DB25C4C8277994B800EC1435 /* CenterFootnoteLabelTableViewCell.swift in Sources */,
 				DBA210352759D7B1000B7CB2 /* FollowingListViewModel+Diffable.swift in Sources */,
+				DB697DFD278FE3B0004EF2F7 /* PublicTimelineViewController.swift in Sources */,
 				DB2C8744274F4B7D00CE0398 /* SettingListViewController.swift in Sources */,
 				DB02C77027350D8A007EA0BF /* SearchHashtagViewModel.swift in Sources */,
 				DB5632B226DCF1CD00FC893F /* StatusThreadRootTableViewCell+ViewModel.swift in Sources */,
@@ -3095,6 +3134,7 @@
 				DBBF70F726D7B62F00971656 /* AccountListTableViewCell+ViewModel.swift in Sources */,
 				DBB47DA926EB3AA2001590F7 /* ProfileFieldListView.swift in Sources */,
 				DBC747D4259DA03B00787EEF /* ListCheckmarkTableViewCell.swift in Sources */,
+				DB697DFB278FE343004EF2F7 /* LocalTimelineViewController.swift in Sources */,
 				DBF69EE12549705A00E2A915 /* ViewControllerAnimatedTransitioningDelegate.swift in Sources */,
 				DBE71B7D26B7C5FD00DFAB8E /* StubTimelineViewModel.swift in Sources */,
 				DB3402B72521D389009EFADF /* UserTimelineViewModel.swift in Sources */,
@@ -3103,7 +3143,9 @@
 				DB51DC4E27181D7500A0D8FB /* CoverFlowStackMediaCollectionCell.swift in Sources */,
 				DBED96D8253F5D7800C5383A /* NamingState.swift in Sources */,
 				DB6DF3E0252060AA00E8A273 /* ProfileViewModel.swift in Sources */,
+				DB697DF9278FE2B5004EF2F7 /* PublicTimelineViewModel.swift in Sources */,
 				DB262A332721377800D18EF3 /* DataSourceFacade+Block.swift in Sources */,
+				DB697DFF278FE416004EF2F7 /* TimelineViewController.swift in Sources */,
 				DB657A7B25AD574D001339B6 /* UIBarButtonItem.swift in Sources */,
 				DB5FAFFD2727B940006520FA /* UserListFetchViewModel.swift in Sources */,
 				DB01092226E608B7005F67D7 /* DataSourceFacade+Repost.swift in Sources */,
@@ -3162,7 +3204,7 @@
 				DB8761C1274552F800BA7EE2 /* UserItem.swift in Sources */,
 				DB5FB0102727FCC5006520FA /* SearchUserViewModel.swift in Sources */,
 				DB262A492722A9D800D18EF3 /* SearchTimelineViewModel+Diffable.swift in Sources */,
-				DB5632A926DCC96C00FC893F /* HomeTimelineViewController+DataSourceProvider.swift in Sources */,
+				DB5632A926DCC96C00FC893F /* TimelineViewController+DataSourceProvider.swift in Sources */,
 				DB56329A26DCBE7300FC893F /* StatusThreadViewModel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -1,5 +1,5 @@
 //
-//  HomeTimelineViewModel+LoadOldestState.swift
+//  TimelineViewModel+LoadOldestState.swift
 //  TwidereX
 //
 //  Created by Cirno MainasuK on 2020-10-9.
@@ -10,11 +10,11 @@ import Foundation
 import GameplayKit
 import CoreDataStack
 
-extension HomeTimelineViewModel {
+extension TimelineViewModel {
     class LoadOldestState: GKState {
-        weak var viewModel: HomeTimelineViewModel?
+        weak var viewModel: TimelineViewModel?
         
-        init(viewModel: HomeTimelineViewModel) {
+        init(viewModel: TimelineViewModel) {
             self.viewModel = viewModel
         }
         
@@ -25,8 +25,8 @@ extension HomeTimelineViewModel {
     }
 }
 
-extension HomeTimelineViewModel.LoadOldestState {
-    class Initial: HomeTimelineViewModel.LoadOldestState {
+extension TimelineViewModel.LoadOldestState {
+    class Initial: TimelineViewModel.LoadOldestState {
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {
             guard let viewModel = viewModel else { return false }
             guard !viewModel.fetchedResultsController.records.value.isEmpty else { return false }
@@ -34,8 +34,8 @@ extension HomeTimelineViewModel.LoadOldestState {
         }
     }
     
-    class Loading: HomeTimelineViewModel.LoadOldestState {
-        let logger = Logger(subsystem: "HomeTimelineViewModel.LoadOldestState", category: "StateMachine")
+    class Loading: TimelineViewModel.LoadOldestState {
+        let logger = Logger(subsystem: "TimelineViewModel.LoadOldestState", category: "StateMachine")
         
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {
             return stateClass == Fail.self || stateClass == Idle.self || stateClass == NoMore.self
@@ -92,7 +92,8 @@ extension HomeTimelineViewModel.LoadOldestState {
                             excludeReplies: false,
                             excludeReblogs: false,
                             onlyMedia: false,
-                            userIdentifier: nil
+                            userIdentifier: nil,
+                            local: viewModel.kind == .home ? nil : viewModel.kind == .local
                         ))
                     )
                 default:
@@ -107,7 +108,16 @@ extension HomeTimelineViewModel.LoadOldestState {
 
             do {
                 logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): fetch…")
-                let output = try await StatusListFetchViewModel.homeTimeline(context: viewModel.context, input: input)
+                let output: StatusListFetchViewModel.Output = try await {
+                    switch viewModel.kind {
+                    case .home:
+                        return try await StatusListFetchViewModel.homeTimeline(context: viewModel.context, input: input)
+                    case .local, .public:
+                        return try await StatusListFetchViewModel.publicTimeline(context: viewModel.context, input: input)
+                    default:
+                        throw AppError.implicit(.badRequest)
+                    }
+                }()
                 if output.hasMore {
                     await enter(state: Idle.self)
                 } else {
@@ -121,25 +131,25 @@ extension HomeTimelineViewModel.LoadOldestState {
         }
         
         @MainActor
-        func enter(state: HomeTimelineViewModel.LoadOldestState.Type) {
+        func enter(state: TimelineViewModel.LoadOldestState.Type) {
             stateMachine?.enter(state)
         }
         
     }   // end class Loading
     
-    class Fail: HomeTimelineViewModel.LoadOldestState {
+    class Fail: TimelineViewModel.LoadOldestState {
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {
             return stateClass == Loading.self || stateClass == Idle.self
         }
     }
     
-    class Idle: HomeTimelineViewModel.LoadOldestState {
+    class Idle: TimelineViewModel.LoadOldestState {
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {
             return stateClass == Loading.self
         }
     }
 
-    class NoMore: HomeTimelineViewModel.LoadOldestState {
+    class NoMore: TimelineViewModel.LoadOldestState {
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {
             // reset state if needs
             return stateClass == Idle.self
