@@ -70,10 +70,20 @@ extension TrendViewController: UITableViewDelegate {
         guard let diffableDataSource = viewModel.diffableDataSource else { return }
         guard case let .trend(object) = diffableDataSource.itemIdentifier(for: indexPath) else { return }
         
-        DataSourceFacade.coordinateToSearchResult(
-            dependency: self,
-            trend: object
-        )
+        switch object {
+        case .twitter(let trend):
+            DataSourceFacade.coordinateToSearchResult(
+                dependency: self,
+                trend: object
+            )
+        case .mastodon(let tag):
+            let hashtagTimelineViewModel = HashtagTimelineViewModel(context: context, hashtag: tag.name)
+            coordinator.present(
+                scene: .hashtagTimeline(viewModel: hashtagTimelineViewModel),
+                from: self,
+                transition: .show
+            )
+        }
     }
     
 }
