@@ -147,7 +147,6 @@
 		DB676180254C042C006C6798 /* FriendshipTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB67617F254C042C006C6798 /* FriendshipTableViewCell.swift */; };
 		DB697DF3278FDDF7004EF2F7 /* TimelineViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB697DF2278FDDF7004EF2F7 /* TimelineViewModel.swift */; };
 		DB697DFF278FE416004EF2F7 /* TimelineViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB697DFE278FE416004EF2F7 /* TimelineViewController.swift */; };
-		DB697E0727901FD4004EF2F7 /* DrawerSidebarEntryCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB697E0627901FD4004EF2F7 /* DrawerSidebarEntryCollectionViewCell.swift */; };
 		DB697E0927904BFB004EF2F7 /* FederatedTimelineViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB697E0827904BFB004EF2F7 /* FederatedTimelineViewController.swift */; };
 		DB697E0C27904C56004EF2F7 /* FederatedTimelineViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB697E0B27904C56004EF2F7 /* FederatedTimelineViewModel.swift */; };
 		DB697E0E27904CD0004EF2F7 /* HomeTimelineViewModel+Diffable.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB697E0D27904CD0004EF2F7 /* HomeTimelineViewModel+Diffable.swift */; };
@@ -173,7 +172,6 @@
 		DB74A164256E148F00C5F3C9 /* CropViewController in Frameworks */ = {isa = PBXBuildFile; productRef = DB74A163256E148F00C5F3C9 /* CropViewController */; };
 		DB74A16E256E50E300C5F3C9 /* UIColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB74A16D256E50E300C5F3C9 /* UIColor.swift */; };
 		DB761E4E255935380050DC01 /* DrawerSidebarHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB761E4D255935380050DC01 /* DrawerSidebarHeaderView.swift */; };
-		DB761E5D255940EF0050DC01 /* DrawerSidebarEntryTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB761E5C255940EF0050DC01 /* DrawerSidebarEntryTableViewCell.swift */; };
 		DB761E62255942050050DC01 /* DrawerSidebarEntryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB761E61255942050050DC01 /* DrawerSidebarEntryView.swift */; };
 		DB76A64B275DF9FA00A50673 /* TwitterStatusThreadReplyViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB76A64A275DF9FA00A50673 /* TwitterStatusThreadReplyViewModel.swift */; };
 		DB76A64D275DFA0600A50673 /* TwitterStatusThreadReplyViewModel+State.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB76A64C275DFA0600A50673 /* TwitterStatusThreadReplyViewModel+State.swift */; };
@@ -614,7 +612,6 @@
 		DB67617F254C042C006C6798 /* FriendshipTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendshipTableViewCell.swift; sourceTree = "<group>"; };
 		DB697DF2278FDDF7004EF2F7 /* TimelineViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimelineViewModel.swift; sourceTree = "<group>"; };
 		DB697DFE278FE416004EF2F7 /* TimelineViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimelineViewController.swift; sourceTree = "<group>"; };
-		DB697E0627901FD4004EF2F7 /* DrawerSidebarEntryCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawerSidebarEntryCollectionViewCell.swift; sourceTree = "<group>"; };
 		DB697E0827904BFB004EF2F7 /* FederatedTimelineViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FederatedTimelineViewController.swift; sourceTree = "<group>"; };
 		DB697E0B27904C56004EF2F7 /* FederatedTimelineViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FederatedTimelineViewModel.swift; sourceTree = "<group>"; };
 		DB697E0D27904CD0004EF2F7 /* HomeTimelineViewModel+Diffable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "HomeTimelineViewModel+Diffable.swift"; sourceTree = "<group>"; };
@@ -640,7 +637,6 @@
 		DB74A16D256E50E300C5F3C9 /* UIColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIColor.swift; sourceTree = "<group>"; };
 		DB761E3E25592AA20050DC01 /* DrawerSidebarAnimatedTransitioning.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawerSidebarAnimatedTransitioning.swift; sourceTree = "<group>"; };
 		DB761E4D255935380050DC01 /* DrawerSidebarHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawerSidebarHeaderView.swift; sourceTree = "<group>"; };
-		DB761E5C255940EF0050DC01 /* DrawerSidebarEntryTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawerSidebarEntryTableViewCell.swift; sourceTree = "<group>"; };
 		DB761E61255942050050DC01 /* DrawerSidebarEntryView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DrawerSidebarEntryView.swift; sourceTree = "<group>"; };
 		DB761E69255946160050DC01 /* DrawerSidebarViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawerSidebarViewModel.swift; sourceTree = "<group>"; };
 		DB76A64A275DF9FA00A50673 /* TwitterStatusThreadReplyViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwitterStatusThreadReplyViewModel.swift; sourceTree = "<group>"; };
@@ -1434,15 +1430,6 @@
 				DB3FC03025525BFD003A2F8A /* TimelineViewModel+LoadOldestState.swift */,
 			);
 			path = Base;
-			sourceTree = "<group>";
-		};
-		DB697E0527901A12004EF2F7 /* Cell */ = {
-			isa = PBXGroup;
-			children = (
-				DB761E5C255940EF0050DC01 /* DrawerSidebarEntryTableViewCell.swift */,
-				DB697E0627901FD4004EF2F7 /* DrawerSidebarEntryCollectionViewCell.swift */,
-			);
-			path = Cell;
 			sourceTree = "<group>";
 		};
 		DB697E0A27904C3F004EF2F7 /* Federated */ = {
@@ -2316,7 +2303,6 @@
 		DBEFDC8D25591F650086F268 /* Drawer */ = {
 			isa = PBXGroup;
 			children = (
-				DB697E0527901A12004EF2F7 /* Cell */,
 				DB761E522559353B0050DC01 /* View */,
 				DBEFDC8725591F5C0086F268 /* DrawerSidebarViewController.swift */,
 				DB761E69255946160050DC01 /* DrawerSidebarViewModel.swift */,
@@ -2986,7 +2972,6 @@
 				DBE71B7F26B7D68500DFAB8E /* StubTimelineCollectionViewCell.swift in Sources */,
 				DB213FA627392ABC009ABD74 /* HashtagTimelineViewController.swift in Sources */,
 				DBF739CF275C247F00BF6AB5 /* DataSourceFacade+Mute.swift in Sources */,
-				DB761E5D255940EF0050DC01 /* DrawerSidebarEntryTableViewCell.swift in Sources */,
 				DBDAF242274F530600050319 /* ViewStateStore.swift in Sources */,
 				DB7E22F02552A3D500551314 /* UserLikeTimelineViewController.swift in Sources */,
 				DB02C77D27353479007EA0BF /* HashtagListFetchViewModel.swift in Sources */,
@@ -3024,7 +3009,6 @@
 				DB56329C26DCC23700FC893F /* DataSourceProvider.swift in Sources */,
 				DB44A56226C4FEAB004C8B78 /* WelcomeViewModel.swift in Sources */,
 				DBC8E04B2576337F00401E20 /* DisposeBagCollectable.swift in Sources */,
-				DB697E0727901FD4004EF2F7 /* DrawerSidebarEntryCollectionViewCell.swift in Sources */,
 				DB71C7C6271D304900BE3819 /* UserLikeTimelineViewController+DataSourceProvider.swift in Sources */,
 				DBAA898E2758CF01001C273B /* DrawerSidebarHeaderView+ViewModel.swift in Sources */,
 				DB02C77927352217007EA0BF /* SearchHashtagViewModel+Diffable.swift in Sources */,

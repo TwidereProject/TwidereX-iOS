@@ -12,7 +12,7 @@ import TwidereAsset
 extension DrawerSidebarViewModel {
     func setupDiffableDataSource(
         sidebarCollectionView: UICollectionView,
-        settingTableView: UITableView
+        settingCollectionView: UICollectionView
     ) {
         // sidebar
         sidebarDiffableDataSource = setupDiffableDataSource(collectionView: sidebarCollectionView)
@@ -38,7 +38,7 @@ extension DrawerSidebarViewModel {
             .store(in: &disposeBag)
         
         // setting
-        settingDiffableDataSource = setupDiffableDataSource(tableView: settingTableView)
+        settingDiffableDataSource = setupDiffableDataSource(collectionView: settingCollectionView)
         var settingSnapshot = NSDiffableDataSourceSnapshot<SidebarSection, SidebarItem>()
         settingSnapshot.appendSections([.main])
         settingSnapshot.appendItems([.settings], toSection: .main)
@@ -48,22 +48,6 @@ extension DrawerSidebarViewModel {
 }
 
 extension DrawerSidebarViewModel {
-    func setupDiffableDataSource(tableView: UITableView) -> UITableViewDiffableDataSource<SidebarSection, SidebarItem> {
-        UITableViewDiffableDataSource(tableView: tableView) { tableView, indexPath, item in
-            let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: DrawerSidebarEntryTableViewCell.self), for: indexPath) as! DrawerSidebarEntryTableViewCell
-            let tintColor: UIColor = {
-                switch item {
-                case .settings:     return .secondaryLabel.withAlphaComponent(0.8)
-                default:            return .secondaryLabel
-                }
-            }()
-            cell.entryView.iconImageView.image = item.image
-            cell.entryView.iconImageView.tintColor = tintColor
-            cell.entryView.titleLabel.text = item.title
-            cell.entryView.titleLabel.textColor = tintColor
-            return cell
-        }
-    }
     
     func setupDiffableDataSource(
         collectionView: UICollectionView
@@ -104,10 +88,19 @@ extension DrawerSidebarViewModel {
             cell.contentConfiguration = contentConfiguration
             
             // background
-            var backgroundConfiguration = UIBackgroundConfiguration.listPlainCell()
-            backgroundConfiguration.cornerRadius = 12
-            backgroundConfiguration.backgroundInsets.leading = -8
-            backgroundConfiguration.backgroundInsets.trailing = -8
+            var backgroundConfiguration: UIBackgroundConfiguration
+            switch item {
+            case .settings:
+                backgroundConfiguration = UIBackgroundConfiguration.listAccompaniedSidebarCell()
+                backgroundConfiguration.cornerRadius = 0
+                backgroundConfiguration.backgroundInsets.leading = 0
+                backgroundConfiguration.backgroundInsets.trailing = 0
+            default:
+                backgroundConfiguration = UIBackgroundConfiguration.listPlainCell()
+                backgroundConfiguration.cornerRadius = 12
+                backgroundConfiguration.backgroundInsets.leading = -8
+                backgroundConfiguration.backgroundInsets.trailing = -8
+            }
             backgroundConfiguration.backgroundColorTransformer = UIConfigurationColorTransformer { [weak cell] _ in
                 guard let state = cell?.configurationState else {
                     return .clear
