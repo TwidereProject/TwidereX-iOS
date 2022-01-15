@@ -72,11 +72,15 @@ extension StatusView {
         
         @Published public var dateTimeProvider: DateTimeProvider?
         @Published public var timestamp: Date?
+        @Published public var timeAgoStyleTimestamp: String?
+        @Published public var formattedStyleTimestamp: String?
         
         @Published public var sharePlaintextContent: String?
         @Published public var shareStatusURL: String?
         
         @Published public var isDeletable = false
+        
+        @Published public var groupedAccessibilityLabel = ""
         
         let timestampUpdatePublisher = Timer.publish(every: 1.0, on: .main, in: .common)
             .autoconnect()
@@ -116,6 +120,7 @@ extension StatusView.ViewModel {
         bindPoll(statusView: statusView)
         bindLocation(statusView: statusView)
         bindToolbar(statusView: statusView)
+        bindAccessibility(statusView: statusView)
     }
     
     private func bindHeader(statusView: StatusView) {
@@ -213,9 +218,10 @@ extension StatusView.ViewModel {
             $dateTimeProvider,
             timestampUpdatePublisher.prepend(Date()).eraseToAnyPublisher()
         )
-        .sink { timestamp, dateTimeProvider, _ in
-            statusView.timestampLabel.text = dateTimeProvider?.shortTimeAgoSinceNow(to: timestamp)
-            statusView.metricsDashboardView.timestampLabel.text = {
+        .sink { [weak self] timestamp, dateTimeProvider, _ in
+            guard let self = self else { return }
+            self.timeAgoStyleTimestamp = dateTimeProvider?.shortTimeAgoSinceNow(to: timestamp)
+            self.formattedStyleTimestamp = {
                 let formatter = DateFormatter()
                 formatter.dateStyle = .medium
                 formatter.timeStyle = .medium
@@ -224,6 +230,16 @@ extension StatusView.ViewModel {
             }()
         }
         .store(in: &disposeBag)
+        $timeAgoStyleTimestamp
+            .sink { timestamp in
+                statusView.timestampLabel.text = timestamp
+            }
+            .store(in: &disposeBag)
+        $formattedStyleTimestamp
+            .sink { timestamp in
+                statusView.metricsDashboardView.timestampLabel.text = timestamp
+            }
+            .store(in: &disposeBag)
     }
     
     private func bindContent(statusView: StatusView) {
@@ -485,6 +501,65 @@ extension StatusView.ViewModel {
         }
         .store(in: &disposeBag)
     }
+    
+    private func bindAccessibility(statusView: StatusView) {
+        let contentAccessibilityLabel = Publishers.CombineLatest4(
+            $header,
+            $authorName,
+            $timeAgoStyleTimestamp,
+            $content
+        )
+        .map { header, authorName, timestamp, content -> String? in
+            var strings: [String?] = []
+            
+            switch header {
+            case .none:
+                break
+            case .notification(let info):
+                strings.append(info.textMetaContent.string)
+            case .repost(let info):
+                strings.append(info.authorNameMetaContent.string)
+            }
+            
+            strings.append(authorName?.string)
+            strings.append(timestamp)
+            strings.append(content?.string)
+            
+            return strings.compactMap { $0 }.joined(separator: ", ")
+        }
+        
+        let meidaAccessibilityLabel = $mediaViewConfigurations
+            .map { configurations -> String? in
+                let count = configurations.count
+                // TODO: i18n
+                return count > 0 ? "\(count) media" : nil
+            }
+            
+        // TODO: Toolbar
+        
+        Publishers.CombineLatest(
+            contentAccessibilityLabel,
+            meidaAccessibilityLabel
+        )
+        .map { content, media in
+            let group = [
+                content,
+                media
+            ]
+            
+            return group
+                .compactMap { $0 }
+                .joined(separator: ", ")
+        }
+        .assign(to: &$groupedAccessibilityLabel)
+        
+        $groupedAccessibilityLabel
+            .sink { accessibilityLabel in
+                statusView.accessibilityLabel = accessibilityLabel
+            }
+            .store(in: &disposeBag)
+    }
+
 }
 
 extension StatusView {

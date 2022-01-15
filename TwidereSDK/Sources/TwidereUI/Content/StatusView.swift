@@ -37,6 +37,9 @@ public protocol StatusViewDelegate: AnyObject {
     
     func statusView(_ statusView: StatusView, statusToolbar: StatusToolbar, actionDidPressed action: StatusToolbar.Action, button: UIButton)
     func statusView(_ statusView: StatusView, statusToolbar: StatusToolbar, menuActionDidPressed action: StatusToolbar.MenuAction, menuButton button: UIButton)
+    
+    // a11y
+    func statusView(_ statusView: StatusView, accessibilityActivate: Void)
 }
 
 public final class StatusView: UIView {
@@ -202,7 +205,7 @@ public final class StatusView: UIView {
     public let locationLabel = PlainLabel(style: .statusLocation)
 
     // metrics
-    let metricsDashboardView = StatusMetricsDashboardView()
+    public let metricsDashboardView = StatusMetricsDashboardView()
     
     // toolbar
     public let toolbar = StatusToolbar()
@@ -259,6 +262,7 @@ extension StatusView {
         headerTapGestureRecognizer.addTarget(self, action: #selector(StatusView.headerTapGestureRecognizerHandler(_:)))
         headerContainerView.addGestureRecognizer(headerTapGestureRecognizer)
         // avatar button
+        authorAvatarButton.accessibilityLabel = "Open Author Profile" // TODO: i18n
         authorAvatarButton.addTarget(self, action: #selector(StatusView.authorAvatarButtonDidPressed(_:)), for: .touchUpInside)
         // expand content
         expandContentButton.addTarget(self, action: #selector(StatusView.expandContentButtonDidPressed(_:)), for: .touchUpInside)
@@ -1066,6 +1070,10 @@ extension StatusView: StatusViewDelegate {
     }
     
     public func statusView(_ statusView: StatusView, statusToolbar: StatusToolbar, menuActionDidPressed action: StatusToolbar.MenuAction, menuButton button: UIButton) {
+        assertionFailure()
+    }
+    
+    public func statusView(_ statusView: StatusView, accessibilityActivate: Void) {
         assertionFailure()
     }
     

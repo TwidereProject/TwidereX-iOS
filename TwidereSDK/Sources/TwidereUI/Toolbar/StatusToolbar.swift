@@ -203,6 +203,8 @@ extension StatusToolbar {
         case .none:
             break
         }
+        
+        replyButton.accessibilityLabel = L10n.Accessibility.Common.Status.Actions.reply
     }
     
     public func setupRepost(count: Int, isRepost: Bool, isLocked: Bool) {
@@ -224,6 +226,13 @@ extension StatusToolbar {
         repostButton.setTitleColor(tintColor.withAlphaComponent(0.8), for: .highlighted)
         
         // TODO: loked
+        
+        repostButton.accessibilityLabel = L10n.Accessibility.Common.Status.Actions.retweet
+        if isRepost {
+            repostButton.accessibilityTraits.insert(.selected)
+        } else {
+            repostButton.accessibilityTraits.remove(.selected)
+        }
     }
     
     public func setupLike(count: Int, isLike: Bool) {
@@ -247,6 +256,13 @@ extension StatusToolbar {
         likeButton.tintColor = tintColor
         likeButton.setTitleColor(tintColor, for: .normal)
         likeButton.setTitleColor(tintColor.withAlphaComponent(0.8), for: .highlighted)
+        
+        likeButton.accessibilityLabel = L10n.Accessibility.Common.Status.Actions.like
+        if isLike {
+            likeButton.accessibilityTraits.insert(.selected)
+        } else {
+            likeButton.accessibilityTraits.remove(.selected)
+        }
     }
     
     public struct MenuContext {
@@ -313,6 +329,7 @@ extension StatusToolbar {
         
         
         menuButton.showsMenuAsPrimaryAction = true
+        menuButton.accessibilityLabel = "Menu"      // TODO: i18n
     }
     
 }

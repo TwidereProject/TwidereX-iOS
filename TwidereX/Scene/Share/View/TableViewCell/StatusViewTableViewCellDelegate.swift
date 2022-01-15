@@ -39,6 +39,7 @@ protocol StatusViewTableViewCellDelegate: AnyObject, AutoGenerateProtocolDelegat
     func tableViewCell(_ cell: UITableViewCell, statusView: StatusView, quoteStatusViewDidPressed quoteStatusView: StatusView)
     func tableViewCell(_ cell: UITableViewCell, statusView: StatusView, statusToolbar: StatusToolbar, actionDidPressed action: StatusToolbar.Action, button: UIButton)
     func tableViewCell(_ cell: UITableViewCell, statusView: StatusView, statusToolbar: StatusToolbar, menuActionDidPressed action: StatusToolbar.MenuAction, menuButton button: UIButton)
+    func tableViewCell(_ cell: UITableViewCell, statusView: StatusView, accessibilityActivate: Void)
     // sourcery:end
 }
 
@@ -100,6 +101,10 @@ extension StatusViewDelegate where Self: StatusViewContainerTableViewCell {
 
     func statusView(_ statusView: StatusView, statusToolbar: StatusToolbar, menuActionDidPressed action: StatusToolbar.MenuAction, menuButton button: UIButton) {
         delegate?.tableViewCell(self, statusView: statusView, statusToolbar: statusToolbar, menuActionDidPressed: action, menuButton: button)
+    }
+
+    func statusView(_ statusView: StatusView, accessibilityActivate: Void) {
+        delegate?.tableViewCell(self, statusView: statusView, accessibilityActivate: accessibilityActivate)
     }
     // sourcery:end
     
