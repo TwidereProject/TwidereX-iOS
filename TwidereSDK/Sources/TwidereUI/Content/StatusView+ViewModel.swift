@@ -160,10 +160,10 @@ extension StatusView.ViewModel {
         .store(in: &disposeBag)
         UserDefaults.shared
             .observe(\.avatarStyle, options: [.initial, .new]) { defaults, _ in
+                
                 let avatarStyle = defaults.avatarStyle
                 let animator = UIViewPropertyAnimator(duration: 0.3, timingParameters: UISpringTimingParameters())
-                animator.addAnimations { [weak statusView] in
-                    guard let statusView = statusView else { return }
+                animator.addAnimations {
                     switch avatarStyle {
                     case .circle:
                         statusView.authorAvatarButton.avatarImageView.configure(cornerConfiguration: .init(corner: .circle))
@@ -509,7 +509,7 @@ extension StatusView {
     public func configure(feed: Feed, configurationContext: ConfigurationContext) {
         switch feed.content {
         case .none:
-            assertionFailure()
+            logger.log(level: .info, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): [Warning] feed content missing")
         case .twitter(let status):
             configure(
                 twitterStatus: status,

@@ -65,8 +65,7 @@ extension TwitterStatusPublisher: StatusPublisher {
         let publishAttachmentTaskWeight: Int64 = 100
         let publishAttachmentTaskCount: Int64 = Int64(attachmentViewModels.count) * publishAttachmentTaskWeight
         
-        let publishStatusTaskWeight: Int64 = 20
-        let publishStatusTaskCount: Int64 = publishStatusTaskWeight
+        let publishStatusTaskCount: Int64 = 20
         
         let taskCount = [
             publishAttachmentTaskCount,

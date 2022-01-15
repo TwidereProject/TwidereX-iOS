@@ -12,7 +12,6 @@ extension Twitter.API.Media {
     
     static let uploadEndpointURL = Twitter.API.uploadEndpointURL.appendingPathComponent("media/upload.json")
     
-    
 }
 
 extension Twitter.API.Media {
@@ -37,10 +36,16 @@ extension Twitter.API.Media {
         public let command = "INIT"
         public let totalBytes: Int
         public let mediaType: String
+        public let mediaCategory: String
         
-        public init(totalBytes: Int, mediaType: String) {
+        public init(
+            totalBytes: Int,
+            mediaType: String,
+            mediaCategory: String
+        ) {
             self.totalBytes = totalBytes
             self.mediaType = mediaType.urlEncoded
+            self.mediaCategory = mediaCategory
         }
         
         var queryItems: [URLQueryItem]? {
@@ -48,6 +53,7 @@ extension Twitter.API.Media {
             items.append(URLQueryItem(name: "command", value: command))
             items.append(URLQueryItem(name: "total_bytes", value: "\(totalBytes)"))
             items.append(URLQueryItem(name: "media_type", value: mediaType))
+            items.append(URLQueryItem(name: "media_category", value: mediaCategory))
             guard !items.isEmpty else { return nil }
             return items
         }
@@ -184,7 +190,7 @@ extension Twitter.API.Media {
         public let mediaIDString: String
         public let size: Int
         public let expiresAfterSecs: Int
-        public let processingInfo: ProcessingInfo?
+        public let processingInfo: ProcessingInfo?  // server return it when media needs processing
         
         public enum CodingKeys: String, CodingKey {
             case mediaIDString = "media_id_string"
@@ -195,7 +201,7 @@ extension Twitter.API.Media {
         
         public struct ProcessingInfo: Codable {
             public let state: String
-            public let checkAfterSecs: Int
+            public let checkAfterSecs: Int?
             
             public enum CodingKeys: String, CodingKey {
                 case state

@@ -96,4 +96,50 @@ extension NSItemProvider {
             }
         }
     }
+    
+}
+
+extension NSItemProvider {
+    
+    public struct VideoLoadResult {
+        public let url: URL
+        public let sizeInBytes: UInt64
+    }
+    
+    public func loadVideoData() async throws -> VideoLoadResult? {
+        try await withCheckedThrowingContinuation { continuation in
+            loadFileRepresentation(forTypeIdentifier: UTType.movie.identifier) { url, error in
+                if let error = error {
+                    continuation.resume(with: .failure(error))
+                    return
+                }
+                
+                guard let url = url,
+                      let attribute = try? FileManager.default.attributesOfItem(atPath: url.path),
+                      let sizeInBytes = attribute[.size] as? UInt64
+                else {
+                    continuation.resume(with: .success(nil))
+                    assertionFailure()
+                    return
+                }
+                
+                do {
+                    let fileURL = try FileManager.default.createTemporaryFileURL(
+                        filename: UUID().uuidString,
+                        pathExtension: url.pathExtension
+                    )
+                    try FileManager.default.copyItem(at: url, to: fileURL)
+                    let result = VideoLoadResult(
+                        url: fileURL,
+                        sizeInBytes: sizeInBytes
+                    )
+                    
+                    continuation.resume(with: .success(result))
+                } catch {
+                    continuation.resume(with: .failure(error))
+                }
+            }   // end loadFileRepresentation
+        }   // end try await withCheckedThrowingContinuation
+    }   // end func
+    
 }

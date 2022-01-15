@@ -9,7 +9,7 @@ import Foundation
 import NIOHTTP1
 
 extension Twitter.API.Error {
-    public struct ResponseError: Error, LocalizedError {
+    public struct ResponseError: Error {
         public var httpResponseStatus: HTTPResponseStatus
         public var twitterAPIError: TwitterAPIError?
     

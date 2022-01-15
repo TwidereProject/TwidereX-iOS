@@ -150,27 +150,26 @@ extension MainTabBarController {
                         feedbackGenerator.notificationOccurred(.success)
                     }
                 case .failure(let error):
-                    // TODO:
-                    break
+                    guard let error = error as? LocalizedError else {
+                        return
+                    }
+                    
+                    var config = SwiftMessages.defaultConfig
+                    config.duration = .seconds(seconds: 3)
+                    config.interactiveHide = true
+                    
+                    let bannerView = NotificationBannerView()
+                    bannerView.configure(style: .error)
+                    bannerView.configure(error: error)
+                    
+                    feedbackGenerator.prepare()
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                        SwiftMessages.show(config: config, view: bannerView)
+                        feedbackGenerator.notificationOccurred(.error)
+                    }
                 }
             }
             .store(in: &disposeBag)
-//        context.apiService.error
-//            .receive(on: DispatchQueue.main)
-//            .sink { [weak self] error in
-//                guard let _ = self else { return }
-//                switch error {
-//                case .implicit:
-//                    break
-//                case .explicit(let reason):
-//                    break
-//                    // FIXME:
-////                    let messageConfig = reason.messageConfig
-////                    let notifyBannerView = reason.notifyBannerView
-////                    SwiftMessages.show(config: messageConfig, view: notifyBannerView)
-//                }
-//            }
-//            .store(in: &disposeBag)
         
         delegate = self
     }

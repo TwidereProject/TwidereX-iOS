@@ -13,6 +13,38 @@ import TwidereCore
 import TwitterSDK
 import MastodonSDK
 
+// objc.io
+// ref: https://talk.objc.io/episodes/S01E269-swift-concurrency-async-sequences-part-1
+struct Chunked<Base: AsyncSequence>: AsyncSequence where Base.Element == UInt8 {
+    var base: Base
+    var chunkSize: Int = 1 * 1024 * 1024      // 1 MiB
+    typealias Element = Data
+    
+    struct AsyncIterator: AsyncIteratorProtocol {
+        var base: Base.AsyncIterator
+        var chunkSize: Int
+        
+        mutating func next() async throws -> Data? {
+            var result = Data()
+            while let element = try await base.next() {
+                result.append(element)
+                if result.count == chunkSize { return result }
+            }
+            return result.isEmpty ? nil : result
+        }
+    }
+    
+    func makeAsyncIterator() -> AsyncIterator {
+        AsyncIterator(base: base.makeAsyncIterator(), chunkSize: chunkSize)
+    }
+}
+
+extension AsyncSequence where Element == UInt8 {
+    var chunked: Chunked<Self> {
+        Chunked(base: self)
+    }
+}
+
 extension Data {
     fileprivate func chunks(size: Int) -> [Data] {
         return stride(from: 0, to: count, by: size).map {
@@ -23,16 +55,66 @@ extension Data {
 
 // Twitter Only
 extension AttachmentViewModel {
-    struct SliceResult {
-        let chunks: [Data]
+    class SliceResult {
+        
+        let fileURL: URL
+        let chunks: Chunked<FileHandle.AsyncBytes>
+        let chunkCount: Int
         let type: UTType
-        
-        let totalBytes: Int
-        
-        public init(chunks: [Data], type: UTType) {
+        let sizeInBytes: UInt64
+
+        public init?(
+            url: URL,
+            type: UTType
+        ) {
+            guard let chunks = try? FileHandle(forReadingFrom: url).bytes.chunked else { return nil }
+            let _sizeInBytes: UInt64? = {
+                let attribute = try? FileManager.default.attributesOfItem(atPath: url.path)
+                return attribute?[.size] as? UInt64
+            }()
+            guard let sizeInBytes = _sizeInBytes else { return nil }
+            
+            self.fileURL = url
             self.chunks = chunks
+            self.chunkCount = SliceResult.chunkCount(chunkSize: UInt64(chunks.chunkSize), sizeInBytes: sizeInBytes)
             self.type = type
-            self.totalBytes = chunks.reduce(0, { result, next in return result + next.count })
+            self.sizeInBytes = sizeInBytes
+        }
+        
+        public init?(
+            imageData: Data,
+            type: UTType
+        ) {
+            let _fileURL = try? FileManager.default.createTemporaryFileURL(
+                filename: UUID().uuidString,
+                pathExtension: imageData.kf.imageFormat == .PNG ? "png" : "jpeg"
+            )
+            guard let fileURL = _fileURL else { return nil }
+            
+            do {
+                try imageData.write(to: fileURL)
+            } catch {
+                return nil
+            }
+            
+            guard let chunks = try? FileHandle(forReadingFrom: fileURL).bytes.chunked else {
+                return nil
+            }
+            let sizeInBytes = UInt64(imageData.count)
+            
+            self.fileURL = fileURL
+            self.chunks = chunks
+            self.chunkCount = SliceResult.chunkCount(chunkSize: UInt64(chunks.chunkSize), sizeInBytes: sizeInBytes)
+            self.type = type
+            self.sizeInBytes = sizeInBytes
+        }
+        
+        static func chunkCount(chunkSize: UInt64, sizeInBytes: UInt64) -> Int {
+            guard sizeInBytes > 0 else { return 0 }
+            let count = sizeInBytes / chunkSize
+            let remains = sizeInBytes % chunkSize
+            let result = remains > 0 ? count + 1 : count
+            return Int(result)
         }
         
     }
@@ -84,17 +166,18 @@ extension AttachmentViewModel {
                 }
             } while (imageData.count > maxPayloadSizeInBytes)
             
-            let chunks = imageData.chunks(size: 1 * 1024 * 1024)      // 1 MiB chunks
-            os_log("%{public}s[%{public}ld], %{public}s: split to %ld chunks", ((#file as NSString).lastPathComponent), #line, #function, chunks.count)
-
             return SliceResult(
-                chunks: chunks,
+                imageData: imageData,
                 type: imageData.kf.imageFormat == .PNG ? UTType.png : UTType.jpeg
             )
+            
 //        case .gif(let url):
 //            fatalError()
-//        case .video(let url):
-//            fatalError()
+        case .video(let url, _):
+            return SliceResult(
+                url: url,
+                type: .movie
+            )
         }
     }
 }
@@ -139,13 +222,14 @@ extension AttachmentViewModel {
         }
         
         // init + N * append + finalize
-        progress.totalUnitCount = 1 + Int64(sliceResult.chunks.count) + 1
+        progress.totalUnitCount = 1 + Int64(sliceResult.chunkCount) + 1
         progress.completedUnitCount = 0
         
         // init
         let mediaInitResponse = try await context.apiService.twitterMediaInit(
-            totalBytes: sliceResult.totalBytes,
+            totalBytes: Int(sliceResult.sizeInBytes),
             mediaType: sliceResult.type.preferredMIMEType ?? "",
+            mediaCategory: output.twitterMediaCategory.rawValue,
             twitterAuthenticationContext: twitterAuthenticationContext
         )
         AttachmentViewModel.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): init media success: \(mediaInitResponse.value.mediaIDString)")
@@ -153,16 +237,18 @@ extension AttachmentViewModel {
         progress.completedUnitCount += 1
         
         // append
-        let chunkCount = sliceResult.chunks.count
-        for (i, chunk) in sliceResult.chunks.enumerated() {
+        var chunkIndex = 0
+        let chunkCount = sliceResult.chunkCount
+        for try await chunk in sliceResult.chunks {
             _ = try await context.apiService.twitterMediaAppend(
                 mediaID: mediaID,
                 chunk: chunk,
-                index: i,
+                index: chunkIndex,
                 twitterAuthenticationContext: twitterAuthenticationContext
             )
-            AttachmentViewModel.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): append chunk \(i)/\(chunkCount) success")
+            AttachmentViewModel.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): append chunk \(chunkIndex)/\(chunkCount) success")
             progress.completedUnitCount += 1
+            chunkIndex += 1
         }
         
         var isFinalized = false
@@ -171,10 +257,17 @@ extension AttachmentViewModel {
                 mediaID: mediaID,
                 twitterAuthenticationContext: twitterAuthenticationContext
             )
-            if let info = mediaFinalizedResponse.value.processingInfo {
+            
+            guard let processingInfo = mediaFinalizedResponse.value.processingInfo else {
+                isFinalized = true
+                break
+            }
+            
+            if let checkAfterSecs = processingInfo.checkAfterSecs {
+                let checkAfterSeconds = UInt64(checkAfterSecs)
+                AttachmentViewModel.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): finalize status pending. check after \(checkAfterSecs)s")
+                
                 assert(!Thread.isMainThread)
-                let checkAfterSeconds = UInt64(info.checkAfterSecs)
-                AttachmentViewModel.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): finalize status pending. check after \(info.checkAfterSecs)s")
                 await Task.sleep(1_000_000_000 * checkAfterSeconds)     // 1s * checkAfterSeconds
                 continue
             
@@ -288,6 +381,8 @@ extension AttachmentViewModel.Output {
             case .png:      return .png(data)
             case .jpg:      return .jpeg(data)
             }
+        case .video(let url, let mimeType):
+            return .other(url, fileExtension: url.pathExtension, mimeType: "video/mp4")
         }
     }
 }
