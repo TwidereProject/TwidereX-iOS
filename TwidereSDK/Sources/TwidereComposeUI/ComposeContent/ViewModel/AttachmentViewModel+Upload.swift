@@ -298,13 +298,20 @@ extension AttachmentViewModel {
             focus: nil              // TODO:
         )
         
-        // init + N * append + finalize
-        progress.totalUnitCount = 1 + 10
+        // upload + N * check upload
+        // upload : check = 9 : 1
+        let uploadTaskCount: Int64 = 540
+        let checkUploadTaskCount: Int64 = 1
+        let checkUploadTaskRetryLimit: Int64 = 60
+        
+        progress.totalUnitCount = uploadTaskCount + checkUploadTaskCount * checkUploadTaskRetryLimit
         progress.completedUnitCount = 0
         
         let attachmentUploadResponse: Mastodon.Response.Content<Mastodon.Entity.Attachment> = try await {
             do {
                 AttachmentViewModel.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): [V2] upload attachment...")
+                
+                progress.addChild(query.progress, withPendingUnitCount: uploadTaskCount)
                 return try await context.apiService.mastodonMediaUpload(
                     query: query,
                     mastodonAuthenticationContext: mastodonAuthenticationContext,
@@ -318,6 +325,7 @@ extension AttachmentViewModel {
                 
                 AttachmentViewModel.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): [V1] upload attachment...")
 
+                progress.addChild(query.progress, withPendingUnitCount: uploadTaskCount)
                 return try await context.apiService.mastodonMediaUpload(
                     query: query,
                     mastodonAuthenticationContext: mastodonAuthenticationContext,
@@ -325,21 +333,19 @@ extension AttachmentViewModel {
                 )
             }
         }()
-        progress.completedUnitCount += 1
-        
         
         // check needs wait processing (until get the `url`)
         if attachmentUploadResponse.statusCode == 202 {
             // note:
             // the Mastodon server append the attachments in order by upload time
             // can not upload concurrency
-            let waitProcessRetryLimit = 10
-            var waitProcessRetryCount = 0
+            let waitProcessRetryLimit = checkUploadTaskRetryLimit
+            var waitProcessRetryCount: Int64 = 0
             
             repeat {
                 defer {
                     // make sure always count + 1
-                    waitProcessRetryCount += 1
+                    waitProcessRetryCount += checkUploadTaskCount
                 }
                 
                 AttachmentViewModel.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): check attachment process status")
@@ -348,13 +354,13 @@ extension AttachmentViewModel {
                     attachmentID: attachmentUploadResponse.value.id,
                     mastodonAuthenticationContext: mastodonAuthenticationContext
                 )
-                progress.completedUnitCount += 1
+                progress.completedUnitCount += checkUploadTaskCount
                 
                 if let url = attachmentStatusResponse.value.url {
                     AttachmentViewModel.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): attachment process finish: \(url)")
                     
                     // escape here
-                    progress.completedUnitCount = 11
+                    progress.completedUnitCount = progress.totalUnitCount
                     return .mastodon(attachmentStatusResponse)
                     
                 } else {
@@ -381,7 +387,7 @@ extension AttachmentViewModel.Output {
             case .png:      return .png(data)
             case .jpg:      return .jpeg(data)
             }
-        case .video(let url, let mimeType):
+        case .video(let url, _):
             return .other(url, fileExtension: url.pathExtension, mimeType: "video/mp4")
         }
     }

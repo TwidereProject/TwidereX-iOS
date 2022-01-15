@@ -43,6 +43,20 @@ extension Mastodon.API.Media {
         )
         request.timeoutInterval = 180    // should > 200 Kb/s for 40 MiB media attachment
         let serialStream = query.serialStream
+        
+        // total unit count in bytes count
+        // will small than actally count due to multipart protocol meta
+        serialStream.progress.totalUnitCount = {
+            var size = 0
+            size += query.file?.sizeInByte ?? 0
+            size += query.thumbnail?.sizeInByte ?? 0
+            return Int64(size)
+        }()
+        query.progress.addChild(
+            serialStream.progress,
+            withPendingUnitCount: query.progress.totalUnitCount
+        )
+        
         defer {
             // close stream when task finish
             serialStream.boundStreams.output.close()
@@ -58,6 +72,12 @@ extension Mastodon.API.Media {
         public let thumbnail: Mastodon.API.MediaAttachment?
         public let description: String?
         public let focus: String?
+        
+        public let progress: Progress = {
+            let progress = Progress()
+            progress.totalUnitCount = 100
+            return progress
+        }()
         
         public init(
             file: Mastodon.API.MediaAttachment?,
