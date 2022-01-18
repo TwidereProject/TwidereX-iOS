@@ -201,7 +201,8 @@ extension UserMediaTimelineViewModel.State {
                                 excludeReplies: true,
                                 excludeReblogs: true,
                                 onlyMedia: true,
-                                userIdentifier: identifier
+                                userIdentifier: identifier,
+                                local: nil
                             ))
                         )
                     default:

@@ -160,6 +160,8 @@ extension StatusMetricsDashboardView {
         let text = metricText(count: count)
         replyButton.setTitle(text, for: .normal)
         replyButton.isHidden = count == 0
+
+        // FIXME: a11y
     }
     
     public func setupRepost(count: Int) {

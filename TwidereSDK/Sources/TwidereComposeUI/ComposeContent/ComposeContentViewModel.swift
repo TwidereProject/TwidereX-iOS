@@ -64,7 +64,7 @@ public final class ComposeContentViewModel: NSObject {
     @Published public internal(set) var attachmentViewModels: [AttachmentViewModel] = []
     @Published public var maxMediaAttachmentLimit = 4
     @Published public internal(set) var isMediaSensitive = false        // Mastodon only
-    
+    @Published public internal(set) var isMediaValid = true
     // Output
     public var diffableDataSource: UITableViewDiffableDataSource<Section, Item>?
     public var customEmojiDiffableDataSource: UICollectionViewDiffableDataSource<CustomEmojiPickerInputView.ViewModel.Section, CustomEmojiPickerInputView.ViewModel.Item>?
@@ -287,7 +287,8 @@ public final class ComposeContentViewModel: NSObject {
             $author,
             $excludeReplyTwitterUserIDs
         )
-        .map { author, excludeReplyTwitterUserIDs -> String in
+        .compactMap { [weak self] author, excludeReplyTwitterUserIDs -> String? in
+            guard let self = self else { return nil }
             var usernames: [String] = []
             
             switch (self.replyTo, author) {
@@ -411,6 +412,31 @@ public final class ComposeContentViewModel: NSObject {
             }
             .store(in: &disposeBag)
         
+        $attachmentViewModels
+            .map { viewModels in
+                Publishers.MergeMany(viewModels.map { $0.$output })     // build publisher when underlying outputs emits
+                    .delay(for: 0.5, scheduler: DispatchQueue.main)
+                    .map { _ in viewModels.map { $0.output } }          // convert to outputs with delay. Due to @Published emit before changes
+            }
+            .switchToLatest()                                           // always apply stream on latest viewModels
+            .map { outputs in
+                // condition 1: all outputs ready
+                guard outputs.allSatisfy({ $0 != nil }) else { return false }
+                // condition 2: video exclusive (empty or only one)
+                var videoCount = 0
+                for output in outputs {
+                    switch output {
+                    case .video:        videoCount += 1
+                    default:            continue
+                    }
+                }
+                guard videoCount == 0 || (videoCount == 1 && outputs.count == 1) else {
+                    return false
+                }
+                return true
+            }
+            .assign(to: &$isMediaValid)
+        
         // bind emojis
         $isCustomEmojiComposing
             .assign(to: \.value, on: customEmojiPickerInputViewModel.isCustomEmojiComposing)
@@ -530,15 +556,21 @@ public final class ComposeContentViewModel: NSObject {
 
         
         // bind UI state
-        Publishers.CombineLatest3(
+        Publishers.CombineLatest4(
             $isTextInputEmpty,
             $isTextInputValid,
-            $attachmentViewModels
+            $attachmentViewModels,
+            $isMediaValid
         )
-        .map { isTextInputEmpty, isTextInputValid, attachmentViewModels in
-            guard isTextInputValid else { return false }
-            guard !isTextInputEmpty || !attachmentViewModels.isEmpty else { return false }
-            return true
+        .map { isTextInputEmpty, isTextInputValid, attachmentViewModels, isMediaValid in
+            guard isTextInputValid else {
+                return false
+            }
+            if isTextInputEmpty {
+                return !attachmentViewModels.isEmpty && isMediaValid
+            } else {
+                return attachmentViewModels.isEmpty || isMediaValid
+            }
         }
         .assign(to: &$isComposeBarButtonEnabled)
         
@@ -556,7 +588,7 @@ public final class ComposeContentViewModel: NSObject {
     }
     
     deinit {
-        os_log("%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
+        os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
         locationManager.stopUpdatingLocation()
     }
     

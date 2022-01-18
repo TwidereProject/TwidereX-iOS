@@ -23,7 +23,7 @@ final public class FeedFetchedResultsController: NSObject {
     public let fetchedResultsController: NSFetchedResultsController<Feed>
     
     // input
-    public let predicate: CurrentValueSubject<NSPredicate, Never>
+    @Published public var predicate: NSPredicate
     
     // output
     private let _objectIDs = PassthroughSubject<[NSManagedObjectID], Never>()
@@ -45,11 +45,9 @@ final public class FeedFetchedResultsController: NSObject {
             
             return controller
         }()
-        self.predicate = CurrentValueSubject(
-            Feed.predicate(
-                kind: .none,
-                acct: .none
-            )
+        self.predicate = Feed.predicate(
+            kind: .none,
+            acct: .none
         )
         super.init()
         
@@ -62,7 +60,7 @@ final public class FeedFetchedResultsController: NSObject {
         
         fetchedResultsController.delegate = self
         
-        predicate.removeDuplicates()
+        $predicate.removeDuplicates()
             .receive(on: DispatchQueue.main)
             .sink { [weak self] predicate in
                 guard let self = self else { return }

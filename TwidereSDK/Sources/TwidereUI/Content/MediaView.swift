@@ -88,6 +88,8 @@ extension MediaView {
 extension MediaView {
     private func _init() {
         // lazy load content later
+        
+        isAccessibilityElement = true
     }
     
     public func setup(configuration: Configuration) {

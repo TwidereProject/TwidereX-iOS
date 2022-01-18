@@ -106,6 +106,23 @@ extension ComposeAttachmentTableViewCell {
                         )
                     }
                     .store(in: &cell.disposeBag)
+                viewModel.$output
+                    .receive(on: DispatchQueue.main)
+                    .sink { [weak cell] output in
+                        guard let cell = cell else { return }
+                        
+                        cell.activityIndicatorView.stopAnimating()
+                        switch output {
+                        case .video:
+                            cell.setPlayerBadgeDisplay()
+                        case .image:
+                            break
+                        case nil:
+                            cell.activityIndicatorView.startAnimating()
+                        }
+                    }
+                    .store(in: &cell.disposeBag)
+                    
                 return cell
             }
         }

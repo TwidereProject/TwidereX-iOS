@@ -87,6 +87,27 @@ extension StatusThreadRootTableViewCell {
         ])
         
         statusView.delegate = self
+        
+        isAccessibilityElement = false
+    }
+    
+    override var accessibilityElements: [Any]? {
+        get {
+            return [
+                statusView.headerTextLabel,
+                statusView.authorAvatarButton,
+                statusView.authorNameLabel,
+                statusView.spoilerContentTextView,
+                statusView.contentTextView,
+                statusView.mediaGridContainerView,
+                statusView.quoteStatusView,
+                statusView.metricsDashboardView,
+                statusView.toolbar,
+            ]
+            .compactMap { $0 }
+            .filter { !$0.isHidden }
+        }
+        set { }
     }
     
 }

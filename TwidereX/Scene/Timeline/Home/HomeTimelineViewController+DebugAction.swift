@@ -81,6 +81,14 @@ extension HomeTimelineViewController {
                     guard let self = self else { return }
                     self.showStubTimelineAction(action)
                 }),
+                UIAction(title: "Local Timeline", image: nil, attributes: [], handler: { [weak self] action in
+                    guard let self = self else { return }
+                    self.showLocalTimelineAction(action)
+                }),
+                UIAction(title: "Public Timeline", image: nil, attributes: [], handler: { [weak self] action in
+                    guard let self = self else { return }
+                    self.showPublicTimelineAction(action)
+                }),
                 notificationBannerMenu,
                 UIAction(title: "Corner Smooth Preview", attributes: [], state: .off, handler: { [weak self] action in
                     guard let self = self else { return }
@@ -215,6 +223,16 @@ extension HomeTimelineViewController {
     
     @objc private func showStubTimelineAction(_ sender: UIAction) {
         coordinator.present(scene: .stubTimeline, from: self, transition: .show)
+    }
+    
+    @objc private func showLocalTimelineAction(_ sender: UIAction) {
+        let federatedTimelineViewModel = FederatedTimelineViewModel(context: context, local: true)
+        coordinator.present(scene: .federatedTimeline(viewModel: federatedTimelineViewModel), from: self, transition: .show)
+    }
+    
+    @objc private func showPublicTimelineAction(_ sender: UIAction) {
+        let federatedTimelineViewModel = FederatedTimelineViewModel(context: context, local: false)
+        coordinator.present(scene: .federatedTimeline(viewModel: federatedTimelineViewModel), from: self, transition: .show)
     }
     
     @objc private func showAccountListAction(_ sender: UIAction) {

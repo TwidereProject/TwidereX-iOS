@@ -44,6 +44,10 @@ public final class ComposeContentViewController: UIViewController {
         )
         return inputView
     }()
+    
+    deinit {
+        os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
+    }
 }
 
 extension ComposeContentViewController {
@@ -368,6 +372,8 @@ extension ComposeContentViewController {
     private func createPhotoLibraryPicker() -> PHPickerViewController {
         let configuration: PHPickerConfiguration = {
             var configuration = PHPickerConfiguration()
+            // Twitter not supports HDR (HEVC, Dolby Vision)
+            // configuration.preferredAssetRepresentationMode = .current
             configuration.filter = .any(of: [.images, .videos])
             configuration.selectionLimit = viewModel.maxMediaAttachmentLimit - viewModel.attachmentViewModels.count
             return configuration

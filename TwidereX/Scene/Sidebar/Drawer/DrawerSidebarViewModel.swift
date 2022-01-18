@@ -19,8 +19,8 @@ final class DrawerSidebarViewModel {
     let context: AppContext
     
     // output
-    var sidebarDiffableDataSource: UITableViewDiffableDataSource<SidebarSection, SidebarItem>?
-    var settingDiffableDataSource: UITableViewDiffableDataSource<SidebarSection, SidebarItem>?
+    var sidebarDiffableDataSource: UICollectionViewDiffableDataSource<SidebarSection, SidebarItem>?
+    var settingDiffableDataSource: UICollectionViewDiffableDataSource<SidebarSection, SidebarItem>?
     
     init(context: AppContext) {
         self.context = context

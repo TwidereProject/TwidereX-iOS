@@ -6,12 +6,16 @@
 //  Copyright © 2021 Twidere. All rights reserved.
 //
 
+import os.log
 import Foundation
 import CoreDataStack
 import TwitterSDK
 import MastodonSDK
+import TwidereCore
 
 enum StatusListFetchViewModel {
+    
+    static let logger = Logger(subsystem: "StatusListFetchViewModel", category: "ViewModel")
     
     enum Result {
         case twitter([Twitter.Entity.Tweet]) // v1
@@ -89,6 +93,7 @@ extension StatusListFetchViewModel {
         let excludeReblogs: Bool
         let onlyMedia: Bool
         let userIdentifier: MastodonUserIdentifier?
+        let local: Bool?
         
         func map(maxID: MastodonStatus.ID?) -> MastodonFetchContext {
             MastodonFetchContext(
@@ -100,7 +105,8 @@ extension StatusListFetchViewModel {
                 excludeReplies: self.excludeReplies,
                 excludeReblogs: self.excludeReblogs,
                 onlyMedia: self.onlyMedia,
-                userIdentifier: self.userIdentifier
+                userIdentifier: self.userIdentifier,
+                local: self.local
             )
         }
         
@@ -114,7 +120,8 @@ extension StatusListFetchViewModel {
                 excludeReplies: self.excludeReplies,
                 excludeReblogs: self.excludeReblogs,
                 onlyMedia: self.onlyMedia,
-                userIdentifier: self.userIdentifier
+                userIdentifier: self.userIdentifier,
+                local: self.local
             )
         }
     }
@@ -171,6 +178,36 @@ extension StatusListFetchViewModel {
                 let fetchContext = fetchContext.map(maxID: maxID)
                 return Input(fetchContext: .mastodon(fetchContext))
             }()
+            return Output(
+                result: .mastodon(response.value),
+                hasMore: !noMore,
+                nextInput: nextInput
+            )
+        }
+    }
+    
+    static func publicTimeline(context: AppContext, input: Input) async throws -> Output {
+        switch input.fetchContext {
+        case .twitter(let fetchContext):
+            assertionFailure("Invalid entry")
+            throw AppError.implicit(.badRequest)
+        case .mastodon(let fetchContext):
+            let authenticationContext = fetchContext.authenticationContext
+            let response = try await context.apiService.mastodonPublicTimeline(
+                local: fetchContext.local ?? false,
+                maxID: fetchContext.maxID,
+                count: fetchContext.count ?? 100,
+                authenticationContext: authenticationContext
+            )
+            let _maxID = response.link?.maxID
+            let noMore = response.value.isEmpty || (response.value.count == 1 && response.value[0].id == fetchContext.maxID) || _maxID == nil || _maxID == fetchContext.maxID
+            let nextInput: Input? = {
+                if noMore { return nil }
+                guard let maxID = _maxID else { return nil }
+                let fetchContext = fetchContext.map(maxID: maxID)
+                return Input(fetchContext: .mastodon(fetchContext))
+            }()
+            logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): hasMore: \(!noMore)")
             return Output(
                 result: .mastodon(response.value),
                 hasMore: !noMore,

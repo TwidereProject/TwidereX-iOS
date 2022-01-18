@@ -53,6 +53,9 @@ extension SceneCoordinator {
         case profile(viewModel: ProfileViewModel)
         case friendshipList(viewModel: FriendshipListViewModel)
         
+        // Timeline
+        case federatedTimeline(viewModel: FederatedTimelineViewModel)
+        
         // Status
         case statusThread(viewModel: StatusThreadViewModel)
         case compose(viewModel: ComposeViewModel, contentViewModel: ComposeContentViewModel)
@@ -225,6 +228,10 @@ private extension SceneCoordinator {
             }
         case .profile(let viewModel):
             let _viewController = ProfileViewController()
+            _viewController.viewModel = viewModel
+            viewController = _viewController
+        case .federatedTimeline(let viewModel):
+            let _viewController = FederatedTimelineViewController()
             _viewController.viewModel = viewModel
             viewController = _viewController
         case .statusThread(let viewModel):

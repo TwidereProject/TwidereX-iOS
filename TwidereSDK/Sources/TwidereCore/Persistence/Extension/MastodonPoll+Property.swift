@@ -11,8 +11,8 @@ import CoreDataStack
 
 extension MastodonPoll.Property {
     public init(
-        domain: String,
         entity: Mastodon.Entity.Poll,
+        domain: String,
         networkDate: Date
     ) {
         self.init(

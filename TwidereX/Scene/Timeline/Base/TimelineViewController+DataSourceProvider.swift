@@ -1,6 +1,6 @@
 //
-//  HomeTimelineViewController+DataSourceProvider.swift
-//  HomeTimelineViewController+DataSourceProvider
+//  TimelineViewController+DataSourceProvider.swift
+//
 //
 //  Created by Cirno MainasuK on 2021-8-30.
 //  Copyright © 2021 Twidere. All rights reserved.
@@ -8,7 +8,7 @@
 
 import UIKit
 
-extension HomeTimelineViewController: DataSourceProvider {
+extension TimelineViewController: DataSourceProvider {
     func item(from source: DataSourceItem.Source) async -> DataSourceItem? {
         var _indexPath = source.indexPath
         if _indexPath == nil, let cell = source.tableViewCell {
@@ -25,16 +25,22 @@ extension HomeTimelineViewController: DataSourceProvider {
             let managedObjectContext = context.managedObjectContext
             let item: DataSourceItem? = await managedObjectContext.perform {
                 guard let feed = record.object(in: managedObjectContext) else { return nil }
-                guard feed.kind == .home else { return nil }
-                if let status = feed.twitterStatus {
-                    return .status(.twitter(record: .init(objectID: status.objectID)))
-                } else if let status = feed.mastodonStatus {
-                    return .status(.mastodon(record: .init(objectID: status.objectID)))
-                } else {
+                switch feed.kind {
+                case .home:
+                    if let status = feed.twitterStatus {
+                        return .status(.twitter(record: .init(objectID: status.objectID)))
+                    } else if let status = feed.mastodonStatus {
+                        return .status(.mastodon(record: .init(objectID: status.objectID)))
+                    } else {
+                        return nil
+                    }
+                default:
                     return nil
-                }
+                }   // end switch
             }
             return item
+        case .status(let record):
+            return .status(record)
         default:
             return nil
         }

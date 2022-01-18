@@ -1,7 +1,7 @@
 strings:
   inputs:
-  - TwidereSDK/Sources/TwidereLocalization/Resources/en.lproj/Localizable.strings
-  - TwidereSDK/Sources/TwidereLocalization/Resources/en.lproj/Localizable.stringsdict
+    - TwidereSDK/Sources/TwidereLocalization/Resources/en.lproj/Localizable.strings
+    - TwidereSDK/Sources/TwidereLocalization/Resources/en.lproj/Localizable.stringsdict
   outputs:
     - templateName: structured-swift5
       output: TwidereSDK/Sources/TwidereLocalization/Generated/Strings.swift

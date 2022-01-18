@@ -14,6 +14,8 @@ import TwidereUI
 
 final class DrawerSidebarViewController: UIViewController, NeedsDependency {
     
+    static let settingTableViewHeight: CGFloat = 56
+    
     let logger = Logger(subsystem: "DrawerSidebarViewController", category: "ViewController")
     
     weak var context: AppContext! { willSet { precondition(!isViewLoaded) } }
@@ -24,23 +26,23 @@ final class DrawerSidebarViewController: UIViewController, NeedsDependency {
 
     let headerView = DrawerSidebarHeaderView()    
     
-    let sidebarTableView: UITableView = {
-        let tableView = UITableView()
-        tableView.register(DrawerSidebarEntryTableViewCell.self, forCellReuseIdentifier: String(describing: DrawerSidebarEntryTableViewCell.self))
-        tableView.tableFooterView = UIView()
-        tableView.separatorStyle = .none
-        return tableView
+    let sidebarCollectionView: UICollectionView = {
+        var configuration = UICollectionLayoutListConfiguration(appearance: .sidebar)
+        configuration.backgroundColor = .clear
+        let layout = UICollectionViewCompositionalLayout.list(using: configuration)
+        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        return collectionView
     }()
     
-    let settingTableViewSeparatorLine = SeparatorLineView()
+    let settingCollectionViewSeparatorLine = SeparatorLineView()
     
-    let settingTableView: UITableView = {
-        let tableView = UITableView()
-        tableView.register(DrawerSidebarEntryTableViewCell.self, forCellReuseIdentifier: String(describing: DrawerSidebarEntryTableViewCell.self))
-        tableView.tableFooterView = UIView()
-        tableView.separatorStyle = .none
-        tableView.alwaysBounceVertical = false
-        return tableView
+    let settingCollectionView: UICollectionView = {
+        var configuration = UICollectionLayoutListConfiguration(appearance: .sidebar)
+        configuration.backgroundColor = .clear
+        let layout = UICollectionViewCompositionalLayout.list(using: configuration)
+        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        collectionView.isScrollEnabled = false
+        return collectionView
     }()
     
     deinit {
@@ -63,30 +65,41 @@ extension DrawerSidebarViewController {
             headerView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             headerView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
         ])
-
-        settingTableView.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(settingTableView)
+        
+        sidebarCollectionView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(sidebarCollectionView)
         NSLayoutConstraint.activate([
-            settingTableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            view.trailingAnchor.constraint(equalTo: settingTableView.trailingAnchor),
-            view.layoutMarginsGuide.bottomAnchor.constraint(equalTo: settingTableView.bottomAnchor),
-            settingTableView.heightAnchor.constraint(equalToConstant: 56).priority(.defaultHigh),
+            sidebarCollectionView.topAnchor.constraint(equalTo: headerView.bottomAnchor),
+            sidebarCollectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            sidebarCollectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            sidebarCollectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+        ])
+        sidebarCollectionView.contentInset.bottom = DrawerSidebarViewController.settingTableViewHeight
+        
+        settingCollectionView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(settingCollectionView)
+        NSLayoutConstraint.activate([
+            settingCollectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            view.trailingAnchor.constraint(equalTo: settingCollectionView.trailingAnchor),
+            view.layoutMarginsGuide.bottomAnchor.constraint(equalTo: settingCollectionView.bottomAnchor),
+            settingCollectionView.heightAnchor.constraint(greaterThanOrEqualToConstant: DrawerSidebarViewController.settingTableViewHeight).priority(.required - 1),
         ])
 
-        settingTableViewSeparatorLine.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(settingTableViewSeparatorLine)
+        settingCollectionViewSeparatorLine.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(settingCollectionViewSeparatorLine)
         NSLayoutConstraint.activate([
-            settingTableViewSeparatorLine.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            view.trailingAnchor.constraint(equalTo: settingTableViewSeparatorLine.trailingAnchor),
-            settingTableView.topAnchor.constraint(equalTo: settingTableViewSeparatorLine.bottomAnchor),
-            settingTableViewSeparatorLine.heightAnchor.constraint(equalToConstant: UIView.separatorLineHeight(of: view)).priority(.defaultHigh),
+            settingCollectionViewSeparatorLine.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            view.trailingAnchor.constraint(equalTo: settingCollectionViewSeparatorLine.trailingAnchor),
+            settingCollectionView.topAnchor.constraint(equalTo: settingCollectionViewSeparatorLine.bottomAnchor),
+            settingCollectionViewSeparatorLine.heightAnchor.constraint(equalToConstant: UIView.separatorLineHeight(of: view)).priority(.defaultHigh),
         ])
 
-        sidebarTableView.delegate = self
-        settingTableView.delegate = self
+        // sidebarTableView.delegate = self
+        sidebarCollectionView.delegate = self
+        settingCollectionView.delegate = self
         viewModel.setupDiffableDataSource(
-            sidebarTableView: sidebarTableView,
-            settingTableView: settingTableView
+            sidebarCollectionView: sidebarCollectionView,
+            settingCollectionView: settingCollectionView
         )
         
         context.authenticationService.activeAuthenticationContext
@@ -105,7 +118,6 @@ extension DrawerSidebarViewController {
 
 // MARK: - DrawerSidebarHeaderViewDelegate
 extension DrawerSidebarViewController: DrawerSidebarHeaderViewDelegate {
-
 
     func drawerSidebarHeaderView(_ headerView: DrawerSidebarHeaderView, avatarButtonDidPressed button: UIButton) {
         let profileViewModel = MeProfileViewModel(context: self.context)
@@ -150,14 +162,28 @@ extension DrawerSidebarViewController: DrawerSidebarHeaderViewDelegate {
 
 }
 
-// MARK: - UITableViewDelegate
-extension DrawerSidebarViewController: UITableViewDelegate {
-
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        switch tableView {
-        case sidebarTableView:
-            break
-        case settingTableView:
+// MARK: - UICollectionViewDelegate
+extension DrawerSidebarViewController: UICollectionViewDelegate {
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        switch collectionView {
+        case sidebarCollectionView:
+            guard let diffableDataSource = viewModel.sidebarDiffableDataSource else { return }
+            guard let item = diffableDataSource.itemIdentifier(for: indexPath) else { return }
+            switch item {
+            case .local:
+                let federatedTimelineViewModel = FederatedTimelineViewModel(context: context, local: true)
+                coordinator.present(scene: .federatedTimeline(viewModel: federatedTimelineViewModel), from: self, transition: .show)
+            case .federated:
+                let federatedTimelineViewModel = FederatedTimelineViewModel(context: context, local: false)
+                coordinator.present(scene: .federatedTimeline(viewModel: federatedTimelineViewModel), from: self, transition: .show)
+            default:
+                assertionFailure("TODO")
+            }
+            dismiss(animated: true, completion: nil)
+        case settingCollectionView:
+            guard let diffableDataSource = viewModel.settingDiffableDataSource else { return }
+            guard let item = diffableDataSource.itemIdentifier(for: indexPath) else { return }
+            guard case .settings = item else { return }
             dismiss(animated: true) {
                 self.coordinator.present(scene: .setting, from: nil, transition: .modal(animated: true, completion: nil))
             }
@@ -166,5 +192,4 @@ extension DrawerSidebarViewController: UITableViewDelegate {
             break
         }
     }
-
 }

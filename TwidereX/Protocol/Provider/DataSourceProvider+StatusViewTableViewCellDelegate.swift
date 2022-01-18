@@ -373,3 +373,33 @@ extension StatusViewTableViewCellDelegate where Self: DataSourceProvider {
     }
 
 }
+
+// MARK: - a11y
+extension StatusViewTableViewCellDelegate where Self: DataSourceProvider {
+
+    func tableViewCell(_ cell: UITableViewCell, statusView: StatusView, accessibilityActivate: Void) {
+        Task {
+            let source = DataSourceItem.Source(tableViewCell: cell, indexPath: nil)
+            guard let item = await item(from: source) else {
+                return
+            }
+            switch item {
+            case .status(let status):
+                await DataSourceFacade.coordinateToStatusThreadScene(
+                    provider: self,
+                    target: .repost,    // keep repost wrapper
+                    status: status
+                )
+            case .user(let user):
+                await DataSourceFacade.coordinateToProfileScene(
+                    provider: self,
+                    user: user
+                )
+            case .notification(let notification):
+                assertionFailure("TODO")
+            }
+        }
+    }
+    
+}
+

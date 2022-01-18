@@ -16,10 +16,11 @@ extension APIService {
     public func twitterMediaInit(
         totalBytes: Int,
         mediaType: String,
+        mediaCategory: String,
         twitterAuthenticationContext: TwitterAuthenticationContext
     ) async throws -> Twitter.Response.Content<Twitter.API.Media.InitResponse> {
         let authorization = twitterAuthenticationContext.authorization
-        let query = Twitter.API.Media.InitQuery(totalBytes: totalBytes, mediaType: mediaType)
+        let query = Twitter.API.Media.InitQuery(totalBytes: totalBytes, mediaType: mediaType, mediaCategory: mediaCategory)
         return try await Twitter.API.Media.`init`(
             session: session,
             query: query,

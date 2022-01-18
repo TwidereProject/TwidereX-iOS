@@ -117,8 +117,8 @@ extension Persistence.MastodonPoll {
         context: PersistContext
     ) -> MastodonPoll {
         let property = MastodonPoll.Property(
-            domain: context.domain,
             entity: context.entity,
+            domain: context.domain,
             networkDate: context.networkDate
         )
         let poll = MastodonPoll.insert(
@@ -135,8 +135,8 @@ extension Persistence.MastodonPoll {
     ) {
         guard context.networkDate > poll.updatedAt else { return }
         let property = MastodonPoll.Property(
-            domain: context.domain,
             entity: context.entity,
+            domain: context.domain,
             networkDate: context.networkDate
         )
         poll.update(property: property)
