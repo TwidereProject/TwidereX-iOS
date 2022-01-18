@@ -11,6 +11,8 @@ import TwidereAsset
 import TwidereLocalization
 
 enum SidebarItem: Hashable {
+    case local              // Mastodon only
+    case federated          // Mastodon only
     case messages
     case likes
     case lists
@@ -23,6 +25,8 @@ extension SidebarItem {
     
     var title: String {
         switch self {
+        case .local:        return L10n.Scene.Local.title
+        case .federated:    return L10n.Scene.Federated.title
         case .messages:     return L10n.Scene.Messages.title
         case .likes:        return L10n.Scene.Likes.title
         case .lists:        return L10n.Scene.Lists.title
@@ -34,6 +38,8 @@ extension SidebarItem {
     
     var image: UIImage {
         switch self {
+        case .local:        return Asset.Human.person2.image.withRenderingMode(.alwaysTemplate)
+        case .federated:    return Asset.ObjectTools.globe.image.withRenderingMode(.alwaysTemplate)
         case .messages:     return Asset.Communication.mail.image.withRenderingMode(.alwaysTemplate)
         case .likes:        return Asset.Health.heart.image.withRenderingMode(.alwaysTemplate)
         case .lists:        return Asset.ObjectTools.bookmarks.image.withRenderingMode(.alwaysTemplate)

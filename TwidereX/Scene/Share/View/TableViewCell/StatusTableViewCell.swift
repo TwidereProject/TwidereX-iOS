@@ -12,6 +12,7 @@ import Combine
 
 class StatusTableViewCell: UITableViewCell {
     
+    private var _disposeBag = Set<AnyCancellable>()
     var disposeBag = Set<AnyCancellable>()
     
     let logger = Logger(subsystem: "StatusTableViewCell", category: "UI")
@@ -79,6 +80,22 @@ extension StatusTableViewCell {
         bottomConversationLinkLineView.isHidden = true
         
         statusView.delegate = self
+        
+        // a11y
+        isAccessibilityElement = true
+        accessibilityElements = [statusView]
+        statusView.viewModel.$groupedAccessibilityLabel
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] accessibilityLabel in
+                guard let self = self else { return }
+                self.accessibilityLabel = accessibilityLabel
+            }
+            .store(in: &_disposeBag)
+    }
+    
+    override func accessibilityActivate() -> Bool {
+        delegate?.tableViewCell(self, statusView: statusView, accessibilityActivate: Void())
+        return true
     }
     
 }

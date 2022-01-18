@@ -26,13 +26,20 @@ final public class ComposeAttachmentCollectionViewCell: UICollectionViewCell {
         return imageView
     }()
     
+    public let activityIndicatorView: UIActivityIndicatorView = {
+        let activityIndicatorView = UIActivityIndicatorView(style: .medium)
+        activityIndicatorView.hidesWhenStopped = true
+        activityIndicatorView.stopAnimating()
+        return activityIndicatorView
+    }()
+    
     public private(set) lazy var optionImageView: UIImageView = {
         let image = Asset.Editing.ellipsisCircleFill.image
         let imageView = UIImageView(image: image)
         return imageView
     }()
     
-    let altImageView: UIImageView = {
+    let indicatorImageView: UIImageView = {
         let image = Asset.Media.altRectangle.image
         let imageView = UIImageView(image: image)
         return imageView
@@ -42,8 +49,9 @@ final public class ComposeAttachmentCollectionViewCell: UICollectionViewCell {
         super.prepareForReuse()
         
         disposeBag.removeAll()
-        altImageView.isHidden = true
+        indicatorImageView.isHidden = true
         imageView.image = nil
+        activityIndicatorView.stopAnimating()
     }
     
     public override init(frame: CGRect) {
@@ -78,26 +86,33 @@ extension ComposeAttachmentCollectionViewCell {
             imageView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor),
             imageView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor),
         ])
+        
+        activityIndicatorView.translatesAutoresizingMaskIntoConstraints = false
+        containerView.addSubview(activityIndicatorView)
+        NSLayoutConstraint.activate([
+            activityIndicatorView.centerXAnchor.constraint(equalTo: containerView.centerXAnchor),
+            activityIndicatorView.centerYAnchor.constraint(equalTo: containerView.centerYAnchor),
+        ])
 
         optionImageView.translatesAutoresizingMaskIntoConstraints = false
         containerView.addSubview(optionImageView)
         NSLayoutConstraint.activate([
             containerView.trailingAnchor.constraint(equalTo: optionImageView.trailingAnchor, constant: 4),
             containerView.bottomAnchor.constraint(equalTo: optionImageView.bottomAnchor, constant: 4),
-            optionImageView.widthAnchor.constraint(equalToConstant: 12).priority(.required - 1),
-            optionImageView.heightAnchor.constraint(equalToConstant: 12).priority(.required - 1),
+            optionImageView.widthAnchor.constraint(equalToConstant: 16).priority(.required - 1),
+            optionImageView.heightAnchor.constraint(equalToConstant: 16).priority(.required - 1),
         ])
         
-        altImageView.translatesAutoresizingMaskIntoConstraints = false
-        containerView.addSubview(altImageView)
+        indicatorImageView.translatesAutoresizingMaskIntoConstraints = false
+        containerView.addSubview(indicatorImageView)
         NSLayoutConstraint.activate([
-            altImageView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 4),
-            containerView.bottomAnchor.constraint(equalTo: altImageView.bottomAnchor, constant: 4),
-            altImageView.widthAnchor.constraint(equalToConstant: 16).priority(.required - 1),
-            altImageView.heightAnchor.constraint(equalToConstant: 12).priority(.required - 1),
+            indicatorImageView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 4),
+            indicatorImageView.centerYAnchor.constraint(equalTo: optionImageView.centerYAnchor),
+            indicatorImageView.widthAnchor.constraint(equalToConstant: 16).priority(.required - 1),
+            indicatorImageView.heightAnchor.constraint(equalToConstant: 12).priority(.required - 1),
         ])
         
-        altImageView.isHidden = true
+        indicatorImageView.isHidden = true
         containerView.backgroundColor = ComposeAttachmentCollectionViewCell.placeholderColor
         containerView.layer.masksToBounds = true
         containerView.layer.cornerCurve = .continuous
@@ -115,7 +130,18 @@ extension ComposeAttachmentCollectionViewCell {
     }
     
     public func setAltBadgeDisplay() {
-        altImageView.isHidden = false
+        indicatorImageView.image = Asset.Media.altRectangle.image
+        indicatorImageView.isHidden = false
+    }
+    
+    public func setGIFBadgeDisplay() {
+        indicatorImageView.image = Asset.Media.gifRectangle.image
+        indicatorImageView.isHidden = false
+    }
+    
+    public func setPlayerBadgeDisplay() {
+        indicatorImageView.image = Asset.Media.playerRectangle.image
+        indicatorImageView.isHidden = false
     }
     
 }

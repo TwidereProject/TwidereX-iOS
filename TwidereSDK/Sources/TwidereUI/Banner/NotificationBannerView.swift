@@ -163,6 +163,22 @@ extension NotificationBannerView {
     }
 }
 
+extension NotificationBannerView {
+
+    public func configure(error: LocalizedError) {
+        let title = error.errorDescription ?? error.failureReason ?? "Internal Error"
+        let message = error.failureReason
+
+        titleLabel.text = title
+        
+        if let message = message {
+            messageLabel.text = message
+        } else {
+            messageLabel.isHidden = true
+            titleLabel.numberOfLines = 2
+        }
+    }
+}
 
 extension NotificationBannerView {
 

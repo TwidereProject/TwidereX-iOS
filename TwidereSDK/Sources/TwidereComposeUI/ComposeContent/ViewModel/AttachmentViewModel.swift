@@ -44,24 +44,36 @@ final public class AttachmentViewModel {
                 switch output {
                 case .image(let data, _):
                     return UIImage(data: data)
-//                case .file(let url, _):
-//                    guard FileManager.default.fileExists(atPath: url.path) else { return nil }
-//                    let asset = AVURLAsset(url: url)
-//                    let assetImageGenerator = AVAssetImageGenerator(asset: asset)
-//                    assetImageGenerator.appliesPreferredTrackTransform = true   // fix orientation
-//                    do {
-//                        let cgImage = try assetImageGenerator.copyCGImage(at: CMTimeMake(value: 0, timescale: 1), actualTime: nil)
-//                        let image = UIImage(cgImage: cgImage)
-//                        return image
-//                    } catch {
-//                        AttachmentViewModel.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): thumbnail generate fail: \(error.localizedDescription)")
-//                        return nil
-//                    }
+                case .video(let url, _):
+                    guard FileManager.default.fileExists(atPath: url.path) else { return nil }
+                    let asset = AVURLAsset(url: url)
+                    let assetImageGenerator = AVAssetImageGenerator(asset: asset)
+                    assetImageGenerator.appliesPreferredTrackTransform = true   // fix orientation
+                    do {
+                        let cgImage = try assetImageGenerator.copyCGImage(at: CMTimeMake(value: 0, timescale: 1), actualTime: nil)
+                        let image = UIImage(cgImage: cgImage)
+                        return image
+                    } catch {
+                        AttachmentViewModel.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): thumbnail generate fail: \(error.localizedDescription)")
+                        return nil
+                    }
                 case .none:
                     return nil
                 }
             }
             .assign(to: &$thumbnail)
+    }
+    
+    deinit {
+        switch output {
+        case .image:
+            // FIXME:
+            break
+        case .video(let url, _):
+            try? FileManager.default.removeItem(at: url)
+        case nil :
+            break
+        }
     }
 }
 
@@ -86,14 +98,21 @@ extension AttachmentViewModel {
     public enum Output {
         case image(Data, imageKind: ImageKind)
         // case gif(Data)
-        // case file(URL, mimeType: String)    // assert use file for video only
+        case video(URL, mimeType: String)    // assert use file for video only
         
         public enum ImageKind {
             case png
             case jpg
         }
+        
+        public var twitterMediaCategory: TwitterMediaCategory {
+            switch self {
+            case .image:        return .image
+            case .video:        return .amplifyVideo
+            }
+        }
     }
-    
+        
     public struct SizeLimit {
         public let image: Int
         public let gif: Int
@@ -102,7 +121,7 @@ extension AttachmentViewModel {
         public init(
             image: Int = 5 * 1024 * 1024,           // 5 MiB,
             gif: Int = 15 * 1024 * 1024,            // 15 MiB,
-            video: Int = 15 * 1024 * 1024           // 15 MiB
+            video: Int = 512 * 1024 * 1024          // 512 MiB
         ) {
             self.image = image
             self.gif = gif
@@ -113,6 +132,13 @@ extension AttachmentViewModel {
     public enum AttachmentError: Error {
         case invalidAttachmentType
         case attachmentTooLarge
+    }
+    
+    public enum TwitterMediaCategory: String {
+        case image = "TWEET_IMAGE"
+        case GIF = "TWEET_GIF"
+        case video = "TWEET_VIDEO"
+        case amplifyVideo = "AMPLIFY_VIDEO"
     }
 }
 
@@ -167,10 +193,12 @@ extension AttachmentViewModel {
             }()
             return .image(result.data, imageKind: imageKind)
         } else if asset.isMovie() {
-            // TODO:
-            assertionFailure()
-            throw AttachmentError.invalidAttachmentType
+            guard let result = try await asset.itemProvider.loadVideoData() else {
+                throw AttachmentError.invalidAttachmentType
+            }
+            return .video(result.url, mimeType: "video/mp4")
         } else {
+            assertionFailure()
             throw AttachmentError.invalidAttachmentType
         }
     }

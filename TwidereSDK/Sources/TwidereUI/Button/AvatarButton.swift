@@ -37,6 +37,8 @@ public class AvatarButton: UIControl {
             avatarImageView.trailingAnchor.constraint(equalTo: trailingAnchor),
             avatarImageView.bottomAnchor.constraint(equalTo: bottomAnchor),
         ])
+        
+        isAccessibilityElement = true
     }
     
     func updateAppearance() {

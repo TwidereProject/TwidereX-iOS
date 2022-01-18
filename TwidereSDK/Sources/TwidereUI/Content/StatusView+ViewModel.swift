@@ -72,11 +72,15 @@ extension StatusView {
         
         @Published public var dateTimeProvider: DateTimeProvider?
         @Published public var timestamp: Date?
+        @Published public var timeAgoStyleTimestamp: String?
+        @Published public var formattedStyleTimestamp: String?
         
         @Published public var sharePlaintextContent: String?
         @Published public var shareStatusURL: String?
         
         @Published public var isDeletable = false
+        
+        @Published public var groupedAccessibilityLabel = ""
         
         let timestampUpdatePublisher = Timer.publish(every: 1.0, on: .main, in: .common)
             .autoconnect()
@@ -116,6 +120,7 @@ extension StatusView.ViewModel {
         bindPoll(statusView: statusView)
         bindLocation(statusView: statusView)
         bindToolbar(statusView: statusView)
+        bindAccessibility(statusView: statusView)
     }
     
     private func bindHeader(statusView: StatusView) {
@@ -160,10 +165,10 @@ extension StatusView.ViewModel {
         .store(in: &disposeBag)
         UserDefaults.shared
             .observe(\.avatarStyle, options: [.initial, .new]) { defaults, _ in
+                
                 let avatarStyle = defaults.avatarStyle
                 let animator = UIViewPropertyAnimator(duration: 0.3, timingParameters: UISpringTimingParameters())
-                animator.addAnimations { [weak statusView] in
-                    guard let statusView = statusView else { return }
+                animator.addAnimations {
                     switch avatarStyle {
                     case .circle:
                         statusView.authorAvatarButton.avatarImageView.configure(cornerConfiguration: .init(corner: .circle))
@@ -213,9 +218,10 @@ extension StatusView.ViewModel {
             $dateTimeProvider,
             timestampUpdatePublisher.prepend(Date()).eraseToAnyPublisher()
         )
-        .sink { timestamp, dateTimeProvider, _ in
-            statusView.timestampLabel.text = dateTimeProvider?.shortTimeAgoSinceNow(to: timestamp)
-            statusView.metricsDashboardView.timestampLabel.text = {
+        .sink { [weak self] timestamp, dateTimeProvider, _ in
+            guard let self = self else { return }
+            self.timeAgoStyleTimestamp = dateTimeProvider?.shortTimeAgoSinceNow(to: timestamp)
+            self.formattedStyleTimestamp = {
                 let formatter = DateFormatter()
                 formatter.dateStyle = .medium
                 formatter.timeStyle = .medium
@@ -224,96 +230,16 @@ extension StatusView.ViewModel {
             }()
         }
         .store(in: &disposeBag)
-        // poll
-        let pollVoteDescription = Publishers.CombineLatest(
-            $voterCount,
-            $voteCount
-        )
-        .map { voterCount, voteCount -> String in
-            var description = ""
-            if let voterCount = voterCount {
-                description += L10n.Count.people(voterCount)
-            } else {
-                description += L10n.Count.vote(voteCount)
+        $timeAgoStyleTimestamp
+            .sink { timestamp in
+                statusView.timestampLabel.text = timestamp
             }
-            return description
-        }
-        let pollCountdownDescription = Publishers.CombineLatest3(
-            $expireAt,
-            $expired,
-            timestampUpdatePublisher.prepend(Date()).eraseToAnyPublisher()
-        )
-        .map { expireAt, expired, _ -> String? in
-            guard !expired else {
-                return L10n.Common.Controls.Status.Poll.expired
-            }
-            
-            guard let expireAt = expireAt,
-                  let timeLeft = expireAt.localizedTimeLeft
-            else {
-                return nil
-            }
-            
-            return timeLeft
-        }
-        Publishers.CombineLatest(
-            pollVoteDescription,
-            pollCountdownDescription
-        )
-        .sink { pollVoteDescription, pollCountdownDescription in
-            let description = [
-                pollVoteDescription,
-                pollCountdownDescription
-            ]
-            .compactMap { $0 }
-            .joined(separator: " · ")
-            
-            statusView.pollVoteDescriptionLabel.text = description
-        }
-        .store(in: &disposeBag)
-        Publishers.CombineLatest(
-            $isVotable,
-            $isVoting
-        )
-        .sink { isVotable, isVoting in
-            guard isVotable else {
-                statusView.pollVoteButton.isHidden = true
-                statusView.pollVoteActivityIndicatorView.isHidden = true
-                return
-            }
-            
-            statusView.pollVoteButton.isHidden = isVoting
-            statusView.pollVoteActivityIndicatorView.isHidden = !isVoting
-            statusView.pollVoteActivityIndicatorView.startAnimating()
-        }
-        .store(in: &disposeBag)
-        $isVoteButtonEnabled
-            .assign(to: \.isEnabled, on: statusView.pollVoteButton)
             .store(in: &disposeBag)
-        // dashboard
-        Publishers.CombineLatest4(
-            $replyCount,
-            $repostCount,
-            $quoteCount,
-            $likeCount
-        )
-        .sink { replyCount, repostCount, quoteCount, likeCount in
-            switch statusView.style {
-            case .plain:
-                statusView.setMetricsDisplay()
-
-                statusView.metricsDashboardView.setupReply(count: replyCount)
-                statusView.metricsDashboardView.setupRepost(count: repostCount)
-                statusView.metricsDashboardView.setupQuote(count: quoteCount)
-                statusView.metricsDashboardView.setupLike(count: likeCount)
-                
-                let needsDashboardDisplay = replyCount > 0 || repostCount > 0 || quoteCount > 0 || likeCount > 0
-                statusView.metricsDashboardView.dashboardContainer.isHidden = !needsDashboardDisplay
-            default:
-                break
+        $formattedStyleTimestamp
+            .sink { timestamp in
+                statusView.metricsDashboardView.timestampLabel.text = timestamp
             }
-        }
-        .store(in: &disposeBag)
+            .store(in: &disposeBag)
     }
     
     private func bindContent(statusView: StatusView) {
@@ -359,6 +285,30 @@ extension StatusView.ViewModel {
                 statusView.metricsDashboardView.sourceLabel.text = source ?? ""
             }
             .store(in: &disposeBag)
+        // dashboard
+        Publishers.CombineLatest4(
+            $replyCount,
+            $repostCount,
+            $quoteCount,
+            $likeCount
+        )
+        .sink { replyCount, repostCount, quoteCount, likeCount in
+            switch statusView.style {
+            case .plain:
+                statusView.setMetricsDisplay()
+
+                statusView.metricsDashboardView.setupReply(count: replyCount)
+                statusView.metricsDashboardView.setupRepost(count: repostCount)
+                statusView.metricsDashboardView.setupQuote(count: quoteCount)
+                statusView.metricsDashboardView.setupLike(count: likeCount)
+                
+                let needsDashboardDisplay = replyCount > 0 || repostCount > 0 || quoteCount > 0 || likeCount > 0
+                statusView.metricsDashboardView.dashboardContainer.isHidden = !needsDashboardDisplay
+            default:
+                break
+            }
+        }
+        .store(in: &disposeBag)
     }
     
     private func bindMedia(statusView: StatusView) {
@@ -430,6 +380,72 @@ extension StatusView.ViewModel {
                 statusView.pollTableView.allowsSelection = isVotable
             }
             .store(in: &disposeBag)
+        // poll
+        let pollVoteDescription = Publishers.CombineLatest(
+            $voterCount,
+            $voteCount
+        )
+        .map { voterCount, voteCount -> String in
+            var description = ""
+            if let voterCount = voterCount {
+                description += L10n.Count.people(voterCount)
+            } else {
+                description += L10n.Count.vote(voteCount)
+            }
+            return description
+        }
+        let pollCountdownDescription = Publishers.CombineLatest3(
+            $expireAt,
+            $expired,
+            timestampUpdatePublisher.prepend(Date()).eraseToAnyPublisher()
+        )
+        .map { expireAt, expired, _ -> String? in
+            guard !expired else {
+                return L10n.Common.Controls.Status.Poll.expired
+            }
+            
+            guard let expireAt = expireAt,
+                  let timeLeft = expireAt.localizedTimeLeft
+            else {
+                return nil
+            }
+            
+            return timeLeft
+        }
+        Publishers.CombineLatest(
+            pollVoteDescription,
+            pollCountdownDescription
+        )
+        .sink { pollVoteDescription, pollCountdownDescription in
+            let description = [
+                pollVoteDescription,
+                pollCountdownDescription
+            ]
+            .compactMap { $0 }
+            .joined(separator: " · ")
+            
+            statusView.pollVoteDescriptionLabel.text = description
+        }
+        .store(in: &disposeBag)
+        Publishers.CombineLatest(
+            $isVotable,
+            $isVoting
+        )
+        .sink { isVotable, isVoting in
+            guard isVotable else {
+                statusView.pollVoteButton.isHidden = true
+                statusView.pollVoteActivityIndicatorView.isHidden = true
+                return
+            }
+            
+            statusView.pollVoteButton.isHidden = isVoting
+            statusView.pollVoteActivityIndicatorView.isHidden = !isVoting
+            statusView.pollVoteActivityIndicatorView.startAnimating()
+        }
+        .store(in: &disposeBag)
+        $isVoteButtonEnabled
+            .assign(to: \.isEnabled, on: statusView.pollVoteButton)
+            .store(in: &disposeBag)
     }
     
     private func bindLocation(statusView: StatusView) {
@@ -485,6 +501,65 @@ extension StatusView.ViewModel {
         }
         .store(in: &disposeBag)
     }
+    
+    private func bindAccessibility(statusView: StatusView) {
+        let contentAccessibilityLabel = Publishers.CombineLatest4(
+            $header,
+            $authorName,
+            $timeAgoStyleTimestamp,
+            $content
+        )
+        .map { header, authorName, timestamp, content -> String? in
+            var strings: [String?] = []
+            
+            switch header {
+            case .none:
+                break
+            case .notification(let info):
+                strings.append(info.textMetaContent.string)
+            case .repost(let info):
+                strings.append(info.authorNameMetaContent.string)
+            }
+            
+            strings.append(authorName?.string)
+            strings.append(timestamp)
+            strings.append(content?.string)
+            
+            return strings.compactMap { $0 }.joined(separator: ", ")
+        }
+        
+        let meidaAccessibilityLabel = $mediaViewConfigurations
+            .map { configurations -> String? in
+                let count = configurations.count
+                // TODO: i18n
+                return count > 0 ? "\(count) media" : nil
+            }
+            
+        // TODO: Toolbar
+        
+        Publishers.CombineLatest(
+            contentAccessibilityLabel,
+            meidaAccessibilityLabel
+        )
+        .map { content, media in
+            let group = [
+                content,
+                media
+            ]
+            
+            return group
+                .compactMap { $0 }
+                .joined(separator: ", ")
+        }
+        .assign(to: &$groupedAccessibilityLabel)
+        
+        $groupedAccessibilityLabel
+            .sink { accessibilityLabel in
+                statusView.accessibilityLabel = accessibilityLabel
+            }
+            .store(in: &disposeBag)
+    }
+
 }
 
 extension StatusView {
@@ -509,7 +584,7 @@ extension StatusView {
     public func configure(feed: Feed, configurationContext: ConfigurationContext) {
         switch feed.content {
         case .none:
-            assertionFailure()
+            logger.log(level: .info, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): [Warning] feed content missing")
         case .twitter(let status):
             configure(
                 twitterStatus: status,
@@ -813,8 +888,8 @@ extension StatusView {
             author.publisher(for: \.emojis)
         )
         .map { _, emojis in
-            let content = MastodonContent(content: author.name, emojis: emojis.asDictionary)
             do {
+                let content = MastodonContent(content: author.name, emojis: emojis.asDictionary)
                 let metaContent = try MastodonMetaContent.convert(document: content)
                 return metaContent
             } catch {
@@ -908,6 +983,8 @@ extension StatusView {
         mastodonStatus status: MastodonStatus,
         activeAuthenticationContext: AnyPublisher<AuthenticationContext?, Never>
     ) {
+        let status = status.repost ?? status
+        
         // pollItems
         status.publisher(for: \.poll)
             .sink { [weak self] poll in

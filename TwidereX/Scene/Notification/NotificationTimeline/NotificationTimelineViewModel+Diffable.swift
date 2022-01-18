@@ -65,7 +65,7 @@ extension NotificationTimelineViewModel {
                             let request = Feed.sortedFetchRequest
                             request.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [
                                 Feed.hasMorePredicate(),
-                                self.fetchedResultsController.predicate.value,
+                                self.fetchedResultsController.predicate,
                             ])
                             do {
                                 return try managedObjectContext.fetch(request)

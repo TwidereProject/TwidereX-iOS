@@ -7,8 +7,8 @@
 //
 
 import Foundation
-import CoreDataStack
 import CoreData
+import CoreDataStack
 
 extension DataSourceFacade {
     static func status(

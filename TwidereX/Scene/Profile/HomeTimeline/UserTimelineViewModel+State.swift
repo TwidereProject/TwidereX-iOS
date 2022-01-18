@@ -209,7 +209,8 @@ extension UserTimelineViewModel.State {
                                 excludeReplies: false,
                                 excludeReblogs: false,
                                 onlyMedia: false,
-                                userIdentifier: identifier
+                                userIdentifier: identifier,
+                                local: nil
                             ))
                         )
                     default:

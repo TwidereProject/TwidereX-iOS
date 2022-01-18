@@ -82,9 +82,7 @@ final class DrawerSidebarHeaderView: UIView {
         profileDashboardView.isAllowAdaptiveLayout = false
         return profileDashboardView
     }()
-    
-    let separatorLine = SeparatorLineView()
-    
+
     override init(frame: CGRect) {
         super.init(frame: frame)
         _init()
@@ -160,15 +158,6 @@ extension DrawerSidebarHeaderView {
         infoStackView.addArrangedSubview(closeButton)
         
         containerStackView.addArrangedSubview(profileDashboardView)
-        
-        separatorLine.translatesAutoresizingMaskIntoConstraints = false
-        addSubview(separatorLine)
-        NSLayoutConstraint.activate([
-            separatorLine.leadingAnchor.constraint(equalTo: leadingAnchor),
-            separatorLine.trailingAnchor.constraint(equalTo: trailingAnchor),
-            bottomAnchor.constraint(equalTo: separatorLine.bottomAnchor),
-            separatorLine.heightAnchor.constraint(equalToConstant: UIView.separatorLineHeight(of: self))
-        ])
         
         avatarView.avatarButton.addTarget(self, action: #selector(DrawerSidebarHeaderView.avatarButtonDidPressed(_:)), for: .touchUpInside)
 //        nameButton.addTarget(self, action: #selector(DrawerSidebarHeaderView.nameButtonDidPressed(_:)), for: .touchUpInside)

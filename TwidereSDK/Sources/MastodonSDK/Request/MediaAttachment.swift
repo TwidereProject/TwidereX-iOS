@@ -22,6 +22,7 @@ extension Mastodon.API {
 }
 
 extension Mastodon.API.MediaAttachment {
+    
     public var data: Data? {
         switch self {
         case .jpeg(let data): return data
@@ -52,6 +53,18 @@ extension Mastodon.API.MediaAttachment {
 
     var base64EncodedString: String? {
         return data.map { "data:" + mimeType + ";base64," + $0.base64EncodedString() }
+    }
+    
+    var sizeInByte: Int? {
+        switch self {
+        case .jpeg(let data), .gif(let data), .png(let data):
+            return data?.count
+        case .other(let url, _, _):
+            guard let url = url else { return nil }
+            guard let attribute = try? FileManager.default.attributesOfItem(atPath: url.path) else { return nil }
+            guard let size = attribute[.size] as? UInt64 else { return nil }
+            return Int(size)
+        }
     }
 }
 

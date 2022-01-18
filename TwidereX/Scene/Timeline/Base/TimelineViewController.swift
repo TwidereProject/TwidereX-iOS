@@ -1,52 +1,45 @@
 //
-//  HomeTimelineViewController.swift
+//  TimelineViewController.swift
 //  TwidereX
 //
-//  Created by Cirno MainasuK on 2020-9-1.
-//  Copyright © 2020 Twidere. All rights reserved.
+//  Created by MainasuK on 2022-1-13.
+//  Copyright © 2022 Twidere. All rights reserved.
 //
 
 import os.log
 import UIKit
-import SwiftUI
-import AVKit
 import Combine
-import CoreData
-import CoreDataStack
-import GameplayKit
-import TwitterSDK
 import Floaty
-import AlamofireImage
 import AppShared
-import TwidereUI
+import TwidereCore
 import TwidereComposeUI
 
-final class HomeTimelineViewController: UIViewController, NeedsDependency, DrawerSidebarTransitionHostViewController, MediaPreviewTransitionHostViewController {
+class TimelineViewController: UIViewController, NeedsDependency, DrawerSidebarTransitionHostViewController, MediaPreviewTransitionHostViewController {
     
-    let logger = Logger(subsystem: "HomeTimelineViewController", category: "ViewController")
+    let logger = Logger(subsystem: "TimelineViewController", category: "ViewController")
     
+    // MARK: NeedsDependency
     weak var context: AppContext! { willSet { precondition(!isViewLoaded) } }
     weak var coordinator: SceneCoordinator! { willSet { precondition(!isViewLoaded) } }
     
-    var disposeBag = Set<AnyCancellable>()
-    private(set) lazy var viewModel = HomeTimelineViewModel(context: context)
-    
+    // MARK: DrawerSidebarTransitionHostViewController
     private(set) var drawerSidebarTransitionController: DrawerSidebarTransitionController!
     let avatarBarButtonItem = AvatarBarButtonItem()
     
+    // MARK: MediaPreviewTransitionHostViewController
     let mediaPreviewTransitionController = MediaPreviewTransitionController()
+    
+    var disposeBag = Set<AnyCancellable>()
+    var viewModel: TimelineViewModel!
     
     private(set) lazy var refreshControl: UIRefreshControl = {
         let refreshControl = UIRefreshControl()
-        refreshControl.addTarget(self, action: #selector(HomeTimelineViewController.refreshControlValueChanged(_:)), for: .valueChanged)
+        refreshControl.addTarget(self, action: #selector(TimelineViewController.refreshControlValueChanged(_:)), for: .valueChanged)
         return refreshControl
     }()
     
     private(set) lazy var tableView: UITableView = {
         let tableView = UITableView()
-        tableView.register(StatusTableViewCell.self, forCellReuseIdentifier: String(describing: StatusTableViewCell.self))
-        tableView.register(TimelineMiddleLoaderTableViewCell.self, forCellReuseIdentifier: String(describing: TimelineMiddleLoaderTableViewCell.self))
-        tableView.register(TimelineBottomLoaderTableViewCell.self, forCellReuseIdentifier: String(describing: TimelineBottomLoaderTableViewCell.self))
         tableView.backgroundColor = .systemBackground
         tableView.rowHeight = UITableView.automaticDimension
         tableView.separatorStyle = .none
@@ -87,7 +80,7 @@ final class HomeTimelineViewController: UIViewController, NeedsDependency, Drawe
     
 }
 
-extension HomeTimelineViewController {
+extension TimelineViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -96,8 +89,17 @@ extension HomeTimelineViewController {
 
         view.backgroundColor = .systemBackground
 
-        navigationItem.leftBarButtonItem = avatarBarButtonItem
-        avatarBarButtonItem.avatarButton.addTarget(self, action: #selector(HomeTimelineViewController.avatarButtonPressed(_:)), for: .touchUpInside)
+        // setup avatarBarButtonItem
+        viewModel.$needsSetupAvatarBarButtonItem
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] needsSetupAvatarBarButtonItem in
+                guard let self = self else { return }
+                self.navigationItem.leftBarButtonItem = needsSetupAvatarBarButtonItem ? self.avatarBarButtonItem : nil
+                self.avatarBarButtonItem.avatarButton.addTarget(self, action: #selector(TimelineViewController.avatarButtonPressed(_:)), for: .touchUpInside)
+            }
+            .store(in: &disposeBag)
+        
+        // bind avatarBarButtonItem data
         Publishers.CombineLatest(
             context.authenticationService.activeAuthenticationContext,
             viewModel.viewDidAppear.eraseToAnyPublisher()
@@ -110,10 +112,7 @@ extension HomeTimelineViewController {
         }
         .store(in: &disposeBag)
 
-        #if DEBUG
-        navigationItem.rightBarButtonItem = debugActionBarButtonItem
-        #endif
-
+        // layout tableView
         tableView.translatesAutoresizingMaskIntoConstraints = false
         tableView.frame = view.bounds
         view.addSubview(tableView)
@@ -124,6 +123,7 @@ extension HomeTimelineViewController {
             tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
         ])
         
+        // layout publish progress
         publishProgressView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(publishProgressView)
         NSLayoutConstraint.activate([
@@ -152,11 +152,7 @@ extension HomeTimelineViewController {
         view.addSubview(floatyButton)
         
         tableView.delegate = self
-        viewModel.setupDiffableDataSource(
-            tableView: tableView,
-            statusViewTableViewCellDelegate: self,
-            timelineMiddleLoaderTableViewCellDelegate: self
-        )
+        
         // setup refresh control
         tableView.refreshControl = refreshControl
         viewModel.didLoadLatest
@@ -212,19 +208,8 @@ extension HomeTimelineViewController {
             }
             
         }
-//        DispatchQueue.main.async { [weak self] in
-//            guard let self = self else { return }
-//            if (self.viewModel.fetchedResultsController.fetchedObjects ?? []).count == 0 {
-//                self.viewModel.loadLatestStateMachine.enter(HomeTimelineViewModel.LoadLatestState.Loading.self)
-//            }
-//        }
     }
 
-//    override func viewDidDisappear(_ animated: Bool) {
-//        super.viewDidDisappear(animated)
-//
-//        context.videoPlaybackService.viewDidDisappear(from: self)
-//    }
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
@@ -248,7 +233,7 @@ extension HomeTimelineViewController {
 
 }
 
-extension HomeTimelineViewController {
+extension TimelineViewController {
 
     @objc private func avatarButtonPressed(_ sender: UIButton) {
         logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public)")
@@ -284,8 +269,8 @@ extension HomeTimelineViewController {
 }
 
 // MARK: - UITableViewDelegate
-extension HomeTimelineViewController: UITableViewDelegate, AutoGenerateTableViewDelegate {
-    // sourcery:inline:HomeTimelineViewController.AutoGenerateTableViewDelegate
+extension TimelineViewController: UITableViewDelegate, AutoGenerateTableViewDelegate {
+    // sourcery:inline:TimelineViewController.AutoGenerateTableViewDelegate
 
     // Generated using Sourcery
     // DO NOT EDIT
@@ -341,7 +326,7 @@ extension HomeTimelineViewController: UITableViewDelegate, AutoGenerateTableView
 }
 
 // MARK: - ScrollViewContainer
-extension HomeTimelineViewController: ScrollViewContainer {
+extension TimelineViewController: ScrollViewContainer {
 
     var scrollView: UIScrollView { return tableView }
 
@@ -366,10 +351,10 @@ extension HomeTimelineViewController: ScrollViewContainer {
 }
 
 // MARK: - StatusViewTableViewCellDelegate
-extension HomeTimelineViewController: StatusViewTableViewCellDelegate { }
+extension TimelineViewController: StatusViewTableViewCellDelegate { }
 
 // MARK: - TimelineMiddleLoaderTableViewCellDelegate
-extension HomeTimelineViewController: TimelineMiddleLoaderTableViewCellDelegate {
+extension TimelineViewController: TimelineMiddleLoaderTableViewCellDelegate {
     func timelineMiddleLoaderTableViewCell(
         _ cell: TimelineMiddleLoaderTableViewCell,
         loadMoreButtonDidPressed button: UIButton
@@ -379,7 +364,7 @@ extension HomeTimelineViewController: TimelineMiddleLoaderTableViewCellDelegate 
         guard let item = diffableDataSource.itemIdentifier(for: indexPath) else { return }
         
         Task {
-            await viewModel.loadMore(item: item)            
+            await viewModel.loadMore(item: item)
         }
     }
 }

@@ -35,6 +35,7 @@ public final class PublisherService {
         self.appSecret = appSecret
         
         $statusPublishers
+            .receive(on: DispatchQueue.main)
             .sink { [weak self] publishers in
                 guard let self = self else { return }
                 guard let last = publishers.last else {
@@ -42,14 +43,12 @@ public final class PublisherService {
                     return
                 }
                 
-                self.currentPublishProgressObservation = last.progress.observe(
-                    \.fractionCompleted,
-                     options: [.initial, .new]
-                ) { [weak self] progress, _ in
-                    guard let self = self else { return }
-                    self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): publish progress \(progress.fractionCompleted)")
-                    self.currentPublishProgress = progress.fractionCompleted
-                }
+                self.currentPublishProgressObservation = last.progress
+                    .observe(\.fractionCompleted, options: [.initial, .new]) { [weak self] progress, _ in
+                        guard let self = self else { return }
+                        self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): publish progress \(progress.fractionCompleted)")
+                        self.currentPublishProgress = progress.fractionCompleted
+                    }
             }
             .store(in: &disposeBag)
         
@@ -91,6 +90,7 @@ extension PublisherService {
             } catch {
                 self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): publish failure: \(error.localizedDescription)")
                 self.statusPublishResult.send(.failure(error))
+                self.currentPublishProgress = 0
             }
         }
     }

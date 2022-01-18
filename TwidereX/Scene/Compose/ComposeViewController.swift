@@ -30,6 +30,10 @@ final class ComposeViewController: UIViewController, NeedsDependency {
         composeContentViewController.viewModel = composeContentViewModel
         return composeContentViewController
     }()
+    
+    deinit {
+        os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
+    }
 }
 
 extension ComposeViewController {
@@ -43,7 +47,10 @@ extension ComposeViewController {
         
         viewModel.$title
             .map { $0 as String? }
-            .assign(to: \.title, on: self)
+            .sink { [weak self] title in
+                guard let self = self else { return }
+                self.title = title
+            }
             .store(in: &disposeBag)
         
         addChild(composeContentViewController)

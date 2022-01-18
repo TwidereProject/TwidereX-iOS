@@ -8,7 +8,7 @@
 
 import Foundation
 
-final public class MastodonEmoji: NSObject, Codable {
+public final class MastodonEmoji: NSObject, Codable {
     public let code: String
     public let url: String
     public let staticURL: String

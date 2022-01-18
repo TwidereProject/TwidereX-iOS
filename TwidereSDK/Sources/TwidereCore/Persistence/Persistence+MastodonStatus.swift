@@ -168,8 +168,8 @@ extension Persistence.MastodonStatus {
         relationship: MastodonStatus.Relationship
     ) -> MastodonStatus {
         let property = MastodonStatus.Property(
-            domain: context.domain,
             entity: context.entity,
+            domain: context.domain,
             networkDate: context.networkDate
         )
         let status = MastodonStatus.insert(
@@ -187,8 +187,8 @@ extension Persistence.MastodonStatus {
     ) {
         guard context.networkDate > status.updatedAt else { return }
         let property = MastodonStatus.Property(
-            domain: context.domain,
             entity: context.entity,
+            domain: context.domain,
             networkDate: context.networkDate
         )
         status.update(property: property)
