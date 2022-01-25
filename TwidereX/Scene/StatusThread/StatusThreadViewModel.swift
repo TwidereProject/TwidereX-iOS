@@ -34,9 +34,9 @@ final class StatusThreadViewModel {
     // output
     var diffableDataSource: UITableViewDiffableDataSource<StatusSection, StatusItem>?
     var root: CurrentValueSubject<StatusItem.Thread?, Never>
+    var threadContext = CurrentValueSubject<ThreadContext?, Never>(nil)
     @Published var replies: [StatusItem] = []
     @Published var leafs: [StatusItem] = []
-    var threadContext = CurrentValueSubject<ThreadContext?, Never>(nil)
     @Published var hasReplyTo = false
     
     // thread

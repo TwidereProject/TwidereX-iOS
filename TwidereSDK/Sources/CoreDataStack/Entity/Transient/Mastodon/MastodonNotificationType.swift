@@ -43,4 +43,5 @@ public enum MastodonNotificationType: RawRepresentable {
         case .status:               return "status"
         case ._other(let value):    return value
         }
-    }}
+    }
+}

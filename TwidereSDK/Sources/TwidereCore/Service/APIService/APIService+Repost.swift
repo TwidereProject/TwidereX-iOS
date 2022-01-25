@@ -150,12 +150,12 @@ extension APIService {
             guard let authentication = authenticationContext.authenticationRecord.object(in: managedObjectContext),
                   let _status = record.object(in: managedObjectContext)
             else { return nil }
-            let user = authentication.user
+            let me = authentication.user
             let status = _status.repost ?? _status
-            let isReposted = status.repostBy.contains(user)
+            let isReposted = status.repostBy.contains(me)
             let repostedCount = status.repostCount
             let repostCount = isReposted ? repostedCount - 1 : repostedCount + 1
-            status.update(isRepost: !isReposted, by: user)
+            status.update(isRepost: !isReposted, by: me)
             status.update(repostCount: Int64(max(0, repostCount)))
             let repostContext = MastodonRepostContext(
                 statusID: status.id,

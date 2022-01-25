@@ -73,6 +73,7 @@ final class NotificationTimelineViewModel {
 }
 
 extension NotificationTimelineViewModel {
+    
     enum Scope {
         case all
         case mentions

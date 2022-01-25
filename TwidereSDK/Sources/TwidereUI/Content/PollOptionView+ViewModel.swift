@@ -248,13 +248,17 @@ extension PollOptionView {
         }
         .assign(to: \.metaContent, on: viewModel)
         .store(in: &disposeBag)
-        
+
         // $isExpire
         option.poll.publisher(for: \.expired)
             .assign(to: \.isExpire, on: viewModel)
             .store(in: &disposeBag)
         // isMultiple
         viewModel.isMultiple = option.poll.multiple
+        
+        let optionIndex = option.index
+        let authorDomain = option.poll.status.author.domain
+        let authorUserID = option.poll.status.author.id
         // isSelect, isPollVoted, isMyPoll
         Publishers.CombineLatest4(
             option.publisher(for: \.poll),
@@ -275,21 +279,21 @@ extension PollOptionView {
                 domain = authenticationContext.domain
                 userID = authenticationContext.userID
             }
-            
+
             let options = poll.options
             let pollVoteBy = poll.voteBy
-            
-            let isMyPoll = option.poll.status.author.domain == domain
-                        && option.poll.status.author.id == userID
-            
+
+            let isMyPoll = authorDomain == domain
+                        && authorUserID == userID
+
             let votedOptions = options.filter { option in
                 option.voteBy.contains(where: { $0.id == userID && $0.domain == domain })
             }
-            let isRemoteVotedOption = votedOptions.contains(option)
+            let isRemoteVotedOption = votedOptions.contains(where: { $0.index == optionIndex })
             let isRemoteVotedPoll = pollVoteBy.contains(where: { $0.id == userID && $0.domain == domain })
-            
+
             let isLocalVotedOption = isSelected
-            
+
             let isSelect: Bool? = {
                 if isLocalVotedOption {
                     return true

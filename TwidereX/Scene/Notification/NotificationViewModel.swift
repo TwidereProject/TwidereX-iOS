@@ -118,7 +118,6 @@ extension NotificationViewModel {
     }
 }
 
-
 // MARK: - PageboyViewControllerDataSource
 extension NotificationViewModel: PageboyViewControllerDataSource {
     
