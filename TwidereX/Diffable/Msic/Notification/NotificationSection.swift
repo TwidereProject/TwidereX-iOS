@@ -46,7 +46,6 @@ extension NotificationSection {
                         let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: StatusTableViewCell.self), for: indexPath) as! StatusTableViewCell
                         StatusSection.setupStatusPollDataSource(
                             context: context,
-                            managedObjectContext: context.managedObjectContext,
                             statusView: cell.statusView,
                             configurationContext: PollOptionView.ConfigurationContext(
                                 dateTimeProvider: DateTimeSwiftProvider(),

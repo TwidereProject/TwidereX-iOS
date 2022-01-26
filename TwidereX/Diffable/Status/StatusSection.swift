@@ -49,7 +49,6 @@ extension StatusSection {
                 let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: StatusTableViewCell.self), for: indexPath) as! StatusTableViewCell
                 setupStatusPollDataSource(
                     context: context,
-                    managedObjectContext: context.managedObjectContext,
                     statusView: cell.statusView,
                     configurationContext: PollOptionView.ConfigurationContext(
                         dateTimeProvider: DateTimeSwiftProvider(),
@@ -85,7 +84,6 @@ extension StatusSection {
                 let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: StatusTableViewCell.self), for: indexPath) as! StatusTableViewCell
                 setupStatusPollDataSource(
                     context: context,
-                    managedObjectContext: context.managedObjectContext,
                     statusView: cell.statusView,
                     configurationContext: PollOptionView.ConfigurationContext(
                         dateTimeProvider: DateTimeSwiftProvider(),
@@ -127,7 +125,6 @@ extension StatusSection {
                     indexPath: indexPath,
                     configuration: ThreadCellRegistrationConfiguration(
                         thread: thread,
-                        managedObjectContext: context.managedObjectContext,
                         activeAuthenticationContext: activeAuthenticationContext,
                         configuration: configuration
                     )
@@ -151,7 +148,6 @@ extension StatusSection {
     
     struct ThreadCellRegistrationConfiguration {
         let thread: StatusItem.Thread
-        let managedObjectContext: NSManagedObjectContext
         let activeAuthenticationContext: AnyPublisher<AuthenticationContext?, Never>
         let configuration: Configuration
     }
@@ -162,20 +158,21 @@ extension StatusSection {
         indexPath: IndexPath,
         configuration: ThreadCellRegistrationConfiguration
     ) -> UITableViewCell {
+        let managedObjectContext = context.managedObjectContext
+        
         switch configuration.thread {
         case .root(let threadContext):
             let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: StatusThreadRootTableViewCell.self), for: indexPath) as! StatusThreadRootTableViewCell
             setupStatusPollDataSource(
                 context: context,
-                managedObjectContext: configuration.managedObjectContext,
                 statusView: cell.statusView,
                 configurationContext: PollOptionView.ConfigurationContext(
                     dateTimeProvider: DateTimeSwiftProvider(),
                     activeAuthenticationContext: configuration.activeAuthenticationContext
                 )
             )
-            configuration.managedObjectContext.performAndWait {
-                guard let status = threadContext.status.object(in: configuration.managedObjectContext) else { return }
+            managedObjectContext.performAndWait {
+                guard let status = threadContext.status.object(in: managedObjectContext) else { return }
                 cell.configure(
                     tableView: tableView,
                     viewModel: StatusThreadRootTableViewCell.ViewModel(
@@ -194,15 +191,14 @@ extension StatusSection {
             let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: StatusTableViewCell.self), for: indexPath) as! StatusTableViewCell
             setupStatusPollDataSource(
                 context: context,
-                managedObjectContext: configuration.managedObjectContext,
                 statusView: cell.statusView,
                 configurationContext: PollOptionView.ConfigurationContext(
                     dateTimeProvider: DateTimeSwiftProvider(),
                     activeAuthenticationContext: configuration.activeAuthenticationContext
                 )
             )
-            configuration.managedObjectContext.performAndWait {
-                guard let status = threadContext.status.object(in: configuration.managedObjectContext) else { return }
+            managedObjectContext.performAndWait {
+                guard let status = threadContext.status.object(in: managedObjectContext) else { return }
                 cell.configure(
                     tableView: tableView,
                     viewModel: StatusTableViewCell.ViewModel(
@@ -224,10 +220,10 @@ extension StatusSection {
     
     public static func setupStatusPollDataSource(
         context: AppContext,
-        managedObjectContext: NSManagedObjectContext,
         statusView: StatusView,
         configurationContext: PollOptionView.ConfigurationContext
     ) {
+        let managedObjectContext = context.managedObjectContext
         statusView.pollTableViewDiffableDataSource = UITableViewDiffableDataSource<PollSection, PollItem>(tableView: statusView.pollTableView) { tableView, indexPath, item in
             switch item {
             case .option(let record):

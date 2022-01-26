@@ -7,6 +7,7 @@
 
 import UIKit
 import Combine
+import CoreData
 import CoreDataStack
 import TwidereAsset
 import TwitterMeta
@@ -27,6 +28,7 @@ extension PollOptionView {
     public final class ViewModel: ObservableObject {
         var disposeBag = Set<AnyCancellable>()
         var observations = Set<NSKeyValueObservation>()
+        var objects = Set<NSManagedObject>()
         
         @Published var style: PollOptionView.Style?
         
@@ -231,6 +233,8 @@ extension PollOptionView {
         pollOption option: MastodonPollOption,
         configurationContext: ConfigurationContext
     ) {
+        viewModel.objects.insert(option)
+
         // metaContent
         Publishers.CombineLatest(
             option.poll.status.publisher(for: \.emojis),

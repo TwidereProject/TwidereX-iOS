@@ -54,6 +54,7 @@ public final class PollOptionView: UIView {
     }()
     
     public func prepareForReuse() {
+        viewModel.objects.removeAll()
         viewModel.percentage = nil
         stripProgressView.setProgress(0, animated: false)
     }
