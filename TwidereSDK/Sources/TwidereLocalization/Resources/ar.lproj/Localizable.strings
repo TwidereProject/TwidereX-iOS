@@ -9,6 +9,7 @@
 "Accessibility.Common.More" = "المزيد";
 "Accessibility.Common.NetworkImage" = "صورة الشبكة";
 "Accessibility.Common.Status.Actions.Like" = "أعجبني";
+"Accessibility.Common.Status.Actions.Menu" = "القائمة";
 "Accessibility.Common.Status.Actions.Reply" = "رد";
 "Accessibility.Common.Status.Actions.Retweet" = "أعد تغريده";
 "Accessibility.Common.Status.Location" = "الموقع";
@@ -32,6 +33,8 @@
 "Accessibility.Scene.Home.Drawer.AccountDropdown" = "القائمة المنزلقة للحساب";
 "Accessibility.Scene.Home.Menu" = "القائمة";
 "Accessibility.Scene.ManageAccounts.Add" = "أضف";
+"Accessibility.Scene.ManageAccounts.CurrentSignInUser" = "Current sign-in user: %@";
+"Accessibility.Scene.ManageAccounts.DoubleTapAndHoldToOpenTheAccountsPanel" = "Double tap and hold to open the accounts panel";
 "Accessibility.Scene.Search.History" = "التأريخ";
 "Accessibility.Scene.Search.Save" = "احفظ";
 "Accessibility.Scene.Settings.Display.FontSize" = "حجم الخط";
@@ -144,7 +147,7 @@
 "Common.Controls.Friendship.Actions.Block" = "احجب";
 "Common.Controls.Friendship.Actions.Blocked" = "محجوب";
 "Common.Controls.Friendship.Actions.Follow" = "تابعه";
-"Common.Controls.Friendship.Actions.Following" = "يتابع";
+"Common.Controls.Friendship.Actions.Following" = "المتابَعون";
 "Common.Controls.Friendship.Actions.Mute" = "اكتم";
 "Common.Controls.Friendship.Actions.Pending" = "معلق";
 "Common.Controls.Friendship.Actions.Report" = "أبلغ";
@@ -161,9 +164,9 @@
 "Common.Controls.Friendship.UserIsFollowingYou" = "%@ يتابعك";
 "Common.Controls.Friendship.UserIsNotFollowingYou" = "%@ لا يتابعك";
 "Common.Controls.Ios.PhotoLibrary" = "مكتبة الصور";
-"Common.Controls.List.NoResults" = "No results";
+"Common.Controls.List.NoResults" = "لا نتائج";
 "Common.Controls.ProfileDashboard.Followers" = "المتابِعون";
-"Common.Controls.ProfileDashboard.Following" = "يتابع";
+"Common.Controls.ProfileDashboard.Following" = "المتابَعون";
 "Common.Controls.ProfileDashboard.Listed" = "مدرج";
 "Common.Controls.Status.Actions.Bookmark" = "أضفه للعلامات";
 "Common.Controls.Status.Actions.CopyLink" = "انسخ الرابط";
@@ -173,6 +176,7 @@
 "Common.Controls.Status.Actions.Quote" = "اقتبس";
 "Common.Controls.Status.Actions.Retweet" = "أعد تغريده";
 "Common.Controls.Status.Actions.Share" = "شاركه";
+"Common.Controls.Status.Actions.ShareContent" = "شارك المحتوى";
 "Common.Controls.Status.Actions.ShareLink" = "شارك الرابط";
 "Common.Controls.Status.Actions.Translate" = "ترجمه";
 "Common.Controls.Status.Actions.UnpinFromProfile" = "ألغ تثبيتها من ملفك الشخصي";
@@ -250,7 +254,7 @@
 "Scene.Compose.Vote.Expiration.6Hour" = "6 ساعات";
 "Scene.Compose.Vote.Expiration.7Day" = "7 أيام";
 "Scene.Compose.Vote.Multiple" = "خيارات متعددة";
-"Scene.Compose.Vote.PlaceholderIndex" = "Choice %d";
+"Scene.Compose.Vote.PlaceholderIndex" = "اختر %d";
 "Scene.ComposeHashtagSearch.SearchPlaceholder" = "ابحث عن وسم";
 "Scene.ComposeUserSearch.SearchPlaceholder" = "ابحث عن مستخدم";
 "Scene.Drafts.Actions.DeleteDraft" = "احذف المسودة";
@@ -260,7 +264,7 @@
 "Scene.Drawer.SignIn" = "لِج";
 "Scene.Federated.Title" = "الشبكة الموحدة";
 "Scene.Followers.Title" = "المتابِعون";
-"Scene.Following.Title" = "يتابع";
+"Scene.Following.Title" = "المتابَعون";
 "Scene.Likes.Title" = "الإعجابات";
 "Scene.Listed.Title" = "مدرج";
 "Scene.Lists.Icons.Create" = "أنشئ قائمة";
@@ -364,7 +368,7 @@
 "Scene.Settings.Display.SectionHeader.Media" = "الوسائط";
 "Scene.Settings.Display.SectionHeader.Preview" = "معاينة";
 "Scene.Settings.Display.SectionHeader.Text" = "النص";
-"Scene.Settings.Display.Text.AvatarStyle" = "نمط الصورة الرمزية";
+"Scene.Settings.Display.Text.AvatarStyle" = "شكل الصورة الرمزية";
 "Scene.Settings.Display.Text.Circle" = "دائرة";
 "Scene.Settings.Display.Text.RoundedSquare" = "مربع مدور الزوايا";
 "Scene.Settings.Display.Text.UseTheSystemFontSize" = "استخدم حجم خط النظام";

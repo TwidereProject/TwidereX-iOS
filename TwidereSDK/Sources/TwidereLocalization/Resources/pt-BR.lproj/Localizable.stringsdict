@@ -2,6 +2,22 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
   <dict>
+    <key>count.media</key>
+    <dict>
+      <key>NSStringLocalizedFormatKey</key>
+      <string>%#@count_media@</string>
+      <key>count_media</key>
+      <dict>
+        <key>NSStringFormatSpecTypeKey</key>
+        <string>NSStringPluralRuleType</string>
+        <key>NSStringFormatValueTypeKey</key>
+        <string>ld</string>
+        <key>one</key>
+        <string>1 mídia</string>
+        <key>other</key>
+        <string>%ld mídias</string>
+      </dict>
+    </dict>
     <key>count.vote</key>
     <dict>
       <key>NSStringLocalizedFormatKey</key>

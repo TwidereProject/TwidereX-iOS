@@ -2,6 +2,30 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
   <dict>
+    <key>count.media</key>
+    <dict>
+      <key>NSStringLocalizedFormatKey</key>
+      <string>%#@count_media@</string>
+      <key>count_media</key>
+      <dict>
+        <key>NSStringFormatSpecTypeKey</key>
+        <string>NSStringPluralRuleType</string>
+        <key>NSStringFormatValueTypeKey</key>
+        <string>ld</string>
+        <key>zero</key>
+        <string>%ld media</string>
+        <key>one</key>
+        <string>1 media</string>
+        <key>two</key>
+        <string>1 وسائط</string>
+        <key>few</key>
+        <string>%ld media</string>
+        <key>many</key>
+        <string>%ld media</string>
+        <key>other</key>
+        <string>%ld media</string>
+      </dict>
+    </dict>
     <key>count.vote</key>
     <dict>
       <key>NSStringLocalizedFormatKey</key>
@@ -15,15 +39,15 @@
         <key>zero</key>
         <string>%ld votes</string>
         <key>one</key>
-        <string>1 vote</string>
+        <string>صوتٌ واحِد</string>
         <key>two</key>
-        <string>%ld votes</string>
+        <string>%ld صوتين</string>
         <key>few</key>
-        <string>%ld votes</string>
+        <string>%ld أصوات</string>
         <key>many</key>
-        <string>%ld votes</string>
+        <string>%ld صَوْتاً</string>
         <key>other</key>
-        <string>%ld votes</string>
+        <string>%ld صوت</string>
       </dict>
     </dict>
     <key>count.people</key>
@@ -37,17 +61,17 @@
         <key>NSStringFormatValueTypeKey</key>
         <string>ld</string>
         <key>zero</key>
-        <string>%ld people</string>
+        <string>%ld شخص</string>
         <key>one</key>
-        <string>1 people</string>
+        <string>شخص واحد</string>
         <key>two</key>
-        <string>%ld people</string>
+        <string>شخصان %ld</string>
         <key>few</key>
-        <string>%ld people</string>
+        <string>%ld أشخاص</string>
         <key>many</key>
-        <string>%ld people</string>
+        <string>%ld شخصًا</string>
         <key>other</key>
-        <string>%ld people</string>
+        <string>%ld شخص</string>
       </dict>
     </dict>
     <key>count.people.talking</key>
@@ -63,15 +87,15 @@
         <key>zero</key>
         <string>%ld اشخاص يتحدثون</string>
         <key>one</key>
-        <string>%ld اشخاص يتحدثون</string>
+        <string>شخصٌ واحدٌ يتحدَّث</string>
         <key>two</key>
-        <string>%ld اشخاص يتحدثون</string>
+        <string>%ld شخصان يتحدثان</string>
         <key>few</key>
         <string>%ld اشخاص يتحدثون</string>
         <key>many</key>
-        <string>%ld اشخاص يتحدثون</string>
+        <string>%ld شخص يتحدَّثون</string>
         <key>other</key>
-        <string>%ld اشخاص يتحدثون</string>
+        <string>%ld شخص يتحدث</string>
       </dict>
     </dict>
     <key>date.year.left</key>
@@ -87,13 +111,13 @@
         <key>zero</key>
         <string>%ld سنوات متبقية</string>
         <key>one</key>
-        <string>%ld سنوات متبقية</string>
+        <string>تتبقى سنة</string>
         <key>two</key>
-        <string>%ld سنوات متبقية</string>
+        <string>%ld تتبقى سنتان</string>
         <key>few</key>
         <string>%ld سنوات متبقية</string>
         <key>many</key>
-        <string>%ld سنوات متبقية</string>
+        <string>%ld سنة متبقية</string>
         <key>other</key>
         <string>%ld سنوات متبقية</string>
       </dict>
@@ -111,15 +135,15 @@
         <key>zero</key>
         <string>%ld شهور متبقية</string>
         <key>one</key>
-        <string>%ld شهور متبقية</string>
+        <string>يتبقى شهر</string>
         <key>two</key>
-        <string>%ld شهور متبقية</string>
+        <string>%ld يتبقى شهران</string>
         <key>few</key>
         <string>%ld شهور متبقية</string>
         <key>many</key>
-        <string>%ld شهور متبقية</string>
+        <string>%ld شهر متبقية</string>
         <key>other</key>
-        <string>%ld شهور متبقية</string>
+        <string>%ld شهر متبقية</string>
       </dict>
     </dict>
     <key>date.day.left</key>
@@ -135,15 +159,15 @@
         <key>zero</key>
         <string>%ld أيام متبقية</string>
         <key>one</key>
-        <string>%ld أيام متبقية</string>
+        <string>يتبقى يوم</string>
         <key>two</key>
-        <string>%ld أيام متبقية</string>
+        <string>%ld يتبقى يومان</string>
         <key>few</key>
         <string>%ld أيام متبقية</string>
         <key>many</key>
-        <string>%ld أيام متبقية</string>
+        <string>تبقى %ld يوم</string>
         <key>other</key>
-        <string>%ld أيام متبقية</string>
+        <string>تبقى %ld يوم</string>
       </dict>
     </dict>
     <key>date.hour.left</key>
@@ -159,15 +183,15 @@
         <key>zero</key>
         <string>%ld ساعات متبقية</string>
         <key>one</key>
-        <string>%ld ساعات متبقية</string>
+        <string>تتبقى ساعة</string>
         <key>two</key>
-        <string>%ld ساعات متبقية</string>
+        <string>%ld تتبقى ساعتان</string>
         <key>few</key>
         <string>%ld ساعات متبقية</string>
         <key>many</key>
-        <string>%ld ساعات متبقية</string>
+        <string>%ld ساعة متبقية</string>
         <key>other</key>
-        <string>%ld ساعات متبقية</string>
+        <string>%ld ساعة متبقية</string>
       </dict>
     </dict>
     <key>date.minute.left</key>
@@ -183,15 +207,15 @@
         <key>zero</key>
         <string>%ld دقيقية متبقية</string>
         <key>one</key>
-        <string>%ld دقيقة متبقية</string>
+        <string>تتبقى دقيقة</string>
         <key>two</key>
-        <string>%ld دقائق متبقية</string>
+        <string>%ld تتبقى دقيقتان</string>
         <key>few</key>
         <string>%ld دقائق متبقية</string>
         <key>many</key>
-        <string>%ld دقائق متبقية</string>
+        <string>%ld دقيقة متبقية</string>
         <key>other</key>
-        <string>%ld دقائق متبقية</string>
+        <string>%ld دقيقة متبقية</string>
       </dict>
     </dict>
     <key>date.second.left</key>
@@ -207,15 +231,15 @@
         <key>zero</key>
         <string>%ld ثواني متبقية</string>
         <key>one</key>
-        <string>%ld ثانية متبقية</string>
+        <string>متبقي ثانية واحدة</string>
         <key>two</key>
-        <string>%ld ثواني متبقية</string>
+        <string>متبقي ثانيتان %ld</string>
         <key>few</key>
         <string>%ld ثواني متبقية</string>
         <key>many</key>
-        <string>%ld ثواني متبقية</string>
+        <string>%ld ثانية متبقية</string>
         <key>other</key>
-        <string>%ld ثواني متبقية</string>
+        <string>%ld ثانية متبقية</string>
       </dict>
     </dict>
   </dict>

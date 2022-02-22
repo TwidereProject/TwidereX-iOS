@@ -9,6 +9,7 @@
 "Accessibility.Common.More" = "更多";
 "Accessibility.Common.NetworkImage" = "网络图像";
 "Accessibility.Common.Status.Actions.Like" = "喜欢";
+"Accessibility.Common.Status.Actions.Menu" = "菜单";
 "Accessibility.Common.Status.Actions.Reply" = "回复";
 "Accessibility.Common.Status.Actions.Retweet" = "转推";
 "Accessibility.Common.Status.Location" = "地理位置";
@@ -32,6 +33,8 @@
 "Accessibility.Scene.Home.Drawer.AccountDropdown" = "账户下拉列表";
 "Accessibility.Scene.Home.Menu" = "菜单";
 "Accessibility.Scene.ManageAccounts.Add" = "添加";
+"Accessibility.Scene.ManageAccounts.CurrentSignInUser" = "当前登录用户：%@";
+"Accessibility.Scene.ManageAccounts.DoubleTapAndHoldToOpenTheAccountsPanel" = "轻点两下并按住打开账户面板";
 "Accessibility.Scene.Search.History" = "历史";
 "Accessibility.Scene.Search.Save" = "保存";
 "Accessibility.Scene.Settings.Display.FontSize" = "字体大小";
@@ -173,6 +176,7 @@
 "Common.Controls.Status.Actions.Quote" = "引用";
 "Common.Controls.Status.Actions.Retweet" = "转推";
 "Common.Controls.Status.Actions.Share" = "分享";
+"Common.Controls.Status.Actions.ShareContent" = "分享内容";
 "Common.Controls.Status.Actions.ShareLink" = "分享链接";
 "Common.Controls.Status.Actions.Translate" = "翻译";
 "Common.Controls.Status.Actions.UnpinFromProfile" = "在个人资料页面取消置顶";

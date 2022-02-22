@@ -9,6 +9,7 @@
 "Accessibility.Common.More" = "Més";
 "Accessibility.Common.NetworkImage" = "Imatge de xarxa";
 "Accessibility.Common.Status.Actions.Like" = "M'agrada";
+"Accessibility.Common.Status.Actions.Menu" = "Menú";
 "Accessibility.Common.Status.Actions.Reply" = "Resposta";
 "Accessibility.Common.Status.Actions.Retweet" = "Repiular";
 "Accessibility.Common.Status.Location" = "Ubicació";
@@ -32,6 +33,8 @@
 "Accessibility.Scene.Home.Drawer.AccountDropdown" = "Desplegable del compte";
 "Accessibility.Scene.Home.Menu" = "Menú";
 "Accessibility.Scene.ManageAccounts.Add" = "Afegir";
+"Accessibility.Scene.ManageAccounts.CurrentSignInUser" = "Current sign-in user: %@";
+"Accessibility.Scene.ManageAccounts.DoubleTapAndHoldToOpenTheAccountsPanel" = "Double tap and hold to open the accounts panel";
 "Accessibility.Scene.Search.History" = "Historial";
 "Accessibility.Scene.Search.Save" = "Desa";
 "Accessibility.Scene.Settings.Display.FontSize" = "Mida de la lletra";
@@ -173,6 +176,7 @@
 "Common.Controls.Status.Actions.Quote" = "Cita";
 "Common.Controls.Status.Actions.Retweet" = "Repiular";
 "Common.Controls.Status.Actions.Share" = "Share";
+"Common.Controls.Status.Actions.ShareContent" = "Share content";
 "Common.Controls.Status.Actions.ShareLink" = "Comparteix l'enllaç";
 "Common.Controls.Status.Actions.Translate" = "Translate";
 "Common.Controls.Status.Actions.UnpinFromProfile" = "Unpin from Profile";

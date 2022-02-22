@@ -45,6 +45,8 @@ public enum L10n {
         public enum Actions {
           /// Like
           public static let like = L10n.tr("Localizable", "Accessibility.Common.Status.Actions.Like")
+          /// Menu
+          public static let menu = L10n.tr("Localizable", "Accessibility.Common.Status.Actions.Menu")
           /// Reply
           public static let reply = L10n.tr("Localizable", "Accessibility.Common.Status.Actions.Reply")
           /// Retweet
@@ -104,6 +106,12 @@ public enum L10n {
       public enum ManageAccounts {
         /// Add
         public static let add = L10n.tr("Localizable", "Accessibility.Scene.ManageAccounts.Add")
+        /// Current sign-in user: %@
+        public static func currentSignInUser(_ p1: Any) -> String {
+          return L10n.tr("Localizable", "Accessibility.Scene.ManageAccounts.CurrentSignInUser", String(describing: p1))
+        }
+        /// Double tap and hold to open the accounts panel
+        public static let doubleTapAndHoldToOpenTheAccountsPanel = L10n.tr("Localizable", "Accessibility.Scene.ManageAccounts.DoubleTapAndHoldToOpenTheAccountsPanel")
       }
       public enum Search {
         /// History
@@ -588,6 +596,8 @@ public enum L10n {
           public static let retweet = L10n.tr("Localizable", "Common.Controls.Status.Actions.Retweet")
           /// Share
           public static let share = L10n.tr("Localizable", "Common.Controls.Status.Actions.Share")
+          /// Share content
+          public static let shareContent = L10n.tr("Localizable", "Common.Controls.Status.Actions.ShareContent")
           /// Share link
           public static let shareLink = L10n.tr("Localizable", "Common.Controls.Status.Actions.ShareLink")
           /// Translate
@@ -1395,6 +1405,10 @@ public enum L10n {
   }
 
   public enum Count {
+    /// Plural format key: "%#@count_media@"
+    public static func media(_ p1: Int) -> String {
+      return L10n.tr("Localizable", "count.media", p1)
+    }
     /// Plural format key: "%#@count_people@"
     public static func people(_ p1: Int) -> String {
       return L10n.tr("Localizable", "count.people", p1)

@@ -9,6 +9,7 @@
 "Accessibility.Common.More" = "Mehr";
 "Accessibility.Common.NetworkImage" = "Netzwerkbild";
 "Accessibility.Common.Status.Actions.Like" = "Gefällt mir";
+"Accessibility.Common.Status.Actions.Menu" = "Menü";
 "Accessibility.Common.Status.Actions.Reply" = "Antworten";
 "Accessibility.Common.Status.Actions.Retweet" = "Retweet";
 "Accessibility.Common.Status.Location" = "Standort";
@@ -32,6 +33,8 @@
 "Accessibility.Scene.Home.Drawer.AccountDropdown" = "Konto DropDown-Liste";
 "Accessibility.Scene.Home.Menu" = "Menü";
 "Accessibility.Scene.ManageAccounts.Add" = "Hinzufügen";
+"Accessibility.Scene.ManageAccounts.CurrentSignInUser" = "Current sign-in user: %@";
+"Accessibility.Scene.ManageAccounts.DoubleTapAndHoldToOpenTheAccountsPanel" = "Double tap and hold to open the accounts panel";
 "Accessibility.Scene.Search.History" = "Verlauf";
 "Accessibility.Scene.Search.Save" = "Speichern";
 "Accessibility.Scene.Settings.Display.FontSize" = "Schriftgröße";
@@ -173,6 +176,7 @@
 "Common.Controls.Status.Actions.Quote" = "Zitieren";
 "Common.Controls.Status.Actions.Retweet" = "Retweet";
 "Common.Controls.Status.Actions.Share" = "Share";
+"Common.Controls.Status.Actions.ShareContent" = "Share content";
 "Common.Controls.Status.Actions.ShareLink" = "Link teilen";
 "Common.Controls.Status.Actions.Translate" = "Translate";
 "Common.Controls.Status.Actions.UnpinFromProfile" = "Unpin from Profile";
