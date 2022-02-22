@@ -12,6 +12,7 @@
 "Accessibility.Common.Status.Actions.Menu" = "Menú";
 "Accessibility.Common.Status.Actions.Reply" = "Resposta";
 "Accessibility.Common.Status.Actions.Retweet" = "Repiular";
+"Accessibility.Common.Status.AuthorAvatar" = "Author avatar";
 "Accessibility.Common.Status.Location" = "Ubicació";
 "Accessibility.Common.Status.Media" = "Multimèdia";
 "Accessibility.Common.Status.Retweeted" = "Repiulades";
@@ -34,7 +35,6 @@
 "Accessibility.Scene.Home.Menu" = "Menú";
 "Accessibility.Scene.ManageAccounts.Add" = "Afegir";
 "Accessibility.Scene.ManageAccounts.CurrentSignInUser" = "Current sign-in user: %@";
-"Accessibility.Scene.ManageAccounts.DoubleTapAndHoldToOpenTheAccountsPanel" = "Double tap and hold to open the accounts panel";
 "Accessibility.Scene.Search.History" = "Historial";
 "Accessibility.Scene.Search.Save" = "Desa";
 "Accessibility.Scene.Settings.Display.FontSize" = "Mida de la lletra";
@@ -44,6 +44,9 @@
 "Accessibility.Scene.User.Tab.Media" = "Multimèdia";
 "Accessibility.Scene.User.Tab.Status" = "Estats";
 "Accessibility.Scene.User.Website" = "Lloc web";
+"Accessibility.VoiceOver.DoubleTapAndHoldToDisplayMenu" = "Double tap and hold to display menu";
+"Accessibility.VoiceOver.DoubleTapAndHoldToOpenTheAccountsPanel" = "Double tap and hold to open the accounts panel";
+"Accessibility.VoiceOver.DoubleTapToOpenProfile" = "Double tap to open profile";
 "Common.Alerts.AccountSuspended.Message" = "Twitter suspèn comptes que violen %@";
 "Common.Alerts.AccountSuspended.Title" = "Compte suspès";
 "Common.Alerts.AccountSuspended.TwitterRules" = "Normes de Twitter";

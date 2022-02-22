@@ -12,6 +12,7 @@
 "Accessibility.Common.Status.Actions.Menu" = "Menu";
 "Accessibility.Common.Status.Actions.Reply" = "Reply";
 "Accessibility.Common.Status.Actions.Retweet" = "Retweet";
+"Accessibility.Common.Status.AuthorAvatar" = "Author avatar";
 "Accessibility.Common.Status.Location" = "Location";
 "Accessibility.Common.Status.Media" = "Media";
 "Accessibility.Common.Status.Retweeted" = "Retweeted";
@@ -34,7 +35,6 @@
 "Accessibility.Scene.Home.Menu" = "Menu";
 "Accessibility.Scene.ManageAccounts.Add" = "Add";
 "Accessibility.Scene.ManageAccounts.CurrentSignInUser" = "Current sign-in user: %@";
-"Accessibility.Scene.ManageAccounts.DoubleTapAndHoldToOpenTheAccountsPanel" = "Double tap and hold to open the accounts panel";
 "Accessibility.Scene.Search.History" = "History";
 "Accessibility.Scene.Search.Save" = "Save";
 "Accessibility.Scene.Settings.Display.FontSize" = "Font Size";
@@ -44,6 +44,9 @@
 "Accessibility.Scene.User.Tab.Media" = "Media";
 "Accessibility.Scene.User.Tab.Status" = "Statuses";
 "Accessibility.Scene.User.Website" = "Website";
+"Accessibility.VoiceOver.DoubleTapAndHoldToDisplayMenu" = "Double tap and hold to display menu";
+"Accessibility.VoiceOver.DoubleTapAndHoldToOpenTheAccountsPanel" = "Double tap and hold to open the accounts panel";
+"Accessibility.VoiceOver.DoubleTapToOpenProfile" = "Double tap to open profile";
 "Common.Alerts.AccountSuspended.Message" = "Twitter suspends accounts which violate the %@";
 "Common.Alerts.AccountSuspended.Title" = "Account Suspended";
 "Common.Alerts.AccountSuspended.TwitterRules" = "Twitter Rules";

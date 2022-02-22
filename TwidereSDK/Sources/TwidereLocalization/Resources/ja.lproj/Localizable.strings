@@ -12,6 +12,7 @@
 "Accessibility.Common.Status.Actions.Menu" = "メニュー";
 "Accessibility.Common.Status.Actions.Reply" = "返信";
 "Accessibility.Common.Status.Actions.Retweet" = "リツイート";
+"Accessibility.Common.Status.AuthorAvatar" = "Author avatar";
 "Accessibility.Common.Status.Location" = "位置情報";
 "Accessibility.Common.Status.Media" = "メディア";
 "Accessibility.Common.Status.Retweeted" = "Retweeted";
@@ -34,7 +35,6 @@
 "Accessibility.Scene.Home.Menu" = "メニュー";
 "Accessibility.Scene.ManageAccounts.Add" = "追加";
 "Accessibility.Scene.ManageAccounts.CurrentSignInUser" = "Current sign-in user: %@";
-"Accessibility.Scene.ManageAccounts.DoubleTapAndHoldToOpenTheAccountsPanel" = "Double tap and hold to open the accounts panel";
 "Accessibility.Scene.Search.History" = "履歴";
 "Accessibility.Scene.Search.Save" = "保存";
 "Accessibility.Scene.Settings.Display.FontSize" = "フォントサイズ";
@@ -44,6 +44,9 @@
 "Accessibility.Scene.User.Tab.Media" = "メディア";
 "Accessibility.Scene.User.Tab.Status" = "投稿";
 "Accessibility.Scene.User.Website" = "ウェブサイト";
+"Accessibility.VoiceOver.DoubleTapAndHoldToDisplayMenu" = "Double tap and hold to display menu";
+"Accessibility.VoiceOver.DoubleTapAndHoldToOpenTheAccountsPanel" = "Double tap and hold to open the accounts panel";
+"Accessibility.VoiceOver.DoubleTapToOpenProfile" = "Double tap to open profile";
 "Common.Alerts.AccountSuspended.Message" = "Twitterは%@に違反したアカウントを凍結します";
 "Common.Alerts.AccountSuspended.Title" = "アカウントは凍結されています";
 "Common.Alerts.AccountSuspended.TwitterRules" = "Twitterルール";

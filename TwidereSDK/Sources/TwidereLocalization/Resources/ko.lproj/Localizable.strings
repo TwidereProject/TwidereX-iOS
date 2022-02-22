@@ -12,6 +12,7 @@
 "Accessibility.Common.Status.Actions.Menu" = "메뉴";
 "Accessibility.Common.Status.Actions.Reply" = "답글";
 "Accessibility.Common.Status.Actions.Retweet" = "리트윗";
+"Accessibility.Common.Status.AuthorAvatar" = "Author avatar";
 "Accessibility.Common.Status.Location" = "위치";
 "Accessibility.Common.Status.Media" = "미디어";
 "Accessibility.Common.Status.Retweeted" = "리트윗함";
@@ -34,7 +35,6 @@
 "Accessibility.Scene.Home.Menu" = "메뉴";
 "Accessibility.Scene.ManageAccounts.Add" = "새로 만들기";
 "Accessibility.Scene.ManageAccounts.CurrentSignInUser" = "Current sign-in user: %@";
-"Accessibility.Scene.ManageAccounts.DoubleTapAndHoldToOpenTheAccountsPanel" = "Double tap and hold to open the accounts panel";
 "Accessibility.Scene.Search.History" = "기록";
 "Accessibility.Scene.Search.Save" = "저장";
 "Accessibility.Scene.Settings.Display.FontSize" = "글꼴 크기";
@@ -44,6 +44,9 @@
 "Accessibility.Scene.User.Tab.Media" = "미디어";
 "Accessibility.Scene.User.Tab.Status" = "상태";
 "Accessibility.Scene.User.Website" = "웹사이트";
+"Accessibility.VoiceOver.DoubleTapAndHoldToDisplayMenu" = "Double tap and hold to display menu";
+"Accessibility.VoiceOver.DoubleTapAndHoldToOpenTheAccountsPanel" = "Double tap and hold to open the accounts panel";
+"Accessibility.VoiceOver.DoubleTapToOpenProfile" = "Double tap to open profile";
 "Common.Alerts.AccountSuspended.Message" = "트위터는 %@ 규정을 어기면 계정을 정지시킵니다.";
 "Common.Alerts.AccountSuspended.Title" = "계정 정지됨";
 "Common.Alerts.AccountSuspended.TwitterRules" = "트위터 규정";

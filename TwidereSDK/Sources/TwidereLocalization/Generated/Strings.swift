@@ -36,6 +36,8 @@ public enum L10n {
         public static let twitter = L10n.tr("Localizable", "Accessibility.Common.Logo.Twitter")
       }
       public enum Status {
+        /// Author avatar
+        public static let authorAvatar = L10n.tr("Localizable", "Accessibility.Common.Status.AuthorAvatar")
         /// Location
         public static let location = L10n.tr("Localizable", "Accessibility.Common.Status.Location")
         /// Media
@@ -110,8 +112,6 @@ public enum L10n {
         public static func currentSignInUser(_ p1: Any) -> String {
           return L10n.tr("Localizable", "Accessibility.Scene.ManageAccounts.CurrentSignInUser", String(describing: p1))
         }
-        /// Double tap and hold to open the accounts panel
-        public static let doubleTapAndHoldToOpenTheAccountsPanel = L10n.tr("Localizable", "Accessibility.Scene.ManageAccounts.DoubleTapAndHoldToOpenTheAccountsPanel")
       }
       public enum Search {
         /// History
@@ -143,6 +143,14 @@ public enum L10n {
           public static let status = L10n.tr("Localizable", "Accessibility.Scene.User.Tab.Status")
         }
       }
+    }
+    public enum VoiceOver {
+      /// Double tap and hold to display menu
+      public static let doubleTapAndHoldToDisplayMenu = L10n.tr("Localizable", "Accessibility.VoiceOver.DoubleTapAndHoldToDisplayMenu")
+      /// Double tap and hold to open the accounts panel
+      public static let doubleTapAndHoldToOpenTheAccountsPanel = L10n.tr("Localizable", "Accessibility.VoiceOver.DoubleTapAndHoldToOpenTheAccountsPanel")
+      /// Double tap to open profile
+      public static let doubleTapToOpenProfile = L10n.tr("Localizable", "Accessibility.VoiceOver.DoubleTapToOpenProfile")
     }
   }
 

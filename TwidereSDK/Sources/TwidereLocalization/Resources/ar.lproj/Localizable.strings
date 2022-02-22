@@ -12,6 +12,7 @@
 "Accessibility.Common.Status.Actions.Menu" = "القائمة";
 "Accessibility.Common.Status.Actions.Reply" = "رد";
 "Accessibility.Common.Status.Actions.Retweet" = "أعد تغريده";
+"Accessibility.Common.Status.AuthorAvatar" = "Author avatar";
 "Accessibility.Common.Status.Location" = "الموقع";
 "Accessibility.Common.Status.Media" = "الوسائط";
 "Accessibility.Common.Status.Retweeted" = "أُعيد تغريده";
@@ -34,7 +35,6 @@
 "Accessibility.Scene.Home.Menu" = "القائمة";
 "Accessibility.Scene.ManageAccounts.Add" = "أضف";
 "Accessibility.Scene.ManageAccounts.CurrentSignInUser" = "Current sign-in user: %@";
-"Accessibility.Scene.ManageAccounts.DoubleTapAndHoldToOpenTheAccountsPanel" = "Double tap and hold to open the accounts panel";
 "Accessibility.Scene.Search.History" = "التأريخ";
 "Accessibility.Scene.Search.Save" = "احفظ";
 "Accessibility.Scene.Settings.Display.FontSize" = "حجم الخط";
@@ -44,6 +44,9 @@
 "Accessibility.Scene.User.Tab.Media" = "الوسائط";
 "Accessibility.Scene.User.Tab.Status" = "الحالات";
 "Accessibility.Scene.User.Website" = "الموقع الإلكتروني";
+"Accessibility.VoiceOver.DoubleTapAndHoldToDisplayMenu" = "Double tap and hold to display menu";
+"Accessibility.VoiceOver.DoubleTapAndHoldToOpenTheAccountsPanel" = "Double tap and hold to open the accounts panel";
+"Accessibility.VoiceOver.DoubleTapToOpenProfile" = "Double tap to open profile";
 "Common.Alerts.AccountSuspended.Message" = "تويتر يعلق الحسابات التي تخالف %@";
 "Common.Alerts.AccountSuspended.Title" = "الحساب معلق";
 "Common.Alerts.AccountSuspended.TwitterRules" = "قواعد تويتر";
