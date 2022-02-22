@@ -122,6 +122,7 @@ extension ProfileViewController {
         if navigationController?.viewControllers.first == self {
             navigationItem.leftBarButtonItem = avatarBarButtonItem
             avatarBarButtonItem.avatarButton.addTarget(self, action: #selector(ProfileViewController.avatarButtonPressed(_:)), for: .touchUpInside)
+            avatarBarButtonItem.delegate = self
             
             Publishers.CombineLatest(
                 context.authenticationService.activeAuthenticationContext,
@@ -300,6 +301,9 @@ extension ProfileViewController {
     }
     
 }
+
+// MARK: - AvatarBarButtonItemDelegate
+extension ProfileViewController: AvatarBarButtonItemDelegate { }
 
 // MARK: - ProfileHeaderViewControllerDelegate
 extension ProfileViewController: ProfileHeaderViewControllerDelegate {

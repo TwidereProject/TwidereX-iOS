@@ -12,6 +12,7 @@ import TwidereCommon
 import TwitterSDK
 
 extension AuthenticationIndex {
+    
     public var user: UserObject? {
         switch platform {
         case .twitter:

@@ -98,6 +98,7 @@ extension TimelineViewController {
                 self.avatarBarButtonItem.avatarButton.addTarget(self, action: #selector(TimelineViewController.avatarButtonPressed(_:)), for: .touchUpInside)
             }
             .store(in: &disposeBag)
+        avatarBarButtonItem.delegate = self
         
         // bind avatarBarButtonItem data
         Publishers.CombineLatest(
@@ -295,35 +296,10 @@ extension TimelineViewController: UITableViewDelegate, AutoGenerateTableViewDele
     }
 
     // sourcery:end
-    
-//    func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
-//        guard let diffableDataSource = viewModel.diffableDataSource else { return 100 }
-//        guard let item = diffableDataSource.itemIdentifier(for: indexPath) else { return 100 }
-//
-//        guard let frame = viewModel.cellFrameCache.object(forKey: NSNumber(value: item.hashValue))?.cgRectValue else {
-//            return 200
-//        }
-//        // os_log("%{public}s[%{public}ld], %{public}s: cache cell frame %s", ((#file as NSString).lastPathComponent), #line, #function, frame.debugDescription)
-//
-//        return ceil(frame.height)
-//    }
-//
-//    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-//        handleTableView(tableView, willDisplay: cell, forRowAt: indexPath)
-//    }
-//
-//    func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-//        handleTableView(tableView, didEndDisplaying: cell, forRowAt: indexPath)
-//
-//        guard let diffableDataSource = viewModel.diffableDataSource else { return }
-//        guard let item = diffableDataSource.itemIdentifier(for: indexPath) else { return }
-//
-//        let key = item.hashValue
-//        let frame = cell.frame
-//        viewModel.cellFrameCache.setObject(NSValue(cgRect: frame), forKey: NSNumber(value: key))
-//    }
-
 }
+
+// MARK: - AvatarBarButtonItemDelegate
+extension TimelineViewController: AvatarBarButtonItemDelegate { }
 
 // MARK: - ScrollViewContainer
 extension TimelineViewController: ScrollViewContainer {

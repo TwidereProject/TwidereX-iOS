@@ -72,7 +72,11 @@ public final class UserView: UIView {
     public let headerTextLabel = MetaLabel(style: .statusHeader)
 
     // avatar
-    public let authorProfileAvatarView = ProfileAvatarView()
+    public let authorProfileAvatarView: ProfileAvatarView = {
+        let profileAvatarView = ProfileAvatarView()
+        profileAvatarView.setup(dimension: .inline)
+        return profileAvatarView
+    }()
     
     // name
     public let nameLabel = MetaLabel(style: .userAuthorName)
@@ -166,8 +170,12 @@ extension UserView {
         containerStackView.addArrangedSubview(contentStackView)
         
         // content: H - [ user avatar | info container | accessory container ]
-        authorProfileAvatarView.dimension = UserView.avatarImageViewSize.width
+        authorProfileAvatarView.translatesAutoresizingMaskIntoConstraints = false
         contentStackView.addArrangedSubview(authorProfileAvatarView)
+        NSLayoutConstraint.activate([
+            authorProfileAvatarView.widthAnchor.constraint(equalToConstant: UserView.avatarImageViewSize.width).priority(.required - 1),
+            authorProfileAvatarView.heightAnchor.constraint(equalToConstant: UserView.avatarImageViewSize.height).priority(.required - 1),
+        ])
         contentStackView.addArrangedSubview(infoContainerStackView)
         contentStackView.addArrangedSubview(accessoryContainerView)
         
