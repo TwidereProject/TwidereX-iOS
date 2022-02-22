@@ -35,13 +35,16 @@ public enum Asset {
     public static let trendingUp = ImageAsset(name: "Arrows/trending.up")
   }
   public enum Badge {
-    public static let circleMask = ImageAsset(name: "Badge/circle.mask")
+    public static let circleMask44 = ImageAsset(name: "Badge/circle.mask.44")
+    public static let circleMask88 = ImageAsset(name: "Badge/circle.mask.88")
     public static let circleMastodon = ImageAsset(name: "Badge/circle.mastodon")
     public static let circleTwitter = ImageAsset(name: "Badge/circle.twitter")
     public static let robot = ImageAsset(name: "Badge/robot")
-    public static let robotMask = ImageAsset(name: "Badge/robot.mask")
+    public static let robotMask44 = ImageAsset(name: "Badge/robot.mask.44")
+    public static let robotMask88 = ImageAsset(name: "Badge/robot.mask.88")
     public static let verified = ImageAsset(name: "Badge/verified")
-    public static let verifiedMask = ImageAsset(name: "Badge/verified.mask")
+    public static let verifiedMask44 = ImageAsset(name: "Badge/verified.mask.44")
+    public static let verifiedMask88 = ImageAsset(name: "Badge/verified.mask.88")
   }
   public enum Colors {
     public enum Banner {

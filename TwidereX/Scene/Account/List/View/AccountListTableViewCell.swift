@@ -9,21 +9,16 @@
 import os.log
 import UIKit
 import Combine
-
-protocol AccountListTableViewCellDelegate: AnyObject {
-    func accountListTableViewCell(_ cell: AccountListTableViewCell, menuButtonPressed button: UIButton)
-}
+import TwidereUI
 
 final class AccountListTableViewCell: UITableViewCell {
     
     var disposeBag = Set<AnyCancellable>()
     var observations = Set<NSKeyValueObservation>()
     
-    weak var delegate: AccountListTableViewCellDelegate?
-    
     let userBriefInfoView = UserBriefInfoView()
     
-    let separatorLine = UIView.separatorLine
+    let separatorLine = SeparatorLineView()
     
     override func prepareForReuse() {
         super.prepareForReuse()
@@ -71,12 +66,4 @@ extension AccountListTableViewCell {
         ])
     }
     
-}
-
-extension AccountListTableViewCell {
-    @objc private func menuButtonPressed(_ sender: UIButton) {
-        os_log("%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
-
-        delegate?.accountListTableViewCell(self, menuButtonPressed: sender)
-    }
 }

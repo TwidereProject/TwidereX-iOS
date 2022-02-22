@@ -23,7 +23,7 @@ protocol StatusViewContainerTableViewCell: UITableViewCell, AutoGenerateProtocol
 // sourcery: protocolName = "StatusViewDelegate"
 // sourcery: replaceOf = "statusView(_"
 // sourcery: replaceWith = "func tableViewCell(_ cell: UITableViewCell,"
-protocol StatusViewTableViewCellDelegate: AnyObject, AutoGenerateProtocolDelegate {
+protocol StatusViewTableViewCellDelegate: AutoGenerateProtocolDelegate {
     // sourcery:inline:StatusViewTableViewCellDelegate.AutoGenerateProtocolDelegate
     func tableViewCell(_ cell: UITableViewCell, statusView: StatusView, headerDidPressed header: UIView)
     func tableViewCell(_ cell: UITableViewCell, statusView: StatusView, authorAvatarButtonDidPressed button: AvatarButton)

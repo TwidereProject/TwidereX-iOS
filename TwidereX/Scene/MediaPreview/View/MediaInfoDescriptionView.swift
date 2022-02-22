@@ -38,7 +38,7 @@ final class MediaInfoDescriptionView: UIView {
     
     let avatarView: ProfileAvatarView = {
         let avatarView = ProfileAvatarView()
-        avatarView.dimension = 32
+        avatarView.setup(dimension: .inline)
         return avatarView
     }()
     
@@ -114,7 +114,12 @@ extension MediaInfoDescriptionView {
         bottomContainerStackView.spacing = 8
         bottomContainerStackView.alignment = .center
         
+        avatarView.translatesAutoresizingMaskIntoConstraints = false
         bottomContainerStackView.addArrangedSubview(avatarView)
+        NSLayoutConstraint.activate([
+            avatarView.widthAnchor.constraint(equalToConstant: MediaInfoDescriptionView.avatarImageViewSize.width).priority(.required - 1),
+            avatarView.heightAnchor.constraint(equalToConstant: MediaInfoDescriptionView.avatarImageViewSize.height).priority(.required - 1),
+        ])
         bottomContainerStackView.addArrangedSubview(nameMetaLabel)
         toolbar.translatesAutoresizingMaskIntoConstraints = false
         bottomContainerStackView.addArrangedSubview(toolbar)
