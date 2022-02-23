@@ -107,7 +107,7 @@ extension StatusThreadViewModel.LoadThreadState {
                         authenticationContext: authenticationContext
                     )
                     guard let conversationID = response.value.data?.first?.conversationID else {
-                        assertionFailure()
+                        // assertionFailure()
                         await enter(state: PrepareFail.self)
                         return
                     }

@@ -9,6 +9,7 @@
 import os.log
 import UIKit
 import Combine
+import TwidereUI
 
 final class StatusThreadRootTableViewCell: UITableViewCell {
     
@@ -91,21 +92,31 @@ extension StatusThreadRootTableViewCell {
         isAccessibilityElement = false
     }
     
+}
+
+extension StatusThreadRootTableViewCell {
+    
     override var accessibilityElements: [Any]? {
         get {
-            return [
+            var elements: [UIView?] = [
                 statusView.headerTextLabel,
                 statusView.authorAvatarButton,
                 statusView.authorNameLabel,
+                statusView.authorUsernameLabel,
                 statusView.spoilerContentTextView,
                 statusView.contentTextView,
                 statusView.mediaGridContainerView,
+                statusView.pollTableView,
+                statusView.pollVoteDescriptionLabel,
+                statusView.pollVoteButton,
                 statusView.quoteStatusView,
                 statusView.metricsDashboardView,
                 statusView.toolbar,
             ]
-            .compactMap { $0 }
-            .filter { !$0.isHidden }
+            
+            return elements
+                .compactMap { $0 }
+                .filter { !$0.isHidden }
         }
         set { }
     }

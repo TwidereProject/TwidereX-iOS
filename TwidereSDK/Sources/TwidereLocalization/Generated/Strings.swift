@@ -125,6 +125,12 @@ public enum L10n {
           public static let fontSize = L10n.tr("Localizable", "Accessibility.Scene.Settings.Display.FontSize")
         }
       }
+      public enum SignIn {
+        /// Please enter Mastodon domain to sign-in
+        public static let pleaseEnterMastodonDomainToSignIn = L10n.tr("Localizable", "Accessibility.Scene.SignIn.PleaseEnterMastodonDomainToSignIn")
+        /// Twitter client authentication key setting
+        public static let twitterClientAuthenticationKeySetting = L10n.tr("Localizable", "Accessibility.Scene.SignIn.TwitterClientAuthenticationKeySetting")
+      }
       public enum Timeline {
         /// Load
         public static let loadGap = L10n.tr("Localizable", "Accessibility.Scene.Timeline.LoadGap")

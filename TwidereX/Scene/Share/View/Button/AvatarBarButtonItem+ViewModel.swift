@@ -17,6 +17,8 @@ extension AvatarBarButtonItem {
         var disposeBag = Set<AnyCancellable>()
         var observations = Set<NSKeyValueObservation>()
         
+        @Published var name: String?
+        @Published var username: String?
         @Published var avatarURL: URL?
         
         @Published var avatarStyle: UserDefaults.AvatarStyle = UserDefaults.shared.avatarStyle
@@ -33,7 +35,11 @@ extension AvatarBarButtonItem {
 
 extension AvatarBarButtonItem.ViewModel {
     func bind(view: AvatarBarButtonItem) {
-        // avatar
+        bindAvatar(view: view)
+        bindAccessibility(view: view)
+    }
+    
+    private func bindAvatar(view: AvatarBarButtonItem) {
         $avatarURL
             .sink { avatarURL in
                 let configuration = AvatarImageView.Configuration(url: avatarURL)
@@ -53,6 +59,7 @@ extension AvatarBarButtonItem.ViewModel {
         view.avatarButton.avatarImageView.configure(
             cornerConfiguration: cornerConfiguration(avatarStyle: avatarStyle)
         )
+        
         $avatarStyle
             .removeDuplicates()
             .sink { avatarStyle in
@@ -67,6 +74,29 @@ extension AvatarBarButtonItem.ViewModel {
             }
             .store(in: &disposeBag)
     }
+    
+    private func bindAccessibility(view: AvatarBarButtonItem) {
+        Publishers.CombineLatest(
+            $name,
+            $username
+        )
+        .sink { name, username in
+            let info = [name, username]
+                .compactMap { $0 }
+                .joined(separator: ", ")
+            
+            guard !info.isEmpty else {
+                view.avatarButton.accessibilityLabel = nil
+                return
+            }
+            
+            view.accessibilityLabel = L10n.Accessibility.Scene.ManageAccounts.currentSignInUser(info)
+        }
+        .store(in: &disposeBag)
+        
+        view.accessibilityHint = L10n.Accessibility.VoiceOver.doubleTapAndHoldToOpenTheAccountsPanel
+    }
+    
 }
 
 extension AvatarBarButtonItem {
@@ -97,6 +127,16 @@ extension AvatarBarButtonItem {
             return
         }
         
+        user.publisher(for: \.name)
+            .map { $0 as String? }
+            .assign(to: \.name, on: viewModel)
+            .store(in: &disposeBag)
+        
+        user.publisher(for: \.username)
+            .map { $0 as String? }
+            .assign(to: \.username, on: viewModel)
+            .store(in: &disposeBag)
+        
         // avatar
         user.publisher(for: \.profileImageURL)
             .map { _ in user.avatarImageURL() }
@@ -108,6 +148,16 @@ extension AvatarBarButtonItem {
         guard user.managedObjectContext != nil else {
             return
         }
+        
+        user.publisher(for: \.displayName)
+            .map { _ in user.displayName as String? }
+            .assign(to: \.name, on: viewModel)
+            .store(in: &disposeBag)
+        
+        user.publisher(for: \.acct)
+            .map { _ in user.acctWithDomain as String? }
+            .assign(to: \.username, on: viewModel)
+            .store(in: &disposeBag)
         
         // avatar
         user.publisher(for: \.avatar)

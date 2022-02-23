@@ -38,6 +38,8 @@
 "Accessibility.Scene.Search.History" = "履歴";
 "Accessibility.Scene.Search.Save" = "保存";
 "Accessibility.Scene.Settings.Display.FontSize" = "フォントサイズ";
+"Accessibility.Scene.SignIn.PleaseEnterMastodonDomainToSignIn" = "Please enter Mastodon domain to sign-in";
+"Accessibility.Scene.SignIn.TwitterClientAuthenticationKeySetting" = "Twitter client authentication key setting";
 "Accessibility.Scene.Timeline.LoadGap" = "読み込み";
 "Accessibility.Scene.User.Location" = "位置情報";
 "Accessibility.Scene.User.Tab.Favourite" = "お気に入り";

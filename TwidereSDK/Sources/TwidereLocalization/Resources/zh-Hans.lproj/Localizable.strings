@@ -38,6 +38,8 @@
 "Accessibility.Scene.Search.History" = "历史";
 "Accessibility.Scene.Search.Save" = "保存";
 "Accessibility.Scene.Settings.Display.FontSize" = "字体大小";
+"Accessibility.Scene.SignIn.PleaseEnterMastodonDomainToSignIn" = "请输入要登录的 Mastodon 域名";
+"Accessibility.Scene.SignIn.TwitterClientAuthenticationKeySetting" = "Twitter 客户端认证密钥自定义设置";
 "Accessibility.Scene.Timeline.LoadGap" = "加载";
 "Accessibility.Scene.User.Location" = "地理位置";
 "Accessibility.Scene.User.Tab.Favourite" = "收藏";

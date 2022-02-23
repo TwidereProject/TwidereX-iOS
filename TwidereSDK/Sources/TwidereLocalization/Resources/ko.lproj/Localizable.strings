@@ -38,6 +38,8 @@
 "Accessibility.Scene.Search.History" = "기록";
 "Accessibility.Scene.Search.Save" = "저장";
 "Accessibility.Scene.Settings.Display.FontSize" = "글꼴 크기";
+"Accessibility.Scene.SignIn.PleaseEnterMastodonDomainToSignIn" = "Please enter Mastodon domain to sign-in";
+"Accessibility.Scene.SignIn.TwitterClientAuthenticationKeySetting" = "Twitter client authentication key setting";
 "Accessibility.Scene.Timeline.LoadGap" = "불러오기";
 "Accessibility.Scene.User.Location" = "위치";
 "Accessibility.Scene.User.Tab.Favourite" = "좋아요";

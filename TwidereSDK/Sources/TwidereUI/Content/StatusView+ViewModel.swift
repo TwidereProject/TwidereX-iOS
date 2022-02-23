@@ -558,6 +558,15 @@ extension StatusView.ViewModel {
                 statusView.accessibilityLabel = accessibilityLabel
             }
             .store(in: &disposeBag)
+        
+
+        // visibility
+        $pollItems
+            .sink { items in
+                statusView.pollVoteDescriptionLabel.isAccessibilityElement = !items.isEmpty
+                statusView.pollVoteButton.isAccessibilityElement = !items.isEmpty
+            }
+            .store(in: &disposeBag)
     }
 
 }

@@ -38,6 +38,8 @@
 "Accessibility.Scene.Search.History" = "التأريخ";
 "Accessibility.Scene.Search.Save" = "احفظ";
 "Accessibility.Scene.Settings.Display.FontSize" = "حجم الخط";
+"Accessibility.Scene.SignIn.PleaseEnterMastodonDomainToSignIn" = "Please enter Mastodon domain to sign-in";
+"Accessibility.Scene.SignIn.TwitterClientAuthenticationKeySetting" = "Twitter client authentication key setting";
 "Accessibility.Scene.Timeline.LoadGap" = "حمّل";
 "Accessibility.Scene.User.Location" = "الموقع";
 "Accessibility.Scene.User.Tab.Favourite" = "المفضلة";

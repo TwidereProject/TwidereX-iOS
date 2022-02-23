@@ -74,14 +74,22 @@ public final class StatusView: UIView {
     public let headerContainerView = UIView()
     public let headerIconImageView = UIImageView()
     public static var headerTextLabelStyle: TextStyle { .statusHeader }
-    public let headerTextLabel = MetaLabel(style: .statusHeader)
+    public let headerTextLabel: MetaLabel = {
+        let label = MetaLabel(style: .statusHeader)
+        label.isUserInteractionEnabled = false
+        return label
+    }()
     
     // avatar
     public let authorAvatarButton = AvatarButton()
     
     // author
     public static var authorNameLabelStyle: TextStyle { .statusAuthorName }
-    public let authorNameLabel = MetaLabel(style: StatusView.authorNameLabelStyle)
+    public let authorNameLabel: MetaLabel = {
+        let label = MetaLabel(style: StatusView.authorNameLabelStyle)
+        label.accessibilityTraits = .staticText
+        return label
+    }()
     public let lockImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.tintColor = .secondaryLabel
@@ -257,12 +265,12 @@ extension StatusView {
         ])
         
         // header
-        headerTextLabel.isUserInteractionEnabled = false
         let headerTapGestureRecognizer = UITapGestureRecognizer.singleTapGestureRecognizer
         headerTapGestureRecognizer.addTarget(self, action: #selector(StatusView.headerTapGestureRecognizerHandler(_:)))
         headerContainerView.addGestureRecognizer(headerTapGestureRecognizer)
         // avatar button
-        authorAvatarButton.accessibilityLabel = "Open Author Profile" // TODO: i18n
+        authorAvatarButton.accessibilityLabel = L10n.Accessibility.Common.Status.authorAvatar
+        authorAvatarButton.accessibilityHint = L10n.Accessibility.VoiceOver.doubleTapToOpenProfile
         authorAvatarButton.addTarget(self, action: #selector(StatusView.authorAvatarButtonDidPressed(_:)), for: .touchUpInside)
         // expand content
         expandContentButton.addTarget(self, action: #selector(StatusView.expandContentButtonDidPressed(_:)), for: .touchUpInside)
