@@ -673,6 +673,7 @@ extension StatusView.ViewModel {
                 $pollCountdownDescription
             )
             .map { items, pollVoteDescription, pollCountdownDescription -> String? in
+                guard !items.isEmpty else { return nil }
                 guard let managedObjectContext = self.managedObjectContext else { return nil }
                 
                 var strings: [String?] = []
