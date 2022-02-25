@@ -98,12 +98,14 @@ extension StatusThreadRootTableViewCell {
     
     override var accessibilityElements: [Any]? {
         get {
-            var elements: [UIView?] = [
+            let elements: [UIView?] = [
                 statusView.headerTextLabel,
                 statusView.authorAvatarButton,
                 statusView.authorNameLabel,
                 statusView.authorUsernameLabel,
+                statusView.visibilityImageView,
                 statusView.spoilerContentTextView,
+                statusView.expandContentButton,
                 statusView.contentTextView,
                 statusView.mediaGridContainerView,
                 statusView.pollTableView,

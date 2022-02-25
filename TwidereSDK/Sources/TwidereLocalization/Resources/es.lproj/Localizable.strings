@@ -8,13 +8,21 @@
 "Accessibility.Common.Logo.Twitter" = "Logo de Twitter";
 "Accessibility.Common.More" = "Más";
 "Accessibility.Common.NetworkImage" = "Imagen de red";
+"Accessibility.Common.Status.Actions.HideContent" = "Hide content";
+"Accessibility.Common.Status.Actions.HideMedia" = "Hide media";
 "Accessibility.Common.Status.Actions.Like" = "Me gusta";
 "Accessibility.Common.Status.Actions.Menu" = "Menú";
 "Accessibility.Common.Status.Actions.Reply" = "Responder";
 "Accessibility.Common.Status.Actions.Retweet" = "Retwittear";
+"Accessibility.Common.Status.Actions.RevealContent" = "Reveal content";
+"Accessibility.Common.Status.Actions.RevealMedia" = "Reveal media";
 "Accessibility.Common.Status.AuthorAvatar" = "Author avatar";
+"Accessibility.Common.Status.Boosted" = "Boosted";
+"Accessibility.Common.Status.ContentWarning" = "Content Warning";
+"Accessibility.Common.Status.Liked" = "Liked";
 "Accessibility.Common.Status.Location" = "Ubicación";
 "Accessibility.Common.Status.Media" = "Multimedia";
+"Accessibility.Common.Status.PollOptionOrdinalPrefix" = "Poll option";
 "Accessibility.Common.Status.Retweeted" = "Retwitteados";
 "Accessibility.Common.Video.Play" = "Reproducir vídeo";
 "Accessibility.Scene.Compose.AddMention" = "Añadir mención";
@@ -49,6 +57,7 @@
 "Accessibility.VoiceOver.DoubleTapAndHoldToDisplayMenu" = "Double tap and hold to display menu";
 "Accessibility.VoiceOver.DoubleTapAndHoldToOpenTheAccountsPanel" = "Double tap and hold to open the accounts panel";
 "Accessibility.VoiceOver.DoubleTapToOpenProfile" = "Double tap to open profile";
+"Accessibility.VoiceOver.Selected" = "Selected";
 "Common.Alerts.AccountSuspended.Message" = "Twitter suspende cuentas que violan %@";
 "Common.Alerts.AccountSuspended.Title" = "Cuenta suspendida";
 "Common.Alerts.AccountSuspended.TwitterRules" = "Reglas de Twitter";
@@ -174,6 +183,7 @@
 "Common.Controls.ProfileDashboard.Following" = "Siguiendo";
 "Common.Controls.ProfileDashboard.Listed" = "Listado";
 "Common.Controls.Status.Actions.Bookmark" = "Marcador";
+"Common.Controls.Status.Actions.Boost" = "Boost";
 "Common.Controls.Status.Actions.CopyLink" = "Copiar enlace";
 "Common.Controls.Status.Actions.CopyText" = "Copiar texto";
 "Common.Controls.Status.Actions.DeleteTweet" = "Eliminar tweet";

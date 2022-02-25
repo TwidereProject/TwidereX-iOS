@@ -11,8 +11,10 @@ import Combine
 import SwiftUI
 import CoreDataStack
 import AppShared
+import TwidereUI
 
 extension StatusTableViewCell {
+    
     final class ViewModel {
         enum Value {
             case feed(Feed)
@@ -22,20 +24,16 @@ extension StatusTableViewCell {
         }
         
         let value: Value
-        let activeAuthenticationContext: AnyPublisher<AuthenticationContext?, Never>
 
-        init(
-            value: Value,
-            activeAuthenticationContext: AnyPublisher<AuthenticationContext?, Never>
-        ) {
+        init(value: Value) {
             self.value = value
-            self.activeAuthenticationContext = activeAuthenticationContext
         }
     }
     
     func configure(
         tableView: UITableView,
         viewModel: ViewModel,
+        configurationContext: StatusView.ConfigurationContext,
         delegate: StatusViewTableViewCellDelegate?
     ) {
         if statusView.frame == .zero {
@@ -49,12 +47,6 @@ extension StatusTableViewCell {
             statusView.quoteStatusView?.contentTextView.preferredMaxLayoutWidth = statusView.quoteStatusView?.contentMaxLayoutWidth
             logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): did layout for new cell")
         }
-        
-        let configurationContext = StatusView.ConfigurationContext(
-            dateTimeProvider: DateTimeSwiftProvider(),
-            twitterTextProvider: OfficialTwitterTextProvider(),
-            activeAuthenticationContext: viewModel.activeAuthenticationContext
-        )
         
         switch viewModel.value {
         case .feed(let feed):
@@ -84,19 +76,21 @@ extension StatusTableViewCell {
             configureSeparator(style: .inset)
         }
         
+        self.delegate = delegate
         
-        statusView.viewModel.contentRevealChangePublisher
+        statusView.viewModel.$isContentReveal
+            .removeDuplicates()
+            .dropFirst()
             .receive(on: DispatchQueue.main)
-            .sink { [weak tableView] _ in
+            .sink { [weak tableView, weak self] _ in
                 guard let tableView = tableView else { return }
+                guard let _ = self else { return }
                 UIView.setAnimationsEnabled(false)
                 tableView.beginUpdates()
                 tableView.endUpdates()
                 UIView.setAnimationsEnabled(true)
             }
             .store(in: &disposeBag)
-        
-        self.delegate = delegate
     }
 
 }

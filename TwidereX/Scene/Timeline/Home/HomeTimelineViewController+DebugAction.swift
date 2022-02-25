@@ -250,7 +250,7 @@ extension HomeTimelineViewController {
         case blockingAuthor
         
         func match(item: StatusItem) -> Bool {
-            let authenticationContext = AppContext.shared.authenticationService.activeAuthenticationContext.value
+            let authenticationContext = AppContext.shared.authenticationService.activeAuthenticationContext
             switch item {
             case .feed(let record):
                 guard let feed = record.object(in: AppContext.shared.managedObjectContext) else { return false }

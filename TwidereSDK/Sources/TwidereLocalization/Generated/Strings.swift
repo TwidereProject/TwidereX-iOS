@@ -38,13 +38,25 @@ public enum L10n {
       public enum Status {
         /// Author avatar
         public static let authorAvatar = L10n.tr("Localizable", "Accessibility.Common.Status.AuthorAvatar")
+        /// Boosted
+        public static let boosted = L10n.tr("Localizable", "Accessibility.Common.Status.Boosted")
+        /// Content Warning
+        public static let contentWarning = L10n.tr("Localizable", "Accessibility.Common.Status.ContentWarning")
+        /// Liked
+        public static let liked = L10n.tr("Localizable", "Accessibility.Common.Status.Liked")
         /// Location
         public static let location = L10n.tr("Localizable", "Accessibility.Common.Status.Location")
         /// Media
         public static let media = L10n.tr("Localizable", "Accessibility.Common.Status.Media")
+        /// Poll option
+        public static let pollOptionOrdinalPrefix = L10n.tr("Localizable", "Accessibility.Common.Status.PollOptionOrdinalPrefix")
         /// Retweeted
         public static let retweeted = L10n.tr("Localizable", "Accessibility.Common.Status.Retweeted")
         public enum Actions {
+          /// Hide content
+          public static let hideContent = L10n.tr("Localizable", "Accessibility.Common.Status.Actions.HideContent")
+          /// Hide media
+          public static let hideMedia = L10n.tr("Localizable", "Accessibility.Common.Status.Actions.HideMedia")
           /// Like
           public static let like = L10n.tr("Localizable", "Accessibility.Common.Status.Actions.Like")
           /// Menu
@@ -53,6 +65,10 @@ public enum L10n {
           public static let reply = L10n.tr("Localizable", "Accessibility.Common.Status.Actions.Reply")
           /// Retweet
           public static let retweet = L10n.tr("Localizable", "Accessibility.Common.Status.Actions.Retweet")
+          /// Reveal content
+          public static let revealContent = L10n.tr("Localizable", "Accessibility.Common.Status.Actions.RevealContent")
+          /// Reveal media
+          public static let revealMedia = L10n.tr("Localizable", "Accessibility.Common.Status.Actions.RevealMedia")
         }
       }
       public enum Video {
@@ -157,6 +173,8 @@ public enum L10n {
       public static let doubleTapAndHoldToOpenTheAccountsPanel = L10n.tr("Localizable", "Accessibility.VoiceOver.DoubleTapAndHoldToOpenTheAccountsPanel")
       /// Double tap to open profile
       public static let doubleTapToOpenProfile = L10n.tr("Localizable", "Accessibility.VoiceOver.DoubleTapToOpenProfile")
+      /// Selected
+      public static let selected = L10n.tr("Localizable", "Accessibility.VoiceOver.Selected")
     }
   }
 
@@ -596,6 +614,8 @@ public enum L10n {
         public enum Actions {
           /// Bookmark
           public static let bookmark = L10n.tr("Localizable", "Common.Controls.Status.Actions.Bookmark")
+          /// Boost
+          public static let boost = L10n.tr("Localizable", "Common.Controls.Status.Actions.Boost")
           /// Copy link
           public static let copyLink = L10n.tr("Localizable", "Common.Controls.Status.Actions.CopyLink")
           /// Copy text
@@ -1419,6 +1439,14 @@ public enum L10n {
   }
 
   public enum Count {
+    /// Plural format key: "Input limit remains %#@character_count@"
+    public static func inputLimitRemains(_ p1: Int) -> String {
+      return L10n.tr("Localizable", "count.input_limit_remains", p1)
+    }
+    /// Plural format key: "%#@like_count@"
+    public static func like(_ p1: Int) -> String {
+      return L10n.tr("Localizable", "count.like", p1)
+    }
     /// Plural format key: "%#@count_media@"
     public static func media(_ p1: Int) -> String {
       return L10n.tr("Localizable", "count.media", p1)
@@ -1427,9 +1455,35 @@ public enum L10n {
     public static func people(_ p1: Int) -> String {
       return L10n.tr("Localizable", "count.people", p1)
     }
+    /// Plural format key: "%#@post_count@"
+    public static func post(_ p1: Int) -> String {
+      return L10n.tr("Localizable", "count.post", p1)
+    }
+    /// Plural format key: "%#@quote_count@"
+    public static func quote(_ p1: Int) -> String {
+      return L10n.tr("Localizable", "count.quote", p1)
+    }
+    /// Plural format key: "%#@reblog_count@"
+    public static func reblog(_ p1: Int) -> String {
+      return L10n.tr("Localizable", "count.reblog", p1)
+    }
+    /// Plural format key: "%#@reply_count@"
+    public static func reply(_ p1: Int) -> String {
+      return L10n.tr("Localizable", "count.reply", p1)
+    }
+    /// Plural format key: "%#@retweet_count@"
+    public static func retweet(_ p1: Int) -> String {
+      return L10n.tr("Localizable", "count.retweet", p1)
+    }
     /// Plural format key: "%#@count_vote@"
     public static func vote(_ p1: Int) -> String {
       return L10n.tr("Localizable", "count.vote", p1)
+    }
+    public enum MetricFormatted {
+      /// Plural format key: "%@ %#@post_count@"
+      public static func post(_ p1: Any, _ p2: Int) -> String {
+        return L10n.tr("Localizable", "count.metric_formatted.post", String(describing: p1), p2)
+      }
     }
     public enum People {
       /// Plural format key: "%#@count_people_talking@"

@@ -75,7 +75,7 @@ extension SearchViewModel {
         Publishers.CombineLatest3(
             historyItems,
             trendItems,
-            context.authenticationService.activeAuthenticationContext
+            context.authenticationService.$activeAuthenticationContext
         )
         .throttle(for: 0.3, scheduler: DispatchQueue.main, latest: true)
         .sink { [weak self] historyItems, trendItems, authenticationContext in

@@ -9,8 +9,9 @@
 import os.log
 import UIKit
 import Combine
-import AppShared
 import CoreDataStack
+import AppShared
+import TwidereCore
 import TwitterMeta
 import MastodonMeta
 import Meta
@@ -19,31 +20,84 @@ extension MediaInfoDescriptionView {
     final class ViewModel: ObservableObject {
         var disposeBag = Set<AnyCancellable>()
         var observations = Set<NSKeyValueObservation>()
+        
+        @Published public var platform: Platform = .none
+        @Published public var twitterTextProvider: TwitterTextProvider?
+        @Published public var dateTimeProvider: DateTimeProvider?
+        @Published public var authenticationContext: AuthenticationContext?
      
+        @Published public var authorUserIdentifier: UserIdentifier?
         @Published public var authorAvatarImageURL: URL?
         @Published public var authorName: MetaContent?
         
-        @Published public var protected: Bool = false
+        @Published public var protected = false
+        @Published public var isMyself = false
         
         @Published public var content: MetaContent?
+
+        @Published public var visibility: StatusVisibility?
      
-        @Published public var isRepost: Bool = false
-        @Published public var isLike: Bool = false
+        @Published public var isRepost = false
+        @Published public var isRepostEnabled = true
+        
+        @Published public var isLike = false
+        
+        init() {
+            // isMyself
+            Publishers.CombineLatest(
+                $authenticationContext,
+                $authorUserIdentifier
+            )
+            .map { authenticationContext, authorUserIdentifier -> Bool in
+                guard let authenticationContext = authenticationContext,
+                      let authorUserIdentifier = authorUserIdentifier
+                else { return false }
+                let meUserIdentifier = authenticationContext.userIdentifier
+                switch (meUserIdentifier, authorUserIdentifier) {
+                case (.twitter(let me), .twitter(let author)):
+                    return me.id == author.id
+                case (.mastodon(let me), .mastodon(let author)):
+                    return me.domain == author.domain
+                        && me.id == author.id
+                default:
+                    return false
+                }
+            }
+            .assign(to: &$isMyself)
+            // isRepostEnabled
+            Publishers.CombineLatest4(
+                $platform,
+                $protected,
+                $isMyself,
+                $visibility
+            )
+            .map { platform, protected, isMyself, visibility -> Bool in
+                switch platform {
+                case .none:
+                    return true
+                case .twitter:
+                    guard !isMyself else { return true }
+                    return !protected
+                case .mastodon:
+                    guard !isMyself else { return true }
+                    guard case let .mastodon(visibility) = visibility else {
+                        return true
+                    }
+                    switch visibility {
+                    case .public, .unlisted:
+                        return true
+                    case .private, .direct, ._other:
+                        return false
+                    }
+                }
+            }
+            .assign(to: &$isRepostEnabled)
+        }
     }
 }
 
 extension MediaInfoDescriptionView.ViewModel {
     func bind(view: MediaInfoDescriptionView) {
-        // content
-        $content
-            .sink { metaContent in
-                guard let content = metaContent else {
-                    view.contentTextView.reset()
-                    return
-                }
-                view.contentTextView.configure(content: content)
-            }
-            .store(in: &disposeBag)
         // avatar
         $authorAvatarImageURL
             .sink { url in
@@ -75,18 +129,31 @@ extension MediaInfoDescriptionView.ViewModel {
                 view.nameMetaLabel.configure(content: metaContent)
             }
             .store(in: &disposeBag)
+        // content
+        $content
+            .sink { metaContent in
+                guard let content = metaContent else {
+                    view.contentTextView.reset()
+                    return
+                }
+                view.contentTextView.configure(content: content)
+            }
+            .store(in: &disposeBag)
         // toolbar
+        $platform
+            .assign(to: \.platform, on: view.toolbar.viewModel)
+            .store(in: &disposeBag)
         Publishers.CombineLatest(
             $isRepost,
-            $protected
+            $isRepostEnabled
         )
-        .sink { isRepost, protected in
-            view.toolbar.setupRepost(count: 0, isRepost: isRepost, isLocked: protected)
+        .sink { isRepost, isEnabled in
+            view.toolbar.setupRepost(count: 0, isEnabled: isEnabled, isHighlighted: isRepost)
         }
         .store(in: &disposeBag)
         $isLike
             .sink { isLike in
-                view.toolbar.setupLike(count: 0, isLike: isLike)
+                 view.toolbar.setupLike(count: 0, isHighlighted: isLike)
             }
             .store(in: &disposeBag)
     }
@@ -94,23 +161,8 @@ extension MediaInfoDescriptionView.ViewModel {
 
 
 extension MediaInfoDescriptionView {
-    public struct ConfigurationContext {
-        public let dateTimeProvider: DateTimeProvider
-        public let twitterTextProvider: TwitterTextProvider
-        public let activeAuthenticationContext: AnyPublisher<AuthenticationContext?, Never>
-        
-        public init(
-            dateTimeProvider: DateTimeProvider,
-            twitterTextProvider: TwitterTextProvider,
-            activeAuthenticationContext: AnyPublisher<AuthenticationContext?, Never>
-        ) {
-            self.dateTimeProvider = dateTimeProvider
-            self.twitterTextProvider = twitterTextProvider
-            self.activeAuthenticationContext = activeAuthenticationContext
-        }
-    }
+    public typealias ConfigurationContext = StatusView.ConfigurationContext
 }
-
 
 extension MediaInfoDescriptionView {
     public func configure(
@@ -137,24 +189,17 @@ extension MediaInfoDescriptionView {
         twitterStatus status: TwitterStatus,
         configurationContext: ConfigurationContext
     ) {
-        configureAuthor(
-            twitterStatus: status,
-            dateTimeProvider: configurationContext.dateTimeProvider
-        )
-        configureContent(
-            twitterStatus: status,
-            twitterTextProvider: configurationContext.twitterTextProvider
-        )
-        configureToolbar(
-            twitterStatus: status,
-            activeAuthenticationContext: configurationContext.activeAuthenticationContext
-        )
+        viewModel.platform = .twitter
+        viewModel.dateTimeProvider = configurationContext.dateTimeProvider
+        viewModel.twitterTextProvider = configurationContext.twitterTextProvider
+        configurationContext.authenticationContext.assign(to: \.authenticationContext, on: viewModel).store(in: &disposeBag)
+
+        configureAuthor(twitterStatus: status)
+        configureContent(twitterStatus: status)
+        configureToolbar(twitterStatus: status)
     }
     
-    private func configureAuthor(
-        twitterStatus status: TwitterStatus,
-        dateTimeProvider: DateTimeProvider
-    ) {
+    private func configureAuthor(twitterStatus status: TwitterStatus) {
         let author = (status.repost ?? status).author
         
         // author avatar
@@ -173,10 +218,12 @@ extension MediaInfoDescriptionView {
             .store(in: &disposeBag)
     }
     
-    private func configureContent(
-        twitterStatus status: TwitterStatus,
-        twitterTextProvider: TwitterTextProvider
-    ) {
+    private func configureContent(twitterStatus status: TwitterStatus) {
+        guard let twitterTextProvider = viewModel.twitterTextProvider else {
+            assertionFailure()
+            return
+        }
+        
         let status = status.repost ?? status
         let content = TwitterContent(content: status.text)
         let metaContent = TwitterMetaContent.convert(
@@ -185,17 +232,15 @@ extension MediaInfoDescriptionView {
             twitterTextProvider: twitterTextProvider
         )
         viewModel.content = metaContent
+        viewModel.visibility = nil
     }
     
-    private func configureToolbar(
-        twitterStatus status: TwitterStatus,
-        activeAuthenticationContext: AnyPublisher<AuthenticationContext?, Never>
-    ) {
+    private func configureToolbar(twitterStatus status: TwitterStatus) {
         let status = status.repost ?? status
         
         // relationship
         Publishers.CombineLatest(
-            activeAuthenticationContext,
+            viewModel.$authenticationContext,
             status.publisher(for: \.repostBy)
         )
         .map { authenticationContext, repostBy in
@@ -209,7 +254,7 @@ extension MediaInfoDescriptionView {
         .store(in: &disposeBag)
         
         Publishers.CombineLatest(
-            activeAuthenticationContext,
+            viewModel.$authenticationContext,
             status.publisher(for: \.likeBy)
         )
         .map { authenticationContext, likeBy in
@@ -230,20 +275,19 @@ extension MediaInfoDescriptionView {
         mastodonStatus status: MastodonStatus,
         configurationContext: ConfigurationContext
     ) {
+        viewModel.platform = .mastodon
+        viewModel.dateTimeProvider = configurationContext.dateTimeProvider
+        viewModel.twitterTextProvider = configurationContext.twitterTextProvider
+        configurationContext.authenticationContext.assign(to: \.authenticationContext, on: viewModel).store(in: &disposeBag)
+        
 //        configureHeader(mastodonStatus: status, mastodonNotification: notification)
-        configureAuthor(mastodonStatus: status, dateTimeProvider: configurationContext.dateTimeProvider)
+        configureAuthor(mastodonStatus: status)
         configureContent(mastodonStatus: status)
 //        configureMedia(mastodonStatus: status)
-        configureToolbar(
-            mastodonStatus: status,
-            activeAuthenticationContext: configurationContext.activeAuthenticationContext
-        )
+        configureToolbar(mastodonStatus: status)
     }
     
-    private func configureAuthor(
-        mastodonStatus status: MastodonStatus,
-        dateTimeProvider: DateTimeProvider
-    ) {
+    private func configureAuthor(mastodonStatus status: MastodonStatus) {
         let author = (status.repost ?? status).author
         
         // author avatar
@@ -285,17 +329,16 @@ extension MediaInfoDescriptionView {
             assertionFailure(error.localizedDescription)
             viewModel.content = PlaintextMetaContent(string: "")
         }
+        
+        viewModel.visibility = status.visibility.asStatusVisibility
     }
     
-    private func configureToolbar(
-        mastodonStatus status: MastodonStatus,
-        activeAuthenticationContext: AnyPublisher<AuthenticationContext?, Never>
-    ) {
+    private func configureToolbar(mastodonStatus status: MastodonStatus) {
         let status = status.repost ?? status
         
         // relationship
         Publishers.CombineLatest(
-            activeAuthenticationContext,
+            viewModel.$authenticationContext,
             status.publisher(for: \.repostBy)
         )
             .map { authenticationContext, repostBy in
@@ -310,7 +353,7 @@ extension MediaInfoDescriptionView {
             .store(in: &disposeBag)
         
         Publishers.CombineLatest(
-            activeAuthenticationContext,
+            viewModel.$authenticationContext,
             status.publisher(for: \.likeBy)
         )
             .map { authenticationContext, likeBy in

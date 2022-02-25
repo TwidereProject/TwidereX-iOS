@@ -75,6 +75,10 @@ extension PollOptionView {
     
     private func _init() {
         textField.deleteBackwardDelegate = self
+        
+        // Accessibility
+        // hint: Poll option
+        accessibilityHint = L10n.Accessibility.Common.Status.pollOptionOrdinalPrefix
     }
     
     public override func layoutSubviews() {

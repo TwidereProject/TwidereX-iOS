@@ -102,7 +102,7 @@ extension TimelineViewController {
         
         // bind avatarBarButtonItem data
         Publishers.CombineLatest(
-            context.authenticationService.activeAuthenticationContext,
+            context.authenticationService.$activeAuthenticationContext,
             viewModel.viewDidAppear.eraseToAnyPublisher()
         )
         .receive(on: DispatchQueue.main)
@@ -260,8 +260,11 @@ extension TimelineViewController {
                 apiService: context.apiService,
                 authenticationService: context.authenticationService,
                 mastodonEmojiService: context.mastodonEmojiService,
-                dateTimeProvider: DateTimeSwiftProvider(),
-                twitterTextProvider: OfficialTwitterTextProvider()
+                statusViewConfigureContext: .init(
+                    dateTimeProvider: DateTimeSwiftProvider(),
+                    twitterTextProvider: OfficialTwitterTextProvider(),
+                    authenticationContext: context.authenticationService.$activeAuthenticationContext
+                )
             )
         )
         coordinator.present(scene: .compose(viewModel: composeViewModel, contentViewModel: composeContentViewModel), from: self, transition: .modal(animated: true, completion: nil))

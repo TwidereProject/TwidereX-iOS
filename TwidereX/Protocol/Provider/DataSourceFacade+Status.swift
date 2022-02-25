@@ -36,8 +36,11 @@ extension DataSourceFacade {
                     apiService: provider.context.apiService,
                     authenticationService: provider.context.authenticationService,
                     mastodonEmojiService: provider.context.mastodonEmojiService,
-                    dateTimeProvider: DateTimeSwiftProvider(),
-                    twitterTextProvider: OfficialTwitterTextProvider()
+                    statusViewConfigureContext: .init(
+                        dateTimeProvider: DateTimeSwiftProvider(),
+                        twitterTextProvider: OfficialTwitterTextProvider(),
+                        authenticationContext: provider.context.authenticationService.$activeAuthenticationContext
+                    )
                 )
             )
             provider.coordinator.present(
@@ -110,7 +113,7 @@ extension DataSourceFacade {
             case .twitter:
                 break
             case .mastodon(let status):
-                status.update(isContentReveal: !status.isContentReveal)
+                status.update(isContentSensitiveToggled: !status.isContentSensitiveToggled)
             }
         }
     }

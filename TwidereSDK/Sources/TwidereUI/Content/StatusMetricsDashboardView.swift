@@ -7,6 +7,7 @@
 
 import os.log
 import UIKit
+import CoreDataStack
 import TwidereCommon
 import TwidereCore
 
@@ -22,6 +23,12 @@ public final class StatusMetricsDashboardView: UIView {
     
     public weak var delegate: StatusMetricsDashboardViewDelegate?
     
+    public private(set) lazy var viewModel: ViewModel = {
+        let viewModel = ViewModel()
+        viewModel.bind(view: self)
+        return viewModel
+    }()
+    
     public let container = UIStackView()
     public let metaContainer = UIStackView()
 
@@ -36,6 +43,7 @@ public final class StatusMetricsDashboardView: UIView {
         label.textAlignment = .center
         return label
     }()
+    
 
     public let dashboardContainer = UIStackView()
     public let replyButton     = HitTestExpandedButton()
@@ -76,7 +84,7 @@ extension StatusMetricsDashboardView {
         metaContainer.addArrangedSubview(sourceLabel)
         
         dashboardContainer.axis = .horizontal
-        dashboardContainer.spacing = 8
+        dashboardContainer.spacing = 20
         dashboardContainer.distribution = .fillEqually
         container.addArrangedSubview(dashboardContainer)
         
@@ -93,7 +101,7 @@ extension StatusMetricsDashboardView {
         replyButton.setImage(Asset.Arrows.arrowTurnUpLeftMini.image.withRenderingMode(.alwaysTemplate), for: .normal)
         repostButton.setImage(Asset.Media.repeatMini.image.withRenderingMode(.alwaysTemplate), for: .normal)
         quoteButton.setImage(Asset.TextFormatting.textQuoteMini.image.withRenderingMode(.alwaysTemplate), for: .normal)
-        likeButton.setImage(Asset.Health.heartMini.image.withRenderingMode(.alwaysTemplate), for: .normal)
+        likeButton.setImage(Asset.Health.heartFillMini.image.withRenderingMode(.alwaysTemplate), for: .normal)
         
         let leadingPadding = UIView()
         dashboardContainer.addArrangedSubview(leadingPadding)
@@ -150,38 +158,7 @@ extension StatusMetricsDashboardView {
 }
 
 extension StatusMetricsDashboardView {
-    
-    private func metricText(count: Int) -> String {
-        guard count > 0 else { return "" }
-        return StatusMetricsDashboardView.numberMetricFormatter.string(from: count) ?? ""
-    }
 
-    public func setupReply(count: Int) {
-        let text = metricText(count: count)
-        replyButton.setTitle(text, for: .normal)
-        replyButton.isHidden = count == 0
-
-        // FIXME: a11y
-    }
-    
-    public func setupRepost(count: Int) {
-        let text = metricText(count: count)
-        repostButton.setTitle(text, for: .normal)
-        repostButton.isHidden = count == 0
-    }
-    
-    public func setupQuote(count: Int) {
-        let text = metricText(count: count)
-        quoteButton.setTitle(text, for: .normal)
-        quoteButton.isHidden = count == 0
-    }
-    
-    public func setupLike(count: Int) {
-        let text = metricText(count: count)
-        likeButton.setTitle(text, for: .normal)
-        likeButton.isHidden = count == 0
-    }
-    
     public func setDashboardDisplay() {
         dashboardContainer.isHidden = false
     }

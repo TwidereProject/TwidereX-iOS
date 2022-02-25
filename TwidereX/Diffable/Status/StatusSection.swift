@@ -26,6 +26,7 @@ extension StatusSection {
     struct Configuration {
         weak var statusViewTableViewCellDelegate: StatusViewTableViewCellDelegate?
         weak var timelineMiddleLoaderTableViewCellDelegate: TimelineMiddleLoaderTableViewCellDelegate?
+        let statusViewConfigurationContext: StatusView.ConfigurationContext
     }
 
     static func diffableDataSource(
@@ -41,8 +42,6 @@ extension StatusSection {
             // data source should dispatch in main thread
             assert(Thread.isMainThread)
             
-            let activeAuthenticationContext = context.authenticationService.activeAuthenticationContext.eraseToAnyPublisher()
-            
             // configure cell with item
             switch item {
             case .feed(let record):
@@ -50,20 +49,14 @@ extension StatusSection {
                 setupStatusPollDataSource(
                     context: context,
                     statusView: cell.statusView,
-                    configurationContext: PollOptionView.ConfigurationContext(
-                        dateTimeProvider: DateTimeSwiftProvider(),
-                        activeAuthenticationContext: activeAuthenticationContext
-                    )
+                    configurationContext: configuration.statusViewConfigurationContext
                 )
                 context.managedObjectContext.performAndWait {
                     guard let feed = record.object(in: context.managedObjectContext) else { return }
                     configure(
                         tableView: tableView,
                         cell: cell,
-                        viewModel: StatusTableViewCell.ViewModel(
-                            value: .feed(feed),
-                            activeAuthenticationContext: activeAuthenticationContext
-                        ),
+                        viewModel: StatusTableViewCell.ViewModel(value: .feed(feed)),
                         configuration: configuration
                     )
                 }
@@ -85,10 +78,7 @@ extension StatusSection {
                 setupStatusPollDataSource(
                     context: context,
                     statusView: cell.statusView,
-                    configurationContext: PollOptionView.ConfigurationContext(
-                        dateTimeProvider: DateTimeSwiftProvider(),
-                        activeAuthenticationContext: activeAuthenticationContext
-                    )
+                    configurationContext: configuration.statusViewConfigurationContext
                 )
                 context.managedObjectContext.performAndWait {
                     switch status {
@@ -97,10 +87,7 @@ extension StatusSection {
                         configure(
                             tableView: tableView,
                             cell: cell,
-                            viewModel: StatusTableViewCell.ViewModel(
-                                value: .twitterStatus(status),
-                                activeAuthenticationContext: activeAuthenticationContext
-                            ),
+                            viewModel: StatusTableViewCell.ViewModel(value: .twitterStatus(status)),
                             configuration: configuration
                         )
                     case .mastodon(let record):
@@ -108,10 +95,7 @@ extension StatusSection {
                         configure(
                             tableView: tableView,
                             cell: cell,
-                            viewModel: StatusTableViewCell.ViewModel(
-                                value: .mastodonStatus(status),
-                                activeAuthenticationContext: activeAuthenticationContext
-                            ),
+                            viewModel: StatusTableViewCell.ViewModel(value: .mastodonStatus(status)),
                             configuration: configuration
                         )
                     }   // end switch
@@ -125,7 +109,6 @@ extension StatusSection {
                     indexPath: indexPath,
                     configuration: ThreadCellRegistrationConfiguration(
                         thread: thread,
-                        activeAuthenticationContext: activeAuthenticationContext,
                         configuration: configuration
                     )
                 )
@@ -148,7 +131,6 @@ extension StatusSection {
     
     struct ThreadCellRegistrationConfiguration {
         let thread: StatusItem.Thread
-        let activeAuthenticationContext: AnyPublisher<AuthenticationContext?, Never>
         let configuration: Configuration
     }
 
@@ -160,25 +142,22 @@ extension StatusSection {
     ) -> UITableViewCell {
         let managedObjectContext = context.managedObjectContext
         
+        let configurationContext = configuration.configuration.statusViewConfigurationContext
+        
         switch configuration.thread {
         case .root(let threadContext):
             let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: StatusThreadRootTableViewCell.self), for: indexPath) as! StatusThreadRootTableViewCell
             setupStatusPollDataSource(
                 context: context,
                 statusView: cell.statusView,
-                configurationContext: PollOptionView.ConfigurationContext(
-                    dateTimeProvider: DateTimeSwiftProvider(),
-                    activeAuthenticationContext: configuration.activeAuthenticationContext
-                )
+                configurationContext: configurationContext
             )
             managedObjectContext.performAndWait {
                 guard let status = threadContext.status.object(in: managedObjectContext) else { return }
                 cell.configure(
                     tableView: tableView,
-                    viewModel: StatusThreadRootTableViewCell.ViewModel(
-                        value: .statusObject(status),
-                        activeAuthenticationContext: configuration.activeAuthenticationContext
-                    ),
+                    viewModel: StatusThreadRootTableViewCell.ViewModel(value: .statusObject(status)),
+                    configurationContext: configurationContext,
                     delegate: configuration.configuration.statusViewTableViewCellDelegate
                 )
             }
@@ -192,19 +171,14 @@ extension StatusSection {
             setupStatusPollDataSource(
                 context: context,
                 statusView: cell.statusView,
-                configurationContext: PollOptionView.ConfigurationContext(
-                    dateTimeProvider: DateTimeSwiftProvider(),
-                    activeAuthenticationContext: configuration.activeAuthenticationContext
-                )
+                configurationContext: configurationContext
             )
             managedObjectContext.performAndWait {
                 guard let status = threadContext.status.object(in: managedObjectContext) else { return }
                 cell.configure(
                     tableView: tableView,
-                    viewModel: StatusTableViewCell.ViewModel(
-                        value: .statusObject(status),
-                        activeAuthenticationContext: configuration.activeAuthenticationContext
-                    ),
+                    viewModel: StatusTableViewCell.ViewModel(value: .statusObject(status)),
+                    configurationContext: configurationContext,
                     delegate: configuration.configuration.statusViewTableViewCellDelegate
                 )
             }
@@ -272,7 +246,7 @@ extension StatusSection {
                     }()
                     
                     if needsUpdatePoll,
-                       case let .mastodon(authenticationContext) = context.authenticationService.activeAuthenticationContext.value
+                       case let .mastodon(authenticationContext) = context.authenticationService.activeAuthenticationContext
                     {
                         let status: ManagedObjectRecord<MastodonStatus> = .init(objectID: option.poll.status.objectID)
                         Task { [weak context] in
@@ -305,6 +279,7 @@ extension StatusSection {
         cell.configure(
             tableView: tableView,
             viewModel: viewModel,
+            configurationContext: configuration.statusViewConfigurationContext,
             delegate: configuration.statusViewTableViewCellDelegate
         )
     }

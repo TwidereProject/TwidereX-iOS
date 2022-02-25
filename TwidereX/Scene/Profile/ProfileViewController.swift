@@ -125,8 +125,8 @@ extension ProfileViewController {
             avatarBarButtonItem.delegate = self
             
             Publishers.CombineLatest(
-                context.authenticationService.activeAuthenticationContext,
-                viewModel.viewDidAppear.eraseToAnyPublisher()
+                context.authenticationService.$activeAuthenticationContext,
+                viewModel.viewDidAppear
             )
             .receive(on: DispatchQueue.main)
             .sink { [weak self] authenticationContext, _ in
@@ -182,7 +182,7 @@ extension ProfileViewController {
         Publishers.CombineLatest3(
             viewModel.relationshipViewModel.$optionSet,  // update trigger
             viewModel.$userRecord,
-            context.authenticationService.activeAuthenticationContext
+            context.authenticationService.$activeAuthenticationContext
         )
         .receive(on: DispatchQueue.main)
         .sink { [weak self] optionSet, userRecord, authenticationContext in
@@ -293,8 +293,11 @@ extension ProfileViewController {
                 apiService: context.apiService,
                 authenticationService: context.authenticationService,
                 mastodonEmojiService: context.mastodonEmojiService,
-                dateTimeProvider: DateTimeSwiftProvider(),
-                twitterTextProvider: OfficialTwitterTextProvider()
+                statusViewConfigureContext: .init(
+                    dateTimeProvider: DateTimeSwiftProvider(),
+                    twitterTextProvider: OfficialTwitterTextProvider(),
+                    authenticationContext: context.authenticationService.$activeAuthenticationContext
+                )
             )
         )
         coordinator.present(scene: .compose(viewModel: composeViewModel, contentViewModel: composeContentViewModel), from: self, transition: .modal(animated: true, completion: nil))
@@ -310,7 +313,7 @@ extension ProfileViewController: ProfileHeaderViewControllerDelegate {
     
     func headerViewController(_ viewController: ProfileHeaderViewController, profileHeaderView: ProfileHeaderView, friendshipButtonDidPressed button: UIButton) {
         guard let user = viewModel.user else { return }
-        guard let authenticationContext = context.authenticationService.activeAuthenticationContext.value else { return }
+        guard let authenticationContext = context.authenticationService.activeAuthenticationContext else { return }
         guard let relationshipOptionSet = viewModel.relationshipViewModel.optionSet else { return }
         let record = UserRecord(object: user)
 

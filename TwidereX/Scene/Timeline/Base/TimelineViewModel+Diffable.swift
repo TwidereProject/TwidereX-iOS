@@ -77,7 +77,7 @@ extension TimelineViewModel {
         defer {
             isLoadingLatest = false
         }
-        guard let authenticationContext = context.authenticationService.activeAuthenticationContext.value else { return }
+        guard let authenticationContext = context.authenticationService.activeAuthenticationContext else { return }
         do {
             switch authenticationContext {
             case .twitter(let authenticationContext):
@@ -111,7 +111,7 @@ extension TimelineViewModel {
     // load timeline gap
     func loadMore(item: StatusItem) async {
         guard case let .feedLoader(record) = item else { return }
-        guard let authenticationContext = context.authenticationService.activeAuthenticationContext.value else { return }
+        guard let authenticationContext = context.authenticationService.activeAuthenticationContext else { return }
         guard let diffableDataSource = diffableDataSource else { return }
         var snapshot = diffableDataSource.snapshot()
 

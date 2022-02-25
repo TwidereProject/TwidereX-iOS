@@ -14,6 +14,7 @@ import CoreDataStack
 import TwitterSDK
 import MastodonSDK
 import TwidereCore
+import TwidereUI
 import TwidereAsset
 import MetaTextKit
 import TwitterMeta
@@ -207,7 +208,8 @@ public final class ComposeContentViewModel: NSObject {
             guard let author = author else { return }
             switch author {
             case .twitter:
-                let parseResult = configurationContext.twitterTextProvider.parse(text: currentTextInput)
+                let twitterTextProvider = configurationContext.statusViewConfigureContext.twitterTextProvider
+                let parseResult = twitterTextProvider.parse(text: currentTextInput)
                 self.textInputLimitProgress = {
                     guard parseResult.maxWeightedLength > 0 else { return .zero }
                     return CGFloat(parseResult.weightedLength) / CGFloat(parseResult.maxWeightedLength)
@@ -606,21 +608,18 @@ extension ComposeContentViewModel {
         public let apiService: APIService
         public let authenticationService: AuthenticationService
         public let mastodonEmojiService: MastodonEmojiService
-        public let dateTimeProvider: DateTimeProvider
-        public let twitterTextProvider: TwitterTextProvider
-        
+        public let statusViewConfigureContext: StatusView.ConfigurationContext
+
         public init(
             apiService: APIService,
             authenticationService: AuthenticationService,
             mastodonEmojiService: MastodonEmojiService,
-            dateTimeProvider: DateTimeProvider,
-            twitterTextProvider: TwitterTextProvider
+            statusViewConfigureContext: StatusView.ConfigurationContext
         ) {
             self.apiService = apiService
             self.authenticationService = authenticationService
             self.mastodonEmojiService = mastodonEmojiService
-            self.dateTimeProvider = dateTimeProvider
-            self.twitterTextProvider = twitterTextProvider
+            self.statusViewConfigureContext = statusViewConfigureContext
         }
     }
 }
@@ -653,7 +652,7 @@ extension ComposeContentViewModel {
                 let metaContent = TwitterMetaContent.convert(
                     content: content,
                     urlMaximumLength: .max,
-                    twitterTextProvider: configurationContext.twitterTextProvider
+                    twitterTextProvider: configurationContext.statusViewConfigureContext.twitterTextProvider
                 )
                 return metaContent
                 

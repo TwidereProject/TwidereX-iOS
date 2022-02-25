@@ -108,6 +108,7 @@ public enum Asset {
     public static let person2 = ImageAsset(name: "Human/person.2")
     public static let personExclamationMini = ImageAsset(name: "Human/person.exclamation.mini")
     public static let person = ImageAsset(name: "Human/person")
+    public static let personLarge = ImageAsset(name: "Human/person.large")
     public static let personMini = ImageAsset(name: "Human/person.mini")
     public static let personPlusMini = ImageAsset(name: "Human/person.plus.mini")
   }
@@ -141,7 +142,9 @@ public enum Asset {
   }
   public enum ObjectTools {
     public static let bell = ImageAsset(name: "Object&Tools/bell")
+    public static let bellLarge = ImageAsset(name: "Object&Tools/bell.large")
     public static let bellRinging = ImageAsset(name: "Object&Tools/bell.ringing")
+    public static let bellRingingLarge = ImageAsset(name: "Object&Tools/bell.ringing.large")
     public static let blockedBadge = ImageAsset(name: "Object&Tools/blocked.badge")
     public static let bookmarks = ImageAsset(name: "Object&Tools/bookmarks")
     public static let camera = ImageAsset(name: "Object&Tools/camera")
@@ -152,6 +155,7 @@ public enum Asset {
     public static let globeMini = ImageAsset(name: "Object&Tools/globe.mini")
     public static let globeMiniInline = ImageAsset(name: "Object&Tools/globe.mini.inline")
     public static let house = ImageAsset(name: "Object&Tools/house")
+    public static let houseLarge = ImageAsset(name: "Object&Tools/house.large")
     public static let icRoundRefresh = ImageAsset(name: "Object&Tools/ic.round.refresh")
     public static let lock = ImageAsset(name: "Object&Tools/lock")
     public static let lockMini = ImageAsset(name: "Object&Tools/lock.mini")
@@ -159,6 +163,7 @@ public enum Asset {
     public static let lockOpen = ImageAsset(name: "Object&Tools/lock.open")
     public static let lockOpenMiniInline = ImageAsset(name: "Object&Tools/lock.open.mini.inline")
     public static let magnifyingglass = ImageAsset(name: "Object&Tools/magnifyingglass")
+    public static let magnifyingglassLarge = ImageAsset(name: "Object&Tools/magnifyingglass.large")
     public static let mappin = ImageAsset(name: "Object&Tools/mappin")
     public static let mappinMini = ImageAsset(name: "Object&Tools/mappin.mini")
     public static let note = ImageAsset(name: "Object&Tools/note")

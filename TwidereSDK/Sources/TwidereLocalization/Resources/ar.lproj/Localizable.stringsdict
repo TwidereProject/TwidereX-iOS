@@ -26,6 +26,198 @@
         <string>%ld media</string>
       </dict>
     </dict>
+    <key>count.input_limit_remains</key>
+    <dict>
+      <key>NSStringLocalizedFormatKey</key>
+      <string>Input limit remains %#@character_count@</string>
+      <key>character_count</key>
+      <dict>
+        <key>NSStringFormatSpecTypeKey</key>
+        <string>NSStringPluralRuleType</string>
+        <key>NSStringFormatValueTypeKey</key>
+        <string>ld</string>
+        <key>zero</key>
+        <string>%ld characters</string>
+        <key>one</key>
+        <string>1 character</string>
+        <key>two</key>
+        <string>%ld characters</string>
+        <key>few</key>
+        <string>%ld characters</string>
+        <key>many</key>
+        <string>%ld characters</string>
+        <key>other</key>
+        <string>%ld characters</string>
+      </dict>
+    </dict>
+    <key>count.metric_formatted.post</key>
+    <dict>
+      <key>NSStringLocalizedFormatKey</key>
+      <string>%@ %#@post_count@</string>
+      <key>post_count</key>
+      <dict>
+        <key>NSStringFormatSpecTypeKey</key>
+        <string>NSStringPluralRuleType</string>
+        <key>NSStringFormatValueTypeKey</key>
+        <string>ld</string>
+        <key>zero</key>
+        <string>posts</string>
+        <key>one</key>
+        <string>post</string>
+        <key>two</key>
+        <string>posts</string>
+        <key>few</key>
+        <string>posts</string>
+        <key>many</key>
+        <string>posts</string>
+        <key>other</key>
+        <string>posts</string>
+      </dict>
+    </dict>
+    <key>count.post</key>
+    <dict>
+      <key>NSStringLocalizedFormatKey</key>
+      <string>%#@post_count@</string>
+      <key>post_count</key>
+      <dict>
+        <key>NSStringFormatSpecTypeKey</key>
+        <string>NSStringPluralRuleType</string>
+        <key>NSStringFormatValueTypeKey</key>
+        <string>ld</string>
+        <key>zero</key>
+        <string>%ld posts</string>
+        <key>one</key>
+        <string>1 post</string>
+        <key>two</key>
+        <string>%ld posts</string>
+        <key>few</key>
+        <string>%ld posts</string>
+        <key>many</key>
+        <string>%ld posts</string>
+        <key>other</key>
+        <string>%ld posts</string>
+      </dict>
+    </dict>
+    <key>count.quote</key>
+    <dict>
+      <key>NSStringLocalizedFormatKey</key>
+      <string>%#@quote_count@</string>
+      <key>quote_count</key>
+      <dict>
+        <key>NSStringFormatSpecTypeKey</key>
+        <string>NSStringPluralRuleType</string>
+        <key>NSStringFormatValueTypeKey</key>
+        <string>ld</string>
+        <key>zero</key>
+        <string>%ld quotes</string>
+        <key>one</key>
+        <string>1 quote</string>
+        <key>two</key>
+        <string>%ld quotes</string>
+        <key>few</key>
+        <string>%ld quotes</string>
+        <key>many</key>
+        <string>%ld quotes</string>
+        <key>other</key>
+        <string>%ld quotes</string>
+      </dict>
+    </dict>
+    <key>count.like</key>
+    <dict>
+      <key>NSStringLocalizedFormatKey</key>
+      <string>%#@like_count@</string>
+      <key>like_count</key>
+      <dict>
+        <key>NSStringFormatSpecTypeKey</key>
+        <string>NSStringPluralRuleType</string>
+        <key>NSStringFormatValueTypeKey</key>
+        <string>ld</string>
+        <key>zero</key>
+        <string>%ld likes</string>
+        <key>one</key>
+        <string>1 like</string>
+        <key>two</key>
+        <string>%ld likes</string>
+        <key>few</key>
+        <string>%ld likes</string>
+        <key>many</key>
+        <string>%ld likes</string>
+        <key>other</key>
+        <string>%ld likes</string>
+      </dict>
+    </dict>
+    <key>count.retweet</key>
+    <dict>
+      <key>NSStringLocalizedFormatKey</key>
+      <string>%#@retweet_count@</string>
+      <key>retweet_count</key>
+      <dict>
+        <key>NSStringFormatSpecTypeKey</key>
+        <string>NSStringPluralRuleType</string>
+        <key>NSStringFormatValueTypeKey</key>
+        <string>ld</string>
+        <key>zero</key>
+        <string>%ld retweets</string>
+        <key>one</key>
+        <string>1 retweet</string>
+        <key>two</key>
+        <string>%ld retweets</string>
+        <key>few</key>
+        <string>%ld retweets</string>
+        <key>many</key>
+        <string>%ld retweets</string>
+        <key>other</key>
+        <string>%ld retweets</string>
+      </dict>
+    </dict>
+    <key>count.reblog</key>
+    <dict>
+      <key>NSStringLocalizedFormatKey</key>
+      <string>%#@reblog_count@</string>
+      <key>reblog_count</key>
+      <dict>
+        <key>NSStringFormatSpecTypeKey</key>
+        <string>NSStringPluralRuleType</string>
+        <key>NSStringFormatValueTypeKey</key>
+        <string>ld</string>
+        <key>zero</key>
+        <string>%ld reblogs</string>
+        <key>one</key>
+        <string>1 reblog</string>
+        <key>two</key>
+        <string>%ld reblogs</string>
+        <key>few</key>
+        <string>%ld reblogs</string>
+        <key>many</key>
+        <string>%ld reblogs</string>
+        <key>other</key>
+        <string>%ld reblogs</string>
+      </dict>
+    </dict>
+    <key>count.reply</key>
+    <dict>
+      <key>NSStringLocalizedFormatKey</key>
+      <string>%#@reply_count@</string>
+      <key>reply_count</key>
+      <dict>
+        <key>NSStringFormatSpecTypeKey</key>
+        <string>NSStringPluralRuleType</string>
+        <key>NSStringFormatValueTypeKey</key>
+        <string>ld</string>
+        <key>zero</key>
+        <string>%ld replies</string>
+        <key>one</key>
+        <string>1 reply</string>
+        <key>two</key>
+        <string>%ld replies</string>
+        <key>few</key>
+        <string>%ld replies</string>
+        <key>many</key>
+        <string>%ld replies</string>
+        <key>other</key>
+        <string>%ld replies</string>
+      </dict>
+    </dict>
     <key>count.vote</key>
     <dict>
       <key>NSStringLocalizedFormatKey</key>

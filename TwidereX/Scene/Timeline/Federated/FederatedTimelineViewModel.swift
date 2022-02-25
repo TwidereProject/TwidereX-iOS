@@ -21,7 +21,7 @@ final class FederatedTimelineViewModel: TimelineViewModel {
             kind: .federated(local: local)
         )
         
-        context.authenticationService.activeAuthenticationContext
+        context.authenticationService.$activeAuthenticationContext
             .sink { [weak self] authenticationContext in
                 guard let self = self else { return }
                 guard let authenticationContext = authenticationContext else {

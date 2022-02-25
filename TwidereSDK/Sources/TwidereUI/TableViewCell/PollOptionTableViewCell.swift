@@ -54,7 +54,12 @@ extension PollOptionTableViewCell {
             contentView.bottomAnchor.constraint(equalTo:  optionView.bottomAnchor, constant: PollOptionTableViewCell.margin),
             optionView.heightAnchor.constraint(equalToConstant: PollOptionView.height).priority(.required - 1),
         ])
-        optionView.setup(style: .plain)        
+        optionView.setup(style: .plain)
+        
+        // accessibility
+        accessibilityElements = [optionView]
+        optionView.isAccessibilityElement = true
+        
     }
     
 }

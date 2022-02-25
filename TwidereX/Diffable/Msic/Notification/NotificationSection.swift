@@ -9,6 +9,7 @@
 
 import UIKit
 import AppShared
+import TwidereUI
 
 enum NotificationSection: Hashable {
     case main
@@ -17,8 +18,9 @@ enum NotificationSection: Hashable {
 extension NotificationSection {
     
     struct Configuration {
-        let statusViewTableViewCellDelegate: StatusViewTableViewCellDelegate
-        let userTableViewCellDelegate: UserTableViewCellDelegate?
+        weak var statusViewTableViewCellDelegate: StatusViewTableViewCellDelegate?
+        weak var userTableViewCellDelegate: UserTableViewCellDelegate?
+        let statusViewConfigurationContext: StatusView.ConfigurationContext
     }
 
     static func diffableDataSource(
@@ -29,9 +31,7 @@ extension NotificationSection {
         return UITableViewDiffableDataSource<NotificationSection, NotificationItem>(tableView: tableView) { tableView, indexPath, item in
             // data source should dispatch in main thread
             assert(Thread.isMainThread)
-            
-            let activeAuthenticationContext = context.authenticationService.activeAuthenticationContext.eraseToAnyPublisher()
-            
+                        
             // configure cell with item
             switch item {
             case .feed(let record):
@@ -47,18 +47,12 @@ extension NotificationSection {
                         StatusSection.setupStatusPollDataSource(
                             context: context,
                             statusView: cell.statusView,
-                            configurationContext: PollOptionView.ConfigurationContext(
-                                dateTimeProvider: DateTimeSwiftProvider(),
-                                activeAuthenticationContext: activeAuthenticationContext
-                            )
+                            configurationContext: configuration.statusViewConfigurationContext
                         )
                         configure(
                             tableView: tableView,
                             cell: cell,
-                            viewModel: StatusTableViewCell.ViewModel(
-                                value: .feed(feed),
-                                activeAuthenticationContext: context.authenticationService.activeAuthenticationContext.share().eraseToAnyPublisher()
-                            ),
+                            viewModel: StatusTableViewCell.ViewModel(value: .feed(feed)),
                             configuration: configuration
                         )
                         return cell
@@ -66,7 +60,7 @@ extension NotificationSection {
                         switch object {
                         case .mastodon(let notification):
                             let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: UserNotificationStyleTableViewCell.self), for: indexPath) as! UserNotificationStyleTableViewCell
-                            let authenticationContext = context.authenticationService.activeAuthenticationContext.value
+                            let authenticationContext = context.authenticationService.activeAuthenticationContext
                             let me = authenticationContext?.user(in: context.managedObjectContext)
                             let user: UserObject = .mastodon(object: notification.account)
                             configure(
@@ -113,6 +107,7 @@ extension NotificationSection {
         cell.configure(
             tableView: tableView,
             viewModel: viewModel,
+            configurationContext: configuration.statusViewConfigurationContext,
             delegate: configuration.statusViewTableViewCellDelegate
         )
     }

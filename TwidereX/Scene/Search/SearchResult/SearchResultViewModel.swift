@@ -31,7 +31,7 @@ final class SearchResultViewModel {
         self.context = context
         self._coordinator = coordinator
         
-        context.authenticationService.activeAuthenticationContext
+        context.authenticationService.$activeAuthenticationContext
             .receive(on: DispatchQueue.main)
             .sink { [weak self] authenticationContext in
                 guard let self = self else { return }

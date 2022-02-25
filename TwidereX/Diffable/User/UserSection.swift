@@ -66,7 +66,7 @@ extension UserSection {
                 let cell = dequeueReusableCell(tableView: tableView, indexPath: indexPath, style: style)
                 context.managedObjectContext.performAndWait {
                     guard let user = record.object(in: context.managedObjectContext) else { return }
-                    let authenticationContext = context.authenticationService.activeAuthenticationContext.value
+                    let authenticationContext = context.authenticationService.activeAuthenticationContext
                     let me = authenticationContext?.user(in: context.managedObjectContext)
                     let viewModel = UserTableViewCell.ViewModel(
                         user: user,

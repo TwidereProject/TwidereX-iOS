@@ -30,6 +30,8 @@ extension PollOptionView {
         var observations = Set<NSKeyValueObservation>()
         var objects = Set<NSManagedObject>()
         
+        @Published var authenticationContext: AuthenticationContext?
+        
         @Published var style: PollOptionView.Style?
         
         @Published public var content: String = ""          // for edit style
@@ -49,6 +51,8 @@ extension PollOptionView {
         @Published public var selectImageTintColor: UIColor = Asset.Colors.hightLight.color
         @Published public var isReveal: Bool = false
         
+        @Published public var groupedAccessibilityLabel = ""
+
         init() {
             // corner
             $isMultiple
@@ -100,6 +104,28 @@ extension PollOptionView {
                 return isExpire || isPollVoted || isMyPoll
             }
             .assign(to: &$isReveal)
+            // groupedAccessibilityLabel
+
+            Publishers.CombineLatest3(
+                $metaContent,
+                $percentage,
+                $isReveal
+            )
+            .map { metaContent, percentage, isReveal -> String in
+                var strings: [String?] = []
+                
+                metaContent.flatMap { strings.append($0.string) }
+                
+                if isReveal,
+                    let percentage = percentage,
+                    let string = PollOptionView.percentageFormatter.string(from: NSNumber(value: percentage))
+                {
+                    strings.append(string)
+                }
+                
+                return strings.compactMap { $0 }.joined(separator: ", ")
+            }
+            .assign(to: &$groupedAccessibilityLabel)
         }
         
         public enum Corner: Hashable {
@@ -210,22 +236,26 @@ extension PollOptionView.ViewModel {
         $selectImageTintColor
             .assign(to: \.tintColor, on: view.selectionImageView)
             .store(in: &disposeBag)
+        // accessibility
+        $isSelect
+            .sink { isSelect in
+                if isSelect == true {
+                    view.accessibilityTraits.insert(.selected)
+                } else {
+                    view.accessibilityTraits.remove(.selected)
+                }
+            }
+            .store(in: &disposeBag)
+        $groupedAccessibilityLabel
+            .sink { groupedAccessibilityLabel in
+                view.accessibilityLabel = groupedAccessibilityLabel
+            }
+            .store(in: &disposeBag)
     }
 }
 
 extension PollOptionView {
-    public struct ConfigurationContext {
-        public let dateTimeProvider: DateTimeProvider
-        public let activeAuthenticationContext: AnyPublisher<AuthenticationContext?, Never>
-        
-        public init(
-            dateTimeProvider: DateTimeProvider,
-            activeAuthenticationContext: AnyPublisher<AuthenticationContext?, Never>
-        ) {
-            self.dateTimeProvider = dateTimeProvider
-            self.activeAuthenticationContext = activeAuthenticationContext
-        }
-    }
+    public typealias ConfigurationContext = StatusView.ConfigurationContext
 }
 
 extension PollOptionView {
@@ -234,6 +264,10 @@ extension PollOptionView {
         configurationContext: ConfigurationContext
     ) {
         viewModel.objects.insert(option)
+        
+        configurationContext.authenticationContext
+            .assign(to: \.authenticationContext, on: viewModel)
+            .store(in: &disposeBag)
 
         // metaContent
         Publishers.CombineLatest(
@@ -268,14 +302,14 @@ extension PollOptionView {
             option.publisher(for: \.poll),
             option.publisher(for: \.voteBy),
             option.publisher(for: \.isSelected),
-            configurationContext.activeAuthenticationContext
+            viewModel.$authenticationContext
         )
-        .sink { [weak self] poll, optionVoteBy, isSelected, activeAuthenticationContext in
+        .sink { [weak self] poll, optionVoteBy, isSelected, authenticationContext in
             guard let self = self else { return }
             
             let domain: String
             let userID: String
-            switch activeAuthenticationContext {
+            switch authenticationContext {
             case .twitter, .none:
                 domain = ""
                 userID = ""

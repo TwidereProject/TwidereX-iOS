@@ -43,14 +43,19 @@ class MainTabBarController: UITabBarController {
         
         var image: UIImage {
             switch self {
-            case .home:
-                return Asset.ObjectTools.house.image.withRenderingMode(.alwaysTemplate)
-            case .notification:
-                return Asset.ObjectTools.bell.image.withRenderingMode(.alwaysTemplate)
-            case .search:
-                return Asset.ObjectTools.magnifyingglass.image.withRenderingMode(.alwaysTemplate)
-            case .me:
-                return Asset.Human.person.image.withRenderingMode(.alwaysTemplate)
+            case .home:             return Asset.ObjectTools.house.image.withRenderingMode(.alwaysTemplate)
+            case .notification:     return Asset.ObjectTools.bell.image.withRenderingMode(.alwaysTemplate)
+            case .search:           return Asset.ObjectTools.magnifyingglass.image.withRenderingMode(.alwaysTemplate)
+            case .me:               return Asset.Human.person.image.withRenderingMode(.alwaysTemplate)
+            }
+        }
+        
+        var largeImage: UIImage {
+            switch self {
+            case .home:             return Asset.ObjectTools.houseLarge.image.withRenderingMode(.alwaysTemplate)
+            case .notification:     return Asset.ObjectTools.bellLarge.image.withRenderingMode(.alwaysTemplate)
+            case .search:           return Asset.ObjectTools.magnifyingglassLarge.image.withRenderingMode(.alwaysTemplate)
+            case .me:               return Asset.Human.personLarge.image.withRenderingMode(.alwaysTemplate)
             }
         }
         
@@ -110,17 +115,15 @@ extension MainTabBarController {
         let tabs = Tab.allCases
         let viewControllers: [UIViewController] = tabs.map { tab in
             let viewController = tab.viewController(context: context, coordinator: coordinator)
-            viewController.tabBarItem.title = "" // set text to empty string for image only style (SDK failed to layout when set to nil)
+            viewController.tabBarItem.title = tab.title
             viewController.tabBarItem.image = tab.image
+            viewController.tabBarItem.accessibilityLabel = tab.title
+            viewController.tabBarItem.largeContentSizeImage = tab.largeImage
+            
             return viewController
         }
         setViewControllers(viewControllers, animated: false)
         selectedIndex = 0
-        
-//        // TODO: custom accent color
-//        let tabBarAppearance = UITabBarAppearance()
-//        tabBarAppearance.configureWithDefaultBackground()
-//        tabBar.standardAppearance = tabBarAppearance
         
         let feedbackGenerator = UINotificationFeedbackGenerator()
 

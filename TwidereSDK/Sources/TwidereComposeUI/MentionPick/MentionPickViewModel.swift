@@ -37,7 +37,7 @@ public final class MentionPickViewModel {
         self.primaryItem = primaryItem
         self.secondaryItems = secondaryItems
         
-        authenticationService.activeAuthenticationContext
+        authenticationService.$activeAuthenticationContext
             .sink { [weak self] authenticationContext in
                 guard let self = self else { return }
                 switch authenticationContext {

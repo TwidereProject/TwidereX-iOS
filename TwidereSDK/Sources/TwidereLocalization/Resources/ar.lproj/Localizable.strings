@@ -8,13 +8,21 @@
 "Accessibility.Common.Logo.Twitter" = "شعار تويتر";
 "Accessibility.Common.More" = "المزيد";
 "Accessibility.Common.NetworkImage" = "صورة الشبكة";
+"Accessibility.Common.Status.Actions.HideContent" = "Hide content";
+"Accessibility.Common.Status.Actions.HideMedia" = "Hide media";
 "Accessibility.Common.Status.Actions.Like" = "أعجبني";
 "Accessibility.Common.Status.Actions.Menu" = "القائمة";
 "Accessibility.Common.Status.Actions.Reply" = "رد";
 "Accessibility.Common.Status.Actions.Retweet" = "أعد تغريده";
+"Accessibility.Common.Status.Actions.RevealContent" = "Reveal content";
+"Accessibility.Common.Status.Actions.RevealMedia" = "Reveal media";
 "Accessibility.Common.Status.AuthorAvatar" = "Author avatar";
+"Accessibility.Common.Status.Boosted" = "Boosted";
+"Accessibility.Common.Status.ContentWarning" = "Content Warning";
+"Accessibility.Common.Status.Liked" = "Liked";
 "Accessibility.Common.Status.Location" = "الموقع";
 "Accessibility.Common.Status.Media" = "الوسائط";
+"Accessibility.Common.Status.PollOptionOrdinalPrefix" = "Poll option";
 "Accessibility.Common.Status.Retweeted" = "أُعيد تغريده";
 "Accessibility.Common.Video.Play" = "شغّل الفيديو";
 "Accessibility.Scene.Compose.AddMention" = "أُذكر مستخدمًا";
@@ -49,6 +57,7 @@
 "Accessibility.VoiceOver.DoubleTapAndHoldToDisplayMenu" = "Double tap and hold to display menu";
 "Accessibility.VoiceOver.DoubleTapAndHoldToOpenTheAccountsPanel" = "Double tap and hold to open the accounts panel";
 "Accessibility.VoiceOver.DoubleTapToOpenProfile" = "Double tap to open profile";
+"Accessibility.VoiceOver.Selected" = "Selected";
 "Common.Alerts.AccountSuspended.Message" = "تويتر يعلق الحسابات التي تخالف %@";
 "Common.Alerts.AccountSuspended.Title" = "الحساب معلق";
 "Common.Alerts.AccountSuspended.TwitterRules" = "قواعد تويتر";
@@ -174,6 +183,7 @@
 "Common.Controls.ProfileDashboard.Following" = "المتابَعون";
 "Common.Controls.ProfileDashboard.Listed" = "مدرج";
 "Common.Controls.Status.Actions.Bookmark" = "أضفه للعلامات";
+"Common.Controls.Status.Actions.Boost" = "Boost";
 "Common.Controls.Status.Actions.CopyLink" = "انسخ الرابط";
 "Common.Controls.Status.Actions.CopyText" = "انسخ النص";
 "Common.Controls.Status.Actions.DeleteTweet" = "احذف التغريدة";

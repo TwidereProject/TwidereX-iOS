@@ -16,6 +16,118 @@
         <string>%ld 个媒体</string>
       </dict>
     </dict>
+    <key>count.input_limit_remains</key>
+    <dict>
+      <key>NSStringLocalizedFormatKey</key>
+      <string>输入字符限制剩余 %#@character_count@</string>
+      <key>character_count</key>
+      <dict>
+        <key>NSStringFormatSpecTypeKey</key>
+        <string>NSStringPluralRuleType</string>
+        <key>NSStringFormatValueTypeKey</key>
+        <string>ld</string>
+        <key>other</key>
+        <string>%ld 个字符</string>
+      </dict>
+    </dict>
+    <key>count.metric_formatted.post</key>
+    <dict>
+      <key>NSStringLocalizedFormatKey</key>
+      <string>%@ %#@post_count@</string>
+      <key>post_count</key>
+      <dict>
+        <key>NSStringFormatSpecTypeKey</key>
+        <string>NSStringPluralRuleType</string>
+        <key>NSStringFormatValueTypeKey</key>
+        <string>ld</string>
+        <key>other</key>
+        <string>帖子</string>
+      </dict>
+    </dict>
+    <key>count.post</key>
+    <dict>
+      <key>NSStringLocalizedFormatKey</key>
+      <string>%#@post_count@</string>
+      <key>post_count</key>
+      <dict>
+        <key>NSStringFormatSpecTypeKey</key>
+        <string>NSStringPluralRuleType</string>
+        <key>NSStringFormatValueTypeKey</key>
+        <string>ld</string>
+        <key>other</key>
+        <string>%ld 个帖子</string>
+      </dict>
+    </dict>
+    <key>count.quote</key>
+    <dict>
+      <key>NSStringLocalizedFormatKey</key>
+      <string>%#@quote_count@</string>
+      <key>quote_count</key>
+      <dict>
+        <key>NSStringFormatSpecTypeKey</key>
+        <string>NSStringPluralRuleType</string>
+        <key>NSStringFormatValueTypeKey</key>
+        <string>ld</string>
+        <key>other</key>
+        <string>%ld 个引用</string>
+      </dict>
+    </dict>
+    <key>count.like</key>
+    <dict>
+      <key>NSStringLocalizedFormatKey</key>
+      <string>%#@like_count@</string>
+      <key>like_count</key>
+      <dict>
+        <key>NSStringFormatSpecTypeKey</key>
+        <string>NSStringPluralRuleType</string>
+        <key>NSStringFormatValueTypeKey</key>
+        <string>ld</string>
+        <key>other</key>
+        <string>%ld 个赞</string>
+      </dict>
+    </dict>
+    <key>count.retweet</key>
+    <dict>
+      <key>NSStringLocalizedFormatKey</key>
+      <string>%#@retweet_count@</string>
+      <key>retweet_count</key>
+      <dict>
+        <key>NSStringFormatSpecTypeKey</key>
+        <string>NSStringPluralRuleType</string>
+        <key>NSStringFormatValueTypeKey</key>
+        <string>ld</string>
+        <key>other</key>
+        <string>%ld 条转推</string>
+      </dict>
+    </dict>
+    <key>count.reblog</key>
+    <dict>
+      <key>NSStringLocalizedFormatKey</key>
+      <string>%#@reblog_count@</string>
+      <key>reblog_count</key>
+      <dict>
+        <key>NSStringFormatSpecTypeKey</key>
+        <string>NSStringPluralRuleType</string>
+        <key>NSStringFormatValueTypeKey</key>
+        <string>ld</string>
+        <key>other</key>
+        <string>%ld 条转嘟</string>
+      </dict>
+    </dict>
+    <key>count.reply</key>
+    <dict>
+      <key>NSStringLocalizedFormatKey</key>
+      <string>%#@reply_count@</string>
+      <key>reply_count</key>
+      <dict>
+        <key>NSStringFormatSpecTypeKey</key>
+        <string>NSStringPluralRuleType</string>
+        <key>NSStringFormatValueTypeKey</key>
+        <string>ld</string>
+        <key>other</key>
+        <string>%ld 个回复</string>
+      </dict>
+    </dict>
     <key>count.vote</key>
     <dict>
       <key>NSStringLocalizedFormatKey</key>

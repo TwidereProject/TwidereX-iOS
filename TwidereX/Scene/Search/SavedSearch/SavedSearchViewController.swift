@@ -81,7 +81,7 @@ extension SavedSearchViewController: UITableViewDelegate {
         
         guard let diffableDataSource = self.viewModel.diffableDataSource,
               case let .history(record) = diffableDataSource.itemIdentifier(for: indexPath),
-              let authenticationContext = self.viewModel.context.authenticationService.activeAuthenticationContext.value
+              let authenticationContext = self.viewModel.context.authenticationService.activeAuthenticationContext
         else { return nil }
         
         let deleteAction = UIContextualAction(

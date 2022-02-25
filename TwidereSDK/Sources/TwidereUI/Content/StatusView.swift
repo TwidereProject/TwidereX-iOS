@@ -52,7 +52,7 @@ public final class StatusView: UIView {
     public static let bodyContainerStackViewSpacing: CGFloat = 10
     public static let quoteStatusViewContainerLayoutMargin: CGFloat = 12
     
-    let logger = Logger(subsystem: "StatusView", category: "UI")
+    let logger = Logger(subsystem: "StatusView", category: "View")
     
     public private(set) var style: Style?
     
@@ -337,7 +337,6 @@ extension StatusView {
             statusView.pollVoteActivityIndicatorView.isHidden = true
             statusView.quoteStatusView?.isHidden = true
             statusView.locationContainer.isHidden = true
-            statusView.metricsDashboardView.isHidden = true
         }
     }
 }
@@ -910,10 +909,6 @@ extension StatusView {
     
     public func setLocationDisplay() {
         locationContainer.isHidden = false
-    }
-    
-    public func setMetricsDisplay() {
-        metricsDashboardView.isHidden = false
     }
     
     // content text Width

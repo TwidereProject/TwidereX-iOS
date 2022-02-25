@@ -127,7 +127,7 @@ extension DataSourceFacade {
         status: ManagedObjectRecord<MastodonStatus>,
         voteButtonDidPressed button: UIButton
     ) async throws {
-        guard case let .mastodon(authenticationContext) = provider.context.authenticationService.activeAuthenticationContext.value else { return }
+        guard case let .mastodon(authenticationContext) = provider.context.authenticationService.activeAuthenticationContext else { return }
         
         // should use same context on UI to make transient property trigger update
         let managedObjectContext = provider.context.managedObjectContext

@@ -18,6 +18,134 @@
         <string>%ld mídias</string>
       </dict>
     </dict>
+    <key>count.input_limit_remains</key>
+    <dict>
+      <key>NSStringLocalizedFormatKey</key>
+      <string>O limite de entrada permanece %#@character_count@</string>
+      <key>character_count</key>
+      <dict>
+        <key>NSStringFormatSpecTypeKey</key>
+        <string>NSStringPluralRuleType</string>
+        <key>NSStringFormatValueTypeKey</key>
+        <string>ld</string>
+        <key>one</key>
+        <string>1 caractere</string>
+        <key>other</key>
+        <string>%ld caracteres</string>
+      </dict>
+    </dict>
+    <key>count.metric_formatted.post</key>
+    <dict>
+      <key>NSStringLocalizedFormatKey</key>
+      <string>%@ %#@post_count@</string>
+      <key>post_count</key>
+      <dict>
+        <key>NSStringFormatSpecTypeKey</key>
+        <string>NSStringPluralRuleType</string>
+        <key>NSStringFormatValueTypeKey</key>
+        <string>ld</string>
+        <key>one</key>
+        <string>postagem</string>
+        <key>other</key>
+        <string>postagens</string>
+      </dict>
+    </dict>
+    <key>count.post</key>
+    <dict>
+      <key>NSStringLocalizedFormatKey</key>
+      <string>%#@post_count@</string>
+      <key>post_count</key>
+      <dict>
+        <key>NSStringFormatSpecTypeKey</key>
+        <string>NSStringPluralRuleType</string>
+        <key>NSStringFormatValueTypeKey</key>
+        <string>ld</string>
+        <key>one</key>
+        <string>1 postagem</string>
+        <key>other</key>
+        <string>%ld postagens</string>
+      </dict>
+    </dict>
+    <key>count.quote</key>
+    <dict>
+      <key>NSStringLocalizedFormatKey</key>
+      <string>%#@quote_count@</string>
+      <key>quote_count</key>
+      <dict>
+        <key>NSStringFormatSpecTypeKey</key>
+        <string>NSStringPluralRuleType</string>
+        <key>NSStringFormatValueTypeKey</key>
+        <string>ld</string>
+        <key>one</key>
+        <string>1 citação</string>
+        <key>other</key>
+        <string>%ld citações</string>
+      </dict>
+    </dict>
+    <key>count.like</key>
+    <dict>
+      <key>NSStringLocalizedFormatKey</key>
+      <string>%#@like_count@</string>
+      <key>like_count</key>
+      <dict>
+        <key>NSStringFormatSpecTypeKey</key>
+        <string>NSStringPluralRuleType</string>
+        <key>NSStringFormatValueTypeKey</key>
+        <string>ld</string>
+        <key>one</key>
+        <string>1 curtida</string>
+        <key>other</key>
+        <string>%ld curtidas</string>
+      </dict>
+    </dict>
+    <key>count.retweet</key>
+    <dict>
+      <key>NSStringLocalizedFormatKey</key>
+      <string>%#@retweet_count@</string>
+      <key>retweet_count</key>
+      <dict>
+        <key>NSStringFormatSpecTypeKey</key>
+        <string>NSStringPluralRuleType</string>
+        <key>NSStringFormatValueTypeKey</key>
+        <string>ld</string>
+        <key>one</key>
+        <string>1 retweet</string>
+        <key>other</key>
+        <string>%ld retweets</string>
+      </dict>
+    </dict>
+    <key>count.reblog</key>
+    <dict>
+      <key>NSStringLocalizedFormatKey</key>
+      <string>%#@reblog_count@</string>
+      <key>reblog_count</key>
+      <dict>
+        <key>NSStringFormatSpecTypeKey</key>
+        <string>NSStringPluralRuleType</string>
+        <key>NSStringFormatValueTypeKey</key>
+        <string>ld</string>
+        <key>one</key>
+        <string>1 reblog</string>
+        <key>other</key>
+        <string>%ld reblogs</string>
+      </dict>
+    </dict>
+    <key>count.reply</key>
+    <dict>
+      <key>NSStringLocalizedFormatKey</key>
+      <string>%#@reply_count@</string>
+      <key>reply_count</key>
+      <dict>
+        <key>NSStringFormatSpecTypeKey</key>
+        <string>NSStringPluralRuleType</string>
+        <key>NSStringFormatValueTypeKey</key>
+        <string>ld</string>
+        <key>one</key>
+        <string>1 resposta</string>
+        <key>other</key>
+        <string>%ld respostas</string>
+      </dict>
+    </dict>
     <key>count.vote</key>
     <dict>
       <key>NSStringLocalizedFormatKey</key>

@@ -29,7 +29,7 @@ public class AuthenticationService: NSObject {
     public let authenticationIndexes = CurrentValueSubject<[AuthenticationIndex], Never>([])
     public let activeAuthenticationIndex = CurrentValueSubject<AuthenticationIndex?, Never>(nil)
     
-    public let activeAuthenticationContext = CurrentValueSubject<AuthenticationContext?, Never>(nil)
+    @Published public var activeAuthenticationContext: AuthenticationContext? = nil
     
     @available(*, deprecated, message: "")
     public let activeTwitterAuthenticationBox = CurrentValueSubject<AuthenticationService.TwitterAuthenticationBox?, Never>(nil)
@@ -108,8 +108,7 @@ public class AuthenticationService: NSObject {
                 guard let authenticationContext = AuthenticationContext(authenticationIndex: authenticationIndex, appSecret: appSecret) else { return nil }
                 return authenticationContext
             }
-            .assign(to: \.value, on: activeAuthenticationContext)
-            .store(in: &disposeBag)
+            .assign(to: &$activeAuthenticationContext)
 
         do {
             try authenticationIndexFetchedResultsController.performFetch()

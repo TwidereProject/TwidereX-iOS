@@ -63,8 +63,8 @@ extension NotificationViewController {
         avatarBarButtonItem.delegate = self
         
         Publishers.CombineLatest(
-            context.authenticationService.activeAuthenticationContext,
-            viewModel.viewDidAppear.eraseToAnyPublisher()
+            context.authenticationService.$activeAuthenticationContext,
+            viewModel.viewDidAppear
         )
         .receive(on: DispatchQueue.main)
         .sink { [weak self] authenticationContext, _ in
