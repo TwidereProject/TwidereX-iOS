@@ -112,6 +112,7 @@ extension StatusThreadRootTableViewCell {
                 statusView.pollVoteDescriptionLabel,
                 statusView.pollVoteButton,
                 statusView.quoteStatusView,
+                statusView.locationLabel,
                 statusView.metricsDashboardView,
                 statusView.toolbar,
             ]

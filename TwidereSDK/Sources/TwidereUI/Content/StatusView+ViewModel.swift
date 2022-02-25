@@ -507,13 +507,20 @@ extension StatusView.ViewModel {
     private func bindLocation(statusView: StatusView) {
         $location
             .sink { location in
-                guard let location = location, !location.isEmpty else { return }
+                guard let location = location, !location.isEmpty else {
+                    statusView.locationLabel.isAccessibilityElement = false
+                    return
+                }
+                statusView.locationLabel.isAccessibilityElement = true
+                
                 if statusView.traitCollection.preferredContentSizeCategory > .extraLarge {
                     statusView.locationMapPinImageView.image = Asset.ObjectTools.mappin.image
                 } else {
                     statusView.locationMapPinImageView.image = Asset.ObjectTools.mappinMini.image
                 }
                 statusView.locationLabel.text = location
+                statusView.locationLabel.accessibilityLabel = location
+                
                 statusView.setLocationDisplay()
             }
             .store(in: &disposeBag)
@@ -704,12 +711,13 @@ extension StatusView.ViewModel {
                 .joined(separator: ", ")
         }
         
-        let groupTwo = Publishers.CombineLatest(
-            toolbarAccessibilityLabel,
-            pollAccessibilityLabel
+        let groupTwo = Publishers.CombineLatest3(
+            pollAccessibilityLabel,
+            $location,
+            toolbarAccessibilityLabel
         )
-        .map { a, b -> String? in
-            return [a, b]
+        .map { a, b, c -> String? in
+            return [a, b, c]
                 .compactMap { $0 }
                 .joined(separator: ", ")
         }
