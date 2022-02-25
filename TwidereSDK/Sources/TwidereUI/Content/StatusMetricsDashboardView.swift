@@ -96,6 +96,9 @@ extension StatusMetricsDashboardView {
             button.setTitleColor(.secondaryLabel, for: .normal)
             button.setInsets(forContentPadding: .zero, imageTitlePadding: 4)
             button.addTarget(self, action: #selector(StatusMetricsDashboardView.buttonDidPressed(_:)), for: .touchUpInside)
+            
+            // TODO: coordinate to the user list
+            button.accessibilityTraits = .staticText
         }
         
         replyButton.setImage(Asset.Arrows.arrowTurnUpLeftMini.image.withRenderingMode(.alwaysTemplate), for: .normal)
