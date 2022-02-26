@@ -85,7 +85,7 @@ extension StatusMetricsDashboardView {
         
         dashboardContainer.axis = .horizontal
         dashboardContainer.spacing = 20
-        dashboardContainer.distribution = .fillEqually
+        dashboardContainer.distribution = .equalCentering
         container.addArrangedSubview(dashboardContainer)
         
         let buttons = [replyButton, repostButton, quoteButton, likeButton]
@@ -106,8 +106,6 @@ extension StatusMetricsDashboardView {
         quoteButton.setImage(Asset.TextFormatting.textQuoteMini.image.withRenderingMode(.alwaysTemplate), for: .normal)
         likeButton.setImage(Asset.Health.heartFillMini.image.withRenderingMode(.alwaysTemplate), for: .normal)
         
-        let leadingPadding = UIView()
-        dashboardContainer.addArrangedSubview(leadingPadding)
         replyButton.translatesAutoresizingMaskIntoConstraints = false
         repostButton.translatesAutoresizingMaskIntoConstraints = false
         quoteButton.translatesAutoresizingMaskIntoConstraints = false
@@ -116,9 +114,7 @@ extension StatusMetricsDashboardView {
         dashboardContainer.addArrangedSubview(repostButton)
         dashboardContainer.addArrangedSubview(quoteButton)
         dashboardContainer.addArrangedSubview(likeButton)
-        let trailingPadding = UIView()
-        dashboardContainer.addArrangedSubview(trailingPadding)
-        
+         
         NSLayoutConstraint.activate([
             replyButton.heightAnchor.constraint(equalToConstant: 44).priority(.required - 10),
             replyButton.heightAnchor.constraint(equalTo: repostButton.heightAnchor).priority(.defaultHigh),
