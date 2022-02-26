@@ -55,7 +55,7 @@ extension StatusView {
         @Published public var mediaViewConfigurations: [MediaView.Configuration] = []
         
         @Published public var isContentSensitive: Bool = false
-        @Published public var isContentSensitiveToggled: Bool = true
+        @Published public var isContentSensitiveToggled: Bool = false
         
         @Published public var isContentReveal: Bool = false
         
@@ -125,6 +125,19 @@ extension StatusView {
         }
         
         init() {
+            // isContentSensitive
+            Publishers.CombineLatest(
+                $platform,
+                $spoilerContent
+            )
+            .map { platform, spoilerContent in
+                switch platform {
+                case .none:         return false
+                case .twitter:      return false
+                case .mastodon:     return spoilerContent != nil
+                }
+            }
+            .assign(to: &$isContentSensitive)
             // isContentReveal
             Publishers.CombineLatest(
                 $isContentSensitive,
