@@ -38,6 +38,7 @@ extension StatusView {
         
         @Published public var header: Header = .none
         
+        @Published public var userIdentifier: UserIdentifier?
         @Published public var authorAvatarImage: UIImage?
         @Published public var authorAvatarImageURL: URL?
         @Published public var authorName: MetaContent?
@@ -125,6 +126,18 @@ extension StatusView {
         }
         
         init() {
+            // isMyself
+            Publishers.CombineLatest(
+                $authenticationContext,
+                $userIdentifier
+            )
+            .map { authenticationContext, userIdentifier in
+                guard let authenticationContext = authenticationContext,
+                      let userIdentifier = userIdentifier
+                else { return false }
+                return authenticationContext.userIdentifier == userIdentifier
+            }
+            .assign(to: &$isMyself)
             // isContentSensitive
             Publishers.CombineLatest(
                 $platform,
@@ -889,6 +902,9 @@ extension StatusView {
         }
         
         let author = (status.repost ?? status).author
+        
+        viewModel.userIdentifier = .twitter(.init(id: author.id))
+        
         // author avatar
         author.publisher(for: \.profileImageURL)
             .map { _ in author.avatarImageURL() }
@@ -1090,6 +1106,9 @@ extension StatusView {
     
     private func configureAuthor(mastodonStatus status: MastodonStatus) {
         let author = (status.repost ?? status).author
+        
+        viewModel.userIdentifier = .mastodon(.init(domain: author.domain, id: author.id))
+        
         // author avatar
         author.publisher(for: \.avatar)
             .map { url in url.flatMap { URL(string: $0) } }
