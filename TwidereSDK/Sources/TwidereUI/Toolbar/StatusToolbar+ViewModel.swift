@@ -14,6 +14,7 @@ extension StatusToolbar {
     public final class ViewModel: ObservableObject {
         var disposeBag = Set<AnyCancellable>()
         
+        @Published public var traitCollectionDidChange = CurrentValueSubject<Void, Never>(Void())
         @Published public var platform: Platform = .none
 
         @Published public var replyCount: Int = 0
@@ -52,13 +53,12 @@ extension StatusToolbar {
             }
             .store(in: &disposeBag)
             // repost
-            Publishers.CombineLatest4(
+            Publishers.CombineLatest3(
                 $repostCount,
                 $isRepostEnabled,
-                $isRepostHighlighted,
                 $platform
             )
-            .sink { count, isEnabled, isHighlighted, platform in
+            .sink { count, isEnabled, platform in
                 // title
                 let text = ViewModel.metricText(count: count)
                 switch view.style {
@@ -82,7 +82,13 @@ extension StatusToolbar {
                 
                 // isEnabled
                 view.repostButton.isEnabled = isEnabled
-
+            }
+            .store(in: &disposeBag)
+            Publishers.CombineLatest(
+                $isRepostHighlighted,
+                $traitCollectionDidChange
+            )
+            .sink { isHighlighted, _ in
                 // isHighlighted
                 let tintColor = isHighlighted ? Asset.Scene.Status.Toolbar.repost.color : .secondaryLabel
                 view.repostButton.tintColor = tintColor
@@ -96,26 +102,28 @@ extension StatusToolbar {
             }
             .store(in: &disposeBag)
             // like
-            Publishers.CombineLatest(
-                $likeCount,
-                // $isLikeEnabled,
-                $isLikeHighlighted
-            )
-            .sink { count, isHighlighted in
-                // title
-                let text = ViewModel.metricText(count: count)
-                switch view.style {
-                case .none:
-                    break
-                case .inline:
-                    view.likeButton.setTitle(text, for: .normal)
-                    view.likeButton.accessibilityHint = L10n.Count.reply(count)
-                case .plain:
-                    view.likeButton.accessibilityHint =  nil
-                    // no titile
+            $likeCount
+                .sink { count in
+                    // title
+                    let text = ViewModel.metricText(count: count)
+                    switch view.style {
+                    case .none:
+                        break
+                    case .inline:
+                        view.likeButton.setTitle(text, for: .normal)
+                        view.likeButton.accessibilityHint = L10n.Count.reply(count)
+                    case .plain:
+                        view.likeButton.accessibilityHint =  nil
+                        // no titile
+                    }
+                    view.likeButton.accessibilityLabel = L10n.Accessibility.Common.Status.Actions.like
                 }
-                view.likeButton.accessibilityLabel = L10n.Accessibility.Common.Status.Actions.like
-                
+                .store(in: &disposeBag)
+            Publishers.CombineLatest(
+                $isLikeHighlighted,
+                $traitCollectionDidChange
+            )
+            .sink { isHighlighted, _ in
                 // isHighlighted
                 let tintColor = isHighlighted ? Asset.Scene.Status.Toolbar.like.color : .secondaryLabel
                 view.likeButton.tintColor = tintColor

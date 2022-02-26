@@ -27,7 +27,7 @@ public final class StatusToolbar: UIView {
         return viewModel
     }()
     
-    private let logger = Logger(subsystem: "StatusToolbar", category: "UI")
+    private let logger = Logger(subsystem: "StatusToolbar", category: "Toolbar")
     private let container = UIStackView()
     private(set) var style: Style?
     
@@ -70,6 +70,12 @@ extension StatusToolbar {
         // dynamic label for repostButton
         likeButton.accessibilityLabel = L10n.Accessibility.Common.Status.Actions.like
         menuButton.accessibilityLabel = L10n.Accessibility.Common.Status.Actions.menu
+    }
+    
+    public override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        
+        viewModel.traitCollectionDidChange.send()
     }
     
     public func setup(style: Style) {
