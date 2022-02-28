@@ -54,6 +54,7 @@ public final class PollOptionView: UIView {
     }()
     
     public func prepareForReuse() {
+        viewModel.objects.removeAll()
         viewModel.percentage = nil
         stripProgressView.setProgress(0, animated: false)
     }
@@ -74,6 +75,10 @@ extension PollOptionView {
     
     private func _init() {
         textField.deleteBackwardDelegate = self
+        
+        // Accessibility
+        // hint: Poll option
+        accessibilityHint = L10n.Accessibility.Common.Status.pollOptionOrdinalPrefix
     }
     
     public override func layoutSubviews() {

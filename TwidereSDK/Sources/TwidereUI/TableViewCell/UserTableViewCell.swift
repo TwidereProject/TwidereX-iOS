@@ -18,7 +18,7 @@ public class UserTableViewCell: UITableViewCell {
     
     var disposeBag = Set<AnyCancellable>()
     
-    let logger = Logger(subsystem: "UserTableViewCell", category: "UI")
+    let logger = Logger(subsystem: "UserTableViewCell", category: "View")
     
     public let userView = UserView()
     

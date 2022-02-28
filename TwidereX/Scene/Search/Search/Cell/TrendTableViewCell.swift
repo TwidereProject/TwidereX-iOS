@@ -6,8 +6,6 @@
 //  Copyright © 2021 Twidere. All rights reserved.
 //
 
-import Foundation
-
 import UIKit
 import MetaTextKit
 import TwidereCore

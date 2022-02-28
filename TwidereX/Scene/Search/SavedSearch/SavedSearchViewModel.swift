@@ -32,7 +32,7 @@ final class SavedSearchViewModel {
         self.savedSearchFetchedResultController = SavedSearchFetchedResultController(managedObjectContext: context.managedObjectContext)
         // end init
 
-        context.authenticationService.activeAuthenticationContext
+        context.authenticationService.$activeAuthenticationContext
             .map { $0?.userIdentifier }
             .assign(to: \.userIdentifier, on: savedSearchFetchedResultController)
             .store(in: &disposeBag)

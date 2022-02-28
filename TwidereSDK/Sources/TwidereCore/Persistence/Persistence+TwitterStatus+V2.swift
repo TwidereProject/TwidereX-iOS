@@ -226,12 +226,23 @@ extension Persistence.TwitterStatus {
     ) {
         status.update(entities: TwitterEntity(entity: context.entity.status.entities))
         
+        // V2 only properties
+        // conversationID
         context.entity.status.conversationID.flatMap { status.update(conversationID: $0) }
+        // replyCount, quoteCount
+        context.entity.status.publicMetrics.flatMap { metrics in
+            status.update(replyCount: Int64(metrics.replyCount))
+            status.update(replyCount: Int64(metrics.quoteCount))
+        }
+        
+        // Not stable fields
+        // media
         context.dictionary.media(for: context.entity.status)
             .flatMap { media in
                 let attachments = media.compactMap { $0.twitterAttachment }
                 status.update(attachments: attachments)
             }
+        // place
         context.dictionary.place(for: context.entity.status)
             .flatMap { place in
                 status.update(location: place.twitterLocation)

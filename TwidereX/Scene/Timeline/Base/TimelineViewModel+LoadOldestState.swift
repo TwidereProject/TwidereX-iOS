@@ -90,7 +90,7 @@ extension TimelineViewModel.LoadOldestState {
         private func fetch(anchor record: StatusRecord) async {
             guard let viewModel = viewModel, let stateMachine = stateMachine else { return }
             
-            guard let authenticationContext = viewModel.context.authenticationService.activeAuthenticationContext.value else {
+            guard let authenticationContext = viewModel.context.authenticationService.activeAuthenticationContext else {
                 await enter(state: Fail.self)
                 return
             }

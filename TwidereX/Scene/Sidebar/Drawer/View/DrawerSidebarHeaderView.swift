@@ -39,7 +39,7 @@ final class DrawerSidebarHeaderView: UIView {
     
     let avatarView: ProfileAvatarView = {
         let avatarView = ProfileAvatarView()
-        avatarView.dimension = DrawerSidebarHeaderView.avatarViewSize.width
+        avatarView.setup(dimension: .inline)
         return avatarView
     }()
     
@@ -120,8 +120,8 @@ extension DrawerSidebarHeaderView {
         avatarView.translatesAutoresizingMaskIntoConstraints = false
         infoStackView.addArrangedSubview(avatarView)
         NSLayoutConstraint.activate([
-            avatarView.widthAnchor.constraint(equalToConstant: 40).priority(.required - 1),
-            avatarView.heightAnchor.constraint(equalToConstant: 40).priority(.required - 1),
+            avatarView.widthAnchor.constraint(equalToConstant: DrawerSidebarHeaderView.avatarViewSize.width).priority(.required - 1),
+            avatarView.heightAnchor.constraint(equalToConstant: DrawerSidebarHeaderView.avatarViewSize.height).priority(.required - 1),
         ])
         
         let nameStackView = UIStackView()

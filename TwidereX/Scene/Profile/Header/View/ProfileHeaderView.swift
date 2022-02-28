@@ -52,7 +52,7 @@ final class ProfileHeaderView: UIView {
     
     let avatarView: ProfileAvatarView = {
         let avatarView = ProfileAvatarView()
-        avatarView.dimension = ProfileHeaderView.avatarViewSize.width
+        avatarView.setup(dimension: .plain)
         return avatarView
     }()
     
@@ -135,6 +135,8 @@ extension ProfileHeaderView {
         NSLayoutConstraint.activate([
             avatarView.centerXAnchor.constraint(equalTo: centerXAnchor),
             avatarView.centerYAnchor.constraint(equalTo: bannerContainer.bottomAnchor),
+            avatarView.widthAnchor.constraint(equalToConstant: ProfileHeaderView.avatarViewSize.width).priority(.required - 1),
+            avatarView.heightAnchor.constraint(equalToConstant: ProfileHeaderView.avatarViewSize.height).priority(.required - 1),
         ])
         
         // container: V - [ name container | usernameLabel | friendshipButton | bioTextAreaView | … ]

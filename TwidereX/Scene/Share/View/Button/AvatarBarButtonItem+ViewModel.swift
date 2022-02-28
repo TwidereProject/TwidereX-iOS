@@ -10,42 +10,93 @@ import UIKit
 import Combine
 import TwidereCore
 import CoreDataStack
+import TwidereUI
 
 extension AvatarBarButtonItem {
     public class ViewModel: ObservableObject {
-        var bindDisposeBag = Set<AnyCancellable>()
+        var disposeBag = Set<AnyCancellable>()
         var observations = Set<NSKeyValueObservation>()
         
+        @Published var name: String?
+        @Published var username: String?
         @Published var avatarURL: URL?
+        
+        @Published var avatarStyle: UserDefaults.AvatarStyle = UserDefaults.shared.avatarStyle
+        
+        init() {
+            UserDefaults.shared
+                .observe(\.avatarStyle, options: [.initial, .new]) { defaults, _ in
+                    self.avatarStyle = defaults.avatarStyle
+                }
+                .store(in: &observations)
+        }
     }
 }
 
 extension AvatarBarButtonItem.ViewModel {
     func bind(view: AvatarBarButtonItem) {
-        // avatar
+        bindAvatar(view: view)
+        bindAccessibility(view: view)
+    }
+    
+    private func bindAvatar(view: AvatarBarButtonItem) {
         $avatarURL
             .sink { avatarURL in
                 let configuration = AvatarImageView.Configuration(url: avatarURL)
                 view.avatarButton.avatarImageView.configure(configuration: configuration)
             }
-            .store(in: &bindDisposeBag)
-        UserDefaults.shared
-            .observe(\.avatarStyle, options: [.initial, .new]) { defaults, _ in
-                let avatarStyle = defaults.avatarStyle
+            .store(in: &disposeBag)
+        
+        func cornerConfiguration(avatarStyle: UserDefaults.AvatarStyle) -> AvatarImageView.CornerConfiguration {
+            switch avatarStyle {
+            case .circle:
+                return .init(corner: .circle)
+            case .roundedSquare:
+                return .init(corner: .scale(ratio: 4))
+            }
+        }
+        
+        view.avatarButton.avatarImageView.configure(
+            cornerConfiguration: cornerConfiguration(avatarStyle: avatarStyle)
+        )
+        
+        $avatarStyle
+            .removeDuplicates()
+            .sink { avatarStyle in
+                let cornerConfiguration = cornerConfiguration(avatarStyle: avatarStyle)
+                
                 let animator = UIViewPropertyAnimator(duration: 0.3, timingParameters: UISpringTimingParameters())
                 animator.addAnimations { [weak view] in
                     guard let view = view else { return }
-                    switch avatarStyle {
-                    case .circle:
-                        view.avatarButton.avatarImageView.configure(cornerConfiguration: .init(corner: .circle))
-                    case .roundedSquare:
-                        view.avatarButton.avatarImageView.configure(cornerConfiguration: .init(corner: .scale(ratio: 4)))
-                    }
+                    view.avatarButton.avatarImageView.configure(cornerConfiguration: cornerConfiguration)
                 }
                 animator.startAnimation()
             }
-            .store(in: &observations)
+            .store(in: &disposeBag)
     }
+    
+    private func bindAccessibility(view: AvatarBarButtonItem) {
+        Publishers.CombineLatest(
+            $name,
+            $username
+        )
+        .sink { name, username in
+            let info = [name, username]
+                .compactMap { $0 }
+                .joined(separator: ", ")
+            
+            guard !info.isEmpty else {
+                view.avatarButton.accessibilityLabel = nil
+                return
+            }
+            
+            view.accessibilityLabel = L10n.Accessibility.Scene.ManageAccounts.currentSignInUser(info)
+        }
+        .store(in: &disposeBag)
+        
+        view.accessibilityHint = L10n.Accessibility.VoiceOver.doubleTapAndHoldToOpenTheAccountsPanel
+    }
+    
 }
 
 extension AvatarBarButtonItem {
@@ -76,6 +127,16 @@ extension AvatarBarButtonItem {
             return
         }
         
+        user.publisher(for: \.name)
+            .map { $0 as String? }
+            .assign(to: \.name, on: viewModel)
+            .store(in: &disposeBag)
+        
+        user.publisher(for: \.username)
+            .map { $0 as String? }
+            .assign(to: \.username, on: viewModel)
+            .store(in: &disposeBag)
+        
         // avatar
         user.publisher(for: \.profileImageURL)
             .map { _ in user.avatarImageURL() }
@@ -87,6 +148,16 @@ extension AvatarBarButtonItem {
         guard user.managedObjectContext != nil else {
             return
         }
+        
+        user.publisher(for: \.displayName)
+            .map { _ in user.displayName as String? }
+            .assign(to: \.name, on: viewModel)
+            .store(in: &disposeBag)
+        
+        user.publisher(for: \.acct)
+            .map { _ in user.acctWithDomain as String? }
+            .assign(to: \.username, on: viewModel)
+            .store(in: &disposeBag)
         
         // avatar
         user.publisher(for: \.avatar)

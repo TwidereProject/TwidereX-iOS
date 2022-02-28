@@ -39,11 +39,14 @@ public final class ThemeService {
         // set tab bar appearance
         let tabBarAppearance = UITabBarAppearance()
         tabBarAppearance.configureWithDefaultBackground()
-        let tabBarItemAppearance = UITabBarItemAppearance()
-//        tabBarItemAppearance.selected.titleTextAttributes = [.foregroundColor: UIColor.clear]
-//        tabBarItemAppearance.focused.titleTextAttributes = [.foregroundColor: UIColor.clear]
-//        tabBarItemAppearance.normal.titleTextAttributes = [.foregroundColor: UIColor.clear]
-//        tabBarItemAppearance.disabled.titleTextAttributes = [.foregroundColor: UIColor.clear]
+        tabBarAppearance.stackedLayoutAppearance = {
+            let tabBarItemAppearance = UITabBarItemAppearance()
+            tabBarItemAppearance.selected.titleTextAttributes = [.foregroundColor: UIColor.clear]
+            tabBarItemAppearance.focused.titleTextAttributes = [.foregroundColor: UIColor.clear]
+            tabBarItemAppearance.normal.titleTextAttributes = [.foregroundColor: UIColor.clear]
+            tabBarItemAppearance.disabled.titleTextAttributes = [.foregroundColor: UIColor.clear]
+            return tabBarItemAppearance
+        }()
         UITabBar.appearance().standardAppearance = tabBarAppearance
         UITabBar.appearance().scrollEdgeAppearance = tabBarAppearance
         // UITabBar.appearance().barTintColor = theme.tabBarBackgroundColor

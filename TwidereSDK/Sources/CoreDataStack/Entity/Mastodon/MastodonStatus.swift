@@ -45,7 +45,7 @@ final public class MastodonStatus: NSManagedObject {
     @NSManaged public private(set) var isMediaSensitive: Bool
     
     // sourcery: autoUpdatableObject
-    @NSManaged public private(set) var isContentReveal: Bool
+    @NSManaged public private(set) var isContentSensitiveToggled: Bool
     // sourcery: autoUpdatableObject
     @NSManaged public private(set) var isMediaSensitiveToggled: Bool
     
@@ -382,9 +382,9 @@ extension MastodonStatus: AutoUpdatableObject {
     		self.isMediaSensitive = isMediaSensitive
     	}
     }
-    public func update(isContentReveal: Bool) {
-    	if self.isContentReveal != isContentReveal {
-    		self.isContentReveal = isContentReveal
+    public func update(isContentSensitiveToggled: Bool) {
+    	if self.isContentSensitiveToggled != isContentSensitiveToggled {
+    		self.isContentSensitiveToggled = isContentSensitiveToggled
     	}
     }
     public func update(isMediaSensitiveToggled: Bool) {

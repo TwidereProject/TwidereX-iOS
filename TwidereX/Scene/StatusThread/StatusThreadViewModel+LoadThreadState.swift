@@ -96,7 +96,7 @@ extension StatusThreadViewModel.LoadThreadState {
             
             if twitterConversation.conversationID == nil {
                 // fetch conversationID if not exist
-                guard let authenticationContext = viewModel.context.authenticationService.activeAuthenticationContext.value?.twitterAuthenticationContext else {
+                guard let authenticationContext = viewModel.context.authenticationService.activeAuthenticationContext?.twitterAuthenticationContext else {
                     await enter(state: PrepareFail.self)
                     return
                 }
@@ -107,7 +107,7 @@ extension StatusThreadViewModel.LoadThreadState {
                         authenticationContext: authenticationContext
                     )
                     guard let conversationID = response.value.data?.first?.conversationID else {
-                        assertionFailure()
+                        // assertionFailure()
                         await enter(state: PrepareFail.self)
                         return
                     }
@@ -247,7 +247,7 @@ extension StatusThreadViewModel.LoadThreadState {
             twitterConversation: StatusThreadViewModel.ThreadContext.TwitterConversation
         ) async -> [TwitterStatusThreadLeafViewModel.Node] {
             guard let viewModel = viewModel, let stateMachine = stateMachine else { return [] }
-            guard let authenticationContext = viewModel.context.authenticationService.activeAuthenticationContext.value?.twitterAuthenticationContext,
+            guard let authenticationContext = viewModel.context.authenticationService.activeAuthenticationContext?.twitterAuthenticationContext,
                   let conversationID = twitterConversation.conversationID
             else {
                 await enter(state: Fail.self)
@@ -336,7 +336,7 @@ extension StatusThreadViewModel.LoadThreadState {
                     descendantNodes: []
                 )
             }
-            guard let authenticationContext = viewModel.context.authenticationService.activeAuthenticationContext.value?.mastodonAuthenticationContext
+            guard let authenticationContext = viewModel.context.authenticationService.activeAuthenticationContext?.mastodonAuthenticationContext
             else {
                 await enter(state: Fail.self)
                 return MastodonContextResponse(

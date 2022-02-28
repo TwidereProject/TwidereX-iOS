@@ -7,6 +7,7 @@
 
 import UIKit
 import Combine
+import CoreData
 import CoreDataStack
 import TwidereAsset
 import TwitterMeta
@@ -27,6 +28,9 @@ extension PollOptionView {
     public final class ViewModel: ObservableObject {
         var disposeBag = Set<AnyCancellable>()
         var observations = Set<NSKeyValueObservation>()
+        var objects = Set<NSManagedObject>()
+        
+        @Published var authenticationContext: AuthenticationContext?
         
         @Published var style: PollOptionView.Style?
         
@@ -47,6 +51,8 @@ extension PollOptionView {
         @Published public var selectImageTintColor: UIColor = Asset.Colors.hightLight.color
         @Published public var isReveal: Bool = false
         
+        @Published public var groupedAccessibilityLabel = ""
+
         init() {
             // corner
             $isMultiple
@@ -98,6 +104,28 @@ extension PollOptionView {
                 return isExpire || isPollVoted || isMyPoll
             }
             .assign(to: &$isReveal)
+            // groupedAccessibilityLabel
+
+            Publishers.CombineLatest3(
+                $metaContent,
+                $percentage,
+                $isReveal
+            )
+            .map { metaContent, percentage, isReveal -> String in
+                var strings: [String?] = []
+                
+                metaContent.flatMap { strings.append($0.string) }
+                
+                if isReveal,
+                    let percentage = percentage,
+                    let string = PollOptionView.percentageFormatter.string(from: NSNumber(value: percentage))
+                {
+                    strings.append(string)
+                }
+                
+                return strings.compactMap { $0 }.joined(separator: ", ")
+            }
+            .assign(to: &$groupedAccessibilityLabel)
         }
         
         public enum Corner: Hashable {
@@ -208,22 +236,26 @@ extension PollOptionView.ViewModel {
         $selectImageTintColor
             .assign(to: \.tintColor, on: view.selectionImageView)
             .store(in: &disposeBag)
+        // accessibility
+        $isSelect
+            .sink { isSelect in
+                if isSelect == true {
+                    view.accessibilityTraits.insert(.selected)
+                } else {
+                    view.accessibilityTraits.remove(.selected)
+                }
+            }
+            .store(in: &disposeBag)
+        $groupedAccessibilityLabel
+            .sink { groupedAccessibilityLabel in
+                view.accessibilityLabel = groupedAccessibilityLabel
+            }
+            .store(in: &disposeBag)
     }
 }
 
 extension PollOptionView {
-    public struct ConfigurationContext {
-        public let dateTimeProvider: DateTimeProvider
-        public let activeAuthenticationContext: AnyPublisher<AuthenticationContext?, Never>
-        
-        public init(
-            dateTimeProvider: DateTimeProvider,
-            activeAuthenticationContext: AnyPublisher<AuthenticationContext?, Never>
-        ) {
-            self.dateTimeProvider = dateTimeProvider
-            self.activeAuthenticationContext = activeAuthenticationContext
-        }
-    }
+    public typealias ConfigurationContext = StatusView.ConfigurationContext
 }
 
 extension PollOptionView {
@@ -231,6 +263,12 @@ extension PollOptionView {
         pollOption option: MastodonPollOption,
         configurationContext: ConfigurationContext
     ) {
+        viewModel.objects.insert(option)
+        
+        configurationContext.authenticationContext
+            .assign(to: \.authenticationContext, on: viewModel)
+            .store(in: &disposeBag)
+
         // metaContent
         Publishers.CombineLatest(
             option.poll.status.publisher(for: \.emojis),
@@ -248,26 +286,30 @@ extension PollOptionView {
         }
         .assign(to: \.metaContent, on: viewModel)
         .store(in: &disposeBag)
-        
+
         // $isExpire
         option.poll.publisher(for: \.expired)
             .assign(to: \.isExpire, on: viewModel)
             .store(in: &disposeBag)
         // isMultiple
         viewModel.isMultiple = option.poll.multiple
+        
+        let optionIndex = option.index
+        let authorDomain = option.poll.status.author.domain
+        let authorUserID = option.poll.status.author.id
         // isSelect, isPollVoted, isMyPoll
         Publishers.CombineLatest4(
             option.publisher(for: \.poll),
             option.publisher(for: \.voteBy),
             option.publisher(for: \.isSelected),
-            configurationContext.activeAuthenticationContext
+            viewModel.$authenticationContext
         )
-        .sink { [weak self] poll, optionVoteBy, isSelected, activeAuthenticationContext in
+        .sink { [weak self] poll, optionVoteBy, isSelected, authenticationContext in
             guard let self = self else { return }
             
             let domain: String
             let userID: String
-            switch activeAuthenticationContext {
+            switch authenticationContext {
             case .twitter, .none:
                 domain = ""
                 userID = ""
@@ -275,21 +317,21 @@ extension PollOptionView {
                 domain = authenticationContext.domain
                 userID = authenticationContext.userID
             }
-            
+
             let options = poll.options
             let pollVoteBy = poll.voteBy
-            
-            let isMyPoll = option.poll.status.author.domain == domain
-                        && option.poll.status.author.id == userID
-            
+
+            let isMyPoll = authorDomain == domain
+                        && authorUserID == userID
+
             let votedOptions = options.filter { option in
                 option.voteBy.contains(where: { $0.id == userID && $0.domain == domain })
             }
-            let isRemoteVotedOption = votedOptions.contains(option)
+            let isRemoteVotedOption = votedOptions.contains(where: { $0.index == optionIndex })
             let isRemoteVotedPoll = pollVoteBy.contains(where: { $0.id == userID && $0.domain == domain })
-            
+
             let isLocalVotedOption = isSelected
-            
+
             let isSelect: Bool? = {
                 if isLocalVotedOption {
                     return true

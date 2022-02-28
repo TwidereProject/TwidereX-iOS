@@ -102,7 +102,7 @@ extension DrawerSidebarViewController {
             settingCollectionView: settingCollectionView
         )
         
-        context.authenticationService.activeAuthenticationContext
+        context.authenticationService.$activeAuthenticationContext
             .sink { [weak self] authenticationContext in
                 guard let self = self else { return }
                 let user = authenticationContext?.user(in: self.context.managedObjectContext)

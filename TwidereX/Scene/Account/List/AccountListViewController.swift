@@ -14,10 +14,6 @@ import CoreDataStack
 import TwitterSDK
 import TwidereCommon
 
-protocol AccountListViewControllerDelegate: AnyObject {
-    func signoutTwitterUser(id: TwitterUser.ID)
-}
-
 final class AccountListViewController: UIViewController, NeedsDependency {
     
     weak var context: AppContext! { willSet { precondition(!isViewLoaded) } }
@@ -43,7 +39,7 @@ final class AccountListViewController: UIViewController, NeedsDependency {
     }()
         
     deinit {
-        os_log("%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
+        os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
     }
     
 }
@@ -129,66 +125,6 @@ extension AccountListViewController: UITableViewDelegate {
             }
         }
     }
-}
-
-// MARK: - AccountListTableViewCellDelegate
-extension AccountListViewController: AccountListTableViewCellDelegate {
-    
-    func accountListTableViewCell(_ cell: AccountListTableViewCell, menuButtonPressed button: UIButton) {
-//        guard let diffableDataSource = viewModel.diffableDataSource else { return }
-//        guard let indexPath = tableView.indexPath(for: cell) else { return }
-//        guard let item = diffableDataSource.itemIdentifier(for: indexPath) else { return }
-//        guard case let .twitterUser(objectID) = item else { return }
-//
-//        let managedObjectContext = context.managedObjectContext
-//        managedObjectContext.perform {
-//            guard let twitterUser = managedObjectContext.object(with: objectID) as? TwitterUser else { return }
-//            let title = twitterUser.name
-//
-//            DispatchQueue.main.async { [weak self] in
-//                let alertController = UIAlertController(title: title, message: nil, preferredStyle: .actionSheet)
-//                let signOutAction = UIAlertAction(title: L10n.Scene.ManageAccounts.deleteAccount.localizedCapitalized, style: .destructive) { [weak self] _ in
-//                    guard let self = self else { return }
-//                    self.signoutTwitterUser(id: twitterUser.id)
-//                }
-//                let cancelAction = UIAlertAction(title: L10n.Common.Controls.Actions.cancel, style: .cancel, handler: nil)
-//                alertController.addAction(signOutAction)
-//                alertController.addAction(cancelAction)
-//                guard let self = self else { return }
-//                alertController.popoverPresentationController?.sourceView = button
-//                self.present(alertController, animated: true, completion: nil)
-//            }
-//        }
-    }
-    
-}
-
-// MARK: - AccountListViewControllerDelegate
-extension AccountListViewController: AccountListViewControllerDelegate {
-    
-    func signoutTwitterUser(id: TwitterUser.ID) {
-//        let currentAccountCount = viewModel.diffableDataSource.snapshot().itemIdentifiers.count
-//        context.authenticationService.signOutTwitterUser(id: id)
-//            .receive(on: DispatchQueue.main)
-//            .sink { [weak self] result in
-//                guard let self = self else { return }
-//                switch result {
-//                case .failure(let error):
-//                    assertionFailure(error.localizedDescription)
-//                case .success(let isSignOut):
-//                    guard isSignOut else { return }
-//                    self.dismiss(animated: true) {
-//                        if currentAccountCount == 1 {
-//                            // No active user. Present Authentication scene
-//                            let authenticationViewModel = AuthenticationViewModel(isAuthenticationIndexExist: false)
-//                            self.coordinator.present(scene: .authentication(viewModel: authenticationViewModel), from: nil, transition: .modal(animated: true, completion: nil))
-//                        }
-//                    }
-//                }
-//            }
-//            .store(in: &disposeBag)
-    }
-    
 }
 
 // MARK: - UserTableViewCellDelegate

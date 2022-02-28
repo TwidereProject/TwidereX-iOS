@@ -48,7 +48,7 @@ final class NotificationTimelineViewModel {
         self.fetchedResultsController = FeedFetchedResultsController(managedObjectContext: context.managedObjectContext)
         // end init
         
-        context.authenticationService.activeAuthenticationContext
+        context.authenticationService.$activeAuthenticationContext
             .sink { [weak self] authenticationContext in
                 guard let self = self else { return }
                 let emptyFeedPredicate = Feed.nonePredicate()
@@ -73,6 +73,7 @@ final class NotificationTimelineViewModel {
 }
 
 extension NotificationTimelineViewModel {
+    
     enum Scope {
         case all
         case mentions

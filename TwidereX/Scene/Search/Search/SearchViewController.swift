@@ -123,7 +123,7 @@ extension SearchViewController {
         Publishers.CombineLatest3(
             viewModel.$savedSearchTexts,
             searchResultViewModel.$searchText,
-            context.authenticationService.activeAuthenticationContext
+            context.authenticationService.$activeAuthenticationContext
         )
         .receive(on: DispatchQueue.main)
         .sink { [weak self] texts, searchText, activeAuthenticationContext in
@@ -235,7 +235,7 @@ extension SearchViewController: UITableViewDelegate {
         
         guard let diffableDataSource = self.viewModel.diffableDataSource,
               case let .history(record) = diffableDataSource.itemIdentifier(for: indexPath),
-              let authenticationContext = self.viewModel.context.authenticationService.activeAuthenticationContext.value
+              let authenticationContext = self.viewModel.context.authenticationService.activeAuthenticationContext
         else { return nil }
         
         let deleteAction = UIContextualAction(

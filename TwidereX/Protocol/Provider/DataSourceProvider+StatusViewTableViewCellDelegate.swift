@@ -321,7 +321,7 @@ extension StatusViewTableViewCellDelegate where Self: DataSourceProvider {
         actionDidPressed action: StatusToolbar.Action,
         button: UIButton
     ) {
-        guard let authenticationContext = context.authenticationService.activeAuthenticationContext.value else { return }
+        guard let authenticationContext = context.authenticationService.activeAuthenticationContext else { return }
         Task {
             let source = DataSourceItem.Source(tableViewCell: cell, indexPath: nil)
             guard let item = await item(from: source) else {
@@ -350,7 +350,7 @@ extension StatusViewTableViewCellDelegate where Self: DataSourceProvider {
         menuActionDidPressed action: StatusToolbar.MenuAction,
         menuButton button: UIButton
     ) {
-        guard let authenticationContext = context.authenticationService.activeAuthenticationContext.value else { return }
+        guard let authenticationContext = context.authenticationService.activeAuthenticationContext else { return }
         Task {
             let source = DataSourceItem.Source(tableViewCell: cell, indexPath: nil)
             guard let item = await item(from: source) else {

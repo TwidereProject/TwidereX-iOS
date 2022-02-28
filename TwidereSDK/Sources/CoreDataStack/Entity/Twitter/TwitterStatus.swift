@@ -24,6 +24,11 @@ final public class TwitterStatus: NSManagedObject {
     @NSManaged public private(set) var replyCount: Int64
     // sourcery: autoUpdatableObject, autoGenerateProperty
     @NSManaged public private(set) var repostCount: Int64
+    // sourcery: autoGenerateProperty
+    @NSManaged public private(set) var quoteCount: Int64
+    
+    // Note: not mark `autoUpdatableObject` for `replyCount` and `quoteCount`
+    // to avoid V1 API update the exists value to 0
     
     // sourcery: autoUpdatableObject, autoGenerateProperty
     @NSManaged public private(set) var source: String?
@@ -191,6 +196,7 @@ extension TwitterStatus: AutoGenerateProperty {
         public let likeCount: Int64
         public let replyCount: Int64
         public let repostCount: Int64
+        public let quoteCount: Int64
         public let source: String?
         public let replyToStatusID: TwitterStatus.ID?
         public let replyToUserID: TwitterUser.ID?
@@ -203,6 +209,7 @@ extension TwitterStatus: AutoGenerateProperty {
     		likeCount: Int64,
     		replyCount: Int64,
     		repostCount: Int64,
+    		quoteCount: Int64,
     		source: String?,
     		replyToStatusID: TwitterStatus.ID?,
     		replyToUserID: TwitterUser.ID?,
@@ -214,6 +221,7 @@ extension TwitterStatus: AutoGenerateProperty {
     		self.likeCount = likeCount
     		self.replyCount = replyCount
     		self.repostCount = repostCount
+    		self.quoteCount = quoteCount
     		self.source = source
     		self.replyToStatusID = replyToStatusID
     		self.replyToUserID = replyToUserID
@@ -228,6 +236,7 @@ extension TwitterStatus: AutoGenerateProperty {
     	self.likeCount = property.likeCount
     	self.replyCount = property.replyCount
     	self.repostCount = property.repostCount
+    	self.quoteCount = property.quoteCount
     	self.source = property.source
     	self.replyToStatusID = property.replyToStatusID
     	self.replyToUserID = property.replyToUserID
@@ -350,6 +359,18 @@ extension TwitterStatus: AutoUpdatableObject {
     	}
     }
     // sourcery:end
+    
+    public func update(replyCount: Int64) {
+        if self.replyCount != replyCount {
+            self.replyCount = replyCount
+        }
+    }
+    
+    public func update(quoteCount: Int64) {
+        if self.quoteCount != quoteCount {
+            self.quoteCount = quoteCount
+        }
+    }
     
     public func update(isRepost: Bool, by user: TwitterUser) {
         if isRepost {

@@ -173,11 +173,7 @@ extension ComposeContentViewModel {
                 tableView: tableView,
                 viewModel: ComposeReplyTableViewCell.ViewModel(
                     status: status,
-                    statusViewConfigureContext: StatusView.ConfigurationContext(
-                        dateTimeProvider: configurationContext.dateTimeProvider,
-                        twitterTextProvider: configurationContext.twitterTextProvider,
-                        activeAuthenticationContext: Just(nil).eraseToAnyPublisher()
-                    )
+                    statusViewConfigureContext: configurationContext.statusViewConfigureContext
                 )
             )
             return composeReplyTableViewCell

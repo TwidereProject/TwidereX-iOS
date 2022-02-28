@@ -179,29 +179,6 @@ extension UserTimelineViewController: UITableViewDelegate, AutoGenerateTableView
     
 }
 
-//// MARK: - AVPlayerViewControllerDelegate
-//extension UserTimelineViewController: AVPlayerViewControllerDelegate {
-//    
-//    func playerViewController(_ playerViewController: AVPlayerViewController, willBeginFullScreenPresentationWithAnimationCoordinator coordinator: UIViewControllerTransitionCoordinator) {
-//        handlePlayerViewController(playerViewController, willBeginFullScreenPresentationWithAnimationCoordinator: coordinator)
-//    }
-//    
-//    func playerViewController(_ playerViewController: AVPlayerViewController, willEndFullScreenPresentationWithAnimationCoordinator coordinator: UIViewControllerTransitionCoordinator) {
-//        handlePlayerViewController(playerViewController, willEndFullScreenPresentationWithAnimationCoordinator: coordinator)
-//    }
-//    
-//}
-
-// MARK: - TimelinePostTableViewCellDelegate
-//extension UserTimelineViewController: TimelinePostTableViewCellDelegate {
-//    weak var playerViewControllerDelegate: AVPlayerViewControllerDelegate? { return self }
-//    func parent() -> UIViewController { return self }
-//}
-//
-//// MARK: - TimelineHeaderTableViewCellDelegate
-//extension UserTimelineViewController: TimelineHeaderTableViewCellDelegate { }
-
-
 // MARK: - CustomScrollViewContainerController
 extension UserTimelineViewController: ScrollViewContainer {
     var scrollView: UIScrollView { return tableView }

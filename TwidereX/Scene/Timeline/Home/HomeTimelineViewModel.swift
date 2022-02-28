@@ -14,7 +14,7 @@ final class HomeTimelineViewModel: TimelineViewModel {
     init(context: AppContext) {
         super.init(context: context, kind: .home)
         
-        context.authenticationService.activeAuthenticationContext
+        context.authenticationService.$activeAuthenticationContext
             .sink { [weak self] authenticationContext in
                 guard let self = self else { return }
                 let emptyFeedPredicate = Feed.nonePredicate()

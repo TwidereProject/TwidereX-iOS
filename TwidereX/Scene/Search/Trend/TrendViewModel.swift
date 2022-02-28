@@ -31,7 +31,7 @@ final class TrendViewModel {
         self.trendService = TrendService(apiService: context.apiService)
         // end init
         
-        context.authenticationService.activeAuthenticationContext
+        context.authenticationService.$activeAuthenticationContext
             .removeDuplicates()
             .receive(on: DispatchQueue.main)
             .sink { [weak self] authenticationContext in

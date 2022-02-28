@@ -61,7 +61,7 @@ class ProfileViewModel: ObservableObject {
             .assign(to: &$userIdentifier)
             
         // bind active authentication
-        context.authenticationService.activeAuthenticationContext
+        context.authenticationService.$activeAuthenticationContext
             .sink { [weak self] authenticationContext in
                 guard let self = self else { return }
                 Task {
@@ -85,7 +85,7 @@ class ProfileViewModel: ObservableObject {
         // observe friendship
         Publishers.CombineLatest(
             $userRecord,
-            context.authenticationService.activeAuthenticationContext
+            context.authenticationService.$activeAuthenticationContext
         )
         .sink { [weak self] userRecord, authenticationContext in
             guard let self = self else { return }

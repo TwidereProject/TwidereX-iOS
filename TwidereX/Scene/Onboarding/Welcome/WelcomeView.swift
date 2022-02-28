@@ -10,6 +10,7 @@ import os.log
 import SwiftUI
 import Introspect
 import TwidereAsset
+import TwidereLocalization
 
 struct WelcomeView: View {
     
@@ -32,7 +33,7 @@ struct WelcomeView: View {
             HStack {
                 // not use UIImage init method here
                 // only .init(_:bundle:) works with the dynamic Dark Mode asset
-                Image(Asset.Scene.Welcome.twidere.name, bundle: TwidereAsset.bundle)
+                Image(decorative: Asset.Scene.Welcome.twidere.name, bundle: TwidereAsset.bundle)
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                     .frame(width: 48, height: 48)
@@ -74,6 +75,7 @@ struct WelcomeView: View {
                             }
                         }
                     )
+                    .accessibilityHint(L10n.Accessibility.Scene.SignIn.pleaseEnterMastodonDomainToSignIn)
                     .textFieldStyle(PlainTextFieldStyle())
                     .autocapitalization(.none)
                     .disableAutocorrection(true)
@@ -129,7 +131,7 @@ struct TwitterAuthenticateButton: View {
                 primaryAction()
             } label: {
                 HStack {
-                    Image(Asset.Logo.twitter.name, bundle: TwidereAsset.bundle)
+                    Image(decorative: Asset.Logo.twitter.name, bundle: TwidereAsset.bundle)
                         .renderingMode(.template)
                     Spacer()
                     if isBusy {
@@ -147,9 +149,12 @@ struct TwitterAuthenticateButton: View {
             Button {
                 secondaryAction()
             } label: {
-                Image(Asset.Editing.ellipsis.name, bundle: TwidereAsset.bundle)
-                    .renderingMode(.template)
-                    .padding(.horizontal, 18)
+                Image(
+                    Asset.Editing.ellipsis.name, bundle: TwidereAsset.bundle,
+                    label: Text(L10n.Accessibility.Scene.SignIn.twitterClientAuthenticationKeySetting)
+                )
+                .renderingMode(.template)
+                .padding(.horizontal, 18)
             }
         }
         .frame(height: 48)
@@ -171,7 +176,7 @@ struct MastodonAuthenticateButton: View {
             primaryAction()
         } label: {
             HStack {
-                Image(Asset.Logo.mastodon.name, bundle: TwidereAsset.bundle)
+                Image(decorative: Asset.Logo.mastodon.name, bundle: TwidereAsset.bundle)
                     .renderingMode(.template)
                 Spacer()
                 if isBusy {
@@ -183,7 +188,7 @@ struct MastodonAuthenticateButton: View {
                         .frame(maxWidth: .infinity, alignment: .leading)
                 }
                 Spacer()
-                Image(Asset.Arrows.arrowRight.name, bundle: TwidereAsset.bundle)
+                Image(decorative: Asset.Arrows.arrowRight.name, bundle: TwidereAsset.bundle)
                     .renderingMode(.template)
             }
             .padding(.horizontal, 18)

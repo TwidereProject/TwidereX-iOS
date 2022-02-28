@@ -59,6 +59,9 @@ public final class MediaGridContainerView: UIView {
     let sensitiveToggleButton: HitTestExpandedButton = {
         let button = HitTestExpandedButton(type: .system)
         button.setImage(Asset.Human.eyeSlashMini.image.withRenderingMode(.alwaysTemplate), for: .normal)
+        button.isAccessibilityElement = true
+        button.accessibilityLabel = L10n.Accessibility.Common.Status.Actions.hideMedia
+        button.accessibilityTraits = .button
         return button
     }()
     
@@ -67,6 +70,9 @@ public final class MediaGridContainerView: UIView {
         overlay.layer.masksToBounds = true
         overlay.layer.cornerRadius = MediaView.cornerRadius
         overlay.layer.cornerCurve = .continuous
+        overlay.isAccessibilityElement = true
+        overlay.accessibilityLabel = L10n.Accessibility.Common.Status.Actions.revealMedia
+        overlay.accessibilityTraits = .button
         return overlay
     }()
     
@@ -333,5 +339,19 @@ extension MediaGridContainerView {
 extension MediaGridContainerView: ContentWarningOverlayViewDelegate {
     public func contentWarningOverlayViewDidPressed(_ contentWarningOverlayView: ContentWarningOverlayView) {
         delegate?.mediaGridContainerView(self, toggleContentWarningOverlayViewDisplay: contentWarningOverlayView)
+    }
+}
+
+extension MediaGridContainerView {
+    public override var accessibilityElements: [Any]? {
+        get {
+            if viewModel.isContentWarningOverlayDisplay == true {
+                return [contentWarningOverlayView]
+            } else {
+                return [sensitiveToggleButton] + mediaViews
+            }
+            
+        }
+        set { }
     }
 }

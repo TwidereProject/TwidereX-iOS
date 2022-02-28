@@ -63,7 +63,7 @@ final class FriendshipListViewModel: NSObject {
         context: AppContext,
         kind: Kind
     ) {
-        guard let authenticationContext = context.authenticationService.activeAuthenticationContext.value else { return nil }
+        guard let authenticationContext = context.authenticationService.activeAuthenticationContext else { return nil }
         let userIdentifier = authenticationContext.userIdentifier
         
         self.init(

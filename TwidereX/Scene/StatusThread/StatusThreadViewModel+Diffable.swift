@@ -11,6 +11,7 @@ import UIKit
 import Combine
 import CoreData
 import CoreDataStack
+import AppShared
 
 extension StatusThreadViewModel {
     
@@ -20,8 +21,14 @@ extension StatusThreadViewModel {
     ) {
         let configuration = StatusSection.Configuration(
             statusViewTableViewCellDelegate: statusViewTableViewCellDelegate,
-            timelineMiddleLoaderTableViewCellDelegate: nil
+            timelineMiddleLoaderTableViewCellDelegate: nil,
+            statusViewConfigurationContext: .init(
+                dateTimeProvider: DateTimeSwiftProvider(),
+                twitterTextProvider: OfficialTwitterTextProvider(),
+                authenticationContext: context.authenticationService.$activeAuthenticationContext
+            )
         )
+        
         diffableDataSource = StatusSection.diffableDataSource(
             tableView: tableView,
             context: context,

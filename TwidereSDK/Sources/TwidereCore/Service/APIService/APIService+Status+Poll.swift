@@ -72,7 +72,7 @@ extension APIService {
     
     private struct MastodonVotePollContext {
         let pollID: Mastodon.Entity.Poll.ID
-        let choices: [Int]
+        // let choices: [Int]
     }
     
     public func voteMastodonStatusPoll(
@@ -92,8 +92,7 @@ extension APIService {
             }
             
             let context = MastodonVotePollContext(
-                pollID: poll.id,
-                choices: choices
+                pollID: poll.id
             )
             
             return context
