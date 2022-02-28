@@ -2,6 +2,132 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
   <dict>
+    <key>count.media</key>
+    <dict>
+      <key>NSStringLocalizedFormatKey</key>
+      <string>%#@count_media@</string>
+      <key>count_media</key>
+      <dict>
+        <key>NSStringFormatSpecTypeKey</key>
+        <string>NSStringPluralRuleType</string>
+        <key>NSStringFormatValueTypeKey</key>
+        <string>ld</string>
+        <key>other</key>
+        <string>%ld media</string>
+      </dict>
+    </dict>
+    <key>count.input_limit_remains</key>
+    <dict>
+      <key>NSStringLocalizedFormatKey</key>
+      <string>Input limit remains %#@character_count@</string>
+      <key>character_count</key>
+      <dict>
+        <key>NSStringFormatSpecTypeKey</key>
+        <string>NSStringPluralRuleType</string>
+        <key>NSStringFormatValueTypeKey</key>
+        <string>ld</string>
+        <key>other</key>
+        <string>%ld characters</string>
+      </dict>
+    </dict>
+    <key>count.metric_formatted.post</key>
+    <dict>
+      <key>NSStringLocalizedFormatKey</key>
+      <string>%@ %#@post_count@</string>
+      <key>post_count</key>
+      <dict>
+        <key>NSStringFormatSpecTypeKey</key>
+        <string>NSStringPluralRuleType</string>
+        <key>NSStringFormatValueTypeKey</key>
+        <string>ld</string>
+        <key>other</key>
+        <string>posts</string>
+      </dict>
+    </dict>
+    <key>count.post</key>
+    <dict>
+      <key>NSStringLocalizedFormatKey</key>
+      <string>%#@post_count@</string>
+      <key>post_count</key>
+      <dict>
+        <key>NSStringFormatSpecTypeKey</key>
+        <string>NSStringPluralRuleType</string>
+        <key>NSStringFormatValueTypeKey</key>
+        <string>ld</string>
+        <key>other</key>
+        <string>%ld posts</string>
+      </dict>
+    </dict>
+    <key>count.quote</key>
+    <dict>
+      <key>NSStringLocalizedFormatKey</key>
+      <string>%#@quote_count@</string>
+      <key>quote_count</key>
+      <dict>
+        <key>NSStringFormatSpecTypeKey</key>
+        <string>NSStringPluralRuleType</string>
+        <key>NSStringFormatValueTypeKey</key>
+        <string>ld</string>
+        <key>other</key>
+        <string>%ld quotes</string>
+      </dict>
+    </dict>
+    <key>count.like</key>
+    <dict>
+      <key>NSStringLocalizedFormatKey</key>
+      <string>%#@like_count@</string>
+      <key>like_count</key>
+      <dict>
+        <key>NSStringFormatSpecTypeKey</key>
+        <string>NSStringPluralRuleType</string>
+        <key>NSStringFormatValueTypeKey</key>
+        <string>ld</string>
+        <key>other</key>
+        <string>%ld likes</string>
+      </dict>
+    </dict>
+    <key>count.retweet</key>
+    <dict>
+      <key>NSStringLocalizedFormatKey</key>
+      <string>%#@retweet_count@</string>
+      <key>retweet_count</key>
+      <dict>
+        <key>NSStringFormatSpecTypeKey</key>
+        <string>NSStringPluralRuleType</string>
+        <key>NSStringFormatValueTypeKey</key>
+        <string>ld</string>
+        <key>other</key>
+        <string>%ld retweets</string>
+      </dict>
+    </dict>
+    <key>count.reblog</key>
+    <dict>
+      <key>NSStringLocalizedFormatKey</key>
+      <string>%#@reblog_count@</string>
+      <key>reblog_count</key>
+      <dict>
+        <key>NSStringFormatSpecTypeKey</key>
+        <string>NSStringPluralRuleType</string>
+        <key>NSStringFormatValueTypeKey</key>
+        <string>ld</string>
+        <key>other</key>
+        <string>%ld reblogs</string>
+      </dict>
+    </dict>
+    <key>count.reply</key>
+    <dict>
+      <key>NSStringLocalizedFormatKey</key>
+      <string>%#@reply_count@</string>
+      <key>reply_count</key>
+      <dict>
+        <key>NSStringFormatSpecTypeKey</key>
+        <string>NSStringPluralRuleType</string>
+        <key>NSStringFormatValueTypeKey</key>
+        <string>ld</string>
+        <key>other</key>
+        <string>%ld replies</string>
+      </dict>
+    </dict>
     <key>count.vote</key>
     <dict>
       <key>NSStringLocalizedFormatKey</key>
@@ -13,7 +139,7 @@
         <key>NSStringFormatValueTypeKey</key>
         <string>ld</string>
         <key>other</key>
-        <string>%ld votes</string>
+        <string>%ld 표</string>
       </dict>
     </dict>
     <key>count.people</key>
@@ -27,7 +153,7 @@
         <key>NSStringFormatValueTypeKey</key>
         <string>ld</string>
         <key>other</key>
-        <string>%ld people</string>
+        <string>%ld 명</string>
       </dict>
     </dict>
     <key>count.people.talking</key>
@@ -41,7 +167,7 @@
         <key>NSStringFormatValueTypeKey</key>
         <string>ld</string>
         <key>other</key>
-        <string>%ld people talking</string>
+        <string>%ld 명이 이야기 중</string>
       </dict>
     </dict>
     <key>date.year.left</key>
@@ -55,7 +181,7 @@
         <key>NSStringFormatValueTypeKey</key>
         <string>ld</string>
         <key>other</key>
-        <string>%ld years left</string>
+        <string>%ld년 남음</string>
       </dict>
     </dict>
     <key>date.month.left</key>
@@ -69,7 +195,7 @@
         <key>NSStringFormatValueTypeKey</key>
         <string>ld</string>
         <key>other</key>
-        <string>%ld months left</string>
+        <string>%ld달 남음</string>
       </dict>
     </dict>
     <key>date.day.left</key>
@@ -83,7 +209,7 @@
         <key>NSStringFormatValueTypeKey</key>
         <string>ld</string>
         <key>other</key>
-        <string>%ld days left</string>
+        <string>%ld일 남음</string>
       </dict>
     </dict>
     <key>date.hour.left</key>
@@ -97,7 +223,7 @@
         <key>NSStringFormatValueTypeKey</key>
         <string>ld</string>
         <key>other</key>
-        <string>%ld hours left</string>
+        <string>%ld시간 남음</string>
       </dict>
     </dict>
     <key>date.minute.left</key>
@@ -111,7 +237,7 @@
         <key>NSStringFormatValueTypeKey</key>
         <string>ld</string>
         <key>other</key>
-        <string>%ld minutes left</string>
+        <string>%ld분 남음</string>
       </dict>
     </dict>
     <key>date.second.left</key>
@@ -125,7 +251,7 @@
         <key>NSStringFormatValueTypeKey</key>
         <string>ld</string>
         <key>other</key>
-        <string>%ld seconds left</string>
+        <string>%ld초 남음</string>
       </dict>
     </dict>
   </dict>

@@ -38,7 +38,10 @@ final class MediaInfoDescriptionView: UIView {
     
     let avatarView: ProfileAvatarView = {
         let avatarView = ProfileAvatarView()
-        avatarView.dimension = 32
+        avatarView.setup(dimension: .inline)
+        avatarView.isAccessibilityElement = true
+        avatarView.accessibilityLabel = L10n.Accessibility.Common.Status.authorAvatar
+        avatarView.accessibilityHint = L10n.Accessibility.VoiceOver.doubleTapToOpenProfile
         return avatarView
     }()
     
@@ -114,7 +117,12 @@ extension MediaInfoDescriptionView {
         bottomContainerStackView.spacing = 8
         bottomContainerStackView.alignment = .center
         
+        avatarView.translatesAutoresizingMaskIntoConstraints = false
         bottomContainerStackView.addArrangedSubview(avatarView)
+        NSLayoutConstraint.activate([
+            avatarView.widthAnchor.constraint(equalToConstant: MediaInfoDescriptionView.avatarImageViewSize.width).priority(.required - 1),
+            avatarView.heightAnchor.constraint(equalToConstant: MediaInfoDescriptionView.avatarImageViewSize.height).priority(.required - 1),
+        ])
         bottomContainerStackView.addArrangedSubview(nameMetaLabel)
         toolbar.translatesAutoresizingMaskIntoConstraints = false
         bottomContainerStackView.addArrangedSubview(toolbar)
@@ -166,6 +174,20 @@ extension MediaInfoDescriptionView: StatusToolbarDelegate {
     func statusToolbar(_ statusToolbar: StatusToolbar, menuActionDidPressed action: StatusToolbar.MenuAction, menuButton button: UIButton) {
         delegate?.mediaInfoDescriptionView(self, statusToolbar: statusToolbar, menuActionDidPressed: action, menuButton: button)
     }
+}
+
+extension MediaInfoDescriptionView {
+    override var accessibilityElements: [Any]? {
+        get {
+            return [
+                avatarView,
+                nameMetaLabel,
+                toolbar,
+            ]
+        }
+        set { }
+    }
+    
 }
 
 #if DEBUG

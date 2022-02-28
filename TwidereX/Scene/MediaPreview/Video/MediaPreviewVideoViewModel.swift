@@ -65,5 +65,4 @@ extension MediaPreviewVideoViewModel {
         let assetURL: URL?
         let previewURL: URL?
     }
-    
 }

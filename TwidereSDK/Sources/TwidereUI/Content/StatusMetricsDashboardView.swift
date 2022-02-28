@@ -7,6 +7,7 @@
 
 import os.log
 import UIKit
+import CoreDataStack
 import TwidereCommon
 import TwidereCore
 
@@ -22,6 +23,12 @@ public final class StatusMetricsDashboardView: UIView {
     
     public weak var delegate: StatusMetricsDashboardViewDelegate?
     
+    public private(set) lazy var viewModel: ViewModel = {
+        let viewModel = ViewModel()
+        viewModel.bind(view: self)
+        return viewModel
+    }()
+    
     public let container = UIStackView()
     public let metaContainer = UIStackView()
 
@@ -36,6 +43,7 @@ public final class StatusMetricsDashboardView: UIView {
         label.textAlignment = .center
         return label
     }()
+    
 
     public let dashboardContainer = UIStackView()
     public let replyButton     = HitTestExpandedButton()
@@ -76,8 +84,8 @@ extension StatusMetricsDashboardView {
         metaContainer.addArrangedSubview(sourceLabel)
         
         dashboardContainer.axis = .horizontal
-        dashboardContainer.spacing = 8
-        dashboardContainer.distribution = .fillEqually
+        dashboardContainer.spacing = 20
+        dashboardContainer.distribution = .equalCentering
         container.addArrangedSubview(dashboardContainer)
         
         let buttons = [replyButton, repostButton, quoteButton, likeButton]
@@ -88,15 +96,16 @@ extension StatusMetricsDashboardView {
             button.setTitleColor(.secondaryLabel, for: .normal)
             button.setInsets(forContentPadding: .zero, imageTitlePadding: 4)
             button.addTarget(self, action: #selector(StatusMetricsDashboardView.buttonDidPressed(_:)), for: .touchUpInside)
+            
+            // TODO: coordinate to the user list
+            button.accessibilityTraits = .staticText
         }
         
         replyButton.setImage(Asset.Arrows.arrowTurnUpLeftMini.image.withRenderingMode(.alwaysTemplate), for: .normal)
         repostButton.setImage(Asset.Media.repeatMini.image.withRenderingMode(.alwaysTemplate), for: .normal)
         quoteButton.setImage(Asset.TextFormatting.textQuoteMini.image.withRenderingMode(.alwaysTemplate), for: .normal)
-        likeButton.setImage(Asset.Health.heartMini.image.withRenderingMode(.alwaysTemplate), for: .normal)
+        likeButton.setImage(Asset.Health.heartFillMini.image.withRenderingMode(.alwaysTemplate), for: .normal)
         
-        let leadingPadding = UIView()
-        dashboardContainer.addArrangedSubview(leadingPadding)
         replyButton.translatesAutoresizingMaskIntoConstraints = false
         repostButton.translatesAutoresizingMaskIntoConstraints = false
         quoteButton.translatesAutoresizingMaskIntoConstraints = false
@@ -105,9 +114,7 @@ extension StatusMetricsDashboardView {
         dashboardContainer.addArrangedSubview(repostButton)
         dashboardContainer.addArrangedSubview(quoteButton)
         dashboardContainer.addArrangedSubview(likeButton)
-        let trailingPadding = UIView()
-        dashboardContainer.addArrangedSubview(trailingPadding)
-        
+         
         NSLayoutConstraint.activate([
             replyButton.heightAnchor.constraint(equalToConstant: 44).priority(.required - 10),
             replyButton.heightAnchor.constraint(equalTo: repostButton.heightAnchor).priority(.defaultHigh),
@@ -150,38 +157,7 @@ extension StatusMetricsDashboardView {
 }
 
 extension StatusMetricsDashboardView {
-    
-    private func metricText(count: Int) -> String {
-        guard count > 0 else { return "" }
-        return StatusMetricsDashboardView.numberMetricFormatter.string(from: count) ?? ""
-    }
 
-    public func setupReply(count: Int) {
-        let text = metricText(count: count)
-        replyButton.setTitle(text, for: .normal)
-        replyButton.isHidden = count == 0
-
-        // FIXME: a11y
-    }
-    
-    public func setupRepost(count: Int) {
-        let text = metricText(count: count)
-        repostButton.setTitle(text, for: .normal)
-        repostButton.isHidden = count == 0
-    }
-    
-    public func setupQuote(count: Int) {
-        let text = metricText(count: count)
-        quoteButton.setTitle(text, for: .normal)
-        quoteButton.isHidden = count == 0
-    }
-    
-    public func setupLike(count: Int) {
-        let text = metricText(count: count)
-        likeButton.setTitle(text, for: .normal)
-        likeButton.isHidden = count == 0
-    }
-    
     public func setDashboardDisplay() {
         dashboardContainer.isHidden = false
     }

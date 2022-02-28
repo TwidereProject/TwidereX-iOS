@@ -20,7 +20,7 @@ final class WelcomeViewController: UIViewController, NeedsDependency {
     weak var context: AppContext! { willSet { precondition(!isViewLoaded) } }
     weak var coordinator: SceneCoordinator! { willSet { precondition(!isViewLoaded) } }
     
-    let logger = Logger(subsystem: "WelcomeViewController", category: "UI")
+    let logger = Logger(subsystem: "WelcomeViewController", category: "ViewController")
     
     var disposeBag = Set<AnyCancellable>()
     var viewModel: WelcomeViewModel!
@@ -28,12 +28,17 @@ final class WelcomeViewController: UIViewController, NeedsDependency {
     private var twitterAuthenticationController: TwitterAuthenticationController?
     private var mastodonAuthenticationController: MastodonAuthenticationController?
 
-    private(set) lazy var closeBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "xmark"), style: .plain, target: self, action: #selector(WelcomeViewController.closeBarButtonItemPressed(_:)))
+    private(set) lazy var closeBarButtonItem: UIBarButtonItem = {
+        let item = UIBarButtonItem(image: UIImage(systemName: "xmark"), style: .plain, target: self, action: #selector(WelcomeViewController.closeBarButtonItemPressed(_:)))
+        item.accessibilityLabel = L10n.Accessibility.Common.close
+        return item
+    }()
 
     private(set) lazy var backBarButtonItem: UIBarButtonItem = {
         let image = Asset.Arrows.arrowLeft.image.withRenderingMode(.alwaysTemplate)
         let item = UIBarButtonItem(image: image, style: .plain, target: self, action: #selector(WelcomeViewController.backBarButtonItemPressed(_:)))
         item.tintColor = .label
+        item.accessibilityLabel = L10n.Accessibility.Common.back
         return item
     }()
     

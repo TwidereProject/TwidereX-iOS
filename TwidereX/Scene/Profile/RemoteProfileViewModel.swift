@@ -25,7 +25,7 @@ final class RemoteProfileViewModel: ProfileViewModel {
             setup(user: record)
         case .twitter(let twitterContext):
             Task {
-                guard case let .twitter(authenticationContext) = context.authenticationService.activeAuthenticationContext.value else { return }
+                guard case let .twitter(authenticationContext) = context.authenticationService.activeAuthenticationContext else { return }
                 do {
                     let _record = try await fetchTwitterUser(
                         twitterContext: twitterContext,

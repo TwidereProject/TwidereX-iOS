@@ -37,7 +37,7 @@ final class SearchViewModel {
         viewDidAppear
             .sink { [weak self] _ in
                 guard let self = self else { return }
-                guard let authenticationContext = self.context.authenticationService.activeAuthenticationContext.value else { return }
+                guard let authenticationContext = self.context.authenticationService.activeAuthenticationContext else { return }
                 
                 Task {
                     do {
@@ -56,7 +56,7 @@ final class SearchViewModel {
         )
         .sink { [weak self] trendGroupIndex, _ in
             guard let self = self else { return }
-            guard let authenticationContext = self.context.authenticationService.activeAuthenticationContext.value else { return }
+            guard let authenticationContext = self.context.authenticationService.activeAuthenticationContext else { return }
             
             Task {
                 do {

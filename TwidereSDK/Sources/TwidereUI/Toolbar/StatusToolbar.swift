@@ -19,16 +19,23 @@ public final class StatusToolbar: UIView {
     
     public static let numberMetricFormatter = NumberMetricFormatter()
     
+    public weak var delegate: StatusToolbarDelegate?
+
+    public private(set) lazy var viewModel: ViewModel = {
+        let viewModel = ViewModel()
+        viewModel.bind(view: self)
+        return viewModel
+    }()
+    
+    private let logger = Logger(subsystem: "StatusToolbar", category: "Toolbar")
+    private let container = UIStackView()
+    private(set) var style: Style?
+    
     public let replyButton     = HitTestExpandedButton()
     public let repostButton    = HitTestExpandedButton()
     public let likeButton      = HitTestExpandedButton()
     public let menuButton      = HitTestExpandedButton()
     
-    private let logger = Logger(subsystem: "StatusToolbar", category: "UI")
-    private let container = UIStackView()
-    private var style: Style?
-    
-    public weak var delegate: StatusToolbarDelegate?
     
     public override init(frame: CGRect) {
         super.init(frame: frame)
@@ -58,6 +65,17 @@ extension StatusToolbar {
             container.trailingAnchor.constraint(equalTo: trailingAnchor),
             container.bottomAnchor.constraint(equalTo: bottomAnchor),
         ])
+        
+        replyButton.accessibilityLabel = L10n.Accessibility.Common.Status.Actions.reply
+        // dynamic label for repostButton
+        likeButton.accessibilityLabel = L10n.Accessibility.Common.Status.Actions.like
+        menuButton.accessibilityLabel = L10n.Accessibility.Common.Status.Actions.menu
+    }
+    
+    public override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        
+        viewModel.traitCollectionDidChange.send()
     }
     
     public func setup(style: Style) {
@@ -182,154 +200,6 @@ extension StatusToolbar {
         
         logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): \(action.rawValue) button pressed")
         delegate?.statusToolbar(self, actionDidPressed: action, button: sender)
-    }
-    
-}
-
-extension StatusToolbar {
-    
-    private func metricText(count: Int) -> String {
-        guard count > 0 else { return "" }
-        return StatusToolbar.numberMetricFormatter.string(from: count) ?? ""
-    }
-
-    public func setupReply(count: Int, isEnabled: Bool) {
-        let text = metricText(count: count)
-        switch style {
-        case .inline:
-            replyButton.setTitle(text, for: .normal)
-        case .plain:
-            break
-        case .none:
-            break
-        }
-        
-        replyButton.accessibilityLabel = L10n.Accessibility.Common.Status.Actions.reply
-    }
-    
-    public func setupRepost(count: Int, isRepost: Bool, isLocked: Bool) {
-        // set title
-        let text = metricText(count: count)
-        switch style {
-        case .inline:
-            repostButton.setTitle(text, for: .normal)
-        case .plain:
-            break
-        case .none:
-            break
-        }
-        
-        // set color
-        let tintColor = isRepost ? Asset.Scene.Status.Toolbar.repost.color : .secondaryLabel
-        repostButton.tintColor = tintColor
-        repostButton.setTitleColor(tintColor, for: .normal)
-        repostButton.setTitleColor(tintColor.withAlphaComponent(0.8), for: .highlighted)
-        
-        // TODO: loked
-        
-        repostButton.accessibilityLabel = L10n.Accessibility.Common.Status.Actions.retweet
-        if isRepost {
-            repostButton.accessibilityTraits.insert(.selected)
-        } else {
-            repostButton.accessibilityTraits.remove(.selected)
-        }
-    }
-    
-    public func setupLike(count: Int, isLike: Bool) {
-        // set title
-        let text = metricText(count: count)
-        switch style {
-        case .inline:
-            let image: UIImage = isLike ? Asset.Health.heartFillMini.image : Asset.Health.heartMini.image
-            likeButton.setImage(image.withRenderingMode(.alwaysTemplate), for: .normal)
-            likeButton.setTitle(text, for: .normal)
-        case .plain:
-            let image: UIImage = isLike ? Asset.Health.heartFill.image : Asset.Health.heart.image
-            likeButton.setImage(image.withRenderingMode(.alwaysTemplate), for: .normal)
-            // no title
-        case .none:
-            break
-        }
-        
-        // set color
-        let tintColor = isLike ? Asset.Scene.Status.Toolbar.like.color : .secondaryLabel
-        likeButton.tintColor = tintColor
-        likeButton.setTitleColor(tintColor, for: .normal)
-        likeButton.setTitleColor(tintColor.withAlphaComponent(0.8), for: .highlighted)
-        
-        likeButton.accessibilityLabel = L10n.Accessibility.Common.Status.Actions.like
-        if isLike {
-            likeButton.accessibilityTraits.insert(.selected)
-        } else {
-            likeButton.accessibilityTraits.remove(.selected)
-        }
-    }
-    
-    public struct MenuContext {
-        let shareText: String?
-        let shareLink: String?
-        let displayDeleteAction: Bool
-    }
-    
-    public func setupMenu(menuContext: MenuContext) {
-        menuButton.menu = {
-            var children: [UIMenuElement] = [
-                UIAction(
-                    title: L10n.Common.Controls.Status.Actions.copyText.capitalized,
-                    image: UIImage(systemName: "doc.on.doc"),
-                    identifier: nil,
-                    discoverabilityTitle: nil,
-                    attributes: [],
-                    state: .off
-                ) { _ in
-                    guard let text = menuContext.shareText else { return }
-                    UIPasteboard.general.string = text
-                },
-                UIAction(
-                    title: L10n.Common.Controls.Status.Actions.copyLink.capitalized,
-                    image: UIImage(systemName: "link"),
-                    identifier: nil,
-                    discoverabilityTitle: nil,
-                    attributes: [],
-                    state: .off
-                ) { _ in
-                    guard let text = menuContext.shareLink else { return }
-                    UIPasteboard.general.string = text
-                },
-                UIAction(
-                    title: L10n.Common.Controls.Status.Actions.shareLink.capitalized,
-                    image: UIImage(systemName: "square.and.arrow.up"),
-                    identifier: nil,
-                    discoverabilityTitle: nil,
-                    attributes: [],
-                    state: .off
-                ) { [weak self] _ in
-                    guard let self = self else { return }
-                    self.delegate?.statusToolbar(self, actionDidPressed: .menu, button: self.menuButton)
-                }
-            ]
-            
-            if menuContext.displayDeleteAction {
-                let removeAction = UIAction(
-                    title: L10n.Common.Controls.Actions.delete,
-                    image: UIImage(systemName: "minus.circle"),
-                    identifier: nil,
-                    discoverabilityTitle: nil,
-                    attributes: .destructive,
-                    state: .off
-                ) { [weak self] _ in
-                    guard let self = self else { return }
-                    self.delegate?.statusToolbar(self, menuActionDidPressed: .remove, menuButton: self.menuButton)
-                }
-                children.append(removeAction)
-            }
-            
-            return UIMenu(title: "", options: [], children: children)
-        }()
-        
-        
-        menuButton.showsMenuAsPrimaryAction = true
-        menuButton.accessibilityLabel = "Menu"      // TODO: i18n
     }
     
 }

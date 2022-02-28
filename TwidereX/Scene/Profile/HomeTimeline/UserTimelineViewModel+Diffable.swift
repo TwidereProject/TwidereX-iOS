@@ -11,6 +11,7 @@ import UIKit
 import Combine
 import CoreData
 import CoreDataStack
+import AppShared
 
 extension UserTimelineViewModel {
     func setupDiffableDataSource(
@@ -19,7 +20,12 @@ extension UserTimelineViewModel {
     ) {
         let configuration = StatusSection.Configuration(
             statusViewTableViewCellDelegate: statusViewTableViewCellDelegate,
-            timelineMiddleLoaderTableViewCellDelegate: nil
+            timelineMiddleLoaderTableViewCellDelegate: nil,
+            statusViewConfigurationContext: .init(
+                dateTimeProvider: DateTimeSwiftProvider(),
+                twitterTextProvider: OfficialTwitterTextProvider(),
+                authenticationContext: context.authenticationService.$activeAuthenticationContext
+            )
         )
         diffableDataSource = StatusSection.diffableDataSource(
             tableView: tableView,

@@ -10,6 +10,7 @@ import os.log
 import UIKit
 import CoreData
 import CoreDataStack
+import AppShared
 
 extension UserLikeTimelineViewModel {
     func setupDiffableDataSource(
@@ -18,8 +19,14 @@ extension UserLikeTimelineViewModel {
     ) {
         let configuration = StatusSection.Configuration(
             statusViewTableViewCellDelegate: statusViewTableViewCellDelegate,
-            timelineMiddleLoaderTableViewCellDelegate: nil
+            timelineMiddleLoaderTableViewCellDelegate: nil,
+            statusViewConfigurationContext: .init(
+                dateTimeProvider: DateTimeSwiftProvider(),
+                twitterTextProvider: OfficialTwitterTextProvider(),
+                authenticationContext: context.authenticationService.$activeAuthenticationContext
+            )
         )
+        
         diffableDataSource = StatusSection.diffableDataSource(
             tableView: tableView,
             context: context,

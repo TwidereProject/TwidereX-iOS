@@ -120,17 +120,27 @@ extension UITableViewDelegate where Self: DataSourceProvider & MediaPreviewTrans
         return nil
     }
     
-    func aspectTableView(_ tableView: UITableView, previewForHighlightingContextMenuWithConfiguration configuration: UIContextMenuConfiguration) -> UITargetedPreview? {
+    func aspectTableView(
+        _ tableView: UITableView,
+        previewForHighlightingContextMenuWithConfiguration
+        configuration: UIContextMenuConfiguration
+    ) -> UITargetedPreview? {
         logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public)")
         return aspectTableView(tableView, configuration: configuration)
     }
     
-    func aspectTableView(_ tableView: UITableView, previewForDismissingContextMenuWithConfiguration configuration: UIContextMenuConfiguration) -> UITargetedPreview? {
+    func aspectTableView(
+        _ tableView: UITableView,
+        previewForDismissingContextMenuWithConfiguration configuration: UIContextMenuConfiguration
+    ) -> UITargetedPreview? {
         logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public)")
         return aspectTableView(tableView, configuration: configuration)
     }
     
-    private func aspectTableView(_ tableView: UITableView, configuration: UIContextMenuConfiguration) -> UITargetedPreview? {
+    private func aspectTableView(
+        _ tableView: UITableView,
+        configuration: UIContextMenuConfiguration
+    ) -> UITargetedPreview? {
         guard let configuration = configuration as? TimelineTableViewCellContextMenuConfiguration else { return nil }
         guard let indexPath = configuration.indexPath, let index = configuration.index else { return nil }
         if let cell = tableView.cellForRow(at: indexPath) as? StatusViewContainerTableViewCell {
@@ -146,7 +156,11 @@ extension UITableViewDelegate where Self: DataSourceProvider & MediaPreviewTrans
         }
     }
         
-    func aspectTableView(_ tableView: UITableView, willPerformPreviewActionForMenuWith configuration: UIContextMenuConfiguration, animator: UIContextMenuInteractionCommitAnimating) {
+    func aspectTableView(
+        _ tableView: UITableView,
+        willPerformPreviewActionForMenuWith configuration: UIContextMenuConfiguration,
+        animator: UIContextMenuInteractionCommitAnimating
+    ) {
         logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public)")
         guard let configuration = configuration as? TimelineTableViewCellContextMenuConfiguration else { return }
         guard let indexPath = configuration.indexPath, let index = configuration.index else { return }
@@ -179,6 +193,6 @@ extension UITableViewDelegate where Self: DataSourceProvider & MediaPreviewTrans
                 )
             }
         }
-    }
+    }   // end func
     
 }

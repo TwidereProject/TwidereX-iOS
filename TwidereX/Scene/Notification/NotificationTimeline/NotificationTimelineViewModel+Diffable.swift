@@ -12,6 +12,7 @@ import CoreData
 import CoreDataStack
 import TwitterSDK
 import MastodonSDK
+import AppShared
 
 extension NotificationTimelineViewModel {
     
@@ -22,7 +23,12 @@ extension NotificationTimelineViewModel {
     ) {
         let configuration = NotificationSection.Configuration(
             statusViewTableViewCellDelegate: statusViewTableViewCellDelegate,
-            userTableViewCellDelegate: userTableViewCellDelegate
+            userTableViewCellDelegate: userTableViewCellDelegate,
+            statusViewConfigurationContext: .init(
+                dateTimeProvider: DateTimeSwiftProvider(),
+                twitterTextProvider: OfficialTwitterTextProvider(),
+                authenticationContext: context.authenticationService.$activeAuthenticationContext
+            )
         )
         diffableDataSource = NotificationSection.diffableDataSource(
             tableView: tableView,
@@ -123,7 +129,7 @@ extension NotificationTimelineViewModel {
 
     // load lastest
     func loadLatest() async {
-        guard let authenticationContext = context.authenticationService.activeAuthenticationContext.value else { return }
+        guard let authenticationContext = context.authenticationService.activeAuthenticationContext else { return }
         do {
             switch authenticationContext {
             case .twitter(let authenticationContext):
@@ -158,7 +164,7 @@ extension NotificationTimelineViewModel {
     // load timeline gap
     func loadMore(item: NotificationItem) async {
         guard case let .feedLoader(record) = item else { return }
-        guard let authenticationContext = context.authenticationService.activeAuthenticationContext.value else { return }
+        guard let authenticationContext = context.authenticationService.activeAuthenticationContext else { return }
 
         let managedObjectContext = context.managedObjectContext
         let key = "LoadMore@\(record.objectID)"

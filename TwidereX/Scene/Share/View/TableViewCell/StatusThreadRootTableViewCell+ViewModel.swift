@@ -12,8 +12,10 @@ import SwiftUI
 import CoreDataStack
 import TwidereCore
 import AppShared
+import TwidereUI
 
 extension StatusThreadRootTableViewCell {
+    
     final class ViewModel {
         enum Value {
             case statusObject(StatusObject)
@@ -22,20 +24,18 @@ extension StatusThreadRootTableViewCell {
         }
         
         let value: Value
-        let activeAuthenticationContext: AnyPublisher<AuthenticationContext?, Never>
         
         init(
-            value: Value,
-            activeAuthenticationContext: AnyPublisher<AuthenticationContext?, Never>
+            value: Value
         ) {
             self.value = value
-            self.activeAuthenticationContext = activeAuthenticationContext
         }
     }
     
     func configure(
         tableView: UITableView,
         viewModel: StatusThreadRootTableViewCell.ViewModel,
+        configurationContext: StatusView.ConfigurationContext,
         delegate: StatusViewTableViewCellDelegate?
     ) {
         if statusView.frame == .zero {
@@ -48,13 +48,7 @@ extension StatusThreadRootTableViewCell {
             statusView.quoteStatusView?.contentTextView.preferredMaxLayoutWidth = statusView.quoteStatusView?.contentMaxLayoutWidth
             logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): did layout for new cell")
         }
-        
-        let configurationContext = StatusView.ConfigurationContext(
-            dateTimeProvider: DateTimeSwiftProvider(),
-            twitterTextProvider: OfficialTwitterTextProvider(),
-            activeAuthenticationContext: viewModel.activeAuthenticationContext
-        )
-        
+    
         switch viewModel.value {
         case .statusObject(let object):
             statusView.configure(
@@ -74,18 +68,21 @@ extension StatusThreadRootTableViewCell {
             )
         }
         
-        
-        statusView.viewModel.contentRevealChangePublisher
+        self.delegate = delegate
+
+        statusView.viewModel.$isContentReveal
+            .removeDuplicates()
+            .dropFirst()
             .receive(on: DispatchQueue.main)
-            .sink { [weak tableView] _ in
+            .sink { [weak tableView, weak self] _ in
                 guard let tableView = tableView else { return }
+                guard let _ = self else { return }
                 UIView.setAnimationsEnabled(false)
                 tableView.beginUpdates()
                 tableView.endUpdates()
                 UIView.setAnimationsEnabled(true)
             }
             .store(in: &disposeBag)
-        
-        self.delegate = delegate
     }
+    
 }

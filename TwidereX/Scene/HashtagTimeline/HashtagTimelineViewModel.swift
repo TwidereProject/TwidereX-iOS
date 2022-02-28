@@ -43,7 +43,7 @@ final class HashtagTimelineViewModel {
         self.statusRecordFetchedResultController = StatusRecordFetchedResultController(managedObjectContext: context.managedObjectContext)
         // end init
         
-        context.authenticationService.activeAuthenticationContext
+        context.authenticationService.$activeAuthenticationContext
             .map { $0?.userIdentifier }
             .assign(to: &statusRecordFetchedResultController.$userIdentifier)
     }

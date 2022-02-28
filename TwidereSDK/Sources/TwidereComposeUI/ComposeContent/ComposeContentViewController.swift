@@ -283,7 +283,7 @@ extension ComposeContentViewController {
             guard let self = self else { return nil }
             guard isRequestLocation, let currentLocation = currentLocation else { return nil }
             
-            guard let authenticationContext = self.viewModel.configurationContext.authenticationService.activeAuthenticationContext.value,
+            guard let authenticationContext = self.viewModel.configurationContext.authenticationService.activeAuthenticationContext,
                   case let .twitter(twitterAuthenticationContext) = authenticationContext
             else { return nil }
             

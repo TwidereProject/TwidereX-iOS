@@ -20,7 +20,7 @@ extension DrawerSidebarViewModel {
         sidebarSnapshot.appendSections([.main])
         sidebarDiffableDataSource?.applySnapshotUsingReloadData(sidebarSnapshot)
         
-        context.authenticationService.activeAuthenticationContext
+        context.authenticationService.$activeAuthenticationContext
             .sink { [weak self] authenticationContext in
                 guard let self = self else { return }
                 var snapshot = NSDiffableDataSourceSnapshot<SidebarSection, SidebarItem>()

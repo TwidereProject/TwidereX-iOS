@@ -31,7 +31,7 @@ extension UserView {
         // TODO: verified | bot
         
         @Published public var name: MetaContent? = PlaintextMetaContent(string: " ")
-        @Published public var username: String? = " "
+        @Published public var username: String?
         
         @Published public var protected: Bool = false
         
@@ -68,20 +68,19 @@ extension UserView.ViewModel {
             case .none:
                 userView.authorProfileAvatarView.badge = .none
             case .platform:
-                let badge: UIImage? = {
+                userView.authorProfileAvatarView.badge = {
                     switch platform {
-                    case .none:     return nil
-                    case .twitter:  return Asset.Badge.circleTwitter.image
-                    case .mastodon: return Asset.Badge.circleMastodon.image
+                    case .none:         return .none
+                    case .twitter:      return .circle(.twitter)
+                    case .mastodon:     return .circle(.mastodon)
                     }
                 }()
-                userView.authorProfileAvatarView.badge = badge != nil ? .circle : .none
-                userView.authorProfileAvatarView.badgeImageView.image = badge
             case .user:
                 userView.authorProfileAvatarView.badge = .none
             }
         }
         .store(in: &disposeBag)
+        // badge
         UserDefaults.shared
             .observe(\.avatarStyle, options: [.initial, .new]) { defaults, _ in
                 let avatarStyle = defaults.avatarStyle
@@ -98,21 +97,6 @@ extension UserView.ViewModel {
                 animator.startAnimation()
             }
             .store(in: &observations)
-//        // badge
-//        $platform
-//            .sink { platform in
-//                switch platform {
-//                case .twitter:
-//                    userView.badgeImageView.image = Asset.Badge.twitter.image
-//                    userView.setBadgeDisplay()
-//                case .mastodon:
-//                    userView.badgeImageView.image = Asset.Badge.mastodon.image
-//                    userView.setBadgeDisplay()
-//                case .none:
-//                    break
-//                }
-//            }
-//            .store(in: &disposeBag)
         // header
         $header
             .sink { header in
@@ -140,6 +124,9 @@ extension UserView.ViewModel {
             .store(in: &disposeBag)
         // username
         $username
+            .map { username in
+                return username.flatMap { "@\($0)" } ?? " "
+            }
             .assign(to: \.text, on: userView.usernameLabel)
             .store(in: &disposeBag)
         // protected
@@ -235,7 +222,7 @@ extension UserView {
             .store(in: &disposeBag)
         // author username
         user.publisher(for: \.username)
-            .map { "@\($0)" as String? }
+            .map { $0 as String? }
             .assign(to: \.username, on: viewModel)
             .store(in: &disposeBag)
         // protected
@@ -276,8 +263,8 @@ extension UserView {
         .assign(to: \.name, on: viewModel)
         .store(in: &disposeBag)
         // author username
-        user.publisher(for: \.username)
-            .map { "@\($0)" as String? }
+        user.publisher(for: \.acct)
+            .map { _ in user.acctWithDomain as String? }
             .assign(to: \.username, on: viewModel)
             .store(in: &disposeBag)
         // protected

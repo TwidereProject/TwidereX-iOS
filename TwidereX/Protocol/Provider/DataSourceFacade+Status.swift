@@ -36,8 +36,11 @@ extension DataSourceFacade {
                     apiService: provider.context.apiService,
                     authenticationService: provider.context.authenticationService,
                     mastodonEmojiService: provider.context.mastodonEmojiService,
-                    dateTimeProvider: DateTimeSwiftProvider(),
-                    twitterTextProvider: OfficialTwitterTextProvider()
+                    statusViewConfigureContext: .init(
+                        dateTimeProvider: DateTimeSwiftProvider(),
+                        twitterTextProvider: OfficialTwitterTextProvider(),
+                        authenticationContext: provider.context.authenticationService.$activeAuthenticationContext
+                    )
                 )
             )
             provider.coordinator.present(
@@ -103,13 +106,14 @@ extension DataSourceFacade {
         provider: DataSourceProvider,
         status: StatusRecord
     ) async throws {
-        try await provider.context.backgroundManagedObjectContext.performChanges {
-            guard let object = status.object(in: provider.context.managedObjectContext) else { return }
+        let managedObjectContext = provider.context.managedObjectContext
+        try await managedObjectContext.performChanges {
+            guard let object = status.object(in: managedObjectContext) else { return }
             switch object {
             case .twitter:
                 break
             case .mastodon(let status):
-                status.update(isContentReveal: !status.isContentReveal)
+                status.update(isContentSensitiveToggled: !status.isContentSensitiveToggled)
             }
         }
     }

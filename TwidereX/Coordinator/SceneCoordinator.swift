@@ -74,16 +74,9 @@ extension SceneCoordinator {
         case trend(viewModel: TrendViewModel)
         case searchResult(viewModel: SearchResultViewModel)
         
-        // TODO:
-        // case tweetConversation(viewModel: TweetConversationViewModel)
-//        case searchDetail(viewModel: SearchDetailViewModel)
-        
-//        case friendshipList(viewModel: FriendshipListViewModel)
-
         case setting
         case displayPreference
         case about
-        // end TODO:
         
         #if DEBUG
         case developer

@@ -9,13 +9,14 @@
 import os.log
 import UIKit
 import Combine
+import TwidereUI
 
 class StatusTableViewCell: UITableViewCell {
     
     private var _disposeBag = Set<AnyCancellable>()
     var disposeBag = Set<AnyCancellable>()
     
-    let logger = Logger(subsystem: "StatusTableViewCell", category: "UI")
+    let logger = Logger(subsystem: "StatusTableViewCell", category: "View")
     
     weak var delegate: StatusViewTableViewCellDelegate?
     
@@ -83,7 +84,6 @@ extension StatusTableViewCell {
         
         // a11y
         isAccessibilityElement = true
-        accessibilityElements = [statusView]
         statusView.viewModel.$groupedAccessibilityLabel
             .receive(on: DispatchQueue.main)
             .sink { [weak self] accessibilityLabel in

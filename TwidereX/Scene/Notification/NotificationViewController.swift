@@ -60,9 +60,11 @@ extension NotificationViewController {
         
         navigationItem.leftBarButtonItem = avatarBarButtonItem
         avatarBarButtonItem.avatarButton.addTarget(self, action: #selector(NotificationViewController.avatarButtonPressed(_:)), for: .touchUpInside)
+        avatarBarButtonItem.delegate = self
+        
         Publishers.CombineLatest(
-            context.authenticationService.activeAuthenticationContext,
-            viewModel.viewDidAppear.eraseToAnyPublisher()
+            context.authenticationService.$activeAuthenticationContext,
+            viewModel.viewDidAppear
         )
         .receive(on: DispatchQueue.main)
         .sink { [weak self] authenticationContext, _ in
@@ -174,3 +176,7 @@ extension NotificationViewController {
         scrollToPage(.at(index: index), animated: true, completion: nil)
     }
 }
+
+// MARK: - AvatarBarButtonItemDelegate
+extension NotificationViewController: AvatarBarButtonItemDelegate { }
+

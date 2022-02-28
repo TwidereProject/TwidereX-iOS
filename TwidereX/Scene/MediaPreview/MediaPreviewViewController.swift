@@ -54,6 +54,7 @@ final class MediaPreviewViewController: UIViewController, NeedsDependency {
         let button = HitTestExpandedButton(type: .system)
         button.imageView?.tintColor = .label
         button.setImage(Asset.Editing.xmarkRound.image.withRenderingMode(.alwaysTemplate), for: .normal)
+        button.accessibilityLabel = L10n.Accessibility.Common.close
         return button
     }()
 
@@ -132,53 +133,14 @@ extension MediaPreviewViewController {
             pageControl.trailingAnchor.constraint(equalTo: pageControlBackgroundVisualEffectView.trailingAnchor),
             pageControl.bottomAnchor.constraint(equalTo: pageControlBackgroundVisualEffectView.bottomAnchor),
         ])
-
-//
-//        switch viewModel.rootItem {
-//        case .tweet(let meta):
-//            pageControl.numberOfPages = viewModel.viewControllers.count
-//            if case let .tweet(meta) = viewModel.rootItem {
-//                pageControl.currentPage = meta.initialIndex
-//            }
-//            pageControl.isHidden = viewModel.viewControllers.count == 1
-//            mediaInfoDescriptionView.actionToolbarContainer.delegate = self
-//            let managedObjectContext = self.context.managedObjectContext
-//            managedObjectContext.perform {
-//                let tweet = managedObjectContext.object(with: meta.tweetObjectID) as! Tweet
-//                let targetTweet = tweet.retweet ?? tweet
-//                let activeTwitterAuthenticationBox = self.context.authenticationService.activeTwitterAuthenticationBox.value
-//                let requestTwitterUserID = activeTwitterAuthenticationBox?.twitterUserID ?? ""
-//                MediaPreviewViewController.configure(actionToolbarContainer: self.mediaInfoDescriptionView.actionToolbarContainer, tweet: targetTweet, requestTwitterUserID: requestTwitterUserID)
-//
-//                // observe model change
-//                ManagedObjectObserver.observe(object: tweet.retweet ?? tweet)
-//                    .receive(on: DispatchQueue.main)
-//                    .sink { _ in
-//                        // do nothing
-//                    } receiveValue: { [weak self] change in
-//                        guard let self = self else { return }
-//                        guard case let .update(object) = change.changeType,
-//                              let newTweet = object as? Tweet else { return }
-//                        let targetTweet = newTweet.retweet ?? newTweet
-//                        let activeTwitterAuthenticationBox = self.context.authenticationService.activeTwitterAuthenticationBox.value
-//                        let requestTwitterUserID = activeTwitterAuthenticationBox?.twitterUserID ?? ""
-//
-//                        MediaPreviewViewController.configure(actionToolbarContainer: self.mediaInfoDescriptionView.actionToolbarContainer, tweet: targetTweet, requestTwitterUserID: requestTwitterUserID)
-//                    }
-//                    .store(in: &self.disposeBag)
-//            }
-//        case .local(let meta):
-//            pageControl.isHidden = true
-//            mediaInfoDescriptionView.isHidden = true
-//        }
         
         if let status = viewModel.status {
             mediaInfoDescriptionView.configure(
                 statusObject: status,
-                configurationContext: MediaInfoDescriptionView.ConfigurationContext(
+                configurationContext: .init(
                     dateTimeProvider: DateTimeSwiftProvider(),
                     twitterTextProvider: OfficialTwitterTextProvider(),
-                    activeAuthenticationContext: context.authenticationService.activeAuthenticationContext.eraseToAnyPublisher()
+                    authenticationContext: context.authenticationService.$activeAuthenticationContext
                 )
             )
         } else {
@@ -188,6 +150,7 @@ extension MediaPreviewViewController {
         pageControl.numberOfPages = viewModel.viewControllers.count
         pageControl.isHidden = viewModel.viewControllers.count == 1
         pageControl.isUserInteractionEnabled = false
+        pageControl.addTarget(self, action: #selector(MediaPreviewViewController.pageControlValueDidChanged(_:)), for: .valueChanged)
         
         viewModel.mediaPreviewImageViewControllerDelegate = self
         
@@ -213,6 +176,17 @@ extension MediaPreviewViewController {
     @objc private func closeButtonPressed(_ sender: UIButton) {
         os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
         dismiss(animated: true, completion: nil)
+    }
+    
+    @objc private func pageControlValueDidChanged(_ sender: UIPageControl) {
+        logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public)")
+        let currentPage = sender.currentPage
+        guard let pageCount = pageViewController.pageCount,
+              currentPage >= 0,
+              currentPage < pageCount
+        else { return }
+        
+        pageViewController.scrollToPage(.at(index: currentPage), animated: true, completion: nil)
     }
 
 }

@@ -163,7 +163,7 @@ extension UserLikeTimelineViewModel.State {
             guard let viewModel = viewModel, let stateMachine = stateMachine else { return }
             
             guard let userIdentifier = viewModel.userIdentifier,
-                  let authenticationContext = viewModel.context.authenticationService.activeAuthenticationContext.value
+                  let authenticationContext = viewModel.context.authenticationService.activeAuthenticationContext
             else {
                 stateMachine.enter(Fail.self)
                 return

@@ -71,7 +71,7 @@ extension SearchHashtagViewModel.State {
             }
             
             guard let viewModel = viewModel, let stateMachine = stateMachine else { return }
-            guard let authenticationContext = viewModel.context.authenticationService.activeAuthenticationContext.value
+            guard let authenticationContext = viewModel.context.authenticationService.activeAuthenticationContext
             else {
                 stateMachine.enter(Fail.self)
                 return

@@ -35,7 +35,7 @@ final public class ComposeInputTableViewCell: UITableViewCell {
     
     public let avatarView: ProfileAvatarView = {
         let imageView = ProfileAvatarView()
-        imageView.dimension = ComposeInputTableViewCell.avatarImageViewSize.width
+        imageView.setup(dimension: .inline)
         return imageView
     }()
     

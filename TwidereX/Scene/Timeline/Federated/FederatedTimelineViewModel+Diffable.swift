@@ -11,6 +11,8 @@ import UIKit
 import Combine
 import CoreData
 import CoreDataStack
+import TwidereCore
+import AppShared
 
 extension FederatedTimelineViewModel {
     
@@ -21,7 +23,12 @@ extension FederatedTimelineViewModel {
     ) {
         let configuration = StatusSection.Configuration(
             statusViewTableViewCellDelegate: statusViewTableViewCellDelegate,
-            timelineMiddleLoaderTableViewCellDelegate: timelineMiddleLoaderTableViewCellDelegate
+            timelineMiddleLoaderTableViewCellDelegate: timelineMiddleLoaderTableViewCellDelegate,
+            statusViewConfigurationContext: StatusView.ConfigurationContext(
+                dateTimeProvider: DateTimeSwiftProvider(),
+                twitterTextProvider: OfficialTwitterTextProvider(),
+                authenticationContext: context.authenticationService.$activeAuthenticationContext
+            )
         )
         diffableDataSource = StatusSection.diffableDataSource(
             tableView: tableView,

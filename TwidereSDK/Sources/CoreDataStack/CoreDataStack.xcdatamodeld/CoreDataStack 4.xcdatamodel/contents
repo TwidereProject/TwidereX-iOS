@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="19574" systemVersion="21C52" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="19574" systemVersion="21D62" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
     <entity name="AuthenticationIndex" representedClassName="CoreDataStack.AuthenticationIndex" syncable="YES">
         <attribute name="activeAt" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="createdAt" attributeType="Date" usesScalarValueType="NO"/>
@@ -85,7 +85,7 @@
         <attribute name="domain" attributeType="String"/>
         <attribute name="emojis" optional="YES" attributeType="Binary"/>
         <attribute name="id" attributeType="String"/>
-        <attribute name="isContentReveal" transient="YES" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="isContentSensitiveToggled" transient="YES" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
         <attribute name="isMediaSensitive" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
         <attribute name="isMediaSensitiveToggled" transient="YES" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
         <attribute name="language" optional="YES" attributeType="String"/>
@@ -179,6 +179,7 @@
         <attribute name="id" attributeType="String"/>
         <attribute name="likeCount" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="location" optional="YES" attributeType="Binary"/>
+        <attribute name="quoteCount" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="replyCount" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="replyToStatusID" optional="YES" attributeType="String"/>
         <attribute name="replyToUserID" optional="YES" attributeType="String"/>
@@ -243,7 +244,7 @@
         <element name="MastodonUser" positionX="-63" positionY="-153" width="128" height="584"/>
         <element name="TwitterAuthentication" positionX="-109.453125" positionY="275.71875" width="128" height="209"/>
         <element name="TwitterSavedSearch" positionX="90" positionY="-18" width="128" height="104"/>
-        <element name="TwitterStatus" positionX="-63" positionY="-153" width="128" height="404"/>
+        <element name="TwitterStatus" positionX="-63" positionY="-153" width="128" height="419"/>
         <element name="TwitterUser" positionX="281.5234375" positionY="201.703125" width="128" height="509"/>
     </elements>
 </model>
