@@ -73,7 +73,7 @@ extension DisplayPreferenceViewController: UITableViewDelegate {
         let sectionData = viewModel.sections[section]
         let header = sectionData.header
         let headerView = TableViewSectionTextHeaderView()
-        headerView.headerLabel.text = header
+        headerView.label.text = header
         return headerView
     }
 

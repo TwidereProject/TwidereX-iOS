@@ -37,7 +37,7 @@ extension UserTimelineViewModel {
         snapshot.appendSections([.main])
         diffableDataSource?.apply(snapshot)
         
-        statusRecordFetchedResultController.records
+        statusRecordFetchedResultController.$records
             .receive(on: DispatchQueue.main)
             .sink { [weak self] records in
                 guard let self = self else { return }

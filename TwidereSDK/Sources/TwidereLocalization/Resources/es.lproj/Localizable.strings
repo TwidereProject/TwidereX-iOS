@@ -208,6 +208,9 @@
 "Common.Controls.Status.YouBoosted" = "Has retooteado";
 "Common.Controls.Status.YouRetweeted" = "Has retwitteado";
 "Common.Controls.Timeline.LoadMore" = "Cargar más";
+"Common.Controls.User.Actions.AddRemoveFromLists" = "Add/remove from Lists";
+"Common.Controls.User.Actions.ViewListed" = "View Listed";
+"Common.Controls.User.Actions.ViewLists" = "View Lists";
 "Common.Countable.Like.Multiple" = "%@ me gusta";
 "Common.Countable.Like.Single" = "%@ me gusta";
 "Common.Countable.List.Multiple" = "%@ listas";

@@ -208,6 +208,9 @@
 "Common.Controls.Status.YouBoosted" = "You boosted";
 "Common.Controls.Status.YouRetweeted" = "あなたがリツイート";
 "Common.Controls.Timeline.LoadMore" = "さらに読み込む";
+"Common.Controls.User.Actions.AddRemoveFromLists" = "Add/remove from Lists";
+"Common.Controls.User.Actions.ViewListed" = "View Listed";
+"Common.Controls.User.Actions.ViewLists" = "View Lists";
 "Common.Countable.Like.Multiple" = "%@ いいね";
 "Common.Countable.Like.Single" = "%@ いいね";
 "Common.Countable.List.Multiple" = "%@ リスト";

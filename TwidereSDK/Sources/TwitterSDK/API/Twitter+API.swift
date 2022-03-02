@@ -57,11 +57,13 @@ extension Twitter.API {
         public enum Search { }
         public enum Status {
             public enum Delete { }
+            public enum List { }
         }
         public enum User {
             public enum Block { }
             public enum Follow { } 
             public enum Like { }
+            public enum List { }
             public enum Mute { }
             public enum Retweet { }
         }

@@ -30,9 +30,6 @@ public class AuthenticationService: NSObject {
     public let activeAuthenticationIndex = CurrentValueSubject<AuthenticationIndex?, Never>(nil)
     
     @Published public var activeAuthenticationContext: AuthenticationContext? = nil
-    
-    @available(*, deprecated, message: "")
-    public let activeTwitterAuthenticationBox = CurrentValueSubject<AuthenticationService.TwitterAuthenticationBox?, Never>(nil)
 
     public init(
         managedObjectContext: NSManagedObjectContext,

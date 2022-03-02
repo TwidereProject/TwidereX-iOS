@@ -208,6 +208,9 @@
 "Common.Controls.Status.YouBoosted" = "내가 부스트했습니다.";
 "Common.Controls.Status.YouRetweeted" = "내가 리트윗했습니다.";
 "Common.Controls.Timeline.LoadMore" = "더 불러오기";
+"Common.Controls.User.Actions.AddRemoveFromLists" = "Add/remove from Lists";
+"Common.Controls.User.Actions.ViewListed" = "View Listed";
+"Common.Controls.User.Actions.ViewLists" = "View Lists";
 "Common.Countable.Like.Multiple" = "%@개 좋아요";
 "Common.Countable.Like.Single" = "%@개 좋아요";
 "Common.Countable.List.Multiple" = "%@개 리스트";

@@ -208,6 +208,9 @@
 "Common.Controls.Status.YouBoosted" = "رقيتَ";
 "Common.Controls.Status.YouRetweeted" = "أعدت تغريد";
 "Common.Controls.Timeline.LoadMore" = "حمّل المزيد";
+"Common.Controls.User.Actions.AddRemoveFromLists" = "Add/remove from Lists";
+"Common.Controls.User.Actions.ViewListed" = "View Listed";
+"Common.Controls.User.Actions.ViewLists" = "View Lists";
 "Common.Countable.Like.Multiple" = "%@ إعجابًا";
 "Common.Countable.Like.Single" = "%@ إعجاب";
 "Common.Countable.List.Multiple" = "%@ قائمة";

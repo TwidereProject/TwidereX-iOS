@@ -15,7 +15,7 @@ import TwitterSDK
 
 final public class TwitterUserFetchedResultsController: NSObject {
     
-    let logger = Logger(subsystem: "TwitterUserFetchedResultsController", category: "ViewController")
+    let logger = Logger(subsystem: "TwitterUserFetchedResultsController", category: "FetchedResultsController")
     
     var disposeBag = Set<AnyCancellable>()
     

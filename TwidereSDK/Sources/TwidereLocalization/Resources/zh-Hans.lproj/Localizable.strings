@@ -208,6 +208,9 @@
 "Common.Controls.Status.YouBoosted" = "你转嘟了";
 "Common.Controls.Status.YouRetweeted" = "你转推了";
 "Common.Controls.Timeline.LoadMore" = "加载更多";
+"Common.Controls.User.Actions.AddRemoveFromLists" = "从列表中添加或删除";
+"Common.Controls.User.Actions.ViewListed" = "查看所在列表";
+"Common.Controls.User.Actions.ViewLists" = "查看列表";
 "Common.Countable.Like.Multiple" = "%@ 喜欢";
 "Common.Countable.Like.Single" = "%@ 喜欢";
 "Common.Countable.List.Multiple" = "%@ 列表";

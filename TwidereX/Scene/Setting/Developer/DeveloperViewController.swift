@@ -43,28 +43,14 @@ extension DeveloperViewController {
             hostingViewController.view.bottomAnchor.constraint(equalTo: view.bottomAnchor),
         ])
         
-        if let authenticationBox = context.authenticationService.activeTwitterAuthenticationBox.value {
-            viewModel.fetching = true
-            context.apiService.rateLimitStatus(authorization: authenticationBox.twitterAuthorization)
-                .receive(on: DispatchQueue.main)
-                .sink { [weak self] completion in
-                    guard let self = self else { return }
-                    self.viewModel.fetching = false
-                    
-                    switch completion {
-                    case .failure(let error):
-                        os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: fetch rate limit status fail: %s", ((#file as NSString).lastPathComponent), #line, #function, error.localizedDescription)
-                    case .finished:
-                        os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: fetch rate limit status success", ((#file as NSString).lastPathComponent), #line, #function)
-                        break
-                    }
-                } receiveValue: { [weak self] response in
-                    guard let self = self else { return }
-                    self.viewModel.rateLimitStatusResources.value = response.value.resources
-                }
-                .store(in: &disposeBag)
+        if case let .twitter(authenticationContext) = context.authenticationService.activeAuthenticationContext {
+            Task { @MainActor in
+                viewModel.fetching = true
+                defer { viewModel.fetching = false }
+                let response = try await self.context.apiService.rateLimitStatus(authorization: authenticationContext.authorization)
+                viewModel.rateLimitStatusResources.value = response.value.resources
+            }   // end Task
         }
-        
     }
     
 }

@@ -47,7 +47,7 @@ extension TimelineViewModel.LoadOldestState {
     class Loading: TimelineViewModel.LoadOldestState {
         let logger = Logger(subsystem: "TimelineViewModel.LoadOldestState", category: "StateMachine")
         
-        var nextInput: StatusListFetchViewModel.Input?
+        var nextInput: StatusFetchViewModel.Input?
 
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {
             return stateClass == Fail.self || stateClass == Idle.self || stateClass == NoMore.self
@@ -73,7 +73,7 @@ extension TimelineViewModel.LoadOldestState {
                             return nil
                         }
                     case .federated:
-                        guard let status = viewModel.statusRecordFetchedResultController.records.value.last else { return nil }
+                        guard let status = viewModel.statusRecordFetchedResultController.records.last else { return nil }
                         return status
                     }
                 }
@@ -101,7 +101,7 @@ extension TimelineViewModel.LoadOldestState {
                     guard let status = record.object(in: managedObjectContext) else { return nil }
                     switch (status, authenticationContext) {
                     case (.twitter(let status), .twitter(let authenticationContext)):
-                        return StatusListFetchViewModel.Input(
+                        return StatusFetchViewModel.Input(
                             fetchContext: .twitter(.init(
                                 authenticationContext: authenticationContext,
                                 searchText: nil,
@@ -114,7 +114,7 @@ extension TimelineViewModel.LoadOldestState {
                             ))
                         )
                     case (.mastodon(let status), .mastodon(let authenticationContext)):
-                        return StatusListFetchViewModel.Input(
+                        return StatusFetchViewModel.Input(
                             fetchContext: .mastodon(.init(
                                 authenticationContext: authenticationContext,
                                 searchText: nil,
@@ -146,12 +146,12 @@ extension TimelineViewModel.LoadOldestState {
 
             do {
                 logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): fetch…")
-                let output: StatusListFetchViewModel.Output = try await {
+                let output: StatusFetchViewModel.Output = try await {
                     switch viewModel.kind {
                     case .home:
-                        return try await StatusListFetchViewModel.homeTimeline(context: viewModel.context, input: input)
+                        return try await StatusFetchViewModel.homeTimeline(context: viewModel.context, input: input)
                     case .federated:
-                        return try await StatusListFetchViewModel.publicTimeline(context: viewModel.context, input: input)
+                        return try await StatusFetchViewModel.publicTimeline(context: viewModel.context, input: input)
                     }
                 }()
                 

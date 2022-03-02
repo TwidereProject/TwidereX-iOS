@@ -670,6 +670,16 @@ public enum L10n {
         /// Load More
         public static let loadMore = L10n.tr("Localizable", "Common.Controls.Timeline.LoadMore")
       }
+      public enum User {
+        public enum Actions {
+          /// Add/remove from Lists
+          public static let addRemoveFromLists = L10n.tr("Localizable", "Common.Controls.User.Actions.AddRemoveFromLists")
+          /// View Listed
+          public static let viewListed = L10n.tr("Localizable", "Common.Controls.User.Actions.ViewListed")
+          /// View Lists
+          public static let viewLists = L10n.tr("Localizable", "Common.Controls.User.Actions.ViewLists")
+        }
+      }
     }
     public enum Countable {
       public enum Like {

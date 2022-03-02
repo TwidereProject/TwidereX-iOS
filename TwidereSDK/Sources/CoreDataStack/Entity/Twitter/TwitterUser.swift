@@ -149,21 +149,11 @@ extension TwitterUser: Managed {
 }
 
 extension TwitterUser {
-    
-    @available(*, deprecated, message: "")
-    public static func predicate(idStr: String) -> NSPredicate {
-        return NSPredicate(format: "%K == %@", #keyPath(TwitterUser.id), idStr)
-    }
-    
+        
     public static func predicate(id: String) -> NSPredicate {
         return NSPredicate(format: "%K == %@", #keyPath(TwitterUser.id), id)
     }
-    
-    @available(*, deprecated, message: "")
-    public static func predicate(idStrs: [String]) -> NSPredicate {
-        return NSPredicate(format: "%K IN %@", #keyPath(TwitterUser.id), idStrs)
-    }
-    
+
     public static func predicate(ids: [String]) -> NSPredicate {
         return NSPredicate(format: "%K IN %@", #keyPath(TwitterUser.id), ids)
     }

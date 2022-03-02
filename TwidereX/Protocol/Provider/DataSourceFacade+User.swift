@@ -10,6 +10,7 @@ import UIKit
 import CoreDataStack
 import TwidereAsset
 import TwidereLocalization
+import TwidereCore
 
 extension DataSourceFacade {
     static func createMenuForUser(
@@ -17,48 +18,103 @@ extension DataSourceFacade {
         user: UserRecord,
         authenticationContext: AuthenticationContext
     ) async throws -> UIMenu {
-        var children: [UIMenuElement] = []
-        
-        let relationshipOptionSet = try await DataSourceFacade.relationshipOptionSet(
-            provider: provider,
-            record: user,
-            authenticationContext: authenticationContext
-        )
-        
-        let isMyself = relationshipOptionSet.contains(.isMyself)
-        
-        if !isMyself {
-            // mute
-            let isMuting = relationshipOptionSet.contains(.muting)
-            let muteAction = await createMenuMuteActionForUser(
-                provider: provider,
-                record: user,
-                authenticationContext: authenticationContext,
-                isMuting: isMuting
-            )
-            children.append(muteAction)
-
-            // block
-            let isBlocking = relationshipOptionSet.contains(.blocking)
-            let blockAction = await createMenuBlockActionForUser(
-                provider: provider,
-                record: user,
-                authenticationContext: authenticationContext,
-                isBlocking: isBlocking
-            )
-            children.append(blockAction)
+        let infoMenu: UIMenu = await {
+            var children: [UIMenuElement] = []
             
-            // report
-            let reportAction = await createMenuReportActionForUser(
+            let viewListAction = await createMenuViewListActionForUser(
                 provider: provider,
                 record: user,
                 authenticationContext: authenticationContext
             )
-            children.append(reportAction)
-        }
+            children.append(viewListAction)
+            
+            return await UIMenu(title: "info", options: [.displayInline], children: children)
+        }()
         
-        return await UIMenu(title: "", options: [], children: children)
+        let relationshipMenu: UIMenu = try await {
+            var children: [UIMenuElement] = []
+            let relationshipOptionSet = try await DataSourceFacade.relationshipOptionSet(
+                provider: provider,
+                record: user,
+                authenticationContext: authenticationContext
+            )
+            
+            let isMyself = relationshipOptionSet.contains(.isMyself)
+            
+            if !isMyself {
+                // mute
+                let isMuting = relationshipOptionSet.contains(.muting)
+                let muteAction = await createMenuMuteActionForUser(
+                    provider: provider,
+                    record: user,
+                    authenticationContext: authenticationContext,
+                    isMuting: isMuting
+                )
+                children.append(muteAction)
+                
+                // block
+                let isBlocking = relationshipOptionSet.contains(.blocking)
+                let blockAction = await createMenuBlockActionForUser(
+                    provider: provider,
+                    record: user,
+                    authenticationContext: authenticationContext,
+                    isBlocking: isBlocking
+                )
+                children.append(blockAction)
+                
+                // report
+                let reportAction = await createMenuReportActionForUser(
+                    provider: provider,
+                    record: user,
+                    authenticationContext: authenticationContext
+                )
+                children.append(reportAction)
+            }
+            
+            return await UIMenu(title: "relationship", options: [.displayInline], children: children)
+        }()
+        
+        return await UIMenu(
+            title: "",
+            options: [],
+            children: [
+                infoMenu,
+                relationshipMenu,
+            ]
+        )
     }
+}
+
+extension DataSourceFacade {
+
+    @MainActor
+    private static func createMenuViewListActionForUser(
+        provider: DataSourceProvider,
+        record: UserRecord,
+        authenticationContext: AuthenticationContext
+    ) async -> UIAction {
+        let action = UIAction(
+            title: L10n.Common.Controls.User.Actions.viewLists,
+            image: UIImage(systemName: "list.dash.header.rectangle"),
+            identifier: nil,
+            discoverabilityTitle: nil,
+            attributes: [],
+            state: .off) { [weak provider] _ in
+                guard let provider = provider else { return }
+                let listViewModel = ListViewModel(
+                    context: provider.context,
+                    kind: .lists,
+                    user: .user(record)
+                )
+                provider.coordinator.present(
+                    scene: .list(viewModel: listViewModel),
+                    from: provider,
+                    transition: .show
+                )
+            }
+        return action
+    }
+    
 }
  
 extension DataSourceFacade {
@@ -80,7 +136,7 @@ extension DataSourceFacade {
 
 extension DataSourceFacade {
     
-    // mute // unmute
+    // mute / unmute
     private static func createMenuMuteActionForUser(
         provider: DataSourceProvider,
         record: UserRecord,
@@ -124,6 +180,7 @@ extension DataSourceFacade {
         return blockAction
     }
 
+    // report
     private static func createMenuReportActionForUser(
         provider: DataSourceProvider,
         record: UserRecord,

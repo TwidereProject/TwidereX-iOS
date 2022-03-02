@@ -93,7 +93,7 @@ extension MentionPickViewController: UITableViewDelegate {
             return nil
         case .secondary:
             let header = TableViewSectionTextHeaderView()
-            header.headerLabel.text = L10n.Scene.Compose.othersInThisConversation
+            header.label.text = L10n.Scene.Compose.othersInThisConversation
             return header
         }
     }

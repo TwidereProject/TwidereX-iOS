@@ -10,7 +10,7 @@ import UIKit
 
 public final class TableViewSectionTextHeaderView: UIView {
     
-    public let headerLabel: UILabel = {
+    public let label: UILabel = {
         let label = UILabel()
         label.font = UIFont.preferredFont(forTextStyle: .subheadline)
         label.text = "Header"
@@ -34,13 +34,13 @@ extension TableViewSectionTextHeaderView {
     private func _init() {
         preservesSuperviewLayoutMargins = true
         
-        headerLabel.translatesAutoresizingMaskIntoConstraints = false
-        addSubview(headerLabel)
+        label.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(label)
         NSLayoutConstraint.activate([
-            headerLabel.topAnchor.constraint(greaterThanOrEqualTo: topAnchor, constant: 8),
-            headerLabel.leadingAnchor.constraint(equalTo: layoutMarginsGuide.leadingAnchor),
-            headerLabel.trailingAnchor.constraint(equalTo: layoutMarginsGuide.trailingAnchor),
-            bottomAnchor.constraint(equalTo: headerLabel.bottomAnchor, constant: 8),
+            label.topAnchor.constraint(greaterThanOrEqualTo: topAnchor, constant: 8),
+            label.leadingAnchor.constraint(equalTo: layoutMarginsGuide.leadingAnchor),
+            label.trailingAnchor.constraint(equalTo: layoutMarginsGuide.trailingAnchor),
+            bottomAnchor.constraint(equalTo: label.bottomAnchor, constant: 8),
         ])
     }
 }

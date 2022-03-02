@@ -57,7 +57,7 @@ extension SearchMediaViewModel.State {
         
         let logger = Logger(subsystem: "SearchMediaViewModel.State", category: "StateMachine")
         
-        var nextInput: StatusListFetchViewModel.SearchInput?
+        var nextInput: StatusFetchViewModel.Search.Input?
         
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {
             return stateClass == Fail.self
@@ -87,7 +87,7 @@ extension SearchMediaViewModel.State {
                 nextInput = {
                     switch authenticationContext {
                     case .twitter(let authenticationContext):
-                        return StatusListFetchViewModel.SearchInput.twitter(.init(
+                        return StatusFetchViewModel.Search.Input.twitter(.init(
                             authenticationContext: authenticationContext,
                             searchText: searchText,
                             onlyMedia: true,
@@ -97,7 +97,7 @@ extension SearchMediaViewModel.State {
                     case .mastodon(let authenticationContext):
                         assertionFailure("this is not accessible entry for Mastodon")
                         let offset = viewModel.statusRecordFetchedResultController.mastodonStatusFetchedResultController.statusIDs.value.count
-                        return StatusListFetchViewModel.SearchInput.mastodon(.init(
+                        return StatusFetchViewModel.Search.Input.mastodon(.init(
                             authenticationContext: authenticationContext,
                             searchText: searchText,
                             offset: offset,
@@ -115,7 +115,7 @@ extension SearchMediaViewModel.State {
             Task {
                 do {
                     logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): fetch…")
-                    let output = try await StatusListFetchViewModel.searchTimeline(
+                    let output = try await StatusFetchViewModel.Search.timeline(
                         context: viewModel.context,
                         input: input
                     )

@@ -64,40 +64,6 @@ extension UserLikeTimelineViewModel.State {
             viewModel.statusRecordFetchedResultController.reset()
             
             stateMachine.enter(LoadingMore.self)
-//            var snapshot = NSDiffableDataSourceSnapshot<TimelineSection, Item>()
-//            snapshot.appendSections([.main])
-//            snapshot.appendItems([.bottomLoader], toSection: .main)
-//            viewModel.diffableDataSource?.apply(snapshot)
-//            
-//            let userID = viewModel.userID.value
-//            viewModel.fetchLatest()
-//                .receive(on: DispatchQueue.main)
-//                .sink { completion in
-//                    switch completion {
-//                    case .failure(let error):
-//                        os_log("%{public}s[%{public}ld], %{public}s: fetch user timeline latest response error: %s", ((#file as NSString).lastPathComponent), #line, #function, error.localizedDescription)
-//                        if NotAuthorized.canEnter(for: error) {
-//                            stateMachine.enter(NotAuthorized.self)
-//                        } else if Blocked.canEnter(for: error) {
-//                            stateMachine.enter(Blocked.self)
-//                        } else {
-//                            stateMachine.enter(Fail.self)
-//                        }
-//                    case .finished:
-//                        break
-//                    }
-//                } receiveValue: { response in
-//                    guard viewModel.userID.value == userID else { return }
-//                    let tweetIDs = response.value.map { $0.idStr }
-//
-//                    if tweetIDs.isEmpty {
-//                        stateMachine.enter(NoMore.self)
-//                    } else {
-//                        stateMachine.enter(Idle.self)
-//                    }
-//                    viewModel.tweetIDs.value = tweetIDs
-//                }
-//                .store(in: &viewModel.disposeBag)
         }
     }
     
@@ -130,7 +96,7 @@ extension UserLikeTimelineViewModel.State {
     class LoadingMore: UserLikeTimelineViewModel.State {
         let logger = Logger(subsystem: "UserLikeTimelineViewModel.State", category: "StateMachine")
 
-        var nextInput: StatusListFetchViewModel.Input?
+        var nextInput: StatusFetchViewModel.Input?
 
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {
             switch stateClass {
@@ -173,7 +139,7 @@ extension UserLikeTimelineViewModel.State {
                 nextInput = {
                     switch (userIdentifier, authenticationContext) {
                     case (.twitter(let identifier), .twitter(let authenticationContext)):
-                        return StatusListFetchViewModel.Input(
+                        return StatusFetchViewModel.Input(
                             fetchContext: .twitter(.init(
                                 authenticationContext: authenticationContext,
                                 searchText: nil,
@@ -190,7 +156,7 @@ extension UserLikeTimelineViewModel.State {
                         guard identifier.id == authenticationContext.userID else {
                             return nil
                         }
-                        return StatusListFetchViewModel.Input(
+                        return StatusFetchViewModel.Input(
                             fetchContext: .mastodon(.init(
                                 authenticationContext: authenticationContext,
                                 searchText: nil,
@@ -218,8 +184,8 @@ extension UserLikeTimelineViewModel.State {
             Task {
                 do {
                     logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): fetch…")
-                    let output = try await StatusListFetchViewModel.likeTimeline(context: viewModel.context, input: input)
                     
+                    let output = try await StatusFetchViewModel.likeTimeline(context: viewModel.context, input: input)
                     nextInput = output.nextInput
                     if output.hasMore {
                         await enter(state: Idle.self)
@@ -239,6 +205,7 @@ extension UserLikeTimelineViewModel.State {
                         let statusIDs = statuses.map { $0.id }
                         viewModel.statusRecordFetchedResultController.mastodonStatusFetchedResultController.append(statusIDs: statusIDs)
                     }
+                    
                     logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): fetch success")
                     
                 } catch {

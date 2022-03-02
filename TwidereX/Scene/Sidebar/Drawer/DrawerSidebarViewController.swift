@@ -172,12 +172,19 @@ extension DrawerSidebarViewController: UICollectionViewDelegate {
             switch item {
             case .local:
                 let federatedTimelineViewModel = FederatedTimelineViewModel(context: context, local: true)
-                coordinator.present(scene: .federatedTimeline(viewModel: federatedTimelineViewModel), from: self, transition: .show)
+                coordinator.present(scene: .federatedTimeline(viewModel: federatedTimelineViewModel), from: presentingViewController, transition: .show)
             case .federated:
                 let federatedTimelineViewModel = FederatedTimelineViewModel(context: context, local: false)
-                coordinator.present(scene: .federatedTimeline(viewModel: federatedTimelineViewModel), from: self, transition: .show)
+                coordinator.present(scene: .federatedTimeline(viewModel: federatedTimelineViewModel), from: presentingViewController, transition: .show)
+            case .likes:
+                let meLikeTimelineViewModel = MeLikeTimelineViewModel(context: context)
+                coordinator.present(scene: .userLikeTimeline(viewModel: meLikeTimelineViewModel), from: presentingViewController, transition: .show)
+            case .lists:
+                let listViewModel = ListViewModel(context: context, kind: .lists, user: .me)
+                coordinator.present(scene: .list(viewModel: listViewModel), from: presentingViewController, transition: .show)
+
             default:
-                assertionFailure("TODO")
+                assertionFailure()
             }
             dismiss(animated: true, completion: nil)
         case settingCollectionView:

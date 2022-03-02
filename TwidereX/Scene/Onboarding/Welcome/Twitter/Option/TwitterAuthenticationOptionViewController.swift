@@ -190,7 +190,7 @@ extension TwitterAuthenticationOptionViewController: UITableViewDelegate {
         
         guard let header = section.header else { return nil }
         let headerView = TableViewSectionTextHeaderView()
-        headerView.headerLabel.text = header
+        headerView.label.text = header
         return headerView
     }
     
@@ -200,8 +200,8 @@ extension TwitterAuthenticationOptionViewController: UITableViewDelegate {
         
         guard let footer = section.footer else { return nil }
         let footerView = TableViewSectionTextHeaderView()
-        footerView.headerLabel.text = footer
-        footerView.headerLabel.font = .preferredFont(forTextStyle: .footnote)
+        footerView.label.text = footer
+        footerView.label.font = .preferredFont(forTextStyle: .footnote)
         return footerView
     }
     

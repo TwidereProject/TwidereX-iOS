@@ -12,6 +12,7 @@ public enum Persistence { }
 
 extension Persistence {
     public enum Twitter { }
+    public enum TwitterList { }
     public enum TwitterSavedSearch { }
     public enum TwitterUser { }
     public enum TwitterStatus { }

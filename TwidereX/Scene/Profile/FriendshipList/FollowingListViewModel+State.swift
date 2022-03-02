@@ -42,7 +42,7 @@ extension FriendshipListViewModel.State {
     class Loading: FriendshipListViewModel.State {
         let logger = Logger(subsystem: "FriendshipListViewModel.State", category: "StateMachine")
         
-        var nextInput: UserListFetchViewModel.FriendshipListInput?
+        var nextInput: UserFetchViewModel.Friendship.Input?
         
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {
             return stateClass == Fail.self
@@ -65,7 +65,7 @@ extension FriendshipListViewModel.State {
                 nextInput = {
                     switch (viewModel.userIdentifier, authenticationContext) {
                     case (.twitter(let identifier), .twitter(let authenticationContext)):
-                        return UserListFetchViewModel.FriendshipListInput.twitter(.init(
+                        return UserFetchViewModel.Friendship.Input.twitter(.init(
                             authenticationContext: authenticationContext,
                             kind: viewModel.kind,
                             userID: identifier.id,
@@ -73,7 +73,7 @@ extension FriendshipListViewModel.State {
                             maxResults: nil
                         ))
                     case (.mastodon(let identifier), .mastodon(let authenticationContext)):
-                        return UserListFetchViewModel.FriendshipListInput.mastodon(.init(
+                        return UserFetchViewModel.Friendship.Input.mastodon(.init(
                             authenticationContext: authenticationContext,
                             kind: viewModel.kind,
                             userID: identifier.id,
@@ -96,7 +96,7 @@ extension FriendshipListViewModel.State {
                 do {
                     logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): fetch…")
                     
-                    let output = try await UserListFetchViewModel.friendshipList(
+                    let output = try await UserFetchViewModel.Friendship.list(
                         context: viewModel.context,
                         input: input
                     )

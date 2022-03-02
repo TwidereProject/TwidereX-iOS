@@ -62,18 +62,18 @@ extension NotificationTimelineViewModel.LoadOldestState {
             Task {
                 // generate input from timeline last feed entry
                 let managedObjectContext = viewModel.context.managedObjectContext
-                let _input: NotificationListFetchViewModel.NotificationInput? = await managedObjectContext.perform {
+                let _input: NotificationFetchViewModel.Input? = await managedObjectContext.perform {
                     guard let feed = lsatFeedRecord.object(in: managedObjectContext) else { return nil }
                     switch (feed.content, authenticationContext) {
                     case (.twitter(let status), .twitter(let authenticationContext)):
-                        return NotificationListFetchViewModel.NotificationInput.twitter(.init(
+                        return NotificationFetchViewModel.Input.twitter(.init(
                             authenticationContext: authenticationContext,
                             maxID: status.id,
                             count: 20
                         ))
                         
                     case (.mastodonNotification(let notification), .mastodon(let authenticationContext)):
-                        return NotificationListFetchViewModel.NotificationInput.mastodon(.init(
+                        return NotificationFetchViewModel.Input.mastodon(.init(
                             authenticationContext: authenticationContext,
                             maxID: notification.id,
                             excludeTypes: viewModel.scope._excludeTypes,
@@ -91,7 +91,7 @@ extension NotificationTimelineViewModel.LoadOldestState {
 
                 do {
                     logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): fetch…")
-                    let output = try await NotificationListFetchViewModel.notificationTimeline(context: viewModel.context, input: input)
+                    let output = try await NotificationFetchViewModel.timeline(context: viewModel.context, input: input)
                     if output.hasMore {
                         await enter(state: Idle.self)
                     } else {

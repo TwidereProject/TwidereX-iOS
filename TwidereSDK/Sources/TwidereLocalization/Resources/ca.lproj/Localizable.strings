@@ -208,6 +208,9 @@
 "Common.Controls.Status.YouBoosted" = "You boosted";
 "Common.Controls.Status.YouRetweeted" = "You retweeted";
 "Common.Controls.Timeline.LoadMore" = "Carrega'n més";
+"Common.Controls.User.Actions.AddRemoveFromLists" = "Add/remove from Lists";
+"Common.Controls.User.Actions.ViewListed" = "View Listed";
+"Common.Controls.User.Actions.ViewLists" = "View Lists";
 "Common.Countable.Like.Multiple" = "%@ agradaments";
 "Common.Countable.Like.Single" = "%@ agradament";
 "Common.Countable.List.Multiple" = "%@ llistes";
