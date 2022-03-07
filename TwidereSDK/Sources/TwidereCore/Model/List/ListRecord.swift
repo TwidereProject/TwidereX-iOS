@@ -8,9 +8,9 @@
 import CoreData
 import CoreDataStack
 
-
 public enum ListRecord: Hashable {
     case twitter(record: ManagedObjectRecord<TwitterList>)
+    case mastodon(record: ManagedObjectRecord<MastodonList>)
 }
 
 extension ListRecord {
@@ -18,6 +18,8 @@ extension ListRecord {
         switch object {
         case .twitter(let object):
             self = .twitter(record: .init(objectID: object.objectID))
+        case .mastodon(let object):
+            self = .mastodon(record: .init(objectID: object.objectID))
         }
     }
 }
@@ -28,6 +30,9 @@ extension ListRecord {
         case .twitter(let record):
             return record.object(in: managedObjectContext)
                 .flatMap { ListObject.twitter(object: $0) }
+        case .mastodon(let record):
+            return record.object(in: managedObjectContext)
+                .flatMap { ListObject.mastodon(object: $0) }
         }
     }
 }

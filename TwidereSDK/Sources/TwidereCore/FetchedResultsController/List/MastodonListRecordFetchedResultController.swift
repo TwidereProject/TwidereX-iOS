@@ -1,36 +1,38 @@
 //
-//  TwitterListRecordFetchedResultController.swift
+//  MastodonListRecordFetchedResultController.swift
 //  
 //
-//  Created by MainasuK on 2022-2-28.
+//  Created by MainasuK on 2022-3-4.
 //
+
 
 import os.log
 import UIKit
 import Combine
 import CoreData
 import CoreDataStack
-import TwitterSDK
+import MastodonSDK
 
-final public class TwitterListRecordFetchedResultController: NSObject {
+final public class MastodonListRecordFetchedResultController: NSObject {
     
-    let logger = Logger(subsystem: "TwitterListRecordFetchedResultController", category: "FetchedResultsController")
+    let logger = Logger(subsystem: "MastodonListRecordFetchedResultController", category: "FetchedResultsController")
     
     var disposeBag = Set<AnyCancellable>()
     
-    let fetchedResultsController: NSFetchedResultsController<TwitterList>
+    let fetchedResultsController: NSFetchedResultsController<MastodonList>
     
     // input
-    @Published var ids: [Twitter.Entity.User.ID] = []
+    @Published var domain: String = ""
+    @Published var ids: [Mastodon.Entity.List.ID] = []
     @Published var predicate: NSPredicate? = nil
     
     // output
     private let _objectIDs = PassthroughSubject<[NSManagedObjectID], Never>()
-    @Published public var records: [ManagedObjectRecord<TwitterList>] = []
+    @Published public var records: [ManagedObjectRecord<MastodonList>] = []
     
     public init(managedObjectContext: NSManagedObjectContext) {
         self.fetchedResultsController = {
-            let fetchRequest = TwitterList.sortedFetchRequest
+            let fetchRequest = MastodonList.sortedFetchRequest
             fetchRequest.predicate = TwitterList.predicate(ids: [])
             fetchRequest.returnsObjectsAsFaults = false
             fetchRequest.fetchBatchSize = 20
@@ -53,22 +55,23 @@ final public class TwitterListRecordFetchedResultController: NSObject {
         
         fetchedResultsController.delegate = self
         
-        Publishers.CombineLatest(
+        Publishers.CombineLatest3(
+            $domain,
             $ids,
             $predicate
         )
         .receive(on: DispatchQueue.main)
-        .sink { [weak self] ids, predicate in
+        .sink { [weak self] domain, ids, predicate in
             guard let self = self else { return }
             
             let compoundPredicate: NSPredicate = {
                 if let predicate = predicate {
                     return NSCompoundPredicate(andPredicateWithSubpredicates: [
-                        TwitterList.predicate(ids: ids),
+                        MastodonList.predicate(domain: domain, ids: ids),
                         predicate
                     ])
                 } else {
-                    return TwitterList.predicate(ids: ids)
+                    return MastodonList.predicate(domain: domain, ids: ids)
                 }
             }()
             self.fetchedResultsController.fetchRequest.predicate = compoundPredicate
@@ -84,7 +87,7 @@ final public class TwitterListRecordFetchedResultController: NSObject {
     
 }
 
-extension TwitterListRecordFetchedResultController {
+extension MastodonListRecordFetchedResultController {
     public func reset() {
         ids = []
     }
@@ -99,7 +102,7 @@ extension TwitterListRecordFetchedResultController {
 }
 
 // MARK: - NSFetchedResultsControllerDelegate
-extension TwitterListRecordFetchedResultController: NSFetchedResultsControllerDelegate {
+extension MastodonListRecordFetchedResultController: NSFetchedResultsControllerDelegate {
     public func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChangeContentWith snapshot: NSDiffableDataSourceSnapshotReference) {
         logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public)")
 

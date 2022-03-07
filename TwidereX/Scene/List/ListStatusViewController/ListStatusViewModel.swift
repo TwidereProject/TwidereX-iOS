@@ -63,6 +63,7 @@ class ListStatusViewModel {
                 guard let list = record?.object(in: context.managedObjectContext) else { return nil }
                 switch list {
                 case .twitter(let object):      return object.name
+                case .mastodon(let object):     return object.title
                 }
             }
             .assign(to: &$title)

@@ -21,12 +21,20 @@ extension DataSourceFacade {
         let infoMenu: UIMenu = await {
             var children: [UIMenuElement] = []
             
-            let viewListAction = await createMenuViewListActionForUser(
+            let viewListsAction = await createMenuViewListsActionForUser(
                 provider: provider,
                 record: user,
                 authenticationContext: authenticationContext
             )
-            children.append(viewListAction)
+            children.append(viewListsAction)
+            
+            if let viewListedAction = await createMenuViewListedActionForUser(
+                provider: provider,
+                record: user,
+                authenticationContext: authenticationContext
+            ) {
+                children.append(viewListedAction)
+            }
             
             return await UIMenu(title: "info", options: [.displayInline], children: children)
         }()
@@ -88,7 +96,7 @@ extension DataSourceFacade {
 extension DataSourceFacade {
 
     @MainActor
-    private static func createMenuViewListActionForUser(
+    private static func createMenuViewListsActionForUser(
         provider: DataSourceProvider,
         record: UserRecord,
         authenticationContext: AuthenticationContext
@@ -99,21 +107,56 @@ extension DataSourceFacade {
             identifier: nil,
             discoverabilityTitle: nil,
             attributes: [],
-            state: .off) { [weak provider] _ in
-                guard let provider = provider else { return }
-                let listViewModel = ListViewModel(
-                    context: provider.context,
-                    kind: .lists,
-                    user: .user(record)
-                )
-                provider.coordinator.present(
-                    scene: .list(viewModel: listViewModel),
-                    from: provider,
-                    transition: .show
-                )
-            }
+            state: .off
+        ) { [weak provider] _ in
+            guard let provider = provider else { return }
+            
+            let compositeListViewModel = CompositeListViewModel(
+                context: provider.context,
+                kind: .lists(record)
+            )
+            provider.coordinator.present(
+                scene: .compositeList(viewModel: compositeListViewModel),
+                from: provider,
+                transition: .show
+            )
+        }
         return action
-    }
+    }   // end func
+    
+    @MainActor
+    private static func createMenuViewListedActionForUser(
+        provider: DataSourceProvider,
+        record: UserRecord,
+        authenticationContext: AuthenticationContext
+    ) async -> UIAction? {
+        switch record {
+        case .twitter:      break
+        case .mastodon:     return nil
+        }
+        
+        let action = UIAction(
+            title: L10n.Common.Controls.User.Actions.viewListed,
+            image: UIImage(systemName: "list.bullet.rectangle"),
+            identifier: nil,
+            discoverabilityTitle: nil,
+            attributes: [],
+            state: .off
+        ) { [weak provider] _ in
+            guard let provider = provider else { return }
+            
+            let compositeListViewModel = CompositeListViewModel(
+                context: provider.context,
+                kind: .listed(record)
+            )
+            provider.coordinator.present(
+                scene: .compositeList(viewModel: compositeListViewModel),
+                from: provider,
+                transition: .show
+            )
+        }
+        return action
+    }   // end func
     
 }
  

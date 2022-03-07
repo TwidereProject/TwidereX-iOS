@@ -6,4 +6,21 @@
 //  Copyright © 2022 Twidere. All rights reserved.
 //
 
+import os.log
 import Foundation
+import CoreDataStack
+import TwitterSDK
+import MastodonSDK
+import TwidereCore
+
+enum ListFetchViewModel {
+        
+    enum Result {
+        case twitter([Twitter.Entity.V2.List])
+    }
+    
+}
+
+extension ListFetchViewModel {
+    enum List { }
+}

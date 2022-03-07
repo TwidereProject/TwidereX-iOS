@@ -57,8 +57,8 @@ extension SceneCoordinator {
         case userLikeTimeline(viewModel: UserLikeTimelineViewModel)
         
         // List
+        case compositeList(viewModel: CompositeListViewModel)
         case list(viewModel: ListViewModel)
-        case twitterUserOwnedList(viewModel: TwitterUserOwnedListViewModel)
         case listStatus(viewModel: ListStatusViewModel)
         
         // Status
@@ -232,16 +232,16 @@ private extension SceneCoordinator {
             let _viewController = UserLikeTimelineViewController()
             _viewController.viewModel = viewModel
             viewController = _viewController
+        case .compositeList(let viewModel):
+            let _viewController = CompositeListViewController()
+            _viewController.viewModel = viewModel
+            viewController = _viewController
         case .list(let viewModel):
             let _viewController = ListViewController()
             _viewController.viewModel = viewModel
             viewController = _viewController
         case .listStatus(let viewModel):
             let _viewController = ListStatusViewController()
-            _viewController.viewModel = viewModel
-            viewController = _viewController
-        case .twitterUserOwnedList(let viewModel):
-            let _viewController = TwitterUserOwnedListViewController()
             _viewController.viewModel = viewModel
             viewController = _viewController
         case .statusThread(let viewModel):

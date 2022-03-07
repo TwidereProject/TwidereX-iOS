@@ -11,6 +11,15 @@
         }
       },
       {
+        "package": "AlamofireImage",
+        "repositoryURL": "https://github.com/Alamofire/AlamofireImage",
+        "state": {
+          "branch": null,
+          "revision": "98cbb00ce0ec5fc8e52a5b50a6bfc08d3e5aee10",
+          "version": "4.2.0"
+        }
+      },
+      {
         "package": "CommonOSLog",
         "repositoryURL": "https://github.com/MainasuK/CommonOSLog",
         "state": {
@@ -137,6 +146,15 @@
         }
       },
       {
+        "package": "SwiftMessages",
+        "repositoryURL": "https://github.com/SwiftKickMobile/SwiftMessages",
+        "state": {
+          "branch": null,
+          "revision": "b29dd21090b708aa0ae9ecbaf6e2d0487028dc3f",
+          "version": "9.0.6"
+        }
+      },
+      {
         "package": "Introspect",
         "repositoryURL": "https://github.com/siteline/SwiftUI-Introspect.git",
         "state": {
@@ -168,8 +186,8 @@
         "repositoryURL": "https://github.com/TimOliver/TOCropViewController.git",
         "state": {
           "branch": null,
-          "revision": "dad97167bf1be16aeecd109130900995dd01c515",
-          "version": "2.6.0"
+          "revision": "d0470491f56e734731bbf77991944c0dfdee3e0e",
+          "version": "2.6.1"
         }
       },
       {

@@ -112,11 +112,12 @@ extension ListViewController: UITableViewDelegate {
                 case .twitter(let kind):
                     switch kind {
                     case .owned:
-                        coordinator.present(
-                            scene: .twitterUserOwnedList(viewModel: viewModel.twitterUserOwnedListViewModel),
-                            from: self,
-                            transition: .show
-                        )
+                        assertionFailure()
+//                        coordinator.present(
+//                            scene: .twitterUserOwnedList(viewModel: viewModel.twitterUserOwnedListViewModel),
+//                            from: self,
+//                            transition: .show
+//                        )
                     case .subscribed:
                         assertionFailure("TODO")
                     case .listed:

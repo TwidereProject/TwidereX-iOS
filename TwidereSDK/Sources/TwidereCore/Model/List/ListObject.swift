@@ -9,6 +9,7 @@ import CoreDataStack
 
 public enum ListObject: Hashable {
     case twitter(object: TwitterList)
+    case mastodon(object: MastodonList)
 }
 
 extension ListObject {
@@ -16,6 +17,8 @@ extension ListObject {
         switch self {
         case .twitter(let object):
             return .twitter(record: .init(objectID: object.objectID))
+        case .mastodon(let object):
+            return .mastodon(record: .init(objectID: object.objectID))
         }
     }
 }

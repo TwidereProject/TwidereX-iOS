@@ -89,6 +89,10 @@ extension ListSection {
             let metaContent = Meta.convert(from: .plaintext(string: object.name))
             cell.primaryTextLabel.configure(content: metaContent)
             cell.accessoryType = .disclosureIndicator
+        case .mastodon(let object):
+            let metaContent = Meta.convert(from: .plaintext(string: object.title))
+            cell.primaryTextLabel.configure(content: metaContent)
+            cell.accessoryType = .disclosureIndicator
         }
     }
 
