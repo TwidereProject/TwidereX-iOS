@@ -19,6 +19,7 @@ extension ListFetchViewModel.List {
         case twitterUserOwned(TwitterFetchContext)
         case twitterUserFollowed(TwitterFetchContext)
         case twitterUserListed(TwitterFetchContext)
+        case mastodonUserOwned(MastodonFetchContext)
     }
     
     struct Output {
@@ -44,6 +45,10 @@ extension ListFetchViewModel.List {
                 nextToken: nextToken
             )
         }
+    }
+    
+    struct MastodonFetchContext {
+        let authenticationContext: MastodonAuthenticationContext
     }
 
     static func list(context: AppContext, input: Input) async throws -> Output {
@@ -102,8 +107,17 @@ extension ListFetchViewModel.List {
                 nextInput: {
                     guard let nextToken = content.meta.nextToken else { return nil }
                     let fetchContext = fetchContext.map(nextToken: nextToken)
-                    return .twitterUserFollowed(fetchContext)
+                    return .twitterUserListed(fetchContext)
                 }()
+            )
+        case .mastodonUserOwned(let fetchContext):
+            let response = try await context.apiService.mastodonUserOwnedLists(
+                authenticationContext: fetchContext.authenticationContext
+            )
+            let content = response.value
+            return Output(
+                result: .mastodon(content),
+                nextInput: nil 
             )
         }   // end switch input { }
     }

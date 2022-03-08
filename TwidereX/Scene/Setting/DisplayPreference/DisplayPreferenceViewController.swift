@@ -23,8 +23,8 @@ final class DisplayPreferenceViewController: UIViewController, NeedsDependency {
         tableView.register(StatusTableViewCell.self, forCellReuseIdentifier: String(describing: StatusTableViewCell.self))
         tableView.register(SwitchTableViewCell.self, forCellReuseIdentifier: String(describing: SwitchTableViewCell.self))
         tableView.register(SlideTableViewCell.self, forCellReuseIdentifier: String(describing: SlideTableViewCell.self))
-        tableView.register(ListEntryTableViewCell.self, forCellReuseIdentifier: String(describing: ListEntryTableViewCell.self))
-        tableView.register(ListCheckmarkTableViewCell.self, forCellReuseIdentifier: String(describing: ListCheckmarkTableViewCell.self))
+        tableView.register(TableViewEntryTableViewCell.self, forCellReuseIdentifier: String(describing: TableViewEntryTableViewCell.self))
+        tableView.register(TableViewCheckmarkTableViewCell.self, forCellReuseIdentifier: String(describing: TableViewCheckmarkTableViewCell.self))
         tableView.tableHeaderView = UITableView.groupedTableViewPaddingHeaderView
         tableView.rowHeight = UITableView.automaticDimension
         return tableView

@@ -1,5 +1,5 @@
 //
-//  ListEntryTableViewCell.swift
+//  TableViewEntryTableViewCell.swift
 //  TwidereX
 //
 //  Created by Cirno MainasuK on 2020-12-30.
@@ -8,7 +8,7 @@
 
 import UIKit
 
-final class ListEntryTableViewCell: ListTableViewCell {
+public final class TableViewEntryTableViewCell: TableViewPlainCell {
     
     override func _init() {
         super._init()
@@ -27,7 +27,7 @@ struct ListEntryTableViewCell_Previews: PreviewProvider {
     
     static var previews: some View {
         UIViewPreview {
-            let cell = ListEntryTableViewCell()
+            let cell = TableViewEntryTableViewCell()
             cell.primaryTextLabel.configure(content: PlaintextMetaContent(string: "Primary"))
             cell.secondaryTextLabel.text = "Secondary"
             return cell

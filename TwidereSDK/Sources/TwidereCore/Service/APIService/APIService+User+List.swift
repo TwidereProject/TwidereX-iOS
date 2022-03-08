@@ -8,6 +8,7 @@
 import Foundation
 import CoreDataStack
 import TwitterSDK
+import MastodonSDK
 
 extension APIService {
     
@@ -133,6 +134,45 @@ extension APIService {
                         entity: Persistence.TwitterList.PersistContext.Entity(
                             list: list,
                             owner: owner
+                        ),
+                        networkDate: response.networkDate
+                    )
+                )
+            }   // for … in …
+        }   // end managedObjectContext.performChanges
+        
+        return response
+    }
+    
+}
+
+extension APIService {
+    
+    public func mastodonUserOwnedLists(
+        authenticationContext: MastodonAuthenticationContext
+    ) async throws -> Mastodon.Response.Content<[Mastodon.Entity.List]> {
+        let managedObjectContext = backgroundManagedObjectContext
+        
+        let response = try await Mastodon.API.List.ownedLists(
+            session: session,
+            domain: authenticationContext.domain,
+            authorization: authenticationContext.authorization
+        )
+        
+        try await managedObjectContext.performChanges {
+            guard let me = authenticationContext.authenticationRecord.object(in: managedObjectContext)?.user else {
+                assertionFailure()
+                return
+            }
+            
+            for list in response.value {
+                _ = Persistence.MastodonList.createOrMerge(
+                    in: managedObjectContext,
+                    context: Persistence.MastodonList.PersistContext(
+                        domain: authenticationContext.domain,
+                        entity: Persistence.MastodonList.PersistContext.Entity(
+                            list: list,
+                            owner: me
                         ),
                         networkDate: response.networkDate
                     )

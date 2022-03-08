@@ -17,6 +17,7 @@ enum ListFetchViewModel {
         
     enum Result {
         case twitter([Twitter.Entity.V2.List])
+        case mastodon([Mastodon.Entity.List])
     }
     
 }

@@ -20,8 +20,7 @@ class ListViewModel {
     let context: AppContext
     let kind: Kind
     let fetchedResultController: ListRecordFetchedResultController
-    
-    // @Published var user: UserRecord?
+    let listBatchFetchViewModel = ListBatchFetchViewModel()
     
     // output
     var diffableDataSource: UITableViewDiffableDataSource<ListSection, ListItem>?

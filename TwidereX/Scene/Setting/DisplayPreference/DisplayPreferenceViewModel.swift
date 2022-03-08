@@ -96,7 +96,7 @@ extension DisplayPreferenceViewModel: UITableViewDataSource {
             DisplayPreferenceViewModel.configure(cell: _cell)
             cell = _cell
         case .avatarStyle(let avatarStyle):
-            let _cell = tableView.dequeueReusableCell(withIdentifier: String(describing: ListCheckmarkTableViewCell.self), for: indexPath) as! ListCheckmarkTableViewCell
+            let _cell = tableView.dequeueReusableCell(withIdentifier: String(describing: TableViewCheckmarkTableViewCell.self), for: indexPath) as! TableViewCheckmarkTableViewCell
             let metaContent = Meta.convert(from: .plaintext(string: avatarStyle.text))
             _cell.primaryTextLabel.configure(content: metaContent)
             UserDefaults.shared
@@ -106,7 +106,7 @@ extension DisplayPreferenceViewModel: UITableViewDataSource {
                 .store(in: &_cell.observations)
             cell = _cell
         case .dateFormat:
-            let _cell = tableView.dequeueReusableCell(withIdentifier: String(describing: ListEntryTableViewCell.self), for: indexPath) as! ListEntryTableViewCell
+            let _cell = tableView.dequeueReusableCell(withIdentifier: String(describing: TableViewEntryTableViewCell.self), for: indexPath) as! TableViewEntryTableViewCell
             _cell.iconImageView.isHidden = true
             let metaContent = Meta.convert(from: .plaintext(string: L10n.Scene.Settings.Display.SectionHeader.dateFormat))
             _cell.primaryTextLabel.configure(content: metaContent)

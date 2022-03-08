@@ -67,9 +67,7 @@ extension AvatarImageView {
     }
     
     public func configure(configuration: Configuration) {
-        // reset
-        cancelTask()
-        af.cancelImageRequest()
+        prepareForResuse()
         
         self.configuration = configuration
         
@@ -98,6 +96,12 @@ extension AvatarImageView {
             
             af.setImage(withURL: url, filter: filter)
         }
+    }
+    
+    public func prepareForResuse() {
+        cancelTask()
+        af.cancelImageRequest()
+        image = nil
     }
     
 }

@@ -121,6 +121,13 @@ extension ListStatusViewModel.State {
                             maxResults: nil,
                             nextToken: nil
                         ))
+                    case (.mastodon(let list), .mastodon(let authenticationContext)):
+                        return StatusFetchViewModel.List.Input.mastodon(.init(
+                            authenticationContext: authenticationContext,
+                            list: list,
+                            maxID: nil,
+                            limit: nil
+                        ))
                     default:
                         return nil
                     }
@@ -154,9 +161,8 @@ extension ListStatusViewModel.State {
                         assertionFailure()
                         return
                     case .mastodon(let statuses):
-                        // no V1 API used here
-                        assertionFailure("TODO")
-                        return
+                        let statusIDs = statuses.map { $0.id }
+                        viewModel.fetchedResultController.mastodonStatusFetchedResultController.append(statusIDs: statusIDs)
                     }
                     
                     logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): fetch success")

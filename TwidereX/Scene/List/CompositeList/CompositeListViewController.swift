@@ -8,12 +8,15 @@
 
 import os.log
 import UIKit
+import Combine
 import TwidereLocalization
 import TwidereUI
 
 class CompositeListViewController: UIViewController, NeedsDependency {
     
-    let logger = Logger(subsystem: "ListViewController", category: "ViewController")
+    var disposeBag = Set<AnyCancellable>()
+    
+    let logger = Logger(subsystem: "CompositeListViewController", category: "ViewController")
     
     // MARK: NeedsDependency
     weak var context: AppContext! { willSet { precondition(!isViewLoaded) } }
@@ -30,6 +33,10 @@ class CompositeListViewController: UIViewController, NeedsDependency {
         tableView.sectionHeaderTopPadding = 14
         return tableView
     }()
+    
+    deinit {
+        os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
+    }
     
 }
 
@@ -58,6 +65,21 @@ extension CompositeListViewController {
         viewModel.setupDiffableDataSource(
             tableView: tableView
         )
+        
+        switch viewModel.kind {
+        case .lists:
+            break
+        case .listed:
+            // setup batch fetch
+            viewModel.listBatchFetchViewModel.setup(scrollView: tableView)
+            viewModel.listBatchFetchViewModel.shouldFetch
+                .receive(on: DispatchQueue.main)
+                .sink { [weak self] _ in
+                    guard let self = self else { return }
+                    self.viewModel.listedListViewModel.stateMachine.enter(ListViewModel.State.Loading.self)
+                }
+                .store(in: &disposeBag)
+        }
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -105,7 +127,7 @@ extension CompositeListViewController: UITableViewDelegate {
         
         Task {
             switch item {
-            case .list(let record):
+            case .list(let record, _):
                 let listStatusViewModel = ListStatusViewModel(context: context, list: record)
                 coordinator.present(
                     scene: .listStatus(viewModel: listStatusViewModel),
@@ -115,22 +137,21 @@ extension CompositeListViewController: UITableViewDelegate {
             case .showMore:
                 switch section {
                 case .twitter(let kind):
-                    switch kind {
-                    case .owned:
-                        assertionFailure()
-//                        coordinator.present(
-//                            scene: .twitterUserOwnedList(viewModel: viewModel.twitterUserOwnedListViewModel),
-//                            from: self,
-//                            transition: .show
-//                        )
-                    case .subscribed:
-                        assertionFailure("TODO")
-                    case .listed:
-                        assertionFailure("Should display without fold")
-                    }
+                    let listViewModel: ListViewModel = {
+                        switch kind {
+                        case .owned:        return viewModel.ownedListViewModel
+                        case .subscribed:   return viewModel.subscribedListViewModel
+                        case .listed:       return viewModel.listedListViewModel
+                        }
+                    }()
+                    coordinator.present(
+                        scene: .list(viewModel: listViewModel),
+                        from: self,
+                        transition: .show
+                    )
                     
                 case .mastodon:
-                    assertionFailure()
+                    assertionFailure("There is no entry will go here")
                 }
             case .loader, .noResults:
                 break

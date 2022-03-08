@@ -20,6 +20,9 @@ final public class MastodonList: NSManagedObject {
     // sourcery: autoUpdatableObject, autoGenerateProperty
     @NSManaged public private(set) var title: String
     
+    // sourcery: autoUpdatableObject, autoGenerateProperty
+    @NSManaged public private(set) var updatedAt: Date
+    
     // many-to-one relationship
     // sourcery: autoGenerateRelationship
     @NSManaged public private(set) var owner: MastodonUser
@@ -90,15 +93,18 @@ extension MastodonList: AutoGenerateProperty {
         public let id: ID
         public let domain: ID
         public let title: String
+        public let updatedAt: Date
 
     	public init(
     		id: ID,
     		domain: ID,
-    		title: String
+    		title: String,
+    		updatedAt: Date
     	) {
     		self.id = id
     		self.domain = domain
     		self.title = title
+    		self.updatedAt = updatedAt
     	}
     }
 
@@ -106,10 +112,12 @@ extension MastodonList: AutoGenerateProperty {
     	self.id = property.id
     	self.domain = property.domain
     	self.title = property.title
+    	self.updatedAt = property.updatedAt
     }
 
     public func update(property: Property) {
     	update(title: property.title)
+    	update(updatedAt: property.updatedAt)
     }
     // sourcery:end
 }
@@ -145,6 +153,11 @@ extension MastodonList: AutoUpdatableObject {
     public func update(title: String) {
     	if self.title != title {
     		self.title = title
+    	}
+    }
+    public func update(updatedAt: Date) {
+    	if self.updatedAt != updatedAt {
+    		self.updatedAt = updatedAt
     	}
     }
     // sourcery:end

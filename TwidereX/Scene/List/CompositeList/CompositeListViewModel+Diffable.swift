@@ -76,7 +76,7 @@ extension CompositeListViewModel {
             let sectionItemLimit: Int? = snapshot.numberOfSections > 1 ? CompositeListViewModel.sectionItemLimit : nil
             
             // owned list
-            let ownedItems = ownedListRecords.map { ListItem.list(record: $0) }
+            let ownedItems = ownedListRecords.map { ListItem.list(record: $0, style: .plain) }
             CompositeListViewModel.appendItemsToSnapshot(
                 snapshot: &snapshot,
                 items: ownedItems,
@@ -87,7 +87,7 @@ extension CompositeListViewModel {
 
             // subscribed list
             if let subscribedListSection = _subscribedListSection {
-                let subscribedItems = subscribedListRecords.map { ListItem.list(record: $0) }
+                let subscribedItems = subscribedListRecords.map { ListItem.list(record: $0, style: .user) }
                 CompositeListViewModel.appendItemsToSnapshot(
                     snapshot: &snapshot,
                     items: subscribedItems,
@@ -131,7 +131,7 @@ extension CompositeListViewModel {
             // listed list
             if let section = _section {
                 snapshot.appendSections([section])
-                let items = records.map { ListItem.list(record: $0) }
+                let items = records.map { ListItem.list(record: $0, style: .user) }
                 CompositeListViewModel.appendItemsToSnapshot(
                     snapshot: &snapshot,
                     items: items,
@@ -163,19 +163,19 @@ extension CompositeListViewModel {
         let limitItems = sectionLimit.flatMap({ Array(items.prefix($0)) }) ?? items
         snapshot.appendItems(limitItems, toSection: section)
         
-        if items.isEmpty {
-            switch state {
-            case .none:
-                break
-            case is ListViewModel.State.NoMore:
-                if items.isEmpty {
-                    snapshot.appendItems([.noResults()], toSection: section)
-                }
-            default:
+        switch state {
+        case .none:
+            break
+        case is ListViewModel.State.NoMore:
+            if items.isEmpty {
+                snapshot.appendItems([.noResults()], toSection: section)
+            }
+        default:
+            if let sectionLimit = sectionLimit, items.count > sectionLimit {
+                snapshot.appendItems([.showMore()], toSection: section)
+            } else {
                 snapshot.appendItems([.loader()], toSection: section)
             }
-        } else if let sectionLimit = sectionLimit, items.count > sectionLimit {
-            snapshot.appendItems([.showMore()], toSection: section)
         }
     }
     

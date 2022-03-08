@@ -25,7 +25,7 @@ extension Mastodon.API.Timeline {
     ///   - domain: Mastodon instance domain. e.g. "example.com"
     ///   - query: `TimelineQuery` with query parameters
     ///   - authorization: User token
-    /// - Returns: `AnyPublisher` contains `[Mastodon.Entity.Status]` nested in the response
+    /// - Returns: `[Mastodon.Entity.Status]` nested in the response
     public static func home(
         session: URLSession,
         domain: String,
@@ -46,7 +46,6 @@ extension Mastodon.API.Timeline {
 }
 
 extension Mastodon.API.Timeline {
-    
     static func hashtagTimelineEndpointURL(domain: String, hashtag: String) -> URL {
         return Mastodon.API.endpointURL(domain: domain)
             .appendingPathComponent("timelines")
@@ -68,7 +67,7 @@ extension Mastodon.API.Timeline {
     ///   - hashtag: Content of a #hashtag, not including # symbol.
     ///   - query: `TimelineQuery` with query parameters
     ///   - authorization: User token, auth is required if public preview is disabled
-    /// - Returns: `[Status]` nested in the response
+    /// - Returns: `[Mastodon.Entity.Status]` nested in the response
     public static func hashtag(
         session: URLSession,
         domain: String,
@@ -89,7 +88,6 @@ extension Mastodon.API.Timeline {
 }
 
 extension Mastodon.API.Timeline {
-    
     static func publicTimelineEndpointURL(domain: String) -> URL {
         return Mastodon.API.endpointURL(domain: domain)
             .appendingPathComponent("timelines")
@@ -109,7 +107,7 @@ extension Mastodon.API.Timeline {
     ///   - domain: Mastodon instance domain. e.g. "example.com"
     ///   - query: `TimelineQuery` with query parameters
     ///   - authorization: User token, auth is required if public preview is disabled
-    /// - Returns: `AnyPublisher` contains `Token` nested in the response
+    /// - Returns: `[Mastodon.Entity.Status]` nested in the response
     public static func `public`(
         session: URLSession,
         domain: String,
@@ -124,6 +122,51 @@ extension Mastodon.API.Timeline {
         )
         let (data, response) = try await session.data(for: request, delegate: nil)
         let value = try Mastodon.API.decode(type: [Mastodon.Entity.Status].self, from: data, response: response)
+        return Mastodon.Response.Content(value: value, response: response)
+    }
+}
+
+extension Mastodon.API.Timeline {
+    static func listTimelineEndpointURL(
+        domain: String,
+        listID: Mastodon.Entity.List.ID
+    ) -> URL {
+        return Mastodon.API.endpointURL(domain: domain)
+            .appendingPathComponent("timelines")
+            .appendingPathComponent("list")
+            .appendingPathComponent(listID)
+    }
+    
+    /// View statuses in the given list timeline.
+    ///
+    /// - Since: 0.0.0
+    /// - Version: 3.4.2
+    /// # Last Update
+    ///   2022/3/8
+    /// # Reference
+    ///   [Document](https://https://docs.joinmastodon.org/methods/timelines/)
+    /// - Parameters:
+    ///   - session: `URLSession`
+    ///   - domain: Mastodon instance domain. e.g. "example.com"
+    ///   - query: `TimelineQuery` with query parameters
+    ///   - authorization: User token
+    /// - Returns: `[Mastodon.Entity.Status]` nested in the response
+    public static func list(
+        session: URLSession,
+        domain: String,
+        listID: Mastodon.Entity.List.ID,
+        query: TimelineQuery,
+        authorization: Mastodon.API.OAuth.Authorization
+    ) async throws -> Mastodon.Response.Content<[Mastodon.Entity.Status]> {
+        let request = Mastodon.API.request(
+            url: listTimelineEndpointURL(domain: domain, listID: listID),
+            method: .GET,
+            query: query,
+            authorization: authorization
+        )
+        let (data, response) = try await session.data(for: request, delegate: nil)
+        let value = try Mastodon.API.decode(type: [Mastodon.Entity.Status].self, from: data, response: response)
+        
         return Mastodon.Response.Content(value: value, response: response)
     }
 }

@@ -29,7 +29,7 @@ extension DrawerSidebarViewModel {
                 case .twitter:
                     snapshot.appendItems([.likes, .lists], toSection: .main)
                 case .mastodon:
-                    snapshot.appendItems([.local, .federated, .likes], toSection: .main)
+                    snapshot.appendItems([.local, .federated, .likes, .lists], toSection: .main)
                 case .none:
                     break
                 }

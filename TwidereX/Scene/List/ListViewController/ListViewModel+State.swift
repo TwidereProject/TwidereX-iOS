@@ -130,8 +130,10 @@ extension ListViewModel.State {
                             }
                         }()
                         return input
-                    case (.mastodon(let record), .mastodon(let authenticationContext)):
-                        fatalError("TODO")
+                    case (.mastodon, .mastodon(let authenticationContext)):
+                        return .mastodonUserOwned(.init(
+                            authenticationContext: authenticationContext
+                        ))
                     default:
                         return nil
                     }
@@ -160,6 +162,9 @@ extension ListViewModel.State {
                     case .twitter(let lists):
                         let ids = lists.map { $0.id }
                         viewModel.fetchedResultController.twitterListRecordFetchedResultController.append(ids: ids)
+                    case .mastodon(let lists):
+                        let ids = lists.map { $0.id }
+                        viewModel.fetchedResultController.mastodonListRecordFetchedResultController.append(ids: ids)
                     }
                     
                     logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): fetch success")

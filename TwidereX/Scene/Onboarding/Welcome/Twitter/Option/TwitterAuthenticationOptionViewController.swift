@@ -10,8 +10,9 @@ import os.log
 import UIKit
 import Combine
 import AppShared
-import TwitterSDK
 import AuthenticationServices
+import TwitterSDK
+import TwidereUI
 
 final class TwitterAuthenticationOptionViewController: UIViewController, NeedsDependency {
     
@@ -26,7 +27,7 @@ final class TwitterAuthenticationOptionViewController: UIViewController, NeedsDe
     
     let tableView: UITableView = {
         let tableView = UITableView(frame: .zero, style: .grouped)
-        tableView.register(ListTextFieldTableViewCell.self, forCellReuseIdentifier: String(describing: ListTextFieldTableViewCell.self))
+        tableView.register(TableViewTextFieldTableViewCell.self, forCellReuseIdentifier: String(describing: TableViewTextFieldTableViewCell.self))
         tableView.tableHeaderView = UITableView.groupedTableViewPaddingHeaderView
         return tableView
     }()

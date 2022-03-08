@@ -1,5 +1,5 @@
 //
-//  ListCheckmarkTableViewCell.swift
+//  TableViewCheckmarkTableViewCell.swift
 //  TwidereX
 //
 //  Created by Cirno MainasuK on 2020-12-31.
@@ -8,7 +8,7 @@
 
 import UIKit
 
-final class ListCheckmarkTableViewCell: ListTableViewCell {
+public final class TableViewCheckmarkTableViewCell: TableViewPlainCell {
     
     override func _init() {
         super._init()
@@ -26,7 +26,7 @@ struct ListCheckmarkTableViewCell_Previews: PreviewProvider {
     
     static var previews: some View {
         UIViewPreview {
-            let cell = ListCheckmarkTableViewCell()
+            let cell = TableViewCheckmarkTableViewCell()
             cell.primaryTextLabel.configure(content: PlaintextMetaContent(string: "Title"))
             return cell
         }

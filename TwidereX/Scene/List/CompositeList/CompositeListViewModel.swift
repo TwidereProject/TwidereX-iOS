@@ -18,12 +18,11 @@ class CompositeListViewModel {
     // input
     let context: AppContext
     let kind: Kind
+    let listBatchFetchViewModel = ListBatchFetchViewModel()
     
     let ownedListViewModel: ListViewModel
     let subscribedListViewModel: ListViewModel
     let listedListViewModel: ListViewModel
-    
-    // @Published var user: UserRecord?
     
     // output
     var diffableDataSource: UITableViewDiffableDataSource<ListSection, ListItem>?

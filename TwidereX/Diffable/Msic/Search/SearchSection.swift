@@ -25,7 +25,7 @@ extension SearchSection {
         configuration: Configuration
     ) -> UITableViewDiffableDataSource<SearchSection, SearchItem> {
         tableView.register(TimelineBottomLoaderTableViewCell.self, forCellReuseIdentifier: String(describing: TimelineBottomLoaderTableViewCell.self))
-        tableView.register(ListTableViewCell.self, forCellReuseIdentifier: String(describing: ListTableViewCell.self))
+        tableView.register(TableViewPlainCell.self, forCellReuseIdentifier: String(describing: TableViewPlainCell.self))
         tableView.register(TrendTableViewCell.self, forCellReuseIdentifier: String(describing: TrendTableViewCell.self))
         tableView.register(CenterFootnoteLabelTableViewCell.self, forCellReuseIdentifier: String(describing: CenterFootnoteLabelTableViewCell.self))
         tableView.register(ButtonTableViewCell.self, forCellReuseIdentifier: String(describing: ButtonTableViewCell.self))
@@ -33,7 +33,7 @@ extension SearchSection {
         return UITableViewDiffableDataSource(tableView: tableView) { tableView, indexPath, item in
             switch item {
             case .history(let record):
-                let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: ListTableViewCell.self), for: indexPath) as! ListTableViewCell
+                let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: TableViewPlainCell.self), for: indexPath) as! TableViewPlainCell
                 context.managedObjectContext.performAndWait {
                     guard let object = record.object(in: context.managedObjectContext) else { return }
                     configure(cell: cell, object: object)
@@ -71,7 +71,7 @@ extension SearchSection {
 
 extension SearchSection {
     private static func configure(
-        cell: ListTableViewCell,
+        cell: TableViewPlainCell,
         object: SavedSearchObject
     ) {
         switch object {

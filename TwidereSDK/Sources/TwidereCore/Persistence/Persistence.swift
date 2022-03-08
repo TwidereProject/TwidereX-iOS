@@ -19,6 +19,7 @@ extension Persistence {
 }
 
 extension Persistence {
+    public enum MastodonList { }
     public enum MastodonUser { }
     public enum MastodonStatus { }
     public enum MastodonNotification { }

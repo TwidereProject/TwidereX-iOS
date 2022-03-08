@@ -1,5 +1,5 @@
 //
-//  ListTableViewCell.swift
+//  TableViewPlainCell.swift
 //  TwidereX
 //
 //  Created by Cirno MainasuK on 2020-12-31.
@@ -9,20 +9,20 @@
 import UIKit
 import MetaTextKit
 
-class ListTableViewCell: UITableViewCell {
+public class TableViewPlainCell: UITableViewCell {
     
-    var observations = Set<NSKeyValueObservation>()
+    public var observations = Set<NSKeyValueObservation>()
     
-    let iconImageView: UIImageView = {
+    public let iconImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFill
         imageView.tintColor = .label
         return imageView
     }()
     
-    let primaryTextLabel = MetaLabel(style: .listPrimaryText)
+    public let primaryTextLabel = MetaLabel(style: .listPrimaryText)
     
-    let secondaryTextLabel: UILabel = {
+    public let secondaryTextLabel: UILabel = {
         let label = UILabel()
         label.font = .preferredFont(forTextStyle: .body)
         label.textColor = .secondaryLabel
@@ -30,12 +30,12 @@ class ListTableViewCell: UITableViewCell {
         return label
     }()
     
-    override func prepareForReuse() {
+    public override func prepareForReuse() {
         super.prepareForReuse()
         observations.removeAll()
     }
     
-    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+    public override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         _init()
     }

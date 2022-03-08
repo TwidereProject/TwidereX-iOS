@@ -18,15 +18,18 @@ extension DataSourceFacade {
         user: UserRecord,
         authenticationContext: AuthenticationContext
     ) async throws -> UIMenu {
-        let infoMenu: UIMenu = await {
+        var children: [UIMenu] = []
+        
+        let _infoMenu: UIMenu? = await {
             var children: [UIMenuElement] = []
             
-            let viewListsAction = await createMenuViewListsActionForUser(
+            if let viewListsAction = await createMenuViewListsActionForUser(
                 provider: provider,
                 record: user,
                 authenticationContext: authenticationContext
-            )
-            children.append(viewListsAction)
+            ) {
+                children.append(viewListsAction)
+            }
             
             if let viewListedAction = await createMenuViewListedActionForUser(
                 provider: provider,
@@ -36,8 +39,12 @@ extension DataSourceFacade {
                 children.append(viewListedAction)
             }
             
+            guard !children.isEmpty else { return nil }
             return await UIMenu(title: "info", options: [.displayInline], children: children)
         }()
+        if let menu = _infoMenu {
+            children.append(menu)
+        }
         
         let relationshipMenu: UIMenu = try await {
             var children: [UIMenuElement] = []
@@ -81,14 +88,12 @@ extension DataSourceFacade {
             
             return await UIMenu(title: "relationship", options: [.displayInline], children: children)
         }()
+        children.append(relationshipMenu)
         
         return await UIMenu(
             title: "",
             options: [],
-            children: [
-                infoMenu,
-                relationshipMenu,
-            ]
+            children: children
         )
     }
 }
@@ -100,7 +105,27 @@ extension DataSourceFacade {
         provider: DataSourceProvider,
         record: UserRecord,
         authenticationContext: AuthenticationContext
-    ) async -> UIAction {
+    ) async -> UIAction? {
+        switch record {
+        case .twitter:
+            break
+        case .mastodon(let record):
+            // only display menu for myself
+            guard case let .mastodon(myUserIdentifer) = authenticationContext.userIdentifier else { return nil }
+            let _userIdentifer: MastodonUserIdentifier? = await provider.context.managedObjectContext.perform {
+                guard let user = record.object(in: provider.context.managedObjectContext) else { return nil }
+                return .init(
+                    domain: user.domain,
+                    id: user.id
+                )
+            }
+            guard let userIdentifer = _userIdentifer,
+                  userIdentifer == myUserIdentifer
+            else {
+                return nil
+            }
+        }
+        
         let action = UIAction(
             title: L10n.Common.Controls.User.Actions.viewLists,
             image: UIImage(systemName: "list.dash.header.rectangle"),

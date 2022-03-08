@@ -113,10 +113,6 @@
 		DB47AB2D27CE085900CD73C7 /* ListViewModel+Diffable.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB47AB2C27CE085800CD73C7 /* ListViewModel+Diffable.swift */; };
 		DB47AB2E27CE097C00CD73C7 /* ListItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB47AB1F27CCC18500CD73C7 /* ListItem.swift */; };
 		DB47AB2F27CE097C00CD73C7 /* ListSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB47AB2027CCC18500CD73C7 /* ListSection.swift */; };
-		DB47AB3627CE1DC700CD73C7 /* ListTextFieldTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB47AB3527CE1DC700CD73C7 /* ListTextFieldTableViewCell.swift */; };
-		DB47AB3827CE1DE100CD73C7 /* ListCheckmarkTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB47AB3727CE1DE100CD73C7 /* ListCheckmarkTableViewCell.swift */; };
-		DB47AB3A27CE1DF800CD73C7 /* ListTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB47AB3927CE1DF800CD73C7 /* ListTableViewCell.swift */; };
-		DB47AB3C27CE1F2300CD73C7 /* ListEntryTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB47AB3B27CE1F2300CD73C7 /* ListEntryTableViewCell.swift */; };
 		DB47AB3E27CE1F9E00CD73C7 /* TimelineTopLoaderTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB47AB3D27CE1F9E00CD73C7 /* TimelineTopLoaderTableViewCell.swift */; };
 		DB47AB4427CF52B600CD73C7 /* ListStatusViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB47AB4327CF52B600CD73C7 /* ListStatusViewController.swift */; };
 		DB47AB4727CF52D100CD73C7 /* ListStatusViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB47AB4627CF52D100CD73C7 /* ListStatusViewModel.swift */; };
@@ -561,16 +557,8 @@
 		DB47AB1C27CCB88000CD73C7 /* ListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListViewModel.swift; sourceTree = "<group>"; };
 		DB47AB1F27CCC18500CD73C7 /* ListItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListItem.swift; sourceTree = "<group>"; };
 		DB47AB2027CCC18500CD73C7 /* ListSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListSection.swift; sourceTree = "<group>"; };
-		DB47AB2827CDD04D00CD73C7 /* TwitterUserOwnedListViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TwitterUserOwnedListViewModel.swift; sourceTree = "<group>"; };
-		DB47AB2927CDD04D00CD73C7 /* TwitterUserOwnedListViewModel+State.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "TwitterUserOwnedListViewModel+State.swift"; sourceTree = "<group>"; };
 		DB47AB2C27CE085800CD73C7 /* ListViewModel+Diffable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ListViewModel+Diffable.swift"; sourceTree = "<group>"; };
-		DB47AB3527CE1DC700CD73C7 /* ListTextFieldTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ListTextFieldTableViewCell.swift; sourceTree = "<group>"; };
-		DB47AB3727CE1DE100CD73C7 /* ListCheckmarkTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ListCheckmarkTableViewCell.swift; sourceTree = "<group>"; };
-		DB47AB3927CE1DF800CD73C7 /* ListTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ListTableViewCell.swift; sourceTree = "<group>"; };
-		DB47AB3B27CE1F2300CD73C7 /* ListEntryTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ListEntryTableViewCell.swift; sourceTree = "<group>"; };
 		DB47AB3D27CE1F9E00CD73C7 /* TimelineTopLoaderTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TimelineTopLoaderTableViewCell.swift; sourceTree = "<group>"; };
-		DB47AB3F27CE2FA100CD73C7 /* TwitterUserOwnedListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwitterUserOwnedListViewController.swift; sourceTree = "<group>"; };
-		DB47AB4127CE300900CD73C7 /* TwitterUserOwnedListViewModel+Diffable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TwitterUserOwnedListViewModel+Diffable.swift"; sourceTree = "<group>"; };
 		DB47AB4327CF52B600CD73C7 /* ListStatusViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListStatusViewController.swift; sourceTree = "<group>"; };
 		DB47AB4627CF52D100CD73C7 /* ListStatusViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListStatusViewModel.swift; sourceTree = "<group>"; };
 		DB47AB4827CF537D00CD73C7 /* ListStatusViewController+DataSourceProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ListStatusViewController+DataSourceProvider.swift"; sourceTree = "<group>"; };
@@ -999,17 +987,6 @@
 			path = View;
 			sourceTree = "<group>";
 		};
-		DB0CC4BB27D6021900A051B4 /* Deprecated */ = {
-			isa = PBXGroup;
-			children = (
-				DB47AB3F27CE2FA100CD73C7 /* TwitterUserOwnedListViewController.swift */,
-				DB47AB2827CDD04D00CD73C7 /* TwitterUserOwnedListViewModel.swift */,
-				DB47AB4127CE300900CD73C7 /* TwitterUserOwnedListViewModel+Diffable.swift */,
-				DB47AB2927CDD04D00CD73C7 /* TwitterUserOwnedListViewModel+State.swift */,
-			);
-			path = Deprecated;
-			sourceTree = "<group>";
-		};
 		DB10B34B254AB350002D86F3 /* Media */ = {
 			isa = PBXGroup;
 			children = (
@@ -1235,7 +1212,6 @@
 		DB47AB1B27CCB7F100CD73C7 /* List */ = {
 			isa = PBXGroup;
 			children = (
-				DB0CC4BB27D6021900A051B4 /* Deprecated */,
 				DB47AB2327CCDCA800CD73C7 /* ListViewController */,
 				DB47AB4527CF52B900CD73C7 /* ListStatusViewController */,
 				DB2D36F727D5E74200C1FBE0 /* CompositeList */,
@@ -1769,10 +1745,6 @@
 		DB97D1E7256CBA5D0056F8C2 /* TableViewCell */ = {
 			isa = PBXGroup;
 			children = (
-				DB47AB3927CE1DF800CD73C7 /* ListTableViewCell.swift */,
-				DB47AB3727CE1DE100CD73C7 /* ListCheckmarkTableViewCell.swift */,
-				DB47AB3527CE1DC700CD73C7 /* ListTextFieldTableViewCell.swift */,
-				DB47AB3B27CE1F2300CD73C7 /* ListEntryTableViewCell.swift */,
 				DB89F590257A2A70005ECD04 /* TimelineLoaderTableViewCell.swift */,
 				DB47AB3D27CE1F9E00CD73C7 /* TimelineTopLoaderTableViewCell.swift */,
 				DB98DC0D2507862D0087E30F /* TimelineMiddleLoaderTableViewCell.swift */,
@@ -2838,7 +2810,6 @@
 				DB42411626C3EB9100B6C5F8 /* ReadabilityPadding.swift in Sources */,
 				DB2C8740274F4B7D00CE0398 /* DisplayPreferenceViewModel.swift in Sources */,
 				DB47AB4F27CF5BEB00CD73C7 /* StatusFetchViewModel+Search.swift in Sources */,
-				DB47AB3C27CE1F2300CD73C7 /* ListEntryTableViewCell.swift in Sources */,
 				DB47AB5327CF5E2C00CD73C7 /* UserFetchViewModel+Friendship.swift in Sources */,
 				DBCE2E992591A44000926D09 /* UIViewAnimatingPosition.swift in Sources */,
 				DB262A422722970000D18EF3 /* SearchResultViewModel.swift in Sources */,
@@ -2903,7 +2874,6 @@
 				DB71C7C6271D304900BE3819 /* UserLikeTimelineViewController+DataSourceProvider.swift in Sources */,
 				DBAA898E2758CF01001C273B /* DrawerSidebarHeaderView+ViewModel.swift in Sources */,
 				DBF167FD27C394830001F75E /* NeedsDependency+AvatarBarButtonItemDelegate.swift in Sources */,
-				DB47AB3627CE1DC700CD73C7 /* ListTextFieldTableViewCell.swift in Sources */,
 				DB02C77927352217007EA0BF /* SearchHashtagViewModel+Diffable.swift in Sources */,
 				DB262A4327229BE700D18EF3 /* SearchTimelineViewController.swift in Sources */,
 				DB25C4CA277999BE00EC1435 /* ButtonTableViewCell.swift in Sources */,
@@ -2945,7 +2915,6 @@
 				DBD0B4982758B58F0015A388 /* DrawerSidebarPresentationController.swift in Sources */,
 				DB47AB2F27CE097C00CD73C7 /* ListSection.swift in Sources */,
 				DB5A2288255B9155006CA5B2 /* AccountListViewModel+Diffable.swift in Sources */,
-				DB47AB3A27CE1DF800CD73C7 /* ListTableViewCell.swift in Sources */,
 				DB12BEE727329F55002AA635 /* SearchUserViewController+DataSourceProvider.swift in Sources */,
 				DB42411426C3E55200B6C5F8 /* WelcomeView.swift in Sources */,
 				DBE71B7A26B7AF5C00DFAB8E /* StubTimelineViewController.swift in Sources */,
@@ -2973,7 +2942,6 @@
 				DB915406254FC8CE00613473 /* FollowActionButton.swift in Sources */,
 				DB8761C0274552F800BA7EE2 /* StatusSection.swift in Sources */,
 				DB01092426E6199C005F67D7 /* DataSourceProvider+StatusViewTableViewCellDelegate.swift in Sources */,
-				DB47AB3827CE1DE100CD73C7 /* ListCheckmarkTableViewCell.swift in Sources */,
 				DB25C4C8277994B800EC1435 /* CenterFootnoteLabelTableViewCell.swift in Sources */,
 				DBA210352759D7B1000B7CB2 /* FollowingListViewModel+Diffable.swift in Sources */,
 				DB2C8744274F4B7D00CE0398 /* SettingListViewController.swift in Sources */,

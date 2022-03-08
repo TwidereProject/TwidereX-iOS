@@ -1,5 +1,5 @@
 //
-//  ListTextFieldTableViewCell.swift
+//  TableViewTextFieldTableViewCell.swift
 //  TwidereX
 //
 //  Created by Cirno MainasuK on 2021-1-18.
@@ -9,14 +9,14 @@
 import UIKit
 import Combine
 
-final class ListTextFieldTableViewCell: UITableViewCell {
+public final class TableViewTextFieldTableViewCell: UITableViewCell {
     
-    var disposeBag = Set<AnyCancellable>()
+    public var disposeBag = Set<AnyCancellable>()
     
-    let textField = UITextField()
-    let input = PassthroughSubject<String, Never>()
+    public let textField = UITextField()
+    public let input = PassthroughSubject<String, Never>()
     
-    override func prepareForReuse() {
+    public override func prepareForReuse() {
         super.prepareForReuse()
         
         disposeBag.removeAll()
@@ -34,7 +34,7 @@ final class ListTextFieldTableViewCell: UITableViewCell {
     
 }
 
-extension ListTextFieldTableViewCell {
+extension TableViewTextFieldTableViewCell {
     
     private func _init() {
         selectionStyle = .none
@@ -69,7 +69,7 @@ struct ListTextFieldTableViewCell_Previews: PreviewProvider {
     
     static var previews: some View {
         UIViewPreview {
-            let cell = ListTextFieldTableViewCell()
+            let cell = TableViewTextFieldTableViewCell()
             cell.textField.placeholder = "Placeholder"
             return cell
         }

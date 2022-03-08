@@ -8,6 +8,7 @@
 import Foundation
 import CoreDataStack
 import TwitterSDK
+import MastodonSDK
 
 extension APIService {
     
@@ -38,6 +39,55 @@ extension APIService {
                 statusIDs: statusIDs,
                 authenticationContext: authenticationContext
             )
+        }
+        
+        return response
+    }
+    
+}
+
+extension APIService {
+    
+    public func mastodonListStatuses(
+        list: ManagedObjectRecord<MastodonList>,
+        query: Mastodon.API.Timeline.TimelineQuery,
+        authenticationContext: MastodonAuthenticationContext
+    ) async throws -> Mastodon.Response.Content<[Mastodon.Entity.Status]> {
+        let managedObjectContext = backgroundManagedObjectContext
+        
+        let _listID: TwitterList.ID? = await managedObjectContext.perform {
+            guard let list = list.object(in: managedObjectContext) else { return nil }
+            return list.id
+        }
+        guard let listID = _listID else {
+            throw AppError.implicit(.badRequest)
+        }
+        
+        let response = try await Mastodon.API.Timeline.list(
+            session: session,
+            domain: authenticationContext.domain,
+            listID: listID,
+            query: query,
+            authorization: authenticationContext.authorization
+        )
+        
+        try await managedObjectContext.performChanges {
+            let me = authenticationContext.authenticationRecord.object(in: managedObjectContext)?.user
+            // persist status
+            for entity in response.value {
+                let persistContext = Persistence.MastodonStatus.PersistContext(
+                    domain: authenticationContext.domain,
+                    entity: entity,
+                    me: me,
+                    statusCache: nil,
+                    userCache: nil,
+                    networkDate: response.networkDate
+                )
+                let _ = Persistence.MastodonStatus.createOrMerge(
+                    in: managedObjectContext,
+                    context: persistContext
+                )
+            }
         }
         
         return response
