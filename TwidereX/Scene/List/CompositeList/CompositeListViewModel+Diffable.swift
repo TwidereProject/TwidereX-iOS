@@ -163,18 +163,21 @@ extension CompositeListViewModel {
         let limitItems = sectionLimit.flatMap({ Array(items.prefix($0)) }) ?? items
         snapshot.appendItems(limitItems, toSection: section)
         
-        switch state {
-        case .none:
-            break
-        case is ListViewModel.State.NoMore:
-            if items.isEmpty {
-                snapshot.appendItems([.noResults()], toSection: section)
-            }
-        default:
-            if let sectionLimit = sectionLimit, items.count > sectionLimit {
-                snapshot.appendItems([.showMore()], toSection: section)
-            } else {
+        let hasMore = !(state is ListViewModel.State.NoMore)
+        
+        if let sectionLimit = sectionLimit, items.count > sectionLimit {
+            // A. add "Show More" when limit exists
+            snapshot.appendItems([.showMore()], toSection: section)
+        } else {
+            // B. no limit
+            if hasMore {
+                // B1. display loader when hasMore
                 snapshot.appendItems([.loader()], toSection: section)
+            } else if items.isEmpty {
+                // B2. display no Result when NOT hasMore also empty results
+                snapshot.appendItems([.noResults()], toSection: section)
+            } else {
+                // do nothing
             }
         }
     }

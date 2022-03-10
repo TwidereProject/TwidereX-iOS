@@ -10,7 +10,7 @@ import Foundation
 // https://developer.twitter.com/en/docs/twitter-api/lists/list-lookup/api-reference/get-users-id-owned_lists
 extension Twitter.API.V2.User.List {
 
-    static func ownedListEndpointURL(userID: Twitter.Entity.V2.User.ID) -> URL {
+    private static func ownedListEndpointURL(userID: Twitter.Entity.V2.User.ID) -> URL {
         return Twitter.API.endpointV2URL
             .appendingPathComponent("users")
             .appendingPathComponent(userID)
@@ -92,7 +92,7 @@ extension Twitter.API.V2.User.List {
 // https://developer.twitter.com/en/docs/twitter-api/lists/list-follows/api-reference/get-users-id-followed_lists
 extension Twitter.API.V2.User.List {
 
-    static func followedListEndpointURL(userID: Twitter.Entity.V2.User.ID) -> URL {
+    private static func followedListEndpointURL(userID: Twitter.Entity.V2.User.ID) -> URL {
         return Twitter.API.endpointV2URL
             .appendingPathComponent("users")
             .appendingPathComponent(userID)
@@ -124,7 +124,7 @@ extension Twitter.API.V2.User.List {
 // https://developer.twitter.com/en/docs/twitter-api/lists/list-members/api-reference/get-users-id-list_memberships
 extension Twitter.API.V2.User.List {
 
-    static func listMembershipsEndpointURL(userID: Twitter.Entity.V2.User.ID) -> URL {
+    private static func membershipsEndpointURL(userID: Twitter.Entity.V2.User.ID) -> URL {
         return Twitter.API.endpointV2URL
             .appendingPathComponent("users")
             .appendingPathComponent(userID)
@@ -138,7 +138,7 @@ extension Twitter.API.V2.User.List {
         authorization: Twitter.API.OAuth.Authorization
     ) async throws -> Twitter.Response.Content<Twitter.API.V2.User.List.ListMembershipsContent> {
         let request = Twitter.API.request(
-            url: listMembershipsEndpointURL(userID: userID),
+            url: membershipsEndpointURL(userID: userID),
             method: .GET,
             query: query,
             authorization: authorization
@@ -150,5 +150,90 @@ extension Twitter.API.V2.User.List {
     
     public typealias ListMembershipsQuery = OwnedListsQuery
     public typealias ListMembershipsContent = OwnedListsContent
+
+}
+
+// https://developer.twitter.com/en/docs/twitter-api/lists/list-follows/api-reference/post-users-id-followed-lists
+// https://developer.twitter.com/en/docs/twitter-api/lists/list-follows/api-reference/delete-users-id-followed-lists-list_id
+extension Twitter.API.V2.User.List {
+
+    private static func followEndpointURL(userID: Twitter.Entity.V2.User.ID) -> URL {
+        return Twitter.API.endpointV2URL
+            .appendingPathComponent("users")
+            .appendingPathComponent(userID)
+            .appendingPathComponent("followed_lists")
+    }
+    
+    private static func unfollowEndpointURL(
+        userID: Twitter.Entity.V2.User.ID,
+        listID: Twitter.Entity.V2.List.ID
+    ) -> URL {
+        return Twitter.API.endpointV2URL
+            .appendingPathComponent("users")
+            .appendingPathComponent(userID)
+            .appendingPathComponent("followed_lists")
+            .appendingPathComponent(listID)
+    }
+    
+    public static func follow(
+        session: URLSession,
+        userID: Twitter.Entity.V2.User.ID,
+        query: FollowQuery,
+        authorization: Twitter.API.OAuth.Authorization
+    ) async throws -> Twitter.Response.Content<Twitter.API.V2.User.List.FollowContent> {
+        let request = Twitter.API.request(
+            url: followEndpointURL(userID: userID),
+            method: .POST,
+            query: query,
+            authorization: authorization
+        )
+        let (data, response) = try await session.data(for: request, delegate: nil)
+        let value = try Twitter.API.decode(type: FollowContent.self, from: data, response: response)
+        return Twitter.Response.Content(value: value, response: response)
+    }
+    
+    public static func unfollow(
+        session: URLSession,
+        userID: Twitter.Entity.V2.User.ID,
+        listID: Twitter.Entity.V2.List.ID,
+        authorization: Twitter.API.OAuth.Authorization
+    ) async throws -> Twitter.Response.Content<Twitter.API.V2.User.List.FollowContent> {
+        let request = Twitter.API.request(
+            url: unfollowEndpointURL(userID: userID, listID: listID),
+            method: .DELETE,
+            query: nil,
+            authorization: authorization
+        )
+        let (data, response) = try await session.data(for: request, delegate: nil)
+        let value = try Twitter.API.decode(type: FollowContent.self, from: data, response: response)
+        return Twitter.Response.Content(value: value, response: response)
+    }
+    
+    public struct FollowQuery: JSONEncodeQuery {
+        
+        public let id: Twitter.Entity.V2.List.ID
+        
+        enum CodingKeys: String, CodingKey {
+            case id = "list_id"
+        }
+        
+        public init(
+            id: Twitter.Entity.V2.List.ID
+        ) {
+            self.id = id
+        }
+        
+        var queryItems: [URLQueryItem]? { nil }
+        var encodedQueryItems: [URLQueryItem]? { nil }
+        var formQueryItems: [URLQueryItem]? { nil }
+    }
+    
+    public struct FollowContent: Codable {
+        public let data: ContentData
+        
+        public struct ContentData: Codable {
+            public let following: Bool
+        }
+    }
 
 }

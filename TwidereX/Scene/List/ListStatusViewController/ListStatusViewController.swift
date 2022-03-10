@@ -22,6 +22,12 @@ final class ListStatusViewController: UIViewController, NeedsDependency, MediaPr
     var viewModel: ListStatusViewModel!
     
     let mediaPreviewTransitionController = MediaPreviewTransitionController()
+    
+    let menuBarButtonItem: UIBarButtonItem = {
+        let barButtonItem = UIBarButtonItem()
+        barButtonItem.image = UIImage(systemName: "ellipsis")
+        return barButtonItem
+    }()
 
     lazy var tableView: UITableView = {
         let tableView = UITableView()
@@ -52,6 +58,32 @@ extension ListStatusViewController {
             }
             .store(in: &disposeBag)
         view.backgroundColor = .systemBackground
+        
+        navigationItem.rightBarButtonItem = menuBarButtonItem
+        context.authenticationService.$activeAuthenticationContext
+            .asyncMap { [weak self] authenticationContext -> UIMenu? in
+                guard let self = self else { return nil }
+                guard let list = self.viewModel.list else { return nil }
+                guard let authenticationContext = authenticationContext else { return nil }
+                do {
+                    let menu = try await DataSourceFacade.createMenuForList(
+                        dependency: self,
+                        list: list,
+                        authenticationContext: authenticationContext
+                    )
+                    return menu
+                } catch {
+                    assertionFailure(error.localizedDescription)
+                    return nil
+                }
+            }
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] menu in
+                guard let self = self else { return }
+                guard let menu = menu else { return }
+                self.menuBarButtonItem.menu = menu
+            }
+            .store(in: &disposeBag)
         
         tableView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(tableView)

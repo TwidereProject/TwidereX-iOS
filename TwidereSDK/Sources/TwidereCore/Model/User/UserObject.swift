@@ -22,4 +22,13 @@ extension UserObject {
             return .mastodon(record: .init(objectID: object.objectID))
         }
     }
+    
+    public var userIdentifer: UserIdentifier {
+        switch self {
+        case .twitter(let object):
+            return .twitter(.init(id: object.id))
+        case .mastodon(let object):
+            return .mastodon(.init(domain: object.domain, id: object.id))
+        }
+    }
 }

@@ -22,3 +22,14 @@ extension ListObject {
         }
     }
 }
+
+extension ListObject {
+    public var owner: UserObject {
+        switch self {
+        case .twitter(let object):
+            return .twitter(object: object.owner)
+        case .mastodon(let object):
+            return .mastodon(object: object.owner)
+        }
+    }
+}
