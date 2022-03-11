@@ -1,32 +1,31 @@
 //
-//  ListViewModel.swift
+//  ListUserViewModel.swift
 //  TwidereX
 //
-//  Created by MainasuK on 2022-2-28.
+//  Created by MainasuK on 2022-3-11.
 //  Copyright © 2022 Twidere. All rights reserved.
 //
 
+import os.log
 import UIKit
 import Combine
-import CoreDataStack
-import TwidereCore
 import GameplayKit
+import TwidereCore
 
-class ListViewModel {
+final class ListUserViewModel {
     
     var disposeBag = Set<AnyCancellable>()
+    let logger = Logger(subsystem: "ListStatusViewModel", category: "ViewModel")
     
     // input
     let context: AppContext
     let kind: Kind
-    let fetchedResultController: ListRecordFetchedResultController
+    let fetchedResultController: UserRecordFetchedResultController
     let listBatchFetchViewModel = ListBatchFetchViewModel()
-    
+
     // output
-    var diffableDataSource: UITableViewDiffableDataSource<ListSection, ListItem>?
-    
+    var diffableDataSource: UITableViewDiffableDataSource<UserSection, UserItem>?
     @MainActor private(set) lazy var stateMachine: GKStateMachine = {
-        // exclude timeline middle fetcher state
         let stateMachine = GKStateMachine(states: [
             State.Initial(viewModel: self),
             State.Reloading(viewModel: self),
@@ -38,20 +37,20 @@ class ListViewModel {
         stateMachine.enter(State.Initial.self)
         return stateMachine
     }()
-    
+
     init(
         context: AppContext,
         kind: Kind
     ) {
         self.context = context
         self.kind = kind
-        self.fetchedResultController = ListRecordFetchedResultController(managedObjectContext: context.managedObjectContext)
+        self.fetchedResultController = UserRecordFetchedResultController(managedObjectContext: context.managedObjectContext)
         // end init
-
+        
         Task {
             let _userIdentifer: UserIdentifier? = await context.managedObjectContext.perform {
-                guard let user = kind.user?.object(in: context.managedObjectContext) else { return nil }
-                return UserIdentifier(object: user)
+                guard let list = kind.list.object(in: context.managedObjectContext) else { return nil }
+                return UserIdentifier(object: list.owner)
             }
             guard let userIdentifer = _userIdentifer else { return }
             
@@ -62,20 +61,22 @@ class ListViewModel {
     
 }
 
-
-extension ListViewModel {
+extension ListUserViewModel {
     enum Kind {
-        case none       // disabled
-        case owned(user: UserRecord)
-        case subscribed(user: UserRecord)
-        case listed(user: UserRecord)
+        case members(list: ListRecord)
+        case subscribers(list: ListRecord)
         
-        var user: UserRecord? {
+        var list: ListRecord {
             switch self {
-            case .none:                     return nil
-            case .owned(let user):          return user
-            case .subscribed(let user):     return user
-            case .listed(let user):         return user
+            case .members(let list):        return list
+            case .subscribers(let list):    return list
+            }
+        }
+        
+        var title: String {
+            switch self {
+            case .members:      return L10n.Scene.ListsDetails.Tabs.members
+            case .subscribers:  return L10n.Scene.ListsDetails.Tabs.subscriber
             }
         }
     }

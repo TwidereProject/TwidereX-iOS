@@ -11,9 +11,9 @@ import CoreDataStack
 import TwitterSDK
 import MastodonSDK
 
-enum NotificationFetchViewModel {
-    
-    enum Result {
+public enum NotificationFetchViewModel {
+
+    public enum Result {
         case twitter([Twitter.Entity.Tweet]) // v1
         case mastodon([Mastodon.Entity.Notification])
     }
@@ -22,24 +22,30 @@ enum NotificationFetchViewModel {
 
 extension NotificationFetchViewModel {
 
-    enum Input {
+    public enum Input {
         case twitter(TwitterFetchContext)
          case mastodon(MastodonFetchContext)
     }
     
-    struct Output {
-        let result: Result
-        let nextInput: Input?
+    public struct Output {
+        public let result: Result
+        public let nextInput: Input?
         
-        var hasMore: Bool {
+        public var hasMore: Bool {
             nextInput != nil
         }
     }
 
-    struct TwitterFetchContext {
-        let authenticationContext: TwitterAuthenticationContext
-        let maxID: Twitter.Entity.Tweet.ID?
-        let count: Int?
+    public struct TwitterFetchContext {
+        public let authenticationContext: TwitterAuthenticationContext
+        public let maxID: Twitter.Entity.Tweet.ID?
+        public let count: Int?
+        
+        public init(authenticationContext: TwitterAuthenticationContext, maxID: Twitter.Entity.Tweet.ID?, count: Int?) {
+            self.authenticationContext = authenticationContext
+            self.maxID = maxID
+            self.count = count
+        }
         
         func map(maxID: String) -> TwitterFetchContext {
             return TwitterFetchContext(
@@ -50,13 +56,24 @@ extension NotificationFetchViewModel {
         }
     }
     
-    struct MastodonFetchContext {
-        let authenticationContext: MastodonAuthenticationContext
-        let maxID: String?
-        let excludeTypes: [Mastodon.Entity.Notification.NotificationType]?
+    public struct MastodonFetchContext {
+        public let authenticationContext: MastodonAuthenticationContext
+        public let maxID: String?
+        public let excludeTypes: [Mastodon.Entity.Notification.NotificationType]?
+        public let limit: Int?
 
-        let limit: Int?
-
+        public init(
+            authenticationContext: MastodonAuthenticationContext,
+            maxID: String?,
+            excludeTypes: [Mastodon.Entity.Notification.NotificationType]?,
+            limit: Int?
+        ) {
+            self.authenticationContext = authenticationContext
+            self.maxID = maxID
+            self.excludeTypes = excludeTypes
+            self.limit = limit
+        }
+        
         func map(maxID: String) -> MastodonFetchContext {
             return MastodonFetchContext(
                 authenticationContext: authenticationContext,
@@ -67,7 +84,7 @@ extension NotificationFetchViewModel {
         }
     }
     
-    static func timeline(context: AppContext, input: Input) async throws -> Output {
+    public static func timeline(api: APIService, input: Input) async throws -> Output {
         switch input {
         case .twitter(let fetchContext):
             let authenticationContext = fetchContext.authenticationContext
@@ -75,7 +92,7 @@ extension NotificationFetchViewModel {
                 count: fetchContext.count,
                 maxID: fetchContext.maxID
             )
-            let response = try await context.apiService.twitterMentionTimeline(
+            let response = try await api.twitterMentionTimeline(
                 query: query,
                 authenticationContext: authenticationContext
             )
@@ -97,7 +114,7 @@ extension NotificationFetchViewModel {
                 excludeTypes: fetchContext.excludeTypes,
                 accountID: nil
             )
-            let response = try await context.apiService.mastodonNotificationTimeline(
+            let response = try await api.mastodonNotificationTimeline(
                 query: query,
                 authenticationContext: authenticationContext
             )

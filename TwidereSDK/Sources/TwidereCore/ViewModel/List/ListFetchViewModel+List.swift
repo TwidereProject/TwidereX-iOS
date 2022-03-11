@@ -11,31 +11,42 @@ import Foundation
 import CoreDataStack
 import TwitterSDK
 import MastodonSDK
-import TwidereCore
 
 extension ListFetchViewModel.List {
 
-    enum Input {
+    public enum Input {
         case twitterUserOwned(TwitterFetchContext)
         case twitterUserFollowed(TwitterFetchContext)
         case twitterUserListed(TwitterFetchContext)
         case mastodonUserOwned(MastodonFetchContext)
     }
     
-    struct Output {
-        let result: ListFetchViewModel.Result
-        let nextInput: Input?
+    public struct Output {
+        public let result: ListFetchViewModel.Result
+        public let nextInput: Input?
         
-        var hasMore: Bool {
+        public var hasMore: Bool {
             nextInput != nil
         }
     }
     
-    struct TwitterFetchContext {
-        let authenticationContext: TwitterAuthenticationContext
-        let user: ManagedObjectRecord<TwitterUser>
-        let maxResults: Int?
-        let nextToken: String?
+    public struct TwitterFetchContext {
+        public let authenticationContext: TwitterAuthenticationContext
+        public let user: ManagedObjectRecord<TwitterUser>
+        public let maxResults: Int?
+        public let nextToken: String?
+        
+        public init(
+            authenticationContext: TwitterAuthenticationContext,
+            user: ManagedObjectRecord<TwitterUser>,
+            maxResults: Int?,
+            nextToken: String?
+        ) {
+            self.authenticationContext = authenticationContext
+            self.user = user
+            self.maxResults = maxResults
+            self.nextToken = nextToken
+        }
         
         func map(nextToken: String) -> TwitterFetchContext {
             return TwitterFetchContext(
@@ -47,18 +58,24 @@ extension ListFetchViewModel.List {
         }
     }
     
-    struct MastodonFetchContext {
-        let authenticationContext: MastodonAuthenticationContext
+    public struct MastodonFetchContext {
+        public let authenticationContext: MastodonAuthenticationContext
+    
+        public init(
+            authenticationContext: MastodonAuthenticationContext
+        ) {
+            self.authenticationContext = authenticationContext
+        }
     }
 
-    static func list(context: AppContext, input: Input) async throws -> Output {
+    public static func list(api: APIService, input: Input) async throws -> Output {
         switch input {
         case .twitterUserOwned(let fetchContext):
             let query = Twitter.API.V2.User.List.OwnedListsQuery(
                 maxResults: fetchContext.maxResults ?? 50,
                 nextToken: fetchContext.nextToken
             )
-            let response = try await context.apiService.twitterUserOwnedLists(
+            let response = try await api.twitterUserOwnedLists(
                 user: fetchContext.user,
                 query: query,
                 authenticationContext: fetchContext.authenticationContext
@@ -77,7 +94,7 @@ extension ListFetchViewModel.List {
                 maxResults: fetchContext.maxResults ?? 50,
                 nextToken: fetchContext.nextToken
             )
-            let response = try await context.apiService.twitterUserFollowedLists(
+            let response = try await api.twitterUserFollowedLists(
                 user: fetchContext.user,
                 query: query,
                 authenticationContext: fetchContext.authenticationContext
@@ -96,7 +113,7 @@ extension ListFetchViewModel.List {
                 maxResults: fetchContext.maxResults ?? 50,
                 nextToken: fetchContext.nextToken
             )
-            let response = try await context.apiService.twitterUserListMemberships(
+            let response = try await api.twitterUserListMemberships(
                 user: fetchContext.user,
                 query: query,
                 authenticationContext: fetchContext.authenticationContext
@@ -111,7 +128,7 @@ extension ListFetchViewModel.List {
                 }()
             )
         case .mastodonUserOwned(let fetchContext):
-            let response = try await context.apiService.mastodonUserOwnedLists(
+            let response = try await api.mastodonUserOwnedLists(
                 authenticationContext: fetchContext.authenticationContext
             )
             let content = response.value

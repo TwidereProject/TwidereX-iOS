@@ -8,7 +8,6 @@
 
 import os.log
 import Foundation
-import TwidereCore
 import TwitterSDK
 import MastodonSDK
 
@@ -16,23 +15,30 @@ extension UserFetchViewModel.Search {
     
     static let logger = Logger(subsystem: "UserFetchViewModel.Search", category: "ViewModel")
     
-    enum Input {
+    public enum Input {
         case twitter(TwitterFetchContext)
         case mastodon(MastodonFetchContext)
     }
     
-    struct Output {
-        let result: UserFetchViewModel.Result
+    public struct Output {
+        public let result: UserFetchViewModel.Result
         
-        let hasMore: Bool
-        let nextInput: Input?
+        public let hasMore: Bool
+        public let nextInput: Input?
     }
     
-    struct TwitterFetchContext {
-        let authenticationContext: TwitterAuthenticationContext
-        let searchText: String
-        let page: Int
-        let count: Int?
+    public struct TwitterFetchContext {
+        public let authenticationContext: TwitterAuthenticationContext
+        public let searchText: String
+        public let page: Int
+        public let count: Int?
+        
+        public init(authenticationContext: TwitterAuthenticationContext, searchText: String, page: Int, count: Int?) {
+            self.authenticationContext = authenticationContext
+            self.searchText = searchText
+            self.page = page
+            self.count = count
+        }
         
         func map(page: Int) -> TwitterFetchContext {
             return TwitterFetchContext(
@@ -44,11 +50,18 @@ extension UserFetchViewModel.Search {
         }
     }
     
-    struct MastodonFetchContext {
-        let authenticationContext: MastodonAuthenticationContext
-        let searchText: String
-        let offset: Int
-        let count: Int?
+    public struct MastodonFetchContext {
+        public let authenticationContext: MastodonAuthenticationContext
+        public let searchText: String
+        public let offset: Int
+        public let count: Int?
+        
+        public init(authenticationContext: MastodonAuthenticationContext, searchText: String, offset: Int, count: Int?) {
+            self.authenticationContext = authenticationContext
+            self.searchText = searchText
+            self.offset = offset
+            self.count = count
+        }
         
         func map(offset: Int) -> MastodonFetchContext {
             return MastodonFetchContext(
@@ -60,7 +73,7 @@ extension UserFetchViewModel.Search {
         }
     }
 
-    static func timeline(context: AppContext, input: Input) async throws -> Output {
+    public static func timeline(api: APIService, input: Input) async throws -> Output {
         switch input {
         case .twitter(let fetchContext):
             let searchText: String = try {
@@ -76,7 +89,7 @@ extension UserFetchViewModel.Search {
                 count: fetchContext.count ?? 20
             )
             logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): fetch at page \(query.page)")
-            let response = try await context.apiService.searchTwitterUser(
+            let response = try await api.searchTwitterUser(
                 query: query,
                 authenticationContext: fetchContext.authenticationContext
             )
@@ -108,7 +121,7 @@ extension UserFetchViewModel.Search {
                 offset: fetchContext.offset
             )
             logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): fetch at offset \(query.offset ?? -1)")
-            let response = try await context.apiService.searchMastodon(
+            let response = try await api.searchMastodon(
                 query: query,
                 authenticationContext: fetchContext.authenticationContext
             )

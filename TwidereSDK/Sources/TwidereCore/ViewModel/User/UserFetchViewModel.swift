@@ -8,15 +8,14 @@
 
 import os.log
 import Foundation
-import TwidereCore
 import TwitterSDK
 import MastodonSDK
 
-enum UserFetchViewModel {
+public enum UserFetchViewModel {
     
     static let logger = Logger(subsystem: "UserFetchViewModel", category: "ViewModel")
     
-    enum Result {
+    public enum Result {
         case twitter([Twitter.Entity.User]) // v1
         case twitterV2([Twitter.Entity.V2.User]) // v2
         case mastodon([Mastodon.Entity.Account])
@@ -24,6 +23,7 @@ enum UserFetchViewModel {
 }
 
 extension UserFetchViewModel {
-    enum Search { }
-    enum Friendship { }
+    public enum Friendship { }
+    public enum List { }
+    public enum Search { }
 }

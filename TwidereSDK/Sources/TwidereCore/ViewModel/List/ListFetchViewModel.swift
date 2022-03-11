@@ -11,17 +11,14 @@ import Foundation
 import CoreDataStack
 import TwitterSDK
 import MastodonSDK
-import TwidereCore
 
-enum ListFetchViewModel {
-        
-    enum Result {
+public enum ListFetchViewModel {
+    public enum Result {
         case twitter([Twitter.Entity.V2.List])
         case mastodon([Mastodon.Entity.List])
     }
-    
 }
 
 extension ListFetchViewModel {
-    enum List { }
+    public enum List { }
 }

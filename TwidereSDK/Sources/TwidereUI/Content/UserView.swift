@@ -213,7 +213,7 @@ extension UserView {
         // header: notification
         // headline: name | lock | username
         // subheadline: follower count
-        // accessory: menu
+        // accessory: none // TODO: menu
         case notification
         // headline: name | lock
         // subheadline: username

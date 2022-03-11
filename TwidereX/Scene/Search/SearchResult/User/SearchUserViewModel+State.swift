@@ -110,7 +110,7 @@ extension SearchUserViewModel.State {
                     logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): fetch…")
                     
                     let output = try await UserFetchViewModel.Search.timeline(
-                        context: viewModel.context,
+                        api: viewModel.context.apiService,
                         input: input
                     )
                     

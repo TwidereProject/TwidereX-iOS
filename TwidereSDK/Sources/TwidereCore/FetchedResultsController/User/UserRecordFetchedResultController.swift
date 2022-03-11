@@ -25,7 +25,7 @@ final public class UserRecordFetchedResultController {
     @Published public var userIdentifier: UserIdentifier?
     
     // output
-    public let records = CurrentValueSubject<[UserRecord], Never>([])
+    @Published public var records: [UserRecord] = []
     
     public init(managedObjectContext: NSManagedObjectContext) {
         self.twitterUserFetchedResultsController = TwitterUserFetchedResultsController(managedObjectContext: managedObjectContext)
@@ -51,15 +51,13 @@ final public class UserRecordFetchedResultController {
             twitterUserFetchedResultsController.records,
             mastodonUserFetchedResultController.records
         )
-            .map { twitterRecords, mastodonRecords in
-                var records: [UserRecord] = []
-                records.append(contentsOf: twitterRecords.map { .twitter(record: $0) })
-                records.append(contentsOf: mastodonRecords.map { .mastodon(record: $0) })
-                return records
-            }
-            .assign(to: \.value, on: records)
-            .store(in: &disposeBag)
-        
+        .map { twitterRecords, mastodonRecords in
+            var records: [UserRecord] = []
+            records.append(contentsOf: twitterRecords.map { .twitter(record: $0) })
+            records.append(contentsOf: mastodonRecords.map { .mastodon(record: $0) })
+            return records
+        }
+        .assign(to: &$records)
     }
     
 }

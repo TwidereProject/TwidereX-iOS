@@ -1,5 +1,5 @@
 //
-//  SlideTableViewCell.swift
+//  TableSlideTableViewCell.swift
 //  TwidereX
 //
 //  Created by Cirno MainasuK on 2020-11-19.
@@ -10,37 +10,36 @@ import os.log
 import UIKit
 import Combine
 
-final class SlideTableViewCell: UITableViewCell {
+public final class TableSlideTableViewCell: UITableViewCell {
     
-    var disposeBag = Set<AnyCancellable>()
+    public var disposeBag = Set<AnyCancellable>()
     
     let container = UIStackView()
     let leadingLabel = UILabel()
     let trailingLabel = UILabel()
     let slider = UISlider()
     
-    let sliderPublisher = PassthroughSubject<Float, Never>()
+    public let sliderPublisher = PassthroughSubject<Float, Never>()
     
-    override func prepareForReuse() {
+    public override func prepareForReuse() {
         super.prepareForReuse()
         
         disposeBag.removeAll()
     }
     
-    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+    public override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         _init()
     }
     
-    
-    required init?(coder: NSCoder) {
+    public required init?(coder: NSCoder) {
         super.init(coder: coder)
         _init()
     }
     
 }
 
-extension SlideTableViewCell {
+extension TableSlideTableViewCell {
     
     private func _init() {
         selectionStyle = .none
@@ -62,12 +61,12 @@ extension SlideTableViewCell {
         container.addArrangedSubview(slider)
         container.addArrangedSubview(trailingLabel)
 
-        slider.addTarget(self, action: #selector(SlideTableViewCell.sliderValueChagned(_:event:)), for: .valueChanged)
+        slider.addTarget(self, action: #selector(TableSlideTableViewCell.sliderValueChagned(_:event:)), for: .valueChanged)
     }
     
 }
 
-extension SlideTableViewCell {
+extension TableSlideTableViewCell {
     
     @objc private func sliderValueChagned(_ sender: UISlider, event: UIEvent) {
         sliderPublisher.send(sender.value)

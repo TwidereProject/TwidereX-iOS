@@ -34,7 +34,7 @@ final class DisplayPreferenceViewModel: NSObject {
             .avatarStyle(.roundedSquare),
         ]),
     ]
-    let fontSizeSlideTableViewCell = SlideTableViewCell()
+    let fontSizeSlideTableViewCell = TableSlideTableViewCell()
 
     override init() {
 //        customContentSizeCatagory = CurrentValueSubject(UserDefaults.shared.customContentSizeCatagory)

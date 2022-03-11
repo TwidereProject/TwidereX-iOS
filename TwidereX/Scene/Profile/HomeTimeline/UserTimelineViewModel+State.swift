@@ -9,6 +9,7 @@ import os.log
 import Foundation
 import GameplayKit
 import TwitterSDK
+import TwidereCore
 
 extension UserTimelineViewModel {
     
@@ -227,7 +228,7 @@ extension UserTimelineViewModel.State {
             Task {
                 do {
                     logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): fetch…")
-                    let output = try await StatusFetchViewModel.userTimeline(context: viewModel.context, input: input)
+                    let output = try await StatusFetchViewModel.userTimeline(api: viewModel.context.apiService, input: input)
                     
                     nextInput = output.nextInput
                     if output.hasMore {

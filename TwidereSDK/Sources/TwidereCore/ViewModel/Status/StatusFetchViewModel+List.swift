@@ -11,29 +11,35 @@ import Foundation
 import CoreDataStack
 import TwitterSDK
 import MastodonSDK
-import TwidereCore
 
 extension StatusFetchViewModel.List {
 
-    enum Input {
+    public enum Input {
         case twitter(TwitterFetchContext)
         case mastodon(MastodonFetchContext)
     }
     
-    struct Output {
-        let result: StatusFetchViewModel.Result
-        let nextInput: Input?
+    public struct Output {
+        public let result: StatusFetchViewModel.Result
+        public let nextInput: Input?
         
-        var hasMore: Bool {
+        public var hasMore: Bool {
             nextInput != nil
         }
     }
     
-    struct TwitterFetchContext {
-        let authenticationContext: TwitterAuthenticationContext
-        let list: ManagedObjectRecord<TwitterList>
-        let maxResults: Int?
-        let nextToken: String?
+    public struct TwitterFetchContext {
+        public let authenticationContext: TwitterAuthenticationContext
+        public let list: ManagedObjectRecord<TwitterList>
+        public let maxResults: Int?
+        public let nextToken: String?
+        
+        public init(authenticationContext: TwitterAuthenticationContext, list: ManagedObjectRecord<TwitterList>, maxResults: Int?, nextToken: String?) {
+            self.authenticationContext = authenticationContext
+            self.list = list
+            self.maxResults = maxResults
+            self.nextToken = nextToken
+        }
         
         func map(nextToken: Twitter.Entity.V2.Tweet.ID) -> TwitterFetchContext {
             return TwitterFetchContext(
@@ -45,11 +51,18 @@ extension StatusFetchViewModel.List {
         }
     }
     
-    struct MastodonFetchContext {
-        let authenticationContext: MastodonAuthenticationContext
-        let list: ManagedObjectRecord<MastodonList>
-        let maxID: Mastodon.Entity.Status.ID?
-        let limit: Int?
+    public struct MastodonFetchContext {
+        public let authenticationContext: MastodonAuthenticationContext
+        public let list: ManagedObjectRecord<MastodonList>
+        public let maxID: Mastodon.Entity.Status.ID?
+        public let limit: Int?
+        
+        public init(authenticationContext: MastodonAuthenticationContext, list: ManagedObjectRecord<MastodonList>, maxID: Mastodon.Entity.Status.ID?, limit: Int?) {
+            self.authenticationContext = authenticationContext
+            self.list = list
+            self.maxID = maxID
+            self.limit = limit
+        }
         
         func map(maxID: Mastodon.Entity.Status.ID) -> MastodonFetchContext {
             return MastodonFetchContext(
@@ -61,14 +74,14 @@ extension StatusFetchViewModel.List {
         }
     }
 
-    static func timeline(context: AppContext, input: Input) async throws -> Output {
+    public static func timeline(api: APIService, input: Input) async throws -> Output {
         switch input {
         case .twitter(let fetchContext):
             let query = Twitter.API.V2.Status.List.StatusesQuery(
                 maxResults: fetchContext.maxResults ?? 20,
                 nextToken: fetchContext.nextToken
             )
-            let response = try await context.apiService.twitterListStatuses(
+            let response = try await api.twitterListStatuses(
                 list: fetchContext.list,
                 query: query,
                 authenticationContext: fetchContext.authenticationContext
@@ -87,7 +100,7 @@ extension StatusFetchViewModel.List {
                 maxID: fetchContext.maxID,
                 limit: fetchContext.limit ?? 20
             )
-            let response = try await context.apiService.mastodonListStatuses(
+            let response = try await api.mastodonListStatuses(
                 list: fetchContext.list,
                 query: query,
                 authenticationContext: fetchContext.authenticationContext

@@ -16,8 +16,42 @@ import SwiftMessages
 
 extension DataSourceFacade {
     
+    static func coordinateToListMemberScene(
+        dependency: NeedsDependency & UIViewController,
+        list: ListRecord
+    ) async {
+        let listUserViewModel = ListUserViewModel(
+            context: dependency.context,
+            kind: .members(list: list)
+        )
+        await dependency.coordinator.present(
+            scene: .listUser(viewModel: listUserViewModel),
+            from: dependency,
+            transition: .show
+        )
+    }
+    
+    static func coordinateToListSubscriberScene(
+        dependency: NeedsDependency & UIViewController,
+        list: ListRecord
+    ) async {
+        let listUserViewModel = ListUserViewModel(
+            context: dependency.context,
+            kind: .subscribers(list: list)
+        )
+        await dependency.coordinator.present(
+            scene: .listUser(viewModel: listUserViewModel),
+            from: dependency,
+            transition: .show
+        )
+    }
+    
+}
+
+extension DataSourceFacade {
+    
     static func createMenuForList(
-        dependency: NeedsDependency,
+        dependency: NeedsDependency & UIViewController,
         list: ListRecord,
         authenticationContext: AuthenticationContext
     ) async throws -> UIMenu {
@@ -31,8 +65,14 @@ extension DataSourceFacade {
             discoverabilityTitle: nil,
             attributes: [],
             state: .off
-        ) { [weak dependency] action in
-            
+        ) { [weak dependency] _ in
+            guard let dependency = dependency else { return }
+            Task {
+                await coordinateToListMemberScene(
+                    dependency: dependency,
+                    list: list
+                )
+            }   // end Task
         }
         children.append(membersAction)
         
@@ -43,8 +83,14 @@ extension DataSourceFacade {
             discoverabilityTitle: nil,
             attributes: [],
             state: .off
-        ) { [weak dependency] action in
-            
+        ) { [weak dependency] _ in
+            guard let dependency = dependency else { return }
+            Task {
+                await coordinateToListSubscriberScene(
+                    dependency: dependency,
+                    list: list
+                )
+            }   // end Task
         }
         children.append(subscribersAction)
         
@@ -155,7 +201,7 @@ extension DataSourceFacade {
             config.interactiveHide = true
             let bannerView = NotificationBannerView()
             bannerView.configure(style: .success)
-            bannerView.titleLabel.text = L10n.Common.Alerts.FollowingSuccess.title
+            bannerView.titleLabel.text = relationship.isFollowing ? L10n.Common.Alerts.UnfollowingSuccess.title : L10n.Common.Alerts.FollowingSuccess.title
             bannerView.messageLabel.isHidden = true
             SwiftMessages.show(config: config, view: bannerView)
             
@@ -168,8 +214,8 @@ extension DataSourceFacade {
             config.interactiveHide = true
             let bannerView = NotificationBannerView()
             bannerView.configure(style: .warning)
-            bannerView.titleLabel.text = L10n.Common.Alerts.FailedToFollowing.title
-            bannerView.messageLabel.text = L10n.Common.Alerts.FailedToFollowing.message
+            bannerView.titleLabel.text = relationship.isFollowing ? L10n.Common.Alerts.FailedToUnfollowing.title : L10n.Common.Alerts.FailedToFollowing.title
+            bannerView.messageLabel.text = relationship.isFollowing ? L10n.Common.Alerts.FailedToUnfollowing.message : L10n.Common.Alerts.FailedToFollowing.message
             SwiftMessages.show(config: config, view: bannerView)
         }
     }

@@ -11,13 +11,12 @@ import Foundation
 import CoreDataStack
 import TwitterSDK
 import MastodonSDK
-import TwidereCore
 
-enum StatusFetchViewModel {
+public enum StatusFetchViewModel {
     
     static let logger = Logger(subsystem: "StatusListFetchViewModel", category: "ViewModel")
     
-    enum Result {
+    public enum Result {
         case twitter([Twitter.Entity.Tweet]) // v1
         case twitterV2([Twitter.Entity.V2.Tweet]) // v2
         case mastodon([Mastodon.Entity.Status])
@@ -26,18 +25,22 @@ enum StatusFetchViewModel {
 }
 
 extension StatusFetchViewModel {
-    enum Search { }
-    enum Hashtag { }
-    enum List { }
+    public enum Search { }
+    public enum Hashtag { }
+    public enum List { }
 }
 
 extension StatusFetchViewModel {
     @available(*, deprecated, message: "")
-    struct Input {
-        let fetchContext: FetchContext
+    public struct Input {
+        public let fetchContext: FetchContext
+        
+        public init(fetchContext: StatusFetchViewModel.Input.FetchContext) {
+            self.fetchContext = fetchContext
+        }
         
         // TODO: refactor this with protocol and more specific case
-        enum FetchContext {
+        public enum FetchContext {
             case twitter(TwitterFetchContext)
             case mastodon(MastodonFetchContext)
             
@@ -51,15 +54,35 @@ extension StatusFetchViewModel {
     }
     
     @available(*, deprecated, message: "")
-    struct TwitterFetchContext {
-        let authenticationContext: TwitterAuthenticationContext
-        let searchText: String?
-        let maxID: TwitterStatus.ID?
-        let nextToken: String?
-        let count: Int?
-        let excludeReplies: Bool
-        let onlyMedia: Bool
-        let userIdentifier: TwitterUserIdentifier?
+    public struct TwitterFetchContext {
+        public let authenticationContext: TwitterAuthenticationContext
+        public let searchText: String?
+        public let maxID: TwitterStatus.ID?
+        public let nextToken: String?
+        public let count: Int?
+        public let excludeReplies: Bool
+        public let onlyMedia: Bool
+        public let userIdentifier: TwitterUserIdentifier?
+        
+        public init(
+            authenticationContext: TwitterAuthenticationContext,
+            searchText: String?,
+            maxID: TwitterStatus.ID?,
+            nextToken: String?,
+            count: Int?,
+            excludeReplies: Bool,
+            onlyMedia: Bool,
+            userIdentifier: TwitterUserIdentifier?
+        ) {
+            self.authenticationContext = authenticationContext
+            self.searchText = searchText
+            self.maxID = maxID
+            self.nextToken = nextToken
+            self.count = count
+            self.excludeReplies = excludeReplies
+            self.onlyMedia = onlyMedia
+            self.userIdentifier = userIdentifier
+        }
         
         func map(maxID: TwitterStatus.ID?) -> TwitterFetchContext {
             TwitterFetchContext(
@@ -89,17 +112,41 @@ extension StatusFetchViewModel {
     }
     
     @available(*, deprecated, message: "")
-    struct MastodonFetchContext {
-        let authenticationContext: MastodonAuthenticationContext
-        let searchText: String?
-        let offset: Int?
-        let maxID: MastodonStatus.ID?
-        let count: Int?
-        let excludeReplies: Bool
-        let excludeReblogs: Bool
-        let onlyMedia: Bool
-        let userIdentifier: MastodonUserIdentifier?
-        let local: Bool?
+    public struct MastodonFetchContext {
+        public let authenticationContext: MastodonAuthenticationContext
+        public let searchText: String?
+        public let offset: Int?
+        public let maxID: MastodonStatus.ID?
+        public let count: Int?
+        public let excludeReplies: Bool
+        public let excludeReblogs: Bool
+        public let onlyMedia: Bool
+        public let userIdentifier: MastodonUserIdentifier?
+        public let local: Bool?
+        
+        public init(
+            authenticationContext: MastodonAuthenticationContext,
+            searchText: String?,
+            offset: Int?,
+            maxID: MastodonStatus.ID?,
+            count: Int?,
+            excludeReplies: Bool,
+            excludeReblogs: Bool,
+            onlyMedia: Bool,
+            userIdentifier: MastodonUserIdentifier?,
+            local: Bool?
+        ) {
+            self.authenticationContext = authenticationContext
+            self.searchText = searchText
+            self.offset = offset
+            self.maxID = maxID
+            self.count = count
+            self.excludeReplies = excludeReplies
+            self.excludeReblogs = excludeReblogs
+            self.onlyMedia = onlyMedia
+            self.userIdentifier = userIdentifier
+            self.local = local
+        }
         
         func map(maxID: MastodonStatus.ID?) -> MastodonFetchContext {
             MastodonFetchContext(
@@ -133,13 +180,13 @@ extension StatusFetchViewModel {
     }
     
     @available(*, deprecated, message: "")
-    struct Output {
-        let result: Result
+    public struct Output {
+        public let result: Result
         
-        let hasMore: Bool
-        let nextInput: Input?
+        public let hasMore: Bool
+        public let nextInput: Input?
         
-        enum Result {
+        public enum Result {
             case twitter([Twitter.Entity.Tweet]) // v1
             case twitterV2([Twitter.Entity.V2.Tweet]) // v2
             case mastodon([Mastodon.Entity.Status])
@@ -149,11 +196,11 @@ extension StatusFetchViewModel {
 }
 
 extension StatusFetchViewModel {
-    static func homeTimeline(context: AppContext, input: Input) async throws -> Output {    
+    public static func homeTimeline(api: APIService, input: Input) async throws -> Output {
         switch input.fetchContext {
         case .twitter(let fetchContext):
             let authenticationContext = fetchContext.authenticationContext
-            let response = try await context.apiService.twitterHomeTimeline(
+            let response = try await api.twitterHomeTimeline(
                 maxID: fetchContext.maxID,
                 count: fetchContext.count ?? 100,
                 authenticationContext: authenticationContext
@@ -172,7 +219,7 @@ extension StatusFetchViewModel {
             )
         case .mastodon(let fetchContext):
             let authenticationContext = fetchContext.authenticationContext
-            let response = try await context.apiService.mastodonHomeTimeline(
+            let response = try await api.mastodonHomeTimeline(
                 maxID: fetchContext.maxID,
                 count: fetchContext.count ?? 100,
                 authenticationContext: authenticationContext
@@ -192,14 +239,14 @@ extension StatusFetchViewModel {
         }
     }
     
-    static func publicTimeline(context: AppContext, input: Input) async throws -> Output {
+    public static func publicTimeline(api: APIService, input: Input) async throws -> Output {
         switch input.fetchContext {
         case .twitter(let fetchContext):
             assertionFailure("Invalid entry")
             throw AppError.implicit(.badRequest)
         case .mastodon(let fetchContext):
             let authenticationContext = fetchContext.authenticationContext
-            let response = try await context.apiService.mastodonPublicTimeline(
+            let response = try await api.mastodonPublicTimeline(
                 local: fetchContext.local ?? false,
                 maxID: fetchContext.maxID,
                 count: fetchContext.count ?? 100,
@@ -222,7 +269,7 @@ extension StatusFetchViewModel {
         }
     }
     
-    static func userTimeline(context: AppContext, input: Input) async throws -> Output {
+    public static func userTimeline(api: APIService, input: Input) async throws -> Output {
         switch input.fetchContext {
         case .twitter(let fetchContext):
             guard let userID = fetchContext.userIdentifier?.id else {
@@ -235,7 +282,7 @@ extension StatusFetchViewModel {
                 excludeReplies: fetchContext.excludeReplies
             )
             let authenticationContext = fetchContext.authenticationContext
-            let response = try await context.apiService.twitterUserTimeline(
+            let response = try await api.twitterUserTimeline(
                 query: query,
                 authenticationContext: authenticationContext
             )
@@ -265,7 +312,7 @@ extension StatusFetchViewModel {
                 onlyMedia: fetchContext.onlyMedia,
                 limit: fetchContext.count ?? 100
             )
-            let response = try await context.apiService.mastodonUserTimeline(
+            let response = try await api.mastodonUserTimeline(
                 accountID: accountID,
                 query: query,
                 authenticationContext: authenticationContext
@@ -285,7 +332,7 @@ extension StatusFetchViewModel {
         }
     }
     
-    static func likeTimeline(context: AppContext, input: Input) async throws -> Output {
+    public static func likeTimeline(api: APIService, input: Input) async throws -> Output {
         switch input.fetchContext {
         case .twitter(let fetchContext):
             guard let userID = fetchContext.userIdentifier?.id else {
@@ -297,7 +344,7 @@ extension StatusFetchViewModel {
                 userID: userID,
                 maxID: fetchContext.maxID
             )
-            let response = try await context.apiService.twitterLikeTimeline(
+            let response = try await api.twitterLikeTimeline(
                 query: query,
                 authenticationContext: authenticationContext
             )
@@ -319,7 +366,7 @@ extension StatusFetchViewModel {
                 limit: fetchContext.count ?? 100,
                 maxID: fetchContext.maxID
             )
-            let response = try await context.apiService.mastodonLikeTimeline(
+            let response = try await api.mastodonLikeTimeline(
                 query: query,
                 authenticationContext: authenticationContext
             )

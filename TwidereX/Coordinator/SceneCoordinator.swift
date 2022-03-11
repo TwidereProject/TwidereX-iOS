@@ -60,6 +60,7 @@ extension SceneCoordinator {
         case compositeList(viewModel: CompositeListViewModel)
         case list(viewModel: ListViewModel)
         case listStatus(viewModel: ListStatusViewModel)
+        case listUser(viewModel: ListUserViewModel)
         
         // Status
         case statusThread(viewModel: StatusThreadViewModel)
@@ -242,6 +243,10 @@ private extension SceneCoordinator {
             viewController = _viewController
         case .listStatus(let viewModel):
             let _viewController = ListStatusViewController()
+            _viewController.viewModel = viewModel
+            viewController = _viewController
+        case .listUser(let viewModel):
+            let _viewController = ListUserViewController()
             _viewController.viewModel = viewModel
             viewController = _viewController
         case .statusThread(let viewModel):

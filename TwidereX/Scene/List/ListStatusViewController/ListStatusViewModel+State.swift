@@ -144,7 +144,7 @@ extension ListStatusViewModel.State {
                 do {
                     logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): fetch…")
                     
-                    let output = try await StatusFetchViewModel.List.timeline(context: viewModel.context, input: input)
+                    let output = try await StatusFetchViewModel.List.timeline(api: viewModel.context.apiService, input: input)
                     nextInput = output.nextInput
                     if output.hasMore {
                         await enter(state: Idle.self)

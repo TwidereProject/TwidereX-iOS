@@ -9,6 +9,7 @@
 import os.log
 import Foundation
 import GameplayKit
+import TwidereCore
 
 extension HashtagTimelineViewModel {
     class State: GKState {
@@ -110,7 +111,7 @@ extension HashtagTimelineViewModel.State {
                 do {
                     logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): fetch \(searchText)…")
                     let output = try await StatusFetchViewModel.Hashtag.timeline(
-                        context: viewModel.context,
+                        api: viewModel.context.apiService,
                         input: input
                     )
 

@@ -149,9 +149,9 @@ extension TimelineViewModel.LoadOldestState {
                 let output: StatusFetchViewModel.Output = try await {
                     switch viewModel.kind {
                     case .home:
-                        return try await StatusFetchViewModel.homeTimeline(context: viewModel.context, input: input)
+                        return try await StatusFetchViewModel.homeTimeline(api: viewModel.context.apiService, input: input)
                     case .federated:
-                        return try await StatusFetchViewModel.publicTimeline(context: viewModel.context, input: input)
+                        return try await StatusFetchViewModel.publicTimeline(api: viewModel.context.apiService, input: input)
                     }
                 }()
                 

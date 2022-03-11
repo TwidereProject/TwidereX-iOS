@@ -1,5 +1,5 @@
 //
-//  StatusFetchViewModel+Search.swift
+//  StatusFetchViewModel+Hashtag.swift
 //  TwidereX
 //
 //  Created by MainasuK on 2022-3-2.
@@ -11,59 +11,54 @@ import Foundation
 import CoreDataStack
 import TwitterSDK
 import MastodonSDK
-import TwidereCore
 
-extension StatusFetchViewModel.Search {
-    
-    enum Input {
+extension StatusFetchViewModel.Hashtag {
+
+    public enum Input {
         case twitter(TwitterFetchContext)
         case mastodon(MastodonFetchContext)
     }
     
-    struct Output {
-        let result: StatusFetchViewModel.Result
-        let nextInput: Input?
+    public struct Output {
+        public let result: StatusFetchViewModel.Result
+        public let nextInput: Input?
         
-        var hasMore: Bool {
+        public var hasMore: Bool {
             nextInput != nil
         }
     }
     
-    struct TwitterFetchContext {
-        let authenticationContext: TwitterAuthenticationContext
-        let searchText: String
-        let onlyMedia: Bool
-        let nextToken: String?
-        let maxResults: Int?
-        
-        func map(nextToken: String) -> TwitterFetchContext {
-            return TwitterFetchContext(
-                authenticationContext: authenticationContext,
-                searchText: searchText,
-                onlyMedia: onlyMedia,
-                nextToken: nextToken,
-                maxResults: maxResults
-            )
-        }
-    }
+    public typealias TwitterFetchContext = StatusFetchViewModel.Search.TwitterFetchContext
     
-    struct MastodonFetchContext {
-        let authenticationContext: MastodonAuthenticationContext
-        let searchText: String
-        let offset: Int
-        let limit: Int?
+    public struct MastodonFetchContext {
+        public let authenticationContext: MastodonAuthenticationContext
+        public let hashtag: String
+        public let maxID: Mastodon.Entity.Status.ID?
+        public let limit: Int?
         
-        func map(offset: Int) -> MastodonFetchContext {
+        public init(
+            authenticationContext: MastodonAuthenticationContext,
+            hashtag: String,
+            maxID: Mastodon.Entity.Status.ID?,
+            limit: Int?
+        ) {
+            self.authenticationContext = authenticationContext
+            self.hashtag = hashtag
+            self.maxID = maxID
+            self.limit = limit
+        }
+        
+        func map(maxID: Mastodon.Entity.Status.ID) -> MastodonFetchContext {
             return MastodonFetchContext(
                 authenticationContext: authenticationContext,
-                searchText: searchText,
-                offset: offset,
+                hashtag: hashtag,
+                maxID: maxID,
                 limit: limit
             )
         }
     }
     
-    static func timeline(context: AppContext, input: Input) async throws -> Output {
+    public static func timeline(api: APIService, input: Input) async throws -> Output {
         switch input {
         case .twitter(let fetchContext):
             let authenticationContext = fetchContext.authenticationContext
@@ -91,7 +86,7 @@ extension StatusFetchViewModel.Search {
                 startTime: nil,
                 nextToken: fetchContext.nextToken
             )
-            let response = try await context.apiService.searchTwitterStatus(
+            let response = try await api.searchTwitterStatus(
                 query: query,
                 authenticationContext: authenticationContext
             )
@@ -104,39 +99,27 @@ extension StatusFetchViewModel.Search {
                     return .twitter(fetchContext)
                 }()
             )
-            
         case .mastodon(let fetchContext):
             let authenticationContext = fetchContext.authenticationContext
-            let searchText = fetchContext.searchText.trimmingCharacters(in: .whitespacesAndNewlines)
-            guard !searchText.isEmpty else {
-                throw AppError.implicit(.badRequest)
-            }
-            let query = Mastodon.API.V2.Search.SearchQuery(
-                type: .statuses,
-                accountID: nil,
-                maxID: nil,
-                minID: nil,
-                excludeUnreviewed: nil,
-                q: searchText,
-                resolve: true,
-                limit: fetchContext.limit,
-                offset: fetchContext.offset,
-                following: nil
+            let query = Mastodon.API.Timeline.TimelineQuery(
+                maxID: fetchContext.maxID,
+                limit: fetchContext.limit
             )
-            let response = try await context.apiService.searchMastodon(
+            let response = try await api.mastodonHashtagTimeline(
+                hashtag: fetchContext.hashtag,
                 query: query,
                 authenticationContext: authenticationContext
             )
             return Output(
-                result: .mastodon(response.value.statuses),
+                result: .mastodon(response.value),
                 nextInput: {
-                    guard !response.value.statuses.isEmpty else { return nil }
-                    let offset = fetchContext.offset + response.value.statuses.count
-                    let fetchContext = fetchContext.map(offset: offset)
+                    guard let maxID = response.value.last?.id else { return nil }
+                    let fetchContext = fetchContext.map(maxID: maxID)
                     return .mastodon(fetchContext)
                 }()
             )
-        }
+        }   // end switch input { }
     }
     
+
 }

@@ -236,7 +236,7 @@ extension DataSourceFacade {
                     }()
                     presentStatusDeleteFailureNotification(title: title, message: message, error: error)
                 }
-            }
+            }   // end Task
         }
         alertController.addAction(deleteAction)
         let cancelAction = UIAlertAction.cancel

@@ -91,7 +91,7 @@ extension NotificationTimelineViewModel.LoadOldestState {
 
                 do {
                     logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): fetch…")
-                    let output = try await NotificationFetchViewModel.timeline(context: viewModel.context, input: input)
+                    let output = try await NotificationFetchViewModel.timeline(api: viewModel.context.apiService, input: input)
                     if output.hasMore {
                         await enter(state: Idle.self)
                     } else {

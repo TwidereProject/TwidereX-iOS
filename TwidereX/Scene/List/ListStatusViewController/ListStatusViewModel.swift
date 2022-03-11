@@ -59,7 +59,8 @@ class ListStatusViewModel {
             .assign(to: &fetchedResultController.$userIdentifier)
         
         $list
-            .asyncMap { record in
+            .asyncMap { [weak self] record in
+                guard let self = self else { return nil }
                 guard let list = record?.object(in: context.managedObjectContext) else { return nil }
                 switch list {
                 case .twitter(let object):      return object.name

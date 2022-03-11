@@ -10,6 +10,7 @@ import os.log
 import Foundation
 import GameplayKit
 import TwitterSDK
+import TwidereCore
 
 extension SearchMediaViewModel {
     class State: GKState {
@@ -116,7 +117,7 @@ extension SearchMediaViewModel.State {
                 do {
                     logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): fetch…")
                     let output = try await StatusFetchViewModel.Search.timeline(
-                        context: viewModel.context,
+                        api: viewModel.context.apiService,
                         input: input
                     )
                     

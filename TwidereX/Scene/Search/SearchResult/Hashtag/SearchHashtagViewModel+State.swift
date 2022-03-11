@@ -105,7 +105,7 @@ extension SearchHashtagViewModel.State {
                 do {
                     logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): fetch \(searchText)…")
                     let output = try await HashtagFetchViewModel.Search.list(
-                        context: viewModel.context,
+                        api: viewModel.context.apiService,
                         input: input
                     )
 

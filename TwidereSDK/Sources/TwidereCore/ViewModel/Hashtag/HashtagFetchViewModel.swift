@@ -10,16 +10,15 @@ import os.log
 import Foundation
 import MastodonSDK
 
-enum HashtagFetchViewModel {
+public enum HashtagFetchViewModel {
     
     static let logger = Logger(subsystem: "HashtagFetchViewModel", category: "ViewModel")
     
-    enum Result {
+    public enum Result {
         case mastodon([Mastodon.Entity.Tag])
     }
 }
 
 extension HashtagFetchViewModel {
-    enum Search { }
-    
+    public enum Search { }
 }

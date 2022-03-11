@@ -14,22 +14,34 @@ extension HashtagFetchViewModel.Search {
     
     static let logger = Logger(subsystem: "HashtagFetchViewModel.Search", category: "ViewModel")
     
-    enum Input {
+    public enum Input {
         case mastodon(MastodonFetchContext)
     }
     
-    struct Output {
-        let result: HashtagFetchViewModel.Result
+    public struct Output {
+        public let result: HashtagFetchViewModel.Result
         
-        let hasMore: Bool
-        let nextInput: Input?
+        public let hasMore: Bool
+        public let nextInput: Input?
     }
     
-    struct MastodonFetchContext {
-        let authenticationContext: MastodonAuthenticationContext
-        let searchText: String
-        let offset: Int
-        let count: Int?
+    public struct MastodonFetchContext {
+        public let authenticationContext: MastodonAuthenticationContext
+        public let searchText: String
+        public let offset: Int
+        public let count: Int?
+        
+        public init(
+            authenticationContext: MastodonAuthenticationContext,
+            searchText: String,
+            offset: Int,
+            count: Int?
+        ) {
+            self.authenticationContext = authenticationContext
+            self.searchText = searchText
+            self.offset = offset
+            self.count = count
+        }
         
         func map(offset: Int) -> MastodonFetchContext {
             return MastodonFetchContext(
@@ -41,7 +53,7 @@ extension HashtagFetchViewModel.Search {
         }
     }
     
-    static func list(context: AppContext, input: Input) async throws -> Output {
+    public static func list(api: APIService, input: Input) async throws -> Output {
         switch input {
         case .mastodon(let fetchContext):
             let searchText: String = try {
@@ -59,7 +71,7 @@ extension HashtagFetchViewModel.Search {
                 offset: fetchContext.offset
             )
             logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): fetch at offset \(query.offset ?? -1)")
-            let response = try await context.apiService.searchMastodon(
+            let response = try await api.searchMastodon(
                 query: query,
                 authenticationContext: fetchContext.authenticationContext
             )

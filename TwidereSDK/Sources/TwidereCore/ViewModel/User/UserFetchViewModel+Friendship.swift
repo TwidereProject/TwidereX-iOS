@@ -8,7 +8,6 @@
 
 import os.log
 import Foundation
-import TwidereCore
 import TwitterSDK
 import MastodonSDK
 
@@ -16,29 +15,43 @@ extension UserFetchViewModel.Friendship {
     
     static let logger = Logger(subsystem: "UserFetchViewModel.Friendship", category: "ViewModel")
     
-    enum Kind {
+    public enum Kind {
         case following
         case follower
     }
     
-    enum Input {
+    public enum Input {
         case twitter(TwitterFetchContext)
         case mastodon(MastodonFetchContext)
     }
     
-    struct Output {
-        let result: UserFetchViewModel.Result
-        let hasMore: Bool
-        let nextInput: Input?
-        let kind: Kind
+    public struct Output {
+        public let result: UserFetchViewModel.Result
+        public let hasMore: Bool
+        public let nextInput: Input?
+        public let kind: Kind
     }
     
-    struct TwitterFetchContext {
-        let authenticationContext: TwitterAuthenticationContext
-        let kind: Kind
-        let userID: Twitter.Entity.V2.User.ID
-        let paginationToken: String?
-        let maxResults: Int?
+    public struct TwitterFetchContext {
+        public let authenticationContext: TwitterAuthenticationContext
+        public let kind: Kind
+        public let userID: Twitter.Entity.V2.User.ID
+        public let paginationToken: String?
+        public let maxResults: Int?
+        
+        public init(
+            authenticationContext: TwitterAuthenticationContext,
+            kind: UserFetchViewModel.Friendship.Kind,
+            userID: Twitter.Entity.V2.User.ID,
+            paginationToken: String?,
+            maxResults: Int?
+        ) {
+            self.authenticationContext = authenticationContext
+            self.kind = kind
+            self.userID = userID
+            self.paginationToken = paginationToken
+            self.maxResults = maxResults
+        }
         
         func map(paginationToken: String) -> TwitterFetchContext {
             return TwitterFetchContext(
@@ -51,12 +64,26 @@ extension UserFetchViewModel.Friendship {
         }
     }
     
-    struct MastodonFetchContext {
-        let authenticationContext: MastodonAuthenticationContext
-        let kind: Kind
-        let userID: Mastodon.Entity.Account.ID
-        let maxID: Mastodon.Entity.Account.ID?
-        let limit: Int?
+    public struct MastodonFetchContext {
+        public let authenticationContext: MastodonAuthenticationContext
+        public let kind: Kind
+        public let userID: Mastodon.Entity.Account.ID
+        public let maxID: Mastodon.Entity.Account.ID?
+        public let limit: Int?
+        
+        public init(
+            authenticationContext: MastodonAuthenticationContext,
+            kind: UserFetchViewModel.Friendship.Kind,
+            userID: Mastodon.Entity.Account.ID,
+            maxID: Mastodon.Entity.Account.ID?,
+            limit: Int?
+        ) {
+            self.authenticationContext = authenticationContext
+            self.kind = kind
+            self.userID = userID
+            self.maxID = maxID
+            self.limit = limit
+        }
         
         func map(maxID: Mastodon.Entity.Account.ID) -> MastodonFetchContext {
             return MastodonFetchContext(
@@ -69,7 +96,7 @@ extension UserFetchViewModel.Friendship {
         }
     }
 
-    static func list(context: AppContext, input: Input) async throws -> Output {
+    public static func list(api: APIService, input: Input) async throws -> Output {
         switch input {
         case .twitter(let fetchContext):
             let query = Twitter.API.V2.User.Follow.FriendshipListQuery(
@@ -80,9 +107,9 @@ extension UserFetchViewModel.Friendship {
             let response = try await { () -> Twitter.Response.Content<Twitter.API.V2.User.Follow.FriendshipListContent> in
                 switch fetchContext.kind {
                 case .following:
-                    return try await context.apiService.twitterUserFollowingList(query: query, authenticationContext: fetchContext.authenticationContext)
+                    return try await api.twitterUserFollowingList(query: query, authenticationContext: fetchContext.authenticationContext)
                 case .follower:
-                    return try await context.apiService.twitterUserFollowerList(query: query, authenticationContext: fetchContext.authenticationContext)
+                    return try await api.twitterUserFollowerList(query: query, authenticationContext: fetchContext.authenticationContext)
                 }
             }()
             let count = response.value.data?.count ?? 0
@@ -106,10 +133,10 @@ extension UserFetchViewModel.Friendship {
                 switch fetchContext.kind {
                 case .following:
                     let query = Mastodon.API.Account.FollowingQuery(maxID: fetchContext.maxID, limit: limit)
-                    return try await context.apiService.mastodonUserFollowingList(userID: fetchContext.userID, query: query, authenticationContext: fetchContext.authenticationContext)
+                    return try await api.mastodonUserFollowingList(userID: fetchContext.userID, query: query, authenticationContext: fetchContext.authenticationContext)
                 case .follower:
                     let query = Mastodon.API.Account.FollowerQuery(maxID: fetchContext.maxID, limit: limit)
-                    return try await context.apiService.mastodonUserFollowerList(userID: fetchContext.userID, query: query, authenticationContext: fetchContext.authenticationContext)
+                    return try await api.mastodonUserFollowerList(userID: fetchContext.userID, query: query, authenticationContext: fetchContext.authenticationContext)
                 }
             }()
             let count = response.value.count

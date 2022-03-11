@@ -31,7 +31,7 @@ extension SearchUserViewModel {
         snapshot.appendItems([], toSection: .main)
         diffableDataSource?.apply(snapshot)
         
-        userRecordFetchedResultController.records
+        userRecordFetchedResultController.$records
             .receive(on: DispatchQueue.global())
             .sink { [weak self] records in
                 guard let self = self else { return }

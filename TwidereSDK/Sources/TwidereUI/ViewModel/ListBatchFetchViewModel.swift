@@ -12,7 +12,7 @@ import Combine
 import UIKit
 
 // ref: Texture.ASBatchFetchingDelegate
-final class ListBatchFetchViewModel {
+public final class ListBatchFetchViewModel {
     
     var disposeBag = Set<AnyCancellable>()
     
@@ -27,9 +27,9 @@ final class ListBatchFetchViewModel {
     let hasMore = CurrentValueSubject<Bool, Never>(true)
     
     // output
-    let shouldFetch = PassthroughSubject<Void, Never>()
+    public let shouldFetch = PassthroughSubject<Void, Never>()
     
-    init(direction: Direction = .bottom) {
+    public init(direction: Direction = .bottom) {
         Publishers.CombineLatest(
             hasMore,
             timerPublisher
@@ -76,7 +76,7 @@ final class ListBatchFetchViewModel {
 }
 
 extension ListBatchFetchViewModel {
-    enum Direction {
+    public enum Direction {
         case top
         case bottom
     }
@@ -84,7 +84,7 @@ extension ListBatchFetchViewModel {
 }
 
 extension ListBatchFetchViewModel {
-    func setup(scrollView: UIScrollView) {
+    public func setup(scrollView: UIScrollView) {
         self.scrollView = scrollView
     }
 }

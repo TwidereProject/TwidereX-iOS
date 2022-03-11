@@ -11,6 +11,7 @@ import MastodonSDK
 import CoreDataStack
 
 extension APIService {
+    
     public func twitterListShow(
         query: Twitter.API.List.ShowQuery,
         authenticationContext: TwitterAuthenticationContext
@@ -23,6 +24,85 @@ extension APIService {
         
         return response
     }
+    
+    public func twitterListFollower(
+        list: ManagedObjectRecord<TwitterList>,
+        query: Twitter.API.V2.List.FollowerQuery,
+        authenticationContext: TwitterAuthenticationContext
+    ) async throws -> Twitter.Response.Content<Twitter.API.V2.List.FollowerContent> {
+        let managedObjectContext = backgroundManagedObjectContext
+        let _listID: TwitterList.ID? = await managedObjectContext.perform {
+            let list = list.object(in: managedObjectContext)
+            return list?.id
+        }
+        guard let listID = _listID else {
+            throw AppError.implicit(.badRequest)
+        }
+
+        let response = try await Twitter.API.V2.List.follower(
+            session: session,
+            listID: listID,
+            query: query,
+            authorization: authenticationContext.authorization
+        )
+        
+        try await managedObjectContext.performChanges {
+            let me = authenticationContext.authenticationRecord.object(in: managedObjectContext)?.user
+            for entity in response.value.data ?? [] {
+                _ = Persistence.TwitterUser.createOrMerge(
+                    in: managedObjectContext,
+                    context: Persistence.TwitterUser.PersistContextV2(
+                        entity: entity,
+                        me: me,
+                        cache: nil,
+                        networkDate: response.networkDate
+                    )
+                )
+            }   // end for … in …
+        }
+        
+        return response
+    }
+    
+    public func twitterListMember(
+        list: ManagedObjectRecord<TwitterList>,
+        query: Twitter.API.V2.List.MemberQuery,
+        authenticationContext: TwitterAuthenticationContext
+    ) async throws -> Twitter.Response.Content<Twitter.API.V2.List.MemberContent> {
+        let managedObjectContext = backgroundManagedObjectContext
+        let _listID: TwitterList.ID? = await managedObjectContext.perform {
+            let list = list.object(in: managedObjectContext)
+            return list?.id
+        }
+        guard let listID = _listID else {
+            throw AppError.implicit(.badRequest)
+        }
+
+        let response = try await Twitter.API.V2.List.member(
+            session: session,
+            listID: listID,
+            query: query,
+            authorization: authenticationContext.authorization
+        )
+        
+        try await managedObjectContext.performChanges {
+            let me = authenticationContext.authenticationRecord.object(in: managedObjectContext)?.user
+            for entity in response.value.data ?? [] {
+                _ = Persistence.TwitterUser.createOrMerge(
+                    in: managedObjectContext,
+                    context: Persistence.TwitterUser.PersistContextV2(
+                        entity: entity,
+                        me: me,
+                        cache: nil,
+                        networkDate: response.networkDate
+                    )
+                )
+            }   // end for … in …
+        }
+        
+        return response
+    }
+    
 }
 
 extension APIService {
