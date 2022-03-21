@@ -22,6 +22,7 @@ extension UserFetchViewModel.List {
     
     public enum Input {
         case twitter(TwitterFetchContext)
+        case mastodon(MastodonFetchContext)
     }
     
     public struct Output {
@@ -67,22 +68,27 @@ extension UserFetchViewModel.List {
     
     public struct MastodonFetchContext {
         public let authenticationContext: MastodonAuthenticationContext
-        public let searchText: String
-        public let offset: Int
+        public let list: ManagedObjectRecord<MastodonList>
+        public let maxID: Mastodon.Entity.Account.ID?
         public let count: Int?
         
-        public init(authenticationContext: MastodonAuthenticationContext, searchText: String, offset: Int, count: Int?) {
+        public init(
+            authenticationContext: MastodonAuthenticationContext,
+            list: ManagedObjectRecord<MastodonList>,
+            maxID: Mastodon.Entity.Account.ID?,
+            count: Int?
+        ) {
             self.authenticationContext = authenticationContext
-            self.searchText = searchText
-            self.offset = offset
+            self.list = list
+            self.maxID = maxID
             self.count = count
         }
         
-        func map(offset: Int) -> MastodonFetchContext {
+        func map(maxID: Mastodon.Entity.Account.ID?) -> MastodonFetchContext {
             return MastodonFetchContext(
                 authenticationContext: authenticationContext,
-                searchText: searchText,
-                offset: offset,
+                list: list,
+                maxID: maxID,
                 count: count
             )
         }
@@ -120,6 +126,25 @@ extension UserFetchViewModel.List {
                     guard let nextToken = content.meta.nextToken else { return nil }
                     let fetchContext = fetchContext.map(nextToken: nextToken)
                     return .twitter(fetchContext)
+                }()
+            )
+        case .mastodon(let fetchContext):
+            let response = try await api.mastodonListMember(
+                list: fetchContext.list,
+                query: .init(
+                    maxID: fetchContext.maxID,
+                    sinceID: nil,
+                    limit: fetchContext.count ?? 50
+                ),
+                authenticationContext: fetchContext.authenticationContext
+            )
+            let content = response.value
+            return Output(
+                result: .mastodon(content),
+                nextInput: {
+                    guard let maxID = response.link?.maxID else { return nil }
+                    let fetchContext = fetchContext.map(maxID: maxID)
+                    return .mastodon(fetchContext)
                 }()
             )
         }   // end switch

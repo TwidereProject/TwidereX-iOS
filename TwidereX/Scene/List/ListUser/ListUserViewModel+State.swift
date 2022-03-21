@@ -130,9 +130,15 @@ extension ListUserViewModel.State {
                         )
                         let input = UserFetchViewModel.List.Input.twitter(fetchContext)
                         return input
-                    case (.mastodon, .mastodon(let authenticationContext)):
-                        assertionFailure("TODO")
-                        return nil
+                    case (.mastodon(let list), .mastodon(let authenticationContext)):
+                        let fetchContext = UserFetchViewModel.List.MastodonFetchContext(
+                            authenticationContext: authenticationContext,
+                            list: list,
+                            maxID: nil,
+                            count: nil
+                        )
+                        let input = UserFetchViewModel.List.Input.mastodon(fetchContext)
+                        return input
                     default:
                         return nil
                     }
@@ -164,7 +170,8 @@ extension ListUserViewModel.State {
                         let userIDs = users.map { $0.id }
                         viewModel.fetchedResultController.twitterUserFetchedResultsController.append(userIDs: userIDs)
                     case .mastodon(let users):
-                        assertionFailure("TODO")
+                        let userIDs = users.map { $0.id }
+                        viewModel.fetchedResultController.mastodonUserFetchedResultController.append(userIDs: userIDs)
                     }
 
                     logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): fetch success")

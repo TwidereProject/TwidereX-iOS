@@ -7,6 +7,58 @@
 
 import Foundation
 
+// lookup: https://developer.twitter.com/en/docs/twitter-api/lists/list-lookup/api-reference/get-lists-id
+extension Twitter.API.V2.List {
+    
+    private static func lookupEndpointURL(listID: Twitter.Entity.V2.List.ID) -> URL {
+        return Twitter.API.endpointV2URL
+            .appendingPathComponent("lists")
+            .appendingPathComponent(listID)
+    }
+    
+    public static func lookup(
+        session: URLSession,
+        listID: Twitter.Entity.V2.List.ID,
+        authorization: Twitter.API.OAuth.Authorization
+    ) async throws -> Twitter.Response.Content<Twitter.API.V2.List.LookupContent> {
+        let request = Twitter.API.request(
+            url: lookupEndpointURL(listID: listID),
+            method: .GET,
+            query: LookupQuery(),
+            authorization: authorization
+        )
+        let (data, response) = try await session.data(for: request, delegate: nil)
+        let value = try Twitter.API.decode(type: Twitter.API.V2.List.LookupContent.self, from: data, response: response)
+        return Twitter.Response.Content(value: value, response: response)
+    }
+    
+    public struct LookupQuery: Query {
+
+        var queryItems: [URLQueryItem]? {
+            let items: [URLQueryItem] = [
+                [Twitter.Request.Expansions.ownerID].queryItem,
+                Twitter.Request.userFields.queryItem,
+                Twitter.Request.listFields.queryItem,
+            ]
+            return items
+        }
+        var encodedQueryItems: [URLQueryItem]? { nil }
+        var formQueryItems: [URLQueryItem]? { nil }
+        var contentType: String? { nil }
+        var body: Data? { nil }
+    }
+    
+    public struct LookupContent: Codable {
+        public let data: Twitter.Entity.V2.List
+        public let includes: Includes?
+        
+        public struct Includes: Codable {
+            public let users: [Twitter.Entity.V2.User]
+        }
+    }
+    
+}
+
 // https://developer.twitter.com/en/docs/twitter-api/lists/list-follows/api-reference/get-lists-id-followers
 extension Twitter.API.V2.List {
     
@@ -111,5 +163,60 @@ extension Twitter.API.V2.List {
     
     public typealias MemberQuery = FollowerQuery
     public typealias MemberContent = FollowerContent
+    
+}
+
+// create: https://developer.twitter.com/en/docs/twitter-api/lists/manage-lists/api-reference/post-lists
+extension Twitter.API.V2.List {
+    
+    private static func listsEndpointURL() -> URL {
+        return Twitter.API.endpointV2URL
+            .appendingPathComponent("lists")
+    }
+    
+    public static func create(
+        session: URLSession,
+        query: CreateQuery,
+        authorization: Twitter.API.OAuth.Authorization
+    ) async throws -> Twitter.Response.Content<Twitter.API.V2.List.CreateContent> {
+        let request = Twitter.API.request(
+            url: listsEndpointURL(),
+            method: .POST,
+            query: query,
+            authorization: authorization
+        )
+        let (data, response) = try await session.data(for: request, delegate: nil)
+        let value = try Twitter.API.decode(type: Twitter.API.V2.List.CreateContent.self, from: data, response: response)
+        return Twitter.Response.Content(value: value, response: response)
+    }
+    
+    public struct CreateQuery: JSONEncodeQuery {
+        public let name: String
+        public let description: String?
+        public let `private`: Bool?
+        
+        public init(
+            name: String,
+            description: String?,
+            private: Bool?
+        ) {
+            self.name = name
+            self.description = description
+            self.private = `private`
+        }
+        
+        var queryItems: [URLQueryItem]? { nil }
+        var encodedQueryItems: [URLQueryItem]? { nil }
+        var formQueryItems: [URLQueryItem]? { nil }
+    }
+    
+    public struct CreateContent: Codable {
+        public let data: ContentData
+        
+        public struct ContentData: Codable {
+            public let id: Twitter.Entity.V2.List.ID
+            public let name: String
+        }
+    }
     
 }

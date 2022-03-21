@@ -11,6 +11,7 @@ import UIKit
 import Combine
 import TwidereLocalization
 import TwidereUI
+import TwidereCore
 
 class CompositeListViewController: UIViewController, NeedsDependency {
     
@@ -23,6 +24,8 @@ class CompositeListViewController: UIViewController, NeedsDependency {
     weak var coordinator: SceneCoordinator! { willSet { precondition(!isViewLoaded) } }
     
     var viewModel: CompositeListViewModel!
+    
+    private(set) lazy var addBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(CompositeListViewController.addBarButtonItemPressed(_:)))
     
     private(set) lazy var tableView: UITableView = {
         let style: UITableView.Style = UIDevice.current.userInterfaceIdiom == .phone ? .grouped : .insetGrouped
@@ -68,7 +71,8 @@ extension CompositeListViewController {
         
         switch viewModel.kind {
         case .lists:
-            break
+            // setup barButtonItem
+            navigationItem.rightBarButtonItem = addBarButtonItem
         case .listed:
             // setup batch fetch
             viewModel.listBatchFetchViewModel.setup(scrollView: tableView)
@@ -88,6 +92,32 @@ extension CompositeListViewController {
         tableView.deselectRow(with: transitionCoordinator, animated: animated)
     }
     
+}
+
+extension CompositeListViewController {
+    @objc private func addBarButtonItemPressed(_ sender: UIBarButtonItem) {
+        logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public)")
+        let createListViewModel = CreateListViewModel(
+            context: context,
+            platform: {
+                switch viewModel.kind.user {
+                case .twitter:      return .twitter
+                case .mastodon:     return .mastodon
+                }
+            }()
+        )
+        let viewController = coordinator.present(
+            scene: .createList(viewModel: createListViewModel),
+            from: self,
+            transition: .modal(animated: true, completion: nil)
+        )
+        
+        guard let viewController = viewController as? CreateListViewController else {
+            assertionFailure()
+            return
+        }
+        viewController.delegate = self
+    }
 }
 
 // MARK: - UITableViewDelegate
@@ -159,4 +189,22 @@ extension CompositeListViewController: UITableViewDelegate {
         }   // end Task
     }
     
+}
+
+// MARK: - CreateListViewControllerDelegate
+extension CompositeListViewController: CreateListViewControllerDelegate {
+    func createListViewController(
+        _ viewController: CreateListViewController,
+        didCreateList response: APIService.CreateListResponse
+    ) {
+        logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public)")
+        switch response {
+        case .twitter(let response):
+            let listID = response.value.data.id
+            viewModel.ownedListViewModel.fetchedResultController.twitterListRecordFetchedResultController.prepend(ids: [listID])
+        case .mastodon(let response):
+            let listID = response.value.id
+            viewModel.ownedListViewModel.fetchedResultController.mastodonListRecordFetchedResultController.prepend(ids: [listID])
+        }
+    }
 }

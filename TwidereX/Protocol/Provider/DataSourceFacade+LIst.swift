@@ -76,23 +76,31 @@ extension DataSourceFacade {
         }
         children.append(membersAction)
         
-        let subscribersAction = await UIAction(
-            title: L10n.Scene.ListsDetails.Tabs.subscriber,
-            image: UIImage(systemName: "person.crop.rectangle.stack"),
-            identifier: nil,
-            discoverabilityTitle: nil,
-            attributes: [],
-            state: .off
-        ) { [weak dependency] _ in
-            guard let dependency = dependency else { return }
-            Task {
-                await coordinateToListSubscriberScene(
-                    dependency: dependency,
-                    list: list
-                )
-            }   // end Task
+        let _subscribersAction: UIAction? = await {
+            switch list {
+            case .twitter:  break
+            case .mastodon: return nil
+            }
+            return await UIAction(
+                title: L10n.Scene.ListsDetails.Tabs.subscriber,
+                image: UIImage(systemName: "person.2"),
+                identifier: nil,
+                discoverabilityTitle: nil,
+                attributes: [],
+                state: .off
+            ) { [weak dependency] _ in
+                guard let dependency = dependency else { return }
+                Task {
+                    await coordinateToListSubscriberScene(
+                        dependency: dependency,
+                        list: list
+                    )
+                }   // end Task
+            }
+        }()
+        if let action = _subscribersAction {
+            children.append(action)
         }
-        children.append(subscribersAction)
         
         let isMyList: Bool = await managedObjectContext.perform {
             guard let list = list.object(in: managedObjectContext) else { return false }

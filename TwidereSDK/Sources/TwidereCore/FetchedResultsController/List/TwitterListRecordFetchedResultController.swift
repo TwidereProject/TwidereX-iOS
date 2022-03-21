@@ -89,6 +89,13 @@ extension TwitterListRecordFetchedResultController {
         ids = []
     }
     
+    public func prepend(ids: [TwitterList.ID]) {
+        var result = self.ids
+        let ids = ids.filter { !result.contains($0) }
+        result = ids + result
+        self.ids = result
+    }
+    
     public func append(ids: [TwitterList.ID]) {
         var result = self.ids
         for id in ids where !result.contains(id) {
