@@ -18,7 +18,8 @@ extension FriendshipListViewModel {
         tableView: UITableView
     ) {
         let configuration = UserSection.Configuration(
-            userTableViewCellDelegate: nil
+            userViewTableViewCellDelegate: nil,
+            listMembershipViewModel: nil
         )
         
         diffableDataSource = UserSection.diffableDataSource(

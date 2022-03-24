@@ -100,7 +100,57 @@ extension Mastodon.API.List {
 
 extension Mastodon.API.List {
     
-    static func accountsEndpointURL(
+    private static func deleteListEndpointURL(
+        domain: String,
+        listID: Mastodon.Entity.List.ID
+    ) -> URL {
+        return Mastodon.API.endpointURL(domain: domain)
+            .appendingPathComponent("lists")
+            .appendingPathComponent(listID)
+    }
+    
+    /// Delete a list.
+    ///
+    /// - Since: 0.0.0
+    /// - Version: 3.4.6
+    /// # Last Update
+    ///   2022/3/21
+    /// # Reference
+    ///   [Document](https://docs.joinmastodon.org/methods/timelines/lists/)
+    /// - Parameters:
+    ///   - session: `URLSession`
+    ///   - domain: Mastodon instance domain. e.g. "example.com"
+    ///   - listID: the ID for list
+    ///   - authorization: User token
+    /// - Returns: `Mastodon.Entity.List` nested in the response
+    public static func delete(
+        session: URLSession,
+        domain: String,
+        listID: Mastodon.Entity.List.ID,
+        authorization: Mastodon.API.OAuth.Authorization
+    ) async throws -> Mastodon.Response.Content<Void> {
+        let request = Mastodon.API.request(
+            url: deleteListEndpointURL(domain: domain, listID: listID),
+            method: .DELETE,
+            query: nil,
+            authorization: authorization
+        )
+        let (data, response) = try await session.data(for: request, delegate: nil)
+        if let error = try? Mastodon.API.decode(type: Mastodon.Entity.Error.self, from: data, response: response) {
+            throw Mastodon.API.Error(httpResponseStatus: .ok, error: error)
+        }
+        return Mastodon.Response.Content(value: Void(), response: response)
+    }
+    
+    public struct DeleteContent: Codable {
+        public let error: String?
+    }
+    
+}
+
+extension Mastodon.API.List {
+    
+    private static func accountsEndpointURL(
         domain: String,
         listID: Mastodon.Entity.List.ID
     ) -> URL {
@@ -121,6 +171,7 @@ extension Mastodon.API.List {
     /// - Parameters:
     ///   - session: `URLSession`
     ///   - domain: Mastodon instance domain. e.g. "example.com"
+    ///   - listID: the ID for list
     ///   - authorization: User token
     /// - Returns: `Mastodon.Entity.Account` nested in the response
     public static func accounts(
@@ -169,5 +220,99 @@ extension Mastodon.API.List {
             return nil
         }
     }
+    
+    /// Add accounts to list.
+    ///
+    /// - Since: 0.0.0
+    /// - Version: 3.4.6
+    /// # Last Update
+    ///   2022/3/23
+    /// # Reference
+    ///   [Document](https://docs.joinmastodon.org/methods/timelines/lists/)
+    /// - Parameters:
+    ///   - session: `URLSession`
+    ///   - domain: Mastodon instance domain. e.g. "example.com"
+    ///   - listID: the ID for list
+    ///   - query: AddAccountsQuery
+    ///   - authorization: User token
+    /// - Returns: `Mastodon.Entity.Account` nested in the response
+    public static func addAccounts(
+        session: URLSession,
+        domain: String,
+        listID: Mastodon.Entity.List.ID,
+        query: AddAccountsQuery,
+        authorization: Mastodon.API.OAuth.Authorization
+    ) async throws -> Mastodon.Response.Content<Void> {
+        let request = Mastodon.API.request(
+            url: accountsEndpointURL(domain: domain, listID: listID),
+            method: .POST,
+            query: query,
+            authorization: authorization
+        )
+        let (data, response) = try await session.data(for: request, delegate: nil)
+        if let error = try? Mastodon.API.decode(type: Mastodon.Entity.Error.self, from: data, response: response) {
+            // 422: Account is already in list
+            if let response = response as? HTTPURLResponse, response.statusCode == 422 {
+                return Mastodon.Response.Content(value: Void(), response: response)
+            }
+            throw Mastodon.API.Error(httpResponseStatus: .ok, error: error)
+        }
+        return Mastodon.Response.Content(value: Void(), response: response)
+    }
+    
+    public struct AddAccountsQuery: JSONEncodeQuery {
+        
+        public let accountIDs: [Mastodon.Entity.Account.ID]
+        
+        public init(
+            accountIDs: [Mastodon.Entity.Account.ID]
+        ) {
+            self.accountIDs = accountIDs
+        }
+        
+        enum CodingKeys: String, CodingKey {
+            case accountIDs = "account_ids"
+        }
+        
+        var queryItems: [URLQueryItem]? { nil }
+        
+    }
+    
+    /// Remove accounts from list.
+    ///
+    /// - Since: 0.0.0
+    /// - Version: 3.4.6
+    /// # Last Update
+    ///   2022/3/23
+    /// # Reference
+    ///   [Document](https://docs.joinmastodon.org/methods/timelines/lists/)
+    /// - Parameters:
+    ///   - session: `URLSession`
+    ///   - domain: Mastodon instance domain. e.g. "example.com"
+    ///   - listID: the ID for list
+    ///   - query: DeleteAccountsQuery
+    ///   - authorization: User token
+    /// - Returns: `Mastodon.Entity.Account` nested in the response
+    public static func deleteAccounts(
+        session: URLSession,
+        domain: String,
+        listID: Mastodon.Entity.List.ID,
+        query: DeleteAccountsQuery,
+        authorization: Mastodon.API.OAuth.Authorization
+    ) async throws -> Mastodon.Response.Content<Void> {
+        let request = Mastodon.API.request(
+            url: accountsEndpointURL(domain: domain, listID: listID),
+            method: .DELETE,
+            query: query,
+            authorization: authorization
+        )
+        let (data, response) = try await session.data(for: request, delegate: nil)
+        if let error = try? Mastodon.API.decode(type: Mastodon.Entity.Error.self, from: data, response: response) {
+            throw Mastodon.API.Error(httpResponseStatus: .ok, error: error)
+        }
+        return Mastodon.Response.Content(value: Void(), response: response)
+    }
+    
+    public typealias DeleteAccountsQuery = AddAccountsQuery
     
 }

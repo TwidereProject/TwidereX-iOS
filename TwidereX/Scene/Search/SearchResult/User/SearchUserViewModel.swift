@@ -13,6 +13,8 @@ import CoreData
 import CoreDataStack
 import GameplayKit
 import TwitterSDK
+import TwidereCore
+import TwidereUI
 
 final class SearchUserViewModel {
     
@@ -22,7 +24,9 @@ final class SearchUserViewModel {
     
     // input
     let context: AppContext
+    let kind: Kind
     let userRecordFetchedResultController: UserRecordFetchedResultController
+    let listMembershipViewModel: ListMembershipViewModel?
     let listBatchFetchViewModel = ListBatchFetchViewModel()
     let viewDidAppear = PassthroughSubject<Void, Never>()
     @Published var searchText = ""
@@ -43,9 +47,19 @@ final class SearchUserViewModel {
         return stateMachine
     }()
 
-    init(context: AppContext) {
+    init(
+        context: AppContext,
+        kind: SearchUserViewModel.Kind
+    ) {
         self.context = context
-        self.userRecordFetchedResultController = UserRecordFetchedResultController(managedObjectContext: context.managedObjectContext)
+        self.kind = kind
+        self.userRecordFetchedResultController = UserRecordFetchedResultController(
+            managedObjectContext: context.managedObjectContext
+        )
+        self.listMembershipViewModel = {
+            guard case let .listMember(list) = kind else { return nil }
+            return ListMembershipViewModel(api: context.apiService, list: list)
+        }()
         // end init
         
         $searchText
@@ -62,60 +76,18 @@ final class SearchUserViewModel {
         
         $userIdentifier
             .assign(to: &userRecordFetchedResultController.$userIdentifier)
-        
-//        Publishers.CombineLatest(
-//            items.eraseToAnyPublisher(),
-//            stateMachinePublisher.eraseToAnyPublisher()
-//        )
-//        .throttle(for: .milliseconds(300), scheduler: DispatchQueue.main, latest: true)
-//        .receive(on: DispatchQueue.main)
-//        .sink { [weak self] items, state in
-//            guard let self = self else { return }
-//            os_log("%{public}s[%{public}ld], %{public}s: state did change", ((#file as NSString).lastPathComponent), #line, #function)
-//            
-//            var snapshot = NSDiffableDataSourceSnapshot<TimelineSection, Item>()
-//            snapshot.appendSections([.main])
-//            snapshot.appendItems(items)
-//            switch self.stateMachine.currentState {
-//            case is State.Fail:
-//                // TODO:
-//                break
-//            case is State.Initial, is State.NoMore:
-//                break
-//            case is State.Idle, is State.Loading:
-//                snapshot.appendItems([.bottomLoader], toSection: .main)
-//            default:
-//                assertionFailure()
-//            }
-//            
-//            self.diffableDataSource?.apply(snapshot, animatingDifferences: true)
-//        }
-//        .store(in: &disposeBag)
-//        
-//        searchTwitterUserIDs
-//            .receive(on: DispatchQueue.main)
-//            .sink { [weak self] ids in
-//                guard let self = self else { return }
-//                self.fetchedResultsController.fetchRequest.predicate = TwitterUser.predicate(idStrs: ids)
-//                do {
-//                    try self.fetchedResultsController.performFetch()
-//                } catch {
-//                    assertionFailure(error.localizedDescription)
-//                }
-//            }
-//            .store(in: &disposeBag)
-//        
-//        searchActionPublisher
-//            .receive(on: DispatchQueue.main)
-//            .sink { [weak self] _ in
-//                guard let self = self else { return }
-//                self.stateMachine.enter(State.Loading.self)
-//            }
-//            .store(in: &disposeBag)
+    
     }
     
     deinit {
-        os_log("%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
+        os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
     }
     
+}
+
+extension SearchUserViewModel {
+    enum Kind {
+        case friendship
+        case listMember(list: ListRecord)
+    }
 }

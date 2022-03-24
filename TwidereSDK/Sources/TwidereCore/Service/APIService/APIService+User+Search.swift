@@ -8,7 +8,8 @@
 
 import Foundation
 import TwitterSDK
-    
+import MastodonSDK
+
 extension APIService {
     // v1 API
     public func searchTwitterUser(
@@ -38,5 +39,35 @@ extension APIService {
             }   // end for … in …
         }   // end managedObjectContext.performChanges
         return response
-    }   // end func searchTwitterUser
+    }   // end func
+}
+
+extension APIService {
+    public func searchMastodonUser(
+        query: Mastodon.API.Account.SearchQuery,
+        authenticationContext: MastodonAuthenticationContext
+    ) async throws -> Mastodon.Response.Content<[Mastodon.Entity.Account]> {
+        let response = try await Mastodon.API.Account.search(
+            session: session,
+            domain: authenticationContext.domain,
+            query: query,
+            authorization: authenticationContext.authorization
+        )
+        
+        let managedObjectContext = backgroundManagedObjectContext
+        try await managedObjectContext.performChanges {
+            for entity in response.value {
+                _ = Persistence.MastodonUser.createOrMerge(
+                    in: managedObjectContext,
+                    context: Persistence.MastodonUser.PersistContext(
+                        domain: authenticationContext.domain,
+                        entity: entity,
+                        cache: nil,
+                        networkDate: response.networkDate
+                    )
+                )
+            }   // end for … in …
+        }   // end managedObjectContext.performChanges
+        return response
+    }   // end func
 }

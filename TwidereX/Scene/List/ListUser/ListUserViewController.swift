@@ -11,6 +11,7 @@ import UIKit
 import Combine
 import CoreDataStack
 import TwidereUI
+import SwiftMessages
 
 final class ListUserViewController: UIViewController, NeedsDependency {
     
@@ -21,6 +22,12 @@ final class ListUserViewController: UIViewController, NeedsDependency {
     
     var disposeBag = Set<AnyCancellable>()
     var viewModel: ListUserViewModel!
+    
+    private(set) lazy var addBarButtonItem = UIBarButtonItem(
+        barButtonSystemItem: .add,
+        target: self,
+        action: #selector(ListUserViewController.addBarButtonItemPressed(_:))
+    )
 
     lazy var tableView: UITableView = {
         let tableView = UITableView()
@@ -42,6 +49,12 @@ extension ListUserViewController {
 
         title = viewModel.kind.title
         view.backgroundColor = .systemBackground
+        navigationItem.rightBarButtonItem = {
+            switch viewModel.kind {
+            case .members:              return addBarButtonItem
+            case .subscribers:          return nil
+            }
+        }()
 
         tableView.translatesAutoresizingMaskIntoConstraints = false
         tableView.frame = view.bounds
@@ -56,7 +69,7 @@ extension ListUserViewController {
         tableView.delegate = self
         viewModel.setupDiffableDataSource(
             tableView: tableView,
-            userTableViewCellDelegate: self
+            userViewTableViewCellDelegate: self
         )
         
         // setup batch fetch
@@ -72,6 +85,24 @@ extension ListUserViewController {
     
 }
 
+extension ListUserViewController {
+    
+    @objc private func addBarButtonItemPressed(_ sender: UIBarButtonItem) {
+        logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public)")
+                
+        let list = viewModel.kind.list
+        let addListMemberViewModel = AddListMemberViewModel(context: context, list: list)
+        addListMemberViewModel.listMembershipViewModelDelegate = self
+        
+        coordinator.present(
+            scene: .addListMember(viewModel: addListMemberViewModel),
+            from: self,
+            transition: .modal(animated: true, completion: nil)
+        )
+    }
+
+}
+
 // MARK: - UITableViewDelegate
 extension ListUserViewController: UITableViewDelegate, AutoGenerateTableViewDelegate {
     // sourcery:inline:ListUserViewController.AutoGenerateTableViewDelegate
@@ -84,5 +115,80 @@ extension ListUserViewController: UITableViewDelegate, AutoGenerateTableViewDele
     // sourcery:end
 }
 
-// MARK: - UserTableViewCellDelegate
-extension ListUserViewController: UserTableViewCellDelegate { }
+// MARK: - UserViewTableViewCellDelegate
+extension ListUserViewController: UserViewTableViewCellDelegate {
+    func tableViewCell(
+        _ cell: UITableViewCell,
+        userView: UserView,
+        menuActionDidPressed action: UserView.MenuAction,
+        menuButton button: UIButton
+    ) {
+        switch action {
+        case .remove:
+            Task {
+                let source = DataSourceItem.Source(tableViewCell: cell, indexPath: nil)
+                guard let item = await item(from: source) else {
+                    assertionFailure()
+                    return
+                }
+                guard case let .user(user) = item else {
+                    assertionFailure("only works for status data provider")
+                    return
+                }
+                
+                guard let authenticationContext = self.context.authenticationService.activeAuthenticationContext else {
+                    assertionFailure()
+                    return
+                }
+                
+                do {
+                    let list = self.viewModel.kind.list
+                    _ = try await self.context.apiService.removeListMember(
+                        list: list,
+                        user: user,
+                        authenticationContext: authenticationContext
+                    )
+                    await self.viewModel.update(user: user, action: .remove)
+                    
+                    var config = SwiftMessages.defaultConfig
+                    config.duration = .seconds(seconds: 3)
+                    config.interactiveHide = true
+                    let bannerView = NotificationBannerView()
+                    bannerView.configure(style: .success)
+                    bannerView.titleLabel.text = L10n.Common.Alerts.ListMemberRemoved.title
+                    bannerView.messageLabel.isHidden = true
+                    SwiftMessages.show(config: config, view: bannerView)
+                } catch {
+                    var config = SwiftMessages.defaultConfig
+                    config.duration = .seconds(seconds: 3)
+                    config.interactiveHide = true
+                    let bannerView = NotificationBannerView()
+                    bannerView.configure(style: .warning)
+                    bannerView.titleLabel.text = L10n.Common.Alerts.FailedToRemoveListMember.title
+                    bannerView.messageLabel.text = L10n.Common.Alerts.FailedToRemoveListMember.message
+                    SwiftMessages.show(config: config, view: bannerView)
+                }
+            }   // end Task
+        default:
+            assertionFailure()
+        }   // end swtich
+    }
+}
+
+// MARK: - ListMembershipViewModelDelegate
+extension ListUserViewController: ListMembershipViewModelDelegate {
+    
+    func listMembershipViewModel(_ viewModel: ListMembershipViewModel, didAddUser user: UserRecord) {
+        logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public)")
+        Task {
+            await self.viewModel.update(user: user, action: .add)
+        }   // end Task
+    }
+    
+    func listMembershipViewModel(_ viewModel: ListMembershipViewModel, didRemoveUser user: UserRecord) {
+        logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public)")
+        Task {
+            await self.viewModel.update(user: user, action: .remove)
+        }   // end Task
+    }
+}

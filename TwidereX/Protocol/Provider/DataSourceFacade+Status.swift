@@ -220,7 +220,7 @@ extension DataSourceFacade {
                         case .mastodon:     return L10n.Common.Alerts.TootDeleted.title
                         }
                     }()
-                    presentStatusDeleteSuccessNotification(title: title)
+                    presentSuccessBanner(title: title)
                 } catch {
                     let title: String = {
                         switch status {
@@ -234,7 +234,7 @@ extension DataSourceFacade {
                         case .mastodon:     return L10n.Common.Alerts.FailedToDeleteToot.message
                         }
                     }()
-                    presentStatusDeleteFailureNotification(title: title, message: message, error: error)
+                    presentWarningBanner(title: title, message: message, error: error)
                 }
             }   // end Task
         }
@@ -246,36 +246,6 @@ extension DataSourceFacade {
             from: provider,
             transition: .alertController(animated: true, completion: nil)
         )
-    }
-    
-    @MainActor
-    private static func presentStatusDeleteSuccessNotification(title: String) {
-        os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: delete status success", ((#file as NSString).lastPathComponent), #line, #function)
-        var config = SwiftMessages.defaultConfig
-        config.duration = .seconds(seconds: 3)
-        config.interactiveHide = true
-        let bannerView = NotificationBannerView()
-        bannerView.configure(style: .success)
-        bannerView.titleLabel.text = title
-        bannerView.messageLabel.isHidden = true
-        SwiftMessages.show(config: config, view: bannerView)
-    }
-    
-    @MainActor
-    public static func presentStatusDeleteFailureNotification(
-        title: String,
-        message: String,
-        error: Error
-    ) {
-        os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: delete status fail: %s", ((#file as NSString).lastPathComponent), #line, #function, error.localizedDescription)
-        var config = SwiftMessages.defaultConfig
-        config.duration = .seconds(seconds: 3)
-        config.interactiveHide = true
-        let bannerView = NotificationBannerView()
-        bannerView.configure(style: .warning)
-        bannerView.titleLabel.text = title
-        bannerView.messageLabel.text = message
-        SwiftMessages.show(config: config, view: bannerView)
     }
     
 }

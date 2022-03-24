@@ -10,10 +10,13 @@ import os.log
 import UIKit
 import Combine
 import MetaTextKit
+import TwidereCore
 
 protocol UserViewDelegate: AnyObject {
     // func userView(_ userView: UserView, authorAvatarButtonDidPressed button: AvatarButton)
     func userView(_ userView: UserView, menuActionDidPressed action: UserView.MenuAction, menuButton button: UIButton)
+    func userView(_ userView: UserView, friendshipButtonDidPressed button: UIButton)
+    func userView(_ userView: UserView, membershipButtonDidPressed button: UIButton)
 }
 
 public final class UserView: UIView {
@@ -120,6 +123,14 @@ public final class UserView: UIView {
         return button
     }()
     
+    // add/remove control
+    public let membershipButton: HitTestExpandedButton = {
+        let button = HitTestExpandedButton()
+        button.setImage(UIImage(systemName: "plus.circle"), for: .normal)
+        button.tintColor = Asset.Colors.hightLight.color    // FIXME: tint color
+        return button
+    }()
+    
     // activity indicator
     public let activityIndicatorView: UIActivityIndicatorView = {
         let activityIndicatorView = UIActivityIndicatorView(style: .medium)
@@ -150,6 +161,7 @@ public final class UserView: UIView {
 extension UserView {
     public enum MenuAction: Hashable {
         case signOut
+        case remove
     }
     
 }
@@ -183,6 +195,14 @@ extension UserView {
         nameLabel.isUserInteractionEnabled = false
         usernameLabel.isUserInteractionEnabled = false
         followerCountLabel.isUserInteractionEnabled = false
+        
+        membershipButton.addTarget(self, action: #selector(UserView.membershipButtonDidPressed(_:)), for: .touchUpInside)
+        
+        #if DEBUG
+        nameLabel.configure(content: PlaintextMetaContent(string: "Name"))
+        usernameLabel.text = "@username"
+        followerCountLabel.text = "1000 Followers"
+        #endif
     }
     
     public func setup(style: Style) {
@@ -197,28 +217,51 @@ extension UserView {
 }
 
 extension UserView {
+
+    @objc private func membershipButtonDidPressed(_ sender: UIButton) {
+        logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public)")
+        delegate?.userView(self, membershipButtonDidPressed: sender)
+    }
+
+}
+
+extension UserView {
     public enum Style {
         // headline: name | lock
         // subheadline: username
         // accessory: menu
         case account
+        
         // headline: name | lock | username
         // subheadline: follower count
         // accessory: follow button
         case relationship
+        
         // headline: name | lock
         // subheadline: username
         // accessory: action button
         case friendship
+        
         // header: notification
         // headline: name | lock | username
         // subheadline: follower count
         // accessory: none // TODO: menu
         case notification
+        
         // headline: name | lock
         // subheadline: username
         // accessory: checkmark button
         case mentionPick
+        
+        // headline: name | lock | username
+        // subheadline: follower count
+        // accessory: membership menu
+        case listMember
+        
+        // headline: name | lock | username
+        // subheadline: follower count
+        // accessory: membership button
+        case addListMember
         
         public func layout(userView: UserView) {
             switch self {
@@ -227,6 +270,8 @@ extension UserView {
             case .friendship:       layoutFriendship(userView: userView)
             case .notification:     layoutNotification(userView: userView)
             case .mentionPick:      layoutMentionPick(userView: userView)
+            case .listMember:       layoutListMember(userView: userView)
+            case .addListMember:    layoutAddListMember(userView: userView)
             }
         }
         
@@ -237,6 +282,27 @@ extension UserView {
 }
 
 extension UserView.Style {
+    
+    // headline: name | lock | username
+    // subheadline: follower count
+    private func layoutRelationshipBase(userView: UserView) {
+        let headlineStackView = UIStackView()
+        userView.infoContainerStackView.addArrangedSubview(headlineStackView)
+        headlineStackView.axis = .horizontal
+        headlineStackView.spacing = 6
+        headlineStackView.addArrangedSubview(userView.nameLabel)
+        userView.lockImageView.translatesAutoresizingMaskIntoConstraints = false
+        headlineStackView.addArrangedSubview(userView.lockImageView)
+        NSLayoutConstraint.activate([
+            userView.lockImageView.heightAnchor.constraint(equalTo: userView.nameLabel.heightAnchor).priority(.required - 10),
+        ])
+        userView.lockImageView.setContentHuggingPriority(.defaultLow, for: .horizontal)
+        userView.lockImageView.setContentCompressionResistancePriority(.required - 10, for: .horizontal)
+        headlineStackView.addArrangedSubview(UIView())  // padding
+        
+        userView.infoContainerStackView.addArrangedSubview(userView.usernameLabel)
+    }
+    
     // FIXME: update layout
     func layoutAccount(userView: UserView) {
         let headlineStackView = UIStackView()
@@ -263,21 +329,7 @@ extension UserView.Style {
     
     // FIXME: update layout
     func layoutRelationship(userView: UserView) {
-        let headlineStackView = UIStackView()
-        userView.infoContainerStackView.addArrangedSubview(headlineStackView)
-        headlineStackView.axis = .horizontal
-        headlineStackView.spacing = 6
-        headlineStackView.addArrangedSubview(userView.nameLabel)
-        userView.lockImageView.translatesAutoresizingMaskIntoConstraints = false
-        headlineStackView.addArrangedSubview(userView.lockImageView)
-        NSLayoutConstraint.activate([
-            userView.lockImageView.heightAnchor.constraint(equalTo: userView.nameLabel.heightAnchor).priority(.required - 10),
-        ])
-        userView.lockImageView.setContentHuggingPriority(.defaultLow, for: .horizontal)
-        userView.lockImageView.setContentCompressionResistancePriority(.required - 10, for: .horizontal)
-        headlineStackView.addArrangedSubview(UIView())  // padding
-        
-        userView.infoContainerStackView.addArrangedSubview(userView.usernameLabel)
+        layoutRelationshipBase(userView: userView)
         
         userView.friendshipButton.translatesAutoresizingMaskIntoConstraints = false
         userView.accessoryContainerView.addArrangedSubview(userView.friendshipButton)
@@ -336,27 +388,14 @@ extension UserView.Style {
         userView.headerIconImageView.setContentHuggingPriority(.defaultLow, for: .vertical)
         userView.headerIconImageView.setContentHuggingPriority(.defaultLow, for: .horizontal)
 
-        let headlineStackView = UIStackView()
-        userView.infoContainerStackView.addArrangedSubview(headlineStackView)
-        headlineStackView.axis = .horizontal
-        headlineStackView.spacing = 6
-        headlineStackView.addArrangedSubview(userView.nameLabel)
-        userView.lockImageView.translatesAutoresizingMaskIntoConstraints = false
-        headlineStackView.addArrangedSubview(userView.lockImageView)
-        NSLayoutConstraint.activate([
-            userView.lockImageView.heightAnchor.constraint(equalTo: userView.nameLabel.heightAnchor).priority(.required - 10),
-        ])
-        userView.lockImageView.setContentHuggingPriority(.defaultLow, for: .horizontal)
-        userView.lockImageView.setContentCompressionResistancePriority(.required - 10, for: .horizontal)
-        headlineStackView.addArrangedSubview(UIView())  // padding
-        
-        userView.infoContainerStackView.addArrangedSubview(userView.usernameLabel)
-        
+        layoutRelationshipBase(userView: userView)
+
         // set header label align to author name
         NSLayoutConstraint.activate([
             userView.headerTextLabel.leadingAnchor.constraint(equalTo: userView.authorProfileAvatarView.trailingAnchor, constant: UserView.contentStackViewSpacing),
         ])
-        
+
+        // TODO: action button   
         userView.setNeedsLayout()
     }
     
@@ -389,6 +428,37 @@ extension UserView.Style {
         
         userView.setNeedsLayout()
     }
+    
+    func layoutAddListMember(userView: UserView) {
+        layoutRelationshipBase(userView: userView)
+        
+        userView.membershipButton.translatesAutoresizingMaskIntoConstraints = false
+        userView.accessoryContainerView.addArrangedSubview(userView.membershipButton)
+        NSLayoutConstraint.activate([
+            userView.membershipButton.widthAnchor.constraint(equalToConstant: 44),
+            userView.membershipButton.heightAnchor.constraint(equalToConstant: 44).priority(.required - 1),
+        ])
+        userView.membershipButton.setContentHuggingPriority(.required - 1, for: .horizontal)
+        userView.membershipButton.setContentCompressionResistancePriority(.required - 1, for: .horizontal)
+        
+        userView.activityIndicatorView.translatesAutoresizingMaskIntoConstraints = false
+        userView.accessoryContainerView.addSubview(userView.activityIndicatorView)
+        NSLayoutConstraint.activate([
+            userView.activityIndicatorView.centerXAnchor.constraint(equalTo: userView.membershipButton.centerXAnchor),
+            userView.activityIndicatorView.centerYAnchor.constraint(equalTo: userView.membershipButton.centerYAnchor),
+        ])
+        userView.activityIndicatorView.isHidden = true
+    }
+    
+    func layoutListMember(userView: UserView) {
+        layoutRelationshipBase(userView: userView)
+        
+        userView.menuButton.translatesAutoresizingMaskIntoConstraints = false
+        userView.accessoryContainerView.addArrangedSubview(userView.menuButton)
+        userView.menuButton.setContentHuggingPriority(.required - 1, for: .horizontal)
+        userView.menuButton.setContentCompressionResistancePriority(.required - 1, for: .horizontal)
+    }
+    
 }
 
 extension UserView {
@@ -402,10 +472,49 @@ extension UserView {
 import SwiftUI
 struct UserView_Preview: PreviewProvider {
     static var previews: some View {
-        UIViewPreview {
-            let userView = UserView()
-            userView.setup(style: .account)
-            return userView
+        Group {
+            UIViewPreview {
+                let userView = UserView()
+                userView.setup(style: .account)
+                return userView
+            }
+            .previewLayout(.fixed(width: 375, height: 48))
+        .previewDisplayName("Account")
+            UIViewPreview {
+                let userView = UserView()
+                userView.setup(style: .relationship)
+                return userView
+            }
+            .previewLayout(.fixed(width: 375, height: 48))
+            .previewDisplayName("Relationship")
+            UIViewPreview {
+                let userView = UserView()
+                userView.setup(style: .friendship)
+                return userView
+            }
+            .previewLayout(.fixed(width: 375, height: 48))
+            .previewDisplayName("Friendship")
+            UIViewPreview {
+                let userView = UserView()
+                userView.setup(style: .notification)
+                return userView
+            }
+            .previewLayout(.fixed(width: 375, height: 48))
+            .previewDisplayName("Notification")
+            UIViewPreview {
+                let userView = UserView()
+                userView.setup(style: .mentionPick)
+                return userView
+            }
+            .previewLayout(.fixed(width: 375, height: 48))
+            .previewDisplayName("MentionPick")
+            UIViewPreview {
+                let userView = UserView()
+                userView.setup(style: .addListMember)
+                return userView
+            }
+            .previewLayout(.fixed(width: 375, height: 48))
+            .previewDisplayName("AddListMember")
         }
     }
 }

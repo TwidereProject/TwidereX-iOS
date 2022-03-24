@@ -30,8 +30,6 @@ class ListStatusViewModel {
     // output
     var diffableDataSource: UITableViewDiffableDataSource<StatusSection, StatusItem>?
     
-    @Published var title: String?
-    
     @MainActor private(set) lazy var stateMachine: GKStateMachine = {
         let stateMachine = GKStateMachine(states: [
             State.Initial(viewModel: self),
@@ -44,6 +42,9 @@ class ListStatusViewModel {
         stateMachine.enter(State.Initial.self)
         return stateMachine
     }()
+    
+    @Published var title: String?
+    @Published var isDeleted = false
     
     init(
         context: AppContext,
@@ -60,19 +61,32 @@ class ListStatusViewModel {
         
         $list
             .asyncMap { [weak self] record in
-                guard let self = self else { return nil }
+                guard let _ = self else { return nil }
                 guard let list = record?.object(in: context.managedObjectContext) else { return nil }
-                switch list {
-                case .twitter(let object):      return object.name
-                case .mastodon(let object):     return object.title
-                }
+                return list.name
             }
             .assign(to: &$title)
-            
+        
+        
+        ManagedObjectObserver.observe(context: context.managedObjectContext)
+            .sink(receiveCompletion: { completion in
+                // do nohting
+            }, receiveValue: { [weak self] changes in
+                guard let self = self else { return }
+                
+                let objectIDs: [NSManagedObjectID] = changes.changeTypes.compactMap { changeType in
+                    guard case let .delete(object) = changeType else { return nil }
+                    return object.objectID
+                }
+                
+                let isDeleted = objectIDs.contains(list.objectID)
+                self.isDeleted = isDeleted
+            })
+            .store(in: &disposeBag)
     }
     
     deinit {
-        os_log("%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
+        os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
     }
     
 }

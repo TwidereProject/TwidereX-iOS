@@ -18,7 +18,8 @@ enum UserSection {
 extension UserSection {
     
     struct Configuration {
-        weak var userTableViewCellDelegate: UserTableViewCellDelegate?
+        weak var userViewTableViewCellDelegate: UserViewTableViewCellDelegate?
+        let listMembershipViewModel: ListMembershipViewModel?
     }
     
     static func diffableDataSource(
@@ -32,6 +33,8 @@ extension UserSection {
             UserFriendshipStyleTableViewCell.self,
             UserMentionPickStyleTableViewCell.self,
             UserNotificationStyleTableViewCell.self,
+            UserListMemberStyleTableViewCell.self,
+            UserAddListMemberStyleTableViewCell.self,
             TimelineBottomLoaderTableViewCell.self,
         ]
             
@@ -53,7 +56,8 @@ extension UserSection {
                     let viewModel = UserTableViewCell.ViewModel(
                         user: me,
                         me: me,
-                        notification: nil
+                        notification: nil,
+                        listMembershipViewModel: configuration.listMembershipViewModel
                     )
                     configure(
                         cell: cell,
@@ -71,7 +75,8 @@ extension UserSection {
                     let viewModel = UserTableViewCell.ViewModel(
                         user: user,
                         me: me,
-                        notification: nil
+                        notification: nil,
+                        listMembershipViewModel: configuration.listMembershipViewModel
                     )
                     configure(
                         cell: cell,
@@ -108,6 +113,10 @@ extension UserSection {
             return tableView.dequeueReusableCell(withIdentifier: String(describing: UserNotificationStyleTableViewCell.self), for: indexPath) as! UserNotificationStyleTableViewCell
         case .mentionPick:
             return tableView.dequeueReusableCell(withIdentifier: String(describing: UserMentionPickStyleTableViewCell.self), for: indexPath) as! UserMentionPickStyleTableViewCell
+        case .listMember:
+            return tableView.dequeueReusableCell(withIdentifier: String(describing: UserListMemberStyleTableViewCell.self), for: indexPath) as! UserListMemberStyleTableViewCell
+        case .addListMember:
+            return tableView.dequeueReusableCell(withIdentifier: String(describing: UserAddListMemberStyleTableViewCell.self), for: indexPath) as! UserAddListMemberStyleTableViewCell
         }
     }
     
@@ -118,7 +127,7 @@ extension UserSection {
     ) {
         cell.configure(
             viewModel: viewModel,
-            delegate: configuration.userTableViewCellDelegate
+            delegate: configuration.userViewTableViewCellDelegate
         )
     }
 }

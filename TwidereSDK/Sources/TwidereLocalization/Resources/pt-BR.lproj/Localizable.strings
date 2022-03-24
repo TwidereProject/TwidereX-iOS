@@ -72,6 +72,8 @@
 "Common.Alerts.DeleteTweetConfirm.Title" = "Excluir Tweet";
 "Common.Alerts.FailedToBlockUser.Message" = "Por favor, tente novamente";
 "Common.Alerts.FailedToBlockUser.Title" = "Falha ao bloquear %@";
+"Common.Alerts.FailedToDeleteList.Message" = "Por favor, tente novamente";
+"Common.Alerts.FailedToDeleteList.Title" = "Failed to Delete List";
 "Common.Alerts.FailedToDeleteToot.Message" = "Por favor, tente novamente";
 "Common.Alerts.FailedToDeleteToot.Title" = "Falha ao Excluir Toot";
 "Common.Alerts.FailedToDeleteTweet.Message" = "Por favor, tente novamente";
@@ -86,6 +88,8 @@
 "Common.Alerts.FailedToLoginTimeout.Title" = "Falha ao Fazer Login";
 "Common.Alerts.FailedToMuteUser.Message" = "Por favor, tente novamente";
 "Common.Alerts.FailedToMuteUser.Title" = "Falha ao silenciar %@";
+"Common.Alerts.FailedToRemoveListMember.Message" = "Por favor, tente novamente";
+"Common.Alerts.FailedToRemoveListMember.Title" = "Failed to Remove List Member";
 "Common.Alerts.FailedToReportAndBlockUser.Message" = "Por favor, tente novamente";
 "Common.Alerts.FailedToReportAndBlockUser.Title" = "Falha ao reportar e bloquear %@";
 "Common.Alerts.FailedToReportUser.Message" = "Por favor, tente novamente";
@@ -100,6 +104,9 @@
 "Common.Alerts.FailedToUnmuteUser.Title" = "Falha ao dessilenciar %@";
 "Common.Alerts.FollowingRequestSent.Title" = "Pedido para Seguir Enviado";
 "Common.Alerts.FollowingSuccess.Title" = "Seguiu com Sucesso";
+"Common.Alerts.ListDeleted.Message" = "Por favor, tente novamente";
+"Common.Alerts.ListDeleted.Title" = "List Deleted";
+"Common.Alerts.ListMemberRemoved.Title" = "List Member Removed";
 "Common.Alerts.MediaSaveFail.Message" = "Por favor, tente novamente";
 "Common.Alerts.MediaSaveFail.Title" = "Falha ao salvar mídia";
 "Common.Alerts.MediaSaved.Title" = "Mídia salva";
@@ -208,9 +215,9 @@
 "Common.Controls.Status.YouBoosted" = "Você impulsionou";
 "Common.Controls.Status.YouRetweeted" = "Você retweetou";
 "Common.Controls.Timeline.LoadMore" = "Carregar Mais";
-"Common.Controls.User.Actions.AddRemoveFromLists" = "Add/remove from Lists";
-"Common.Controls.User.Actions.ViewListed" = "View Listed";
-"Common.Controls.User.Actions.ViewLists" = "View Lists";
+"Common.Controls.User.Actions.AddRemoveFromLists" = "Adicionar/remover das Listas";
+"Common.Controls.User.Actions.ViewListed" = "Ver Listado";
+"Common.Controls.User.Actions.ViewLists" = "Ver Listas";
 "Common.Countable.Like.Multiple" = "%@ curtidas";
 "Common.Countable.Like.Single" = "%@ curtida";
 "Common.Countable.List.Multiple" = "%@ listas";
@@ -315,6 +322,7 @@
 "Scene.ListsModify.Name" = "Nome";
 "Scene.ListsModify.Private" = "Privado";
 "Scene.ListsUsers.Add.Search" = "Buscar pessoas";
+"Scene.ListsUsers.Add.SearchWithinPeopleYouFollow" = "Search within people you follow";
 "Scene.ListsUsers.Add.Title" = "Adicionar Membro";
 "Scene.ListsUsers.MenuActions.Add" = "Adicionar";
 "Scene.ListsUsers.MenuActions.Remove" = "Remover";

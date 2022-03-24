@@ -72,6 +72,8 @@
 "Common.Alerts.DeleteTweetConfirm.Title" = "Delete Tweet";
 "Common.Alerts.FailedToBlockUser.Message" = "Si us plau, torna-ho a provar";
 "Common.Alerts.FailedToBlockUser.Title" = "Error al blocar %@";
+"Common.Alerts.FailedToDeleteList.Message" = "Si us plau, torna-ho a provar";
+"Common.Alerts.FailedToDeleteList.Title" = "Failed to Delete List";
 "Common.Alerts.FailedToDeleteToot.Message" = "Si us plau, torna-ho a provar";
 "Common.Alerts.FailedToDeleteToot.Title" = "Failed to Delete Toot";
 "Common.Alerts.FailedToDeleteTweet.Message" = "Si us plau, torna-ho a provar";
@@ -86,6 +88,8 @@
 "Common.Alerts.FailedToLoginTimeout.Title" = "No s'ha pogut entrar";
 "Common.Alerts.FailedToMuteUser.Message" = "Si us plau, torna-ho a provar";
 "Common.Alerts.FailedToMuteUser.Title" = "Error al silenciar %@";
+"Common.Alerts.FailedToRemoveListMember.Message" = "Si us plau, torna-ho a provar";
+"Common.Alerts.FailedToRemoveListMember.Title" = "Failed to Remove List Member";
 "Common.Alerts.FailedToReportAndBlockUser.Message" = "Si us plau, torna-ho a provar";
 "Common.Alerts.FailedToReportAndBlockUser.Title" = "Error al denunciar i blocar %@";
 "Common.Alerts.FailedToReportUser.Message" = "Si us plau, torna-ho a provar";
@@ -100,6 +104,9 @@
 "Common.Alerts.FailedToUnmuteUser.Title" = "Error al silenciar %@";
 "Common.Alerts.FollowingRequestSent.Title" = "Petició de seguiment enviada";
 "Common.Alerts.FollowingSuccess.Title" = "Seguiment realitzat";
+"Common.Alerts.ListDeleted.Message" = "Si us plau, torna-ho a provar";
+"Common.Alerts.ListDeleted.Title" = "List Deleted";
+"Common.Alerts.ListMemberRemoved.Title" = "List Member Removed";
 "Common.Alerts.MediaSaveFail.Message" = "Si us plau, torna-ho a provar";
 "Common.Alerts.MediaSaveFail.Title" = "No s'ha pogut desar el mitjà";
 "Common.Alerts.MediaSaved.Title" = "S'ha desat el mitjà";
@@ -315,6 +322,7 @@
 "Scene.ListsModify.Name" = "Nom";
 "Scene.ListsModify.Private" = "Privada";
 "Scene.ListsUsers.Add.Search" = "Cerca persones";
+"Scene.ListsUsers.Add.SearchWithinPeopleYouFollow" = "Search within people you follow";
 "Scene.ListsUsers.Add.Title" = "Afegeix membre";
 "Scene.ListsUsers.MenuActions.Add" = "Afegir";
 "Scene.ListsUsers.MenuActions.Remove" = "Elimina";

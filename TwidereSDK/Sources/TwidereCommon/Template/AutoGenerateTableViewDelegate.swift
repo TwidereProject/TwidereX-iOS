@@ -8,4 +8,4 @@
 
 import Foundation
 
-protocol AutoGenerateTableViewDelegate { }
+public protocol AutoGenerateTableViewDelegate { }

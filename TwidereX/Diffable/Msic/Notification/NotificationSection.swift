@@ -19,7 +19,7 @@ extension NotificationSection {
     
     struct Configuration {
         weak var statusViewTableViewCellDelegate: StatusViewTableViewCellDelegate?
-        weak var userTableViewCellDelegate: UserTableViewCellDelegate?
+        weak var userViewTableViewCellDelegate: UserViewTableViewCellDelegate?
         let statusViewConfigurationContext: StatusView.ConfigurationContext
     }
 
@@ -68,7 +68,8 @@ extension NotificationSection {
                                 viewModel: UserTableViewCell.ViewModel(
                                     user: user,
                                     me: me,
-                                    notification: .mastodon(object: notification)
+                                    notification: .mastodon(object: notification),
+                                    listMembershipViewModel: nil
                                 ),
                                 configuration: configuration
                             )
@@ -119,7 +120,7 @@ extension NotificationSection {
     ) {
         cell.configure(
             viewModel: viewModel,
-            delegate: configuration.userTableViewCellDelegate
+            delegate: configuration.userViewTableViewCellDelegate
         )
     }
 }

@@ -14,12 +14,15 @@ extension ListUserViewModel {
     
     func setupDiffableDataSource(
         tableView: UITableView,
-        userTableViewCellDelegate: UserTableViewCellDelegate
+        userViewTableViewCellDelegate: UserViewTableViewCellDelegate
     ) {
         diffableDataSource = UserSection.diffableDataSource(
             tableView: tableView,
             context: context,
-            configuration: UserSection.Configuration()
+            configuration: UserSection.Configuration(
+                userViewTableViewCellDelegate: userViewTableViewCellDelegate,
+                listMembershipViewModel: nil
+            )
         )
         
         fetchedResultController.$records
@@ -30,7 +33,7 @@ extension ListUserViewModel {
 
                 snapshot.appendSections([.main])
 
-                let items = records.map { UserItem.user(record: $0, style: .friendship) }
+                let items = records.map { UserItem.user(record: $0, style: .listMember) }
                 snapshot.appendItems(items, toSection: .main)
 
                 let currentState = await self.stateMachine.currentState

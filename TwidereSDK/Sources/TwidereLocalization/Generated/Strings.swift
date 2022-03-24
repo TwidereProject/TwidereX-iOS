@@ -234,6 +234,12 @@ public enum L10n {
           return L10n.tr("Localizable", "Common.Alerts.FailedToBlockUser.Title", String(describing: p1))
         }
       }
+      public enum FailedToDeleteList {
+        /// Please try again
+        public static let message = L10n.tr("Localizable", "Common.Alerts.FailedToDeleteList.Message")
+        /// Failed to Delete List
+        public static let title = L10n.tr("Localizable", "Common.Alerts.FailedToDeleteList.Title")
+      }
       public enum FailedToDeleteToot {
         /// Please try again
         public static let message = L10n.tr("Localizable", "Common.Alerts.FailedToDeleteToot.Message")
@@ -277,6 +283,12 @@ public enum L10n {
         public static func title(_ p1: Any) -> String {
           return L10n.tr("Localizable", "Common.Alerts.FailedToMuteUser.Title", String(describing: p1))
         }
+      }
+      public enum FailedToRemoveListMember {
+        /// Please try again
+        public static let message = L10n.tr("Localizable", "Common.Alerts.FailedToRemoveListMember.Message")
+        /// Failed to Remove List Member
+        public static let title = L10n.tr("Localizable", "Common.Alerts.FailedToRemoveListMember.Title")
       }
       public enum FailedToReportAndBlockUser {
         /// Please try again
@@ -329,6 +341,16 @@ public enum L10n {
       public enum FollowingSuccess {
         /// Following Succeeded
         public static let title = L10n.tr("Localizable", "Common.Alerts.FollowingSuccess.Title")
+      }
+      public enum ListDeleted {
+        /// Please try again
+        public static let message = L10n.tr("Localizable", "Common.Alerts.ListDeleted.Message")
+        /// List Deleted
+        public static let title = L10n.tr("Localizable", "Common.Alerts.ListDeleted.Title")
+      }
+      public enum ListMemberRemoved {
+        /// List Member Removed
+        public static let title = L10n.tr("Localizable", "Common.Alerts.ListMemberRemoved.Title")
       }
       public enum MediaSaveFail {
         /// Please try again
@@ -1038,6 +1060,8 @@ public enum L10n {
       public enum Add {
         /// Search people
         public static let search = L10n.tr("Localizable", "Scene.ListsUsers.Add.Search")
+        /// Search within people you follow
+        public static let searchWithinPeopleYouFollow = L10n.tr("Localizable", "Scene.ListsUsers.Add.SearchWithinPeopleYouFollow")
         /// Add Member
         public static let title = L10n.tr("Localizable", "Scene.ListsUsers.Add.Title")
       }

@@ -12,6 +12,7 @@ import SwiftUI
 import CoreDataStack
 import TwidereCommon
 import TwidereCore
+import TwidereAsset
 import Meta
 import MastodonSDK
 
@@ -36,6 +37,10 @@ extension UserView {
         @Published public var protected: Bool = false
         
         @Published public var followerCount: Int?
+        
+        public var listMembershipViewModel: ListMembershipViewModel?
+        @Published public var isListMember = false
+        @Published public var isListMemberCandidate = false       // a.k.a isBusy
         
         public enum Header {
             case none
@@ -150,6 +155,65 @@ extension UserView.ViewModel {
                 userView.friendshipButton.isHidden = relationship == .isMyself
             }
             .store(in: &disposeBag)
+        
+        // accessory
+        switch userView.style {
+        case .account:
+            userView.menuButton.showsMenuAsPrimaryAction = true
+            userView.menuButton.menu = {
+                let children = [
+                    UIAction(
+                        title: L10n.Common.Controls.Actions.signOut,
+                        image: UIImage(systemName: "person.crop.circle.badge.minus"),
+                        attributes: .destructive,
+                        state: .off
+                    ) { [weak userView] _ in
+                        guard let userView = userView else { return }
+                        userView.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): sign out user…")
+                        userView.delegate?.userView(userView, menuActionDidPressed: .signOut, menuButton: userView.menuButton)
+                    }
+                ]
+                return UIMenu(title: "", image: nil, options: [], children: children)
+            }()
+        case .listMember:
+            userView.menuButton.showsMenuAsPrimaryAction = true
+            userView.menuButton.menu = {
+                let children = [
+                    UIAction(
+                        title: L10n.Common.Controls.Actions.remove,
+                        image: UIImage(systemName: "minus.circle"),
+                        attributes: .destructive,
+                        state: .off
+                    ) { [weak userView] _ in
+                        guard let userView = userView else { return }
+                        userView.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): remove user…")
+                        userView.delegate?.userView(userView, menuActionDidPressed: .remove, menuButton: userView.menuButton)
+                    }
+                ]
+                return UIMenu(title: "", image: nil, options: [], children: children)
+            }()
+        case .addListMember:
+            Publishers.CombineLatest(
+                $isListMember,
+                $isListMemberCandidate
+            )
+            .receive(on: DispatchQueue.main)
+            .sink { [weak userView] isMember, isMemberCandidate in
+                guard let userView = userView else { return }
+                let image = isMember ? UIImage(systemName: "minus.circle") : UIImage(systemName: "plus.circle")
+                let tintColor = isMember ? UIColor.systemRed : Asset.Colors.hightLight.color
+                userView.membershipButton.setImage(image, for: .normal)
+                userView.membershipButton.tintColor = tintColor
+                
+                userView.membershipButton.alpha = isMemberCandidate ? 0 : 1
+                userView.activityIndicatorView.isHidden = !isMemberCandidate
+            }
+            .store(in: &disposeBag)
+                
+        default:
+            userView.menuButton.showsMenuAsPrimaryAction = true
+            userView.menuButton.menu = nil
+        }
     }
     
 }
@@ -158,7 +222,8 @@ extension UserView {
     public func configure(
         user: UserObject,
         me: UserObject?,
-        notification: NotificationObject?
+        notification: NotificationObject?,
+        listMembershipViewModel: ListMembershipViewModel?
     ) {
         switch user {
         case .twitter(let user):
@@ -174,27 +239,26 @@ extension UserView {
         viewModel.relationshipViewModel.user = user
         viewModel.relationshipViewModel.me = me
         
-        // menu
+        viewModel.listMembershipViewModel = listMembershipViewModel
+        
+        // accessory
         switch style {
-        case .account:
-            menuButton.showsMenuAsPrimaryAction = true
-            menuButton.menu = {
-                let children = [
-                    UIAction(
-                        title: L10n.Common.Controls.Actions.signOut,
-                        image: UIImage(systemName: "person.crop.circle.badge.minus"),
-                        attributes: .destructive,
-                        state: .off) { [weak self] _ in
-                            guard let self = self else { return }
-                            self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): sign out user…")
-                            self.delegate?.userView(self, menuActionDidPressed: .signOut, menuButton: self.menuButton)
-                        }
-                ]
-                return UIMenu(title: "", image: nil, options: [], children: children)
-            }()
+        case .addListMember:
+            guard let listMembershipViewModel = listMembershipViewModel else {
+                assertionFailure()
+                break
+            }
+            let userRecord = user.asRecord
+            listMembershipViewModel.$members
+                .map { members in members.contains(userRecord) }
+                .assign(to: \.isListMember, on: viewModel)
+                .store(in: &disposeBag)
+            listMembershipViewModel.$workingMembers
+                .map { members in members.contains(userRecord) }
+                .assign(to: \.isListMemberCandidate, on: viewModel)
+                .store(in: &disposeBag)
         default:
-            menuButton.showsMenuAsPrimaryAction = true
-            menuButton.menu = nil
+            break
         }
     }
     

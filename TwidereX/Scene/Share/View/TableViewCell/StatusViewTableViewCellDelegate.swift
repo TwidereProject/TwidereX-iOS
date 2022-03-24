@@ -107,5 +107,4 @@ extension StatusViewDelegate where Self: StatusViewContainerTableViewCell {
         delegate?.tableViewCell(self, statusView: statusView, accessibilityActivate: accessibilityActivate)
     }
     // sourcery:end
-    
 }

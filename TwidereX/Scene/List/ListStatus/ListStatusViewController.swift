@@ -117,12 +117,30 @@ extension ListStatusViewController {
                 self.viewModel.stateMachine.enter(ListStatusViewModel.State.Reloading.self)
             }
             .store(in: &disposeBag)
+        
+        viewModel.$isDeleted
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] isDeleted in
+                guard let self = self else { return }
+                guard isDeleted else { return }
+                
+                // pop if current view controller on screen when isDeleted
+                if self.navigationController?.visibleViewController === self {
+                    self.navigationController?.popViewController(animated: true)
+                }
+            }
+            .store(in: &disposeBag)
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
         tableView.deselectRow(with: transitionCoordinator, animated: animated)
+        
+        // pop if view controller will appear when isDeleted
+        if viewModel.isDeleted {
+            self.navigationController?.popViewController(animated: true)
+        }
     }
     
 }

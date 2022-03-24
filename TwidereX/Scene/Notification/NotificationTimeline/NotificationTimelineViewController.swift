@@ -9,6 +9,7 @@
 import os.log
 import UIKit
 import Combine
+import TwidereUI
 
 final class NotificationTimelineViewController: UIViewController, NeedsDependency, MediaPreviewTransitionHostViewController {
 
@@ -61,7 +62,7 @@ extension NotificationTimelineViewController {
         viewModel.setupDiffableDataSource(
             tableView: tableView,
             statusViewTableViewCellDelegate: self,
-            userTableViewCellDelegate: self
+            userViewTableViewCellDelegate: self
         )
         // setup refresh control
         tableView.refreshControl = refreshControl
@@ -153,7 +154,7 @@ extension NotificationTimelineViewController: UITableViewDelegate, AutoGenerateT
 extension NotificationTimelineViewController: StatusViewTableViewCellDelegate { }
 
 // MARK: - UserTableViewCellDelegate
-extension NotificationTimelineViewController: UserTableViewCellDelegate { }
+extension NotificationTimelineViewController: UserViewTableViewCellDelegate { }
 
 // MARK: - ScrollViewContainer
 extension NotificationTimelineViewController: ScrollViewContainer {

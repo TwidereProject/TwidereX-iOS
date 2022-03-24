@@ -7,4 +7,4 @@
 
 import Foundation
 
-@objc protocol AutoGenerateProtocolDelegate: AnyObject { }
+@objc public protocol AutoGenerateProtocolDelegate: AnyObject { }

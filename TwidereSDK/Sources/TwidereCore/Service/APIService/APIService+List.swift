@@ -362,7 +362,7 @@ extension APIService {
                 return
             }
             
-            Persistence.MastodonList.createOrMerge(
+            _ = Persistence.MastodonList.createOrMerge(
                 in: managedObjectContext,
                 context: Persistence.MastodonList.PersistContext(
                     domain: authenticationContext.domain,
@@ -376,6 +376,53 @@ extension APIService {
         }
         
         return response
+    }
+    
+}
+
+extension APIService {
+    
+    public func deleteList(
+        list: ListRecord,
+        authenticationContext: AuthenticationContext
+    ) async throws {
+        let managedObjectContext = backgroundManagedObjectContext
+        
+        switch (list, authenticationContext) {
+        case (.twitter(let list), .twitter(let authenticationContext)):
+            fatalError()
+            // logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): create Twitter list: \(response.value.data.id)")
+            // return .twitter(response: response)
+        case (.mastodon(let list), .mastodon(let authenticationContext)):
+            let _listID: MastodonList.ID? = await managedObjectContext.perform {
+                guard let object = list.object(in: managedObjectContext) else { return nil }
+                return object.id
+            }
+            guard let listID = _listID else {
+                throw AppError.implicit(.badRequest)
+            }
+
+            do {
+                _ = try await Mastodon.API.List.delete(
+                    session: session,
+                    domain: authenticationContext.domain,
+                    listID: listID,
+                    authorization: authenticationContext.authorization
+                )
+                
+                try await managedObjectContext.performChanges {
+                    guard let object = list.object(in: managedObjectContext) else { return }
+                    managedObjectContext.delete(object)
+                }
+            } catch let error as Mastodon.API.Error {
+                throw AppError.implicit(.mastodonResponseError(error))
+            } catch {
+                throw error
+            }
+            logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): delete Mastodon list: \(listID)")
+        default:
+            throw AppError.implicit(.badRequest)
+        }
     }
     
 }

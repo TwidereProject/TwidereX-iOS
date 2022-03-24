@@ -19,11 +19,11 @@ extension NotificationTimelineViewModel {
     func setupDiffableDataSource(
         tableView: UITableView,
         statusViewTableViewCellDelegate: StatusViewTableViewCellDelegate,
-        userTableViewCellDelegate: UserTableViewCellDelegate
+        userViewTableViewCellDelegate: UserViewTableViewCellDelegate
     ) {
         let configuration = NotificationSection.Configuration(
             statusViewTableViewCellDelegate: statusViewTableViewCellDelegate,
-            userTableViewCellDelegate: userTableViewCellDelegate,
+            userViewTableViewCellDelegate: userViewTableViewCellDelegate,
             statusViewConfigurationContext: .init(
                 dateTimeProvider: DateTimeSwiftProvider(),
                 twitterTextProvider: OfficialTwitterTextProvider(),

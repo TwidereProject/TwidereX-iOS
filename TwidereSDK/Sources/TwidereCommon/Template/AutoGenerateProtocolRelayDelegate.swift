@@ -8,4 +8,4 @@
 
 import Foundation
 
-protocol AutoGenerateProtocolRelayDelegate { }
+public protocol AutoGenerateProtocolRelayDelegate { }

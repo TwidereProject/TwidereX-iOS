@@ -93,6 +93,12 @@ extension SearchUserViewModel.State {
                         return UserFetchViewModel.Search.Input.mastodon(.init(
                             authenticationContext: authenticationContext,
                             searchText: searchText,
+                            following: {
+                                switch viewModel.kind {
+                                case .friendship:       return false
+                                case .listMember:       return true
+                                }
+                            }(),
                             offset: 0,
                             count: 50)
                         )

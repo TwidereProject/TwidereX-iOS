@@ -136,7 +136,6 @@
 		DB56329726DCBE1600FC893F /* StatusThreadViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB56329626DCBE1600FC893F /* StatusThreadViewController.swift */; };
 		DB56329A26DCBE7300FC893F /* StatusThreadViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB56329926DCBE7300FC893F /* StatusThreadViewModel.swift */; };
 		DB56329C26DCC23700FC893F /* DataSourceProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB56329B26DCC23700FC893F /* DataSourceProvider.swift */; };
-		DB5632A226DCC70700FC893F /* AutoGenerateTableViewDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB5632A126DCC70700FC893F /* AutoGenerateTableViewDelegate.swift */; };
 		DB5632A726DCC84C00FC893F /* DataSourceProvider+UITableViewDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB5632A626DCC84C00FC893F /* DataSourceProvider+UITableViewDelegate.swift */; };
 		DB5632A926DCC96C00FC893F /* TimelineViewController+DataSourceProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB5632A826DCC96C00FC893F /* TimelineViewController+DataSourceProvider.swift */; };
 		DB5632AB26DCCD3900FC893F /* DataSourceFacade.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB5632AA26DCCD3900FC893F /* DataSourceFacade.swift */; };
@@ -269,13 +268,14 @@
 		DBA5FA192553DCBC00D2E98E /* TransitioningMath.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBA5FA182553DCBC00D2E98E /* TransitioningMath.swift */; };
 		DBA61AB62552596A006AC169 /* UserMediaTimelineViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBA61AB52552596A006AC169 /* UserMediaTimelineViewController.swift */; };
 		DBA6B1B725355C1E005FB0B4 /* UIAlertController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBA6B1B625355C1E005FB0B4 /* UIAlertController.swift */; };
+		DBA6B30C27E9B4CB004D052D /* DataSourceFacade+Banner.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBA6B30B27E9B4CB004D052D /* DataSourceFacade+Banner.swift */; };
+		DBA6B30E27E9CB6F004D052D /* AddListMemberViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBA6B30D27E9CB6F004D052D /* AddListMemberViewController.swift */; };
+		DBA6B31127E9CBCC004D052D /* AddListMemberViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBA6B31027E9CBCC004D052D /* AddListMemberViewModel.swift */; };
 		DBA7DD74256B96450008A95A /* UIFont.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBA7DD73256B96450008A95A /* UIFont.swift */; };
 		DBAA898E2758CF01001C273B /* DrawerSidebarHeaderView+ViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBAA898D2758CF01001C273B /* DrawerSidebarHeaderView+ViewModel.swift */; };
 		DBAA89902758DFC9001C273B /* AvatarBarButtonItem+ViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBAA898F2758DFC9001C273B /* AvatarBarButtonItem+ViewModel.swift */; };
 		DBAA89922758EF12001C273B /* DrawerSidebarViewModel+Diffable.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBAA89912758EF12001C273B /* DrawerSidebarViewModel+Diffable.swift */; };
 		DBB0E3C32760FB1200F1D45F /* TwidereSDK in Frameworks */ = {isa = PBXBuildFile; productRef = DBB0E3C22760FB1200F1D45F /* TwidereSDK */; };
-		DBB3780027686E3000B77A02 /* AutoGenerateProtocolDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBB377FF27686E3000B77A02 /* AutoGenerateProtocolDelegate.swift */; };
-		DBB3780327687CA200B77A02 /* AutoGenerateProtocolRelayDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBB3780227687CA200B77A02 /* AutoGenerateProtocolRelayDelegate.swift */; };
 		DBB47DA926EB3AA2001590F7 /* ProfileFieldListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBB47DA826EB3AA2001590F7 /* ProfileFieldListView.swift */; };
 		DBB47DAB26EB3BF8001590F7 /* ProfileFieldContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBB47DAA26EB3BF8001590F7 /* ProfileFieldContentView.swift */; };
 		DBB47DAD26EB440C001590F7 /* ProfileFieldCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBB47DAC26EB440C001590F7 /* ProfileFieldCollectionViewCell.swift */; };
@@ -576,8 +576,6 @@
 		DB56329626DCBE1600FC893F /* StatusThreadViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusThreadViewController.swift; sourceTree = "<group>"; };
 		DB56329926DCBE7300FC893F /* StatusThreadViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusThreadViewModel.swift; sourceTree = "<group>"; };
 		DB56329B26DCC23700FC893F /* DataSourceProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataSourceProvider.swift; sourceTree = "<group>"; };
-		DB56329D26DCC47D00FC893F /* AutoGenerateTableViewDelegate.stencil */ = {isa = PBXFileReference; lastKnownFileType = text; path = AutoGenerateTableViewDelegate.stencil; sourceTree = "<group>"; };
-		DB5632A126DCC70700FC893F /* AutoGenerateTableViewDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutoGenerateTableViewDelegate.swift; sourceTree = "<group>"; };
 		DB5632A626DCC84C00FC893F /* DataSourceProvider+UITableViewDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DataSourceProvider+UITableViewDelegate.swift"; sourceTree = "<group>"; };
 		DB5632A826DCC96C00FC893F /* TimelineViewController+DataSourceProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TimelineViewController+DataSourceProvider.swift"; sourceTree = "<group>"; };
 		DB5632AA26DCCD3900FC893F /* DataSourceFacade.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataSourceFacade.swift; sourceTree = "<group>"; };
@@ -708,6 +706,9 @@
 		DBA5FA2D2553F06B00D2E98E /* MediaInfoDescriptionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaInfoDescriptionView.swift; sourceTree = "<group>"; };
 		DBA61AB52552596A006AC169 /* UserMediaTimelineViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserMediaTimelineViewController.swift; sourceTree = "<group>"; };
 		DBA6B1B625355C1E005FB0B4 /* UIAlertController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIAlertController.swift; sourceTree = "<group>"; };
+		DBA6B30B27E9B4CB004D052D /* DataSourceFacade+Banner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DataSourceFacade+Banner.swift"; sourceTree = "<group>"; };
+		DBA6B30D27E9CB6F004D052D /* AddListMemberViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddListMemberViewController.swift; sourceTree = "<group>"; };
+		DBA6B31027E9CBCC004D052D /* AddListMemberViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddListMemberViewModel.swift; sourceTree = "<group>"; };
 		DBA7DD73256B96450008A95A /* UIFont.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIFont.swift; sourceTree = "<group>"; };
 		DBA9B3A525875B6B00EA14ED /* MentionPickViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MentionPickViewController.swift; sourceTree = "<group>"; };
 		DBA9B3C02587609200EA14ED /* MentionPickViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MentionPickViewModel.swift; sourceTree = "<group>"; };
@@ -716,10 +717,6 @@
 		DBAA89912758EF12001C273B /* DrawerSidebarViewModel+Diffable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DrawerSidebarViewModel+Diffable.swift"; sourceTree = "<group>"; };
 		DBAC4A6625552A1E00140B23 /* MediaPreviewImageViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaPreviewImageViewModel.swift; sourceTree = "<group>"; };
 		DBB2513D2599DBAB0064A876 /* HomeTimelineViewController+DebugAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "HomeTimelineViewController+DebugAction.swift"; sourceTree = "<group>"; };
-		DBB377FE27686E2C00B77A02 /* AutoGenerateProtocolDelegate.swifttemplate */ = {isa = PBXFileReference; lastKnownFileType = text; path = AutoGenerateProtocolDelegate.swifttemplate; sourceTree = "<group>"; };
-		DBB377FF27686E3000B77A02 /* AutoGenerateProtocolDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutoGenerateProtocolDelegate.swift; sourceTree = "<group>"; };
-		DBB3780127687C8C00B77A02 /* AutoGenerateProtocolRelayDelegate.swifttemplate */ = {isa = PBXFileReference; lastKnownFileType = text; path = AutoGenerateProtocolRelayDelegate.swifttemplate; sourceTree = "<group>"; };
-		DBB3780227687CA200B77A02 /* AutoGenerateProtocolRelayDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutoGenerateProtocolRelayDelegate.swift; sourceTree = "<group>"; };
 		DBB47DA826EB3AA2001590F7 /* ProfileFieldListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileFieldListView.swift; sourceTree = "<group>"; };
 		DBB47DAA26EB3BF8001590F7 /* ProfileFieldContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileFieldContentView.swift; sourceTree = "<group>"; };
 		DBB47DAC26EB440C001590F7 /* ProfileFieldCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileFieldCollectionViewCell.swift; sourceTree = "<group>"; };
@@ -1218,6 +1215,7 @@
 				DB47AB4527CF52B900CD73C7 /* ListStatus */,
 				DB46D11B27DB2703003B8BA1 /* ListUser */,
 				DB2C0BDB27DF14970033FC94 /* CreateList */,
+				DBA6B30F27E9CB7D004D052D /* AddListMember */,
 			);
 			path = List;
 			sourceTree = "<group>";
@@ -1268,23 +1266,11 @@
 			path = StatusThread;
 			sourceTree = "<group>";
 		};
-		DB56329F26DCC49200FC893F /* Template */ = {
-			isa = PBXGroup;
-			children = (
-				DBB377FE27686E2C00B77A02 /* AutoGenerateProtocolDelegate.swifttemplate */,
-				DBB3780127687C8C00B77A02 /* AutoGenerateProtocolRelayDelegate.swifttemplate */,
-				DB56329D26DCC47D00FC893F /* AutoGenerateTableViewDelegate.stencil */,
-				DBB377FF27686E3000B77A02 /* AutoGenerateProtocolDelegate.swift */,
-				DBB3780227687CA200B77A02 /* AutoGenerateProtocolRelayDelegate.swift */,
-				DB5632A126DCC70700FC893F /* AutoGenerateTableViewDelegate.swift */,
-			);
-			path = Template;
-			sourceTree = "<group>";
-		};
 		DB5632A526DCC82D00FC893F /* Provider */ = {
 			isa = PBXGroup;
 			children = (
 				DB5632AA26DCCD3900FC893F /* DataSourceFacade.swift */,
+				DBA6B30B27E9B4CB004D052D /* DataSourceFacade+Banner.swift */,
 				DB76A661275F65FE00A50673 /* DataSourceFacade+Model.swift */,
 				DB3B906A26E8D3AB0010F64C /* DataSourceFacade+Status.swift */,
 				DB01091F26E60756005F67D7 /* DataSourceFacade+StatusThread.swift */,
@@ -1769,6 +1755,15 @@
 			path = View;
 			sourceTree = "<group>";
 		};
+		DBA6B30F27E9CB7D004D052D /* AddListMember */ = {
+			isa = PBXGroup;
+			children = (
+				DBA6B30D27E9CB6F004D052D /* AddListMemberViewController.swift */,
+				DBA6B31027E9CBCC004D052D /* AddListMemberViewModel.swift */,
+			);
+			path = AddListMember;
+			sourceTree = "<group>";
+		};
 		DBA9B3AA25875B6F00EA14ED /* MentionPick */ = {
 			isa = PBXGroup;
 			children = (
@@ -1944,7 +1939,6 @@
 				DBDA8E9924FE0DC8006750DC /* Resources */,
 				DBE76D312502147200DEB0FC /* Extension */,
 				DB1BF29D25663EFE00B5F490 /* Preference */,
-				DB56329F26DCC49200FC893F /* Template */,
 				DBED96DC253F5D7B00C5383A /* Protocol */,
 				DBDA8E5324FDF3D6006750DC /* Supporting Files */,
 			);
@@ -2754,7 +2748,6 @@
 				DBCB4053255B6EB100DD8D8F /* AccountListViewModel.swift in Sources */,
 				DB7E22F92552A40000551314 /* UserLikeTimelineViewModel.swift in Sources */,
 				DB76A651275F1C3200A50673 /* MediaHostToMediaPreviewViewControllerAnimatedTransitioning.swift in Sources */,
-				DB5632A226DCC70700FC893F /* AutoGenerateTableViewDelegate.swift in Sources */,
 				DB76A659275F498F00A50673 /* MediaPreviewImageView.swift in Sources */,
 				DB262A4A2722AAA700D18EF3 /* SearchTimelineViewModel+State.swift in Sources */,
 				DB213FAB27392C44009ABD74 /* HashtagTimelineViewModel+Diffable.swift in Sources */,
@@ -2799,7 +2792,6 @@
 				DB47AB1D27CCB88000CD73C7 /* ListViewModel.swift in Sources */,
 				DB213FAD27392E7D009ABD74 /* HashtagTimelineViewController+DataSourceProvider.swift in Sources */,
 				DB8761BF274552F800BA7EE2 /* StatusItem.swift in Sources */,
-				DBB3780327687CA200B77A02 /* AutoGenerateProtocolRelayDelegate.swift in Sources */,
 				DB89F591257A2A70005ECD04 /* TimelineLoaderTableViewCell.swift in Sources */,
 				DB747FF9251C496A000C4BD7 /* ProfileViewController.swift in Sources */,
 				DB47AB6027CF65B900CD73C7 /* ListStatusViewModel+Diffable.swift in Sources */,
@@ -2816,6 +2808,7 @@
 				DB02C77927352217007EA0BF /* SearchHashtagViewModel+Diffable.swift in Sources */,
 				DB262A4327229BE700D18EF3 /* SearchTimelineViewController.swift in Sources */,
 				DB25C4CA277999BE00EC1435 /* ButtonTableViewCell.swift in Sources */,
+				DBA6B30E27E9CB6F004D052D /* AddListMemberViewController.swift in Sources */,
 				DBF63A38259D7CCB009E12C8 /* CornerSmoothPreviewViewController.swift in Sources */,
 				DB0CC4BA27D5F7BA00A051B4 /* CompositeListViewModel+Diffable.swift in Sources */,
 				DB02C77527351DA2007EA0BF /* HashtagTableViewCell+ViewModel.swift in Sources */,
@@ -2845,7 +2838,6 @@
 				DB213FAF273930BF009ABD74 /* HashtagTimelineViewModel+State.swift in Sources */,
 				DB969A66253064FE0053CB31 /* DispatchQueue.swift in Sources */,
 				DB262A3D27228B4800D18EF3 /* SearchResultViewController.swift in Sources */,
-				DBB3780027686E3000B77A02 /* AutoGenerateProtocolDelegate.swift in Sources */,
 				DB5FB0122727FD4A006520FA /* SearchUserViewModel+State.swift in Sources */,
 				DB46D12327DB6223003B8BA1 /* ListUserViewController+DataSourceProvider.swift in Sources */,
 				DB1E48192772CECC0074F6A0 /* SearchItem.swift in Sources */,
@@ -2867,6 +2859,7 @@
 				DBCB4047255B683B00DD8D8F /* AccountListTableViewCell.swift in Sources */,
 				DB8EBE8027667C80005CF76A /* SearchMediaViewController+DataSourceProvider.swift in Sources */,
 				DBF639FC259B333A009E12C8 /* EmptyStateView.swift in Sources */,
+				DBA6B30C27E9B4CB004D052D /* DataSourceFacade+Banner.swift in Sources */,
 				DB25C4C527798E1A00EC1435 /* DataSourceFacade+SavedSearch.swift in Sources */,
 				DBA210332759D79C000B7CB2 /* FollowingListViewController.swift in Sources */,
 				DBFCC44725667C620016698E /* UILabel.swift in Sources */,
@@ -2875,6 +2868,7 @@
 				DB76A660275F58CD00A50673 /* MediaPreviewViewController+DataSourceProvider.swift in Sources */,
 				DBAA89902758DFC9001C273B /* AvatarBarButtonItem+ViewModel.swift in Sources */,
 				DB262A4E2726928F00D18EF3 /* SearchMediaViewModel.swift in Sources */,
+				DBA6B31127E9CBCC004D052D /* AddListMemberViewModel.swift in Sources */,
 				DB9EC4EA255A6BC7005403AA /* TwitterAccountUnlockViewController.swift in Sources */,
 				DB1E48142772CE850074F6A0 /* SearchViewModel+Diffable.swift in Sources */,
 				DB71C7D1271EB09A00BE3819 /* DataSourceFacade+Friendship.swift in Sources */,

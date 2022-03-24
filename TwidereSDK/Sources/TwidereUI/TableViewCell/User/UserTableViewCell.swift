@@ -10,19 +10,15 @@ import os.log
 import UIKit
 import Combine
 
-public protocol UserTableViewCellDelegate: AnyObject {
-    func userTableViewCell(_ cell: UserTableViewCell, menuActionDidPressed action: UserView.MenuAction, menuButton button: UIButton)
-}
-
 public class UserTableViewCell: UITableViewCell {
     
     var disposeBag = Set<AnyCancellable>()
     
     let logger = Logger(subsystem: "UserTableViewCell", category: "View")
-    
+        
     public let userView = UserView()
     
-    public weak var delegate: UserTableViewCellDelegate?
+    public weak var delegate: UserViewTableViewCellDelegate?
     
     public override func prepareForReuse() {
         super.prepareForReuse()
@@ -57,9 +53,8 @@ public class UserTableViewCell: UITableViewCell {
     
 }
 
-// MARK: - UserViewDelegate
-extension UserTableViewCell: UserViewDelegate {
-    func userView(_ userView: UserView, menuActionDidPressed action: UserView.MenuAction, menuButton button: UIButton) {
-        delegate?.userTableViewCell(self, menuActionDidPressed: action, menuButton: button)
-    }
-}
+// MARK: - UserViewContainerTableViewCell
+extension UserTableViewCell: UserViewContainerTableViewCell { }
+
+// MARK: - 
+extension UserTableViewCell: UserViewDelegate { }

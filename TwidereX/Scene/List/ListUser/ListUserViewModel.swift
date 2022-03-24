@@ -9,6 +9,7 @@
 import os.log
 import UIKit
 import Combine
+import CoreDataStack
 import GameplayKit
 import TwidereCore
 
@@ -77,6 +78,44 @@ extension ListUserViewModel {
             switch self {
             case .members:      return L10n.Scene.ListsDetails.Tabs.members
             case .subscribers:  return L10n.Scene.ListsDetails.Tabs.subscriber
+            }
+        }
+    }
+}
+
+extension ListUserViewModel {
+    enum UserUpdateAction {
+        case add
+        case remove
+    }
+    
+    func update(
+        user: UserRecord,
+        action: UserUpdateAction
+    ) async {
+        let managedObjectContext = context.managedObjectContext
+        switch user {
+        case .twitter(let record):
+            let _userID: TwitterUser.ID? = await managedObjectContext.perform {
+                return record.object(in: managedObjectContext)?.id
+            }
+            guard let userID = _userID else { return }
+            switch action {
+            case .add:
+                fetchedResultController.twitterUserFetchedResultsController.prepend(userIDs: [userID])
+            case .remove:
+                fetchedResultController.twitterUserFetchedResultsController.userIDs.removeAll(where: { $0 == userID })
+            }
+        case .mastodon(let record):
+            let _userID: MastodonUser.ID? = await managedObjectContext.perform {
+                return record.object(in: managedObjectContext)?.id
+            }
+            guard let userID = _userID else { return }
+            switch action {
+            case .add:
+                fetchedResultController.mastodonUserFetchedResultController.prepend(userIDs: [userID])
+            case .remove:
+                fetchedResultController.mastodonUserFetchedResultController.userIDs.removeAll(where: { $0 == userID })
             }
         }
     }

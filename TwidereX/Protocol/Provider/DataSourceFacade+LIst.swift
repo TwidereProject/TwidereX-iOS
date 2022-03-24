@@ -134,6 +134,27 @@ extension DataSourceFacade {
                 }   // end Task
             }
             children.append(followAction)
+        } else {
+            let deleteAction = await UIAction(
+                title: L10n.Common.Controls.Actions.delete,
+                image: UIImage(systemName: "minus.circle"),
+                identifier: nil,
+                discoverabilityTitle: nil,
+                attributes: [.destructive],
+                state: .off
+            ) { [weak dependency] _ in
+                guard let dependency = dependency else {
+                    return
+                }
+                Task {
+                    try await responseToListDeleteAction(
+                        dependency: dependency,
+                        list: list,
+                        authenticationContext: authenticationContext
+                    )
+                }   // end Task
+            }
+            children.append(deleteAction)
         }
         
         let title: String = await managedObjectContext.perform {
@@ -172,7 +193,7 @@ extension DataSourceFacade {
         ) { [weak dependency] _ in
             guard let dependency = dependency else { return }
             Task {
-                try await DataSourceFacade.responseListFollowAction(
+                try await DataSourceFacade.responseToListFollowAction(
                     dependency: dependency,
                     list: list,
                     relationship: relationship,
@@ -184,8 +205,13 @@ extension DataSourceFacade {
         return action
     }
     
+}
+    
+
+extension DataSourceFacade {
+    
     @MainActor
-    private static func responseListFollowAction(
+    private static func responseToListFollowAction(
         dependency: NeedsDependency,
         list: ListRecord,
         relationship: APIService.ListRelationship,
@@ -226,6 +252,59 @@ extension DataSourceFacade {
             bannerView.messageLabel.text = relationship.isFollowing ? L10n.Common.Alerts.FailedToUnfollowing.message : L10n.Common.Alerts.FailedToFollowing.message
             SwiftMessages.show(config: config, view: bannerView)
         }
+    }
+    
+    @MainActor
+    static func responseToListDeleteAction(
+        dependency: NeedsDependency & UIViewController,
+        list: ListRecord,
+        authenticationContext: AuthenticationContext
+    ) async throws {
+        let title = L10n.Scene.ListsDetails.MenuActions.deleteList
+        let message: String = await dependency.context.managedObjectContext.perform {
+            guard let object = list.object(in: dependency.context.managedObjectContext) else {
+                return L10n.Scene.ListsDetails.deleteListTitle
+            }
+            return L10n.Scene.ListsDetails.deleteListConfirm(object.name)
+        }
+        let alertController = UIAlertController(
+            title: title,
+            message: message,
+            preferredStyle: .alert
+        )
+        let deleteAction = UIAlertAction(
+            title: L10n.Common.Controls.Actions.delete,
+            style: .destructive
+        ) { [weak dependency] _ in
+            guard let dependency = dependency else { return }
+            Task {
+                let notificationFeedbackGenerator = UINotificationFeedbackGenerator()
+
+                do {
+                    try await dependency.context.apiService.deleteList(
+                        list: list,
+                        authenticationContext: authenticationContext
+                    )
+                    notificationFeedbackGenerator.notificationOccurred(.success)
+                    presentSuccessBanner(title: "List Deleted")   // TODO: i18n
+                } catch {
+                    notificationFeedbackGenerator.notificationOccurred(.error)
+                    presentWarningBanner(
+                        title: "Failed to Delete List", // TODO: i18n
+                        message: "Please try again",    // TODO: i18n
+                        error: error
+                    )
+                }
+            }   // end Task
+        }
+        alertController.addAction(deleteAction)
+        let cancelAction = UIAlertAction.cancel
+        alertController.addAction(cancelAction)
+        dependency.coordinator.present(
+            scene: .alertController(alertController: alertController),
+            from: dependency,
+            transition: .alertController(animated: true, completion: nil)
+        )
     }
     
 }

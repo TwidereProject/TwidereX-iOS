@@ -32,4 +32,13 @@ extension ListObject {
             return .mastodon(object: object.owner)
         }
     }
+    
+    public var name: String {
+        switch self {
+        case .twitter(let object):
+            return object.name
+        case .mastodon(let object):
+            return object.title
+        }
+    }
 }
