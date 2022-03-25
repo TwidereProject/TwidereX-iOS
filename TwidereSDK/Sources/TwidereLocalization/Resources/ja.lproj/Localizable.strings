@@ -70,6 +70,8 @@
 "Common.Alerts.DeleteTootConfirm.Title" = "トゥートを削除";
 "Common.Alerts.DeleteTweetConfirm.Message" = "このツイートを削除しますか？";
 "Common.Alerts.DeleteTweetConfirm.Title" = "ツイートを削除";
+"Common.Alerts.FailedToAddListMember.Message" = "もう一度やり直してください";
+"Common.Alerts.FailedToAddListMember.Title" = "Failed to Add List Member";
 "Common.Alerts.FailedToBlockUser.Message" = "もう一度やり直してください";
 "Common.Alerts.FailedToBlockUser.Title" = "%@ のブロックに失敗";
 "Common.Alerts.FailedToDeleteList.Message" = "もう一度やり直してください";

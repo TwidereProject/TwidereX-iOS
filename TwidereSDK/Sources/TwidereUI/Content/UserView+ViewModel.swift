@@ -24,9 +24,11 @@ extension UserView {
         let relationshipViewModel = RelationshipViewModel()
         
         @Published public var platform: Platform = .none
-        
+        @Published public var authenticationContext: AuthenticationContext?       // me
+
         @Published public var header: Header = .none
         
+        @Published public var userIdentifier: UserIdentifier? = nil
         @Published public var avatarImageURL: URL?
         @Published public var avatarBadge: AvatarBadge = .none
         // TODO: verified | bot
@@ -39,8 +41,10 @@ extension UserView {
         @Published public var followerCount: Int?
         
         public var listMembershipViewModel: ListMembershipViewModel?
+        @Published public var listOwnerUserIdentifier: UserIdentifier? = nil
         @Published public var isListMember = false
         @Published public var isListMemberCandidate = false       // a.k.a isBusy
+        @Published public var isMyList = false
         
         public enum Header {
             case none
@@ -51,6 +55,20 @@ extension UserView {
             case none
             case platform
             case user   // verified | bot
+        }
+        
+        init() {
+            // isMyList
+            Publishers.CombineLatest(
+                $authenticationContext,
+                $listOwnerUserIdentifier
+            )
+            .map { authenticationContext, userIdentifier -> Bool in
+                guard let authenticationContext = authenticationContext else { return false }
+                guard let userIdentifier = userIdentifier else { return false }
+                return authenticationContext.userIdentifier == userIdentifier
+            }
+            .assign(to: &$isMyList)
         }
     }
 }
@@ -155,7 +173,7 @@ extension UserView.ViewModel {
                 userView.friendshipButton.isHidden = relationship == .isMyself
             }
             .store(in: &disposeBag)
-        
+
         // accessory
         switch userView.style {
         case .account:
@@ -175,6 +193,7 @@ extension UserView.ViewModel {
                 ]
                 return UIMenu(title: "", image: nil, options: [], children: children)
             }()
+                
         case .listMember:
             userView.menuButton.showsMenuAsPrimaryAction = true
             userView.menuButton.menu = {
@@ -192,6 +211,10 @@ extension UserView.ViewModel {
                 ]
                 return UIMenu(title: "", image: nil, options: [], children: children)
             }()
+            $isMyList
+                .map { !$0 }
+                .assign(to: \.isHidden, on: userView.menuButton)
+                .store(in: &disposeBag)
         case .addListMember:
             Publishers.CombineLatest(
                 $isListMember,
@@ -219,12 +242,31 @@ extension UserView.ViewModel {
 }
 
 extension UserView {
+    public struct ConfigurationContext {
+        public let listMembershipViewModel: ListMembershipViewModel?
+        public let authenticationContext: Published<AuthenticationContext?>.Publisher
+        
+        public init(
+            listMembershipViewModel: ListMembershipViewModel?,
+            authenticationContext: Published<AuthenticationContext?>.Publisher
+        ) {
+            self.listMembershipViewModel = listMembershipViewModel
+            self.authenticationContext = authenticationContext
+        }
+    }
+}
+
+extension UserView {
     public func configure(
         user: UserObject,
         me: UserObject?,
         notification: NotificationObject?,
-        listMembershipViewModel: ListMembershipViewModel?
+        configurationContext: ConfigurationContext
     ) {
+        configurationContext.authenticationContext
+            .assign(to: \.authenticationContext, on: viewModel)
+            .store(in: &disposeBag)
+        
         switch user {
         case .twitter(let user):
             configure(twitterUser: user)
@@ -239,12 +281,17 @@ extension UserView {
         viewModel.relationshipViewModel.user = user
         viewModel.relationshipViewModel.me = me
         
-        viewModel.listMembershipViewModel = listMembershipViewModel
+        viewModel.listMembershipViewModel = configurationContext.listMembershipViewModel
+        if let listMembershipViewModel = configurationContext.listMembershipViewModel {
+            listMembershipViewModel.$ownerUserIdentifier
+                .assign(to: \.listOwnerUserIdentifier, on: viewModel)
+                .store(in: &disposeBag)
+        }
         
         // accessory
         switch style {
         case .addListMember:
-            guard let listMembershipViewModel = listMembershipViewModel else {
+            guard let listMembershipViewModel = configurationContext.listMembershipViewModel else {
                 assertionFailure()
                 break
             }
@@ -274,6 +321,8 @@ extension UserView {
     private func configure(twitterUser user: TwitterUser) {
         // platform
         viewModel.platform = .twitter
+        // userIdentifier
+        viewModel.userIdentifier = .twitter(.init(id: user.id))
         // avatar
         user.publisher(for: \.profileImageURL)
             .map { _ in user.avatarImageURL() }
@@ -306,6 +355,8 @@ extension UserView {
     private func configure(mastodonUser user: MastodonUser) {
         // platform
         viewModel.platform = .mastodon
+        // userIdentifier
+        viewModel.userIdentifier = .mastodon(.init(domain: user.domain, id: user.id))
         // avatar
         Publishers.CombineLatest3(
             UserDefaults.shared.publisher(for: \.preferredStaticAvatar),

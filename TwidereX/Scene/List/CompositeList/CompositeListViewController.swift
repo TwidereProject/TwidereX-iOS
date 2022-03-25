@@ -97,22 +97,23 @@ extension CompositeListViewController {
 extension CompositeListViewController {
     @objc private func addBarButtonItemPressed(_ sender: UIBarButtonItem) {
         logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public)")
-        let createListViewModel = CreateListViewModel(
+        let editListViewModel = EditListViewModel(
             context: context,
             platform: {
                 switch viewModel.kind.user {
                 case .twitter:      return .twitter
                 case .mastodon:     return .mastodon
                 }
-            }()
+            }(),
+            kind: .create
         )
         let viewController = coordinator.present(
-            scene: .createList(viewModel: createListViewModel),
+            scene: .editList(viewModel: editListViewModel),
             from: self,
             transition: .modal(animated: true, completion: nil)
         )
         
-        guard let viewController = viewController as? CreateListViewController else {
+        guard let viewController = viewController as? EditListViewController else {
             assertionFailure()
             return
         }
@@ -191,10 +192,11 @@ extension CompositeListViewController: UITableViewDelegate {
     
 }
 
-// MARK: - CreateListViewControllerDelegate
-extension CompositeListViewController: CreateListViewControllerDelegate {
-    func createListViewController(
-        _ viewController: CreateListViewController,
+// MARK: - EditListViewControllerDelegate
+extension CompositeListViewController: EditListViewControllerDelegate {
+    
+    func editListViewController(
+        _ viewController: EditListViewController,
         didCreateList response: APIService.CreateListResponse
     ) {
         logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public)")
@@ -207,4 +209,9 @@ extension CompositeListViewController: CreateListViewControllerDelegate {
             viewModel.ownedListViewModel.fetchedResultController.mastodonListRecordFetchedResultController.prepend(ids: [listID])
         }
     }
+    
+    func editListViewController(_ viewController: EditListViewController, didUpdateList response: APIService.UpdateListResponse) {
+        // do nothing
+    }
+    
 }

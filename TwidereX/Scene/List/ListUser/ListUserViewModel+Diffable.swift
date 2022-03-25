@@ -21,7 +21,10 @@ extension ListUserViewModel {
             context: context,
             configuration: UserSection.Configuration(
                 userViewTableViewCellDelegate: userViewTableViewCellDelegate,
-                listMembershipViewModel: nil
+                userViewConfigurationContext: .init(
+                    listMembershipViewModel: listMembershipViewModel,
+                    authenticationContext: context.authenticationService.$activeAuthenticationContext
+                )
             )
         )
         

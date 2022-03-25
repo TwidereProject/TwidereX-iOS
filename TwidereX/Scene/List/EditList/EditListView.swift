@@ -1,5 +1,5 @@
 //
-//  CreateListView.swift
+//  EditListView.swift
 //  TwidereX
 //
 //  Created by MainasuK on 2022-3-14.
@@ -9,9 +9,9 @@
 import SwiftUI
 import TwidereLocalization
 
-struct CreateListView: View {
+struct EditListView: View {
         
-    @ObservedObject var viewModel: CreateListViewModel
+    @ObservedObject var viewModel: EditListViewModel
     
     var body: some View {
         List {
@@ -40,11 +40,11 @@ struct CreateListView: View {
 struct CreateListView_Previews: PreviewProvider {
     static var previews: some View {
         Group {
-            CreateListView(viewModel: CreateListViewModel(context: .shared, platform: .twitter))
-            CreateListView(viewModel: CreateListViewModel(context: .shared, platform: .twitter))
+            EditListView(viewModel: EditListViewModel(context: .shared, platform: .twitter, kind: .create))
+            EditListView(viewModel: EditListViewModel(context: .shared, platform: .twitter, kind: .create))
                 .preferredColorScheme(.dark)
-            CreateListView(viewModel: CreateListViewModel(context: .shared, platform: .mastodon))
-            CreateListView(viewModel: CreateListViewModel(context: .shared, platform: .mastodon))
+            EditListView(viewModel: EditListViewModel(context: .shared, platform: .mastodon, kind: .create))
+            EditListView(viewModel: EditListViewModel(context: .shared, platform: .mastodon, kind: .create))
                 .preferredColorScheme(.dark)
         }
     }

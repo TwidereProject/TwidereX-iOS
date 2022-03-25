@@ -70,6 +70,8 @@
 "Common.Alerts.DeleteTootConfirm.Title" = "툿을 지웁니다.";
 "Common.Alerts.DeleteTweetConfirm.Message" = "이 트윗을 지울까요?";
 "Common.Alerts.DeleteTweetConfirm.Title" = "트윗을 지웁니다.";
+"Common.Alerts.FailedToAddListMember.Message" = "다시 해보세요.";
+"Common.Alerts.FailedToAddListMember.Title" = "Failed to Add List Member";
 "Common.Alerts.FailedToBlockUser.Message" = "다시 해보세요.";
 "Common.Alerts.FailedToBlockUser.Title" = "%@를 차단하지 못했습니다.";
 "Common.Alerts.FailedToDeleteList.Message" = "다시 해보세요.";

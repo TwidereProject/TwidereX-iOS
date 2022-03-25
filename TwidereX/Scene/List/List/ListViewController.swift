@@ -88,23 +88,15 @@ extension ListViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): select \(indexPath.debugDescription)")
         
-//        guard let diffableDataSource = viewModel.diffableDataSource else { return }
-//        guard case let .trend(object) = diffableDataSource.itemIdentifier(for: indexPath) else { return }
-//
-//        switch object {
-//        case .twitter(let trend):
-//            DataSourceFacade.coordinateToSearchResult(
-//                dependency: self,
-//                trend: object
-//            )
-//        case .mastodon(let tag):
-//            let hashtagTimelineViewModel = HashtagTimelineViewModel(context: context, hashtag: tag.name)
-//            coordinator.present(
-//                scene: .hashtagTimeline(viewModel: hashtagTimelineViewModel),
-//                from: self,
-//                transition: .show
-//            )
-//        }
+        guard let diffableDataSource = viewModel.diffableDataSource else { return }
+        guard case let .list(record, _) = diffableDataSource.itemIdentifier(for: indexPath) else { return }
+        
+        let listStatusViewModel = ListStatusViewModel(context: context, list: record)
+        coordinator.present(
+            scene: .listStatus(viewModel: listStatusViewModel),
+            from: self,
+            transition: .show
+        )
     }
     
 }

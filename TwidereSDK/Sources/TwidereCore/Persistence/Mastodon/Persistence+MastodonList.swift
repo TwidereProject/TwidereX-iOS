@@ -132,7 +132,8 @@ extension Persistence.MastodonList {
     ) {
         let entity = context.entity.list
         
-        // TODO:
+        object.update(title: entity.title)
+        object.update(updatedAt: context.networkDate)
     }
     
 }

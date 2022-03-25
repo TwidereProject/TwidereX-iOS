@@ -66,9 +66,9 @@
 		DB262A4F272692F900D18EF3 /* SearchMediaViewModel+Diffable.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB67611C254BC04B006C6798 /* SearchMediaViewModel+Diffable.swift */; };
 		DB262A502726938600D18EF3 /* SearchMediaViewModel+State.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB676117254BBF57006C6798 /* SearchMediaViewModel+State.swift */; };
 		DB2924CB2546B958003899A7 /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = DB2924CA2546B958003899A7 /* Kingfisher */; };
-		DB2C0BDA27DF14950033FC94 /* CreateListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB2C0BD927DF14950033FC94 /* CreateListViewController.swift */; };
-		DB2C0BDD27DF151D0033FC94 /* CreateListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB2C0BDC27DF151D0033FC94 /* CreateListView.swift */; };
-		DB2C0BDF27DF21A70033FC94 /* CreateListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB2C0BDE27DF21A70033FC94 /* CreateListViewModel.swift */; };
+		DB2C0BDA27DF14950033FC94 /* EditListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB2C0BD927DF14950033FC94 /* EditListViewController.swift */; };
+		DB2C0BDD27DF151D0033FC94 /* EditListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB2C0BDC27DF151D0033FC94 /* EditListView.swift */; };
+		DB2C0BDF27DF21A70033FC94 /* EditListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB2C0BDE27DF21A70033FC94 /* EditListViewModel.swift */; };
 		DB2C873C274F4B7D00CE0398 /* DeveloperView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB2C8730274F4B7D00CE0398 /* DeveloperView.swift */; };
 		DB2C873D274F4B7D00CE0398 /* DeveloperViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB2C8731274F4B7D00CE0398 /* DeveloperViewModel.swift */; };
 		DB2C873E274F4B7D00CE0398 /* DeveloperViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB2C8732274F4B7D00CE0398 /* DeveloperViewController.swift */; };
@@ -498,9 +498,9 @@
 		DB2924D62547CCA2003899A7 /* ComposeTweetMediaSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComposeTweetMediaSection.swift; sourceTree = "<group>"; };
 		DB2924DE2547CCD6003899A7 /* ComposeTweetMediaItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComposeTweetMediaItem.swift; sourceTree = "<group>"; };
 		DB2924E32547D4C7003899A7 /* ComposeTweetMediaCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComposeTweetMediaCollectionViewCell.swift; sourceTree = "<group>"; };
-		DB2C0BD927DF14950033FC94 /* CreateListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateListViewController.swift; sourceTree = "<group>"; };
-		DB2C0BDC27DF151D0033FC94 /* CreateListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateListView.swift; sourceTree = "<group>"; };
-		DB2C0BDE27DF21A70033FC94 /* CreateListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateListViewModel.swift; sourceTree = "<group>"; };
+		DB2C0BD927DF14950033FC94 /* EditListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditListViewController.swift; sourceTree = "<group>"; };
+		DB2C0BDC27DF151D0033FC94 /* EditListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditListView.swift; sourceTree = "<group>"; };
+		DB2C0BDE27DF21A70033FC94 /* EditListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditListViewModel.swift; sourceTree = "<group>"; };
 		DB2C870D274F4B0100CE0398 /* ViewStateStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewStateStore.swift; sourceTree = "<group>"; };
 		DB2C870E274F4B0100CE0398 /* DocumentStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentStore.swift; sourceTree = "<group>"; };
 		DB2C870F274F4B0100CE0398 /* AppContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppContext.swift; sourceTree = "<group>"; };
@@ -1054,14 +1054,14 @@
 			path = SearchResult;
 			sourceTree = "<group>";
 		};
-		DB2C0BDB27DF14970033FC94 /* CreateList */ = {
+		DB2C0BDB27DF14970033FC94 /* EditList */ = {
 			isa = PBXGroup;
 			children = (
-				DB2C0BD927DF14950033FC94 /* CreateListViewController.swift */,
-				DB2C0BDC27DF151D0033FC94 /* CreateListView.swift */,
-				DB2C0BDE27DF21A70033FC94 /* CreateListViewModel.swift */,
+				DB2C0BD927DF14950033FC94 /* EditListViewController.swift */,
+				DB2C0BDC27DF151D0033FC94 /* EditListView.swift */,
+				DB2C0BDE27DF21A70033FC94 /* EditListViewModel.swift */,
 			);
-			path = CreateList;
+			path = EditList;
 			sourceTree = "<group>";
 		};
 		DB2C870C274F4B0100CE0398 /* State */ = {
@@ -1214,7 +1214,7 @@
 				DB47AB2327CCDCA800CD73C7 /* List */,
 				DB47AB4527CF52B900CD73C7 /* ListStatus */,
 				DB46D11B27DB2703003B8BA1 /* ListUser */,
-				DB2C0BDB27DF14970033FC94 /* CreateList */,
+				DB2C0BDB27DF14970033FC94 /* EditList */,
 				DBA6B30F27E9CB7D004D052D /* AddListMember */,
 			);
 			path = List;
@@ -2709,7 +2709,7 @@
 				DBDAF241274F530600050319 /* DocumentStore.swift in Sources */,
 				DB83020D273D160400BF5224 /* NotificationTimelineViewModel+LoadOldestState.swift in Sources */,
 				DB262A3727213FBE00D18EF3 /* UIAlertAction.swift in Sources */,
-				DB2C0BDF27DF21A70033FC94 /* CreateListViewModel.swift in Sources */,
+				DB2C0BDF27DF21A70033FC94 /* EditListViewModel.swift in Sources */,
 				DBEA4F8F251314640007FEC5 /* MosaicImageView.swift in Sources */,
 				DBF639F2259B13BB009E12C8 /* TimelineHeaderView.swift in Sources */,
 				DB004BF626CE4A7F00F5C574 /* StatusCollectionViewCell.swift in Sources */,
@@ -2827,7 +2827,7 @@
 				DB2C873C274F4B7D00CE0398 /* DeveloperView.swift in Sources */,
 				DB2C8742274F4B7D00CE0398 /* AboutViewController.swift in Sources */,
 				DB5FD9B326D8D94600CF5439 /* StatusTableViewCell+ViewModel.swift in Sources */,
-				DB2C0BDA27DF14950033FC94 /* CreateListViewController.swift in Sources */,
+				DB2C0BDA27DF14950033FC94 /* EditListViewController.swift in Sources */,
 				DBA210342759D7A8000B7CB2 /* FriendshipListViewModel.swift in Sources */,
 				DBC747E1259DBD5400787EEF /* AvatarBarButtonItem.swift in Sources */,
 				DBD0B49A2758B5A60015A388 /* DrawerSidebarViewModel.swift in Sources */,
@@ -2877,7 +2877,7 @@
 				DB8761C0274552F800BA7EE2 /* StatusSection.swift in Sources */,
 				DB01092426E6199C005F67D7 /* DataSourceProvider+StatusViewTableViewCellDelegate.swift in Sources */,
 				DB46D11D27DB2807003B8BA1 /* ListUserViewModel.swift in Sources */,
-				DB2C0BDD27DF151D0033FC94 /* CreateListView.swift in Sources */,
+				DB2C0BDD27DF151D0033FC94 /* EditListView.swift in Sources */,
 				DB25C4C8277994B800EC1435 /* CenterFootnoteLabelTableViewCell.swift in Sources */,
 				DBA210352759D7B1000B7CB2 /* FollowingListViewModel+Diffable.swift in Sources */,
 				DB2C8744274F4B7D00CE0398 /* SettingListViewController.swift in Sources */,

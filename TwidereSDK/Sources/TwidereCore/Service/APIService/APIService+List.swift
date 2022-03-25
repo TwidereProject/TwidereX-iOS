@@ -382,6 +382,124 @@ extension APIService {
 
 extension APIService {
     
+    public enum UpdateListQuery {
+        case twitter(query: Twitter.API.V2.List.UpdateQuery)
+        case mastodon(query: Mastodon.API.List.UpdateQuery)
+    }
+    
+    public enum UpdateListResponse {
+        case twitter(response: Twitter.Response.Content<Twitter.API.V2.List.UpdateContent>)
+        case mastodon(response: Mastodon.Response.Content<Mastodon.Entity.List>)
+    }
+    
+    public func update(
+        list: ListRecord,
+        query: UpdateListQuery,
+        authenticationContext: AuthenticationContext
+    ) async throws -> UpdateListResponse {
+        switch (list, query, authenticationContext) {
+        case (.twitter(let list), .twitter(let query), .twitter(let authenticationContext)):
+            let response = try await update(
+                list: list,
+                query: query,
+                authenticationContext: authenticationContext
+            )
+            return .twitter(response: response)
+        case (.mastodon(let list), .mastodon(let query), .mastodon(let authenticationContext)):
+            let response = try await update(
+                list: list,
+                query: query,
+                authenticationContext: authenticationContext
+            )
+            return .mastodon(response: response)
+        default:
+            throw AppError.implicit(.badRequest)
+        }
+    }
+    
+    public func update(
+        list: ManagedObjectRecord<TwitterList>,
+        query: Twitter.API.V2.List.UpdateQuery,
+        authenticationContext: TwitterAuthenticationContext
+    ) async throws -> Twitter.Response.Content<Twitter.API.V2.List.UpdateContent> {
+        let managedObjectContext = backgroundManagedObjectContext
+        
+        let _listID: TwitterList.ID? = await managedObjectContext.perform {
+            guard let object = list.object(in: managedObjectContext) else { return nil }
+            return object.id
+        }
+        guard let listID = _listID else {
+            throw AppError.implicit(.badRequest)
+        }
+        
+        let response = try await Twitter.API.V2.List.update(
+            session: session,
+            listID: listID,
+            query: query,
+            authorization: authenticationContext.authorization
+        )
+
+        // persist update list into database
+        _ = try await lookup(
+            listID: listID,
+            authenticationContext: authenticationContext
+        )
+
+        logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): update Twitter list: \(listID)")
+        return response
+    }
+    
+    public func update(
+        list: ManagedObjectRecord<MastodonList>,
+        query: Mastodon.API.List.UpdateQuery,
+        authenticationContext: MastodonAuthenticationContext
+    ) async throws -> Mastodon.Response.Content<Mastodon.Entity.List> {
+        let managedObjectContext = backgroundManagedObjectContext
+        
+        let _listID: MastodonList.ID? = await managedObjectContext.perform {
+            guard let object = list.object(in: managedObjectContext) else { return nil }
+            return object.id
+        }
+        guard let listID = _listID else {
+            throw AppError.implicit(.badRequest)
+        }
+        
+        let response = try await Mastodon.API.List.update(
+            session: session,
+            domain: authenticationContext.domain,
+            listID: listID,
+            query: query,
+            authorization: authenticationContext.authorization
+        )
+        
+        // persist updated list into database
+        try await managedObjectContext.performChanges {
+            let list = response.value
+            guard let me = authenticationContext.authenticationRecord.object(in: managedObjectContext)?.user else {
+                return
+            }
+            
+            _ = Persistence.MastodonList.createOrMerge(
+                in: managedObjectContext,
+                context: Persistence.MastodonList.PersistContext(
+                    domain: authenticationContext.domain,
+                    entity: .init(
+                        list: list,
+                        owner: me
+                    ),
+                    networkDate: response.networkDate
+                )
+            )
+        }
+        
+        logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): update Mastodon list: \(listID)")
+        return response
+    }
+    
+}
+
+extension APIService {
+    
     public func deleteList(
         list: ListRecord,
         authenticationContext: AuthenticationContext
@@ -390,8 +508,28 @@ extension APIService {
         
         switch (list, authenticationContext) {
         case (.twitter(let list), .twitter(let authenticationContext)):
-            fatalError()
-            // logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): create Twitter list: \(response.value.data.id)")
+            let _listID: TwitterList.ID? = await managedObjectContext.perform {
+                guard let object = list.object(in: managedObjectContext) else { return nil }
+                return object.id
+            }
+            guard let listID = _listID else {
+                throw AppError.implicit(.badRequest)
+            }
+            
+            logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): delete Twitter list: \(listID)")
+            do {
+                _ = try await Twitter.API.V2.List.delete(
+                    session: session,
+                    listID: listID,
+                    authorization: authenticationContext.authorization
+                )
+                try await managedObjectContext.performChanges {
+                    guard let object = list.object(in: managedObjectContext) else { return }
+                    managedObjectContext.delete(object)
+                }
+            } catch {
+                throw error
+            }
             // return .twitter(response: response)
         case (.mastodon(let list), .mastodon(let authenticationContext)):
             let _listID: MastodonList.ID? = await managedObjectContext.perform {
@@ -402,6 +540,7 @@ extension APIService {
                 throw AppError.implicit(.badRequest)
             }
 
+            logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): delete Mastodon list: \(listID)")
             do {
                 _ = try await Mastodon.API.List.delete(
                     session: session,
@@ -419,7 +558,6 @@ extension APIService {
             } catch {
                 throw error
             }
-            logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): delete Mastodon list: \(listID)")
         default:
             throw AppError.implicit(.badRequest)
         }

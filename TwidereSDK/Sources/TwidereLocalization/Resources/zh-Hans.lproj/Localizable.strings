@@ -70,6 +70,8 @@
 "Common.Alerts.DeleteTootConfirm.Title" = "删除噗文";
 "Common.Alerts.DeleteTweetConfirm.Message" = "您想要删除此推文吗？";
 "Common.Alerts.DeleteTweetConfirm.Title" = "删除推文";
+"Common.Alerts.FailedToAddListMember.Message" = "请重试";
+"Common.Alerts.FailedToAddListMember.Title" = "添加列表成员失败";
 "Common.Alerts.FailedToBlockUser.Message" = "请重试";
 "Common.Alerts.FailedToBlockUser.Title" = "屏蔽 %@ 失败";
 "Common.Alerts.FailedToDeleteList.Message" = "请重试";

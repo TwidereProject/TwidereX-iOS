@@ -24,7 +24,10 @@ extension SearchUserViewModel {
             context: context,
             configuration: UserSection.Configuration(
                 userViewTableViewCellDelegate: userViewTableViewCellDelegate,
-                listMembershipViewModel: listMembershipViewModel
+                userViewConfigurationContext: .init(
+                    listMembershipViewModel: listMembershipViewModel,
+                    authenticationContext: context.authenticationService.$activeAuthenticationContext
+                )
             )
         )
         

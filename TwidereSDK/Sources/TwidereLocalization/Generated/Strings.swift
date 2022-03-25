@@ -226,6 +226,12 @@ public enum L10n {
         /// Delete Tweet
         public static let title = L10n.tr("Localizable", "Common.Alerts.DeleteTweetConfirm.Title")
       }
+      public enum FailedToAddListMember {
+        /// Please try again
+        public static let message = L10n.tr("Localizable", "Common.Alerts.FailedToAddListMember.Message")
+        /// Failed to Add List Member
+        public static let title = L10n.tr("Localizable", "Common.Alerts.FailedToAddListMember.Title")
+      }
       public enum FailedToBlockUser {
         /// Please try again
         public static let message = L10n.tr("Localizable", "Common.Alerts.FailedToBlockUser.Message")

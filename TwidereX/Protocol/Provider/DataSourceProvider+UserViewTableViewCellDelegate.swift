@@ -8,6 +8,7 @@
 
 import UIKit
 import TwidereUI
+import SwiftMessages
 
 extension UserViewTableViewCellDelegate where Self: DataSourceProvider {
     
@@ -57,7 +58,7 @@ extension UserViewTableViewCellDelegate where Self: DataSourceProvider {
             return
         }
         
-        Task {
+        Task { @MainActor in
             guard let authenticationContext = context.authenticationService.activeAuthenticationContext else {
                 return
             }
@@ -72,15 +73,26 @@ extension UserViewTableViewCellDelegate where Self: DataSourceProvider {
                 return
             }
             
-            guard let listMembershipViewModel = await userView.viewModel.listMembershipViewModel else {
+            guard let listMembershipViewModel = userView.viewModel.listMembershipViewModel else {
                 assertionFailure()
                 return
             }
             
-            if await userView.viewModel.isListMember {
-                try await listMembershipViewModel.remove(user: user, authenticationContext: authenticationContext)
-            } else {
-                try await listMembershipViewModel.add(user: user, authenticationContext: authenticationContext)
+            do {
+                if userView.viewModel.isListMember {
+                    try await listMembershipViewModel.remove(user: user, authenticationContext: authenticationContext)
+                } else {
+                    try await listMembershipViewModel.add(user: user, authenticationContext: authenticationContext)
+                }
+            } catch {
+                var config = SwiftMessages.defaultConfig
+                config.duration = .seconds(seconds: 3)
+                config.interactiveHide = true
+                let bannerView = NotificationBannerView()
+                bannerView.configure(style: .warning)
+                bannerView.titleLabel.text = L10n.Common.Alerts.FailedToAddListMember.title
+                bannerView.messageLabel.text = error.localizedDescription
+                SwiftMessages.show(config: config, view: bannerView)
             }
             
         }   // end Task

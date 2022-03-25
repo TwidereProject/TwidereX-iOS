@@ -24,6 +24,9 @@ public final class ListMembershipViewModel {
     public let list: ListRecord
     
     // output
+    @Published public var owner: UserRecord?
+    @Published public var ownerUserIdentifier: UserIdentifier?
+    
     @Published public var members = Set<UserRecord>()
     @Published public var workingMembers = Set<UserRecord>()
     
@@ -34,6 +37,18 @@ public final class ListMembershipViewModel {
         self.api = api
         self.list = list
         // end init
+        
+        let managedObjectContext = api.backgroundManagedObjectContext
+        Task {
+            self.owner = await managedObjectContext.perform {
+                guard let owner = list.object(in: managedObjectContext)?.owner else { return nil }
+                return .init(object: owner)
+            }
+            self.ownerUserIdentifier = await managedObjectContext.perform {
+                guard let owner = list.object(in: managedObjectContext)?.owner else { return nil }
+                return owner.userIdentifer
+            }
+        }
     }
     
 }

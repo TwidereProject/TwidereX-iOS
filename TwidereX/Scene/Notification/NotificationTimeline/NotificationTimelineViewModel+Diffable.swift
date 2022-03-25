@@ -28,6 +28,10 @@ extension NotificationTimelineViewModel {
                 dateTimeProvider: DateTimeSwiftProvider(),
                 twitterTextProvider: OfficialTwitterTextProvider(),
                 authenticationContext: context.authenticationService.$activeAuthenticationContext
+            ),
+            userViewConfigurationContext: .init(
+                listMembershipViewModel: nil,
+                authenticationContext: context.authenticationService.$activeAuthenticationContext
             )
         )
         diffableDataSource = NotificationSection.diffableDataSource(

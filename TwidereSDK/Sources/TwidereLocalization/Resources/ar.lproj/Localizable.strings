@@ -70,6 +70,8 @@
 "Common.Alerts.DeleteTootConfirm.Title" = "احذف التبويقة";
 "Common.Alerts.DeleteTweetConfirm.Message" = "هل تريد حذف هذه التغريدة؟";
 "Common.Alerts.DeleteTweetConfirm.Title" = "احذف التغريدة";
+"Common.Alerts.FailedToAddListMember.Message" = "الرجاء المحاولة مرة أخرى";
+"Common.Alerts.FailedToAddListMember.Title" = "Failed to Add List Member";
 "Common.Alerts.FailedToBlockUser.Message" = "الرجاء المحاولة مرة أخرى";
 "Common.Alerts.FailedToBlockUser.Title" = "فشل حجب %@";
 "Common.Alerts.FailedToDeleteList.Message" = "الرجاء المحاولة مرة أخرى";

@@ -70,6 +70,8 @@
 "Common.Alerts.DeleteTootConfirm.Title" = "Eliminar toot";
 "Common.Alerts.DeleteTweetConfirm.Message" = "¿Desea eliminar este tweet?";
 "Common.Alerts.DeleteTweetConfirm.Title" = "Eliminar tweet";
+"Common.Alerts.FailedToAddListMember.Message" = "Por favor, inténtelo de nuevo";
+"Common.Alerts.FailedToAddListMember.Title" = "Failed to Add List Member";
 "Common.Alerts.FailedToBlockUser.Message" = "Por favor, inténtelo de nuevo";
 "Common.Alerts.FailedToBlockUser.Title" = "Error al bloquear %@";
 "Common.Alerts.FailedToDeleteList.Message" = "Por favor, inténtelo de nuevo";

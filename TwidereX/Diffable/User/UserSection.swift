@@ -19,7 +19,7 @@ extension UserSection {
     
     struct Configuration {
         weak var userViewTableViewCellDelegate: UserViewTableViewCellDelegate?
-        let listMembershipViewModel: ListMembershipViewModel?
+        let userViewConfigurationContext: UserView.ConfigurationContext
     }
     
     static func diffableDataSource(
@@ -56,8 +56,7 @@ extension UserSection {
                     let viewModel = UserTableViewCell.ViewModel(
                         user: me,
                         me: me,
-                        notification: nil,
-                        listMembershipViewModel: configuration.listMembershipViewModel
+                        notification: nil
                     )
                     configure(
                         cell: cell,
@@ -75,8 +74,7 @@ extension UserSection {
                     let viewModel = UserTableViewCell.ViewModel(
                         user: user,
                         me: me,
-                        notification: nil,
-                        listMembershipViewModel: configuration.listMembershipViewModel
+                        notification: nil
                     )
                     configure(
                         cell: cell,
@@ -127,19 +125,8 @@ extension UserSection {
     ) {
         cell.configure(
             viewModel: viewModel,
+            configurationContext: configuration.userViewConfigurationContext,
             delegate: configuration.userViewTableViewCellDelegate
         )
     }
-}
-
-extension UserSection {
-    
-    @available(*, deprecated, message: "")
-    static func configure(
-        cell: AccountListTableViewCell,
-        authenticationIndex: AuthenticationIndex
-    ) {
-        cell.configure(authenticationIndex: authenticationIndex)
-    }
-
 }

@@ -100,6 +100,72 @@ extension Mastodon.API.List {
 
 extension Mastodon.API.List {
     
+    private static func listEndpointURL(
+        domain: String,
+        listID: Mastodon.Entity.List.ID
+    ) -> URL {
+        return Mastodon.API.endpointURL(domain: domain)
+            .appendingPathComponent("lists")
+            .appendingPathComponent(listID)
+    }
+    
+    /// Fetch all lists that the user owns.
+    ///
+    /// - Since: 0.0.0
+    /// - Version: 3.4.6
+    /// # Last Update
+    ///   2022/3/25
+    /// # Reference
+    ///   [Document](https://docs.joinmastodon.org/methods/timelines/lists/)
+    /// - Parameters:
+    ///   - session: `URLSession`
+    ///   - domain: Mastodon instance domain. e.g. "example.com"
+    ///   - listID: the ID for list
+    ///   - query: UpdateQuery
+    ///   - authorization: User token
+    /// - Returns: `Mastodon.Entity.List` nested in the response
+    public static func update(
+        session: URLSession,
+        domain: String,
+        listID: Mastodon.Entity.List.ID,
+        query: UpdateQuery,
+        authorization: Mastodon.API.OAuth.Authorization
+    ) async throws -> Mastodon.Response.Content<Mastodon.Entity.List> {
+        let request = Mastodon.API.request(
+            url: listEndpointURL(domain: domain, listID: listID),
+            method: .PUT,
+            query: query,
+            authorization: authorization
+        )
+        let (data, response) = try await session.data(for: request, delegate: nil)
+        let value = try Mastodon.API.decode(type: Mastodon.Entity.List.self, from: data, response: response)
+        return Mastodon.Response.Content(value: value, response: response)
+    }
+    
+    public struct UpdateQuery: JSONEncodeQuery {
+        public let title: String?
+        public let repliesPolicy: Mastodon.Entity.ReplyPolicy?
+        
+        enum CodingKeys: String, CodingKey {
+            case title
+            case repliesPolicy = "replies_policy"
+        }
+        
+        public init(
+            title: String?,
+            repliesPolicy: Mastodon.Entity.ReplyPolicy?
+        ) {
+            self.title = title
+            self.repliesPolicy = repliesPolicy
+        }
+        
+        var queryItems: [URLQueryItem]? { nil }
+    }
+    
+}
+
+extension Mastodon.API.List {
+    
     private static func deleteListEndpointURL(
         domain: String,
         listID: Mastodon.Entity.List.ID

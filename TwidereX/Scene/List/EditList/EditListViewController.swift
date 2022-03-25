@@ -1,5 +1,5 @@
 //
-//  CreateListViewController.swift
+//  EditListViewController.swift
 //  TwidereX
 //
 //  Created by MainasuK on 2022-3-14.
@@ -13,11 +13,12 @@ import Combine
 import TwidereLocalization
 import TwidereCore
 
-protocol CreateListViewControllerDelegate: AnyObject {
-    func createListViewController(_ viewController: CreateListViewController, didCreateList response: APIService.CreateListResponse)
+protocol EditListViewControllerDelegate: AnyObject {
+    func editListViewController(_ viewController: EditListViewController, didCreateList response: APIService.CreateListResponse)
+    func editListViewController(_ viewController: EditListViewController, didUpdateList response: APIService.UpdateListResponse)
 }
 
-final class CreateListViewController: UIViewController, NeedsDependency {
+final class EditListViewController: UIViewController, NeedsDependency {
     
     let logger = Logger(subsystem: "CreateListViewController", category: "ViewController")
         
@@ -25,19 +26,19 @@ final class CreateListViewController: UIViewController, NeedsDependency {
     weak var coordinator: SceneCoordinator! { willSet { precondition(!isViewLoaded) } }
 
     var disposeBag = Set<AnyCancellable>()
-    var viewModel: CreateListViewModel!
+    var viewModel: EditListViewModel!
     
-    weak var delegate: CreateListViewControllerDelegate?
+    weak var delegate: EditListViewControllerDelegate?
 
-    private(set) lazy var closeBarButtonItem = UIBarButtonItem.closeBarButtonItem(target: self, action: #selector(CreateListViewController.closeBarButtonItemPressed(_:)))
-    private(set) lazy var doneBarButtonItem = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(CreateListViewController.doneBarButtonItemPressed(_:)))
+    private(set) lazy var closeBarButtonItem = UIBarButtonItem.closeBarButtonItem(target: self, action: #selector(EditListViewController.closeBarButtonItemPressed(_:)))
+    private(set) lazy var doneBarButtonItem = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(EditListViewController.doneBarButtonItemPressed(_:)))
     private(set) lazy var activityIndicatorBarButtonItem: UIBarButtonItem = {
         let activityIndicator = UIActivityIndicatorView(style: .medium)
         activityIndicator.startAnimating()
         return UIBarButtonItem(customView: activityIndicator)
     }()
     
-    private(set) lazy var createListView = CreateListView(viewModel: viewModel)
+    private(set) lazy var createListView = EditListView(viewModel: viewModel)
 
     deinit {
         os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
@@ -45,12 +46,17 @@ final class CreateListViewController: UIViewController, NeedsDependency {
     
 }
 
-extension CreateListViewController {
+extension EditListViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        title = L10n.Scene.ListsModify.Create.title
+        title = {
+            switch viewModel.kind {
+            case .create:       return L10n.Scene.ListsModify.Create.title
+            case .edit:         return L10n.Scene.ListsModify.Edit.title
+            }
+        }()
         navigationItem.leftBarButtonItem = closeBarButtonItem
         navigationItem.leftBarButtonItem?.tintColor = .label
         navigationItem.rightBarButtonItem = doneBarButtonItem
@@ -81,7 +87,7 @@ extension CreateListViewController {
     
 }
 
-extension CreateListViewController {
+extension EditListViewController {
 
     @objc private func closeBarButtonItemPressed(_ sender: UIBarButtonItem) {
         logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public)")
@@ -93,8 +99,14 @@ extension CreateListViewController {
         
         Task { @MainActor in
             do {
-                let result = try await viewModel.createList()
-                delegate?.createListViewController(self, didCreateList: result)
+                switch viewModel.kind {
+                case .create:
+                    let result = try await viewModel.createList()
+                    delegate?.editListViewController(self, didCreateList: result)
+                case .edit:
+                    let result = try await viewModel.updateList()
+                    delegate?.editListViewController(self, didUpdateList: result)
+                }
                 self.dismiss(animated: true)
 
             } catch {
@@ -104,4 +116,13 @@ extension CreateListViewController {
         }   // end Task
     }
     
+}
+
+// MARK: - UIAdaptivePresentationControllerDelegate
+extension EditListViewController: UIAdaptivePresentationControllerDelegate {
+    
+    func presentationControllerShouldDismiss(_ presentationController: UIPresentationController) -> Bool {
+        return !viewModel.isBusy
+    }
+
 }

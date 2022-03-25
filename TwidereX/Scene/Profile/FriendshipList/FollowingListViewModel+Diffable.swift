@@ -19,7 +19,10 @@ extension FriendshipListViewModel {
     ) {
         let configuration = UserSection.Configuration(
             userViewTableViewCellDelegate: nil,
-            listMembershipViewModel: nil
+            userViewConfigurationContext: .init(
+                listMembershipViewModel: nil,
+                authenticationContext: context.authenticationService.$activeAuthenticationContext
+            )
         )
         
         diffableDataSource = UserSection.diffableDataSource(

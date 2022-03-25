@@ -55,19 +55,26 @@ class ListStatusViewModel {
         self.fetchedResultController = StatusRecordFetchedResultController(managedObjectContext: context.managedObjectContext)
         // end init
         
+        // bind userIdentifier
         context.authenticationService.$activeAuthenticationContext
             .map { $0?.userIdentifier }
             .assign(to: &fetchedResultController.$userIdentifier)
         
-        $list
-            .asyncMap { [weak self] record in
-                guard let _ = self else { return nil }
-                guard let list = record?.object(in: context.managedObjectContext) else { return nil }
-                return list.name
+        // bind titile
+        if let object = list.object(in: context.managedObjectContext) {
+            switch object {
+            case .twitter(let list):
+                list.publisher(for: \.name)
+                    .map { $0 as String? }
+                    .assign(to: &$title)
+            case .mastodon(let list):
+                list.publisher(for: \.title)
+                    .map { $0 as String? }
+                    .assign(to: &$title)
             }
-            .assign(to: &$title)
+        }
         
-        
+        // listen delete event
         ManagedObjectObserver.observe(context: context.managedObjectContext)
             .sink(receiveCompletion: { completion in
                 // do nohting

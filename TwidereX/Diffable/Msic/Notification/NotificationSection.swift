@@ -21,6 +21,7 @@ extension NotificationSection {
         weak var statusViewTableViewCellDelegate: StatusViewTableViewCellDelegate?
         weak var userViewTableViewCellDelegate: UserViewTableViewCellDelegate?
         let statusViewConfigurationContext: StatusView.ConfigurationContext
+        let userViewConfigurationContext: UserView.ConfigurationContext
     }
 
     static func diffableDataSource(
@@ -68,8 +69,7 @@ extension NotificationSection {
                                 viewModel: UserTableViewCell.ViewModel(
                                     user: user,
                                     me: me,
-                                    notification: .mastodon(object: notification),
-                                    listMembershipViewModel: nil
+                                    notification: .mastodon(object: notification)
                                 ),
                                 configuration: configuration
                             )
@@ -120,6 +120,7 @@ extension NotificationSection {
     ) {
         cell.configure(
             viewModel: viewModel,
+            configurationContext: configuration.userViewConfigurationContext,
             delegate: configuration.userViewTableViewCellDelegate
         )
     }

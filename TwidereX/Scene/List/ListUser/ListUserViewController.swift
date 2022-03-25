@@ -49,12 +49,29 @@ extension ListUserViewController {
 
         title = viewModel.kind.title
         view.backgroundColor = .systemBackground
-        navigationItem.rightBarButtonItem = {
-            switch viewModel.kind {
-            case .members:              return addBarButtonItem
-            case .subscribers:          return nil
+        context.authenticationService.$activeAuthenticationContext
+            .asyncMap { [weak self] authenticationContext -> UIBarButtonItem? in
+                guard let self = self else { return nil }
+                guard let authenticationContext = authenticationContext else { return nil }
+                // only setup bar button for `members` kind list
+                switch self.viewModel.kind {
+                case .members:      break
+                case .subscribers:  return nil
+                }
+                // only setup bar button for myList
+                let managedObjectContext = self.context.managedObjectContext
+                let isMyList: Bool = await managedObjectContext.perform {
+                    guard let list = self.viewModel.kind.list.object(in: managedObjectContext) else { return false }
+                    return list.owner.userIdentifer == authenticationContext.userIdentifier
+                }
+                return isMyList ? self.addBarButtonItem : nil
             }
-        }()
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] barButtonItem in
+                guard let self = self else { return }
+                self.navigationItem.rightBarButtonItem = barButtonItem
+            }
+            .store(in: &disposeBag)
 
         tableView.translatesAutoresizingMaskIntoConstraints = false
         tableView.frame = view.bounds

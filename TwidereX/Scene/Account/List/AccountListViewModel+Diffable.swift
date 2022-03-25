@@ -22,7 +22,10 @@ extension AccountListViewModel {
             context: context,
             configuration: UserSection.Configuration(
                 userViewTableViewCellDelegate: userViewTableViewCellDelegate,
-                listMembershipViewModel: nil
+                userViewConfigurationContext: .init(
+                    listMembershipViewModel: nil,
+                    authenticationContext: context.authenticationService.$activeAuthenticationContext
+                )
             )
         )
         

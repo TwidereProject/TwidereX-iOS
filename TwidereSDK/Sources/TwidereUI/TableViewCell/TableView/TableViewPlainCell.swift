@@ -30,9 +30,19 @@ public class TableViewPlainCell: UITableViewCell {
         return label
     }()
     
+    public let accessoryContainerView: UIStackView = {
+        let stackView = UIStackView()
+        stackView.axis = .horizontal
+        return stackView
+    }()
+    
+    public let accessoryImageView = UIImageView()
+    
     public override func prepareForReuse() {
         super.prepareForReuse()
+        
         observations.removeAll()
+        accessoryImageView.isHidden = true
     }
     
     public override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
@@ -46,6 +56,7 @@ public class TableViewPlainCell: UITableViewCell {
     }
     
     func _init() {
+        // container: H - [ iconImageView | textContainer | accessoryContainerView ]
         let container = UIStackView()
         container.axis = .horizontal
         container.translatesAutoresizingMaskIntoConstraints = false
@@ -57,6 +68,7 @@ public class TableViewPlainCell: UITableViewCell {
             contentView.bottomAnchor.constraint(equalTo: container.bottomAnchor, constant: 10),
         ])
         
+        // iconImageView
         iconImageView.translatesAutoresizingMaskIntoConstraints = false
         container.addArrangedSubview(iconImageView)
         NSLayoutConstraint.activate([
@@ -64,6 +76,7 @@ public class TableViewPlainCell: UITableViewCell {
             iconImageView.heightAnchor.constraint(equalToConstant: 24).priority(.required - 1),
         ])
         
+        // textContainer
         let textContainer = UIStackView()
         textContainer.axis = .vertical
         container.addArrangedSubview(textContainer)
@@ -71,8 +84,17 @@ public class TableViewPlainCell: UITableViewCell {
         textContainer.addArrangedSubview(primaryTextLabel)
         textContainer.addArrangedSubview(secondaryTextLabel)
         
+        // accessoryContainerView
+        container.addArrangedSubview(accessoryContainerView)
+        accessoryContainerView.addArrangedSubview(accessoryImageView)
+        accessoryImageView.setContentHuggingPriority(.required - 1, for: .horizontal)
+        accessoryImageView.setContentHuggingPriority(.required - 1, for: .vertical)
+        accessoryImageView.setContentCompressionResistancePriority(.required, for: .vertical)
+        accessoryImageView.setContentCompressionResistancePriority(.required - 1, for: .horizontal)
+        
         iconImageView.isHidden = true
         secondaryTextLabel.isHidden = true
+        accessoryImageView.isHidden = true
         
         primaryTextLabel.isUserInteractionEnabled = false
     }

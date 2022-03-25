@@ -22,6 +22,7 @@ final class ListUserViewModel {
     let context: AppContext
     let kind: Kind
     let fetchedResultController: UserRecordFetchedResultController
+    let listMembershipViewModel: ListMembershipViewModel
     let listBatchFetchViewModel = ListBatchFetchViewModel()
 
     // output
@@ -38,6 +39,8 @@ final class ListUserViewModel {
         stateMachine.enter(State.Initial.self)
         return stateMachine
     }()
+    
+    // @Published var 
 
     init(
         context: AppContext,
@@ -46,6 +49,7 @@ final class ListUserViewModel {
         self.context = context
         self.kind = kind
         self.fetchedResultController = UserRecordFetchedResultController(managedObjectContext: context.managedObjectContext)
+        self.listMembershipViewModel = ListMembershipViewModel(api: context.apiService, list: kind.list)
         // end init
         
         Task {

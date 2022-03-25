@@ -15,33 +15,32 @@ extension UserTableViewCell {
         public let user: UserObject
         public let me: UserObject?
         public let notification: NotificationObject?
-        public let listMembershipViewModel: ListMembershipViewModel?
         
         public init(
             user: UserObject,
             me: UserObject?,
-            notification: NotificationObject?,
-            listMembershipViewModel: ListMembershipViewModel?
+            notification: NotificationObject?
         ) {
             self.user = user
             self.me = me
             self.notification = notification
-            self.listMembershipViewModel = listMembershipViewModel
         }
     }
-    
+}
+
+extension UserTableViewCell {
     public func configure(
         viewModel: ViewModel,
+        configurationContext: UserView.ConfigurationContext,
         delegate: UserViewTableViewCellDelegate?
     ) {
         userView.configure(
             user: viewModel.user,
             me: viewModel.me,
             notification: viewModel.notification,
-            listMembershipViewModel: viewModel.listMembershipViewModel
+            configurationContext: configurationContext
         )
         
         self.delegate = delegate
     }
-    
 }

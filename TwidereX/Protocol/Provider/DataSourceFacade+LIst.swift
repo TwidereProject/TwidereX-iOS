@@ -135,6 +135,26 @@ extension DataSourceFacade {
             }
             children.append(followAction)
         } else {
+            let editAction = await UIAction(
+                title: L10n.Common.Controls.Actions.edit,
+                subtitle: nil,
+                image: UIImage(systemName: "pencil"),
+                identifier: nil,
+                discoverabilityTitle: nil,
+                attributes: [],
+                state: .off
+            ) { [weak dependency] _ in
+                guard let dependency = dependency else { return }
+                Task {
+                    try await responseToListEditAction(
+                        dependency: dependency,
+                        list: list,
+                        authenticationContext: authenticationContext
+                    )
+                }   // end Task
+            }
+            children.append(editAction)
+            
             let deleteAction = await UIAction(
                 title: L10n.Common.Controls.Actions.delete,
                 image: UIImage(systemName: "minus.circle"),
@@ -143,9 +163,7 @@ extension DataSourceFacade {
                 attributes: [.destructive],
                 state: .off
             ) { [weak dependency] _ in
-                guard let dependency = dependency else {
-                    return
-                }
+                guard let dependency = dependency else { return }
                 Task {
                     try await responseToListDeleteAction(
                         dependency: dependency,
@@ -158,11 +176,59 @@ extension DataSourceFacade {
         }
         
         let title: String = await managedObjectContext.perform {
+            guard isMyList else { return "" }
             guard let list = list.object(in: managedObjectContext) else { return "" }
             switch list.owner {
             case .twitter(let user):        return "\(user.name)\n@\(user.username)"
             case .mastodon(let user):       return "\(user.name)\n@\(user.acctWithDomain)"
             }
+        }
+        let _ownerAction: UIAction? = await {
+            guard !isMyList else { return nil }
+            let _name: String? = await managedObjectContext.perform {
+                guard let list = list.object(in: managedObjectContext) else { return nil }
+                switch list.owner {
+                case .twitter(let user):        return user.name
+                case .mastodon(let user):       return user.name
+                }
+            }
+            let _username: String? = await managedObjectContext.perform {
+                guard let list = list.object(in: managedObjectContext) else { return nil }
+                switch list.owner {
+                case .twitter(let user):        return "@" + user.username
+                case .mastodon(let user):       return "@" + user.acct
+                }
+            }
+            let _owner: UserRecord? = await managedObjectContext.perform {
+                guard let list = list.object(in: managedObjectContext) else { return nil }
+                return list.owner.asRecord
+            }
+            guard let name = _name,
+                  let username = _username,
+                  let owner = _owner
+            else { return nil }
+            return await UIAction(
+                title: name,
+                subtitle: username,
+                image: UIImage(systemName: "person.crop.circle"),
+                identifier: nil,
+                discoverabilityTitle: nil,
+                attributes: [],
+                state: .off
+            ) { _ in
+                Task { @MainActor [weak dependency] in
+                    guard let dependency = dependency else { return }
+                    let profileViewModel = LocalProfileViewModel(context: dependency.context, userRecord: owner)
+                    dependency.coordinator.present(
+                        scene: .profile(viewModel: profileViewModel),
+                        from: dependency,
+                        transition: .show
+                    )
+                }   // end Task
+            }
+        }()
+        if let action = _ownerAction {
+            children.insert(action, at: 0)
         }
         return await UIMenu(
             title: title,
@@ -304,6 +370,29 @@ extension DataSourceFacade {
             scene: .alertController(alertController: alertController),
             from: dependency,
             transition: .alertController(animated: true, completion: nil)
+        )
+    }
+    
+    @MainActor
+    static func responseToListEditAction(
+        dependency: NeedsDependency & UIViewController,
+        list: ListRecord,
+        authenticationContext: AuthenticationContext
+    ) async throws {
+        let editListViewModel = EditListViewModel(
+            context: dependency.context,
+            platform: {
+                switch list {
+                case .twitter:      return .twitter
+                case .mastodon:     return .mastodon
+                }
+            }(),
+            kind: .edit(list: list)
+        )
+        dependency.coordinator.present(
+            scene: .editList(viewModel: editListViewModel),
+            from: dependency,
+            transition: .modal(animated: true, completion: nil)
         )
     }
     

@@ -220,3 +220,95 @@ extension Twitter.API.V2.List {
     }
     
 }
+
+// update: https://developer.twitter.com/en/docs/twitter-api/lists/manage-lists/api-reference/put-lists-id
+extension Twitter.API.V2.List {
+    
+    private static func updateListEndpointURL(listID: Twitter.Entity.V2.List.ID) -> URL {
+        return Twitter.API.endpointV2URL
+            .appendingPathComponent("lists")
+            .appendingPathComponent(listID)
+    }
+    
+    public static func update(
+        session: URLSession,
+        listID: Twitter.Entity.V2.List.ID,
+        query: UpdateQuery,
+        authorization: Twitter.API.OAuth.Authorization
+    ) async throws -> Twitter.Response.Content<Twitter.API.V2.List.UpdateContent> {
+        let request = Twitter.API.request(
+            url: updateListEndpointURL(listID: listID),
+            method: .PUT,
+            query: query,
+            authorization: authorization
+        )
+        let (data, response) = try await session.data(for: request, delegate: nil)
+        let value = try Twitter.API.decode(type: Twitter.API.V2.List.UpdateContent.self, from: data, response: response)
+        return Twitter.Response.Content(value: value, response: response)
+    }
+    
+    public struct UpdateQuery: JSONEncodeQuery {
+        public let name: String?
+        public let description: String?
+        public let `private`: Bool?
+        
+        public init(
+            name: String?,
+            description: String?,
+            private: Bool?
+        ) {
+            self.name = name
+            self.description = description
+            self.private = `private`
+        }
+        
+        var queryItems: [URLQueryItem]? { nil }
+        var encodedQueryItems: [URLQueryItem]? { nil }
+        var formQueryItems: [URLQueryItem]? { nil }
+    }
+    
+    public struct UpdateContent: Codable {
+        public let data: ContentData
+        
+        public struct ContentData: Codable {
+            public let updated: Bool
+        }
+    }
+    
+}
+
+
+// delete: https://developer.twitter.com/en/docs/twitter-api/lists/manage-lists/api-reference/delete-lists-id
+extension Twitter.API.V2.List {
+    
+    private static func deleteListEndpointURL(listID: Twitter.Entity.V2.List.ID) -> URL {
+        return Twitter.API.endpointV2URL
+            .appendingPathComponent("lists")
+            .appendingPathComponent(listID)
+    }
+    
+    public static func delete(
+        session: URLSession,
+        listID: Twitter.Entity.V2.List.ID,
+        authorization: Twitter.API.OAuth.Authorization
+    ) async throws -> Twitter.Response.Content<Twitter.API.V2.List.DeleteContent> {
+        let request = Twitter.API.request(
+            url: deleteListEndpointURL(listID: listID),
+            method: .DELETE,
+            query: nil,
+            authorization: authorization
+        )
+        let (data, response) = try await session.data(for: request, delegate: nil)
+        let value = try Twitter.API.decode(type: Twitter.API.V2.List.DeleteContent.self, from: data, response: response)
+        return Twitter.Response.Content(value: value, response: response)
+    }
+    
+    public struct DeleteContent: Codable {
+        public let data: ContentData
+        
+        public struct ContentData: Codable {
+            public let deleted: Bool
+        }
+    }
+    
+}
