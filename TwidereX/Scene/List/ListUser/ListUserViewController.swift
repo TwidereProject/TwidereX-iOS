@@ -99,6 +99,13 @@ extension ListUserViewController {
             }
             .store(in: &disposeBag)
     }
+ 
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        tableView.deselectRow(with: transitionCoordinator, animated: animated)
+    }
     
 }
 
