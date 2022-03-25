@@ -230,6 +230,7 @@ extension UserView.ViewModel {
                 
                 userView.membershipButton.alpha = isMemberCandidate ? 0 : 1
                 userView.activityIndicatorView.isHidden = !isMemberCandidate
+                userView.activityIndicatorView.startAnimating()
             }
             .store(in: &disposeBag)
                 
