@@ -15,10 +15,18 @@ jobs:
       
       # https://docs.github.com/en/enterprise-server@3.3/actions/deployment/deploying-xcode-applications/installing-an-apple-certificate-on-macos-runners-for-xcode-development
       - name: Import Code-Signing Certificates            
-        uses: Apple-Actions/import-codesign-certs@v1      # https://github.com/Apple-Actions/import-codesign-certs
+        uses: Apple-Actions/import-codesign-certs@v1            # https://github.com/Apple-Actions/import-codesign-certs
         with:
           p12-file-base64: ${{ secrets.CERTIFICATES_P12 }}
           p12-password: ${{ secrets.CERTIFICATES_P12_PASSWORD }}
+      
+      - name: Download Provisioning Profiles
+        uses: Apple-Actions/download-provisioning-profiles@v1   # https://github.com/Apple-Actions/download-provisioning-profiles
+        with:
+          bundle-id: com.twidere.TwidereX
+          issuer-id: ${{ secrets.APPSTORE_ISSUER_ID }}
+          api-key-id: ${{ secrets.APPSTORE_KEY_ID }}
+          api-private-key: ${{ secrets.APPSTORE_PRIVATE_KEY }}
 
       - name: force Xcode 13.2
         run: sudo xcode-select -switch /Applications/Xcode_13.2.app
@@ -34,3 +42,11 @@ jobs:
 
       - name: build
         run: exec ./.github/scripts/build-release.sh
+
+      - name: Upload TestFlight Build
+        uses: Apple-Actions/upload-testflight-build@master    # https://github.com/Apple-Actions/upload-testflight-build
+        with:
+          app-path: .build/Artifacts/TwidereX.ipa/TwidereX.ipa
+          issuer-id: ${{ secrets.APPSTORE_ISSUER_ID }}
+          api-key-id: ${{ secrets.APPSTORE_KEY_ID }}
+          api-private-key: ${{ secrets.APPSTORE_PRIVATE_KEY }}
