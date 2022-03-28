@@ -11,7 +11,7 @@ import TwidereUI
 
 extension MentionPickViewModel {
     struct DataSourceConfiguration {
-        let userTableViewCellDelegate: UserTableViewCellDelegate
+        weak var userTableViewCellDelegate: UserViewTableViewCellDelegate?
     }
     
     func setupDiffableDataSource(

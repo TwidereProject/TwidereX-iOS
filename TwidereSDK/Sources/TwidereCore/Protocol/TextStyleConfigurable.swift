@@ -39,6 +39,7 @@ public enum TextStyle {
     case mediaDescriptionAuthorName
     case hashtagTitle
     case hashtagDescription
+    case listPrimaryText
     case searchHistoryTitle
     case searchTrendTitle
     case searchTrendSubtitle
@@ -85,6 +86,7 @@ extension TextStyle {
         case .mediaDescriptionAuthorName:   return 1
         case .hashtagTitle:                 return 1
         case .hashtagDescription:           return 1
+        case .listPrimaryText:              return 1
         case .searchHistoryTitle:           return 1
         case .searchTrendTitle:             return 1
         case .searchTrendSubtitle:          return 1
@@ -141,6 +143,8 @@ extension TextStyle {
             return .preferredFont(forTextStyle: .headline)
         case .hashtagDescription:
             return .preferredFont(forTextStyle: .subheadline)
+        case .listPrimaryText:
+            return UIFontMetrics(forTextStyle: .headline).scaledFont(for: .preferredFont(forTextStyle: .body))
         case .searchHistoryTitle:
             return UIFontMetrics(forTextStyle: .headline).scaledFont(for: .preferredFont(forTextStyle: .body))
         case .searchTrendTitle:
@@ -202,6 +206,8 @@ extension TextStyle {
             return .label
         case .hashtagDescription:
             return .secondaryLabel
+        case .listPrimaryText:
+            return .label
         case .searchHistoryTitle:
             return .label
         case .searchTrendTitle:
@@ -276,6 +282,8 @@ extension MetaLabel: TextStyleConfigurable {
         case .hashtagTitle:
             break
         case .hashtagDescription:
+            break
+        case .listPrimaryText:
             break
         case .searchHistoryTitle:
             break

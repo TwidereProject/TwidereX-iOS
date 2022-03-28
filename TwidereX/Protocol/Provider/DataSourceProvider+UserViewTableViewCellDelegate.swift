@@ -8,15 +8,19 @@
 
 import UIKit
 import TwidereUI
+import SwiftMessages
 
-extension UserTableViewCellDelegate where Self: DataSourceProvider {
-    func userTableViewCell(
-        _ cell: UserTableViewCell,
+extension UserViewTableViewCellDelegate where Self: DataSourceProvider {
+    
+    func tableViewCell(
+        _ cell: UITableViewCell,
+        userView: UserView,
         menuActionDidPressed action: UserView.MenuAction,
         menuButton button: UIButton
     ) {
         switch action {
         case .signOut:
+            // TODO: move to view controller
             Task {
                 let source = DataSourceItem.Source(tableViewCell: cell, indexPath: nil)
                 guard let item = await item(from: source) else {
@@ -31,7 +35,67 @@ extension UserTableViewCellDelegate where Self: DataSourceProvider {
                     provider: self,
                     user: user
                 )
-            }
-        }
+            }   // end Task
+        case .remove:
+            assertionFailure("Override in view controller")
+        }   // end swtich
     }
+
+    func tableViewCell(
+        _ cell: UITableViewCell,
+        userView: UserView,
+        friendshipButtonDidPressed button: UIButton
+    ) {
+        assertionFailure("TODO")
+    }
+
+    func tableViewCell(
+        _ cell: UITableViewCell,
+        userView: UserView,
+        membershipButtonDidPressed button: UIButton
+    ) {
+        guard !userView.viewModel.isListMemberCandidate else {
+            return
+        }
+        
+        Task { @MainActor in
+            guard let authenticationContext = context.authenticationService.activeAuthenticationContext else {
+                return
+            }
+            
+            let source = DataSourceItem.Source(tableViewCell: cell, indexPath: nil)
+            guard let item = await item(from: source) else {
+                assertionFailure()
+                return
+            }
+            guard case let .user(user) = item else {
+                assertionFailure("only works for status data provider")
+                return
+            }
+            
+            guard let listMembershipViewModel = userView.viewModel.listMembershipViewModel else {
+                assertionFailure()
+                return
+            }
+            
+            do {
+                if userView.viewModel.isListMember {
+                    try await listMembershipViewModel.remove(user: user, authenticationContext: authenticationContext)
+                } else {
+                    try await listMembershipViewModel.add(user: user, authenticationContext: authenticationContext)
+                }
+            } catch {
+                var config = SwiftMessages.defaultConfig
+                config.duration = .seconds(seconds: 3)
+                config.interactiveHide = true
+                let bannerView = NotificationBannerView()
+                bannerView.configure(style: .warning)
+                bannerView.titleLabel.text = L10n.Common.Alerts.FailedToAddListMember.title
+                bannerView.messageLabel.text = error.localizedDescription
+                SwiftMessages.show(config: config, view: bannerView)
+            }
+            
+        }   // end Task
+    }
+
 }

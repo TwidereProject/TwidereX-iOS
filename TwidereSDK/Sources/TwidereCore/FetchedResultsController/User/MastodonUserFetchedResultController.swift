@@ -22,13 +22,13 @@ final public class MastodonUserFetchedResultController: NSObject {
     let fetchedResultsController: NSFetchedResultsController<MastodonUser>
 
     // input
-    public let domain = CurrentValueSubject<String, Never>("")
-    public let userIDs = CurrentValueSubject<[Mastodon.Entity.Account.ID], Never>([])
-    public let predicate = CurrentValueSubject<NSPredicate?, Never>(nil)
+    @Published public var domain = ""
+    @Published public var userIDs: [Mastodon.Entity.Account.ID] = []
+    @Published public var predicate: NSPredicate? = nil
     
     // output
     private let _objectIDs = PassthroughSubject<[NSManagedObjectID], Never>()
-    public let records = CurrentValueSubject<[ManagedObjectRecord<MastodonUser>], Never>([])
+    @Published public var records: [ManagedObjectRecord<MastodonUser>] = []
     
     public init(managedObjectContext: NSManagedObjectContext) {
         self.fetchedResultsController = {
@@ -51,15 +51,14 @@ final public class MastodonUserFetchedResultController: NSObject {
         _objectIDs
             .throttle(for: 0.1, scheduler: DispatchQueue.main, latest: true)
             .map { objectIDs in objectIDs.map { ManagedObjectRecord(objectID: $0) } }
-            .assign(to: \.value, on: records)
-            .store(in: &disposeBag)
-        
+            .assign(to: &$records)
+            
         fetchedResultsController.delegate = self
 
         Publishers.CombineLatest3(
-            domain,
-            userIDs,
-            predicate
+            $domain,
+            $userIDs,
+            $predicate
         )
         .receive(on: DispatchQueue.main)
         .sink { [weak self] domain, userIDs, predicate in
@@ -89,12 +88,19 @@ final public class MastodonUserFetchedResultController: NSObject {
 }
 
 extension MastodonUserFetchedResultController {
+    public func prepend(userIDs: [Mastodon.Entity.Account.ID]) {
+        var result = self.userIDs
+        let userIDs = userIDs.filter { !result.contains($0) }
+        result = userIDs + result
+        self.userIDs = result
+    }
+    
     public func append(userIDs: [Mastodon.Entity.Account.ID]) {
-        var result = self.userIDs.value
+        var result = self.userIDs
         for statusID in userIDs where !result.contains(statusID) {
             result.append(statusID)
         }
-        self.userIDs.value = result
+        self.userIDs = result
     }
 }
 
@@ -106,7 +112,7 @@ extension MastodonUserFetchedResultController: NSFetchedResultsControllerDelegat
     ) {
         logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public)")
         
-        let indexes = userIDs.value
+        let indexes = userIDs
         let users = fetchedResultsController.fetchedObjects ?? []
         
         let objectIDs: [NSManagedObjectID] = users

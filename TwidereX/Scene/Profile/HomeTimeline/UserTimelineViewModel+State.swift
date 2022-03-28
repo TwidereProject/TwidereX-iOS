@@ -9,6 +9,7 @@ import os.log
 import Foundation
 import GameplayKit
 import TwitterSDK
+import TwidereCore
 
 extension UserTimelineViewModel {
     
@@ -143,7 +144,7 @@ extension UserTimelineViewModel.State {
     
     class LoadingMore: UserTimelineViewModel.State {
         
-        var nextInput: StatusListFetchViewModel.Input?
+        var nextInput: StatusFetchViewModel.Input?
         
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {
             switch stateClass {
@@ -186,7 +187,7 @@ extension UserTimelineViewModel.State {
                 nextInput = {
                     switch (userIdentifier, authenticationContext) {
                     case (.twitter(let identifier), .twitter(let authenticationContext)):
-                        return StatusListFetchViewModel.Input(
+                        return StatusFetchViewModel.Input(
                             fetchContext: .twitter(.init(
                                 authenticationContext: authenticationContext,
                                 searchText: nil,
@@ -199,7 +200,7 @@ extension UserTimelineViewModel.State {
                             ))
                         )
                     case (.mastodon(let identifier), .mastodon(let authenticationContext)):
-                        return StatusListFetchViewModel.Input(
+                        return StatusFetchViewModel.Input(
                             fetchContext: .mastodon(.init(
                                 authenticationContext: authenticationContext,
                                 searchText: nil,
@@ -227,7 +228,7 @@ extension UserTimelineViewModel.State {
             Task {
                 do {
                     logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): fetch…")
-                    let output = try await StatusListFetchViewModel.userTimeline(context: viewModel.context, input: input)
+                    let output = try await StatusFetchViewModel.userTimeline(api: viewModel.context.apiService, input: input)
                     
                     nextInput = output.nextInput
                     if output.hasMore {

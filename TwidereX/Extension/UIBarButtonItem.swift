@@ -22,8 +22,7 @@ extension UIBarButtonItem {
     
     static func closeBarButtonItem(target: Any?, action: Selector?) -> UIBarButtonItem {
         let barButtonItem = UIBarButtonItem(
-            image: Asset.Editing.xmark.image.withRenderingMode(.alwaysTemplate),
-            style: .plain,
+            barButtonSystemItem: .close,
             target: target,
             action: action
         )

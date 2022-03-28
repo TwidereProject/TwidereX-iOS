@@ -7,7 +7,6 @@
 
 import os.log
 import UIKit
-import AVKit
 import Combine
 import CoreDataStack
 import GameplayKit
@@ -38,7 +37,7 @@ final class UserTimelineViewController: UIViewController, NeedsDependency, Media
     let cellFrameCache = NSCache<NSNumber, NSValue>()
     
     deinit {
-        os_log("%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
+        os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
     }
     
 }
@@ -93,21 +92,7 @@ extension UserTimelineViewController {
         tableView.deselectRow(with: transitionCoordinator, animated: animated)
     }
     
-    override func viewDidDisappear(_ animated: Bool) {
-        super.viewDidDisappear(animated)
-        
-//        context.videoPlaybackService.viewDidDisappear(from: self)
-    }
-    
 }
-
-// MARK: - UIScrollViewDelegate
-//extension UserTimelineViewController {
-//    func scrollViewDidScroll(_ scrollView: UIScrollView) {
-//        handleScrollViewDidScroll(scrollView)
-//    }
-//
-//}
 
 // MARK: - CellFrameCacheContainer
 extension UserTimelineViewController: CellFrameCacheContainer {
@@ -153,29 +138,9 @@ extension UserTimelineViewController: UITableViewDelegate, AutoGenerateTableView
         return ceil(frame.height)
     }
 
-//    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-//        handleTableView(tableView, willDisplay: cell, forRowAt: indexPath)
-//    }
-
     func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         cacheCellFrame(tableView: tableView, didEndDisplaying: cell, forRowAt: indexPath)
     }
-//
-//    func tableView(_ tableView: UITableView, contextMenuConfigurationForRowAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
-//        handleTableView(tableView, contextMenuConfigurationForRowAt: indexPath, point: point)
-//    }
-//
-//    func tableView(_ tableView: UITableView, previewForHighlightingContextMenuWithConfiguration configuration: UIContextMenuConfiguration) -> UITargetedPreview? {
-//        handleTableView(tableView, previewForHighlightingContextMenuWithConfiguration: configuration)
-//    }
-//
-//    func tableView(_ tableView: UITableView, previewForDismissingContextMenuWithConfiguration configuration: UIContextMenuConfiguration) -> UITargetedPreview? {
-//        handleTableView(tableView, previewForDismissingContextMenuWithConfiguration: configuration)
-//    }
-//
-//    func tableView(_ tableView: UITableView, willPerformPreviewActionForMenuWith configuration: UIContextMenuConfiguration, animator: UIContextMenuInteractionCommitAnimating) {
-//        handleTableView(tableView, willPerformPreviewActionForMenuWith: configuration, animator: animator)
-//    }
     
 }
 
@@ -190,15 +155,6 @@ extension UserTimelineViewController: TabBarPage {
         scrollView
     }
 }
-
-//// MARK: - LoadMoreConfigurableTableViewContainer
-//extension UserTimelineViewController: LoadMoreConfigurableTableViewContainer {
-//    typealias BottomLoaderTableViewCell = TimelineBottomLoaderTableViewCell
-//    typealias LoadingState = UserTimelineViewModel.State.LoadingMore
-//
-//    var loadMoreConfigurableTableView: UITableView { return tableView }
-//    var loadMoreConfigurableStateMachine: GKStateMachine { return viewModel.stateMachine }
-//}
 
 // MARK: - StatusViewTableViewCellDelegate
 extension UserTimelineViewController: StatusViewTableViewCellDelegate { }

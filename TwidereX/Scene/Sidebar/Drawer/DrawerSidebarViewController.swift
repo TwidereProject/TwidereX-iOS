@@ -119,7 +119,10 @@ extension DrawerSidebarViewController {
 // MARK: - DrawerSidebarHeaderViewDelegate
 extension DrawerSidebarViewController: DrawerSidebarHeaderViewDelegate {
 
-    func drawerSidebarHeaderView(_ headerView: DrawerSidebarHeaderView, avatarButtonDidPressed button: UIButton) {
+    func drawerSidebarHeaderView(
+        _ headerView: DrawerSidebarHeaderView,
+        avatarButtonDidPressed button: UIButton
+    ) {
         let profileViewModel = MeProfileViewModel(context: self.context)
         
         // present from `presentingViewController` here to reduce transition delay
@@ -127,18 +130,28 @@ extension DrawerSidebarViewController: DrawerSidebarHeaderViewDelegate {
         dismiss(animated: true)
     }
 
-    func drawerSidebarHeaderView(_ headerView: DrawerSidebarHeaderView, menuButtonDidPressed button: UIButton) {
+    func drawerSidebarHeaderView(
+        _ headerView: DrawerSidebarHeaderView,
+        menuButtonDidPressed button: UIButton
+    ) {
         dismiss(animated: true) {
             let accountListViewModel = AccountListViewModel(context: self.context)
             self.coordinator.present(scene: .accountList(viewModel: accountListViewModel), from: nil, transition: .modal(animated: true, completion: nil))
         }
     }
 
-    func drawerSidebarHeaderView(_ headerView: DrawerSidebarHeaderView, closeButtonDidPressed button: UIButton) {
+    func drawerSidebarHeaderView(
+        _ headerView: DrawerSidebarHeaderView,
+        closeButtonDidPressed button: UIButton
+    ) {
         dismiss(animated: true, completion: nil)
     }
     
-    func drawerSidebarHeaderView(_ headerView: DrawerSidebarHeaderView, profileDashboardView: ProfileDashboardView, followingMeterViewDidPressed meterView: ProfileDashboardMeterView) {
+    func drawerSidebarHeaderView(
+        _ headerView: DrawerSidebarHeaderView,
+        profileDashboardView: ProfileDashboardView,
+        followingMeterViewDidPressed meterView: ProfileDashboardMeterView
+    ) {
         guard let friendshipListViewModel = FriendshipListViewModel(context: context, kind: .following) else {
             assertionFailure()
             return
@@ -147,7 +160,11 @@ extension DrawerSidebarViewController: DrawerSidebarHeaderViewDelegate {
         dismiss(animated: true, completion: nil)
     }
     
-    func drawerSidebarHeaderView(_ headerView: DrawerSidebarHeaderView, profileDashboardView: ProfileDashboardView, followersMeterViewDidPressed meterView: ProfileDashboardMeterView) {
+    func drawerSidebarHeaderView(
+        _ headerView: DrawerSidebarHeaderView,
+        profileDashboardView: ProfileDashboardView,
+        followersMeterViewDidPressed meterView: ProfileDashboardMeterView
+    ) {
         guard let friendshipListViewModel = FriendshipListViewModel(context: context, kind: .follower) else {
             assertionFailure()
             return
@@ -156,8 +173,27 @@ extension DrawerSidebarViewController: DrawerSidebarHeaderViewDelegate {
         dismiss(animated: true, completion: nil)
     }
     
-    func drawerSidebarHeaderView(_ headerView: DrawerSidebarHeaderView, profileDashboardView: ProfileDashboardView, listedMeterViewDidPressed meterView: ProfileDashboardMeterView) {
-        // TODO:
+    func drawerSidebarHeaderView(
+        _ headerView: DrawerSidebarHeaderView,
+        profileDashboardView: ProfileDashboardView,
+        listedMeterViewDidPressed meterView: ProfileDashboardMeterView
+    ) {
+        guard let me = context.authenticationService.activeAuthenticationContext?.user(in: context.managedObjectContext)?.asRecord else { return }
+        switch me {
+        case .twitter:      break
+        case .mastodon:     return
+        }
+        
+        let compositeListViewModel = CompositeListViewModel(
+            context: context,
+            kind: .listed(me)
+        )
+        coordinator.present(
+            scene: .compositeList(viewModel: compositeListViewModel),
+            from: presentingViewController,
+            transition: .show
+        )
+        dismiss(animated: true, completion: nil)
     }
 
 }
@@ -172,12 +208,27 @@ extension DrawerSidebarViewController: UICollectionViewDelegate {
             switch item {
             case .local:
                 let federatedTimelineViewModel = FederatedTimelineViewModel(context: context, local: true)
-                coordinator.present(scene: .federatedTimeline(viewModel: federatedTimelineViewModel), from: self, transition: .show)
+                coordinator.present(scene: .federatedTimeline(viewModel: federatedTimelineViewModel), from: presentingViewController, transition: .show)
             case .federated:
                 let federatedTimelineViewModel = FederatedTimelineViewModel(context: context, local: false)
-                coordinator.present(scene: .federatedTimeline(viewModel: federatedTimelineViewModel), from: self, transition: .show)
+                coordinator.present(scene: .federatedTimeline(viewModel: federatedTimelineViewModel), from: presentingViewController, transition: .show)
+            case .likes:
+                let meLikeTimelineViewModel = MeLikeTimelineViewModel(context: context)
+                coordinator.present(scene: .userLikeTimeline(viewModel: meLikeTimelineViewModel), from: presentingViewController, transition: .show)
+            case .lists:
+                guard let me = context.authenticationService.activeAuthenticationContext?.user(in: context.managedObjectContext)?.asRecord else { return }
+                
+                let compositeListViewModel = CompositeListViewModel(
+                    context: context,
+                    kind: .lists(me)
+                )
+                coordinator.present(
+                    scene: .compositeList(viewModel: compositeListViewModel),
+                    from: presentingViewController,
+                    transition: .show
+                )
             default:
-                assertionFailure("TODO")
+                assertionFailure()
             }
             dismiss(animated: true, completion: nil)
         case settingCollectionView:
@@ -190,6 +241,6 @@ extension DrawerSidebarViewController: UICollectionViewDelegate {
         default:
             assertionFailure()
             break
-        }
-    }
+        }   // end switch
+    }   // end func
 }

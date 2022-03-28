@@ -18,7 +18,11 @@ extension FriendshipListViewModel {
         tableView: UITableView
     ) {
         let configuration = UserSection.Configuration(
-            userTableViewCellDelegate: nil
+            userViewTableViewCellDelegate: nil,
+            userViewConfigurationContext: .init(
+                listMembershipViewModel: nil,
+                authenticationContext: context.authenticationService.$activeAuthenticationContext
+            )
         )
         
         diffableDataSource = UserSection.diffableDataSource(
@@ -32,7 +36,7 @@ extension FriendshipListViewModel {
         snapshot.appendItems([], toSection: .main)
         diffableDataSource?.apply(snapshot)
         
-        userRecordFetchedResultController.records
+        userRecordFetchedResultController.$records
             .receive(on: DispatchQueue.main)
             .sink { [weak self] records in
                 guard let self = self else { return }

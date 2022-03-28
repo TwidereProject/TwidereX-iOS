@@ -54,7 +54,7 @@ extension SearchHashtagViewModel.State {
     class Loading: SearchHashtagViewModel.State {
         let logger = Logger(subsystem: "SearchHashtagViewModel.State", category: "StateMachine")
         
-        var nextInput: HashtagListFetchViewModel.SearchInput?
+        var nextInput: HashtagFetchViewModel.Search.Input?
         
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {
             return stateClass == Fail.self
@@ -86,7 +86,7 @@ extension SearchHashtagViewModel.State {
                         assertionFailure()
                         return nil
                     case .mastodon(let authenticationContext):
-                        return HashtagListFetchViewModel.SearchInput.mastodon(.init(
+                        return HashtagFetchViewModel.Search.Input.mastodon(.init(
                             authenticationContext: authenticationContext,
                             searchText: searchText,
                             offset: 0,
@@ -104,8 +104,8 @@ extension SearchHashtagViewModel.State {
             Task {
                 do {
                     logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): fetch \(searchText)…")
-                    let output = try await HashtagListFetchViewModel.search(
-                        context: viewModel.context,
+                    let output = try await HashtagFetchViewModel.Search.list(
+                        api: viewModel.context.apiService,
                         input: input
                     )
 

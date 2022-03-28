@@ -241,7 +241,7 @@ extension TwitterAuthenticationController {
             
             // get authenticated user
             let twitterUserRequest = TwitterUser.sortedFetchRequest
-            twitterUserRequest.predicate = TwitterUser.predicate(idStr: userID)
+            twitterUserRequest.predicate = TwitterUser.predicate(id: userID)
             twitterUserRequest.fetchLimit = 1
             
             // the `verifyTwitterCredentials` method should insert this user

@@ -31,3 +31,14 @@ public struct MastodonUserIdentifier: Hashable {
         self.id = id
     }
 }
+
+extension UserIdentifier {
+    public init(object: UserObject) {
+        switch object {
+        case .twitter(let object):
+            self = .twitter(.init(id: object.id))
+        case .mastodon(let object):
+            self = .mastodon(.init(domain: object.domain, id: object.id))
+        }
+    }
+}

@@ -9,6 +9,7 @@
 import os.log
 import Foundation
 import GameplayKit
+import TwidereCore
 
 extension HashtagTimelineViewModel {
     class State: GKState {
@@ -54,7 +55,7 @@ extension HashtagTimelineViewModel.State {
     class Loading: HashtagTimelineViewModel.State {
         let logger = Logger(subsystem: "HashtagTimelineViewModel.State", category: "StateMachine")
         
-        var nextInput: StatusListFetchViewModel.HashtagInput?
+        var nextInput: StatusFetchViewModel.Hashtag.Input?
         
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {
             return stateClass == Fail.self
@@ -83,7 +84,7 @@ extension HashtagTimelineViewModel.State {
                 nextInput = {
                     switch authenticationContext {
                     case .twitter(let authenticationContext):
-                        return StatusListFetchViewModel.HashtagInput.twitter(.init(
+                        return StatusFetchViewModel.Hashtag.Input.twitter(.init(
                             authenticationContext: authenticationContext,
                             searchText: searchText,
                             onlyMedia: false,
@@ -91,7 +92,7 @@ extension HashtagTimelineViewModel.State {
                             maxResults: 50
                         ))
                     case .mastodon(let authenticationContext):
-                        return StatusListFetchViewModel.HashtagInput.mastodon(.init(
+                        return StatusFetchViewModel.Hashtag.Input.mastodon(.init(
                             authenticationContext: authenticationContext,
                             hashtag: searchText,
                             maxID: nil,
@@ -109,8 +110,8 @@ extension HashtagTimelineViewModel.State {
             Task {
                 do {
                     logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): fetch \(searchText)…")
-                    let output = try await StatusListFetchViewModel.hashtagTimeline(
-                        context: viewModel.context,
+                    let output = try await StatusFetchViewModel.Hashtag.timeline(
+                        api: viewModel.context.apiService,
                         input: input
                     )
 

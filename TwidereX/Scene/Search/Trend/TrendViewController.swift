@@ -22,6 +22,7 @@ final class TrendViewController: UIViewController, NeedsDependency {
 
     private(set) lazy var tableView: UITableView = {
         let tableView = UITableView()
+        tableView.cellLayoutMarginsFollowReadableWidth = true
         tableView.backgroundColor = .systemBackground
         tableView.rowHeight = UITableView.automaticDimension
         return tableView

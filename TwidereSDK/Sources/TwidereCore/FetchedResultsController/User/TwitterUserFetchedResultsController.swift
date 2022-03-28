@@ -15,19 +15,19 @@ import TwitterSDK
 
 final public class TwitterUserFetchedResultsController: NSObject {
     
-    let logger = Logger(subsystem: "TwitterUserFetchedResultsController", category: "ViewController")
+    let logger = Logger(subsystem: "TwitterUserFetchedResultsController", category: "FetchedResultsController")
     
     var disposeBag = Set<AnyCancellable>()
     
     let fetchedResultsController: NSFetchedResultsController<TwitterUser>
     
     // input
-    public let userIDs = CurrentValueSubject<[Twitter.Entity.User.ID], Never>([])
-    public let predicate = CurrentValueSubject<NSPredicate?, Never>(nil)
+    @Published public var userIDs: [Twitter.Entity.User.ID] = []
+    @Published public var predicate: NSPredicate? = nil
     
     // output
     private let _objectIDs = PassthroughSubject<[NSManagedObjectID], Never>()
-    public let records = CurrentValueSubject<[ManagedObjectRecord<TwitterUser>], Never>([])
+    @Published public var records: [ManagedObjectRecord<TwitterUser>] = []
     
     public init(managedObjectContext: NSManagedObjectContext) {
         self.fetchedResultsController = {
@@ -50,14 +50,13 @@ final public class TwitterUserFetchedResultsController: NSObject {
         _objectIDs
             .throttle(for: 0.1, scheduler: DispatchQueue.main, latest: true)
             .map { objectIDs in objectIDs.map { ManagedObjectRecord(objectID: $0) } }
-            .assign(to: \.value, on: records)
-            .store(in: &disposeBag)
+            .assign(to: &$records)
         
         fetchedResultsController.delegate = self
         
         Publishers.CombineLatest(
-            userIDs,
-            predicate
+            $userIDs,
+            $predicate
         )
         .receive(on: DispatchQueue.main)
         .sink { [weak self] userIDs, predicate in
@@ -87,12 +86,19 @@ final public class TwitterUserFetchedResultsController: NSObject {
 }
 
 extension TwitterUserFetchedResultsController {
+    public func prepend(userIDs: [TwitterUser.ID]) {
+        var result = self.userIDs
+        let userIDs = userIDs.filter { !result.contains($0) }
+        result = userIDs + result
+        self.userIDs = result
+    }
+    
     public func append(userIDs: [TwitterUser.ID]) {
-        var result = self.userIDs.value
+        var result = self.userIDs
         for statusID in userIDs where !result.contains(statusID) {
             result.append(statusID)
         }
-        self.userIDs.value = result
+        self.userIDs = result
     }
 }
 
@@ -101,7 +107,7 @@ extension TwitterUserFetchedResultsController: NSFetchedResultsControllerDelegat
     public func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChangeContentWith snapshot: NSDiffableDataSourceSnapshotReference) {
         logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public)")
 
-        let indexes = userIDs.value
+        let indexes = userIDs
         let users = fetchedResultsController.fetchedObjects ?? []
         
         let objectIDs: [NSManagedObjectID] = users

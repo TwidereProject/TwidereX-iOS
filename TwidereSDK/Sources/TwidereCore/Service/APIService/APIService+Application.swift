@@ -15,8 +15,14 @@ import MastodonSDK
 
 extension APIService {
     
-    public func rateLimitStatus(authorization: Twitter.API.OAuth.Authorization) -> AnyPublisher<Twitter.Response.Content<Twitter.Entity.RateLimitStatus>, Error> {
-        return Twitter.API.Application.rateLimitStatus(session: session, authorization: authorization)
+    public func rateLimitStatus(
+        authorization: Twitter.API.OAuth.Authorization
+    ) async throws -> Twitter.Response.Content<Twitter.Entity.RateLimitStatus> {
+        let response = try await Twitter.API.Application.rateLimitStatus(
+            session: session,
+            authorization: authorization
+        )
+        return response
     }
     
 }

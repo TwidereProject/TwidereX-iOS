@@ -93,7 +93,7 @@ extension MentionPickViewController: UITableViewDelegate {
             return nil
         case .secondary:
             let header = TableViewSectionTextHeaderView()
-            header.headerLabel.text = L10n.Scene.Compose.othersInThisConversation
+            header.label.text = L10n.Scene.Compose.othersInThisConversation
             return header
         }
     }
@@ -101,8 +101,16 @@ extension MentionPickViewController: UITableViewDelegate {
 }
 
 // MARK: - UserTableViewCellDelegate
-extension MentionPickViewController: UserTableViewCellDelegate {
-    public func userTableViewCell(_ cell: UserTableViewCell, menuActionDidPressed action: UserView.MenuAction, menuButton button: UIButton) {
+extension MentionPickViewController: UserViewTableViewCellDelegate {
+    public func tableViewCell(_ cell: UITableViewCell, userView: UserView, menuActionDidPressed action: UserView.MenuAction, menuButton button: UIButton) {
+        // do nothing
+    }
+    
+    public func tableViewCell(_ cell: UITableViewCell, userView: UserView, friendshipButtonDidPressed button: UIButton) {
+        // do nothing
+    }
+    
+    public func tableViewCell(_ cell: UITableViewCell, userView: UserView, membershipButtonDidPressed button: UIButton) {
         // do nothing
     }
 }

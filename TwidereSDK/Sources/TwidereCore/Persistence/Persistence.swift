@@ -12,12 +12,14 @@ public enum Persistence { }
 
 extension Persistence {
     public enum Twitter { }
+    public enum TwitterList { }
     public enum TwitterSavedSearch { }
     public enum TwitterUser { }
     public enum TwitterStatus { }
 }
 
 extension Persistence {
+    public enum MastodonList { }
     public enum MastodonUser { }
     public enum MastodonStatus { }
     public enum MastodonNotification { }

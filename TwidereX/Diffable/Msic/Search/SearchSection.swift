@@ -17,9 +17,7 @@ enum SearchSection: Hashable, CaseIterable {
 
 extension SearchSection {
     
-    struct Configuration {
-        
-    }
+    struct Configuration { }
     
     static func diffableDataSource(
         tableView: UITableView,
@@ -27,7 +25,7 @@ extension SearchSection {
         configuration: Configuration
     ) -> UITableViewDiffableDataSource<SearchSection, SearchItem> {
         tableView.register(TimelineBottomLoaderTableViewCell.self, forCellReuseIdentifier: String(describing: TimelineBottomLoaderTableViewCell.self))
-        tableView.register(SearchHistoryTableViewCell.self, forCellReuseIdentifier: String(describing: SearchHistoryTableViewCell.self))
+        tableView.register(TableViewPlainCell.self, forCellReuseIdentifier: String(describing: TableViewPlainCell.self))
         tableView.register(TrendTableViewCell.self, forCellReuseIdentifier: String(describing: TrendTableViewCell.self))
         tableView.register(CenterFootnoteLabelTableViewCell.self, forCellReuseIdentifier: String(describing: CenterFootnoteLabelTableViewCell.self))
         tableView.register(ButtonTableViewCell.self, forCellReuseIdentifier: String(describing: ButtonTableViewCell.self))
@@ -35,7 +33,7 @@ extension SearchSection {
         return UITableViewDiffableDataSource(tableView: tableView) { tableView, indexPath, item in
             switch item {
             case .history(let record):
-                let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: SearchHistoryTableViewCell.self), for: indexPath) as! SearchHistoryTableViewCell
+                let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: TableViewPlainCell.self), for: indexPath) as! TableViewPlainCell
                 context.managedObjectContext.performAndWait {
                     guard let object = record.object(in: context.managedObjectContext) else { return }
                     configure(cell: cell, object: object)
@@ -66,23 +64,23 @@ extension SearchSection {
                 cell.button.configuration = configuration
                 cell.button.contentHorizontalAlignment = .leading
                 return cell
-            }
+            }   // end switch
         }
     }
 }
 
 extension SearchSection {
     private static func configure(
-        cell: SearchHistoryTableViewCell,
+        cell: TableViewPlainCell,
         object: SavedSearchObject
     ) {
         switch object {
         case .twitter(let history):
             let metaContent = Meta.convert(from: .plaintext(string: history.name))
-            cell.metaLabel.configure(content: metaContent)
+            cell.primaryTextLabel.configure(content: metaContent)
         case .mastodon(let history):
             let metaContent = Meta.convert(from: .plaintext(string: history.query))
-            cell.metaLabel.configure(content: metaContent)
+            cell.primaryTextLabel.configure(content: metaContent)
         }
     }
     
