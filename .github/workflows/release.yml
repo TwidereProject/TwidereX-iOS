@@ -18,6 +18,10 @@ jobs:
         with:
           trigger: '#r2d2/release'
           prefix_only: true
+          reaction: rocket
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - run: 'echo Found it!'
         if: steps.check.outputs.triggered == 'true'
       
