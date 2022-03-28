@@ -14,7 +14,7 @@ on:
 
 jobs:
   build:
-    name: CI Build test for Twidere X
+    name: CI Build Test
     runs-on: macos-11
     steps:
       - name: checkout

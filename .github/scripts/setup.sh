@@ -1,17 +1,13 @@
 #!/bin/bash
 
-# mock firebase config file
-cp ./TwidereX/mock-GoogleService-Info.plist ./TwidereX/GoogleService-Info.plist
-
 sudo gem install cocoapods-keys
 
-# stub keys. DO NOT use in production
-# set "TwidereX" project name to make cocoapods-keys using right project
-pod keys set app_secret "twidere" "TwidereX"
-pod keys set consumer_key "<consumer_key>" "TwidereX"
-pod keys set consumer_key_secret "<consumer_key_secret>" "TwidereX"
-pod keys set host_key_public "" "TwidereX"
-pod keys set oauth_endpoint "oob" "TwidereX"
+# set "TwidereX" project name to make cocoapods-keys using the right project
+pod keys set app_secret ${{ secrets.APP_SECRET }} "TwidereX"
+pod keys set consumer_key ${{ secrets.CONSUMER_KEY }} "TwidereX"
+pod keys set consumer_key_secret ${{ secrets.CONSUMER_KEY_SECRET }} "TwidereX"
+pod keys set host_key_public ${{ secrets.HOST_KEY_PUBLIC }} "TwidereX"
+pod keys set oauth_endpoint ${{ secrets.OAUTH_ENDPOINT }} "TwidereX"
 pod keys set oauth_endpoint_debug "oob" "TwidereX"
 
 pod install
