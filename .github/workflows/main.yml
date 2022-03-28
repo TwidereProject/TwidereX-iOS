@@ -24,4 +24,4 @@ jobs:
       - name: setup
         run: exec ./.github/scripts/setup.sh
       - name: build
-        run: exec ./.github/scripts/build.sh
+        run: exec ./.github/scripts/build-debug.sh
