@@ -16,13 +16,22 @@ jobs:
       - uses: khan/pull-request-comment-trigger@v1.1.0    # https://github.com/Khan/pull-request-comment-trigger
         id: check
         with:
-          trigger: '#r2d2/release'
+          trigger: 'r2d2/release'
           reaction: rocket
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - run: 'echo Found it!'
+      - uses: xt0rted/pull-request-comment-branch@v1
         if: steps.check.outputs.triggered == 'true'
+        id: comment-branch
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: actions/checkout@v3
+        if: steps.check.outputs.triggered == 'true'
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          ref: ${{ steps.comment-branch.outputs.head_ref }}
       
       # https://docs.github.com/en/enterprise-server@3.3/actions/deployment/deploying-xcode-applications/installing-an-apple-certificate-on-macos-runners-for-xcode-development
       - name: Import Code-Signing Certificates            
@@ -30,9 +39,6 @@ jobs:
         with:
           p12-file-base64: ${{ secrets.CERTIFICATES_P12 }}
           p12-password: ${{ secrets.CERTIFICATES_P12_PASSWORD }}
-
-      - name: checkout
-        uses: actions/checkout@v2
 
       - name: force Xcode 13.2
         run: sudo xcode-select -switch /Applications/Xcode_13.2.app
