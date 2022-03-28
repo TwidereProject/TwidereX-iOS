@@ -37,5 +37,11 @@ jobs:
       - name: setup
         run: exec ./.github/scripts/setup.sh
 
+      - name: "#️⃣ Generate Build Number"
+        id: buildnumber
+        uses: einaregilsson/build-number@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
       - name: build
-        run: exec ./.github/scripts/build.sh
+        run: exec ./.github/scripts/build-release.sh
