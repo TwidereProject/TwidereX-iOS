@@ -1,37 +1,17 @@
 name: Build and Release
 
-on:
-  pull_request:
-    types: [opened]
-  issue_comment:
-    types: [created]
-
+on: push
+  
 # macOS environments: https://github.com/actions/virtual-environments/tree/main/images/macos
 
 jobs:
   build:
     name: Release
     runs-on: macos-11
+    if: contains(github.event.head_commit.message, '@r2d2/release')
     steps:
-      - uses: khan/pull-request-comment-trigger@v1.1.0    # https://github.com/Khan/pull-request-comment-trigger
-        id: check
-        with:
-          trigger: 'r2d2/release'
-          reaction: rocket
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - uses: xt0rted/pull-request-comment-branch@v1
-        if: steps.check.outputs.triggered == 'true'
-        id: comment-branch
-        with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-
-      - uses: actions/checkout@v3
-        if: steps.check.outputs.triggered == 'true'
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          ref: ${{ steps.comment-branch.outputs.head_ref }}
+      - name: checkout
+        uses: actions/checkout@v2
       
       # https://docs.github.com/en/enterprise-server@3.3/actions/deployment/deploying-xcode-applications/installing-an-apple-certificate-on-macos-runners-for-xcode-development
       - name: Import Code-Signing Certificates            
@@ -51,12 +31,6 @@ jobs:
           HOST_KEY_PUBLIC: ${{ secrets.HOST_KEY_PUBLIC }}
           OAUTH_ENDPOINT: ${{ secrets.OAUTH_ENDPOINT }}
         run: exec ./.github/scripts/setup.sh
-
-      - name: "#️⃣ Generate Build Number"
-        id: buildnumber
-        uses: einaregilsson/build-number@v2
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: build
         run: exec ./.github/scripts/build-release.sh
