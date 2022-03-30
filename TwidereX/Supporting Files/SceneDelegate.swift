@@ -74,7 +74,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             return
         }
 
-        print(interaction)
         switch interaction.intent {
         case is SwitchAccountIntent:
             guard let intent = interaction.intent as? SwitchAccountIntent,
