@@ -34,6 +34,11 @@
 	<string>Twidere X needs your location to send geo marked tweet</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>Twidere X needs write permission to save photo</string>
+	<key>NSUserActivityTypes</key>
+	<array>
+		<string>IntentIntent</string>
+		<string>SwitchAccountIntent</string>
+	</array>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>

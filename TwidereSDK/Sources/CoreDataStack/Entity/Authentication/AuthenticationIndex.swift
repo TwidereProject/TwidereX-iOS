@@ -77,3 +77,11 @@ extension AuthenticationIndex: Managed {
         return [NSSortDescriptor(keyPath: \AuthenticationIndex.activeAt, ascending: false)]
     }
 }
+
+extension AuthenticationIndex {
+    
+    public static func predicate(identifier: UUID) -> NSPredicate {
+        return NSPredicate(format: "%K == %@", #keyPath(AuthenticationIndex.identifier), identifier as NSUUID)
+    }
+    
+}

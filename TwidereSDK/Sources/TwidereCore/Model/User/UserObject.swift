@@ -6,6 +6,7 @@
 //  Copyright © 2021 Twidere. All rights reserved.
 //
 
+import Foundation
 import CoreDataStack
 
 public enum UserObject: Hashable {
@@ -29,6 +30,37 @@ extension UserObject {
             return .twitter(.init(id: object.id))
         case .mastodon(let object):
             return .mastodon(.init(domain: object.domain, id: object.id))
+        }
+    }
+}
+
+extension UserObject {
+    public var name: String {
+        switch self {
+        case .twitter(let object):
+            return object.name
+        case .mastodon(let object):
+            return object.name
+        }
+    }
+    
+    /// - Twitter: `@username`
+    /// - Mastodon: `@username@domain.com`
+    public var username: String {
+        switch self {
+        case .twitter(let object):
+            return object.username
+        case .mastodon(let object):
+            return object.acctWithDomain
+        }
+    }
+    
+    public var avatarURL: URL? {
+        switch self {
+        case .twitter(let object):
+            return object.avatarImageURL()
+        case .mastodon(let object):
+            return object.avatar.flatMap { URL(string: $0) }
         }
     }
 }

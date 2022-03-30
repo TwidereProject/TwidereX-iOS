@@ -5,11 +5,16 @@
 //  Created by Cirno MainasuK on 2020-8-31.
 //
 
+import os.log
 import UIKit
 import Combine
+import Intents
 import FPSIndicator
+import CoreDataStack
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
+    
+    let logger = Logger(subsystem: "SceneDelegate", category: "Scene")
     
     var disposeBag = Set<AnyCancellable>()
 
@@ -61,6 +66,43 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         #if DEBUG
         // fpsIndicator = FPSIndicator(windowScene: windowScene)
         #endif
+    }
+    
+    func scene(_ scene: UIScene, continue userActivity: NSUserActivity) {
+        guard let interaction = userActivity.interaction else {
+            logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): Can't continue unknown NSUserActivity type \(userActivity.activityType)")
+            return
+        }
+
+        print(interaction)
+        switch interaction.intent {
+        case is SwitchAccountIntent:
+            guard let intent = interaction.intent as? SwitchAccountIntent,
+                  let account = intent.account,
+                  let identifier = account.identifier.flatMap(UUID.init(uuidString:))
+            else {
+                assertionFailure()
+                return
+            }
+            let managedObjectContext = AppContext.shared.managedObjectContext
+            Task { @MainActor in
+                let _authenticationIndexRecord: ManagedObjectRecord<AuthenticationIndex>? = await managedObjectContext.perform {
+                    let request = AuthenticationIndex.sortedFetchRequest
+                    request.predicate = AuthenticationIndex.predicate(identifier: identifier)
+                    guard let authenticationIndex = try? managedObjectContext.fetch(request).first else { return nil }
+                    return .init(objectID: authenticationIndex.objectID)
+                }
+                guard let authenticationIndexRecord = _authenticationIndexRecord else {
+                    return
+                }
+                let isActive = try await AppContext.shared.authenticationService.activeAuthenticationIndex(record: authenticationIndexRecord)
+                guard isActive else { return }
+                self.coordinator?.setup()
+            }
+        default:
+            assertionFailure()
+            return
+        }
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {
