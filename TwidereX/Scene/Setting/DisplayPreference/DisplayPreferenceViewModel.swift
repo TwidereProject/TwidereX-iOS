@@ -34,7 +34,7 @@ final class DisplayPreferenceViewModel: NSObject {
             .avatarStyle(.roundedSquare),
         ]),
     ]
-    let fontSizeSlideTableViewCell = SlideTableViewCell()
+    let fontSizeSlideTableViewCell = TableSlideTableViewCell()
 
     override init() {
 //        customContentSizeCatagory = CurrentValueSubject(UserDefaults.shared.customContentSizeCatagory)
@@ -95,29 +95,10 @@ extension DisplayPreferenceViewModel: UITableViewDataSource {
             let _cell = tableView.dequeueReusableCell(withIdentifier: String(describing: StatusTableViewCell.self), for: indexPath) as! StatusTableViewCell
             DisplayPreferenceViewModel.configure(cell: _cell)
             cell = _cell
-//        case .useTheSystemFontSizeSwitch:
-//            let _cell = tableView.dequeueReusableCell(withIdentifier: String(describing: SwitchTableViewCell.self), for: indexPath) as! SwitchTableViewCell
-//            _cell.textLabel?.text = L10n.Scene.Settings.Display.Text.useTheSystemFontSize
-//            UserDefaults.shared.publisher(for: \.useTheSystemFontSize)
-//                .receive(on: DispatchQueue.main)
-//                .sink(receiveValue: { useTheSystemFontSize in
-//                    guard _cell.switcher.isOn != useTheSystemFontSize else { return }
-//                    _cell.switcher.setOn(useTheSystemFontSize, animated: true)
-//                })
-//                .store(in: &_cell.disposeBag)
-//            _cell.switcherPublisher
-//                .removeDuplicates()
-//                .assign(to: \.useTheSystemFontSize, on: UserDefaults.shared)
-//                .store(in: &_cell.disposeBag)
-//            cell = _cell
-//        case .fontSizeSlider:
-//            let _cell = fontSizeSlideTableViewCell      // prevent dequeue new cell instance
-//            _cell.disposeBag.removeAll()
-//            DisplayPreferenceViewModel.configureFontSizeSlider(cell: _cell)
-//            cell = _cell
         case .avatarStyle(let avatarStyle):
-            let _cell = tableView.dequeueReusableCell(withIdentifier: String(describing: ListCheckmarkTableViewCell.self), for: indexPath) as! ListCheckmarkTableViewCell
-            _cell.titleLabel.text = avatarStyle.text
+            let _cell = tableView.dequeueReusableCell(withIdentifier: String(describing: TableViewCheckmarkTableViewCell.self), for: indexPath) as! TableViewCheckmarkTableViewCell
+            let metaContent = Meta.convert(from: .plaintext(string: avatarStyle.text))
+            _cell.primaryTextLabel.configure(content: metaContent)
             UserDefaults.shared
                 .observe(\.avatarStyle, options: [.initial, .new]) { defaults, _ in
                     _cell.accessoryType = avatarStyle == defaults.avatarStyle ? .checkmark : .none
@@ -125,9 +106,10 @@ extension DisplayPreferenceViewModel: UITableViewDataSource {
                 .store(in: &_cell.observations)
             cell = _cell
         case .dateFormat:
-            let _cell = tableView.dequeueReusableCell(withIdentifier: String(describing: ListEntryTableViewCell.self), for: indexPath) as! ListEntryTableViewCell
+            let _cell = tableView.dequeueReusableCell(withIdentifier: String(describing: TableViewEntryTableViewCell.self), for: indexPath) as! TableViewEntryTableViewCell
             _cell.iconImageView.isHidden = true
-            _cell.titleLabel.text = L10n.Scene.Settings.Display.SectionHeader.dateFormat
+            let metaContent = Meta.convert(from: .plaintext(string: L10n.Scene.Settings.Display.SectionHeader.dateFormat))
+            _cell.primaryTextLabel.configure(content: metaContent)
             cell = _cell
         }
         return cell

@@ -8,6 +8,7 @@
 
 import UIKit
 import TwitterSDK
+import MastodonSDK
 import TwidereLocalization
 
 public enum AppError: Error {
@@ -24,6 +25,8 @@ public enum AppError: Error {
         
         // Twitter API error
         case twitterResponseError(Twitter.API.Error.ResponseError)
+        // Mastodon API error
+        case mastodonResponseError(Mastodon.API.Error)
     }
     
 }
@@ -64,6 +67,12 @@ extension AppError.ErrorReason: LocalizedError {
             }
             
             return twitterAPIError.errorDescription
+        case .mastodonResponseError(let error):
+            guard let mastodonError = error.mastodonError else {
+                return error.httpResponseStatus.reasonPhrase
+            }
+            
+            return mastodonError.errorDescription
         }
     }
     
@@ -83,6 +92,12 @@ extension AppError.ErrorReason: LocalizedError {
             }
             
             return twitterAPIError.failureReason
+        case .mastodonResponseError(let error):
+            guard let mastodonError = error.mastodonError else {
+                return nil
+            }
+            
+            return mastodonError.failureReason
         }
     }
     

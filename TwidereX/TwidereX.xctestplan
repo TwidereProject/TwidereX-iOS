@@ -25,6 +25,10 @@
       }
     },
     {
+      "selectedTests" : [
+        "TwidereXUITests\/testExample()",
+        "TwidereXUITests\/testLaunchPerformance()"
+      ],
       "target" : {
         "containerPath" : "container:TwidereX.xcodeproj",
         "identifier" : "DBDA8E3E24FCF8A7006750DC",

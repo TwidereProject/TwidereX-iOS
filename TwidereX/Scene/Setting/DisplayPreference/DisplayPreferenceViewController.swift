@@ -21,10 +21,10 @@ final class DisplayPreferenceViewController: UIViewController, NeedsDependency {
     private(set) lazy var tableView: UITableView = {
         let tableView = ControlContainableTableView(frame: .zero, style: .grouped)
         tableView.register(StatusTableViewCell.self, forCellReuseIdentifier: String(describing: StatusTableViewCell.self))
-        tableView.register(SwitchTableViewCell.self, forCellReuseIdentifier: String(describing: SwitchTableViewCell.self))
-        tableView.register(SlideTableViewCell.self, forCellReuseIdentifier: String(describing: SlideTableViewCell.self))
-        tableView.register(ListEntryTableViewCell.self, forCellReuseIdentifier: String(describing: ListEntryTableViewCell.self))
-        tableView.register(ListCheckmarkTableViewCell.self, forCellReuseIdentifier: String(describing: ListCheckmarkTableViewCell.self))
+        tableView.register(TableViewSwitchTableViewCell.self, forCellReuseIdentifier: String(describing: TableViewSwitchTableViewCell.self))
+        tableView.register(TableSlideTableViewCell.self, forCellReuseIdentifier: String(describing: TableSlideTableViewCell.self))
+        tableView.register(TableViewEntryTableViewCell.self, forCellReuseIdentifier: String(describing: TableViewEntryTableViewCell.self))
+        tableView.register(TableViewCheckmarkTableViewCell.self, forCellReuseIdentifier: String(describing: TableViewCheckmarkTableViewCell.self))
         tableView.tableHeaderView = UITableView.groupedTableViewPaddingHeaderView
         tableView.rowHeight = UITableView.automaticDimension
         return tableView
@@ -73,7 +73,7 @@ extension DisplayPreferenceViewController: UITableViewDelegate {
         let sectionData = viewModel.sections[section]
         let header = sectionData.header
         let headerView = TableViewSectionTextHeaderView()
-        headerView.headerLabel.text = header
+        headerView.label.text = header
         return headerView
     }
 

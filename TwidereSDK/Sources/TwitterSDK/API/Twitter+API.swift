@@ -38,6 +38,7 @@ extension Twitter.API {
     public enum Favorites { }
     public enum Friendships { }
     public enum Geo { }
+    public enum List { }
     public enum Lookup { }
     public enum Media { }
     public enum Mute { }
@@ -52,16 +53,21 @@ extension Twitter.API {
     
     // V2
     public enum V2 {
+        public enum List {
+            public enum Member { }
+        }
         public enum FollowLookup { }
         public enum Lookup { }
         public enum Search { }
         public enum Status {
             public enum Delete { }
+            public enum List { }
         }
         public enum User {
             public enum Block { }
             public enum Follow { } 
             public enum Like { }
+            public enum List { }
             public enum Mute { }
             public enum Retweet { }
         }

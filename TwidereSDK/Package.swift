@@ -37,7 +37,7 @@ let package = Package(
         .package(url: "https://github.com/onevcat/Kingfisher.git", from: "7.1.1"),
         .package(url: "https://github.com/SDWebImage/SDWebImage.git", from: "5.12.0"),
         .package(url: "https://github.com/MainasuK/UITextView-Placeholder.git", from: "1.4.1"),
-        .package(url: "https://github.com/TimOliver/TOCropViewController.git", from: "2.6.0"),
+        .package(url: "https://github.com/TimOliver/TOCropViewController.git", from: "2.6.1"),
         .package(url: "https://github.com/MainasuK/KeyboardLayoutGuide.git", branch: "fix/iOS15"),
         .package(url: "https://github.com/apple/swift-collections.git", from: "1.0.2"),
         .package(url: "https://github.com/SwiftKickMobile/SwiftMessages.git", from: "9.0.5"),
@@ -113,7 +113,7 @@ let package = Package(
                 .product(name: "SDWebImage", package: "SDWebImage"),
                 .product(name: "Kingfisher", package: "Kingfisher"),
                 .product(name: "UITextView+Placeholder", package: "UITextView-Placeholder"),
-                .product(name: "TOCropViewController", package: "TOCropViewController"),
+                .product(name: "CropViewController", package: "TOCropViewController"),
                 .product(name: "KeyboardLayoutGuide", package: "KeyboardLayoutGuide"),
                 .product(name: "SwiftMessages", package: "SwiftMessages"),
             ]

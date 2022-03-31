@@ -70,8 +70,12 @@
 "Common.Alerts.DeleteTootConfirm.Title" = "Delete Toot";
 "Common.Alerts.DeleteTweetConfirm.Message" = "Do you want to delete this tweet?";
 "Common.Alerts.DeleteTweetConfirm.Title" = "Delete Tweet";
+"Common.Alerts.FailedToAddListMember.Message" = "Bitte versuche es erneut";
+"Common.Alerts.FailedToAddListMember.Title" = "Failed to Add List Member";
 "Common.Alerts.FailedToBlockUser.Message" = "Bitte versuche es erneut";
 "Common.Alerts.FailedToBlockUser.Title" = "Fehler beim Blockieren von %@";
+"Common.Alerts.FailedToDeleteList.Message" = "Bitte versuche es erneut";
+"Common.Alerts.FailedToDeleteList.Title" = "Failed to Delete List";
 "Common.Alerts.FailedToDeleteToot.Message" = "Bitte versuche es erneut";
 "Common.Alerts.FailedToDeleteToot.Title" = "Failed to Delete Toot";
 "Common.Alerts.FailedToDeleteTweet.Message" = "Bitte versuche es erneut";
@@ -86,6 +90,8 @@
 "Common.Alerts.FailedToLoginTimeout.Title" = "Failed to Login";
 "Common.Alerts.FailedToMuteUser.Message" = "Bitte versuche es erneut";
 "Common.Alerts.FailedToMuteUser.Title" = "Fehler beim Stummschalten von %@";
+"Common.Alerts.FailedToRemoveListMember.Message" = "Bitte versuche es erneut";
+"Common.Alerts.FailedToRemoveListMember.Title" = "Failed to Remove List Member";
 "Common.Alerts.FailedToReportAndBlockUser.Message" = "Bitte versuche es erneut";
 "Common.Alerts.FailedToReportAndBlockUser.Title" = "Fehler beim melden und Sperren von %@";
 "Common.Alerts.FailedToReportUser.Message" = "Bitte versuche es erneut";
@@ -100,6 +106,9 @@
 "Common.Alerts.FailedToUnmuteUser.Title" = "Stummschaltung von %@ konnte nicht aufgehoben werden";
 "Common.Alerts.FollowingRequestSent.Title" = "Anfrage zum Folgen gesendet";
 "Common.Alerts.FollowingSuccess.Title" = "Folgen erfolgreich";
+"Common.Alerts.ListDeleted.Message" = "Bitte versuche es erneut";
+"Common.Alerts.ListDeleted.Title" = "List Deleted";
+"Common.Alerts.ListMemberRemoved.Title" = "List Member Removed";
 "Common.Alerts.MediaSaveFail.Message" = "Bitte versuche es erneut";
 "Common.Alerts.MediaSaveFail.Title" = "Datei speichern fehlgeschlagen";
 "Common.Alerts.MediaSaved.Title" = "Datei gespeichert";
@@ -208,6 +217,9 @@
 "Common.Controls.Status.YouBoosted" = "You boosted";
 "Common.Controls.Status.YouRetweeted" = "You retweeted";
 "Common.Controls.Timeline.LoadMore" = "Mehr laden";
+"Common.Controls.User.Actions.AddRemoveFromLists" = "Add/remove from Lists";
+"Common.Controls.User.Actions.ViewListed" = "View Listed";
+"Common.Controls.User.Actions.ViewLists" = "View Lists";
 "Common.Countable.Like.Multiple" = "%@ likes";
 "Common.Countable.Like.Single" = "%@ like";
 "Common.Countable.List.Multiple" = "%@ lists";
@@ -312,6 +324,7 @@
 "Scene.ListsModify.Name" = "Name";
 "Scene.ListsModify.Private" = "Private";
 "Scene.ListsUsers.Add.Search" = "Search people";
+"Scene.ListsUsers.Add.SearchWithinPeopleYouFollow" = "Search within people you follow";
 "Scene.ListsUsers.Add.Title" = "Mitglied hinzufügen";
 "Scene.ListsUsers.MenuActions.Add" = "Hinzufügen";
 "Scene.ListsUsers.MenuActions.Remove" = "Entfernen";

@@ -78,20 +78,7 @@ final class SavePhotoActivity: UIActivity {
                 
                 self.activityDidFinish(false)
             }
-        }
-        
-//        ImageDownloader.default.download(URLRequest(url: url), completion: { [weak self] response in
-//            guard let self = self else { return }
-//            switch response.result {
-//            case .failure(let error):
-//                os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: download image %s fail: %s", ((#file as NSString).lastPathComponent), #line, #function, url.debugDescription, error.localizedDescription)
-//                self.activityDidFinish(false)
-//            case .success(let image):
-//                os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: download image %s success", ((#file as NSString).lastPathComponent), #line, #function, url.debugDescription)
-//                context.photoLibraryService.save(image: image)
-//                self.activityDidFinish(true)
-//            }
-//        })
+        }   // end Task
     }
 
 }

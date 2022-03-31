@@ -47,6 +47,8 @@ extension UserLikeTimelineViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        title = L10n.Scene.Likes.title
+        
         tableView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(tableView)
         tableView.backgroundColor = .systemBackground

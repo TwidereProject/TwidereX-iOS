@@ -43,7 +43,7 @@ extension SearchUserViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+
         tableView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(tableView)
         NSLayoutConstraint.activate([
@@ -57,7 +57,7 @@ extension SearchUserViewController {
         tableView.delegate = self
         viewModel.setupDiffableDataSource(
             tableView: tableView,
-            userTableViewCellDelegate: self
+            userViewTableViewCellDelegate: self
         )
         
         // setup batch fetch
@@ -101,13 +101,6 @@ extension SearchUserViewController: DeselectRowTransitionCoordinator {
     }
 }
 
-//// MARK: - UIScrollViewDelegate
-//extension SearchUserViewController {
-//    func scrollViewDidScroll(_ scrollView: UIScrollView) {
-//        handleScrollViewDidScroll(scrollView)
-//    }
-//}
-
 // MARK: - UITableViewDelegate
 extension SearchUserViewController: UITableViewDelegate, AutoGenerateTableViewDelegate {
     // sourcery:inline:SearchUserViewController.AutoGenerateTableViewDelegate
@@ -122,31 +115,8 @@ extension SearchUserViewController: UITableViewDelegate, AutoGenerateTableViewDe
     func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
         return 80
     }
-
-//    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-//        guard let diffableDataSource = viewModel.diffableDataSource else { return }
-//        guard let item = diffableDataSource.itemIdentifier(for: indexPath) else { return }
-//
-//        guard case let .twitterUser(objectID) = item else { return }
-//        let twitterUser = viewModel.fetchedResultsController.managedObjectContext.object(with: objectID) as! TwitterUser
-//
-////        let profileViewModel = ProfileViewModel(context: context, twitterUser: twitterUser)
-////        navigationController?.delegate = nil
-////        coordinator.present(scene: .profile(viewModel: profileViewModel), from: self, transition: .show)
-//    }
     
 }
 
-//// MARK: - UserBriefInfoTableViewCellDelegate
-//extension SearchUserViewController: SearchUserTableViewCellDelegate { }
-//
-//// MARK: - LoadMoreConfigurableTableViewContainer
-//extension SearchUserViewController: LoadMoreConfigurableTableViewContainer {
-//    typealias BottomLoaderTableViewCell = TimelineBottomLoaderTableViewCell
-//    typealias LoadingState = SearchUserViewModel.State.Loading
-//    var loadMoreConfigurableTableView: UITableView { return tableView }
-//    var loadMoreConfigurableStateMachine: GKStateMachine { return viewModel.stateMachine }
-//}
-
-// MARK: - UserTableViewCellDelegate
-extension SearchUserViewController: UserTableViewCellDelegate { }
+// MARK: - UserViewTableViewCellDelegate
+extension SearchUserViewController: UserViewTableViewCellDelegate { }

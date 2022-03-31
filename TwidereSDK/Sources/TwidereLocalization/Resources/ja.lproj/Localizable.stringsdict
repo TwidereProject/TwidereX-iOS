@@ -13,13 +13,13 @@
         <key>NSStringFormatValueTypeKey</key>
         <string>ld</string>
         <key>other</key>
-        <string>%ld media</string>
+        <string>%ld 件のメディア</string>
       </dict>
     </dict>
     <key>count.input_limit_remains</key>
     <dict>
       <key>NSStringLocalizedFormatKey</key>
-      <string>Input limit remains %#@character_count@</string>
+      <string>入力制限残り %#@character_count@</string>
       <key>character_count</key>
       <dict>
         <key>NSStringFormatSpecTypeKey</key>
@@ -27,7 +27,7 @@
         <key>NSStringFormatValueTypeKey</key>
         <string>ld</string>
         <key>other</key>
-        <string>%ld characters</string>
+        <string>%ld 文字</string>
       </dict>
     </dict>
     <key>count.metric_formatted.post</key>
@@ -55,7 +55,7 @@
         <key>NSStringFormatValueTypeKey</key>
         <string>ld</string>
         <key>other</key>
-        <string>%ld posts</string>
+        <string>%ld 件の投稿</string>
       </dict>
     </dict>
     <key>count.quote</key>
@@ -69,7 +69,7 @@
         <key>NSStringFormatValueTypeKey</key>
         <string>ld</string>
         <key>other</key>
-        <string>%ld quotes</string>
+        <string>%ld 件の引用</string>
       </dict>
     </dict>
     <key>count.like</key>
@@ -83,7 +83,7 @@
         <key>NSStringFormatValueTypeKey</key>
         <string>ld</string>
         <key>other</key>
-        <string>%ld likes</string>
+        <string>%ld いいね</string>
       </dict>
     </dict>
     <key>count.retweet</key>
@@ -97,7 +97,7 @@
         <key>NSStringFormatValueTypeKey</key>
         <string>ld</string>
         <key>other</key>
-        <string>%ld retweets</string>
+        <string>%ld リツイート</string>
       </dict>
     </dict>
     <key>count.reblog</key>
@@ -111,7 +111,7 @@
         <key>NSStringFormatValueTypeKey</key>
         <string>ld</string>
         <key>other</key>
-        <string>%ld reblogs</string>
+        <string>%ld 件のリブログ</string>
       </dict>
     </dict>
     <key>count.reply</key>
@@ -125,7 +125,7 @@
         <key>NSStringFormatValueTypeKey</key>
         <string>ld</string>
         <key>other</key>
-        <string>%ld replies</string>
+        <string>%ld 件の返信</string>
       </dict>
     </dict>
     <key>count.vote</key>
@@ -139,7 +139,7 @@
         <key>NSStringFormatValueTypeKey</key>
         <string>ld</string>
         <key>other</key>
-        <string>%ld votes</string>
+        <string>%ld 票</string>
       </dict>
     </dict>
     <key>count.people</key>
@@ -153,7 +153,7 @@
         <key>NSStringFormatValueTypeKey</key>
         <string>ld</string>
         <key>other</key>
-        <string>%ld people</string>
+        <string>%ld 人</string>
       </dict>
     </dict>
     <key>count.people.talking</key>
@@ -181,7 +181,7 @@
         <key>NSStringFormatValueTypeKey</key>
         <string>ld</string>
         <key>other</key>
-        <string>%ld years left</string>
+        <string>残り %ld 年</string>
       </dict>
     </dict>
     <key>date.month.left</key>
@@ -195,7 +195,7 @@
         <key>NSStringFormatValueTypeKey</key>
         <string>ld</string>
         <key>other</key>
-        <string>%ld months left</string>
+        <string>残り %ld ヶ月</string>
       </dict>
     </dict>
     <key>date.day.left</key>
@@ -209,7 +209,7 @@
         <key>NSStringFormatValueTypeKey</key>
         <string>ld</string>
         <key>other</key>
-        <string>%ld days left</string>
+        <string>残り %ld 日</string>
       </dict>
     </dict>
     <key>date.hour.left</key>
@@ -223,7 +223,7 @@
         <key>NSStringFormatValueTypeKey</key>
         <string>ld</string>
         <key>other</key>
-        <string>%ld hours left</string>
+        <string>残り %ld 時間</string>
       </dict>
     </dict>
     <key>date.minute.left</key>
@@ -237,7 +237,7 @@
         <key>NSStringFormatValueTypeKey</key>
         <string>ld</string>
         <key>other</key>
-        <string>%ld minutes left</string>
+        <string>残り %ld 分</string>
       </dict>
     </dict>
     <key>date.second.left</key>
@@ -251,7 +251,7 @@
         <key>NSStringFormatValueTypeKey</key>
         <string>ld</string>
         <key>other</key>
-        <string>%ld seconds left</string>
+        <string>残り %ld 秒</string>
       </dict>
     </dict>
   </dict>

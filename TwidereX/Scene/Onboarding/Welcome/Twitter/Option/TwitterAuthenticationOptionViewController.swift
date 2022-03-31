@@ -10,8 +10,9 @@ import os.log
 import UIKit
 import Combine
 import AppShared
-import TwitterSDK
 import AuthenticationServices
+import TwitterSDK
+import TwidereUI
 
 final class TwitterAuthenticationOptionViewController: UIViewController, NeedsDependency {
     
@@ -26,7 +27,7 @@ final class TwitterAuthenticationOptionViewController: UIViewController, NeedsDe
     
     let tableView: UITableView = {
         let tableView = UITableView(frame: .zero, style: .grouped)
-        tableView.register(ListTextFieldTableViewCell.self, forCellReuseIdentifier: String(describing: ListTextFieldTableViewCell.self))
+        tableView.register(TableViewTextFieldTableViewCell.self, forCellReuseIdentifier: String(describing: TableViewTextFieldTableViewCell.self))
         tableView.tableHeaderView = UITableView.groupedTableViewPaddingHeaderView
         return tableView
     }()
@@ -190,7 +191,7 @@ extension TwitterAuthenticationOptionViewController: UITableViewDelegate {
         
         guard let header = section.header else { return nil }
         let headerView = TableViewSectionTextHeaderView()
-        headerView.headerLabel.text = header
+        headerView.label.text = header
         return headerView
     }
     
@@ -200,8 +201,8 @@ extension TwitterAuthenticationOptionViewController: UITableViewDelegate {
         
         guard let footer = section.footer else { return nil }
         let footerView = TableViewSectionTextHeaderView()
-        footerView.headerLabel.text = footer
-        footerView.headerLabel.font = .preferredFont(forTextStyle: .footnote)
+        footerView.label.text = footer
+        footerView.label.font = .preferredFont(forTextStyle: .footnote)
         return footerView
     }
     

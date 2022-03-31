@@ -18,7 +18,8 @@ enum UserSection {
 extension UserSection {
     
     struct Configuration {
-        weak var userTableViewCellDelegate: UserTableViewCellDelegate?
+        weak var userViewTableViewCellDelegate: UserViewTableViewCellDelegate?
+        let userViewConfigurationContext: UserView.ConfigurationContext
     }
     
     static func diffableDataSource(
@@ -32,6 +33,8 @@ extension UserSection {
             UserFriendshipStyleTableViewCell.self,
             UserMentionPickStyleTableViewCell.self,
             UserNotificationStyleTableViewCell.self,
+            UserListMemberStyleTableViewCell.self,
+            UserAddListMemberStyleTableViewCell.self,
             TimelineBottomLoaderTableViewCell.self,
         ]
             
@@ -108,6 +111,10 @@ extension UserSection {
             return tableView.dequeueReusableCell(withIdentifier: String(describing: UserNotificationStyleTableViewCell.self), for: indexPath) as! UserNotificationStyleTableViewCell
         case .mentionPick:
             return tableView.dequeueReusableCell(withIdentifier: String(describing: UserMentionPickStyleTableViewCell.self), for: indexPath) as! UserMentionPickStyleTableViewCell
+        case .listMember:
+            return tableView.dequeueReusableCell(withIdentifier: String(describing: UserListMemberStyleTableViewCell.self), for: indexPath) as! UserListMemberStyleTableViewCell
+        case .addListMember:
+            return tableView.dequeueReusableCell(withIdentifier: String(describing: UserAddListMemberStyleTableViewCell.self), for: indexPath) as! UserAddListMemberStyleTableViewCell
         }
     }
     
@@ -118,19 +125,8 @@ extension UserSection {
     ) {
         cell.configure(
             viewModel: viewModel,
-            delegate: configuration.userTableViewCellDelegate
+            configurationContext: configuration.userViewConfigurationContext,
+            delegate: configuration.userViewTableViewCellDelegate
         )
     }
-}
-
-extension UserSection {
-    
-    @available(*, deprecated, message: "")
-    static func configure(
-        cell: AccountListTableViewCell,
-        authenticationIndex: AuthenticationIndex
-    ) {
-        cell.configure(authenticationIndex: authenticationIndex)
-    }
-
 }

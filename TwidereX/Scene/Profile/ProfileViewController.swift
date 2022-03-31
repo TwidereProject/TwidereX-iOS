@@ -219,7 +219,6 @@ extension ProfileViewController {
         }
         .store(in: &disposeBag)
 
-        
         tabBarPagerController.relayScrollView.refreshControl = refreshControl
         refreshControl.addTarget(self, action: #selector(ProfileViewController.refreshControlValueChanged(_:)), for: .valueChanged)
 
@@ -379,7 +378,21 @@ extension ProfileViewController: ProfileHeaderViewControllerDelegate {
     }
     
     func headerViewController(_ viewController: ProfileHeaderViewController, profileHeaderView: ProfileHeaderView, profileDashboardView dashboardView: ProfileDashboardView, listedMeterViewDidPressed meterView: ProfileDashboardMeterView) {
-        // TODO:
+        guard let user = viewModel.userRecord else { return }
+        switch user {
+        case .twitter:      break
+        case .mastodon:     return
+        }
+        
+        let compositeListViewModel = CompositeListViewModel(
+            context: context,
+            kind: .listed(user)
+        )
+        coordinator.present(
+            scene: .compositeList(viewModel: compositeListViewModel),
+            from: presentingViewController,
+            transition: .show
+        )
     }
 }
 

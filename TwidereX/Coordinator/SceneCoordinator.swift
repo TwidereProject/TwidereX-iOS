@@ -44,7 +44,6 @@ extension SceneCoordinator {
     enum Scene {
         // Onboarding
         case welcome(viewModel: WelcomeViewModel)
-//        case authentication(viewModel: AuthenticationViewModel)
         case twitterAuthenticationOption(viewModel: TwitterAuthenticationOptionViewModel)
         case twitterPinBasedAuthentication(viewModel: TwitterPinBasedAuthenticationViewModel)
         
@@ -55,6 +54,15 @@ extension SceneCoordinator {
         
         // Timeline
         case federatedTimeline(viewModel: FederatedTimelineViewModel)
+        case userLikeTimeline(viewModel: UserLikeTimelineViewModel)
+        
+        // List
+        case compositeList(viewModel: CompositeListViewModel)
+        case list(viewModel: ListViewModel)
+        case listStatus(viewModel: ListStatusViewModel)
+        case listUser(viewModel: ListUserViewModel)
+        case editList(viewModel: EditListViewModel)
+        case addListMember(viewModel: AddListMemberViewModel)
         
         // Status
         case statusThread(viewModel: StatusThreadViewModel)
@@ -192,10 +200,6 @@ private extension SceneCoordinator {
             let _viewController = WelcomeViewController()
             _viewController.viewModel = viewModel
             viewController = _viewController
-//        case .authentication(let viewModel):
-//            let _viewController = AuthenticationViewController()
-//            _viewController.viewModel = viewModel
-//            viewController = _viewController
         case .twitterAuthenticationOption(let viewModel):
             let _viewController = TwitterAuthenticationOptionViewController()
             _viewController.viewModel = viewModel
@@ -225,6 +229,34 @@ private extension SceneCoordinator {
             viewController = _viewController
         case .federatedTimeline(let viewModel):
             let _viewController = FederatedTimelineViewController()
+            _viewController.viewModel = viewModel
+            viewController = _viewController
+        case .userLikeTimeline(let viewModel):
+            let _viewController = UserLikeTimelineViewController()
+            _viewController.viewModel = viewModel
+            viewController = _viewController
+        case .compositeList(let viewModel):
+            let _viewController = CompositeListViewController()
+            _viewController.viewModel = viewModel
+            viewController = _viewController
+        case .list(let viewModel):
+            let _viewController = ListViewController()
+            _viewController.viewModel = viewModel
+            viewController = _viewController
+        case .listStatus(let viewModel):
+            let _viewController = ListStatusViewController()
+            _viewController.viewModel = viewModel
+            viewController = _viewController
+        case .listUser(let viewModel):
+            let _viewController = ListUserViewController()
+            _viewController.viewModel = viewModel
+            viewController = _viewController
+        case .editList(let viewModel):
+            let _viewController = EditListViewController()
+            _viewController.viewModel = viewModel
+            viewController = _viewController
+        case .addListMember(let viewModel):
+            let _viewController = AddListMemberViewController()
             _viewController.viewModel = viewModel
             viewController = _viewController
         case .statusThread(let viewModel):

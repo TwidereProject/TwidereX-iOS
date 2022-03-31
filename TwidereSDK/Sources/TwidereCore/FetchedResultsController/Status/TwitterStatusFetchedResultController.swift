@@ -16,6 +16,8 @@ import TwitterSDK
 
 public final class TwitterStatusFetchedResultController: NSObject {
     
+    let logger = Logger(subsystem: "TwitterStatusFetchedResultController", category: "DB")
+
     var disposeBag = Set<AnyCancellable>()
     
     let fetchedResultsController: NSFetchedResultsController<TwitterStatus>
@@ -101,8 +103,8 @@ extension TwitterStatusFetchedResultController: NSFetchedResultsControllerDelega
         _ controller: NSFetchedResultsController<NSFetchRequestResult>,
         didChangeContentWith snapshot: NSDiffableDataSourceSnapshotReference
     ) {
-        os_log("%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
-        
+        logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public)")
+
         let indexes = statusIDs.value
         let statuses = fetchedResultsController.fetchedObjects ?? []
         

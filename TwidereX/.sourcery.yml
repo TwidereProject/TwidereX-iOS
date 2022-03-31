@@ -2,6 +2,6 @@ sources:
   - .
   - ../TwidereSDK/Sources
 templates:
-  - ./Template
+  - ../TwidereSDK/Sources/TwidereCommon/Template
 output:
   Generated

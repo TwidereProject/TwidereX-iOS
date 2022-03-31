@@ -9,6 +9,7 @@
 import os.log
 import UIKit
 import Combine
+import TwidereLocalization
 
 // DrawerSidebarTransitionableViewController
 final class SearchViewController: UIViewController, NeedsDependency, DrawerSidebarTransitionHostViewController {
@@ -43,19 +44,20 @@ final class SearchViewController: UIViewController, NeedsDependency, DrawerSideb
     private(set) lazy var tableView: UITableView = {
         let style: UITableView.Style = UIDevice.current.userInterfaceIdiom == .phone ? .grouped : .insetGrouped
         let tableView = UITableView(frame: .zero, style: style)
+        tableView.cellLayoutMarginsFollowReadableWidth = true
         tableView.backgroundColor = .systemGroupedBackground
         tableView.rowHeight = UITableView.automaticDimension
         tableView.sectionHeaderTopPadding = 14
         return tableView
     }()
     
-    let historySectionHeaderView: SearchTableSectionHeaderView = {
-        let header = SearchTableSectionHeaderView()
+    let historySectionHeaderView: TableViewSectionTextHeaderView = {
+        let header = TableViewSectionTextHeaderView()
         header.label.text = L10n.Scene.Search.savedSearch
         return header
     }()
     
-    let trendSectionHeaderView = SearchTableSectionHeaderView()
+    let trendSectionHeaderView = TableViewSectionTextHeaderView()
     
     deinit {
         os_log("%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
@@ -223,11 +225,11 @@ extension SearchViewController: UITableViewDelegate {
                         transition: .show
                     )
                 }
-            default:
+                
+            case .loader, .noResults:
                 break
             }
-            
-        }
+        }   // end Task
     }
     
     func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {

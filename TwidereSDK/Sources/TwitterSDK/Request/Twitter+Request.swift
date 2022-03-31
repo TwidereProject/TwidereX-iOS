@@ -77,4 +77,12 @@ extension Twitter.Request {
         .name,
         .placeType,
     ]
+    static let listFields: [Twitter.Request.ListFields] = [
+        .createdAt,
+        .followerCount,
+        .memberCount,
+        .private,
+        .description,
+        .ownerID,
+    ]
 }

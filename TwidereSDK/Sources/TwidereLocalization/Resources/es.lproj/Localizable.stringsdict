@@ -21,7 +21,7 @@
     <key>count.input_limit_remains</key>
     <dict>
       <key>NSStringLocalizedFormatKey</key>
-      <string>Input limit remains %#@character_count@</string>
+      <string>Límite de entrada restante: %#@character_count@</string>
       <key>character_count</key>
       <dict>
         <key>NSStringFormatSpecTypeKey</key>
@@ -29,9 +29,9 @@
         <key>NSStringFormatValueTypeKey</key>
         <string>ld</string>
         <key>one</key>
-        <string>1 character</string>
+        <string>1 carácter</string>
         <key>other</key>
-        <string>%ld characters</string>
+        <string>%ld caracteres</string>
       </dict>
     </dict>
     <key>count.metric_formatted.post</key>
@@ -45,9 +45,9 @@
         <key>NSStringFormatValueTypeKey</key>
         <string>ld</string>
         <key>one</key>
-        <string>post</string>
+        <string>publicación</string>
         <key>other</key>
-        <string>posts</string>
+        <string>publicaciones</string>
       </dict>
     </dict>
     <key>count.post</key>
@@ -61,9 +61,9 @@
         <key>NSStringFormatValueTypeKey</key>
         <string>ld</string>
         <key>one</key>
-        <string>1 post</string>
+        <string>1 publicación</string>
         <key>other</key>
-        <string>%ld posts</string>
+        <string>%ld publicaciones</string>
       </dict>
     </dict>
     <key>count.quote</key>
@@ -77,9 +77,9 @@
         <key>NSStringFormatValueTypeKey</key>
         <string>ld</string>
         <key>one</key>
-        <string>1 quote</string>
+        <string>1 cita</string>
         <key>other</key>
-        <string>%ld quotes</string>
+        <string>%ld citas</string>
       </dict>
     </dict>
     <key>count.like</key>
@@ -93,9 +93,9 @@
         <key>NSStringFormatValueTypeKey</key>
         <string>ld</string>
         <key>one</key>
-        <string>1 like</string>
+        <string>1 me gusta</string>
         <key>other</key>
-        <string>%ld likes</string>
+        <string>%ld me gusta</string>
       </dict>
     </dict>
     <key>count.retweet</key>
@@ -125,9 +125,9 @@
         <key>NSStringFormatValueTypeKey</key>
         <string>ld</string>
         <key>one</key>
-        <string>1 reblog</string>
+        <string>1 retoot</string>
         <key>other</key>
-        <string>%ld reblogs</string>
+        <string>%ld retoots</string>
       </dict>
     </dict>
     <key>count.reply</key>
@@ -141,9 +141,9 @@
         <key>NSStringFormatValueTypeKey</key>
         <string>ld</string>
         <key>one</key>
-        <string>1 reply</string>
+        <string>1 respuesta</string>
         <key>other</key>
-        <string>%ld replies</string>
+        <string>%ld respuestas</string>
       </dict>
     </dict>
     <key>count.vote</key>

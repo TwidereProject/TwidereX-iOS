@@ -43,10 +43,3 @@ public final class APIService {
     }
     
 }
-
-extension APIService {
-    public enum Persist { }
-    public enum CoreData {
-        public enum V2 { }
-    }
-}

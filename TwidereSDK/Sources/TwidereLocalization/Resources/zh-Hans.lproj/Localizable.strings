@@ -70,8 +70,12 @@
 "Common.Alerts.DeleteTootConfirm.Title" = "删除噗文";
 "Common.Alerts.DeleteTweetConfirm.Message" = "您想要删除此推文吗？";
 "Common.Alerts.DeleteTweetConfirm.Title" = "删除推文";
+"Common.Alerts.FailedToAddListMember.Message" = "请重试";
+"Common.Alerts.FailedToAddListMember.Title" = "添加列表成员失败";
 "Common.Alerts.FailedToBlockUser.Message" = "请重试";
 "Common.Alerts.FailedToBlockUser.Title" = "屏蔽 %@ 失败";
+"Common.Alerts.FailedToDeleteList.Message" = "请重试";
+"Common.Alerts.FailedToDeleteList.Title" = "删除列表失败";
 "Common.Alerts.FailedToDeleteToot.Message" = "请重试";
 "Common.Alerts.FailedToDeleteToot.Title" = "删除噗文失败";
 "Common.Alerts.FailedToDeleteTweet.Message" = "请重试";
@@ -86,6 +90,8 @@
 "Common.Alerts.FailedToLoginTimeout.Title" = "登录失败";
 "Common.Alerts.FailedToMuteUser.Message" = "请重试";
 "Common.Alerts.FailedToMuteUser.Title" = "静音 %@ 失败";
+"Common.Alerts.FailedToRemoveListMember.Message" = "请重试";
+"Common.Alerts.FailedToRemoveListMember.Title" = "移除列表成员失败";
 "Common.Alerts.FailedToReportAndBlockUser.Message" = "请重试";
 "Common.Alerts.FailedToReportAndBlockUser.Title" = "屏蔽并举报 %@ 为垃圾信息用户失败";
 "Common.Alerts.FailedToReportUser.Message" = "请重试";
@@ -100,6 +106,9 @@
 "Common.Alerts.FailedToUnmuteUser.Title" = "解除静音 %@ 失败";
 "Common.Alerts.FollowingRequestSent.Title" = "已发送关注请求";
 "Common.Alerts.FollowingSuccess.Title" = "关注成功";
+"Common.Alerts.ListDeleted.Message" = "请重试";
+"Common.Alerts.ListDeleted.Title" = "列表已删除";
+"Common.Alerts.ListMemberRemoved.Title" = "列表成员已移除";
 "Common.Alerts.MediaSaveFail.Message" = "请重试";
 "Common.Alerts.MediaSaveFail.Title" = "保存媒体失败";
 "Common.Alerts.MediaSaved.Title" = "媒体已保存";
@@ -208,6 +217,9 @@
 "Common.Controls.Status.YouBoosted" = "你转嘟了";
 "Common.Controls.Status.YouRetweeted" = "你转推了";
 "Common.Controls.Timeline.LoadMore" = "加载更多";
+"Common.Controls.User.Actions.AddRemoveFromLists" = "从列表中添加或删除";
+"Common.Controls.User.Actions.ViewListed" = "查看所在列表";
+"Common.Controls.User.Actions.ViewLists" = "查看列表";
 "Common.Countable.Like.Multiple" = "%@ 喜欢";
 "Common.Countable.Like.Single" = "%@ 喜欢";
 "Common.Countable.List.Multiple" = "%@ 列表";
@@ -312,6 +324,7 @@
 "Scene.ListsModify.Name" = "名称";
 "Scene.ListsModify.Private" = "仅关注者";
 "Scene.ListsUsers.Add.Search" = "搜索用户";
+"Scene.ListsUsers.Add.SearchWithinPeopleYouFollow" = "在你关注的人中搜索";
 "Scene.ListsUsers.Add.Title" = "添加成员";
 "Scene.ListsUsers.MenuActions.Add" = "添加";
 "Scene.ListsUsers.MenuActions.Remove" = "删除";

@@ -80,5 +80,5 @@ final class FriendshipListViewModel: NSObject {
 }
 
 extension FriendshipListViewModel {
-    typealias Kind = UserListFetchViewModel.FriendshipListKind
+    typealias Kind = UserFetchViewModel.Friendship.Kind
 }

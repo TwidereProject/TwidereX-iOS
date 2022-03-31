@@ -12,6 +12,7 @@ import SwiftUI
 import CoreDataStack
 import TwidereCommon
 import TwidereCore
+import TwidereAsset
 import Meta
 import MastodonSDK
 
@@ -23,9 +24,11 @@ extension UserView {
         let relationshipViewModel = RelationshipViewModel()
         
         @Published public var platform: Platform = .none
-        
+        @Published public var authenticationContext: AuthenticationContext?       // me
+
         @Published public var header: Header = .none
         
+        @Published public var userIdentifier: UserIdentifier? = nil
         @Published public var avatarImageURL: URL?
         @Published public var avatarBadge: AvatarBadge = .none
         // TODO: verified | bot
@@ -37,6 +40,12 @@ extension UserView {
         
         @Published public var followerCount: Int?
         
+        public var listMembershipViewModel: ListMembershipViewModel?
+        @Published public var listOwnerUserIdentifier: UserIdentifier? = nil
+        @Published public var isListMember = false
+        @Published public var isListMemberCandidate = false       // a.k.a isBusy
+        @Published public var isMyList = false
+        
         public enum Header {
             case none
             case notification(info: NotificationHeaderInfo)
@@ -46,6 +55,20 @@ extension UserView {
             case none
             case platform
             case user   // verified | bot
+        }
+        
+        init() {
+            // isMyList
+            Publishers.CombineLatest(
+                $authenticationContext,
+                $listOwnerUserIdentifier
+            )
+            .map { authenticationContext, userIdentifier -> Bool in
+                guard let authenticationContext = authenticationContext else { return false }
+                guard let userIdentifier = userIdentifier else { return false }
+                return authenticationContext.userIdentifier == userIdentifier
+            }
+            .assign(to: &$isMyList)
         }
     }
 }
@@ -150,16 +173,101 @@ extension UserView.ViewModel {
                 userView.friendshipButton.isHidden = relationship == .isMyself
             }
             .store(in: &disposeBag)
+
+        // accessory
+        switch userView.style {
+        case .account:
+            userView.menuButton.showsMenuAsPrimaryAction = true
+            userView.menuButton.menu = {
+                let children = [
+                    UIAction(
+                        title: L10n.Common.Controls.Actions.signOut,
+                        image: UIImage(systemName: "person.crop.circle.badge.minus"),
+                        attributes: .destructive,
+                        state: .off
+                    ) { [weak userView] _ in
+                        guard let userView = userView else { return }
+                        userView.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): sign out user…")
+                        userView.delegate?.userView(userView, menuActionDidPressed: .signOut, menuButton: userView.menuButton)
+                    }
+                ]
+                return UIMenu(title: "", image: nil, options: [], children: children)
+            }()
+                
+        case .listMember:
+            userView.menuButton.showsMenuAsPrimaryAction = true
+            userView.menuButton.menu = {
+                let children = [
+                    UIAction(
+                        title: L10n.Common.Controls.Actions.remove,
+                        image: UIImage(systemName: "minus.circle"),
+                        attributes: .destructive,
+                        state: .off
+                    ) { [weak userView] _ in
+                        guard let userView = userView else { return }
+                        userView.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): remove user…")
+                        userView.delegate?.userView(userView, menuActionDidPressed: .remove, menuButton: userView.menuButton)
+                    }
+                ]
+                return UIMenu(title: "", image: nil, options: [], children: children)
+            }()
+            $isMyList
+                .map { !$0 }
+                .assign(to: \.isHidden, on: userView.menuButton)
+                .store(in: &disposeBag)
+        case .addListMember:
+            Publishers.CombineLatest(
+                $isListMember,
+                $isListMemberCandidate
+            )
+            .receive(on: DispatchQueue.main)
+            .sink { [weak userView] isMember, isMemberCandidate in
+                guard let userView = userView else { return }
+                let image = isMember ? UIImage(systemName: "minus.circle") : UIImage(systemName: "plus.circle")
+                let tintColor = isMember ? UIColor.systemRed : Asset.Colors.hightLight.color
+                userView.membershipButton.setImage(image, for: .normal)
+                userView.membershipButton.tintColor = tintColor
+                
+                userView.membershipButton.alpha = isMemberCandidate ? 0 : 1
+                userView.activityIndicatorView.isHidden = !isMemberCandidate
+                userView.activityIndicatorView.startAnimating()
+            }
+            .store(in: &disposeBag)
+                
+        default:
+            userView.menuButton.showsMenuAsPrimaryAction = true
+            userView.menuButton.menu = nil
+        }
     }
     
+}
+
+extension UserView {
+    public struct ConfigurationContext {
+        public let listMembershipViewModel: ListMembershipViewModel?
+        public let authenticationContext: Published<AuthenticationContext?>.Publisher
+        
+        public init(
+            listMembershipViewModel: ListMembershipViewModel?,
+            authenticationContext: Published<AuthenticationContext?>.Publisher
+        ) {
+            self.listMembershipViewModel = listMembershipViewModel
+            self.authenticationContext = authenticationContext
+        }
+    }
 }
 
 extension UserView {
     public func configure(
         user: UserObject,
         me: UserObject?,
-        notification: NotificationObject?
+        notification: NotificationObject?,
+        configurationContext: ConfigurationContext
     ) {
+        configurationContext.authenticationContext
+            .assign(to: \.authenticationContext, on: viewModel)
+            .store(in: &disposeBag)
+        
         switch user {
         case .twitter(let user):
             configure(twitterUser: user)
@@ -174,27 +282,31 @@ extension UserView {
         viewModel.relationshipViewModel.user = user
         viewModel.relationshipViewModel.me = me
         
-        // menu
+        viewModel.listMembershipViewModel = configurationContext.listMembershipViewModel
+        if let listMembershipViewModel = configurationContext.listMembershipViewModel {
+            listMembershipViewModel.$ownerUserIdentifier
+                .assign(to: \.listOwnerUserIdentifier, on: viewModel)
+                .store(in: &disposeBag)
+        }
+        
+        // accessory
         switch style {
-        case .account:
-            menuButton.showsMenuAsPrimaryAction = true
-            menuButton.menu = {
-                let children = [
-                    UIAction(
-                        title: L10n.Common.Controls.Actions.signOut,
-                        image: UIImage(systemName: "person.crop.circle.badge.minus"),
-                        attributes: .destructive,
-                        state: .off) { [weak self] _ in
-                            guard let self = self else { return }
-                            self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): sign out user…")
-                            self.delegate?.userView(self, menuActionDidPressed: .signOut, menuButton: self.menuButton)
-                        }
-                ]
-                return UIMenu(title: "", image: nil, options: [], children: children)
-            }()
+        case .addListMember:
+            guard let listMembershipViewModel = configurationContext.listMembershipViewModel else {
+                assertionFailure()
+                break
+            }
+            let userRecord = user.asRecord
+            listMembershipViewModel.$members
+                .map { members in members.contains(userRecord) }
+                .assign(to: \.isListMember, on: viewModel)
+                .store(in: &disposeBag)
+            listMembershipViewModel.$workingMembers
+                .map { members in members.contains(userRecord) }
+                .assign(to: \.isListMemberCandidate, on: viewModel)
+                .store(in: &disposeBag)
         default:
-            menuButton.showsMenuAsPrimaryAction = true
-            menuButton.menu = nil
+            break
         }
     }
     
@@ -210,6 +322,8 @@ extension UserView {
     private func configure(twitterUser user: TwitterUser) {
         // platform
         viewModel.platform = .twitter
+        // userIdentifier
+        viewModel.userIdentifier = .twitter(.init(id: user.id))
         // avatar
         user.publisher(for: \.profileImageURL)
             .map { _ in user.avatarImageURL() }
@@ -242,6 +356,8 @@ extension UserView {
     private func configure(mastodonUser user: MastodonUser) {
         // platform
         viewModel.platform = .mastodon
+        // userIdentifier
+        viewModel.userIdentifier = .mastodon(.init(domain: user.domain, id: user.id))
         // avatar
         Publishers.CombineLatest3(
             UserDefaults.shared.publisher(for: \.preferredStaticAvatar),

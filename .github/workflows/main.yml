@@ -14,7 +14,7 @@ on:
 
 jobs:
   build:
-    name: CI Build test for Twidere X
+    name: CI Build Test
     runs-on: macos-11
     steps:
       - name: checkout
@@ -24,4 +24,4 @@ jobs:
       - name: setup
         run: exec ./.github/scripts/setup.sh
       - name: build
-        run: exec ./.github/scripts/build.sh
+        run: exec ./.github/scripts/build-debug.sh

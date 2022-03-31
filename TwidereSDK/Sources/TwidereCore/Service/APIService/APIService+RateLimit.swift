@@ -78,6 +78,6 @@ extension APIService {
             
             return available
         }
-        
     }
+    
 }

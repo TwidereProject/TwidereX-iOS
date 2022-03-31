@@ -8,6 +8,8 @@
 
 import Foundation
 import CoreDataStack
+import TwidereCore
+import TwidereUI
 
 enum UserItem: Hashable {
     case authenticationIndex(record: ManagedObjectRecord<AuthenticationIndex>)

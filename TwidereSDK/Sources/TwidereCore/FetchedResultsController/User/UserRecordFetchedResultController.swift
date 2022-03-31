@@ -25,7 +25,7 @@ final public class UserRecordFetchedResultController {
     @Published public var userIdentifier: UserIdentifier?
     
     // output
-    public let records = CurrentValueSubject<[UserRecord], Never>([])
+    @Published public var records: [UserRecord] = []
     
     public init(managedObjectContext: NSManagedObjectContext) {
         self.twitterUserFetchedResultsController = TwitterUserFetchedResultsController(managedObjectContext: managedObjectContext)
@@ -40,33 +40,31 @@ final public class UserRecordFetchedResultController {
                     // default on twitter
                     break
                 case .mastodon(let identifier):
-                    self.mastodonUserFetchedResultController.domain.value = identifier.domain
+                    self.mastodonUserFetchedResultController.domain = identifier.domain
                 case nil:
-                    self.mastodonUserFetchedResultController.domain.value = ""
+                    self.mastodonUserFetchedResultController.domain = ""
                 }
             }
             .store(in: &disposeBag)
         
         Publishers.CombineLatest(
-            twitterUserFetchedResultsController.records,
-            mastodonUserFetchedResultController.records
+            twitterUserFetchedResultsController.$records,
+            mastodonUserFetchedResultController.$records
         )
-            .map { twitterRecords, mastodonRecords in
-                var records: [UserRecord] = []
-                records.append(contentsOf: twitterRecords.map { .twitter(record: $0) })
-                records.append(contentsOf: mastodonRecords.map { .mastodon(record: $0) })
-                return records
-            }
-            .assign(to: \.value, on: records)
-            .store(in: &disposeBag)
-        
+        .map { twitterRecords, mastodonRecords in
+            var records: [UserRecord] = []
+            records.append(contentsOf: twitterRecords.map { .twitter(record: $0) })
+            records.append(contentsOf: mastodonRecords.map { .mastodon(record: $0) })
+            return records
+        }
+        .assign(to: &$records)
     }
     
 }
 
 extension UserRecordFetchedResultController {
     public func reset() {
-        twitterUserFetchedResultsController.userIDs.value = []
-        mastodonUserFetchedResultController.userIDs.value = []
+        twitterUserFetchedResultsController.userIDs = []
+        mastodonUserFetchedResultController.userIDs = []
     }
 }

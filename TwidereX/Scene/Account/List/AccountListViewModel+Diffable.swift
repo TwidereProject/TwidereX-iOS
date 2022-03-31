@@ -15,13 +15,17 @@ extension AccountListViewModel {
     
     func setupDiffableDataSource(
         tableView: UITableView,
-        userTableViewCellDelegate: UserTableViewCellDelegate
+        userViewTableViewCellDelegate: UserViewTableViewCellDelegate
     ) {
         diffableDataSource = UserSection.diffableDataSource(
             tableView: tableView,
             context: context,
             configuration: UserSection.Configuration(
-                userTableViewCellDelegate: userTableViewCellDelegate
+                userViewTableViewCellDelegate: userViewTableViewCellDelegate,
+                userViewConfigurationContext: .init(
+                    listMembershipViewModel: nil,
+                    authenticationContext: context.authenticationService.$activeAuthenticationContext
+                )
             )
         )
         

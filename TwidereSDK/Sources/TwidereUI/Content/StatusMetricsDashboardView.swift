@@ -104,7 +104,7 @@ extension StatusMetricsDashboardView {
         replyButton.setImage(Asset.Arrows.arrowTurnUpLeftMini.image.withRenderingMode(.alwaysTemplate), for: .normal)
         repostButton.setImage(Asset.Media.repeatMini.image.withRenderingMode(.alwaysTemplate), for: .normal)
         quoteButton.setImage(Asset.TextFormatting.textQuoteMini.image.withRenderingMode(.alwaysTemplate), for: .normal)
-        likeButton.setImage(Asset.Health.heartFillMini.image.withRenderingMode(.alwaysTemplate), for: .normal)
+        likeButton.setImage(Asset.Health.heartMini.image.withRenderingMode(.alwaysTemplate), for: .normal)
         
         replyButton.translatesAutoresizingMaskIntoConstraints = false
         repostButton.translatesAutoresizingMaskIntoConstraints = false

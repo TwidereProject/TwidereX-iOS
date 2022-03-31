@@ -10,6 +10,7 @@ import os.log
 import UIKit
 import Combine
 import GameplayKit
+import TwidereUI
 import TwidereAsset
 import TwidereLocalization
 

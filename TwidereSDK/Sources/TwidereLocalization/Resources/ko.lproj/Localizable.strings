@@ -70,8 +70,12 @@
 "Common.Alerts.DeleteTootConfirm.Title" = "툿을 지웁니다.";
 "Common.Alerts.DeleteTweetConfirm.Message" = "이 트윗을 지울까요?";
 "Common.Alerts.DeleteTweetConfirm.Title" = "트윗을 지웁니다.";
+"Common.Alerts.FailedToAddListMember.Message" = "다시 해보세요.";
+"Common.Alerts.FailedToAddListMember.Title" = "Failed to Add List Member";
 "Common.Alerts.FailedToBlockUser.Message" = "다시 해보세요.";
 "Common.Alerts.FailedToBlockUser.Title" = "%@를 차단하지 못했습니다.";
+"Common.Alerts.FailedToDeleteList.Message" = "다시 해보세요.";
+"Common.Alerts.FailedToDeleteList.Title" = "Failed to Delete List";
 "Common.Alerts.FailedToDeleteToot.Message" = "다시 해보세요.";
 "Common.Alerts.FailedToDeleteToot.Title" = "툿을 지우지 못했습니다.";
 "Common.Alerts.FailedToDeleteTweet.Message" = "다시 해보세요.";
@@ -86,6 +90,8 @@
 "Common.Alerts.FailedToLoginTimeout.Title" = "로그인 실패";
 "Common.Alerts.FailedToMuteUser.Message" = "다시 해보세요.";
 "Common.Alerts.FailedToMuteUser.Title" = "%@를 뮤트하지 못했습니다.";
+"Common.Alerts.FailedToRemoveListMember.Message" = "다시 해보세요.";
+"Common.Alerts.FailedToRemoveListMember.Title" = "Failed to Remove List Member";
 "Common.Alerts.FailedToReportAndBlockUser.Message" = "다시 해보세요.";
 "Common.Alerts.FailedToReportAndBlockUser.Title" = "%@를 신고하고 차단하지 못했습니다.";
 "Common.Alerts.FailedToReportUser.Message" = "다시 해보세요.";
@@ -100,6 +106,9 @@
 "Common.Alerts.FailedToUnmuteUser.Title" = "%@의 뮤트를 풀지 못했습니다.";
 "Common.Alerts.FollowingRequestSent.Title" = "팔로우 요청을 보냈습니다.";
 "Common.Alerts.FollowingSuccess.Title" = "팔로우했습니다.";
+"Common.Alerts.ListDeleted.Message" = "다시 해보세요.";
+"Common.Alerts.ListDeleted.Title" = "List Deleted";
+"Common.Alerts.ListMemberRemoved.Title" = "List Member Removed";
 "Common.Alerts.MediaSaveFail.Message" = "다시 해보세요.";
 "Common.Alerts.MediaSaveFail.Title" = "저장에 실패했습니다";
 "Common.Alerts.MediaSaved.Title" = "저장했습니다";
@@ -208,6 +217,9 @@
 "Common.Controls.Status.YouBoosted" = "내가 부스트했습니다.";
 "Common.Controls.Status.YouRetweeted" = "내가 리트윗했습니다.";
 "Common.Controls.Timeline.LoadMore" = "더 불러오기";
+"Common.Controls.User.Actions.AddRemoveFromLists" = "Add/remove from Lists";
+"Common.Controls.User.Actions.ViewListed" = "View Listed";
+"Common.Controls.User.Actions.ViewLists" = "View Lists";
 "Common.Countable.Like.Multiple" = "%@개 좋아요";
 "Common.Countable.Like.Single" = "%@개 좋아요";
 "Common.Countable.List.Multiple" = "%@개 리스트";
@@ -312,6 +324,7 @@
 "Scene.ListsModify.Name" = "이름";
 "Scene.ListsModify.Private" = "비공개";
 "Scene.ListsUsers.Add.Search" = "사람 찾기";
+"Scene.ListsUsers.Add.SearchWithinPeopleYouFollow" = "Search within people you follow";
 "Scene.ListsUsers.Add.Title" = "멤버 추가";
 "Scene.ListsUsers.MenuActions.Add" = "새로 만들기";
 "Scene.ListsUsers.MenuActions.Remove" = "지우기";

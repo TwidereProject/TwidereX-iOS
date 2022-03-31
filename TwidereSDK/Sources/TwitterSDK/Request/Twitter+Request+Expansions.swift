@@ -18,6 +18,7 @@ extension Twitter.Request {
         case referencedTweetsID = "referenced_tweets.id"
         case referencedTweetsIDAuthorID = "referenced_tweets.id.author_id"
         case pinnedTweetID = "pinned_tweet_id"
+        case ownerID = "owner_id"
     }
 }
 

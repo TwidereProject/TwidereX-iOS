@@ -118,7 +118,7 @@ extension TwitterAuthenticationOptionViewModel: UITableViewDataSource {
         let option = sections[indexPath.section].options[indexPath.row]
         switch option {
         case .consumerKeyTextField:
-            let _cell = tableView.dequeueReusableCell(withIdentifier: String(describing: ListTextFieldTableViewCell.self), for: indexPath) as! ListTextFieldTableViewCell
+            let _cell = tableView.dequeueReusableCell(withIdentifier: String(describing: TableViewTextFieldTableViewCell.self), for: indexPath) as! TableViewTextFieldTableViewCell
             _cell.textField.placeholder = option.placeholder
             _cell.textField.text = consumerKey.value
             _cell.input
@@ -127,7 +127,7 @@ extension TwitterAuthenticationOptionViewModel: UITableViewDataSource {
                 .store(in: &_cell.disposeBag)
             cell = _cell
         case .consumerSecretTextField:
-            let _cell = tableView.dequeueReusableCell(withIdentifier: String(describing: ListTextFieldTableViewCell.self), for: indexPath) as! ListTextFieldTableViewCell
+            let _cell = tableView.dequeueReusableCell(withIdentifier: String(describing: TableViewTextFieldTableViewCell.self), for: indexPath) as! TableViewTextFieldTableViewCell
             _cell.textField.placeholder = option.placeholder
             _cell.textField.text = consumerSecret.value
             _cell.input

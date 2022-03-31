@@ -55,7 +55,7 @@ extension SearchUserViewModel.State {
     class Loading: SearchUserViewModel.State {
         let logger = Logger(subsystem: "SearchUserViewModel.State", category: "StateMachine")
         
-        var nextInput: UserListFetchViewModel.SearchInput?
+        var nextInput: UserFetchViewModel.Search.Input?
         
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {
             return stateClass == Fail.self
@@ -83,16 +83,22 @@ extension SearchUserViewModel.State {
                 nextInput = {
                     switch authenticationContext {
                     case .twitter(let authenticationContext):
-                        return UserListFetchViewModel.SearchInput.twitter(.init(
+                        return UserFetchViewModel.Search.Input.twitter(.init(
                             authenticationContext: authenticationContext,
                             searchText: searchText,
                             page: 1,    // count from 1
                             count: 50
                         ))
                     case .mastodon(let authenticationContext):
-                        return UserListFetchViewModel.SearchInput.mastodon(.init(
+                        return UserFetchViewModel.Search.Input.mastodon(.init(
                             authenticationContext: authenticationContext,
                             searchText: searchText,
+                            following: {
+                                switch viewModel.kind {
+                                case .friendship:       return false
+                                case .listMember:       return true
+                                }
+                            }(),
                             offset: 0,
                             count: 50)
                         )
@@ -109,8 +115,8 @@ extension SearchUserViewModel.State {
                 do {
                     logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): fetch…")
                     
-                    let output = try await UserListFetchViewModel.search(
-                        context: viewModel.context,
+                    let output = try await UserFetchViewModel.Search.timeline(
+                        api: viewModel.context.apiService,
                         input: input
                     )
                     
@@ -143,66 +149,6 @@ extension SearchUserViewModel.State {
                     await enter(state: Fail.self)
                 }
             }   // end currentTask = Task { … }
-//            if searchText != previoursSearchText {
-//                page = 1
-//                previoursSearchText = searchText
-//                viewModel.searchTwitterUserIDs.value = []
-//                viewModel.items.value = []
-//            }
-//
-//            let count = 20
-//            viewModel.context.apiService.userSearch(
-//                searchText: searchText,
-//                page: page,
-//                count: count,
-//                twitterAuthenticationBox: twitterAuthenticationBox
-//            )
-//            .receive(on: DispatchQueue.main)
-//            .sink { [weak self] completion in
-//                guard let self = self else { return }
-//                switch completion {
-//                case .failure(let error):
-//                    os_log("%{public}s[%{public}ld], %{public}s: search %s fail: %s", ((#file as NSString).lastPathComponent), #line, #function, searchText, error.localizedDescription)
-//                    debugPrint(error)
-//                    self.error = error
-//                    stateMachine.enter(Fail.self)
-//                case .finished:
-//                    break
-//                }
-//            } receiveValue: { [weak self] response in
-//                guard let self = self else { return }
-//                let entities = response.value
-//                self.page += 1
-//                os_log("%{public}s[%{public}ld], %{public}s: search %s success. results count %ld", ((#file as NSString).lastPathComponent), #line, #function, searchText, entities.count)
-//
-//                guard entities.count > 0 else {
-//                    stateMachine.enter(NoMore.self)
-//                    return
-//                }
-//
-//                let newTwitterUsers = entities
-//                let oldTwitterUserIDs = viewModel.searchTwitterUserIDs.value
-//
-//                var twitterUserIDs: [Twitter.Entity.Tweet.ID] = []
-//                for twitterUserID in oldTwitterUserIDs {
-//                    guard !twitterUserIDs.contains(twitterUserID) else { continue }
-//                    twitterUserIDs.append(twitterUserID)
-//                }
-//
-//                for twitterUser in newTwitterUsers {
-//                    guard !twitterUserIDs.contains(twitterUser.idStr) else { continue }
-//                    twitterUserIDs.append(twitterUser.idStr)
-//                }
-//
-//                viewModel.searchTwitterUserIDs.value = twitterUserIDs
-//
-//                if entities.count < count {
-//                    stateMachine.enter(NoMore.self)
-//                } else {
-//                    stateMachine.enter(Idle.self)
-//                }
-//            }
-//            .store(in: &viewModel.disposeBag)
         }
         
         @MainActor

@@ -8,8 +8,11 @@
 
 import AVKit
 import UIKit
+import Combine
 
 public final class MediaView: UIView {
+    
+    var disposeBag = Set<AnyCancellable>()
     
     public static let cornerRadius: CGFloat = 8
     public static let durationFormatter: DateComponentsFormatter = {
@@ -99,7 +102,7 @@ extension MediaView {
         
         switch configuration {
         case .image(let info):
-            configure(image: info)
+            configure(image: info, containerView: container)
         case .gif(let info):
             configure(gif: info)
         case .video(let info):
@@ -107,14 +110,17 @@ extension MediaView {
         }
     }
     
-    private func configure(image info: Configuration.ImageInfo) {
+    private func configure(
+        image info: Configuration.ImageInfo,
+        containerView: UIView
+    ) {
         imageView.translatesAutoresizingMaskIntoConstraints = false
-        container.addSubview(imageView)
+        containerView.addSubview(imageView)
         NSLayoutConstraint.activate([
-            imageView.topAnchor.constraint(equalTo: container.topAnchor),
-            imageView.leadingAnchor.constraint(equalTo: container.leadingAnchor),
-            imageView.trailingAnchor.constraint(equalTo: container.trailingAnchor),
-            imageView.bottomAnchor.constraint(equalTo: container.bottomAnchor),
+            imageView.topAnchor.constraint(equalTo: containerView.topAnchor),
+            imageView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor),
+            imageView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor),
+            imageView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor),
         ])
         
         let placeholder = UIImage.placeholder(color: .systemGray6)
@@ -142,6 +148,12 @@ extension MediaView {
         
         assert(playerViewController.contentOverlayView != nil)
         if let contentOverlayView = playerViewController.contentOverlayView {
+            let imageInfo = Configuration.ImageInfo(
+                aspectRadio: info.aspectRadio,
+                assetURL: info.previewURL
+            )
+            configure(image: imageInfo, containerView: contentOverlayView)
+            
             indicatorBlurEffectView.translatesAutoresizingMaskIntoConstraints = false
             contentOverlayView.addSubview(indicatorBlurEffectView)
             NSLayoutConstraint.activate([
@@ -157,6 +169,14 @@ extension MediaView {
         playerViewController.player = player
         playerViewController.showsPlaybackControls = false
         
+        playerViewController.publisher(for: \.isReadyForDisplay)
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] isReadyForDisplay in
+                guard let self = self else { return }
+                self.imageView.isHidden = isReadyForDisplay
+            }
+            .store(in: &disposeBag)
+        
         // auto play for GIF
         player.play()
     }
@@ -166,7 +186,7 @@ extension MediaView {
             aspectRadio: info.aspectRadio,
             assetURL: info.previewURL
         )
-        configure(image: imageInfo)
+        configure(image: imageInfo, containerView: container)
         
         indicatorBlurEffectView.translatesAutoresizingMaskIntoConstraints = false
         imageView.addSubview(indicatorBlurEffectView)
@@ -222,6 +242,8 @@ extension MediaView {
         
         // reset configuration
         configuration = nil
+        
+        disposeBag.removeAll()
     }
 }
 

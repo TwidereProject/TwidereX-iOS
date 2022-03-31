@@ -27,9 +27,9 @@ extension DrawerSidebarViewModel {
                 snapshot.appendSections([.main])
                 switch authenticationContext {
                 case .twitter:
-                    break
+                    snapshot.appendItems([.likes, .lists], toSection: .main)
                 case .mastodon:
-                    snapshot.appendItems([.local, .federated], toSection: .main)
+                    snapshot.appendItems([.local, .federated, .likes, .lists], toSection: .main)
                 case .none:
                     break
                 }

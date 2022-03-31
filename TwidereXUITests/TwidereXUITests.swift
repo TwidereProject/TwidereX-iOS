@@ -7,6 +7,7 @@
 
 import XCTest
 
+@MainActor
 class TwidereXUITests: XCTestCase {
 
     override func setUpWithError() throws {
@@ -17,12 +18,19 @@ class TwidereXUITests: XCTestCase {
 
         // In UI tests it’s important to set the initial state - such as interface orientation - required for your tests before they run. The setUp method is a good place to do this.
     }
+    
+    override class func tearDown() {
+        super.tearDown()
+        
+        let app = XCUIApplication()
+        print(app.debugDescription)
+    }
 
     override func tearDownWithError() throws {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
     }
 
-    func testExample() throws {
+    func testSmoke() throws {
         // UI tests must launch the application that they test.
         let app = XCUIApplication()
         app.launch()
@@ -37,4 +45,8 @@ class TwidereXUITests: XCTestCase {
             XCUIApplication().launch()
         }
     }
+}
+
+extension UInt64 {
+    static let second: UInt64 = 1_000_000_000
 }

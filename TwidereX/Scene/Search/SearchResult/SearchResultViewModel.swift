@@ -116,7 +116,7 @@ extension SearchResultViewModel {
             
         case .user:
             let _viewController = SearchUserViewController()
-            _viewController.viewModel = SearchUserViewModel(context: context)
+            _viewController.viewModel = SearchUserViewModel(context: context, kind: .friendship)
             $searchText.assign(to: &_viewController.viewModel.$searchText)
             $userIdentifier.assign(to: &_viewController.viewModel.$userIdentifier)
             viewController = _viewController
