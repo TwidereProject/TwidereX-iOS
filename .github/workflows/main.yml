@@ -22,6 +22,12 @@ jobs:
       - name: force Xcode 13.2
         run: sudo xcode-select -switch /Applications/Xcode_13.2.app
       - name: setup
+        env: 
+            APP_SECRET: ${{ secrets.APP_SECRET }}
+            CONSUMER_KEY: ${{ secrets.CONSUMER_KEY }}
+            CONSUMER_KEY_SECRET: ${{ secrets.CONSUMER_KEY_SECRET }}
+            HOST_KEY_PUBLIC: ${{ secrets.HOST_KEY_PUBLIC }}
+            OAUTH_ENDPOINT: ${{ secrets.OAUTH_ENDPOINT }}
         run: exec ./.github/scripts/setup.sh
       - name: build
         run: exec ./.github/scripts/build-debug.sh
