@@ -16,6 +16,81 @@ import MastodonSDK
 
 extension APIService {
     
+    public struct PublishStatusContext {
+        public let content: String
+        public let mastodonVisibility: Mastodon.Entity.Status.Visibility?
+        public let idempotencyKey: String?
+        
+        public init(
+            content: String,
+            mastodonVisibility: Mastodon.Entity.Status.Visibility?,
+            idempotencyKey: String?
+        ) {
+            self.content = content
+            self.mastodonVisibility = mastodonVisibility
+            self.idempotencyKey = idempotencyKey
+        }
+    }
+    
+    public struct PublishStatusResponse {
+        public let id: String
+        public let authorName: String
+        public let authorUsername: String
+        public let authorAvatarURL: URL?
+        public let statusURL: URL
+    }
+
+    public func publishStatus(
+        context: PublishStatusContext,
+        authenticationContext: AuthenticationContext
+    ) async throws -> PublishStatusResponse {
+        switch authenticationContext {
+        case .twitter(let authenticationContext):
+            let response = try await publishTwitterStatus(
+                content: context.content,
+                mediaIDs: nil,
+                placeID: nil,
+                replyTo: nil,
+                excludeReplyUserIDs: nil,
+                twitterAuthenticationContext: authenticationContext
+            )
+            return .init(
+                id: response.value.idStr,
+                authorName: response.value.user.name,
+                authorUsername: response.value.user.screenName,
+                authorAvatarURL: response.value.user.avatarImageURL(),
+                statusURL: response.value.statusURL
+            )
+        case .mastodon(let authenticationContext):
+            let response = try await publishMastodonStatus(
+                query: Mastodon.API.Status.PublishStatusQuery(
+                    status: context.content,
+                    mediaIDs: nil,
+                    pollOptions: nil,
+                    pollExpiresIn: nil,
+                    pollMultiple: nil,
+                    inReplyToID: nil,
+                    sensitive: nil,
+                    spoilerText: nil,
+                    visibility: context.mastodonVisibility,
+                    idempotencyKey: context.idempotencyKey
+                ),
+                mastodonAuthenticationContext: authenticationContext
+            )
+            return .init(
+                id: response.value.id,
+                authorName: response.value.account.name,
+                authorUsername: response.value.account.acctWithDomain(domain: authenticationContext.domain),
+                authorAvatarURL: URL(string: response.value.account.avatar),
+                statusURL: URL(string: response.value.url ?? response.value.uri)!
+            )
+        }   // end switch
+    }   // end func
+    
+}
+
+extension APIService {
+    
     public func publishTwitterStatus(
         content: String,
         mediaIDs: [String]?,
@@ -69,7 +144,6 @@ extension APIService {
         let response = try await Mastodon.API.Status.publish(
             session: session,
             domain: domain,
-            idempotencyKey: nil,    // TODO:
             query: query,
             authorization: authorization
         )

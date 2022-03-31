@@ -37,6 +37,7 @@
 	<key>NSUserActivityTypes</key>
 	<array>
 		<string>IntentIntent</string>
+		<string>PublishPostIntent</string>
 		<string>SwitchAccountIntent</string>
 	</array>
 	<key>UIApplicationSceneManifest</key>

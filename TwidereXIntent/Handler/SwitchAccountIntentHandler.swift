@@ -42,40 +42,8 @@ extension SwitchAccountIntentHandler: SwitchAccountIntentHandling {
     
     
     func provideAccountOptionsCollection(for intent: SwitchAccountIntent) async throws -> INObjectCollection<Account> {
-        let accounts = try await fetchAccounts()
+        let accounts = try await Account.fetch(in: managedObjectContext)
         return .init(items: accounts)
-    }
-    
-}
-
-
-extension SwitchAccountIntentHandler {
-        
-    @MainActor
-    func fetchAccounts() async throws -> [Account] {
-        let managedObjectContext = managedObjectContext
-        
-        // get accounts
-        let accounts: [Account] = try await managedObjectContext.perform {
-            let request = AuthenticationIndex.sortedFetchRequest
-            let results = try managedObjectContext.fetch(request)
-            
-            let accounts = results.compactMap { authenticationIndex -> Account? in
-                guard let object = authenticationIndex.account else { return nil }
-                let account = Account(
-                    identifier: authenticationIndex.identifier.uuidString,
-                    display: object.name,
-                    subtitle: object.username,
-                    image: object.avatarURL.flatMap { INImage(url: $0) }
-                )
-                account.name = object.name
-                account.username = object.username
-                return account
-            }
-            return accounts
-        }   // end managedObjectContext.perform
-
-        return accounts
     }
     
 }

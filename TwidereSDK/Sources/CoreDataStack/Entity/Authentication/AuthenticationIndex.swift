@@ -84,4 +84,8 @@ extension AuthenticationIndex {
         return NSPredicate(format: "%K == %@", #keyPath(AuthenticationIndex.identifier), identifier as NSUUID)
     }
     
+    public static func predicate(identifiers: [UUID]) -> NSPredicate {
+        return NSPredicate(format: "%K IN %@", #keyPath(AuthenticationIndex.identifier), identifiers as [NSUUID])
+    }
+    
 }

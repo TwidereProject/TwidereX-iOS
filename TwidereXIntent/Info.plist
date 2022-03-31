@@ -12,6 +12,7 @@
 			<array/>
 			<key>IntentsSupported</key>
 			<array>
+				<string>PublishPostIntent</string>
 				<string>SwitchAccountIntent</string>
 			</array>
 		</dict>

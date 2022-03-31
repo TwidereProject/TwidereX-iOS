@@ -32,7 +32,6 @@ extension Mastodon.API.Status {
     public static func publish(
         session: URLSession,
         domain: String,
-        idempotencyKey: String?,
         query: PublishStatusQuery,
         authorization: Mastodon.API.OAuth.Authorization?
     ) async throws -> Mastodon.Response.Content<Mastodon.Entity.Status> {
@@ -42,7 +41,7 @@ extension Mastodon.API.Status {
             query: query,
             authorization: authorization
         )
-        if let idempotencyKey = idempotencyKey {
+        if let idempotencyKey = query.idempotencyKey {
             request.setValue(idempotencyKey, forHTTPHeaderField: "Idempotency-Key")
         }
         let (data, response) = try await session.data(for: request, delegate: nil)
@@ -61,6 +60,7 @@ extension Mastodon.API.Status {
         public let sensitive: Bool?
         public let spoilerText: String?
         public let visibility: Mastodon.Entity.Status.Visibility?
+        public let idempotencyKey: String?
         
         public init(
             status: String?,
@@ -71,7 +71,8 @@ extension Mastodon.API.Status {
             inReplyToID: Mastodon.Entity.Status.ID?,
             sensitive: Bool?,
             spoilerText: String?,
-            visibility: Mastodon.Entity.Status.Visibility?
+            visibility: Mastodon.Entity.Status.Visibility?,
+            idempotencyKey: String?
         ) {
             self.status = status
             self.mediaIDs = mediaIDs
@@ -82,6 +83,7 @@ extension Mastodon.API.Status {
             self.sensitive = sensitive
             self.spoilerText = spoilerText
             self.visibility = visibility
+            self.idempotencyKey = idempotencyKey
         }
         
         var contentType: String? {

@@ -8,7 +8,6 @@
 
 import Intents
 
-
 class IntentHandler: INExtension {
     
     override func handler(for intent: INIntent) -> Any {
@@ -17,6 +16,8 @@ class IntentHandler: INExtension {
         switch intent {
         case is SwitchAccountIntent:
             return SwitchAccountIntentHandler()
+        case is PublishPostIntent:
+            return PublishPostIntentHandler()
         default:
             return self
         }

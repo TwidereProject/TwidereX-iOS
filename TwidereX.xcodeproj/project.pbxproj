@@ -148,6 +148,9 @@
 		DB578CCD254C0BDB00745336 /* UserBriefInfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB578CCC254C0BDB00745336 /* UserBriefInfoView.swift */; };
 		DB581A0127D89A3700C35B91 /* DataSourceFacade+LIst.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB581A0027D89A3700C35B91 /* DataSourceFacade+LIst.swift */; };
 		DB5A2288255B9155006CA5B2 /* AccountListViewModel+Diffable.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB5A2287255B9155006CA5B2 /* AccountListViewModel+Diffable.swift */; };
+		DB5BF12327F5A549002A3EF5 /* PublishPostIntentHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB5BF12227F5A549002A3EF5 /* PublishPostIntentHandler.swift */; };
+		DB5BF12527F5A5C1002A3EF5 /* Account+Fetch.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB5BF12427F5A5C1002A3EF5 /* Account+Fetch.swift */; };
+		DB5BF12D27F5BAD5002A3EF5 /* AuthenticationIndex+Fetch.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB5BF12C27F5BAD5002A3EF5 /* AuthenticationIndex+Fetch.swift */; };
 		DB5FB00F2727FCB7006520FA /* SearchUserViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB67616B254C021A006C6798 /* SearchUserViewController.swift */; };
 		DB5FB0102727FCC5006520FA /* SearchUserViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB67617A254C0279006C6798 /* SearchUserViewModel.swift */; };
 		DB5FB0112727FD02006520FA /* SearchUserViewModel+Diffable.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBDDE72D254C084A0057CF8E /* SearchUserViewModel+Diffable.swift */; };
@@ -621,6 +624,9 @@
 		DB581A0027D89A3700C35B91 /* DataSourceFacade+LIst.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DataSourceFacade+LIst.swift"; sourceTree = "<group>"; };
 		DB5918F6255E81FB00B20F6F /* MediaPreviewViewController+DataSourceProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MediaPreviewViewController+DataSourceProvider.swift"; sourceTree = "<group>"; };
 		DB5A2287255B9155006CA5B2 /* AccountListViewModel+Diffable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AccountListViewModel+Diffable.swift"; sourceTree = "<group>"; };
+		DB5BF12227F5A549002A3EF5 /* PublishPostIntentHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublishPostIntentHandler.swift; sourceTree = "<group>"; };
+		DB5BF12427F5A5C1002A3EF5 /* Account+Fetch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Account+Fetch.swift"; sourceTree = "<group>"; };
+		DB5BF12C27F5BAD5002A3EF5 /* AuthenticationIndex+Fetch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AuthenticationIndex+Fetch.swift"; sourceTree = "<group>"; };
 		DB5FD9B226D8D94600CF5439 /* StatusTableViewCell+ViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "StatusTableViewCell+ViewModel.swift"; sourceTree = "<group>"; };
 		DB5FD9B626D8EFF700CF5439 /* UserBriefInfoView+ViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UserBriefInfoView+ViewModel.swift"; sourceTree = "<group>"; };
 		DB60C1A82762394E00628235 /* AuthenticationServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AuthenticationServices.framework; path = System/Library/Frameworks/AuthenticationServices.framework; sourceTree = SDKROOT; };
@@ -1354,6 +1360,24 @@
 				DB76A64C275DFA0600A50673 /* TwitterStatusThreadReplyViewModel+State.swift */,
 			);
 			path = Twitter;
+			sourceTree = "<group>";
+		};
+		DB5BF12627F5A5CE002A3EF5 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				DB5BF12427F5A5C1002A3EF5 /* Account+Fetch.swift */,
+				DB5BF12C27F5BAD5002A3EF5 /* AuthenticationIndex+Fetch.swift */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		DB5BF12727F5A5D3002A3EF5 /* Handler */ = {
+			isa = PBXGroup;
+			children = (
+				DBFDCE4F27F4515E00BE99E3 /* SwitchAccountIntentHandler.swift */,
+				DB5BF12227F5A549002A3EF5 /* PublishPostIntentHandler.swift */,
+			);
+			path = Handler;
 			sourceTree = "<group>";
 		};
 		DB676105254AD4B1006C6798 /* CollectionViewCell */ = {
@@ -2254,7 +2278,8 @@
 				DBFDCE4527F450FC00BE99E3 /* Info.plist */,
 				DBFDCE4C27F4510A00BE99E3 /* Intents.intentdefinition */,
 				DBFDCE4327F450FC00BE99E3 /* IntentHandler.swift */,
-				DBFDCE4F27F4515E00BE99E3 /* SwitchAccountIntentHandler.swift */,
+				DB5BF12627F5A5CE002A3EF5 /* Model */,
+				DB5BF12727F5A5D3002A3EF5 /* Handler */,
 			);
 			path = TwidereXIntent;
 			sourceTree = "<group>";
@@ -3121,8 +3146,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DB5BF12527F5A5C1002A3EF5 /* Account+Fetch.swift in Sources */,
+				DB5BF12D27F5BAD5002A3EF5 /* AuthenticationIndex+Fetch.swift in Sources */,
 				DBFDCE5027F4515E00BE99E3 /* SwitchAccountIntentHandler.swift in Sources */,
 				DBFDCE4D27F4510A00BE99E3 /* Intents.intentdefinition in Sources */,
+				DB5BF12327F5A549002A3EF5 /* PublishPostIntentHandler.swift in Sources */,
 				DBFDCE4427F450FC00BE99E3 /* IntentHandler.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
