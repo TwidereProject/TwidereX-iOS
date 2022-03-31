@@ -21,7 +21,6 @@ Before clone and install the dependency. You need [apply](https://developer.twit
 All you need
 
 - Twitter app `API key` and `API key secret`
-- Firebase [configuration](https://firebase.google.com/docs/ios/setup) file
 - The latest Xcode from the App Store
 - [CocoaPods](https://cocoapods.org)
 - [cocoapods-keys](https://github.com/orta/cocoapods-keys)
