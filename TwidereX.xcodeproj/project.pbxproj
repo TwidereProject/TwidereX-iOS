@@ -854,6 +854,7 @@
 		DBF739D0275C3EF300BF6AB5 /* DataSourceFacade+Report.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DataSourceFacade+Report.swift"; sourceTree = "<group>"; };
 		DBF81C7227F688DF00004A56 /* eu */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = eu; path = eu.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		DBF81C7327F68AA800004A56 /* tr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = tr; path = tr.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		DBF81C7A27F696E000004A56 /* gl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = gl; path = gl.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		DBFA4A1025A5640E00D51703 /* ProfileViewController+UserProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ProfileViewController+UserProvider.swift"; sourceTree = "<group>"; };
 		DBFA4A1F25A5924C00D51703 /* TimelineViewModel+Diffable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TimelineViewModel+Diffable.swift"; sourceTree = "<group>"; };
 		DBFA4A2A25A5A69100D51703 /* SearchTimelineViewModel+Diffable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SearchTimelineViewModel+Diffable.swift"; sourceTree = "<group>"; };
@@ -2515,6 +2516,7 @@
 				es,
 				eu,
 				tr,
+				gl,
 			);
 			mainGroup = DBDA8E1524FCF8A3006750DC;
 			packageReferences = (
@@ -3227,6 +3229,7 @@
 				DBD8B54125E3C474006299ED /* es */,
 				DBF81C7227F688DF00004A56 /* eu */,
 				DBF81C7327F68AA800004A56 /* tr */,
+				DBF81C7A27F696E000004A56 /* gl */,
 			);
 			name = InfoPlist.strings;
 			sourceTree = "<group>";

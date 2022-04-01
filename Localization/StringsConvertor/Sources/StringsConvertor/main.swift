@@ -57,6 +57,7 @@ class Helper {
         case "en_US":   return "en"
         case "zh_CN":   return "zh-Hans"    // Chinese Simplified
         case "ja_JP":   return "ja"         // Japanese
+        case "gl_ES":   return "gl"         // Galician
         case "de_DE":   return "de"         // German
         case "pt_BR":   return "pt-BR"      // Brazilian Portuguese
         case "ca_ES":   return "ca"         // Catalan

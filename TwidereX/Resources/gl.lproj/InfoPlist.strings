@@ -1,0 +1,3 @@
+"NSCameraUsageDescription" = "Usado para tirar foto para chiar";
+"NSLocationWhenInUseUsageDescription" = "Usado para enviar chío con localización";
+"NSPhotoLibraryAddUsageDescription" = "Usado para gardar foto na Galería";
