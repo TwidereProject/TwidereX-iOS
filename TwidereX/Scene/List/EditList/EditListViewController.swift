@@ -61,7 +61,7 @@ extension EditListViewController {
         navigationItem.leftBarButtonItem?.tintColor = .label
         navigationItem.rightBarButtonItem = doneBarButtonItem
                 
-        let hostingViewController = UIHostingController(rootView: createListView.environmentObject(context))
+        let hostingViewController = UIHostingController(rootView: createListView)
         addChild(hostingViewController)
         hostingViewController.view.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(hostingViewController.view)

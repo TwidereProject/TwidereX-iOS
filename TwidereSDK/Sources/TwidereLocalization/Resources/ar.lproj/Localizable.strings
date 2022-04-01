@@ -369,6 +369,7 @@
 "Scene.Settings.About.Title" = "حول";
 "Scene.Settings.About.Version" = "النسخة %@";
 "Scene.Settings.Appearance.AmoledOptimizedMode" = "الوضع المحسّن لـ AMOLED";
+"Scene.Settings.Appearance.AppIcon" = "App Icon";
 "Scene.Settings.Appearance.HighlightColor" = "لون إبراز النص";
 "Scene.Settings.Appearance.PickColor" = "اختر لون";
 "Scene.Settings.Appearance.ScrollingTimeline.AppBar" = "إخفاء شريط التطبيق أثناء التمرير";
@@ -377,12 +378,18 @@
 "Scene.Settings.Appearance.SectionHeader.ScrollingTimeline" = "التمرير في الخط الزمني";
 "Scene.Settings.Appearance.SectionHeader.TabPosition" = "موضع اللسان";
 "Scene.Settings.Appearance.SectionHeader.Theme" = "السمة";
+"Scene.Settings.Appearance.SectionHeader.Translation" = "Translation";
 "Scene.Settings.Appearance.TabPosition.Bottom" = "في الأسفل";
 "Scene.Settings.Appearance.TabPosition.Top" = "في الأعلى";
 "Scene.Settings.Appearance.Theme.Auto" = "تلقائي";
 "Scene.Settings.Appearance.Theme.Dark" = "مظلم";
 "Scene.Settings.Appearance.Theme.Light" = "فاتح";
 "Scene.Settings.Appearance.Title" = "المظهر";
+"Scene.Settings.Appearance.Translation.Always" = "دائماً";
+"Scene.Settings.Appearance.Translation.Auto" = "تلقائي";
+"Scene.Settings.Appearance.Translation.Off" = "إيقاف";
+"Scene.Settings.Appearance.Translation.Service" = "Service";
+"Scene.Settings.Appearance.Translation.TranslateButton" = "Translate button";
 "Scene.Settings.Display.DateFormat.Absolute" = "مُطلق";
 "Scene.Settings.Display.DateFormat.Relative" = "نسبي";
 "Scene.Settings.Display.Media.Always" = "دائماً";

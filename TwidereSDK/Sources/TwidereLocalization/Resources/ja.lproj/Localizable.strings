@@ -369,6 +369,7 @@
 "Scene.Settings.About.Title" = "情報";
 "Scene.Settings.About.Version" = "Ver %@";
 "Scene.Settings.Appearance.AmoledOptimizedMode" = "AMOLED 最適化モード";
+"Scene.Settings.Appearance.AppIcon" = "App Icon";
 "Scene.Settings.Appearance.HighlightColor" = "ハイライト色";
 "Scene.Settings.Appearance.PickColor" = "色を選択";
 "Scene.Settings.Appearance.ScrollingTimeline.AppBar" = "スクロール時にアプリバーを隠す";
@@ -377,12 +378,18 @@
 "Scene.Settings.Appearance.SectionHeader.ScrollingTimeline" = "タイムラインのスクロール";
 "Scene.Settings.Appearance.SectionHeader.TabPosition" = "タブの位置";
 "Scene.Settings.Appearance.SectionHeader.Theme" = "テーマ";
+"Scene.Settings.Appearance.SectionHeader.Translation" = "Translation";
 "Scene.Settings.Appearance.TabPosition.Bottom" = "下";
 "Scene.Settings.Appearance.TabPosition.Top" = "上";
 "Scene.Settings.Appearance.Theme.Auto" = "自動";
 "Scene.Settings.Appearance.Theme.Dark" = "ダーク";
 "Scene.Settings.Appearance.Theme.Light" = "ライト";
 "Scene.Settings.Appearance.Title" = "外観";
+"Scene.Settings.Appearance.Translation.Always" = "常に";
+"Scene.Settings.Appearance.Translation.Auto" = "自動";
+"Scene.Settings.Appearance.Translation.Off" = "オフ";
+"Scene.Settings.Appearance.Translation.Service" = "Service";
+"Scene.Settings.Appearance.Translation.TranslateButton" = "Translate button";
 "Scene.Settings.Display.DateFormat.Absolute" = "絶対";
 "Scene.Settings.Display.DateFormat.Relative" = "相対";
 "Scene.Settings.Display.Media.Always" = "常に";

@@ -369,6 +369,7 @@
 "Scene.Settings.About.Title" = "关于";
 "Scene.Settings.About.Version" = "版本 %@";
 "Scene.Settings.Appearance.AmoledOptimizedMode" = "AMOLED 优化模式";
+"Scene.Settings.Appearance.AppIcon" = "应用图标";
 "Scene.Settings.Appearance.HighlightColor" = "高亮颜色";
 "Scene.Settings.Appearance.PickColor" = "选择颜色";
 "Scene.Settings.Appearance.ScrollingTimeline.AppBar" = "滚动时隐藏应用栏";
@@ -377,12 +378,18 @@
 "Scene.Settings.Appearance.SectionHeader.ScrollingTimeline" = "滚动时间线";
 "Scene.Settings.Appearance.SectionHeader.TabPosition" = "标签位置";
 "Scene.Settings.Appearance.SectionHeader.Theme" = "主题";
+"Scene.Settings.Appearance.SectionHeader.Translation" = "翻译";
 "Scene.Settings.Appearance.TabPosition.Bottom" = "底端";
 "Scene.Settings.Appearance.TabPosition.Top" = "顶端";
 "Scene.Settings.Appearance.Theme.Auto" = "自动";
 "Scene.Settings.Appearance.Theme.Dark" = "深色";
 "Scene.Settings.Appearance.Theme.Light" = "亮色";
 "Scene.Settings.Appearance.Title" = "外观";
+"Scene.Settings.Appearance.Translation.Always" = "总是";
+"Scene.Settings.Appearance.Translation.Auto" = "自动";
+"Scene.Settings.Appearance.Translation.Off" = "关闭";
+"Scene.Settings.Appearance.Translation.Service" = "服务";
+"Scene.Settings.Appearance.Translation.TranslateButton" = "翻译按钮";
 "Scene.Settings.Display.DateFormat.Absolute" = "绝对的";
 "Scene.Settings.Display.DateFormat.Relative" = "相对的";
 "Scene.Settings.Display.Media.Always" = "总是";
