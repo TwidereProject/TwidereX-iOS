@@ -21,6 +21,9 @@ public final class CoreDataStack {
     private var disposeBag = Set<AnyCancellable>()
     
     private(set) var storeDescriptions: [NSPersistentStoreDescription]
+    
+    // output
+    @Published public var didFinishLoad = false
         
     /// A persistent history token used for fetching transactions from the store.
     private var lastHistoryToken: NSPersistentHistoryToken?
@@ -91,9 +94,11 @@ public final class CoreDataStack {
          error conditions that could cause the creation of the store to fail.
          */
         let container = CoreDataStack.persistentContainer()
-        configure(persistentContainer: container, storeDescriptions: storeDescriptions)
-        load(persistentContainer: container)
-
+        CoreDataStack.configure(persistentContainer: container, storeDescriptions: storeDescriptions)
+        CoreDataStack.load(persistentContainer: container) { [weak self] in
+            guard let self = self else { return }
+            self.didFinishLoad = true
+        }
         return container
     }()
 
@@ -107,11 +112,11 @@ public final class CoreDataStack {
         return container
     }
     
-    private func configure(persistentContainer container: NSPersistentContainer, storeDescriptions: [NSPersistentStoreDescription]) {
+    static func configure(persistentContainer container: NSPersistentContainer, storeDescriptions: [NSPersistentStoreDescription]) {
         container.persistentStoreDescriptions = storeDescriptions
     }
     
-    private func load(persistentContainer container: NSPersistentContainer) {
+    static func load(persistentContainer container: NSPersistentContainer, callback: @escaping () -> Void) {
         container.loadPersistentStores { storeDescription, error in
             if let error = error as NSError? {
                 // Replace this implementation with code to handle the error appropriately.
@@ -142,10 +147,12 @@ public final class CoreDataStack {
             container.viewContext.mergePolicy = NSMergePolicy.mergeByPropertyObjectTrump
             // set false and use persistent history tracking to merge changes
             container.viewContext.automaticallyMergesChangesFromParent = false
+             
+            callback()
             
             os_log("%{public}s[%{public}ld], %{public}s: %s", ((#file as NSString).lastPathComponent), #line, #function, storeDescription.debugDescription)
         }
-    }
+    }   // end func
     
 }
 
@@ -211,7 +218,10 @@ extension CoreDataStack {
         let oldStoreURL = persistentContainer.persistentStoreCoordinator.url(for: persistentContainer.persistentStoreCoordinator.persistentStores.first!)
         try! persistentContainer.persistentStoreCoordinator.destroyPersistentStore(at: oldStoreURL, ofType: NSSQLiteStoreType, options: nil)
         
-        load(persistentContainer: persistentContainer)
+        CoreDataStack.load(persistentContainer: persistentContainer) { [weak self] in
+            guard let self = self else { return }
+            self.didFinishLoad = true
+        }
     }
 
 }

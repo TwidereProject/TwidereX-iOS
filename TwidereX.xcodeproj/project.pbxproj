@@ -148,6 +148,9 @@
 		DB578CCD254C0BDB00745336 /* UserBriefInfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB578CCC254C0BDB00745336 /* UserBriefInfoView.swift */; };
 		DB581A0127D89A3700C35B91 /* DataSourceFacade+LIst.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB581A0027D89A3700C35B91 /* DataSourceFacade+LIst.swift */; };
 		DB5A2288255B9155006CA5B2 /* AccountListViewModel+Diffable.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB5A2287255B9155006CA5B2 /* AccountListViewModel+Diffable.swift */; };
+		DB5BF12327F5A549002A3EF5 /* PublishPostIntentHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB5BF12227F5A549002A3EF5 /* PublishPostIntentHandler.swift */; };
+		DB5BF12527F5A5C1002A3EF5 /* Account+Fetch.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB5BF12427F5A5C1002A3EF5 /* Account+Fetch.swift */; };
+		DB5BF12D27F5BAD5002A3EF5 /* AuthenticationIndex+Fetch.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB5BF12C27F5BAD5002A3EF5 /* AuthenticationIndex+Fetch.swift */; };
 		DB5FB00F2727FCB7006520FA /* SearchUserViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB67616B254C021A006C6798 /* SearchUserViewController.swift */; };
 		DB5FB0102727FCC5006520FA /* SearchUserViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB67617A254C0279006C6798 /* SearchUserViewModel.swift */; };
 		DB5FB0112727FD02006520FA /* SearchUserViewModel+Diffable.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBDDE72D254C084A0057CF8E /* SearchUserViewModel+Diffable.swift */; };
@@ -353,6 +356,13 @@
 		DBFC0AE9276118240011E99B /* AppShared.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DB94B6BB26C65CB000A2E8A1 /* AppShared.framework */; };
 		DBFC0AEA276118240011E99B /* AppShared.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = DB94B6BB26C65CB000A2E8A1 /* AppShared.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		DBFCC44725667C620016698E /* UILabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBFCC44625667C620016698E /* UILabel.swift */; };
+		DBFDCE4127F450FC00BE99E3 /* Intents.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DBFDCE0327F446BB00BE99E3 /* Intents.framework */; };
+		DBFDCE4427F450FC00BE99E3 /* IntentHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBFDCE4327F450FC00BE99E3 /* IntentHandler.swift */; };
+		DBFDCE4827F450FC00BE99E3 /* TwidereXIntent.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = DBFDCE4027F450FC00BE99E3 /* TwidereXIntent.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		DBFDCE4D27F4510A00BE99E3 /* Intents.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = DBFDCE4C27F4510A00BE99E3 /* Intents.intentdefinition */; };
+		DBFDCE4E27F4510C00BE99E3 /* Intents.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = DBFDCE4C27F4510A00BE99E3 /* Intents.intentdefinition */; settings = {ATTRIBUTES = (codegen, ); }; };
+		DBFDCE5027F4515E00BE99E3 /* SwitchAccountIntentHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBFDCE4F27F4515E00BE99E3 /* SwitchAccountIntentHandler.swift */; };
+		DBFDCE5427F451FC00BE99E3 /* AppShared.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DB94B6BB26C65CB000A2E8A1 /* AppShared.framework */; };
 		E5E65DC85CA480AE17571EFC /* Pods_AppShared.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 84835D7E14A262E389DD4AB3 /* Pods_AppShared.framework */; };
 /* End PBXBuildFile section */
 
@@ -399,6 +409,20 @@
 			remoteGlobalIDString = DBDA8E1D24FCF8A3006750DC;
 			remoteInfo = TwidereX;
 		};
+		DBFDCE4627F450FC00BE99E3 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = DBDA8E1624FCF8A3006750DC /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = DBFDCE3F27F450FC00BE99E3;
+			remoteInfo = TwidereXIntent;
+		};
+		DBFDCE5627F451FC00BE99E3 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = DBDA8E1624FCF8A3006750DC /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = DB94B6BA26C65CB000A2E8A1;
+			remoteInfo = AppShared;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -421,6 +445,17 @@
 				DBFC0AEA276118240011E99B /* AppShared.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		DBFDCE0C27F446BB00BE99E3 /* Embed App Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				DBFDCE4827F450FC00BE99E3 /* TwidereXIntent.appex in Embed App Extensions */,
+			);
+			name = "Embed App Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
@@ -589,6 +624,9 @@
 		DB581A0027D89A3700C35B91 /* DataSourceFacade+LIst.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DataSourceFacade+LIst.swift"; sourceTree = "<group>"; };
 		DB5918F6255E81FB00B20F6F /* MediaPreviewViewController+DataSourceProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MediaPreviewViewController+DataSourceProvider.swift"; sourceTree = "<group>"; };
 		DB5A2287255B9155006CA5B2 /* AccountListViewModel+Diffable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AccountListViewModel+Diffable.swift"; sourceTree = "<group>"; };
+		DB5BF12227F5A549002A3EF5 /* PublishPostIntentHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublishPostIntentHandler.swift; sourceTree = "<group>"; };
+		DB5BF12427F5A5C1002A3EF5 /* Account+Fetch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Account+Fetch.swift"; sourceTree = "<group>"; };
+		DB5BF12C27F5BAD5002A3EF5 /* AuthenticationIndex+Fetch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AuthenticationIndex+Fetch.swift"; sourceTree = "<group>"; };
 		DB5FD9B226D8D94600CF5439 /* StatusTableViewCell+ViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "StatusTableViewCell+ViewModel.swift"; sourceTree = "<group>"; };
 		DB5FD9B626D8EFF700CF5439 /* UserBriefInfoView+ViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UserBriefInfoView+ViewModel.swift"; sourceTree = "<group>"; };
 		DB60C1A82762394E00628235 /* AuthenticationServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AuthenticationServices.framework; path = System/Library/Frameworks/AuthenticationServices.framework; sourceTree = SDKROOT; };
@@ -819,6 +857,14 @@
 		DBFA4A2A25A5A69100D51703 /* SearchTimelineViewModel+Diffable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SearchTimelineViewModel+Diffable.swift"; sourceTree = "<group>"; };
 		DBFCC44625667C620016698E /* UILabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UILabel.swift; sourceTree = "<group>"; };
 		DBFCC46225668B860016698E /* DrawerSidebarPresentationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawerSidebarPresentationController.swift; sourceTree = "<group>"; };
+		DBFDCE0327F446BB00BE99E3 /* Intents.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Intents.framework; path = System/Library/Frameworks/Intents.framework; sourceTree = SDKROOT; };
+		DBFDCE2227F44C7100BE99E3 /* IntentsUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IntentsUI.framework; path = System/Library/Frameworks/IntentsUI.framework; sourceTree = SDKROOT; };
+		DBFDCE4027F450FC00BE99E3 /* TwidereXIntent.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = TwidereXIntent.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		DBFDCE4327F450FC00BE99E3 /* IntentHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntentHandler.swift; sourceTree = "<group>"; };
+		DBFDCE4527F450FC00BE99E3 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		DBFDCE4C27F4510A00BE99E3 /* Intents.intentdefinition */ = {isa = PBXFileReference; lastKnownFileType = file.intentdefinition; path = Intents.intentdefinition; sourceTree = "<group>"; };
+		DBFDCE4F27F4515E00BE99E3 /* SwitchAccountIntentHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwitchAccountIntentHandler.swift; sourceTree = "<group>"; };
+		DBFDCE5127F451A200BE99E3 /* TwidereXIntent.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = TwidereXIntent.entitlements; sourceTree = "<group>"; };
 		F58BC0DB264850C274FDE699 /* Pods-TwidereX.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TwidereX.debug.xcconfig"; path = "Target Support Files/Pods-TwidereX/Pods-TwidereX.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -878,6 +924,15 @@
 			buildActionMask = 2147483647;
 			files = (
 				02F6D779D988FB3601DEB108 /* Pods_TwidereX_TwidereXUITests.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		DBFDCE3D27F450FC00BE99E3 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				DBFDCE5427F451FC00BE99E3 /* AppShared.framework in Frameworks */,
+				DBFDCE4127F450FC00BE99E3 /* Intents.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1305,6 +1360,24 @@
 				DB76A64C275DFA0600A50673 /* TwitterStatusThreadReplyViewModel+State.swift */,
 			);
 			path = Twitter;
+			sourceTree = "<group>";
+		};
+		DB5BF12627F5A5CE002A3EF5 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				DB5BF12427F5A5C1002A3EF5 /* Account+Fetch.swift */,
+				DB5BF12C27F5BAD5002A3EF5 /* AuthenticationIndex+Fetch.swift */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		DB5BF12727F5A5D3002A3EF5 /* Handler */ = {
+			isa = PBXGroup;
+			children = (
+				DBFDCE4F27F4515E00BE99E3 /* SwitchAccountIntentHandler.swift */,
+				DB5BF12227F5A549002A3EF5 /* PublishPostIntentHandler.swift */,
+			);
+			path = Handler;
 			sourceTree = "<group>";
 		};
 		DB676105254AD4B1006C6798 /* CollectionViewCell */ = {
@@ -1904,6 +1977,7 @@
 				DBE76CE92500B29300DEB0FC /* StubMixer */,
 				DB94B6BC26C65CB000A2E8A1 /* AppShared */,
 				DBBBBE5F2744E8CC007ACB4B /* ShareExtension */,
+				DBFDCE4227F450FC00BE99E3 /* TwidereXIntent */,
 				DBDA8E1F24FCF8A3006750DC /* Products */,
 				0ACC0E3D669CFFCB246A2D5B /* Pods */,
 				F30A8D6C372DFF6B5AEEE327 /* Frameworks */,
@@ -1918,6 +1992,7 @@
 				DBDA8E3F24FCF8A7006750DC /* TwidereXUITests.xctest */,
 				DB94B6BB26C65CB000A2E8A1 /* AppShared.framework */,
 				DBBBBE5E2744E8CC007ACB4B /* ShareExtension.appex */,
+				DBFDCE4027F450FC00BE99E3 /* TwidereXIntent.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -2196,6 +2271,19 @@
 			path = Status;
 			sourceTree = "<group>";
 		};
+		DBFDCE4227F450FC00BE99E3 /* TwidereXIntent */ = {
+			isa = PBXGroup;
+			children = (
+				DBFDCE5127F451A200BE99E3 /* TwidereXIntent.entitlements */,
+				DBFDCE4527F450FC00BE99E3 /* Info.plist */,
+				DBFDCE4C27F4510A00BE99E3 /* Intents.intentdefinition */,
+				DBFDCE4327F450FC00BE99E3 /* IntentHandler.swift */,
+				DB5BF12627F5A5CE002A3EF5 /* Model */,
+				DB5BF12727F5A5D3002A3EF5 /* Handler */,
+			);
+			path = TwidereXIntent;
+			sourceTree = "<group>";
+		};
 		F30A8D6C372DFF6B5AEEE327 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -2208,6 +2296,8 @@
 				A4649F84FF237A9295846A9E /* Pods_TwitterAPI_TwitterAPITests.framework */,
 				84835D7E14A262E389DD4AB3 /* Pods_AppShared.framework */,
 				765E576F8ECB1EC1A3937771 /* Pods_CoreDataStack.framework */,
+				DBFDCE0327F446BB00BE99E3 /* Intents.framework */,
+				DBFDCE2227F44C7100BE99E3 /* IntentsUI.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -2284,11 +2374,13 @@
 				DB5632A026DCC52F00FC893F /* ShellScript */,
 				DB51DC3227169C3F00A0D8FB /* ShellScript */,
 				DBFC0AEB276118240011E99B /* Embed Frameworks */,
+				DBFDCE0C27F446BB00BE99E3 /* Embed App Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 				DB94B6C026C65CB000A2E8A1 /* PBXTargetDependency */,
+				DBFDCE4727F450FC00BE99E3 /* PBXTargetDependency */,
 			);
 			name = TwidereX;
 			packageProductDependencies = (
@@ -2351,13 +2443,33 @@
 			productReference = DBDA8E3F24FCF8A7006750DC /* TwidereXUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
+		DBFDCE3F27F450FC00BE99E3 /* TwidereXIntent */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = DBFDCE4927F450FC00BE99E3 /* Build configuration list for PBXNativeTarget "TwidereXIntent" */;
+			buildPhases = (
+				DBFDCE3C27F450FC00BE99E3 /* Sources */,
+				DBFDCE3D27F450FC00BE99E3 /* Frameworks */,
+				DBFDCE3E27F450FC00BE99E3 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				DBFDCE5727F451FC00BE99E3 /* PBXTargetDependency */,
+			);
+			name = TwidereXIntent;
+			packageProductDependencies = (
+			);
+			productName = TwidereXIntent;
+			productReference = DBFDCE4027F450FC00BE99E3 /* TwidereXIntent.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
 		DBDA8E1624FCF8A3006750DC /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastSwiftUpdateCheck = 1310;
+				LastSwiftUpdateCheck = 1330;
 				LastUpgradeCheck = 1200;
 				ORGANIZATIONNAME = Twidere;
 				TargetAttributes = {
@@ -2378,6 +2490,9 @@
 					DBDA8E3E24FCF8A7006750DC = {
 						CreatedOnToolsVersion = 12.0;
 						TestTargetID = DBDA8E1D24FCF8A3006750DC;
+					};
+					DBFDCE3F27F450FC00BE99E3 = {
+						CreatedOnToolsVersion = 13.3;
 					};
 				};
 			};
@@ -2423,6 +2538,7 @@
 				DBDA8E3E24FCF8A7006750DC /* TwidereXUITests */,
 				DB94B6BA26C65CB000A2E8A1 /* AppShared */,
 				DBBBBE5D2744E8CC007ACB4B /* ShareExtension */,
+				DBFDCE3F27F450FC00BE99E3 /* TwidereXIntent */,
 			);
 		};
 /* End PBXProject section */
@@ -2468,6 +2584,13 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		DBDA8E3D24FCF8A7006750DC /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		DBFDCE3E27F450FC00BE99E3 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -2737,6 +2860,7 @@
 				DB213FA927392B81009ABD74 /* HashtagTimelineViewModel.swift in Sources */,
 				DB0D3A38255E4341000BB9FA /* UserLikeTimelineViewController+StatusProvider.swift in Sources */,
 				DB7E22FE2552A6A700551314 /* UserLikeTimelineViewModel+State.swift in Sources */,
+				DBFDCE4E27F4510C00BE99E3 /* Intents.intentdefinition in Sources */,
 				DBA210362759D7B1000B7CB2 /* FollowingListViewModel+State.swift in Sources */,
 				DB3FC04025527053003A2F8A /* UserMediaTimelineViewModel.swift in Sources */,
 				DBBBBE592744E800007ACB4B /* ComposeViewController.swift in Sources */,
@@ -3018,6 +3142,19 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		DBFDCE3C27F450FC00BE99E3 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				DB5BF12527F5A5C1002A3EF5 /* Account+Fetch.swift in Sources */,
+				DB5BF12D27F5BAD5002A3EF5 /* AuthenticationIndex+Fetch.swift in Sources */,
+				DBFDCE5027F4515E00BE99E3 /* SwitchAccountIntentHandler.swift in Sources */,
+				DBFDCE4D27F4510A00BE99E3 /* Intents.intentdefinition in Sources */,
+				DB5BF12327F5A549002A3EF5 /* PublishPostIntentHandler.swift in Sources */,
+				DBFDCE4427F450FC00BE99E3 /* IntentHandler.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -3050,6 +3187,16 @@
 			isa = PBXTargetDependency;
 			target = DBDA8E1D24FCF8A3006750DC /* TwidereX */;
 			targetProxy = DBDA8E4024FCF8A7006750DC /* PBXContainerItemProxy */;
+		};
+		DBFDCE4727F450FC00BE99E3 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = DBFDCE3F27F450FC00BE99E3 /* TwidereXIntent */;
+			targetProxy = DBFDCE4627F450FC00BE99E3 /* PBXContainerItemProxy */;
+		};
+		DBFDCE5727F451FC00BE99E3 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = DB94B6BA26C65CB000A2E8A1 /* AppShared */;
+			targetProxy = DBFDCE5627F451FC00BE99E3 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -3121,11 +3268,11 @@
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 82;
+				CURRENT_PROJECT_VERSION = 84;
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = 7LFDZ96332;
 				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 82;
+				DYLIB_CURRENT_VERSION = 84;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				INFOPLIST_FILE = ShareExtension/Info.plist;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2021 Twidere. All rights reserved.";
@@ -3155,11 +3302,11 @@
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 82;
+				CURRENT_PROJECT_VERSION = 84;
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = 7LFDZ96332;
 				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 82;
+				DYLIB_CURRENT_VERSION = 84;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				INFOPLIST_FILE = ShareExtension/Info.plist;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2021 Twidere. All rights reserved.";
@@ -3185,7 +3332,7 @@
 			buildSettings = {
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 82;
+				CURRENT_PROJECT_VERSION = 84;
 				DEVELOPMENT_TEAM = 7LFDZ96332;
 				INFOPLIST_FILE = ShareExtension/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = ShareExtension;
@@ -3211,7 +3358,7 @@
 			buildSettings = {
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 82;
+				CURRENT_PROJECT_VERSION = 84;
 				DEVELOPMENT_TEAM = 7LFDZ96332;
 				INFOPLIST_FILE = ShareExtension/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = ShareExtension;
@@ -3361,7 +3508,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = TwidereX/TwidereX.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 82;
+				CURRENT_PROJECT_VERSION = 84;
 				DEVELOPMENT_ASSET_PATHS = "TwidereX/Resources/Preview\\ Assets.xcassets";
 				DEVELOPMENT_TEAM = 7LFDZ96332;
 				INFOPLIST_FILE = TwidereX/Info.plist;
@@ -3387,7 +3534,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = TwidereX/TwidereX.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 82;
+				CURRENT_PROJECT_VERSION = 84;
 				DEVELOPMENT_ASSET_PATHS = "TwidereX/Resources/Preview\\ Assets.xcassets";
 				DEVELOPMENT_TEAM = 7LFDZ96332;
 				INFOPLIST_FILE = TwidereX/Info.plist;
@@ -3410,7 +3557,7 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 82;
+				CURRENT_PROJECT_VERSION = 84;
 				DEVELOPMENT_TEAM = 7LFDZ96332;
 				INFOPLIST_FILE = TwidereXTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -3434,7 +3581,7 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 82;
+				CURRENT_PROJECT_VERSION = 84;
 				DEVELOPMENT_TEAM = 7LFDZ96332;
 				INFOPLIST_FILE = TwidereXTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -3457,7 +3604,7 @@
 			baseConfigurationReference = 2E41729E598B3379FC09BC03 /* Pods-TwidereX-TwidereXUITests.debug.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 82;
+				CURRENT_PROJECT_VERSION = 84;
 				DEVELOPMENT_TEAM = 7LFDZ96332;
 				INFOPLIST_FILE = TwidereXUITests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -3480,7 +3627,7 @@
 			baseConfigurationReference = 44D01BA9E21B7F374DBDA38A /* Pods-TwidereX-TwidereXUITests.release.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 82;
+				CURRENT_PROJECT_VERSION = 84;
 				DEVELOPMENT_TEAM = 7LFDZ96332;
 				INFOPLIST_FILE = TwidereXUITests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -3495,6 +3642,62 @@
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_TARGET_NAME = TwidereX;
 				VERSIONING_SYSTEM = "apple-generic";
+			};
+			name = Release;
+		};
+		DBFDCE4A27F450FC00BE99E3 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
+				CODE_SIGN_ENTITLEMENTS = TwidereXIntent/TwidereXIntent.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 84;
+				DEVELOPMENT_TEAM = 7LFDZ96332;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = TwidereXIntent/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = TwidereXIntent;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2022 Twidere. All rights reserved.";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.twidere.TwidereX.TwidereXIntent;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		DBFDCE4B27F450FC00BE99E3 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
+				CODE_SIGN_ENTITLEMENTS = TwidereXIntent/TwidereXIntent.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 84;
+				DEVELOPMENT_TEAM = 7LFDZ96332;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = TwidereXIntent/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = TwidereXIntent;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2022 Twidere. All rights reserved.";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.twidere.TwidereX.TwidereXIntent;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
 		};
@@ -3551,6 +3754,15 @@
 			buildConfigurations = (
 				DBDA8E4F24FCF8A7006750DC /* Debug */,
 				DBDA8E5024FCF8A7006750DC /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		DBFDCE4927F450FC00BE99E3 /* Build configuration list for PBXNativeTarget "TwidereXIntent" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				DBFDCE4A27F450FC00BE99E3 /* Debug */,
+				DBFDCE4B27F450FC00BE99E3 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

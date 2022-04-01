@@ -14,7 +14,9 @@ extension Twitter.Entity {
         
         // Fundamental
         public let idStr: ID
+        // nickname
         public let name: String
+        /// @username without "@"
         public let screenName: String
         
         public let userDescription: String?

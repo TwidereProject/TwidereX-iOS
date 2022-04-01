@@ -119,17 +119,6 @@ public class AuthenticationService: NSObject {
 
 extension AuthenticationService {
     
-    @available(*, deprecated, message: "use TwitterAuthenticationContext")
-    public struct TwitterAuthenticationBox {
-        public let authenticationIndexObjectID: NSManagedObjectID
-        public let twitterUserID: TwitterUser.ID
-        public let twitterAuthorization: Twitter.API.OAuth.Authorization
-    }
-    
-}
-
-extension AuthenticationService {
-    
     public func activeAuthenticationIndex(record: ManagedObjectRecord<AuthenticationIndex>) async throws -> Bool {
         let managedObjectContext = backgroundManagedObjectContext
         let isActive = try await managedObjectContext.performChanges { () -> Bool in
