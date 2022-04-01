@@ -53,6 +53,7 @@ class Helper {
     private func map(language: String) -> String? {
         switch language {
         case "ar_SA":   return "ar"         // Arabic
+        case "eu_ES":   return "eu"         // Basque
         case "en_US":   return "en"
         case "zh_CN":   return "zh-Hans"    // Chinese Simplified
         case "ja_JP":   return "ja"         // Japanese
@@ -61,6 +62,7 @@ class Helper {
         case "ca_ES":   return "ca"         // Catalan
         case "es_ES":   return "es"         // Spanish
         case "ko_KR":   return "ko"         // Korean
+        case "tr_TR":   return "tr"         // Turkish
         default:        return nil
         }
     }
