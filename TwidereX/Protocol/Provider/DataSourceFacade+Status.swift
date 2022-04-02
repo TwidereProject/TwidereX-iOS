@@ -72,7 +72,12 @@ extension DataSourceFacade {
                 provider.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): update like failure: \(error.localizedDescription)")
             }
         case .menu:
-            assertionFailure("The button menu should not be nil")
+            // media menu button trigger this
+            await DataSourceFacade.responseToStatusShareAction(
+                provider: provider,
+                status: status,
+                button: sender
+            )
         }   // end switch action
     }
 }
