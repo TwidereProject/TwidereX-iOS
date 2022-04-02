@@ -23,6 +23,8 @@ struct AppIconPreferenceView: View {
         
     var body: some View {
         ScrollView(.vertical, showsIndicators: false) {
+            Color.clear
+                .frame(height: 20)
             LazyVGrid(columns: items, spacing: 20) {
                 ForEach(AppIcon.allCases, id: \.rawValue) { appIcon in
                     Button {
@@ -44,7 +46,7 @@ struct AppIconPreferenceView: View {
             }
         }
         .background(Color(uiColor: .secondarySystemBackground))
-        .padding(.top, 16)
+        .navigationTitle(L10n.Scene.Settings.Appearance.appIcon)
     }   // end body
     
 }

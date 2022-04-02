@@ -40,7 +40,7 @@ struct AppearanceView: View {
                     appIconRow
                 }
             } header: {
-                Text("")
+                EmptyView()
             }
             Section {
                 // Translate Button
@@ -62,6 +62,7 @@ struct AppearanceView: View {
             } header: {
                 Text(L10n.Scene.Settings.Appearance.SectionHeader.translation)
             }
+            .textCase(nil)
 
 
         }
