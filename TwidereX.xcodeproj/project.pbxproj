@@ -353,6 +353,8 @@
 		DBF81C8327F6ECF400004A56 /* AppearanceViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBF81C8227F6ECF400004A56 /* AppearanceViewModel.swift */; };
 		DBF81C8527F709EF00004A56 /* TranslateButtonPreferenceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBF81C8427F709EF00004A56 /* TranslateButtonPreferenceView.swift */; };
 		DBF81C8827F7141600004A56 /* TranslationServicePreferenceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBF81C8727F7141600004A56 /* TranslationServicePreferenceView.swift */; };
+		DBF81C8E27F843D700004A56 /* AppIconAssets.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBF81C8C27F843D700004A56 /* AppIconAssets.swift */; };
+		DBF81C9127F8448C00004A56 /* AppIconPreferenceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBF81C9027F8448C00004A56 /* AppIconPreferenceView.swift */; };
 		DBFA4A2025A5924C00D51703 /* TimelineViewModel+Diffable.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBFA4A1F25A5924C00D51703 /* TimelineViewModel+Diffable.swift */; };
 		DBFC0ADC276108590011E99B /* CropViewController in Frameworks */ = {isa = PBXBuildFile; productRef = DBFC0ADB276108590011E99B /* CropViewController */; };
 		DBFC0ADE276108610011E99B /* AlamofireImage in Frameworks */ = {isa = PBXBuildFile; productRef = DBFC0ADD276108610011E99B /* AlamofireImage */; };
@@ -865,6 +867,8 @@
 		DBF81C8227F6ECF400004A56 /* AppearanceViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppearanceViewModel.swift; sourceTree = "<group>"; };
 		DBF81C8427F709EF00004A56 /* TranslateButtonPreferenceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TranslateButtonPreferenceView.swift; sourceTree = "<group>"; };
 		DBF81C8727F7141600004A56 /* TranslationServicePreferenceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TranslationServicePreferenceView.swift; sourceTree = "<group>"; };
+		DBF81C8C27F843D700004A56 /* AppIconAssets.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppIconAssets.swift; sourceTree = "<group>"; };
+		DBF81C9027F8448C00004A56 /* AppIconPreferenceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppIconPreferenceView.swift; sourceTree = "<group>"; };
 		DBFA4A1025A5640E00D51703 /* ProfileViewController+UserProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ProfileViewController+UserProvider.swift"; sourceTree = "<group>"; };
 		DBFA4A1F25A5924C00D51703 /* TimelineViewModel+Diffable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TimelineViewModel+Diffable.swift"; sourceTree = "<group>"; };
 		DBFA4A2A25A5A69100D51703 /* SearchTimelineViewModel+Diffable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SearchTimelineViewModel+Diffable.swift"; sourceTree = "<group>"; };
@@ -2019,6 +2023,7 @@
 				DB88AC34250B25170009E562 /* Vender */,
 				DBDA8E5424FDF3E2006750DC /* Scene */,
 				DBDA8E9924FE0DC8006750DC /* Resources */,
+				DBF81C8B27F843D700004A56 /* Generated */,
 				DBE76D312502147200DEB0FC /* Extension */,
 				DBED96DC253F5D7B00C5383A /* Protocol */,
 				DBDA8E5324FDF3D6006750DC /* Supporting Files */,
@@ -2280,6 +2285,7 @@
 		DBF81C8127F6E84300004A56 /* Appearance */ = {
 			isa = PBXGroup;
 			children = (
+				DBF81C9227F8449800004A56 /* AppIcon */,
 				DBF81C8627F709F200004A56 /* Translation */,
 				DBF81C7F27F6E80700004A56 /* AppearanceView.swift */,
 				DBF81C8227F6ECF400004A56 /* AppearanceViewModel.swift */,
@@ -2295,6 +2301,22 @@
 				DBF81C8727F7141600004A56 /* TranslationServicePreferenceView.swift */,
 			);
 			name = Translation;
+			sourceTree = "<group>";
+		};
+		DBF81C8B27F843D700004A56 /* Generated */ = {
+			isa = PBXGroup;
+			children = (
+				DBF81C8C27F843D700004A56 /* AppIconAssets.swift */,
+			);
+			path = Generated;
+			sourceTree = "<group>";
+		};
+		DBF81C9227F8449800004A56 /* AppIcon */ = {
+			isa = PBXGroup;
+			children = (
+				DBF81C9027F8448C00004A56 /* AppIconPreferenceView.swift */,
+			);
+			name = AppIcon;
 			sourceTree = "<group>";
 		};
 		DBFDCE4227F450FC00BE99E3 /* TwidereXIntent */ = {
@@ -3080,6 +3102,7 @@
 				DB01092026E60756005F67D7 /* DataSourceFacade+StatusThread.swift in Sources */,
 				DBDAF244274F530B00050319 /* NeedsDependency.swift in Sources */,
 				DB8761C3274552FB00BA7EE2 /* HashtagSection.swift in Sources */,
+				DBF81C8E27F843D700004A56 /* AppIconAssets.swift in Sources */,
 				DB262A3B272288FC00D18EF3 /* SearchViewController.swift in Sources */,
 				DBF3309125B96E0B00A678FB /* WKNavigationDelegateShim.swift in Sources */,
 				DB2D36F927D5E74D00C1FBE0 /* CompositeListViewModel.swift in Sources */,
@@ -3155,6 +3178,7 @@
 				DB262A492722A9D800D18EF3 /* SearchTimelineViewModel+Diffable.swift in Sources */,
 				DB5632A926DCC96C00FC893F /* TimelineViewController+DataSourceProvider.swift in Sources */,
 				DB56329A26DCBE7300FC893F /* StatusThreadViewModel.swift in Sources */,
+				DBF81C9127F8448C00004A56 /* AppIconPreferenceView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3420,6 +3444,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
@@ -3483,6 +3508,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
@@ -3541,7 +3567,8 @@
 			baseConfigurationReference = F58BC0DB264850C274FDE699 /* Pods-TwidereX.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_ALTERNATE_APPICON_NAMES = "";
+				ASSETCATALOG_COMPILER_APPICON_NAME = Twidere;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = TwidereX/TwidereX.entitlements;
 				CODE_SIGN_STYLE = Automatic;
@@ -3567,7 +3594,8 @@
 			baseConfigurationReference = 4423B1DC6D103908A7B752AF /* Pods-TwidereX.release.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_ALTERNATE_APPICON_NAMES = "";
+				ASSETCATALOG_COMPILER_APPICON_NAME = Twidere;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = TwidereX/TwidereX.entitlements;
 				CODE_SIGN_STYLE = Automatic;

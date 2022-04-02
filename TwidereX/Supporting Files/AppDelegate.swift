@@ -11,6 +11,7 @@ import Floaty
 import Firebase
 import Kingfisher
 import AppShared
+import TwidereCommon
 
 @_exported import TwidereUI
 
@@ -42,6 +43,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         // configure appearance
         ThemeService.shared.apply(theme: ThemeService.shared.theme.value)
+        
+        UserDefaults.shared.publisher(for: \.alternateIconNamePreference)
+            .receive(on: DispatchQueue.main)
+            .removeDuplicates()
+            .sink { preference in
+                UIApplication.shared.setAlternateIconName(preference.iconName)
+            }
+            .store(in: &disposeBag)
 
         return true
     }

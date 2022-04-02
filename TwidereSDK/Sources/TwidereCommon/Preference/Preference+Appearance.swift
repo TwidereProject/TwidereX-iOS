@@ -6,10 +6,16 @@
 //
 
 import Foundation
-import SwiftMessages
 
+// MARK: - App Icon
 extension UserDefaults {
-
+    @objc dynamic public var alternateIconNamePreference: AppIcon {
+        get {
+            guard let rawValue: Int = self[#function] else { return .twidere }
+            return AppIcon(rawValue: rawValue) ?? .twidere
+        }
+        set { self[#function] = newValue.rawValue }
+    }
 }
 
 // MARK: - Translation

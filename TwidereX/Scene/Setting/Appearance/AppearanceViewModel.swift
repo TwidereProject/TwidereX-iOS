@@ -22,7 +22,8 @@ final class AppearanceViewModel: ObservableObject {
     let context: AppContext
     
     // output
-    @Published var appIcon: UIImage
+    // App Icon
+    @Published var alternateIconNamePreference = UserDefaults.shared.alternateIconNamePreference
     
     // Translation
     @Published var translateButtonPreference = UserDefaults.shared.translateButtonPreference
@@ -34,8 +35,11 @@ final class AppearanceViewModel: ObservableObject {
         self.context = context
         // end init
         
-        appIcon = UIImage(named: "AppIcon")!
+        // App Icon
+        UserDefaults.shared.publisher(for: \.alternateIconNamePreference)
+            .assign(to: &$alternateIconNamePreference)
         
+        // Translation
         UserDefaults.shared.publisher(for: \.translateButtonPreference)
             .assign(to: &$translateButtonPreference)
         UserDefaults.shared.publisher(for: \.translationServicePreference)

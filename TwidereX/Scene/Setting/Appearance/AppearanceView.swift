@@ -24,7 +24,7 @@ struct AppearanceView: View {
             HStack {
                 Text(L10n.Scene.Settings.Appearance.appIcon)
                 Spacer()
-                Image(uiImage: viewModel.appIcon)
+                Image(uiImage: UIImage(named: "\(viewModel.alternateIconNamePreference.iconName)") ?? UIImage())
                     .cornerRadius(4)
             }
         }
@@ -34,7 +34,11 @@ struct AppearanceView: View {
     var body: some View {
         List {
             Section {
-                appIconRow
+                NavigationLink {
+                    AppIconPreferenceView()
+                } label: {
+                    appIconRow
+                }
             } header: {
                 Text("")
             }
