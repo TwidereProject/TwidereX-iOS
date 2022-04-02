@@ -9,10 +9,16 @@ strings:
         bundle: Bundle.module
         publicAccess: true
 xcassets:
-  inputs: TwidereSDK/Sources/TwidereAsset/Assets.xcassets
-  outputs:
-    templateName: swift5
-    output: TwidereSDK/Sources/TwidereAsset/Generated/Assets.swift
-    params:
-      bundle: Bundle.module
-      publicAccess: true
+  - inputs: TwidereSDK/Sources/TwidereAsset/Assets.xcassets
+    outputs:
+      templateName: swift5
+      output: TwidereSDK/Sources/TwidereAsset/Generated/Assets.swift
+      params:
+        bundle: Bundle.module
+        publicAccess: true
+  - inputs: TwidereX/Resources/Assets.xcassets
+    outputs:
+      templateName: swift5
+      output: TwidereX/Generated/AppIconAssets.swift
+      params:
+        enumName: AppIconAssets

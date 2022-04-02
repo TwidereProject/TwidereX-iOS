@@ -213,8 +213,19 @@ extension StatusToolbar {
                     state: .off
                 ) { [weak self] _ in
                     guard let self = self else { return }
-                    self.delegate?.statusToolbar(self, actionDidPressed: .menu, button: self.menuButton)
-                }
+                    self.delegate?.statusToolbar(self, menuActionDidPressed: .share, menuButton: self.menuButton)
+                },
+                UIAction(
+                    title: L10n.Common.Controls.Status.Actions.translate.capitalized,
+                    image: UIImage(systemName: "character.bubble"),
+                    identifier: nil,
+                    discoverabilityTitle: nil,
+                    attributes: [],
+                    state: .off
+                ) { [weak self] _ in
+                    guard let self = self else { return }
+                    self.delegate?.statusToolbar(self, menuActionDidPressed: .translate, menuButton: self.menuButton)
+                },
             ]
             
             if menuContext.displayDeleteAction {

@@ -350,7 +350,6 @@ extension StatusViewTableViewCellDelegate where Self: DataSourceProvider {
         menuActionDidPressed action: StatusToolbar.MenuAction,
         menuButton button: UIButton
     ) {
-        guard let authenticationContext = context.authenticationService.activeAuthenticationContext else { return }
         Task {
             let source = DataSourceItem.Source(tableViewCell: cell, indexPath: nil)
             guard let item = await item(from: source) else {
@@ -361,17 +360,51 @@ extension StatusViewTableViewCellDelegate where Self: DataSourceProvider {
                 assertionFailure("only works for status data provider")
                 return
             }
-            
-            try await DataSourceFacade.responseToRemoveStatusAction(
-                provider: self,
-                target: .status,
-                status: status,
-                authenticationContext: authenticationContext
-            )
-        }   // end Task
-        
-    }
 
+            switch action {
+            case .translate:
+                try await DataSourceFacade.responseToStatusTranslate(
+                    provider: self,
+                    status: status
+                )
+            case .share:
+                await DataSourceFacade.responseToStatusShareAction(
+                    provider: self,
+                    status: status,
+                    button: button
+                )
+            case .remove:
+                guard let authenticationContext = context.authenticationService.activeAuthenticationContext else { return }
+                try await DataSourceFacade.responseToRemoveStatusAction(
+                    provider: self,
+                    target: .status,
+                    status: status,
+                    authenticationContext: authenticationContext
+                )
+            }   // end switch
+        }   // end Task
+    }   // end func
+
+}
+
+extension StatusViewTableViewCellDelegate where Self: DataSourceProvider {
+    func tableViewCell(_ cell: UITableViewCell, statusView: StatusView, translateButtonDidPressed button: UIButton) {
+        Task {
+            let source = DataSourceItem.Source(tableViewCell: cell, indexPath: nil)
+            guard let item = await item(from: source) else {
+                return
+            }
+            switch item {
+            case .status(let status):
+                try await DataSourceFacade.responseToStatusTranslate(
+                    provider: self,
+                    status: status
+                )
+            default:
+                assertionFailure()
+            }
+        }   // end Task
+    }
 }
 
 // MARK: - a11y
@@ -398,7 +431,7 @@ extension StatusViewTableViewCellDelegate where Self: DataSourceProvider {
             case .notification(let notification):
                 assertionFailure("TODO")
             }
-        }
+        }   // end Task
     }
     
 }

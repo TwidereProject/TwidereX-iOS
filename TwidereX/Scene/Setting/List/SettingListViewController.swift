@@ -46,7 +46,7 @@ extension SettingListViewController {
                 guard let self = self else { return }                
                 switch entry.type {
                 case .appearance:
-                    break
+                    self.coordinator.present(scene: .appearance, from: self, transition: .show)
                 case .display:
                     self.coordinator.present(scene: .displayPreference, from: self, transition: .show)
                 case .layout:
@@ -72,4 +72,16 @@ extension SettingListViewController {
         dismiss(animated: true, completion: nil)
     }
     
+}
+
+// MARK: - UIAdaptivePresentationControllerDelegate
+extension SettingListViewController: UIAdaptivePresentationControllerDelegate {
+    func adaptivePresentationStyle(for controller: UIPresentationController, traitCollection: UITraitCollection) -> UIModalPresentationStyle {
+        switch traitCollection.userInterfaceIdiom {
+        case .pad:
+            return .formSheet
+        default:
+            return .formSheet
+        }
+    }
 }

@@ -1206,6 +1206,8 @@ public enum L10n {
       public enum Appearance {
         /// AMOLED optimized mode
         public static let amoledOptimizedMode = L10n.tr("Localizable", "Scene.Settings.Appearance.AmoledOptimizedMode")
+        /// App Icon
+        public static let appIcon = L10n.tr("Localizable", "Scene.Settings.Appearance.AppIcon")
         /// Highlight color
         public static let highlightColor = L10n.tr("Localizable", "Scene.Settings.Appearance.HighlightColor")
         /// Pick color
@@ -1227,6 +1229,8 @@ public enum L10n {
           public static let tabPosition = L10n.tr("Localizable", "Scene.Settings.Appearance.SectionHeader.TabPosition")
           /// Theme
           public static let theme = L10n.tr("Localizable", "Scene.Settings.Appearance.SectionHeader.Theme")
+          /// Translation
+          public static let translation = L10n.tr("Localizable", "Scene.Settings.Appearance.SectionHeader.Translation")
         }
         public enum TabPosition {
           /// Bottom
@@ -1241,6 +1245,18 @@ public enum L10n {
           public static let dark = L10n.tr("Localizable", "Scene.Settings.Appearance.Theme.Dark")
           /// Light
           public static let light = L10n.tr("Localizable", "Scene.Settings.Appearance.Theme.Light")
+        }
+        public enum Translation {
+          /// Always
+          public static let always = L10n.tr("Localizable", "Scene.Settings.Appearance.Translation.Always")
+          /// Auto
+          public static let auto = L10n.tr("Localizable", "Scene.Settings.Appearance.Translation.Auto")
+          /// Off
+          public static let off = L10n.tr("Localizable", "Scene.Settings.Appearance.Translation.Off")
+          /// Service
+          public static let service = L10n.tr("Localizable", "Scene.Settings.Appearance.Translation.Service")
+          /// Translate button
+          public static let translateButton = L10n.tr("Localizable", "Scene.Settings.Appearance.Translation.TranslateButton")
         }
       }
       public enum Display {

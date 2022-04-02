@@ -40,7 +40,7 @@ extension Twitter.Entity {
         //let inReplyToUserID: JSONNull?
         public let inReplyToUserIDStr: User.ID?
         //let isQuoteStatus: Bool
-        //let lang: Lang
+        public let lang: String?
         //let possiblySensitive: Bool?
         //let possiblySensitiveAppealable: Bool?
         
@@ -82,7 +82,7 @@ extension Twitter.Entity {
             //case inReplyToUserID = "in_reply_to_user_id"
             case inReplyToUserIDStr = "in_reply_to_user_id_str"
             //case isQuoteStatus = "is_quote_status"
-            //case lang = "lang"
+            case lang = "lang"
             //case possiblySensitive = "possibly_sensitive"
             //case possiblySensitiveAppealable = "possibly_sensitive_appealable"
             

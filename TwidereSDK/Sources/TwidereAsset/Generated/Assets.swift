@@ -130,6 +130,7 @@ public enum Asset {
   public enum Logo {
     public static let githubCircle = ImageAsset(name: "Logo/github.circle")
     public static let mastodon = ImageAsset(name: "Logo/mastodon")
+    public static let mediaPlaceholder = ImageAsset(name: "Logo/media.placeholder")
     public static let twitterCircle = ImageAsset(name: "Logo/twitter.circle")
     public static let twitter = ImageAsset(name: "Logo/twitter")
   }

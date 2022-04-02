@@ -27,6 +27,9 @@ final public class TwitterStatus: NSManagedObject {
     // sourcery: autoGenerateProperty
     @NSManaged public private(set) var quoteCount: Int64
     
+    // sourcery: autoGenerateProperty
+    @NSManaged public private(set) var language: String?
+    
     // Note: not mark `autoUpdatableObject` for `replyCount` and `quoteCount`
     // to avoid V1 API update the exists value to 0
     
@@ -197,6 +200,7 @@ extension TwitterStatus: AutoGenerateProperty {
         public let replyCount: Int64
         public let repostCount: Int64
         public let quoteCount: Int64
+        public let language: String?
         public let source: String?
         public let replyToStatusID: TwitterStatus.ID?
         public let replyToUserID: TwitterUser.ID?
@@ -210,6 +214,7 @@ extension TwitterStatus: AutoGenerateProperty {
     		replyCount: Int64,
     		repostCount: Int64,
     		quoteCount: Int64,
+    		language: String?,
     		source: String?,
     		replyToStatusID: TwitterStatus.ID?,
     		replyToUserID: TwitterUser.ID?,
@@ -222,6 +227,7 @@ extension TwitterStatus: AutoGenerateProperty {
     		self.replyCount = replyCount
     		self.repostCount = repostCount
     		self.quoteCount = quoteCount
+    		self.language = language
     		self.source = source
     		self.replyToStatusID = replyToStatusID
     		self.replyToUserID = replyToUserID
@@ -237,6 +243,7 @@ extension TwitterStatus: AutoGenerateProperty {
     	self.replyCount = property.replyCount
     	self.repostCount = property.repostCount
     	self.quoteCount = property.quoteCount
+    	self.language = property.language
     	self.source = property.source
     	self.replyToStatusID = property.replyToStatusID
     	self.replyToUserID = property.replyToUserID

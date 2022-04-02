@@ -369,6 +369,7 @@
 "Scene.Settings.About.Title" = "정보";
 "Scene.Settings.About.Version" = "%@ 버전";
 "Scene.Settings.Appearance.AmoledOptimizedMode" = "AMOLED 최적화 모드";
+"Scene.Settings.Appearance.AppIcon" = "App Icon";
 "Scene.Settings.Appearance.HighlightColor" = "강조색";
 "Scene.Settings.Appearance.PickColor" = "색 고르기";
 "Scene.Settings.Appearance.ScrollingTimeline.AppBar" = "제목 표시줄 숨기기";
@@ -377,12 +378,18 @@
 "Scene.Settings.Appearance.SectionHeader.ScrollingTimeline" = "타임라인을 스크롤할 때";
 "Scene.Settings.Appearance.SectionHeader.TabPosition" = "탭 위치";
 "Scene.Settings.Appearance.SectionHeader.Theme" = "테마";
+"Scene.Settings.Appearance.SectionHeader.Translation" = "Translation";
 "Scene.Settings.Appearance.TabPosition.Bottom" = "맨 아래";
 "Scene.Settings.Appearance.TabPosition.Top" = "위";
 "Scene.Settings.Appearance.Theme.Auto" = "자동";
 "Scene.Settings.Appearance.Theme.Dark" = "어둡게";
 "Scene.Settings.Appearance.Theme.Light" = "밝게";
 "Scene.Settings.Appearance.Title" = "모양";
+"Scene.Settings.Appearance.Translation.Always" = "언제나";
+"Scene.Settings.Appearance.Translation.Auto" = "자동";
+"Scene.Settings.Appearance.Translation.Off" = "끄기";
+"Scene.Settings.Appearance.Translation.Service" = "Service";
+"Scene.Settings.Appearance.Translation.TranslateButton" = "Translate button";
 "Scene.Settings.Display.DateFormat.Absolute" = "절대 시간";
 "Scene.Settings.Display.DateFormat.Relative" = "상대적 시간 (~분 전)";
 "Scene.Settings.Display.Media.Always" = "언제나";
