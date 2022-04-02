@@ -9,6 +9,7 @@
 import AVKit
 import UIKit
 import Combine
+import TwidereAsset
 
 public final class MediaView: UIView {
     
@@ -123,16 +124,28 @@ extension MediaView {
             imageView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor),
         ])
         
-        let placeholder = UIImage.placeholder(color: .systemGray6)
+        let placeholder = Asset.Logo.mediaPlaceholder.image
+        imageView.contentMode = .center
+        imageView.backgroundColor = .systemGray6
+        
         guard let urlString = info.assetURL,
               let url = URL(string: urlString) else {
                   imageView.image = placeholder
                   return
               }
+        
         imageView.af.setImage(
             withURL: url,
-            placeholderImage: placeholder
-        )
+            placeholderImage: placeholder,
+            completion: { [weak imageView] response in
+                assert(Thread.isMainThread)
+                switch response.result {
+                case .success:
+                    imageView?.contentMode = .scaleAspectFill
+                case .failure:
+                    break
+                }
+            })
     }
     
     private func configure(gif info: Configuration.VideoInfo) {
