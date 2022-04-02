@@ -1,7 +1,7 @@
 {
   "images" : [
     {
-      "filename" : "logotw 1.pdf",
+      "filename" : "twidere-light.pdf",
       "idiom" : "universal"
     },
     {
@@ -11,7 +11,7 @@
           "value" : "dark"
         }
       ],
-      "filename" : "logotw 1-1.pdf",
+      "filename" : "twidere-dark.pdf",
       "idiom" : "universal"
     }
   ],
