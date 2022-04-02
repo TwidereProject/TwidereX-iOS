@@ -197,6 +197,7 @@
         <attribute name="emojis" optional="YES" attributeType="Binary"/>
         <attribute name="entities" optional="YES" attributeType="Binary"/>
         <attribute name="id" attributeType="String"/>
+        <attribute name="language" optional="YES" attributeType="String"/>
         <attribute name="likeCount" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="location" optional="YES" attributeType="Binary"/>
         <attribute name="quoteCount" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
@@ -267,7 +268,7 @@
         <element name="TwitterAuthentication" positionX="-109.453125" positionY="275.71875" width="128" height="209"/>
         <element name="TwitterList" positionX="90" positionY="-18" width="128" height="164"/>
         <element name="TwitterSavedSearch" positionX="90" positionY="-18" width="128" height="104"/>
-        <element name="TwitterStatus" positionX="-63" positionY="-153" width="128" height="419"/>
+        <element name="TwitterStatus" positionX="-63" positionY="-153" width="128" height="434"/>
         <element name="TwitterUser" positionX="281.5234375" positionY="201.703125" width="128" height="524"/>
     </elements>
 </model>

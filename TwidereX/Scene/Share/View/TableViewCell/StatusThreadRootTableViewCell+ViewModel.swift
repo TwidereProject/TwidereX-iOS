@@ -70,19 +70,21 @@ extension StatusThreadRootTableViewCell {
         
         self.delegate = delegate
 
-        statusView.viewModel.$isContentReveal
-            .removeDuplicates()
-            .dropFirst()
-            .receive(on: DispatchQueue.main)
-            .sink { [weak tableView, weak self] _ in
-                guard let tableView = tableView else { return }
-                guard let _ = self else { return }
-                UIView.setAnimationsEnabled(false)
-                tableView.beginUpdates()
-                tableView.endUpdates()
-                UIView.setAnimationsEnabled(true)
-            }
-            .store(in: &disposeBag)
+        Publishers.CombineLatest(
+            statusView.viewModel.$isContentReveal.removeDuplicates(),
+            statusView.viewModel.$isTranslateButtonDisplay.removeDuplicates()
+        )
+        .dropFirst()
+        .receive(on: DispatchQueue.main)
+        .sink { [weak tableView, weak self] _ in
+            guard let tableView = tableView else { return }
+            guard let _ = self else { return }
+            UIView.setAnimationsEnabled(false)
+            tableView.beginUpdates()
+            tableView.endUpdates()
+            UIView.setAnimationsEnabled(true)
+        }
+        .store(in: &disposeBag)
     }
     
 }

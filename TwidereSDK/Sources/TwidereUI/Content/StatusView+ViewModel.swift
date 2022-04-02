@@ -53,6 +53,9 @@ extension StatusView {
         @Published public var content: MetaContent?
         @Published public var twitterTextProvider: TwitterTextProvider?
         
+        @Published public var language: String?
+        @Published public var isTranslateButtonDisplay = false
+        
         @Published public var mediaViewConfigurations: [MediaView.Configuration] = []
         
         @Published public var isContentSensitive: Bool = false
@@ -196,6 +199,28 @@ extension StatusView {
                 }
             }
             .assign(to: &$isRepostEnabled)
+            
+            Publishers.CombineLatest(
+                UserDefaults.shared.publisher(for: \.translateButtonPreference),
+                $language
+            )
+            .map { preference, language -> Bool in
+                switch preference {
+                case .auto:
+                    guard let language = language, !language.isEmpty else {
+                        // default hidden
+                        return false
+                    }
+                    let contentLocale = Locale(identifier: language)
+                    guard let currentLanguageCode = Locale.current.languageCode,
+                          let contentLanguageCode = contentLocale.languageCode
+                    else { return true }
+                    return currentLanguageCode != contentLanguageCode
+                case .always:   return true
+                case .off:      return false
+                }
+            }
+            .assign(to: &$isTranslateButtonDisplay)
         }
     }
 }
@@ -360,6 +385,13 @@ extension StatusView.ViewModel {
                 
                 let label = isContentReveal ? L10n.Accessibility.Common.Status.Actions.hideContent : L10n.Accessibility.Common.Status.Actions.revealContent
                 statusView.expandContentButton.accessibilityLabel = label
+            }
+            .store(in: &disposeBag)
+        $isTranslateButtonDisplay
+            .sink { isTranslateButtonDisplay in
+                if isTranslateButtonDisplay {
+                    statusView.setTranslateButtonDisplay()
+                }
             }
             .store(in: &disposeBag)
         $source
@@ -951,6 +983,7 @@ extension StatusView {
         viewModel.isContentSensitiveToggled = false
         viewModel.content = metaContent
         viewModel.sharePlaintextContent = status.displayText
+        viewModel.language = status.language
         viewModel.source = status.source
     }
     
@@ -1179,6 +1212,7 @@ extension StatusView {
             .assign(to: \.isContentSensitiveToggled, on: viewModel)
             .store(in: &disposeBag)
         
+        viewModel.language = status.language
         viewModel.source = status.source
     }
     

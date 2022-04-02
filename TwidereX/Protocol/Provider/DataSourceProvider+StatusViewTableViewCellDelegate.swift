@@ -387,6 +387,26 @@ extension StatusViewTableViewCellDelegate where Self: DataSourceProvider {
 
 }
 
+extension StatusViewTableViewCellDelegate where Self: DataSourceProvider {
+    func tableViewCell(_ cell: UITableViewCell, statusView: StatusView, translateButtonDidPressed button: UIButton) {
+        Task {
+            let source = DataSourceItem.Source(tableViewCell: cell, indexPath: nil)
+            guard let item = await item(from: source) else {
+                return
+            }
+            switch item {
+            case .status(let status):
+                try await DataSourceFacade.responseToStatusTranslate(
+                    provider: self,
+                    status: status
+                )
+            default:
+                assertionFailure()
+            }
+        }   // end Task
+    }
+}
+
 // MARK: - a11y
 extension StatusViewTableViewCellDelegate where Self: DataSourceProvider {
 
@@ -411,7 +431,7 @@ extension StatusViewTableViewCellDelegate where Self: DataSourceProvider {
             case .notification(let notification):
                 assertionFailure("TODO")
             }
-        }
+        }   // end Task
     }
     
 }

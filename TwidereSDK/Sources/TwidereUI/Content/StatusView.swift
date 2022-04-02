@@ -38,6 +38,8 @@ public protocol StatusViewDelegate: AnyObject {
     func statusView(_ statusView: StatusView, statusToolbar: StatusToolbar, actionDidPressed action: StatusToolbar.Action, button: UIButton)
     func statusView(_ statusView: StatusView, statusToolbar: StatusToolbar, menuActionDidPressed action: StatusToolbar.MenuAction, menuButton button: UIButton)
     
+    func statusView(_ statusView: StatusView, translateButtonDidPressed button: UIButton)
+    
     // a11y
     func statusView(_ statusView: StatusView, accessibilityActivate: Void)
 }
@@ -149,6 +151,15 @@ public final class StatusView: UIView {
             .foregroundColor: Asset.Colors.Theme.daylight.color
         ]
         return textView
+    }()
+    
+    // translate
+    let translateButtonContainer = UIStackView()
+    public let translateButton: UIButton = {
+        let button = HitTestExpandedButton(type: .system)
+        button.titleLabel?.font = UIFontMetrics(forTextStyle: .headline).scaledFont(for: .systemFont(ofSize: 14, weight: .medium))
+        button.setTitle(L10n.Common.Controls.Status.Actions.translate, for: .normal)
+        return button
     }()
     
     // media
@@ -268,16 +279,24 @@ extension StatusView {
         let headerTapGestureRecognizer = UITapGestureRecognizer.singleTapGestureRecognizer
         headerTapGestureRecognizer.addTarget(self, action: #selector(StatusView.headerTapGestureRecognizerHandler(_:)))
         headerContainerView.addGestureRecognizer(headerTapGestureRecognizer)
+        
         // avatar button
         authorAvatarButton.accessibilityLabel = L10n.Accessibility.Common.Status.authorAvatar
         authorAvatarButton.accessibilityHint = L10n.Accessibility.VoiceOver.doubleTapToOpenProfile
         authorAvatarButton.addTarget(self, action: #selector(StatusView.authorAvatarButtonDidPressed(_:)), for: .touchUpInside)
+        
         // expand content
         expandContentButton.addTarget(self, action: #selector(StatusView.expandContentButtonDidPressed(_:)), for: .touchUpInside)
+        
         // content
         contentTextView.delegate = self
+        
+        // translateButton
+        translateButton.addTarget(self, action: #selector(StatusView.translateButtonDidPressed(_:)), for: .touchUpInside)
+        
         // media grid
         mediaGridContainerView.delegate = self
+        
         // poll
         pollTableView.translatesAutoresizingMaskIntoConstraints = false
         pollTableViewHeightLayoutConstraint = pollTableView.heightAnchor.constraint(equalToConstant: 36).priority(.required - 10)
@@ -286,9 +305,11 @@ extension StatusView {
         ])
         pollTableView.delegate = self
         pollVoteButton.addTarget(self, action: #selector(StatusView.pollVoteButtonDidPressed(_:)), for: .touchUpInside)
+        
         // toolbar
         toolbar.delegate = self
         
+        // theme
         ThemeService.shared.theme
             .sink { [weak self] theme in
                 guard let self = self else { return }
@@ -331,6 +352,7 @@ extension StatusView {
             statusView.visibilityImageView.isHidden = true
             statusView.spoilerContentTextView.isHidden = true
             statusView.expandContentButtonContainer.isHidden = true
+            statusView.translateButtonContainer.isHidden = true
             statusView.mediaGridContainerView.isHidden = true
             statusView.pollTableView.isHidden = true
             statusView.pollVoteInfoContainerView.isHidden = true
@@ -605,6 +627,15 @@ extension StatusView.Style {
 
         // contentTextView
         statusView.containerStackView.addArrangedSubview(statusView.contentTextView)
+        
+        // translateButtonContainer: H - [ translateButton | (spacer) ]
+        statusView.translateButtonContainer.axis = .horizontal
+        statusView.containerStackView.addArrangedSubview(statusView.translateButtonContainer)
+        
+        statusView.translateButtonContainer.addArrangedSubview(statusView.translateButton)
+        statusView.translateButtonContainer.addArrangedSubview(UIView())
+        statusView.translateButton.setContentHuggingPriority(.required - 1, for: .vertical)
+        statusView.translateButton.setContentCompressionResistancePriority(.required - 1, for: .vertical)
         
         // mediaGridContainerView
         statusView.containerStackView.addArrangedSubview(statusView.mediaGridContainerView)
@@ -894,6 +925,10 @@ extension StatusView {
         expandContentButtonContainer.isHidden = false
     }
     
+    public func setTranslateButtonDisplay() {
+        translateButtonContainer.isHidden = false
+    }
+    
     public func setMediaDisplay() {
         mediaGridContainerView.isHidden = false
     }
@@ -968,6 +1003,11 @@ extension StatusView {
         logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public)")
         guard let quoteStatusView = quoteStatusView else { return }
         delegate?.statusView(self, quoteStatusView: quoteStatusView, authorAvatarButtonDidPressed: quoteStatusView.authorAvatarButton)
+    }
+    
+    @objc private func translateButtonDidPressed(_ sender: UIButton) {
+        logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public)")
+        delegate?.statusView(self, translateButtonDidPressed: sender)
     }
 }
 
@@ -1073,6 +1113,10 @@ extension StatusView: StatusViewDelegate {
     }
     
     public func statusView(_ statusView: StatusView, statusToolbar: StatusToolbar, menuActionDidPressed action: StatusToolbar.MenuAction, menuButton button: UIButton) {
+        assertionFailure()
+    }
+    
+    public func statusView(_ statusView: StatusView, translateButtonDidPressed button: UIButton) {
         assertionFailure()
     }
     
