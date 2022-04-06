@@ -11,6 +11,7 @@ import UIKit
 import Photos
 import Alamofire
 import AlamofireImage
+import TwidereCommon
 import SwiftMessages
 
 public final class PhotoLibraryService: NSObject {
@@ -49,6 +50,9 @@ extension PhotoLibraryService {
             }
             
             try await save(data: data, from: source, resourceType: resourceType)
+            
+            // update store review count trigger
+            UserDefaults.shared.storeReviewInteractTriggerCount += 1
             
         } catch {
             throw error

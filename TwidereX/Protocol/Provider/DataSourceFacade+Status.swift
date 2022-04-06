@@ -58,6 +58,9 @@ extension DataSourceFacade {
                     status: status,
                     authenticationContext: authenticationContext
                 )
+                
+                // update store review count trigger
+                UserDefaults.shared.storeReviewInteractTriggerCount += 1
             } catch {
                 provider.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): update repost failure: \(error.localizedDescription)")
             }
@@ -68,6 +71,9 @@ extension DataSourceFacade {
                     status: status,
                     authenticationContext: authenticationContext
                 )
+                
+                // update store review count trigger
+                UserDefaults.shared.storeReviewInteractTriggerCount += 1
             } catch {
                 provider.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): update like failure: \(error.localizedDescription)")
             }
