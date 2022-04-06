@@ -531,6 +531,8 @@ public enum L10n {
         public static let cancel = L10n.tr("Localizable", "Common.Controls.Actions.Cancel")
         /// Confirm
         public static let confirm = L10n.tr("Localizable", "Common.Controls.Actions.Confirm")
+        /// Copy
+        public static let copy = L10n.tr("Localizable", "Common.Controls.Actions.Copy")
         /// Delete
         public static let delete = L10n.tr("Localizable", "Common.Controls.Actions.Delete")
         /// Edit
@@ -547,6 +549,10 @@ public enum L10n {
         public static let save = L10n.tr("Localizable", "Common.Controls.Actions.Save")
         /// Save photo
         public static let savePhoto = L10n.tr("Localizable", "Common.Controls.Actions.SavePhoto")
+        /// Share
+        public static let share = L10n.tr("Localizable", "Common.Controls.Actions.Share")
+        /// Share link
+        public static let shareLink = L10n.tr("Localizable", "Common.Controls.Actions.ShareLink")
         /// Share media
         public static let shareMedia = L10n.tr("Localizable", "Common.Controls.Actions.ShareMedia")
         /// Sign in
@@ -557,6 +563,12 @@ public enum L10n {
         public static let takePhoto = L10n.tr("Localizable", "Common.Controls.Actions.TakePhoto")
         /// Yes
         public static let yes = L10n.tr("Localizable", "Common.Controls.Actions.Yes")
+        public enum ShareMediaMenu {
+          /// Link
+          public static let link = L10n.tr("Localizable", "Common.Controls.Actions.ShareMediaMenu.Link")
+          /// Media
+          public static let media = L10n.tr("Localizable", "Common.Controls.Actions.ShareMediaMenu.Media")
+        }
       }
       public enum Friendship {
         /// Block %@

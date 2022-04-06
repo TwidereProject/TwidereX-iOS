@@ -154,6 +154,7 @@
 "Common.Controls.Actions.Browse" = "Browse";
 "Common.Controls.Actions.Cancel" = "Cancel";
 "Common.Controls.Actions.Confirm" = "Confirm";
+"Common.Controls.Actions.Copy" = "Copy";
 "Common.Controls.Actions.Delete" = "Delete";
 "Common.Controls.Actions.Edit" = "Edit";
 "Common.Controls.Actions.Ok" = "OK";
@@ -162,7 +163,11 @@
 "Common.Controls.Actions.Remove" = "Remove";
 "Common.Controls.Actions.Save" = "Save";
 "Common.Controls.Actions.SavePhoto" = "Save photo";
+"Common.Controls.Actions.Share" = "Share";
+"Common.Controls.Actions.ShareLink" = "Share link";
 "Common.Controls.Actions.ShareMedia" = "Share media";
+"Common.Controls.Actions.ShareMediaMenu.Link" = "Link";
+"Common.Controls.Actions.ShareMediaMenu.Media" = "Media";
 "Common.Controls.Actions.SignIn" = "Sign in";
 "Common.Controls.Actions.SignOut" = "Sign out";
 "Common.Controls.Actions.TakePhoto" = "Take photo";

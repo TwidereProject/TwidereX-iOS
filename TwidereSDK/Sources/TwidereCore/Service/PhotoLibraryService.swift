@@ -59,7 +59,23 @@ extension PhotoLibraryService {
         }
     }
     
-    func data(from source: Source) async throws -> Data? {
+    public func copy(source: Source, resourceType: PHAssetResourceType) async throws {
+        do {
+            guard let data = try await data(from: source) else {
+                throw PhotoLibraryError.badPayload
+            }
+            
+            try await copy(data: data, from: source, resourceType: resourceType)
+            
+            // update store review count trigger
+            UserDefaults.shared.storeReviewInteractTriggerCount += 1
+            
+        } catch {
+            throw error
+        }
+    }
+    
+    public func data(from source: Source) async throws -> Data? {
         switch source {
         case .remote(let url):
             logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): download media: \(url.absoluteString)")
@@ -78,6 +94,10 @@ extension PhotoLibraryService {
             return image.pngData()
         }
     }
+    
+}
+    
+extension PhotoLibraryService {
     
     func save(data: Data, from source: Source, resourceType: PHAssetResourceType) async throws {
         assert(PHAssetCreationRequest.supportsAssetResourceTypes([resourceType.rawValue as NSNumber]))
@@ -119,6 +139,15 @@ extension PhotoLibraryService {
             debugPrint(error)
             throw error
         }
+    }
+    
+    func copy(data: Data, from source: Source, resourceType: PHAssetResourceType) async throws {
+        switch resourceType {
+        case .video:
+            UIPasteboard.general.setData(data, forPasteboardType: UTType.mpeg4Movie.identifier)     // public.mpeg-4
+        default:
+            UIPasteboard.general.image = await UIImage(data: data, scale: UIScreen.main.scale)
+        }   // end switch
     }
     
 }

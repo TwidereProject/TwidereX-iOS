@@ -154,6 +154,7 @@
 "Common.Controls.Actions.Browse" = "Navegar";
 "Common.Controls.Actions.Cancel" = "Cancelar";
 "Common.Controls.Actions.Confirm" = "Confirmar";
+"Common.Controls.Actions.Copy" = "Copy";
 "Common.Controls.Actions.Delete" = "Excluir";
 "Common.Controls.Actions.Edit" = "Editar";
 "Common.Controls.Actions.Ok" = "OK";
@@ -162,7 +163,11 @@
 "Common.Controls.Actions.Remove" = "Remover";
 "Common.Controls.Actions.Save" = "Salvar";
 "Common.Controls.Actions.SavePhoto" = "Salvar foto";
+"Common.Controls.Actions.Share" = "Compartilhar";
+"Common.Controls.Actions.ShareLink" = "Compartilhar link";
 "Common.Controls.Actions.ShareMedia" = "Compartilhar mídia";
+"Common.Controls.Actions.ShareMediaMenu.Link" = "Link";
+"Common.Controls.Actions.ShareMediaMenu.Media" = "Mídia";
 "Common.Controls.Actions.SignIn" = "Entrar";
 "Common.Controls.Actions.SignOut" = "Encerrar sessão";
 "Common.Controls.Actions.TakePhoto" = "Tirar foto";
