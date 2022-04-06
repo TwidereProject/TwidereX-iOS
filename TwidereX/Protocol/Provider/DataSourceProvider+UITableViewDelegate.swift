@@ -91,7 +91,7 @@ extension UITableViewDelegate where Self: DataSourceProvider & MediaPreviewTrans
                             state: .off
                         ) { [weak self] _ in
                             guard let self = self else { return }
-                            Task {
+                            Task { @MainActor in
                                 let impactFeedbackGenerator = UIImpactFeedbackGenerator(style: .light)
                                 let notificationFeedbackGenerator = UINotificationFeedbackGenerator()
                                 
@@ -116,7 +116,7 @@ extension UITableViewDelegate where Self: DataSourceProvider & MediaPreviewTrans
                             state: .off
                         ) { [weak self] _ in
                             guard let self = self else { return }
-                            Task {
+                            Task { @MainActor in
                                 let impactFeedbackGenerator = UIImpactFeedbackGenerator(style: .light)
                                 let notificationFeedbackGenerator = UINotificationFeedbackGenerator()
                                 
@@ -147,7 +147,7 @@ extension UITableViewDelegate where Self: DataSourceProvider & MediaPreviewTrans
                                     state: .off
                                 ) { [weak self] _ in
                                     guard let self = self else { return }
-                                    Task {
+                                    Task { @MainActor in
                                         let applicationActivities: [UIActivity] = [
                                             SafariActivity(sceneCoordinator: self.coordinator)
                                         ]
@@ -166,23 +166,22 @@ extension UITableViewDelegate where Self: DataSourceProvider & MediaPreviewTrans
                                     state: .off
                                 ) { [weak self] _ in
                                     guard let self = self else { return }
-                                    Task {
+                                    Task { @MainActor in
                                         let applicationActivities: [UIActivity] = [
                                             SafariActivity(sceneCoordinator: self.coordinator)
                                         ]
                                         // FIXME: handle error
-                                        guard let assetData = try await self.context.photoLibraryService.data(from: .remote(url: assetURL)) else {
+                                        guard let url = try await self.context.photoLibraryService.file(from: .remote(url: assetURL)) else {
                                             return
                                         }
                                         let activityViewController = UIActivityViewController(
-                                            activityItems: [MediaActivityItemSource(assetURL: assetURL, assetData: assetData)],
+                                            activityItems: [url],
                                             applicationActivities: applicationActivities
                                         )
                                         activityViewController.popoverPresentationController?.sourceView = mediaView
                                         self.present(activityViewController, animated: true, completion: nil)
                                     }   // end Task
                                 },
-
                             ]
                         ),
                     ]   // end children

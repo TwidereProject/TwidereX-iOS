@@ -95,6 +95,24 @@ extension PhotoLibraryService {
         }
     }
     
+    public func file(from source: Source) async throws -> URL? {
+        guard let data = try await data(from: source) else { return nil }
+        
+        let temporaryDirectory = FileManager.default.temporaryDirectory
+        let downloadDirectory = temporaryDirectory.appendingPathComponent("Download", isDirectory: true)
+        try? FileManager.default.createDirectory(at: downloadDirectory, withIntermediateDirectories: true, attributes: nil)
+        let pathExtension: String = {
+            switch source {
+            case .remote(let url):  return url.pathExtension
+            case .image:            return "png"
+            }
+        }()
+        let assetURL = downloadDirectory.appendingPathComponent(UUID().uuidString, isDirectory: false).appendingPathExtension(pathExtension)
+        
+        try data.write(to: assetURL)
+        return assetURL
+    }
+    
 }
     
 extension PhotoLibraryService {

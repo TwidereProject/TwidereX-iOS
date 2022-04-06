@@ -250,7 +250,6 @@
 		DB92570A251C8FE0004FEFB5 /* ProfileHeaderViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB925709251C8FE0004FEFB5 /* ProfileHeaderViewController.swift */; };
 		DB925744251C9CD6004FEFB5 /* ProfilePagingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB925743251C9CD6004FEFB5 /* ProfilePagingViewController.swift */; };
 		DB925749251C9D48004FEFB5 /* ProfilePagingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB925748251C9D47004FEFB5 /* ProfilePagingViewModel.swift */; };
-		DB932E5127FDBC410036A824 /* MediaActivityItemSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB932E5027FDBC410036A824 /* MediaActivityItemSource.swift */; };
 		DB94B6B126C64DAC00A2E8A1 /* Introspect in Frameworks */ = {isa = PBXBuildFile; productRef = DB94B6B026C64DAC00A2E8A1 /* Introspect */; };
 		DB94B6B426C65BE100A2E8A1 /* MastodonAuthenticationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB94B6B326C65BE100A2E8A1 /* MastodonAuthenticationController.swift */; };
 		DB94B6BE26C65CB000A2E8A1 /* AppShared.h in Headers */ = {isa = PBXBuildFile; fileRef = DB94B6BD26C65CB000A2E8A1 /* AppShared.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -727,7 +726,6 @@
 		DB925709251C8FE0004FEFB5 /* ProfileHeaderViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileHeaderViewController.swift; sourceTree = "<group>"; };
 		DB925743251C9CD6004FEFB5 /* ProfilePagingViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfilePagingViewController.swift; sourceTree = "<group>"; };
 		DB925748251C9D47004FEFB5 /* ProfilePagingViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfilePagingViewModel.swift; sourceTree = "<group>"; };
-		DB932E5027FDBC410036A824 /* MediaActivityItemSource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MediaActivityItemSource.swift; sourceTree = "<group>"; };
 		DB94B6B326C65BE100A2E8A1 /* MastodonAuthenticationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MastodonAuthenticationController.swift; sourceTree = "<group>"; };
 		DB94B6BB26C65CB000A2E8A1 /* AppShared.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = AppShared.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		DB94B6BD26C65CB000A2E8A1 /* AppShared.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppShared.h; sourceTree = "<group>"; };
@@ -1926,7 +1924,6 @@
 				DB76A667275F896E00A50673 /* ShareActivityProvider.swift */,
 				DBCB4089255D8C2B00DD8D8F /* SafariActivity.swift */,
 				DBC8E04F257653E100401E20 /* SavePhotoActivity.swift */,
-				DB932E5027FDBC410036A824 /* MediaActivityItemSource.swift */,
 			);
 			path = Activity;
 			sourceTree = "<group>";
@@ -3050,7 +3047,6 @@
 				DB262A4E2726928F00D18EF3 /* SearchMediaViewModel.swift in Sources */,
 				DBA6B31127E9CBCC004D052D /* AddListMemberViewModel.swift in Sources */,
 				DB9EC4EA255A6BC7005403AA /* TwitterAccountUnlockViewController.swift in Sources */,
-				DB932E5127FDBC410036A824 /* MediaActivityItemSource.swift in Sources */,
 				DB1E48142772CE850074F6A0 /* SearchViewModel+Diffable.swift in Sources */,
 				DB71C7D1271EB09A00BE3819 /* DataSourceFacade+Friendship.swift in Sources */,
 				DBCE2E912591A06300926D09 /* UINavigationController.swift in Sources */,
