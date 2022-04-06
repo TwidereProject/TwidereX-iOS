@@ -10,6 +10,7 @@ import os.log
 import Foundation
 import TwidereCommon
 import TwidereCore
+import MastodonMeta
 
 extension DataSourceFacade {
     @MainActor
@@ -24,9 +25,14 @@ extension DataSourceFacade {
             case .twitter(let status):
                 return status.displayText
             case .mastodon(let status):
+                let spoilerText = status.spoilerText.flatMap {
+                    Meta.convert(from: .mastodon(string: $0, emojis: [:]))
+                }
+                
+                let content = Meta.convert(from: .mastodon(string: status.content, emojis: [:]))
                 return [
-                    status.spoilerText,
-                    status.content
+                    spoilerText?.string,
+                    content.string
                 ]
                 .compactMap { $0 }
                 .joined(separator: "\n")
