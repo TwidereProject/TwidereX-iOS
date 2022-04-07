@@ -70,8 +70,9 @@ class Helper {
     
     private func map(filename: String) -> (filename: String, keyStyle: Parser.KeyStyle)? {
         switch filename {
-        case "app":             return ("Localizable", .swiftgen)
+        case "app":             return ("Localizable", .strings)
         case "ios-infoPlist":   return ("infoPlist", .infoPlist)
+        case "Intents":         return ("Intents", .strings)
         default:                return nil
         }
     }
@@ -80,6 +81,7 @@ class Helper {
         switch filename {
         case "app":             return "module"
         case "ios-infoPlist":   return "main"
+        case "Intents":         return "TwidereXIntent"
         default:                return nil
         }
     }
@@ -144,10 +146,26 @@ extension Helper {
 let currentFileURL = URL(fileURLWithPath: "\(#file)", isDirectory: false)
 let packageRootURL = currentFileURL.deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent()
 
+// convert input JSON files
+// output
+// - main:
+//      infoPlist.strings
+// - module:
+//      Localized.strings
 let inputDirectoryURL = packageRootURL.appendingPathComponent("input", isDirectory: true)
 let outputDirectoryURL = packageRootURL.appendingPathComponent("output", isDirectory: true)
 Helper().convert(from: inputDirectoryURL, to: outputDirectoryURL)
 
-// use stringdict without convert
+// copy stringdict without convert
+// output
+// - module:
+//      Localized.stringsdict
 let outputBundleModuleDirectoryURL = outputDirectoryURL.appendingPathComponent("module", isDirectory: true)
 Helper().copy(from: inputDirectoryURL, to: outputBundleModuleDirectoryURL, sourceFilename: "app", destinationFilename: "Localizable", pathExtension: "stringsdict")
+
+// copy TwidereIntent strings without convert
+// output
+// - module:
+//      Intents.strings
+let outputTwidereIntentDirectoryURL = outputDirectoryURL.appendingPathComponent("TwidereXIntent", isDirectory: true)
+Helper().copy(from: inputDirectoryURL, to: outputTwidereIntentDirectoryURL, sourceFilename: "Intents", destinationFilename: "Intents", pathExtension: "strings")

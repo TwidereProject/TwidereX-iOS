@@ -9,9 +9,9 @@ echo ${SRCROOT}
 
 # download translation resources
 mkdir -p ./Localization/Crowdin
-crowdin download --all
+crowdin download --all --config ./crowdin-download.yml
 
-# prepare resources
+# # prepare resources
 INPUT_DIR="${SRCROOT}/Localization/StringsConvertor/input"
 echo "Prepare resources at ${INPUT_DIR}"
 
@@ -28,6 +28,7 @@ sh ./scripts/build.sh
 # copy strings
 cp -R ${SRCROOT}/Localization/StringsConvertor/output/module/ ${SRCROOT}/TwidereSDK/Sources/TwidereLocalization/Resources
 cp -R ${SRCROOT}/Localization/StringsConvertor/output/main/ ${SRCROOT}/TwidereX/Resources
+cp -R ${SRCROOT}/Localization/StringsConvertor/output/TwidereXIntent/ ${SRCROOT}/TwidereXIntent
 
 # cleanup input & output
 sh ./scripts/cleanup.sh

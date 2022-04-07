@@ -250,6 +250,8 @@
 		DB92570A251C8FE0004FEFB5 /* ProfileHeaderViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB925709251C8FE0004FEFB5 /* ProfileHeaderViewController.swift */; };
 		DB925744251C9CD6004FEFB5 /* ProfilePagingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB925743251C9CD6004FEFB5 /* ProfilePagingViewController.swift */; };
 		DB925749251C9D48004FEFB5 /* ProfilePagingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB925748251C9D47004FEFB5 /* ProfilePagingViewModel.swift */; };
+		DB932E5227FEC7390036A824 /* Intents.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = DB932E5527FEC7390036A824 /* Intents.intentdefinition */; settings = {ATTRIBUTES = (codegen, ); }; };
+		DB932E5327FEC7390036A824 /* Intents.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = DB932E5527FEC7390036A824 /* Intents.intentdefinition */; };
 		DB94B6B126C64DAC00A2E8A1 /* Introspect in Frameworks */ = {isa = PBXBuildFile; productRef = DB94B6B026C64DAC00A2E8A1 /* Introspect */; };
 		DB94B6B426C65BE100A2E8A1 /* MastodonAuthenticationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB94B6B326C65BE100A2E8A1 /* MastodonAuthenticationController.swift */; };
 		DB94B6BE26C65CB000A2E8A1 /* AppShared.h in Headers */ = {isa = PBXBuildFile; fileRef = DB94B6BD26C65CB000A2E8A1 /* AppShared.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -366,8 +368,6 @@
 		DBFDCE4127F450FC00BE99E3 /* Intents.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DBFDCE0327F446BB00BE99E3 /* Intents.framework */; };
 		DBFDCE4427F450FC00BE99E3 /* IntentHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBFDCE4327F450FC00BE99E3 /* IntentHandler.swift */; };
 		DBFDCE4827F450FC00BE99E3 /* TwidereXIntent.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = DBFDCE4027F450FC00BE99E3 /* TwidereXIntent.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
-		DBFDCE4D27F4510A00BE99E3 /* Intents.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = DBFDCE4C27F4510A00BE99E3 /* Intents.intentdefinition */; };
-		DBFDCE4E27F4510C00BE99E3 /* Intents.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = DBFDCE4C27F4510A00BE99E3 /* Intents.intentdefinition */; settings = {ATTRIBUTES = (codegen, ); }; };
 		DBFDCE5027F4515E00BE99E3 /* SwitchAccountIntentHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBFDCE4F27F4515E00BE99E3 /* SwitchAccountIntentHandler.swift */; };
 		DBFDCE5427F451FC00BE99E3 /* AppShared.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DB94B6BB26C65CB000A2E8A1 /* AppShared.framework */; };
 		E5E65DC85CA480AE17571EFC /* Pods_AppShared.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 84835D7E14A262E389DD4AB3 /* Pods_AppShared.framework */; };
@@ -726,6 +726,19 @@
 		DB925709251C8FE0004FEFB5 /* ProfileHeaderViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileHeaderViewController.swift; sourceTree = "<group>"; };
 		DB925743251C9CD6004FEFB5 /* ProfilePagingViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfilePagingViewController.swift; sourceTree = "<group>"; };
 		DB925748251C9D47004FEFB5 /* ProfilePagingViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfilePagingViewModel.swift; sourceTree = "<group>"; };
+		DB932E5427FEC7390036A824 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.intentdefinition; name = Base; path = Base.lproj/Intents.intentdefinition; sourceTree = "<group>"; };
+		DB932E5727FEC73B0036A824 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Intents.strings; sourceTree = "<group>"; };
+		DB932E5927FEC73C0036A824 /* ar */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ar; path = ar.lproj/Intents.strings; sourceTree = "<group>"; };
+		DB932E5B27FEC73F0036A824 /* eu */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = eu; path = eu.lproj/Intents.strings; sourceTree = "<group>"; };
+		DB932E5D27FEC7410036A824 /* ca */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ca; path = ca.lproj/Intents.strings; sourceTree = "<group>"; };
+		DB932E5F27FEC7430036A824 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Intents.strings"; sourceTree = "<group>"; };
+		DB932E6127FEC7440036A824 /* gl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = gl; path = gl.lproj/Intents.strings; sourceTree = "<group>"; };
+		DB932E6327FEC7450036A824 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/Intents.strings; sourceTree = "<group>"; };
+		DB932E6527FEC7450036A824 /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/Intents.strings; sourceTree = "<group>"; };
+		DB932E6727FEC7460036A824 /* ko */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ko; path = ko.lproj/Intents.strings; sourceTree = "<group>"; };
+		DB932E6927FEC7480036A824 /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/Intents.strings; sourceTree = "<group>"; };
+		DB932E6B27FEC7490036A824 /* pt-BR */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "pt-BR"; path = "pt-BR.lproj/Intents.strings"; sourceTree = "<group>"; };
+		DB932E6D27FEC7490036A824 /* tr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = tr; path = tr.lproj/Intents.strings; sourceTree = "<group>"; };
 		DB94B6B326C65BE100A2E8A1 /* MastodonAuthenticationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MastodonAuthenticationController.swift; sourceTree = "<group>"; };
 		DB94B6BB26C65CB000A2E8A1 /* AppShared.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = AppShared.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		DB94B6BD26C65CB000A2E8A1 /* AppShared.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppShared.h; sourceTree = "<group>"; };
@@ -879,7 +892,6 @@
 		DBFDCE4027F450FC00BE99E3 /* TwidereXIntent.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = TwidereXIntent.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		DBFDCE4327F450FC00BE99E3 /* IntentHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntentHandler.swift; sourceTree = "<group>"; };
 		DBFDCE4527F450FC00BE99E3 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		DBFDCE4C27F4510A00BE99E3 /* Intents.intentdefinition */ = {isa = PBXFileReference; lastKnownFileType = file.intentdefinition; path = Intents.intentdefinition; sourceTree = "<group>"; };
 		DBFDCE4F27F4515E00BE99E3 /* SwitchAccountIntentHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwitchAccountIntentHandler.swift; sourceTree = "<group>"; };
 		DBFDCE5127F451A200BE99E3 /* TwidereXIntent.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = TwidereXIntent.entitlements; sourceTree = "<group>"; };
 		F58BC0DB264850C274FDE699 /* Pods-TwidereX.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TwidereX.debug.xcconfig"; path = "Target Support Files/Pods-TwidereX/Pods-TwidereX.debug.xcconfig"; sourceTree = "<group>"; };
@@ -2324,7 +2336,7 @@
 			children = (
 				DBFDCE5127F451A200BE99E3 /* TwidereXIntent.entitlements */,
 				DBFDCE4527F450FC00BE99E3 /* Info.plist */,
-				DBFDCE4C27F4510A00BE99E3 /* Intents.intentdefinition */,
+				DB932E5527FEC7390036A824 /* Intents.intentdefinition */,
 				DBFDCE4327F450FC00BE99E3 /* IntentHandler.swift */,
 				DB5BF12627F5A5CE002A3EF5 /* Model */,
 				DB5BF12727F5A5D3002A3EF5 /* Handler */,
@@ -2912,7 +2924,7 @@
 				DB213FA927392B81009ABD74 /* HashtagTimelineViewModel.swift in Sources */,
 				DB0D3A38255E4341000BB9FA /* UserLikeTimelineViewController+StatusProvider.swift in Sources */,
 				DB7E22FE2552A6A700551314 /* UserLikeTimelineViewModel+State.swift in Sources */,
-				DBFDCE4E27F4510C00BE99E3 /* Intents.intentdefinition in Sources */,
+				DB932E5227FEC7390036A824 /* Intents.intentdefinition in Sources */,
 				DBA210362759D7B1000B7CB2 /* FollowingListViewModel+State.swift in Sources */,
 				DB3FC04025527053003A2F8A /* UserMediaTimelineViewModel.swift in Sources */,
 				DBBBBE592744E800007ACB4B /* ComposeViewController.swift in Sources */,
@@ -3207,7 +3219,7 @@
 				DB5BF12527F5A5C1002A3EF5 /* Account+Fetch.swift in Sources */,
 				DB5BF12D27F5BAD5002A3EF5 /* AuthenticationIndex+Fetch.swift in Sources */,
 				DBFDCE5027F4515E00BE99E3 /* SwitchAccountIntentHandler.swift in Sources */,
-				DBFDCE4D27F4510A00BE99E3 /* Intents.intentdefinition in Sources */,
+				DB932E5327FEC7390036A824 /* Intents.intentdefinition in Sources */,
 				DB5BF12327F5A549002A3EF5 /* PublishPostIntentHandler.swift in Sources */,
 				DBFDCE4427F450FC00BE99E3 /* IntentHandler.swift in Sources */,
 			);
@@ -3259,6 +3271,26 @@
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
+		DB932E5527FEC7390036A824 /* Intents.intentdefinition */ = {
+			isa = PBXVariantGroup;
+			children = (
+				DB932E5427FEC7390036A824 /* Base */,
+				DB932E5727FEC73B0036A824 /* en */,
+				DB932E5927FEC73C0036A824 /* ar */,
+				DB932E5B27FEC73F0036A824 /* eu */,
+				DB932E5D27FEC7410036A824 /* ca */,
+				DB932E5F27FEC7430036A824 /* zh-Hans */,
+				DB932E6127FEC7440036A824 /* gl */,
+				DB932E6327FEC7450036A824 /* de */,
+				DB932E6527FEC7450036A824 /* ja */,
+				DB932E6727FEC7460036A824 /* ko */,
+				DB932E6927FEC7480036A824 /* es */,
+				DB932E6B27FEC7490036A824 /* pt-BR */,
+				DB932E6D27FEC7490036A824 /* tr */,
+			);
+			name = Intents.intentdefinition;
+			sourceTree = "<group>";
+		};
 		DBBBBE622744E8CC007ACB4B /* MainInterface.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
