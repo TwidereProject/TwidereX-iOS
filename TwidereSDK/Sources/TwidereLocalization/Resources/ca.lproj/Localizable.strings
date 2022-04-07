@@ -121,6 +121,9 @@
 "Common.Alerts.PermissionDeniedFriendshipBlocked.Title" = "Permís denegat";
 "Common.Alerts.PermissionDeniedNotAuthorized.Message" = "Ho sento, no estàs autoritzat";
 "Common.Alerts.PermissionDeniedNotAuthorized.Title" = "Permís denegat";
+"Common.Alerts.PhotoCopied.Title" = "Photo Copied";
+"Common.Alerts.PhotoCopyFail.Message" = "Si us plau, torna-ho a provar";
+"Common.Alerts.PhotoCopyFail.Title" = "Failed to Copy Photo";
 "Common.Alerts.PhotoSaveFail.Message" = "Si us plau, torna-ho a provar";
 "Common.Alerts.PhotoSaveFail.Title" = "Error al desar la imatge";
 "Common.Alerts.PhotoSaved.Title" = "Imatge desada";
@@ -204,6 +207,7 @@
 "Common.Controls.Status.Actions.PinOnProfile" = "Pin on Profile";
 "Common.Controls.Status.Actions.Quote" = "Cita";
 "Common.Controls.Status.Actions.Retweet" = "Repiular";
+"Common.Controls.Status.Actions.SaveMedia" = "Save media";
 "Common.Controls.Status.Actions.Share" = "Share";
 "Common.Controls.Status.Actions.ShareContent" = "Share content";
 "Common.Controls.Status.Actions.ShareLink" = "Comparteix l'enllaç";

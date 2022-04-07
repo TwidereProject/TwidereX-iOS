@@ -121,6 +121,9 @@
 "Common.Alerts.PermissionDeniedFriendshipBlocked.Title" = "权限已被拒绝";
 "Common.Alerts.PermissionDeniedNotAuthorized.Message" = "对不起，您没有被授权";
 "Common.Alerts.PermissionDeniedNotAuthorized.Title" = "权限已被拒绝";
+"Common.Alerts.PhotoCopied.Title" = "照片已复制";
+"Common.Alerts.PhotoCopyFail.Message" = "请重试";
+"Common.Alerts.PhotoCopyFail.Title" = "照片保存失败";
 "Common.Alerts.PhotoSaveFail.Message" = "请重试";
 "Common.Alerts.PhotoSaveFail.Title" = "保存照片失败";
 "Common.Alerts.PhotoSaved.Title" = "照片已保存";
@@ -204,6 +207,7 @@
 "Common.Controls.Status.Actions.PinOnProfile" = "在个人资料页面置顶";
 "Common.Controls.Status.Actions.Quote" = "引用";
 "Common.Controls.Status.Actions.Retweet" = "转推";
+"Common.Controls.Status.Actions.SaveMedia" = "保存媒体";
 "Common.Controls.Status.Actions.Share" = "分享";
 "Common.Controls.Status.Actions.ShareContent" = "分享内容";
 "Common.Controls.Status.Actions.ShareLink" = "分享链接";

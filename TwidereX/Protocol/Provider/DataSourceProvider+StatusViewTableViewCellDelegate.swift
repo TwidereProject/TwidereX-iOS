@@ -362,6 +362,27 @@ extension StatusViewTableViewCellDelegate where Self: DataSourceProvider {
             }
 
             switch action {
+            case .saveMedia:
+                let mediaViewConfigurations = await statusView.viewModel.mediaViewConfigurations
+                let impactFeedbackGenerator = await UIImpactFeedbackGenerator(style: .light)
+                let notificationFeedbackGenerator = UINotificationFeedbackGenerator()
+
+                do {
+                    await impactFeedbackGenerator.impactOccurred()
+                    for configuration in mediaViewConfigurations {
+                        guard let url = configuration.assetURL.flatMap({ URL(string: $0) }) else { continue }
+                        try await context.photoLibraryService.save(source: .remote(url: url), resourceType: configuration.resourceType)
+                    }
+                    await context.photoLibraryService.presentSuccessNotification(title: L10n.Common.Alerts.PhotoSaved.title)
+                    await notificationFeedbackGenerator.notificationOccurred(.success)
+                } catch {
+                    await context.photoLibraryService.presentFailureNotification(
+                        error: error,
+                        title: L10n.Common.Alerts.PhotoSaveFail.title,
+                        message: L10n.Common.Alerts.PhotoSaveFail.message
+                    )
+                    await notificationFeedbackGenerator.notificationOccurred(.error)
+                }
             case .translate:
                 try await DataSourceFacade.responseToStatusTranslate(
                     provider: self,

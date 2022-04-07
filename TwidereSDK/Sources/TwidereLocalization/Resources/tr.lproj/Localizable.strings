@@ -121,6 +121,9 @@
 "Common.Alerts.PermissionDeniedFriendshipBlocked.Title" = "İzin Reddedildi";
 "Common.Alerts.PermissionDeniedNotAuthorized.Message" = "Üzgünüm, yetkiniz yok";
 "Common.Alerts.PermissionDeniedNotAuthorized.Title" = "İzin Reddedildi";
+"Common.Alerts.PhotoCopied.Title" = "Photo Copied";
+"Common.Alerts.PhotoCopyFail.Message" = "Lütfen tekrar deneyin";
+"Common.Alerts.PhotoCopyFail.Title" = "Failed to Copy Photo";
 "Common.Alerts.PhotoSaveFail.Message" = "Lütfen tekrar deneyin";
 "Common.Alerts.PhotoSaveFail.Title" = "Fotoğrafı kaydetme başarısız";
 "Common.Alerts.PhotoSaved.Title" = "Fotoğraf Kaydedildi";
@@ -204,6 +207,7 @@
 "Common.Controls.Status.Actions.PinOnProfile" = "Profilde Sabitle";
 "Common.Controls.Status.Actions.Quote" = "Alıntı";
 "Common.Controls.Status.Actions.Retweet" = "Retweetle";
+"Common.Controls.Status.Actions.SaveMedia" = "Save media";
 "Common.Controls.Status.Actions.Share" = "Paylaş";
 "Common.Controls.Status.Actions.ShareContent" = "İçeriği paylaş";
 "Common.Controls.Status.Actions.ShareLink" = "Linki paylaş";

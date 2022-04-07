@@ -121,6 +121,9 @@
 "Common.Alerts.PermissionDeniedFriendshipBlocked.Title" = "Zugriff verweigert";
 "Common.Alerts.PermissionDeniedNotAuthorized.Message" = "Entschuldigung, Sie sind nicht berechtigt";
 "Common.Alerts.PermissionDeniedNotAuthorized.Title" = "Zugriff verweigert";
+"Common.Alerts.PhotoCopied.Title" = "Photo Copied";
+"Common.Alerts.PhotoCopyFail.Message" = "Bitte versuche es erneut";
+"Common.Alerts.PhotoCopyFail.Title" = "Failed to Copy Photo";
 "Common.Alerts.PhotoSaveFail.Message" = "Bitte versuche es erneut";
 "Common.Alerts.PhotoSaveFail.Title" = "Foto konnte nicht gespeichert werden";
 "Common.Alerts.PhotoSaved.Title" = "Foto gespeichert";
@@ -204,6 +207,7 @@
 "Common.Controls.Status.Actions.PinOnProfile" = "Pin on Profile";
 "Common.Controls.Status.Actions.Quote" = "Zitieren";
 "Common.Controls.Status.Actions.Retweet" = "Retweet";
+"Common.Controls.Status.Actions.SaveMedia" = "Save media";
 "Common.Controls.Status.Actions.Share" = "Share";
 "Common.Controls.Status.Actions.ShareContent" = "Share content";
 "Common.Controls.Status.Actions.ShareLink" = "Link teilen";

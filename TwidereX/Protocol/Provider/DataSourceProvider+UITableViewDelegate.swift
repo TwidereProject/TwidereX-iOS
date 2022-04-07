@@ -101,10 +101,14 @@ extension UITableViewDelegate where Self: DataSourceProvider & MediaPreviewTrans
                                         source: .remote(url: assetURL),
                                         resourceType: resourceType
                                     )
-                                    self.context.photoLibraryService.presentSuccessNotification()
+                                    self.context.photoLibraryService.presentSuccessNotification(title: L10n.Common.Alerts.PhotoSaved.title)
                                     notificationFeedbackGenerator.notificationOccurred(.success)
                                 } catch {
-                                    self.context.photoLibraryService.presentFailureNotification(error: error)
+                                    self.context.photoLibraryService.presentFailureNotification(
+                                        error: error,
+                                        title: L10n.Common.Alerts.PhotoSaveFail.title,
+                                        message: L10n.Common.Alerts.PhotoSaveFail.message
+                                    )
                                     notificationFeedbackGenerator.notificationOccurred(.error)
                                 }
                             }   // end Task
@@ -126,10 +130,14 @@ extension UITableViewDelegate where Self: DataSourceProvider & MediaPreviewTrans
                                         source: .remote(url: assetURL),
                                         resourceType: resourceType
                                     )
-                                    self.context.photoLibraryService.presentSuccessNotification()
+                                    self.context.photoLibraryService.presentSuccessNotification(title: L10n.Common.Alerts.PhotoCopied.title)
                                     notificationFeedbackGenerator.notificationOccurred(.success)
                                 } catch {
-                                    self.context.photoLibraryService.presentFailureNotification(error: error)
+                                    self.context.photoLibraryService.presentFailureNotification(
+                                        error: error,
+                                        title: L10n.Common.Alerts.PhotoCopied.title,
+                                        message: L10n.Common.Alerts.PhotoCopyFail.message
+                                    )
                                     notificationFeedbackGenerator.notificationOccurred(.error)
                                 }
                             }   // end Task

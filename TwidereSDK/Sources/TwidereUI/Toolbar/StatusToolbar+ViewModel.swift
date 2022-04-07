@@ -176,58 +176,81 @@ extension StatusToolbar {
     public struct MenuContext {
         let shareText: String?
         let shareLink: String?
+        let displaySaveMediaAction: Bool
         let displayDeleteAction: Bool
     }
     
     public func setupMenu(menuContext: MenuContext) {
         menuButton.menu = {
-            var children: [UIMenuElement] = [
-                UIAction(
-                    title: L10n.Common.Controls.Status.Actions.copyText.capitalized,
-                    image: UIImage(systemName: "doc.on.doc"),
-                    identifier: nil,
-                    discoverabilityTitle: nil,
-                    attributes: [],
-                    state: .off
-                ) { _ in
-                    guard let text = menuContext.shareText else { return }
-                    UIPasteboard.general.string = text
-                },
-                UIAction(
-                    title: L10n.Common.Controls.Status.Actions.copyLink.capitalized,
-                    image: UIImage(systemName: "link"),
-                    identifier: nil,
-                    discoverabilityTitle: nil,
-                    attributes: [],
-                    state: .off
-                ) { _ in
-                    guard let text = menuContext.shareLink else { return }
-                    UIPasteboard.general.string = text
-                },
-                UIAction(
-                    title: L10n.Common.Controls.Status.Actions.shareLink.capitalized,
-                    image: UIImage(systemName: "square.and.arrow.up"),
-                    identifier: nil,
-                    discoverabilityTitle: nil,
-                    attributes: [],
-                    state: .off
-                ) { [weak self] _ in
-                    guard let self = self else { return }
-                    self.delegate?.statusToolbar(self, menuActionDidPressed: .share, menuButton: self.menuButton)
-                },
-                UIAction(
-                    title: L10n.Common.Controls.Status.Actions.translate.capitalized,
-                    image: UIImage(systemName: "character.bubble"),
-                    identifier: nil,
-                    discoverabilityTitle: nil,
-                    attributes: [],
-                    state: .off
-                ) { [weak self] _ in
-                    guard let self = self else { return }
-                    self.delegate?.statusToolbar(self, menuActionDidPressed: .translate, menuButton: self.menuButton)
-                },
-            ]
+            var children: [UIMenuElement] = []
             
+            let copyTextAction = UIAction(
+                title: L10n.Common.Controls.Status.Actions.copyText.capitalized,
+                image: UIImage(systemName: "doc.on.doc"),
+                identifier: nil,
+                discoverabilityTitle: nil,
+                attributes: [],
+                state: .off
+            ) { _ in
+                guard let text = menuContext.shareText else { return }
+                UIPasteboard.general.string = text
+            }
+            children.append(copyTextAction)
+            
+            let copyLink = UIAction(
+                title: L10n.Common.Controls.Status.Actions.copyLink.capitalized,
+                image: UIImage(systemName: "link"),
+                identifier: nil,
+                discoverabilityTitle: nil,
+                attributes: [],
+                state: .off
+            ) { _ in
+                guard let text = menuContext.shareLink else { return }
+                UIPasteboard.general.string = text
+            }
+            children.append(copyLink)
+                
+            let shareLink = UIAction(
+                title: L10n.Common.Controls.Status.Actions.shareLink.capitalized,
+                image: UIImage(systemName: "square.and.arrow.up"),
+                identifier: nil,
+                discoverabilityTitle: nil,
+                attributes: [],
+                state: .off
+            ) { [weak self] _ in
+                guard let self = self else { return }
+                self.delegate?.statusToolbar(self, menuActionDidPressed: .share, menuButton: self.menuButton)
+            }
+            children.append(shareLink)
+                
+            if menuContext.displaySaveMediaAction {
+                let saveMdeiaAction = UIAction(
+                    title: L10n.Common.Controls.Status.Actions.saveMedia.capitalized,
+                    image: UIImage(systemName: "square.and.arrow.down"),
+                    identifier: nil,
+                    discoverabilityTitle: nil,
+                    attributes: [],
+                    state: .off
+                ) { [weak self] _ in
+                    guard let self = self else { return }
+                    self.delegate?.statusToolbar(self, menuActionDidPressed: .saveMedia, menuButton: self.menuButton)
+                }
+                children.append(saveMdeiaAction)
+            }
+                
+            let translateAction = UIAction(
+                title: L10n.Common.Controls.Status.Actions.translate.capitalized,
+                image: UIImage(systemName: "character.bubble"),
+                identifier: nil,
+                discoverabilityTitle: nil,
+                attributes: [],
+                state: .off
+            ) { [weak self] _ in
+                guard let self = self else { return }
+                self.delegate?.statusToolbar(self, menuActionDidPressed: .translate, menuButton: self.menuButton)
+            }
+            children.append(translateAction)
+                
             if menuContext.displayDeleteAction {
                 let removeAction = UIAction(
                     title: L10n.Common.Controls.Actions.delete,

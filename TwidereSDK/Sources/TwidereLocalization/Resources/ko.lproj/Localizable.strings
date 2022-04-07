@@ -121,6 +121,9 @@
 "Common.Alerts.PermissionDeniedFriendshipBlocked.Title" = "권한 거부됨";
 "Common.Alerts.PermissionDeniedNotAuthorized.Message" = "안타깝지만 권한이 없습니다.";
 "Common.Alerts.PermissionDeniedNotAuthorized.Title" = "권한 거부됨";
+"Common.Alerts.PhotoCopied.Title" = "Photo Copied";
+"Common.Alerts.PhotoCopyFail.Message" = "다시 해보세요.";
+"Common.Alerts.PhotoCopyFail.Title" = "Failed to Copy Photo";
 "Common.Alerts.PhotoSaveFail.Message" = "다시 해보세요.";
 "Common.Alerts.PhotoSaveFail.Title" = "이미지를 저장하지 못했습니다.";
 "Common.Alerts.PhotoSaved.Title" = "이미지를 저장했습니다.";
@@ -204,6 +207,7 @@
 "Common.Controls.Status.Actions.PinOnProfile" = "프로필에 고정";
 "Common.Controls.Status.Actions.Quote" = "인용";
 "Common.Controls.Status.Actions.Retweet" = "리트윗";
+"Common.Controls.Status.Actions.SaveMedia" = "Save media";
 "Common.Controls.Status.Actions.Share" = "공유";
 "Common.Controls.Status.Actions.ShareContent" = "Share content";
 "Common.Controls.Status.Actions.ShareLink" = "링크 공유하기";

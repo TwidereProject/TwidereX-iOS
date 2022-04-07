@@ -121,6 +121,9 @@
 "Common.Alerts.PermissionDeniedFriendshipBlocked.Title" = "رُفض الإذن";
 "Common.Alerts.PermissionDeniedNotAuthorized.Message" = "عذراً، غير مصرح لك";
 "Common.Alerts.PermissionDeniedNotAuthorized.Title" = "رُفض الإذن";
+"Common.Alerts.PhotoCopied.Title" = "Photo Copied";
+"Common.Alerts.PhotoCopyFail.Message" = "الرجاء المحاولة مرة أخرى";
+"Common.Alerts.PhotoCopyFail.Title" = "Failed to Copy Photo";
 "Common.Alerts.PhotoSaveFail.Message" = "الرجاء المحاولة مرة أخرى";
 "Common.Alerts.PhotoSaveFail.Title" = "تعذر حفظ الصورة";
 "Common.Alerts.PhotoSaved.Title" = "حُفظت الصورة";
@@ -204,6 +207,7 @@
 "Common.Controls.Status.Actions.PinOnProfile" = "ثبته في اللاحة";
 "Common.Controls.Status.Actions.Quote" = "اقتبس";
 "Common.Controls.Status.Actions.Retweet" = "أعد تغريده";
+"Common.Controls.Status.Actions.SaveMedia" = "Save media";
 "Common.Controls.Status.Actions.Share" = "شاركه";
 "Common.Controls.Status.Actions.ShareContent" = "شارك المحتوى";
 "Common.Controls.Status.Actions.ShareLink" = "شارك الرابط";

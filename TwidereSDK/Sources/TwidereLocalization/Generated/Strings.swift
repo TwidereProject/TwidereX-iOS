@@ -404,6 +404,16 @@ public enum L10n {
         /// Permission Denied
         public static let title = L10n.tr("Localizable", "Common.Alerts.PermissionDeniedNotAuthorized.Title")
       }
+      public enum PhotoCopied {
+        /// Photo Copied
+        public static let title = L10n.tr("Localizable", "Common.Alerts.PhotoCopied.Title")
+      }
+      public enum PhotoCopyFail {
+        /// Please try again
+        public static let message = L10n.tr("Localizable", "Common.Alerts.PhotoCopyFail.Message")
+        /// Failed to Copy Photo
+        public static let title = L10n.tr("Localizable", "Common.Alerts.PhotoCopyFail.Title")
+      }
       public enum PhotoSaveFail {
         /// Please try again
         public static let message = L10n.tr("Localizable", "Common.Alerts.PhotoSaveFail.Message")
@@ -668,6 +678,8 @@ public enum L10n {
           public static let quote = L10n.tr("Localizable", "Common.Controls.Status.Actions.Quote")
           /// Retweet
           public static let retweet = L10n.tr("Localizable", "Common.Controls.Status.Actions.Retweet")
+          /// Save media
+          public static let saveMedia = L10n.tr("Localizable", "Common.Controls.Status.Actions.SaveMedia")
           /// Share
           public static let share = L10n.tr("Localizable", "Common.Controls.Status.Actions.Share")
           /// Share content

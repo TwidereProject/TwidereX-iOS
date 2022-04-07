@@ -67,13 +67,17 @@ final class SavePhotoActivity: UIActivity {
                     source: .remote(url: url),
                     resourceType: self.resourceType
                 )
-                await context.photoLibraryService.presentSuccessNotification()
+                await context.photoLibraryService.presentSuccessNotification(title: L10n.Common.Alerts.PhotoSaved.title)
                 await notificationFeedbackGenerator.notificationOccurred(.success)
                 
                 self.activityDidFinish(true)
                 
             } catch {
-                await context.photoLibraryService.presentFailureNotification(error: error)
+                await context.photoLibraryService.presentFailureNotification(
+                    error: error,
+                    title: L10n.Common.Alerts.PhotoSaveFail.title,
+                    message: L10n.Common.Alerts.PhotoSaveFail.message
+                )
                 await notificationFeedbackGenerator.notificationOccurred(.error)
                 
                 self.activityDidFinish(false)

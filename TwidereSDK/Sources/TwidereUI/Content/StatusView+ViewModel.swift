@@ -615,15 +615,17 @@ extension StatusView.ViewModel {
         }
         .store(in: &disposeBag)
         // menu
-        Publishers.CombineLatest3(
+        Publishers.CombineLatest4(
             $sharePlaintextContent,
             $shareStatusURL,
+            $mediaViewConfigurations,
             $isDeletable
         )
-        .sink { sharePlaintextContent, shareStatusURL, isDeletable in
+        .sink { sharePlaintextContent, shareStatusURL, mediaViewConfigurations, isDeletable in
             statusView.toolbar.setupMenu(menuContext: .init(
                 shareText: sharePlaintextContent,
                 shareLink: shareStatusURL,
+                displaySaveMediaAction: !mediaViewConfigurations.isEmpty,
                 displayDeleteAction: isDeletable
             ))
         }

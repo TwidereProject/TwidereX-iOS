@@ -121,6 +121,9 @@
 "Common.Alerts.PermissionDeniedFriendshipBlocked.Title" = "Baimena ukatu da";
 "Common.Alerts.PermissionDeniedNotAuthorized.Message" = "Barkatu, ez duzu baimenik";
 "Common.Alerts.PermissionDeniedNotAuthorized.Title" = "Baimena ukatu da";
+"Common.Alerts.PhotoCopied.Title" = "Photo Copied";
+"Common.Alerts.PhotoCopyFail.Message" = "Mesedez, saiatu berriro";
+"Common.Alerts.PhotoCopyFail.Title" = "Failed to Copy Photo";
 "Common.Alerts.PhotoSaveFail.Message" = "Mesedez, saiatu berriro";
 "Common.Alerts.PhotoSaveFail.Title" = "Ezin izan da argazkia gorde";
 "Common.Alerts.PhotoSaved.Title" = "Argazkia gordeta";
@@ -204,6 +207,7 @@
 "Common.Controls.Status.Actions.PinOnProfile" = "Profilean finkatu";
 "Common.Controls.Status.Actions.Quote" = "Aipatu";
 "Common.Controls.Status.Actions.Retweet" = "Bertxiotu";
+"Common.Controls.Status.Actions.SaveMedia" = "Save media";
 "Common.Controls.Status.Actions.Share" = "Partekatu";
 "Common.Controls.Status.Actions.ShareContent" = "Edukia partekatu";
 "Common.Controls.Status.Actions.ShareLink" = "Partekatu esteka";

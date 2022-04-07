@@ -121,6 +121,9 @@
 "Common.Alerts.PermissionDeniedFriendshipBlocked.Title" = "権限がありません";
 "Common.Alerts.PermissionDeniedNotAuthorized.Message" = "権限がありません";
 "Common.Alerts.PermissionDeniedNotAuthorized.Title" = "権限がありません";
+"Common.Alerts.PhotoCopied.Title" = "Photo Copied";
+"Common.Alerts.PhotoCopyFail.Message" = "もう一度やり直してください";
+"Common.Alerts.PhotoCopyFail.Title" = "Failed to Copy Photo";
 "Common.Alerts.PhotoSaveFail.Message" = "もう一度やり直してください";
 "Common.Alerts.PhotoSaveFail.Title" = "写真の保存に失敗しました";
 "Common.Alerts.PhotoSaved.Title" = "写真を保存しました";
@@ -204,6 +207,7 @@
 "Common.Controls.Status.Actions.PinOnProfile" = "プロフィールに固定表示";
 "Common.Controls.Status.Actions.Quote" = "引用";
 "Common.Controls.Status.Actions.Retweet" = "リツイート";
+"Common.Controls.Status.Actions.SaveMedia" = "Save media";
 "Common.Controls.Status.Actions.Share" = "共有";
 "Common.Controls.Status.Actions.ShareContent" = "コンテンツを共有";
 "Common.Controls.Status.Actions.ShareLink" = "リンクを共有";
