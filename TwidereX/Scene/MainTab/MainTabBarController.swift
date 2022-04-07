@@ -217,6 +217,8 @@ extension MainTabBarController {
 
         switch tab {
         case .me:
+            let feedbackGenerator = UIImpactFeedbackGenerator(style: .light)
+            feedbackGenerator.impactOccurred()
             let accountListViewModel = AccountListViewModel(context: context)
             coordinator.present(scene: .accountList(viewModel: accountListViewModel), from: self, transition: .modal(animated: true, completion: nil))
         default:
