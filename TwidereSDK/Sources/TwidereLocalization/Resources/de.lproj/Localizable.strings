@@ -121,6 +121,9 @@
 "Common.Alerts.PermissionDeniedFriendshipBlocked.Title" = "Zugriff verweigert";
 "Common.Alerts.PermissionDeniedNotAuthorized.Message" = "Entschuldigung, Sie sind nicht berechtigt";
 "Common.Alerts.PermissionDeniedNotAuthorized.Title" = "Zugriff verweigert";
+"Common.Alerts.PhotoCopied.Title" = "Photo Copied";
+"Common.Alerts.PhotoCopyFail.Message" = "Bitte versuche es erneut";
+"Common.Alerts.PhotoCopyFail.Title" = "Failed to Copy Photo";
 "Common.Alerts.PhotoSaveFail.Message" = "Bitte versuche es erneut";
 "Common.Alerts.PhotoSaveFail.Title" = "Foto konnte nicht gespeichert werden";
 "Common.Alerts.PhotoSaved.Title" = "Foto gespeichert";
@@ -154,6 +157,7 @@
 "Common.Controls.Actions.Browse" = "Browse";
 "Common.Controls.Actions.Cancel" = "Abbrechen";
 "Common.Controls.Actions.Confirm" = "Bestätigen";
+"Common.Controls.Actions.Copy" = "Copy";
 "Common.Controls.Actions.Delete" = "Delete";
 "Common.Controls.Actions.Edit" = "Bearbeiten";
 "Common.Controls.Actions.Ok" = "Ok";
@@ -162,7 +166,11 @@
 "Common.Controls.Actions.Remove" = "Entfernen";
 "Common.Controls.Actions.Save" = "Speichern";
 "Common.Controls.Actions.SavePhoto" = "Foto speichern";
+"Common.Controls.Actions.Share" = "Share";
+"Common.Controls.Actions.ShareLink" = "Link teilen";
 "Common.Controls.Actions.ShareMedia" = "Share media";
+"Common.Controls.Actions.ShareMediaMenu.Link" = "Link";
+"Common.Controls.Actions.ShareMediaMenu.Media" = "Medien";
 "Common.Controls.Actions.SignIn" = "Einloggen";
 "Common.Controls.Actions.SignOut" = "Sign out";
 "Common.Controls.Actions.TakePhoto" = "Foto aufnehmen";
@@ -199,6 +207,7 @@
 "Common.Controls.Status.Actions.PinOnProfile" = "Pin on Profile";
 "Common.Controls.Status.Actions.Quote" = "Zitieren";
 "Common.Controls.Status.Actions.Retweet" = "Retweet";
+"Common.Controls.Status.Actions.SaveMedia" = "Save media";
 "Common.Controls.Status.Actions.Share" = "Share";
 "Common.Controls.Status.Actions.ShareContent" = "Share content";
 "Common.Controls.Status.Actions.ShareLink" = "Link teilen";

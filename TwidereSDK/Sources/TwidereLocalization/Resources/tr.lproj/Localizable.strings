@@ -121,6 +121,9 @@
 "Common.Alerts.PermissionDeniedFriendshipBlocked.Title" = "İzin Reddedildi";
 "Common.Alerts.PermissionDeniedNotAuthorized.Message" = "Üzgünüm, yetkiniz yok";
 "Common.Alerts.PermissionDeniedNotAuthorized.Title" = "İzin Reddedildi";
+"Common.Alerts.PhotoCopied.Title" = "Photo Copied";
+"Common.Alerts.PhotoCopyFail.Message" = "Lütfen tekrar deneyin";
+"Common.Alerts.PhotoCopyFail.Title" = "Failed to Copy Photo";
 "Common.Alerts.PhotoSaveFail.Message" = "Lütfen tekrar deneyin";
 "Common.Alerts.PhotoSaveFail.Title" = "Fotoğrafı kaydetme başarısız";
 "Common.Alerts.PhotoSaved.Title" = "Fotoğraf Kaydedildi";
@@ -154,6 +157,7 @@
 "Common.Controls.Actions.Browse" = "Gözat";
 "Common.Controls.Actions.Cancel" = "İptal";
 "Common.Controls.Actions.Confirm" = "Onayla";
+"Common.Controls.Actions.Copy" = "Copy";
 "Common.Controls.Actions.Delete" = "Sil";
 "Common.Controls.Actions.Edit" = "Düzenle";
 "Common.Controls.Actions.Ok" = "Tamam";
@@ -162,7 +166,11 @@
 "Common.Controls.Actions.Remove" = "Kaldır";
 "Common.Controls.Actions.Save" = "Kaydet";
 "Common.Controls.Actions.SavePhoto" = "Fotoğrafı kaydet";
+"Common.Controls.Actions.Share" = "Paylaş";
+"Common.Controls.Actions.ShareLink" = "Linki paylaş";
 "Common.Controls.Actions.ShareMedia" = "Medyayı paylaş";
+"Common.Controls.Actions.ShareMediaMenu.Link" = "Link";
+"Common.Controls.Actions.ShareMediaMenu.Media" = "Medya";
 "Common.Controls.Actions.SignIn" = "Giriş yap";
 "Common.Controls.Actions.SignOut" = "Çıkış Yap";
 "Common.Controls.Actions.TakePhoto" = "Fotoğraf çek";
@@ -199,6 +207,7 @@
 "Common.Controls.Status.Actions.PinOnProfile" = "Profilde Sabitle";
 "Common.Controls.Status.Actions.Quote" = "Alıntı";
 "Common.Controls.Status.Actions.Retweet" = "Retweetle";
+"Common.Controls.Status.Actions.SaveMedia" = "Save media";
 "Common.Controls.Status.Actions.Share" = "Paylaş";
 "Common.Controls.Status.Actions.ShareContent" = "İçeriği paylaş";
 "Common.Controls.Status.Actions.ShareLink" = "Linki paylaş";

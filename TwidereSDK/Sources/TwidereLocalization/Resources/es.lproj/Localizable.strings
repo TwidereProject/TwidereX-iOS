@@ -121,6 +121,9 @@
 "Common.Alerts.PermissionDeniedFriendshipBlocked.Title" = "Permiso denegado";
 "Common.Alerts.PermissionDeniedNotAuthorized.Message" = "Lo sentimos, no estás autorizado";
 "Common.Alerts.PermissionDeniedNotAuthorized.Title" = "Permiso denegado";
+"Common.Alerts.PhotoCopied.Title" = "Photo Copied";
+"Common.Alerts.PhotoCopyFail.Message" = "Por favor, inténtelo de nuevo";
+"Common.Alerts.PhotoCopyFail.Title" = "Failed to Copy Photo";
 "Common.Alerts.PhotoSaveFail.Message" = "Por favor, inténtelo de nuevo";
 "Common.Alerts.PhotoSaveFail.Title" = "Error al guardar la foto";
 "Common.Alerts.PhotoSaved.Title" = "Foto guardada";
@@ -154,6 +157,7 @@
 "Common.Controls.Actions.Browse" = "Navegar";
 "Common.Controls.Actions.Cancel" = "Cancelar";
 "Common.Controls.Actions.Confirm" = "Confirmar";
+"Common.Controls.Actions.Copy" = "Copy";
 "Common.Controls.Actions.Delete" = "Eliminar";
 "Common.Controls.Actions.Edit" = "Editar";
 "Common.Controls.Actions.Ok" = "OK";
@@ -162,7 +166,11 @@
 "Common.Controls.Actions.Remove" = "Eliminar";
 "Common.Controls.Actions.Save" = "Guardar";
 "Common.Controls.Actions.SavePhoto" = "Guardar foto";
+"Common.Controls.Actions.Share" = "Compartir";
+"Common.Controls.Actions.ShareLink" = "Compartir enlace";
 "Common.Controls.Actions.ShareMedia" = "Compartir multimedia";
+"Common.Controls.Actions.ShareMediaMenu.Link" = "Link";
+"Common.Controls.Actions.ShareMediaMenu.Media" = "Multimedia";
 "Common.Controls.Actions.SignIn" = "Iniciar sesión";
 "Common.Controls.Actions.SignOut" = "Cerrar sesión";
 "Common.Controls.Actions.TakePhoto" = "Hacer una foto";
@@ -199,6 +207,7 @@
 "Common.Controls.Status.Actions.PinOnProfile" = "Fijar en el perfil";
 "Common.Controls.Status.Actions.Quote" = "Cita";
 "Common.Controls.Status.Actions.Retweet" = "Retwittear";
+"Common.Controls.Status.Actions.SaveMedia" = "Save media";
 "Common.Controls.Status.Actions.Share" = "Compartir";
 "Common.Controls.Status.Actions.ShareContent" = "Compartir contenido";
 "Common.Controls.Status.Actions.ShareLink" = "Compartir enlace";

@@ -128,9 +128,12 @@ public enum Asset {
     public static let keyboard = ImageAsset(name: "Keyboard/keyboard")
   }
   public enum Logo {
+    public static let discordCircle = ImageAsset(name: "Logo/discord.circle")
     public static let githubCircle = ImageAsset(name: "Logo/github.circle")
     public static let mastodon = ImageAsset(name: "Logo/mastodon")
     public static let mediaPlaceholder = ImageAsset(name: "Logo/media.placeholder")
+    public static let telegramCircle = ImageAsset(name: "Logo/telegram.circle")
+    public static let twidere = ImageAsset(name: "Logo/twidere")
     public static let twitterCircle = ImageAsset(name: "Logo/twitter.circle")
     public static let twitter = ImageAsset(name: "Logo/twitter")
   }
@@ -178,7 +181,8 @@ public enum Asset {
   }
   public enum Scene {
     public enum About {
-      public static let twidereLarge = ImageAsset(name: "Scene/About/twidere.large")
+      public static let backgroundLogo = ImageAsset(name: "Scene/About/background.logo")
+      public static let backgroundLogoShadow = ImageAsset(name: "Scene/About/background.logo.shadow")
     }
     public enum Preference {
       public static let twidereAvatar = ImageAsset(name: "Scene/Preference/twidere.avatar")
@@ -191,9 +195,6 @@ public enum Asset {
         public static let like = ColorAsset(name: "Scene/Status/Toolbar/like")
         public static let repost = ColorAsset(name: "Scene/Status/Toolbar/repost")
       }
-    }
-    public enum Welcome {
-      public static let twidere = ImageAsset(name: "Scene/Welcome/twidere")
     }
   }
   public enum Symbol {

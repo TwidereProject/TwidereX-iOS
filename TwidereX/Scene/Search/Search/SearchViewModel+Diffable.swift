@@ -54,7 +54,14 @@ extension SearchViewModel {
             trendViewModel.$isTrendFetched
         )
         .map { trendGroupRecords, trendGroupIndex, isTrendFetched in
-            let limit = 5
+            let limit: Int = {
+                switch trendGroupIndex {
+                case .mastodon:
+                    return 20   // display inline for most servers
+                default:
+                    return 5
+                }
+            }()
             let trends: [TrendObject] = trendGroupRecords[trendGroupIndex]?.trends ?? []
             self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): incoming \(trends.count) trend items")
             
