@@ -23,8 +23,10 @@ extension DataSourceFacade {
             guard let object = status.object(in: managedObjectContext) else { return nil }
             switch object {
             case .twitter(let status):
+                let status = status.repost ?? status
                 return status.displayText
             case .mastodon(let status):
+                let status = status.repost ?? status
                 let spoilerText = status.spoilerText.flatMap {
                     Meta.convert(from: .mastodon(string: $0, emojis: [:]))
                 }
