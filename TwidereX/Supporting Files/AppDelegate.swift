@@ -48,7 +48,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             .receive(on: DispatchQueue.main)
             .removeDuplicates()
             .sink { preference in
-                UIApplication.shared.setAlternateIconName(preference.iconName)
+                UIApplication.shared.setAlternateIconName(preference == .twidere ? nil : preference.iconName)
             }
             .store(in: &disposeBag)
 
