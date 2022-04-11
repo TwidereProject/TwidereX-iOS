@@ -59,7 +59,7 @@ extension DataSourceFacade {
 
         logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): link to translator: \(url)")
         provider.coordinator.present(
-            scene: .safari(url: url),
+            scene: .safari(url: url.absoluteString),
             from: provider,
             transition: .safariPresent(animated: true, completion: nil)
         )

@@ -43,7 +43,6 @@ extension DataSourceFacade {
     ) async {
         switch meta {
         case .url(_, _, let url, _):
-            guard let url = URL(string: url) else { return }
             await provider.coordinator.present(scene: .safari(url: url), from: nil, transition: .safariPresent(animated: true, completion: nil))
         case .hashtag(_, let hashtag, _):
             let hashtagViewModel = HashtagTimelineViewModel(context: provider.context, hashtag: hashtag)
@@ -69,7 +68,6 @@ extension DataSourceFacade {
     ) async {
         switch meta {
         case .url(_, _, let url, _):
-            guard let url = URL(string: url) else { return }
             await provider.coordinator.present(scene: .safari(url: url), from: nil, transition: .safariPresent(animated: true, completion: nil))
         case .hashtag(_, let hashtag, _):
             let hashtagViewModel = HashtagTimelineViewModel(context: provider.context, hashtag: hashtag)
