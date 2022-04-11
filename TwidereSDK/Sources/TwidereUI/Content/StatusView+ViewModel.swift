@@ -904,7 +904,7 @@ extension StatusView {
         configureLocation(twitterStatus: status)
         configureToolbar(twitterStatus: status)
         
-        if let quote = status.quote {
+        if let quote = status.quote ?? status.repost?.quote {
             quoteStatusView?.configure(
                 twitterStatus: quote,
                 configurationContext: configurationContext
