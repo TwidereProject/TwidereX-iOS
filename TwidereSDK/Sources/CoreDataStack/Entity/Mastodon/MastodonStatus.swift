@@ -101,7 +101,7 @@ extension MastodonStatus {
             let _data = primitiveValue(forKey: keyPath) as? Data
             didAccessValue(forKey: keyPath)
             do {
-                guard let data = _data else { return [] }
+                guard let data = _data, !data.isEmpty else { return [] }
                 let attachments = try JSONDecoder().decode([MastodonAttachment].self, from: data)
                 return attachments
             } catch {
@@ -136,6 +136,31 @@ extension MastodonStatus {
         }
         set {
             let keyPath = #keyPath(MastodonStatus.emojis)
+            let data = try? JSONEncoder().encode(newValue)
+            willChangeValue(forKey: keyPath)
+            setPrimitiveValue(data, forKey: keyPath)
+            didChangeValue(forKey: keyPath)
+        }
+    }
+    
+    // sourcery: autoUpdatableObject, autoGenerateProperty
+    @objc public var mentions: [MastodonMention] {
+        get {
+            let keyPath = #keyPath(MastodonStatus.mentions)
+            willAccessValue(forKey: keyPath)
+            let _data = primitiveValue(forKey: keyPath) as? Data
+            didAccessValue(forKey: keyPath)
+            do {
+                guard let data = _data else { return [] }
+                let emojis = try JSONDecoder().decode([MastodonMention].self, from: data)
+                return emojis
+            } catch {
+                assertionFailure(error.localizedDescription)
+                return []
+            }
+        }
+        set {
+            let keyPath = #keyPath(MastodonStatus.mentions)
             let data = try? JSONEncoder().encode(newValue)
             willChangeValue(forKey: keyPath)
             setPrimitiveValue(data, forKey: keyPath)
@@ -225,6 +250,7 @@ extension MastodonStatus: AutoGenerateProperty {
         public let updatedAt: Date
         public let attachments: [MastodonAttachment]
         public let emojis: [MastodonEmoji]
+        public let mentions: [MastodonMention]
 
     	public init(
     		id: ID,
@@ -246,7 +272,8 @@ extension MastodonStatus: AutoGenerateProperty {
     		createdAt: Date,
     		updatedAt: Date,
     		attachments: [MastodonAttachment],
-    		emojis: [MastodonEmoji]
+    		emojis: [MastodonEmoji],
+    		mentions: [MastodonMention]
     	) {
     		self.id = id
     		self.domain = domain
@@ -268,6 +295,7 @@ extension MastodonStatus: AutoGenerateProperty {
     		self.updatedAt = updatedAt
     		self.attachments = attachments
     		self.emojis = emojis
+    		self.mentions = mentions
     	}
     }
 
@@ -292,6 +320,7 @@ extension MastodonStatus: AutoGenerateProperty {
     	self.updatedAt = property.updatedAt
     	self.attachments = property.attachments
     	self.emojis = property.emojis
+    	self.mentions = property.mentions
     }
 
     public func update(property: Property) {
@@ -312,6 +341,7 @@ extension MastodonStatus: AutoGenerateProperty {
     	update(updatedAt: property.updatedAt)
     	update(attachments: property.attachments)
     	update(emojis: property.emojis)
+    	update(mentions: property.mentions)
     }
     // sourcery:end
 }
@@ -445,6 +475,11 @@ extension MastodonStatus: AutoUpdatableObject {
     public func update(emojis: [MastodonEmoji]) {
     	if self.emojis != emojis {
     		self.emojis = emojis
+    	}
+    }
+    public func update(mentions: [MastodonMention]) {
+    	if self.mentions != mentions {
+    		self.mentions = mentions
     	}
     }
     // sourcery:end

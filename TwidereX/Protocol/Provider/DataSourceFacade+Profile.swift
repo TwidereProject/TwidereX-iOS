@@ -83,17 +83,34 @@ extension DataSourceFacade {
                 }
 
             case .mastodon(let status):
-                // TODO:
-                return nil
-            }
-        }
-        
-        guard let profileContext = _profileContext else { return }
+                let status = status.repost ?? status
+                guard let mention = status.mentions.first(where: { mention == $0.username }) else {
+                    return nil
+                }
 
-        if case .mastodon = status {
-            let href = userInfo?["href"] as? String
-            guard let url = href.flatMap({ URL(string: $0) }) else { return }
-            await provider.coordinator.present(scene: .safari(url: url), from: provider, transition: .safariPresent(animated: true, completion: nil))
+                let userID = mention.id
+                let request = MastodonUser.sortedFetchRequest
+                request.predicate = MastodonUser.predicate(domain: status.domain, id: userID)
+                let _user = try? provider.context.managedObjectContext.fetch(request).first
+                
+                if let user = _user {
+                    return .record(record: .mastodon(record: .init(objectID: user.objectID)))
+                } else {
+                    return .mastodon(.userID(userID))
+                }
+            }   // end switch object
+        }   // end let _profileContext: RemoteProfileViewModel = await provider.context.managedObjectContext.perform …
+        
+        guard let profileContext = _profileContext else {
+            if case .mastodon = status {
+                let href = userInfo?["href"] as? String
+                guard let url = href.flatMap({ URL(string: $0) }) else { return }
+                await provider.coordinator.present(
+                    scene: .safari(url: url.absoluteString),
+                    from: provider,
+                    transition: .safariPresent(animated: true, completion: nil)
+                )
+            }
             return
         }
 
@@ -132,7 +149,7 @@ extension DataSourceFacade {
                 }
 
             case .mastodon(let user):
-                // TODO:
+                
                 return nil
             }
         }
@@ -142,7 +159,7 @@ extension DataSourceFacade {
         if case .mastodon = user {
             let href = userInfo?["href"] as? String
             guard let url = href.flatMap({ URL(string: $0) }) else { return }
-            await provider.coordinator.present(scene: .safari(url: url), from: provider, transition: .safariPresent(animated: true, completion: nil))
+            await provider.coordinator.present(scene: .safari(url: url.absoluteString), from: provider, transition: .safariPresent(animated: true, completion: nil))
             return
         }
     
