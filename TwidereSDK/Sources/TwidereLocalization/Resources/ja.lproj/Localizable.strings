@@ -121,6 +121,9 @@
 "Common.Alerts.PermissionDeniedFriendshipBlocked.Title" = "権限がありません";
 "Common.Alerts.PermissionDeniedNotAuthorized.Message" = "権限がありません";
 "Common.Alerts.PermissionDeniedNotAuthorized.Title" = "権限がありません";
+"Common.Alerts.PhotoCopied.Title" = "Photo Copied";
+"Common.Alerts.PhotoCopyFail.Message" = "もう一度やり直してください";
+"Common.Alerts.PhotoCopyFail.Title" = "Failed to Copy Photo";
 "Common.Alerts.PhotoSaveFail.Message" = "もう一度やり直してください";
 "Common.Alerts.PhotoSaveFail.Title" = "写真の保存に失敗しました";
 "Common.Alerts.PhotoSaved.Title" = "写真を保存しました";
@@ -154,6 +157,7 @@
 "Common.Controls.Actions.Browse" = "参照";
 "Common.Controls.Actions.Cancel" = "キャンセル";
 "Common.Controls.Actions.Confirm" = "確認";
+"Common.Controls.Actions.Copy" = "Copy";
 "Common.Controls.Actions.Delete" = "削除";
 "Common.Controls.Actions.Edit" = "編集";
 "Common.Controls.Actions.Ok" = "OK";
@@ -162,7 +166,11 @@
 "Common.Controls.Actions.Remove" = "削除";
 "Common.Controls.Actions.Save" = "保存";
 "Common.Controls.Actions.SavePhoto" = "写真を保存";
+"Common.Controls.Actions.Share" = "共有";
+"Common.Controls.Actions.ShareLink" = "リンクを共有";
 "Common.Controls.Actions.ShareMedia" = "メディアを共有";
+"Common.Controls.Actions.ShareMediaMenu.Link" = "Link";
+"Common.Controls.Actions.ShareMediaMenu.Media" = "メディア";
 "Common.Controls.Actions.SignIn" = "サインイン";
 "Common.Controls.Actions.SignOut" = "サインアウト";
 "Common.Controls.Actions.TakePhoto" = "写真を撮影";
@@ -199,6 +207,7 @@
 "Common.Controls.Status.Actions.PinOnProfile" = "プロフィールに固定表示";
 "Common.Controls.Status.Actions.Quote" = "引用";
 "Common.Controls.Status.Actions.Retweet" = "リツイート";
+"Common.Controls.Status.Actions.SaveMedia" = "Save media";
 "Common.Controls.Status.Actions.Share" = "共有";
 "Common.Controls.Status.Actions.ShareContent" = "コンテンツを共有";
 "Common.Controls.Status.Actions.ShareLink" = "リンクを共有";
@@ -369,6 +378,7 @@
 "Scene.Settings.About.Title" = "情報";
 "Scene.Settings.About.Version" = "Ver %@";
 "Scene.Settings.Appearance.AmoledOptimizedMode" = "AMOLED 最適化モード";
+"Scene.Settings.Appearance.AppIcon" = "App Icon";
 "Scene.Settings.Appearance.HighlightColor" = "ハイライト色";
 "Scene.Settings.Appearance.PickColor" = "色を選択";
 "Scene.Settings.Appearance.ScrollingTimeline.AppBar" = "スクロール時にアプリバーを隠す";
@@ -377,12 +387,18 @@
 "Scene.Settings.Appearance.SectionHeader.ScrollingTimeline" = "タイムラインのスクロール";
 "Scene.Settings.Appearance.SectionHeader.TabPosition" = "タブの位置";
 "Scene.Settings.Appearance.SectionHeader.Theme" = "テーマ";
+"Scene.Settings.Appearance.SectionHeader.Translation" = "Translation";
 "Scene.Settings.Appearance.TabPosition.Bottom" = "下";
 "Scene.Settings.Appearance.TabPosition.Top" = "上";
 "Scene.Settings.Appearance.Theme.Auto" = "自動";
 "Scene.Settings.Appearance.Theme.Dark" = "ダーク";
 "Scene.Settings.Appearance.Theme.Light" = "ライト";
 "Scene.Settings.Appearance.Title" = "外観";
+"Scene.Settings.Appearance.Translation.Always" = "常に";
+"Scene.Settings.Appearance.Translation.Auto" = "自動";
+"Scene.Settings.Appearance.Translation.Off" = "オフ";
+"Scene.Settings.Appearance.Translation.Service" = "Service";
+"Scene.Settings.Appearance.Translation.TranslateButton" = "Translate button";
 "Scene.Settings.Display.DateFormat.Absolute" = "絶対";
 "Scene.Settings.Display.DateFormat.Relative" = "相対";
 "Scene.Settings.Display.Media.Always" = "常に";

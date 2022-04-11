@@ -121,6 +121,9 @@
 "Common.Alerts.PermissionDeniedFriendshipBlocked.Title" = "权限已被拒绝";
 "Common.Alerts.PermissionDeniedNotAuthorized.Message" = "对不起，您没有被授权";
 "Common.Alerts.PermissionDeniedNotAuthorized.Title" = "权限已被拒绝";
+"Common.Alerts.PhotoCopied.Title" = "照片已复制";
+"Common.Alerts.PhotoCopyFail.Message" = "请重试";
+"Common.Alerts.PhotoCopyFail.Title" = "照片保存失败";
 "Common.Alerts.PhotoSaveFail.Message" = "请重试";
 "Common.Alerts.PhotoSaveFail.Title" = "保存照片失败";
 "Common.Alerts.PhotoSaved.Title" = "照片已保存";
@@ -154,6 +157,7 @@
 "Common.Controls.Actions.Browse" = "浏览";
 "Common.Controls.Actions.Cancel" = "取消";
 "Common.Controls.Actions.Confirm" = "确认";
+"Common.Controls.Actions.Copy" = "复制";
 "Common.Controls.Actions.Delete" = "删除";
 "Common.Controls.Actions.Edit" = "编辑";
 "Common.Controls.Actions.Ok" = "好的";
@@ -162,7 +166,11 @@
 "Common.Controls.Actions.Remove" = "删除";
 "Common.Controls.Actions.Save" = "保存";
 "Common.Controls.Actions.SavePhoto" = "保存照片";
+"Common.Controls.Actions.Share" = "分享";
+"Common.Controls.Actions.ShareLink" = "分享链接";
 "Common.Controls.Actions.ShareMedia" = "共享媒体";
+"Common.Controls.Actions.ShareMediaMenu.Link" = "链接";
+"Common.Controls.Actions.ShareMediaMenu.Media" = "媒体";
 "Common.Controls.Actions.SignIn" = "登录";
 "Common.Controls.Actions.SignOut" = "登出";
 "Common.Controls.Actions.TakePhoto" = "拍摄照片";
@@ -199,6 +207,7 @@
 "Common.Controls.Status.Actions.PinOnProfile" = "在个人资料页面置顶";
 "Common.Controls.Status.Actions.Quote" = "引用";
 "Common.Controls.Status.Actions.Retweet" = "转推";
+"Common.Controls.Status.Actions.SaveMedia" = "保存媒体";
 "Common.Controls.Status.Actions.Share" = "分享";
 "Common.Controls.Status.Actions.ShareContent" = "分享内容";
 "Common.Controls.Status.Actions.ShareLink" = "分享链接";
@@ -369,6 +378,7 @@
 "Scene.Settings.About.Title" = "关于";
 "Scene.Settings.About.Version" = "版本 %@";
 "Scene.Settings.Appearance.AmoledOptimizedMode" = "AMOLED 优化模式";
+"Scene.Settings.Appearance.AppIcon" = "应用图标";
 "Scene.Settings.Appearance.HighlightColor" = "高亮颜色";
 "Scene.Settings.Appearance.PickColor" = "选择颜色";
 "Scene.Settings.Appearance.ScrollingTimeline.AppBar" = "滚动时隐藏应用栏";
@@ -377,12 +387,18 @@
 "Scene.Settings.Appearance.SectionHeader.ScrollingTimeline" = "滚动时间线";
 "Scene.Settings.Appearance.SectionHeader.TabPosition" = "标签位置";
 "Scene.Settings.Appearance.SectionHeader.Theme" = "主题";
+"Scene.Settings.Appearance.SectionHeader.Translation" = "翻译";
 "Scene.Settings.Appearance.TabPosition.Bottom" = "底端";
 "Scene.Settings.Appearance.TabPosition.Top" = "顶端";
 "Scene.Settings.Appearance.Theme.Auto" = "自动";
 "Scene.Settings.Appearance.Theme.Dark" = "深色";
 "Scene.Settings.Appearance.Theme.Light" = "亮色";
 "Scene.Settings.Appearance.Title" = "外观";
+"Scene.Settings.Appearance.Translation.Always" = "总是";
+"Scene.Settings.Appearance.Translation.Auto" = "自动";
+"Scene.Settings.Appearance.Translation.Off" = "关闭";
+"Scene.Settings.Appearance.Translation.Service" = "服务";
+"Scene.Settings.Appearance.Translation.TranslateButton" = "翻译按钮";
 "Scene.Settings.Display.DateFormat.Absolute" = "绝对的";
 "Scene.Settings.Display.DateFormat.Relative" = "相对的";
 "Scene.Settings.Display.Media.Always" = "总是";

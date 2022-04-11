@@ -24,6 +24,7 @@ extension TwitterStatus.Property {
             replyCount: 0,
             repostCount: entity.retweetCount.flatMap(Int64.init) ?? 0,
             quoteCount: 0,
+            language: entity.lang,
             source: entity.source.flatMap { source in
                 do {
                     let document = try HTMLDocument(string: source)
@@ -130,6 +131,7 @@ extension TwitterStatus.Property {
             replyCount: status.publicMetrics.flatMap { Int64($0.replyCount) } ?? 0,
             repostCount: status.publicMetrics.flatMap { Int64($0.retweetCount) } ?? 0,
             quoteCount: status.publicMetrics.flatMap { Int64($0.quoteCount) } ?? 0,
+            language: status.lang,
             source: status.source,
             replyToStatusID: status.repliedToID,
             replyToUserID: status.inReplyToUserID,

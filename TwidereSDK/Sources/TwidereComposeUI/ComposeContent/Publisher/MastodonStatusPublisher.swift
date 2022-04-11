@@ -81,6 +81,8 @@ extension MastodonStatusPublisher: StatusPublisher {
         api: APIService,
         appSecret: AppSecret
     ) async throws -> StatusPublishResult {
+        let idempotencyKey = UUID().uuidString
+        
         let publishAttachmentTaskWeight: Int64 = 100
         let publishAttachmentTaskCount: Int64 = Int64(attachmentViewModels.count) * publishAttachmentTaskWeight
         
@@ -158,7 +160,8 @@ extension MastodonStatusPublisher: StatusPublisher {
             inReplyToID: inReplyToID,
             sensitive: isMediaSensitive,
             spoilerText: isContentWarningComposing ? contentWarning : nil,
-            visibility: visibility
+            visibility: visibility,
+            idempotencyKey: idempotencyKey
         )
         
         let publishResponse = try await api.publishMastodonStatus(

@@ -49,11 +49,25 @@ extension AboutViewController {
                     let url = URL(string: "https://github.com/TwidereProject/TwidereX-iOS")!
                     self.coordinator.present(scene: .safari(url: url), from: nil, transition: .safariPresent(animated: true, completion: nil))
                 case .twitter:
-                    let profileViewModel = RemoteProfileViewModel(
-                        context: self.context,
-                        profileContext: .twitter(.username("TwidereProject"))
-                    )
-                    self.coordinator.present(scene: .profile(viewModel: profileViewModel), from: self, transition: .show)
+                    switch self.context.authenticationService.activeAuthenticationContext {
+                    case .twitter:
+                        let profileViewModel = RemoteProfileViewModel(
+                            context: self.context,
+                            profileContext: .twitter(.username("TwidereProject"))
+                        )
+                        self.coordinator.present(scene: .profile(viewModel: profileViewModel), from: self, transition: .show)
+                    case .mastodon:
+                        fallthrough
+                    case .none:
+                        let url = URL(string: "https://twitter.com/twidereproject")!
+                        self.coordinator.present(scene: .safari(url: url), from: nil, transition: .safariPresent(animated: true, completion: nil))
+                    }
+                case .telegram:
+                    let url = URL(string: "https://t.me/twidere_x")!
+                    UIApplication.shared.open(url)
+                case .discord:
+                    let url = URL(string: "https://discord.gg/hfzTV6P2AJ")!
+                    UIApplication.shared.open(url)
                 case .license:
                     let url = URL(string: "https://github.com/TwidereProject/TwidereX-iOS/blob/master/LICENSE")!
                     self.coordinator.present(scene: .safari(url: url), from: nil, transition: .safariPresent(animated: true, completion: nil))

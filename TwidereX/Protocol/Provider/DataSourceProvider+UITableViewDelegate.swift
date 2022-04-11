@@ -91,7 +91,7 @@ extension UITableViewDelegate where Self: DataSourceProvider & MediaPreviewTrans
                             state: .off
                         ) { [weak self] _ in
                             guard let self = self else { return }
-                            Task {
+                            Task { @MainActor in
                                 let impactFeedbackGenerator = UIImpactFeedbackGenerator(style: .light)
                                 let notificationFeedbackGenerator = UINotificationFeedbackGenerator()
                                 
@@ -101,16 +101,99 @@ extension UITableViewDelegate where Self: DataSourceProvider & MediaPreviewTrans
                                         source: .remote(url: assetURL),
                                         resourceType: resourceType
                                     )
-                                    self.context.photoLibraryService.presentSuccessNotification()
+                                    self.context.photoLibraryService.presentSuccessNotification(title: L10n.Common.Alerts.PhotoSaved.title)
                                     notificationFeedbackGenerator.notificationOccurred(.success)
                                 } catch {
-                                    self.context.photoLibraryService.presentFailureNotification(error: error)
+                                    self.context.photoLibraryService.presentFailureNotification(
+                                        error: error,
+                                        title: L10n.Common.Alerts.PhotoSaveFail.title,
+                                        message: L10n.Common.Alerts.PhotoSaveFail.message
+                                    )
                                     notificationFeedbackGenerator.notificationOccurred(.error)
                                 }
-                            }
-                        }
-                    ]
-                )
+                            }   // end Task
+                        },
+                        UIAction(
+                            title: L10n.Common.Controls.Actions.copy,
+                            image: UIImage(systemName: "doc.on.doc"),
+                            attributes: [],
+                            state: .off
+                        ) { [weak self] _ in
+                            guard let self = self else { return }
+                            Task { @MainActor in
+                                let impactFeedbackGenerator = UIImpactFeedbackGenerator(style: .light)
+                                let notificationFeedbackGenerator = UINotificationFeedbackGenerator()
+                                
+                                do {
+                                    impactFeedbackGenerator.impactOccurred()
+                                    try await self.context.photoLibraryService.copy(
+                                        source: .remote(url: assetURL),
+                                        resourceType: resourceType
+                                    )
+                                    self.context.photoLibraryService.presentSuccessNotification(title: L10n.Common.Alerts.PhotoCopied.title)
+                                    notificationFeedbackGenerator.notificationOccurred(.success)
+                                } catch {
+                                    self.context.photoLibraryService.presentFailureNotification(
+                                        error: error,
+                                        title: L10n.Common.Alerts.PhotoCopied.title,
+                                        message: L10n.Common.Alerts.PhotoCopyFail.message
+                                    )
+                                    notificationFeedbackGenerator.notificationOccurred(.error)
+                                }
+                            }   // end Task
+                        },
+                        UIMenu(
+                            title: L10n.Common.Controls.Actions.share,
+                            image: UIImage(systemName: "square.and.arrow.up"),
+                            identifier: nil,
+                            options: [],
+                            children: [
+                                UIAction(
+                                    title: L10n.Common.Controls.Actions.ShareMediaMenu.link,
+                                    image: UIImage(systemName: "link"),
+                                    attributes: [],
+                                    state: .off
+                                ) { [weak self] _ in
+                                    guard let self = self else { return }
+                                    Task { @MainActor in
+                                        let applicationActivities: [UIActivity] = [
+                                            SafariActivity(sceneCoordinator: self.coordinator)
+                                        ]
+                                        let activityViewController = UIActivityViewController(
+                                            activityItems: [assetURL],
+                                            applicationActivities: applicationActivities
+                                        )
+                                        activityViewController.popoverPresentationController?.sourceView = mediaView
+                                        self.present(activityViewController, animated: true, completion: nil)
+                                    }   // end Task
+                                },
+                                UIAction(
+                                    title: L10n.Common.Controls.Actions.ShareMediaMenu.media,
+                                    image: UIImage(systemName: "photo"),
+                                    attributes: [],
+                                    state: .off
+                                ) { [weak self] _ in
+                                    guard let self = self else { return }
+                                    Task { @MainActor in
+                                        let applicationActivities: [UIActivity] = [
+                                            SafariActivity(sceneCoordinator: self.coordinator)
+                                        ]
+                                        // FIXME: handle error
+                                        guard let url = try await self.context.photoLibraryService.file(from: .remote(url: assetURL)) else {
+                                            return
+                                        }
+                                        let activityViewController = UIActivityViewController(
+                                            activityItems: [url],
+                                            applicationActivities: applicationActivities
+                                        )
+                                        activityViewController.popoverPresentationController?.sourceView = mediaView
+                                        self.present(activityViewController, animated: true, completion: nil)
+                                    }   // end Task
+                                },
+                            ]
+                        ),
+                    ]   // end children
+                )   // end return UIMenu
             }
             configuration.indexPath = indexPath
             configuration.index = i

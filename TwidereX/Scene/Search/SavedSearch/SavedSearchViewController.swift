@@ -9,6 +9,7 @@
 import os.log
 import UIKit
 import Combine
+import TwidereLocalization
 
 final class SavedSearchViewController: UIViewController, NeedsDependency {
     
@@ -39,6 +40,7 @@ extension SavedSearchViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        title = L10n.Scene.Search.savedSearch
         view.backgroundColor = .systemBackground
         
         tableView.translatesAutoresizingMaskIntoConstraints = false

@@ -16,6 +16,81 @@ import MastodonSDK
 
 extension APIService {
     
+    public struct PublishStatusContext {
+        public let content: String
+        public let mastodonVisibility: Mastodon.Entity.Status.Visibility?
+        public let idempotencyKey: String?
+        
+        public init(
+            content: String,
+            mastodonVisibility: Mastodon.Entity.Status.Visibility?,
+            idempotencyKey: String?
+        ) {
+            self.content = content
+            self.mastodonVisibility = mastodonVisibility
+            self.idempotencyKey = idempotencyKey
+        }
+    }
+    
+    public struct PublishStatusResponse {
+        public let id: String
+        public let authorName: String
+        public let authorUsername: String
+        public let authorAvatarURL: URL?
+        public let statusURL: URL
+    }
+
+    public func publishStatus(
+        context: PublishStatusContext,
+        authenticationContext: AuthenticationContext
+    ) async throws -> PublishStatusResponse {
+        switch authenticationContext {
+        case .twitter(let authenticationContext):
+            let response = try await publishTwitterStatus(
+                content: context.content,
+                mediaIDs: nil,
+                placeID: nil,
+                replyTo: nil,
+                excludeReplyUserIDs: nil,
+                twitterAuthenticationContext: authenticationContext
+            )
+            return .init(
+                id: response.value.idStr,
+                authorName: response.value.user.name,
+                authorUsername: response.value.user.screenName,
+                authorAvatarURL: response.value.user.avatarImageURL(),
+                statusURL: response.value.statusURL
+            )
+        case .mastodon(let authenticationContext):
+            let response = try await publishMastodonStatus(
+                query: Mastodon.API.Status.PublishStatusQuery(
+                    status: context.content,
+                    mediaIDs: nil,
+                    pollOptions: nil,
+                    pollExpiresIn: nil,
+                    pollMultiple: nil,
+                    inReplyToID: nil,
+                    sensitive: nil,
+                    spoilerText: nil,
+                    visibility: context.mastodonVisibility,
+                    idempotencyKey: context.idempotencyKey
+                ),
+                mastodonAuthenticationContext: authenticationContext
+            )
+            return .init(
+                id: response.value.id,
+                authorName: response.value.account.name,
+                authorUsername: response.value.account.acctWithDomain(domain: authenticationContext.domain),
+                authorAvatarURL: URL(string: response.value.account.avatar),
+                statusURL: URL(string: response.value.url ?? response.value.uri)!
+            )
+        }   // end switch
+    }   // end func
+    
+}
+
+extension APIService {
+    
     public func publishTwitterStatus(
         content: String,
         mediaIDs: [String]?,
@@ -58,6 +133,7 @@ extension APIService {
 }
 
 extension APIService {
+    
     public func publishMastodonStatus(
         query: Mastodon.API.Status.PublishStatusQuery,
         mastodonAuthenticationContext: MastodonAuthenticationContext
@@ -68,83 +144,11 @@ extension APIService {
         let response = try await Mastodon.API.Status.publish(
             session: session,
             domain: domain,
-            idempotencyKey: nil,    // TODO:
             query: query,
             authorization: authorization
         )
         
         return response
-    }
-}
-
-extension APIService {
-    
-    @available(*, deprecated, message: "")
-    func delete(
-        tweetObjectID: NSManagedObjectID,
-        twitterAuthenticationBox: AuthenticationService.TwitterAuthenticationBox
-    ) -> AnyPublisher<Twitter.Response.Content<Twitter.Entity.Tweet>, Error> {
-        fatalError()
-//        let authorization = twitterAuthenticationBox.twitterAuthorization
-//        let managedObjectContext = backgroundManagedObjectContext
-//        
-//        let query = Future<Twitter.API.Statuses.DestroyQuery, Never> { promise in
-//            let tweet = managedObjectContext.object(with: tweetObjectID) as! Tweet
-//            let query = Twitter.API.Statuses.DestroyQuery(id: tweet.id)
-//            promise(.success(query))
-//        }
-//        
-//        let impactFeedbackGenerator = UIImpactFeedbackGenerator(style: .light)
-//        let notificationFeedbackGenerator = UINotificationFeedbackGenerator()
-//        
-//        return query
-//            .setFailureType(to: Error.self)
-//            .flatMap { query -> AnyPublisher<Twitter.Response.Content<Twitter.Entity.Tweet>, Error> in
-//                os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: delete tweet %s …", ((#file as NSString).lastPathComponent), #line, #function, query.id)
-//                impactFeedbackGenerator.prepare()
-//                impactFeedbackGenerator.impactOccurred()
-//                return Twitter.API.Statuses.destroy(session: self.session, authorization: authorization, query: query)
-//            }
-//            .map { response -> AnyPublisher<Twitter.Response.Content<Twitter.Entity.Tweet>, Error> in
-//                let tweet = response.value
-//                os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: delete tweet %s success", ((#file as NSString).lastPathComponent), #line, #function, tweet.idStr)
-//                return managedObjectContext.performChanges {
-//                    let tweet = managedObjectContext.object(with: tweetObjectID) as! Tweet
-//                    tweet.softDelete()
-//                }
-//                .setFailureType(to: Error.self)
-//                .tryMap { result -> Twitter.Response.Content<Twitter.Entity.Tweet> in
-//                    switch result {
-//                    case .success:
-//                        return response
-//                    case .failure(let error):
-//                        throw error
-//                    }
-//                }
-//                .eraseToAnyPublisher()
-//            }
-//            .switchToLatest()
-//            .handleEvents(receiveCompletion: { completion in
-//                notificationFeedbackGenerator.prepare()
-//                switch completion {
-//                case .failure(let error):
-//                    os_log("%{public}s[%{public}ld], %{public}s: delete tweet fail: %s", ((#file as NSString).lastPathComponent), #line, #function, error.localizedDescription)
-////                    var config = SwiftMessages.defaultConfig
-////                    config.duration = .seconds(seconds: 3)
-////                    config.interactiveHide = true
-////                    let bannerView = NotifyBannerView()
-////                    bannerView.configure(for: .error)
-////                    bannerView.titleLabel.text = L10n.Common.Alerts.FailedToDeleteTweet.title
-////                    bannerView.messageLabel.text = L10n.Common.Alerts.FailedToDeleteTweet.message
-////                    DispatchQueue.main.async {
-////                        SwiftMessages.show(config: config, view: bannerView)
-////                        notificationFeedbackGenerator.notificationOccurred(.error)
-////                    }
-//                case .finished:
-//                    notificationFeedbackGenerator.notificationOccurred(.success)
-//                }
-//            })
-//            .eraseToAnyPublisher()
     }
     
 }

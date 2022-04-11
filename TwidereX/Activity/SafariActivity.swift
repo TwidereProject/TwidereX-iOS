@@ -32,7 +32,9 @@ final class SafariActivity: UIActivity {
 
     override func canPerform(withActivityItems activityItems: [Any]) -> Bool {
         for item in activityItems {
-            guard let _ = item as? NSURL, sceneCoordinator != nil else { continue }
+            guard let url = item as? NSURL, !url.isFileURL,
+                  sceneCoordinator != nil
+            else { continue }
             return true
         }
         

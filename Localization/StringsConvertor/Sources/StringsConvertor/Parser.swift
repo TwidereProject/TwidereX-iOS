@@ -22,13 +22,13 @@ class Parser {
 extension Parser {
     enum KeyStyle {
         case infoPlist
-        case swiftgen
+        case strings
     }
 }
 
 extension Parser {
     
-    func generateStrings(keyStyle: KeyStyle = .swiftgen) -> String {
+    func generateStrings(keyStyle: KeyStyle = .strings) -> String {
         let pairs = traval(dictionary: json, prefixKeys: [])
         
         var lines: [String] = []
@@ -43,7 +43,7 @@ extension Parser {
                             .map {
                                 switch keyStyle {
                                 case .infoPlist:        return $0
-                                case .swiftgen:         return $0.capitalized
+                                case .strings:         return $0.capitalized
                                 }
                             }
                             .joined()

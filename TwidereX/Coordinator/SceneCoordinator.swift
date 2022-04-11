@@ -82,7 +82,9 @@ extension SceneCoordinator {
         case trend(viewModel: TrendViewModel)
         case searchResult(viewModel: SearchResultViewModel)
         
+        // Settings
         case setting
+        case appearance
         case displayPreference
         case about
         
@@ -272,12 +274,6 @@ private extension SceneCoordinator {
             _viewController.viewModel = viewModel
             _viewController.composeContentViewModel = contentViewModel
             viewController = _viewController
-
-//        case .searchDetail(let viewModel):
-//            let _viewController = SearchDetailViewController()
-//            _viewController.viewModel = viewModel
-//            viewController = _viewController
-
         case .mediaPreview(let viewModel):
             let _viewController = MediaPreviewViewController()
             _viewController.viewModel = viewModel
@@ -306,6 +302,8 @@ private extension SceneCoordinator {
             viewController = _viewController
         case .setting:
             viewController = SettingListViewController()
+        case .appearance:
+            viewController = AppearanceViewController()
         case .displayPreference:
             viewController = DisplayPreferenceViewController()
         case .about:

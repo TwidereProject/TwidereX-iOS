@@ -1,0 +1,83 @@
+"0e8JfP" = "确认一下，您想要使用 ‘${account}’?";
+
+"1iPE2d-BS59z4" = "确认要选择 “公开”？";
+
+"1iPE2d-aV5Ezl" = "确认要选择“默认”？";
+
+"1iPE2d-aV8f0g" = "确认要选择 “仅关注者”？";
+
+"1iPE2d-aeaw8w" = "确认要选择“私信”？";
+
+"1iPE2d-jEAHra" = "确认要选择 “不公开”？";
+
+"8WWS78" = "用户名";
+
+"9OV1Ic" = "帖子";
+
+"ApmQKm" = "切换账号";
+
+"BS59z4" = "公开";
+
+"Ciuk7c" = "名称";
+
+"DBgjXT" = "账号";
+
+"Fn8AQn" = "URL";
+
+"G5v3xr" = "设置活跃账户";
+
+"GILN5g" = "有 ${count} 个选项匹配 ‘${accounts}’。";
+
+"N4GVJI" = "${errorDescription}";
+
+"QSA5ql" = "账号";
+
+"QWcTQP" = "切换至 ${account}";
+
+"SnCJhk" = "发布帖子";
+
+"SqRrlA" = "确认一下，您想要使用 ‘${accounts}’?";
+
+"SrV2FP" = "错误描述";
+
+"TzDamL" = "嘟文可见性";
+
+"WVP0I1" = "${errorDescription}";
+
+"Xs6a35" = "嘟文可见性";
+
+"YNUo2I" = "有 ${count} 个选项匹配 ‘${account}’。";
+
+"Yb4tzx" = "帐号";
+
+"aV5Ezl" = "默认";
+
+"aV8f0g" = "仅关注者";
+
+"aeaw8w" = "私信";
+
+"ch7ADX" = "撰写并发送帖子";
+
+"f1YNIs" = "帖子内容";
+
+"jEAHra" = "不公开";
+
+"kWl9zU" = "用 ${accounts} 发布 ${content}";
+
+"noeHVX" = "帖子";
+
+"vbgnbQ" = "用 ${accounts} 发布 ${content}";
+
+"xeqcBa-BS59z4" = "有 ${count} 个选项匹配 “公开”";
+
+"xeqcBa-aV5Ezl" = "有 ${count} 个选项匹配 “默认”";
+
+"xeqcBa-aV8f0g" = "有 ${count} 个选项匹配 “仅关注者”";
+
+"xeqcBa-aeaw8w" = "有 ${count} 个选项匹配 “私信”";
+
+"xeqcBa-jEAHra" = "有 ${count} 个选项匹配 “不公开”";
+
+"z3DAP7" = "切换至 ${account}";
+
+"zlMGvn" = "内容";

@@ -165,6 +165,9 @@ extension StatusToolbar {
     }
     
     public enum MenuAction: String, CaseIterable {
+        case saveMedia
+        case translate
+        case share
         case remove
     }
 

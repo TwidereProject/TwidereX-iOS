@@ -60,6 +60,19 @@ public final class PublisherService {
                 self.currentPublishProgress = 0
             }
             .store(in: &disposeBag)
+        
+        statusPublishResult
+            .receive(on: DispatchQueue.main)
+            .sink { result in
+                switch result {
+                case .success:
+                    // update store review count trigger
+                    UserDefaults.shared.storeReviewInteractTriggerCount += 1
+                case .failure:
+                    break
+                }
+            }
+            .store(in: &disposeBag)
     }
     
 }

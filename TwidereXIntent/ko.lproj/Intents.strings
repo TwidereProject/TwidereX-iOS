@@ -1,0 +1,83 @@
+"0e8JfP" = "Just to confirm, you wanted ‘${account}’?";
+
+"1iPE2d-BS59z4" = "Just to confirm, you wanted ‘Public’?";
+
+"1iPE2d-aV5Ezl" = "Just to confirm, you wanted ‘Default’?";
+
+"1iPE2d-aV8f0g" = "Just to confirm, you wanted ‘Private’?";
+
+"1iPE2d-aeaw8w" = "Just to confirm, you wanted ‘Direct’?";
+
+"1iPE2d-jEAHra" = "Just to confirm, you wanted ‘Unlisted’?";
+
+"8WWS78" = "사용자 이름";
+
+"9OV1Ic" = "Posts";
+
+"ApmQKm" = "Switch Account";
+
+"BS59z4" = "공개";
+
+"Ciuk7c" = "이름";
+
+"DBgjXT" = "Account";
+
+"Fn8AQn" = "URL";
+
+"G5v3xr" = "Set active account";
+
+"GILN5g" = "There are ${count} options matching ‘${accounts}’.";
+
+"N4GVJI" = "${errorDescription}";
+
+"QSA5ql" = "Account";
+
+"QWcTQP" = "Switch to ${account}";
+
+"SnCJhk" = "Publish Post";
+
+"SqRrlA" = "Just to confirm, you wanted ‘${accounts}’?";
+
+"SrV2FP" = "Error Description";
+
+"TzDamL" = "Toot Visibility";
+
+"WVP0I1" = "${errorDescription}";
+
+"Xs6a35" = "Toot Visibility";
+
+"YNUo2I" = "There are ${count} options matching ‘${account}’.";
+
+"Yb4tzx" = "계정";
+
+"aV5Ezl" = "Default";
+
+"aV8f0g" = "비공개";
+
+"aeaw8w" = "직접";
+
+"ch7ADX" = "Compose and send post";
+
+"f1YNIs" = "Post Content";
+
+"jEAHra" = "리스트 되지 않음";
+
+"kWl9zU" = "Post ${content}with ${accounts}";
+
+"noeHVX" = "Post";
+
+"vbgnbQ" = "Post ${content}with ${accounts}";
+
+"xeqcBa-BS59z4" = "There are ${count} options matching ‘Public’.";
+
+"xeqcBa-aV5Ezl" = "There are ${count} options matching ‘Default’.";
+
+"xeqcBa-aV8f0g" = "There are ${count} options matching ‘Private’.";
+
+"xeqcBa-aeaw8w" = "There are ${count} options matching ‘Direct’.";
+
+"xeqcBa-jEAHra" = "There are ${count} options matching ‘Unlisted’.";
+
+"z3DAP7" = "Switch to ${account}";
+
+"zlMGvn" = "Content";

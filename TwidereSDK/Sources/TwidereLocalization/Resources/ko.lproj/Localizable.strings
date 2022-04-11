@@ -121,6 +121,9 @@
 "Common.Alerts.PermissionDeniedFriendshipBlocked.Title" = "권한 거부됨";
 "Common.Alerts.PermissionDeniedNotAuthorized.Message" = "안타깝지만 권한이 없습니다.";
 "Common.Alerts.PermissionDeniedNotAuthorized.Title" = "권한 거부됨";
+"Common.Alerts.PhotoCopied.Title" = "Photo Copied";
+"Common.Alerts.PhotoCopyFail.Message" = "다시 해보세요.";
+"Common.Alerts.PhotoCopyFail.Title" = "Failed to Copy Photo";
 "Common.Alerts.PhotoSaveFail.Message" = "다시 해보세요.";
 "Common.Alerts.PhotoSaveFail.Title" = "이미지를 저장하지 못했습니다.";
 "Common.Alerts.PhotoSaved.Title" = "이미지를 저장했습니다.";
@@ -154,6 +157,7 @@
 "Common.Controls.Actions.Browse" = "탐색";
 "Common.Controls.Actions.Cancel" = "돌아가기";
 "Common.Controls.Actions.Confirm" = "확인";
+"Common.Controls.Actions.Copy" = "Copy";
 "Common.Controls.Actions.Delete" = "지우기";
 "Common.Controls.Actions.Edit" = "고치기";
 "Common.Controls.Actions.Ok" = "확인";
@@ -162,7 +166,11 @@
 "Common.Controls.Actions.Remove" = "지우기";
 "Common.Controls.Actions.Save" = "저장";
 "Common.Controls.Actions.SavePhoto" = "사진 저장하기";
+"Common.Controls.Actions.Share" = "공유";
+"Common.Controls.Actions.ShareLink" = "링크 공유하기";
 "Common.Controls.Actions.ShareMedia" = "미디어 공유하기";
+"Common.Controls.Actions.ShareMediaMenu.Link" = "Link";
+"Common.Controls.Actions.ShareMediaMenu.Media" = "미디어";
 "Common.Controls.Actions.SignIn" = "로그인";
 "Common.Controls.Actions.SignOut" = "로그아웃 됐습니다.";
 "Common.Controls.Actions.TakePhoto" = "사진 찍기";
@@ -199,6 +207,7 @@
 "Common.Controls.Status.Actions.PinOnProfile" = "프로필에 고정";
 "Common.Controls.Status.Actions.Quote" = "인용";
 "Common.Controls.Status.Actions.Retweet" = "리트윗";
+"Common.Controls.Status.Actions.SaveMedia" = "Save media";
 "Common.Controls.Status.Actions.Share" = "공유";
 "Common.Controls.Status.Actions.ShareContent" = "Share content";
 "Common.Controls.Status.Actions.ShareLink" = "링크 공유하기";
@@ -369,6 +378,7 @@
 "Scene.Settings.About.Title" = "정보";
 "Scene.Settings.About.Version" = "%@ 버전";
 "Scene.Settings.Appearance.AmoledOptimizedMode" = "AMOLED 최적화 모드";
+"Scene.Settings.Appearance.AppIcon" = "App Icon";
 "Scene.Settings.Appearance.HighlightColor" = "강조색";
 "Scene.Settings.Appearance.PickColor" = "색 고르기";
 "Scene.Settings.Appearance.ScrollingTimeline.AppBar" = "제목 표시줄 숨기기";
@@ -377,12 +387,18 @@
 "Scene.Settings.Appearance.SectionHeader.ScrollingTimeline" = "타임라인을 스크롤할 때";
 "Scene.Settings.Appearance.SectionHeader.TabPosition" = "탭 위치";
 "Scene.Settings.Appearance.SectionHeader.Theme" = "테마";
+"Scene.Settings.Appearance.SectionHeader.Translation" = "Translation";
 "Scene.Settings.Appearance.TabPosition.Bottom" = "맨 아래";
 "Scene.Settings.Appearance.TabPosition.Top" = "위";
 "Scene.Settings.Appearance.Theme.Auto" = "자동";
 "Scene.Settings.Appearance.Theme.Dark" = "어둡게";
 "Scene.Settings.Appearance.Theme.Light" = "밝게";
 "Scene.Settings.Appearance.Title" = "모양";
+"Scene.Settings.Appearance.Translation.Always" = "언제나";
+"Scene.Settings.Appearance.Translation.Auto" = "자동";
+"Scene.Settings.Appearance.Translation.Off" = "끄기";
+"Scene.Settings.Appearance.Translation.Service" = "Service";
+"Scene.Settings.Appearance.Translation.TranslateButton" = "Translate button";
 "Scene.Settings.Display.DateFormat.Absolute" = "절대 시간";
 "Scene.Settings.Display.DateFormat.Relative" = "상대적 시간 (~분 전)";
 "Scene.Settings.Display.Media.Always" = "언제나";

@@ -33,7 +33,7 @@ struct WelcomeView: View {
             HStack {
                 // not use UIImage init method here
                 // only .init(_:bundle:) works with the dynamic Dark Mode asset
-                Image(decorative: Asset.Scene.Welcome.twidere.name, bundle: TwidereAsset.bundle)
+                Image(decorative: Asset.Logo.twidere.name, bundle: TwidereAsset.bundle)
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                     .frame(width: 48, height: 48)

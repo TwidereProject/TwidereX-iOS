@@ -13,6 +13,7 @@ import CoreData
 import CoreDataStack
 import TwidereCommon
 import TwidereCore
+import StoreKit
 
 class AppContext: ObservableObject {
     
@@ -72,6 +73,42 @@ class AppContext: ObservableObject {
             .sink { [unowned self] in
                 self.objectWillChange.send()
             }
+        
+        setupStoreReview()
+    }
+    
+    private func setupStoreReview() {
+        guard UserDefaults.shared.lastVersionPromptedForReview == nil else { return }
+        
+        // tigger store review when hit 50 times interact
+        let limit = 50
+        
+        UserDefaults.shared.publisher(for: \.storeReviewInteractTriggerCount)
+            .removeDuplicates()
+            .throttle(for: 2, scheduler: DispatchQueue.main, latest: false)
+            .sink { count in
+                guard count > limit else { return }
+                guard UserDefaults.shared.lastVersionPromptedForReview == nil else { return }
+                
+                let _windowScene: UIWindowScene? = {
+                    let windowScenes = UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }
+                    if let keyWindowScene = windowScenes.first(where: { $0.keyWindow != nil }) {
+                        return keyWindowScene
+                    } else {
+                        return windowScenes.first
+                    }
+                }()
+                guard let windowScene = _windowScene else {
+                    assertionFailure()
+                    return
+                }
+                
+                // let version = UIApplication.appVersion()
+                // UserDefaults.shared.lastVersionPromptedForReview = version
+                SKStoreReviewController.requestReview(in: windowScene)
+            }
+            .store(in: &disposeBag)
+        
     }
     
 }

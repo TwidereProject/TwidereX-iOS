@@ -71,7 +71,7 @@ struct SettingListView: View {
     
     static let generalSection: [SettingListEntry] = {
         let types: [SettingListEntryType]  = [
-//            .appearance,
+            .appearance,
             .display,
 //            .layout,
 //            .webBrowser
@@ -144,7 +144,7 @@ struct SettingListView: View {
             .modifier(TextCaseEraseStyle())
             #endif
         }
-        .listStyle(GroupedListStyle())
+        .listStyle(InsetGroupedListStyle())
     }
     
 }
