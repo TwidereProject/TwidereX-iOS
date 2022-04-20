@@ -9,7 +9,8 @@ import Foundation
 
 extension Twitter.Entity {
     public struct Place: Codable {
-        public let id: String
+        public typealias ID = String
+        public let id: ID
 
         public let country: String?
         public let countryCode: String?

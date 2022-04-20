@@ -10,6 +10,7 @@ import os.log
 import UIKit
 import Combine
 import TwidereCore
+import TwitterSDK
 
 final class TrendViewModel {
     
@@ -25,6 +26,8 @@ final class TrendViewModel {
     // output
     var diffableDataSource: UITableViewDiffableDataSource<SearchSection, SearchItem>?
     @Published var isTrendFetched = false
+    @Published var twitterTrendPlaces: [Twitter.Entity.Trend.Place] = []
+    @Published var trendPlaceName: String?
 
     init(context: AppContext) {
         self.context = context
@@ -39,7 +42,8 @@ final class TrendViewModel {
                 
                 switch authenticationContext {
                 case .twitter:
-                    self.trendGroupIndex = .twitter(placeID: 1)         // default world wide
+                    let placeID = TrendViewModel.defaultTwitterTrendPlace?.woeid ?? 1 // fallback to world-wide "1"
+                    self.trendGroupIndex = .twitter(placeID: placeID)
                 case .mastodon(let authenticationContext):
                     self.trendGroupIndex = .mastodon(domain: authenticationContext.domain)
                 case nil:
@@ -47,6 +51,61 @@ final class TrendViewModel {
                 }
             }
             .store(in: &disposeBag)
+        
+        Publishers.CombineLatest(
+            $trendGroupIndex,
+            $twitterTrendPlaces
+        )
+        .map { trendGroupIndex, twitterTrendPlaces in
+            switch trendGroupIndex {
+            case .none:
+                return nil
+            case .twitter(let placeID):
+                let _place = twitterTrendPlaces
+                    .first(where: { $0.woeid == placeID })
+                let name = _place?.name ?? TrendViewModel.defaultTwitterTrendPlace?.name ?? L10n.Scene.Trends.worldWide
+                return name
+            case .mastodon:
+                return nil
+            }
+        }
+        .assign(to: &$trendPlaceName)
     }
     
+}
+
+
+extension TrendViewModel {
+    func fetchTrendPlaces() async throws {
+        guard twitterTrendPlaces.isEmpty else { return }
+        guard case let .twitter(authenticationContext) = context.authenticationService.activeAuthenticationContext else { return }
+        let response = try await context.apiService.twitterTrendPlaces(authenticationContext: authenticationContext)
+        twitterTrendPlaces = response.value
+            .filter { $0.parentID == 1 }
+            .sorted(by: { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending })
+    }
+}
+
+extension TrendViewModel {
+    
+    func updateTrendGroupIndex(place: Twitter.Entity.Trend.Place) {
+        TrendViewModel.defaultTwitterTrendPlace = place
+        trendGroupIndex = .twitter(placeID: place.woeid)
+    }
+    
+    static var defaultTwitterTrendPlace: Twitter.Entity.Trend.Place? {
+        get {
+            guard let data = UserDefaults.shared.data(forKey: #function),
+                  let place = try? JSONDecoder().decode(Twitter.Entity.Trend.Place.self, from: data)
+            else { return nil }
+            return place
+        }
+        set {
+            let data: Data? = newValue.flatMap { place in
+                let data = try? JSONEncoder().encode(place)
+                return data
+            }
+            UserDefaults.shared[#function] = data
+        }
+    }
 }

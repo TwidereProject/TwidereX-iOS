@@ -103,8 +103,8 @@ class AppContext: ObservableObject {
                     return
                 }
                 
-                // let version = UIApplication.appVersion()
-                // UserDefaults.shared.lastVersionPromptedForReview = version
+                let version = UIApplication.appVersion()
+                UserDefaults.shared.lastVersionPromptedForReview = version
                 SKStoreReviewController.requestReview(in: windowScene)
             }
             .store(in: &disposeBag)

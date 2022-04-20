@@ -10,6 +10,7 @@ import os.log
 import UIKit
 import Combine
 import TwidereCore
+import TwitterSDK
 
 final class SearchViewModel {
     
@@ -68,9 +69,18 @@ final class SearchViewModel {
                 } catch {
                     // do nothing
                 }
-            }
+            }   // end Task
         }
         .store(in: &disposeBag)
+        
+        viewDidAppear
+            .sink { [weak self] _ in
+                guard let self = self else { return }
+                Task {
+                    try await self.trendViewModel.fetchTrendPlaces()
+                }   // end Task
+            }
+            .store(in: &disposeBag)
         
         savedSearchViewModel.savedSearchFetchedResultController.$records
             .sink { [weak self] records in
@@ -90,7 +100,7 @@ final class SearchViewModel {
     }
     
     deinit {
-        os_log("%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
+        os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
     }
     
 }

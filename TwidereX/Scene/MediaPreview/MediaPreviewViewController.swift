@@ -269,6 +269,9 @@ extension MediaPreviewViewController: MediaPreviewImageViewControllerDelegate {
     }
 
     func mediaPreviewImageViewController(_ viewController: MediaPreviewImageViewController, longPressGestureRecognizerDidTrigger longPressGestureRecognizer: UILongPressGestureRecognizer) {
+        let impactFeedbackGenerator = UIImpactFeedbackGenerator(style: .light)
+        impactFeedbackGenerator.impactOccurred()
+        
         // trigger menu button action
         mediaInfoDescriptionView.toolbar.delegate?.statusToolbar(
             mediaInfoDescriptionView.toolbar,
