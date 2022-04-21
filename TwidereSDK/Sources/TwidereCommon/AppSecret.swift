@@ -28,34 +28,38 @@ extension AppSecret {
     public struct OAuthSecret {
         public let consumerKey: String
         public let consumerKeySecret: String
+        public let clientID: String
         public let hostPublicKey: Curve25519.KeyAgreement.PublicKey?
         public let oauthEndpoint: String
         
         public init(
             consumerKey: String,
             consumerKeySecret: String,
+            clientID: String,
             hostPublicKey: Curve25519.KeyAgreement.PublicKey?,
             oauthEndpoint: String
         ) {
             self.consumerKey = consumerKey
             self.consumerKeySecret = consumerKeySecret
+            self.clientID = clientID
             self.hostPublicKey = hostPublicKey
             self.oauthEndpoint = oauthEndpoint
         }
+        
     }
 }
 
-extension AppSecret: TwitterOAuthExchangeProvider {
-    public func oauthExchange() -> Twitter.API.OAuth.OAuthExchange {
+extension AppSecret: TwitterOAuthProvider {
+    public var oauth: Twitter.API.OAuth.RequestTokenQueryContext {
         let oauthEndpoint = oauthSecret.oauthEndpoint
         switch oauthEndpoint {
         case "oob":
-            return .pin(exchange: .init(
+            return .standard(query: .init(
                 consumerKey: oauthSecret.consumerKey,
                 consumerKeySecret: oauthSecret.consumerKeySecret
             ))
         default:
-            return .custom(exchange: .init(
+            return .relay(query: .init(
                 consumerKey: oauthSecret.consumerKey,
                 hostPublicKey: oauthSecret.hostPublicKey!,
                 oauthEndpoint: oauthSecret.oauthEndpoint

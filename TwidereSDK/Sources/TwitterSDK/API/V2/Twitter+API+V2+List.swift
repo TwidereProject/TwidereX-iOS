@@ -7,6 +7,10 @@
 
 import Foundation
 
+extension Twitter.API.V2 {
+    public enum List { }
+}
+
 // lookup: https://developer.twitter.com/en/docs/twitter-api/lists/list-lookup/api-reference/get-lists-id
 extension Twitter.API.V2.List {
     

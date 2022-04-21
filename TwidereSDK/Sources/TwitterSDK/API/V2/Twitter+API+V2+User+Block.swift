@@ -7,6 +7,10 @@
 
 import Foundation
 
+extension Twitter.API.V2.User {
+    public enum Block { }
+}
+
 // doc: https://developer.twitter.com/en/docs/twitter-api/users/blocks/introduction
 extension Twitter.API.V2.User.Block {
     

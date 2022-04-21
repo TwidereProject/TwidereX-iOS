@@ -31,15 +31,19 @@ extension AppSecret {
             
             return key
         }()
+        
         #if DEBUG
         let oauthEndpoint = keys.oauth_endpoint_debug
+        let clientID = keys.client_id_debug
         #else
         let oauthEndpoint = keys.oauth_endpoint
+        let clientID = keys.client_id
         #endif
         
         let oauthSecret = AppSecret.OAuthSecret(
             consumerKey: keys.consumer_key,
             consumerKeySecret: keys.consumer_key_secret,
+            clientID: clientID,
             hostPublicKey: hostPublicKey,
             oauthEndpoint: oauthEndpoint
         )

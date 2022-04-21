@@ -7,6 +7,10 @@
 
 import Foundation
 
+extension Twitter.API.V2.User {
+    public enum List { }
+}
+
 // https://developer.twitter.com/en/docs/twitter-api/lists/list-lookup/api-reference/get-users-id-owned_lists
 extension Twitter.API.V2.User.List {
 

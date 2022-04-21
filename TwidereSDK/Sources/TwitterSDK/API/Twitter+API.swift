@@ -51,29 +51,6 @@ extension Twitter.API {
     public enum Trend { }
     public enum Users { }
     
-    // V2
-    public enum V2 {
-        public enum List {
-            public enum Member { }
-        }
-        public enum FollowLookup { }
-        public enum Lookup { }
-        public enum Search { }
-        public enum Status {
-            public enum Delete { }
-            public enum List { }
-        }
-        public enum User {
-            public enum Block { }
-            public enum Follow { } 
-            public enum Like { }
-            public enum List { }
-            public enum Mute { }
-            public enum Retweet { }
-        }
-        public enum UserLookup { } 
-    }
-    
 }
 
 
@@ -117,7 +94,43 @@ extension Twitter.API {
             request.httpBody = body
         }
         if let contentType = query?.contentType {
-            request.setValue(contentType, forHTTPHeaderField: "content-type")
+            request.setValue(contentType, forHTTPHeaderField: "Content-Type")
+        }
+        
+        return request
+    }
+    
+    static func request(
+        url: URL,
+        method: Method,
+        query: Query?,
+        authorization: Twitter.API.V2.OAuth2.Authorization
+    ) -> URLRequest {
+        var components = URLComponents(string: url.absoluteString)!
+        components.queryItems = query?.queryItems
+        if let encodedQueryItems = query?.encodedQueryItems {
+            let percentEncodedQueryItems = (components.percentEncodedQueryItems ?? []) + encodedQueryItems
+            components.percentEncodedQueryItems = percentEncodedQueryItems
+        }
+        
+        let requestURL = components.url!
+        var request = URLRequest(
+            url: requestURL,
+            cachePolicy: .reloadIgnoringLocalAndRemoteCacheData,
+            timeoutInterval: Twitter.API.timeoutInterval
+        )
+        request.httpMethod = method.rawValue
+        
+        let authorizationValue = authorization.authorizationHeader
+        request.setValue(
+            authorizationValue,
+            forHTTPHeaderField: Twitter.API.OAuth.authorizationField
+        )
+        if let body = query?.body {
+            request.httpBody = body
+        }
+        if let contentType = query?.contentType {
+            request.setValue(contentType, forHTTPHeaderField: "Content-Type")
         }
         
         return request

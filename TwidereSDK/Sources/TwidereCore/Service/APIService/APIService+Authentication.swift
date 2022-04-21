@@ -13,29 +13,31 @@ import TwidereCommon
 
 extension APIService {
     
-    public func twitterRequestToken(
-        provider: TwitterOAuthExchangeProvider
-    ) async throws -> Twitter.API.OAuth.OAuthRequestTokenResponseExchange {
-        let oauthExchange = provider.oauthExchange()
-        return try await Twitter.API.OAuth.requestToken(session: session, oauthExchange: oauthExchange)
-    }
-    
-    public func twitterAccessToken() async throws {
-        assertionFailure()
-    }
-    
-    // only pin-based OAuth needs client swap AccessToken
-    public func twitterAccessToken(
-        requestToken: String,
-        pinCode: String,
-        oauthSecret: AppSecret.OAuthSecret
-    ) async throws -> Twitter.API.OAuth.AccessTokenResponse {
-        return try await Twitter.API.OAuth.accessToken(
+    public func twitterOAuthRequestToken(
+        provider: TwitterOAuthProvider
+    ) async throws -> Twitter.API.OAuth.RequestTokenResponseContext {
+        return try await Twitter.API.OAuth.requestToken(
             session: session,
-            consumerKey: oauthSecret.consumerKey,
-            consumerSecret: oauthSecret.consumerKeySecret,
-            requestToken: requestToken,
-            pinCode: pinCode
+            query: provider.oauth
+        )
+    }
+    
+    // PIN-based OAuth needs client swap AccessToken
+    public func twitterOAuthAccessToken(
+        query: Twitter.API.OAuth.AccessToken.AccessTokenQuery
+    ) async throws -> Twitter.API.OAuth.AccessToken.AccessTokenResponse {
+        return try await Twitter.API.OAuth.AccessToken.accessToken(
+            session: session,
+            query: query
+        )
+    }
+    
+    public func twitterOAuth2AccessToken(
+        query: Twitter.API.V2.OAuth2.AccessTokenQuery
+    ) async throws -> Twitter.API.V2.OAuth2.AccessTokenResponse {
+        return try await Twitter.API.V2.OAuth2.accessToken(
+            session: session,
+            query: query
         )
     }
     
@@ -44,9 +46,12 @@ extension APIService {
 extension APIService {
     public func mastodonUserAccessToken(
         domain: String,
-        query: Mastodon.API.OAuth.AccessTokenQuery,
-        code: String
+        query: Mastodon.API.OAuth.AccessTokenQuery
     ) async throws -> Mastodon.Response.Content<Mastodon.Entity.Token> {
-        return try await Mastodon.API.OAuth.accessToken(session: session, domain: domain, query: query)
+        return try await Mastodon.API.OAuth.accessToken(
+            session: session,
+            domain: domain,
+            query: query
+        )
     }
 }

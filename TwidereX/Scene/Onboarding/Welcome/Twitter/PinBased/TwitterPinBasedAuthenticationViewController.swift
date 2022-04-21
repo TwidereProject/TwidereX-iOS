@@ -44,10 +44,10 @@ extension TwitterPinBasedAuthenticationViewController {
             webView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
         ])
         
-        let request = URLRequest(url: viewModel.authenticateURL)
+        let request = URLRequest(url: viewModel.authorizeURL)
         webView.navigationDelegate = viewModel.navigationDelegate
         webView.load(request)
-        os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: authenticate via: %s", ((#file as NSString).lastPathComponent), #line, #function, viewModel.authenticateURL.debugDescription)
+        os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: authenticate via: %s", ((#file as NSString).lastPathComponent), #line, #function, viewModel.authorizeURL.debugDescription)
     }
     
 }

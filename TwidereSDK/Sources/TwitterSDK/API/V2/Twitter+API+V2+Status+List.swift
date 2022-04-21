@@ -7,6 +7,10 @@
 
 import Foundation
 
+extension Twitter.API.V2.Status {
+    public enum List { }
+}
+
 extension Twitter.API.V2.Status.List {
 
     static func tweetsEndpointURL(listID: Twitter.Entity.V2.List.ID) -> URL {

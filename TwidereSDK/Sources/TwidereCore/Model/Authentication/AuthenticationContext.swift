@@ -74,13 +74,18 @@ public struct TwitterAuthenticationContext: Hashable {
     public let authenticationRecord: ManagedObjectRecord<TwitterAuthentication>
     public let userID: TwitterUser.ID
     public let authorization: Twitter.API.OAuth.Authorization
+    public let authorizationV2: Twitter.API.V2.OAuth2.Authorization?
     
-    public init?(authentication: TwitterAuthentication, appSecret: AppSecret) {
+    public init?(
+        authentication: TwitterAuthentication,
+        appSecret: AppSecret
+    ) {
         guard let authorization = try? authentication.authorization(appSecret: appSecret) else { return nil }
         
         self.authenticationRecord = ManagedObjectRecord(objectID: authentication.objectID)
         self.userID = authentication.userID
         self.authorization = authorization
+        self.authorizationV2 = try? authentication.authorizationV2(appSecret: appSecret)
     }
 }
 

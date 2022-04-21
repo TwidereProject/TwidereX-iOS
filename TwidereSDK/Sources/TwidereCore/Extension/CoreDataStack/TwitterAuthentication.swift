@@ -29,7 +29,7 @@ extension AuthenticationIndex {
 
 extension TwitterAuthentication.Property {
     
-    public func seal(appSecret: AppSecret) throws -> TwitterAuthentication.Property {
+    public func sealing(appSecret: AppSecret) throws -> TwitterAuthentication.Property {
         let nonce = UUID().uuidString
         let appSecret = appSecret.appSecret
 
@@ -37,15 +37,45 @@ extension TwitterAuthentication.Property {
         let consumerSecret = try TwitterAuthentication.Property.sealFieldValue(appSecret: appSecret, nonce: nonce, field: "consumerSecret", value: self.consumerSecret)
         let accessToken = try TwitterAuthentication.Property.sealFieldValue(appSecret: appSecret, nonce: nonce, field: "accessToken", value: self.accessToken)
         let accessTokenSecret = try TwitterAuthentication.Property.sealFieldValue(appSecret: appSecret, nonce: nonce, field: "accessTokenSecret", value: self.accessTokenSecret)
+        
         let property = TwitterAuthentication.Property(
-            userID: self.userID,
-            screenName: self.screenName,
+            userID: userID,
+            screenName: screenName,
             consumerKey: consumerKey,
             consumerSecret: consumerSecret,
             accessToken: accessToken,
             accessTokenSecret: accessTokenSecret,
-            nonce: nonce
+            nonce: nonce,
+            bearerAccessToken: bearerAccessToken,
+            bearerRefreshToken: bearerRefreshToken,
+            bearerNonce: "",
+            updatedAt: Date()
         )
+        
+        return property
+    }
+    
+    public func sealingV2(appSecret: AppSecret) throws -> TwitterAuthentication.Property {
+        let bearerNonce = UUID().uuidString
+        let appSecret = appSecret.appSecret
+
+        let bearerAccessToken = try TwitterAuthentication.Property.sealFieldValue(appSecret: appSecret, nonce: bearerNonce, field: "bearerAccessToken", value: self.bearerAccessToken)
+        let bearerRefreshToken = try TwitterAuthentication.Property.sealFieldValue(appSecret: appSecret, nonce: bearerNonce, field: "bearerRefreshToken", value: self.bearerRefreshToken)
+        
+        let property = TwitterAuthentication.Property(
+            userID: userID,
+            screenName: screenName,
+            consumerKey: consumerKey,
+            consumerSecret: consumerSecret,
+            accessToken: accessToken,
+            accessTokenSecret: accessTokenSecret,
+            nonce: nonce,
+            bearerAccessToken: bearerAccessToken,
+            bearerRefreshToken: bearerRefreshToken,
+            bearerNonce: bearerNonce,
+            updatedAt: Date()
+        )
+        
         return property
     }
     
@@ -81,6 +111,13 @@ extension TwitterAuthentication {
             consumerSecret: consumerSecret,
             accessToken: accessToken,
             accessTokenSecret: accessTokenSecret
+        )
+    }
+    
+    public func authorizationV2(appSecret: AppSecret) throws -> Twitter.API.V2.OAuth2.Authorization {
+        return Twitter.API.V2.OAuth2.Authorization(
+            accessToken: self.bearerAccessToken,
+            refreshToken: self.bearerRefreshToken
         )
     }
     

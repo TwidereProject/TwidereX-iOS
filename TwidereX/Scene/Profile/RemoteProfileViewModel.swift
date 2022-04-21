@@ -124,7 +124,7 @@ extension RemoteProfileViewModel {
         twitterContext: ProfileContext.TwitterContext,
         authenticationContext: TwitterAuthenticationContext
     ) async throws -> ManagedObjectRecord<TwitterUser>? {
-        let response: Twitter.Response.Content<Twitter.API.V2.UserLookup.Content> = try await {
+        let response: Twitter.Response.Content<Twitter.API.V2.User.Lookup.Content> = try await {
             switch twitterContext {
             case .userID(let userID):
                 return try await context.apiService.twitterUsers(

@@ -115,31 +115,22 @@ extension WelcomeViewController {
 // MARK: - WelcomeViewModelDelegate
 extension WelcomeViewController: WelcomeViewModelDelegate {
     
-    // For user PIN-based OAuth Twitter authentication (WebView)
+    // For user customized PIN-based OAuth Twitter authentication (WebView)
     func presentTwitterAuthenticationOption() {
         let twitterAuthenticationOptionViewModel = TwitterAuthenticationOptionViewModel(context: context)
         coordinator.present(scene: .twitterAuthenticationOption(viewModel: twitterAuthenticationOptionViewModel), from: self, transition: .modal(animated: true, completion: nil))
     }
     
-    // For app custom OAuth Twitter authentication (AuthenticationServices)
+    // For app OAuth Twitter authentication (AuthenticationServices)
     func welcomeViewModel(
         _ viewModel: WelcomeViewModel,
-        authenticateTwitter exchange: Twitter.API.OAuth.OAuthRequestTokenResponseExchange
+        authenticateTwitter authorizationContext: TwitterAuthenticationController.AuthorizationContext
     ) {
-        let requestToken: String = {
-            switch exchange {
-            case .pin(let response):            return response.oauthToken
-            case .custom(_, let append):        return append.requestToken
-            }
-        }()
-        let authenticateURL = Twitter.API.OAuth.authenticateURL(requestToken: requestToken)
-
         let authenticationController = TwitterAuthenticationController(
             context: context,
             coordinator: coordinator,
             appSecret: AppSecret.default,
-            authenticateURL: authenticateURL,
-            requestTokenExchange: exchange
+            authorizationContext: authorizationContext
         )
         
         authenticationController.isAuthenticating
@@ -181,15 +172,9 @@ extension WelcomeViewController: WelcomeViewModelDelegate {
             .store(in: &authenticationController.disposeBag)
         
         self.twitterAuthenticationController = authenticationController
-        switch exchange {
-        case .pin:
-            break
-        case .custom:
-            assert(authenticationController.authenticationSession != nil )
-            authenticationController.authenticationSession?.prefersEphemeralWebBrowserSession = true
-            authenticationController.authenticationSession?.presentationContextProvider = self
-            authenticationController.authenticationSession?.start()
-        }
+        authenticationController.authenticationSession?.prefersEphemeralWebBrowserSession = false
+        authenticationController.authenticationSession?.presentationContextProvider = self
+        authenticationController.authenticationSession?.start()
     }
     
     // For PIN-Based OAuth Mastodon authentication (AuthenticationServices)

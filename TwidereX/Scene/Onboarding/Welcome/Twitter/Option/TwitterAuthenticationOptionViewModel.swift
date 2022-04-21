@@ -10,6 +10,7 @@ import UIKit
 import Combine
 import AppShared
 import TwitterSDK
+import TwidereCommon
 
 final class TwitterAuthenticationOptionViewModel: NSObject {
     
@@ -64,6 +65,7 @@ final class TwitterAuthenticationOptionViewModel: NSObject {
                 oauthSecret: AppSecret.OAuthSecret(
                     consumerKey: consumerKey,
                     consumerKeySecret: consumerSecret,
+                    clientID: "",   // TODO:
                     hostPublicKey: nil,
                     oauthEndpoint: "oob"
                 )
@@ -140,14 +142,4 @@ extension TwitterAuthenticationOptionViewModel: UITableViewDataSource {
         return cell
     }
     
-}
-
-// MARK: - OAuthExchangeProvider
-extension TwitterAuthenticationOptionViewModel: TwitterOAuthExchangeProvider {
-    func oauthExchange() -> Twitter.API.OAuth.OAuthExchange {
-        return .pin(exchange: .init(
-            consumerKey: consumerKey.value,
-            consumerKeySecret: consumerSecret.value
-        ))
-    }
 }

@@ -93,9 +93,12 @@ extension TwitterAuthenticationOptionViewController {
         requestTokenExchangeTask = Task {
             self.navigationItem.rightBarButtonItem = self.activityIndicatorBarButtonItem
             do {
-                let requestTokenExchange = try await self.context.apiService.twitterRequestToken(provider: appSecret)
+                let requestTokenExchange = try await self.context.apiService.twitterOAuthRequestToken(provider: appSecret)
                 if Task.isCancelled { return }
-                self.twitterAuthenticate(requestTokenExchange: requestTokenExchange, appSecret: appSecret)
+                self.twitterAuthenticate(
+                    appSecret: appSecret,
+                    authorizationContext: .oauth(requestTokenExchange)
+                )
             } catch {
                 os_log("%{public}s[%{public}ld], %{public}s: request token error: %{public}s", ((#file as NSString).lastPathComponent), #line, #function, error.localizedDescription)
                 self.navigationItem.rightBarButtonItem = self.signInBarButtonItem
@@ -110,23 +113,14 @@ extension TwitterAuthenticationOptionViewController {
 
 extension TwitterAuthenticationOptionViewController {
     private func twitterAuthenticate(
-        requestTokenExchange: Twitter.API.OAuth.OAuthRequestTokenResponseExchange,
-        appSecret: AppSecret
+        appSecret: AppSecret,
+        authorizationContext: TwitterAuthenticationController.AuthorizationContext
     ) {
-        let requestToken: String = {
-            switch requestTokenExchange {
-            case .pin(let response):            return response.oauthToken
-            case .custom(_, let append):        return append.requestToken
-            }
-        }()
-        let authenticateURL = Twitter.API.OAuth.authenticateURL(requestToken: requestToken)
-        
         let authenticationController = TwitterAuthenticationController(
             context: context,
             coordinator: coordinator,
             appSecret: appSecret,
-            authenticateURL: authenticateURL,
-            requestTokenExchange: requestTokenExchange
+            authorizationContext: authorizationContext
         )
         
         authenticationController.isAuthenticating

@@ -16,7 +16,7 @@ import MastodonSDK
 
 protocol WelcomeViewModelDelegate: AnyObject {
     func presentTwitterAuthenticationOption()
-    func welcomeViewModel(_ viewModel: WelcomeViewModel, authenticateTwitter exchange: Twitter.API.OAuth.OAuthRequestTokenResponseExchange)
+    func welcomeViewModel(_ viewModel: WelcomeViewModel, authenticateTwitter authorizationContext: TwitterAuthenticationController.AuthorizationContext)
     func welcomeViewModel(_ viewModel: WelcomeViewModel, authenticateMastodon authenticationInfo: MastodonAuthenticationController.MastodonAuthenticationInfo)
 }
 
@@ -81,14 +81,16 @@ extension WelcomeViewModel {
         }
         
         do {
-            let requestTokenResponse = try await context.apiService.twitterRequestToken(provider: AppSecret.default)
-            delegate?.welcomeViewModel(self, authenticateTwitter: requestTokenResponse)
+            let requestTokenResponse = try await context.apiService.twitterOAuthRequestToken(provider: AppSecret.default)
+            delegate?.welcomeViewModel(self, authenticateTwitter: .oauth(requestTokenResponse))
+            
+//            let clientID = AppSecret.default.oauthSecret.clientID
+//            delegate?.welcomeViewModel(self, authenticateTwitter: .oauth2(.init(clientID: clientID)))
         } catch {
             self.error.send(error)
         }
     }
 }
-
 
 extension WelcomeViewModel {
     
@@ -106,7 +108,7 @@ extension WelcomeViewModel {
             }
             
             // delay 1s
-            await Task.sleep(1_000_000_000) // 1s
+            try? await Task.sleep(nanoseconds: .second * 1)   // 1s
             guard let domain = MastodonAuthenticationController.parseDomain(from: mastodonDomain) else {
                 self.error.send(WelcomeError.invalidMastodonDomain)
                 return
@@ -132,5 +134,4 @@ extension WelcomeViewModel {
         }
     }
 
-    
 }
