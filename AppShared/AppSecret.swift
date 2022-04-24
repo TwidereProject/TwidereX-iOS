@@ -15,7 +15,7 @@ extension AppSecret {
     public convenience init(oauthSecret: OAuthSecret) {
         let keys = TwidereXKeys()
         self.init(
-            appSecret: keys.app_secret,
+            secret: keys.app_secret,
             oauthSecret: oauthSecret
         )
     }
@@ -34,9 +34,11 @@ extension AppSecret {
         
         #if DEBUG
         let oauthEndpoint = keys.oauth_endpoint_debug
+        let oauth2Endpoint = keys.oauth2_endpoint_debug
         let clientID = keys.client_id_debug
         #else
         let oauthEndpoint = keys.oauth_endpoint
+        let oauth2Endpoint = keys.oauth2_endpoint
         let clientID = keys.client_id
         #endif
         
@@ -45,7 +47,8 @@ extension AppSecret {
             consumerKeySecret: keys.consumer_key_secret,
             clientID: clientID,
             hostPublicKey: hostPublicKey,
-            oauthEndpoint: oauthEndpoint
+            oauthEndpoint: oauthEndpoint,
+            oauth2Endpoint: oauth2Endpoint
         )
         let appSecret = AppSecret(oauthSecret: oauthSecret)
         return appSecret

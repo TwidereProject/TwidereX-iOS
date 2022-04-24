@@ -42,7 +42,7 @@ extension PublishPostIntentHandler: PublishPostIntentHandling {
         do {
             let authenticationIndexes = try accounts.authenticationIndex(in: managedObjectContext)
             let authenticationContexts = authenticationIndexes.compactMap { authenticationIndex in
-                AuthenticationContext(authenticationIndex: authenticationIndex, appSecret: AppSecret.default)
+                AuthenticationContext(authenticationIndex: authenticationIndex, secret: AppSecret.default.secret)
             }
             
             var posts: [Post] = []

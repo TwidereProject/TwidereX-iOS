@@ -11,5 +11,7 @@ pod keys set client_id_debug "" "TwidereX"
 pod keys set host_key_public ${HOST_KEY_PUBLIC} "TwidereX"
 pod keys set oauth_endpoint ${OAUTH_ENDPOINT} "TwidereX"
 pod keys set oauth_endpoint_debug "oob" "TwidereX"
+pod keys set oauth2_endpoint ${OAUTH2_ENDPOINT} "TwidereX"
+pod keys set oauth2_endpoint_debug ${OAUTH2_ENDPOINT_DEBUG} "TwidereX"
 
 pod install

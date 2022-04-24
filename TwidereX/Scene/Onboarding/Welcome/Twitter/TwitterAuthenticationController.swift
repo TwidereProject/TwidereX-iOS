@@ -13,8 +13,9 @@ import CoreDataStack
 import AuthenticationServices
 import WebKit
 import TwitterSDK
-import AppShared
 import TwidereCommon
+import TwidereCore
+import AppShared
 
 // Note:
 // use given AuthorizationContext to authorize user
@@ -22,7 +23,7 @@ import TwidereCommon
 //   - PIN-based: for user who use customize consumer key OR custom build with "oob" OAuth endpoint
 //   - custom: App Store default build OR custom build with OAuth relay server endpoint
 // - OAuth2:
-//
+//   - TODO:
 final class TwitterAuthenticationController: NeedsDependency {
     
     let logger = Logger(subsystem: "TwitterAuthenticationController", category: "Controller")
@@ -32,26 +33,20 @@ final class TwitterAuthenticationController: NeedsDependency {
     // input
     var context: AppContext!
     var coordinator: SceneCoordinator!
-    let appSecret: AppSecret
-    var authenticationSession: ASWebAuthenticationSession?
-    var twitterPinBasedAuthenticationViewController: UIViewController?
     
     // output
-    let isAuthenticating = CurrentValueSubject<Bool, Never>(false)
-    let error = CurrentValueSubject<Error?, Never>(nil)
-    let authenticated = PassthroughSubject<Twitter.Entity.User, Never>()
+    @Published var authenticationSession: ASWebAuthenticationSession?
+    @Published var twitterPinBasedAuthenticationViewController: UIViewController?
+    @Published var isAuthenticating = false
+    @Published var error: Error? = nil
+    @Published var authenticatedTwitterUser: Twitter.Entity.User? = nil
 
     init(
         context: AppContext,
-        coordinator: SceneCoordinator,
-        appSecret: AppSecret,
-        authorizationContext: AuthorizationContext
+        coordinator: SceneCoordinator
     ) {
         self.context = context
         self.coordinator = coordinator
-        self.appSecret = appSecret
-        
-        setup(authorizationContext)
     }
     
     deinit {
@@ -61,79 +56,151 @@ final class TwitterAuthenticationController: NeedsDependency {
 }
 
 extension TwitterAuthenticationController {
-    public enum AuthorizationContext {
-        case oauth(Twitter.API.OAuth.RequestTokenResponseContext)
-        case oauth2(Twitter.API.V2.OAuth2.RequestTokenResponse)
-    }
-}
 
-extension TwitterAuthenticationController {
-
-    private func setup(_ authorizationContext: AuthorizationContext) {
+    @MainActor
+    func setup(authorizationContext: Twitter.AuthorizationContext) async throws {
         switch authorizationContext {
         case .oauth(let context):
-            switch context {
-            // use PIN-based OAuth via WKWebView (when set callback as "oob")
-            case .standard(let response):
-                let authorizeURL = Twitter.API.OAuth.authorizeURL(requestToken: response.oauthToken)
-                let twitterPinBasedAuthenticationViewModel = TwitterPinBasedAuthenticationViewModel(authorizeURL: authorizeURL)
-                setupPINAuthenticate(
-                    requestTokenResponse: response,
-                    appSecret: appSecret,
-                    pinCodePublisher: twitterPinBasedAuthenticationViewModel.pinCodePublisher
+            let requestToken = try await context.requestToken(session: self.context.apiService.session)
+
+            switch (context, requestToken) {
+            // Pin-based OAuth via WebView
+            case (.standard(let oauthContext), .standard(let requestToken)):
+                setupTwitterPinBasedAuthenticationViewController(
+                    oauthContext: oauthContext,
+                    requestToken: requestToken
                 )
-                Task {
-                    await twitterPinBasedAuthenticationViewController = coordinator.present(
-                        scene: .twitterPinBasedAuthentication(viewModel: twitterPinBasedAuthenticationViewModel),
-                        from: nil,
-                        transition: .modal(animated: true, completion: nil)
-                    )
-                }   // end Task
+                
             // 3-legged OAuth via system AuthenticationServices
-            case .relay(let response):
-                setupAuthenticationSession(requestTokenResponse: response)
+            case (.relay(let oauthContext), .relay(let requestToken)):
+                setupAuthenticationSession(
+                    oauthContext: oauthContext,
+                    requestToken: requestToken
+                )
+            default:
+                assertionFailure()
+                throw AppError.implicit(.badRequest)
             }
-        case .oauth2(let response):
-            setupAuthenticationSession(requestTokenResponse: response)
-        }
+            
+        case .oauth2(let context):
+            switch context {
+            case .relay(let context):
+                let authorization = try await context.authorize(session: self.context.apiService.session)
+                setupAuthenticationSession(
+                    oauthContext: context,
+                    authorization: authorization
+                )
+            }
+        }   // end switch
     }
     
 }
 
 extension TwitterAuthenticationController {
-    
-    func setupAuthenticationSession(
-        requestTokenResponse response: Twitter.API.OAuth.RequestToken.Relay.RequestTokenResponse
+
+    // setup pin code based account authentication & verify publisher
+    func setupTwitterPinBasedAuthenticationViewController(
+        oauthContext: Twitter.AuthorizationContext.OAuth.Standard.Context,
+        requestToken: Twitter.API.OAuth.RequestToken.Standard.Response
     ) {
-        let authorizeURL = Twitter.API.OAuth.authorizeURL(requestToken: response.append.requestToken)
+        let authorizeURL = Twitter.API.OAuth.authorizeURL(requestToken: requestToken.oauthToken)
+        let viewModel = TwitterPinBasedAuthenticationViewModel(authorizeURL: authorizeURL)
+        let viewController: TwitterPinBasedAuthenticationViewController = {
+            let viewController = TwitterPinBasedAuthenticationViewController()
+            viewController.context = self.context
+            viewController.coordinator = self.coordinator
+            viewController.viewModel = viewModel
+            return viewController
+        }()
+        
+        viewModel.pinCodePublisher
+            .sink(receiveValue: { [weak self] pinCode in
+                guard let self = self else { return }
+                Task {
+                    self.isAuthenticating = true
+                    defer {
+                        self.isAuthenticating = false
+                    }
+
+                    await self.twitterPinBasedAuthenticationViewController?.dismiss(animated: true, completion: nil)
+                    self.twitterPinBasedAuthenticationViewController = nil
+                    do {
+                        let accessTokenResponse = try await self.context.apiService.twitterOAuthAccessToken(
+                            query: .init(
+                                consumerKey: oauthContext.consumerKey,
+                                consumerSecret: oauthContext.consumerKeySecret,
+                                requestToken: requestToken.oauthToken,
+                                pinCode: pinCode
+                            )
+                        )
+
+                        let property = TwitterAuthentication.Property(
+                            userID: accessTokenResponse.userID,
+                            screenName: accessTokenResponse.screenName,
+                            consumerKey: oauthContext.consumerKey,
+                            consumerSecret: oauthContext.consumerKeySecret,
+                            accessToken: accessTokenResponse.oauthToken,
+                            accessTokenSecret: accessTokenResponse.oauthTokenSecret,
+                            nonce: "",
+                            bearerAccessToken: "",
+                            bearerRefreshToken: "",
+                            updatedAt: Date()
+                        )
+                        let response = try await TwitterAuthenticationController.verifyAndSaveAuthentication(
+                            context: self.context,
+                            property: property
+                        )
+
+                        let user = response.value
+                        self.authenticatedTwitterUser = user
+
+                    } catch {
+                        self.error = error
+                    }
+                }   // end Task
+            })
+            .store(in: &disposeBag)
+        
+        self.twitterPinBasedAuthenticationViewController = viewController
+    }
+
+}
+
+extension TwitterAuthenticationController {
+
+    func setupAuthenticationSession(
+        oauthContext: Twitter.AuthorizationContext.OAuth.Relay.Context,
+        requestToken: Twitter.API.OAuth.RequestToken.Relay.Response
+    ) {
+        let authorizeURL = Twitter.API.OAuth.authorizeURL(requestToken: requestToken.append.requestToken)
         authenticationSession = ASWebAuthenticationSession(
             url: authorizeURL,
             callbackURLScheme: AppCommon.scheme
         ) { [weak self] callback, error in
             guard let self = self else { return }
             os_log("%{public}s[%{public}ld], %{public}s: callback: %s, error: %s", ((#file as NSString).lastPathComponent), #line, #function, callback?.debugDescription ?? "<nil>", error.debugDescription)
-            
+
             if let error = error {
                 if let error = error as? ASWebAuthenticationSessionError {
                     if error.errorCode == ASWebAuthenticationSessionError.canceledLogin.rawValue {
                         os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: user cancel authentication", ((#file as NSString).lastPathComponent), #line, #function)
-                        self.isAuthenticating.value = false
+                        self.isAuthenticating = false
                         return
                     }
                 }
-                
-                self.isAuthenticating.value = false
-                self.error.value = error
+
+                self.isAuthenticating = false
+                self.error = error
                 return
             }
-            
+
             guard let callbackURL = callback,
-                  let customOAuthCallback = Twitter.API.OAuth.RequestToken.Relay.CustomOAuthCallback(callbackURL: callbackURL),
-                  let authentication = try? customOAuthCallback.authentication(privateKey: response.append.clientExchangePrivateKey)
+                  let customOAuthCallback = Twitter.API.OAuth.RequestToken.Relay.OAuthCallback(callbackURL: callbackURL),
+                  let authentication = try? customOAuthCallback.authentication(privateKey: requestToken.append.clientExchangePrivateKey)
             else {
                 let error = AuthenticationError.invalidOAuthCallback(error: nil)
-                self.isAuthenticating.value = false
-                self.error.value = error
+                self.isAuthenticating = false
+                self.error = error
                 return
             }
             os_log("%{public}s[%{public}ld], %{public}s: authentication: %s", ((#file as NSString).lastPathComponent), #line, #function, String(describing: authentication))
@@ -149,165 +216,112 @@ extension TwitterAuthenticationController {
                     nonce: "",
                     bearerAccessToken: "",
                     bearerRefreshToken: "",
-                    bearerNonce: "",
                     updatedAt: Date()
                 )
                 do {
                     let response = try await TwitterAuthenticationController.verifyAndSaveAuthentication(
                         context: self.context,
-                        property: property,
-                        appSecret: .default
+                        property: property
                     )
                     let user = response.value
                     os_log("%{public}s[%{public}ld], %{public}s: user @%s verified", ((#file as NSString).lastPathComponent), #line, #function, user.screenName)
-                    self.authenticated.send(user)
+                    self.authenticatedTwitterUser = user
                 } catch {
-                    self.isAuthenticating.value = false
-                    self.error.value = error
-                }
-            }
-        }
-    }
-    
-    func setupAuthenticationSession(
-        requestTokenResponse response: Twitter.API.V2.OAuth2.RequestTokenResponse
-    ) {
-        authenticationSession = ASWebAuthenticationSession(
-            url: response.authorizeURL,
-            callbackURLScheme: AppCommon.scheme
-        ) { [weak self] callback, error in
-            guard let self = self else { return }
-            os_log("%{public}s[%{public}ld], %{public}s: callback: %s, error: %s", ((#file as NSString).lastPathComponent), #line, #function, callback?.debugDescription ?? "<nil>", error.debugDescription)
-            
-            if let error = error {
-                if let error = error as? ASWebAuthenticationSessionError {
-                    if error.errorCode == ASWebAuthenticationSessionError.canceledLogin.rawValue {
-                        os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: user cancel authentication", ((#file as NSString).lastPathComponent), #line, #function)
-                        self.isAuthenticating.value = false
-                        return
-                    }
-                }
-                
-                self.isAuthenticating.value = false
-                self.error.value = error
-                return
-            }
-            
-            guard let callbackURL = callback,
-                  let oauthCallback = Twitter.API.V2.OAuth2.OAuthCallback(callbackURL: callbackURL)
-            else {
-                let error = AuthenticationError.invalidOAuthCallback(error: nil)
-                self.isAuthenticating.value = false
-                self.error.value = error
-                return
-            }
-            self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): code: \(oauthCallback.code)")
-
-            Task {
-            
-                do {
-                    let accessTokenResponse = try await self.context.apiService.twitterOAuth2AccessToken(query: .init(
-                        code: oauthCallback.code,
-                        clientID: response.clientID,
-                        redirectURI: response.callbackURL.absoluteString,
-                        codeVerifier: response.verifier
-                    ))
-                    self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): accessToken: \(accessTokenResponse.accessToken), refreshToken: \(accessTokenResponse.refreshToken)")
-                    
-//                    let response = try await TwitterAuthenticationController.verifyAndSaveAuthentication(context: self.context, property: property, appSecret: .default)
-//                    let user = response.value
-//                    os_log("%{public}s[%{public}ld], %{public}s: user @%s verified", ((#file as NSString).lastPathComponent), #line, #function, user.screenName)
-//                    self.authenticated.send(user)
-                    
-                } catch {
-                    self.isAuthenticating.value = false
-                    self.error.value = error
+                    self.isAuthenticating = false
+                    self.error = error
                 }
             }   // end Task
         }
     }
-    
-}
 
-extension TwitterAuthenticationController {
-
-    // setup pin code based account authentication & verify publisher
-    func setupPINAuthenticate(
-        requestTokenResponse response: Twitter.API.OAuth.RequestToken.Standard.RequestTokenResponse,
-        appSecret: AppSecret,
-        pinCodePublisher: PassthroughSubject<String, Never>
+    func setupAuthenticationSession(
+        oauthContext: Twitter.AuthorizationContext.OAuth2.Relay.Context,
+        authorization: Twitter.AuthorizationContext.OAuth2.Relay.Response
     ) {
-        guard let context = self.context else { return }
-        
-        pinCodePublisher
-            .sink(receiveValue: { [weak self] pinCode in
-                guard let self = self else { return }
-                Task {
-                    self.isAuthenticating.value = true
-                    defer {
-                        self.isAuthenticating.value = false
+        let authorizeURL = Twitter.API.V2.OAuth2.authorizeURL(
+            endpoint: oauthContext.endpoint,
+            clientID: oauthContext.clientID,
+            challenge: authorization.content.challenge,
+            state: authorization.content.state
+        )
+
+        authenticationSession = ASWebAuthenticationSession(
+            url: authorizeURL,
+            callbackURLScheme: AppCommon.scheme
+        ) { [weak self] callback, error in
+            guard let self = self else { return }
+            os_log("%{public}s[%{public}ld], %{public}s: callback: %s, error: %s", ((#file as NSString).lastPathComponent), #line, #function, callback?.debugDescription ?? "<nil>", error.debugDescription)
+
+            if let error = error {
+                if let error = error as? ASWebAuthenticationSessionError {
+                    if error.errorCode == ASWebAuthenticationSessionError.canceledLogin.rawValue {
+                        os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: user cancel authentication", ((#file as NSString).lastPathComponent), #line, #function)
+                        self.isAuthenticating = false
+                        return
                     }
-                    
-                    await self.twitterPinBasedAuthenticationViewController?.dismiss(animated: true, completion: nil)
-                    self.twitterPinBasedAuthenticationViewController = nil
-                    do {
-                        let oauthSecret = appSecret.oauthSecret
-                        let accessTokenResponse = try await context.apiService.twitterOAuthAccessToken(
-                            query: .init(
-                                consumerKey: oauthSecret.consumerKey,
-                                consumerSecret: oauthSecret.consumerKeySecret,
-                                requestToken: response.oauthToken,
-                                pinCode: pinCode
-                            )
-                        )
-                        
-                        let property = TwitterAuthentication.Property(
-                            userID: accessTokenResponse.userID,
-                            screenName: accessTokenResponse.screenName,
-                            consumerKey: oauthSecret.consumerKey,
-                            consumerSecret: oauthSecret.consumerKeySecret,
-                            accessToken: accessTokenResponse.oauthToken,
-                            accessTokenSecret: accessTokenResponse.oauthTokenSecret,
-                            nonce: "",
-                            bearerAccessToken: "",
-                            bearerRefreshToken: "",
-                            bearerNonce: "",
-                            updatedAt: Date()
-                        )
-                        let response = try await TwitterAuthenticationController.verifyAndSaveAuthentication(
-                            context: context,
-                            property: property,
-                            appSecret: appSecret
-                        )
-                        
-                        let user = response.value
-                        self.authenticated.send(user)
-                        
-                    } catch {
-                        self.error.value = error
-                    }
-                }   // end Task
-            })
-            .store(in: &disposeBag)
+                }
+
+                self.isAuthenticating = false
+                self.error = error
+                return
+            }
+
+            guard let callbackURL = callback,
+                  let oauthCallback = Twitter.API.V2.OAuth2.Authorize.Relay.OAuthCallback(callbackURL: callbackURL),
+                  let response = try? oauthCallback.authentication(privateKey: authorization.append.clientExchangePrivateKey)
+            else {
+                let error = AuthenticationError.invalidOAuthCallback(error: nil)
+                self.isAuthenticating = false
+                self.error = error
+                return
+            }
+            self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): accessToken: \(response.oauth2AccessToken)")
+
+            Task {
+                let property = TwitterAuthentication.Property(
+                    userID: response.userID,
+                    screenName: response.screenName,
+                    consumerKey: response.oauthConsumerKey,
+                    consumerSecret: response.oauthConsumerSecret,
+                    accessToken: response.oauthAccessToken,
+                    accessTokenSecret: response.oauthAccessTokenSecret,
+                    nonce: "",
+                    bearerAccessToken: response.oauth2AccessToken,
+                    bearerRefreshToken: response.oauth2AccessToken,
+                    updatedAt: Date()
+                )
+                do {
+                    let response = try await TwitterAuthenticationController.verifyAndSaveAuthentication(
+                        context: self.context,
+                        property: property
+                    )
+                    let user = response.value
+                    os_log("%{public}s[%{public}ld], %{public}s: user @%s verified", ((#file as NSString).lastPathComponent), #line, #function, user.screenName)
+                    self.authenticatedTwitterUser = user
+                } catch {
+                    self.isAuthenticating = false
+                    self.error = error
+                }
+            }   // end Task
+        }
     }
 
 }
 
 extension TwitterAuthenticationController {
-    
+
     // shared
     static func verifyAndSaveAuthentication(
         context: AppContext,
-        property: TwitterAuthentication.Property,
-        appSecret: AppSecret
+        property: TwitterAuthentication.Property
     ) async throws -> Twitter.Response.Content<Twitter.Entity.User> {
         let twitterAuthenticationProperty: TwitterAuthentication.Property
         do {
-            twitterAuthenticationProperty = try property.sealing(appSecret: appSecret)
+            twitterAuthenticationProperty = try property.sealing(secret: AppSecret.default.secret)
         } catch {
             throw AuthenticationError.verifyCredentialsFail(error: error)
         }
-                                                            
+
         let response: Twitter.Response.Content<Twitter.Entity.User>
         do {
             let authorization = Twitter.API.OAuth.Authorization(
@@ -320,25 +334,25 @@ extension TwitterAuthenticationController {
         } catch {
             throw error
         }
-        
+
         assert(twitterAuthenticationProperty.userID == response.value.idStr)
         let userID = response.value.idStr
-        
+
         let managedObjectContext = context.backgroundManagedObjectContext
         try await managedObjectContext.performChanges {
             let now = Date()
-            
+
             // get authenticated user
             let twitterUserRequest = TwitterUser.sortedFetchRequest
             twitterUserRequest.predicate = TwitterUser.predicate(id: userID)
             twitterUserRequest.fetchLimit = 1
-            
+
             // the `verifyTwitterCredentials` method should insert this user
             guard let twitterUser = try? managedObjectContext.fetch(twitterUserRequest).first else {
                 assertionFailure()
                 return
             }
-         
+
             if let oldTwitterAuthentication = twitterUser.twitterAuthentication {
                 // update authentication
                 oldTwitterAuthentication.update(screenName: twitterAuthenticationProperty.screenName)
@@ -371,7 +385,7 @@ extension TwitterAuthenticationController {
 
         return response
     }
-    
+
 //    static func verifyAndAppendAuthenticationV2(
 //        context: AppContext,
 //        property: TwitterAuthentication.Property,
@@ -440,7 +454,7 @@ extension TwitterAuthenticationController {
 //
 //        return response
 //    }
-    
+
 }
 
 extension TwitterAuthenticationController {

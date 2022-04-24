@@ -10,15 +10,17 @@ import CryptoKit
 import TwitterSDK
 
 public class AppSecret {
+    
+    public typealias Secret = String
 
-    public let appSecret: String
+    public let secret: Secret
     public let oauthSecret: OAuthSecret
 
     public init(
-        appSecret: String,
+        secret: Secret,
         oauthSecret: AppSecret.OAuthSecret
     ) {
-        self.appSecret = appSecret
+        self.secret = secret
         self.oauthSecret = oauthSecret
     }
 
@@ -31,48 +33,68 @@ extension AppSecret {
         public let clientID: String
         public let hostPublicKey: Curve25519.KeyAgreement.PublicKey?
         public let oauthEndpoint: String
+        public let oauth2Endpoint: String
         
         public init(
             consumerKey: String,
             consumerKeySecret: String,
             clientID: String,
             hostPublicKey: Curve25519.KeyAgreement.PublicKey?,
-            oauthEndpoint: String
+            oauthEndpoint: String,
+            oauth2Endpoint: String
         ) {
             self.consumerKey = consumerKey
             self.consumerKeySecret = consumerKeySecret
             self.clientID = clientID
             self.hostPublicKey = hostPublicKey
             self.oauthEndpoint = oauthEndpoint
+            self.oauth2Endpoint = oauth2Endpoint
         }
-        
     }
 }
 
-extension AppSecret: TwitterOAuthProvider {
-    public var oauth: Twitter.API.OAuth.RequestTokenQueryContext {
-        let oauthEndpoint = oauthSecret.oauthEndpoint
-        switch oauthEndpoint {
+// MARK: - TwitterAuthorizationContextProvider
+extension AppSecret: TwitterAuthorizationContextProvider {
+    public var oauth: Twitter.AuthorizationContext.OAuth.Context {
+        let endpoint = oauthSecret.oauthEndpoint
+        switch endpoint {
         case "oob":
-            return .standard(query: .init(
-                consumerKey: oauthSecret.consumerKey,
-                consumerKeySecret: oauthSecret.consumerKeySecret
-            ))
+            return .standard(.init(
+                    consumerKey: oauthSecret.consumerKey,
+                    consumerKeySecret: oauthSecret.consumerKeySecret
+                )
+            )
+            
         default:
-            return .relay(query: .init(
+            return .relay(.init(
+                    consumerKey: oauthSecret.consumerKey,
+                    hostPublicKey: oauthSecret.hostPublicKey!,
+                    oauthEndpoint: oauthSecret.oauthEndpoint
+                )
+            )
+        }
+    }
+    
+    public var oauth2: Twitter.AuthorizationContext.OAuth2.Context {
+        let endpoint = oauthSecret.oauth2Endpoint
+        switch endpoint {
+        default:
+            return .relay(.init(
+                clientID: oauthSecret.clientID,
                 consumerKey: oauthSecret.consumerKey,
-                hostPublicKey: oauthSecret.hostPublicKey!,
-                oauthEndpoint: oauthSecret.oauthEndpoint
+                consumerKeySecret: oauthSecret.consumerKeySecret,
+                endpoint: URL(string: oauthSecret.oauth2Endpoint)!,
+                hostPublicKey: oauthSecret.hostPublicKey!
             ))
         }
     }
 }
 
 extension AppSecret {
-    public static func authenticationWrapKey(appSecret: String, nonce: String, field: String) throws -> SymmetricKey {
+    public static func authenticationWrapKey(secret: AppSecret.Secret, nonce: String, field: String) throws -> SymmetricKey {
         let keyMaterial: SymmetricKey = {
             var sha256 = SHA256()
-            sha256.update(data: Data(appSecret.utf8))
+            sha256.update(data: Data(secret.utf8))
             let digest = sha256.finalize()
             return SymmetricKey(data: digest)
         }()

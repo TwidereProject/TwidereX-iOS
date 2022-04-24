@@ -163,7 +163,6 @@
         <attribute name="accessToken" attributeType="String" defaultValueString=""/>
         <attribute name="accessTokenSecret" attributeType="String" defaultValueString=""/>
         <attribute name="bearerAccessToken" optional="YES" attributeType="String" defaultValueString=""/>
-        <attribute name="bearerNonce" attributeType="String" defaultValueString=""/>
         <attribute name="bearerRefreshToken" attributeType="String" defaultValueString=""/>
         <attribute name="clientID" attributeType="String" defaultValueString=""/>
         <attribute name="consumerKey" attributeType="String" defaultValueString=""/>
@@ -270,7 +269,7 @@
         <element name="MastodonSavedSearch" positionX="90" positionY="-18" width="128" height="74"/>
         <element name="MastodonStatus" positionX="-63" positionY="-171" width="128" height="494"/>
         <element name="MastodonUser" positionX="-63" positionY="-153" width="128" height="599"/>
-        <element name="TwitterAuthentication" positionX="-109.453125" positionY="275.71875" width="128" height="269"/>
+        <element name="TwitterAuthentication" positionX="-109.453125" positionY="275.71875" width="128" height="254"/>
         <element name="TwitterList" positionX="90" positionY="-18" width="128" height="164"/>
         <element name="TwitterSavedSearch" positionX="90" positionY="-18" width="128" height="104"/>
         <element name="TwitterStatus" positionX="-63" positionY="-153" width="128" height="434"/>

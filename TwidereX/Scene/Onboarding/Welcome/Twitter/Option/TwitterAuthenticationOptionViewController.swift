@@ -66,7 +66,7 @@ extension TwitterAuthenticationOptionViewController {
         signInBarButtonItem.target = self
         signInBarButtonItem.action = #selector(TwitterAuthenticationOptionViewController.signInBarButtonItemPressed(_:))
 
-        viewModel.isSignInBarButtonItemEnabled
+        viewModel.$isSignInBarButtonItemEnabled
             .receive(on: DispatchQueue.main)
             .assign(to: \.isEnabled, on: signInBarButtonItem)
             .store(in: &disposeBag)
@@ -85,20 +85,10 @@ extension TwitterAuthenticationOptionViewController {
     @objc private func signInBarButtonItemPressed(_ sender: UIBarButtonItem) {
         os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
         
-        guard let appSecret = viewModel.appSecret.value else {
-            assertionFailure()
-            return
-        }
-        
-        requestTokenExchangeTask = Task {
-            self.navigationItem.rightBarButtonItem = self.activityIndicatorBarButtonItem
+        navigationItem.rightBarButtonItem = self.activityIndicatorBarButtonItem
+        requestTokenExchangeTask = Task { @MainActor in
             do {
-                let requestTokenExchange = try await self.context.apiService.twitterOAuthRequestToken(provider: appSecret)
-                if Task.isCancelled { return }
-                self.twitterAuthenticate(
-                    appSecret: appSecret,
-                    authorizationContext: .oauth(requestTokenExchange)
-                )
+                try await self.authenticate(authorizationContextProvider: self.viewModel)
             } catch {
                 os_log("%{public}s[%{public}ld], %{public}s: request token error: %{public}s", ((#file as NSString).lastPathComponent), #line, #function, error.localizedDescription)
                 self.navigationItem.rightBarButtonItem = self.signInBarButtonItem
@@ -112,18 +102,18 @@ extension TwitterAuthenticationOptionViewController {
 }
 
 extension TwitterAuthenticationOptionViewController {
-    private func twitterAuthenticate(
-        appSecret: AppSecret,
-        authorizationContext: TwitterAuthenticationController.AuthorizationContext
-    ) {
+    
+    private func authenticate(
+        authorizationContextProvider: TwitterAuthorizationContextProvider
+    ) async throws {
         let authenticationController = TwitterAuthenticationController(
             context: context,
-            coordinator: coordinator,
-            appSecret: appSecret,
-            authorizationContext: authorizationContext
+            coordinator: coordinator
         )
-        
-        authenticationController.isAuthenticating
+
+        // bind UI
+        authenticationController.$isAuthenticating
+            .dropFirst()
             .receive(on: DispatchQueue.main)
             .sink(receiveValue: { [weak self] isAuthenticating in
                 guard let self = self else { return }
@@ -131,9 +121,10 @@ extension TwitterAuthenticationOptionViewController {
                     self.navigationItem.rightBarButtonItem = self.signInBarButtonItem
                 }
             })
-            .store(in: &disposeBag)
-        
-        authenticationController.error
+            .store(in: &authenticationController.disposeBag)
+
+        // bind error
+        authenticationController.$error
             .receive(on: DispatchQueue.main)
             .sink(receiveValue: { [weak self] error in
                 guard let self = self else { return }
@@ -141,17 +132,19 @@ extension TwitterAuthenticationOptionViewController {
                 let alertController = UIAlertController.standardAlert(of: error)
                 self.present(alertController, animated: true)
             })
-            .store(in: &disposeBag)
+            .store(in: &authenticationController.disposeBag)
         
-        authenticationController.authenticated
+        // bind view hierarchy
+        authenticationController.$authenticatedTwitterUser
             .receive(on: DispatchQueue.main)
             .sink(receiveValue: { [weak self] twitterUser in
                 guard let self = self else { return }
+                guard let twitterUser = twitterUser else { return }
                 Task {
                     do {
                         let userID = twitterUser.idStr
                         let isActive = try await self.context.authenticationService.activeTwitterUser(userID: userID)
-                        
+
                         // active user and reset view hierarchy
                         guard isActive else { return }
                         self.coordinator.setup()
@@ -161,12 +154,42 @@ extension TwitterAuthenticationOptionViewController {
                     }
                 }
             })
+            .store(in: &authenticationController.disposeBag)
+        
+        // bind OAuth action
+        // - Pin-based OAuth
+        authenticationController.$twitterPinBasedAuthenticationViewController
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] viewController in
+                guard let self = self else { return }
+                guard let viewController = viewController else { return }
+                let navigationController = UINavigationController(rootViewController: viewController)
+                self.present(navigationController, animated: true)
+            }
             .store(in: &disposeBag)
-        twitterAuthenticationController = authenticationController
-        authenticationController.authenticationSession?.prefersEphemeralWebBrowserSession = true
-        authenticationController.authenticationSession?.presentationContextProvider = self
-        authenticationController.authenticationSession?.start()
+        // - 3-legged OAuth
+        authenticationController.$authenticationSession
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] authenticationSession in
+                guard let self = self else { return }
+                guard let authenticationSession = authenticationSession else { return }
+                authenticationSession.prefersEphemeralWebBrowserSession = false
+                authenticationSession.presentationContextProvider = self
+                authenticationSession.start()
+            }
+            .store(in: &disposeBag)
+        
+        // setup TwitterAuthenticationController
+        if viewModel.consumerKey == "DEBUG", viewModel.consumerSecret == "DEBUG" {
+            try await authenticationController.setup(authorizationContext: .oauth2(authorizationContextProvider.oauth2))
+        } else {
+            try await authenticationController.setup(authorizationContext: .oauth(authorizationContextProvider.oauth))
+        }
+
+        // store authenticationController
+        self.twitterAuthenticationController = authenticationController
     }
+    
 }
 
 // MARK: - ASWebAuthenticationPresentationContextProviding

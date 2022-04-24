@@ -17,11 +17,11 @@ public enum AuthenticationContext: Hashable {
     case twitter(authenticationContext: TwitterAuthenticationContext)
     case mastodon(authenticationContext: MastodonAuthenticationContext)
     
-    public init?(authenticationIndex: AuthenticationIndex, appSecret: AppSecret) {
+    public init?(authenticationIndex: AuthenticationIndex, secret: AppSecret.Secret) {
         switch authenticationIndex.platform {
         case .twitter:
             guard let authentication = authenticationIndex.twitterAuthentication else { return nil }
-            guard let authenticationContext = TwitterAuthenticationContext(authentication: authentication, appSecret: appSecret) else { return nil }
+            guard let authenticationContext = TwitterAuthenticationContext(authentication: authentication, secret: secret) else { return nil }
             self = .twitter(authenticationContext: authenticationContext)
         case .mastodon:
             guard let authentication = authenticationIndex.mastodonAuthentication else { return nil }
@@ -78,14 +78,14 @@ public struct TwitterAuthenticationContext: Hashable {
     
     public init?(
         authentication: TwitterAuthentication,
-        appSecret: AppSecret
+        secret: AppSecret.Secret
     ) {
-        guard let authorization = try? authentication.authorization(appSecret: appSecret) else { return nil }
+        guard let authorization = try? authentication.authorization(secret: secret) else { return nil }
         
         self.authenticationRecord = ManagedObjectRecord(objectID: authentication.objectID)
         self.userID = authentication.userID
         self.authorization = authorization
-        self.authorizationV2 = try? authentication.authorizationV2(appSecret: appSecret)
+        self.authorizationV2 = try? authentication.authorizationV2(secret: secret)
     }
 }
 

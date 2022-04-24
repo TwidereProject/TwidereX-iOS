@@ -13,10 +13,11 @@ import Combine
 import AppShared
 import TwitterSDK
 import MastodonSDK
+import TwidereCommon
 
 protocol WelcomeViewModelDelegate: AnyObject {
     func presentTwitterAuthenticationOption()
-    func welcomeViewModel(_ viewModel: WelcomeViewModel, authenticateTwitter authorizationContext: TwitterAuthenticationController.AuthorizationContext)
+    func welcomeViewModel(_ viewModel: WelcomeViewModel, authenticateTwitter authorizationContextProvider: TwitterAuthorizationContextProvider) async throws
     func welcomeViewModel(_ viewModel: WelcomeViewModel, authenticateMastodon authenticationInfo: MastodonAuthenticationController.MastodonAuthenticationInfo)
 }
 
@@ -81,11 +82,7 @@ extension WelcomeViewModel {
         }
         
         do {
-            let requestTokenResponse = try await context.apiService.twitterOAuthRequestToken(provider: AppSecret.default)
-            delegate?.welcomeViewModel(self, authenticateTwitter: .oauth(requestTokenResponse))
-            
-//            let clientID = AppSecret.default.oauthSecret.clientID
-//            delegate?.welcomeViewModel(self, authenticateTwitter: .oauth2(.init(clientID: clientID)))
+            try await delegate?.welcomeViewModel(self, authenticateTwitter: AppSecret.default)
         } catch {
             self.error.send(error)
         }

@@ -19,35 +19,35 @@ extension Twitter.API.OAuth {
 
 extension Twitter.API.OAuth {
     
-    public static func requestToken(
-        session: URLSession,
-        query: Twitter.API.OAuth.RequestTokenQueryContext
-    ) async throws -> Twitter.API.OAuth.RequestTokenResponseContext {
-        switch query {
-        case .standard(let query):
-            let response = try await Twitter.API.OAuth.RequestToken.Standard.requestToken(
-                session: session,
-                query: query
-            )
-            return .standard(response)
-        case .relay(let query):
-            let response = try await Twitter.API.OAuth.RequestToken.Relay.requestToken(
-                session: session,
-                query: query
-            )
-            return .relay(response)
-        }
-    }
-    
-    public enum RequestTokenQueryContext {
-        case standard(query: Twitter.API.OAuth.RequestToken.Standard.RequestTokenQuery)
-        case relay(query: Twitter.API.OAuth.RequestToken.Relay.RequestTokenQuery)
-    }
-    
-    public enum RequestTokenResponseContext {
-        case standard(Twitter.API.OAuth.RequestToken.Standard.RequestTokenResponse)
-        case relay(Twitter.API.OAuth.RequestToken.Relay.RequestTokenResponse)
-    }
+//    public static func requestToken(
+//        session: URLSession,
+//        query: Twitter.API.OAuth.RequestTokenQueryContext
+//    ) async throws -> Twitter.API.OAuth.RequestTokenResponseContext {
+//        switch query {
+//        case .standard(let query):
+//            let response = try await Twitter.API.OAuth.RequestToken.Standard.requestToken(
+//                session: session,
+//                query: query
+//            )
+//            return .standard(response)
+//        case .relay(let query):
+//            let response = try await Twitter.API.OAuth.RequestToken.Relay.requestToken(
+//                session: session,
+//                query: query
+//            )
+//            return .relay(response)
+//        }
+//    }
+//    
+//    public enum RequestTokenQueryContext {
+//        case standard(query: Twitter.API.OAuth.RequestToken.Standard.Query)
+//        case relay(query: Twitter.API.OAuth.RequestToken.Relay.Query)
+//    }
+//    
+//    public enum RequestTokenResponseContext {
+//        case standard(Twitter.API.OAuth.RequestToken.Standard.Response)
+//        case relay(Twitter.API.OAuth.RequestToken.Relay.Response)
+//    }
     
 }
 

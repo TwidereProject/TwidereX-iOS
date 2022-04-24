@@ -32,8 +32,6 @@ final public class TwitterAuthentication: NSManagedObject {
     @NSManaged public private(set) var bearerAccessToken: String
     // sourcery: autoUpdatableObject, autoGenerateProperty
     @NSManaged public private(set) var bearerRefreshToken: String
-    // sourcery: autoUpdatableObject, autoGenerateProperty
-    @NSManaged public private(set) var bearerNonce: String
     
     
     @NSManaged public private(set) var createdAt: Date
@@ -107,7 +105,6 @@ extension TwitterAuthentication: AutoGenerateProperty {
         public let nonce: String
         public let bearerAccessToken: String
         public let bearerRefreshToken: String
-        public let bearerNonce: String
         public let updatedAt: Date
 
     	public init(
@@ -120,7 +117,6 @@ extension TwitterAuthentication: AutoGenerateProperty {
     		nonce: String,
     		bearerAccessToken: String,
     		bearerRefreshToken: String,
-    		bearerNonce: String,
     		updatedAt: Date
     	) {
     		self.userID = userID
@@ -132,7 +128,6 @@ extension TwitterAuthentication: AutoGenerateProperty {
     		self.nonce = nonce
     		self.bearerAccessToken = bearerAccessToken
     		self.bearerRefreshToken = bearerRefreshToken
-    		self.bearerNonce = bearerNonce
     		self.updatedAt = updatedAt
     	}
     }
@@ -147,7 +142,6 @@ extension TwitterAuthentication: AutoGenerateProperty {
     	self.nonce = property.nonce
     	self.bearerAccessToken = property.bearerAccessToken
     	self.bearerRefreshToken = property.bearerRefreshToken
-    	self.bearerNonce = property.bearerNonce
     	self.updatedAt = property.updatedAt
     }
 
@@ -160,7 +154,6 @@ extension TwitterAuthentication: AutoGenerateProperty {
     	update(nonce: property.nonce)
     	update(bearerAccessToken: property.bearerAccessToken)
     	update(bearerRefreshToken: property.bearerRefreshToken)
-    	update(bearerNonce: property.bearerNonce)
     	update(updatedAt: property.updatedAt)
     }
     // sourcery:end
@@ -236,11 +229,6 @@ extension TwitterAuthentication: AutoUpdatableObject {
     public func update(bearerRefreshToken: String) {
     	if self.bearerRefreshToken != bearerRefreshToken {
     		self.bearerRefreshToken = bearerRefreshToken
-    	}
-    }
-    public func update(bearerNonce: String) {
-    	if self.bearerNonce != bearerNonce {
-    		self.bearerNonce = bearerNonce
     	}
     }
     public func update(updatedAt: Date) {

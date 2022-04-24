@@ -9,7 +9,6 @@ import os.log
 import Foundation
 import CryptoKit
 
-
 extension Twitter.API.OAuth {
     public enum RequestToken {
         public enum Standard { }
@@ -21,8 +20,8 @@ extension Twitter.API.OAuth.RequestToken.Standard {
     
     public static func requestToken(
         session: URLSession,
-        query: RequestTokenQuery
-    ) async throws -> RequestTokenResponse {
+        query: Query
+    ) async throws -> Response {
         let request = requestTokenURLRequest(
             consumerKey: query.consumerKey,
             consumerKeySecret: query.consumerKeySecret
@@ -31,14 +30,14 @@ extension Twitter.API.OAuth.RequestToken.Standard {
         let templateURLString = Twitter.API.OAuth.requestTokenEndpointURL.absoluteString
         guard let body = String(data: data, encoding: .utf8),
               let components = URLComponents(string: templateURLString + "?" + body),
-              let requestTokenResponse = RequestTokenResponse(queryItems: components.queryItems ?? [])
+              let requestTokenResponse = Response(queryItems: components.queryItems ?? [])
         else {
             throw Twitter.API.Error.InternalError(message: "process requestToken response fail")
         }
         return requestTokenResponse
     }
     
-    public struct RequestTokenQuery {
+    public struct Query {
         public let consumerKey: String
         public let consumerKeySecret: String
         
@@ -48,7 +47,7 @@ extension Twitter.API.OAuth.RequestToken.Standard {
         }
     }
     
-    public struct RequestTokenResponse: Codable, CustomDebugStringConvertible {
+    public struct Response: Codable, CustomDebugStringConvertible {
         public let oauthToken: String
         public let oauthTokenSecret: String
         public let oauthCallbackConfirmed: Bool
@@ -126,8 +125,8 @@ extension Twitter.API.OAuth.RequestToken.Relay {
     
     public static func requestToken(
         session: URLSession,
-        query: RequestTokenQuery
-    ) async throws -> RequestTokenResponse {
+        query: Query
+    ) async throws -> Response {
         let consumerKey = query.consumerKey
         let hostPublicKey = query.hostPublicKey
         let oauthEndpoint = query.oauthEndpoint
@@ -140,7 +139,7 @@ extension Twitter.API.OAuth.RequestToken.Relay {
             let salt = clientEphemeralPublicKey.rawRepresentation + sharedSecret.withUnsafeBytes { Data($0) }
             let wrapKey = sharedSecret.hkdfDerivedSymmetricKey(using: SHA256.self, salt: salt, sharedInfo: Data("request token exchange".utf8), outputByteCount: 32)
             let consumerKeyBox = try ChaChaPoly.seal(Data(consumerKey.utf8), using: wrapKey)
-            let customRequestTokenPayload = CustomRequestTokenPayload(exchangePublicKey: clientEphemeralPublicKey, consumerKeyBox: consumerKeyBox)
+            let customRequestTokenPayload = Payload(exchangePublicKey: clientEphemeralPublicKey, consumerKeyBox: consumerKeyBox)
             
             var request = URLRequest(url: URL(string: oauthEndpoint + "/oauth/request_token")!, cachePolicy: .reloadIgnoringLocalAndRemoteCacheData, timeoutInterval: Twitter.API.timeoutInterval)
             request.httpMethod = "POST"
@@ -149,7 +148,7 @@ extension Twitter.API.OAuth.RequestToken.Relay {
             
             let (data, _) = try await session.data(for: request, delegate: nil)
             os_log("%{public}s[%{public}ld], %{public}s: request token response data: %s", ((#file as NSString).lastPathComponent), #line, #function, String(data: data, encoding: .utf8) ?? "<nil>")
-            let response = try JSONDecoder().decode(CustomRequestTokenResponse.self, from: data)
+            let response = try JSONDecoder().decode(Response.Content.self, from: data)
             os_log("%{public}s[%{public}ld], %{public}s: request token response: %s", ((#file as NSString).lastPathComponent), #line, #function, String(describing: response))
             
             guard let exchangePublicKeyData = Data(base64Encoded: response.exchangePublicKey),
@@ -167,13 +166,13 @@ extension Twitter.API.OAuth.RequestToken.Relay {
                 guard let requestToken = String(data: requestTokenData, encoding: .utf8) else {
                     throw Twitter.API.Error.InternalError(message: "invalid requestToken response")
                 }
-                let append = CustomRequestTokenResponseAppend(
+                let append = Response.Append(
                     requestToken: requestToken,
                     clientExchangePrivateKey: clientEphemeralPrivateKey,
                     hostExchangePublicKey: exchangePublicKey
                 )
-                return RequestTokenResponse(
-                    response: response,
+                return Response(
+                    content: response,
                     append: append
                 )
             } catch {
@@ -186,7 +185,7 @@ extension Twitter.API.OAuth.RequestToken.Relay {
         }
     }
     
-    public struct RequestTokenQuery {
+    public struct Query {
         public let consumerKey: String
         public let hostPublicKey: Curve25519.KeyAgreement.PublicKey
         public let oauthEndpoint: String
@@ -198,12 +197,28 @@ extension Twitter.API.OAuth.RequestToken.Relay {
         }
     }
     
-    public struct RequestTokenResponse {
-        public let response: CustomRequestTokenResponse
-        public let append: CustomRequestTokenResponseAppend
+    public struct Response {
+        public let content: Content
+        public let append: Append
+        
+        public struct Content: Codable {
+            public let exchangePublicKey: String
+            public let requestTokenBox: String
+            
+            enum CodingKeys: String, CodingKey, CaseIterable {
+                case exchangePublicKey = "exchange_public_key"
+                case requestTokenBox = "request_token_box"
+            }
+        }
+        
+        public struct Append {
+            public let requestToken: String
+            public let clientExchangePrivateKey: Curve25519.KeyAgreement.PrivateKey
+            public let hostExchangePublicKey: Curve25519.KeyAgreement.PublicKey
+        }
     }
     
-    struct CustomRequestTokenPayload: Codable {
+    struct Payload: Codable {
         public let exchangePublicKey: String
         public let consumerKeyBox: String
         
@@ -217,25 +232,8 @@ extension Twitter.API.OAuth.RequestToken.Relay {
             self.consumerKeyBox = consumerKeyBox.combined.base64EncodedString()
         }
     }
-    
-    public struct CustomRequestTokenResponse: Codable {
-        public let exchangePublicKey: String
-        public let requestTokenBox: String
-        
-        enum CodingKeys: String, CodingKey, CaseIterable {
-            case exchangePublicKey = "exchange_public_key"
-            case requestTokenBox = "request_token_box"
-        }
-    }
-    
-    public struct CustomRequestTokenResponseAppend {
-        public let requestToken: String
-        public let clientExchangePrivateKey: Curve25519.KeyAgreement.PrivateKey
-        public let hostExchangePublicKey: Curve25519.KeyAgreement.PublicKey
-    }
-    
-    public struct CustomOAuthCallback: Codable {
-        
+
+    public struct OAuthCallback: Codable {
         let exchangePublicKey: String
         let authenticationBox: String
         
@@ -280,7 +278,6 @@ extension Twitter.API.OAuth.RequestToken.Relay {
                 }
             }
         }
-        
     }
     
     public struct Authentication: Codable {
@@ -300,6 +297,5 @@ extension Twitter.API.OAuth.RequestToken.Relay {
             case consumerSecret = "consumer_secret"
         }
     }
-    
     
 }

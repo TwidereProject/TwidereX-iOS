@@ -29,14 +29,15 @@ extension AuthenticationIndex {
 
 extension TwitterAuthentication.Property {
     
-    public func sealing(appSecret: AppSecret) throws -> TwitterAuthentication.Property {
+    public func sealing(secret: AppSecret.Secret) throws -> TwitterAuthentication.Property {
         let nonce = UUID().uuidString
-        let appSecret = appSecret.appSecret
 
-        let consumerKey = try TwitterAuthentication.Property.sealFieldValue(appSecret: appSecret, nonce: nonce, field: "consumerKey", value: self.consumerKey)
-        let consumerSecret = try TwitterAuthentication.Property.sealFieldValue(appSecret: appSecret, nonce: nonce, field: "consumerSecret", value: self.consumerSecret)
-        let accessToken = try TwitterAuthentication.Property.sealFieldValue(appSecret: appSecret, nonce: nonce, field: "accessToken", value: self.accessToken)
-        let accessTokenSecret = try TwitterAuthentication.Property.sealFieldValue(appSecret: appSecret, nonce: nonce, field: "accessTokenSecret", value: self.accessTokenSecret)
+        let consumerKey = try TwitterAuthentication.Property.sealFieldValue(secret: secret, nonce: nonce, field: "consumerKey", value: self.consumerKey)
+        let consumerSecret = try TwitterAuthentication.Property.sealFieldValue(secret: secret, nonce: nonce, field: "consumerSecret", value: self.consumerSecret)
+        let accessToken = try TwitterAuthentication.Property.sealFieldValue(secret: secret, nonce: nonce, field: "accessToken", value: self.accessToken)
+        let accessTokenSecret = try TwitterAuthentication.Property.sealFieldValue(secret: secret, nonce: nonce, field: "accessTokenSecret", value: self.accessTokenSecret)
+        let bearerAccessToken = try TwitterAuthentication.Property.sealFieldValue(secret: secret, nonce: nonce, field: "bearerAccessToken", value: self.bearerAccessToken)
+        let bearerRefreshToken = try TwitterAuthentication.Property.sealFieldValue(secret: secret, nonce: nonce, field: "bearerRefreshToken", value: self.bearerRefreshToken)
         
         let property = TwitterAuthentication.Property(
             userID: userID,
@@ -48,39 +49,14 @@ extension TwitterAuthentication.Property {
             nonce: nonce,
             bearerAccessToken: bearerAccessToken,
             bearerRefreshToken: bearerRefreshToken,
-            bearerNonce: "",
             updatedAt: Date()
         )
         
         return property
     }
     
-    public func sealingV2(appSecret: AppSecret) throws -> TwitterAuthentication.Property {
-        let bearerNonce = UUID().uuidString
-        let appSecret = appSecret.appSecret
-
-        let bearerAccessToken = try TwitterAuthentication.Property.sealFieldValue(appSecret: appSecret, nonce: bearerNonce, field: "bearerAccessToken", value: self.bearerAccessToken)
-        let bearerRefreshToken = try TwitterAuthentication.Property.sealFieldValue(appSecret: appSecret, nonce: bearerNonce, field: "bearerRefreshToken", value: self.bearerRefreshToken)
-        
-        let property = TwitterAuthentication.Property(
-            userID: userID,
-            screenName: screenName,
-            consumerKey: consumerKey,
-            consumerSecret: consumerSecret,
-            accessToken: accessToken,
-            accessTokenSecret: accessTokenSecret,
-            nonce: nonce,
-            bearerAccessToken: bearerAccessToken,
-            bearerRefreshToken: bearerRefreshToken,
-            bearerNonce: bearerNonce,
-            updatedAt: Date()
-        )
-        
-        return property
-    }
-    
-    private static func sealFieldValue(appSecret: String, nonce: String, field: String, value: String) throws -> String {
-        let wrapKey = try AppSecret.authenticationWrapKey(appSecret: appSecret, nonce: nonce, field: field)
+    private static func sealFieldValue(secret: String, nonce: String, field: String, value: String) throws -> String {
+        let wrapKey = try AppSecret.authenticationWrapKey(secret: secret, nonce: nonce, field: field)
         let sealedBox = try ChaChaPoly.seal(Data(value.utf8), using: wrapKey)
         return sealedBox.combined.base64EncodedString()
     }
@@ -89,7 +65,7 @@ extension TwitterAuthentication.Property {
 
 extension TwitterAuthentication {
     
-    public func authorization(appSecret: AppSecret) throws -> Twitter.API.OAuth.Authorization {
+    public func authorization(secret: AppSecret.Secret) throws -> Twitter.API.OAuth.Authorization {
         guard !self.nonce.isEmpty else {
             return Twitter.API.OAuth.Authorization(
                 consumerKey: self.consumerKey,
@@ -98,13 +74,12 @@ extension TwitterAuthentication {
                 accessTokenSecret: self.accessTokenSecret
             )
         }
-        let appSecret = appSecret.appSecret
         let nonce = self.nonce
         
-        let consumerKey = try TwitterAuthentication.openFieldValue(appSecret: appSecret, nonce: nonce, field: "consumerKey", ciphertext: self.consumerKey)
-        let consumerSecret = try TwitterAuthentication.openFieldValue(appSecret: appSecret, nonce: nonce, field: "consumerSecret", ciphertext: self.consumerSecret)
-        let accessToken = try TwitterAuthentication.openFieldValue(appSecret: appSecret, nonce: nonce, field: "accessToken", ciphertext: self.accessToken)
-        let accessTokenSecret = try TwitterAuthentication.openFieldValue(appSecret: appSecret, nonce: nonce, field: "accessTokenSecret", ciphertext: self.accessTokenSecret)
+        let consumerKey = try TwitterAuthentication.openFieldValue(secret: secret, nonce: nonce, field: "consumerKey", ciphertext: self.consumerKey)
+        let consumerSecret = try TwitterAuthentication.openFieldValue(secret: secret, nonce: nonce, field: "consumerSecret", ciphertext: self.consumerSecret)
+        let accessToken = try TwitterAuthentication.openFieldValue(secret: secret, nonce: nonce, field: "accessToken", ciphertext: self.accessToken)
+        let accessTokenSecret = try TwitterAuthentication.openFieldValue(secret: secret, nonce: nonce, field: "accessTokenSecret", ciphertext: self.accessTokenSecret)
         
         return Twitter.API.OAuth.Authorization(
             consumerKey: consumerKey,
@@ -114,15 +89,18 @@ extension TwitterAuthentication {
         )
     }
     
-    public func authorizationV2(appSecret: AppSecret) throws -> Twitter.API.V2.OAuth2.Authorization {
+    public func authorizationV2(secret: AppSecret.Secret) throws -> Twitter.API.V2.OAuth2.Authorization {
+        let accessToken = try TwitterAuthentication.openFieldValue(secret: secret, nonce: nonce, field: "bearerAccessToken", ciphertext: self.bearerAccessToken)
+        let refreshToken = try TwitterAuthentication.openFieldValue(secret: secret, nonce: nonce, field: "bearerRefreshToken", ciphertext: self.bearerRefreshToken)
+        
         return Twitter.API.V2.OAuth2.Authorization(
-            accessToken: self.bearerAccessToken,
-            refreshToken: self.bearerRefreshToken
+            accessToken: accessToken,
+            refreshToken: refreshToken
         )
     }
     
-    private static func openFieldValue(appSecret: String, nonce: String, field: String, ciphertext: String) throws -> String {
-        let wrapKey = try AppSecret.authenticationWrapKey(appSecret: appSecret, nonce: nonce, field: field)
+    private static func openFieldValue(secret: AppSecret.Secret, nonce: String, field: String, ciphertext: String) throws -> String {
+        let wrapKey = try AppSecret.authenticationWrapKey(secret: secret, nonce: nonce, field: field)
         let sealedBox = try ChaChaPoly.SealedBox(combined: Data(base64Encoded: ciphertext) ?? Data())
         let valueData = try ChaChaPoly.open(sealedBox, using: wrapKey)
         return String(data: valueData, encoding: .utf8) ?? ""
