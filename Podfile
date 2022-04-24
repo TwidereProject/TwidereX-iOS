@@ -20,8 +20,6 @@ target 'TwidereX' do
   
   # misc
   pod 'SwiftGen', '~> 6.3.0'
-  pod 'Firebase/Analytics', '~> 8.2.0' 
-  pod 'Firebase/Crashlytics', '~> 8.2.0'
   pod 'Sourcery', '~> 1.6.1'
 
   # Debug
@@ -60,7 +58,9 @@ plugin 'cocoapods-keys', {
     "client_id_debug",
     "host_key_public",
     "oauth_endpoint",
-    "oauth_endpoint_debug"
+    "oauth_endpoint_debug",
+    "oauth2_endpoint",
+    "oauth2_endpoint_debug"
   ]
 }
 
