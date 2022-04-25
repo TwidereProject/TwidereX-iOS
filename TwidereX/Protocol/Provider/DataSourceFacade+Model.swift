@@ -69,7 +69,7 @@ extension DataSourceFacade {
         case .repost:
             return status
         case .quote:
-            return status.quote
+            return (status.repost ?? status).quote
         }
     }
     

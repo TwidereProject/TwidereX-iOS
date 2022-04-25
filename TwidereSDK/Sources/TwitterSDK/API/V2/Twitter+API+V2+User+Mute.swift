@@ -7,6 +7,10 @@
 
 import Foundation
 
+extension Twitter.API.V2.User {
+    public enum Mute { }
+}
+
 // doc: https://developer.twitter.com/en/docs/twitter-api/users/mutes/introduction
 extension Twitter.API.V2.User.Mute {
     

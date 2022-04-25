@@ -93,7 +93,7 @@ extension SceneCoordinator {
         case stubTimeline
         #endif
         
-        case safari(url: URL)
+        case safari(url: String)
         case activityViewController(activityViewController: UIActivityViewController, sourceView: UIView)
         case alertController(alertController: UIAlertController)
     }
@@ -315,6 +315,9 @@ private extension SceneCoordinator {
             viewController = StubTimelineViewController()
         #endif
         case .safari(let url):
+            // escape non-ascii characters
+            guard let url = URL(string: url) ?? URL(string: url.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? url) else { return nil }
+            // only allow HTTP/HTTPS scheme
             guard let scheme = url.scheme?.lowercased(),
                   scheme == "http" || scheme == "https" else {
                 return nil

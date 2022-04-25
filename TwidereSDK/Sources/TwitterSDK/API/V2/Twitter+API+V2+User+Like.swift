@@ -7,6 +7,10 @@
 
 import Foundation
 
+extension Twitter.API.V2.User {
+    public enum Like { }
+}
+
 // https://developer.twitter.com/en/docs/twitter-api/tweets/likes/api-reference/post-users-id-likes
 extension Twitter.API.V2.User.Like {
     

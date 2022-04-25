@@ -114,35 +114,29 @@ extension WelcomeViewController {
 
 // MARK: - WelcomeViewModelDelegate
 extension WelcomeViewController: WelcomeViewModelDelegate {
-    
-    // For user PIN-based OAuth Twitter authentication (WebView)
+
+    // For user customized Twitter Token authentication
     func presentTwitterAuthenticationOption() {
         let twitterAuthenticationOptionViewModel = TwitterAuthenticationOptionViewModel(context: context)
-        coordinator.present(scene: .twitterAuthenticationOption(viewModel: twitterAuthenticationOptionViewModel), from: self, transition: .modal(animated: true, completion: nil))
+        coordinator.present(
+            scene: .twitterAuthenticationOption(viewModel: twitterAuthenticationOptionViewModel),
+            from: self,
+            transition: .modal(animated: true, completion: nil)
+        )
     }
     
-    // For app custom OAuth Twitter authentication (AuthenticationServices)
+    // For app OAuth Twitter authentication (AuthenticationServices)
     func welcomeViewModel(
         _ viewModel: WelcomeViewModel,
-        authenticateTwitter exchange: Twitter.API.OAuth.OAuthRequestTokenResponseExchange
-    ) {
-        let requestToken: String = {
-            switch exchange {
-            case .pin(let response):            return response.oauthToken
-            case .custom(_, let append):        return append.requestToken
-            }
-        }()
-        let authenticateURL = Twitter.API.OAuth.authenticateURL(requestToken: requestToken)
-
+        authenticateTwitter authorizationContextProvider: TwitterAuthorizationContextProvider
+    ) async throws {
         let authenticationController = TwitterAuthenticationController(
             context: context,
-            coordinator: coordinator,
-            appSecret: AppSecret.default,
-            authenticateURL: authenticateURL,
-            requestTokenExchange: exchange
+            coordinator: coordinator
         )
         
-        authenticationController.isAuthenticating
+        // bind UI
+        authenticationController.$isAuthenticating
             .receive(on: DispatchQueue.main)
             .sink(receiveValue: { [weak self] isAuthenticating in
                 guard let _ = self else { return }
@@ -150,7 +144,8 @@ extension WelcomeViewController: WelcomeViewModelDelegate {
             })
             .store(in: &authenticationController.disposeBag)
         
-        authenticationController.error
+        // bind error
+        authenticationController.$error
             .receive(on: DispatchQueue.main)
             .sink(receiveValue: { [weak self] error in
                 guard let self = self else { return }
@@ -160,15 +155,17 @@ extension WelcomeViewController: WelcomeViewModelDelegate {
             })
             .store(in: &authenticationController.disposeBag)
         
-        authenticationController.authenticated
+        // bind view hierarchy
+        authenticationController.$authenticatedTwitterUser
             .receive(on: DispatchQueue.main)
             .sink(receiveValue: { [weak self] twitterUser in
                 guard let self = self else { return }
+                guard let twitterUser = twitterUser else { return }
                 Task {
                     do {
                         let userID = twitterUser.idStr
                         let isActive = try await self.context.authenticationService.activeTwitterUser(userID: userID)
-                        
+
                         // active user and reset view hierarchy
                         guard isActive else { return }
                         self.coordinator.setup()
@@ -180,16 +177,34 @@ extension WelcomeViewController: WelcomeViewModelDelegate {
             })
             .store(in: &authenticationController.disposeBag)
         
+        // bind OAuth action
+        // - Pin-based OAuth
+        authenticationController.$twitterPinBasedAuthenticationViewController
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] viewController in
+                guard let self = self else { return }
+                guard let viewController = viewController else { return }
+                let navigationController = UINavigationController(rootViewController: viewController)
+                self.present(navigationController, animated: true)
+            }
+            .store(in: &disposeBag)
+        // - 3-legged OAuth
+        authenticationController.$authenticationSession
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] authenticationSession in
+                guard let self = self else { return }
+                guard let authenticationSession = authenticationSession else { return }
+                authenticationSession.prefersEphemeralWebBrowserSession = false
+                authenticationSession.presentationContextProvider = self
+                authenticationSession.start()
+            }
+            .store(in: &disposeBag)
+        
+        // setup TwitterAuthenticationController
+        try await authenticationController.setup(authorizationContext: .oauth(authorizationContextProvider.oauth))
+
+        // store authenticationController
         self.twitterAuthenticationController = authenticationController
-        switch exchange {
-        case .pin:
-            break
-        case .custom:
-            assert(authenticationController.authenticationSession != nil )
-            authenticationController.authenticationSession?.prefersEphemeralWebBrowserSession = true
-            authenticationController.authenticationSession?.presentationContextProvider = self
-            authenticationController.authenticationSession?.start()
-        }
     }
     
     // For PIN-Based OAuth Mastodon authentication (AuthenticationServices)

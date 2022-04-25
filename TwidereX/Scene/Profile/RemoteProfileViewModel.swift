@@ -10,6 +10,7 @@ import Foundation
 import CoreDataStack
 import TwidereCore
 import TwitterSDK
+import MastodonSDK
 
 final class RemoteProfileViewModel: ProfileViewModel {
     
@@ -36,9 +37,21 @@ final class RemoteProfileViewModel: ProfileViewModel {
                 } catch {
                     // do nothing
                 }
-            }
-//        case .mastodon(let mastodonContext):
-//            break
+            }   // end Task
+        case .mastodon(let mastodonContext):
+            Task {
+                guard case let .mastodon(authenticationContext) = context.authenticationService.activeAuthenticationContext else { return }
+                do {
+                    let _record = try await fetchMastodonUser(
+                        mastodonContext: mastodonContext,
+                        authenticationContext: authenticationContext
+                    )
+                    guard let record = _record else { return }
+                    await self.setup(user: .mastodon(record: record))
+                } catch {
+                    // do nothing
+                }
+            }   // end Task
         }
     }
     
@@ -47,10 +60,9 @@ final class RemoteProfileViewModel: ProfileViewModel {
 extension RemoteProfileViewModel {
  
     enum ProfileContext {
-        // case twitter(userID: TwitterUser.ID)
         case record(record: UserRecord)
         case twitter(TwitterContext)
-        // case mastodon(MastodonContext)
+        case mastodon(MastodonContext)
         
         enum TwitterContext {
             case userID(TwitterUser.ID)
@@ -58,7 +70,8 @@ extension RemoteProfileViewModel {
         }
         
         enum MastodonContext {
-            case username(String)
+            case userID(MastodonUser.ID)
+            //case username(String)
         }
     }
     
@@ -95,6 +108,14 @@ extension RemoteProfileViewModel {
         guard let user = try? context.managedObjectContext.fetch(request).first else { return nil }
         return .init(objectID: user.objectID)
     }
+    
+    func findMastodonUser(domain: String, userID: MastodonUser.ID) -> ManagedObjectRecord<MastodonUser>? {
+        let request = MastodonUser.sortedFetchRequest
+        request.predicate = MastodonUser.predicate(domain: domain, id: userID)
+        request.fetchLimit = 1
+        guard let user = try? context.managedObjectContext.fetch(request).first else { return nil }
+        return .init(objectID: user.objectID)
+    }
 }
 
 extension RemoteProfileViewModel {
@@ -103,7 +124,7 @@ extension RemoteProfileViewModel {
         twitterContext: ProfileContext.TwitterContext,
         authenticationContext: TwitterAuthenticationContext
     ) async throws -> ManagedObjectRecord<TwitterUser>? {
-        let response: Twitter.Response.Content<Twitter.API.V2.UserLookup.Content> = try await {
+        let response: Twitter.Response.Content<Twitter.API.V2.User.Lookup.Content> = try await {
             switch twitterContext {
             case .userID(let userID):
                 return try await context.apiService.twitterUsers(
@@ -123,11 +144,21 @@ extension RemoteProfileViewModel {
     }
     
     func fetchMastodonUser(
-        username: String,
+        mastodonContext: ProfileContext.MastodonContext,
         authenticationContext: MastodonAuthenticationContext
-    ) async throws -> StatusRecord? {
-        assertionFailure()
-        return nil
+    ) async throws -> ManagedObjectRecord<MastodonUser>? {
+        let response: Mastodon.Response.Content<Mastodon.Entity.Account> = try await {
+            switch mastodonContext {
+            case .userID(let userID):
+                return try await context.apiService.mastodonUser(
+                    userID: userID,
+                    mastodonAuthenticationContext: authenticationContext
+                )
+            }
+        }()
+        let entity = response.value
+        let record = findMastodonUser(domain: authenticationContext.domain, userID: entity.id)
+        return record
     }
     
 }

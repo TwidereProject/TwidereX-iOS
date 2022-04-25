@@ -66,7 +66,7 @@ final class SafariActivity: UIActivity {
     
     @MainActor
     func openSafari(url: URL) {
-        sceneCoordinator?.present(scene: .safari(url: url), from: nil, transition: .safariPresent(animated: true, completion: nil))
+        sceneCoordinator?.present(scene: .safari(url: url.absoluteString), from: nil, transition: .safariPresent(animated: true, completion: nil))
     }
     
 }

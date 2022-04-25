@@ -90,7 +90,7 @@ extension PublisherService {
         Task {
             do {
                 self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): publish status…")
-                let result = try await publisher.publish(api: apiService, appSecret: appSecret)
+                let result = try await publisher.publish(api: apiService, secret: appSecret.secret)
                 
                 self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): publish status success")
                 self.statusPublishResult.send(.success(result))

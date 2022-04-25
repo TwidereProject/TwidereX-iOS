@@ -21,9 +21,9 @@ extension APIService {
     public func twitterUsers(
         userIDs: [Twitter.Entity.User.ID],
         twitterAuthenticationContext: TwitterAuthenticationContext
-    ) async throws -> Twitter.Response.Content<Twitter.API.V2.UserLookup.Content>  {
+    ) async throws -> Twitter.Response.Content<Twitter.API.V2.User.Lookup.Content>  {
         let authorization = twitterAuthenticationContext.authorization
-        let response = try await Twitter.API.V2.UserLookup.users(
+        let response = try await Twitter.API.V2.User.Lookup.users(
             session: session,
             userIDs: userIDs,
             authorization: authorization
@@ -51,9 +51,9 @@ extension APIService {
     public func twitterUsers(
         usernames: [String],
         twitterAuthenticationContext: TwitterAuthenticationContext
-    ) async throws -> Twitter.Response.Content<Twitter.API.V2.UserLookup.Content> {
+    ) async throws -> Twitter.Response.Content<Twitter.API.V2.User.Lookup.Content> {
         let authorization = twitterAuthenticationContext.authorization
-        let response = try await Twitter.API.V2.UserLookup.users(
+        let response = try await Twitter.API.V2.User.Lookup.users(
             session: session,
             usernames: usernames,
             authorization: authorization

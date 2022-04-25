@@ -47,7 +47,7 @@ extension AboutViewController {
                 switch entry {
                 case .github:
                     let url = URL(string: "https://github.com/TwidereProject/TwidereX-iOS")!
-                    self.coordinator.present(scene: .safari(url: url), from: nil, transition: .safariPresent(animated: true, completion: nil))
+                    self.coordinator.present(scene: .safari(url: url.absoluteString), from: nil, transition: .safariPresent(animated: true, completion: nil))
                 case .twitter:
                     switch self.context.authenticationService.activeAuthenticationContext {
                     case .twitter:
@@ -60,7 +60,7 @@ extension AboutViewController {
                         fallthrough
                     case .none:
                         let url = URL(string: "https://twitter.com/twidereproject")!
-                        self.coordinator.present(scene: .safari(url: url), from: nil, transition: .safariPresent(animated: true, completion: nil))
+                        self.coordinator.present(scene: .safari(url: url.absoluteString), from: nil, transition: .safariPresent(animated: true, completion: nil))
                     }
                 case .telegram:
                     let url = URL(string: "https://t.me/twidere_x")!
@@ -70,10 +70,10 @@ extension AboutViewController {
                     UIApplication.shared.open(url)
                 case .license:
                     let url = URL(string: "https://github.com/TwidereProject/TwidereX-iOS/blob/master/LICENSE")!
-                    self.coordinator.present(scene: .safari(url: url), from: nil, transition: .safariPresent(animated: true, completion: nil))
+                    self.coordinator.present(scene: .safari(url: url.absoluteString), from: nil, transition: .safariPresent(animated: true, completion: nil))
                 case .privacyPolicy:
                     let url = URL(string: "https://github.com/TwidereProject/TwidereX-iOS/wiki/Privacy-Policy")!
-                    self.coordinator.present(scene: .safari(url: url), from: nil, transition: .safariPresent(animated: true, completion: nil))
+                    self.coordinator.present(scene: .safari(url: url.absoluteString), from: nil, transition: .safariPresent(animated: true, completion: nil))
                 }
             }
             .store(in: &disposeBag)

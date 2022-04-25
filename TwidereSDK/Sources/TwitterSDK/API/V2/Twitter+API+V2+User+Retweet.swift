@@ -7,6 +7,10 @@
 
 import Foundation
 
+extension Twitter.API.V2.User {
+    public enum Retweet { }
+}
+
 extension Twitter.API.V2.User.Retweet {
     
     static func retweetEndpointURL(

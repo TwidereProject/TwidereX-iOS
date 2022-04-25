@@ -9,6 +9,10 @@ import os.log
 import Foundation
 import Combine
 
+extension Twitter.API.V2 {
+    public enum Search { }
+}
+
 /// https://developer.twitter.com/en/docs/twitter-api/tweets/search/api-reference
 extension Twitter.API.V2.Search {
     

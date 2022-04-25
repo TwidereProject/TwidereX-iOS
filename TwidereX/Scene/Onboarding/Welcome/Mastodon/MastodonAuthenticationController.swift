@@ -166,8 +166,7 @@ extension MastodonAuthenticationController {
         )
         let userAccessTokenResponse = try await context.apiService.mastodonUserAccessToken(
             domain: info.domain,
-            query: query,
-            code: code
+            query: query
         )
         
         let token = userAccessTokenResponse.value

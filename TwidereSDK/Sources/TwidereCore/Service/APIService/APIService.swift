@@ -18,8 +18,9 @@ public final class APIService {
         
     var disposeBag = Set<AnyCancellable>()
     
+    public let session: URLSession
+    
     // internal
-    let session: URLSession
     var homeTimelineRequestThrottler = RequestThrottler()
     let logger = Logger(subsystem: "APIService", category: "API")
     

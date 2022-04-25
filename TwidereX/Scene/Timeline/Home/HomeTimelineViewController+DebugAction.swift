@@ -127,6 +127,21 @@ extension HomeTimelineViewController {
             identifier: nil,
             options: [],
             children: [
+                UIAction(title: "Status ID", image: nil, attributes: [], handler: { [weak self] action in
+                    guard let self = self else { return }
+                    let alertController = UIAlertController(title: "Enter Status ID", message: nil, preferredStyle: .alert)
+                    alertController.addTextField()
+                    let showAction = UIAlertAction(title: "Move", style: .default) { [weak self, weak alertController] _ in
+                        guard let self = self else { return }
+                        guard let textField = alertController?.textFields?.first else { return }
+                        guard let id = textField.text?.trimmingCharacters(in: .whitespacesAndNewlines), !id.isEmpty else { return }
+                        self.moveToFirst(action, category: .status(id: id))
+                    }
+                    alertController.addAction(showAction)
+                    let cancelAction = UIAlertAction.cancel
+                    alertController.addAction(cancelAction)
+                    self.coordinator.present(scene: .alertController(alertController: alertController), from: self, transition: .alertController(animated: true, completion: nil))
+                }),
                 UIAction(title: "First Gap", image: nil, attributes: [], handler: { [weak self] action in
                     guard let self = self else { return }
                     self.moveToFirst(action, category: .gap)
@@ -240,7 +255,7 @@ extension HomeTimelineViewController {
         coordinator.present(scene: .accountList(viewModel: accountListViewModel), from: self, transition: .modal(animated: true, completion: nil))
     }
     
-    enum StatusCategory {
+    enum StatusCategory: Hashable {
         case gap
         case quote
         case gif
@@ -248,6 +263,7 @@ extension HomeTimelineViewController {
         case location
         case followsYouAuthor
         case blockingAuthor
+        case status(id: String)
         
         func match(item: StatusItem) -> Bool {
             let authenticationContext = AppContext.shared.authenticationService.activeAuthenticationContext
@@ -272,6 +288,8 @@ extension HomeTimelineViewController {
                         guard case let .twitter(authenticationContext) = authenticationContext else { return false }
                         guard let me = authenticationContext.authenticationRecord.object(in: AppContext.shared.managedObjectContext)?.user else { return false }
                         return (status.repost ?? status).author.blockingBy.contains(me)
+                    case .status(let id):
+                        return status.id == id
                     default:
                         return false
                     }

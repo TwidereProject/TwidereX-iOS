@@ -38,7 +38,8 @@ extension MastodonStatus.Property {
             createdAt: entity.createdAt,
             updatedAt: networkDate,
             attachments: entity.mastodonAttachments,
-            emojis: entity.mastodonEmojis
+            emojis: entity.mastodonEmojis,
+            mentions: entity.mastodonMentions
         )
     }
 }
