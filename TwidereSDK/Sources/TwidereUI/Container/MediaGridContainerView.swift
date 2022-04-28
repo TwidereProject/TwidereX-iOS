@@ -47,7 +47,6 @@ public final class MediaGridContainerView: UIView {
         return mediaViews
     }()
     
-    
     let sensitiveToggleButtonBlurVisualEffectView: UIVisualEffectView = {
         let visualEffectView = UIVisualEffectView(effect: ContentWarningOverlayView.blurVisualEffect)
         visualEffectView.layer.masksToBounds = true
