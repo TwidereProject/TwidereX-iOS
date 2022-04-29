@@ -112,10 +112,6 @@ extension MediaView {
         }
     }
     
-    private func prepareForReuse() {
-        imageView.isHidden = false
-    }
-    
     private func configure(
         image info: Configuration.ImageInfo,
         containerView: UIView
@@ -241,6 +237,7 @@ extension MediaView {
         imageView.removeConstraints(imageView.constraints)
         imageView.af.cancelImageRequest()
         imageView.image = nil
+        imageView.isHidden = false
         
         // reset player
         playerViewController.view.removeFromSuperview()
