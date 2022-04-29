@@ -51,8 +51,8 @@
         "repositoryURL": "https://github.com/krzyzanowskim/CryptoSwift.git",
         "state": {
           "branch": null,
-          "revision": "12f2389aca4a07e0dd54c86ec23d0721ed88b8db",
-          "version": "1.4.3"
+          "revision": "039f56c5d7960f277087a0be51f5eb04ed0ec073",
+          "version": "1.5.1"
         }
       },
       {
@@ -141,8 +141,8 @@
         "repositoryURL": "https://github.com/google/gtm-session-fetcher.git",
         "state": {
           "branch": null,
-          "revision": "eca9404a18f53727e4698211aaf2615eb93b962a",
-          "version": "1.7.1"
+          "revision": "4e9bbf2808b8fee444e84a48f5f3c12641987d3e",
+          "version": "1.7.2"
         }
       },
       {
@@ -222,8 +222,8 @@
         "repositoryURL": "https://github.com/SDWebImage/SDWebImage.git",
         "state": {
           "branch": null,
-          "revision": "2e63d0061da449ad0ed130768d05dceb1496de44",
-          "version": "5.12.5"
+          "revision": "a72df4849408da7e5d3c1b586797b7c601c41d1b",
+          "version": "5.12.1"
         }
       },
       {
