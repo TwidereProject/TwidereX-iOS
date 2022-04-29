@@ -184,6 +184,8 @@ extension MainTabBarController {
         tabBar.addGestureRecognizer(tabBarLongPressGestureRecognizer)
         
         delegate = self
+        
+        updateTabBarDisplay()
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -193,7 +195,38 @@ extension MainTabBarController {
         //coordinator.present(scene: .displayPreference, from: nil, transition: .show)
         #endif
     }
+    
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
         
+        updateTabBarDisplay()
+    }
+        
+}
+
+extension MainTabBarController {
+    private func updateTabBarDisplay() {
+        switch traitCollection.horizontalSizeClass {
+        case .compact:
+            tabBar.isHidden = false
+        default:
+            tabBar.isHidden = true
+        }
+    }
+}
+
+extension MainTabBarController {
+
+    func select(tab: Tab) {
+        let _index = tabBar.items?.firstIndex(where: { $0.tag == tab.tag })
+        guard let index = _index else {
+            return
+        }
+
+        selectedIndex = index
+        currentTab = tab
+    }
+    
 }
 
 extension MainTabBarController {

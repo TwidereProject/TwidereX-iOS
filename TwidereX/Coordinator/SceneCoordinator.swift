@@ -102,8 +102,19 @@ extension SceneCoordinator {
 extension SceneCoordinator {
     
     func setup() {
-        let viewController = MainTabBarController(context: context, coordinator: self)
-        sceneDelegate.window?.rootViewController = viewController
+        let rootViewController: UIViewController
+        switch UIDevice.current.userInterfaceIdiom {
+        case .phone:
+            let viewController = MainTabBarController(context: context, coordinator: self)
+            rootViewController = viewController
+        default:
+            let contentSplitViewController = ContentSplitViewController()
+            contentSplitViewController.context = context
+            contentSplitViewController.coordinator = self
+            rootViewController = contentSplitViewController
+        }
+        
+        sceneDelegate.window?.rootViewController = rootViewController
     }
     
     func setupWelcomeIfNeeds() {
