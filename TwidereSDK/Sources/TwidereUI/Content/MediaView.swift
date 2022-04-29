@@ -100,7 +100,6 @@ extension MediaView {
         self.configuration = configuration
 
         setupContainerViewHierarchy()
-        prepareForReuse()
         
         switch configuration {
         case .image(let info):
