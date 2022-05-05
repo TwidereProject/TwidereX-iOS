@@ -32,14 +32,21 @@ final class ContentSplitViewController: UIViewController, NeedsDependency {
     
     private(set) lazy var mainTabBarController: MainTabBarController = {
         let mainTabBarController = MainTabBarController(context: context, coordinator: coordinator)
-//        if let homeTimelineViewController = mainTabBarController.viewController(of: HomeTimelineViewController.self) {
-//            homeTimelineViewController.viewModel.displayComposeBarButtonItem = false
-//            homeTimelineViewController.viewModel.displaySettingBarButtonItem = false
-//        }
         return mainTabBarController
     }()
     
+    private(set) lazy var secondaryTabBarController: SecondaryTabBarController = {
+        let secondaryTabBarController = SecondaryTabBarController(context: context, coordinator: coordinator)
+        return secondaryTabBarController
+    }()
+    
     var mainTabBarViewLeadingLayoutConstraint: NSLayoutConstraint!
+    
+    @Published var isSidebarDisplay = false
+    @Published var isSecondaryTabBarControllerActive = false
+    
+    // [Tab: HashValue]
+    var transformNavigationStackRecord: [TabBarItem: [Int]] = [:]
 
     deinit {
         os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
@@ -69,7 +76,7 @@ extension ContentSplitViewController {
         addChild(mainTabBarController)
         mainTabBarController.view.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(mainTabBarController.view)
-        sidebarViewController.didMove(toParent: self)
+        mainTabBarController.didMove(toParent: self)
         mainTabBarViewLeadingLayoutConstraint = mainTabBarController.view.leadingAnchor.constraint(equalTo: view.leadingAnchor)
         NSLayoutConstraint.activate([
             mainTabBarController.view.topAnchor.constraint(equalTo: view.topAnchor),
@@ -79,33 +86,123 @@ extension ContentSplitViewController {
             mainTabBarController.view.bottomAnchor.constraint(equalTo: view.bottomAnchor),
         ])
         
-        mainTabBarController.$currentTab
-            .receive(on: DispatchQueue.main)
-            .assign(to: \.activeTab, on: sidebarViewController.viewModel)
-            .store(in: &disposeBag)
+        addChild(secondaryTabBarController)
+        secondaryTabBarController.view.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(secondaryTabBarController.view)
+        secondaryTabBarController.didMove(toParent: self)
+        NSLayoutConstraint.activate([
+            secondaryTabBarController.view.topAnchor.constraint(equalTo: mainTabBarController.view.topAnchor),
+            secondaryTabBarController.view.leadingAnchor.constraint(equalTo: mainTabBarController.view.leadingAnchor),
+            secondaryTabBarController.view.trailingAnchor.constraint(equalTo: mainTabBarController.view.trailingAnchor),
+            secondaryTabBarController.view.bottomAnchor.constraint(equalTo: mainTabBarController.view.bottomAnchor),
+        ])
+        secondaryTabBarController.view.isHidden = true
         
-        updateConstraint()
+        mainTabBarController.$tabs
+            .assign(to: &sidebarViewController.viewModel.$mainTabBarItems)
+        sidebarViewController.viewModel.activeTab = .home
+        sidebarViewController.viewModel.$secondaryTabBarItems
+            .assign(to: &secondaryTabBarController.$tabs)
+        
+        Publishers.CombineLatest(
+            $isSidebarDisplay,
+            $isSecondaryTabBarControllerActive
+        )
+        .receive(on: DispatchQueue.main)
+        .map { isSidebarDisplay, isSecondaryTabBarControllerActive in
+            let needsHidden = !isSidebarDisplay || !isSecondaryTabBarControllerActive
+            return needsHidden
+        }
+        .assign(to: \.isHidden, on: secondaryTabBarController.view)
+        .store(in: &disposeBag)
+        
+        updateConstraint(nil)
     }
     
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
         
-        updateConstraint()
+        updateConstraint(previousTraitCollection)
     }
     
 }
 
 extension ContentSplitViewController {
 
-    private func updateConstraint() {
+    private func updateConstraint(_ previousTraitCollection: UITraitCollection?) {
         switch traitCollection.horizontalSizeClass {
         case .regular:
+            isSidebarDisplay = true
             mainTabBarViewLeadingLayoutConstraint.isActive = false
-        case .compact, .unspecified:
+        default:
+            isSidebarDisplay = false
             mainTabBarViewLeadingLayoutConstraint.isActive = true
-        @unknown default:
-            assertionFailure()
-            mainTabBarViewLeadingLayoutConstraint.isActive = true
+        }
+        
+        guard let previousTraitCollection = previousTraitCollection else { return }
+        switch (previousTraitCollection.horizontalSizeClass, traitCollection.horizontalSizeClass) {
+        case (.regular, .compact):
+            // collapse
+            logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): collpase")
+            collapse()
+                  
+        case (.compact, .regular):
+            logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): expand")
+            expand()
+        default:
+            break
+        }
+    }
+    
+    private func collapse() {
+        guard let from = secondaryTabBarController.selectedViewController as? UINavigationController,
+              let to = mainTabBarController.selectedViewController as? UINavigationController,
+              let tab = secondaryTabBarController.currentTab
+        else { return }
+        
+        var record: [Int] = []
+        let viewControllers = from.popToRootViewController(animated: false) ?? []
+        for viewController in viewControllers {
+            viewController.navigationItem.hidesBackButton = false
+            to.pushViewController(viewController, animated: false)
+            record.append(viewController.hashValue)
+        }
+        transformNavigationStackRecord[tab] = record
+    }
+    
+    private func expand() {
+        for _navigationController in mainTabBarController.viewControllers ?? [] {
+            guard let navigationController = _navigationController as? UINavigationController else {
+                assertionFailure()
+                continue
+            }
+            for (key, values) in transformNavigationStackRecord {
+                if let first = navigationController.viewControllers.first(where: { values.contains($0.hashValue) }) {
+                    var stack = navigationController.popToViewController(first, animated: false) ?? []
+                    navigationController.popViewController(animated: false)
+                    stack.insert(first, at: 0)
+                    
+                    guard let secondaryTabBarNavigationController = secondaryTabBarController.navigationController(for: key) else { continue }
+                    stack.first?.navigationItem.hidesBackButton = true
+                    for stackItem in stack {
+                        secondaryTabBarNavigationController.pushViewController(stackItem, animated: false)
+                    }
+                    
+                } else {
+                    continue
+                }
+            }
+        }
+        
+        transformNavigationStackRecord = [:]
+        
+        for tab in secondaryTabBarController.tabs {
+            guard let secondaryTabBarNavigationController = secondaryTabBarController.navigationController(for: tab) else { continue }
+            if secondaryTabBarNavigationController.viewControllers.count == 1 {
+                let viewController = tab.viewController(context: context, coordinator: coordinator)
+                viewController.navigationItem.hidesBackButton = true
+                secondaryTabBarNavigationController.pushViewController(viewController, animated: false)
+            }
         }
     }
     
@@ -114,43 +211,24 @@ extension ContentSplitViewController {
 // MARK: - SidebarViewModelDelegate
 extension ContentSplitViewController: SidebarViewModelDelegate {
 
-    func sidebarViewModel(_ viewModel: SidebarViewModel, active item: SidebarViewModel.Item) {
+    func sidebarViewModel(_ viewModel: SidebarViewModel, active tab: TabBarItem) {
         logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public)")
-        
-        switch item {
-        case .tab(let tab):
+
+        switch tab {
+        case .settings:
+            coordinator.present(scene: .setting, from: nil, transition: .modal(animated: true, completion: nil))
+        default:
             viewModel.activeTab = tab
-            mainTabBarController.select(tab: tab)
-        case .entry(let entry):
-            let from = mainTabBarController
-            switch entry {
-            case .local:
-                let federatedTimelineViewModel = FederatedTimelineViewModel(context: context, local: true)
-                coordinator.present(scene: .federatedTimeline(viewModel: federatedTimelineViewModel), from: from, transition: .show)
-            case .federated:
-                let federatedTimelineViewModel = FederatedTimelineViewModel(context: context, local: false)
-                coordinator.present(scene: .federatedTimeline(viewModel: federatedTimelineViewModel), from: from, transition: .show)
-            case .likes:
-                let meLikeTimelineViewModel = MeLikeTimelineViewModel(context: context)
-                coordinator.present(scene: .userLikeTimeline(viewModel: meLikeTimelineViewModel), from: from, transition: .show)
-            case .lists:
-                guard let me = context.authenticationService.activeAuthenticationContext?.user(in: context.managedObjectContext)?.asRecord else { return }
-                
-                let compositeListViewModel = CompositeListViewModel(
-                    context: context,
-                    kind: .lists(me)
-                )
-                coordinator.present(
-                    scene: .compositeList(viewModel: compositeListViewModel),
-                    from: from,
-                    transition: .show
-                )
-            case .settings:
-                coordinator.present(scene: .setting, from: from, transition: .modal(animated: true, completion: nil))
-            default:
+            if mainTabBarController.tabs.contains(tab) {
+                mainTabBarController.select(tab: tab)
+                isSecondaryTabBarControllerActive = false
+            } else if secondaryTabBarController.tabs.contains(tab) {
+                secondaryTabBarController.select(tab: tab)
+                isSecondaryTabBarControllerActive = true
+            } else {
                 assertionFailure()
-            }   // end switch entry
-        }   // end switch item
+            }
+        }
     }
 
 }

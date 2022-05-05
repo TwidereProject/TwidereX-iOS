@@ -17,42 +17,34 @@ struct SidebarView: View {
     
     var body: some View {
         VStack(spacing: .zero) {
-            ForEach(viewModel.tabs, id: \.self) { item in
-                let isActive: Bool = {
-                    switch item {
-                    case .tab(let tab):
-                        return viewModel.activeTab == tab
-                    default:
-                        return false
-                    }
-                }()
+            ForEach(viewModel.mainTabBarItems, id: \.self) { item in
                 EntryButton(
                     item: item,
-                    isActive: isActive
+                    isActive: viewModel.activeTab == item
                 ) { item in
-                    viewModel.setActive(item: item)
+                    viewModel.setActiveTab(item: item)
                 }
             }
-            if !viewModel.entries.isEmpty {
+            if !viewModel.secondaryTabBarItems.isEmpty {
                 Divider()
                     .foregroundColor(.secondary)
                     .frame(width: 24, height: 1, alignment: .center)
                     .padding(.vertical, 15)
             }
-            ForEach(viewModel.entries, id: \.self) { item in
+            ForEach(viewModel.secondaryTabBarItems, id: \.self) { item in
                 EntryButton(
                     item: item,
-                    isActive: false
+                    isActive: viewModel.activeTab == item
                 ) { item in
-                    viewModel.setActive(item: item)
+                    viewModel.setActiveTab(item: item)
                 }
             }
             Spacer()
             EntryButton(
-                item: .entry(.settings),
+                item: .settings,
                 isActive: false
             ) { item in
-                viewModel.setActive(item: item)
+                viewModel.setActiveTab(item: item)
             }
         }
         .background(Color(uiColor: .systemBackground))
@@ -65,9 +57,9 @@ struct SidebarView: View {
 extension SidebarView {
     
     struct EntryButton: View {
-        let item: SidebarViewModel.Item
+        let item: TabBarItem
         let isActive: Bool
-        let action: (SidebarViewModel.Item) -> ()
+        let action: (TabBarItem) -> ()
         
         var body: some View {
             let dimension: CGFloat = 32

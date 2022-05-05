@@ -12,7 +12,7 @@ import CoreData
 import CoreDataStack
 
 protocol SidebarViewModelDelegate: AnyObject {
-    func sidebarViewModel(_ viewModel: SidebarViewModel, active item: SidebarViewModel.Item)
+    func sidebarViewModel(_ viewModel: SidebarViewModel, active item: TabBarItem)
 }
 
 final class SidebarViewModel: ObservableObject {
@@ -23,11 +23,11 @@ final class SidebarViewModel: ObservableObject {
     
     // input
     let context: AppContext
-    @Published var activeTab: MainTabBarController.Tab = .home
+    @Published var activeTab: TabBarItem?
         
     // output
-    let tabs: [Item] = MainTabBarController.Tab.allCases.map { Item.tab($0) }
-    @Published var entries: [Item] = []
+    @Published var mainTabBarItems: [TabBarItem] = []
+    @Published var secondaryTabBarItems: [TabBarItem] = []
 
     init(context: AppContext) {
         self.context = context
@@ -35,7 +35,7 @@ final class SidebarViewModel: ObservableObject {
         context.authenticationService.$activeAuthenticationContext
             .sink { [weak self] authenticationContext in
                 guard let self = self else { return }
-                var items: [SidebarItem] = []
+                var items: [TabBarItem] = []
                 switch authenticationContext {
                 case .twitter:
                     items.append(contentsOf: [.likes, .lists])
@@ -44,7 +44,7 @@ final class SidebarViewModel: ObservableObject {
                 case .none:
                     break
                 }
-                self.entries = items.map { Item.entry($0) }
+                self.secondaryTabBarItems = items
             }
             .store(in: &disposeBag)
     }
@@ -52,29 +52,8 @@ final class SidebarViewModel: ObservableObject {
 }
 
 extension SidebarViewModel {
-    enum Item: Hashable {
-        case tab(MainTabBarController.Tab)
-        case entry(SidebarItem)
-        
-        var title: String {
-            switch self {
-            case .tab(let tab):     return tab.title
-            case .entry(let entry): return entry.title
-            }
-        }
-        
-        var image: UIImage {
-            switch self {
-            case .tab(let tab):     return tab.image
-            case .entry(let entry): return entry.image
-            }
-        }
-    }
-}
-
-extension SidebarViewModel {
     
-    func setActive(item: Item) {
+    func setActiveTab(item: TabBarItem) {
         delegate?.sidebarViewModel(self, active: item)
     }
     

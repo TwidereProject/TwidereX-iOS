@@ -161,6 +161,9 @@
 		DB5FD9B326D8D94600CF5439 /* StatusTableViewCell+ViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB5FD9B226D8D94600CF5439 /* StatusTableViewCell+ViewModel.swift */; };
 		DB5FD9B726D8EFF700CF5439 /* UserBriefInfoView+ViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB5FD9B626D8EFF700CF5439 /* UserBriefInfoView+ViewModel.swift */; };
 		DB657A7B25AD574D001339B6 /* UIBarButtonItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB657A7A25AD574D001339B6 /* UIBarButtonItem.swift */; };
+		DB66DB8D2823A7C80071F5F3 /* SecondaryTabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB66DB8C2823A7C80071F5F3 /* SecondaryTabBarController.swift */; };
+		DB66DB902823AC3C0071F5F3 /* TabBarItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB66DB8F2823AC3C0071F5F3 /* TabBarItem.swift */; };
+		DB66DB932823EE1F0071F5F3 /* SecondaryTabBarRootController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB66DB922823EE1F0071F5F3 /* SecondaryTabBarRootController.swift */; };
 		DB67610D254AD681006C6798 /* ActivityIndicatorCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB67610C254AD681006C6798 /* ActivityIndicatorCollectionViewCell.swift */; };
 		DB676161254BE580006C6798 /* MediaPreviewCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB676160254BE580006C6798 /* MediaPreviewCollectionViewCell.swift */; };
 		DB692A0D281317040031CC80 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = DB692A0C281317040031CC80 /* FirebaseAnalytics */; };
@@ -647,6 +650,9 @@
 		DB5FD9B626D8EFF700CF5439 /* UserBriefInfoView+ViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UserBriefInfoView+ViewModel.swift"; sourceTree = "<group>"; };
 		DB60C1A82762394E00628235 /* AuthenticationServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AuthenticationServices.framework; path = System/Library/Frameworks/AuthenticationServices.framework; sourceTree = SDKROOT; };
 		DB657A7A25AD574D001339B6 /* UIBarButtonItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIBarButtonItem.swift; sourceTree = "<group>"; };
+		DB66DB8C2823A7C80071F5F3 /* SecondaryTabBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecondaryTabBarController.swift; sourceTree = "<group>"; };
+		DB66DB8F2823AC3C0071F5F3 /* TabBarItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabBarItem.swift; sourceTree = "<group>"; };
+		DB66DB922823EE1F0071F5F3 /* SecondaryTabBarRootController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecondaryTabBarRootController.swift; sourceTree = "<group>"; };
 		DB6760F8254AD026006C6798 /* SearchMediaViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchMediaViewModel.swift; sourceTree = "<group>"; };
 		DB67610C254AD681006C6798 /* ActivityIndicatorCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityIndicatorCollectionViewCell.swift; sourceTree = "<group>"; };
 		DB676117254BBF57006C6798 /* SearchMediaViewModel+State.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SearchMediaViewModel+State.swift"; sourceTree = "<group>"; };
@@ -1085,6 +1091,7 @@
 			children = (
 				DB148B01281A729600B596C7 /* Sidebar */,
 				DBDA8E9624FE075E006750DC /* MainTab */,
+				DB66DB8E2823A7CC0071F5F3 /* SecondaryTab */,
 				DB148B02281A7AB300B596C7 /* ContentSplitViewController.swift */,
 			);
 			path = Root;
@@ -1443,6 +1450,23 @@
 			path = Handler;
 			sourceTree = "<group>";
 		};
+		DB66DB8E2823A7CC0071F5F3 /* SecondaryTab */ = {
+			isa = PBXGroup;
+			children = (
+				DB66DB8C2823A7C80071F5F3 /* SecondaryTabBarController.swift */,
+				DB66DB922823EE1F0071F5F3 /* SecondaryTabBarRootController.swift */,
+			);
+			path = SecondaryTab;
+			sourceTree = "<group>";
+		};
+		DB66DB912823AC400071F5F3 /* TabBar */ = {
+			isa = PBXGroup;
+			children = (
+				DB66DB8F2823AC3C0071F5F3 /* TabBarItem.swift */,
+			);
+			path = TabBar;
+			sourceTree = "<group>";
+		};
 		DB676105254AD4B1006C6798 /* CollectionViewCell */ = {
 			isa = PBXGroup;
 			children = (
@@ -1603,7 +1627,7 @@
 			children = (
 				DB8761A32745515F00BA7EE2 /* User */,
 				DB8761A92745515F00BA7EE2 /* Status */,
-				DB8761AF2745515F00BA7EE2 /* Msic */,
+				DB8761AF2745515F00BA7EE2 /* Misc */,
 			);
 			path = Diffable;
 			sourceTree = "<group>";
@@ -1627,7 +1651,7 @@
 			path = Status;
 			sourceTree = "<group>";
 		};
-		DB8761AF2745515F00BA7EE2 /* Msic */ = {
+		DB8761AF2745515F00BA7EE2 /* Misc */ = {
 			isa = PBXGroup;
 			children = (
 				DB8761B02745515F00BA7EE2 /* Hashtag */,
@@ -1637,8 +1661,9 @@
 				DBD0B49E2758B5F70015A388 /* Sidebar */,
 				DB1E48172772CEC40074F6A0 /* Search */,
 				DB47AB1E27CCC18500CD73C7 /* List */,
+				DB66DB912823AC400071F5F3 /* TabBar */,
 			);
-			path = Msic;
+			path = Misc;
 			sourceTree = "<group>";
 		};
 		DB8761B02745515F00BA7EE2 /* Hashtag */ = {
@@ -2930,6 +2955,7 @@
 				DB36F35E257F74C10028F81E /* ScrollViewContainer.swift in Sources */,
 				DB262A482722A64900D18EF3 /* SearchTimelineViewController+DataSourceProvider.swift in Sources */,
 				DB76A65D275F52D500A50673 /* MediaInfoDescriptionView+ViewModel.swift in Sources */,
+				DB66DB902823AC3C0071F5F3 /* TabBarItem.swift in Sources */,
 				DB697E0927904BFB004EF2F7 /* FederatedTimelineViewController.swift in Sources */,
 				DB76A664275F688D00A50673 /* DataSourceFacade+Share.swift in Sources */,
 				DB761E4E255935380050DC01 /* DrawerSidebarHeaderView.swift in Sources */,
@@ -3131,6 +3157,7 @@
 				DBDA8E9F24FE0FFF006750DC /* HomeTimelineViewController.swift in Sources */,
 				DB76A65F275F587300A50673 /* DataSourceProvider+MediaInfoDescriptionViewDelegate.swift in Sources */,
 				DB25C4CF2779A06D00EC1435 /* SavedSearchViewModel.swift in Sources */,
+				DB66DB8D2823A7C80071F5F3 /* SecondaryTabBarController.swift in Sources */,
 				DB148B05281A81AE00B596C7 /* SidebarViewModel.swift in Sources */,
 				DB925705251C8FCB004FEFB5 /* ProfileSegmentedViewController.swift in Sources */,
 				DB74A16E256E50E300C5F3C9 /* UIColor.swift in Sources */,
@@ -3168,6 +3195,7 @@
 				DB8EBE7A276648FA005CF76A /* UserMediaTimelineViewController+DataSourceProvider.swift in Sources */,
 				DB51DC5027181DE500A0D8FB /* CoverFlowStackMediaCollectionCell+ViewModel.swift in Sources */,
 				DB148B03281A7AB300B596C7 /* ContentSplitViewController.swift in Sources */,
+				DB66DB932823EE1F0071F5F3 /* SecondaryTabBarRootController.swift in Sources */,
 				DBDA8E2424FCF8A3006750DC /* SceneDelegate.swift in Sources */,
 				DB01739E276B576B00AB844C /* AccountListViewController+DataSourceProvider.swift in Sources */,
 				DB46D12127DB2B68003B8BA1 /* ListUserViewModel+State.swift in Sources */,
