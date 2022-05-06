@@ -8,6 +8,7 @@
 
 import UIKit
 import CommonOSLog
+import TwidereUI
 
 final class DrawerSidebarAnimatedTransitioning: ViewControllerAnimatedTransitioning {
 
@@ -55,16 +56,17 @@ extension DrawerSidebarAnimatedTransitioning {
     }
     
     private func pushTransition(using transitionContext: UIViewControllerContextTransitioning, timingParameters: UITimingCurveProvider = UISpringTimingParameters()) -> UIViewPropertyAnimator {
-        guard let toVC = transitionContext.viewController(forKey: .to) as? DrawerSidebarViewController,
+        guard let _ = transitionContext.viewController(forKey: .to) as? DrawerSidebarViewController,
               let toView = transitionContext.view(forKey: .to),
               let fromView = transitionContext.view(forKey: .from) else {
             fatalError()
         }
 
         let transform: CGAffineTransform = {
+            let width = transitionContext.containerView.frame.width
             switch UIApplication.shared.userInterfaceLayoutDirection {
-            case .rightToLeft:  return CGAffineTransform(translationX: toView.frame.width, y: 0)
-            default:            return CGAffineTransform(translationX: -toView.frame.width, y: 0)
+            case .rightToLeft:  return CGAffineTransform(translationX: width, y: 0)
+            default:            return CGAffineTransform(translationX: -width, y: 0)
             }
         }()
         transitionContext.containerView.addSubview(toView)
@@ -77,7 +79,7 @@ extension DrawerSidebarAnimatedTransitioning {
             toView.layoutIfNeeded()
         }
         
-        let separatorLine = UIView.separatorLine
+        let separatorLine = SeparatorLineView()
         separatorLine.translatesAutoresizingMaskIntoConstraints = false
         transitionContext.containerView.addSubview(separatorLine)
         NSLayoutConstraint.activate([
@@ -111,7 +113,7 @@ extension DrawerSidebarAnimatedTransitioning {
     }
     
     private func popTransition(using transitionContext: UIViewControllerContextTransitioning, timingParameters: UITimingCurveProvider = UISpringTimingParameters()) -> UIViewPropertyAnimator {
-        guard let fromVC = transitionContext.viewController(forKey: .from) as? DrawerSidebarViewController,
+        guard let _ = transitionContext.viewController(forKey: .from) as? DrawerSidebarViewController,
               let fromView = transitionContext.view(forKey: .from),
               let toView = transitionContext.view(forKey: .to) else {
             fatalError()
@@ -121,16 +123,17 @@ extension DrawerSidebarAnimatedTransitioning {
         transitionContext.containerView.bringSubviewToFront(fromView)
 
         let transform: CGAffineTransform = {
+            let width = transitionContext.containerView.frame.width
             switch UIApplication.shared.userInterfaceLayoutDirection {
             case .rightToLeft:
-                return CGAffineTransform(translationX: fromView.frame.width, y: 0)
+                return CGAffineTransform(translationX: width, y: 0)
             default:
-                return CGAffineTransform(translationX: -fromView.frame.width, y: 0)
+                return CGAffineTransform(translationX: -width, y: 0)
             }
         }()
         fromView.transform = .identity
         
-        let separatorLine = UIView.separatorLine
+        let separatorLine = SeparatorLineView()
         separatorLine.translatesAutoresizingMaskIntoConstraints = false
         transitionContext.containerView.addSubview(separatorLine)
         NSLayoutConstraint.activate([
