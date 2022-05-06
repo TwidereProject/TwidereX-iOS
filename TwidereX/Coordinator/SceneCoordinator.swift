@@ -154,6 +154,14 @@ extension SceneCoordinator {
             return nil
         }
         
+        if let contentSplitViewController = presentingViewController as? ContentSplitViewController {
+            if contentSplitViewController.isSidebarDisplay, contentSplitViewController.isSecondaryTabBarControllerActive {
+                presentingViewController = contentSplitViewController.secondaryTabBarController
+            } else {
+                presentingViewController = contentSplitViewController.mainTabBarController
+            }
+        }
+                
         if let mainTabBarController = presentingViewController as? MainTabBarController,
            let navigationController = mainTabBarController.selectedViewController as? UINavigationController,
            let topViewController = navigationController.topViewController {

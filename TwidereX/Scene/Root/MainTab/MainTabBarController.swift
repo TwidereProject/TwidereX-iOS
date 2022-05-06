@@ -46,6 +46,15 @@ final class MainTabBarController: UITabBarController {
 
 extension MainTabBarController {
     
+    override func show(_ vc: UIViewController, sender: Any?) {
+        guard let navigationController = selectedViewController as? UINavigationController else {
+            super.show(vc, sender: sender)
+            return
+        }
+        
+        navigationController.pushViewController(vc, animated: true)
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         

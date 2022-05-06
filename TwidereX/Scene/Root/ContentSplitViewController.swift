@@ -232,4 +232,3 @@ extension ContentSplitViewController: SidebarViewModelDelegate {
     }
 
 }
-

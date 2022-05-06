@@ -90,14 +90,16 @@ extension TimelineViewController {
         view.backgroundColor = .systemBackground
 
         // setup avatarBarButtonItem
-        coordinator.$needsSetupAvatarBarButtonItem
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] needsSetupAvatarBarButtonItem in
-                guard let self = self else { return }
-                self.navigationItem.leftBarButtonItem = needsSetupAvatarBarButtonItem ? self.avatarBarButtonItem : nil
-                self.avatarBarButtonItem.avatarButton.addTarget(self, action: #selector(TimelineViewController.avatarButtonPressed(_:)), for: .touchUpInside)
-            }
-            .store(in: &disposeBag)
+        if navigationController?.viewControllers.first == self {
+            coordinator.$needsSetupAvatarBarButtonItem
+                .receive(on: DispatchQueue.main)
+                .sink { [weak self] needsSetupAvatarBarButtonItem in
+                    guard let self = self else { return }
+                    self.navigationItem.leftBarButtonItem = needsSetupAvatarBarButtonItem ? self.avatarBarButtonItem : nil
+                }
+                .store(in: &disposeBag)
+        }
+        avatarBarButtonItem.avatarButton.addTarget(self, action: #selector(TimelineViewController.avatarButtonPressed(_:)), for: .touchUpInside)
         avatarBarButtonItem.delegate = self
         
         // bind avatarBarButtonItem data
