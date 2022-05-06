@@ -19,7 +19,7 @@ final class DisplayPreferenceViewController: UIViewController, NeedsDependency {
     let viewModel = DisplayPreferenceViewModel()
 
     private(set) lazy var tableView: UITableView = {
-        let tableView = ControlContainableTableView(frame: .zero, style: .grouped)
+        let tableView = ControlContainableTableView(frame: .zero, style: .insetGrouped)
         tableView.register(StatusTableViewCell.self, forCellReuseIdentifier: String(describing: StatusTableViewCell.self))
         tableView.register(TableViewSwitchTableViewCell.self, forCellReuseIdentifier: String(describing: TableViewSwitchTableViewCell.self))
         tableView.register(TableSlideTableViewCell.self, forCellReuseIdentifier: String(describing: TableSlideTableViewCell.self))
