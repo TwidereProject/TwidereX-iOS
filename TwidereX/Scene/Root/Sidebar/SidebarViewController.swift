@@ -78,6 +78,9 @@ extension SidebarViewController {
     @objc private func avatarButtonDidPressed(_ button: UIButton) {
         logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public)")
         
+        let impactFeedbackGenerator = UIImpactFeedbackGenerator()
+        impactFeedbackGenerator.impactOccurred()
+        
         let accountListViewModel = AccountListViewModel(context: context)
         coordinator.present(
             scene: .accountList(viewModel: accountListViewModel),

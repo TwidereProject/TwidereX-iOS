@@ -29,15 +29,23 @@ struct SidebarView: View {
                 Divider()
                     .foregroundColor(.secondary)
                     .frame(width: 24, height: 1, alignment: .center)
-                    .padding(.vertical, 15)
+                    .padding(.top, 15 / 2)
             }
-            ForEach(viewModel.secondaryTabBarItems, id: \.self) { item in
-                EntryButton(
-                    item: item,
-                    isActive: viewModel.activeTab == item
-                ) { item in
-                    viewModel.setActiveTab(item: item)
+            ScrollView {
+                Color.clear
+                    .frame(height: 15 / 2, alignment: .center)
+                ForEach(viewModel.secondaryTabBarItems, id: \.self) { item in
+                    EntryButton(
+                        item: item,
+                        isActive: viewModel.activeTab == item
+                    ) { item in
+                        viewModel.setActiveTab(item: item)
+                    }
                 }
+            }
+            .introspectScrollView { scrollView in
+                scrollView.alwaysBounceVertical = false
+                scrollView.showsVerticalScrollIndicator = false
             }
             Spacer()
             EntryButton(
@@ -73,7 +81,8 @@ extension SidebarView {
                 )
                 .frame(width: dimension, height: dimension, alignment: .center)
             }
-            .frame(maxWidth: .infinity, maxHeight: dimension + 2 * padding, alignment: .center)
+            .frame(maxWidth: .infinity, alignment: .center)
+            .frame(height: dimension + 2 * padding, alignment: .center)
             .accessibilityLabel(item.title)
         }
     }
