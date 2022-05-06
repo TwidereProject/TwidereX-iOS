@@ -18,6 +18,7 @@ protocol SidebarViewModelDelegate: AnyObject {
 final class SidebarViewModel: ObservableObject {
     
     var disposeBag = Set<AnyCancellable>()
+    var avatarURLSubscription: AnyCancellable?
     
     weak var delegate: SidebarViewModelDelegate?
     
@@ -28,6 +29,7 @@ final class SidebarViewModel: ObservableObject {
     // output
     @Published var mainTabBarItems: [TabBarItem] = []
     @Published var secondaryTabBarItems: [TabBarItem] = []
+    @Published var avatarURL: URL?
 
     init(context: AppContext) {
         self.context = context
@@ -35,6 +37,7 @@ final class SidebarViewModel: ObservableObject {
         context.authenticationService.$activeAuthenticationContext
             .sink { [weak self] authenticationContext in
                 guard let self = self else { return }
+                
                 var items: [TabBarItem] = []
                 switch authenticationContext {
                 case .twitter:
@@ -45,6 +48,24 @@ final class SidebarViewModel: ObservableObject {
                     break
                 }
                 self.secondaryTabBarItems = items
+                
+                let user = authenticationContext?.user(in: context.managedObjectContext)
+                switch user {
+                case .twitter(let object):
+                    self.avatarURLSubscription = object.publisher(for: \.profileImageURL)
+                        .sink { [weak self] _ in
+                            guard let self = self else { return }
+                            self.avatarURL = object.avatarImageURL()
+                        }
+                case .mastodon(let object):
+                    self.avatarURLSubscription = object.publisher(for: \.avatar)
+                        .sink { [weak self] _ in
+                            guard let self = self else { return }
+                            self.avatarURL = object.avatar.flatMap { URL(string: $0) }
+                        }
+                case .none:
+                    self.avatarURL = nil
+                }
             }
             .store(in: &disposeBag)
     }

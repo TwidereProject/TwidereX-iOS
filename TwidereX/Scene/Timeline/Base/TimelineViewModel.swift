@@ -50,9 +50,6 @@ class TimelineViewModel {
         return stateMachine
     }()
     
-    // UI
-    @Published var needsSetupAvatarBarButtonItem = false
-    
     init(
         context: AppContext,
         kind: Kind

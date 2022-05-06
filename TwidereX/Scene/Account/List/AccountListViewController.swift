@@ -129,3 +129,15 @@ extension AccountListViewController: UITableViewDelegate {
 
 // MARK: - UserViewTableViewCellDelegate
 extension AccountListViewController: UserViewTableViewCellDelegate { }
+
+// MARK: - UIAdaptivePresentationControllerDelegate
+extension AccountListViewController: UIAdaptivePresentationControllerDelegate {
+    func adaptivePresentationStyle(for controller: UIPresentationController, traitCollection: UITraitCollection) -> UIModalPresentationStyle {
+        switch traitCollection.userInterfaceIdiom {
+        case .phone:
+            return .automatic
+        default:
+            return .formSheet
+        }
+    }
+}

@@ -20,6 +20,9 @@ final public class SceneCoordinator {
     
     let id = UUID().uuidString
     
+    // output
+    @Published var needsSetupAvatarBarButtonItem = false
+    
     init(scene: UIScene, sceneDelegate: SceneDelegate, context: AppContext) {
         self.scene = scene
         self.sceneDelegate = sceneDelegate
@@ -107,11 +110,18 @@ extension SceneCoordinator {
         case .phone:
             let viewController = MainTabBarController(context: context, coordinator: self)
             rootViewController = viewController
+            needsSetupAvatarBarButtonItem = true
         default:
             let contentSplitViewController = ContentSplitViewController()
             contentSplitViewController.context = context
             contentSplitViewController.coordinator = self
             rootViewController = contentSplitViewController
+            contentSplitViewController.$isSidebarDisplay
+                .sink { [weak self] isSidebarDisplay in
+                    guard let self = self else { return }
+                    self.needsSetupAvatarBarButtonItem = !isSidebarDisplay
+                }
+                .store(in: &contentSplitViewController.disposeBag)
         }
         
         sceneDelegate.window?.rootViewController = rootViewController

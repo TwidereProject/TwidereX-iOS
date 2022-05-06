@@ -90,7 +90,7 @@ extension TimelineViewController {
         view.backgroundColor = .systemBackground
 
         // setup avatarBarButtonItem
-        viewModel.$needsSetupAvatarBarButtonItem
+        coordinator.$needsSetupAvatarBarButtonItem
             .receive(on: DispatchQueue.main)
             .sink { [weak self] needsSetupAvatarBarButtonItem in
                 guard let self = self else { return }
@@ -210,7 +210,6 @@ extension TimelineViewController {
             
         }
     }
-
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)

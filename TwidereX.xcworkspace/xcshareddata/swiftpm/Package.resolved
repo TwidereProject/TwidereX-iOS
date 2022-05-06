@@ -114,8 +114,8 @@
         "repositoryURL": "https://github.com/google/GoogleDataTransport.git",
         "state": {
           "branch": null,
-          "revision": "15ccdfd25ac55b9239b82809531ff26605e7556e",
-          "version": "9.1.2"
+          "revision": "4073d04bf28943353b706f461d4ca2a89abb69c1",
+          "version": "9.1.3"
         }
       },
       {

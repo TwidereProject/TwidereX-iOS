@@ -1089,6 +1089,7 @@
 		DB148AFE281A700D00B596C7 /* Root */ = {
 			isa = PBXGroup;
 			children = (
+				DBEFDC8D25591F650086F268 /* Drawer */,
 				DB148B01281A729600B596C7 /* Sidebar */,
 				DBDA8E9624FE075E006750DC /* MainTab */,
 				DB66DB8E2823A7CC0071F5F3 /* SecondaryTab */,
@@ -2158,7 +2159,6 @@
 				DB8AC1122540501A00E636BE /* Compose */,
 				DBF69E932549601C00E2A915 /* Search */,
 				DBA5F9E42553CFEB00D2E98E /* MediaPreview */,
-				DBEFDC8C25591F5F0086F268 /* Sidebar */,
 				DB2C872E274F4B7D00CE0398 /* Setting */,
 			);
 			path = Scene;
@@ -2273,14 +2273,6 @@
 				DB51DC3A2716F82000A0D8FB /* CellFrameCacheContainer.swift */,
 			);
 			path = Protocol;
-			sourceTree = "<group>";
-		};
-		DBEFDC8C25591F5F0086F268 /* Sidebar */ = {
-			isa = PBXGroup;
-			children = (
-				DBEFDC8D25591F650086F268 /* Drawer */,
-			);
-			path = Sidebar;
 			sourceTree = "<group>";
 		};
 		DBEFDC8D25591F650086F268 /* Drawer */ = {
