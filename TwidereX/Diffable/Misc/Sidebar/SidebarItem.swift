@@ -42,7 +42,7 @@ extension SidebarItem {
         case .federated:    return Asset.ObjectTools.globe.image.withRenderingMode(.alwaysTemplate)
         case .messages:     return Asset.Communication.mail.image.withRenderingMode(.alwaysTemplate)
         case .likes:        return Asset.Health.heart.image.withRenderingMode(.alwaysTemplate)
-        case .lists:        return Asset.ObjectTools.bookmarks.image.withRenderingMode(.alwaysTemplate)
+        case .lists:        return Asset.TextFormatting.listBullet.image.withRenderingMode(.alwaysTemplate)
         case .trends:       return Asset.Arrows.trendingUp.image.withRenderingMode(.alwaysTemplate)
         case .drafts:       return Asset.ObjectTools.note.image.withRenderingMode(.alwaysTemplate)
         case .settings:     return Asset.Editing.sliderHorizontal3.image.withRenderingMode(.alwaysTemplate)

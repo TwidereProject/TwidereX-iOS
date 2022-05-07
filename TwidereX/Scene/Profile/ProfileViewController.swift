@@ -120,7 +120,13 @@ extension ProfileViewController {
         view.backgroundColor = .systemBackground
         
         if navigationController?.viewControllers.first == self {
-            navigationItem.leftBarButtonItem = avatarBarButtonItem
+            coordinator.$needsSetupAvatarBarButtonItem
+                .receive(on: DispatchQueue.main)
+                .sink { [weak self] needsSetupAvatarBarButtonItem in
+                    guard let self = self else { return }
+                    self.navigationItem.leftBarButtonItem = needsSetupAvatarBarButtonItem ? self.avatarBarButtonItem : nil
+                }
+                .store(in: &disposeBag)
             avatarBarButtonItem.avatarButton.addTarget(self, action: #selector(ProfileViewController.avatarButtonPressed(_:)), for: .touchUpInside)
             avatarBarButtonItem.delegate = self
             

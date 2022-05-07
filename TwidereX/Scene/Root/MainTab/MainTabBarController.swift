@@ -15,7 +15,7 @@ import SwiftMessages
 import TwitterSDK
 import TwidereUI
 
-class MainTabBarController: UITabBarController {
+final class MainTabBarController: UITabBarController {
     
     let logger = Logger(subsystem: "MainTabBarController", category: "TabBar")
     
@@ -24,78 +24,13 @@ class MainTabBarController: UITabBarController {
     weak var context: AppContext!
     weak var coordinator: SceneCoordinator!
 
-    @Published var currentTab: Tab = .home
-    
-    enum Tab: Int, CaseIterable {
-        case home
-        case notification
-        case search
-        case me
-        
-        var tag: Int {
-            return rawValue
-        }
-        
-        var title: String {
-            switch self {
-            case .home:         return L10n.Scene.Timeline.title
-            case .notification: return L10n.Scene.Notification.title
-            case .search:       return L10n.Scene.Search.title
-            case .me:           return L10n.Scene.Profile.title
-            }
-        }
-        
-        var image: UIImage {
-            switch self {
-            case .home:             return Asset.ObjectTools.house.image.withRenderingMode(.alwaysTemplate)
-            case .notification:     return Asset.ObjectTools.bell.image.withRenderingMode(.alwaysTemplate)
-            case .search:           return Asset.ObjectTools.magnifyingglass.image.withRenderingMode(.alwaysTemplate)
-            case .me:               return Asset.Human.person.image.withRenderingMode(.alwaysTemplate)
-            }
-        }
-        
-        var largeImage: UIImage {
-            switch self {
-            case .home:             return Asset.ObjectTools.houseLarge.image.withRenderingMode(.alwaysTemplate)
-            case .notification:     return Asset.ObjectTools.bellLarge.image.withRenderingMode(.alwaysTemplate)
-            case .search:           return Asset.ObjectTools.magnifyingglassLarge.image.withRenderingMode(.alwaysTemplate)
-            case .me:               return Asset.Human.personLarge.image.withRenderingMode(.alwaysTemplate)
-            }
-        }
-        
-        func viewController(context: AppContext, coordinator: SceneCoordinator) -> UIViewController {
-            let viewController: UIViewController
-            switch self {
-            case .home:
-                let _viewController = HomeTimelineViewController()
-                _viewController.context = context
-                _viewController.coordinator = coordinator
-                _viewController.viewModel = HomeTimelineViewModel(context: context)
-                _viewController.viewModel.needsSetupAvatarBarButtonItem = true
-                viewController = _viewController
-            case .notification:
-                let _viewController = NotificationViewController()
-                _viewController.context = context
-                _viewController.coordinator = coordinator
-                viewController = _viewController
-            case .search:
-                let _viewController = SearchViewController()
-                _viewController.context = context
-                _viewController.coordinator = coordinator
-                _viewController.viewModel = SearchViewModel(context: context)
-                viewController = _viewController
-            case .me:
-                let _viewController = ProfileViewController()
-                _viewController.context = context
-                _viewController.coordinator = coordinator
-                let profileViewModel = MeProfileViewModel(context: context)
-                _viewController.viewModel = profileViewModel
-                viewController = _viewController
-            }
-            viewController.title = self.title
-            return UINavigationController(rootViewController: viewController)
-        }
-    }
+    @Published var tabs: [TabBarItem] = [
+        .home,
+        .notification,
+        .search,
+        .me,
+    ]
+    @Published var currentTab: TabBarItem = .home
     
     init(context: AppContext, coordinator: SceneCoordinator) {
         self.context = context
@@ -111,20 +46,28 @@ class MainTabBarController: UITabBarController {
 
 extension MainTabBarController {
     
+    override func show(_ vc: UIViewController, sender: Any?) {
+        guard let navigationController = selectedViewController as? UINavigationController else {
+            super.show(vc, sender: sender)
+            return
+        }
+        
+        navigationController.pushViewController(vc, animated: true)
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
         view.backgroundColor = .systemBackground
         
-        let tabs = Tab.allCases
         let viewControllers: [UIViewController] = tabs.map { tab in
-            let viewController = tab.viewController(context: context, coordinator: coordinator)
+            let rootViewController = tab.viewController(context: context, coordinator: coordinator)
+            let viewController = AdaptiveStatusBarStyleNavigationController(rootViewController: rootViewController)
             viewController.tabBarItem.tag = tab.tag
             viewController.tabBarItem.title = tab.title
             viewController.tabBarItem.image = tab.image
             viewController.tabBarItem.accessibilityLabel = tab.title
             viewController.tabBarItem.largeContentSizeImage = tab.largeImage
-            
             return viewController
         }
         setViewControllers(viewControllers, animated: false)
@@ -184,6 +127,8 @@ extension MainTabBarController {
         tabBar.addGestureRecognizer(tabBarLongPressGestureRecognizer)
         
         delegate = self
+        
+        updateTabBarDisplay()
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -193,7 +138,38 @@ extension MainTabBarController {
         //coordinator.present(scene: .displayPreference, from: nil, transition: .show)
         #endif
     }
+    
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
         
+        updateTabBarDisplay()
+    }
+        
+}
+
+extension MainTabBarController {
+    private func updateTabBarDisplay() {
+        switch traitCollection.horizontalSizeClass {
+        case .compact:
+            tabBar.isHidden = false
+        default:
+            tabBar.isHidden = true
+        }
+    }
+}
+
+extension MainTabBarController {
+
+    func select(tab: TabBarItem) {
+        let _index = tabBar.items?.firstIndex(where: { $0.tag == tab.tag })
+        guard let index = _index else {
+            return
+        }
+
+        selectedIndex = index
+        currentTab = tab
+    }
+    
 }
 
 extension MainTabBarController {
@@ -201,10 +177,10 @@ extension MainTabBarController {
     @objc private func tabBarLongPressGestureRecognizerHandler(_ sender: UILongPressGestureRecognizer) {
         guard sender.state == .began else { return }
 
-        var _tab: Tab?
+        var _tab: TabBarItem?
         let location = sender.location(in: tabBar)
         for item in tabBar.items ?? [] {
-            guard let tab = Tab(rawValue: item.tag) else { continue }
+            guard let tab = TabBarItem(rawValue: item.tag) else { continue }
             guard let view = item.value(forKey: "view") as? UIView else { continue }
             guard view.frame.contains(location) else { continue}
 
@@ -225,17 +201,7 @@ extension MainTabBarController {
             break
         }
     }
-    
-//    @objc private func doubleTapGestureRecognizerHandler(_ sender: UITapGestureRecognizer) {
-//        os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
-//        switch sender.state {
-//        case .ended:
-//            guard let scrollViewContainer = selectedViewController?.topMost as? ScrollViewContainer else { return }
-//            scrollViewContainer.scrollToTop(animated: true)
-//        default:
-//            break
-//        }
-//    }
+
 }
 
 // MARK: - UITabBarControllerDelegate
@@ -243,17 +209,20 @@ extension MainTabBarController: UITabBarControllerDelegate {
     func tabBarController(_ tabBarController: UITabBarController, didSelect viewController: UIViewController) {
         logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public)")
         
-        defer {
-            if let tab = Tab(rawValue: tabBarController.selectedIndex) {
-                currentTab = tab
-            }
+        guard let tab = TabBarItem(rawValue: viewController.tabBarItem.tag) else {
+            assertionFailure()
+            return
         }
         
-        guard currentTab.rawValue == tabBarController.selectedIndex,
+        defer {
+            currentTab = tab
+        }
+        
+        guard currentTab == tab,
               let navigationController = viewController as? UINavigationController,
               navigationController.viewControllers.count == 1
         else { return }
-        
+
         let _scrollViewContainer = (navigationController.topViewController as? ScrollViewContainer) ?? (navigationController.topMost as? ScrollViewContainer)
         guard let scrollViewContainer = _scrollViewContainer else {
             return

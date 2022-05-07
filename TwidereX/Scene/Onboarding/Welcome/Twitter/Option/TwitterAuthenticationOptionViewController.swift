@@ -163,7 +163,7 @@ extension TwitterAuthenticationOptionViewController {
             .sink { [weak self] viewController in
                 guard let self = self else { return }
                 guard let viewController = viewController else { return }
-                let navigationController = UINavigationController(rootViewController: viewController)
+                let navigationController = AdaptiveStatusBarStyleNavigationController(rootViewController: viewController)
                 self.present(navigationController, animated: true)
             }
             .store(in: &disposeBag)
