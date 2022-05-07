@@ -201,17 +201,7 @@ extension MainTabBarController {
             break
         }
     }
-    
-//    @objc private func doubleTapGestureRecognizerHandler(_ sender: UITapGestureRecognizer) {
-//        os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
-//        switch sender.state {
-//        case .ended:
-//            guard let scrollViewContainer = selectedViewController?.topMost as? ScrollViewContainer else { return }
-//            scrollViewContainer.scrollToTop(animated: true)
-//        default:
-//            break
-//        }
-//    }
+
 }
 
 // MARK: - UITabBarControllerDelegate
@@ -219,23 +209,24 @@ extension MainTabBarController: UITabBarControllerDelegate {
     func tabBarController(_ tabBarController: UITabBarController, didSelect viewController: UIViewController) {
         logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public)")
         
-        guard let index = viewControllers?.firstIndex(of: viewController) else { return }
+        guard let tab = TabBarItem(rawValue: viewController.tabBarItem.tag) else {
+            assertionFailure()
+            return
+        }
         
-//        defer {
-//            if let tab = tabBarItem(rawValue: tabBarController.selectedIndex) {
-//                currentTab = tab
-//            }
-//        }
-//
-//        guard currentTab.rawValue == tabBarController.selectedIndex,
-//              let navigationController = viewController as? UINavigationController,
-//              navigationController.viewControllers.count == 1
-//        else { return }
-//
-//        let _scrollViewContainer = (navigationController.topViewController as? ScrollViewContainer) ?? (navigationController.topMost as? ScrollViewContainer)
-//        guard let scrollViewContainer = _scrollViewContainer else {
-//            return
-//        }
-//        scrollViewContainer.scrollToTop(animated: true)
+        defer {
+            currentTab = tab
+        }
+        
+        guard currentTab == tab,
+              let navigationController = viewController as? UINavigationController,
+              navigationController.viewControllers.count == 1
+        else { return }
+
+        let _scrollViewContainer = (navigationController.topViewController as? ScrollViewContainer) ?? (navigationController.topMost as? ScrollViewContainer)
+        guard let scrollViewContainer = _scrollViewContainer else {
+            return
+        }
+        scrollViewContainer.scrollToTop(animated: true)
     }
 }
