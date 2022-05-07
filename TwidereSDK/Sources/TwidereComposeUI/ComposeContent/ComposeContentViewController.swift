@@ -542,7 +542,7 @@ extension ComposeContentViewController: ComposeInputTableViewCellDelegate & Meta
         mentionPickViewController.viewModel = mentionPickViewModel
         mentionPickViewController.delegate = self
         
-        let navigationController = UINavigationController(rootViewController: mentionPickViewController)
+        let navigationController = AdaptiveStatusBarStyleNavigationController(rootViewController: mentionPickViewController)
         navigationController.modalPresentationStyle = .pageSheet
         if let sheetPresentationController = navigationController.sheetPresentationController {
             sheetPresentationController.detents = [.medium(), .large()]

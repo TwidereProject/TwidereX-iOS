@@ -108,7 +108,7 @@ extension TabBarItem {
             viewController = _viewController
         case .lists:
             guard let me = context.authenticationService.activeAuthenticationContext?.user(in: context.managedObjectContext)?.asRecord else {
-                return UINavigationController(rootViewController: UIViewController())
+                return AdaptiveStatusBarStyleNavigationController(rootViewController: UIViewController())
             }
             let _viewController = CompositeListViewController()
             _viewController.viewModel = CompositeListViewModel(context: context, kind: .lists(me))

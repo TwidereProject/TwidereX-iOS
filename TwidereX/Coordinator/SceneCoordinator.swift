@@ -187,11 +187,11 @@ extension SceneCoordinator {
             }
             
         case .showDetail:
-            let navigationController = UINavigationController(rootViewController: viewController)
+            let navigationController = AdaptiveStatusBarStyleNavigationController(rootViewController: viewController)
             presentingViewController.showDetailViewController(navigationController, sender: sender)
             
         case .modal(let animated, let completion):
-            let modalNavigationController = UINavigationController(rootViewController: viewController)
+            let modalNavigationController = AdaptiveStatusBarStyleNavigationController(rootViewController: viewController)
             if let adaptivePresentationControllerDelegate = viewController as? UIAdaptivePresentationControllerDelegate {
                 modalNavigationController.presentationController?.delegate = adaptivePresentationControllerDelegate
             }

@@ -62,7 +62,7 @@ extension MainTabBarController {
         
         let viewControllers: [UIViewController] = tabs.map { tab in
             let rootViewController = tab.viewController(context: context, coordinator: coordinator)
-            let viewController = UINavigationController(rootViewController: rootViewController)
+            let viewController = AdaptiveStatusBarStyleNavigationController(rootViewController: rootViewController)
             viewController.tabBarItem.tag = tab.tag
             viewController.tabBarItem.title = tab.title
             viewController.tabBarItem.image = tab.image

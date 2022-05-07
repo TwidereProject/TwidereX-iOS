@@ -84,7 +84,7 @@ extension SecondaryTabBarController {
 extension SecondaryTabBarController {
     private func update(tabs: [TabBarItem]) {
         let viewControllers: [UIViewController] = tabs.map { tab in
-            let viewController = UINavigationController(rootViewController: SecondaryTabBarRootController())
+            let viewController = AdaptiveStatusBarStyleNavigationController(rootViewController: SecondaryTabBarRootController())
             let _rootViewController = tab.viewController(context: context, coordinator: coordinator)
             _rootViewController.navigationItem.hidesBackButton = true
             viewController.pushViewController(_rootViewController, animated: false)
