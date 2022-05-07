@@ -111,6 +111,7 @@ extension DataSourceFacade {
                 preloadThumbnails: thumbnails
             )),
             mediaPreviewTransitionItem: {
+                // FIXME: allow other source
                 let item = MediaPreviewTransitionItem(
                     source: source,
                     previewableViewController: provider
@@ -135,6 +136,8 @@ extension DataSourceFacade {
                     let size = attachments[index].size
                     return size
                 }()
+                
+                item.sourceImageViewCornerRadius = MediaView.cornerRadius
                 
                 return item
             }(),
