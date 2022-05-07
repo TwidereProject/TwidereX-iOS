@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import CoreGraphics
 import CoreDataStack
 
 public enum AttachmentObject {
@@ -58,4 +59,16 @@ extension AttachmentObject {
             return mastodonAttachment.previewURL.flatMap { URL(string: $0) }
         }
     }
+}
+
+extension AttachmentObject {
+    public var size: CGSize {
+        switch self {
+        case .twitter(let attachment):
+            return attachment.size
+        case .mastodon(let attachment):
+            return attachment.size
+        }
+    }
+
 }

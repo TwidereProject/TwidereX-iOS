@@ -11,7 +11,7 @@ import UIKit
 import Combine
 import CoreDataStack
 
-final class ListStatusViewController: UIViewController, NeedsDependency, MediaPreviewTransitionHostViewController {
+final class ListStatusViewController: UIViewController, NeedsDependency, MediaPreviewableViewController {
     
     weak var context: AppContext! { willSet { precondition(!isViewLoaded) } }
     weak var coordinator: SceneCoordinator! { willSet { precondition(!isViewLoaded) } }

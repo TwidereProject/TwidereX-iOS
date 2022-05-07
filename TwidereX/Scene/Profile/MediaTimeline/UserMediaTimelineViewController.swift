@@ -13,7 +13,7 @@ import CoreData
 import CoreDataStack
 import TabBarPager
 
-final class UserMediaTimelineViewController: UIViewController, NeedsDependency, MediaPreviewTransitionHostViewController {
+final class UserMediaTimelineViewController: UIViewController, NeedsDependency, MediaPreviewableViewController {
     
     weak var context: AppContext! { willSet { precondition(!isViewLoaded) } }
     weak var coordinator: SceneCoordinator! { willSet { precondition(!isViewLoaded) } }
