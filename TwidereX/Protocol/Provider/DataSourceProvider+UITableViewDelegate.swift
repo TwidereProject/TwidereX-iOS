@@ -38,7 +38,7 @@ extension UITableViewDelegate where Self: DataSourceProvider {
     
 }
 
-extension UITableViewDelegate where Self: DataSourceProvider & MediaPreviewTransitionHostViewController {
+extension UITableViewDelegate where Self: DataSourceProvider & MediaPreviewableViewController {
 
     func aspectTableView(_ tableView: UITableView, contextMenuConfigurationForRowAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
         logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public)")

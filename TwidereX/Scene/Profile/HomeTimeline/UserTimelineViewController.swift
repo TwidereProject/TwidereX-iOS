@@ -12,7 +12,7 @@ import CoreDataStack
 import GameplayKit
 import TabBarPager
 
-final class UserTimelineViewController: UIViewController, NeedsDependency, MediaPreviewTransitionHostViewController {
+final class UserTimelineViewController: UIViewController, NeedsDependency, MediaPreviewableViewController {
     
     weak var context: AppContext! { willSet { precondition(!isViewLoaded) } }
     weak var coordinator: SceneCoordinator! { willSet { precondition(!isViewLoaded) } }

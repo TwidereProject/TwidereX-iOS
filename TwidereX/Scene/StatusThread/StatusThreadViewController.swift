@@ -10,7 +10,7 @@ import os.log
 import UIKit
 import Combine
 
-final class StatusThreadViewController: UIViewController, NeedsDependency, MediaPreviewTransitionHostViewController {
+final class StatusThreadViewController: UIViewController, NeedsDependency, MediaPreviewableViewController {
 
     let logger = Logger(subsystem: "StatusThreadViewController", category: "ViewController")
     

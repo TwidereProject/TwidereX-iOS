@@ -13,24 +13,34 @@ class MediaPreviewTransitionItem: Identifiable {
     
     let id: UUID
     let source: Source
-    weak var transitionHostViewController: MediaPreviewTransitionHostViewController?
+    var previewableViewController: MediaPreviewableViewController
 
-    // TODO:
+    // source
+    var image: UIImage?
+    var aspectRatio: CGSize?
+    var initialFrame: CGRect? = nil
+    var sourceImageView: UIImageView?
+    var sourceImageViewCornerRadius: CGFloat?
+    
+    // target
+    var targetFrame: CGRect? = nil
+    
+    // transitioning
     var transitionView: UIView?
     var snapshotRaw: UIView?
     var snapshotTransitioning: UIView?
-    var initialFrame: CGRect? = nil
-    var targetFrame: CGRect? = nil
     var touchOffset: CGVector = CGVector.zero
+    var interactiveTransitionMaskView: UIView?
+    var interactiveTransitionMaskLayer: CAShapeLayer?
 
     init(
         id: UUID = UUID(),
         source: Source,
-        transitionHostViewController: MediaPreviewTransitionHostViewController
+        previewableViewController: MediaPreviewableViewController
     ) {
         self.id = id
         self.source = source
-        self.transitionHostViewController = transitionHostViewController
+        self.previewableViewController = previewableViewController
     }
     
 }

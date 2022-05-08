@@ -14,7 +14,7 @@ import AppShared
 import TwidereCore
 import TwidereComposeUI
 
-class TimelineViewController: UIViewController, NeedsDependency, DrawerSidebarTransitionHostViewController, MediaPreviewTransitionHostViewController {
+class TimelineViewController: UIViewController, NeedsDependency, DrawerSidebarTransitionHostViewController, MediaPreviewableViewController {
     
     let logger = Logger(subsystem: "TimelineViewController", category: "ViewController")
     

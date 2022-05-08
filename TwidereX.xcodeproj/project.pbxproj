@@ -197,7 +197,6 @@
 		DB761E62255942050050DC01 /* DrawerSidebarEntryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB761E61255942050050DC01 /* DrawerSidebarEntryView.swift */; };
 		DB76A64B275DF9FA00A50673 /* TwitterStatusThreadReplyViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB76A64A275DF9FA00A50673 /* TwitterStatusThreadReplyViewModel.swift */; };
 		DB76A64D275DFA0600A50673 /* TwitterStatusThreadReplyViewModel+State.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB76A64C275DFA0600A50673 /* TwitterStatusThreadReplyViewModel+State.swift */; };
-		DB76A64E275F1C3200A50673 /* MediaPreviewTransitionHostViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB1A1DA8255B5C780049DA6D /* MediaPreviewTransitionHostViewController.swift */; };
 		DB76A64F275F1C3200A50673 /* MediaPreviewingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBA5FA132553DB4300D2E98E /* MediaPreviewingViewController.swift */; };
 		DB76A650275F1C3200A50673 /* MediaPreviewTransitionController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBA5F9EE2553D06400D2E98E /* MediaPreviewTransitionController.swift */; };
 		DB76A651275F1C3200A50673 /* MediaHostToMediaPreviewViewControllerAnimatedTransitioning.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBA5FA092553D1FD00D2E98E /* MediaHostToMediaPreviewViewControllerAnimatedTransitioning.swift */; };
@@ -288,6 +287,7 @@
 		DBAA898E2758CF01001C273B /* DrawerSidebarHeaderView+ViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBAA898D2758CF01001C273B /* DrawerSidebarHeaderView+ViewModel.swift */; };
 		DBAA89902758DFC9001C273B /* AvatarBarButtonItem+ViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBAA898F2758DFC9001C273B /* AvatarBarButtonItem+ViewModel.swift */; };
 		DBAA89922758EF12001C273B /* DrawerSidebarViewModel+Diffable.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBAA89912758EF12001C273B /* DrawerSidebarViewModel+Diffable.swift */; };
+		DBADCDC82826658700D1CA4E /* MediaPreviewableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBADCDC72826658700D1CA4E /* MediaPreviewableViewController.swift */; };
 		DBB0E3C32760FB1200F1D45F /* TwidereSDK in Frameworks */ = {isa = PBXBuildFile; productRef = DBB0E3C22760FB1200F1D45F /* TwidereSDK */; };
 		DBB47DA926EB3AA2001590F7 /* ProfileFieldListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBB47DA826EB3AA2001590F7 /* ProfileFieldListView.swift */; };
 		DBB47DAB26EB3BF8001590F7 /* ProfileFieldContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBB47DAA26EB3BF8001590F7 /* ProfileFieldContentView.swift */; };
@@ -524,7 +524,6 @@
 		DB148B02281A7AB300B596C7 /* ContentSplitViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentSplitViewController.swift; sourceTree = "<group>"; };
 		DB148B04281A81AE00B596C7 /* SidebarViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SidebarViewModel.swift; sourceTree = "<group>"; };
 		DB148B0B281A837E00B596C7 /* SidebarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SidebarView.swift; sourceTree = "<group>"; };
-		DB1A1DA8255B5C780049DA6D /* MediaPreviewTransitionHostViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaPreviewTransitionHostViewController.swift; sourceTree = "<group>"; };
 		DB1D7B4225B5938300397DCD /* TwitterAuthenticationOptionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwitterAuthenticationOptionViewController.swift; sourceTree = "<group>"; };
 		DB1D7B5425B5A87200397DCD /* TwitterAuthenticationOptionViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwitterAuthenticationOptionViewModel.swift; sourceTree = "<group>"; };
 		DB1E48132772CE850074F6A0 /* SearchViewModel+Diffable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SearchViewModel+Diffable.swift"; sourceTree = "<group>"; };
@@ -789,6 +788,7 @@
 		DBAA898F2758DFC9001C273B /* AvatarBarButtonItem+ViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AvatarBarButtonItem+ViewModel.swift"; sourceTree = "<group>"; };
 		DBAA89912758EF12001C273B /* DrawerSidebarViewModel+Diffable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DrawerSidebarViewModel+Diffable.swift"; sourceTree = "<group>"; };
 		DBAC4A6625552A1E00140B23 /* MediaPreviewImageViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaPreviewImageViewModel.swift; sourceTree = "<group>"; };
+		DBADCDC72826658700D1CA4E /* MediaPreviewableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaPreviewableViewController.swift; sourceTree = "<group>"; };
 		DBB2513D2599DBAB0064A876 /* HomeTimelineViewController+DebugAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "HomeTimelineViewController+DebugAction.swift"; sourceTree = "<group>"; };
 		DBB47DA826EB3AA2001590F7 /* ProfileFieldListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileFieldListView.swift; sourceTree = "<group>"; };
 		DBB47DAA26EB3BF8001590F7 /* ProfileFieldContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileFieldContentView.swift; sourceTree = "<group>"; };
@@ -1901,8 +1901,8 @@
 				DBA5FA092553D1FD00D2E98E /* MediaHostToMediaPreviewViewControllerAnimatedTransitioning.swift */,
 				DBA5FA0E2553D59E00D2E98E /* MediaPreviewTransitionItem.swift */,
 				DB76A66E276083CB00A50673 /* MediaPreviewTransitionViewController.swift */,
-				DB1A1DA8255B5C780049DA6D /* MediaPreviewTransitionHostViewController.swift */,
 				DBA5FA132553DB4300D2E98E /* MediaPreviewingViewController.swift */,
+				DBADCDC72826658700D1CA4E /* MediaPreviewableViewController.swift */,
 			);
 			path = MediaPreview;
 			sourceTree = "<group>";
@@ -2953,7 +2953,6 @@
 				DB761E4E255935380050DC01 /* DrawerSidebarHeaderView.swift in Sources */,
 				DBCB402E255B670C00DD8D8F /* AccountListViewController.swift in Sources */,
 				DBDA8E9824FE075E006750DC /* MainTabBarController.swift in Sources */,
-				DB76A64E275F1C3200A50673 /* MediaPreviewTransitionHostViewController.swift in Sources */,
 				DBF81C8827F7141600004A56 /* TranslationServicePreferenceView.swift in Sources */,
 				DB76A66F276083CB00A50673 /* MediaPreviewTransitionViewController.swift in Sources */,
 				DBCB408A255D8C2B00DD8D8F /* SafariActivity.swift in Sources */,
@@ -3033,6 +3032,7 @@
 				DBC8E04B2576337F00401E20 /* DisposeBagCollectable.swift in Sources */,
 				DB71C7C6271D304900BE3819 /* UserLikeTimelineViewController+DataSourceProvider.swift in Sources */,
 				DBAA898E2758CF01001C273B /* DrawerSidebarHeaderView+ViewModel.swift in Sources */,
+				DBADCDC82826658700D1CA4E /* MediaPreviewableViewController.swift in Sources */,
 				DBF167FD27C394830001F75E /* NeedsDependency+AvatarBarButtonItemDelegate.swift in Sources */,
 				DB02C77927352217007EA0BF /* SearchHashtagViewModel+Diffable.swift in Sources */,
 				DB262A4327229BE700D18EF3 /* SearchTimelineViewController.swift in Sources */,
@@ -3408,11 +3408,11 @@
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 94;
+				CURRENT_PROJECT_VERSION = 95;
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = 7LFDZ96332;
 				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 94;
+				DYLIB_CURRENT_VERSION = 95;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				INFOPLIST_FILE = ShareExtension/Info.plist;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2021 Twidere. All rights reserved.";
@@ -3442,11 +3442,11 @@
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 94;
+				CURRENT_PROJECT_VERSION = 95;
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = 7LFDZ96332;
 				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 94;
+				DYLIB_CURRENT_VERSION = 95;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				INFOPLIST_FILE = ShareExtension/Info.plist;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2021 Twidere. All rights reserved.";
@@ -3472,7 +3472,7 @@
 			buildSettings = {
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 94;
+				CURRENT_PROJECT_VERSION = 95;
 				DEVELOPMENT_TEAM = 7LFDZ96332;
 				INFOPLIST_FILE = ShareExtension/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = ShareExtension;
@@ -3498,7 +3498,7 @@
 			buildSettings = {
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 94;
+				CURRENT_PROJECT_VERSION = 95;
 				DEVELOPMENT_TEAM = 7LFDZ96332;
 				INFOPLIST_FILE = ShareExtension/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = ShareExtension;
@@ -3652,7 +3652,7 @@
 				CODE_SIGN_ENTITLEMENTS = TwidereX/TwidereX.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 94;
+				CURRENT_PROJECT_VERSION = 95;
 				DEVELOPMENT_ASSET_PATHS = "TwidereX/Resources/Preview\\ Assets.xcassets";
 				DEVELOPMENT_TEAM = 7LFDZ96332;
 				INFOPLIST_FILE = TwidereX/Info.plist;
@@ -3681,7 +3681,7 @@
 				CODE_SIGN_ENTITLEMENTS = TwidereX/TwidereX.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 94;
+				CURRENT_PROJECT_VERSION = 95;
 				DEVELOPMENT_ASSET_PATHS = "TwidereX/Resources/Preview\\ Assets.xcassets";
 				DEVELOPMENT_TEAM = 7LFDZ96332;
 				INFOPLIST_FILE = TwidereX/Info.plist;
@@ -3705,7 +3705,7 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 94;
+				CURRENT_PROJECT_VERSION = 95;
 				DEVELOPMENT_TEAM = 7LFDZ96332;
 				INFOPLIST_FILE = TwidereXTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -3729,7 +3729,7 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 94;
+				CURRENT_PROJECT_VERSION = 95;
 				DEVELOPMENT_TEAM = 7LFDZ96332;
 				INFOPLIST_FILE = TwidereXTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -3752,7 +3752,7 @@
 			baseConfigurationReference = 2E41729E598B3379FC09BC03 /* Pods-TwidereX-TwidereXUITests.debug.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 94;
+				CURRENT_PROJECT_VERSION = 95;
 				DEVELOPMENT_TEAM = 7LFDZ96332;
 				INFOPLIST_FILE = TwidereXUITests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -3775,7 +3775,7 @@
 			baseConfigurationReference = 44D01BA9E21B7F374DBDA38A /* Pods-TwidereX-TwidereXUITests.release.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 94;
+				CURRENT_PROJECT_VERSION = 95;
 				DEVELOPMENT_TEAM = 7LFDZ96332;
 				INFOPLIST_FILE = TwidereXUITests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -3799,7 +3799,7 @@
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
 				CODE_SIGN_ENTITLEMENTS = TwidereXIntent/TwidereXIntent.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 94;
+				CURRENT_PROJECT_VERSION = 95;
 				DEVELOPMENT_TEAM = 7LFDZ96332;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = TwidereXIntent/Info.plist;
@@ -3827,7 +3827,7 @@
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
 				CODE_SIGN_ENTITLEMENTS = TwidereXIntent/TwidereXIntent.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 94;
+				CURRENT_PROJECT_VERSION = 95;
 				DEVELOPMENT_TEAM = 7LFDZ96332;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = TwidereXIntent/Info.plist;
