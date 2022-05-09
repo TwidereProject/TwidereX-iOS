@@ -68,6 +68,7 @@ extension MainTabBarController {
             viewController.tabBarItem.image = tab.image
             viewController.tabBarItem.accessibilityLabel = tab.title
             viewController.tabBarItem.largeContentSizeImage = tab.largeImage
+            viewController.tabBarItem.imageInsets = UIEdgeInsets(top: 6, left: 0, bottom: -6, right: 0)
             return viewController
         }
         setViewControllers(viewControllers, animated: false)
