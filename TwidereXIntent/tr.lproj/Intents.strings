@@ -12,59 +12,59 @@
 
 "8WWS78" = "Kullanıcı adı";
 
-"9OV1Ic" = "Posts";
+"9OV1Ic" = "Gönderiler";
 
-"ApmQKm" = "Switch Account";
+"ApmQKm" = "Hesabı Değiştir";
 
 "BS59z4" = "Herkese açık";
 
 "Ciuk7c" = "İsim";
 
-"DBgjXT" = "Account";
+"DBgjXT" = "Hesabım";
 
 "Fn8AQn" = "URL";
 
-"G5v3xr" = "Set active account";
+"G5v3xr" = "Hesabı etkinleştir";
 
 "GILN5g" = "There are ${count} options matching ‘${accounts}’.";
 
 "N4GVJI" = "${errorDescription}";
 
-"QSA5ql" = "Account";
+"QSA5ql" = "Hesabım";
 
-"QWcTQP" = "Switch to ${account}";
+"QWcTQP" = "${account} hesabına geç";
 
-"SnCJhk" = "Publish Post";
+"SnCJhk" = "Gönderiyi Yayınla";
 
 "SqRrlA" = "Just to confirm, you wanted ‘${accounts}’?";
 
-"SrV2FP" = "Error Description";
+"SrV2FP" = "Hata Açıklaması";
 
-"TzDamL" = "Toot Visibility";
+"TzDamL" = "Toot Görünürlüğü";
 
 "WVP0I1" = "${errorDescription}";
 
-"Xs6a35" = "Toot Visibility";
+"Xs6a35" = "Toot Görünürlüğü";
 
 "YNUo2I" = "There are ${count} options matching ‘${account}’.";
 
 "Yb4tzx" = "Hesaplar";
 
-"aV5Ezl" = "Default";
+"aV5Ezl" = "Varsayılan";
 
 "aV8f0g" = "Gizli";
 
 "aeaw8w" = "Direkt";
 
-"ch7ADX" = "Compose and send post";
+"ch7ADX" = "Gönderi oluştur ve gönder";
 
-"f1YNIs" = "Post Content";
+"f1YNIs" = "Gönderi İçeriği";
 
 "jEAHra" = "Liste dışı";
 
 "kWl9zU" = "Post ${content}with ${accounts}";
 
-"noeHVX" = "Post";
+"noeHVX" = "Gönderi";
 
 "vbgnbQ" = "Post ${content}with ${accounts}";
 
@@ -78,6 +78,6 @@
 
 "xeqcBa-jEAHra" = "There are ${count} options matching ‘Unlisted’.";
 
-"z3DAP7" = "Switch to ${account}";
+"z3DAP7" = "${account} hesabına geç";
 
-"zlMGvn" = "Content";
+"zlMGvn" = "İçerik";

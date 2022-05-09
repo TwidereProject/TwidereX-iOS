@@ -443,6 +443,7 @@
 "Scene.Settings.Misc.Proxy.Title" = "プロキシ設定";
 "Scene.Settings.Misc.Proxy.Type.Http" = "HTTP";
 "Scene.Settings.Misc.Proxy.Type.Reverse" = "リバース";
+"Scene.Settings.Misc.Proxy.Type.Socks" = "SOCKS";
 "Scene.Settings.Misc.Proxy.Type.Title" = "プロキシの種類";
 "Scene.Settings.Misc.Proxy.Username" = "ユーザー名";
 "Scene.Settings.Misc.Title" = "その他";
@@ -479,3 +480,4 @@
 "Scene.Trends.Now" = "トレンド";
 "Scene.Trends.Title" = "トレンド";
 "Scene.Trends.WorldWide" = "トレンド - 全世界";
+"Scene.Trends.WorldWideWithoutPrefix" = "Worldwide";

@@ -1408,6 +1408,8 @@ public enum L10n {
             public static let http = L10n.tr("Localizable", "Scene.Settings.Misc.Proxy.Type.Http")
             /// Reverse
             public static let reverse = L10n.tr("Localizable", "Scene.Settings.Misc.Proxy.Type.Reverse")
+            /// SOCKS
+            public static let socks = L10n.tr("Localizable", "Scene.Settings.Misc.Proxy.Type.Socks")
             /// Proxy type
             public static let title = L10n.tr("Localizable", "Scene.Settings.Misc.Proxy.Type.Title")
           }
@@ -1515,6 +1517,8 @@ public enum L10n {
       public static let title = L10n.tr("Localizable", "Scene.Trends.Title")
       /// Trends - Worldwide
       public static let worldWide = L10n.tr("Localizable", "Scene.Trends.WorldWide")
+      /// Worldwide
+      public static let worldWideWithoutPrefix = L10n.tr("Localizable", "Scene.Trends.WorldWideWithoutPrefix")
     }
   }
 

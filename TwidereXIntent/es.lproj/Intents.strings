@@ -12,45 +12,45 @@
 
 "8WWS78" = "Nombre de usuario";
 
-"9OV1Ic" = "Posts";
+"9OV1Ic" = "Publicaciones";
 
-"ApmQKm" = "Switch Account";
+"ApmQKm" = "Cambiar de cuenta";
 
 "BS59z4" = "Público";
 
 "Ciuk7c" = "Nombre";
 
-"DBgjXT" = "Account";
+"DBgjXT" = "Cuenta";
 
 "Fn8AQn" = "URL";
 
-"G5v3xr" = "Set active account";
+"G5v3xr" = "Definir cuenta activa";
 
-"GILN5g" = "There are ${count} options matching ‘${accounts}’.";
+"GILN5g" = "Hay ${count} opciones que coinciden con \"${accounts}\".";
 
 "N4GVJI" = "${errorDescription}";
 
-"QSA5ql" = "Account";
+"QSA5ql" = "Cuenta";
 
-"QWcTQP" = "Switch to ${account}";
+"QWcTQP" = "Cambiar a ${account}";
 
 "SnCJhk" = "Publish Post";
 
 "SqRrlA" = "Just to confirm, you wanted ‘${accounts}’?";
 
-"SrV2FP" = "Error Description";
+"SrV2FP" = "Descripción del error";
 
-"TzDamL" = "Toot Visibility";
+"TzDamL" = "Visibilidad del toot";
 
 "WVP0I1" = "${errorDescription}";
 
-"Xs6a35" = "Toot Visibility";
+"Xs6a35" = "Visibilidad del toot";
 
 "YNUo2I" = "There are ${count} options matching ‘${account}’.";
 
 "Yb4tzx" = "Cuentas";
 
-"aV5Ezl" = "Default";
+"aV5Ezl" = "Predeterminado";
 
 "aV8f0g" = "Privado";
 
@@ -58,26 +58,26 @@
 
 "ch7ADX" = "Compose and send post";
 
-"f1YNIs" = "Post Content";
+"f1YNIs" = "Publicar contenido";
 
 "jEAHra" = "No listado";
 
 "kWl9zU" = "Post ${content}with ${accounts}";
 
-"noeHVX" = "Post";
+"noeHVX" = "Publicación";
 
 "vbgnbQ" = "Post ${content}with ${accounts}";
 
-"xeqcBa-BS59z4" = "There are ${count} options matching ‘Public’.";
+"xeqcBa-BS59z4" = "Hay ${count} opciones que coinciden con \"Público\".";
 
-"xeqcBa-aV5Ezl" = "There are ${count} options matching ‘Default’.";
+"xeqcBa-aV5Ezl" = "Hay ${count} opciones que coinciden con \"Predeterminado\".";
 
-"xeqcBa-aV8f0g" = "There are ${count} options matching ‘Private’.";
+"xeqcBa-aV8f0g" = "Hay ${count} opciones que coinciden con \"Privado\".";
 
-"xeqcBa-aeaw8w" = "There are ${count} options matching ‘Direct’.";
+"xeqcBa-aeaw8w" = "Hay ${count} opciones que coinciden con \"Directo\".";
 
-"xeqcBa-jEAHra" = "There are ${count} options matching ‘Unlisted’.";
+"xeqcBa-jEAHra" = "Hay ${count} opciones que coinciden con \"No listado\".";
 
-"z3DAP7" = "Switch to ${account}";
+"z3DAP7" = "Cambiar a ${account}";
 
-"zlMGvn" = "Content";
+"zlMGvn" = "Contenido";

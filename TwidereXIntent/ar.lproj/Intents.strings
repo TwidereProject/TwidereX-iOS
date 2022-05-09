@@ -1,44 +1,44 @@
-"0e8JfP" = "Just to confirm, you wanted ‘${account}’?";
+"0e8JfP" = "للتأكيد، هل تَريد '${account}'؟";
 
-"1iPE2d-BS59z4" = "Just to confirm, you wanted ‘Public’?";
+"1iPE2d-BS59z4" = "للتأكيد، هل تريده \"علني\"؟";
 
-"1iPE2d-aV5Ezl" = "Just to confirm, you wanted ‘Default’?";
+"1iPE2d-aV5Ezl" = "للتأكيد، هل تريده \"افتراضي\"؟";
 
-"1iPE2d-aV8f0g" = "Just to confirm, you wanted ‘Private’?";
+"1iPE2d-aV8f0g" = "للتأكيد، هل تريده \"خاص\"؟";
 
-"1iPE2d-aeaw8w" = "Just to confirm, you wanted ‘Direct’?";
+"1iPE2d-aeaw8w" = "للتأكيد، هل تريده \"مباشر\"؟";
 
-"1iPE2d-jEAHra" = "Just to confirm, you wanted ‘Unlisted’?";
+"1iPE2d-jEAHra" = "للتأكيد، هل تريده \"غير مدرج\"؟";
 
 "8WWS78" = "اسم المستخدم";
 
-"9OV1Ic" = "Posts";
+"9OV1Ic" = "مشاركات";
 
-"ApmQKm" = "Switch Account";
+"ApmQKm" = "بدّل الحساب";
 
 "BS59z4" = "عام";
 
 "Ciuk7c" = "الاسم";
 
-"DBgjXT" = "Account";
+"DBgjXT" = "الحساب";
 
-"Fn8AQn" = "URL";
+"Fn8AQn" = "الرابط";
 
 "G5v3xr" = "Set active account";
 
-"GILN5g" = "There are ${count} options matching ‘${accounts}’.";
+"GILN5g" = "هُناك ${count} خِيار مُطابق لِـ\"${accounts}\".";
 
 "N4GVJI" = "${errorDescription}";
 
-"QSA5ql" = "Account";
+"QSA5ql" = "الحساب";
 
-"QWcTQP" = "Switch to ${account}";
+"QWcTQP" = "بدّل إلى ${account}";
 
-"SnCJhk" = "Publish Post";
+"SnCJhk" = "انشر مشاركة";
 
-"SqRrlA" = "Just to confirm, you wanted ‘${accounts}’?";
+"SqRrlA" = "للتأكيد، هل تريد '${accounts}'؟";
 
-"SrV2FP" = "Error Description";
+"SrV2FP" = "وصف الخطأ";
 
 "TzDamL" = "Toot Visibility";
 
@@ -46,27 +46,27 @@
 
 "Xs6a35" = "Toot Visibility";
 
-"YNUo2I" = "There are ${count} options matching ‘${account}’.";
+"YNUo2I" = "هُناك ${count} خِيار مُطابق لِـ\"${account}\".";
 
 "Yb4tzx" = "الحسابات";
 
-"aV5Ezl" = "Default";
+"aV5Ezl" = "الافتراضي";
 
 "aV8f0g" = "خاص";
 
 "aeaw8w" = "مُباشر";
 
-"ch7ADX" = "Compose and send post";
+"ch7ADX" = "أنشئ مشاركة وانشرها";
 
-"f1YNIs" = "Post Content";
+"f1YNIs" = "محتوى المشاركة";
 
 "jEAHra" = "غير مدرج";
 
-"kWl9zU" = "Post ${content}with ${accounts}";
+"kWl9zU" = "انشر ${content} عبر ${accounts}";
 
-"noeHVX" = "Post";
+"noeHVX" = "مشاركة";
 
-"vbgnbQ" = "Post ${content}with ${accounts}";
+"vbgnbQ" = "انشر ${content} عبر ${accounts}";
 
 "xeqcBa-BS59z4" = "There are ${count} options matching ‘Public’.";
 
@@ -78,6 +78,6 @@
 
 "xeqcBa-jEAHra" = "There are ${count} options matching ‘Unlisted’.";
 
-"z3DAP7" = "Switch to ${account}";
+"z3DAP7" = "بدّل إلى ${account}";
 
-"zlMGvn" = "Content";
+"zlMGvn" = "المحتوى";
