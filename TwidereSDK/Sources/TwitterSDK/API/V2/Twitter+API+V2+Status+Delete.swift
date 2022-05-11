@@ -7,6 +7,10 @@
 
 import Foundation
 
+extension Twitter.API.V2.Status {
+    public enum Delete { }
+}
+
 // doc: https://developer.twitter.com/en/docs/twitter-api/tweets/manage-tweets/introduction
 extension Twitter.API.V2.Status.Delete {
     

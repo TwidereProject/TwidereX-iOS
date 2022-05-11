@@ -62,6 +62,7 @@ final class MediaPreviewViewController: UIViewController, NeedsDependency {
 
     let pageControl: UIPageControl = {
         let pageControl = UIPageControl()
+        pageControl.isUserInteractionEnabled = false    // avoid tap gesture conflict
         return pageControl
     }()
     
@@ -161,6 +162,29 @@ extension MediaPreviewViewController {
         mediaInfoDescriptionView.delegate = self
         
         closeButton.addTarget(self, action: #selector(MediaPreviewViewController.closeButtonPressed(_:)), for: .touchUpInside)
+        
+        // bind view model
+        viewModel.$currentPage
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] index in
+                guard let self = self else { return }
+                // update page control
+                self.pageControl.currentPage = index
+                
+                // update mediaGridContainerView
+                switch self.viewModel.transitionItem.source {
+                case .attachment:
+                    break
+                case .attachments(let mediaGridContainerView):
+                    UIView.animate(withDuration: 0.3) {
+                        mediaGridContainerView.setAlpha(1)
+                        mediaGridContainerView.setAlpha(0, index: index)
+                    }
+                case .profileAvatar, .profileBanner:
+                    break
+                }
+            }
+            .store(in: &disposeBag)
     }
 
     override func viewDidLayoutSubviews() {
@@ -217,8 +241,7 @@ extension MediaPreviewViewController: PageboyViewControllerDelegate {
         direction: PageboyViewController.NavigationDirection,
         animated: Bool
     ) {
-        // update page control
-        pageControl.currentPage = index
+        viewModel.currentPage = index
     }
 
     func pageboyViewController(
@@ -265,10 +288,17 @@ extension MediaPreviewViewController: MediaPreviewingViewController {
 extension MediaPreviewViewController: MediaPreviewImageViewControllerDelegate {
 
     func mediaPreviewImageViewController(_ viewController: MediaPreviewImageViewController, tapGestureRecognizerDidTrigger tapGestureRecognizer: UITapGestureRecognizer) {
-        // do nothing
+        let location = tapGestureRecognizer.location(in: viewController.previewImageView.imageView)
+        let isContainsTap = viewController.previewImageView.imageView.frame.contains(location)
+        
+        guard !isContainsTap else { return }
+        dismiss(animated: true, completion: nil)
     }
 
     func mediaPreviewImageViewController(_ viewController: MediaPreviewImageViewController, longPressGestureRecognizerDidTrigger longPressGestureRecognizer: UILongPressGestureRecognizer) {
+        let impactFeedbackGenerator = UIImpactFeedbackGenerator(style: .light)
+        impactFeedbackGenerator.impactOccurred()
+        
         // trigger menu button action
         mediaInfoDescriptionView.toolbar.delegate?.statusToolbar(
             mediaInfoDescriptionView.toolbar,

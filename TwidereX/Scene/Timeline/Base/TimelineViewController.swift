@@ -14,7 +14,7 @@ import AppShared
 import TwidereCore
 import TwidereComposeUI
 
-class TimelineViewController: UIViewController, NeedsDependency, DrawerSidebarTransitionHostViewController, MediaPreviewTransitionHostViewController {
+class TimelineViewController: UIViewController, NeedsDependency, DrawerSidebarTransitionHostViewController, MediaPreviewableViewController {
     
     let logger = Logger(subsystem: "TimelineViewController", category: "ViewController")
     
@@ -90,14 +90,16 @@ extension TimelineViewController {
         view.backgroundColor = .systemBackground
 
         // setup avatarBarButtonItem
-        viewModel.$needsSetupAvatarBarButtonItem
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] needsSetupAvatarBarButtonItem in
-                guard let self = self else { return }
-                self.navigationItem.leftBarButtonItem = needsSetupAvatarBarButtonItem ? self.avatarBarButtonItem : nil
-                self.avatarBarButtonItem.avatarButton.addTarget(self, action: #selector(TimelineViewController.avatarButtonPressed(_:)), for: .touchUpInside)
-            }
-            .store(in: &disposeBag)
+        if navigationController?.viewControllers.first == self {
+            coordinator.$needsSetupAvatarBarButtonItem
+                .receive(on: DispatchQueue.main)
+                .sink { [weak self] needsSetupAvatarBarButtonItem in
+                    guard let self = self else { return }
+                    self.navigationItem.leftBarButtonItem = needsSetupAvatarBarButtonItem ? self.avatarBarButtonItem : nil
+                }
+                .store(in: &disposeBag)
+        }
+        avatarBarButtonItem.avatarButton.addTarget(self, action: #selector(TimelineViewController.avatarButtonPressed(_:)), for: .touchUpInside)
         avatarBarButtonItem.delegate = self
         
         // bind avatarBarButtonItem data
@@ -210,7 +212,6 @@ extension TimelineViewController {
             
         }
     }
-
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)

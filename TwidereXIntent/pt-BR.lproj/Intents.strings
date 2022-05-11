@@ -1,83 +1,83 @@
-"0e8JfP" = "Just to confirm, you wanted ‘${account}’?";
+"0e8JfP" = "Só para confirmar, você queria ‘${account}’?";
 
-"1iPE2d-BS59z4" = "Just to confirm, you wanted ‘Public’?";
+"1iPE2d-BS59z4" = "Só para confirmar, você queria 'Público'?";
 
-"1iPE2d-aV5Ezl" = "Just to confirm, you wanted ‘Default’?";
+"1iPE2d-aV5Ezl" = "Só para confirmar, você queria ‘Padrão’?";
 
-"1iPE2d-aV8f0g" = "Just to confirm, you wanted ‘Private’?";
+"1iPE2d-aV8f0g" = "Só para confirmar, você queria 'Privado'?";
 
-"1iPE2d-aeaw8w" = "Just to confirm, you wanted ‘Direct’?";
+"1iPE2d-aeaw8w" = "Só para confirmar, você queria ‘Direct’?";
 
-"1iPE2d-jEAHra" = "Just to confirm, you wanted ‘Unlisted’?";
+"1iPE2d-jEAHra" = "Só para confirmar, você queria 'Não listado'?";
 
 "8WWS78" = "Nome de usuário";
 
-"9OV1Ic" = "Posts";
+"9OV1Ic" = "Postagens";
 
-"ApmQKm" = "Switch Account";
+"ApmQKm" = "Alterar Conta";
 
 "BS59z4" = "Público";
 
 "Ciuk7c" = "Nome";
 
-"DBgjXT" = "Account";
+"DBgjXT" = "Conta";
 
 "Fn8AQn" = "URL";
 
-"G5v3xr" = "Set active account";
+"G5v3xr" = "Definir conta ativa";
 
-"GILN5g" = "There are ${count} options matching ‘${accounts}’.";
+"GILN5g" = "Existem ${count} opções correspondentes a '${accounts}'.";
 
 "N4GVJI" = "${errorDescription}";
 
-"QSA5ql" = "Account";
+"QSA5ql" = "Conta";
 
-"QWcTQP" = "Switch to ${account}";
+"QWcTQP" = "Alternar para ${account}";
 
-"SnCJhk" = "Publish Post";
+"SnCJhk" = "Publicar Postagem";
 
-"SqRrlA" = "Just to confirm, you wanted ‘${accounts}’?";
+"SqRrlA" = "Só para confirmar, você queria ‘${accounts}’?";
 
-"SrV2FP" = "Error Description";
+"SrV2FP" = "Descrição do Erro";
 
-"TzDamL" = "Toot Visibility";
+"TzDamL" = "Visibilidade do Toot";
 
 "WVP0I1" = "${errorDescription}";
 
-"Xs6a35" = "Toot Visibility";
+"Xs6a35" = "Visibilidade do Toot";
 
-"YNUo2I" = "There are ${count} options matching ‘${account}’.";
+"YNUo2I" = "Existem ${count} opções correspondentes a '${account}'.";
 
 "Yb4tzx" = "Contas";
 
-"aV5Ezl" = "Default";
+"aV5Ezl" = "Padrão";
 
 "aV8f0g" = "Privado";
 
 "aeaw8w" = "Direto";
 
-"ch7ADX" = "Compose and send post";
+"ch7ADX" = "Compor e enviar postagem";
 
-"f1YNIs" = "Post Content";
+"f1YNIs" = "Postar Conteúdo";
 
 "jEAHra" = "Não listado";
 
-"kWl9zU" = "Post ${content}with ${accounts}";
+"kWl9zU" = "Postar ${content}com ${accounts}";
 
-"noeHVX" = "Post";
+"noeHVX" = "Postagem";
 
-"vbgnbQ" = "Post ${content}with ${accounts}";
+"vbgnbQ" = "Postar ${content}com ${accounts}";
 
-"xeqcBa-BS59z4" = "There are ${count} options matching ‘Public’.";
+"xeqcBa-BS59z4" = "Existem ${count} opções correspondentes a 'Público'.";
 
-"xeqcBa-aV5Ezl" = "There are ${count} options matching ‘Default’.";
+"xeqcBa-aV5Ezl" = "Existem ${count} opções correspondentes a ‘Padrão’.";
 
-"xeqcBa-aV8f0g" = "There are ${count} options matching ‘Private’.";
+"xeqcBa-aV8f0g" = "Existem ${count} opções correspondentes a ‘Privado’.";
 
-"xeqcBa-aeaw8w" = "There are ${count} options matching ‘Direct’.";
+"xeqcBa-aeaw8w" = "Existem ${count} opções correspondentes a 'Direct'.";
 
-"xeqcBa-jEAHra" = "There are ${count} options matching ‘Unlisted’.";
+"xeqcBa-jEAHra" = "Existem ${count} opções correspondentes a ‘Não listado’.";
 
-"z3DAP7" = "Switch to ${account}";
+"z3DAP7" = "Alternar para ${account}";
 
-"zlMGvn" = "Content";
+"zlMGvn" = "Conteúdo";

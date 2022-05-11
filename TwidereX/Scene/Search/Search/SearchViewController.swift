@@ -22,6 +22,14 @@ final class SearchViewController: UIViewController, NeedsDependency, DrawerSideb
     var disposeBag = Set<AnyCancellable>()
     var viewModel: SearchViewModel!
     
+    private(set) lazy var trendPreferenceBarButtonItem: UIBarButtonItem = {
+        let barButtonItem = UIBarButtonItem()
+        barButtonItem.image = UIImage(systemName: "ellipsis")
+//        barButtonItem.target = self
+//        barButtonItem.action = #selector(SearchViewController.trendPreferenceBarButtonItemDidPressed(_:))
+        return barButtonItem
+    }()
+    
     private(set) lazy var searchResultViewModel = SearchResultViewModel(context: context, coordinator: coordinator)
     private(set) lazy var searchResultViewController: SearchResultViewController = {
         let searchResultViewController = SearchResultViewController()
@@ -71,6 +79,50 @@ extension SearchViewController {
         super.viewDidLoad()
         
         drawerSidebarTransitionController = DrawerSidebarTransitionController(hostViewController: self)
+        
+        viewModel.trendViewModel.$twitterTrendPlaces
+            .removeDuplicates()
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] places in
+                guard let self = self else { return }
+                self.navigationItem.rightBarButtonItem = places.isEmpty ? nil : self.trendPreferenceBarButtonItem
+                self.trendPreferenceBarButtonItem.menu = {
+                    let worldwideMenu = UIMenu(
+                        title: "",
+                        image: nil,
+                        identifier: nil,
+                        options: [.displayInline],
+                        children: [
+                            UIAction(
+                                title: L10n.Scene.Trends.worldWideWithoutPrefix,
+                                image: UIImage(systemName: "globe"),
+                                identifier: nil,
+                                discoverabilityTitle: nil,
+                                attributes: [],
+                                state: .off
+                            ) { [weak self] _ in
+                                guard let self = self else { return }
+                                self.viewModel.trendViewModel.resetTrendGroupIndex()
+                            }
+                        ]
+                    )
+                    let placeActions: [UIMenuElement] = places.map { place in
+                        UIAction(
+                            title: place.name,
+                            image: nil,
+                            identifier: nil,
+                            discoverabilityTitle: nil,
+                            attributes: [],
+                            state: .off
+                        ) { [weak self] _ in
+                            guard let self = self else { return }
+                            self.viewModel.trendViewModel.updateTrendGroupIndex(place: place)
+                        }
+                    }
+                    return UIMenu(title: "Trend Places", image: nil, identifier: nil, options: [], children: [worldwideMenu] + placeActions)
+                }()
+            }
+            .store(in: &disposeBag)
 
         view.backgroundColor = .systemGroupedBackground
         navigationItem.searchController = searchController
@@ -107,18 +159,12 @@ extension SearchViewController {
             tableView: tableView
         )
         
-        viewModel.trendViewModel.$trendGroupIndex
+        viewModel.trendViewModel.$trendPlaceName
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] trendGroupIndex in
+            .sink { [weak self] name in
                 guard let self = self else { return }
-                switch trendGroupIndex {
-                case .none:
-                    self.trendSectionHeaderView.label.text = " "
-                case .twitter:      // TODO: add region
-                    self.trendSectionHeaderView.label.text = L10n.Scene.Trends.worldWide
-                case .mastodon:
-                    self.trendSectionHeaderView.label.text = L10n.Scene.Trends.now
-                }
+                let title = [L10n.Scene.Trends.title, name].compactMap { $0 }.joined(separator: " - ")
+                self.trendSectionHeaderView.label.text = title
             }
             .store(in: &disposeBag)
         
@@ -161,6 +207,15 @@ extension SearchViewController {
         viewModel.viewDidAppear.send()
     }
     
+}
+
+extension SearchViewController {
+    
+    @objc private func trendPreferenceBarButtonItemDidPressed(_ sender: UIBarButtonItem) {
+        logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public)")
+        
+    }
+
 }
 
 // MARK: - UITableViewDelegate

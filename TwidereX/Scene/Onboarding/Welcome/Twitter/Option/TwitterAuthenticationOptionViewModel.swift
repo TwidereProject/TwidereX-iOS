@@ -10,6 +10,7 @@ import UIKit
 import Combine
 import AppShared
 import TwitterSDK
+import TwidereCommon
 
 final class TwitterAuthenticationOptionViewModel: NSObject {
     
@@ -17,8 +18,10 @@ final class TwitterAuthenticationOptionViewModel: NSObject {
     
     // input
     let context: AppContext
-    let consumerKey = CurrentValueSubject<String, Never>(UserDefaults.shared.twitterAuthenticationConsumerKey ?? "")
-    let consumerSecret = CurrentValueSubject<String, Never>(UserDefaults.shared.twitterAuthenticationConsumerSecret ?? "")
+    
+    @Published var consumerKey: String = UserDefaults.shared.twitterAuthenticationConsumerKey ?? ""
+    @Published var consumerSecret: String = UserDefaults.shared.twitterAuthenticationConsumerSecret ?? ""
+    @Published var clientID: String = AppSecret.default.oauthSecret.clientID
     
     // output
     let sections: [Section] = [
@@ -31,14 +34,13 @@ final class TwitterAuthenticationOptionViewModel: NSObject {
             ]
         )
     ]
-    let appSecret = CurrentValueSubject<AppSecret?, Never>(nil)
-    let isSignInBarButtonItemEnabled = CurrentValueSubject<Bool, Never>(true)
+    @Published var isSignInBarButtonItemEnabled = false
     
     init(context: AppContext) {
         self.context = context
         super.init()
         
-        consumerKey
+        $consumerKey
             .receive(on: DispatchQueue.main)
             .removeDuplicates()
             .sink { consumerKey in
@@ -46,7 +48,7 @@ final class TwitterAuthenticationOptionViewModel: NSObject {
             }
             .store(in: &disposeBag)
         
-        consumerSecret
+        $consumerSecret
             .receive(on: DispatchQueue.main)
             .removeDuplicates()
             .sink { consumerSecret in
@@ -55,27 +57,17 @@ final class TwitterAuthenticationOptionViewModel: NSObject {
             .store(in: &disposeBag)
         
         Publishers.CombineLatest(
-            consumerKey.eraseToAnyPublisher(),
-            consumerSecret.eraseToAnyPublisher()
+            $consumerKey,
+            $consumerSecret
         )
-        .map { consumerKey, consumerSecret in
-            guard !consumerKey.isEmpty, !consumerSecret.isEmpty else { return nil }
-            return AppSecret(
-                oauthSecret: AppSecret.OAuthSecret(
-                    consumerKey: consumerKey,
-                    consumerKeySecret: consumerSecret,
-                    hostPublicKey: nil,
-                    oauthEndpoint: "oob"
-                )
-            )
+        .receive(on: DispatchQueue.main)
+        .map { consumerKey, consumerSecret -> Bool in
+            guard !consumerKey.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty,
+                  !consumerSecret.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+            else { return false }
+            return true
         }
-        .assign(to: \.value, on: appSecret)
-        .store(in: &disposeBag)
-        
-        appSecret
-            .map { $0 != nil }
-            .assign(to: \.value, on: isSignInBarButtonItemEnabled)
-            .store(in: &disposeBag)
+        .assign(to: &$isSignInBarButtonItemEnabled)
     }
 }
 
@@ -120,19 +112,19 @@ extension TwitterAuthenticationOptionViewModel: UITableViewDataSource {
         case .consumerKeyTextField:
             let _cell = tableView.dequeueReusableCell(withIdentifier: String(describing: TableViewTextFieldTableViewCell.self), for: indexPath) as! TableViewTextFieldTableViewCell
             _cell.textField.placeholder = option.placeholder
-            _cell.textField.text = consumerKey.value
+            _cell.textField.text = consumerKey
             _cell.input
                 .receive(on: DispatchQueue.main)
-                .assign(to: \.value, on: consumerKey)
+                .assign(to: \.consumerKey, on: self)
                 .store(in: &_cell.disposeBag)
             cell = _cell
         case .consumerSecretTextField:
             let _cell = tableView.dequeueReusableCell(withIdentifier: String(describing: TableViewTextFieldTableViewCell.self), for: indexPath) as! TableViewTextFieldTableViewCell
             _cell.textField.placeholder = option.placeholder
-            _cell.textField.text = consumerSecret.value
+            _cell.textField.text = consumerSecret
             _cell.input
                 .receive(on: DispatchQueue.main)
-                .assign(to: \.value, on: consumerSecret)
+                .assign(to: \.consumerSecret, on: self)
                 .store(in: &_cell.disposeBag)
             cell = _cell
         }
@@ -142,12 +134,25 @@ extension TwitterAuthenticationOptionViewModel: UITableViewDataSource {
     
 }
 
-// MARK: - OAuthExchangeProvider
-extension TwitterAuthenticationOptionViewModel: TwitterOAuthExchangeProvider {
-    func oauthExchange() -> Twitter.API.OAuth.OAuthExchange {
-        return .pin(exchange: .init(
-            consumerKey: consumerKey.value,
-            consumerKeySecret: consumerSecret.value
+// MARK: - TwitterAuthorizationContextProvider
+extension TwitterAuthenticationOptionViewModel: TwitterAuthorizationContextProvider {
+    var oauth: Twitter.AuthorizationContext.OAuth.Context {
+        return .standard(.init(
+            consumerKey: consumerKey,
+            consumerKeySecret: consumerSecret)
+        )
+    }
+    
+    var oauth2: Twitter.AuthorizationContext.OAuth2.Context {
+        assert(consumerKey == "DEBUG")
+        return .relay(.init(
+            clientID: clientID,
+            consumerKey: AppSecret.default.oauthSecret.consumerKey,
+            consumerKeySecret: AppSecret.default.oauthSecret.consumerKeySecret,
+            endpoint: URL(string: AppSecret.default.oauthSecret.oauth2Endpoint)!,
+            hostPublicKey: AppSecret.default.oauthSecret.hostPublicKey!
         ))
     }
+    
+    
 }

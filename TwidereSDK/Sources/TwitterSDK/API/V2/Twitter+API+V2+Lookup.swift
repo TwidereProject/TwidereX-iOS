@@ -8,6 +8,10 @@
 import Foundation
 import Combine
 
+extension Twitter.API.V2 {
+    public enum Lookup { }
+}
+
 extension Twitter.API.V2.Lookup {
     
     static let tweetsEndpointURL = Twitter.API.endpointV2URL.appendingPathComponent("tweets")

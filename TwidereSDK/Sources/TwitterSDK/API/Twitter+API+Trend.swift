@@ -67,4 +67,29 @@ extension Twitter.API.Trend {
             public let woeid: Int
         }
     }
+    
+}
+
+extension Twitter.API.Trend {
+    
+    // https://developer.twitter.com/en/docs/twitter-api/v1/trends/locations-with-trending-topics/api-reference/get-trends-available
+    static let trendsPlaceEndpointURL = Twitter.API.endpointURL
+        .appendingPathComponent("trends")
+        .appendingPathComponent("available.json")
+    
+    public static func places(
+        session: URLSession,
+        authorization: Twitter.API.OAuth.Authorization
+    ) async throws -> Twitter.Response.Content<[Twitter.Entity.Trend.Place]> {
+        let request = Twitter.API.request(
+            url: trendsPlaceEndpointURL,
+            method: .GET,
+            query: nil,
+            authorization: authorization
+        )
+        let (data, response) = try await session.data(for: request, delegate: nil)
+        let value = try Twitter.API.decode(type: [Twitter.Entity.Trend.Place].self, from: data, response: response)
+        return Twitter.Response.Content(value: value, response: response)
+    }
+
 }

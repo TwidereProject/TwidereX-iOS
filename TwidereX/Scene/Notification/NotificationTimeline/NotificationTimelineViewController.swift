@@ -11,7 +11,7 @@ import UIKit
 import Combine
 import TwidereUI
 
-final class NotificationTimelineViewController: UIViewController, NeedsDependency, MediaPreviewTransitionHostViewController {
+final class NotificationTimelineViewController: UIViewController, NeedsDependency, MediaPreviewableViewController {
 
     let logger = Logger(subsystem: "NotificationTimelineViewController", category: "ViewController")
     

@@ -236,6 +236,7 @@ extension MediaView {
         imageView.removeConstraints(imageView.constraints)
         imageView.af.cancelImageRequest()
         imageView.image = nil
+        imageView.isHidden = false
         
         // reset player
         playerViewController.view.removeFromSuperview()

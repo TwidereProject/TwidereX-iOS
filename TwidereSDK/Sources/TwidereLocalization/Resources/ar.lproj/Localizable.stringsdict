@@ -29,7 +29,7 @@
     <key>count.input_limit_remains</key>
     <dict>
       <key>NSStringLocalizedFormatKey</key>
-      <string>Input limit remains %#@character_count@</string>
+      <string>يبقى حدّ الإدخال %#@character_count@</string>
       <key>character_count</key>
       <dict>
         <key>NSStringFormatSpecTypeKey</key>
@@ -37,17 +37,17 @@
         <key>NSStringFormatValueTypeKey</key>
         <string>ld</string>
         <key>zero</key>
-        <string>%ld characters</string>
+        <string>لا محارف</string>
         <key>one</key>
-        <string>1 character</string>
+        <string>محرف واحد</string>
         <key>two</key>
-        <string>%ld characters</string>
+        <string>محرفان</string>
         <key>few</key>
-        <string>%ld characters</string>
+        <string>%ld محارف</string>
         <key>many</key>
-        <string>%ld characters</string>
+        <string>%ld محرف</string>
         <key>other</key>
-        <string>%ld characters</string>
+        <string>%ld محرف</string>
       </dict>
     </dict>
     <key>count.metric_formatted.post</key>
@@ -61,17 +61,17 @@
         <key>NSStringFormatValueTypeKey</key>
         <string>ld</string>
         <key>zero</key>
-        <string>posts</string>
+        <string>لا مشاركات</string>
         <key>one</key>
-        <string>post</string>
+        <string>مشاركة</string>
         <key>two</key>
-        <string>posts</string>
+        <string>مشاركتان</string>
         <key>few</key>
-        <string>posts</string>
+        <string>مشاركات</string>
         <key>many</key>
-        <string>posts</string>
+        <string>مشاركة</string>
         <key>other</key>
-        <string>posts</string>
+        <string>مشاركة</string>
       </dict>
     </dict>
     <key>count.post</key>
@@ -85,17 +85,17 @@
         <key>NSStringFormatValueTypeKey</key>
         <string>ld</string>
         <key>zero</key>
-        <string>%ld posts</string>
+        <string>لا مشاركات</string>
         <key>one</key>
-        <string>1 post</string>
+        <string>مشاركة</string>
         <key>two</key>
-        <string>%ld posts</string>
+        <string>مشاركتان</string>
         <key>few</key>
-        <string>%ld posts</string>
+        <string>%ld مشاركات</string>
         <key>many</key>
-        <string>%ld posts</string>
+        <string>%ld مشاركة</string>
         <key>other</key>
-        <string>%ld posts</string>
+        <string>%ld مشاركة</string>
       </dict>
     </dict>
     <key>count.quote</key>

@@ -24,6 +24,8 @@ final class MediaPreviewViewModel: NSObject {
     let item: Item
     let transitionItem: MediaPreviewTransitionItem
     
+    @Published var currentPage: Int
+    
     // output
     var status: StatusObject?
     let viewControllers: [UIViewController]
@@ -35,6 +37,12 @@ final class MediaPreviewViewModel: NSObject {
     ) {
         self.context = context
         self.item = item
+        self.currentPage = {
+            switch item {
+            case .statusAttachment(let previewContext):
+                return previewContext.initialIndex
+            }
+        }()
         self.transitionItem = transitionItem
         // setup output
         self.status = {

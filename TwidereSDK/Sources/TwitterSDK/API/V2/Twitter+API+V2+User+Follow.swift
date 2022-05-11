@@ -7,6 +7,10 @@
 
 import Foundation
 
+extension Twitter.API.V2.User {
+    public enum Follow { }
+}
+
 // Request follow user
 // https://developer.twitter.com/en/docs/twitter-api/users/follows/introduction
 extension Twitter.API.V2.User.Follow {

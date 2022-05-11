@@ -92,6 +92,7 @@ extension AttachmentViewModel: Hashable {
 extension AttachmentViewModel {
     public enum Input: Hashable {
         case image(UIImage)
+        case url(URL)
         case pickerResult(PHPickerResult)
     }
     
@@ -152,6 +153,15 @@ extension AttachmentViewModel {
                 return
             }
             output = .image(data, imageKind: .png)
+        case .url(let url):
+            Task {
+                do {
+                    let output = try await AttachmentViewModel.load(url: url)
+                    self.output = output
+                } catch {
+                    self.error = error
+                }
+            }   // end Task
         case .pickerResult(let pickerResult):
             Task {
                 do {
@@ -160,7 +170,36 @@ extension AttachmentViewModel {
                 } catch {
                     self.error = error
                 }
+            }   // end Task
+        }
+    }
+    
+    private static func load(url: URL) async throws -> Output {
+        guard let uti = UTType(filenameExtension: url.pathExtension) else {
+            throw AttachmentError.invalidAttachmentType
+        }
+        
+        if uti.conforms(to: .image) {
+            guard url.startAccessingSecurityScopedResource() else {
+                throw AttachmentError.invalidAttachmentType
             }
+            defer { url.stopAccessingSecurityScopedResource() }
+            let imageData = try Data(contentsOf: url)
+            return .image(imageData, imageKind: imageData.kf.imageFormat == .PNG ? .png : .jpg)
+        } else if uti.conforms(to: .movie) {
+            guard url.startAccessingSecurityScopedResource() else {
+                throw AttachmentError.invalidAttachmentType
+            }
+            defer { url.stopAccessingSecurityScopedResource() }
+            
+            let fileName = UUID().uuidString
+            let tempDirectoryURL = FileManager.default.temporaryDirectory
+            let fileURL = tempDirectoryURL.appendingPathComponent(fileName).appendingPathExtension(url.pathExtension)
+            try FileManager.default.createDirectory(at: tempDirectoryURL, withIntermediateDirectories: true, attributes: nil)
+            try FileManager.default.copyItem(at: url, to: fileURL)
+            return .video(fileURL, mimeType: UTType.movie.preferredMIMEType ?? "video/mp4")
+        } else {
+            throw AttachmentError.invalidAttachmentType
         }
     }
     

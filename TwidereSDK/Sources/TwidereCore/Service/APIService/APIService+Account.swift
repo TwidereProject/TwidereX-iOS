@@ -41,6 +41,36 @@ extension APIService {
         return response
     }
     
+    public func verifyTwitterCredentials(
+        authorization: Twitter.API.V2.OAuth2.Authorization
+    ) async throws -> Twitter.Response.Content<Twitter.Entity.V2.User> {
+        let response = try await Twitter.API.V2.User.Lookup.me(
+            session: session,
+            authorization: authorization
+        )
+
+        let managedObjectContext = backgroundManagedObjectContext
+        try await managedObjectContext.performChanges {
+            let log = OSLog.api
+            let entity = response.value
+
+            let result = Persistence.TwitterUser.createOrMerge(
+                in: managedObjectContext,
+                context: Persistence.TwitterUser.PersistContextV2(
+                    entity: entity.data,
+                    me: nil,
+                    cache: nil,
+                    networkDate: response.networkDate
+                )
+            )
+
+            let flag = result.isNewInsertion ? "+" : "~"
+            os_log(.info, log: log, "%{public}s[%{public}ld], %{public}s: twitter user [%s](%s)%s verified", ((#file as NSString).lastPathComponent), #line, #function, flag, result.user.id, result.user.username)
+        }
+
+        return response.map { $0.data }
+    }
+    
 }
 
 extension APIService {

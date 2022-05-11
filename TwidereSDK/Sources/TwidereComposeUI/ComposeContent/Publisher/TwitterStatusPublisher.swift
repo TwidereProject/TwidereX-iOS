@@ -60,7 +60,7 @@ public final class TwitterStatusPublisher: NSObject, ProgressReporting {
 extension TwitterStatusPublisher: StatusPublisher {
     public func publish(
         api: APIService,
-        appSecret: AppSecret
+        secret: AppSecret.Secret
     ) async throws -> StatusPublishResult {
         let publishAttachmentTaskWeight: Int64 = 100
         let publishAttachmentTaskCount: Int64 = Int64(attachmentViewModels.count) * publishAttachmentTaskWeight
@@ -76,7 +76,7 @@ extension TwitterStatusPublisher: StatusPublisher {
         
         let _authenticationContext: TwitterAuthenticationContext? = await api.backgroundManagedObjectContext.perform {
             guard let authentication = self.author.twitterAuthentication else { return nil }
-            return TwitterAuthenticationContext(authentication: authentication, appSecret: appSecret)
+            return TwitterAuthenticationContext(authentication: authentication, secret: secret)
         }
         guard let authenticationContext = _authenticationContext else {
             throw AppError.implicit(.authenticationMissing)

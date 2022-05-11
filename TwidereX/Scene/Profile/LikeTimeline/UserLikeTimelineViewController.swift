@@ -13,7 +13,7 @@ import CoreDataStack
 import GameplayKit
 import TabBarPager
 
-final class UserLikeTimelineViewController: UIViewController, NeedsDependency, MediaPreviewTransitionHostViewController {
+final class UserLikeTimelineViewController: UIViewController, NeedsDependency, MediaPreviewableViewController {
     
     let logger = Logger(subsystem: "UserLikeTimelineViewController", category: "ViewController")
     

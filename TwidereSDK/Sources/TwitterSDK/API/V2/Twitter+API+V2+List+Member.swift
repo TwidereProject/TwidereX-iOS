@@ -7,6 +7,10 @@
 
 import Foundation
 
+extension Twitter.API.V2.List {
+    public enum Member { }
+}
+
 // add: https://developer.twitter.com/en/docs/twitter-api/lists/list-members/api-reference/post-lists-id-members
 extension Twitter.API.V2.List.Member {
     

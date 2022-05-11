@@ -11,7 +11,7 @@ import UIKit
 import Combine
 import CoreDataStack
 
-final class SearchTimelineViewController: UIViewController, NeedsDependency, MediaPreviewTransitionHostViewController {
+final class SearchTimelineViewController: UIViewController, NeedsDependency, MediaPreviewableViewController {
     
     let logger = Logger(subsystem: "SearchTimelineViewController", category: "ViewController")
     

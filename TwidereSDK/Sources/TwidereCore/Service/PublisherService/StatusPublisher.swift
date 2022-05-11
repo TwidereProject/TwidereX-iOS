@@ -10,5 +10,5 @@ import TwidereCommon
 
 public protocol StatusPublisher: ProgressReporting {
     var state: Published<StatusPublisherState>.Publisher { get }
-    func publish(api: APIService, appSecret: AppSecret) async throws -> StatusPublishResult
+    func publish(api: APIService, secret: AppSecret.Secret) async throws -> StatusPublishResult
 }

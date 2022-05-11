@@ -30,6 +30,8 @@ jobs:
             CONSUMER_KEY_SECRET: ${{ secrets.CONSUMER_KEY_SECRET }}
             HOST_KEY_PUBLIC: ${{ secrets.HOST_KEY_PUBLIC }}
             OAUTH_ENDPOINT: ${{ secrets.OAUTH_ENDPOINT }}
+            OAUTH2_ENDPOINT: ${{ secrets.OAUTH2_ENDPOINT }}
+            OAUTH2_ENDPOINT_DEBUG: ${{ secrets.OAUTH2_ENDPOINT_DEBUG }}
         run: exec ./.github/scripts/setup.sh
 
       - name: build

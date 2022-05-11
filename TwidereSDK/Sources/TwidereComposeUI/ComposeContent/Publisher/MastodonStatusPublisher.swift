@@ -79,7 +79,7 @@ extension MastodonStatusPublisher: StatusPublisher {
     
     public func publish(
         api: APIService,
-        appSecret: AppSecret
+        secret: AppSecret.Secret
     ) async throws -> StatusPublishResult {
         let idempotencyKey = UUID().uuidString
         

@@ -115,7 +115,12 @@ extension MediaPreviewImageViewController {
     
     @objc private func longPressGestureRecognizerHandler(_ sender: UILongPressGestureRecognizer) {
         os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
-        delegate?.mediaPreviewImageViewController(self, longPressGestureRecognizerDidTrigger: sender)
+        switch sender.state {
+        case .began:
+            delegate?.mediaPreviewImageViewController(self, longPressGestureRecognizerDidTrigger: sender)
+        default:
+            break
+        }
     }
     
 }

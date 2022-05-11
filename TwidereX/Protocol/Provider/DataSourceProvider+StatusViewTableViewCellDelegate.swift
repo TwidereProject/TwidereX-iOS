@@ -163,7 +163,7 @@ extension StatusViewTableViewCellDelegate where Self: DataSourceProvider {
 
 
 // MARK: - media
-extension StatusViewTableViewCellDelegate where Self: DataSourceProvider & MediaPreviewTransitionHostViewController {
+extension StatusViewTableViewCellDelegate where Self: DataSourceProvider & MediaPreviewableViewController {
     func tableViewCell(
         _ cell: UITableViewCell,
         statusView: StatusView,

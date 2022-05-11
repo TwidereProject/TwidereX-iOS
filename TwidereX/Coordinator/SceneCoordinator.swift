@@ -20,6 +20,9 @@ final public class SceneCoordinator {
     
     let id = UUID().uuidString
     
+    // output
+    @Published var needsSetupAvatarBarButtonItem = false
+    
     init(scene: UIScene, sceneDelegate: SceneDelegate, context: AppContext) {
         self.scene = scene
         self.sceneDelegate = sceneDelegate
@@ -93,7 +96,7 @@ extension SceneCoordinator {
         case stubTimeline
         #endif
         
-        case safari(url: URL)
+        case safari(url: String)
         case activityViewController(activityViewController: UIActivityViewController, sourceView: UIView)
         case alertController(alertController: UIAlertController)
     }
@@ -102,8 +105,26 @@ extension SceneCoordinator {
 extension SceneCoordinator {
     
     func setup() {
-        let viewController = MainTabBarController(context: context, coordinator: self)
-        sceneDelegate.window?.rootViewController = viewController
+        let rootViewController: UIViewController
+        switch UIDevice.current.userInterfaceIdiom {
+        case .phone:
+            let viewController = MainTabBarController(context: context, coordinator: self)
+            rootViewController = viewController
+            needsSetupAvatarBarButtonItem = true
+        default:
+            let contentSplitViewController = ContentSplitViewController()
+            contentSplitViewController.context = context
+            contentSplitViewController.coordinator = self
+            rootViewController = contentSplitViewController
+            contentSplitViewController.$isSidebarDisplay
+                .sink { [weak self] isSidebarDisplay in
+                    guard let self = self else { return }
+                    self.needsSetupAvatarBarButtonItem = !isSidebarDisplay
+                }
+                .store(in: &contentSplitViewController.disposeBag)
+        }
+        
+        sceneDelegate.window?.rootViewController = rootViewController
     }
     
     func setupWelcomeIfNeeds() {
@@ -133,6 +154,14 @@ extension SceneCoordinator {
             return nil
         }
         
+        if let contentSplitViewController = presentingViewController as? ContentSplitViewController {
+            if contentSplitViewController.isSidebarDisplay, contentSplitViewController.isSecondaryTabBarControllerActive {
+                presentingViewController = contentSplitViewController.secondaryTabBarController
+            } else {
+                presentingViewController = contentSplitViewController.mainTabBarController
+            }
+        }
+                
         if let mainTabBarController = presentingViewController as? MainTabBarController,
            let navigationController = mainTabBarController.selectedViewController as? UINavigationController,
            let topViewController = navigationController.topViewController {
@@ -158,11 +187,11 @@ extension SceneCoordinator {
             }
             
         case .showDetail:
-            let navigationController = UINavigationController(rootViewController: viewController)
+            let navigationController = AdaptiveStatusBarStyleNavigationController(rootViewController: viewController)
             presentingViewController.showDetailViewController(navigationController, sender: sender)
             
         case .modal(let animated, let completion):
-            let modalNavigationController = UINavigationController(rootViewController: viewController)
+            let modalNavigationController = AdaptiveStatusBarStyleNavigationController(rootViewController: viewController)
             if let adaptivePresentationControllerDelegate = viewController as? UIAdaptivePresentationControllerDelegate {
                 modalNavigationController.presentationController?.delegate = adaptivePresentationControllerDelegate
             }
@@ -315,6 +344,9 @@ private extension SceneCoordinator {
             viewController = StubTimelineViewController()
         #endif
         case .safari(let url):
+            // escape non-ascii characters
+            guard let url = URL(string: url) ?? URL(string: url.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? url) else { return nil }
+            // only allow HTTP/HTTPS scheme
             guard let scheme = url.scheme?.lowercased(),
                   scheme == "http" || scheme == "https" else {
                 return nil

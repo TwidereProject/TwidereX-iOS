@@ -7,7 +7,7 @@ func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
     aspectTableView(tableView, didSelectRowAt: indexPath)
 }
 
-{% if type.based.MediaPreviewTransitionHostViewController %}
+{% if type.based.MediaPreviewableViewController %}
 func tableView(_ tableView: UITableView, contextMenuConfigurationForRowAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
     return aspectTableView(tableView, contextMenuConfigurationForRowAt: indexPath, point: point)
 }

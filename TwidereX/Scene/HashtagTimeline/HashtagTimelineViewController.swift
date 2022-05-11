@@ -13,7 +13,7 @@ import AppShared
 import Floaty
 import TwidereComposeUI
 
-final class HashtagTimelineViewController: UIViewController, NeedsDependency, MediaPreviewTransitionHostViewController {
+final class HashtagTimelineViewController: UIViewController, NeedsDependency, MediaPreviewableViewController {
     
     let logger = Logger(subsystem: "HashtagTimelineViewController", category: "ViewController")
     

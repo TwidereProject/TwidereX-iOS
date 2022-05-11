@@ -8,6 +8,7 @@
 
 import UIKit
 import AVKit
+import TwidereCore
 import TwidereUI
 
 extension DataSourceFacade {
@@ -38,7 +39,7 @@ extension DataSourceFacade {
     }
     
     static func coordinateToMediaPreviewScene(
-        provider: DataSourceProvider & MediaPreviewTransitionHostViewController,
+        provider: DataSourceProvider & MediaPreviewableViewController,
         target: StatusTarget,
         status: StatusRecord,
         mediaPreviewContext: MediaPreviewContext
@@ -61,8 +62,9 @@ extension DataSourceFacade {
 
 extension DataSourceFacade {
     
+    @MainActor
     static func coordinateToMediaPreviewScene(
-        provider: DataSourceProvider & MediaPreviewTransitionHostViewController,
+        provider: DataSourceProvider & MediaPreviewableViewController,
         status: StatusRecord,
         mediaPreviewContext: MediaPreviewContext
     ) async {
@@ -108,17 +110,44 @@ extension DataSourceFacade {
                 initialIndex: mediaPreviewContext.index,
                 preloadThumbnails: thumbnails
             )),
-            mediaPreviewTransitionItem: MediaPreviewTransitionItem(
-                source: source,
-                transitionHostViewController: provider
-            ),
+            mediaPreviewTransitionItem: {
+                // FIXME: allow other source
+                let item = MediaPreviewTransitionItem(
+                    source: source,
+                    previewableViewController: provider
+                )
+                let mediaView = mediaPreviewContext.mediaView
+                
+                item.initialFrame = {
+                    let initialFrame = mediaView.superview!.convert(mediaView.frame, to: nil)
+                    assert(initialFrame != .zero)
+                    return initialFrame
+                }()
+                
+                let thumbnail = mediaView.thumbnail()
+                item.image = thumbnail
+                
+                item.aspectRatio = {
+                    if let thumbnail = thumbnail {
+                        return thumbnail.size
+                    }
+                    let index = mediaPreviewContext.index
+                    guard index < attachments.count else { return nil }
+                    let size = attachments[index].size
+                    return size
+                }()
+                
+                item.sourceImageViewCornerRadius = MediaView.cornerRadius
+                
+                return item
+            }(),
             mediaPreviewContext: mediaPreviewContext
         )
     }
     
     @MainActor
     static func coordinateToMediaPreviewScene(
-        provider: DataSourceProvider & MediaPreviewTransitionHostViewController,
+        provider: DataSourceProvider & MediaPreviewableViewController,
         status: StatusRecord,
         mediaPreviewItem: MediaPreviewViewModel.Item,
         mediaPreviewTransitionItem: MediaPreviewTransitionItem,

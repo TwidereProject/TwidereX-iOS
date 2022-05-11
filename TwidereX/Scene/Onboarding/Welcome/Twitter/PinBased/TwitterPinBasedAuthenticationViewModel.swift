@@ -14,14 +14,14 @@ import WebKit
 final class TwitterPinBasedAuthenticationViewModel {
     
     // input
-    let authenticateURL: URL
+    let authorizeURL: URL
     
     // output
     let pinCodePublisher = PassthroughSubject<String, Never>()
     private var navigationDelegateShim: TwitterPinBasedAuthenticationViewModelNavigationDelegateShim?
     
-    init(authenticateURL: URL) {
-        self.authenticateURL = authenticateURL
+    init(authorizeURL: URL) {
+        self.authorizeURL = authorizeURL
     }
     
     deinit {
