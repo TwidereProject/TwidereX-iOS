@@ -38,3 +38,12 @@ extension Twitter.Entity.Trend {
     }
 }
 
+extension Twitter.Entity.Trend.Place: Hashable {
+    public static func == (lhs: Twitter.Entity.Trend.Place, rhs: Twitter.Entity.Trend.Place) -> Bool {
+        return lhs.woeid == rhs.woeid
+    }
+    
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(woeid)
+    }
+}

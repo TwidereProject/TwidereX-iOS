@@ -46,6 +46,12 @@ public final class ComposeContentViewController: UIViewController {
         return inputView
     }()
     
+    private(set) lazy var documentPickerController: UIDocumentPickerViewController = {
+        let documentPickerController = UIDocumentPickerViewController(forOpeningContentTypes: [.image, .movie])
+        documentPickerController.delegate = self
+        return documentPickerController
+    }()
+    
     deinit {
         os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
     }
@@ -398,6 +404,16 @@ extension ComposeContentViewController: UITableViewDelegate {
 
 }
 
+// MARK: - UIDocumentPickerDelegate
+extension ComposeContentViewController: UIDocumentPickerDelegate {
+    public func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
+        guard let url = urls.first else { return }
+
+        let attachmentViewModel = AttachmentViewModel(input: .url(url))
+        viewModel.attachmentViewModels.append(attachmentViewModel)
+    }
+}
+
 // MARK: - PHPickerViewControllerDelegate
 extension ComposeContentViewController: PHPickerViewControllerDelegate {
     public func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
@@ -483,7 +499,7 @@ extension ComposeContentViewController: ComposeToolbarViewDelegate {
         case .photoLibrary:
             present(createPhotoLibraryPicker(), animated: true, completion: nil)
         case .browse:
-            break
+            present(documentPickerController, animated: true, completion: nil)
         }
     }
 

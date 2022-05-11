@@ -88,6 +88,13 @@ extension TrendViewModel {
 
 extension TrendViewModel {
     
+    // reset to worldwide
+    func resetTrendGroupIndex() {
+        TrendViewModel.defaultTwitterTrendPlace = nil
+        trendGroupIndex = .twitter(placeID: 1)      // worldwide
+    }
+
+    // set place
     func updateTrendGroupIndex(place: Twitter.Entity.Trend.Place) {
         TrendViewModel.defaultTwitterTrendPlace = place
         trendGroupIndex = .twitter(placeID: place.woeid)

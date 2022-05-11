@@ -442,6 +442,7 @@
 "Scene.Settings.Misc.Proxy.Title" = "代理设置";
 "Scene.Settings.Misc.Proxy.Type.Http" = "HTTP";
 "Scene.Settings.Misc.Proxy.Type.Reverse" = "反向代理";
+"Scene.Settings.Misc.Proxy.Type.Socks" = "SOCKS";
 "Scene.Settings.Misc.Proxy.Type.Title" = "代理类型";
 "Scene.Settings.Misc.Proxy.Username" = "用户名";
 "Scene.Settings.Misc.Title" = "其它";
@@ -478,3 +479,4 @@
 "Scene.Trends.Now" = "现在的趋势";
 "Scene.Trends.Title" = "趋势";
 "Scene.Trends.WorldWide" = "趋势 - 全球范围";
+"Scene.Trends.WorldWideWithoutPrefix" = "全球范围";
