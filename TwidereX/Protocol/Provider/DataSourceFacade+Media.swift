@@ -102,8 +102,8 @@ extension DataSourceFacade {
                 }
                 let playerViewController = AVPlayerViewController()
                 playerViewController.player = AVPlayer(url: assetURL)
-                playerViewController.player?.isMuted = true
                 playerViewController.player?.play()
+                playerViewController.delegate = provider.context.playerService
                 provider.present(playerViewController, animated: true, completion: nil)
             }
             return
