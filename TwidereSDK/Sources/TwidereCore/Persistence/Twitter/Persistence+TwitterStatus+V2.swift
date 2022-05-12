@@ -239,6 +239,13 @@ extension Persistence.TwitterStatus {
         // media
         context.dictionary.media(for: context.entity.status)
             .flatMap { media in
+                // https://twittercommunity.com/t/how-to-get-video-from-media-key/152449/6
+                // V2 API missing video asset URL
+                // do not update video & GIFV attachments
+                let isVideo = media.contains(where: { $0.type == TwitterAttachment.Kind.animatedGIF.rawValue || $0.type == TwitterAttachment.Kind.video.rawValue })
+                let isEmpty = status.attachments.isEmpty
+                guard !isVideo || isEmpty else { return }
+                
                 let attachments = media.compactMap { $0.twitterAttachment }
                 status.update(attachments: attachments)
             }

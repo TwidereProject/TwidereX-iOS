@@ -12,7 +12,6 @@ extension MediaGridContainerView {
     public class ViewModel {
         var disposeBag = Set<AnyCancellable>()
         
-        
         @Published public var isSensitiveToggleButtonDisplay: Bool = false
         @Published public var isContentWarningOverlayDisplay: Bool? = nil
     }

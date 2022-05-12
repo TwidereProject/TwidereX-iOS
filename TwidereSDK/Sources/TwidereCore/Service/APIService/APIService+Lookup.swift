@@ -15,8 +15,7 @@ import func QuartzCore.CACurrentMediaTime
 
 extension APIService {
     
-    // V1
-
+    // V1    
     public func twitterStatusV1(
         statusIDs: [Twitter.Entity.Tweet.ID],
         authenticationContext: TwitterAuthenticationContext

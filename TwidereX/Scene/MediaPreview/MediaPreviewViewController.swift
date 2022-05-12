@@ -185,6 +185,21 @@ extension MediaPreviewViewController {
                 }
             }
             .store(in: &disposeBag)
+        
+        viewModel.$currentPage
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                guard let self = self else { return }
+                guard let currentViewController = self.pageViewController.currentViewController else { return }
+                
+                switch currentViewController {
+                case is MediaPreviewVideoViewController:
+                    self.toggleControlDisplay(isHidden: true)
+                default:
+                    self.toggleControlDisplay(isHidden: false)
+                }
+            }
+            .store(in: &disposeBag)
     }
 
     override func viewDidLayoutSubviews() {
@@ -213,6 +228,15 @@ extension MediaPreviewViewController {
         pageViewController.scrollToPage(.at(index: currentPage), animated: true, completion: nil)
     }
 
+}
+
+extension MediaPreviewViewController {
+    
+    func toggleControlDisplay(isHidden: Bool) {
+        closeButtonBackground.isHidden = isHidden
+        mediaInfoDescriptionView.isHidden = isHidden
+    }
+    
 }
 
 // MARK: - PageboyViewControllerDelegate

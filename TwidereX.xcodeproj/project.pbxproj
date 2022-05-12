@@ -83,7 +83,6 @@
 		DB2D36F627D5E73A00C1FBE0 /* CompositeListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB2D36F527D5E73A00C1FBE0 /* CompositeListViewController.swift */; };
 		DB2D36F927D5E74D00C1FBE0 /* CompositeListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB2D36F827D5E74D00C1FBE0 /* CompositeListViewModel.swift */; };
 		DB2EBBF0255D368200956CAA /* TableViewEntryRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB2EBBEF255D368200956CAA /* TableViewEntryRow.swift */; };
-		DB2FFF2E258B1077003DBC19 /* MosaicPlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB2FFF2D258B1077003DBC19 /* MosaicPlayerView.swift */; };
 		DB2FFF3E258B78B0003DBC19 /* AVPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB2FFF3D258B78B0003DBC19 /* AVPlayer.swift */; };
 		DB30ADDC26CFC7EE00B2D2BE /* StatusTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB30ADDB26CFC7EE00B2D2BE /* StatusTableViewCell.swift */; };
 		DB30ADDD26CFD3CC00B2D2BE /* HomeTimelineViewController+DebugAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBB2513D2599DBAB0064A876 /* HomeTimelineViewController+DebugAction.swift */; };
@@ -340,7 +339,6 @@
 		DBE76D1E2500E65D00DEB0FC /* HomeTimelineViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBE76D1D2500E65D00DEB0FC /* HomeTimelineViewModel.swift */; };
 		DBE76D34250214A700DEB0FC /* CommonOSLog in Frameworks */ = {isa = PBXBuildFile; productRef = DBE76D33250214A700DEB0FC /* CommonOSLog */; };
 		DBEA4F842511F7460007FEC5 /* Kanna in Frameworks */ = {isa = PBXBuildFile; productRef = DBEA4F832511F7460007FEC5 /* Kanna */; };
-		DBEA4F8F251314640007FEC5 /* MosaicImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBEA4F8E251314640007FEC5 /* MosaicImageView.swift */; };
 		DBED96D8253F5D7800C5383A /* NamingState.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBED96D7253F5D7800C5383A /* NamingState.swift */; };
 		DBF167FD27C394830001F75E /* NeedsDependency+AvatarBarButtonItemDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBF167FC27C394830001F75E /* NeedsDependency+AvatarBarButtonItemDelegate.swift */; };
 		DBF3309125B96E0B00A678FB /* WKNavigationDelegateShim.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBF3309025B96E0B00A678FB /* WKNavigationDelegateShim.swift */; };
@@ -570,7 +568,6 @@
 		DB2D36F527D5E73A00C1FBE0 /* CompositeListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompositeListViewController.swift; sourceTree = "<group>"; };
 		DB2D36F827D5E74D00C1FBE0 /* CompositeListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompositeListViewModel.swift; sourceTree = "<group>"; };
 		DB2EBBEF255D368200956CAA /* TableViewEntryRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TableViewEntryRow.swift; sourceTree = "<group>"; };
-		DB2FFF2D258B1077003DBC19 /* MosaicPlayerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MosaicPlayerView.swift; sourceTree = "<group>"; };
 		DB2FFF3D258B78B0003DBC19 /* AVPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AVPlayer.swift; sourceTree = "<group>"; };
 		DB30ADDB26CFC7EE00B2D2BE /* StatusTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusTableViewCell.swift; sourceTree = "<group>"; };
 		DB33A4A825A319A0003CED7D /* ActionToolbarContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionToolbarContainer.swift; sourceTree = "<group>"; };
@@ -863,7 +860,6 @@
 		DBE76CF82500B29500DEB0FC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		DBE76CFE2500B43300DEB0FC /* StubMixer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StubMixer.swift; sourceTree = "<group>"; };
 		DBE76D1D2500E65D00DEB0FC /* HomeTimelineViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeTimelineViewModel.swift; sourceTree = "<group>"; };
-		DBEA4F8E251314640007FEC5 /* MosaicImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MosaicImageView.swift; sourceTree = "<group>"; };
 		DBED2A7125B8006400BE6941 /* ar */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ar; path = ar.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		DBED96D7253F5D7800C5383A /* NamingState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NamingState.swift; sourceTree = "<group>"; };
 		DBEFDC8725591F5C0086F268 /* DrawerSidebarViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawerSidebarViewController.swift; sourceTree = "<group>"; };
@@ -1045,8 +1041,6 @@
 		DB04920325904CFA00CCD50E /* Container */ = {
 			isa = PBXGroup;
 			children = (
-				DBEA4F8E251314640007FEC5 /* MosaicImageView.swift */,
-				DB2FFF2D258B1077003DBC19 /* MosaicPlayerView.swift */,
 				DBF639FB259B333A009E12C8 /* EmptyStateView.swift */,
 			);
 			path = Container;
@@ -2927,7 +2921,6 @@
 				DB83020D273D160400BF5224 /* NotificationTimelineViewModel+LoadOldestState.swift in Sources */,
 				DB262A3727213FBE00D18EF3 /* UIAlertAction.swift in Sources */,
 				DB2C0BDF27DF21A70033FC94 /* EditListViewModel.swift in Sources */,
-				DBEA4F8F251314640007FEC5 /* MosaicImageView.swift in Sources */,
 				DBF639F2259B13BB009E12C8 /* TimelineHeaderView.swift in Sources */,
 				DB004BF626CE4A7F00F5C574 /* StatusCollectionViewCell.swift in Sources */,
 				DB3B906D26E8DB6E0010F64C /* DataSourceFacade+Profile.swift in Sources */,
@@ -3205,7 +3198,6 @@
 				DB3B906B26E8D3AB0010F64C /* DataSourceFacade+Status.swift in Sources */,
 				DB51DC202715734900A0D8FB /* UserTimelineViewController+DataSourceProvider.swift in Sources */,
 				DB5FB00F2727FCB7006520FA /* SearchUserViewController.swift in Sources */,
-				DB2FFF2E258B1077003DBC19 /* MosaicPlayerView.swift in Sources */,
 				DB5632AB26DCCD3900FC893F /* DataSourceFacade.swift in Sources */,
 				DB47AB4927CF537D00CD73C7 /* ListStatusViewController+DataSourceProvider.swift in Sources */,
 				DB8761D02745553700BA7EE2 /* MediaSection.swift in Sources */,
