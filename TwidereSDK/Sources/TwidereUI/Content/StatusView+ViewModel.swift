@@ -427,7 +427,7 @@ extension StatusView.ViewModel {
         $mediaViewConfigurations
             .sink { [weak self] configurations in
                 guard let self = self else { return }
-                self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): configure media")
+                // self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): configure media")
                 
                 let maxSize = CGSize(
                     width: statusView.contentMaxLayoutWidth,

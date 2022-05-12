@@ -72,13 +72,7 @@ extension DrawerSidebarAnimatedTransitioning {
         transitionContext.containerView.addSubview(toView)
         toView.transform = transform
         fromView.transform = .identity
-        
-        // fix custom presention container cause layout along with animation issue
-        UIView.performWithoutAnimation {
-            toView.setNeedsLayout()
-            toView.layoutIfNeeded()
-        }
-        
+    
         let separatorLine = SeparatorLineView()
         separatorLine.translatesAutoresizingMaskIntoConstraints = false
         transitionContext.containerView.addSubview(separatorLine)
@@ -115,13 +109,14 @@ extension DrawerSidebarAnimatedTransitioning {
     private func popTransition(using transitionContext: UIViewControllerContextTransitioning, timingParameters: UITimingCurveProvider = UISpringTimingParameters()) -> UIViewPropertyAnimator {
         guard let _ = transitionContext.viewController(forKey: .from) as? DrawerSidebarViewController,
               let fromView = transitionContext.view(forKey: .from),
+              let toViewController = transitionContext.viewController(forKey: .to),
               let toView = transitionContext.view(forKey: .to) else {
             fatalError()
         }
 
         transitionContext.containerView.addSubview(toView)
         transitionContext.containerView.bringSubviewToFront(fromView)
-
+        
         let transform: CGAffineTransform = {
             let width = transitionContext.containerView.frame.width
             switch UIApplication.shared.userInterfaceLayoutDirection {
@@ -132,6 +127,8 @@ extension DrawerSidebarAnimatedTransitioning {
             }
         }()
         fromView.transform = .identity
+        toView.frame.size = transitionContext.finalFrame(for: toViewController).size
+        toView.transform = transform.inverted()
         
         let separatorLine = SeparatorLineView()
         separatorLine.translatesAutoresizingMaskIntoConstraints = false
