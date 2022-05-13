@@ -74,20 +74,37 @@ extension DataSourceFacade {
         }
         let thumbnails = await mediaPreviewContext.thumbnails()
         
-        // FIXME:
-        if let first = attachments.first,
-           first.kind == .video || first.kind == .audio
-        {
-            if let assetURL = first.assetURL {
-                Task { @MainActor [weak provider] in
-                    let playerViewController = AVPlayerViewController()
-                    playerViewController.player = AVPlayer(url: assetURL)
-                    playerViewController.player?.isMuted = true
-                    playerViewController.player?.play()
-                    provider?.present(playerViewController, animated: true, completion: nil)
+        // use standard video player
+        if let first = attachments.first, first.kind == .video || first.kind == .audio {
+            Task { @MainActor [weak provider] in
+                guard let provider = provider else { return }
+                // workaround Twitter Video assertURL missing from V2 API issue
+                var assetURL: URL
+                if let url = first.assetURL {
+                    assetURL = url
+                } else if case let .twitter(record) = status {
+                    let _statusID: String? = await provider.context.managedObjectContext.perform {
+                        let status = record.object(in: provider.context.managedObjectContext)
+                        return status?.id
+                    }
+                    guard let statusID = _statusID,
+                          case let .twitter(authenticationContext) = provider.context.authenticationService.activeAuthenticationContext
+                    else { return }
+                    
+                    let _response = try? await provider.context.apiService.twitterStatusV1(statusIDs: [statusID], authenticationContext: authenticationContext)
+                    guard let status = _response?.value.first,
+                          let url = status.extendedEntities?.media?.first?.assetURL.flatMap({ URL(string: $0) })
+                    else { return }
+                    assetURL = url
+                } else {
+                    assertionFailure()
+                    return
                 }
-            } else {
-                // do nothing
+                let playerViewController = AVPlayerViewController()
+                playerViewController.player = AVPlayer(url: assetURL)
+                playerViewController.player?.play()
+                playerViewController.delegate = provider.context.playerService
+                provider.present(playerViewController, animated: true, completion: nil)
             }
             return
         }

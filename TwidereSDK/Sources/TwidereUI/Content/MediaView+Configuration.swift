@@ -97,7 +97,7 @@ extension MediaView {
 }
 
 extension MediaView {
-    public static func configuration(twitterStatus status: TwitterStatus) -> AnyPublisher<[MediaView.Configuration], Never> {
+    public static func configuration(twitterStatus status: TwitterStatus) -> [MediaView.Configuration] {
         func videoInfo(from attachment: TwitterAttachment) -> MediaView.Configuration.VideoInfo {
             MediaView.Configuration.VideoInfo(
                 aspectRadio: attachment.size,
@@ -108,29 +108,25 @@ extension MediaView {
         }
         
         let status = status.repost ?? status
-        return status.publisher(for: \.attachments)
-            .map { attachments -> [MediaView.Configuration] in
-                return attachments.map { attachment -> MediaView.Configuration in
-                    switch attachment.kind {
-                    case .photo:
-                        let info = MediaView.Configuration.ImageInfo(
-                            aspectRadio: attachment.size,
-                            assetURL: attachment.assetURL
-                        )
-                        return .image(info: info)
-                    case .video:
-                        let info = videoInfo(from: attachment)
-                        return .video(info: info)
-                    case .animatedGIF:
-                        let info = videoInfo(from: attachment)
-                        return .gif(info: info)
-                    }
-                }
+        return status.attachments.map { attachment -> MediaView.Configuration in
+            switch attachment.kind {
+            case .photo:
+                let info = MediaView.Configuration.ImageInfo(
+                    aspectRadio: attachment.size,
+                    assetURL: attachment.assetURL
+                )
+                return .image(info: info)
+            case .video:
+                let info = videoInfo(from: attachment)
+                return .video(info: info)
+            case .animatedGIF:
+                let info = videoInfo(from: attachment)
+                return .gif(info: info)
             }
-            .eraseToAnyPublisher()
+        }
     }
     
-    public static func configuration(mastodonStatus status: MastodonStatus) -> AnyPublisher<[MediaView.Configuration], Never> {
+    public static func configuration(mastodonStatus status: MastodonStatus) -> [MediaView.Configuration] {
         func videoInfo(from attachment: MastodonAttachment) -> MediaView.Configuration.VideoInfo {
             MediaView.Configuration.VideoInfo(
                 aspectRadio: attachment.size,
@@ -141,29 +137,25 @@ extension MediaView {
         }
         
         let status = status.repost ?? status
-        return status.publisher(for: \.attachments)
-            .map { attachments -> [MediaView.Configuration] in
-                return attachments.map { attachment -> MediaView.Configuration in
-                    switch attachment.kind {
-                    case .image:
-                        let info = MediaView.Configuration.ImageInfo(
-                            aspectRadio: attachment.size,
-                            assetURL: attachment.assetURL
-                        )
-                        return .image(info: info)
-                    case .video:
-                        let info = videoInfo(from: attachment)
-                        return .video(info: info)
-                    case .gifv:
-                        let info = videoInfo(from: attachment)
-                        return .gif(info: info)
-                    case .audio:
-                        // TODO:
-                        let info = videoInfo(from: attachment)
-                        return .video(info: info)
-                    }
-                }
+        return status.attachments.map { attachment -> MediaView.Configuration in
+            switch attachment.kind {
+            case .image:
+                let info = MediaView.Configuration.ImageInfo(
+                    aspectRadio: attachment.size,
+                    assetURL: attachment.assetURL
+                )
+                return .image(info: info)
+            case .video:
+                let info = videoInfo(from: attachment)
+                return .video(info: info)
+            case .gifv:
+                let info = videoInfo(from: attachment)
+                return .gif(info: info)
+            case .audio:
+                // TODO:
+                let info = videoInfo(from: attachment)
+                return .video(info: info)
             }
-            .eraseToAnyPublisher()
+        }
     }
 }

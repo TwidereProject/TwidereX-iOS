@@ -331,7 +331,7 @@
 "Scene.ListsModify.Dialog.Edit" = "重命名列表";
 "Scene.ListsModify.Edit.Title" = "编辑列表";
 "Scene.ListsModify.Name" = "名称";
-"Scene.ListsModify.Private" = "仅关注者";
+"Scene.ListsModify.Private" = "私密";
 "Scene.ListsUsers.Add.Search" = "搜索用户";
 "Scene.ListsUsers.Add.SearchWithinPeopleYouFollow" = "在你关注的人中搜索";
 "Scene.ListsUsers.Add.Title" = "添加成员";
