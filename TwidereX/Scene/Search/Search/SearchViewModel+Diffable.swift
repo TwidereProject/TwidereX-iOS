@@ -102,7 +102,7 @@ extension SearchViewModel {
             snapshot.appendItems(historyItems, toSection: .history)
 
             // trend
-            snapshot.appendItems(trendItems, toSection: .trend)
+            snapshot.appendItems(trendItems.removingDuplicates(), toSection: .trend)
             
             diffableDataSource.apply(snapshot, animatingDifferences: false, completion: nil)
         }

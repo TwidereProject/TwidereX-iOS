@@ -7,6 +7,21 @@
 
 import Foundation
 
+/// https://www.hackingwithswift.com/example-code/language/how-to-remove-duplicate-items-from-an-array
+extension Array where Element: Hashable {
+    public func removingDuplicates() -> [Element] {
+        var addedDict = [Element: Bool]()
+
+        return filter {
+            addedDict.updateValue(true, forKey: $0) == nil
+        }
+    }
+
+    public mutating func removeDuplicates() {
+        self = self.removingDuplicates()
+    }
+}
+
 //
 //  CryptoSwift
 //
