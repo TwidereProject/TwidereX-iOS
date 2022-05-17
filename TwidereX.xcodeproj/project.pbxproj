@@ -163,8 +163,6 @@
 		DB66DB932823EE1F0071F5F3 /* SecondaryTabBarRootController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB66DB922823EE1F0071F5F3 /* SecondaryTabBarRootController.swift */; };
 		DB67610D254AD681006C6798 /* ActivityIndicatorCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB67610C254AD681006C6798 /* ActivityIndicatorCollectionViewCell.swift */; };
 		DB676161254BE580006C6798 /* MediaPreviewCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB676160254BE580006C6798 /* MediaPreviewCollectionViewCell.swift */; };
-		DB692A0D281317040031CC80 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = DB692A0C281317040031CC80 /* FirebaseAnalytics */; };
-		DB692A0F281317040031CC80 /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = DB692A0E281317040031CC80 /* FirebaseCrashlytics */; };
 		DB697DF3278FDDF7004EF2F7 /* TimelineViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB697DF2278FDDF7004EF2F7 /* TimelineViewModel.swift */; };
 		DB697DFF278FE416004EF2F7 /* TimelineViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB697DFE278FE416004EF2F7 /* TimelineViewController.swift */; };
 		DB697E0927904BFB004EF2F7 /* FederatedTimelineViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB697E0827904BFB004EF2F7 /* FederatedTimelineViewController.swift */; };
@@ -937,10 +935,8 @@
 				DBFC0AE9276118240011E99B /* AppShared.framework in Frameworks */,
 				DB6B2EC827612E0700A9B9D2 /* CoverFlowStackCollectionViewLayout in Frameworks */,
 				DB94B6B126C64DAC00A2E8A1 /* Introspect in Frameworks */,
-				DB692A0D281317040031CC80 /* FirebaseAnalytics in Frameworks */,
 				DB6CF1C4269715CD001DE069 /* FPSIndicator in Frameworks */,
 				DBD98489251CB88A00ED87A1 /* Tabman in Frameworks */,
-				DB692A0F281317040031CC80 /* FirebaseCrashlytics in Frameworks */,
 				DB6B2ECA27612E0A00A9B9D2 /* TabBarPager in Frameworks */,
 				DBEA4F842511F7460007FEC5 /* Kanna in Frameworks */,
 				DB7AB33E2744E3740035EB8A /* Floaty in Frameworks */,
@@ -2474,13 +2470,14 @@
 			buildConfigurationList = DBDA8E4824FCF8A7006750DC /* Build configuration list for PBXNativeTarget "TwidereX" */;
 			buildPhases = (
 				F13779F6AF8F9C7C3EBF7183 /* [CP] Check Pods Manifest.lock */,
-				DBDA8E1A24FCF8A3006750DC /* Sources */,
 				DBDA8E1B24FCF8A3006750DC /* Frameworks */,
+				DBDA8E1A24FCF8A3006750DC /* Sources */,
 				DBDA8E1C24FCF8A3006750DC /* Resources */,
-				DBDA8E9A24FE0E4E006750DC /* ShellScript */,
 				6B1901F5A04D5AA62D66599E /* [CP] Embed Pods Frameworks */,
+				DBDA8E9A24FE0E4E006750DC /* ShellScript */,
 				DB5632A026DCC52F00FC893F /* ShellScript */,
 				DB51DC3227169C3F00A0D8FB /* ShellScript */,
+				DB49A09C283422A4000E3B50 /* ShellScript */,
 				DBFC0AEB276118240011E99B /* Embed Frameworks */,
 				DBFDCE0C27F446BB00BE99E3 /* Embed App Extensions */,
 			);
@@ -2502,8 +2499,6 @@
 				DBA5DDB6274E1BBF00FF12E3 /* UITextView+Placeholder */,
 				DB6B2EC727612E0700A9B9D2 /* CoverFlowStackCollectionViewLayout */,
 				DB6B2EC927612E0A00A9B9D2 /* TabBarPager */,
-				DB692A0C281317040031CC80 /* FirebaseAnalytics */,
-				DB692A0E281317040031CC80 /* FirebaseCrashlytics */,
 			);
 			productName = TwidereX;
 			productReference = DBDA8E1E24FCF8A3006750DC /* TwidereX.app */;
@@ -2622,19 +2617,18 @@
 			packageReferences = (
 				DBE76D32250214A700DEB0FC /* XCRemoteSwiftPackageReference "CommonOSLog" */,
 				DBE76D3C2502518D00DEB0FC /* XCRemoteSwiftPackageReference "AlamofireImage" */,
-				DBEA4F822511F7460007FEC5 /* XCRemoteSwiftPackageReference "Kanna" */,
-				DB2611B5251B2D42004BF309 /* XCRemoteSwiftPackageReference "CryptoSwift" */,
-				DBD98487251CB88A00ED87A1 /* XCRemoteSwiftPackageReference "Tabman" */,
-				DB2924C92546B958003899A7 /* XCRemoteSwiftPackageReference "Kingfisher" */,
+				DBEA4F822511F7460007FEC5 /* XCRemoteSwiftPackageReference "Kanna.git" */,
+				DB2611B5251B2D42004BF309 /* XCRemoteSwiftPackageReference "CryptoSwift.git" */,
+				DBD98487251CB88A00ED87A1 /* XCRemoteSwiftPackageReference "Tabman.git" */,
+				DB2924C92546B958003899A7 /* XCRemoteSwiftPackageReference "Kingfisher.git" */,
 				DB9EC4DF255A6317005403AA /* XCRemoteSwiftPackageReference "SwiftMessages" */,
-				DB74A162256E148F00C5F3C9 /* XCRemoteSwiftPackageReference "TOCropViewController" */,
-				DB6CF1C2269715CD001DE069 /* XCRemoteSwiftPackageReference "FPSIndicator" */,
-				DB94B6AF26C64DAC00A2E8A1 /* XCRemoteSwiftPackageReference "SwiftUI-Introspect" */,
-				DB30ADD426CF583900B2D2BE /* XCRemoteSwiftPackageReference "FLAnimatedImage" */,
-				DB7AB33C2744E3740035EB8A /* XCRemoteSwiftPackageReference "Floaty" */,
-				DB096FD2274B7B0C00D56CFA /* XCRemoteSwiftPackageReference "Alamofire" */,
-				DBA5DDB5274E1BBF00FF12E3 /* XCRemoteSwiftPackageReference "UITextView-Placeholder" */,
-				DB692A0B281317040031CC80 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+				DB74A162256E148F00C5F3C9 /* XCRemoteSwiftPackageReference "TOCropViewController.git" */,
+				DB6CF1C2269715CD001DE069 /* XCRemoteSwiftPackageReference "FPSIndicator.git" */,
+				DB94B6AF26C64DAC00A2E8A1 /* XCRemoteSwiftPackageReference "SwiftUI-Introspect.git" */,
+				DB30ADD426CF583900B2D2BE /* XCRemoteSwiftPackageReference "FLAnimatedImage.git" */,
+				DB7AB33C2744E3740035EB8A /* XCRemoteSwiftPackageReference "Floaty.git" */,
+				DB096FD2274B7B0C00D56CFA /* XCRemoteSwiftPackageReference "Alamofire.git" */,
+				DBA5DDB5274E1BBF00FF12E3 /* XCRemoteSwiftPackageReference "UITextView-Placeholder.git" */,
 			);
 			productRefGroup = DBDA8E1F24FCF8A3006750DC /* Products */;
 			projectDirPath = "";
@@ -2806,6 +2800,23 @@
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
+		};
+		DB49A09C283422A4000E3B50 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\n\"${PODS_ROOT}/FirebaseCrashlytics/run\"\n";
 		};
 		DB51DC3227169C3F00A0D8FB /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -4135,7 +4146,7 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		DB096FD2274B7B0C00D56CFA /* XCRemoteSwiftPackageReference "Alamofire" */ = {
+		DB096FD2274B7B0C00D56CFA /* XCRemoteSwiftPackageReference "Alamofire.git" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/Alamofire/Alamofire.git";
 			requirement = {
@@ -4143,7 +4154,7 @@
 				minimumVersion = 5.0.0;
 			};
 		};
-		DB2611B5251B2D42004BF309 /* XCRemoteSwiftPackageReference "CryptoSwift" */ = {
+		DB2611B5251B2D42004BF309 /* XCRemoteSwiftPackageReference "CryptoSwift.git" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/krzyzanowskim/CryptoSwift.git";
 			requirement = {
@@ -4151,7 +4162,7 @@
 				minimumVersion = 1.3.2;
 			};
 		};
-		DB2924C92546B958003899A7 /* XCRemoteSwiftPackageReference "Kingfisher" */ = {
+		DB2924C92546B958003899A7 /* XCRemoteSwiftPackageReference "Kingfisher.git" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/onevcat/Kingfisher.git";
 			requirement = {
@@ -4159,7 +4170,7 @@
 				minimumVersion = 7.1.1;
 			};
 		};
-		DB30ADD426CF583900B2D2BE /* XCRemoteSwiftPackageReference "FLAnimatedImage" */ = {
+		DB30ADD426CF583900B2D2BE /* XCRemoteSwiftPackageReference "FLAnimatedImage.git" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/Flipboard/FLAnimatedImage.git";
 			requirement = {
@@ -4167,15 +4178,7 @@
 				minimumVersion = 1.0.0;
 			};
 		};
-		DB692A0B281317040031CC80 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 8.0.0;
-			};
-		};
-		DB6CF1C2269715CD001DE069 /* XCRemoteSwiftPackageReference "FPSIndicator" */ = {
+		DB6CF1C2269715CD001DE069 /* XCRemoteSwiftPackageReference "FPSIndicator.git" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/MainasuK/FPSIndicator.git";
 			requirement = {
@@ -4183,7 +4186,7 @@
 				minimumVersion = 1.0.0;
 			};
 		};
-		DB74A162256E148F00C5F3C9 /* XCRemoteSwiftPackageReference "TOCropViewController" */ = {
+		DB74A162256E148F00C5F3C9 /* XCRemoteSwiftPackageReference "TOCropViewController.git" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/TimOliver/TOCropViewController.git";
 			requirement = {
@@ -4191,7 +4194,7 @@
 				minimumVersion = 2.6.0;
 			};
 		};
-		DB7AB33C2744E3740035EB8A /* XCRemoteSwiftPackageReference "Floaty" */ = {
+		DB7AB33C2744E3740035EB8A /* XCRemoteSwiftPackageReference "Floaty.git" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/kciter/Floaty.git";
 			requirement = {
@@ -4199,7 +4202,7 @@
 				kind = branch;
 			};
 		};
-		DB94B6AF26C64DAC00A2E8A1 /* XCRemoteSwiftPackageReference "SwiftUI-Introspect" */ = {
+		DB94B6AF26C64DAC00A2E8A1 /* XCRemoteSwiftPackageReference "SwiftUI-Introspect.git" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/siteline/SwiftUI-Introspect.git";
 			requirement = {
@@ -4215,7 +4218,7 @@
 				minimumVersion = 9.0.0;
 			};
 		};
-		DBA5DDB5274E1BBF00FF12E3 /* XCRemoteSwiftPackageReference "UITextView-Placeholder" */ = {
+		DBA5DDB5274E1BBF00FF12E3 /* XCRemoteSwiftPackageReference "UITextView-Placeholder.git" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/MainasuK/UITextView-Placeholder.git";
 			requirement = {
@@ -4223,7 +4226,7 @@
 				minimumVersion = 1.4.1;
 			};
 		};
-		DBD98487251CB88A00ED87A1 /* XCRemoteSwiftPackageReference "Tabman" */ = {
+		DBD98487251CB88A00ED87A1 /* XCRemoteSwiftPackageReference "Tabman.git" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/uias/Tabman.git";
 			requirement = {
@@ -4247,7 +4250,7 @@
 				minimumVersion = 4.1.0;
 			};
 		};
-		DBEA4F822511F7460007FEC5 /* XCRemoteSwiftPackageReference "Kanna" */ = {
+		DBEA4F822511F7460007FEC5 /* XCRemoteSwiftPackageReference "Kanna.git" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/tid-kijyun/Kanna.git";
 			requirement = {
@@ -4260,18 +4263,8 @@
 /* Begin XCSwiftPackageProductDependency section */
 		DB2611B6251B2D42004BF309 /* CryptoSwift */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = DB2611B5251B2D42004BF309 /* XCRemoteSwiftPackageReference "CryptoSwift" */;
+			package = DB2611B5251B2D42004BF309 /* XCRemoteSwiftPackageReference "CryptoSwift.git" */;
 			productName = CryptoSwift;
-		};
-		DB692A0C281317040031CC80 /* FirebaseAnalytics */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = DB692A0B281317040031CC80 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
-			productName = FirebaseAnalytics;
-		};
-		DB692A0E281317040031CC80 /* FirebaseCrashlytics */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = DB692A0B281317040031CC80 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
-			productName = FirebaseCrashlytics;
 		};
 		DB6B2EC727612E0700A9B9D2 /* CoverFlowStackCollectionViewLayout */ = {
 			isa = XCSwiftPackageProductDependency;
@@ -4283,22 +4276,22 @@
 		};
 		DB6CF1C3269715CD001DE069 /* FPSIndicator */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = DB6CF1C2269715CD001DE069 /* XCRemoteSwiftPackageReference "FPSIndicator" */;
+			package = DB6CF1C2269715CD001DE069 /* XCRemoteSwiftPackageReference "FPSIndicator.git" */;
 			productName = FPSIndicator;
 		};
 		DB7AB33D2744E3740035EB8A /* Floaty */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = DB7AB33C2744E3740035EB8A /* XCRemoteSwiftPackageReference "Floaty" */;
+			package = DB7AB33C2744E3740035EB8A /* XCRemoteSwiftPackageReference "Floaty.git" */;
 			productName = Floaty;
 		};
 		DB94B6B026C64DAC00A2E8A1 /* Introspect */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = DB94B6AF26C64DAC00A2E8A1 /* XCRemoteSwiftPackageReference "SwiftUI-Introspect" */;
+			package = DB94B6AF26C64DAC00A2E8A1 /* XCRemoteSwiftPackageReference "SwiftUI-Introspect.git" */;
 			productName = Introspect;
 		};
 		DBA5DDB6274E1BBF00FF12E3 /* UITextView+Placeholder */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = DBA5DDB5274E1BBF00FF12E3 /* XCRemoteSwiftPackageReference "UITextView-Placeholder" */;
+			package = DBA5DDB5274E1BBF00FF12E3 /* XCRemoteSwiftPackageReference "UITextView-Placeholder.git" */;
 			productName = "UITextView+Placeholder";
 		};
 		DBB0E3C22760FB1200F1D45F /* TwidereSDK */ = {
@@ -4307,7 +4300,7 @@
 		};
 		DBD98488251CB88A00ED87A1 /* Tabman */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = DBD98487251CB88A00ED87A1 /* XCRemoteSwiftPackageReference "Tabman" */;
+			package = DBD98487251CB88A00ED87A1 /* XCRemoteSwiftPackageReference "Tabman.git" */;
 			productName = Tabman;
 		};
 		DBE76D33250214A700DEB0FC /* CommonOSLog */ = {
@@ -4317,12 +4310,12 @@
 		};
 		DBEA4F832511F7460007FEC5 /* Kanna */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = DBEA4F822511F7460007FEC5 /* XCRemoteSwiftPackageReference "Kanna" */;
+			package = DBEA4F822511F7460007FEC5 /* XCRemoteSwiftPackageReference "Kanna.git" */;
 			productName = Kanna;
 		};
 		DBFC0ADB276108590011E99B /* CropViewController */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = DB74A162256E148F00C5F3C9 /* XCRemoteSwiftPackageReference "TOCropViewController" */;
+			package = DB74A162256E148F00C5F3C9 /* XCRemoteSwiftPackageReference "TOCropViewController.git" */;
 			productName = CropViewController;
 		};
 /* End XCSwiftPackageProductDependency section */

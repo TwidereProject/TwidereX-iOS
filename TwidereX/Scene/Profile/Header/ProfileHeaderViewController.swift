@@ -31,10 +31,10 @@ final class ProfileHeaderViewController: UIViewController {
     
     let logger = Logger(subsystem: "ProfileHeaderViewController", category: "ViewController")
     weak var delegate: ProfileHeaderViewControllerDelegate?
+    weak var headerDelegate: TabBarPagerHeaderDelegate?
     
     var disposeBag = Set<AnyCancellable>()
     var viewModel: ProfileHeaderViewModel!
-    weak var headerDelegate: TabBarPagerHeaderDelegate?
     
     private(set) lazy var headerView = ProfileHeaderView()
 
