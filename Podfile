@@ -18,6 +18,11 @@ target 'TwidereX' do
   ## UI
   pod 'XLPagerTabStrip', '~> 9.0.0'
   
+  # Firebase
+  pod 'Firebase/AnalyticsWithoutAdIdSupport'
+  pod 'FirebaseCrashlytics'
+  pod 'FirebasePerformance'
+  
   # misc
   pod 'SwiftGen', '~> 6.3.0'
   pod 'Sourcery', '~> 1.6.1'
