@@ -12,39 +12,32 @@ import Combine
 import CoreData
 import CoreDataStack
 import TwidereCommon
-import TwidereCore
 import StoreKit
 
-class AppContext: ObservableObject {
+public class AppContext: ObservableObject {
     
     var disposeBag = Set<AnyCancellable>()
     let logger = Logger(subsystem: "AppContext", category: "AppContext")
-    
-    @Published var viewStateStore = ViewStateStore()
         
-    let coreDataStack: CoreDataStack
-    let managedObjectContext: NSManagedObjectContext
-    let backgroundManagedObjectContext: NSManagedObjectContext
+    public let coreDataStack: CoreDataStack
+    public let managedObjectContext: NSManagedObjectContext
+    public let backgroundManagedObjectContext: NSManagedObjectContext
     
-    let apiService: APIService
-    let authenticationService: AuthenticationService
+    public let apiService: APIService
+    public let authenticationService: AuthenticationService
     
-    let mastodonEmojiService: MastodonEmojiService
-    let publisherService: PublisherService
+    public let mastodonEmojiService: MastodonEmojiService
+    public let publisherService: PublisherService
     
-    let documentStore: DocumentStore
-    private var documentStoreSubscription: AnyCancellable!
+    public let photoLibraryService = PhotoLibraryService()
+    public let playerService = PlayerService()
     
-    let photoLibraryService = PhotoLibraryService()
-    let playerService = PlayerService()
-    // let videoPlaybackService = VideoPlaybackService()
-    
-    let timestampUpdatePublisher = Timer.publish(every: 1.0, on: .main, in: .common)
+    public let timestampUpdatePublisher = Timer.publish(every: 1.0, on: .main, in: .common)
         .autoconnect()
         .share()
         .eraseToAnyPublisher()
 
-    init(appSecret: AppSecret) {
+    public init(appSecret: AppSecret) {
         let _coreDataStack = CoreDataStack()
         let _managedObjectContext = _coreDataStack.persistentContainer.viewContext
         let _backgroundManagedObjectContext = _coreDataStack.newTaskContext()
@@ -67,15 +60,6 @@ class AppContext: ObservableObject {
             apiService: _apiService,
             appSecret: appSecret
         )
-        
-        documentStore = DocumentStore()
-        documentStoreSubscription = documentStore.objectWillChange
-            .receive(on: DispatchQueue.main)
-            .sink { [unowned self] in
-                self.objectWillChange.send()
-            }
-        
-        setupStoreReview()
     }
     
     private func setupStoreReview() {

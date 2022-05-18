@@ -45,6 +45,8 @@
 		DB213FAB27392C44009ABD74 /* HashtagTimelineViewModel+Diffable.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB213FAA27392C44009ABD74 /* HashtagTimelineViewModel+Diffable.swift */; };
 		DB213FAD27392E7D009ABD74 /* HashtagTimelineViewController+DataSourceProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB213FAC27392E7D009ABD74 /* HashtagTimelineViewController+DataSourceProvider.swift */; };
 		DB213FAF273930BF009ABD74 /* HashtagTimelineViewModel+State.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB213FAE273930BF009ABD74 /* HashtagTimelineViewModel+State.swift */; };
+		DB235EF42834DD0900398FCA /* SettingListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB235EF32834DD0900398FCA /* SettingListViewModel.swift */; };
+		DB235EF62834DDD200398FCA /* AboutViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB235EF52834DDD200398FCA /* AboutViewModel.swift */; };
 		DB25C4C527798E1A00EC1435 /* DataSourceFacade+SavedSearch.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB25C4C427798E1A00EC1435 /* DataSourceFacade+SavedSearch.swift */; };
 		DB25C4C8277994B800EC1435 /* CenterFootnoteLabelTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB25C4C7277994B800EC1435 /* CenterFootnoteLabelTableViewCell.swift */; };
 		DB25C4CA277999BE00EC1435 /* ButtonTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB25C4C9277999BE00EC1435 /* ButtonTableViewCell.swift */; };
@@ -326,9 +328,6 @@
 		DBDA8E4424FCF8A7006750DC /* TwidereXUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBDA8E4324FCF8A7006750DC /* TwidereXUITests.swift */; };
 		DBDA8E9824FE075E006750DC /* MainTabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBDA8E9724FE075E006750DC /* MainTabBarController.swift */; };
 		DBDA8E9F24FE0FFF006750DC /* HomeTimelineViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBDA8E9E24FE0FFF006750DC /* HomeTimelineViewController.swift */; };
-		DBDAF240274F530300050319 /* AppContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB2C870F274F4B0100CE0398 /* AppContext.swift */; };
-		DBDAF241274F530600050319 /* DocumentStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB2C870E274F4B0100CE0398 /* DocumentStore.swift */; };
-		DBDAF242274F530600050319 /* ViewStateStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB2C870D274F4B0100CE0398 /* ViewStateStore.swift */; };
 		DBDAF243274F530B00050319 /* SceneCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB2C8711274F4B1C00CE0398 /* SceneCoordinator.swift */; };
 		DBDAF244274F530B00050319 /* NeedsDependency.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB2C8712274F4B1C00CE0398 /* NeedsDependency.swift */; };
 		DBE71B7A26B7AF5C00DFAB8E /* StubTimelineViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBE71B7926B7AF5C00DFAB8E /* StubTimelineViewController.swift */; };
@@ -529,6 +528,8 @@
 		DB213FAA27392C44009ABD74 /* HashtagTimelineViewModel+Diffable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "HashtagTimelineViewModel+Diffable.swift"; sourceTree = "<group>"; };
 		DB213FAC27392E7D009ABD74 /* HashtagTimelineViewController+DataSourceProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "HashtagTimelineViewController+DataSourceProvider.swift"; sourceTree = "<group>"; };
 		DB213FAE273930BF009ABD74 /* HashtagTimelineViewModel+State.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "HashtagTimelineViewModel+State.swift"; sourceTree = "<group>"; };
+		DB235EF32834DD0900398FCA /* SettingListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingListViewModel.swift; sourceTree = "<group>"; };
+		DB235EF52834DDD200398FCA /* AboutViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutViewModel.swift; sourceTree = "<group>"; };
 		DB25C4C427798E1A00EC1435 /* DataSourceFacade+SavedSearch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DataSourceFacade+SavedSearch.swift"; sourceTree = "<group>"; };
 		DB25C4C7277994B800EC1435 /* CenterFootnoteLabelTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CenterFootnoteLabelTableViewCell.swift; sourceTree = "<group>"; };
 		DB25C4C9277999BE00EC1435 /* ButtonTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonTableViewCell.swift; sourceTree = "<group>"; };
@@ -549,9 +550,6 @@
 		DB2C0BD927DF14950033FC94 /* EditListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditListViewController.swift; sourceTree = "<group>"; };
 		DB2C0BDC27DF151D0033FC94 /* EditListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditListView.swift; sourceTree = "<group>"; };
 		DB2C0BDE27DF21A70033FC94 /* EditListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditListViewModel.swift; sourceTree = "<group>"; };
-		DB2C870D274F4B0100CE0398 /* ViewStateStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewStateStore.swift; sourceTree = "<group>"; };
-		DB2C870E274F4B0100CE0398 /* DocumentStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentStore.swift; sourceTree = "<group>"; };
-		DB2C870F274F4B0100CE0398 /* AppContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppContext.swift; sourceTree = "<group>"; };
 		DB2C8711274F4B1C00CE0398 /* SceneCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneCoordinator.swift; sourceTree = "<group>"; };
 		DB2C8712274F4B1C00CE0398 /* NeedsDependency.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NeedsDependency.swift; sourceTree = "<group>"; };
 		DB2C8730274F4B7D00CE0398 /* DeveloperView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeveloperView.swift; sourceTree = "<group>"; };
@@ -1176,16 +1174,6 @@
 			path = EditList;
 			sourceTree = "<group>";
 		};
-		DB2C870C274F4B0100CE0398 /* State */ = {
-			isa = PBXGroup;
-			children = (
-				DB2C870D274F4B0100CE0398 /* ViewStateStore.swift */,
-				DB2C870E274F4B0100CE0398 /* DocumentStore.swift */,
-				DB2C870F274F4B0100CE0398 /* AppContext.swift */,
-			);
-			path = State;
-			sourceTree = "<group>";
-		};
 		DB2C8710274F4B1C00CE0398 /* Coordinator */ = {
 			isa = PBXGroup;
 			children = (
@@ -1230,6 +1218,7 @@
 			isa = PBXGroup;
 			children = (
 				DB2C8737274F4B7D00CE0398 /* AboutView.swift */,
+				DB235EF52834DDD200398FCA /* AboutViewModel.swift */,
 				DB2C8738274F4B7D00CE0398 /* AboutViewController.swift */,
 			);
 			path = About;
@@ -1239,6 +1228,7 @@
 			isa = PBXGroup;
 			children = (
 				DB2C873A274F4B7D00CE0398 /* SettingListView.swift */,
+				DB235EF32834DD0900398FCA /* SettingListViewModel.swift */,
 				DB2C873B274F4B7D00CE0398 /* SettingListViewController.swift */,
 			);
 			path = List;
@@ -2084,7 +2074,6 @@
 				DBA122CA256C13B000928671 /* GoogleService-Info.plist */,
 				DBCB408E255D8C2E00DD8D8F /* Activity */,
 				DB2C8710274F4B1C00CE0398 /* Coordinator */,
-				DB2C870C274F4B0100CE0398 /* State */,
 				DB8761A22745515F00BA7EE2 /* Diffable */,
 				DB88AC34250B25170009E562 /* Vender */,
 				DBDA8E5424FDF3E2006750DC /* Scene */,
@@ -2617,18 +2606,18 @@
 			packageReferences = (
 				DBE76D32250214A700DEB0FC /* XCRemoteSwiftPackageReference "CommonOSLog" */,
 				DBE76D3C2502518D00DEB0FC /* XCRemoteSwiftPackageReference "AlamofireImage" */,
-				DBEA4F822511F7460007FEC5 /* XCRemoteSwiftPackageReference "Kanna.git" */,
-				DB2611B5251B2D42004BF309 /* XCRemoteSwiftPackageReference "CryptoSwift.git" */,
-				DBD98487251CB88A00ED87A1 /* XCRemoteSwiftPackageReference "Tabman.git" */,
-				DB2924C92546B958003899A7 /* XCRemoteSwiftPackageReference "Kingfisher.git" */,
+				DBEA4F822511F7460007FEC5 /* XCRemoteSwiftPackageReference "Kanna" */,
+				DB2611B5251B2D42004BF309 /* XCRemoteSwiftPackageReference "CryptoSwift" */,
+				DBD98487251CB88A00ED87A1 /* XCRemoteSwiftPackageReference "Tabman" */,
+				DB2924C92546B958003899A7 /* XCRemoteSwiftPackageReference "Kingfisher" */,
 				DB9EC4DF255A6317005403AA /* XCRemoteSwiftPackageReference "SwiftMessages" */,
-				DB74A162256E148F00C5F3C9 /* XCRemoteSwiftPackageReference "TOCropViewController.git" */,
-				DB6CF1C2269715CD001DE069 /* XCRemoteSwiftPackageReference "FPSIndicator.git" */,
-				DB94B6AF26C64DAC00A2E8A1 /* XCRemoteSwiftPackageReference "SwiftUI-Introspect.git" */,
-				DB30ADD426CF583900B2D2BE /* XCRemoteSwiftPackageReference "FLAnimatedImage.git" */,
-				DB7AB33C2744E3740035EB8A /* XCRemoteSwiftPackageReference "Floaty.git" */,
-				DB096FD2274B7B0C00D56CFA /* XCRemoteSwiftPackageReference "Alamofire.git" */,
-				DBA5DDB5274E1BBF00FF12E3 /* XCRemoteSwiftPackageReference "UITextView-Placeholder.git" */,
+				DB74A162256E148F00C5F3C9 /* XCRemoteSwiftPackageReference "TOCropViewController" */,
+				DB6CF1C2269715CD001DE069 /* XCRemoteSwiftPackageReference "FPSIndicator" */,
+				DB94B6AF26C64DAC00A2E8A1 /* XCRemoteSwiftPackageReference "SwiftUI-Introspect" */,
+				DB30ADD426CF583900B2D2BE /* XCRemoteSwiftPackageReference "FLAnimatedImage" */,
+				DB7AB33C2744E3740035EB8A /* XCRemoteSwiftPackageReference "Floaty" */,
+				DB096FD2274B7B0C00D56CFA /* XCRemoteSwiftPackageReference "Alamofire" */,
+				DBA5DDB5274E1BBF00FF12E3 /* XCRemoteSwiftPackageReference "UITextView-Placeholder" */,
 			);
 			productRefGroup = DBDA8E1F24FCF8A3006750DC /* Products */;
 			projectDirPath = "";
@@ -2928,7 +2917,7 @@
 				DB3FC045255270D6003A2F8A /* UserMediaTimelineViewModel+State.swift in Sources */,
 				DB76A652275F1C3200A50673 /* MediaPreviewTransitionItem.swift in Sources */,
 				DB697DF3278FDDF7004EF2F7 /* TimelineViewModel.swift in Sources */,
-				DBDAF241274F530600050319 /* DocumentStore.swift in Sources */,
+				DB235EF42834DD0900398FCA /* SettingListViewModel.swift in Sources */,
 				DB83020D273D160400BF5224 /* NotificationTimelineViewModel+LoadOldestState.swift in Sources */,
 				DB262A3727213FBE00D18EF3 /* UIAlertAction.swift in Sources */,
 				DB2C0BDF27DF21A70033FC94 /* EditListViewModel.swift in Sources */,
@@ -2963,6 +2952,7 @@
 				DBA210362759D7B1000B7CB2 /* FollowingListViewModel+State.swift in Sources */,
 				DB3FC04025527053003A2F8A /* UserMediaTimelineViewModel.swift in Sources */,
 				DBBBBE592744E800007ACB4B /* ComposeViewController.swift in Sources */,
+				DB235EF62834DDD200398FCA /* AboutViewModel.swift in Sources */,
 				DB76A64F275F1C3200A50673 /* MediaPreviewingViewController.swift in Sources */,
 				DB42411626C3EB9100B6C5F8 /* ReadabilityPadding.swift in Sources */,
 				DB2C8740274F4B7D00CE0398 /* DisplayPreferenceViewModel.swift in Sources */,
@@ -2988,7 +2978,6 @@
 				DBE71B7F26B7D68500DFAB8E /* StubTimelineCollectionViewCell.swift in Sources */,
 				DB213FA627392ABC009ABD74 /* HashtagTimelineViewController.swift in Sources */,
 				DBF739CF275C247F00BF6AB5 /* DataSourceFacade+Mute.swift in Sources */,
-				DBDAF242274F530600050319 /* ViewStateStore.swift in Sources */,
 				DB47AB4727CF52D100CD73C7 /* ListStatusViewModel.swift in Sources */,
 				DB7E22F02552A3D500551314 /* UserLikeTimelineViewController.swift in Sources */,
 				DB578CCD254C0BDB00745336 /* UserBriefInfoView.swift in Sources */,
@@ -3069,7 +3058,6 @@
 				DB43488D251DFF0F005B599F /* ProfileBannerStatusItemView.swift in Sources */,
 				DBDA7F1E27D2256400BA6BE1 /* ListViewModel+State.swift in Sources */,
 				DBE76D1E2500E65D00DEB0FC /* HomeTimelineViewModel.swift in Sources */,
-				DBDAF240274F530300050319 /* AppContext.swift in Sources */,
 				DBD0B4982758B58F0015A388 /* DrawerSidebarPresentationController.swift in Sources */,
 				DB47AB2F27CE097C00CD73C7 /* ListSection.swift in Sources */,
 				DB5A2288255B9155006CA5B2 /* AccountListViewModel+Diffable.swift in Sources */,
@@ -4146,7 +4134,7 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		DB096FD2274B7B0C00D56CFA /* XCRemoteSwiftPackageReference "Alamofire.git" */ = {
+		DB096FD2274B7B0C00D56CFA /* XCRemoteSwiftPackageReference "Alamofire" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/Alamofire/Alamofire.git";
 			requirement = {
@@ -4154,7 +4142,7 @@
 				minimumVersion = 5.0.0;
 			};
 		};
-		DB2611B5251B2D42004BF309 /* XCRemoteSwiftPackageReference "CryptoSwift.git" */ = {
+		DB2611B5251B2D42004BF309 /* XCRemoteSwiftPackageReference "CryptoSwift" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/krzyzanowskim/CryptoSwift.git";
 			requirement = {
@@ -4162,7 +4150,7 @@
 				minimumVersion = 1.3.2;
 			};
 		};
-		DB2924C92546B958003899A7 /* XCRemoteSwiftPackageReference "Kingfisher.git" */ = {
+		DB2924C92546B958003899A7 /* XCRemoteSwiftPackageReference "Kingfisher" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/onevcat/Kingfisher.git";
 			requirement = {
@@ -4170,7 +4158,7 @@
 				minimumVersion = 7.1.1;
 			};
 		};
-		DB30ADD426CF583900B2D2BE /* XCRemoteSwiftPackageReference "FLAnimatedImage.git" */ = {
+		DB30ADD426CF583900B2D2BE /* XCRemoteSwiftPackageReference "FLAnimatedImage" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/Flipboard/FLAnimatedImage.git";
 			requirement = {
@@ -4178,7 +4166,7 @@
 				minimumVersion = 1.0.0;
 			};
 		};
-		DB6CF1C2269715CD001DE069 /* XCRemoteSwiftPackageReference "FPSIndicator.git" */ = {
+		DB6CF1C2269715CD001DE069 /* XCRemoteSwiftPackageReference "FPSIndicator" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/MainasuK/FPSIndicator.git";
 			requirement = {
@@ -4186,7 +4174,7 @@
 				minimumVersion = 1.0.0;
 			};
 		};
-		DB74A162256E148F00C5F3C9 /* XCRemoteSwiftPackageReference "TOCropViewController.git" */ = {
+		DB74A162256E148F00C5F3C9 /* XCRemoteSwiftPackageReference "TOCropViewController" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/TimOliver/TOCropViewController.git";
 			requirement = {
@@ -4194,7 +4182,7 @@
 				minimumVersion = 2.6.0;
 			};
 		};
-		DB7AB33C2744E3740035EB8A /* XCRemoteSwiftPackageReference "Floaty.git" */ = {
+		DB7AB33C2744E3740035EB8A /* XCRemoteSwiftPackageReference "Floaty" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/kciter/Floaty.git";
 			requirement = {
@@ -4202,7 +4190,7 @@
 				kind = branch;
 			};
 		};
-		DB94B6AF26C64DAC00A2E8A1 /* XCRemoteSwiftPackageReference "SwiftUI-Introspect.git" */ = {
+		DB94B6AF26C64DAC00A2E8A1 /* XCRemoteSwiftPackageReference "SwiftUI-Introspect" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/siteline/SwiftUI-Introspect.git";
 			requirement = {
@@ -4218,7 +4206,7 @@
 				minimumVersion = 9.0.0;
 			};
 		};
-		DBA5DDB5274E1BBF00FF12E3 /* XCRemoteSwiftPackageReference "UITextView-Placeholder.git" */ = {
+		DBA5DDB5274E1BBF00FF12E3 /* XCRemoteSwiftPackageReference "UITextView-Placeholder" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/MainasuK/UITextView-Placeholder.git";
 			requirement = {
@@ -4226,7 +4214,7 @@
 				minimumVersion = 1.4.1;
 			};
 		};
-		DBD98487251CB88A00ED87A1 /* XCRemoteSwiftPackageReference "Tabman.git" */ = {
+		DBD98487251CB88A00ED87A1 /* XCRemoteSwiftPackageReference "Tabman" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/uias/Tabman.git";
 			requirement = {
@@ -4250,7 +4238,7 @@
 				minimumVersion = 4.1.0;
 			};
 		};
-		DBEA4F822511F7460007FEC5 /* XCRemoteSwiftPackageReference "Kanna.git" */ = {
+		DBEA4F822511F7460007FEC5 /* XCRemoteSwiftPackageReference "Kanna" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/tid-kijyun/Kanna.git";
 			requirement = {
@@ -4263,7 +4251,7 @@
 /* Begin XCSwiftPackageProductDependency section */
 		DB2611B6251B2D42004BF309 /* CryptoSwift */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = DB2611B5251B2D42004BF309 /* XCRemoteSwiftPackageReference "CryptoSwift.git" */;
+			package = DB2611B5251B2D42004BF309 /* XCRemoteSwiftPackageReference "CryptoSwift" */;
 			productName = CryptoSwift;
 		};
 		DB6B2EC727612E0700A9B9D2 /* CoverFlowStackCollectionViewLayout */ = {
@@ -4276,22 +4264,22 @@
 		};
 		DB6CF1C3269715CD001DE069 /* FPSIndicator */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = DB6CF1C2269715CD001DE069 /* XCRemoteSwiftPackageReference "FPSIndicator.git" */;
+			package = DB6CF1C2269715CD001DE069 /* XCRemoteSwiftPackageReference "FPSIndicator" */;
 			productName = FPSIndicator;
 		};
 		DB7AB33D2744E3740035EB8A /* Floaty */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = DB7AB33C2744E3740035EB8A /* XCRemoteSwiftPackageReference "Floaty.git" */;
+			package = DB7AB33C2744E3740035EB8A /* XCRemoteSwiftPackageReference "Floaty" */;
 			productName = Floaty;
 		};
 		DB94B6B026C64DAC00A2E8A1 /* Introspect */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = DB94B6AF26C64DAC00A2E8A1 /* XCRemoteSwiftPackageReference "SwiftUI-Introspect.git" */;
+			package = DB94B6AF26C64DAC00A2E8A1 /* XCRemoteSwiftPackageReference "SwiftUI-Introspect" */;
 			productName = Introspect;
 		};
 		DBA5DDB6274E1BBF00FF12E3 /* UITextView+Placeholder */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = DBA5DDB5274E1BBF00FF12E3 /* XCRemoteSwiftPackageReference "UITextView-Placeholder.git" */;
+			package = DBA5DDB5274E1BBF00FF12E3 /* XCRemoteSwiftPackageReference "UITextView-Placeholder" */;
 			productName = "UITextView+Placeholder";
 		};
 		DBB0E3C22760FB1200F1D45F /* TwidereSDK */ = {
@@ -4300,7 +4288,7 @@
 		};
 		DBD98488251CB88A00ED87A1 /* Tabman */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = DBD98487251CB88A00ED87A1 /* XCRemoteSwiftPackageReference "Tabman.git" */;
+			package = DBD98487251CB88A00ED87A1 /* XCRemoteSwiftPackageReference "Tabman" */;
 			productName = Tabman;
 		};
 		DBE76D33250214A700DEB0FC /* CommonOSLog */ = {
@@ -4310,12 +4298,12 @@
 		};
 		DBEA4F832511F7460007FEC5 /* Kanna */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = DBEA4F822511F7460007FEC5 /* XCRemoteSwiftPackageReference "Kanna.git" */;
+			package = DBEA4F822511F7460007FEC5 /* XCRemoteSwiftPackageReference "Kanna" */;
 			productName = Kanna;
 		};
 		DBFC0ADB276108590011E99B /* CropViewController */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = DB74A162256E148F00C5F3C9 /* XCRemoteSwiftPackageReference "TOCropViewController.git" */;
+			package = DB74A162256E148F00C5F3C9 /* XCRemoteSwiftPackageReference "TOCropViewController" */;
 			productName = CropViewController;
 		};
 /* End XCSwiftPackageProductDependency section */

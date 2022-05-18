@@ -21,7 +21,7 @@ import TwitterMeta
 import MastodonMeta
 
 // FIXME: make binding logic more generic
-public final class ComposeContentViewModel: NSObject {
+public final class ComposeContentViewModel: NSObject, ObservableObject {
     
     let logger = Logger(subsystem: "ComposeContentViewModel", category: "ViewModel")
     var disposeBag = Set<AnyCancellable>()
