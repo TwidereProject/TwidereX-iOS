@@ -14,7 +14,6 @@ import CoreDataStack
 import TwitterSDK
 import MastodonSDK
 import TwidereCore
-import TwidereUI
 import TwidereAsset
 import MetaTextKit
 import TwitterMeta
@@ -37,12 +36,17 @@ public final class ComposeContentViewModel: NSObject, ObservableObject {
         return locationManager
     }()
     
-    // Input
+    // input
+    public let kind: Kind
     public let configurationContext: ConfigurationContext
     public let customEmojiPickerInputViewModel = CustomEmojiPickerInputView.ViewModel()
+    
+    // layout
+    @Published var viewSize: CGSize = .zero
         
     // text
     @Published public private(set) var initialTextInput = ""
+    @Published public var content = ""
     
     // avatar
     @Published public var author: UserObject?
@@ -62,6 +66,8 @@ public final class ComposeContentViewModel: NSObject, ObservableObject {
     @Published public private(set) var visibility: StatusVisibility? = nil
     
     // attachment
+    public let mediaActionPublisher = PassthroughSubject<ComposeContentToolbarView.MediaAction, Never>()
+    public let mediaPreviewPublisher = PassthroughSubject<AttachmentViewModel, Never>()
     @Published public internal(set) var attachmentViewModels: [AttachmentViewModel] = []
     @Published public var maxMediaAttachmentLimit = 4
     @Published public internal(set) var isMediaSensitive = false        // Mastodon only
@@ -115,7 +121,7 @@ public final class ComposeContentViewModel: NSObject, ObservableObject {
     @Published public internal(set) var currentPlace: Twitter.Entity.Place?
     
     // toolbar
-    @Published public private(set) var availableActions: Set<ComposeToolbarView.Action> = Set()
+    @Published public private(set) var availableActions: Set<ComposeContentToolbarView.Action> = Set()
     @Published public private(set) var isMediaToolBarButtonEnabled = true
     @Published public private(set) var isPollToolBarButtonEnabled = true
     @Published public private(set) var isLocationToolBarButtonEnabled = CLLocationManager.locationServicesEnabled()
@@ -128,14 +134,15 @@ public final class ComposeContentViewModel: NSObject, ObservableObject {
     let viewLayoutMarginDidUpdate = CurrentValueSubject<Void, Never>(Void())
     
     public init(
-        inputContext: InputContext,
+        kind: Kind,
         configurationContext: ConfigurationContext
     ) {
+        self.kind = kind
         self.configurationContext = configurationContext
         super.init()
         // end init
 
-        switch inputContext {
+        switch kind {
         case .post:
             break
         case .hashtag(let hashtag):
@@ -277,7 +284,7 @@ public final class ComposeContentViewModel: NSObject, ObservableObject {
             .map { author in
                 switch author {
                 case .twitter:
-                    guard case .reply = inputContext else { return false }
+                    guard case .reply = kind else { return false }
                     return true
                 default:
                     return false
@@ -354,7 +361,7 @@ public final class ComposeContentViewModel: NSObject, ObservableObject {
                 case .mastodon(let author):
                     self.mastodonVisibility = {
                         var defaultVisibility: Mastodon.Entity.Status.Visibility  = author.locked ? .private : .public
-                        if case let .reply(object) = inputContext,
+                        if case let .reply(object) = kind,
                            case let .mastodon(status) = object {
                             switch status.visibility {
                             case .direct:
@@ -517,29 +524,29 @@ public final class ComposeContentViewModel: NSObject, ObservableObject {
             $author,
             $attachmentViewModels
         )
-            .map { author, attachmentViewModels -> Set<ComposeToolbarView.Action> in
-                var set = Set<ComposeToolbarView.Action>()
-                set.insert(.media)
-                set.insert(.mention)
-                set.insert(.hashtag)
-                set.insert(.media)
-                
-                switch author {
-                case .twitter:
-                    set.insert(.location)
-                case .mastodon:
-                    set.insert(.emoji)
-                    set.insert(.poll)
-                    set.insert(.contentWarning)
-                    if !attachmentViewModels.isEmpty {
-                        set.insert(.mediaSensitive)
-                    }
-                case .none:
-                    break
+        .map { author, attachmentViewModels -> Set<ComposeContentToolbarView.Action> in
+            var set = Set<ComposeContentToolbarView.Action>()
+            set.insert(.media)
+            set.insert(.mention)
+            set.insert(.hashtag)
+            set.insert(.media)
+            
+            switch author {
+            case .twitter:
+                set.insert(.location)
+            case .mastodon:
+                set.insert(.emoji)
+                set.insert(.poll)
+                set.insert(.contentWarning)
+                if !attachmentViewModels.isEmpty {
+                    set.insert(.mediaSensitive)
                 }
-                return set
+            case .none:
+                break
             }
-            .assign(to: &$availableActions)
+            return set
+        }
+        .assign(to: &$availableActions)
         
         Publishers.CombineLatest3(
             $attachmentViewModels,
@@ -597,7 +604,7 @@ public final class ComposeContentViewModel: NSObject, ObservableObject {
 }
 
 extension ComposeContentViewModel {
-    public enum InputContext {
+    public enum Kind {
         case post
         case hashtag(hashtag: String)
         case mention(user: UserObject)
@@ -622,55 +629,6 @@ extension ComposeContentViewModel {
             self.statusViewConfigureContext = statusViewConfigureContext
         }
     }
-}
-
-extension ComposeContentViewModel {
-    func metaText(_ metaText: MetaText, processEditing textStorage: MetaTextStorage) -> MetaContent? {
-        guard let author = self.author else {
-            return nil
-        }
-        
-        switch metaText.textView {
-        case composeInputTableViewCell.contentWarningMetaText.textView:
-            let textInput = textStorage.string.replacingOccurrences(of: "\n", with: " ")
-            self.currentContentWarningInput = textInput
-            
-            let content = MastodonContent(
-                content: textInput,
-                emojis: [:] // emojiViewModel?.emojis.asDictionary ?? [:]
-            )
-            let metaContent = MastodonMetaContent.convert(text: content)
-            return metaContent
-            
-        case composeInputTableViewCell.contentMetaText.textView:
-            let textInput = textStorage.string
-            self.currentTextInput = textInput
-            
-            switch author {
-            case .twitter:
-                let content = TwitterContent(content: textInput)
-                let metaContent = TwitterMetaContent.convert(
-                    content: content,
-                    urlMaximumLength: .max,
-                    twitterTextProvider: configurationContext.statusViewConfigureContext.twitterTextProvider
-                )
-                return metaContent
-                
-            case .mastodon:
-                let content = MastodonContent(
-                    content: textInput,
-                    emojis: [:] // emojiViewModel?.emojis.asDictionary ?? [:]
-                )
-                let metaContent = MastodonMetaContent.convert(text: content)
-                return metaContent
-            }
-            
-        default:
-            assertionFailure()
-            return nil
-        }
-    }
-
 }
 
 extension ComposeContentViewModel {

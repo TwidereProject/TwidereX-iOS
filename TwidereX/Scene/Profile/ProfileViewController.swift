@@ -15,9 +15,9 @@ import Floaty
 import Meta
 import MetaTextArea
 import MetaTextKit
-import TwidereComposeUI
 import TabBarPager
 import XLPagerTabStrip
+import TwidereUI
 
 final class ProfileViewController: UIViewController, NeedsDependency, DrawerSidebarTransitionHostViewController {
     
@@ -287,7 +287,7 @@ extension ProfileViewController {
         
         let composeViewModel = ComposeViewModel(context: context)
         let composeContentViewModel = ComposeContentViewModel(
-            inputContext: {
+            kind: {
                 if user == viewModel.me {
                     return .post
                 } else {

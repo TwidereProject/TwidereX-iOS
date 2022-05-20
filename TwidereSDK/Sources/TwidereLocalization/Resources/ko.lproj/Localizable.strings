@@ -156,9 +156,11 @@
 "Common.Controls.Actions.Add" = "새로 만들기";
 "Common.Controls.Actions.Browse" = "탐색";
 "Common.Controls.Actions.Cancel" = "돌아가기";
+"Common.Controls.Actions.Clear" = "Clear";
 "Common.Controls.Actions.Confirm" = "확인";
 "Common.Controls.Actions.Copy" = "Copy";
 "Common.Controls.Actions.Delete" = "지우기";
+"Common.Controls.Actions.Done" = "닫기";
 "Common.Controls.Actions.Edit" = "고치기";
 "Common.Controls.Actions.Ok" = "확인";
 "Common.Controls.Actions.OpenInSafari" = "사파리에서 보기";
@@ -265,6 +267,12 @@
 "Scene.Compose.And" = ", ";
 "Scene.Compose.CwPlaceholder" = "여기에 주의사항을 적어주세요";
 "Scene.Compose.LastEnd" = " 그리고 ";
+"Scene.Compose.Media.Caption.Add" = "Add Caption";
+"Scene.Compose.Media.Caption.AddADescriptionForThisImage" = "Add a description for this image";
+"Scene.Compose.Media.Caption.Remove" = "Remove Caption";
+"Scene.Compose.Media.Caption.Update" = "Update Caption";
+"Scene.Compose.Media.Preview" = "미리보기";
+"Scene.Compose.Media.Remove" = "지우기";
 "Scene.Compose.OthersInThisConversation" = "이 대화에 있는 다른 사람";
 "Scene.Compose.Placeholder" = "무슨 일이 일어나고 있나요?";
 "Scene.Compose.ReplyTo" = "…에 답글";

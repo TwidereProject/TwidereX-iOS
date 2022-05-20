@@ -11,7 +11,6 @@ import UIKit
 import AppShared
 import TwidereCore
 import TwidereUI
-import TwidereComposeUI
 import SwiftMessages
 
 extension DataSourceFacade {
@@ -31,7 +30,7 @@ extension DataSourceFacade {
             }
             let composeViewModel = ComposeViewModel(context: provider.context)
             let composeContentViewModel = ComposeContentViewModel(
-                inputContext: .reply(status: status),
+                kind: .reply(status: status),
                 configurationContext: ComposeContentViewModel.ConfigurationContext(
                     apiService: provider.context.apiService,
                     authenticationService: provider.context.authenticationService,

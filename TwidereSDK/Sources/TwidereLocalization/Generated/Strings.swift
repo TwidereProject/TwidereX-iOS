@@ -539,12 +539,16 @@ public enum L10n {
         public static let browse = L10n.tr("Localizable", "Common.Controls.Actions.Browse")
         /// Cancel
         public static let cancel = L10n.tr("Localizable", "Common.Controls.Actions.Cancel")
+        /// Clear
+        public static let clear = L10n.tr("Localizable", "Common.Controls.Actions.Clear")
         /// Confirm
         public static let confirm = L10n.tr("Localizable", "Common.Controls.Actions.Confirm")
         /// Copy
         public static let copy = L10n.tr("Localizable", "Common.Controls.Actions.Copy")
         /// Delete
         public static let delete = L10n.tr("Localizable", "Common.Controls.Actions.Delete")
+        /// Done
+        public static let done = L10n.tr("Localizable", "Common.Controls.Actions.Done")
         /// Edit
         public static let edit = L10n.tr("Localizable", "Common.Controls.Actions.Edit")
         /// OK
@@ -897,6 +901,22 @@ public enum L10n {
       public static let replyingTo = L10n.tr("Localizable", "Scene.Compose.ReplyingTo")
       /// Reply to …
       public static let replyTo = L10n.tr("Localizable", "Scene.Compose.ReplyTo")
+      public enum Media {
+        /// Preview
+        public static let preview = L10n.tr("Localizable", "Scene.Compose.Media.Preview")
+        /// Remove
+        public static let remove = L10n.tr("Localizable", "Scene.Compose.Media.Remove")
+        public enum Caption {
+          /// Add Caption
+          public static let add = L10n.tr("Localizable", "Scene.Compose.Media.Caption.Add")
+          /// Add a description for this image
+          public static let addADescriptionForThisImage = L10n.tr("Localizable", "Scene.Compose.Media.Caption.AddADescriptionForThisImage")
+          /// Remove Caption
+          public static let remove = L10n.tr("Localizable", "Scene.Compose.Media.Caption.Remove")
+          /// Update Caption
+          public static let update = L10n.tr("Localizable", "Scene.Compose.Media.Caption.Update")
+        }
+      }
       public enum SaveDraft {
         /// Save draft
         public static let action = L10n.tr("Localizable", "Scene.Compose.SaveDraft.Action")

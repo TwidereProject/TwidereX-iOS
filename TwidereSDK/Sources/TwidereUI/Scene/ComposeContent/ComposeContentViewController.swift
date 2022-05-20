@@ -7,21 +7,27 @@
 
 import os.log
 import UIKit
+import SwiftUI
 import Combine
 import MetaTextKit
 import PhotosUI
 import TwitterSDK
 import MastodonSDK
 import MastodonMeta
-import TwidereUI
 import TwidereCore
 import TwidereAsset
 import CropViewController
 import KeyboardLayoutGuide
 
+public protocol ComposeContentViewControllerDelegate: AnyObject {
+    func composeContentViewController(_ viewController: ComposeContentViewController, previewAttachmentViewModel attachmentViewModel: AttachmentViewModel)
+}
+
 public final class ComposeContentViewController: UIViewController {
     
     let logger = Logger(subsystem: "ComposeContentViewController", category: "ViewController")
+    
+    public weak var delegate: ComposeContentViewControllerDelegate?
     
     var disposeBag = Set<AnyCancellable>()
     var observations = Set<NSKeyValueObservation>()
@@ -61,6 +67,55 @@ extension ComposeContentViewController {
     
     public override func viewDidLoad() {
         super.viewDidLoad()
+        
+        viewModel.viewSize = view.frame.size
+        
+        let hostingViewController = UIHostingController(
+            rootView: ComposeContentView(viewModel: viewModel)
+        )
+        addChild(hostingViewController)
+        hostingViewController.view.translatesAutoresizingMaskIntoConstraints = false
+        hostingViewController.view.frame = view.bounds
+        view.addSubview(hostingViewController.view)
+        NSLayoutConstraint.activate([
+            hostingViewController.view.topAnchor.constraint(equalTo: view.topAnchor),
+            hostingViewController.view.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            hostingViewController.view.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            hostingViewController.view.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+        ])
+        hostingViewController.didMove(toParent: self)
+        
+        // attachment - preview action
+        viewModel.mediaPreviewPublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] attachmentViewModel in
+                guard let self = self else { return }
+                assert(self.delegate != nil)
+                self.delegate?.composeContentViewController(self, previewAttachmentViewModel: attachmentViewModel)
+            }
+            .store(in: &disposeBag)
+        
+        // toolbar - media item
+        viewModel.mediaActionPublisher
+            .throttle(for: 0.5, scheduler: DispatchQueue.main, latest: false)
+            .sink { [weak self] mediaAction in
+                guard let self = self else { return }
+                switch mediaAction {
+                case .photoLibrary:
+                    let picker = self.createPhotoLibraryPicker()
+                    self.present(picker, animated: true, completion: nil)
+                case .camera:
+                    let picker = UIImagePickerController()
+                    picker.sourceType = .camera
+                    picker.delegate = self
+                    self.present(picker, animated: true)
+                case .browse:
+                    self.present(self.documentPickerController, animated: true, completion: nil)
+                }
+            }
+            .store(in: &disposeBag)
+        
+        return
         
         view.backgroundColor = .systemBackground
         composeToolbarBackgroundView.backgroundColor = .systemBackground
@@ -187,8 +242,8 @@ extension ComposeContentViewController {
         
         
         // bind toolbar
-        viewModel.$availableActions
-            .assign(to: &composeToolbarView.$availableActions)
+//        viewModel.$availableActions
+//            .assign(to: &composeToolbarView.$availableActions)
         
         // visibility
         viewModel.$visibility
@@ -371,6 +426,14 @@ extension ComposeContentViewController {
         super.viewLayoutMarginsDidChange()
         
         viewModel.viewLayoutMarginDidUpdate.send()
+    }
+    
+    public override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        
+        if viewModel.viewSize != view.frame.size {
+            viewModel.viewSize = view.frame.size            
+        }
     }
     
 }

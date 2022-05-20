@@ -156,9 +156,11 @@
 "Common.Controls.Actions.Add" = "添加";
 "Common.Controls.Actions.Browse" = "浏览";
 "Common.Controls.Actions.Cancel" = "取消";
+"Common.Controls.Actions.Clear" = "Clear";
 "Common.Controls.Actions.Confirm" = "确认";
 "Common.Controls.Actions.Copy" = "复制";
 "Common.Controls.Actions.Delete" = "删除";
+"Common.Controls.Actions.Done" = "完成";
 "Common.Controls.Actions.Edit" = "编辑";
 "Common.Controls.Actions.Ok" = "好的";
 "Common.Controls.Actions.OpenInSafari" = "在 Safari 中打开";
@@ -265,6 +267,12 @@
 "Scene.Compose.And" = "，";
 "Scene.Compose.CwPlaceholder" = "折叠部分的警告消息";
 "Scene.Compose.LastEnd" = " 和 ";
+"Scene.Compose.Media.Caption.Add" = "Add Caption";
+"Scene.Compose.Media.Caption.AddADescriptionForThisImage" = "Add a description for this image";
+"Scene.Compose.Media.Caption.Remove" = "Remove Caption";
+"Scene.Compose.Media.Caption.Update" = "Update Caption";
+"Scene.Compose.Media.Preview" = "预览";
+"Scene.Compose.Media.Remove" = "删除";
 "Scene.Compose.OthersInThisConversation" = "此对话中的其他人：";
 "Scene.Compose.Placeholder" = "发生了什么？";
 "Scene.Compose.ReplyTo" = "回复给 …";

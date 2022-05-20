@@ -544,9 +544,6 @@
 		DB262A3C27228B4800D18EF3 /* SearchResultViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchResultViewController.swift; sourceTree = "<group>"; };
 		DB262A412722970000D18EF3 /* SearchResultViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchResultViewModel.swift; sourceTree = "<group>"; };
 		DB262A472722A64900D18EF3 /* SearchTimelineViewController+DataSourceProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SearchTimelineViewController+DataSourceProvider.swift"; sourceTree = "<group>"; };
-		DB2924D62547CCA2003899A7 /* ComposeTweetMediaSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComposeTweetMediaSection.swift; sourceTree = "<group>"; };
-		DB2924DE2547CCD6003899A7 /* ComposeTweetMediaItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComposeTweetMediaItem.swift; sourceTree = "<group>"; };
-		DB2924E32547D4C7003899A7 /* ComposeTweetMediaCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComposeTweetMediaCollectionViewCell.swift; sourceTree = "<group>"; };
 		DB2C0BD927DF14950033FC94 /* EditListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditListViewController.swift; sourceTree = "<group>"; };
 		DB2C0BDC27DF151D0033FC94 /* EditListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditListView.swift; sourceTree = "<group>"; };
 		DB2C0BDE27DF21A70033FC94 /* EditListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditListViewModel.swift; sourceTree = "<group>"; };
@@ -715,12 +712,6 @@
 		DB88AC3B250B26F40009E562 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		DB89F590257A2A70005ECD04 /* TimelineLoaderTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimelineLoaderTableViewCell.swift; sourceTree = "<group>"; };
 		DB8AC0F725401BA200E636BE /* UIViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIViewController.swift; sourceTree = "<group>"; };
-		DB8AC10D2540501600E636BE /* ComposeTweetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComposeTweetViewController.swift; sourceTree = "<group>"; };
-		DB8AC1462541677900E636BE /* ComposeTweetViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComposeTweetViewModel.swift; sourceTree = "<group>"; };
-		DB8AC14B254167BE00E636BE /* TweetToolbarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TweetToolbarView.swift; sourceTree = "<group>"; };
-		DB8AC16B25419B2E00E636BE /* ComposeTweetSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComposeTweetSection.swift; sourceTree = "<group>"; };
-		DB8AC17125419B7500E636BE /* ComposeTweetItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComposeTweetItem.swift; sourceTree = "<group>"; };
-		DB8AC17F254275C600E636BE /* RepliedToTweetContentTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RepliedToTweetContentTableViewCell.swift; sourceTree = "<group>"; };
 		DB8AC18F2542DA9500E636BE /* ActiveLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActiveLabel.swift; sourceTree = "<group>"; };
 		DB8E4FD82563CD6900459DA2 /* TwitterPinBasedAuthenticationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwitterPinBasedAuthenticationViewController.swift; sourceTree = "<group>"; };
 		DB8E4FEB2563D42800459DA2 /* TwitterPinBasedAuthenticationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwitterPinBasedAuthenticationViewModel.swift; sourceTree = "<group>"; };
@@ -774,8 +765,6 @@
 		DBA6B30D27E9CB6F004D052D /* AddListMemberViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddListMemberViewController.swift; sourceTree = "<group>"; };
 		DBA6B31027E9CBCC004D052D /* AddListMemberViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddListMemberViewModel.swift; sourceTree = "<group>"; };
 		DBA7DD73256B96450008A95A /* UIFont.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIFont.swift; sourceTree = "<group>"; };
-		DBA9B3A525875B6B00EA14ED /* MentionPickViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MentionPickViewController.swift; sourceTree = "<group>"; };
-		DBA9B3C02587609200EA14ED /* MentionPickViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MentionPickViewModel.swift; sourceTree = "<group>"; };
 		DBAA898D2758CF01001C273B /* DrawerSidebarHeaderView+ViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DrawerSidebarHeaderView+ViewModel.swift"; sourceTree = "<group>"; };
 		DBAA898F2758DFC9001C273B /* AvatarBarButtonItem+ViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AvatarBarButtonItem+ViewModel.swift"; sourceTree = "<group>"; };
 		DBAA89912758EF12001C273B /* DrawerSidebarViewModel+Diffable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DrawerSidebarViewModel+Diffable.swift"; sourceTree = "<group>"; };
@@ -1705,32 +1694,10 @@
 		DB8AC1122540501A00E636BE /* Compose */ = {
 			isa = PBXGroup;
 			children = (
-				DBBBBE572744E7F4007ACB4B /* Deprecated */,
 				DBBBBE582744E800007ACB4B /* ComposeViewController.swift */,
 				DBBBBE8E2744FB42007ACB4B /* ComposeViewModel.swift */,
 			);
 			path = Compose;
-			sourceTree = "<group>";
-		};
-		DB8AC150254167C100E636BE /* View */ = {
-			isa = PBXGroup;
-			children = (
-				DB8AC14B254167BE00E636BE /* TweetToolbarView.swift */,
-				DB8AC17F254275C600E636BE /* RepliedToTweetContentTableViewCell.swift */,
-				DB2924E32547D4C7003899A7 /* ComposeTweetMediaCollectionViewCell.swift */,
-			);
-			path = View;
-			sourceTree = "<group>";
-		};
-		DB8AC17025419B6600E636BE /* Model */ = {
-			isa = PBXGroup;
-			children = (
-				DB8AC16B25419B2E00E636BE /* ComposeTweetSection.swift */,
-				DB8AC17125419B7500E636BE /* ComposeTweetItem.swift */,
-				DB2924D62547CCA2003899A7 /* ComposeTweetMediaSection.swift */,
-				DB2924DE2547CCD6003899A7 /* ComposeTweetMediaItem.swift */,
-			);
-			path = Model;
 			sourceTree = "<group>";
 		};
 		DB8E4FDD2563D3F700459DA2 /* PinBased */ = {
@@ -1902,27 +1869,6 @@
 				DBA6B31027E9CBCC004D052D /* AddListMemberViewModel.swift */,
 			);
 			path = AddListMember;
-			sourceTree = "<group>";
-		};
-		DBA9B3AA25875B6F00EA14ED /* MentionPick */ = {
-			isa = PBXGroup;
-			children = (
-				DBA9B3A525875B6B00EA14ED /* MentionPickViewController.swift */,
-				DBA9B3C02587609200EA14ED /* MentionPickViewModel.swift */,
-			);
-			path = MentionPick;
-			sourceTree = "<group>";
-		};
-		DBBBBE572744E7F4007ACB4B /* Deprecated */ = {
-			isa = PBXGroup;
-			children = (
-				DB8AC17025419B6600E636BE /* Model */,
-				DB8AC150254167C100E636BE /* View */,
-				DB8AC10D2540501600E636BE /* ComposeTweetViewController.swift */,
-				DB8AC1462541677900E636BE /* ComposeTweetViewModel.swift */,
-				DBA9B3AA25875B6F00EA14ED /* MentionPick */,
-			);
-			path = Deprecated;
 			sourceTree = "<group>";
 		};
 		DBBBBE5F2744E8CC007ACB4B /* ShareExtension */ = {

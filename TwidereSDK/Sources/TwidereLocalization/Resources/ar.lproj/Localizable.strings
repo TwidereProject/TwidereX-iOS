@@ -156,9 +156,11 @@
 "Common.Controls.Actions.Add" = "أضف";
 "Common.Controls.Actions.Browse" = "تصفح";
 "Common.Controls.Actions.Cancel" = "ألغِ";
+"Common.Controls.Actions.Clear" = "Clear";
 "Common.Controls.Actions.Confirm" = "أكِّد";
 "Common.Controls.Actions.Copy" = "انسخ";
 "Common.Controls.Actions.Delete" = "حذف";
+"Common.Controls.Actions.Done" = "تم";
 "Common.Controls.Actions.Edit" = "عدّل";
 "Common.Controls.Actions.Ok" = "موافق";
 "Common.Controls.Actions.OpenInSafari" = "افتحه في سفاري";
@@ -265,6 +267,12 @@
 "Scene.Compose.And" = "، ";
 "Scene.Compose.CwPlaceholder" = "اكتب التحذير";
 "Scene.Compose.LastEnd" = " و ";
+"Scene.Compose.Media.Caption.Add" = "Add Caption";
+"Scene.Compose.Media.Caption.AddADescriptionForThisImage" = "Add a description for this image";
+"Scene.Compose.Media.Caption.Remove" = "Remove Caption";
+"Scene.Compose.Media.Caption.Update" = "Update Caption";
+"Scene.Compose.Media.Preview" = "معاينة";
+"Scene.Compose.Media.Remove" = "أزِل";
 "Scene.Compose.OthersInThisConversation" = "آخرون في هذه المحادثة:";
 "Scene.Compose.Placeholder" = "ماذا يحدث ؟";
 "Scene.Compose.ReplyTo" = "رد على …";

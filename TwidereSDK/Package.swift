@@ -22,7 +22,6 @@ let package = Package(
                 "TwidereCore",
                 "TwidereLocalization",
                 "TwidereUI",
-                "TwidereComposeUI",
             ]
         ),
     ],
@@ -41,6 +40,7 @@ let package = Package(
         .package(url: "https://github.com/MainasuK/KeyboardLayoutGuide.git", branch: "fix/iOS15"),
         .package(url: "https://github.com/apple/swift-collections.git", from: "1.0.2"),
         .package(url: "https://github.com/SwiftKickMobile/SwiftMessages.git", from: "9.0.5"),
+        .package(name: "Introspect", url: "https://github.com/siteline/SwiftUI-Introspect.git", from: "0.1.4"),
     ],
     targets: [
         // Targets are the basic building blocks of a package. A target can define a module or a test suite.
@@ -116,13 +116,8 @@ let package = Package(
                 .product(name: "CropViewController", package: "TOCropViewController"),
                 .product(name: "KeyboardLayoutGuide", package: "KeyboardLayoutGuide"),
                 .product(name: "SwiftMessages", package: "SwiftMessages"),
+                .product(name: "Introspect", package: "Introspect"),
             ]
         ),
-        .target(
-            name: "TwidereComposeUI",
-            dependencies: [
-                "TwidereUI",
-            ]
-        )
     ]
 )

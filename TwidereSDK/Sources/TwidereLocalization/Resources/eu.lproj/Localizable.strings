@@ -156,9 +156,11 @@
 "Common.Controls.Actions.Add" = "Gehitu";
 "Common.Controls.Actions.Browse" = "Arakatu";
 "Common.Controls.Actions.Cancel" = "Ezeztatu";
+"Common.Controls.Actions.Clear" = "Clear";
 "Common.Controls.Actions.Confirm" = "Baieztatu";
 "Common.Controls.Actions.Copy" = "Copy";
 "Common.Controls.Actions.Delete" = "Ezabatu";
+"Common.Controls.Actions.Done" = "Eginda";
 "Common.Controls.Actions.Edit" = "Editatu";
 "Common.Controls.Actions.Ok" = "Ados";
 "Common.Controls.Actions.OpenInSafari" = "Ireki esteka Safarirekin";
@@ -265,6 +267,12 @@
 "Scene.Compose.And" = ", ";
 "Scene.Compose.CwPlaceholder" = "Idatz ezazu hemen zure ohartarazpena";
 "Scene.Compose.LastEnd" = " eta ";
+"Scene.Compose.Media.Caption.Add" = "Add Caption";
+"Scene.Compose.Media.Caption.AddADescriptionForThisImage" = "Add a description for this image";
+"Scene.Compose.Media.Caption.Remove" = "Remove Caption";
+"Scene.Compose.Media.Caption.Update" = "Update Caption";
+"Scene.Compose.Media.Preview" = "Aurrebista";
+"Scene.Compose.Media.Remove" = "Ezabatu";
 "Scene.Compose.OthersInThisConversation" = "Beste batzuk elkarrizketa honetan:";
 "Scene.Compose.Placeholder" = "Zer gertatzen ari da?";
 "Scene.Compose.ReplyTo" = "… erantzun";

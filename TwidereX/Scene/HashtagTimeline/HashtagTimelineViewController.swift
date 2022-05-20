@@ -11,7 +11,7 @@ import UIKit
 import Combine
 import AppShared
 import Floaty
-import TwidereComposeUI
+import TwidereUI
 
 final class HashtagTimelineViewController: UIViewController, NeedsDependency, MediaPreviewableViewController {
     
@@ -125,7 +125,7 @@ extension HashtagTimelineViewController {
         
         let composeViewModel = ComposeViewModel(context: context)
         let composeContentViewModel = ComposeContentViewModel(
-            inputContext: .hashtag(hashtag: hashtag),
+            kind: .hashtag(hashtag: hashtag),
             configurationContext: ComposeContentViewModel.ConfigurationContext(
                 apiService: context.apiService,
                 authenticationService: context.authenticationService,

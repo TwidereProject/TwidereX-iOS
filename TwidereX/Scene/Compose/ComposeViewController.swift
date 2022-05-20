@@ -10,14 +10,16 @@ import os.log
 import UIKit
 import Combine
 import TwidereUI
-import TwidereComposeUI
 
-final class ComposeViewController: UIViewController, NeedsDependency {
+final class ComposeViewController: UIViewController, NeedsDependency, MediaPreviewableViewController {
     
     let logger = Logger(subsystem: "ComposeViewController", category: "ViewController")
     
     weak var context: AppContext! { willSet { precondition(!isViewLoaded) } }
     weak var coordinator: SceneCoordinator! { willSet { precondition(!isViewLoaded) } }
+    
+    // MARK: MediaPreviewTransitionHostViewController
+    let mediaPreviewTransitionController = MediaPreviewTransitionController()
     
     var disposeBag = Set<AnyCancellable>()
     var viewModel: ComposeViewModel!
@@ -64,7 +66,6 @@ extension ComposeViewController {
         ])
         composeContentViewController.didMove(toParent: self)
         
-        
         // bind compose bar button item
         composeContentViewModel.$isComposeBarButtonEnabled
             .receive(on: DispatchQueue.main)
@@ -73,6 +74,8 @@ extension ComposeViewController {
         
         // bind author
         viewModel.$author.assign(to: &composeContentViewModel.$author)
+        
+        composeContentViewController.delegate = self
     }
     
 }
@@ -97,6 +100,55 @@ extension ComposeViewController {
         
         self.dismiss(animated: true, completion: nil)
     }
+}
+
+// MARK: - ComposeContentViewControllerDelegate
+extension ComposeViewController: ComposeContentViewControllerDelegate {
+
+    func composeContentViewController(
+        _ viewController: ComposeContentViewController,
+        previewAttachmentViewModel attachmentViewModel: AttachmentViewModel
+    ) {
+        logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public)")
+        
+        let _item: MediaPreviewViewModel.Item? = {
+            switch attachmentViewModel.output {
+            case .image(let data, _):
+                guard let image = UIImage(data: data) else { return nil }
+                return .image(.init(image: image))
+            case .video(let url, _):
+                return nil
+            case .none:
+                return nil
+            }
+        }()
+        guard let item = _item else {
+            assertionFailure()
+            return
+        }
+        
+        let mediaPreviewViewModel = MediaPreviewViewModel(
+            context: context,
+            item: item,
+            transitionItem: {
+                let item = MediaPreviewTransitionItem(
+                    source: .none,
+                    previewableViewController: self
+                )
+                
+                item.image = attachmentViewModel.thumbnail
+                item.aspectRatio = attachmentViewModel.thumbnail?.size
+                
+                return item
+            }()
+        )
+        coordinator.present(
+            scene: .mediaPreview(viewModel: mediaPreviewViewModel),
+            from: self,
+            transition: .custom(transitioningDelegate: mediaPreviewTransitionController)
+        )
+    }
+
 }
 
 // MARK: - UIAdaptivePresentationControllerDelegate

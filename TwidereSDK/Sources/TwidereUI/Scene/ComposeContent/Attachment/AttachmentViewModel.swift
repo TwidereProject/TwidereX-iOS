@@ -12,7 +12,7 @@ import PhotosUI
 import TwidereCommon
 import Kingfisher
 
-final public class AttachmentViewModel {
+final public class AttachmentViewModel: ObservableObject {
 
     static let logger = Logger(subsystem: "AttachmentViewModel", category: "ViewModel")
     
@@ -22,12 +22,12 @@ final public class AttachmentViewModel {
     
     // input
     public let input: Input
-    @Published var altDescription = ""
+    @Published var caption = ""
     @Published var sizeLimit = SizeLimit()
     
     // output
-    @Published var output: Output?
-    @Published var thumbnail: UIImage?      // original size image thumbnail
+    @Published public private(set) var output: Output?
+    @Published public private(set) var thumbnail: UIImage?      // original size image thumbnail
     @Published var error: Error?
     let progress = Progress()
     
@@ -154,7 +154,7 @@ extension AttachmentViewModel {
             }
             output = .image(data, imageKind: .png)
         case .url(let url):
-            Task {
+            Task { @MainActor in
                 do {
                     let output = try await AttachmentViewModel.load(url: url)
                     self.output = output
@@ -163,7 +163,7 @@ extension AttachmentViewModel {
                 }
             }   // end Task
         case .pickerResult(let pickerResult):
-            Task {
+            Task { @MainActor in
                 do {
                     let output = try await AttachmentViewModel.load(pickerResult: pickerResult)
                     self.output = output

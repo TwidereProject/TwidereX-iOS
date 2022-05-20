@@ -156,9 +156,11 @@
 "Common.Controls.Actions.Add" = "追加";
 "Common.Controls.Actions.Browse" = "参照";
 "Common.Controls.Actions.Cancel" = "キャンセル";
+"Common.Controls.Actions.Clear" = "Clear";
 "Common.Controls.Actions.Confirm" = "確認";
 "Common.Controls.Actions.Copy" = "Copy";
 "Common.Controls.Actions.Delete" = "削除";
+"Common.Controls.Actions.Done" = "完了";
 "Common.Controls.Actions.Edit" = "編集";
 "Common.Controls.Actions.Ok" = "OK";
 "Common.Controls.Actions.OpenInSafari" = "Safari で開く";
@@ -265,6 +267,12 @@
 "Scene.Compose.And" = ", ";
 "Scene.Compose.CwPlaceholder" = "ここに警告を書いてください";
 "Scene.Compose.LastEnd" = " と ";
+"Scene.Compose.Media.Caption.Add" = "Add Caption";
+"Scene.Compose.Media.Caption.AddADescriptionForThisImage" = "Add a description for this image";
+"Scene.Compose.Media.Caption.Remove" = "Remove Caption";
+"Scene.Compose.Media.Caption.Update" = "Update Caption";
+"Scene.Compose.Media.Preview" = "プレビュー";
+"Scene.Compose.Media.Remove" = "削除";
 "Scene.Compose.OthersInThisConversation" = "この会話の他の人:";
 "Scene.Compose.Placeholder" = "いまどうしてる？";
 "Scene.Compose.ReplyTo" = "返信 ...";

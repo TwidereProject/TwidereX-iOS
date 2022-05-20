@@ -156,9 +156,11 @@
 "Common.Controls.Actions.Add" = "Engadir";
 "Common.Controls.Actions.Browse" = "Navegar";
 "Common.Controls.Actions.Cancel" = "Cancelar";
+"Common.Controls.Actions.Clear" = "Clear";
 "Common.Controls.Actions.Confirm" = "Confirmar";
 "Common.Controls.Actions.Copy" = "Copiar";
 "Common.Controls.Actions.Delete" = "Borrar";
+"Common.Controls.Actions.Done" = "Feito";
 "Common.Controls.Actions.Edit" = "Editar";
 "Common.Controls.Actions.Ok" = "Aceptar";
 "Common.Controls.Actions.OpenInSafari" = "Abrir no Safari";
@@ -265,6 +267,12 @@
 "Scene.Compose.And" = ", ";
 "Scene.Compose.CwPlaceholder" = "Escribe aquí o teu aviso";
 "Scene.Compose.LastEnd" = " e ";
+"Scene.Compose.Media.Caption.Add" = "Add Caption";
+"Scene.Compose.Media.Caption.AddADescriptionForThisImage" = "Add a description for this image";
+"Scene.Compose.Media.Caption.Remove" = "Remove Caption";
+"Scene.Compose.Media.Caption.Update" = "Update Caption";
+"Scene.Compose.Media.Preview" = "Vista previa";
+"Scene.Compose.Media.Remove" = "Eliminar";
 "Scene.Compose.OthersInThisConversation" = "Máis persoas nesta conversa:";
 "Scene.Compose.Placeholder" = "Que está a pasar?";
 "Scene.Compose.ReplyTo" = "Responder a …";
