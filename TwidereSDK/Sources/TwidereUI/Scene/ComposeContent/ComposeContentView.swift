@@ -81,7 +81,7 @@ public struct ComposeContentView: View {
                 if !viewModel.attachmentViewModels.isEmpty {
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack {
-                            ForEach(viewModel.attachmentViewModels, id: \.self) { attachmentViewModel in
+                            ReorderableForEach(items: viewModel.attachmentViewModels) { attachmentViewModel in
                                 AttachmentView(
                                     viewModel: attachmentViewModel,
                                     action: { action in
@@ -95,9 +95,20 @@ public struct ComposeContentView: View {
                                         }
                                     }
                                 )
-                            }                            
-                        }
-                        Spacer()
+//                                .onDrag {
+//                                    NSItemProvider(object: attachmentViewModel)
+//                                } preview: {
+//                                    let image = attachmentViewModel.thumbnail ?? .placeholder(color: .systemGray3)
+//                                    Image(uiImage: image)
+//                                        .resizable()
+//                                        .aspectRatio(contentMode: .fill)
+//                                        .cornerRadius(10)
+//                                }
+                            } moveAction: { from, to in
+                                viewModel.attachmentViewModels.move(fromOffsets: from, toOffset: to)
+                            }
+                            Spacer()
+                        }   // end HStack
                     }
                     .padding(ComposeContentView.contentMargin)
                     .border(.blue, width: 1)

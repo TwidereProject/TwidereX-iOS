@@ -23,13 +23,23 @@ public struct ComposeContentToolbarView: View {
         VStack(spacing: .zero) {
             HStack(spacing: .zero) {
                 // iput limit indicator
-                let progress = Double(min(viewModel.maxTextInputLimit, viewModel.currentTextInputWeightedLength))
+                let value = Double(viewModel.currentTextInputWeightedLength)
+                let total = Double(viewModel.maxTextInputLimit)
+                let progress = total == .zero ? 0 : value / total
                 ProgressView(
-                    value: progress,
-                    total: Double(viewModel.maxTextInputLimit)
+                    value: min(value, total),       // clump to 1.0
+                    total: total
                 )
                 .progressViewStyle(GaugeProgressStyle(
-                    strokeColor: .accentColor,
+                    strokeColor: {
+                        if progress > 1.0 {
+                            return Color(uiColor: .systemRed)
+                        } else if progress > 0.9 {
+                            return Color(uiColor: .systemOrange)
+                        } else {
+                            return Color.accentColor
+                        }
+                    }(),
                     strokeWidth: 2
                 ))
                 .frame(width: 18, height: 18)

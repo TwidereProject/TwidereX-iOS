@@ -9,6 +9,7 @@
 import os.log
 import UIKit
 import Combine
+import AVKit
 import TwidereUI
 
 final class ComposeViewController: UIViewController, NeedsDependency, MediaPreviewableViewController {
@@ -111,17 +112,21 @@ extension ComposeViewController: ComposeContentViewControllerDelegate {
     ) {
         logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public)")
         
-        let _item: MediaPreviewViewModel.Item? = {
-            switch attachmentViewModel.output {
-            case .image(let data, _):
-                guard let image = UIImage(data: data) else { return nil }
-                return .image(.init(image: image))
-            case .video(let url, _):
-                return nil
-            case .none:
-                return nil
-            }
-        }()
+        let _item: MediaPreviewViewModel.Item?
+        switch attachmentViewModel.output {
+        case .image(let data, _):
+            _item = UIImage(data: data).flatMap { .image(.init(image: $0)) }
+        case .video(let url, _):
+            let playerViewController = AVPlayerViewController()
+            playerViewController.player = AVPlayer(url: url)
+            playerViewController.player?.play()
+            playerViewController.delegate = context.playerService
+            present(playerViewController, animated: true, completion: nil)
+            return
+        case .none:
+            _item = nil
+        }
+        
         guard let item = _item else {
             assertionFailure()
             return

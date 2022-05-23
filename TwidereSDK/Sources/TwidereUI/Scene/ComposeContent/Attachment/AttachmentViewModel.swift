@@ -12,14 +12,15 @@ import PhotosUI
 import TwidereCommon
 import Kingfisher
 
-final public class AttachmentViewModel: ObservableObject {
+final public class AttachmentViewModel: NSObject, ObservableObject, Identifiable {
 
     static let logger = Logger(subsystem: "AttachmentViewModel", category: "ViewModel")
     
-    let id = UUID()
+    public let id = UUID()
     
     var disposeBag = Set<AnyCancellable>()
-    
+    var observations = Set<NSKeyValueObservation>()
+
     // input
     public let input: Input
     @Published var caption = ""
@@ -29,10 +30,11 @@ final public class AttachmentViewModel: ObservableObject {
     @Published public private(set) var output: Output?
     @Published public private(set) var thumbnail: UIImage?      // original size image thumbnail
     @Published var error: Error?
-    let progress = Progress()
+    let progress = Progress()       // upload progress
     
     public init(input: Input) {
         self.input = input
+        super.init()
         // end init
         
         defer {
@@ -45,18 +47,7 @@ final public class AttachmentViewModel: ObservableObject {
                 case .image(let data, _):
                     return UIImage(data: data)
                 case .video(let url, _):
-                    guard FileManager.default.fileExists(atPath: url.path) else { return nil }
-                    let asset = AVURLAsset(url: url)
-                    let assetImageGenerator = AVAssetImageGenerator(asset: asset)
-                    assetImageGenerator.appliesPreferredTrackTransform = true   // fix orientation
-                    do {
-                        let cgImage = try assetImageGenerator.copyCGImage(at: CMTimeMake(value: 0, timescale: 1), actualTime: nil)
-                        let image = UIImage(cgImage: cgImage)
-                        return image
-                    } catch {
-                        AttachmentViewModel.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): thumbnail generate fail: \(error.localizedDescription)")
-                        return nil
-                    }
+                    return AttachmentViewModel.createThumbnailForVideo(url: url)
                 case .none:
                     return nil
                 }
@@ -77,17 +68,18 @@ final public class AttachmentViewModel: ObservableObject {
     }
 }
 
-extension AttachmentViewModel: Hashable {
-    
-    public func hash(into hasher: inout Hasher) {
-        hasher.combine(id)
-        hasher.combine(input)
-    }
-    
-    public static func == (lhs: AttachmentViewModel, rhs: AttachmentViewModel) -> Bool {
-        return lhs.input == rhs.input
-    }
-}
+//extension AttachmentViewModel: Hashable {
+//
+//    public func hash(into hasher: inout Hasher) {
+//        hasher.combine(id)
+//        hasher.combine(input)
+//    }
+//
+//    public static func == (lhs: AttachmentViewModel, rhs: AttachmentViewModel) -> Bool {
+//        return lhs.input == rhs.input
+//    }
+//
+//}
 
 extension AttachmentViewModel {
     public enum Input: Hashable {
@@ -242,6 +234,140 @@ extension AttachmentViewModel {
         }
     }
 
+}
+
+extension AttachmentViewModel {
+    static func createThumbnailForVideo(url: URL) -> UIImage? {
+        guard FileManager.default.fileExists(atPath: url.path) else { return nil }
+        let asset = AVURLAsset(url: url)
+        let assetImageGenerator = AVAssetImageGenerator(asset: asset)
+        assetImageGenerator.appliesPreferredTrackTransform = true   // fix orientation
+        do {
+            let cgImage = try assetImageGenerator.copyCGImage(at: CMTimeMake(value: 0, timescale: 1), actualTime: nil)
+            let image = UIImage(cgImage: cgImage)
+            return image
+        } catch {
+            AttachmentViewModel.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): thumbnail generate fail: \(error.localizedDescription)")
+            return nil
+        }
+    }
+}
+
+// MARK: - TypeIdentifiedItemProvider
+extension AttachmentViewModel: TypeIdentifiedItemProvider {
+    public static var typeIdentifier: String {
+        return Bundle(for: AttachmentViewModel.self).bundleIdentifier! + String(describing: type(of: AttachmentViewModel.self))
+    }
+}
+
+// MARK: - NSItemProviderWriting
+extension AttachmentViewModel: NSItemProviderWriting {
+    
+    public static var writableTypeIdentifiersForItemProvider: [String] {
+        return [
+            AttachmentViewModel.typeIdentifier,
+            UTType.image.identifier,
+            UTType.movie.identifier
+        ]
+    }
+    
+    public var writableTypeIdentifiersForItemProvider: [String] {
+        var typeIdentifiers: [String] = [AttachmentViewModel.typeIdentifier]
+        
+        switch input {
+        case .image:
+            typeIdentifiers.append(UTType.image.identifier)
+        case .url(let url):
+            let _uti = UTType(filenameExtension: url.pathExtension)
+            if let uti = _uti {
+                if uti.conforms(to: .image) {
+                    typeIdentifiers.append(UTType.image.identifier)
+                } else if uti.conforms(to: .movie) {
+                    typeIdentifiers.append(UTType.image.identifier)
+                    typeIdentifiers.append(UTType.movie.identifier)
+                }
+            }
+        case .pickerResult(let item):
+            if item.isImage() {
+                typeIdentifiers.append(UTType.image.identifier)
+            } else if item.isMovie() {
+                typeIdentifiers.append(UTType.image.identifier)
+                typeIdentifiers.append(UTType.movie.identifier)
+            }
+        }
+        
+        return typeIdentifiers
+    }
+    
+    public func loadData(
+        withTypeIdentifier typeIdentifier: String,
+        forItemProviderCompletionHandler completionHandler: @escaping (Data?, Error?) -> Void
+    ) -> Progress? {
+        switch typeIdentifier {
+        case AttachmentViewModel.typeIdentifier:
+            do {
+                let archiver = NSKeyedArchiver(requiringSecureCoding: false)
+                try archiver.encodeEncodable(id, forKey: NSKeyedArchiveRootObjectKey)
+                archiver.finishEncoding()
+                let data = archiver.encodedData
+                completionHandler(data, nil)
+            } catch {
+                assertionFailure()
+                completionHandler(nil, nil)
+            }
+        default:
+            break
+        }
+        
+        let loadingProgress = Progress(totalUnitCount: 100)
+        
+        Publishers.CombineLatest(
+            $output,
+            $error
+        )
+        .sink { [weak self] output, error in
+            guard let self = self else { return }
+            
+            // continue when load completed
+            guard output != nil || error != nil else { return }
+            
+            switch output {
+            case .image(let data, _):
+                switch typeIdentifier {
+                case UTType.image.identifier:
+                    loadingProgress.completedUnitCount = 100
+                    completionHandler(data, nil)
+                default:
+                    completionHandler(nil, nil)
+                }
+            case .video(let url, _):
+                switch typeIdentifier {
+                case UTType.image.identifier:
+                    let _image = AttachmentViewModel.createThumbnailForVideo(url: url)
+                    let _data = _image?.pngData()
+                    loadingProgress.completedUnitCount = 100
+                    completionHandler(_data, nil)
+                case UTType.movie.identifier:
+                    let task = URLSession.shared.dataTask(with: url) { data, response, error in
+                        completionHandler(data, error)
+                    }
+                    task.progress.observe(\.fractionCompleted) { progress, change in
+                        loadingProgress.completedUnitCount = Int64(100 * progress.fractionCompleted)
+                    }
+                    .store(in: &self.observations)
+                    task.resume()
+                default:
+                    completionHandler(nil, nil)
+                }
+            case nil:
+                completionHandler(nil, error)
+            }
+        }
+        .store(in: &disposeBag)
+        
+        return loadingProgress
+    }
+    
 }
 
 extension PHPickerResult {

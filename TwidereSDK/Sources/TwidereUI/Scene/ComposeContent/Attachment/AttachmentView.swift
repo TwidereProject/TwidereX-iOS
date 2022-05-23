@@ -51,12 +51,22 @@ public struct AttachmentView: View {
                     .transition(.opacity)
                 }
                 .overlay(alignment: .bottom) {
-                    HStack {
+                    HStack(alignment: .bottom) {
                         // alt
-                        if !viewModel.caption.isEmpty {
-                            Image(uiImage: Asset.Media.altRectangle.image)
-                                .resizable()
-                                .frame(width: 16, height: 12)
+                        VStack(spacing: 2) {
+                            switch viewModel.output {
+                            case .video:
+                                Image(uiImage: Asset.Media.playerRectangle.image)
+                                    .resizable()
+                                    .frame(width: 16, height: 12)
+                            default:
+                                EmptyView()
+                            }
+                            if !viewModel.caption.isEmpty {
+                                Image(uiImage: Asset.Media.altRectangle.image)
+                                    .resizable()
+                                    .frame(width: 16, height: 12)
+                            }
                         }
                         Spacer()
                         // option
