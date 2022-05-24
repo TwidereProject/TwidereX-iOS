@@ -12,6 +12,7 @@ import TwidereCore
 import TwidereAsset
 import TwidereLocalization
 import Introspect
+import AVKit
 
 public struct AttachmentView: View {
     
@@ -83,7 +84,7 @@ public struct AttachmentView: View {
                 .cornerRadius(AttachmentView.cornerRadius)
         }   // end Menu
         .sheet(isPresented: $isCaptionEditorPresented) {
-            sheet
+            captionSheet
         }   // end sheet
 
     }   // end body
@@ -126,15 +127,24 @@ public struct AttachmentView: View {
         }
     }
     
-    var sheet: some View {
+    var captionSheet: some View {
         NavigationView {
             ScrollView(.vertical) {
                 VStack {
-                    // image
-                    let image = viewModel.thumbnail ?? .placeholder(color: .systemGray3)
-                    Image(uiImage: image)
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
+                    // preview
+                    switch viewModel.output {
+                    case .image:
+                        let image = viewModel.thumbnail ?? .placeholder(color: .systemGray3)
+                        Image(uiImage: image)
+                            .resizable()
+                            .aspectRatio(contentMode: .fill)
+                    case .video(let url, _):
+                        let player = AVPlayer(url: url)
+                        VideoPlayer(player: player)
+                            .frame(height: 300)
+                    case .none:
+                        EmptyView()
+                    }
                     // caption textField
                     TextField(
                         text: $caption,
