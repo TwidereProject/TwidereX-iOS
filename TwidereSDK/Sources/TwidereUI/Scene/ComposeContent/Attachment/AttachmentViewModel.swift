@@ -68,19 +68,6 @@ final public class AttachmentViewModel: NSObject, ObservableObject, Identifiable
     }
 }
 
-//extension AttachmentViewModel: Hashable {
-//
-//    public func hash(into hasher: inout Hasher) {
-//        hasher.combine(id)
-//        hasher.combine(input)
-//    }
-//
-//    public static func == (lhs: AttachmentViewModel, rhs: AttachmentViewModel) -> Bool {
-//        return lhs.input == rhs.input
-//    }
-//
-//}
-
 extension AttachmentViewModel {
     public enum Input: Hashable {
         case image(UIImage)
@@ -267,34 +254,36 @@ extension AttachmentViewModel: NSItemProviderWriting {
         return [
             AttachmentViewModel.typeIdentifier,
             UTType.image.identifier,
-            UTType.movie.identifier
+            UTType.movie.identifier,
         ]
     }
     
     public var writableTypeIdentifiersForItemProvider: [String] {
-        var typeIdentifiers: [String] = [AttachmentViewModel.typeIdentifier]
+        // should append elements in priority order from high to low
+        var typeIdentifiers: [String] = []
         
+        // FIXME: check jpg or png
         switch input {
         case .image:
-            typeIdentifiers.append(UTType.image.identifier)
+            typeIdentifiers.append(UTType.png.identifier)
         case .url(let url):
             let _uti = UTType(filenameExtension: url.pathExtension)
             if let uti = _uti {
                 if uti.conforms(to: .image) {
-                    typeIdentifiers.append(UTType.image.identifier)
+                    typeIdentifiers.append(UTType.png.identifier)
                 } else if uti.conforms(to: .movie) {
-                    typeIdentifiers.append(UTType.image.identifier)
-                    typeIdentifiers.append(UTType.movie.identifier)
+                    typeIdentifiers.append(UTType.mpeg4Movie.identifier)
                 }
             }
         case .pickerResult(let item):
             if item.isImage() {
-                typeIdentifiers.append(UTType.image.identifier)
+                typeIdentifiers.append(UTType.png.identifier)
             } else if item.isMovie() {
-                typeIdentifiers.append(UTType.image.identifier)
-                typeIdentifiers.append(UTType.movie.identifier)
+                typeIdentifiers.append(UTType.mpeg4Movie.identifier)
             }
         }
+        
+        typeIdentifiers.append(AttachmentViewModel.typeIdentifier)
         
         return typeIdentifiers
     }
@@ -334,7 +323,7 @@ extension AttachmentViewModel: NSItemProviderWriting {
             switch output {
             case .image(let data, _):
                 switch typeIdentifier {
-                case UTType.image.identifier:
+                case UTType.png.identifier:
                     loadingProgress.completedUnitCount = 100
                     completionHandler(data, nil)
                 default:
@@ -342,12 +331,12 @@ extension AttachmentViewModel: NSItemProviderWriting {
                 }
             case .video(let url, _):
                 switch typeIdentifier {
-                case UTType.image.identifier:
+                case UTType.png.identifier:
                     let _image = AttachmentViewModel.createThumbnailForVideo(url: url)
                     let _data = _image?.pngData()
                     loadingProgress.completedUnitCount = 100
                     completionHandler(_data, nil)
-                case UTType.movie.identifier:
+                case UTType.mpeg4Movie.identifier:
                     let task = URLSession.shared.dataTask(with: url) { data, response, error in
                         completionHandler(data, error)
                     }

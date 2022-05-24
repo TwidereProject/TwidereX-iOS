@@ -11,7 +11,7 @@ import UniformTypeIdentifiers
 // Ref
 // https://stackoverflow.com/a/68963988/3797903
 
-struct ReorderableForEach<Content: View, Item: Identifiable & Equatable & TypeIdentifiedItemProvider>: View {
+struct ReorderableForEach<Content: View, Item: Identifiable & Equatable & NSItemProviderWriting & TypeIdentifiedItemProvider>: View {
 
     @State var currentReorderItem: Item? = nil
     @State var isCurrentReorderItemOutside: Bool = false
@@ -41,7 +41,7 @@ struct ReorderableForEach<Content: View, Item: Identifiable & Equatable & TypeId
                 .onDrag {
                     currentReorderItem = item
                     isCurrentReorderItemOutside = false
-                    return NSItemProvider(item: "\(item.id)" as NSString, typeIdentifier: Item.typeIdentifier)
+                    return NSItemProvider(object: item)
                 }
         }
         .contentShape(Rectangle())
