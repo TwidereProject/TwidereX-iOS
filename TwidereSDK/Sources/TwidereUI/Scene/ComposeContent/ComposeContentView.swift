@@ -123,6 +123,18 @@ public struct ComposeContentView: View {
         .frame(width: viewModel.viewSize.width)
         .frame(maxHeight: .infinity)
         .padding(.bottom, toolbarHeight)
+        .contentShape(Rectangle())
+        .onDrop(
+            of: AttachmentViewModel.writableTypeIdentifiersForItemProvider,
+            delegate: AttachmentDropDelegate(
+                isAttachmentViewModelAppendable: {
+                    viewModel.attachmentViewModels.count < viewModel.maxMediaAttachmentLimit
+                }(),
+                addAttachmentViewModel: { attachmentViewModel in
+                    viewModel.attachmentViewModels.append(attachmentViewModel)
+                }
+            )
+        )
         .overlay(alignment: .bottom, content: {
             ComposeContentToolbarView(viewModel: viewModel)
                 .background(GeometryReader { geometry in

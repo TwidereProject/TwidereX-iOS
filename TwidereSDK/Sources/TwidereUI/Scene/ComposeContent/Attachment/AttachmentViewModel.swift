@@ -73,6 +73,7 @@ extension AttachmentViewModel {
         case image(UIImage)
         case url(URL)
         case pickerResult(PHPickerResult)
+        case itemProvider(NSItemProvider)
     }
     
     public enum Output {
@@ -144,7 +145,16 @@ extension AttachmentViewModel {
         case .pickerResult(let pickerResult):
             Task { @MainActor in
                 do {
-                    let output = try await AttachmentViewModel.load(pickerResult: pickerResult)
+                    let output = try await AttachmentViewModel.load(itemProvider: pickerResult.itemProvider)
+                    self.output = output
+                } catch {
+                    self.error = error
+                }
+            }   // end Task
+        case .itemProvider(let itemProvider):
+            Task { @MainActor in
+                do {
+                    let output = try await AttachmentViewModel.load(itemProvider: itemProvider)
                     self.output = output
                 } catch {
                     self.error = error
@@ -182,9 +192,9 @@ extension AttachmentViewModel {
         }
     }
     
-    private static func load(pickerResult asset: PHPickerResult) async throws -> Output {
-        if asset.isImage() {
-            guard let result = try await asset.itemProvider.loadImageData() else {
+    private static func load(itemProvider: NSItemProvider) async throws -> Output {
+        if itemProvider.isImage() {
+            guard let result = try await itemProvider.loadImageData() else {
                 throw AttachmentError.invalidAttachmentType
             }
             let imageKind: Output.ImageKind = {
@@ -210,8 +220,8 @@ extension AttachmentViewModel {
                 return .jpg
             }()
             return .image(result.data, imageKind: imageKind)
-        } else if asset.isMovie() {
-            guard let result = try await asset.itemProvider.loadVideoData() else {
+        } else if itemProvider.isMovie() {
+            guard let result = try await itemProvider.loadVideoData() else {
                 throw AttachmentError.invalidAttachmentType
             }
             return .video(result.url, mimeType: "video/mp4")
@@ -276,9 +286,15 @@ extension AttachmentViewModel: NSItemProviderWriting {
                 }
             }
         case .pickerResult(let item):
-            if item.isImage() {
+            if item.itemProvider.isImage() {
                 typeIdentifiers.append(UTType.png.identifier)
-            } else if item.isMovie() {
+            } else if item.itemProvider.isMovie() {
+                typeIdentifiers.append(UTType.mpeg4Movie.identifier)
+            }
+        case .itemProvider(let itemProvider):
+            if itemProvider.isImage() {
+                typeIdentifiers.append(UTType.png.identifier)
+            } else if itemProvider.isMovie() {
                 typeIdentifiers.append(UTType.mpeg4Movie.identifier)
             }
         }
@@ -359,16 +375,16 @@ extension AttachmentViewModel: NSItemProviderWriting {
     
 }
 
-extension PHPickerResult {
+extension NSItemProvider {
     fileprivate func isImage() -> Bool {
-        return itemProvider.hasRepresentationConforming(
+        return hasRepresentationConforming(
             toTypeIdentifier: UTType.image.identifier,
             fileOptions: []
         )
     }
     
     fileprivate func isMovie() -> Bool {
-        return itemProvider.hasRepresentationConforming(
+        return hasRepresentationConforming(
             toTypeIdentifier: UTType.movie.identifier,
             fileOptions: []
         )
