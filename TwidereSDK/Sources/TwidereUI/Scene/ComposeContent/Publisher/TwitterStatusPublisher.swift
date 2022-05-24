@@ -16,7 +16,7 @@ public final class TwitterStatusPublisher: NSObject, ProgressReporting {
     
     let logger = Logger(subsystem: "TwitterStatusPublisher", category: "Publisher")
     
-    // Input
+    // input
     
     // author
     public let author: TwitterUser
@@ -30,7 +30,7 @@ public final class TwitterStatusPublisher: NSObject, ProgressReporting {
     // location
     public let place: Twitter.Entity.Place?
     
-    // Output
+    // output
     let _progress = Progress()
     public var progress: Progress { _progress }
     @Published var _state: StatusPublisherState = .pending
@@ -64,16 +64,16 @@ extension TwitterStatusPublisher: StatusPublisher {
     ) async throws -> StatusPublishResult {
         let publishAttachmentTaskWeight: Int64 = 100
         let publishAttachmentTaskCount: Int64 = Int64(attachmentViewModels.count) * publishAttachmentTaskWeight
-        
+
         let publishStatusTaskCount: Int64 = 20
-        
+
         let taskCount = [
             publishAttachmentTaskCount,
             publishStatusTaskCount
         ].reduce(0, +)
         progress.totalUnitCount = taskCount
         progress.completedUnitCount = 0
-        
+
         let _authenticationContext: TwitterAuthenticationContext? = await api.backgroundManagedObjectContext.perform {
             guard let authentication = self.author.twitterAuthentication else { return nil }
             return TwitterAuthenticationContext(authentication: authentication, secret: secret)
@@ -81,45 +81,54 @@ extension TwitterStatusPublisher: StatusPublisher {
         guard let authenticationContext = _authenticationContext else {
             throw AppError.implicit(.authenticationMissing)
         }
-        
-        // Task: media
-        let uploadContext = AttachmentViewModel.UploadContext(
-            apiService: api,
-            authenticationContext: .twitter(authenticationContext: authenticationContext)
-        )
-        
-        var mediaIDs: [String] = []
-        for attachmentViewModel in attachmentViewModels {
-            // set progress
-            progress.addChild(attachmentViewModel.progress, withPendingUnitCount: publishAttachmentTaskWeight)
-            // upload media
-            do {
-                let result = try await attachmentViewModel.upload(context: uploadContext)
-                guard case let .twitter(response) = result else {
-                    assertionFailure()
-                    continue
-                }
-                let mediaID = response.value.mediaIDString
-                mediaIDs.append(mediaID)
-            } catch {
-                _state = .failure(error)
-                throw error
-            }
-        }
-        
+
+//        // Task: media
+//        let uploadContext = AttachmentViewModel.UploadContext(
+//            apiService: api,
+//            authenticationContext: .twitter(authenticationContext: authenticationContext)
+//        )
+//
+//        var mediaIDs: [String] = []
+//        for attachmentViewModel in attachmentViewModels {
+//            // set progress
+//            progress.addChild(attachmentViewModel.progress, withPendingUnitCount: publishAttachmentTaskWeight)
+//            // upload media
+//            do {
+//                let result = try await attachmentViewModel.upload(context: uploadContext)
+//                guard case let .twitter(response) = result else {
+//                    assertionFailure()
+//                    continue
+//                }
+//                let mediaID = response.value.mediaIDString
+//                mediaIDs.append(mediaID)
+//            } catch {
+//                _state = .failure(error)
+//                throw error
+//            }
+//        }
+
         // Task: status
         let publishResponse = try await api.publishTwitterStatus(
-            content: content,
-            mediaIDs: mediaIDs.isEmpty ? nil : mediaIDs,
-            placeID: place?.id,
-            replyTo: replyTo,
-            excludeReplyUserIDs: excludeReplyUserIDs.isEmpty ? nil : excludeReplyUserIDs,
+            query: Twitter.API.V2.Status.PublishQuery(
+                text: content,
+                replySettings: .mentionedUsers
+            ),
             twitterAuthenticationContext: authenticationContext
         )
+        
+//        let publishResponse = try await api.publishTwitterStatus(
+//            content: content,
+//            mediaIDs: mediaIDs.isEmpty ? nil : mediaIDs,
+//            placeID: place?.id,
+//            replyTo: replyTo,
+//            excludeReplyUserIDs: excludeReplyUserIDs.isEmpty ? nil : excludeReplyUserIDs,
+//            twitterAuthenticationContext: authenticationContext
+//        )
+        
         progress.completedUnitCount += publishStatusTaskCount
         _state = .success
-        logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): status published: \(publishResponse.value.idStr)")
-        
+        logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): status published: \(publishResponse.value.data.id)")
+
         return .twitter(publishResponse)
     }
 }
