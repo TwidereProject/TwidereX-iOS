@@ -5,6 +5,7 @@
 //  Created by Cirno MainasuK on 2020-8-31.
 //
 
+import AVKit
 import UIKit
 import Combine
 import Floaty
@@ -24,8 +25,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         
+        // Firebase
         FirebaseApp.configure()
+        Crashlytics.crashlytics().setCustomValue(Locale.preferredLanguages.first ?? "nil", forKey: "preferredLanguage")
         
+        // configure AudioSession
+        try? AVAudioSession.sharedInstance().setCategory(.ambient)
+
         // Update app version info. See: `Settings.bundle`
         UserDefaults.standard.setValue(UIApplication.appVersion(), forKey: "TwidereX.appVersion")
         UserDefaults.standard.setValue(UIApplication.appBuild(), forKey: "TwidereX.appBundle")
@@ -42,6 +48,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // configure appearance
         ThemeService.shared.apply(theme: ThemeService.shared.theme.value)
         
+        // configure alternative app icon
         UserDefaults.shared.publisher(for: \.alternateIconNamePreference)
             .receive(on: DispatchQueue.main)
             .removeDuplicates()
@@ -72,11 +79,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 extension AppDelegate {
     func application(_ application: UIApplication, supportedInterfaceOrientationsFor window: UIWindow?) -> UIInterfaceOrientationMask {
-        #if DEBUG
-        return .all
-        #else
-        return UIDevice.current.userInterfaceIdiom == .pad ? .all : .portrait
-        #endif
+        switch UIDevice.current.userInterfaceIdiom {
+        case .phone:
+            return .portrait
+        default:
+            return .all
+        }
     }
 }
 

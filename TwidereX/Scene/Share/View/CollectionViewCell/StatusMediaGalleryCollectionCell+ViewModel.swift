@@ -125,9 +125,7 @@ extension StatusMediaGalleryCollectionCell {
         viewModel.isMediaSensitive = false
         viewModel.isMediaSensitiveToggled = false
         viewModel.isMediaSensitiveSwitchable = false
-        MediaView.configuration(twitterStatus: status)
-            .assign(to: \.mediaViewConfigurations, on: viewModel)
-            .store(in: &disposeBag)
+        viewModel.mediaViewConfigurations = MediaView.configuration(twitterStatus: status)
     }
     
     private func configure(mastodonStatus status: MastodonStatus) {
@@ -135,10 +133,7 @@ extension StatusMediaGalleryCollectionCell {
 
         viewModel.resetContentWarningOverlay()
         viewModel.isMediaSensitiveSwitchable = true
-        
-        MediaView.configuration(mastodonStatus: status)
-            .assign(to: \.mediaViewConfigurations, on: viewModel)
-            .store(in: &disposeBag)
+        viewModel.mediaViewConfigurations = MediaView.configuration(mastodonStatus: status)
         status.publisher(for: \.isMediaSensitive)
             .receive(on: DispatchQueue.main)
             .assign(to: \.isMediaSensitive, on: viewModel)

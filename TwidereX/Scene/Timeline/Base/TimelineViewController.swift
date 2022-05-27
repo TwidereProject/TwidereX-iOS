@@ -73,6 +73,8 @@ class TimelineViewController: UIViewController, NeedsDependency, DrawerSidebarTr
         
         return button
     }()
+    
+    let cellFrameCache = NSCache<NSNumber, NSValue>()
 
     deinit {
         os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s:", ((#file as NSString).lastPathComponent), #line, #function)
@@ -195,13 +197,13 @@ extension TimelineViewController {
             let now = Date()
             if let timestamp = viewModel.lastAutomaticFetchTimestamp {
                 if now.timeIntervalSince(timestamp) > 60 {
-                    logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): auto fetch lastest timeline…")
+                    logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): [Timeline] auto fetch lastest timeline…")
                     Task {
                         await viewModel.loadLatest()
                     }
                     viewModel.lastAutomaticFetchTimestamp = now
                 } else {
-                    logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): auto fetch lastest timeline skip. Reason: updated in recent 60s")
+                    logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): [Timeline] auto fetch lastest timeline skip. Reason: updated in recent 60s")
                 }
             } else {
                 Task {
@@ -273,6 +275,16 @@ extension TimelineViewController {
 
 }
 
+// MARK: - CellFrameCacheContainer
+extension TimelineViewController: CellFrameCacheContainer {
+    func keyForCache(tableView: UITableView, indexPath: IndexPath) -> NSNumber? {
+        guard let diffableDataSource = viewModel.diffableDataSource else { return nil }
+        guard let item = diffableDataSource.itemIdentifier(for: indexPath) else { return nil }
+        let key = NSNumber(value: item.hashValue)
+        return key
+    }
+}
+
 // MARK: - UITableViewDelegate
 extension TimelineViewController: UITableViewDelegate, AutoGenerateTableViewDelegate {
     // sourcery:inline:TimelineViewController.AutoGenerateTableViewDelegate
@@ -300,6 +312,17 @@ extension TimelineViewController: UITableViewDelegate, AutoGenerateTableViewDele
     }
 
     // sourcery:end
+    
+    func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
+        guard let frame = retrieveCellFrame(tableView: tableView, indexPath: indexPath) else {
+            return 200
+        }
+        return ceil(frame.height)
+    }
+
+    func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        cacheCellFrame(tableView: tableView, didEndDisplaying: cell, forRowAt: indexPath)
+    }
 }
 
 // MARK: - AvatarBarButtonItemDelegate

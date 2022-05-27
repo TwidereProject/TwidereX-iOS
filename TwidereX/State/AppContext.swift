@@ -36,6 +36,7 @@ class AppContext: ObservableObject {
     private var documentStoreSubscription: AnyCancellable!
     
     let photoLibraryService = PhotoLibraryService()
+    let playerService = PlayerService()
     // let videoPlaybackService = VideoPlaybackService()
     
     let timestampUpdatePublisher = Timer.publish(every: 1.0, on: .main, in: .common)

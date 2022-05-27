@@ -13,8 +13,8 @@ final class DrawerSidebarPresentationController: UIPresentationController {
 
     override var shouldRemovePresentersView: Bool { return true }
     
-    override func containerViewWillLayoutSubviews() {
-        super.containerViewWillLayoutSubviews()
+    override func presentationTransitionWillBegin() {
+        super.presentationTransitionWillBegin()
         
         presentedView?.frame = frameOfPresentedViewInContainerView
     }

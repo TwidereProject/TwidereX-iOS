@@ -427,7 +427,7 @@ extension StatusView.ViewModel {
         $mediaViewConfigurations
             .sink { [weak self] configurations in
                 guard let self = self else { return }
-                self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): configure media")
+                // self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): configure media")
                 
                 let maxSize = CGSize(
                     width: statusView.contentMaxLayoutWidth,
@@ -996,9 +996,7 @@ extension StatusView {
         viewModel.isMediaSensitive = false
         viewModel.isMediaSensitiveToggled = false
         viewModel.isMediaSensitiveSwitchable = false
-        MediaView.configuration(twitterStatus: status)
-            .assign(to: \.mediaViewConfigurations, on: viewModel)
-            .store(in: &disposeBag)
+        viewModel.mediaViewConfigurations = MediaView.configuration(twitterStatus: status)
     }
     
     private func configureLocation(twitterStatus status: TwitterStatus) {
@@ -1223,10 +1221,7 @@ extension StatusView {
         
         mediaGridContainerView.viewModel.resetContentWarningOverlay()
         viewModel.isMediaSensitiveSwitchable = true
-        
-        MediaView.configuration(mastodonStatus: status)
-            .assign(to: \.mediaViewConfigurations, on: viewModel)
-            .store(in: &disposeBag)
+        viewModel.mediaViewConfigurations = MediaView.configuration(mastodonStatus: status)
         
         // set directly without delay
         viewModel.isMediaSensitiveToggled = status.isMediaSensitiveToggled

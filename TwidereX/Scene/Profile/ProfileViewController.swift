@@ -15,8 +15,8 @@ import Floaty
 import Meta
 import MetaTextArea
 import MetaTextKit
-import TabBarPager
 import TwidereComposeUI
+import TabBarPager
 import XLPagerTabStrip
 
 final class ProfileViewController: UIViewController, NeedsDependency, DrawerSidebarTransitionHostViewController {
