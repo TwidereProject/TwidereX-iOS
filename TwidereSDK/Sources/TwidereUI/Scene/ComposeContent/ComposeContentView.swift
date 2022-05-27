@@ -84,7 +84,6 @@ public struct ComposeContentView: View {
                             }
                         )
                         .frame(minHeight: ComposeContentView.avatarSize.height)
-                        .border(.red, width: 1)
                         // poll
                         pollView
                     }
