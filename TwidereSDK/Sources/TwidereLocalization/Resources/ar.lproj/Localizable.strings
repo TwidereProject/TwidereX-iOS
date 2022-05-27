@@ -275,6 +275,9 @@
 "Scene.Compose.Media.Remove" = "أزِل";
 "Scene.Compose.OthersInThisConversation" = "آخرون في هذه المحادثة:";
 "Scene.Compose.Placeholder" = "ماذا يحدث ؟";
+"Scene.Compose.ReplySettings.EveryoneCanReply" = "Everyone can peply";
+"Scene.Compose.ReplySettings.OnlyPeopleYouMentionCanReply" = "Only people you mention can reply";
+"Scene.Compose.ReplySettings.PeopleYouFollowCanReply" = "People you follow can reply";
 "Scene.Compose.ReplyTo" = "رد على …";
 "Scene.Compose.ReplyingTo" = "رد على";
 "Scene.Compose.SaveDraft.Action" = "احفظ المسودة";

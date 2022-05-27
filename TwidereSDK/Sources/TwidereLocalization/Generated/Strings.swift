@@ -917,6 +917,14 @@ public enum L10n {
           public static let update = L10n.tr("Localizable", "Scene.Compose.Media.Caption.Update")
         }
       }
+      public enum ReplySettings {
+        /// Everyone can peply
+        public static let everyoneCanReply = L10n.tr("Localizable", "Scene.Compose.ReplySettings.EveryoneCanReply")
+        /// Only people you mention can reply
+        public static let onlyPeopleYouMentionCanReply = L10n.tr("Localizable", "Scene.Compose.ReplySettings.OnlyPeopleYouMentionCanReply")
+        /// People you follow can reply
+        public static let peopleYouFollowCanReply = L10n.tr("Localizable", "Scene.Compose.ReplySettings.PeopleYouFollowCanReply")
+      }
       public enum SaveDraft {
         /// Save draft
         public static let action = L10n.tr("Localizable", "Scene.Compose.SaveDraft.Action")

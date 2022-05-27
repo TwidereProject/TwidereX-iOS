@@ -337,43 +337,6 @@ extension ComposeContentViewController {
             }
             .store(in: &disposeBag)
         
-        Publishers.CombineLatest(
-            viewModel.$isRequestLocation,
-            viewModel.$currentLocation
-        )
-        .asyncMap { [weak self] isRequestLocation, currentLocation -> Twitter.Entity.Place? in
-            guard let self = self else { return nil }
-            guard isRequestLocation, let currentLocation = currentLocation else { return nil }
-            
-            guard let authenticationContext = self.viewModel.configurationContext.authenticationService.activeAuthenticationContext,
-                  case let .twitter(twitterAuthenticationContext) = authenticationContext
-            else { return nil }
-            
-            do {
-                let response = try await self.viewModel.configurationContext.apiService.geoSearch(
-                    latitude: currentLocation.coordinate.latitude,
-                    longitude: currentLocation.coordinate.longitude,
-                    granularity: "city",
-                    twitterAuthenticationContext: twitterAuthenticationContext
-                )
-                let place = response.value.first
-                return place
-            } catch {
-                return nil
-            }
-        }
-        .receive(on: DispatchQueue.main)
-        .sink { [weak self] place in
-            guard let self = self else { return }
-            os_log("%{public}s[%{public}ld], %{public}s: current place: %s", ((#file as NSString).lastPathComponent), #line, #function, place?.fullName ?? "<nil>")
-            if let place = place {
-                self.viewModel.currentPlace = place
-            }
-            self.composeToolbarView.locationLabel.text = place?.fullName
-            self.composeToolbarView.locationLabel.isHidden = place == nil
-        }
-        .store(in: &disposeBag)
-        
         // emoji
         viewModel.$emojiViewModel
             .map { viewModel -> AnyPublisher<[Mastodon.Entity.Emoji], Never> in
@@ -764,7 +727,7 @@ extension ComposeContentViewController: ComposePollTableViewCellDelegate {
                 self.disposeBag.insert(cancellable)
             }
             // do action
-            viewModel.createNewPollOptionIfNeeds()
+            viewModel.createNewPollOptionIfCould()
         } else {
             // the `isLast` guard the `nextIndex` is always valid
             let nextIndex = optionItems.index(after: index)

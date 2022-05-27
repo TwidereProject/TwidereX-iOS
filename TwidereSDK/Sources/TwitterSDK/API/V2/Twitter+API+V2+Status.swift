@@ -37,18 +37,26 @@ extension Twitter.API.V2.Status {
     
     public struct PublishQuery: JSONEncodeQuery {
         
-        public let text: String?
+        public let poll: Poll?
+        public let forSuperFollowersOnly: Bool?
         public let replySettings: Twitter.Entity.V2.Tweet.ReplySettings?
+        public let text: String?
         
         enum CodingKeys: String, CodingKey {
-            case text
+            case poll
+            case forSuperFollowersOnly = "for_super_followers_only"
             case replySettings = "reply_settings"
+            case text
         }
         
         public init(
-            text: String?,
-            replySettings: Twitter.Entity.V2.Tweet.ReplySettings?
+            poll: Poll?,
+            forSuperFollowersOnly: Bool?,
+            replySettings: Twitter.Entity.V2.Tweet.ReplySettings?,
+            text: String?
         ) {
+            self.poll = poll
+            self.forSuperFollowersOnly = forSuperFollowersOnly
             self.text = text
             self.replySettings = replySettings
         }
@@ -67,4 +75,21 @@ extension Twitter.API.V2.Status {
         }
     }
     
+}
+
+extension Twitter.API.V2.Status {
+    public struct Poll: Codable {
+        public let options: [String]
+        public let durationMinutes: Int
+        
+        enum CodingKeys: String, CodingKey {
+            case options
+            case durationMinutes = "duration_minutes"
+        }
+        
+        public init(options: [String], durationMinutes: Int) {
+            self.options = options
+            self.durationMinutes = durationMinutes
+        }
+    }
 }

@@ -275,6 +275,9 @@
 "Scene.Compose.Media.Remove" = "Elimina";
 "Scene.Compose.OthersInThisConversation" = "Altres en aquesta conversa:";
 "Scene.Compose.Placeholder" = "Què està passant?";
+"Scene.Compose.ReplySettings.EveryoneCanReply" = "Everyone can peply";
+"Scene.Compose.ReplySettings.OnlyPeopleYouMentionCanReply" = "Only people you mention can reply";
+"Scene.Compose.ReplySettings.PeopleYouFollowCanReply" = "People you follow can reply";
 "Scene.Compose.ReplyTo" = "Resposta a …";
 "Scene.Compose.ReplyingTo" = "Responent a";
 "Scene.Compose.SaveDraft.Action" = "Desa l'esborrany";

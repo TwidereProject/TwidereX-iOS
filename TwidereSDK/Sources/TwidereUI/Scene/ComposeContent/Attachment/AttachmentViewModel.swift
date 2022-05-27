@@ -262,9 +262,9 @@ extension AttachmentViewModel: NSItemProviderWriting {
     
     public static var writableTypeIdentifiersForItemProvider: [String] {
         return [
+            UTType.png.identifier,
+            UTType.mpeg4Movie.identifier,
             AttachmentViewModel.typeIdentifier,
-            UTType.image.identifier,
-            UTType.movie.identifier,
         ]
     }
     

@@ -25,6 +25,10 @@ public final class TwitterStatusPublisher: NSObject, ProgressReporting {
     public let excludeReplyUserIDs: [Twitter.Entity.V2.User.ID]
     // status content
     public let content: String
+    // poll
+    public let poll: Twitter.API.V2.Status.Poll?
+    // reply settings
+    public let replySettings: Twitter.Entity.V2.Tweet.ReplySettings
     // media
     public let attachmentViewModels: [AttachmentViewModel]
     // location
@@ -42,6 +46,8 @@ public final class TwitterStatusPublisher: NSObject, ProgressReporting {
         replyTo: ManagedObjectRecord<TwitterStatus>?,
         excludeReplyUserIDs: [Twitter.Entity.V2.User.ID],
         content: String,
+        poll: Twitter.API.V2.Status.Poll?,
+        replySettings: Twitter.Entity.V2.Tweet.ReplySettings,
         attachmentViewModels: [AttachmentViewModel],
         place: Twitter.Entity.Place?
     ) {
@@ -49,6 +55,8 @@ public final class TwitterStatusPublisher: NSObject, ProgressReporting {
         self.replyTo = replyTo
         self.excludeReplyUserIDs = excludeReplyUserIDs
         self.content = content
+        self.poll = poll
+        self.replySettings = replySettings
         self.attachmentViewModels = attachmentViewModels
         self.place = place
         // end init
@@ -110,8 +118,10 @@ extension TwitterStatusPublisher: StatusPublisher {
         // Task: status
         let publishResponse = try await api.publishTwitterStatus(
             query: Twitter.API.V2.Status.PublishQuery(
-                text: content,
-                replySettings: .mentionedUsers
+                poll: poll,
+                forSuperFollowersOnly: nil,
+                replySettings: replySettings,
+                text: content
             ),
             twitterAuthenticationContext: authenticationContext
         )

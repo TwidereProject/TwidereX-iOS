@@ -9,19 +9,22 @@ import SwiftUI
 import UniformTypeIdentifiers
 
 extension ComposeContentView {
+    
     struct AttachmentDropDelegate: DropDelegate {
-        
         let isAttachmentViewModelAppendable: Bool
         let addAttachmentViewModel: (AttachmentViewModel) -> Void
         
         func validateDrop(info: DropInfo) -> Bool {
-            guard !info.hasItemsConforming(to: [AttachmentViewModel.typeIdentifier]) else {
-                return false
-            }
-            return info.hasItemsConforming(to: [.movie, .image])
+            return info.hasItemsConforming(to: AttachmentViewModel.writableTypeIdentifiersForItemProvider)
         }
         
         func dropUpdated(info: DropInfo) -> DropProposal? {
+            // FIXME: somehow it's not works
+            // do not accept in-app drag & drop to avoid duplicate
+            guard !info.hasItemsConforming(to: [AttachmentViewModel.typeIdentifier]) else {
+                return DropProposal(operation: .cancel)
+            }
+            
             return DropProposal(operation: isAttachmentViewModelAppendable ? .copy : .forbidden)
         }
         
@@ -43,6 +46,6 @@ extension ComposeContentView {
             else { return nil }
             return AttachmentViewModel(input: .itemProvider(itemProvider))
         }
-        
     }
+    
 }

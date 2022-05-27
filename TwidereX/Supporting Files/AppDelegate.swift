@@ -79,12 +79,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 extension AppDelegate {
     func application(_ application: UIApplication, supportedInterfaceOrientationsFor window: UIWindow?) -> UIInterfaceOrientationMask {
+        #if DEBUG
+        return .all
+        #else
         switch UIDevice.current.userInterfaceIdiom {
         case .phone:
             return .portrait
         default:
             return .all
         }
+        #endif
     }
 }
 

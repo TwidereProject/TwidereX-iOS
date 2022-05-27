@@ -275,6 +275,9 @@
 "Scene.Compose.Media.Remove" = "Ezabatu";
 "Scene.Compose.OthersInThisConversation" = "Beste batzuk elkarrizketa honetan:";
 "Scene.Compose.Placeholder" = "Zer gertatzen ari da?";
+"Scene.Compose.ReplySettings.EveryoneCanReply" = "Everyone can peply";
+"Scene.Compose.ReplySettings.OnlyPeopleYouMentionCanReply" = "Only people you mention can reply";
+"Scene.Compose.ReplySettings.PeopleYouFollowCanReply" = "People you follow can reply";
 "Scene.Compose.ReplyTo" = "… erantzun";
 "Scene.Compose.ReplyingTo" = "Erantzuten bidaltzaile honi:";
 "Scene.Compose.SaveDraft.Action" = "Zirriborroa gorde";

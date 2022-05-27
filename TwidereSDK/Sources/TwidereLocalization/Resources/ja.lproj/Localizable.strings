@@ -275,6 +275,9 @@
 "Scene.Compose.Media.Remove" = "削除";
 "Scene.Compose.OthersInThisConversation" = "この会話の他の人:";
 "Scene.Compose.Placeholder" = "いまどうしてる？";
+"Scene.Compose.ReplySettings.EveryoneCanReply" = "Everyone can peply";
+"Scene.Compose.ReplySettings.OnlyPeopleYouMentionCanReply" = "Only people you mention can reply";
+"Scene.Compose.ReplySettings.PeopleYouFollowCanReply" = "People you follow can reply";
 "Scene.Compose.ReplyTo" = "返信 ...";
 "Scene.Compose.ReplyingTo" = "返信先";
 "Scene.Compose.SaveDraft.Action" = "下書きを保存";

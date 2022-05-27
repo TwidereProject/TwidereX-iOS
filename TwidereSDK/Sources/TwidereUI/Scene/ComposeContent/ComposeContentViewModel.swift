@@ -45,8 +45,10 @@ public final class ComposeContentViewModel: NSObject, ObservableObject {
     @Published var viewSize: CGSize = .zero
         
     // text
+    weak var contentMetaText: MetaText?
     @Published public private(set) var initialTextInput = ""
     @Published public var content = ""
+    @Published public var isContentEditing = false
     
     // avatar
     @Published public var author: UserObject?
@@ -54,12 +56,15 @@ public final class ComposeContentViewModel: NSObject, ObservableObject {
     // reply-to
     public private(set) var replyTo: StatusObject?
     
-    // mention (Twitter only)
+    // mention (Twitter)
     @Published public private(set) var isMentionPickDisplay = false
     @Published public private(set) var mentionPickButtonTitle = ""
     public private(set) var primaryMentionPickItem: MentionPickViewModel.Item?
     public private(set) var secondaryMentionPickItems: [MentionPickViewModel.Item] = []
     @Published public internal(set) var excludeReplyTwitterUserIDs: Set<TwitterUser.ID> = Set()
+    
+    // replySettingss (Twitter)
+    @Published public internal(set) var twitterReplySettings: Twitter.Entity.V2.Tweet.ReplySettings = .everyone
     
     // visibility (Mastodon)
     @Published public internal(set) var mastodonVisibility: Mastodon.Entity.Status.Visibility = .public
@@ -109,10 +114,16 @@ public final class ComposeContentViewModel: NSObject, ObservableObject {
         options.append(PollComposeItem.Option())
         return options
     }()
-    public let pollExpireConfiguration = PollComposeItem.ExpireConfiguration()
+    @Published public var pollExpireConfiguration = PollComposeItem.ExpireConfiguration()
     public let pollMultipleConfiguration = PollComposeItem.MultipleConfiguration()
     @Published public var maxPollOptionLimit = 4
     public let pollCollectionViewDiffableDataSourceDidUpdate = PassthroughSubject<Void, Never>()
+    public let pollExpireConfigurationFormatter: DateComponentsFormatter = {
+        let formatter = DateComponentsFormatter()
+        formatter.formattingContext = .standalone
+        formatter.unitsStyle = .short
+        return formatter
+    }()
     
     // location (Twitter only)
     public private(set) var didRequestLocationAuthorization = false
@@ -519,6 +530,39 @@ public final class ComposeContentViewModel: NSObject, ObservableObject {
             }
             .store(in: &disposeBag)
         
+        Publishers.CombineLatest(
+            $isRequestLocation,
+            $currentLocation
+        )
+        .asyncMap { [weak self] isRequestLocation, currentLocation -> Twitter.Entity.Place? in
+            guard let self = self else { return nil }
+            guard isRequestLocation, let currentLocation = currentLocation else { return nil }
+            
+            guard let authenticationContext = self.configurationContext.authenticationService.activeAuthenticationContext,
+                  case let .twitter(twitterAuthenticationContext) = authenticationContext
+            else { return nil }
+            
+            do {
+                let response = try await self.configurationContext.apiService.geoSearch(
+                    latitude: currentLocation.coordinate.latitude,
+                    longitude: currentLocation.coordinate.longitude,
+                    granularity: "city",
+                    twitterAuthenticationContext: twitterAuthenticationContext
+                )
+                let place = response.value.first
+                return place
+            } catch {
+                return nil
+            }
+        }
+        .receive(on: DispatchQueue.main)
+        .sink { [weak self] place in
+            guard let self = self else { return }
+            os_log("%{public}s[%{public}ld], %{public}s: current place: %s", ((#file as NSString).lastPathComponent), #line, #function, place?.fullName ?? "<nil>")
+            self.currentPlace = place
+        }
+        .store(in: &disposeBag)
+        
         // bind toolbar
         Publishers.CombineLatest(
             $author,
@@ -533,6 +577,7 @@ public final class ComposeContentViewModel: NSObject, ObservableObject {
             
             switch author {
             case .twitter:
+                set.insert(.poll)
                 set.insert(.location)
             case .mastodon:
                 set.insert(.emoji)
@@ -562,7 +607,6 @@ public final class ComposeContentViewModel: NSObject, ObservableObject {
         $attachmentViewModels
             .map { $0.isEmpty }
             .assign(to: &$isPollToolBarButtonEnabled)
-
         
         // bind UI state
         Publishers.CombineLatest4(
@@ -632,7 +676,7 @@ extension ComposeContentViewModel {
 }
 
 extension ComposeContentViewModel {
-    func createNewPollOptionIfNeeds() {
+    func createNewPollOptionIfCould() {
         logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public)")
         
         guard pollOptions.count < maxPollOptionLimit else { return }
@@ -665,6 +709,7 @@ extension ComposeContentViewModel {
             alertController.addAction(openSettingsAction)
             alertController.addAction(cancelAction)
             presentingViewController.present(alertController, animated: true, completion: nil)
+            UIViewController.top
             return false
         @unknown default:
             return false
@@ -736,6 +781,20 @@ extension ComposeContentViewModel {
                 }(),
                 excludeReplyUserIDs: Array(excludeReplyTwitterUserIDs),
                 content: currentTextInput,
+                poll: {
+                    guard isPollComposing else { return nil }
+                    let durationMinutes: Int = {
+                        let countdown = pollExpireConfiguration.countdown
+                        return (countdown.day ?? 0) * 24 * 60
+                            + (countdown.hour ?? 0) * 60
+                            + (countdown.minute ?? 0)
+                    }()
+                    return .init(
+                        options: pollOptions.map { $0.option },
+                        durationMinutes: durationMinutes
+                    )
+                }(),
+                replySettings: twitterReplySettings,
                 attachmentViewModels: attachmentViewModels,
                 place: currentPlace
             )
@@ -759,4 +818,35 @@ extension ComposeContentViewModel {
             )
         }   // end switch
     }   // end func publisher()
+}
+
+// MARK: - UITextViewDelegate
+extension ComposeContentViewModel: UITextViewDelegate {
+    public func textViewDidBeginEditing(_ textView: UITextView) {
+        isContentEditing = true
+    }
+    
+    public func textViewDidEndEditing(_ textView: UITextView) {
+        isContentEditing = false
+    }
+    
+    func insertContentText(text: String) {
+        guard let contentMetaText = self.contentMetaText else { return }
+        // FIXME: smart prefix and suffix
+        let string = contentMetaText.textStorage.string
+        let isEmpty = string.isEmpty
+        let hasPrefix = string.hasPrefix(" ")
+        if hasPrefix || isEmpty {
+            contentMetaText.textView.insertText(text)
+        } else {
+            contentMetaText.textView.insertText(" " + text)
+        }
+    }
+    
+    func setContentTextFirstResponderIfNeeds() {
+        guard let contentMetaText = self.contentMetaText else { return }
+        guard !contentMetaText.textView.isFirstResponder else { return }
+        contentMetaText.textView.becomeFirstResponder()
+    }
+    
 }

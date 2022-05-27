@@ -119,6 +119,15 @@
         }
       },
       {
+        "package": "Popovers",
+        "repositoryURL": "https://github.com/aheze/Popovers.git",
+        "state": {
+          "branch": null,
+          "revision": "de44c4dd7271ec6413fe350f7efadb14e5e18dce",
+          "version": "1.3.2"
+        }
+      },
+      {
         "package": "SDWebImage",
         "repositoryURL": "https://github.com/SDWebImage/SDWebImage.git",
         "state": {

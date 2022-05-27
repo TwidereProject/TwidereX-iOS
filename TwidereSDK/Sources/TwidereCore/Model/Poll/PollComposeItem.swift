@@ -20,15 +20,17 @@ public protocol PollItemOptionDelegate: AnyObject {
 }
 
 extension PollComposeItem {
-    public final class Option: Hashable {
-        private let id = UUID()
+    public final class Option: NSObject, Identifiable, ObservableObject {
+        public let id = UUID()
         
         var disposeBag = Set<AnyCancellable>()
         public weak var delegate: PollItemOptionDelegate?
         
         @Published public var option = ""
         
-        public init() {
+        public override init() {
+            super.init()
+            
             $option
                 .sink { [weak self] option in
                     guard let self = self else { return }
@@ -42,9 +44,6 @@ extension PollComposeItem {
                 && lhs.option == rhs.option
         }
 
-        public func hash(into hasher: inout Hasher) {
-            hasher.combine(id)
-        }
     }
 }
 
@@ -55,11 +54,15 @@ public protocol PollItemExpireConfigurationDelegate: AnyObject {
 extension PollComposeItem {
     public final class ExpireConfiguration: Hashable, ObservableObject {
         private let id = UUID()
+
+        // [Day, Hour, Minute]
+        public typealias Countdown = [Int]
         
         var disposeBag = Set<AnyCancellable>()
         public weak var delegate: PollItemExpireConfigurationDelegate?
 
-        @Published public var option: Option = .oneDay
+        @Published public var countdown = DateComponents(day: 1)    // Twitter
+        @Published public var option: Option = .oneDay              // Mastodon
         
         public init() {
             $option

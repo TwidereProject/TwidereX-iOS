@@ -275,6 +275,9 @@
 "Scene.Compose.Media.Remove" = "지우기";
 "Scene.Compose.OthersInThisConversation" = "이 대화에 있는 다른 사람";
 "Scene.Compose.Placeholder" = "무슨 일이 일어나고 있나요?";
+"Scene.Compose.ReplySettings.EveryoneCanReply" = "Everyone can peply";
+"Scene.Compose.ReplySettings.OnlyPeopleYouMentionCanReply" = "Only people you mention can reply";
+"Scene.Compose.ReplySettings.PeopleYouFollowCanReply" = "People you follow can reply";
 "Scene.Compose.ReplyTo" = "…에 답글";
 "Scene.Compose.ReplyingTo" = "답글 달기";
 "Scene.Compose.SaveDraft.Action" = "임시 저장하기";

@@ -275,6 +275,9 @@
 "Scene.Compose.Media.Remove" = "Eliminar";
 "Scene.Compose.OthersInThisConversation" = "Usuarios en esta conversación:";
 "Scene.Compose.Placeholder" = "¿Qué está pasando?";
+"Scene.Compose.ReplySettings.EveryoneCanReply" = "Everyone can peply";
+"Scene.Compose.ReplySettings.OnlyPeopleYouMentionCanReply" = "Only people you mention can reply";
+"Scene.Compose.ReplySettings.PeopleYouFollowCanReply" = "People you follow can reply";
 "Scene.Compose.ReplyTo" = "Responder a …";
 "Scene.Compose.ReplyingTo" = "Responder a";
 "Scene.Compose.SaveDraft.Action" = "Guardar borrador";
