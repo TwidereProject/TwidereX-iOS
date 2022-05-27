@@ -28,8 +28,10 @@ struct AppIconPreferenceView: View {
             LazyVGrid(columns: items, spacing: 20) {
                 ForEach(AppIcon.allCases, id: \.rawValue) { appIcon in
                     Button {
-                        UserDefaults.shared.alternateIconNamePreference = appIcon
                         logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): update alternateIconNamePreference: \(appIcon.text)")
+                        // configure alternative app icon
+                        UserDefaults.shared.alternateIconNamePreference = appIcon
+                        UIApplication.shared.setAlternateIconName(appIcon == .twidere ? nil : appIcon.iconName)
                     } label: {
                         VStack {
                             let assetName = "icons/\(appIcon.iconName)"
