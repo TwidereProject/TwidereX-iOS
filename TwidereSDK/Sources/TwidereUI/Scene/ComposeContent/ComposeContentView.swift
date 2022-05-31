@@ -173,21 +173,11 @@ extension ComposeContentView {
                     items: $viewModel.pollOptions
                 ) { $pollOption in
                     let _index = viewModel.pollOptions.firstIndex(of: pollOption)
-                    let placehoder = _index.flatMap { L10n.Scene.Compose.Vote.placeholderIndex($0 + 1) } ?? ""
-                    TextField(
-                        placehoder,
-                        text: $pollOption.option
+                    PollOptionRow(
+                        viewModel: pollOption,
+                        index: _index,
+                        deleteBackwardResponseTextFieldRelayDelegate: viewModel
                     )
-                    .textFieldStyle(.roundedBorder)
-                    .focused($pollField, equals: _index.flatMap { PollField(index: $0) })
-                    .submitLabel(.next)
-                    .onSubmit {
-                        // append new poll entry
-                        if let index = _index, viewModel.pollOptions.count == index + 1  {
-                            viewModel.createNewPollOptionIfCould()
-                        }
-                        pollField = _index.flatMap { PollField(index: $0 + 1) }
-                    }
                 }
                 // expire configuration
                 Button {

@@ -5,7 +5,7 @@
 //  Created by MainasuK on 2021-11-29.
 //
 
-import Foundation
+import UIKit
 import Combine
 import TwidereLocalization
 
@@ -26,24 +26,14 @@ extension PollComposeItem {
         var disposeBag = Set<AnyCancellable>()
         public weak var delegate: PollItemOptionDelegate?
         
-        @Published public var option = ""
+        public weak var textField: UITextField?
+        
+        @Published public var text = ""
+        @Published public var shouldBecomeFirstResponder = false
         
         public override init() {
             super.init()
-            
-            $option
-                .sink { [weak self] option in
-                    guard let self = self else { return }
-                    self.delegate?.option(self, optionDidChanges: option)
-                }
-                .store(in: &disposeBag)
         }
-        
-        public static func == (lhs: Option, rhs: Option) -> Bool {
-            return lhs.id == rhs.id
-                && lhs.option == rhs.option
-        }
-
     }
 }
 

@@ -696,45 +696,45 @@ extension ComposeContentViewController: ComposePollTableViewCellDelegate {
     }
     
     public func composePollTableViewCell(_ cell: ComposePollTableViewCell, pollOptionCollectionViewCell collectionViewCell: ComposePollOptionCollectionViewCell, textFieldDidReturn: UITextField) {
-        guard let diffableDataSource = cell.diffableDataSource else { return }
-        guard let indexPath = cell.collectionView.indexPath(for: collectionViewCell) else { return }
-        guard let item = diffableDataSource.itemIdentifier(for: indexPath) else { return }
-        
-        let optionItems = diffableDataSource.snapshot().itemIdentifiers.filter { item in
-            switch item {
-            case .option:   return true
-            default:        return false
-            }
-        }
-        guard let index = optionItems.firstIndex(of: item) else { return }
-        let isLast = index == optionItems.count - 1
-        
-        if isLast {
-            // set action trigger
-            var cancellable: AnyCancellable?
-            cancellable = viewModel.pollCollectionViewDiffableDataSourceDidUpdate
-                .receive(on: DispatchQueue.main)
-                .sink { [weak self] _ in
-                    guard let self = self else { return }
-                    self.markLastPollOptionBecomeFirstResponser()
-                    
-                    if let cancellable = cancellable {
-                        self.disposeBag.remove(cancellable)
-                        self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): cleanup poll data source trigger")
-                    }
-                }
-            if let cancellable = cancellable {
-                self.disposeBag.insert(cancellable)
-            }
-            // do action
-            viewModel.createNewPollOptionIfCould()
-        } else {
-            // the `isLast` guard the `nextIndex` is always valid
-            let nextIndex = optionItems.index(after: index)
-            let nextItem = optionItems[nextIndex]
-            let cell = pollOptionCollectionViewCell(of: nextItem)
-            cell?.pollOptionView.textField.becomeFirstResponder()
-        }
+//        guard let diffableDataSource = cell.diffableDataSource else { return }
+//        guard let indexPath = cell.collectionView.indexPath(for: collectionViewCell) else { return }
+//        guard let item = diffableDataSource.itemIdentifier(for: indexPath) else { return }
+//        
+//        let optionItems = diffableDataSource.snapshot().itemIdentifiers.filter { item in
+//            switch item {
+//            case .option:   return true
+//            default:        return false
+//            }
+//        }
+//        guard let index = optionItems.firstIndex(of: item) else { return }
+//        let isLast = index == optionItems.count - 1
+//        
+//        if isLast {
+//            // set action trigger
+//            var cancellable: AnyCancellable?
+//            cancellable = viewModel.pollCollectionViewDiffableDataSourceDidUpdate
+//                .receive(on: DispatchQueue.main)
+//                .sink { [weak self] _ in
+//                    guard let self = self else { return }
+//                    self.markLastPollOptionBecomeFirstResponser()
+//                    
+//                    if let cancellable = cancellable {
+//                        self.disposeBag.remove(cancellable)
+//                        self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): cleanup poll data source trigger")
+//                    }
+//                }
+//            if let cancellable = cancellable {
+//                self.disposeBag.insert(cancellable)
+//            }
+//            // do action
+//            viewModel.createNewPollOptionIfCould()
+//        } else {
+//            // the `isLast` guard the `nextIndex` is always valid
+//            let nextIndex = optionItems.index(after: index)
+//            let nextItem = optionItems[nextIndex]
+//            let cell = pollOptionCollectionViewCell(of: nextItem)
+//            cell?.pollOptionView.textField.becomeFirstResponder()
+//        }
     }
     
     public func composePollTableViewCell(_ cell: ComposePollTableViewCell, pollOptionCollectionViewCell collectionViewCell: ComposePollOptionCollectionViewCell, textBeforeDeleteBackward text: String?) {

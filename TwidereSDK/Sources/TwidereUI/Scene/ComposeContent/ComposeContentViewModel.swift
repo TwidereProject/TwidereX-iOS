@@ -115,15 +115,16 @@ public final class ComposeContentViewModel: NSObject, ObservableObject {
         return options
     }()
     @Published public var pollExpireConfiguration = PollComposeItem.ExpireConfiguration()
-    public let pollMultipleConfiguration = PollComposeItem.MultipleConfiguration()
+    @Published public var pollMultipleConfiguration = PollComposeItem.MultipleConfiguration()
     @Published public var maxPollOptionLimit = 4
-    public let pollCollectionViewDiffableDataSourceDidUpdate = PassthroughSubject<Void, Never>()
     public let pollExpireConfigurationFormatter: DateComponentsFormatter = {
         let formatter = DateComponentsFormatter()
         formatter.formattingContext = .standalone
         formatter.unitsStyle = .short
         return formatter
     }()
+    public let pollOptionActiveAtIndex = PassthroughSubject<Int, Never>()
+    // public let pollCollectionViewDiffableDataSourceDidUpdate = PassthroughSubject<Void, Never>()
     
     // location (Twitter only)
     public private(set) var didRequestLocationAuthorization = false
@@ -490,32 +491,32 @@ public final class ComposeContentViewModel: NSObject, ObservableObject {
             }
             .store(in: &disposeBag)
         
-        $pollOptions
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] pollOptions in
-                guard let self = self else { return }
-                
-                var snapshot = NSDiffableDataSourceSnapshot<PollComposeSection, PollComposeItem>()
-                snapshot.appendSections([.main])
-                
-                var items: [PollComposeItem] = []
-                items.append(contentsOf: pollOptions.map { PollComposeItem.option($0) })
-                items.append(PollComposeItem.expireConfiguration(self.pollExpireConfiguration))
-                items.append(PollComposeItem.multipleConfiguration(self.pollMultipleConfiguration))
-                snapshot.appendItems(items, toSection: .main)
-                
-                self.composePollTableViewCell.diffableDataSource?.apply(snapshot, animatingDifferences: false) { [weak self] in
-                    guard let self = self else { return }
-                    self.pollCollectionViewDiffableDataSourceDidUpdate.send()
-                }
-                
-                var height = CGFloat(pollOptions.count) * ComposePollOptionCollectionViewCell.height
-                height += ComposePollExpireConfigurationCollectionViewCell.height
-                height += ComposePollMultipleConfigurationCollectionViewCell.height
-                self.composePollTableViewCell.collectionViewHeightLayoutConstraint.constant = height
-                self.composePollTableViewCell.collectionViewHeightDidUpdate.send()
-            }
-            .store(in: &disposeBag)
+//        $pollOptions
+//            .receive(on: DispatchQueue.main)
+//            .sink { [weak self] pollOptions in
+//                guard let self = self else { return }
+//
+//                var snapshot = NSDiffableDataSourceSnapshot<PollComposeSection, PollComposeItem>()
+//                snapshot.appendSections([.main])
+//
+//                var items: [PollComposeItem] = []
+//                items.append(contentsOf: pollOptions.map { PollComposeItem.option($0) })
+//                items.append(PollComposeItem.expireConfiguration(self.pollExpireConfiguration))
+//                items.append(PollComposeItem.multipleConfiguration(self.pollMultipleConfiguration))
+//                snapshot.appendItems(items, toSection: .main)
+//
+//                self.composePollTableViewCell.diffableDataSource?.apply(snapshot, animatingDifferences: false) { [weak self] in
+//                    guard let self = self else { return }
+//                    self.pollCollectionViewDiffableDataSourceDidUpdate.send()
+//                }
+//
+//                var height = CGFloat(pollOptions.count) * ComposePollOptionCollectionViewCell.height
+//                height += ComposePollExpireConfigurationCollectionViewCell.height
+//                height += ComposePollMultipleConfigurationCollectionViewCell.height
+//                self.composePollTableViewCell.collectionViewHeightLayoutConstraint.constant = height
+//                self.composePollTableViewCell.collectionViewHeightDidUpdate.send()
+//            }
+//            .store(in: &disposeBag)
         
         // bind location
         $isRequestLocation
@@ -680,7 +681,9 @@ extension ComposeContentViewModel {
         logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public)")
         
         guard pollOptions.count < maxPollOptionLimit else { return }
-        pollOptions.append(PollComposeItem.Option())
+        let option = PollComposeItem.Option()
+        option.shouldBecomeFirstResponder = true
+        pollOptions.append(option)
     }
 }
 
@@ -709,7 +712,6 @@ extension ComposeContentViewModel {
             alertController.addAction(openSettingsAction)
             alertController.addAction(cancelAction)
             presentingViewController.present(alertController, animated: true, completion: nil)
-            UIViewController.top
             return false
         @unknown default:
             return false
@@ -790,7 +792,7 @@ extension ComposeContentViewModel {
                             + (countdown.minute ?? 0)
                     }()
                     return .init(
-                        options: pollOptions.map { $0.option },
+                        options: pollOptions.map { $0.text },
                         durationMinutes: durationMinutes
                     )
                 }(),
@@ -847,6 +849,58 @@ extension ComposeContentViewModel: UITextViewDelegate {
         guard let contentMetaText = self.contentMetaText else { return }
         guard !contentMetaText.textView.isFirstResponder else { return }
         contentMetaText.textView.becomeFirstResponder()
+    }
+    
+}
+
+// MARK: - DeleteBackwardResponseTextFieldRelayDelegate
+extension ComposeContentViewModel: DeleteBackwardResponseTextFieldRelayDelegate {
+
+    func deleteBackwardResponseTextFieldDidReturn(_ textField: DeleteBackwardResponseTextField) {
+        let index = textField.tag
+        if index + 1 == pollOptions.count {
+            createNewPollOptionIfCould()
+        } else if index < pollOptions.count {
+            pollOptions[index + 1].textField?.becomeFirstResponder()
+        }
+    }
+    
+    func deleteBackwardResponseTextField(_ textField: DeleteBackwardResponseTextField, textBeforeDelete: String?) {
+        guard (textBeforeDelete ?? "").isEmpty else {
+            // do nothing when not empty
+            return
+        }
+        
+        let index = textField.tag
+        guard index > 0 else {
+            // do nothing at first row
+            return
+        }
+        
+        func optionBeforeRemoved() -> PollComposeItem.Option? {
+            guard index > 0 else { return nil }
+            let indexBeforeRemoved = pollOptions.index(before: index)
+            let itemBeforeRemoved = pollOptions[indexBeforeRemoved]
+            return itemBeforeRemoved
+            
+        }
+        
+        func optionAfterRemoved() -> PollComposeItem.Option? {
+            guard index < pollOptions.count - 1 else { return nil }
+            let indexAfterRemoved = pollOptions.index(after: index)
+            let itemAfterRemoved = pollOptions[indexAfterRemoved]
+            return itemAfterRemoved
+        }
+        
+        // move first responder
+        let _option = optionBeforeRemoved() ?? optionAfterRemoved()
+        _option?.textField?.becomeFirstResponder()
+        
+        guard pollOptions.count > 2 else {
+            // remove item when more then 2 options
+            return
+        }
+        pollOptions.remove(at: index)
     }
     
 }

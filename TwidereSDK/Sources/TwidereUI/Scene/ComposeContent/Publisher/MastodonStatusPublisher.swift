@@ -133,7 +133,7 @@ extension MastodonStatusPublisher: StatusPublisher {
         
         let pollOptions: [String]? = {
             guard self.isPollComposing else { return nil }
-            let options = self.pollOptions.compactMap { $0.option.trimmingCharacters(in: .whitespacesAndNewlines) }
+            let options = self.pollOptions.compactMap { $0.text.trimmingCharacters(in: .whitespacesAndNewlines) }
             return options.isEmpty ? nil : options
         }()
         let pollExpiresIn: Int? = {

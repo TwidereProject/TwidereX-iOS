@@ -21,10 +21,8 @@ struct ReorderableForEach<Content: View, Item: Identifiable & Equatable & NSItem
     
     var body: some View {
         ForEach($items) { $item in
-            let _content = content($item)
-            _content
+            content($item)
                 .zIndex(currentReorderItem == item ? 1 : 0)
-                // .opacity(currentReorderItem == item && !isCurrentReorderItemOutside ? 0.5 : 1.0)
                 .onDrop(
                     of: [Item.typeIdentifier],
                     delegate: DropRelocateDelegate(
@@ -38,8 +36,6 @@ struct ReorderableForEach<Content: View, Item: Identifiable & Equatable & NSItem
                     currentReorderItem = item
                     isCurrentReorderItemOutside = false
                     return NSItemProvider(object: item)
-                } preview: {
-                    _content
                 }
         }
         .onDrop(

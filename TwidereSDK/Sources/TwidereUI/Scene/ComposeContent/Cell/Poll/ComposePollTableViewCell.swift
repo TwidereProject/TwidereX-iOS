@@ -85,44 +85,44 @@ extension ComposePollTableViewCell {
             collectionViewHeightLayoutConstraint,
         ])
         
-        diffableDataSource = UICollectionViewDiffableDataSource(collectionView: collectionView) { [weak self] collectionView, indexPath, item in
-            guard let self = self else { return UICollectionViewCell() }
-            
-            switch item {
-            case .option(let option):
-                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: ComposePollOptionCollectionViewCell.self), for: indexPath) as! ComposePollOptionCollectionViewCell
-                cell.pollOptionView.textField.text = option.option
-                cell.pollOptionView.textField.placeholder = "Choice \(indexPath.row + 1)"      // TODO: i18n
-                cell.delegate = self
-                cell.pollOptionView.viewModel.$content
-                    .assign(to: &option.$option)
-                self.customEmojiPickerInputViewModel?.configure(textInput: cell.pollOptionView.textField)
-                
-                return cell
-            case .expireConfiguration(let configuration):
-                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: ComposePollExpireConfigurationCollectionViewCell.self), for: indexPath) as! ComposePollExpireConfigurationCollectionViewCell
-                configuration.$option
-                    .receive(on: DispatchQueue.main)
-                    .sink { [weak cell] option in
-                        guard let cell = cell else { return }
-                        cell.button.setTitle(option.title, for: .normal)
-                    }
-                    .store(in: &cell.disposeBag)
-                cell.delegate = self
-                return cell
-            case .multipleConfiguration(let configuration):
-                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: ComposePollMultipleConfigurationCollectionViewCell.self), for: indexPath) as! ComposePollMultipleConfigurationCollectionViewCell
-                configuration.$isMultiple
-                    .receive(on: DispatchQueue.main)
-                    .sink { [weak cell] isMultiple in
-                        guard let cell = cell else { return }
-                        cell.configure(isMultiple: isMultiple)
-                    }
-                    .store(in: &cell.disposeBag)
-                cell.delegate = self
-                return cell
-            }
-        }
+//        diffableDataSource = UICollectionViewDiffableDataSource(collectionView: collectionView) { [weak self] collectionView, indexPath, item in
+//            guard let self = self else { return UICollectionViewCell() }
+//            
+//            switch item {
+//            case .option(let option):
+//                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: ComposePollOptionCollectionViewCell.self), for: indexPath) as! ComposePollOptionCollectionViewCell
+//                cell.pollOptionView.textField.text = option.option
+//                cell.pollOptionView.textField.placeholder = "Choice \(indexPath.row + 1)"      // TODO: i18n
+//                cell.delegate = self
+//                cell.pollOptionView.viewModel.$content
+//                    .assign(to: &option.$option)
+//                self.customEmojiPickerInputViewModel?.configure(textInput: cell.pollOptionView.textField)
+//                
+//                return cell
+//            case .expireConfiguration(let configuration):
+//                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: ComposePollExpireConfigurationCollectionViewCell.self), for: indexPath) as! ComposePollExpireConfigurationCollectionViewCell
+//                configuration.$option
+//                    .receive(on: DispatchQueue.main)
+//                    .sink { [weak cell] option in
+//                        guard let cell = cell else { return }
+//                        cell.button.setTitle(option.title, for: .normal)
+//                    }
+//                    .store(in: &cell.disposeBag)
+//                cell.delegate = self
+//                return cell
+//            case .multipleConfiguration(let configuration):
+//                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: ComposePollMultipleConfigurationCollectionViewCell.self), for: indexPath) as! ComposePollMultipleConfigurationCollectionViewCell
+//                configuration.$isMultiple
+//                    .receive(on: DispatchQueue.main)
+//                    .sink { [weak cell] isMultiple in
+//                        guard let cell = cell else { return }
+//                        cell.configure(isMultiple: isMultiple)
+//                    }
+//                    .store(in: &cell.disposeBag)
+//                cell.delegate = self
+//                return cell
+//            }
+//        }
     }
     
 }
