@@ -685,6 +685,7 @@
 		DB76A66C2760721400A50673 /* MediaPreviewVideoViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaPreviewVideoViewModel.swift; sourceTree = "<group>"; };
 		DB76A66E276083CB00A50673 /* MediaPreviewTransitionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaPreviewTransitionViewController.swift; sourceTree = "<group>"; };
 		DB76A67027609A8700A50673 /* RemoteProfileViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteProfileViewModel.swift; sourceTree = "<group>"; };
+		DB77FF7E2845CD5600182A0B /* MetaTextKit */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = MetaTextKit; path = ../MetaTextKit; sourceTree = "<group>"; };
 		DB7E22EF2552A3D500551314 /* UserLikeTimelineViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserLikeTimelineViewController.swift; sourceTree = "<group>"; };
 		DB7E22F82552A40000551314 /* UserLikeTimelineViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserLikeTimelineViewModel.swift; sourceTree = "<group>"; };
 		DB7E22FD2552A6A700551314 /* UserLikeTimelineViewModel+State.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UserLikeTimelineViewModel+State.swift"; sourceTree = "<group>"; };
@@ -1981,6 +1982,7 @@
 		DBDA8E1524FCF8A3006750DC = {
 			isa = PBXGroup;
 			children = (
+				DB77FF7E2845CD5600182A0B /* MetaTextKit */,
 				DB33E5B42719637400EC2225 /* CoverFlowStackCollectionViewLayout */,
 				DB51DC372716AEF000A0D8FB /* TabBarPager */,
 				DB43239D251491EB004FAAEC /* TwidereSDK */,

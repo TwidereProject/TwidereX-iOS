@@ -43,7 +43,7 @@ public struct PollOptionTextField: UIViewRepresentable {
         textField.delegate = context.coordinator
         textField.deleteBackwardDelegate = context.coordinator
         context.coordinator.delegate = delegate
-        configurationHandler(textField)        
+        configurationHandler(textField)
     }
     
     public func makeCoordinator() -> Coordinator {
@@ -80,6 +80,7 @@ extension PollOptionTextField {
     }
 }
 
+// MARK: - UITextFieldDelegate
 extension PollOptionTextField.Coordinator: UITextFieldDelegate {
 
     public func textFieldShouldReturn(_ textField: UITextField) -> Bool {

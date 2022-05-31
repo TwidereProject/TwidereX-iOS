@@ -28,7 +28,6 @@ public struct MetaTextViewRepresentable: UIViewRepresentable {
         textView.backgroundColor = .clear                  // clear background
         textView.textContainer.lineFragmentPadding = 0     // remove leading inset
         textView.isScrollEnabled = false                   // enable dynamic height
-        textView.keyboardType = .twitter
         
         // set width constraint
         textView.translatesAutoresizingMaskIntoConstraints = false

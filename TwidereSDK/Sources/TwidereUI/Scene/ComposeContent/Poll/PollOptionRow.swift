@@ -14,7 +14,8 @@ public struct PollOptionRow: View {
     
     let index: Int?
     let deleteBackwardResponseTextFieldRelayDelegate: DeleteBackwardResponseTextFieldRelayDelegate?
-    
+    let configurationHandler: (DeleteBackwardResponseTextField) -> Void
+
     public var body: some View {
         PollOptionTextField(
             text: $viewModel.text,
@@ -22,6 +23,7 @@ public struct PollOptionRow: View {
             delegate: deleteBackwardResponseTextFieldRelayDelegate
         ) { textField in
             viewModel.textField = textField
+            configurationHandler(textField)
         }
         .onReceive(viewModel.$shouldBecomeFirstResponder) { shouldBecomeFirstResponder in
             guard shouldBecomeFirstResponder else { return }

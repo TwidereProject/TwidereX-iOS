@@ -31,7 +31,7 @@ public struct ComposeContentView: View {
             
     public var body: some View {
         ScrollView(.vertical, showsIndicators: false) {
-            VStack(spacing: 0) {
+            VStack(spacing: .zero) {
                 // reply
                 switch viewModel.kind {
                 case .reply(let status):
@@ -65,6 +65,50 @@ public struct ComposeContentView: View {
                             }
                         }
                     VStack {
+                        // content warning
+                        if viewModel.isContentWarningComposing {
+                            let contentWarningIconSize = CGSize(width: 24, height: 24)
+                            let contentWarningStackSpacing: CGFloat = 8
+                            VStack {
+                                HStack(spacing: contentWarningStackSpacing) {
+                                    VectorImageView(
+                                        image: Asset.Indices.exclamationmarkOctagon.image.withRenderingMode(.alwaysTemplate),
+                                        tintColor: viewModel.isContentWarningEditing ? .tintColor : .secondaryLabel
+                                    )
+                                    .frame(width: contentWarningIconSize.width, height: contentWarningIconSize.height)
+                                    MetaTextViewRepresentable(
+                                        string: $viewModel.contentWarning,
+                                        width: {
+                                            var textViewWidth = viewModel.viewSize.width
+                                            textViewWidth -= ComposeContentView.contentMargin * 2
+                                            textViewWidth -= ComposeContentView.contentMetaTextViewHStackSpacing
+                                            textViewWidth -= ComposeContentView.avatarSize.width
+                                            textViewWidth -= contentWarningIconSize.width
+                                            textViewWidth -= contentWarningStackSpacing
+                                            return textViewWidth
+                                        }(),
+                                        configurationHandler: { metaText in
+                                            viewModel.contentWarningMetaText = metaText
+                                            metaText.textView.attributedPlaceholder = {
+                                                var attributes = metaText.textAttributes
+                                                attributes[.foregroundColor] = UIColor.secondaryLabel
+                                                return NSAttributedString(
+                                                    string: L10n.Scene.Compose.cwPlaceholder,
+                                                    attributes: attributes
+                                                )
+                                            }()
+                                            metaText.textView.tag = ComposeContentViewModel.MetaTextViewKind.contentWarning.rawValue
+                                            metaText.textView.returnKeyType = .next
+                                            metaText.textView.delegate = viewModel
+                                            metaText.textView.setContentHuggingPriority(.required - 1, for: .vertical)
+                                            metaText.delegate = viewModel
+                                        }
+                                    )
+                                }
+                                Divider()
+                                    .background(viewModel.isContentWarningEditing ? .accentColor : Color(uiColor: .separator))
+                            }   // end VStack
+                        } // end if viewModel.isContentWarningComposing
                         // contentTextEditor
                         MetaTextViewRepresentable(
                             string: $viewModel.content,
@@ -77,9 +121,18 @@ public struct ComposeContentView: View {
                             }(),
                             configurationHandler: { metaText in
                                 viewModel.contentMetaText = metaText
+                                metaText.textView.attributedPlaceholder = {
+                                    var attributes = metaText.textAttributes
+                                    attributes[.foregroundColor] = UIColor.secondaryLabel
+                                    return NSAttributedString(
+                                        string: L10n.Scene.Compose.placeholder,
+                                        attributes: attributes
+                                    )
+                                }()
                                 metaText.textView.tag = ComposeContentViewModel.MetaTextViewKind.content.rawValue
-                                metaText.delegate = viewModel
+                                metaText.textView.keyboardType = .twitter
                                 metaText.textView.delegate = viewModel
+                                metaText.delegate = viewModel
                                 metaText.textView.becomeFirstResponder()
                             }
                         )
@@ -133,7 +186,7 @@ public struct ComposeContentView: View {
 }
 
 extension ComposeContentView {
-    
+    // MARK: - attachment
     var mediaAttachmentView: some View {
         Group {
             if !viewModel.attachmentViewModels.isEmpty {
@@ -164,10 +217,10 @@ extension ComposeContentView {
         }   // end Group
     }
     
+    // MARK: - poll
     var pollView: some View {
         VStack {
-            switch viewModel.author {
-            case .twitter where viewModel.isPollComposing:
+            if viewModel.isPollComposing {
                 // poll option TextField
                 ReorderableForEach(
                     items: $viewModel.pollOptions
@@ -177,8 +230,13 @@ extension ComposeContentView {
                         viewModel: pollOption,
                         index: _index,
                         deleteBackwardResponseTextFieldRelayDelegate: viewModel
-                    )
+                    ) { textField in
+                        viewModel.customEmojiPickerInputViewModel.configure(textInput: textField)
+                    }
                 }
+            }
+            switch viewModel.author {
+            case .twitter where viewModel.isPollComposing:
                 // expire configuration
                 Button {
                     isPollExpireConfigurationPopoverPresent.toggle()
@@ -222,7 +280,59 @@ extension ComposeContentView {
                 }
                 .clipped()
             case .mastodon where viewModel.isPollComposing:
-                EmptyView()
+                VStack(spacing: .zero) {
+                    // expire configuration
+                    Menu {
+                        ForEach(PollComposeItem.ExpireConfiguration.Option.allCases, id: \.self) { option in
+                            Button {
+                                viewModel.pollExpireConfiguration.option = option
+                                viewModel.pollExpireConfiguration = viewModel.pollExpireConfiguration
+                            } label: {
+                                Text(option.title)
+                            }
+                        }
+                    } label: {
+                        HStack {
+                            VectorImageView(
+                                image: Asset.ObjectTools.clock.image.withRenderingMode(.alwaysTemplate),
+                                tintColor: .secondaryLabel
+                            )
+                            .frame(width: 24, height: 24)
+                            .padding(.vertical, 12)
+                            let text = viewModel.pollExpireConfigurationFormatter.string(from: TimeInterval(viewModel.pollExpireConfiguration.option.seconds)) ?? "-"
+                            Text(text)
+                                .font(.callout)
+                                .foregroundColor(.primary)
+                            Spacer()
+                            VectorImageView(
+                                image: Asset.Arrows.tablerChevronDown.image.withRenderingMode(.alwaysTemplate),
+                                tintColor: .secondaryLabel
+                            )
+                            .frame(width: 24, height: 24)
+                            .padding(.vertical, 12)
+                        }
+                    }
+                    // multi-selection configuration
+                    Button {
+                        viewModel.pollMultipleConfiguration.isMultiple.toggle()
+                        viewModel.pollMultipleConfiguration = viewModel.pollMultipleConfiguration
+                    } label: {
+                        HStack {
+                            let selectionImage = viewModel.pollMultipleConfiguration.isMultiple ? Asset.Indices.checkmarkSquare.image.withRenderingMode(.alwaysTemplate) : Asset.Indices.square.image.withRenderingMode(.alwaysTemplate)
+                            VectorImageView(
+                                image: selectionImage,
+                                tintColor: .secondaryLabel
+                            )
+                            .frame(width: 24, height: 24)
+                            .padding(.vertical, 12)
+                            Text(L10n.Scene.Compose.Vote.multiple)
+                                .font(.callout)
+                                .foregroundColor(.primary)
+                            Spacer()
+                        }
+                    }
+                }
+
             default:
                 EmptyView()
             }   // end switch viewModel.author

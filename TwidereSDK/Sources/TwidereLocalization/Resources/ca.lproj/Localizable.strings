@@ -127,6 +127,8 @@
 "Common.Alerts.PhotoSaveFail.Message" = "Si us plau, torna-ho a provar";
 "Common.Alerts.PhotoSaveFail.Title" = "Error al desar la imatge";
 "Common.Alerts.PhotoSaved.Title" = "Imatge desada";
+"Common.Alerts.PostFailInvalidPoll.Message" = "Poll has empty field. Please fulfill the field then try again";
+"Common.Alerts.PostFailInvalidPoll.Title" = "Failed to Publish";
 "Common.Alerts.RateLimitExceeded.Message" = "S'ha arribat al límit d'ús de la API de Twitter";
 "Common.Alerts.RateLimitExceeded.Title" = "Taxa d'ús excedida";
 "Common.Alerts.ReportAndBlockUserSuccess.Title" = "%@ ha estat denunciat per publicitat abusiva i blocat";

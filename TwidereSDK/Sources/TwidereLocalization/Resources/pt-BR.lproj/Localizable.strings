@@ -127,6 +127,8 @@
 "Common.Alerts.PhotoSaveFail.Message" = "Por favor, tente novamente";
 "Common.Alerts.PhotoSaveFail.Title" = "Falha ao Salvar Foto";
 "Common.Alerts.PhotoSaved.Title" = "Foto Salva";
+"Common.Alerts.PostFailInvalidPoll.Message" = "Poll has empty field. Please fulfill the field then try again";
+"Common.Alerts.PostFailInvalidPoll.Title" = "Failed to Publish";
 "Common.Alerts.RateLimitExceeded.Message" = "Atingiu o limite de uso da API do Twitter";
 "Common.Alerts.RateLimitExceeded.Title" = "Limite de Acesso Excedido";
 "Common.Alerts.ReportAndBlockUserSuccess.Title" = "%@ foi reportado por spam e bloqueado";
@@ -275,9 +277,9 @@
 "Scene.Compose.Media.Remove" = "Remover";
 "Scene.Compose.OthersInThisConversation" = "Outros nesta conversa:";
 "Scene.Compose.Placeholder" = "O que está acontecendo?";
-"Scene.Compose.ReplySettings.EveryoneCanReply" = "Everyone can peply";
-"Scene.Compose.ReplySettings.OnlyPeopleYouMentionCanReply" = "Only people you mention can reply";
-"Scene.Compose.ReplySettings.PeopleYouFollowCanReply" = "People you follow can reply";
+"Scene.Compose.ReplySettings.EveryoneCanReply" = "Todos podem responder";
+"Scene.Compose.ReplySettings.OnlyPeopleYouMentionCanReply" = "Apenas as pessoas mencionadas podem responder";
+"Scene.Compose.ReplySettings.PeopleYouFollowCanReply" = "As pessoas que você segue podem responder";
 "Scene.Compose.ReplyTo" = "Resposta para …";
 "Scene.Compose.ReplyingTo" = "Em resposta a";
 "Scene.Compose.SaveDraft.Action" = "Salvar rascunho";

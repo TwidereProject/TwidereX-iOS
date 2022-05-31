@@ -424,6 +424,12 @@ public enum L10n {
         /// Photo Saved
         public static let title = L10n.tr("Localizable", "Common.Alerts.PhotoSaved.Title")
       }
+      public enum PostFailInvalidPoll {
+        /// Poll has empty field. Please fulfill the field then try again
+        public static let message = L10n.tr("Localizable", "Common.Alerts.PostFailInvalidPoll.Message")
+        /// Failed to Publish
+        public static let title = L10n.tr("Localizable", "Common.Alerts.PostFailInvalidPoll.Title")
+      }
       public enum RateLimitExceeded {
         /// Reached Twitter API usage limit
         public static let message = L10n.tr("Localizable", "Common.Alerts.RateLimitExceeded.Message")

@@ -127,6 +127,8 @@
 "Common.Alerts.PhotoSaveFail.Message" = "请重试";
 "Common.Alerts.PhotoSaveFail.Title" = "保存照片失败";
 "Common.Alerts.PhotoSaved.Title" = "照片已保存";
+"Common.Alerts.PostFailInvalidPoll.Message" = "Poll has empty field. Please fulfill the field then try again";
+"Common.Alerts.PostFailInvalidPoll.Title" = "Failed to Publish";
 "Common.Alerts.RateLimitExceeded.Message" = "已超过 Twitter API 用量限制";
 "Common.Alerts.RateLimitExceeded.Title" = "超出用量限制";
 "Common.Alerts.ReportAndBlockUserSuccess.Title" = "%@ 已被举报为垃圾信息用户并被屏蔽";

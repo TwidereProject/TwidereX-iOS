@@ -46,6 +46,16 @@ public struct ComposeContentToolbarView: View {
                 case .mastodon:
                     Button {
                         viewModel.isContentWarningComposing.toggle()
+                        if viewModel.isContentWarningComposing {
+                            Task { @MainActor in
+                                try? await Task.sleep(nanoseconds: .second / 20)     // 0.05s
+                                viewModel.setContentWarningTextViewFirstResponderIfNeeds()
+                            }   // end Task
+                        } else {
+                            if viewModel.contentWarningMetaText?.textView.isFirstResponder == true {
+                                viewModel.setContentTextViewFirstResponderIfNeeds()
+                            }
+                        }
                     } label: {
                         VectorImageView(
                             image: ComposeContentToolbarView.Action.contentWarning.image(of: .normal).withRenderingMode(.alwaysTemplate),
@@ -85,7 +95,8 @@ public struct ComposeContentToolbarView: View {
     
     var inputLimitIndicatorView: some View {
         HStack {
-            let value = Double(viewModel.currentTextInputWeightedLength)
+            let textWeightedLength = viewModel.isContentWarningComposing ? (viewModel.contentWeightedLength + viewModel.contentWarningWeightedLength) : viewModel.contentWeightedLength
+            let value = Double(textWeightedLength)
             let total = Double(viewModel.maxTextInputLimit)
             let progress = total == .zero ? 0 : value / total
             ProgressView(
@@ -108,9 +119,9 @@ public struct ComposeContentToolbarView: View {
             .padding(.horizontal, 12)
             .animation(.easeInOut, value: progress)
             // overflow count label
-            let isOverflowLabelDisplay = viewModel.maxTextInputLimit > 0 && viewModel.currentTextInputWeightedLength > viewModel.maxTextInputLimit
+            let isOverflowLabelDisplay = viewModel.maxTextInputLimit > 0 && textWeightedLength > viewModel.maxTextInputLimit
             if isOverflowLabelDisplay {
-                Text("\(viewModel.maxTextInputLimit - viewModel.currentTextInputWeightedLength)")
+                Text("\(viewModel.maxTextInputLimit - textWeightedLength)")
                     .font(.system(size: 14, weight: .regular, design: .monospaced))
                     .foregroundColor(.red)
                     .padding(.trailing, 4)
@@ -151,15 +162,39 @@ public struct ComposeContentToolbarView: View {
     
     var mastodonVisibilityMenuButton: some View {
         Menu {
-            
-        } label: {
-            Label {
-                Text(viewModel.mastodonVisibility.title)
-            } icon: {
-                Image(uiImage: viewModel.mastodonVisibility.image)
+            let visibilities: [Mastodon.Entity.Status.Visibility] = [
+                .public,
+                .unlisted,
+                .private,
+                .direct,
+            ]
+            ForEach(visibilities, id: \.self) { visibility in
+                Button {
+                    viewModel.mastodonVisibility = visibility
+                } label: {
+                    Label {
+                        Text(visibility.title)
+                    } icon: {
+                        Image(uiImage: visibility.image)
+                    }
+                }
             }
+        } label: {
+            HStack {
+                VectorImageView(
+                    image: viewModel.mastodonVisibility.image.withRenderingMode(.alwaysTemplate),
+                    tintColor: .tintColor
+                )
+                .frame(width: 24, height: 24)
+                Text(viewModel.mastodonVisibility.title)
+                    .font(.system(size: 12, weight: .regular))
+                Spacer()
+            }
+            .padding(.horizontal, 12)
+            .contentShape(Rectangle())
+            // do not padding vertical
+            // otherwise the poll, at, hashtag button tap area will be clipped
         }
-
     }
     
 }
@@ -184,9 +219,9 @@ extension ComposeContentToolbarView {
                 mediaMenuButton
             case .emoji:
                 Button {
-                    
+                    viewModel.isCustomEmojiComposing.toggle()
                 } label: {
-                    imageView(for: action)
+                    imageView(for: action, state: viewModel.isCustomEmojiComposing ? .selected : .normal)
                 }
                 .buttonStyle(HighlightDimmableButtonStyle())
             case .poll:
@@ -201,7 +236,7 @@ extension ComposeContentToolbarView {
             case .mention:
                 Button {
                     viewModel.insertContentText(text: "@")
-                    viewModel.setContentTextFirstResponderIfNeeds()
+                    viewModel.setContentTextViewFirstResponderIfNeeds()
                 } label: {
                     imageView(for: action)
                 }
@@ -209,7 +244,7 @@ extension ComposeContentToolbarView {
             case .hashtag:
                 Button {
                     viewModel.insertContentText(text: "#")
-                    viewModel.setContentTextFirstResponderIfNeeds()
+                    viewModel.setContentTextViewFirstResponderIfNeeds()
                 } label: {
                     imageView(for: action)
                 }
@@ -222,9 +257,9 @@ extension ComposeContentToolbarView {
         }   // end Group
     }
     
-    func imageView(for action: Action) -> some View {
+    func imageView(for action: Action, state: UIControl.State = .normal) -> some View {
         ComposeContentToolbarActionImage(
-            image: action.image(of: .normal).withRenderingMode(.alwaysTemplate),
+            image: action.image(of: state).withRenderingMode(.alwaysTemplate),
             tintColor: .secondaryLabel
         )
     }
@@ -336,6 +371,7 @@ extension ComposeContentToolbarView.Action {
 }
 
 extension Twitter.Entity.V2.Tweet.ReplySettings {
+    
     var image: UIImage {
         switch self {
         case .everyone:         return Asset.ObjectTools.globe.image.withRenderingMode(.alwaysTemplate)
@@ -351,4 +387,39 @@ extension Twitter.Entity.V2.Tweet.ReplySettings {
         case .mentionedUsers:   return L10n.Scene.Compose.ReplySettings.onlyPeopleYouMentionCanReply
         }
     }
+    
+}
+
+extension Mastodon.Entity.Status.Visibility {
+    
+    var image: UIImage {
+        switch self {
+        case .public:       return Asset.ObjectTools.globe.image.withRenderingMode(.alwaysTemplate)
+        case .unlisted:     return Asset.ObjectTools.lockOpen.image.withRenderingMode(.alwaysTemplate)
+        case .private:      return Asset.ObjectTools.lock.image.withRenderingMode(.alwaysTemplate)
+        case .direct:       return Asset.Communication.mail.image.withRenderingMode(.alwaysTemplate)
+        case ._other:       return UIImage(systemName: "square.dashed")!
+        }
+    }
+    
+    var title: String {
+        switch self {
+        case .public:       return L10n.Scene.Compose.Visibility.public
+        case .unlisted:     return L10n.Scene.Compose.Visibility.unlisted
+        case .private:      return L10n.Scene.Compose.Visibility.private
+        case .direct:       return L10n.Scene.Compose.Visibility.direct
+        case ._other:       return ""
+        }
+    }
+    
+    var subtitle: String {
+        switch self {
+        case .public:       return L10n.Scene.Compose.VisibilityDescription.public
+        case .unlisted:     return L10n.Scene.Compose.VisibilityDescription.unlisted
+        case .private:      return L10n.Scene.Compose.VisibilityDescription.private
+        case .direct:       return L10n.Scene.Compose.VisibilityDescription.direct
+        case ._other:       return ""
+        }
+    }
+    
 }

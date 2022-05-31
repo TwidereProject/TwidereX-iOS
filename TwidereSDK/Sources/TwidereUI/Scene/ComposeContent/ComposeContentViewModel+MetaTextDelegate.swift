@@ -37,7 +37,7 @@ extension ComposeContentViewModel: MetaTextDelegate {
             
         case .content:
             let textInput = textStorage.string
-            self.currentTextInput = textInput
+            self.content = textInput
             
             switch author {
             case .twitter:
@@ -52,7 +52,7 @@ extension ComposeContentViewModel: MetaTextDelegate {
             case .mastodon:
                 let content = MastodonContent(
                     content: textInput,
-                    emojis: [:] // emojiViewModel?.emojis.asDictionary ?? [:]
+                    emojis: [:] // TODO: emojiViewModel?.emojis.asDictionary ?? [:]
                 )
                 let metaContent = MastodonMetaContent.convert(text: content)
                 return metaContent
@@ -60,7 +60,7 @@ extension ComposeContentViewModel: MetaTextDelegate {
             
         case .contentWarning:
             let textInput = textStorage.string.replacingOccurrences(of: "\n", with: " ")
-            self.currentContentWarningInput = textInput
+            self.contentWarning = textInput
             
             let content = MastodonContent(
                 content: textInput,

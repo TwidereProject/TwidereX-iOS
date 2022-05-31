@@ -127,6 +127,8 @@
 "Common.Alerts.PhotoSaveFail.Message" = "다시 해보세요.";
 "Common.Alerts.PhotoSaveFail.Title" = "이미지를 저장하지 못했습니다.";
 "Common.Alerts.PhotoSaved.Title" = "이미지를 저장했습니다.";
+"Common.Alerts.PostFailInvalidPoll.Message" = "Poll has empty field. Please fulfill the field then try again";
+"Common.Alerts.PostFailInvalidPoll.Title" = "Failed to Publish";
 "Common.Alerts.RateLimitExceeded.Message" = "트위터 API 사용량 제한이 걸렸습니다.";
 "Common.Alerts.RateLimitExceeded.Title" = "한도를 넘어서 제한이 걸렸습니다.";
 "Common.Alerts.ReportAndBlockUserSuccess.Title" = "%@는 스팸으로 신고받아 차단되었습니다.";

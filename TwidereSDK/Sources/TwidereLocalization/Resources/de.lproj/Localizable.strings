@@ -127,6 +127,8 @@
 "Common.Alerts.PhotoSaveFail.Message" = "Bitte versuche es erneut";
 "Common.Alerts.PhotoSaveFail.Title" = "Foto konnte nicht gespeichert werden";
 "Common.Alerts.PhotoSaved.Title" = "Foto gespeichert";
+"Common.Alerts.PostFailInvalidPoll.Message" = "Poll has empty field. Please fulfill the field then try again";
+"Common.Alerts.PostFailInvalidPoll.Title" = "Failed to Publish";
 "Common.Alerts.RateLimitExceeded.Message" = "Nutzungsgrenze der Twitter-API erreicht";
 "Common.Alerts.RateLimitExceeded.Title" = "Kappungsgrenze überschritten";
 "Common.Alerts.ReportAndBlockUserSuccess.Title" = "%@ wurde wegen Spam gemeldet und blockiert";

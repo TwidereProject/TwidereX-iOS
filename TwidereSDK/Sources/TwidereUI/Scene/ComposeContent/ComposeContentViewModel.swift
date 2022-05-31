@@ -25,37 +25,61 @@ public final class ComposeContentViewModel: NSObject, ObservableObject {
     let logger = Logger(subsystem: "ComposeContentViewModel", category: "ViewModel")
     var disposeBag = Set<AnyCancellable>()
     
-    public let composeReplyTableViewCell = ComposeReplyTableViewCell()
-    public let composeInputTableViewCell = ComposeInputTableViewCell()
-    public let composeAttachmentTableViewCell = ComposeAttachmentTableViewCell()
-    public let composePollTableViewCell = ComposePollTableViewCell()
-    
     let locationManager: CLLocationManager = {
         let locationManager = CLLocationManager()
         locationManager.desiredAccuracy = kCLLocationAccuracyReduced
         return locationManager
     }()
     
+    // MARK: - layout
+    @Published var viewSize: CGSize = .zero
+
     // input
     public let kind: Kind
     public let configurationContext: ConfigurationContext
     public let customEmojiPickerInputViewModel = CustomEmojiPickerInputView.ViewModel()
-    
-    // layout
-    @Published var viewSize: CGSize = .zero
-        
-    // text
-    weak var contentMetaText: MetaText?
-    @Published public private(set) var initialTextInput = ""
-    @Published public var content = ""
-    @Published public var isContentEditing = false
-    
-    // avatar
-    @Published public var author: UserObject?
-    
+
     // reply-to
     public private(set) var replyTo: StatusObject?
+
+    // limit
+    @Published public var maxTextInputLimit = 500
+
+    // text
+    weak var contentMetaText: MetaText? {
+        didSet {
+            guard let textView = contentMetaText?.textView else { return }
+            customEmojiPickerInputViewModel.configure(textInput: textView)
+        }
+    }
+    @Published public var initialContent = ""
+    @Published public var content = ""
+    @Published public var contentWeightedLength = 0
+    @Published public var isContentEmpty = true
+    @Published public var isContentValid = true
+    @Published public var isContentEditing = false
     
+    // content warning (Mastodon)
+    weak var contentWarningMetaText: MetaText? {
+        didSet {
+            guard let textView = contentWarningMetaText?.textView else { return }
+            customEmojiPickerInputViewModel.configure(textInput: textView)
+        }
+    }
+    @Published public var contentWarning = ""
+    @Published public var contentWarningWeightedLength = 0  // set 0 when not composing
+    @Published public var isContentWarningComposing = false {
+        didSet {
+            if isContentWarningComposing {
+                isMediaSensitive = true
+            }
+        }
+    }
+    @Published public var isContentWarningEditing = false
+
+    // avatar
+    @Published public var author: UserObject?
+        
     // mention (Twitter)
     @Published public private(set) var isMentionPickDisplay = false
     @Published public private(set) var mentionPickButtonTitle = ""
@@ -68,7 +92,6 @@ public final class ComposeContentViewModel: NSObject, ObservableObject {
     
     // visibility (Mastodon)
     @Published public internal(set) var mastodonVisibility: Mastodon.Entity.Status.Visibility = .public
-    @Published public private(set) var visibility: StatusVisibility? = nil
     
     // attachment
     public let mediaActionPublisher = PassthroughSubject<ComposeContentToolbarView.MediaAction, Never>()
@@ -77,27 +100,9 @@ public final class ComposeContentViewModel: NSObject, ObservableObject {
     @Published public var maxMediaAttachmentLimit = 4
     @Published public internal(set) var isMediaSensitive = false        // Mastodon only
     @Published public internal(set) var isMediaValid = true
-    // Output
-    public var diffableDataSource: UITableViewDiffableDataSource<Section, Item>?
-    public var customEmojiDiffableDataSource: UICollectionViewDiffableDataSource<CustomEmojiPickerInputView.ViewModel.Section, CustomEmojiPickerInputView.ViewModel.Item>?
-    @Published public private(set) var items: Set<Item> = [.input]
     
-    // text
-    @Published public var currentTextInput = ""
-    @Published public var currentTextInputWeightedLength = 0
-    @Published public var isContentWarningComposing = false {           // Mastodon only
-        didSet {
-            if isContentWarningComposing {
-                isMediaSensitive = true
-            }
-        }
-    }
-    @Published public var currentContentWarningInput = ""               // Mastodon only
-    @Published public var currentContentWarningInputWeightedLength = 0  // Mastodon only, set 0 when not composing
-    @Published public var maxTextInputLimit = 500
-    @Published public var textInputLimitProgress: CGFloat = 0.0
-    @Published public var isTextInputEmpty = true
-    @Published public var isTextInputValid = true
+    // MARK: - output
+    public var customEmojiDiffableDataSource: UICollectionViewDiffableDataSource<CustomEmojiPickerInputView.ViewModel.Section, CustomEmojiPickerInputView.ViewModel.Item>?
     
     // emoji (Mastodon only)
     @Published public internal(set) var isCustomEmojiComposing = false
@@ -123,8 +128,6 @@ public final class ComposeContentViewModel: NSObject, ObservableObject {
         formatter.unitsStyle = .short
         return formatter
     }()
-    public let pollOptionActiveAtIndex = PassthroughSubject<Int, Never>()
-    // public let pollCollectionViewDiffableDataSourceDidUpdate = PassthroughSubject<Void, Never>()
     
     // location (Twitter only)
     public private(set) var didRequestLocationAuthorization = false
@@ -158,18 +161,17 @@ public final class ComposeContentViewModel: NSObject, ObservableObject {
         case .post:
             break
         case .hashtag(let hashtag):
-            currentTextInput = "#" + hashtag + " "
+            content = "#" + hashtag + " "
         case .mention(let user):
             // set content text
             switch user {
             case .twitter(let user):
-                currentTextInput = "@" + user.username + " "
+                content = "@" + user.username + " "
             case .mastodon(let user):
-                currentTextInput = "@" + user.acct + " "
+                content = "@" + user.acct + " "
             }
         case .reply(let status):
             replyTo = status
-            items.insert(.replyTo)
             
             switch status {
             case .twitter(let status):
@@ -208,88 +210,71 @@ public final class ComposeContentViewModel: NSObject, ObservableObject {
                 // set content warning
                 if let spoilerText = status.spoilerText, !spoilerText.isEmpty {
                     isContentWarningComposing = true
-                    currentContentWarningInput = spoilerText
+                    contentWarning = spoilerText
                 }
             }
         }
         
         // bind text
-        $currentTextInput
+        $content
             .map { $0.isEmpty }
-            .assign(to: &$isTextInputEmpty)
+            .assign(to: &$isContentEmpty)
         
         Publishers.CombineLatest(
-            $currentTextInput,
+            $content,
             $author
         )
-        .sink { [weak self] currentTextInput, author in
+        .sink { [weak self] content, author in
             guard let self = self else { return }
             guard let author = author else { return }
             switch author {
             case .twitter:
                 let twitterTextProvider = configurationContext.statusViewConfigureContext.twitterTextProvider
-                let parseResult = twitterTextProvider.parse(text: currentTextInput)
-                self.textInputLimitProgress = {
-                    guard parseResult.maxWeightedLength > 0 else { return .zero }
-                    return CGFloat(parseResult.weightedLength) / CGFloat(parseResult.maxWeightedLength)
-                }()
-                self.currentTextInputWeightedLength = parseResult.weightedLength
+                let parseResult = twitterTextProvider.parse(text: content)
+                self.contentWeightedLength = parseResult.weightedLength
                 self.maxTextInputLimit = parseResult.maxWeightedLength
-                self.isTextInputValid = parseResult.isValid
+                self.isContentValid = parseResult.isValid
             case .mastodon:
-                self.currentTextInputWeightedLength = currentTextInput.count
+                self.contentWeightedLength = content.count
             }
         }
         .store(in: &disposeBag)
         
         Publishers.CombineLatest3(
             $isContentWarningComposing,
-            $currentContentWarningInput,
+            $contentWarning,
             $author
         )
-        .sink { [weak self] isContentWarningComposing, currentContentWarningInput, author in
+        .sink { [weak self] isContentWarningComposing, contentWarning, author in
             guard let self = self else { return }
             guard let author = author else { return }
             switch author {
             case .twitter:
-                self.currentContentWarningInputWeightedLength = 0
+                self.contentWarningWeightedLength = 0
             case .mastodon:
-                self.currentContentWarningInputWeightedLength = isContentWarningComposing ? currentContentWarningInput.count : 0
+                self.contentWarningWeightedLength = isContentWarningComposing ? contentWarning.count : 0
             }
         }
         .store(in: &disposeBag)
         
         Publishers.CombineLatest4(
-            $currentTextInputWeightedLength,
-            $currentContentWarningInputWeightedLength,
+            $contentWeightedLength,
+            $contentWarningWeightedLength,
             $maxTextInputLimit,
             $author
         )
-        .sink { [weak self] currentTextInputWeightedLength, currentContentWarningInputWeightedLength, maxTextInputLimit, author in
+        .sink { [weak self] contentWeightedLength, contentWarningWeightedLength, maxTextInputLimit, author in
             guard let self = self else { return }
             guard let author = author else { return }
             switch author {
             case .twitter:
                 break
             case .mastodon:
-                let count = currentTextInputWeightedLength + currentContentWarningInputWeightedLength
-                self.isTextInputValid = count <= maxTextInputLimit
-                self.textInputLimitProgress = {
-                    guard maxTextInputLimit > 0 else { return .zero }
-                    return CGFloat(count) / CGFloat(maxTextInputLimit)
-                }()
+                let count =  contentWeightedLength + contentWarningWeightedLength
+                self.isContentValid = count <= maxTextInputLimit
             }
         }
         .store(in: &disposeBag)
-        
-        // bind author
-        $author
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] author in
-                guard let self = self else { return }
-                self.composeInputTableViewCell.configure(user: author)
-            }
-            .store(in: &disposeBag)
         
         // bind mention
         $author
@@ -345,20 +330,20 @@ public final class ComposeContentViewModel: NSObject, ObservableObject {
         }
         .assign(to: &$mentionPickButtonTitle)
         
-        $mentionPickButtonTitle
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] title in
-                guard let self = self else { return }
-                self.composeInputTableViewCell.mentionPickButton.setTitle(title, for: .normal)
-            }
-            .store(in: &disposeBag)
+//        $mentionPickButtonTitle
+//            .receive(on: DispatchQueue.main)
+//            .sink { [weak self] title in
+//                guard let self = self else { return }
+//                self.composeInputTableViewCell.mentionPickButton.setTitle(title, for: .normal)
+//            }
+//            .store(in: &disposeBag)
         
-        $isMentionPickDisplay
-            .sink { [weak self] isMentionPickDisplay in
-                guard let self = self else { return }
-                self.composeInputTableViewCell.mentionPickButton.isHidden = !isMentionPickDisplay
-            }
-            .store(in: &disposeBag)
+//        $isMentionPickDisplay
+//            .sink { [weak self] isMentionPickDisplay in
+//                guard let self = self else { return }
+//                self.composeInputTableViewCell.mentionPickButton.isHidden = !isMentionPickDisplay
+//            }
+//            .store(in: &disposeBag)
         
         // bind visibility
         $author
@@ -391,48 +376,8 @@ public final class ComposeContentViewModel: NSObject, ObservableObject {
                 }
             }
             .store(in: &disposeBag)
-        
-        Publishers.CombineLatest(
-            $author,
-            $mastodonVisibility
-        )
-        .receive(on: DispatchQueue.main)
-        .map { [weak self] author, mastodonVisibility -> StatusVisibility? in
-            guard let self = self else { return nil }
-            
-            switch author {
-            case .twitter:
-                return nil
-            case .mastodon(let author):
-                return .mastodon(mastodonVisibility)
-            case .none:
-                return nil
-            }
-        }
-        .assign(to: &$visibility)
     
         // bind attachments
-        $attachmentViewModels
-            .sink { [weak self] attachmentViewModels in
-                guard let self = self else { return }
-                // update items
-                if attachmentViewModels.isEmpty {
-                    self.items.remove(.attachment)
-                } else {
-                    self.items.insert(.attachment)
-                }
-                // update data source
-                var snapshot = NSDiffableDataSourceSnapshot<ComposeAttachmentTableViewCell.Section, ComposeAttachmentTableViewCell.Item>()
-                snapshot.appendSections([.main])
-                let items: [ComposeAttachmentTableViewCell.Item] = attachmentViewModels.map {
-                    ComposeAttachmentTableViewCell.Item.attachment(viewModel: $0)
-                }
-                snapshot.appendItems(items, toSection: .main)
-                self.composeAttachmentTableViewCell.diffableDataSource.apply(snapshot)
-                
-            }
-            .store(in: &disposeBag)
-        
         $attachmentViewModels
             .map { viewModels in
                 Publishers.MergeMany(viewModels.map { $0.$output })     // build publisher when underlying outputs emits
@@ -478,45 +423,6 @@ public final class ComposeContentViewModel: NSObject, ObservableObject {
                 return emojiViewModel
             }
             .assign(to: &$emojiViewModel)
-        
-        // bind poll
-        $isPollComposing
-            .sink { [weak self] isPollComposing in
-                guard let self = self else { return }
-                if isPollComposing {
-                    self.items.insert(.poll)
-                } else {
-                    self.items.remove(.poll)
-                }
-            }
-            .store(in: &disposeBag)
-        
-//        $pollOptions
-//            .receive(on: DispatchQueue.main)
-//            .sink { [weak self] pollOptions in
-//                guard let self = self else { return }
-//
-//                var snapshot = NSDiffableDataSourceSnapshot<PollComposeSection, PollComposeItem>()
-//                snapshot.appendSections([.main])
-//
-//                var items: [PollComposeItem] = []
-//                items.append(contentsOf: pollOptions.map { PollComposeItem.option($0) })
-//                items.append(PollComposeItem.expireConfiguration(self.pollExpireConfiguration))
-//                items.append(PollComposeItem.multipleConfiguration(self.pollMultipleConfiguration))
-//                snapshot.appendItems(items, toSection: .main)
-//
-//                self.composePollTableViewCell.diffableDataSource?.apply(snapshot, animatingDifferences: false) { [weak self] in
-//                    guard let self = self else { return }
-//                    self.pollCollectionViewDiffableDataSourceDidUpdate.send()
-//                }
-//
-//                var height = CGFloat(pollOptions.count) * ComposePollOptionCollectionViewCell.height
-//                height += ComposePollExpireConfigurationCollectionViewCell.height
-//                height += ComposePollMultipleConfigurationCollectionViewCell.height
-//                self.composePollTableViewCell.collectionViewHeightLayoutConstraint.constant = height
-//                self.composePollTableViewCell.collectionViewHeightDidUpdate.send()
-//            }
-//            .store(in: &disposeBag)
         
         // bind location
         $isRequestLocation
@@ -611,16 +517,16 @@ public final class ComposeContentViewModel: NSObject, ObservableObject {
         
         // bind UI state
         Publishers.CombineLatest4(
-            $isTextInputEmpty,
-            $isTextInputValid,
+            $isContentEmpty,
+            $isContentValid,
             $attachmentViewModels,
             $isMediaValid
         )
-        .map { isTextInputEmpty, isTextInputValid, attachmentViewModels, isMediaValid in
-            guard isTextInputValid else {
+        .map { isContentEmpty, isContentValid, attachmentViewModels, isMediaValid in
+            guard isContentValid else {
                 return false
             }
-            if isTextInputEmpty {
+            if isContentEmpty {
                 return !attachmentViewModels.isEmpty && isMediaValid
             } else {
                 return attachmentViewModels.isEmpty || isMediaValid
@@ -629,11 +535,11 @@ public final class ComposeContentViewModel: NSObject, ObservableObject {
         .assign(to: &$isComposeBarButtonEnabled)
         
         Publishers.CombineLatest(
-            $initialTextInput,
-            $currentTextInput
+            $initialContent,
+            $content
         )
-        .map { initialTextInput, currentTextInput in
-            return initialTextInput.trimmingCharacters(in: .whitespacesAndNewlines) == currentTextInput.trimmingCharacters(in: .whitespacesAndNewlines)
+        .map { initialContent, content in
+            return initialContent.trimmingCharacters(in: .whitespacesAndNewlines) == content.trimmingCharacters(in: .whitespacesAndNewlines)
         }
         .assign(to: &$canDismissDirectly)
         
@@ -767,9 +673,38 @@ extension ComposeContentViewModel: CLLocationManagerDelegate {
 }
 
 extension ComposeContentViewModel {
+    public enum ComposeError: LocalizedError {
+        case pollInvalid
+        
+        public var errorDescription: String? {
+            switch self {
+            case .pollInvalid:
+                return L10n.Common.Alerts.PostFailInvalidPoll.title
+            }
+        }
+        
+        public var failureReason: String? {
+            switch self {
+            case .pollInvalid:
+                return L10n.Common.Alerts.PostFailInvalidPoll.message
+            }
+        }
+    }
+    
     public func statusPublisher() throws -> StatusPublisher {
         guard let author = self.author else {
             throw AppError.implicit(.authenticationMissing)
+        }
+        
+        let isPollValid: Bool = {
+            guard isPollComposing else { return true }
+            let isAllNonEmpty = pollOptions
+                .map { $0.text }
+                .allSatisfy { !$0.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }
+            return isAllNonEmpty
+        }()
+        guard isPollValid else {
+            throw ComposeError.pollInvalid
         }
         
         switch author {
@@ -782,7 +717,7 @@ extension ComposeContentViewModel {
                     return .init(objectID: status.objectID)
                 }(),
                 excludeReplyUserIDs: Array(excludeReplyTwitterUserIDs),
-                content: currentTextInput,
+                content: content,
                 poll: {
                     guard isPollComposing else { return nil }
                     let durationMinutes: Int = {
@@ -808,8 +743,8 @@ extension ComposeContentViewModel {
                     return .init(objectID: status.objectID)
                 }(),
                 isContentWarningComposing: isContentWarningComposing,
-                contentWarning: currentContentWarningInput,
-                content: currentTextInput,
+                contentWarning: contentWarning,
+                content: content,
                 isMediaSensitive: isMediaSensitive,
                 attachmentViewModels: attachmentViewModels,
                 isPollComposing: isPollComposing,
@@ -824,14 +759,45 @@ extension ComposeContentViewModel {
 
 // MARK: - UITextViewDelegate
 extension ComposeContentViewModel: UITextViewDelegate {
+    
     public func textViewDidBeginEditing(_ textView: UITextView) {
-        isContentEditing = true
+        switch textView {
+        case contentMetaText?.textView:
+            isContentEditing = true
+        case contentWarningMetaText?.textView:
+            isContentWarningEditing = true
+        default:
+            break
+        }
     }
     
     public func textViewDidEndEditing(_ textView: UITextView) {
-        isContentEditing = false
+        switch textView {
+        case contentMetaText?.textView:
+            isContentEditing = false
+        case contentWarningMetaText?.textView:
+            isContentWarningEditing = false
+        default:
+            break
+        }
     }
-    
+
+    public func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
+        switch textView {
+        case contentMetaText?.textView:
+            return true
+        case contentWarningMetaText?.textView:
+            let isReturn = text == "\n"
+            if isReturn {
+                setContentTextViewFirstResponderIfNeeds()
+            }
+            return !isReturn
+        default:
+            assertionFailure()
+            return true
+        }
+    }
+
     func insertContentText(text: String) {
         guard let contentMetaText = self.contentMetaText else { return }
         // FIXME: smart prefix and suffix
@@ -845,10 +811,16 @@ extension ComposeContentViewModel: UITextViewDelegate {
         }
     }
     
-    func setContentTextFirstResponderIfNeeds() {
+    func setContentTextViewFirstResponderIfNeeds() {
         guard let contentMetaText = self.contentMetaText else { return }
         guard !contentMetaText.textView.isFirstResponder else { return }
         contentMetaText.textView.becomeFirstResponder()
+    }
+    
+    func setContentWarningTextViewFirstResponderIfNeeds() {
+        guard let contentWarningMetaText = self.contentWarningMetaText else { return }
+        guard !contentWarningMetaText.textView.isFirstResponder else { return }
+        contentWarningMetaText.textView.becomeFirstResponder()
     }
     
 }

@@ -94,8 +94,8 @@ extension ComposeViewController {
             let statusPublisher = try composeContentViewModel.statusPublisher()
             context.publisherService.enqueue(statusPublisher: statusPublisher)
         } catch {
-            assertionFailure()
-            // TODO: handle error
+            let alertController = UIAlertController.standardAlert(of: error)
+            present(alertController, animated: true)
             return
         }
         

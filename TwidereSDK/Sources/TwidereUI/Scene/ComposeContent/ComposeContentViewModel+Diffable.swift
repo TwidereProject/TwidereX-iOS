@@ -9,7 +9,6 @@
 import UIKit
 import Combine
 import TwidereCore
-import TwidereUI
 import MetaTextKit
 
 extension ComposeContentViewModel {
@@ -32,21 +31,8 @@ extension ComposeContentViewModel {
 
 extension ComposeContentViewModel {
     public func setupDiffableDataSource(
-        tableView: UITableView,
-        customEmojiPickerInputView: CustomEmojiPickerInputView,
-        composeInputTableViewCellDelegate: ComposeInputTableViewCellDelegate & MetaTextDelegate & UITextViewDelegate,
-        composeAttachmentTableViewCellDelegate: ComposeAttachmentTableViewCellDelegate,
-        composePollTableViewCellDelegate: ComposePollTableViewCellDelegate
+        customEmojiPickerInputView: CustomEmojiPickerInputView
     ) {
-        // set delegate
-        composeInputTableViewCell.delegate = composeInputTableViewCellDelegate
-        composeInputTableViewCell.contentMetaText.delegate = composeInputTableViewCellDelegate
-        composeInputTableViewCell.contentMetaText.textView.delegate = composeInputTableViewCellDelegate
-        composeInputTableViewCell.contentWarningMetaText.delegate = composeInputTableViewCellDelegate
-        composeInputTableViewCell.contentWarningMetaText.textView.delegate = composeInputTableViewCellDelegate
-        composeAttachmentTableViewCell.delegate = composeAttachmentTableViewCellDelegate
-        composePollTableViewCell.delegate = composePollTableViewCellDelegate
-        
         // configure emoji picker
         customEmojiPickerInputViewModel.customEmojiPickerInputView = customEmojiPickerInputView
         
@@ -131,75 +117,5 @@ extension ComposeContentViewModel {
                     }
             }
             .store(in: &disposeBag)
-        
-        // setup data source
-        diffableDataSource = UITableViewDiffableDataSource(tableView: tableView) { [weak self] tableView, indexPath, item in
-            // data source should dispatch in main thread
-            assert(Thread.isMainThread)
-            
-            guard let self = self else { return UITableViewCell() }
-            return self.cell(for: item, tableView: tableView, at: indexPath)
-        }
-                
-        var snapshot = NSDiffableDataSourceSnapshot<Section, Item>()
-        snapshot.appendSections([.main])
-        snapshot.appendItems(items.sorted(), toSection: .main)
-        
-        diffableDataSource?.applySnapshotUsingReloadData(snapshot, completion: nil)
-        
-        $items
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] items in
-                guard let self = self else { return }
-                guard let diffableDataSource = self.diffableDataSource else { return }
-                var snapshot = NSDiffableDataSourceSnapshot<Section, Item>()
-                snapshot.appendSections([.main])
-                let sortedItems = items.sorted()
-                snapshot.appendItems(sortedItems, toSection: .main)
-                diffableDataSource.apply(snapshot)
-            }
-            .store(in: &disposeBag)
-    }
-    
-    private func cell(for item: Item, tableView: UITableView, at indexPath: IndexPath) -> UITableViewCell {
-        switch item {
-        case .replyTo:
-            guard let status = self.replyTo else {
-                assertionFailure()
-                return UITableViewCell()
-            }
-            composeReplyTableViewCell.prepareForReuse()
-            composeReplyTableViewCell.configure(
-                tableView: tableView,
-                viewModel: ComposeReplyTableViewCell.ViewModel(
-                    status: status,
-                    statusViewConfigureContext: configurationContext.statusViewConfigureContext
-                )
-            )
-            return composeReplyTableViewCell
-        case .input:
-            // show link line if repy exists
-            composeInputTableViewCell.conversationLinkLineView.isHidden = replyTo == nil
-            // configure content warning input
-            let contentWarningMetaContent = Meta.convert(from: .mastodon(string: currentContentWarningInput, emojis: emojiViewModel?.emojis.asDictionary ?? [:]))
-            composeInputTableViewCell.contentWarningMetaText.configure(content: contentWarningMetaContent)
-            // configure content
-            let contentMetaContent = Meta.convert(from: .plaintext(string: currentTextInput))
-            composeInputTableViewCell.contentMetaText.configure(content: contentMetaContent)
-            // setup emoji picker input viewModel
-            customEmojiPickerInputViewModel.configure(textInput: composeInputTableViewCell.contentWarningMetaText.textView)
-            customEmojiPickerInputViewModel.configure(textInput: composeInputTableViewCell.contentMetaText.textView)
-            
-            return composeInputTableViewCell
-        case .quote:
-            let cell = UITableViewCell()
-            cell.backgroundColor = .yellow
-            return cell
-        case .attachment:
-            return composeAttachmentTableViewCell
-        case .poll:
-            composePollTableViewCell.customEmojiPickerInputViewModel = customEmojiPickerInputViewModel
-            return composePollTableViewCell
-        }
     }
 }
