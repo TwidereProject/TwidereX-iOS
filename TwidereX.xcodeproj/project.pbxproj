@@ -215,6 +215,7 @@
 		DB76A66D2760721400A50673 /* MediaPreviewVideoViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB76A66C2760721400A50673 /* MediaPreviewVideoViewModel.swift */; };
 		DB76A66F276083CB00A50673 /* MediaPreviewTransitionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB76A66E276083CB00A50673 /* MediaPreviewTransitionViewController.swift */; };
 		DB76A67127609A8700A50673 /* RemoteProfileViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB76A67027609A8700A50673 /* RemoteProfileViewModel.swift */; };
+		DB77FF7F2847808C00182A0B /* ShareExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = DBBBBE5E2744E8CC007ACB4B /* ShareExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		DB7AB33E2744E3740035EB8A /* Floaty in Frameworks */ = {isa = PBXBuildFile; productRef = DB7AB33D2744E3740035EB8A /* Floaty */; };
 		DB7E22F02552A3D500551314 /* UserLikeTimelineViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB7E22EF2552A3D500551314 /* UserLikeTimelineViewController.swift */; };
 		DB7E22F92552A40000551314 /* UserLikeTimelineViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB7E22F82552A40000551314 /* UserLikeTimelineViewModel.swift */; };
@@ -275,7 +276,6 @@
 		DBA5DDB7274E1BBF00FF12E3 /* UITextView+Placeholder in Frameworks */ = {isa = PBXBuildFile; productRef = DBA5DDB6274E1BBF00FF12E3 /* UITextView+Placeholder */; };
 		DBA5FA192553DCBC00D2E98E /* TransitioningMath.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBA5FA182553DCBC00D2E98E /* TransitioningMath.swift */; };
 		DBA61AB62552596A006AC169 /* UserMediaTimelineViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBA61AB52552596A006AC169 /* UserMediaTimelineViewController.swift */; };
-		DBA6B1B725355C1E005FB0B4 /* UIAlertController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBA6B1B625355C1E005FB0B4 /* UIAlertController.swift */; };
 		DBA6B30C27E9B4CB004D052D /* DataSourceFacade+Banner.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBA6B30B27E9B4CB004D052D /* DataSourceFacade+Banner.swift */; };
 		DBA6B30E27E9CB6F004D052D /* AddListMemberViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBA6B30D27E9CB6F004D052D /* AddListMemberViewController.swift */; };
 		DBA6B31127E9CBCC004D052D /* AddListMemberViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBA6B31027E9CBCC004D052D /* AddListMemberViewModel.swift */; };
@@ -373,6 +373,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		DB77FF802847808C00182A0B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = DBDA8E1624FCF8A3006750DC /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = DBBBBE5D2744E8CC007ACB4B;
+			remoteInfo = ShareExtension;
+		};
 		DB94B6BF26C65CB000A2E8A1 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = DBDA8E1624FCF8A3006750DC /* Project object */;
@@ -459,6 +466,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 13;
 			files = (
+				DB77FF7F2847808C00182A0B /* ShareExtension.appex in Embed App Extensions */,
 				DBFDCE4827F450FC00BE99E3 /* TwidereXIntent.appex in Embed App Extensions */,
 			);
 			name = "Embed App Extensions";
@@ -760,7 +768,6 @@
 		DBA5FA252553ED1000D2E98E /* MediaPreviewViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaPreviewViewModel.swift; sourceTree = "<group>"; };
 		DBA5FA2D2553F06B00D2E98E /* MediaInfoDescriptionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaInfoDescriptionView.swift; sourceTree = "<group>"; };
 		DBA61AB52552596A006AC169 /* UserMediaTimelineViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserMediaTimelineViewController.swift; sourceTree = "<group>"; };
-		DBA6B1B625355C1E005FB0B4 /* UIAlertController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIAlertController.swift; sourceTree = "<group>"; };
 		DBA6B30B27E9B4CB004D052D /* DataSourceFacade+Banner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DataSourceFacade+Banner.swift"; sourceTree = "<group>"; };
 		DBA6B30D27E9CB6F004D052D /* AddListMemberViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddListMemberViewController.swift; sourceTree = "<group>"; };
 		DBA6B31027E9CBCC004D052D /* AddListMemberViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddListMemberViewModel.swift; sourceTree = "<group>"; };
@@ -2146,7 +2153,6 @@
 			children = (
 				DB8AC18F2542DA9500E636BE /* ActiveLabel.swift */,
 				DB969A65253064FE0053CB31 /* DispatchQueue.swift */,
-				DBA6B1B625355C1E005FB0B4 /* UIAlertController.swift */,
 				DB262A3627213FBE00D18EF3 /* UIAlertAction.swift */,
 				DBA7DD73256B96450008A95A /* UIFont.swift */,
 				DBFCC44625667C620016698E /* UILabel.swift */,
@@ -2421,6 +2427,7 @@
 			dependencies = (
 				DB94B6C026C65CB000A2E8A1 /* PBXTargetDependency */,
 				DBFDCE4727F450FC00BE99E3 /* PBXTargetDependency */,
+				DB77FF812847808C00182A0B /* PBXTargetDependency */,
 			);
 			name = TwidereX;
 			packageProductDependencies = (
@@ -3110,7 +3117,6 @@
 				DB67610D254AD681006C6798 /* ActivityIndicatorCollectionViewCell.swift in Sources */,
 				DB47AB4427CF52B600CD73C7 /* ListStatusViewController.swift in Sources */,
 				DB94B6B426C65BE100A2E8A1 /* MastodonAuthenticationController.swift in Sources */,
-				DBA6B1B725355C1E005FB0B4 /* UIAlertController.swift in Sources */,
 				DB76A668275F896E00A50673 /* ShareActivityProvider.swift in Sources */,
 				DB1E48162772CEC20074F6A0 /* SearchSection.swift in Sources */,
 				DB8EBE7A276648FA005CF76A /* UserMediaTimelineViewController+DataSourceProvider.swift in Sources */,
@@ -3203,6 +3209,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		DB77FF812847808C00182A0B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = DBBBBE5D2744E8CC007ACB4B /* ShareExtension */;
+			targetProxy = DB77FF802847808C00182A0B /* PBXContainerItemProxy */;
+		};
 		DB94B6C026C65CB000A2E8A1 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = DB94B6BA26C65CB000A2E8A1 /* AppShared */;

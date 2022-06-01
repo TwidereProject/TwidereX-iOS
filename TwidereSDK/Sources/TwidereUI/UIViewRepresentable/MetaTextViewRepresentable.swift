@@ -48,8 +48,10 @@ public struct MetaTextViewRepresentable: UIViewRepresentable {
             .font: font,
             .foregroundColor: Asset.Colors.hightLight.color,
         ]
-        
+                
         configurationHandler(metaText)
+            
+        metaText.configure(content: PlaintextMetaContent(string: string))
         
         return textView
     }

@@ -46,7 +46,7 @@ public final class ComposeContentViewModel: NSObject, ObservableObject {
     @Published public var maxTextInputLimit = 500
 
     // text
-    weak var contentMetaText: MetaText? {
+    public weak var contentMetaText: MetaText? {
         didSet {
             guard let textView = contentMetaText?.textView else { return }
             customEmojiPickerInputViewModel.configure(textInput: textView)
@@ -97,7 +97,7 @@ public final class ComposeContentViewModel: NSObject, ObservableObject {
     // attachment
     public let mediaActionPublisher = PassthroughSubject<ComposeContentToolbarView.MediaAction, Never>()
     public let mediaPreviewPublisher = PassthroughSubject<AttachmentViewModel, Never>()
-    @Published public internal(set) var attachmentViewModels: [AttachmentViewModel] = []
+    @Published public var attachmentViewModels: [AttachmentViewModel] = []
     @Published public var maxMediaAttachmentLimit = 4
     @Published public internal(set) var isMediaSensitive = false        // Mastodon only
     @Published public internal(set) var isMediaValid = true

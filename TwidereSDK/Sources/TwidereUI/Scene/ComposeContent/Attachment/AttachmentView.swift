@@ -85,7 +85,10 @@ public struct AttachmentView: View {
         }   // end Menu
         .sheet(isPresented: $isCaptionEditorPresented) {
             captionSheet
-        }   // end sheet
+        }   // end caption sheet
+        .sheet(isPresented: $viewModel.isPreviewPresented) {
+            previewSheet
+        }   // end preview sheet
 
     }   // end body
     
@@ -187,6 +190,47 @@ public struct AttachmentView: View {
                         isCaptionEditorPresented.toggle()
                     } label: {
                         Text(L10n.Common.Controls.Actions.save)
+                    }
+                }
+            }
+        }   // end NavigationView
+    }
+    
+    // design for share extension
+    // preferred UIKit preview in app
+    var previewSheet: some View {
+        NavigationView {
+            ScrollView(.vertical) {
+                VStack {
+                    // preview
+                    switch viewModel.output {
+                    case .image:
+                        let image = viewModel.thumbnail ?? .placeholder(color: .systemGray3)
+                        Image(uiImage: image)
+                            .resizable()
+                            .aspectRatio(contentMode: .fill)
+                    case .video(let url, _):
+                        let player = AVPlayer(url: url)
+                        VideoPlayer(player: player)
+                            .frame(height: 300)
+                    case .none:
+                        EmptyView()
+                    }
+                    Spacer()
+                }
+            }
+            .navigationTitle(L10n.Scene.Compose.Media.preview)
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button {
+                        viewModel.isPreviewPresented.toggle()
+                    } label: {
+                        Image(systemName: "xmark.circle.fill")
+                            .resizable()
+                            .frame(width: 30, height: 30, alignment: .center)
+                            .symbolRenderingMode(.hierarchical)
+                            .foregroundStyle(Color(uiColor: .secondaryLabel), Color(uiColor: .tertiaryLabel))
                     }
                 }
             }

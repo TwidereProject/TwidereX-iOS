@@ -25,6 +25,7 @@ final public class AttachmentViewModel: NSObject, ObservableObject, Identifiable
     public let input: Input
     @Published var caption = ""
     @Published var sizeLimit = SizeLimit()
+    @Published public var isPreviewPresented = false
     
     // output
     @Published public private(set) var output: Output?

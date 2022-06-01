@@ -10,7 +10,7 @@ import UIKit
 
 extension UIAlertController {
     
-    static func standardAlert(of error: Error) -> UIAlertController {
+    public static func standardAlert(of error: Error) -> UIAlertController {
         let title: String? = {
             if let error = error as? LocalizedError {
                 return error.errorDescription
