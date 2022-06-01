@@ -80,6 +80,35 @@ extension ComposeContentViewController {
         ])
         hostingViewController.didMove(toParent: self)
         
+        // mention - pick action
+        viewModel.mentionPickPublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                guard let self = self else { return }
+                guard let primaryItem = self.viewModel.primaryMentionPickItem else { return }
+                
+                let mentionPickViewModel = MentionPickViewModel(
+                    apiService: self.viewModel.configurationContext.apiService,
+                    authenticationService: self.viewModel.configurationContext.authenticationService,
+                    primaryItem: primaryItem,
+                    secondaryItems: self.viewModel.secondaryMentionPickItems
+                )
+                let mentionPickViewController = MentionPickViewController()
+                mentionPickViewController.viewModel = mentionPickViewModel
+                mentionPickViewController.delegate = self
+                
+                let navigationController = AdaptiveStatusBarStyleNavigationController(rootViewController: mentionPickViewController)
+                navigationController.modalPresentationStyle = .pageSheet
+                if let sheetPresentationController = navigationController.sheetPresentationController {
+                    sheetPresentationController.detents = [.medium(), .large()]
+                    sheetPresentationController.selectedDetentIdentifier = .medium
+                    sheetPresentationController.prefersScrollingExpandsWhenScrolledToEdge = false
+                    sheetPresentationController.prefersGrabberVisible = true
+                }
+                self.present(navigationController, animated: true, completion: nil)
+            }
+            .store(in: &disposeBag)
+        
         // attachment - preview action
         viewModel.mediaPreviewPublisher
             .receive(on: DispatchQueue.main)
@@ -231,22 +260,22 @@ extension ComposeContentViewController: CropViewControllerDelegate {
 }
 
 // MARK: - MentionPickViewControllerDelegate
-//extension ComposeContentViewController: MentionPickViewControllerDelegate {
-//    func mentionPickViewController(
-//        _ controller: MentionPickViewController,
-//        itemPickDidChange items: [MentionPickViewModel.Item]
-//    ) {
-//        let excludeReplyTwitterUserIDs = items.compactMap { item -> Twitter.Entity.V2.Tweet.ID? in
-//            switch item {
-//            case .twitterUser(_, let attribute):
-//                guard !attribute.selected else { return nil }
-//                return attribute.userID
-//            }
-//        }
-//
-//        viewModel.excludeReplyTwitterUserIDs = Set(excludeReplyTwitterUserIDs)
-//    }
-//}
+extension ComposeContentViewController: MentionPickViewControllerDelegate {
+    func mentionPickViewController(
+        _ controller: MentionPickViewController,
+        itemPickDidChange items: [MentionPickViewModel.Item]
+    ) {
+        let excludeReplyTwitterUserIDs = items.compactMap { item -> Twitter.Entity.V2.Tweet.ID? in
+            switch item {
+            case .twitterUser(_, let attribute):
+                guard !attribute.selected else { return nil }
+                return attribute.userID
+            }
+        }
+
+        viewModel.excludeReplyTwitterUserIDs = Set(excludeReplyTwitterUserIDs)
+    }
+}
 
 // MARK: - CustomEmojiPickerInputViewDelegate
 extension ComposeContentViewController: CustomEmojiPickerInputViewDelegate {

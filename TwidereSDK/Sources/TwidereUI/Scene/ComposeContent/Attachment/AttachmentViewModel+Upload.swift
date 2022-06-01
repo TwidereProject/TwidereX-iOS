@@ -221,8 +221,8 @@ extension AttachmentViewModel {
             throw AppError.implicit(.badRequest)
         }
         
-        // init + N * append + finalize
-        progress.totalUnitCount = 1 + Int64(sliceResult.chunkCount) + 1
+        // init + N * append + metadata + finalize
+        progress.totalUnitCount = 1 + Int64(sliceResult.chunkCount) + 1 + 1
         progress.completedUnitCount = 0
         
         // init
@@ -268,7 +268,7 @@ extension AttachmentViewModel {
                 AttachmentViewModel.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): finalize status pending. check after \(checkAfterSecs)s")
                 
                 assert(!Thread.isMainThread)
-                await Task.sleep(1_000_000_000 * checkAfterSeconds)     // 1s * checkAfterSeconds
+                try? await Task.sleep(nanoseconds: checkAfterSeconds * .second)     // 1s * checkAfterSeconds
                 continue
             
             } else {
@@ -276,6 +276,20 @@ extension AttachmentViewModel {
                 isFinalized = true
             }
         } while !isFinalized
+        progress.completedUnitCount += 1
+        
+        // metadata
+        let caption = caption.trimmingCharacters(in: .whitespacesAndNewlines)
+        if !caption.isEmpty {
+            _ = try await context.apiService.twitterMediaMetadataCreate(
+                query: .init(
+                    mediaID: mediaID,
+                    altText: caption
+                ),
+                twitterAuthenticationContext: twitterAuthenticationContext
+            )
+            AttachmentViewModel.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): create metadata for media:\(mediaID) success: \(caption)")
+        }
         progress.completedUnitCount += 1
         
         return .twitter(mediaInitResponse)

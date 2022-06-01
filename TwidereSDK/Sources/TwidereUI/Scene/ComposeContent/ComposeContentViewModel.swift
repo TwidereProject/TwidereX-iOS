@@ -86,6 +86,7 @@ public final class ComposeContentViewModel: NSObject, ObservableObject {
     public private(set) var primaryMentionPickItem: MentionPickViewModel.Item?
     public private(set) var secondaryMentionPickItems: [MentionPickViewModel.Item] = []
     @Published public internal(set) var excludeReplyTwitterUserIDs: Set<TwitterUser.ID> = Set()
+    public let mentionPickPublisher = PassthroughSubject<Void, Never>()
     
     // replySettingss (Twitter)
     @Published public internal(set) var twitterReplySettings: Twitter.Entity.V2.Tweet.ReplySettings = .everyone
@@ -324,26 +325,10 @@ public final class ComposeContentViewModel: NSObject, ObservableObject {
                 break
             }
             
-            return usernames
-                .map { "@" + $0 }
-                .joined(separator: ", ")
+            let names = usernames.map { "@" + $0 }
+            return ListFormatter.localizedString(byJoining: names)
         }
         .assign(to: &$mentionPickButtonTitle)
-        
-//        $mentionPickButtonTitle
-//            .receive(on: DispatchQueue.main)
-//            .sink { [weak self] title in
-//                guard let self = self else { return }
-//                self.composeInputTableViewCell.mentionPickButton.setTitle(title, for: .normal)
-//            }
-//            .store(in: &disposeBag)
-        
-//        $isMentionPickDisplay
-//            .sink { [weak self] isMentionPickDisplay in
-//                guard let self = self else { return }
-//                self.composeInputTableViewCell.mentionPickButton.isHidden = !isMentionPickDisplay
-//            }
-//            .store(in: &disposeBag)
         
         // bind visibility
         $author
@@ -718,6 +703,7 @@ extension ComposeContentViewModel {
                 }(),
                 excludeReplyUserIDs: Array(excludeReplyTwitterUserIDs),
                 content: content,
+                place: isRequestLocation ? currentPlace : nil,
                 poll: {
                     guard isPollComposing else { return nil }
                     let durationMinutes: Int = {
@@ -732,8 +718,7 @@ extension ComposeContentViewModel {
                     )
                 }(),
                 replySettings: twitterReplySettings,
-                attachmentViewModels: attachmentViewModels,
-                place: currentPlace
+                attachmentViewModels: attachmentViewModels
             )
         case .mastodon(let author):
             return MastodonStatusPublisher(

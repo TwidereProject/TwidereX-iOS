@@ -21,6 +21,7 @@ public struct ComposeContentView: View {
     
     @ObservedObject var viewModel: ComposeContentViewModel
     
+    @State var mentionTextHeight: CGFloat = 0
     @State var toolbarHeight: CGFloat = 0
     @State var isPollExpireConfigurationPopoverPresent = false
     
@@ -65,6 +66,32 @@ public struct ComposeContentView: View {
                             }
                         }
                     VStack {
+                        // mention
+                        if viewModel.isMentionPickDisplay {
+                            Button {
+                                viewModel.mentionPickPublisher.send()
+                            } label: {
+                                HStack(spacing: .zero) {
+                                    VectorImageView(
+                                        image: Asset.Communication.textBubbleSmall.image.withRenderingMode(.alwaysTemplate),
+                                        tintColor: .tintColor
+                                    )
+                                    .frame(width: mentionTextHeight, height: mentionTextHeight, alignment: .center)
+                                    Text(viewModel.mentionPickButtonTitle)
+                                        .font(.footnote)
+                                        .background(GeometryReader { geometry in
+                                            Color.clear.preference(
+                                                key: SizeDimensionPreferenceKey.self,
+                                                value: geometry.size.height
+                                            )
+                                        })
+                                        .onPreferenceChange(SizeDimensionPreferenceKey.self) {
+                                            mentionTextHeight = $0
+                                        }
+                                    Spacer()
+                                }
+                            }
+                        }   // end if
                         // content warning
                         if viewModel.isContentWarningComposing {
                             let contentWarningIconSize = CGSize(width: 24, height: 24)
@@ -172,13 +199,12 @@ public struct ComposeContentView: View {
             )
             .background(GeometryReader { geometry in
                 Color.clear.preference(
-                    key: ToolbarHeightPreferenceKey.self,
+                    key: SizeDimensionPreferenceKey.self,
                     value: geometry.size.height
                 )
             })
-            .onPreferenceChange(ToolbarHeightPreferenceKey.self) {
+            .onPreferenceChange(SizeDimensionPreferenceKey.self) {
                 toolbarHeight = $0
-                print(toolbarHeight)
             }
         })
     }
@@ -342,7 +368,7 @@ extension ComposeContentView {
 }
 
 private extension ComposeContentView {
-    struct ToolbarHeightPreferenceKey: PreferenceKey {
+    struct SizeDimensionPreferenceKey: PreferenceKey {
         static let defaultValue: CGFloat = 0
 
         static func reduce(

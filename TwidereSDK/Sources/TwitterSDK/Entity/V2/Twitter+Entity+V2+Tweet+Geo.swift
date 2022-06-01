@@ -12,6 +12,14 @@ extension Twitter.Entity.V2.Tweet {
         public let placeID: Twitter.Entity.V2.Place.ID?
         public let coordinates: Coordinate?
         
+        public init(
+            placeID: Twitter.Entity.V2.Place.ID?,
+            coordinates: Twitter.Entity.V2.Tweet.Geo.Coordinate? = nil
+        ) {
+            self.placeID = placeID
+            self.coordinates = coordinates
+        }
+        
         public enum CodingKeys: String, CodingKey {
             case placeID = "place_id"
             case coordinates

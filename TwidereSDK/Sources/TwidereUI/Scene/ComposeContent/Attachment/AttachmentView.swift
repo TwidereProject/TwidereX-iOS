@@ -100,19 +100,28 @@ public struct AttachmentView: View {
                 }
             )
             // caption
-            Button(
-                action: {
-                    action(.caption)
-                    caption = viewModel.caption
-                    isCaptionEditorPresented.toggle()
-                },
-                label: {
-                    let title = viewModel.caption.isEmpty ? L10n.Scene.Compose.Media.Caption.add : L10n.Scene.Compose.Media.Caption.update
-                    Label(title, systemImage: "text.bubble")
-                    // FIXME: https://stackoverflow.com/questions/72318730/how-to-customize-swiftui-menu
-                    // add caption subtitle
+            let canAddCaption: Bool = {
+                switch viewModel.output {
+                case .image:        return true
+                case .video:        return false
+                case .none:         return false
                 }
-            )
+            }()
+            if canAddCaption {
+                Button(
+                    action: {
+                        action(.caption)
+                        caption = viewModel.caption
+                        isCaptionEditorPresented.toggle()
+                    },
+                    label: {
+                        let title = viewModel.caption.isEmpty ? L10n.Scene.Compose.Media.Caption.add : L10n.Scene.Compose.Media.Caption.update
+                        Label(title, systemImage: "text.bubble")
+                        // FIXME: https://stackoverflow.com/questions/72318730/how-to-customize-swiftui-menu
+                        // add caption subtitle
+                    }
+                )
+            }
             Divider()
             // remove
             Button(
