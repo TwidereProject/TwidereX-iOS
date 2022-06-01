@@ -127,8 +127,8 @@
 "Common.Alerts.PhotoSaveFail.Message" = "Por favor, tente novamente";
 "Common.Alerts.PhotoSaveFail.Title" = "Falha ao Salvar Foto";
 "Common.Alerts.PhotoSaved.Title" = "Foto Salva";
-"Common.Alerts.PostFailInvalidPoll.Message" = "Poll has empty field. Please fulfill the field then try again";
-"Common.Alerts.PostFailInvalidPoll.Title" = "Failed to Publish";
+"Common.Alerts.PostFailInvalidPoll.Message" = "A enquete tem um campo vazio. Preencha o campo e tente novamente";
+"Common.Alerts.PostFailInvalidPoll.Title" = "Falha ao Publicar";
 "Common.Alerts.RateLimitExceeded.Message" = "Atingiu o limite de uso da API do Twitter";
 "Common.Alerts.RateLimitExceeded.Title" = "Limite de Acesso Excedido";
 "Common.Alerts.ReportAndBlockUserSuccess.Title" = "%@ foi reportado por spam e bloqueado";
