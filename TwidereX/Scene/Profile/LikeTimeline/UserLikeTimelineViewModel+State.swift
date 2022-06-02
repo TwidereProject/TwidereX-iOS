@@ -62,7 +62,12 @@ extension UserLikeTimelineViewModel.State {
             super.didEnter(from: previousState)
             guard let viewModel = viewModel, let stateMachine = stateMachine else { return }
             
-            viewModel.statusRecordFetchedResultController.reset()
+            if viewModel.isRefreshControlEnabled {
+                // do nothing
+            } else {
+                viewModel.statusRecordFetchedResultController.reset()
+            }
+            
             
             stateMachine.enter(LoadingMore.self)
         }
@@ -136,6 +141,8 @@ extension UserLikeTimelineViewModel.State {
                 return
             }
             
+            let isReloading = nextInput == nil
+            
             if nextInput == nil {
                 nextInput = {
                     switch (userIdentifier, authenticationContext) {
@@ -194,6 +201,10 @@ extension UserLikeTimelineViewModel.State {
                         await enter(state: NoMore.self)
                     }
                     
+                    if isReloading {
+                        viewModel.statusRecordFetchedResultController.reset()
+                    }
+                    
                     switch output.result {
                     case .twitterV2:
                         // not use v2 API here
@@ -208,6 +219,7 @@ extension UserLikeTimelineViewModel.State {
                     }
                     
                     logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): fetch success")
+                    viewModel.didLoadLatest.send()
                     
                 } catch {
                     logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): fetch failure: \(error.localizedDescription)")

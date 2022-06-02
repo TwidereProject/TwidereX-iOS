@@ -8,6 +8,4 @@
 
 import UIKit
 
-final class SecondaryTabBarRootController: UIViewController {
-    
-}
+final public class SecondaryTabBarRootController: UIViewController { }

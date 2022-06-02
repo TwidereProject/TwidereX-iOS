@@ -63,6 +63,7 @@ final class ProfileViewController: UIViewController, NeedsDependency, DrawerSide
             .assign(to: &userMediaTimelineViewModel.$userIdentifier)
         
         let userLikeTimelineViewModel = UserLikeTimelineViewModel(context: context)
+        userLikeTimelineViewModel.isRefreshControlEnabled = false
         viewModel.$userIdentifier
             .assign(to: &userLikeTimelineViewModel.$userIdentifier)
         
@@ -265,7 +266,7 @@ extension ProfileViewController {
     }
     
     @objc private func refreshControlValueChanged(_ sender: UIRefreshControl) {
-        logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): <#message#>")
+        logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public)")
         
         let currentPage = profilePagingViewController.currentPage
         if let currentPage = currentPage as? UserTimelineViewController {
