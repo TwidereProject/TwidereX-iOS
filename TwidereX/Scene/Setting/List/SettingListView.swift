@@ -68,7 +68,8 @@ struct SettingListEntry: Identifiable {
 struct SettingListView: View {
     
     @EnvironmentObject var context: AppContext
-    
+    @ObservedObject var viewModel: SettingListViewModel
+
     static let generalSection: [SettingListEntry] = {
         let types: [SettingListEntryType]  = [
             .appearance,
@@ -111,7 +112,7 @@ struct SettingListView: View {
             ) {
                 ForEach(SettingListView.generalSection) { entry in
                     Button(action: {
-                        context.viewStateStore.settingView.presentSettingListEntryPublisher.send(entry)
+                        viewModel.settingListEntryPublisher.send(entry)
                     }, label: {
                         TableViewEntryRow(icon: entry.image, title: entry.title)
                             .foregroundColor(Color(.label))
@@ -122,7 +123,7 @@ struct SettingListView: View {
             Section(header: Text(verbatim: L10n.Scene.Settings.SectionHeader.about)) {
                 ForEach(SettingListView.aboutSection) { entry in
                     Button(action: {
-                        context.viewStateStore.settingView.presentSettingListEntryPublisher.send(entry)
+                        viewModel.settingListEntryPublisher.send(entry)
                     }, label: {
                         TableViewEntryRow(icon: entry.image, title: entry.title)
                             .foregroundColor(Color(.label))
@@ -134,7 +135,7 @@ struct SettingListView: View {
             Section {
                 ForEach(SettingListView.developerSection) { entry in
                     Button(action: {
-                        context.viewStateStore.settingView.presentSettingListEntryPublisher.send(entry)
+                        viewModel.settingListEntryPublisher.send(entry)
                     }, label: {
                         TableViewEntryRow(icon: entry.image, title: entry.title)
                             .foregroundColor(Color(.label))
@@ -154,8 +155,8 @@ struct SettingListView: View {
 struct SettingListView_Previews: PreviewProvider {
     static var previews: some View {
         Group {
-            SettingListView()
-            SettingListView()
+            SettingListView(viewModel: SettingListViewModel())
+            SettingListView(viewModel: SettingListViewModel())
                 .preferredColorScheme(.dark)
         }
     }

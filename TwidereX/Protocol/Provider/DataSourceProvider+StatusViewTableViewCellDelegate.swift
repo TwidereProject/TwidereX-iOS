@@ -8,7 +8,7 @@
 
 import UIKit
 import AppShared
-import TwidereComposeUI
+import TwidereUI
 import MetaTextArea
 import Meta
 

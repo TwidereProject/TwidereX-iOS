@@ -64,8 +64,14 @@ extension MediaHostToMediaPreviewViewControllerAnimatedTransitioning {
         // set from image hidden. update hidden when paging. seealso: `MediaPreviewViewController`
         transitionItem.source.updateAppearance(position: .start, index: toVC.viewModel.currentPage)
         
+        switch transitionItem.source {
+        case .none:
+            break
+        default:
+            assert(transitionItem.initialFrame != nil)
+        }
+        
         // Set transition image view
-        assert(transitionItem.initialFrame != nil)
         let initialFrame = transitionItem.initialFrame ?? toViewEndFrame
         let transitionTargetFrame: CGRect = {
             let aspectRatio = transitionItem.aspectRatio ?? CGSize(width: initialFrame.width, height: initialFrame.height)

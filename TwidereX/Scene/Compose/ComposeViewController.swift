@@ -9,15 +9,18 @@
 import os.log
 import UIKit
 import Combine
+import AVKit
 import TwidereUI
-import TwidereComposeUI
 
-final class ComposeViewController: UIViewController, NeedsDependency {
+final class ComposeViewController: UIViewController, NeedsDependency, MediaPreviewableViewController {
     
     let logger = Logger(subsystem: "ComposeViewController", category: "ViewController")
     
     weak var context: AppContext! { willSet { precondition(!isViewLoaded) } }
     weak var coordinator: SceneCoordinator! { willSet { precondition(!isViewLoaded) } }
+    
+    // MARK: MediaPreviewTransitionHostViewController
+    let mediaPreviewTransitionController = MediaPreviewTransitionController()
     
     var disposeBag = Set<AnyCancellable>()
     var viewModel: ComposeViewModel!
@@ -64,7 +67,6 @@ extension ComposeViewController {
         ])
         composeContentViewController.didMove(toParent: self)
         
-        
         // bind compose bar button item
         composeContentViewModel.$isComposeBarButtonEnabled
             .receive(on: DispatchQueue.main)
@@ -73,6 +75,8 @@ extension ComposeViewController {
         
         // bind author
         viewModel.$author.assign(to: &composeContentViewModel.$author)
+        
+        composeContentViewController.delegate = self
     }
     
 }
@@ -90,13 +94,66 @@ extension ComposeViewController {
             let statusPublisher = try composeContentViewModel.statusPublisher()
             context.publisherService.enqueue(statusPublisher: statusPublisher)
         } catch {
-            assertionFailure()
-            // TODO: handle error
+            let alertController = UIAlertController.standardAlert(of: error)
+            present(alertController, animated: true)
             return
         }
         
         self.dismiss(animated: true, completion: nil)
     }
+}
+
+// MARK: - ComposeContentViewControllerDelegate
+extension ComposeViewController: ComposeContentViewControllerDelegate {
+
+    func composeContentViewController(
+        _ viewController: ComposeContentViewController,
+        previewAttachmentViewModel attachmentViewModel: AttachmentViewModel
+    ) {
+        logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public)")
+        
+        let _item: MediaPreviewViewModel.Item?
+        switch attachmentViewModel.output {
+        case .image(let data, _):
+            _item = UIImage(data: data).flatMap { .image(.init(image: $0)) }
+        case .video(let url, _):
+            let playerViewController = AVPlayerViewController()
+            playerViewController.player = AVPlayer(url: url)
+            playerViewController.player?.play()
+            playerViewController.delegate = context.playerService
+            present(playerViewController, animated: true, completion: nil)
+            return
+        case .none:
+            _item = nil
+        }
+        
+        guard let item = _item else {
+            assertionFailure()
+            return
+        }
+        
+        let mediaPreviewViewModel = MediaPreviewViewModel(
+            context: context,
+            item: item,
+            transitionItem: {
+                let item = MediaPreviewTransitionItem(
+                    source: .none,
+                    previewableViewController: self
+                )
+                
+                item.image = attachmentViewModel.thumbnail
+                item.aspectRatio = attachmentViewModel.thumbnail?.size
+                
+                return item
+            }()
+        )
+        coordinator.present(
+            scene: .mediaPreview(viewModel: mediaPreviewViewModel),
+            from: self,
+            transition: .custom(transitioningDelegate: mediaPreviewTransitionController)
+        )
+    }
+
 }
 
 // MARK: - UIAdaptivePresentationControllerDelegate

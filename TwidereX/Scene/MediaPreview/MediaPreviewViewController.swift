@@ -173,6 +173,8 @@ extension MediaPreviewViewController {
                 
                 // update mediaGridContainerView
                 switch self.viewModel.transitionItem.source {
+                case .none:
+                    break
                 case .attachment:
                     break
                 case .attachments(let mediaGridContainerView):
@@ -233,8 +235,8 @@ extension MediaPreviewViewController {
 extension MediaPreviewViewController {
     
     func toggleControlDisplay(isHidden: Bool) {
-        closeButtonBackground.isHidden = isHidden
-        mediaInfoDescriptionView.isHidden = isHidden
+        closeButtonBackground.alpha = isHidden ? 0 : 1
+        mediaInfoDescriptionView.alpha = isHidden ? 0 : 1
     }
     
 }

@@ -127,6 +127,8 @@
 "Common.Alerts.PhotoSaveFail.Message" = "Lütfen tekrar deneyin";
 "Common.Alerts.PhotoSaveFail.Title" = "Fotoğrafı kaydetme başarısız";
 "Common.Alerts.PhotoSaved.Title" = "Fotoğraf Kaydedildi";
+"Common.Alerts.PostFailInvalidPoll.Message" = "Poll has empty field. Please fulfill the field then try again";
+"Common.Alerts.PostFailInvalidPoll.Title" = "Failed to Publish";
 "Common.Alerts.RateLimitExceeded.Message" = "Twitter API kullanım sınırına ulaşıldı";
 "Common.Alerts.RateLimitExceeded.Title" = "Kullanım limiti aşıldı";
 "Common.Alerts.ReportAndBlockUserSuccess.Title" = "%@ spam için şikayet edildi ve engellendi";
@@ -156,9 +158,11 @@
 "Common.Controls.Actions.Add" = "Ekle";
 "Common.Controls.Actions.Browse" = "Gözat";
 "Common.Controls.Actions.Cancel" = "İptal";
+"Common.Controls.Actions.Clear" = "Temizle";
 "Common.Controls.Actions.Confirm" = "Onayla";
 "Common.Controls.Actions.Copy" = "Kopyala";
 "Common.Controls.Actions.Delete" = "Sil";
+"Common.Controls.Actions.Done" = "Bitti";
 "Common.Controls.Actions.Edit" = "Düzenle";
 "Common.Controls.Actions.Ok" = "Tamam";
 "Common.Controls.Actions.OpenInSafari" = "Safari'de Aç";
@@ -265,8 +269,17 @@
 "Scene.Compose.And" = ", ";
 "Scene.Compose.CwPlaceholder" = "Uyarınızı buraya yazın";
 "Scene.Compose.LastEnd" = " ve ";
+"Scene.Compose.Media.Caption.Add" = "Başlık Ekle";
+"Scene.Compose.Media.Caption.AddADescriptionForThisImage" = "Bu resim için bir açıklama ekleyin";
+"Scene.Compose.Media.Caption.Remove" = "Başlığı Kaldır";
+"Scene.Compose.Media.Caption.Update" = "Başlığı Güncelle";
+"Scene.Compose.Media.Preview" = "Önizleme";
+"Scene.Compose.Media.Remove" = "Kaldır";
 "Scene.Compose.OthersInThisConversation" = "Bu sohbetteki kişiler:";
 "Scene.Compose.Placeholder" = "Ne oluyor?";
+"Scene.Compose.ReplySettings.EveryoneCanReply" = "Everyone can peply";
+"Scene.Compose.ReplySettings.OnlyPeopleYouMentionCanReply" = "Yalnızca bahsettiğiniz kişiler yanıt verebilir";
+"Scene.Compose.ReplySettings.PeopleYouFollowCanReply" = "Takip ettiğiniz kişiler yanıt verebilir";
 "Scene.Compose.ReplyTo" = "... yanıtla";
 "Scene.Compose.ReplyingTo" = "Yanıt veriliyor";
 "Scene.Compose.SaveDraft.Action" = "Taslağı kaydet";
@@ -290,7 +303,7 @@
 "Scene.Compose.Vote.Expiration.6Hour" = "6 saat";
 "Scene.Compose.Vote.Expiration.7Day" = "7 gün";
 "Scene.Compose.Vote.Multiple" = "Çoklu seçim";
-"Scene.Compose.Vote.PlaceholderIndex" = "Choice %d";
+"Scene.Compose.Vote.PlaceholderIndex" = "Seçim %d";
 "Scene.ComposeHashtagSearch.SearchPlaceholder" = "Hashtag ara";
 "Scene.ComposeUserSearch.SearchPlaceholder" = "Kullanıcıları ara";
 "Scene.Drafts.Actions.DeleteDraft" = "Taslağı sil";

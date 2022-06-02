@@ -17,7 +17,7 @@ final class DeveloperViewModel: ObservableObject {
     
     var disposeBag = Set<AnyCancellable>()
     
-    // Input
+    // input
     let rateLimitStatusResources = CurrentValueSubject<JSON?, Never>(nil)
     @Published var resourceFilterOption: DeveloperViewModel.ResourceFilterOption = .used
 

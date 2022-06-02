@@ -105,7 +105,7 @@ extension DataSourceFacade {
                 playerViewController.player?.play()
                 playerViewController.delegate = provider.context.playerService
                 provider.present(playerViewController, animated: true, completion: nil)
-            }
+            }   // end Task
             return
         }
         

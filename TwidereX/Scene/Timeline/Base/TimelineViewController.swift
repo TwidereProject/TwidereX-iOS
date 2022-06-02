@@ -12,7 +12,6 @@ import Combine
 import Floaty
 import AppShared
 import TwidereCore
-import TwidereComposeUI
 
 class TimelineViewController: UIViewController, NeedsDependency, DrawerSidebarTransitionHostViewController, MediaPreviewableViewController {
     
@@ -258,7 +257,7 @@ extension TimelineViewController {
         
         let composeViewModel = ComposeViewModel(context: context)
         let composeContentViewModel = ComposeContentViewModel(
-            inputContext: .post,
+            kind: .post,
             configurationContext: ComposeContentViewModel.ConfigurationContext(
                 apiService: context.apiService,
                 authenticationService: context.authenticationService,
