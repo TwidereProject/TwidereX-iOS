@@ -162,7 +162,6 @@
 		DB657A7B25AD574D001339B6 /* UIBarButtonItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB657A7A25AD574D001339B6 /* UIBarButtonItem.swift */; };
 		DB66DB8D2823A7C80071F5F3 /* SecondaryTabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB66DB8C2823A7C80071F5F3 /* SecondaryTabBarController.swift */; };
 		DB66DB902823AC3C0071F5F3 /* TabBarItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB66DB8F2823AC3C0071F5F3 /* TabBarItem.swift */; };
-		DB66DB932823EE1F0071F5F3 /* SecondaryTabBarRootController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB66DB922823EE1F0071F5F3 /* SecondaryTabBarRootController.swift */; };
 		DB67610D254AD681006C6798 /* ActivityIndicatorCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB67610C254AD681006C6798 /* ActivityIndicatorCollectionViewCell.swift */; };
 		DB676161254BE580006C6798 /* MediaPreviewCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB676160254BE580006C6798 /* MediaPreviewCollectionViewCell.swift */; };
 		DB697DF3278FDDF7004EF2F7 /* TimelineViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB697DF2278FDDF7004EF2F7 /* TimelineViewModel.swift */; };
@@ -648,7 +647,6 @@
 		DB657A7A25AD574D001339B6 /* UIBarButtonItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIBarButtonItem.swift; sourceTree = "<group>"; };
 		DB66DB8C2823A7C80071F5F3 /* SecondaryTabBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecondaryTabBarController.swift; sourceTree = "<group>"; };
 		DB66DB8F2823AC3C0071F5F3 /* TabBarItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabBarItem.swift; sourceTree = "<group>"; };
-		DB66DB922823EE1F0071F5F3 /* SecondaryTabBarRootController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecondaryTabBarRootController.swift; sourceTree = "<group>"; };
 		DB6760F8254AD026006C6798 /* SearchMediaViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchMediaViewModel.swift; sourceTree = "<group>"; };
 		DB67610C254AD681006C6798 /* ActivityIndicatorCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityIndicatorCollectionViewCell.swift; sourceTree = "<group>"; };
 		DB676117254BBF57006C6798 /* SearchMediaViewModel+State.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SearchMediaViewModel+State.swift"; sourceTree = "<group>"; };
@@ -1429,7 +1427,6 @@
 			isa = PBXGroup;
 			children = (
 				DB66DB8C2823A7C80071F5F3 /* SecondaryTabBarController.swift */,
-				DB66DB922823EE1F0071F5F3 /* SecondaryTabBarRootController.swift */,
 			);
 			path = SecondaryTab;
 			sourceTree = "<group>";
@@ -3122,7 +3119,6 @@
 				DB8EBE7A276648FA005CF76A /* UserMediaTimelineViewController+DataSourceProvider.swift in Sources */,
 				DB51DC5027181DE500A0D8FB /* CoverFlowStackMediaCollectionCell+ViewModel.swift in Sources */,
 				DB148B03281A7AB300B596C7 /* ContentSplitViewController.swift in Sources */,
-				DB66DB932823EE1F0071F5F3 /* SecondaryTabBarRootController.swift in Sources */,
 				DBDA8E2424FCF8A3006750DC /* SceneDelegate.swift in Sources */,
 				DB01739E276B576B00AB844C /* AccountListViewController+DataSourceProvider.swift in Sources */,
 				DB46D12127DB2B68003B8BA1 /* ListUserViewModel+State.swift in Sources */,

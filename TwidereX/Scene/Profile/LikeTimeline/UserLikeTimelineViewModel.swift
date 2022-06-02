@@ -27,6 +27,8 @@ class UserLikeTimelineViewModel {
     let statusRecordFetchedResultController: StatusRecordFetchedResultController
     let listBatchFetchViewModel = ListBatchFetchViewModel()
     @Published var userIdentifier: UserIdentifier?
+    @Published var isRefreshControlEnabled = true
+    let didLoadLatest = PassthroughSubject<Void, Never>()
     
     // output
     var diffableDataSource: UITableViewDiffableDataSource<StatusSection, StatusItem>?

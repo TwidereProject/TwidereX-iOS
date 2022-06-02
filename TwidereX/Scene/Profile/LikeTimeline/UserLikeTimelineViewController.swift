@@ -25,6 +25,12 @@ final class UserLikeTimelineViewController: UIViewController, NeedsDependency, M
     
     let mediaPreviewTransitionController = MediaPreviewTransitionController()
     
+    private(set) lazy var refreshControl: UIRefreshControl = {
+        let refreshControl = UIRefreshControl()
+        refreshControl.addTarget(self, action: #selector(UserLikeTimelineViewController.refreshControlValueChanged(_:)), for: .valueChanged)
+        return refreshControl
+    }()
+    
     lazy var tableView: UITableView = {
         let tableView = UITableView()
         tableView.register(StatusTableViewCell.self, forCellReuseIdentifier: String(describing: StatusTableViewCell.self))
@@ -65,6 +71,22 @@ extension UserLikeTimelineViewController {
             statusViewTableViewCellDelegate: self
         )
         
+        tableView.refreshControl = refreshControl
+        viewModel.$isRefreshControlEnabled
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] isRefreshControlEnabled in
+                guard let self = self else { return }
+                self.tableView.refreshControl = isRefreshControlEnabled ? self.refreshControl : nil
+            }
+            .store(in: &disposeBag)
+        viewModel.didLoadLatest
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                guard let self = self else { return }
+                self.refreshControl.endRefreshing()
+            }
+            .store(in: &disposeBag)
+        
         // setup batch fetch
         viewModel.listBatchFetchViewModel.setup(scrollView: tableView)
         viewModel.listBatchFetchViewModel.shouldFetch
@@ -88,6 +110,7 @@ extension UserLikeTimelineViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
+        refreshControl.endRefreshing()
         tableView.deselectRow(with: transitionCoordinator, animated: animated)
     }
     
@@ -96,6 +119,14 @@ extension UserLikeTimelineViewController {
         
     }
     
+}
+
+extension UserLikeTimelineViewController {
+    @objc private func refreshControlValueChanged(_ sender: UIRefreshControl) {
+        logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public)")
+        
+        viewModel.stateMachine.enter(UserLikeTimelineViewModel.State.Reloading.self)
+    }
 }
 
 // MARK: - CellFrameCacheContainer
