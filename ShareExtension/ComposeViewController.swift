@@ -161,7 +161,9 @@ extension ComposeViewController {
                     .observe(\.fractionCompleted, options: [.initial, .new]) { [weak self] progress, _ in
                         guard let self = self else { return }
                         self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): publish progress \(progress.fractionCompleted)")
-                        self.viewModel.currentPublishProgress = progress.fractionCompleted
+                        Task { @MainActor in
+                            self.viewModel.currentPublishProgress = progress.fractionCompleted                            
+                        }
                     }
                 
                 // publish

@@ -1,5 +1,5 @@
 //
-//  APIService+HashtagTimeline.swift
+//  APIService+HashtagTimeline+Hashtag.swift
 //  TwidereX
 //
 //  Created by Cirno MainasuK on 2021-11-9.

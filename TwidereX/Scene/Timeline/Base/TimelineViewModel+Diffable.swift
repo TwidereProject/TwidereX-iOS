@@ -18,13 +18,13 @@ extension TimelineViewModel {
         snapshot: NSDiffableDataSourceSnapshot<StatusSection, StatusItem>,
         animatingDifferences: Bool
     ) async {
-        await self.diffableDataSource?.apply(snapshot, animatingDifferences: animatingDifferences)
+        await diffableDataSource?.apply(snapshot, animatingDifferences: animatingDifferences)
     }
     
     @MainActor func updateSnapshotUsingReloadData(
         snapshot: NSDiffableDataSourceSnapshot<StatusSection, StatusItem>
     ) async {
-        await self.diffableDataSource?.applySnapshotUsingReloadData(snapshot)
+        await diffableDataSource?.applySnapshotUsingReloadData(snapshot)
     }
     
 }
@@ -67,112 +67,4 @@ extension TimelineViewModel {
             targetIndexPath: targetIndexPath
         )
     }
-}
-
-extension TimelineViewModel {
-
-    // load lastest
-    func loadLatest() async {
-        isLoadingLatest = true
-        defer {
-            isLoadingLatest = false
-        }
-        guard let authenticationContext = context.authenticationService.activeAuthenticationContext else { return }
-        do {
-            switch authenticationContext {
-            case .twitter(let authenticationContext):
-                _ = try await context.apiService.twitterHomeTimeline(
-                    maxID: nil,
-                    authenticationContext: authenticationContext
-                )
-            case .mastodon(let authenticationContext):
-                switch kind {
-                case .home:
-                    _ =  try await context.apiService.mastodonHomeTimeline(
-                        maxID: nil,
-                        authenticationContext: authenticationContext
-                    )
-                case .federated(let local):
-                    let response = try await context.apiService.mastodonPublicTimeline(
-                        local: local,
-                        maxID: nil,
-                        authenticationContext: authenticationContext
-                    )
-                    let statusIDs = response.value.map { $0.id }
-                    statusRecordFetchedResultController.mastodonStatusFetchedResultController.prepend(statusIDs: statusIDs)
-                }
-            }
-        } catch {
-            self.didLoadLatest.send()
-            logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): \(error.localizedDescription)")
-        }
-    }
-    
-    // load timeline gap
-    func loadMore(item: StatusItem) async {
-        guard case let .feedLoader(record) = item else { return }
-        guard let authenticationContext = context.authenticationService.activeAuthenticationContext else { return }
-        guard let diffableDataSource = diffableDataSource else { return }
-        var snapshot = diffableDataSource.snapshot()
-
-        let managedObjectContext = context.managedObjectContext
-        let key = "LoadMore@\(record.objectID)"
-        
-        guard let feed = record.object(in: managedObjectContext) else { return }
-        // keep transient property live
-        managedObjectContext.cache(feed, key: key)
-        defer {
-            managedObjectContext.cache(nil, key: key)
-        }
-        do {
-            // update state
-            try await managedObjectContext.performChanges {
-                feed.update(isLoadingMore: true)
-            }
-        } catch {
-            assertionFailure(error.localizedDescription)
-        }
-        
-        // reconfigure item
-        snapshot.reconfigureItems([item])
-        await updateDataSource(snapshot: snapshot, animatingDifferences: true)
-        
-        // fetch data
-        do {
-            switch (feed.content, authenticationContext) {
-            case (.twitter(let status), .twitter(let authenticationContext)):
-                _ = try await context.apiService.twitterHomeTimeline(
-                    maxID: status.id,
-                    authenticationContext: authenticationContext
-                )
-            case (.mastodon(let status), .mastodon(let authenticationContext)):
-                switch kind {
-                case .home:
-                    _ = try await context.apiService.mastodonHomeTimeline(
-                        maxID: status.id,
-                        authenticationContext: authenticationContext
-                    )
-                case .federated:
-                    assertionFailure()
-                }
-            default:
-                assertionFailure()
-            }
-        } catch {
-            do {
-                // restore state
-                try await managedObjectContext.performChanges {
-                    feed.update(isLoadingMore: false)
-                }
-            } catch {
-                assertionFailure(error.localizedDescription)
-            }
-            logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): fetch more failure: \(error.localizedDescription)")
-        }
-        
-        // reconfigure item again
-        snapshot.reconfigureItems([item])
-        await updateDataSource(snapshot: snapshot, animatingDifferences: true)
-    }
-    
 }

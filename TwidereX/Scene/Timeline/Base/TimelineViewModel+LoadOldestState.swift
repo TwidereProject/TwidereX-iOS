@@ -62,7 +62,7 @@ extension TimelineViewModel.LoadOldestState {
                 let _anchorRecord: StatusRecord? = await managedObjectContext.perform {
                     switch viewModel.kind {
                     case .home:
-                        guard let feed = viewModel.fetchedResultsController.records.value.last else { return nil }
+                        guard let feed = viewModel.feedFetchedResultsController.records.value.last else { return nil }
                         guard let content = feed.object(in: managedObjectContext)?.content else { return nil }
                         switch content {
                         case .twitter(let status):
@@ -75,6 +75,8 @@ extension TimelineViewModel.LoadOldestState {
                     case .federated:
                         guard let status = viewModel.statusRecordFetchedResultController.records.last else { return nil }
                         return status
+                    default:
+                        fatalError()
                     }
                 }
             
@@ -152,6 +154,8 @@ extension TimelineViewModel.LoadOldestState {
                         return try await StatusFetchViewModel.homeTimeline(api: viewModel.context.apiService, input: input)
                     case .federated:
                         return try await StatusFetchViewModel.publicTimeline(api: viewModel.context.apiService, input: input)
+                    default:
+                        fatalError()
                     }
                 }()
                 
@@ -176,6 +180,8 @@ extension TimelineViewModel.LoadOldestState {
                     default:
                         assertionFailure()
                     }
+                default:
+                    fatalError()
                 }
             } catch {
                 logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): fetch failure: \(error.localizedDescription)")

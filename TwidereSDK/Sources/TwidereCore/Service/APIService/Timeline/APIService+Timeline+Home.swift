@@ -1,5 +1,5 @@
 //
-//  APIService+HomeTimeline.swift
+//  APIService+Timeline+Home.swift
 //  TwidereX
 //
 //  Created by Cirno MainasuK on 2020-9-3.
@@ -19,6 +19,97 @@ extension APIService {
     static let homeTimelineRequestWindowInSec: TimeInterval = 15 * 60
     
     public func twitterHomeTimeline(
+        query: Twitter.API.V2.User.Timeline.HomeQuery,
+        authenticationContext: TwitterAuthenticationContext
+    ) async throws -> Twitter.Response.Content<Twitter.API.V2.User.Timeline.HomeContent> {
+        let response = try await Twitter.API.V2.User.Timeline.home(
+            session: session,
+            userID: authenticationContext.userID,
+            query: query,
+            authorization: authenticationContext.authorization
+        )
+        
+        #if DEBUG
+        // log time cost
+        let start = CACurrentMediaTime()
+        defer {
+            // log rate limit
+            response.logRateLimit()
+
+            let end = CACurrentMediaTime()
+            os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: persist cost %.2fs", ((#file as NSString).lastPathComponent), #line, #function, end - start)
+        }
+        #endif
+        
+        let managedObjectContext = backgroundManagedObjectContext
+        try await managedObjectContext.performChanges {
+            let content = response.value
+            let dictionary = Twitter.Response.V2.DictContent(
+                tweets: [content.data, content.includes?.tweets].compactMap { $0 }.flatMap { $0 },
+                users: content.includes?.users ?? [],
+                media: content.includes?.media ?? [],
+                places: content.includes?.places ?? [],
+                polls: content.includes?.polls ?? []
+            )
+            let me = authenticationContext.authenticationRecord.object(in: managedObjectContext)?.user
+            
+            // persist [TwitterStatus]
+            let statusArray = Persistence.Twitter.persist(
+                in: managedObjectContext,
+                context: Persistence.Twitter.PersistContextV2(
+                    dictionary: dictionary,
+                    me: me,
+                    networkDate: response.networkDate
+                )
+            )
+            
+            // locate anchor status
+            let anchorStatus: TwitterStatus? = {
+                guard let untilID = query.untilID else { return nil }
+                let request = TwitterStatus.sortedFetchRequest
+                request.predicate = TwitterStatus.predicate(id: untilID)
+                request.fetchLimit = 1
+                return try? managedObjectContext.fetch(request).first
+            }()
+            
+            // update hasMore flag for anchor status
+            let acct = Feed.Acct.twitter(userID: authenticationContext.userID)
+            if let anchorStatus = anchorStatus,
+               let feed = anchorStatus.feed(kind: .home, acct: acct) {
+                feed.update(hasMore: false)
+            }
+        
+            // persist Feed relationship
+            let sortedStatuses = statusArray.sorted(by: { $0.createdAt < $1.createdAt })
+            let oldestStatus = sortedStatuses.first
+            for status in sortedStatuses {
+                let _feed = status.feed(kind: .home, acct: acct)
+                if let feed = _feed {
+                    feed.update(updatedAt: response.networkDate)
+                } else {
+                    let feedProperty = Feed.Property(
+                        acct: acct,
+                        kind: .home,
+                        hasMore: false,
+                        createdAt: status.createdAt,
+                        updatedAt: response.networkDate
+                    )
+                    let feed = Feed.insert(into: managedObjectContext, property: feedProperty)
+                    status.attach(feed: feed)
+                    
+                    // set hasMore on oldest status if is new feed
+                    if status === oldestStatus {
+                        feed.update(hasMore: true)
+                    }
+                }
+            }
+        }
+        
+        return response
+    }
+
+    
+    public func twitterHomeTimelineV1(
         maxID: Twitter.Entity.Tweet.ID? = nil,
         count: Int = 100,
         authenticationContext: TwitterAuthenticationContext

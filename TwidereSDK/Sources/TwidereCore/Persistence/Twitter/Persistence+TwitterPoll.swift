@@ -1,32 +1,29 @@
 //
-//  Persistence+MastodonPoll.swift
+//  Persistence+TwitterPoll.swift
 //  
 //
-//  Created by MainasuK on 2021-12-9.
+//  Created by MainasuK on 2022-6-8.
 //
 
 import CoreData
 import CoreDataStack
 import Foundation
-import MastodonSDK
+import TwitterSDK
 import os.log
 
-extension Persistence.MastodonPoll {
+extension Persistence.TwitterPoll {
 
     public struct PersistContext {
-        public let domain: String
-        public let entity: Mastodon.Entity.Poll
-        public let me: MastodonUser?
+        public let entity: Twitter.Entity.V2.Tweet.Poll
+        public let me: TwitterUser?
         public let networkDate: Date
         public let log = OSLog.api
         
         public init(
-            domain: String,
-            entity: Mastodon.Entity.Poll,
-            me: MastodonUser?,
+            entity: Twitter.Entity.V2.Tweet.Poll,
+            me: TwitterUser?,
             networkDate: Date
         ) {
-            self.domain = domain
             self.entity = entity
             self.me = me
             self.networkDate = networkDate
@@ -34,11 +31,11 @@ extension Persistence.MastodonPoll {
     }
 
     public struct PersistResult {
-        public let poll: MastodonPoll
+        public let poll: TwitterPoll
         public let isNewInsertion: Bool
         
         public init(
-            poll: MastodonPoll,
+            poll: TwitterPoll,
             isNewInsertion: Bool
         ) {
             self.poll = poll
@@ -46,7 +43,7 @@ extension Persistence.MastodonPoll {
         }
         
         #if DEBUG
-        public let logger = Logger(subsystem: "Persistence.MastodonPoll.PersistResult", category: "Persist")
+        public let logger = Logger(subsystem: "Persistence.TwitterPoll.PersistResult", category: "Persist")
         public func log() {
             let pollInsertionFlag = isNewInsertion ? "+" : "-"
             logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): [\(pollInsertionFlag)](\(poll.id)):")
@@ -79,14 +76,14 @@ extension Persistence.MastodonPoll {
     
 }
 
-extension Persistence.MastodonPoll {
+extension Persistence.TwitterPoll {
     
     public static func fetch(
         in managedObjectContext: NSManagedObjectContext,
         context: PersistContext
-    ) -> MastodonPoll? {
-        let request = MastodonPoll.sortedFetchRequest
-        request.predicate = MastodonPoll.predicate(domain: context.domain, id: context.entity.id)
+    ) -> TwitterPoll? {
+        let request = TwitterPoll.sortedFetchRequest
+        request.predicate = TwitterPoll.predicate(id: context.entity.id)
         request.fetchLimit = 1
         do {
             return try managedObjectContext.fetch(request).first
@@ -100,22 +97,20 @@ extension Persistence.MastodonPoll {
     public static func create(
         in managedObjectContext: NSManagedObjectContext,
         context: PersistContext
-    ) -> MastodonPoll {
-        let property = MastodonPoll.Property(
+    ) -> TwitterPoll {
+        let property = TwitterPoll.Property(
             entity: context.entity,
-            domain: context.domain,
             networkDate: context.networkDate
         )
-        let poll = MastodonPoll.insert(
+        let poll = TwitterPoll.insert(
             into: managedObjectContext,
             property: property
         )
         
-        let options: [MastodonPollOption] = context.entity.options.enumerated().map { i, entity in
-            let optionResult = Persistence.MastodonPollOption.persist(
+        let options: [TwitterPollOption] = context.entity.options.enumerated().map { i, entity in
+            let optionResult = Persistence.TwitterPollOption.persist(
                 in: managedObjectContext,
-                context: Persistence.MastodonPollOption.PersistContext(
-                    index: i,
+                context: Persistence.TwitterPollOption.PersistContext(
                     entity: entity,
                     me: context.me,
                     networkDate: context.networkDate
@@ -130,13 +125,12 @@ extension Persistence.MastodonPoll {
     }
     
     public static func merge(
-        poll: MastodonPoll,
+        poll: TwitterPoll,
         context: PersistContext
     ) {
         guard context.networkDate > poll.updatedAt else { return }
-        let property = MastodonPoll.Property(
+        let property = TwitterPoll.Property(
             entity: context.entity,
-            domain: context.domain,
             networkDate: context.networkDate
         )
         poll.update(property: property)
@@ -144,36 +138,22 @@ extension Persistence.MastodonPoll {
     }
     
     public static func update(
-        poll: MastodonPoll,
+        poll: TwitterPoll,
         context: PersistContext
     ) {
         let optionEntities = context.entity.options
-        let options = poll.options.sorted(by: { $0.index < $1.index })
+        let options = poll.options.sorted(by: { $0.position < $1.position })
         for (option, entity) in zip(options, optionEntities) {
-            Persistence.MastodonPollOption.merge(
+            Persistence.TwitterPollOption.merge(
                 option: option,
-                context: Persistence.MastodonPollOption.PersistContext(
-                    index: Int(option.index),
+                context: Persistence.TwitterPollOption.PersistContext(
                     entity: entity,
                     me: context.me,
                     networkDate: context.networkDate
                 )
             )
         }   // end for in
-        
-        if let me = context.me {
-            if let voted = context.entity.voted {
-                poll.update(isVote: voted, by: me)
-            }
-            
-            let ownVotes = context.entity.ownVotes ?? []
-            for option in options {
-                let index = Int(option.index)
-                let isVote = ownVotes.contains(index)
-                option.update(isVote: isVote, by: me)
-            }
-        }
-        
+
         poll.update(updatedAt: context.networkDate)
     }
     

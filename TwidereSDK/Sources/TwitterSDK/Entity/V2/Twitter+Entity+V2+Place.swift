@@ -8,7 +8,7 @@
 import Foundation
 
 extension Twitter.Entity.V2 {
-    public struct Place: Codable {
+    public struct Place: Codable, Identifiable {
         public typealias ID = String
         
         public let id: ID

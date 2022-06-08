@@ -16,23 +16,17 @@ extension Persistence.Twitter {
     
     public struct PersistContextV2 {
         public let dictionary: Twitter.Response.V2.DictContent
-        public let user: TwitterUser?
-        public let statusCache: Persistence.PersistCache<TwitterStatus>?
-        public let userCache: Persistence.PersistCache<TwitterUser>?
+        public let me: TwitterUser?
         public let networkDate: Date
         public let log = OSLog.api
         
         public init(
             dictionary: Twitter.Response.V2.DictContent,
-            user: TwitterUser?,
-            statusCache: Persistence.PersistCache<TwitterStatus>?,
-            userCache: Persistence.PersistCache<TwitterUser>?,
+            me: TwitterUser?,
             networkDate: Date
         ) {
             self.dictionary = dictionary
-            self.user = user
-            self.statusCache = statusCache
-            self.userCache = userCache
+            self.me = me
             self.networkDate = networkDate
         }
     }
@@ -40,7 +34,9 @@ extension Persistence.Twitter {
     public static func persist(
         in managedObjectContext: NSManagedObjectContext,
         context: PersistContextV2
-    ) {
+    ) -> [TwitterStatus] {
+        var statusArray: [TwitterStatus] = []
+
         for status in context.dictionary.tweetDict.values {
             guard let authorID = status.authorID,
                   let author = context.dictionary.userDict[authorID]
@@ -69,7 +65,7 @@ extension Persistence.Twitter {
                 }   // end switch
             }   // end for
             
-            _ = Persistence.TwitterStatus.createOrMerge(
+            let (twitterStatus, _) = Persistence.TwitterStatus.createOrMerge(
                 in: managedObjectContext,
                 context: Persistence.TwitterStatus.PersistContextV2(
                     entity: .init(status: status, author: author),
@@ -77,12 +73,15 @@ extension Persistence.Twitter {
                     quote: quote,
                     replyTo: replyTo,
                     dictionary: context.dictionary,
-                    user: context.user,
-                    statusCache: context.statusCache,
-                    userCache: context.userCache,
+                    me: context.me,
+                    statusCache: nil,
+                    userCache: nil,
                     networkDate: context.networkDate
                 )
             )   // end .createOrMerge(…)
+            statusArray.append(twitterStatus)
         }   // end for
+        
+        return statusArray
     }   // end func
 }

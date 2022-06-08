@@ -64,14 +64,14 @@ extension FederatedTimelineViewModel {
                     }()
 
                     switch self.kind {
-                    case .home:
-                        assertionFailure()
                     case .federated:
                         let currentState = await self.loadOldestStateMachine.currentState
                         let hasMore = !(currentState is LoadOldestState.NoMore)
                         if hasMore, !newSnapshot.itemIdentifiers.contains(.bottomLoader) {
                             newSnapshot.appendItems([.bottomLoader], toSection: .main)
                         }
+                    default:
+                        assertionFailure()
                     }
                     
                     let hasChanges = newSnapshot.itemIdentifiers != oldSnapshot.itemIdentifiers

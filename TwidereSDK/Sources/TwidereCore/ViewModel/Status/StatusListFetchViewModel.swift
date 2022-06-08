@@ -25,12 +25,6 @@ public enum StatusFetchViewModel {
 }
 
 extension StatusFetchViewModel {
-    public enum Search { }
-    public enum Hashtag { }
-    public enum List { }
-}
-
-extension StatusFetchViewModel {
     @available(*, deprecated, message: "")
     public struct Input {
         public let fetchContext: FetchContext
@@ -200,7 +194,7 @@ extension StatusFetchViewModel {
         switch input.fetchContext {
         case .twitter(let fetchContext):
             let authenticationContext = fetchContext.authenticationContext
-            let response = try await api.twitterHomeTimeline(
+            let response = try await api.twitterHomeTimelineV1(
                 maxID: fetchContext.maxID,
                 count: fetchContext.count ?? 100,
                 authenticationContext: authenticationContext

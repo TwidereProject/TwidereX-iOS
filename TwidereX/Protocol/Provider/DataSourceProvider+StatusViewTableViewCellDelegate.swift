@@ -365,7 +365,7 @@ extension StatusViewTableViewCellDelegate where Self: DataSourceProvider {
             case .saveMedia:
                 let mediaViewConfigurations = await statusView.viewModel.mediaViewConfigurations
                 let impactFeedbackGenerator = await UIImpactFeedbackGenerator(style: .light)
-                let notificationFeedbackGenerator = UINotificationFeedbackGenerator()
+                let notificationFeedbackGenerator = await UINotificationFeedbackGenerator()
 
                 do {
                     await impactFeedbackGenerator.impactOccurred()

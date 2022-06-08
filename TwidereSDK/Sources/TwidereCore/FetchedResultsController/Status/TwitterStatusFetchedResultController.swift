@@ -88,6 +88,14 @@ public final class TwitterStatusFetchedResultController: NSObject {
 }
 
 extension TwitterStatusFetchedResultController {
+    
+    public func prepend(statusIDs: [Twitter.Entity.V2.Tweet.ID]) {
+        var result = self.statusIDs.value
+        let statusIDs = statusIDs.filter { !result.contains($0) }
+        result = statusIDs + result
+        self.statusIDs.value = result
+    }
+    
     public func append(statusIDs: [Twitter.Entity.V2.Tweet.ID]) {
         var result = self.statusIDs.value
         for statusID in statusIDs where !result.contains(statusID) {
@@ -95,6 +103,7 @@ extension TwitterStatusFetchedResultController {
         }
         self.statusIDs.value = result
     }
+    
 }
 
 // MARK: - NSFetchedResultsControllerDelegate

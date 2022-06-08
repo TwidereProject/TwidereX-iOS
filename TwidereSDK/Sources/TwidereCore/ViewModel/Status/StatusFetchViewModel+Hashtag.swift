@@ -12,6 +12,10 @@ import CoreDataStack
 import TwitterSDK
 import MastodonSDK
 
+extension StatusFetchViewModel {
+    public enum Hashtag { }
+}
+
 extension StatusFetchViewModel.Hashtag {
 
     public enum Input {

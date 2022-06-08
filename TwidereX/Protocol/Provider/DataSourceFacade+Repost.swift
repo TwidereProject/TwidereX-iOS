@@ -17,7 +17,7 @@ extension DataSourceFacade {
         authenticationContext: AuthenticationContext
     ) async throws {
         let impactFeedbackGenerator = await UIImpactFeedbackGenerator(style: .light)
-        let notificationFeedbackGenerator = UINotificationFeedbackGenerator()
+        let notificationFeedbackGenerator = await UINotificationFeedbackGenerator()
         
         await impactFeedbackGenerator.impactOccurred()
         do {

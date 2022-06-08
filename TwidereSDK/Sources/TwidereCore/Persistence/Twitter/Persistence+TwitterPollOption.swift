@@ -1,32 +1,29 @@
 //
-//  Persistence+MastodonPollOption.swift
+//  Persistence+TwitterPollOption.swift
 //  
 //
-//  Created by MainasuK on 2021-12-9.
+//  Created by MainasuK on 2022-6-8.
 //
 
 import CoreData
 import CoreDataStack
 import Foundation
-import MastodonSDK
+import TwitterSDK
 import os.log
 
-extension Persistence.MastodonPollOption {
+extension Persistence.TwitterPollOption {
     
     public struct PersistContext {
-        public let index: Int
-        public let entity: Mastodon.Entity.Poll.Option
-        public let me: MastodonUser?
+        public let entity: Twitter.Entity.V2.Tweet.Poll.Option
+        public let me: TwitterUser?
         public let networkDate: Date
         public let log = OSLog.api
         
         public init(
-            index: Int,
-            entity: Mastodon.Entity.Poll.Option,
-            me: MastodonUser?,
+            entity: Twitter.Entity.V2.Tweet.Poll.Option,
+            me: TwitterUser?,
             networkDate: Date
         ) {
-            self.index = index
             self.entity = entity
             self.me = me
             self.networkDate = networkDate
@@ -34,11 +31,11 @@ extension Persistence.MastodonPollOption {
     }
     
     public struct PersistResult {
-        public let option: MastodonPollOption
+        public let option: TwitterPollOption
         public let isNewInsertion: Bool
         
         public init(
-            option: MastodonPollOption,
+            option: TwitterPollOption,
             isNewInsertion: Bool
         ) {
             self.option = option
@@ -58,31 +55,32 @@ extension Persistence.MastodonPollOption {
     
 }
 
-extension Persistence.MastodonPollOption {
+extension Persistence.TwitterPollOption {
     
     @discardableResult
     public static func create(
         in managedObjectContext: NSManagedObjectContext,
         context: PersistContext
-    ) -> MastodonPollOption {
-        let property = MastodonPollOption.Property(
-            index: context.index,
+    ) -> TwitterPollOption {
+        let property = TwitterPollOption.Property(
             entity: context.entity,
             networkDate: context.networkDate
         )
-        let option = MastodonPollOption.insert(into: managedObjectContext, property: property)
+        let option = TwitterPollOption.insert(
+            into: managedObjectContext,
+            property: property
+        )
         update(option: option, context: context)
         return option
     }
     
     public static func merge(
-        option: MastodonPollOption,
+        option: TwitterPollOption,
         context: PersistContext
     ) {
-        assert(option.index == context.index)
+        assert(option.position == context.entity.position)
         guard context.networkDate > option.updatedAt else { return }
-        let property = MastodonPollOption.Property(
-            index: context.index,
+        let property = TwitterPollOption.Property(
             entity: context.entity,
             networkDate: context.networkDate
         )
@@ -91,7 +89,7 @@ extension Persistence.MastodonPollOption {
     }
     
     private static func update(
-        option: MastodonPollOption,
+        option: TwitterPollOption,
         context: PersistContext
     ) {
         // Do nothing

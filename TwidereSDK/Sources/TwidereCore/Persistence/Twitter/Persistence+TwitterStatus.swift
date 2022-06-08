@@ -106,6 +106,7 @@ extension Persistence.TwitterStatus {
             let author = authorResult.user
             
             let relationship = TwitterStatus.Relationship(
+                poll: nil,
                 author: author,
                 repost: repost,
                 quote: quote

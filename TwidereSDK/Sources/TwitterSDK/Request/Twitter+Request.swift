@@ -37,6 +37,7 @@ extension Twitter.Request {
         .publicMetrics,
         .possiblySensitive,
         .referencedTweets,
+        .replySettings,
         .source,
         .text,
         .withheld,
@@ -66,6 +67,7 @@ extension Twitter.Request {
         .url,
         .width,
         .publicMetrics,
+        .altText
     ]
     static let placeFields: [Twitter.Request.PlaceFields] = [
         .containedWithin,
@@ -76,6 +78,13 @@ extension Twitter.Request {
         .id,
         .name,
         .placeType,
+    ]
+    static let pollFields: [Twitter.Request.PollFields] = [
+        .durationMinutes,
+        .endDatetime,
+        .id,
+        .options,
+        .votingStatus,
     ]
     static let listFields: [Twitter.Request.ListFields] = [
         .createdAt,

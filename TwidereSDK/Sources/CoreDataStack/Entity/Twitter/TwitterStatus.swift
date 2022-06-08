@@ -47,6 +47,10 @@ final public class TwitterStatus: NSManagedObject {
     @NSManaged public private(set) var createdAt: Date
     // sourcery: autoUpdatableObject, autoGenerateProperty
     @NSManaged public private(set) var updatedAt: Date
+    
+    // one-to-one relationship
+    // sourcery: autoGenerateRelationship
+    @NSManaged public private(set) var poll: TwitterPoll?
         
     // one-to-many relationship
     @NSManaged public private(set) var feeds: Set<Feed>
@@ -271,15 +275,18 @@ extension TwitterStatus: AutoGenerateRelationship {
     // Generated using Sourcery
     // DO NOT EDIT
     public struct Relationship {
+    	public let poll: TwitterPoll?
     	public let author: TwitterUser
     	public let repost: TwitterStatus?
     	public let quote: TwitterStatus?
 
     	public init(
+    		poll: TwitterPoll?,
     		author: TwitterUser,
     		repost: TwitterStatus?,
     		quote: TwitterStatus?
     	) {
+    		self.poll = poll
     		self.author = author
     		self.repost = repost
     		self.quote = quote
@@ -287,6 +294,7 @@ extension TwitterStatus: AutoGenerateRelationship {
     }
 
     public func configure(relationship: Relationship) {
+    	self.poll = relationship.poll
     	self.author = relationship.author
     	self.repost = relationship.repost
     	self.quote = relationship.quote
@@ -407,5 +415,10 @@ extension TwitterStatus: AutoUpdatableObject {
 extension TwitterStatus {
     public func attach(feed: Feed) {
         mutableSetValue(forKey: #keyPath(TwitterStatus.feeds)).add(feed)
+    }
+    
+    public func attach(poll: TwitterPoll) {
+        guard self.poll == nil else { return }
+        self.poll = poll
     }
 }

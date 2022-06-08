@@ -1,5 +1,5 @@
 //
-//  APIService+LikeTimeline.swift
+//  APIService+Timeline+Like.swift
 //  TwidereX
 //
 //  Created by Cirno MainasuK on 2021-10-18.

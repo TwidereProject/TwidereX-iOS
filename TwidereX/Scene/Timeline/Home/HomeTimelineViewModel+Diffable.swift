@@ -39,7 +39,7 @@ extension HomeTimelineViewModel {
         snapshot.appendSections([.main])
         diffableDataSource?.applySnapshotUsingReloadData(snapshot)
         
-        fetchedResultsController.records
+        feedFetchedResultsController.records
             .receive(on: DispatchQueue.main)
             .sink { [weak self] records in
                 guard let self = self else { return }
@@ -70,7 +70,7 @@ extension HomeTimelineViewModel {
                             let request = Feed.sortedFetchRequest
                             request.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [
                                 Feed.hasMorePredicate(),
-                                self.fetchedResultsController.predicate,
+                                self.feedFetchedResultsController.predicate,
                             ])
                             do {
                                 return try managedObjectContext.fetch(request)

@@ -12,6 +12,10 @@ import CoreDataStack
 import TwitterSDK
 import MastodonSDK
 
+extension StatusFetchViewModel {
+    public enum List { }
+}
+
 extension StatusFetchViewModel.List {
 
     public enum Input {
