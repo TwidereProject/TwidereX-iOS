@@ -12,6 +12,7 @@ import CoreDataStack
 import TwidereCore
 
 extension TimelineViewModel {
+    @MainActor
     class LoadOldestState: GKState {
         weak var viewModel: TimelineViewModel?
         

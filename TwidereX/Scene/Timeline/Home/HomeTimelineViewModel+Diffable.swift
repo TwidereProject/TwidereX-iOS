@@ -15,6 +15,7 @@ import AppShared
 
 extension HomeTimelineViewModel {
     
+    @MainActor
     func setupDiffableDataSource(
         tableView: UITableView,
         statusViewTableViewCellDelegate: StatusViewTableViewCellDelegate,
@@ -102,7 +103,7 @@ extension HomeTimelineViewModel {
                         self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): snapshot has changes")
                     }
                     
-                    guard let difference = await self.calculateReloadSnapshotDifference(
+                    guard let difference = self.calculateReloadSnapshotDifference(
                         tableView: tableView,
                         oldSnapshot: oldSnapshot,
                         newSnapshot: newSnapshot
@@ -113,11 +114,11 @@ extension HomeTimelineViewModel {
                         return
                     }
                     
-                    await self.updateSnapshotUsingReloadData(snapshot: newSnapshot)
-                    await tableView.scrollToRow(at: difference.targetIndexPath, at: .top, animated: false)
-                    var contentOffset = await tableView.contentOffset
-                    contentOffset.y = await tableView.contentOffset.y - difference.sourceDistanceToTableViewTopEdge
-                    await tableView.setContentOffset(contentOffset, animated: false)
+                    self.reloadSnapshotWithDifference(
+                        tableView: tableView,
+                        snapshot: newSnapshot,
+                        difference: difference
+                    )
                     self.didLoadLatest.send()
                     self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): applied new snapshot")
                 }   // end Task

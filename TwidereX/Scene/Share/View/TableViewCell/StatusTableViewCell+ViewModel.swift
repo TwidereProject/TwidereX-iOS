@@ -63,13 +63,13 @@ extension StatusTableViewCell {
             configureSeparator(style: .inset)
         case .twitterStatus(let status):
             statusView.configure(
-                twitterStatus: status,
+                status: status,
                 configurationContext: configurationContext
             )
             configureSeparator(style: .inset)
         case .mastodonStatus(let status):
             statusView.configure(
-                mastodonStatus: status,
+                status: status,
                 notification: nil, 
                 configurationContext: configurationContext
             )

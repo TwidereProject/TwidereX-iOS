@@ -16,6 +16,7 @@ import AppShared
 
 extension FederatedTimelineViewModel {
     
+    @MainActor
     func setupDiffableDataSource(
         tableView: UITableView,
         statusViewTableViewCellDelegate: StatusViewTableViewCellDelegate,

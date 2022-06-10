@@ -85,7 +85,7 @@ extension APIService {
             )
             let me = authenticationContext.authenticationRecord.object(in: managedObjectContext)?.user
             
-            Persistence.Twitter.persist(
+            _ = Persistence.Twitter.persist(
                 in: managedObjectContext,
                 context: Persistence.Twitter.PersistContextV2(
                     dictionary: dictionary,

@@ -170,6 +170,10 @@ extension HomeTimelineViewController {
                     guard let self = self else { return }
                     self.moveToFirst(action, category: .gif)
                 }),
+                UIAction(title: "First Poll Status", image: nil, attributes: [], handler: { [weak self] action in
+                    guard let self = self else { return }
+                    self.moveToFirst(action, category: .poll)
+                }),
                 UIAction(title: "First Location Status", image: nil, attributes: [], handler: { [weak self] action in
                     guard let self = self else { return }
                     self.moveToFirst(action, category: .location)
@@ -260,6 +264,7 @@ extension HomeTimelineViewController {
         case quote
         case gif
         case video
+        case poll
         case location
         case followsYouAuthor
         case blockingAuthor
@@ -278,6 +283,8 @@ extension HomeTimelineViewController {
                         return status.attachments.contains(where: { attachment in attachment.kind == .animatedGIF })
                     case .video:
                         return status.attachments.contains(where: { attachment in attachment.kind == .video })
+                    case .poll:
+                        return status.poll != nil
                     case .location:
                         return status.location != nil
                     case .followsYouAuthor:

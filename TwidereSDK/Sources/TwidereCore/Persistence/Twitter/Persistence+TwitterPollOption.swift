@@ -78,7 +78,7 @@ extension Persistence.TwitterPollOption {
         option: TwitterPollOption,
         context: PersistContext
     ) {
-        assert(option.position == context.entity.position)
+        assert(option.position == Int64(context.entity.position))
         guard context.networkDate > option.updatedAt else { return }
         let property = TwitterPollOption.Property(
             entity: context.entity,

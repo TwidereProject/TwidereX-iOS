@@ -33,6 +33,7 @@ class TimelineViewModel {
     @Published var lastAutomaticFetchTimestamp: Date?
     
     // output
+    @MainActor
     var diffableDataSource: UITableViewDiffableDataSource<StatusSection, StatusItem>?
     let didLoadLatest = PassthroughSubject<Void, Never>()
     
@@ -117,10 +118,11 @@ extension TimelineViewModel {
     }
     
     // load middle gap
+    
     func loadMore(item: StatusItem) async {
         guard case let .feedLoader(record) = item else { return }
         guard let authenticationContext = context.authenticationService.activeAuthenticationContext else { return }
-        guard let diffableDataSource = diffableDataSource else { return }
+        guard let diffableDataSource = await diffableDataSource else { return }
         var snapshot = diffableDataSource.snapshot()
 
         let managedObjectContext = context.managedObjectContext

@@ -67,4 +67,16 @@ extension TimelineViewModel {
             targetIndexPath: targetIndexPath
         )
     }
+    
+    @MainActor func reloadSnapshotWithDifference(
+        tableView: UITableView,
+        snapshot: NSDiffableDataSourceSnapshot<StatusSection, StatusItem>,
+        difference: Difference<StatusItem>
+    ) {
+        diffableDataSource?.applySnapshotUsingReloadData(snapshot)
+        tableView.scrollToRow(at: difference.targetIndexPath, at: .top, animated: false)
+        var contentOffset = tableView.contentOffset
+        contentOffset.y = tableView.contentOffset.y - difference.sourceDistanceToTableViewTopEdge
+        tableView.setContentOffset(contentOffset, animated: false)
+    }
 }

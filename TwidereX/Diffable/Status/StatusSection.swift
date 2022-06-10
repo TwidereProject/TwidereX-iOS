@@ -14,6 +14,7 @@ import CoreDataStack
 import MetaTextKit
 import TwidereUI
 import AppShared
+import TwitterSDK
 
 enum StatusSection: Hashable {
     case main
@@ -219,42 +220,35 @@ extension StatusSection {
                     )
                     
                     // trigger update if needs
-                    let needsUpdatePoll: Bool = {
-                        // check first option in poll to trigger update poll only once
-                        guard option.index == 0 else { return false }
-                        
-                        let poll = option.poll
-                        guard !poll.expired else {
-                            logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): poll expired. Skip update poll \(poll.id)")
-                            return false
-                        }
-                        
-                        let now = Date()
-                        let timeIntervalSinceUpdate = now.timeIntervalSince(poll.updatedAt)
-                        #if DEBUG
-                        let autoRefreshTimeInterval: TimeInterval = 3 // speedup testing
-                        #else
-                        let autoRefreshTimeInterval: TimeInterval = 30
-                        #endif
-                        
-                        guard timeIntervalSinceUpdate > autoRefreshTimeInterval else {
-                            logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): skip update poll \(poll.id) due to recent updated")
-                            return false
-                        }
-                        logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): update poll \(poll.id)…")
-                        return true
-                    }()
-                    
-                    if needsUpdatePoll,
-                       case let .mastodon(authenticationContext) = context.authenticationService.activeAuthenticationContext
-                    {
-                        let status: ManagedObjectRecord<MastodonStatus> = .init(objectID: option.poll.status.objectID)
-                        Task { [weak context] in
-                            guard let context = context else { return }
-                            _ = try await context.apiService.viewMastodonStatusPoll(
-                                status: status,
-                                authenticationContext: authenticationContext
-                            )
+                    // check is the first option in poll to trigger update poll only once
+                    if option.index == 0, option.poll.needsUpdate {
+                        let authenticationContext = context.authenticationService.activeAuthenticationContext
+                        switch (option, authenticationContext) {
+                        case (.twitter(let object), .twitter(let authenticationContext)):
+                            let status: ManagedObjectRecord<TwitterStatus> = .init(objectID: object.poll.status.objectID)
+                            Task { [weak context] in
+                                guard let context = context else { return }
+                                let statusIDs: [Twitter.Entity.V2.Tweet.ID] = await context.managedObjectContext.perform {
+                                    guard let _status = status.object(in: context.managedObjectContext) else { return [] }
+                                    let status = _status.repost ?? _status
+                                    return [status.id]
+                                }
+                                _ = try await context.apiService.twitterStatus(
+                                    statusIDs: statusIDs,
+                                    authenticationContext: authenticationContext
+                                )
+                            }   // end Task
+                        case (.mastodon(let object), .mastodon(let authenticationContext)):
+                            let status: ManagedObjectRecord<MastodonStatus> = .init(objectID: object.poll.status.objectID)
+                            Task { [weak context] in
+                                guard let context = context else { return }
+                                _ = try await context.apiService.viewMastodonStatusPoll(
+                                    status: status,
+                                    authenticationContext: authenticationContext
+                                )
+                            }   // end Task
+                        default:
+                            assertionFailure()
                         }
                     }
                 }   // end managedObjectContext.performAndWait
@@ -283,19 +277,6 @@ extension StatusSection {
             delegate: configuration.statusViewTableViewCellDelegate
         )
     }
-    
-//    static func configure(
-//        tableView: UITableView,
-//        cell: StatusThreadRootTableViewCell,
-//        viewModel: StatusThreadRootTableViewCell.ViewModel,
-//        configuration: Configuration
-//    ) {
-//        cell.configure(
-//            tableView: tableView,
-//            viewModel: viewModel,
-//            delegate: configuration.statusViewTableViewCellDelegate
-//        )
-//    }
     
     static func configure(
         cell: TimelineMiddleLoaderTableViewCell,
