@@ -159,7 +159,7 @@ extension CompositeListViewController: UITableViewDelegate {
         Task {
             switch item {
             case .list(let record, _):
-                let listStatusViewModel = ListStatusViewModel(context: context, list: record)
+                let listStatusViewModel = ListStatusTimelineViewModel(context: context, list: record)
                 coordinator.present(
                     scene: .listStatus(viewModel: listStatusViewModel),
                     from: self,

@@ -15,6 +15,7 @@ import AppShared
 
 extension HomeTimelineViewModel {
     
+    @MainActor
     func setupDiffableDataSource(
         tableView: UITableView,
         statusViewTableViewCellDelegate: StatusViewTableViewCellDelegate,
@@ -39,13 +40,13 @@ extension HomeTimelineViewModel {
         snapshot.appendSections([.main])
         diffableDataSource?.applySnapshotUsingReloadData(snapshot)
         
-        fetchedResultsController.records
+        feedFetchedResultsController.records
             .receive(on: DispatchQueue.main)
             .sink { [weak self] records in
                 guard let self = self else { return }
                 guard let diffableDataSource = self.diffableDataSource else { return }
                 self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): incoming \(records.count) objects")
-                Task {
+                Task { @MainActor in 
                     let start = CACurrentMediaTime()
                     defer {
                         let end = CACurrentMediaTime()
@@ -70,7 +71,7 @@ extension HomeTimelineViewModel {
                             let request = Feed.sortedFetchRequest
                             request.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [
                                 Feed.hasMorePredicate(),
-                                self.fetchedResultsController.predicate,
+                                self.feedFetchedResultsController.predicate,
                             ])
                             do {
                                 return try managedObjectContext.fetch(request)
@@ -102,7 +103,7 @@ extension HomeTimelineViewModel {
                         self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): snapshot has changes")
                     }
                     
-                    guard let difference = await self.calculateReloadSnapshotDifference(
+                    guard let difference = self.calculateReloadSnapshotDifference(
                         tableView: tableView,
                         oldSnapshot: oldSnapshot,
                         newSnapshot: newSnapshot
@@ -113,11 +114,11 @@ extension HomeTimelineViewModel {
                         return
                     }
                     
-                    await self.updateSnapshotUsingReloadData(snapshot: newSnapshot)
-                    await tableView.scrollToRow(at: difference.targetIndexPath, at: .top, animated: false)
-                    var contentOffset = await tableView.contentOffset
-                    contentOffset.y = await tableView.contentOffset.y - difference.sourceDistanceToTableViewTopEdge
-                    await tableView.setContentOffset(contentOffset, animated: false)
+                    self.reloadSnapshotWithDifference(
+                        tableView: tableView,
+                        snapshot: newSnapshot,
+                        difference: difference
+                    )
                     self.didLoadLatest.send()
                     self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): applied new snapshot")
                 }   // end Task

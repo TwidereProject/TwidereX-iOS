@@ -1,0 +1,299 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="20086" systemVersion="21F79" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+    <entity name="AuthenticationIndex" representedClassName="CoreDataStack.AuthenticationIndex" syncable="YES">
+        <attribute name="activeAt" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="createdAt" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="identifier" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="platformRaw" attributeType="String"/>
+        <relationship name="mastodonAuthentication" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="MastodonAuthentication" inverseName="authenticationIndex" inverseEntity="MastodonAuthentication"/>
+        <relationship name="twitterAuthentication" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="TwitterAuthentication" inverseName="authenticationIndex" inverseEntity="TwitterAuthentication"/>
+    </entity>
+    <entity name="Feed" representedClassName="CoreDataStack.Feed" syncable="YES">
+        <attribute name="acctRaw" attributeType="String"/>
+        <attribute name="createdAt" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="hasMore" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="isLoadingMore" transient="YES" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="kindRaw" attributeType="String"/>
+        <attribute name="updatedAt" attributeType="Date" usesScalarValueType="NO"/>
+        <relationship name="mastodonNotification" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="MastodonNotification" inverseName="feeds" inverseEntity="MastodonNotification"/>
+        <relationship name="mastodonStatus" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="MastodonStatus" inverseName="feeds" inverseEntity="MastodonStatus"/>
+        <relationship name="twitterStatus" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="TwitterStatus" inverseName="feeds" inverseEntity="TwitterStatus"/>
+        <fetchIndex name="byKindAndAcct">
+            <fetchIndexElement property="kindRaw" type="Binary" order="ascending"/>
+            <fetchIndexElement property="acctRaw" type="Binary" order="ascending"/>
+            <fetchIndexElement property="createdAt" type="Binary" order="descending"/>
+        </fetchIndex>
+    </entity>
+    <entity name="MastodonAuthentication" representedClassName="CoreDataStack.MastodonAuthentication" syncable="YES">
+        <attribute name="appAccessToken" attributeType="String"/>
+        <attribute name="clientID" attributeType="String"/>
+        <attribute name="clientSecret" attributeType="String"/>
+        <attribute name="createdAt" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="domain" attributeType="String"/>
+        <attribute name="identifier" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="updatedAt" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="userAccessToken" attributeType="String"/>
+        <attribute name="userID" attributeType="String"/>
+        <relationship name="authenticationIndex" maxCount="1" deletionRule="Nullify" destinationEntity="AuthenticationIndex" inverseName="mastodonAuthentication" inverseEntity="AuthenticationIndex"/>
+        <relationship name="user" maxCount="1" deletionRule="Nullify" destinationEntity="MastodonUser" inverseName="mastodonAuthentication" inverseEntity="MastodonUser"/>
+    </entity>
+    <entity name="MastodonList" representedClassName="CoreDataStack.MastodonList" syncable="YES">
+        <attribute name="domain" attributeType="String"/>
+        <attribute name="id" attributeType="String"/>
+        <attribute name="repliesPolicy" optional="YES" attributeType="Binary"/>
+        <attribute name="title" attributeType="String"/>
+        <attribute name="updatedAt" attributeType="Date" usesScalarValueType="NO"/>
+        <relationship name="owner" maxCount="1" deletionRule="Nullify" destinationEntity="MastodonUser" inverseName="ownedLists" inverseEntity="MastodonUser"/>
+    </entity>
+    <entity name="MastodonNotification" representedClassName="CoreDataStack.MastodonNotification" syncable="YES">
+        <attribute name="createdAt" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="domain" attributeType="String"/>
+        <attribute name="id" attributeType="String"/>
+        <attribute name="typeRaw" attributeType="String"/>
+        <attribute name="updatedAt" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="userID" attributeType="String"/>
+        <relationship name="account" maxCount="1" deletionRule="Nullify" destinationEntity="MastodonUser" inverseName="notifications" inverseEntity="MastodonUser"/>
+        <relationship name="feeds" toMany="YES" deletionRule="Nullify" destinationEntity="Feed" inverseName="mastodonNotification" inverseEntity="Feed"/>
+        <relationship name="status" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="MastodonStatus" inverseName="notifications" inverseEntity="MastodonStatus"/>
+    </entity>
+    <entity name="MastodonPoll" representedClassName="CoreDataStack.MastodonPoll" syncable="YES">
+        <attribute name="createdAt" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="domain" attributeType="String"/>
+        <attribute name="expired" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="expiresAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="id" attributeType="String"/>
+        <attribute name="isVoting" transient="YES" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="multiple" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="updatedAt" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="votersCount" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="votesCount" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <relationship name="options" toMany="YES" deletionRule="Cascade" destinationEntity="MastodonPollOption" inverseName="poll" inverseEntity="MastodonPollOption"/>
+        <relationship name="status" maxCount="1" deletionRule="Nullify" destinationEntity="MastodonStatus" inverseName="poll" inverseEntity="MastodonStatus"/>
+        <relationship name="voteBy" toMany="YES" deletionRule="Nullify" destinationEntity="MastodonUser" inverseName="votePolls" inverseEntity="MastodonUser"/>
+    </entity>
+    <entity name="MastodonPollOption" representedClassName="CoreDataStack.MastodonPollOption" syncable="YES">
+        <attribute name="createdAt" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="index" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="isSelected" transient="YES" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="title" attributeType="String"/>
+        <attribute name="updatedAt" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="votesCount" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <relationship name="poll" maxCount="1" deletionRule="Nullify" destinationEntity="MastodonPoll" inverseName="options" inverseEntity="MastodonPoll"/>
+        <relationship name="voteBy" toMany="YES" deletionRule="Nullify" destinationEntity="MastodonUser" inverseName="votePollOptions" inverseEntity="MastodonUser"/>
+    </entity>
+    <entity name="MastodonSavedSearch" representedClassName="CoreDataStack.MastodonSavedSearch" syncable="YES">
+        <attribute name="createdAt" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="query" attributeType="String"/>
+        <relationship name="user" maxCount="1" deletionRule="Nullify" destinationEntity="MastodonUser" inverseName="savedSearches" inverseEntity="MastodonUser"/>
+    </entity>
+    <entity name="MastodonStatus" representedClassName="CoreDataStack.MastodonStatus" syncable="YES">
+        <attribute name="attachments" optional="YES" attributeType="Binary"/>
+        <attribute name="content" attributeType="String"/>
+        <attribute name="createdAt" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="domain" attributeType="String"/>
+        <attribute name="emojis" optional="YES" attributeType="Binary"/>
+        <attribute name="id" attributeType="String"/>
+        <attribute name="isContentSensitiveToggled" transient="YES" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="isMediaSensitive" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="isMediaSensitiveToggled" transient="YES" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="language" optional="YES" attributeType="String"/>
+        <attribute name="likeCount" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="mentions" optional="YES" attributeType="Binary"/>
+        <attribute name="replyCount" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="replyToStatusID" optional="YES" attributeType="String"/>
+        <attribute name="replyToUserID" optional="YES" attributeType="String"/>
+        <attribute name="repostCount" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="source" optional="YES" attributeType="String"/>
+        <attribute name="spoilerText" optional="YES" attributeType="String"/>
+        <attribute name="text" optional="YES" attributeType="String"/>
+        <attribute name="updatedAt" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="uri" attributeType="String"/>
+        <attribute name="url" optional="YES" attributeType="String"/>
+        <attribute name="visibilityRaw" attributeType="String"/>
+        <relationship name="author" maxCount="1" deletionRule="Nullify" destinationEntity="MastodonUser" inverseName="statuses" inverseEntity="MastodonUser"/>
+        <relationship name="feeds" toMany="YES" deletionRule="Nullify" destinationEntity="Feed" inverseName="mastodonStatus" inverseEntity="Feed"/>
+        <relationship name="likeBy" toMany="YES" deletionRule="Nullify" destinationEntity="MastodonUser" inverseName="like" inverseEntity="MastodonUser"/>
+        <relationship name="notifications" toMany="YES" deletionRule="Nullify" destinationEntity="MastodonNotification" inverseName="status" inverseEntity="MastodonNotification"/>
+        <relationship name="poll" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="MastodonPoll" inverseName="status" inverseEntity="MastodonPoll"/>
+        <relationship name="repost" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="MastodonStatus" inverseName="repostFrom" inverseEntity="MastodonStatus"/>
+        <relationship name="repostBy" toMany="YES" deletionRule="Nullify" destinationEntity="MastodonUser" inverseName="reposts" inverseEntity="MastodonUser"/>
+        <relationship name="repostFrom" toMany="YES" deletionRule="Nullify" destinationEntity="MastodonStatus" inverseName="repost" inverseEntity="MastodonStatus"/>
+    </entity>
+    <entity name="MastodonUser" representedClassName="CoreDataStack.MastodonUser" syncable="YES">
+        <attribute name="acct" attributeType="String"/>
+        <attribute name="avatar" optional="YES" attributeType="String"/>
+        <attribute name="avatarStatic" optional="YES" attributeType="String"/>
+        <attribute name="bot" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="createdAt" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="displayName" optional="YES" attributeType="String"/>
+        <attribute name="domain" attributeType="String"/>
+        <attribute name="emojis" optional="YES" attributeType="Binary"/>
+        <attribute name="fields" optional="YES" attributeType="Binary"/>
+        <attribute name="followersCount" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="followingCount" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="header" optional="YES" attributeType="String"/>
+        <attribute name="headerStatic" optional="YES" attributeType="String"/>
+        <attribute name="id" attributeType="String"/>
+        <attribute name="locked" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="note" optional="YES" attributeType="String"/>
+        <attribute name="statusesCount" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="suspended" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="updatedAt" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="url" optional="YES" attributeType="String"/>
+        <attribute name="username" attributeType="String"/>
+        <relationship name="blocking" toMany="YES" deletionRule="Nullify" destinationEntity="MastodonUser" inverseName="blockingBy" inverseEntity="MastodonUser"/>
+        <relationship name="blockingBy" toMany="YES" deletionRule="Nullify" destinationEntity="MastodonUser" inverseName="blocking" inverseEntity="MastodonUser"/>
+        <relationship name="following" toMany="YES" deletionRule="Nullify" destinationEntity="MastodonUser" inverseName="followingBy" inverseEntity="MastodonUser"/>
+        <relationship name="followingBy" toMany="YES" deletionRule="Nullify" destinationEntity="MastodonUser" inverseName="following" inverseEntity="MastodonUser"/>
+        <relationship name="followRequestSent" toMany="YES" deletionRule="Nullify" destinationEntity="MastodonUser" inverseName="followRequestSentFrom" inverseEntity="MastodonUser"/>
+        <relationship name="followRequestSentFrom" toMany="YES" deletionRule="Nullify" destinationEntity="MastodonUser" inverseName="followRequestSent" inverseEntity="MastodonUser"/>
+        <relationship name="like" toMany="YES" deletionRule="Nullify" destinationEntity="MastodonStatus" inverseName="likeBy" inverseEntity="MastodonStatus"/>
+        <relationship name="mastodonAuthentication" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="MastodonAuthentication" inverseName="user" inverseEntity="MastodonAuthentication"/>
+        <relationship name="muting" toMany="YES" deletionRule="Nullify" destinationEntity="MastodonUser" inverseName="mutingBy" inverseEntity="MastodonUser"/>
+        <relationship name="mutingBy" toMany="YES" deletionRule="Nullify" destinationEntity="MastodonUser" inverseName="muting" inverseEntity="MastodonUser"/>
+        <relationship name="notifications" toMany="YES" deletionRule="Nullify" destinationEntity="MastodonNotification" inverseName="account" inverseEntity="MastodonNotification"/>
+        <relationship name="ownedLists" toMany="YES" deletionRule="Nullify" destinationEntity="MastodonList" inverseName="owner" inverseEntity="MastodonList"/>
+        <relationship name="reposts" toMany="YES" deletionRule="Nullify" destinationEntity="MastodonStatus" inverseName="repostBy" inverseEntity="MastodonStatus"/>
+        <relationship name="savedSearches" toMany="YES" deletionRule="Nullify" destinationEntity="MastodonSavedSearch" inverseName="user" inverseEntity="MastodonSavedSearch"/>
+        <relationship name="statuses" toMany="YES" deletionRule="Nullify" destinationEntity="MastodonStatus" inverseName="author" inverseEntity="MastodonStatus"/>
+        <relationship name="votePollOptions" toMany="YES" deletionRule="Nullify" destinationEntity="MastodonPollOption" inverseName="voteBy" inverseEntity="MastodonPollOption"/>
+        <relationship name="votePolls" toMany="YES" deletionRule="Nullify" destinationEntity="MastodonPoll" inverseName="voteBy" inverseEntity="MastodonPoll"/>
+    </entity>
+    <entity name="TwitterAuthentication" representedClassName="CoreDataStack.TwitterAuthentication" syncable="YES">
+        <attribute name="accessToken" attributeType="String" defaultValueString=""/>
+        <attribute name="accessTokenSecret" attributeType="String" defaultValueString=""/>
+        <attribute name="bearerAccessToken" optional="YES" attributeType="String" defaultValueString=""/>
+        <attribute name="bearerRefreshToken" attributeType="String" defaultValueString=""/>
+        <attribute name="clientID" attributeType="String" defaultValueString=""/>
+        <attribute name="consumerKey" attributeType="String" defaultValueString=""/>
+        <attribute name="consumerSecret" attributeType="String" defaultValueString=""/>
+        <attribute name="createdAt" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="identifier" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="nonce" attributeType="String" defaultValueString=""/>
+        <attribute name="screenName" attributeType="String" defaultValueString=""/>
+        <attribute name="updatedAt" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="userID" attributeType="String" defaultValueString=""/>
+        <relationship name="authenticationIndex" maxCount="1" deletionRule="Nullify" destinationEntity="AuthenticationIndex" inverseName="twitterAuthentication" inverseEntity="AuthenticationIndex"/>
+        <relationship name="user" maxCount="1" deletionRule="Nullify" destinationEntity="TwitterUser" inverseName="twitterAuthentication" inverseEntity="TwitterUser"/>
+    </entity>
+    <entity name="TwitterList" representedClassName="CoreDataStack.TwitterList" syncable="YES">
+        <attribute name="createdAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="followerCount" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="id" attributeType="String"/>
+        <attribute name="memberCount" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="name" attributeType="String"/>
+        <attribute name="private" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="theDescription" optional="YES" attributeType="String"/>
+        <attribute name="updatedAt" attributeType="Date" usesScalarValueType="NO"/>
+        <relationship name="owner" maxCount="1" deletionRule="Nullify" destinationEntity="TwitterUser" inverseName="ownedLists" inverseEntity="TwitterUser"/>
+    </entity>
+    <entity name="TwitterPoll" representedClassName="CoreDataStack.TwitterPoll" syncable="YES">
+        <attribute name="createdAt" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="durationMinutes" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="endDatetime" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="id" attributeType="String"/>
+        <attribute name="updatedAt" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="votingStatusRaw" optional="YES" attributeType="String"/>
+        <relationship name="options" toMany="YES" deletionRule="Nullify" destinationEntity="TwitterPollOption" inverseName="poll" inverseEntity="TwitterPollOption"/>
+        <relationship name="status" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="TwitterStatus" inverseName="poll" inverseEntity="TwitterStatus"/>
+    </entity>
+    <entity name="TwitterPollOption" representedClassName="CoreDataStack.TwitterPollOption" syncable="YES">
+        <attribute name="createdAt" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="label" attributeType="String"/>
+        <attribute name="position" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="updatedAt" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="votes" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <relationship name="poll" maxCount="1" deletionRule="Nullify" destinationEntity="TwitterPoll" inverseName="options" inverseEntity="TwitterPoll"/>
+    </entity>
+    <entity name="TwitterSavedSearch" representedClassName="CoreDataStack.TwitterSavedSearch" syncable="YES">
+        <attribute name="createdAt" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="id" attributeType="String"/>
+        <attribute name="name" attributeType="String"/>
+        <attribute name="query" attributeType="String"/>
+        <relationship name="user" maxCount="1" deletionRule="Nullify" destinationEntity="TwitterUser" inverseName="savedSearches" inverseEntity="TwitterUser"/>
+    </entity>
+    <entity name="TwitterStatus" representedClassName="CoreDataStack.TwitterStatus" syncable="YES">
+        <attribute name="attachments" optional="YES" attributeType="Binary"/>
+        <attribute name="conversationID" optional="YES" attributeType="String"/>
+        <attribute name="createdAt" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="emojis" optional="YES" attributeType="Binary"/>
+        <attribute name="entities" optional="YES" attributeType="Binary"/>
+        <attribute name="id" attributeType="String"/>
+        <attribute name="language" optional="YES" attributeType="String"/>
+        <attribute name="likeCount" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="location" optional="YES" attributeType="Binary"/>
+        <attribute name="quoteCount" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="replyCount" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="replyToStatusID" optional="YES" attributeType="String"/>
+        <attribute name="replyToUserID" optional="YES" attributeType="String"/>
+        <attribute name="repostCount" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="source" optional="YES" attributeType="String"/>
+        <attribute name="text" attributeType="String" defaultValueString=""/>
+        <attribute name="updatedAt" attributeType="Date" usesScalarValueType="NO"/>
+        <relationship name="author" maxCount="1" deletionRule="Nullify" destinationEntity="TwitterUser" inverseName="statuses" inverseEntity="TwitterUser"/>
+        <relationship name="feeds" toMany="YES" deletionRule="Cascade" destinationEntity="Feed" inverseName="twitterStatus" inverseEntity="Feed"/>
+        <relationship name="likeBy" toMany="YES" deletionRule="Nullify" destinationEntity="TwitterUser" inverseName="like" inverseEntity="TwitterUser"/>
+        <relationship name="poll" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="TwitterPoll" inverseName="status" inverseEntity="TwitterPoll"/>
+        <relationship name="quote" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="TwitterStatus" inverseName="quoteFrom" inverseEntity="TwitterStatus"/>
+        <relationship name="quoteFrom" toMany="YES" deletionRule="Nullify" destinationEntity="TwitterStatus" inverseName="quote" inverseEntity="TwitterStatus"/>
+        <relationship name="replyFrom" toMany="YES" deletionRule="Nullify" destinationEntity="TwitterStatus" inverseName="replyTo" inverseEntity="TwitterStatus"/>
+        <relationship name="replyTo" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="TwitterStatus" inverseName="replyFrom" inverseEntity="TwitterStatus"/>
+        <relationship name="repost" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="TwitterStatus" inverseName="repostFrom" inverseEntity="TwitterStatus"/>
+        <relationship name="repostBy" toMany="YES" deletionRule="Nullify" destinationEntity="TwitterUser" inverseName="reposts" inverseEntity="TwitterUser"/>
+        <relationship name="repostFrom" toMany="YES" deletionRule="Nullify" destinationEntity="TwitterStatus" inverseName="repost" inverseEntity="TwitterStatus"/>
+    </entity>
+    <entity name="TwitterUser" representedClassName="CoreDataStack.TwitterUser" syncable="YES">
+        <attribute name="bio" optional="YES" attributeType="String"/>
+        <attribute name="bioEntities" optional="YES" attributeType="Binary"/>
+        <attribute name="createdAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="followersCount" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="followingCount" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="id" attributeType="String"/>
+        <attribute name="listedCount" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="location" optional="YES" attributeType="String"/>
+        <attribute name="name" attributeType="String"/>
+        <attribute name="pinnedTweetID" optional="YES" attributeType="String"/>
+        <attribute name="profileBannerURL" optional="YES" attributeType="String"/>
+        <attribute name="profileImageURL" optional="YES" attributeType="String"/>
+        <attribute name="protected" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="statusesCount" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="updatedAt" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="url" optional="YES" attributeType="String"/>
+        <attribute name="urlEntities" optional="YES" attributeType="Binary"/>
+        <attribute name="username" attributeType="String"/>
+        <attribute name="verified" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
+        <relationship name="blocking" toMany="YES" deletionRule="Nullify" destinationEntity="TwitterUser" inverseName="blockingBy" inverseEntity="TwitterUser"/>
+        <relationship name="blockingBy" toMany="YES" deletionRule="Nullify" destinationEntity="TwitterUser" inverseName="blocking" inverseEntity="TwitterUser"/>
+        <relationship name="following" toMany="YES" deletionRule="Nullify" destinationEntity="TwitterUser" inverseName="followingBy" inverseEntity="TwitterUser"/>
+        <relationship name="followingBy" toMany="YES" deletionRule="Nullify" destinationEntity="TwitterUser" inverseName="following" inverseEntity="TwitterUser" elementID="followingFrom"/>
+        <relationship name="followRequestSent" toMany="YES" deletionRule="Nullify" destinationEntity="TwitterUser" inverseName="followRequestSentFrom" inverseEntity="TwitterUser"/>
+        <relationship name="followRequestSentFrom" toMany="YES" deletionRule="Nullify" destinationEntity="TwitterUser" inverseName="followRequestSent" inverseEntity="TwitterUser"/>
+        <relationship name="like" toMany="YES" deletionRule="Nullify" destinationEntity="TwitterStatus" inverseName="likeBy" inverseEntity="TwitterStatus"/>
+        <relationship name="muting" toMany="YES" deletionRule="Nullify" destinationEntity="TwitterUser" inverseName="mutingBy" inverseEntity="TwitterUser"/>
+        <relationship name="mutingBy" toMany="YES" deletionRule="Nullify" destinationEntity="TwitterUser" inverseName="muting" inverseEntity="TwitterUser"/>
+        <relationship name="ownedLists" toMany="YES" deletionRule="Nullify" destinationEntity="TwitterList" inverseName="owner" inverseEntity="TwitterList"/>
+        <relationship name="reposts" toMany="YES" deletionRule="Nullify" destinationEntity="TwitterStatus" inverseName="repostBy" inverseEntity="TwitterStatus"/>
+        <relationship name="savedSearches" toMany="YES" deletionRule="Cascade" destinationEntity="TwitterSavedSearch" inverseName="user" inverseEntity="TwitterSavedSearch"/>
+        <relationship name="statuses" toMany="YES" deletionRule="Nullify" destinationEntity="TwitterStatus" inverseName="author" inverseEntity="TwitterStatus"/>
+        <relationship name="twitterAuthentication" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="TwitterAuthentication" inverseName="user" inverseEntity="TwitterAuthentication"/>
+    </entity>
+    <elements>
+        <element name="AuthenticationIndex" positionX="-63" positionY="-153" width="128" height="119"/>
+        <element name="Feed" positionX="-54" positionY="-144" width="128" height="164"/>
+        <element name="MastodonAuthentication" positionX="-63" positionY="-153" width="128" height="194"/>
+        <element name="MastodonList" positionX="90" positionY="-18" width="128" height="119"/>
+        <element name="MastodonNotification" positionX="90" positionY="-18" width="128" height="164"/>
+        <element name="MastodonPoll" positionX="90" positionY="-18" width="128" height="224"/>
+        <element name="MastodonPollOption" positionX="99" positionY="-9" width="128" height="149"/>
+        <element name="MastodonSavedSearch" positionX="90" positionY="-18" width="128" height="74"/>
+        <element name="MastodonStatus" positionX="-63" positionY="-171" width="128" height="494"/>
+        <element name="MastodonUser" positionX="-63" positionY="-153" width="128" height="599"/>
+        <element name="TwitterAuthentication" positionX="-109.453125" positionY="275.71875" width="128" height="254"/>
+        <element name="TwitterList" positionX="90" positionY="-18" width="128" height="164"/>
+        <element name="TwitterSavedSearch" positionX="90" positionY="-18" width="128" height="104"/>
+        <element name="TwitterStatus" positionX="-63" positionY="-153" width="128" height="449"/>
+        <element name="TwitterUser" positionX="281.5234375" positionY="201.703125" width="128" height="524"/>
+        <element name="TwitterPollOption" positionX="90" positionY="-18" width="128" height="119"/>
+        <element name="TwitterPoll" positionX="99" positionY="-9" width="128" height="149"/>
+    </elements>
+</model>

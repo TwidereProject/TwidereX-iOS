@@ -80,19 +80,16 @@ extension APIService {
                 tweets: [content.data, content.includes?.tweets].compactMap { $0 }.flatMap { $0 },
                 users: content.includes?.users ?? [],
                 media: content.includes?.media ?? [],
-                places: content.includes?.places ?? []
+                places: content.includes?.places ?? [],
+                polls: content.includes?.polls ?? []
             )
-            let user = authenticationContext.authenticationRecord.object(in: managedObjectContext)?.user
-            let statusCache = Persistence.PersistCache<TwitterStatus>()
-            let userCache = Persistence.PersistCache<TwitterUser>()
+            let me = authenticationContext.authenticationRecord.object(in: managedObjectContext)?.user
             
-            Persistence.Twitter.persist(
+            _ = Persistence.Twitter.persist(
                 in: managedObjectContext,
                 context: Persistence.Twitter.PersistContextV2(
                     dictionary: dictionary,
-                    user: user,
-                    statusCache: nil, // statusCache,
-                    userCache: nil, // userCache,
+                    me: me,
                     networkDate: response.networkDate
                 )
             )

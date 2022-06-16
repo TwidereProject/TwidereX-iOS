@@ -207,10 +207,10 @@ extension DrawerSidebarViewController: UICollectionViewDelegate {
             guard let item = diffableDataSource.itemIdentifier(for: indexPath) else { return }
             switch item {
             case .local:
-                let federatedTimelineViewModel = FederatedTimelineViewModel(context: context, local: true)
+                let federatedTimelineViewModel = FederatedTimelineViewModel(context: context, isLocal: true)
                 coordinator.present(scene: .federatedTimeline(viewModel: federatedTimelineViewModel), from: presentingViewController, transition: .show)
             case .federated:
-                let federatedTimelineViewModel = FederatedTimelineViewModel(context: context, local: false)
+                let federatedTimelineViewModel = FederatedTimelineViewModel(context: context, isLocal: false)
                 coordinator.present(scene: .federatedTimeline(viewModel: federatedTimelineViewModel), from: presentingViewController, transition: .show)
             case .likes:
                 let meLikeTimelineViewModel = MeLikeTimelineViewModel(context: context)

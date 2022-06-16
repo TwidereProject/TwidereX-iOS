@@ -91,7 +91,7 @@ extension ListViewController: UITableViewDelegate {
         guard let diffableDataSource = viewModel.diffableDataSource else { return }
         guard case let .list(record, _) = diffableDataSource.itemIdentifier(for: indexPath) else { return }
         
-        let listStatusViewModel = ListStatusViewModel(context: context, list: record)
+        let listStatusViewModel = ListStatusTimelineViewModel(context: context, list: record)
         coordinator.present(
             scene: .listStatus(viewModel: listStatusViewModel),
             from: self,

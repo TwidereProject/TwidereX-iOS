@@ -20,6 +20,7 @@ extension Twitter.Request {
         case nonPublicMetrics = "non_public_metrics"
         case organicMetrics = "organic_metrics"
         case promotedMetrics = "promoted_metrics"
+        case altText = "alt_text"
     }
 }
 

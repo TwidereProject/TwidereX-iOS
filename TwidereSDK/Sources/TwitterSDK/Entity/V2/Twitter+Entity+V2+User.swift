@@ -8,7 +8,7 @@
 import Foundation
 
 extension Twitter.Entity.V2 {
-    public struct User: Codable {
+    public struct User: Codable, Identifiable {
         public typealias ID = String
         
         // Fundamental

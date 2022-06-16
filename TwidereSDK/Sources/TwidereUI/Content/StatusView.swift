@@ -257,6 +257,7 @@ extension StatusView {
         viewModel.objects.removeAll()
         viewModel.authorAvatarImageURL = nil
         authorAvatarButton.avatarImageView.cancelTask()
+        quoteStatusView?.prepareForReuse()
         mediaGridContainerView.prepareForReuse()
         if var snapshot = pollTableViewDiffableDataSource?.snapshot() {
             snapshot.deleteAllItems()

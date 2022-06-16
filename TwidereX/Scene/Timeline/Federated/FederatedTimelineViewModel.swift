@@ -10,16 +10,18 @@ import os.log
 import UIKit
 import TwidereCore
 
-final class FederatedTimelineViewModel: TimelineViewModel {
+final class FederatedTimelineViewModel: ListTimelineViewModel {
     
     init(
         context: AppContext,
-        local: Bool
+        isLocal: Bool
     ) {
         super.init(
             context: context,
-            kind: .federated(local: local)
+            kind: .public(isLocal: isLocal)
         )
+        
+        enableAutoFetchLatest = true
         
         context.authenticationService.$activeAuthenticationContext
             .sink { [weak self] authenticationContext in

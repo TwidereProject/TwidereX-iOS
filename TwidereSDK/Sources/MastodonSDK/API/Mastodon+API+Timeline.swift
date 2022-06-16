@@ -144,7 +144,7 @@ extension Mastodon.API.Timeline {
     /// # Last Update
     ///   2022/3/8
     /// # Reference
-    ///   [Document](https://https://docs.joinmastodon.org/methods/timelines/)
+    ///   [Document](https://docs.joinmastodon.org/methods/timelines/)
     /// - Parameters:
     ///   - session: `URLSession`
     ///   - domain: Mastodon instance domain. e.g. "example.com"

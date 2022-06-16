@@ -11,5 +11,5 @@ import MastodonSDK
 import CoreDataStack
 
 public enum PollItem: Hashable {
-    case option(record: ManagedObjectRecord<MastodonPollOption>)
+    case option(record: PollOptionRecord)
 }

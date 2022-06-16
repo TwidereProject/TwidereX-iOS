@@ -25,7 +25,7 @@ extension StatusMediaGallerySection {
         collectionView: UICollectionView,
         context: AppContext,
         configuration: Configuration
-    ) -> UICollectionViewDiffableDataSource<StatusMediaGallerySection, StatusItem> {
+    ) -> UICollectionViewDiffableDataSource<StatusSection, StatusItem> {
         
         let statusRecordCell = UICollectionView.CellRegistration<StatusMediaGalleryCollectionCell, StatusRecord> { cell, indexPath, record in
             context.managedObjectContext.performAndWait {
@@ -72,4 +72,5 @@ extension StatusMediaGallerySection {
         cell.configure(status: status)
         cell.delegate = configuration.statusMediaGalleryCollectionCellDelegate
     }
+    
 }

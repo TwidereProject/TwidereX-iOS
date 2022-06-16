@@ -32,6 +32,7 @@ public final class StatusRecordFetchedResultController {
         self.mastodonStatusFetchedResultController = MastodonStatusFetchedResultController(managedObjectContext: managedObjectContext)
         // end init
         
+        // bind domain
         $userIdentifier
             .sink { [weak self] identifier in
                 guard let self = self else { return }
