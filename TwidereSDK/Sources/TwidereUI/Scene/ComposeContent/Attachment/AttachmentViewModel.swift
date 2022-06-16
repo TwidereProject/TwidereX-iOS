@@ -254,17 +254,25 @@ extension AttachmentViewModel {
 // MARK: - TypeIdentifiedItemProvider
 extension AttachmentViewModel: TypeIdentifiedItemProvider {
     public static var typeIdentifier: String {
-        return Bundle(for: AttachmentViewModel.self).bundleIdentifier! + String(describing: type(of: AttachmentViewModel.self))
+        // must in UTI format
+        // https://developer.apple.com/library/archive/qa/qa1796/_index.html
+        return "com.twidere.AttachmentViewModel"
     }
 }
 
 // MARK: - NSItemProviderWriting
 extension AttachmentViewModel: NSItemProviderWriting {
     
+    
+    /// Attachment uniform type idendifiers
+    ///
+    /// The latest one for in-app drag and drop.
+    /// And use generic `image` and `movie` type to
+    /// allows transformable media in different formats
     public static var writableTypeIdentifiersForItemProvider: [String] {
         return [
-            UTType.png.identifier,
-            UTType.mpeg4Movie.identifier,
+            UTType.image.identifier,
+            UTType.movie.identifier,
             AttachmentViewModel.typeIdentifier,
         ]
     }
