@@ -151,6 +151,7 @@ public final class ComposeContentViewModel: NSObject, ObservableObject {
     
     public init(
         kind: Kind,
+        settings: Settings = Settings(),
         configurationContext: ConfigurationContext
     ) {
         self.kind = kind
@@ -331,36 +332,40 @@ public final class ComposeContentViewModel: NSObject, ObservableObject {
         .assign(to: &$mentionPickButtonTitle)
         
         // bind visibility
-        $author
-            .compactMap { $0 }
-            .first()
-            .sink { [weak self] author in
-                guard let self = self else { return }
-                
-                switch author {
-                case .twitter:
-                    break
-                case .mastodon(let author):
-                    self.mastodonVisibility = {
-                        var defaultVisibility: Mastodon.Entity.Status.Visibility  = author.locked ? .private : .public
-                        if case let .reply(object) = kind,
-                           case let .mastodon(status) = object {
-                            switch status.visibility {
-                            case .direct:
-                                defaultVisibility = .direct
-                            case .unlisted:
-                                defaultVisibility = author.locked ? .private : .unlisted
-                            case .private:
-                                defaultVisibility = .private
-                            case .public, ._other:
-                                break
+        if let mastodonVisibility = settings.mastodonVisibility {
+            self.mastodonVisibility = mastodonVisibility
+        } else {
+            $author
+                .compactMap { $0 }
+                .first()
+                .sink { [weak self] author in
+                    guard let self = self else { return }
+                    
+                    switch author {
+                    case .twitter:
+                        break
+                    case .mastodon(let author):
+                        self.mastodonVisibility = {
+                            var defaultVisibility: Mastodon.Entity.Status.Visibility  = author.locked ? .private : .public
+                            if case let .reply(object) = kind,
+                               case let .mastodon(status) = object {
+                                switch status.visibility {
+                                case .direct:
+                                    defaultVisibility = .direct
+                                case .unlisted:
+                                    defaultVisibility = author.locked ? .private : .unlisted
+                                case .private:
+                                    defaultVisibility = .private
+                                case .public, ._other:
+                                    break
+                                }
                             }
-                        }
-                        return defaultVisibility
-                    }()
+                            return defaultVisibility
+                        }()
+                    }
                 }
-            }
-            .store(in: &disposeBag)
+                .store(in: &disposeBag)
+        }
     
         // bind attachments
         $attachmentViewModels
@@ -545,6 +550,19 @@ extension ComposeContentViewModel {
         case hashtag(hashtag: String)
         case mention(user: UserObject)
         case reply(status: StatusObject)
+    }
+    
+    public struct Settings {
+        public var twitterReplySettings: Twitter.Entity.V2.Tweet.ReplySettings?
+        public var mastodonVisibility: Mastodon.Entity.Status.Visibility?
+        
+        public init(
+            twitterReplySettings: Twitter.Entity.V2.Tweet.ReplySettings? = nil,
+            mastodonVisibility: Mastodon.Entity.Status.Visibility? = nil
+        ) {
+            self.twitterReplySettings = twitterReplySettings
+            self.mastodonVisibility = mastodonVisibility
+        }
     }
     
     public struct ConfigurationContext {

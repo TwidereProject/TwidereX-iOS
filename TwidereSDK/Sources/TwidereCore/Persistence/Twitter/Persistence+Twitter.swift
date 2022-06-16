@@ -65,7 +65,7 @@ extension Persistence.Twitter {
                 }   // end switch
             }   // end for
             
-            let (twitterStatus, _) = Persistence.TwitterStatus.createOrMerge(
+            let result = Persistence.TwitterStatus.createOrMerge(
                 in: managedObjectContext,
                 context: Persistence.TwitterStatus.PersistContextV2(
                     entity: .init(status: status, author: author),
@@ -79,7 +79,12 @@ extension Persistence.Twitter {
                     networkDate: context.networkDate
                 )
             )   // end .createOrMerge(…)
-            statusArray.append(twitterStatus)
+            
+            #if DEBUG
+            result.log()
+            #endif
+
+            statusArray.append(result.status)
         }   // end for
         
         return statusArray

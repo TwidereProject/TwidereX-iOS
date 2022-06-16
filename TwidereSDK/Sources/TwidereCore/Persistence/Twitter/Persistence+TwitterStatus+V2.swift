@@ -78,14 +78,14 @@ extension Persistence.TwitterStatus {
     public static func createOrMerge(
         in managedObjectContext: NSManagedObjectContext,
         context: PersistContextV2
-    ) -> (TwitterStatus, Bool) {
+    ) -> PersistResult {
                 
         // build tree
         // TODO: in reply to
         // let replyTo = context.replyTo.flatMap { entity in … }
         
         let repost = context.repost.flatMap { entity -> TwitterStatus in
-            let (status, _) = createOrMerge(
+            let result = createOrMerge(
                 in: managedObjectContext,
                 context: PersistContextV2(
                     entity: entity,
@@ -99,13 +99,13 @@ extension Persistence.TwitterStatus {
                     networkDate: context.networkDate
                 )
             )
-            return status
+            return result.status
         }
         
         let quote: TwitterStatus? = {
             guard repost == nil else { return nil }
             return context.quote.flatMap { entity -> TwitterStatus in
-                let (status, _) = createOrMerge(
+                let result = createOrMerge(
                     in: managedObjectContext,
                     context: PersistContextV2(
                         entity: entity,
@@ -119,13 +119,13 @@ extension Persistence.TwitterStatus {
                         networkDate: context.networkDate
                     )
                 )
-                return status
+                return result.status
             }
         }()
         
-        if let oldStatus = fetch(in: managedObjectContext, context: context) {
-            merge(twitterStatus: oldStatus, context: context)
-            return (oldStatus, false)
+        if let old = fetch(in: managedObjectContext, context: context) {
+            merge(twitterStatus: old, context: context)
+            return .init(status: old, isNewInsertion: false, isNewInsertionAuthor: false)
         } else {
             let poll: TwitterPoll? = {
                 guard let entity = context.dictionary.poll(for: context.entity.status) else { return nil }
@@ -156,7 +156,7 @@ extension Persistence.TwitterStatus {
                 quote: quote
             )
             let status = create(in: managedObjectContext, context: context, relationship: relationship)
-            return (status, true)
+            return .init(status: status, isNewInsertion: true, isNewInsertionAuthor: authorResult.isNewInsertion)
         }
     }
     

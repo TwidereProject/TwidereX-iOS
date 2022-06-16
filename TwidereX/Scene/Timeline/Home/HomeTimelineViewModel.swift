@@ -9,10 +9,12 @@ import os.log
 import UIKit
 import CoreDataStack
 
-final class HomeTimelineViewModel: TimelineViewModel {
+final class HomeTimelineViewModel: ListTimelineViewModel {
     
     init(context: AppContext) {
         super.init(context: context, kind: .home)
+        
+        enableAutoFetchLatest = true
         
         context.authenticationService.$activeAuthenticationContext
             .sink { [weak self] authenticationContext in

@@ -16,7 +16,80 @@ import MastodonSDK
 import func QuartzCore.CACurrentMediaTime
 
 extension APIService {
+    
     public func twitterLikeTimeline(
+        userID: Twitter.Entity.V2.User.ID,
+        query: Twitter.API.V2.User.Timeline.LikesQuery,
+        authenticationContext: TwitterAuthenticationContext
+    ) async throws -> Twitter.Response.Content<Twitter.API.V2.User.Timeline.LikesContent> {
+        let response = try await Twitter.API.V2.User.Timeline.likes(
+            session: session,
+            userID: userID,
+            query: query,
+            authorization: authenticationContext.authorization
+        )
+        
+        let statusIDs: [Twitter.Entity.Tweet.ID] = {
+            var ids: [Twitter.Entity.Tweet.ID] = []
+            if let statuses = response.value.data {
+                ids.append(contentsOf: statuses.map { $0.id })
+            }
+            if let statuses = response.value.includes?.tweets {
+                ids.append(contentsOf: statuses.map { $0.id })
+            }
+            return Array(Set(ids))
+        }()
+        let _lookupResponse = try? await twitterBatchLookup(
+            statusIDs: statusIDs,
+            authenticationContext: authenticationContext
+        )
+        
+        #if DEBUG
+        // log time cost
+        let start = CACurrentMediaTime()
+        defer {
+            // log rate limit
+            response.logRateLimit()
+            
+            let end = CACurrentMediaTime()
+            os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: persist cost %.2fs", ((#file as NSString).lastPathComponent), #line, #function, end - start)
+        }
+        #endif
+        
+        
+        let managedObjectContext = backgroundManagedObjectContext
+        try await managedObjectContext.performChanges {
+            let content = response.value
+            let dictionary = Twitter.Response.V2.DictContent(
+                tweets: [content.data, content.includes?.tweets].compactMap { $0 }.flatMap { $0 },
+                users: content.includes?.users ?? [],
+                media: content.includes?.media ?? [],
+                places: content.includes?.places ?? [],
+                polls: content.includes?.polls ?? []
+            )
+            let me = authenticationContext.authenticationRecord.object(in: managedObjectContext)?.user
+            
+            // persist [TwitterStatus]
+            let statusArray = Persistence.Twitter.persist(
+                in: managedObjectContext,
+                context: Persistence.Twitter.PersistContextV2(
+                    dictionary: dictionary,
+                    me: me,
+                    networkDate: response.networkDate
+                )
+            )
+            
+            // amend the v2 missing properties
+            if let lookupResponse = _lookupResponse, let me = me {
+                lookupResponse.update(statuses: statusArray, me: me)
+            }
+            
+        }   // end try await managedObjectContext.performChanges
+        
+        return response
+    }
+    
+    public func twitterLikeTimelineV1(
         query: Twitter.API.Statuses.Timeline.TimelineQuery,
         authenticationContext: TwitterAuthenticationContext
     ) async throws -> Twitter.Response.Content<[Twitter.Entity.Tweet]> {

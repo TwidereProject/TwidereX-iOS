@@ -46,7 +46,7 @@ extension HomeTimelineViewModel {
                 guard let self = self else { return }
                 guard let diffableDataSource = self.diffableDataSource else { return }
                 self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): incoming \(records.count) objects")
-                Task {
+                Task { @MainActor in 
                     let start = CACurrentMediaTime()
                     defer {
                         let end = CACurrentMediaTime()

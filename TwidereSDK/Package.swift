@@ -33,6 +33,7 @@ let package = Package(
         .package(url: "https://github.com/TwidereProject/MetaTextKit.git", .exact("3.3.2")),
         .package(url: "https://github.com/Alamofire/Alamofire.git", from: "5.5.0"),
         .package(url: "https://github.com/Alamofire/AlamofireImage.git", from: "4.1.0"),
+        .package(url: "https://github.com/Alamofire/AlamofireNetworkActivityIndicator.git", from: "3.1.0"),
         .package(url: "https://github.com/onevcat/Kingfisher.git", from: "7.1.1"),
         .package(url: "https://github.com/SDWebImage/SDWebImage.git", from: "5.12.0"),
         .package(url: "https://github.com/MainasuK/UITextView-Placeholder.git", from: "1.4.1"),
@@ -99,6 +100,7 @@ let package = Package(
                 .product(name: "CommonOSLog", package: "CommonOSLog"),
                 .product(name: "Alamofire", package: "Alamofire"),
                 .product(name: "AlamofireImage", package: "AlamofireImage"),
+                .product(name: "AlamofireNetworkActivityIndicator", package: "AlamofireNetworkActivityIndicator"),
                 .product(name: "MetaTextKit", package: "MetaTextKit"),
             ]
         ),

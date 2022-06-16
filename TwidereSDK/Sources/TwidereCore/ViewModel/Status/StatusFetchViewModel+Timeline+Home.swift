@@ -18,12 +18,12 @@ extension StatusFetchViewModel.Timeline.Home {
     
     static let logger = Logger(subsystem: "StatusListFetchViewModel.Timeline.Home", category: "ViewModel")
     
-    public enum Input {
+    public enum Input: Hashable {
         case twitter(TwitterFetchContext)
         case mastodon(MastodonFetchContext)
     }
     
-    public struct TwitterFetchContext {
+    public struct TwitterFetchContext: Hashable {
         public let authenticationContext: TwitterAuthenticationContext
         public let untilID: Twitter.Entity.V2.Tweet.ID?
         public let maxResults: Int?
@@ -51,7 +51,7 @@ extension StatusFetchViewModel.Timeline.Home {
         }
     }
     
-    public struct MastodonFetchContext {
+    public struct MastodonFetchContext: Hashable {
         public let authenticationContext: MastodonAuthenticationContext
         public let maxID: Mastodon.Entity.Status.ID?
         public let count: Int?
@@ -89,7 +89,8 @@ extension StatusFetchViewModel.Timeline.Home {
             let response = try await api.twitterHomeTimeline(
                 query: .init(
                     untilID: fetchContext.untilID,
-                    maxResults: fetchContext.maxResults ?? 100
+                    paginationToken: nil,
+                    maxResults: fetchContext.maxResults ?? 50
                 ),
                 authenticationContext: fetchContext.authenticationContext
             )
@@ -102,13 +103,14 @@ extension StatusFetchViewModel.Timeline.Home {
             }()
             return .init(
                 result: .twitterV2(response.value.data ?? []),
+                backInput: nil,
                 nextInput: nextInput.flatMap { .home($0) }
             )
         case .mastodon(let fetchContext):
             let authenticationContext = fetchContext.authenticationContext
             let response = try await api.mastodonHomeTimeline(
                 maxID: fetchContext.maxID,
-                count: fetchContext.count ?? 100,
+                count: fetchContext.count ?? 50,
                 authenticationContext: authenticationContext
             )
             let noMore = response.value.isEmpty || (response.value.count == 1 && response.value[0].id == fetchContext.maxID)
@@ -120,6 +122,7 @@ extension StatusFetchViewModel.Timeline.Home {
             }()
             return .init(
                 result: .mastodon(response.value),
+                backInput: nil,
                 nextInput: nextInput.flatMap { .home($0) }
             )
         }

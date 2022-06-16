@@ -78,7 +78,10 @@ extension TrendViewController: UITableViewDelegate {
                 trend: object
             )
         case .mastodon(let tag):
-            let hashtagTimelineViewModel = HashtagTimelineViewModel(context: context, hashtag: tag.name)
+            let hashtagTimelineViewModel = HashtagTimelineViewModel(
+                context: context,
+                hashtag: tag.name
+            )
             coordinator.present(
                 scene: .hashtagTimeline(viewModel: hashtagTimelineViewModel),
                 from: self,

@@ -23,7 +23,7 @@ final class ProfilePagingViewModel: NSObject {
     init(
         userTimelineViewModel: UserTimelineViewModel,
         userMediaTimelineViewModel: UserMediaTimelineViewModel,
-        userLikeTimelineViewModel: UserLikeTimelineViewModel
+        userLikeTimelineViewModel: UserTimelineViewModel
     ) {
         homeTimelineViewController.viewModel = userTimelineViewModel
         mediaTimelineViewController.viewModel = userMediaTimelineViewModel
@@ -40,7 +40,7 @@ final class ProfilePagingViewModel: NSObject {
     }
     
     deinit {
-        os_log("%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
+        os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
     }
     
 }

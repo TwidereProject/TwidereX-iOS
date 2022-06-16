@@ -245,12 +245,12 @@ extension HomeTimelineViewController {
     }
     
     @objc private func showLocalTimelineAction(_ sender: UIAction) {
-        let federatedTimelineViewModel = FederatedTimelineViewModel(context: context, local: true)
+        let federatedTimelineViewModel = FederatedTimelineViewModel(context: context, isLocal: true)
         coordinator.present(scene: .federatedTimeline(viewModel: federatedTimelineViewModel), from: self, transition: .show)
     }
     
     @objc private func showPublicTimelineAction(_ sender: UIAction) {
-        let federatedTimelineViewModel = FederatedTimelineViewModel(context: context, local: false)
+        let federatedTimelineViewModel = FederatedTimelineViewModel(context: context, isLocal: false)
         coordinator.present(scene: .federatedTimeline(viewModel: federatedTimelineViewModel), from: self, transition: .show)
     }
     
@@ -459,17 +459,29 @@ extension HomeTimelineViewController {
         guard let diffableDataSource = viewModel.diffableDataSource else { return }
         let snapshot = diffableDataSource.snapshot()
         
-        let droppingObjectIDs = snapshot.itemIdentifiers.prefix(count).compactMap { item -> NSManagedObjectID? in
+        let droppingObjectIDs = snapshot.itemIdentifiers.prefix(count).compactMap { item -> [NSManagedObjectID]? in
             switch item {
-            case .feed(let record):         return record.objectID
-            default:                        return nil
+            case .feed(let record):
+                var ids: [NSManagedObjectID] = [record.objectID]
+                if let feed = record.object(in: context.apiService.backgroundManagedObjectContext) {
+                    if let objectID = feed.twitterStatus?.objectID {
+                        ids.append(objectID)
+                    }
+                    if let objectID = feed.mastodonStatus?.objectID {
+                        ids.append(objectID)
+                    }
+                }
+                return ids
+            default:
+                return nil
             }
         }
+        .flatMap { $0 }
         context.apiService.backgroundManagedObjectContext.performChanges { [weak self] in
             guard let self = self else { return }
             for objectID in droppingObjectIDs {
-                let feed = self.context.apiService.backgroundManagedObjectContext.object(with: objectID) as! Feed
-                self.context.apiService.backgroundManagedObjectContext.delete(feed)
+                let object = self.context.apiService.backgroundManagedObjectContext.object(with: objectID)
+                self.context.apiService.backgroundManagedObjectContext.delete(object)
             }
         }
         .sink { result in

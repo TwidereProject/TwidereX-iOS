@@ -29,6 +29,21 @@ extension APIService {
             authorization: authenticationContext.authorization
         )
         
+        let statusIDs: [Twitter.Entity.Tweet.ID] = {
+            var ids: [Twitter.Entity.Tweet.ID] = []
+            if let statuses = response.value.data {
+                ids.append(contentsOf: statuses.map { $0.id })
+            }
+            if let statuses = response.value.includes?.tweets {
+                ids.append(contentsOf: statuses.map { $0.id })
+            }
+            return Array(Set(ids))
+        }()
+        let _lookupResponse = try? await twitterBatchLookup(
+            statusIDs: statusIDs,
+            authenticationContext: authenticationContext
+        )
+        
         #if DEBUG
         // log time cost
         let start = CACurrentMediaTime()
@@ -63,6 +78,11 @@ extension APIService {
                 )
             )
             
+            // amend the v2 missing properties
+            if let lookupResponse = _lookupResponse, let me = me {
+                lookupResponse.update(statuses: statusArray, me: me)
+            }
+            
             // locate anchor status
             let anchorStatus: TwitterStatus? = {
                 guard let untilID = query.untilID else { return nil }
@@ -80,7 +100,11 @@ extension APIService {
             }
         
             // persist Feed relationship
-            let sortedStatuses = statusArray.sorted(by: { $0.createdAt < $1.createdAt })
+            let feedStatusIDs = (response.value.data ?? []).map { $0.id }
+            let sortedStatuses = statusArray
+                .filter { feedStatusIDs.contains($0.id) }
+                .sorted(by: { $0.createdAt < $1.createdAt })
+                .removingDuplicates()
             let oldestStatus = sortedStatuses.first
             for status in sortedStatuses {
                 let _feed = status.feed(kind: .home, acct: acct)
@@ -103,7 +127,9 @@ extension APIService {
                     }
                 }
             }
-        }
+        }   // end managedObjectContext.performChanges
+        
+
         
         return response
     }

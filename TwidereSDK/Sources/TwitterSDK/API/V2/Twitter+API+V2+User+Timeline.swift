@@ -11,6 +11,8 @@ extension Twitter.API.V2.User {
     public enum Timeline { }
 }
 
+// Home
+// https://developer.twitter.com/en/docs/twitter-api/tweets/timelines/api-reference/get-users-id-reverse-chronological
 extension Twitter.API.V2.User.Timeline {
  
     private static func homeTimelineEndpointURL(userID: Twitter.Entity.V2.User.ID) -> URL {
@@ -54,13 +56,16 @@ extension Twitter.API.V2.User.Timeline {
     public struct HomeQuery: Query {
         
         public let untilID: Twitter.Entity.V2.Tweet.ID?
+        public let paginationToken: String?
         public let maxResults: Int?
         
         public init(
             untilID: Twitter.Entity.V2.Tweet.ID?,
+            paginationToken: String?,
             maxResults: Int?
         ) {
             self.untilID = untilID
+            self.paginationToken = paginationToken
             self.maxResults = maxResults
         }
         
@@ -75,6 +80,9 @@ extension Twitter.API.V2.User.Timeline {
             ]
             untilID.flatMap {
                 queryItems.append(URLQueryItem(name: "until_id", value: $0))
+            }
+            paginationToken.flatMap {
+                queryItems.append(URLQueryItem(name: "pagination_token", value: $0))
             }
             maxResults.flatMap {
                 queryItems.append(URLQueryItem(name: "max_results", value: String($0)))
@@ -115,4 +123,81 @@ extension Twitter.API.V2.User.Timeline {
             }
         }
     }
+    
+}
+
+// Tweets
+// https://developer.twitter.com/en/docs/twitter-api/tweets/timelines/api-reference/get-users-id-tweets
+extension Twitter.API.V2.User.Timeline {
+ 
+    private static func tweetsTimelineEndpointURL(userID: Twitter.Entity.V2.User.ID) -> URL {
+        return Twitter.API.endpointV2URL
+            .appendingPathComponent("users")
+            .appendingPathComponent(userID)
+            .appendingPathComponent("tweets")
+    }
+    
+    public static func tweets(
+        session: URLSession,
+        userID: Twitter.Entity.V2.User.ID,
+        query: TweetsQuery,
+        authorization: Twitter.API.OAuth.Authorization
+    ) async throws -> Twitter.Response.Content<Twitter.API.V2.User.Timeline.TweetsContent> {
+        let request = Twitter.API.request(
+            url: tweetsTimelineEndpointURL(userID: userID),
+            method: .GET,
+            query: query,
+            authorization: authorization
+        )
+        let (data, response) = try await session.data(for: request, delegate: nil)
+        let value = try Twitter.API.decode(type: HomeContent.self, from: data, response: response)
+        return Twitter.Response.Content(value: value, response: response)
+    }
+    
+    static var tweetsQueryExpansions: [Twitter.Request.Expansions] {
+        return homeQueryExpansions
+    }
+    
+    public typealias TweetsQuery = HomeQuery
+    
+    public typealias TweetsContent = HomeContent
+    
+}
+
+// Likes
+// https://developer.twitter.com/en/docs/twitter-api/tweets/likes/api-reference/get-users-id-liked_tweets
+extension Twitter.API.V2.User.Timeline {
+    
+    private static func likedTweetsTimelineEndpointURL(userID: Twitter.Entity.V2.User.ID) -> URL {
+        return Twitter.API.endpointV2URL
+            .appendingPathComponent("users")
+            .appendingPathComponent(userID)
+            .appendingPathComponent("liked_tweets")
+    }
+    
+    public static func likes(
+        session: URLSession,
+        userID: Twitter.Entity.V2.User.ID,
+        query: TweetsQuery,
+        authorization: Twitter.API.OAuth.Authorization
+    ) async throws -> Twitter.Response.Content<Twitter.API.V2.User.Timeline.TweetsContent> {
+        let request = Twitter.API.request(
+            url: likedTweetsTimelineEndpointURL(userID: userID),
+            method: .GET,
+            query: query,
+            authorization: authorization
+        )
+        let (data, response) = try await session.data(for: request, delegate: nil)
+        let value = try Twitter.API.decode(type: HomeContent.self, from: data, response: response)
+        return Twitter.Response.Content(value: value, response: response)
+    }
+    
+    static var likesQueryExpansions: [Twitter.Request.Expansions] {
+        return homeQueryExpansions
+    }
+    
+    public typealias LikesQuery = HomeQuery
+    
+    public typealias LikesContent = HomeContent
+    
 }

@@ -19,12 +19,11 @@ extension FederatedTimelineViewModel {
     @MainActor
     func setupDiffableDataSource(
         tableView: UITableView,
-        statusViewTableViewCellDelegate: StatusViewTableViewCellDelegate,
-        timelineMiddleLoaderTableViewCellDelegate: TimelineMiddleLoaderTableViewCellDelegate
+        statusViewTableViewCellDelegate: StatusViewTableViewCellDelegate
     ) {
         let configuration = StatusSection.Configuration(
             statusViewTableViewCellDelegate: statusViewTableViewCellDelegate,
-            timelineMiddleLoaderTableViewCellDelegate: timelineMiddleLoaderTableViewCellDelegate,
+            timelineMiddleLoaderTableViewCellDelegate: nil,
             statusViewConfigurationContext: StatusView.ConfigurationContext(
                 dateTimeProvider: DateTimeSwiftProvider(),
                 twitterTextProvider: OfficialTwitterTextProvider(),
@@ -47,7 +46,7 @@ extension FederatedTimelineViewModel {
                 guard let self = self else { return }
                 guard let diffableDataSource = self.diffableDataSource else { return }
                 self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): incoming \(records.count) objects")
-                Task {
+                Task { @MainActor in
                     let start = CACurrentMediaTime()
                     defer {
                         let end = CACurrentMediaTime()
@@ -65,8 +64,8 @@ extension FederatedTimelineViewModel {
                     }()
 
                     switch self.kind {
-                    case .federated:
-                        let currentState = await self.loadOldestStateMachine.currentState
+                    case .public:
+                        let currentState = self.stateMachine.currentState
                         let hasMore = !(currentState is LoadOldestState.NoMore)
                         if hasMore, !newSnapshot.itemIdentifiers.contains(.bottomLoader) {
                             newSnapshot.appendItems([.bottomLoader], toSection: .main)
@@ -86,22 +85,23 @@ extension FederatedTimelineViewModel {
                     
                     let needsReloadWithContentOffsetAdjust = oldSnapshot.itemIdentifiers != [.bottomLoader]
 
-                    guard needsReloadWithContentOffsetAdjust, let difference = await self.calculateReloadSnapshotDifference(
+                    guard needsReloadWithContentOffsetAdjust, let difference = self.calculateReloadSnapshotDifference(
                         tableView: tableView,
                         oldSnapshot: oldSnapshot,
                         newSnapshot: newSnapshot
                     ) else {
-                        await self.updateDataSource(snapshot: newSnapshot, animatingDifferences: false)
+                        self.updateDataSource(snapshot: newSnapshot, animatingDifferences: false)
                         self.didLoadLatest.send()
                         self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): applied new snapshot")
                         return
                     }
                     
-                    await self.updateSnapshotUsingReloadData(snapshot: newSnapshot)
-                    await tableView.scrollToRow(at: difference.targetIndexPath, at: .top, animated: false)
-                    var contentOffset = await tableView.contentOffset
-                    contentOffset.y = await tableView.contentOffset.y - difference.sourceDistanceToTableViewTopEdge
-                    await tableView.setContentOffset(contentOffset, animated: false)
+                    self.reloadSnapshotWithDifference(
+                        tableView: tableView,
+                        snapshot: newSnapshot,
+                        difference: difference
+                    )
+                    
                     self.didLoadLatest.send()
                     self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): applied new snapshot")
                 }   // end Task

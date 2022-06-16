@@ -17,40 +17,6 @@ extension Twitter.API.V2.Lookup {
     
     static let tweetsEndpointURL = Twitter.API.endpointV2URL.appendingPathComponent("tweets")
     
-//    @available(*, deprecated, message: "")
-//    public static func tweets(tweetIDs: [Twitter.Entity.Tweet.ID], session: URLSession, authorization: Twitter.API.OAuth.Authorization) -> AnyPublisher<Twitter.Response.Content<Twitter.API.V2.Lookup.Content>, Error> {
-//        guard var components = URLComponents(string: tweetsEndpointURL.absoluteString) else { fatalError() }
-//
-//        let ids = tweetIDs.joined(separator: ",")
-//        components.queryItems = [
-//            Twitter.API.V2.Lookup.expansions.queryItem,
-//            Twitter.Request.tweetsFields.queryItem,
-//            Twitter.Request.userFields.queryItem,
-//            Twitter.Request.mediaFields.queryItem,
-//            Twitter.Request.placeFields.queryItem,
-//            Twitter.Request.pollFields.queryItem,
-//            URLQueryItem(name: "ids", value: ids),
-//        ]
-//
-//        guard let requestURL = components.url else { fatalError() }
-//        var request = URLRequest(
-//            url: requestURL,
-//            cachePolicy: .reloadIgnoringLocalAndRemoteCacheData,
-//            timeoutInterval: Twitter.API.timeoutInterval
-//        )
-//        request.setValue(
-//            authorization.authorizationHeader(requestURL: requestURL, httpMethod: "GET"),
-//            forHTTPHeaderField: Twitter.API.OAuth.authorizationField
-//        )
-//
-//        return session.dataTaskPublisher(for: request)
-//            .tryMap { data, response in
-//                let value = try Twitter.API.decode(type: Twitter.API.V2.Lookup.Content.self, from: data, response: response)
-//                return Twitter.Response.Content(value: value, response: response)
-//            }
-//            .eraseToAnyPublisher()
-//    }
-    
     public static func statuses(
         session: URLSession,
         query: StatusLookupQuery,

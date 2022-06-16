@@ -10,28 +10,116 @@ import CoreData
 import Foundation
 import TwitterSDK
 import MastodonSDK
+import TwidereLocalization
 
 extension StatusFetchViewModel {
     public enum Timeline { }
 }
 
 extension StatusFetchViewModel.Timeline {
-    
     public enum Kind {
         case home
-        case federated(local: Bool)
-        case userPost(userIdentifier: UserIdentifier)
-        case userMedia(userIdentifier: UserIdentifier)
-        case userLike(userIdentifier: UserIdentifier)
-    }
+        case `public`(isLocal: Bool)
+        case hashtag(hashtag: String)
+        case list(list: ListRecord)
+        case search(searchTimelineContext: SearchTimelineContext)
+        case user(userTimelineContext: UserTimelineContext)
+        
+        public var category: String {
+            switch self {
+            case .home:                     return "home"
+            case .public:                   return "public"
+            case .hashtag:                  return "hashtag"
+            case .list:                     return "list"
+            case .search:                   return "search"
+            case .user(let context):
+                switch context.timelineKind {
+                case .status:               return "user|status"
+                case .media:                return "user|media"
+                case .like:                 return "user|like"
+                }
+            }
+        }
+    }   // end enum Kind
+}
+
+extension StatusFetchViewModel.Timeline.Kind {
+
+    public class UserTimelineContext {
+        public let timelineKind: TimelineKind
+        @Published public var userIdentifier: UserIdentifier?
+        
+        public init(
+            timelineKind: TimelineKind,
+            userIdentifier: Published<UserIdentifier?>.Publisher?
+        ) {
+            self.timelineKind = timelineKind
+            
+            if let userIdentifier = userIdentifier {
+                userIdentifier.assign(to: &self.$userIdentifier)
+                
+            }
+        }
+        
+        public enum TimelineKind {
+            case status
+            case media
+            case like
+            
+            public var title: String {
+                switch self {
+                case .status:       return ""
+                case .media:        return ""
+                case .like:         return L10n.Scene.Likes.title
+                }
+            }   // end title
+        }   // end enum TimelineKind
+    }   // end class UserTimelineContext
     
-    public enum Input {
+    public class SearchTimelineContext {
+        public let timelineKind: TimelineKind
+        @Published public var searchText = ""
+        
+        public init(
+            timelineKind: TimelineKind,
+            searchText: Published<String>.Publisher?
+        ) {
+            self.timelineKind = timelineKind
+            
+            if let searchText = searchText {
+                searchText.assign(to: &self.$searchText)
+            }
+        }
+        
+        public enum TimelineKind {
+            case status
+            case media
+            
+            public var title: String {
+                switch self {
+                case .status:       return ""
+                case .media:        return ""
+                }
+            }   // end title
+        }   // end enum TimelineKind
+    }   // end class SearchTimelineContext
+    
+}
+
+extension StatusFetchViewModel.Timeline {
+
+    public enum Input: Hashable {
         case home(Home.Input)
-        // TODO:
+        case `public`(Public.Input)
+        case hashtag(Hashtag.Input)
+        case list(List.Input)
+        case search(Search.Input)
+        case user(User.Input)
     }
     
     public struct Output {
         public let result: StatusFetchViewModel.Result
+        public let backInput: Input?
         public let nextInput: Input?
         
         public var hasMore: Bool {
@@ -39,28 +127,54 @@ extension StatusFetchViewModel.Timeline {
         }
     }
     
+}
+
+extension StatusFetchViewModel.Timeline {
+    
     public enum Position {
-        case top
+        case top(anchor: StatusRecord?)
         case middle(anchor: StatusRecord)
-        case bottom
+        case bottom(anchor: StatusRecord)
     }
     
-    public struct Filter {
-        public let rule: Rule
+    public class Filter: Hashable {
+        
+        public var rule: Rule
         
         public init(rule: Rule) {
             self.rule = rule
         }
         
-        public struct Rule: OptionSet {
+        public static func == (
+            lhs: StatusFetchViewModel.Timeline.Filter,
+            rhs: StatusFetchViewModel.Timeline.Filter
+        ) -> Bool {
+            return lhs.rule == rhs.rule
+        }
+        
+        public func hash(into hasher: inout Hasher) {
+            hasher.combine(rule)
+        }
+        
+        public struct Rule: OptionSet, Hashable {
             public let rawValue: Int
+            
+            static let onlyMedia = Rule(rawValue: 1 << 0)
             
             public init(rawValue: Int) {
                 self.rawValue = rawValue
             }
             
             public static let empty: Rule = []
-            // TODO:
+        }
+        
+        public func isIncluded(_ status: Twitter.Entity.V2.Tweet) -> Bool {
+            if rule.contains(.onlyMedia) {
+                // the repost also contains the mediaKeys. Not needs handle explicitly
+                guard let mediaKeys = status.attachments?.mediaKeys, !mediaKeys.isEmpty else { return false }
+            }
+            
+            return true
         }
     }
     
@@ -91,7 +205,10 @@ extension StatusFetchViewModel.Timeline {
         
         
     }
-
+    
+    /// Preare `Input` from `FetchContext` for following `fetch`
+    /// - Parameter fetchContext: the context info to fetch items
+    /// - Returns: `Input` ready for `fetch`
     public static func prepare(fetchContext: FetchContext) async throws -> Input {
         switch fetchContext.kind {
         case .home:
@@ -104,14 +221,11 @@ extension StatusFetchViewModel.Timeline {
                         switch fetchContext.position {
                         case .top:
                             return nil
-                        case .middle(let anchor):
+                        case .middle(let anchor), .bottom(let anchor):
                             return await managedObjectContext.perform {
                                 guard case let .twitter(record) = anchor else { return nil }
                                 return record.object(in: managedObjectContext)?.id
                             }
-                        case .bottom:
-                            assertionFailure()
-                            return nil
                         }
                     }(),
                     maxResults: nil,
@@ -125,21 +239,212 @@ extension StatusFetchViewModel.Timeline {
                         switch fetchContext.position {
                         case .top:
                             return nil
-                        case .middle(let anchor):
+                        case .middle(let anchor), .bottom(let anchor):
                             return await managedObjectContext.perform {
                                 guard case let .mastodon(record) = anchor else { return nil }
                                 return record.object(in: managedObjectContext)?.id
                             }
-                        case .bottom:
-                            assertionFailure()
-                            return nil
                         }
                     }(),
                     count: nil,
-                    filter: fetchContext.filter)))
+                    filter: fetchContext.filter
+                )))
             }   // end switch fetchContext.authenticationContext
-        default:
-            fatalError()
+        case .public(let isLocal):
+            switch fetchContext.authenticationContext {
+            case .twitter:
+                throw AppError.ErrorReason.internal(reason: "No public timeline for Twitter")
+            case .mastodon(let authenticationContext):
+                return await .public(.mastodon(.init(
+                    authenticationContext: authenticationContext,
+                    minID: {
+                        let managedObjectContext = fetchContext.managedObjectContext
+                        switch fetchContext.position {
+                        case .top(let anchor):
+                            return await managedObjectContext.perform {
+                                guard case let .mastodon(record) = anchor else { return nil }
+                                return record.object(in: managedObjectContext)?.id
+                            }
+                        case .middle, .bottom:
+                            return nil
+                        }
+                    }(),
+                    maxID: {
+                        let managedObjectContext = fetchContext.managedObjectContext
+                        switch fetchContext.position {
+                        case .top:
+                            return nil
+                        case .middle(let anchor), .bottom(let anchor):
+                            return await managedObjectContext.perform {
+                                guard case let .mastodon(record) = anchor else { return nil }
+                                return record.object(in: managedObjectContext)?.id
+                            }
+                        }
+                    }(),
+                    count: nil,
+                    isLocal: isLocal,
+                    filter: fetchContext.filter
+                )))
+            }
+        case .hashtag(let hashtag):
+            switch fetchContext.authenticationContext {
+            case .twitter(let authenticationContext):
+                return .search(.twitter(.init(
+                    authenticationContext: authenticationContext,
+                    searchText: hashtag,
+                    untilID: nil,
+                    nextToken: nil,
+                    maxResults: nil,
+                    filter: fetchContext.filter
+                )))
+            case .mastodon(let authenticationContext):
+                return await .hashtag(.mastodon(.init(
+                    authenticationContext: authenticationContext,
+                    hashtag: hashtag,
+                    minID: {
+                        let managedObjectContext = fetchContext.managedObjectContext
+                        switch fetchContext.position {
+                        case .top(let anchor):
+                            return await managedObjectContext.perform {
+                                guard case let .mastodon(record) = anchor else { return nil }
+                                return record.object(in: managedObjectContext)?.id
+                            }
+                        case .middle, .bottom:
+                            return nil
+                        }
+                    }(),
+                    maxID: {
+                        let managedObjectContext = fetchContext.managedObjectContext
+                        switch fetchContext.position {
+                        case .top:
+                            return nil
+                        case .middle(let anchor), .bottom(let anchor):
+                            return await managedObjectContext.perform {
+                                guard case let .mastodon(record) = anchor else { return nil }
+                                return record.object(in: managedObjectContext)?.id
+                            }
+                        }
+                    }(),
+                    count: nil,
+                    filter: fetchContext.filter
+                )))
+            }
+        case .list(let list):
+            switch fetchContext.authenticationContext {
+            case .twitter(let authenticationContext):
+                guard case let .twitter(record) = list else {
+                    throw AppError.implicit(.internal(reason: "Use invalid list record for Twitter list status lookup"))
+                }
+                return .list(.twitter(.init(
+                    authenticationContext: authenticationContext,
+                    list: record,
+                    paginationToken: nil,
+                    maxResults: nil,
+                    filter: fetchContext.filter
+                )))
+            case .mastodon(let authenticationContext):
+                guard case let .mastodon(record) = list else {
+                    throw AppError.implicit(.internal(reason: "Use invalid list record for Mastodon list status lookup"))
+                }
+                return .list(.mastodon(.init(
+                    authenticationContext: authenticationContext,
+                    list: record,
+                    minID: nil,
+                    maxID: nil,
+                    count: nil,
+                    filter: fetchContext.filter
+                )))
+            }
+        case .search(let searchTimelineContext):
+            switch fetchContext.authenticationContext {
+            case .twitter(let authenticationContext):
+                return .search(.twitter(.init(
+                    authenticationContext: authenticationContext,
+                    searchText: searchTimelineContext.searchText,
+                    untilID: nil,
+                    nextToken: nil,
+                    maxResults: nil,
+                    filter: {
+                        switch searchTimelineContext.timelineKind {
+                        case .media:
+                            fetchContext.filter.rule.insert(.onlyMedia)
+                            return fetchContext.filter
+                        default:
+                            return fetchContext.filter
+                        }
+                    }()
+                )))
+            case .mastodon(let authenticationContext):
+                return .search(.mastodon(.init(
+                    authenticationContext: authenticationContext,
+                    searchText: searchTimelineContext.searchText,
+                    offset: 0,
+                    count: nil,
+                    filter: {
+                        switch searchTimelineContext.timelineKind {
+                        case .media:
+                            fetchContext.filter.rule.insert(.onlyMedia)
+                            return fetchContext.filter
+                        default:
+                            return fetchContext.filter
+                        }
+                    }()
+                )))
+            }
+        case .user(let userTimelineContext):
+            switch fetchContext.authenticationContext {
+            case .twitter(let authenticationContext):
+                guard case let .twitter(userIdentifier) = userTimelineContext.userIdentifier else {
+                    throw AppError.implicit(.internal(reason: "Use invalid user identifier for user timeline"))
+                }
+                return .user(.twitter(.init(
+                    authenticationContext: authenticationContext,
+                    userID: userIdentifier.id,
+                    paginationToken: nil,
+                    maxResults: nil,
+                    filter: {
+                        switch userTimelineContext.timelineKind {
+                        case .media:
+                            fetchContext.filter.rule.insert(.onlyMedia)
+                            return fetchContext.filter
+                        default:
+                            return fetchContext.filter
+                        }
+                    }(),
+                    timelineKind: userTimelineContext.timelineKind
+                )))
+            case .mastodon(let authenticationContext):
+                guard case let .mastodon(userIdentifier) = userTimelineContext.userIdentifier else {
+                    throw AppError.implicit(.internal(reason: "Use invalid user identifier for user timeline"))
+                }
+                return await .user(.mastodon(.init(
+                    authenticationContext: authenticationContext,
+                    accountID: userIdentifier.id,
+                    maxID: {
+                        let managedObjectContext = fetchContext.managedObjectContext
+                        switch fetchContext.position {
+                        case .top:
+                            return nil
+                        case .middle(let anchor), .bottom(let anchor):
+                            return await managedObjectContext.perform {
+                                guard case let .mastodon(record) = anchor else { return nil }
+                                return record.object(in: managedObjectContext)?.id
+                            }
+                        }
+                    }(),
+                    count: nil,
+                    filter: {
+                        switch userTimelineContext.timelineKind {
+                        case .media:
+                            fetchContext.filter.rule.insert(.onlyMedia)
+                            return fetchContext.filter
+                        default:
+                            return fetchContext.filter
+                        }
+                    }(),
+                    timelineKind: userTimelineContext.timelineKind
+                )))
+            }   // end switch
         }
     }
     
@@ -150,191 +455,17 @@ extension StatusFetchViewModel.Timeline {
         switch input {
         case .home(let input):
             return try await Home.fetch(api: api, input: input)
-        default:
-            fatalError()
+        case .public(let input):
+            return try await Public.fetch(api: api, input: input)
+        case .hashtag(let input):
+            return try await Hashtag.fetch(api: api, input: input)
+        case .list(let input):
+            return try await List.fetch(api: api, input: input)
+        case .search(let input):
+            return try await Search.fetch(api: api, input: input)
+        case .user(let input):
+            return try await User.fetch(api: api, input: input)
         }
     }
-    
-//    public static func homeTimeline(api: APIService, input: Input) async throws -> Output {
-//        switch input {
-//        case .twitter(let fetchContext):
-//            let authenticationContext = fetchContext.authenticationContext
-//            let response = try await api.twitterHomeTimelineV1(
-//                maxID: fetchContext.maxID,
-//                count: fetchContext.maxResults ?? 100,
-//                authenticationContext: authenticationContext
-//            )
-//            let noMore = response.value.isEmpty || (response.value.count == 1 && response.value[0].idStr == fetchContext.maxID)
-//            let nextInput: Input? = {
-//                if noMore { return nil }
-//                guard let maxID = response.value.last?.idStr else { return nil }
-//                let fetchContext = fetchContext.map(maxID: maxID)
-//                return .twitter(fetchContext)
-//            }()
-//            return Output(
-//                result: .twitter(response.value),
-//                nextInput: nextInput
-//            )
-//        case .mastodon(let fetchContext):
-//            let authenticationContext = fetchContext.authenticationContext
-//            let response = try await api.mastodonHomeTimeline(
-//                maxID: fetchContext.maxID,
-//                count: fetchContext.count ?? 100,
-//                authenticationContext: authenticationContext
-//            )
-//            let noMore = response.value.isEmpty || (response.value.count == 1 && response.value[0].id == fetchContext.maxID)
-//            let nextInput: Input? = {
-//                if noMore { return nil }
-//                guard let maxID = response.value.last?.id else { return nil }
-//                let fetchContext = fetchContext.map(maxID: maxID)
-//                return .mastodon(fetchContext)
-//            }()
-//            return Output(
-//                result: .mastodon(response.value),
-//                nextInput: nextInput
-//            )
-//        }
-//    }
-//
-//    public static func publicTimeline(api: APIService, input: Input) async throws -> Output {
-//        switch input {
-//        case .twitter(let fetchContext):
-//            assertionFailure("Invalid entry")
-//            throw AppError.implicit(.badRequest)
-//        case .mastodon(let fetchContext):
-//            let authenticationContext = fetchContext.authenticationContext
-//            let response = try await api.mastodonPublicTimeline(
-//                local: fetchContext.local ?? false,
-//                maxID: fetchContext.maxID,
-//                count: fetchContext.count ?? 100,
-//                authenticationContext: authenticationContext
-//            )
-//            let _maxID = response.link?.maxID
-//            let noMore = response.value.isEmpty || (response.value.count == 1 && response.value[0].id == fetchContext.maxID) || _maxID == nil || _maxID == fetchContext.maxID
-//            let nextInput: Input? = {
-//                if noMore { return nil }
-//                guard let maxID = _maxID else { return nil }
-//                let fetchContext = fetchContext.map(maxID: maxID)
-//                return .mastodon(fetchContext)
-//            }()
-//            logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): hasMore: \(!noMore)")
-//            return Output(
-//                result: .mastodon(response.value),
-//                nextInput: nextInput
-//            )
-//        }
-//    }
-//
-//    public static func userTimeline(api: APIService, input: Input) async throws -> Output {
-//        switch input {
-//        case .twitter(let fetchContext):
-//            guard let userID = fetchContext.userIdentifier?.id else {
-//                throw AppError.implicit(.badRequest)
-//            }
-//            let query = Twitter.API.Statuses.Timeline.TimelineQuery(
-//                count: fetchContext.maxResults ?? 100,
-//                userID: userID,
-//                maxID: fetchContext.maxID,
-//                excludeReplies: fetchContext.excludeReplies
-//            )
-//            let authenticationContext = fetchContext.authenticationContext
-//            let response = try await api.twitterUserTimeline(
-//                query: query,
-//                authenticationContext: authenticationContext
-//            )
-//            let noMore = response.value.isEmpty || (response.value.count == 1 && response.value[0].idStr == fetchContext.maxID)
-//            let nextInput: Input? = {
-//                if noMore { return nil }
-//                guard let maxID = response.value.last?.idStr else { return nil }
-//                let fetchContext = fetchContext.map(maxID: maxID)
-//                return .twitter(fetchContext)
-//            }()
-//            return Output(
-//                result: .twitter(response.value),
-//                nextInput: nextInput
-//            )
-//        case .mastodon(let fetchContext):
-//            guard let accountID = fetchContext.userIdentifier?.id else {
-//                throw AppError.implicit(.badRequest)
-//            }
-//            let authenticationContext = fetchContext.authenticationContext
-//            let query = Mastodon.API.Account.AccountStatusesQuery(
-//                maxID: fetchContext.maxID,
-//                sinceID: nil,
-//                excludeReplies: fetchContext.excludeReplies,
-//                excludeReblogs: fetchContext.excludeReblogs,
-//                onlyMedia: fetchContext.onlyMedia,
-//                limit: fetchContext.count ?? 100
-//            )
-//            let response = try await api.mastodonUserTimeline(
-//                accountID: accountID,
-//                query: query,
-//                authenticationContext: authenticationContext
-//            )
-//            let noMore = response.value.isEmpty || (response.value.count == 1 && response.value[0].id == fetchContext.maxID)
-//            let nextInput: Input? = {
-//                if noMore { return nil }
-//                guard let maxID = response.value.last?.id else { return nil }
-//                let fetchContext = fetchContext.map(maxID: maxID)
-//                return .mastodon(fetchContext)
-//            }()
-//            return Output(
-//                result: .mastodon(response.value),
-//                hasMore: !noMore,
-//                nextInput: nextInput
-//            )
-//        }
-//    }
-//
-//    public static func likeTimeline(api: APIService, input: Input) async throws -> Output {
-//        switch input.fetchContext {
-//        case .twitter(let fetchContext):
-//            guard let userID = fetchContext.userIdentifier?.id else {
-//                throw AppError.implicit(.badRequest)
-//            }
-//            let authenticationContext = fetchContext.authenticationContext
-//            let query = Twitter.API.Statuses.Timeline.TimelineQuery(
-//                count: fetchContext.count ?? 100,
-//                userID: userID,
-//                maxID: fetchContext.maxID
-//            )
-//            let response = try await api.twitterLikeTimeline(
-//                query: query,
-//                authenticationContext: authenticationContext
-//            )
-//            let noMore = response.value.isEmpty || (response.value.count == 1 && response.value[0].idStr == fetchContext.maxID)
-//            let nextInput: Input? = {
-//                if noMore { return nil }
-//                guard let maxID = response.value.last?.idStr else { return nil }
-//                let fetchContext = fetchContext.map(maxID: maxID)
-//                return Input(fetchContext: .twitter(fetchContext))
-//            }()
-//            return Output(
-//                result: .twitter(response.value),
-//                hasMore: !noMore,
-//                nextInput: nextInput
-//            )
-//        case .mastodon(let fetchContext):
-//            let authenticationContext = fetchContext.authenticationContext
-//            let query = Mastodon.API.Favorite.FavoriteStatusesQuery(
-//                limit: fetchContext.count ?? 100,
-//                maxID: fetchContext.maxID
-//            )
-//            let response = try await api.mastodonLikeTimeline(
-//                query: query,
-//                authenticationContext: authenticationContext
-//            )
-//            let noMore = response.link?.maxID == nil
-//            let nextInput: Input? = {
-//                guard let maxID = response.link?.maxID else { return nil }
-//                let fetchContext = fetchContext.map(maxID: maxID)
-//                return Input(fetchContext: .mastodon(fetchContext))
-//            }()
-//            return Output(
-//                result: .mastodon(response.value),
-//                hasMore: !noMore,
-//                nextInput: nextInput
-//            )
-//        }
-//    }
+
 }
