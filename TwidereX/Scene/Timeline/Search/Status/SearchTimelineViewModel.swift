@@ -31,7 +31,6 @@ final class SearchTimelineViewModel: ListTimelineViewModel {
         
         isRefreshControlEnabled = false
         isFloatyButtonDisplay = false
-        enableAutoFetchLatest = false
         
         context.authenticationService.$activeAuthenticationContext
             .map { $0?.userIdentifier }

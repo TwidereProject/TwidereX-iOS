@@ -84,6 +84,13 @@ extension ListTimelineViewController {
         tableView.deselectRow(with: transitionCoordinator, animated: animated)
     }
     
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        // FIXME: use timer to auto refresh
+        autoFetchLatest()
+    }
+    
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
 
@@ -94,6 +101,45 @@ extension ListTimelineViewController {
             self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): view transition to new size: \(size.debugDescription). And table reloaded")
         }
     }
+    
+}
+
+extension ListTimelineViewController {
+    
+    public func reload() {
+        Task {
+            self.viewModel.stateMachine.enter(ListTimelineViewModel.LoadOldestState.Reloading.self)
+        }   // end Task
+    }
+    
+    private func autoFetchLatest() {
+        guard viewModel.enableAutoFetchLatest else { return }
+        logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public)")
+        
+        guard let diffableDataSource = viewModel.diffableDataSource,
+              !diffableDataSource.snapshot().itemIdentifiers.isEmpty        // conflict with LoadOldestState
+        else { return }
+        
+        if !viewModel.isLoadingLatest {
+            let now = Date()
+            if let timestamp = viewModel.lastAutomaticFetchTimestamp {
+                if now.timeIntervalSince(timestamp) > 60 {
+                    logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): [Timeline] auto fetch lastest timeline…")
+                    Task {
+                        await _viewModel.loadLatest()
+                    }
+                    viewModel.lastAutomaticFetchTimestamp = now
+                } else {
+                    logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): [Timeline] auto fetch lastest timeline skip. Reason: updated in recent 60s")
+                }
+            } else {
+                Task {
+                    await self.viewModel.loadLatest()
+                }
+                viewModel.lastAutomaticFetchTimestamp = now
+            }
+        }
+    }   // end func
     
 }
 

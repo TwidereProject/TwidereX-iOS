@@ -27,7 +27,6 @@ final class ListStatusTimelineViewModel: ListTimelineViewModel {
             kind: .list(list: list)
         )
         
-        enableAutoFetchLatest = false
         isFloatyButtonDisplay = false
         
         context.authenticationService.$activeAuthenticationContext

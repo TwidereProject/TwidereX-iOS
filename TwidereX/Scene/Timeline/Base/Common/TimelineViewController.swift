@@ -168,8 +168,6 @@ extension TimelineViewController {
         super.viewDidAppear(animated)
         
         _viewModel.viewDidAppear.send()
-        
-        // autoFetchLatest()
     }
 
     override func viewSafeAreaInsetsDidChange() {
@@ -248,45 +246,6 @@ extension TimelineViewController {
         coordinator.present(scene: .compose(viewModel: composeViewModel, contentViewModel: composeContentViewModel), from: self, transition: .modal(animated: true, completion: nil))
     }
 
-}
-
-extension ListTimelineViewController {
-    
-    public func reload() {
-        Task {
-            self.viewModel.stateMachine.enter(ListTimelineViewModel.LoadOldestState.Reloading.self)
-        }   // end Task
-    }
-    
-    private func autoFetchLatest() {
-        guard viewModel.enableAutoFetchLatest else { return }
-        
-        guard let diffableDataSource = viewModel.diffableDataSource,
-              !diffableDataSource.snapshot().itemIdentifiers.isEmpty        // conflict with LoadOldestState
-        else { return }
-        
-        if !viewModel.isLoadingLatest {
-            let now = Date()
-            if let timestamp = viewModel.lastAutomaticFetchTimestamp {
-                if now.timeIntervalSince(timestamp) > 60 {
-                    logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): [Timeline] auto fetch lastest timeline…")
-                    Task {
-                        await _viewModel.loadLatest()
-                    }
-                    viewModel.lastAutomaticFetchTimestamp = now
-                } else {
-                    logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): [Timeline] auto fetch lastest timeline skip. Reason: updated in recent 60s")
-                }
-            } else {
-                Task {
-                    await self.viewModel.loadLatest()
-                }
-                viewModel.lastAutomaticFetchTimestamp = now
-            }
-            
-        }
-    }
-    
 }
 
 // MARK: - AvatarBarButtonItemDelegate

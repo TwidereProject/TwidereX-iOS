@@ -20,9 +20,7 @@ final class HashtagTimelineViewModel: ListTimelineViewModel {
             context: context,
             kind: .hashtag(hashtag: hashtag)
         )
-        
-        enableAutoFetchLatest = true
-        
+                
         context.authenticationService.$activeAuthenticationContext
             .map { $0?.userIdentifier }
             .assign(to: &statusRecordFetchedResultController.$userIdentifier)

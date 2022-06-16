@@ -29,7 +29,8 @@ class TimelineViewModel: TimelineViewModelDriver {
     let statusRecordFetchedResultController: StatusRecordFetchedResultController
     let listBatchFetchViewModel = ListBatchFetchViewModel()
     let viewDidAppear = CurrentValueSubject<Void, Never>(Void())
-    var enableAutoFetchLatest = false
+    
+    @Published var enableAutoFetchLatest = false
     @Published var isRefreshControlEnabled = true
     @Published var isFloatyButtonDisplay = true
     @Published var isLoadingLatest = false
