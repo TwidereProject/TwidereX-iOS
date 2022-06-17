@@ -723,6 +723,16 @@ public enum L10n {
             return L10n.tr("Localizable", "Common.Controls.Status.Poll.TotalVotes", String(describing: p1))
           }
         }
+        public enum ReplySettings {
+          /// People %@ follows or mentioned can reply.
+          public static func peopleUserFollowsOrMentionedCanReply(_ p1: Any) -> String {
+            return L10n.tr("Localizable", "Common.Controls.Status.ReplySettings.PeopleUserFollowsOrMentionedCanReply", String(describing: p1))
+          }
+          /// People %@ mentioned can reply.
+          public static func peopleUserMentionedCanReply(_ p1: Any) -> String {
+            return L10n.tr("Localizable", "Common.Controls.Status.ReplySettings.PeopleUserMentionedCanReply", String(describing: p1))
+          }
+        }
         public enum Thread {
           /// Show this thread
           public static let show = L10n.tr("Localizable", "Common.Controls.Status.Thread.Show")

@@ -27,11 +27,11 @@ final public class TwitterStatus: NSManagedObject {
     // sourcery: autoGenerateProperty
     @NSManaged public private(set) var quoteCount: Int64
     
-    // sourcery: autoGenerateProperty
-    @NSManaged public private(set) var language: String?
-    
     // Note: not mark `autoUpdatableObject` for `replyCount` and `quoteCount`
     // to avoid V1 API update the exists value to 0
+    
+    // sourcery: autoGenerateProperty
+    @NSManaged public private(set) var language: String?
     
     // sourcery: autoUpdatableObject, autoGenerateProperty
     @NSManaged public private(set) var source: String?
@@ -145,6 +145,31 @@ extension TwitterStatus {
         }
         set {
             let keyPath = #keyPath(TwitterStatus.entities)
+            let data = try? JSONEncoder().encode(newValue)
+            willChangeValue(forKey: keyPath)
+            setPrimitiveValue(data, forKey: keyPath)
+            didChangeValue(forKey: keyPath)
+        }
+    }
+    
+    // sourcery: autoUpdatableObject
+    @objc public var replySettings: TwitterReplySettings? {
+        get {
+            let keyPath = #keyPath(TwitterStatus.replySettings)
+            willAccessValue(forKey: keyPath)
+            let _data = primitiveValue(forKey: keyPath) as? Data
+            didAccessValue(forKey: keyPath)
+            do {
+                guard let data = _data else { return nil }
+                let replySettings = try JSONDecoder().decode(TwitterReplySettings.self, from: data)
+                return replySettings
+            } catch {
+                assertionFailure(error.localizedDescription)
+                return nil
+            }
+        }
+        set {
+            let keyPath = #keyPath(TwitterStatus.replySettings)
             let data = try? JSONEncoder().encode(newValue)
             willChangeValue(forKey: keyPath)
             setPrimitiveValue(data, forKey: keyPath)
@@ -371,6 +396,11 @@ extension TwitterStatus: AutoUpdatableObject {
     public func update(entities: TwitterEntity?) {
     	if self.entities != entities {
     		self.entities = entities
+    	}
+    }
+    public func update(replySettings: TwitterReplySettings?) {
+    	if self.replySettings != replySettings {
+    		self.replySettings = replySettings
     	}
     }
     // sourcery:end

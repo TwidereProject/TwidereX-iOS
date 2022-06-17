@@ -224,6 +224,8 @@
 "Common.Controls.Status.Poll.TotalPerson" = "%@ jende";
 "Common.Controls.Status.Poll.TotalVote" = "%@ boto";
 "Common.Controls.Status.Poll.TotalVotes" = "%@ boto";
+"Common.Controls.Status.ReplySettings.PeopleUserFollowsOrMentionedCanReply" = "People %@ follows or mentioned can reply.";
+"Common.Controls.Status.ReplySettings.PeopleUserMentionedCanReply" = "People %@ mentioned can reply.";
 "Common.Controls.Status.Thread.Show" = "Erakutsi hari hau";
 "Common.Controls.Status.UserBoosted" = "%@-(e)k bultzatu du";
 "Common.Controls.Status.UserRetweeted" = "%@ bertxiotu du";

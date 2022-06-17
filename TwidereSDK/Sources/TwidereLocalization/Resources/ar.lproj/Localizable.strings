@@ -224,6 +224,8 @@
 "Common.Controls.Status.Poll.TotalPerson" = "%@ شخص";
 "Common.Controls.Status.Poll.TotalVote" = "%@ صوت";
 "Common.Controls.Status.Poll.TotalVotes" = "%@ صوت";
+"Common.Controls.Status.ReplySettings.PeopleUserFollowsOrMentionedCanReply" = "People %@ follows or mentioned can reply.";
+"Common.Controls.Status.ReplySettings.PeopleUserMentionedCanReply" = "People %@ mentioned can reply.";
 "Common.Controls.Status.Thread.Show" = "اظهر هذا النقاش";
 "Common.Controls.Status.UserBoosted" = "رقى %@";
 "Common.Controls.Status.UserRetweeted" = "%@ أعاد التغريد";

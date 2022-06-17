@@ -224,6 +224,8 @@
 "Common.Controls.Status.Poll.TotalPerson" = "%@ 人";
 "Common.Controls.Status.Poll.TotalVote" = "%@ 票";
 "Common.Controls.Status.Poll.TotalVotes" = "%@ 票";
+"Common.Controls.Status.ReplySettings.PeopleUserFollowsOrMentionedCanReply" = "%@ 关注或提及的用户可以回复";
+"Common.Controls.Status.ReplySettings.PeopleUserMentionedCanReply" = "%@ 提及的用户可以回复";
 "Common.Controls.Status.Thread.Show" = "显示此主题帖";
 "Common.Controls.Status.UserBoosted" = "%@ 转嘟了";
 "Common.Controls.Status.UserRetweeted" = "%@ 转推了";
