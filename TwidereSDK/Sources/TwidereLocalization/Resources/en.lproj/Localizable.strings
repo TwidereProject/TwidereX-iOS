@@ -224,6 +224,8 @@
 "Common.Controls.Status.Poll.TotalPerson" = "%@ person";
 "Common.Controls.Status.Poll.TotalVote" = "%@ vote";
 "Common.Controls.Status.Poll.TotalVotes" = "%@ votes";
+"Common.Controls.Status.ReplySettings.PeopleUserFollowsOrMentionedCanReply" = "People %@ follows or mentioned can reply.";
+"Common.Controls.Status.ReplySettings.PeopleUserMentionedCanReply" = "People %@ mentioned can reply.";
 "Common.Controls.Status.Thread.Show" = "Show this thread";
 "Common.Controls.Status.UserBoosted" = "%@ boosted";
 "Common.Controls.Status.UserRetweeted" = "%@ retweeted";

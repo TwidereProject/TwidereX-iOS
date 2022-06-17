@@ -224,6 +224,7 @@
         <attribute name="location" optional="YES" attributeType="Binary"/>
         <attribute name="quoteCount" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="replyCount" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="replySettings" optional="YES" attributeType="Binary" defaultValueString=""/>
         <attribute name="replyToStatusID" optional="YES" attributeType="String"/>
         <attribute name="replyToUserID" optional="YES" attributeType="String"/>
         <attribute name="repostCount" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
@@ -290,10 +291,10 @@
         <element name="MastodonUser" positionX="-63" positionY="-153" width="128" height="599"/>
         <element name="TwitterAuthentication" positionX="-109.453125" positionY="275.71875" width="128" height="254"/>
         <element name="TwitterList" positionX="90" positionY="-18" width="128" height="164"/>
-        <element name="TwitterSavedSearch" positionX="90" positionY="-18" width="128" height="104"/>
-        <element name="TwitterStatus" positionX="-63" positionY="-153" width="128" height="449"/>
-        <element name="TwitterUser" positionX="281.5234375" positionY="201.703125" width="128" height="524"/>
-        <element name="TwitterPollOption" positionX="90" positionY="-18" width="128" height="119"/>
         <element name="TwitterPoll" positionX="99" positionY="-9" width="128" height="149"/>
+        <element name="TwitterPollOption" positionX="90" positionY="-18" width="128" height="119"/>
+        <element name="TwitterSavedSearch" positionX="90" positionY="-18" width="128" height="104"/>
+        <element name="TwitterStatus" positionX="-63" positionY="-153" width="128" height="464"/>
+        <element name="TwitterUser" positionX="281.5234375" positionY="201.703125" width="128" height="524"/>
     </elements>
 </model>

@@ -127,8 +127,8 @@
 "Common.Alerts.PhotoSaveFail.Message" = "Lütfen tekrar deneyin";
 "Common.Alerts.PhotoSaveFail.Title" = "Fotoğrafı kaydetme başarısız";
 "Common.Alerts.PhotoSaved.Title" = "Fotoğraf Kaydedildi";
-"Common.Alerts.PostFailInvalidPoll.Message" = "Poll has empty field. Please fulfill the field then try again";
-"Common.Alerts.PostFailInvalidPoll.Title" = "Failed to Publish";
+"Common.Alerts.PostFailInvalidPoll.Message" = "Ankette boş alan var. Lütfen alanı doldurun ve tekrar deneyin";
+"Common.Alerts.PostFailInvalidPoll.Title" = "Yayınlanamadı";
 "Common.Alerts.RateLimitExceeded.Message" = "Twitter API kullanım sınırına ulaşıldı";
 "Common.Alerts.RateLimitExceeded.Title" = "Kullanım limiti aşıldı";
 "Common.Alerts.ReportAndBlockUserSuccess.Title" = "%@ spam için şikayet edildi ve engellendi";
@@ -224,6 +224,8 @@
 "Common.Controls.Status.Poll.TotalPerson" = "%@ kişi";
 "Common.Controls.Status.Poll.TotalVote" = "%@ oy";
 "Common.Controls.Status.Poll.TotalVotes" = "%@ oylar";
+"Common.Controls.Status.ReplySettings.PeopleUserFollowsOrMentionedCanReply" = "People %@ follows or mentioned can reply.";
+"Common.Controls.Status.ReplySettings.PeopleUserMentionedCanReply" = "People %@ mentioned can reply.";
 "Common.Controls.Status.Thread.Show" = "Bu konuyu göster";
 "Common.Controls.Status.UserBoosted" = "%@ artırıldı";
 "Common.Controls.Status.UserRetweeted" = "%@ retweetledi";
@@ -277,7 +279,7 @@
 "Scene.Compose.Media.Remove" = "Kaldır";
 "Scene.Compose.OthersInThisConversation" = "Bu sohbetteki kişiler:";
 "Scene.Compose.Placeholder" = "Ne oluyor?";
-"Scene.Compose.ReplySettings.EveryoneCanReply" = "Everyone can peply";
+"Scene.Compose.ReplySettings.EveryoneCanReply" = "Herkes yanıtlayabilir";
 "Scene.Compose.ReplySettings.OnlyPeopleYouMentionCanReply" = "Yalnızca bahsettiğiniz kişiler yanıt verebilir";
 "Scene.Compose.ReplySettings.PeopleYouFollowCanReply" = "Takip ettiğiniz kişiler yanıt verebilir";
 "Scene.Compose.ReplyTo" = "... yanıtla";

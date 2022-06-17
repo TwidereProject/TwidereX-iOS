@@ -224,6 +224,8 @@
 "Common.Controls.Status.Poll.TotalPerson" = "%@명";
 "Common.Controls.Status.Poll.TotalVote" = "%@표";
 "Common.Controls.Status.Poll.TotalVotes" = "%@표";
+"Common.Controls.Status.ReplySettings.PeopleUserFollowsOrMentionedCanReply" = "People %@ follows or mentioned can reply.";
+"Common.Controls.Status.ReplySettings.PeopleUserMentionedCanReply" = "People %@ mentioned can reply.";
 "Common.Controls.Status.Thread.Show" = "이 타래 보기";
 "Common.Controls.Status.UserBoosted" = "%@이 부스트했습니다.";
 "Common.Controls.Status.UserRetweeted" = "%@가 리트윗함";

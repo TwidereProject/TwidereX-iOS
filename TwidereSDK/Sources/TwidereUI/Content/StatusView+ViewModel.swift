@@ -13,10 +13,14 @@ import SwiftUI
 import CoreData
 import CoreDataStack
 import TwidereCommon
+import TwidereAsset
+import TwidereLocalization
 import TwidereCore
 import TwitterMeta
 import MastodonMeta
 import Meta
+import TwitterSDK
+import MastodonSDK
 
 extension StatusView {
     public final class ViewModel: ObservableObject {
@@ -97,6 +101,7 @@ extension StatusView {
         @Published public var likeCount: Int = 0
         
         @Published public var visibility: StatusVisibility?
+        @Published public var replySettings: Twitter.Entity.V2.Tweet.ReplySettings?
         
         @Published public var dateTimeProvider: DateTimeProvider?
         @Published public var timestamp: Date?
@@ -126,6 +131,10 @@ extension StatusView {
             public struct RepostInfo {
                 public let authorNameMetaContent: MetaContent
             }
+        }
+        
+        public func prepareForReuse() {
+            replySettings = nil
         }
         
         init() {
@@ -234,6 +243,7 @@ extension StatusView.ViewModel {
         bindPoll(statusView: statusView)
         bindLocation(statusView: statusView)
         bindToolbar(statusView: statusView)
+        bindReplySettings(statusView: statusView)
         bindAccessibility(statusView: statusView)
     }
     
@@ -628,6 +638,29 @@ extension StatusView.ViewModel {
                 displaySaveMediaAction: !mediaViewConfigurations.isEmpty,
                 displayDeleteAction: isDeletable
             ))
+        }
+        .store(in: &disposeBag)
+    }
+    
+    private func bindReplySettings(statusView: StatusView) {
+        Publishers.CombineLatest(
+            $replySettings,
+            $authorUsername
+        )
+        .sink { replySettings, authorUsername in
+            guard let replySettings = replySettings else { return }
+            guard let authorUsername = authorUsername else { return }
+            switch replySettings {
+            case .everyone:
+                return
+            case .following:
+                statusView.replySettingBannerView.imageView.image = Asset.Communication.at.image.withRenderingMode(.alwaysTemplate)
+                statusView.replySettingBannerView.label.text = L10n.Common.Controls.Status.ReplySettings.peopleUserFollowsOrMentionedCanReply("@\(authorUsername)")
+            case .mentionedUsers:
+                statusView.replySettingBannerView.imageView.image = Asset.Human.personCheckMini.image.withRenderingMode(.alwaysTemplate)
+                statusView.replySettingBannerView.label.text = L10n.Common.Controls.Status.ReplySettings.peopleUserMentionedCanReply("@\(authorUsername)")
+            }
+            statusView.setReplySettingsDisplay()
         }
         .store(in: &disposeBag)
     }

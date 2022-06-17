@@ -59,6 +59,7 @@ public class TableViewPlainCell: UITableViewCell {
         // container: H - [ iconImageView | textContainer | accessoryContainerView ]
         let container = UIStackView()
         container.axis = .horizontal
+        container.alignment = .center
         container.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(container)
         NSLayoutConstraint.activate([

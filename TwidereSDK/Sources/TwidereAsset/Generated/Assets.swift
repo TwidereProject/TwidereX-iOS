@@ -106,6 +106,7 @@ public enum Asset {
     public static let eyeSlashMini = ImageAsset(name: "Human/eye.slash.mini")
     public static let faceSmiling = ImageAsset(name: "Human/face.smiling")
     public static let person2 = ImageAsset(name: "Human/person.2")
+    public static let personCheckMini = ImageAsset(name: "Human/person.check.mini")
     public static let personExclamationMini = ImageAsset(name: "Human/person.exclamation.mini")
     public static let person = ImageAsset(name: "Human/person")
     public static let personLarge = ImageAsset(name: "Human/person.large")

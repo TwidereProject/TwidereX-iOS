@@ -95,6 +95,8 @@ extension StatusView {
         status: TwitterStatus,
         configurationContext: ConfigurationContext
     ) {
+        viewModel.prepareForReuse()
+        
         viewModel.managedObjectContext = status.managedObjectContext
         viewModel.objects.insert(status)
         
@@ -110,6 +112,7 @@ extension StatusView {
         configurePoll(status)
         configureLocation(status)
         configureToolbar(status)
+        configureReplySettings(status)
         
         if let quote = status.quote ?? status.repost?.quote {
             quoteStatusView?.configure(
@@ -313,6 +316,13 @@ extension StatusView {
             .assign(to: \.isDeletable, on: viewModel)
             .store(in: &disposeBag)
     }
+    
+    func configureReplySettings(_ status: TwitterStatus) {
+        let status = status.repost ?? status
+        
+        viewModel.replySettings = status.replySettings?.typed
+    }
+    
 }
 
 // MARK: - Mastodon
@@ -323,6 +333,8 @@ extension StatusView {
         notification: MastodonNotification?,
         configurationContext: ConfigurationContext
     ) {
+        viewModel.prepareForReuse()
+        
         viewModel.managedObjectContext = status.managedObjectContext
         viewModel.objects.insert(status)
         

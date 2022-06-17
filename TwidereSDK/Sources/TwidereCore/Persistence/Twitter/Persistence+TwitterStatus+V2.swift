@@ -257,6 +257,14 @@ extension Persistence.TwitterStatus {
         // entities
         status.update(entities: TwitterEntity(entity: context.entity.status.entities))
         
+        // replySettings (v2 only)
+        let _replySettings = context.entity.status.replySettings.flatMap {
+            TwitterReplySettings(value: $0.rawValue)
+        }
+        if let replySettings = _replySettings {
+            status.update(replySettings: replySettings)            
+        }
+        
         // conversationID (v2 only)
         context.entity.status.conversationID.flatMap { status.update(conversationID: $0) }
         
