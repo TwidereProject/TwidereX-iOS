@@ -22,6 +22,7 @@ public struct PollOptionTextField: UIViewRepresentable {
     let configurationHandler: (DeleteBackwardResponseTextField) -> Void
     
     public func makeUIView(context: Context) -> DeleteBackwardResponseTextField {
+        textField.setContentHuggingPriority(.defaultHigh, for: .vertical)
         textField.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
         textField.textInset = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
         textField.borderStyle = .roundedRect
