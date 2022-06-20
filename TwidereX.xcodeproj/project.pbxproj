@@ -234,7 +234,6 @@
 		DB8E4FEC2563D42800459DA2 /* TwitterPinBasedAuthenticationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB8E4FEB2563D42800459DA2 /* TwitterPinBasedAuthenticationViewModel.swift */; };
 		DB914C4A26C3AC7C00E85F1A /* ContentOffsetFixedCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB914C4926C3AC7C00E85F1A /* ContentOffsetFixedCollectionView.swift */; };
 		DB915406254FC8CE00613473 /* FollowActionButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB915405254FC8CE00613473 /* FollowActionButton.swift */; };
-		DB925705251C8FCB004FEFB5 /* ProfileSegmentedViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB925704251C8FCB004FEFB5 /* ProfileSegmentedViewController.swift */; };
 		DB92570A251C8FE0004FEFB5 /* ProfileHeaderViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB925709251C8FE0004FEFB5 /* ProfileHeaderViewController.swift */; };
 		DB925744251C9CD6004FEFB5 /* ProfilePagingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB925743251C9CD6004FEFB5 /* ProfilePagingViewController.swift */; };
 		DB925749251C9D48004FEFB5 /* ProfilePagingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB925748251C9D47004FEFB5 /* ProfilePagingViewModel.swift */; };
@@ -698,7 +697,6 @@
 		DB8E4FEB2563D42800459DA2 /* TwitterPinBasedAuthenticationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwitterPinBasedAuthenticationViewModel.swift; sourceTree = "<group>"; };
 		DB914C4926C3AC7C00E85F1A /* ContentOffsetFixedCollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentOffsetFixedCollectionView.swift; sourceTree = "<group>"; };
 		DB915405254FC8CE00613473 /* FollowActionButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FollowActionButton.swift; sourceTree = "<group>"; };
-		DB925704251C8FCB004FEFB5 /* ProfileSegmentedViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileSegmentedViewController.swift; sourceTree = "<group>"; };
 		DB925709251C8FE0004FEFB5 /* ProfileHeaderViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileHeaderViewController.swift; sourceTree = "<group>"; };
 		DB925743251C9CD6004FEFB5 /* ProfilePagingViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfilePagingViewController.swift; sourceTree = "<group>"; };
 		DB925748251C9D47004FEFB5 /* ProfilePagingViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfilePagingViewModel.swift; sourceTree = "<group>"; };
@@ -1519,7 +1517,7 @@
 		DB747FFD251C496E000C4BD7 /* Profile */ = {
 			isa = PBXGroup;
 			children = (
-				DB92570E251C900F004FEFB5 /* Segmented */,
+				DB925742251C9CC8004FEFB5 /* Paging */,
 				DB925732251C9294004FEFB5 /* Header */,
 				DBD40C1A2599D7F6006E4ABC /* FriendshipList */,
 				DB747FF8251C496A000C4BD7 /* ProfileViewController.swift */,
@@ -1692,15 +1690,6 @@
 			path = Twitter;
 			sourceTree = "<group>";
 		};
-		DB92570E251C900F004FEFB5 /* Segmented */ = {
-			isa = PBXGroup;
-			children = (
-				DB925742251C9CC8004FEFB5 /* Paging */,
-				DB925704251C8FCB004FEFB5 /* ProfileSegmentedViewController.swift */,
-			);
-			path = Segmented;
-			sourceTree = "<group>";
-		};
 		DB925732251C9294004FEFB5 /* Header */ = {
 			isa = PBXGroup;
 			children = (
@@ -1717,7 +1706,8 @@
 				DB925743251C9CD6004FEFB5 /* ProfilePagingViewController.swift */,
 				DB925748251C9D47004FEFB5 /* ProfilePagingViewModel.swift */,
 			);
-			path = Paging;
+			name = Paging;
+			path = Segmented/Paging;
 			sourceTree = "<group>";
 		};
 		DB94B6B526C65BED00A2E8A1 /* Mastodon */ = {
@@ -3054,7 +3044,6 @@
 				DB25C4CF2779A06D00EC1435 /* SavedSearchViewModel.swift in Sources */,
 				DB66DB8D2823A7C80071F5F3 /* SecondaryTabBarController.swift in Sources */,
 				DB148B05281A81AE00B596C7 /* SidebarViewModel.swift in Sources */,
-				DB925705251C8FCB004FEFB5 /* ProfileSegmentedViewController.swift in Sources */,
 				DB74A16E256E50E300C5F3C9 /* UIColor.swift in Sources */,
 				DB676161254BE580006C6798 /* MediaPreviewCollectionViewCell.swift in Sources */,
 				DB01092026E60756005F67D7 /* DataSourceFacade+StatusThread.swift in Sources */,
