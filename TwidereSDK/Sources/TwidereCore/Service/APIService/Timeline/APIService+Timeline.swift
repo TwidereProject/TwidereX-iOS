@@ -127,19 +127,40 @@ extension APIService {
     }   // end func
 }
 
+// Fetch v1 API again to update v2 missing properies
 extension APIService {
     
     public struct TwitterBatchLookupResponse {
+        let logger = Logger(subsystem: "APIService", category: "TwitterBatchLookupResponse")
+        
         public let lookupDict: [Twitter.Entity.Tweet.ID: Twitter.Entity.Tweet]
         
         public func update(status: TwitterStatus, me: TwitterUser) {
             guard let lookupStatus = lookupDict[status.id] else { return }
             
+            // like state
             lookupStatus.favorited.flatMap {
                 status.update(isLike: $0, by: me)
             }
+            // repost state
             lookupStatus.retweeted.flatMap {
                 status.update(isRepost: $0, by: me)
+            }
+            // media
+            if let twitterAttachments = lookupStatus.twitterAttachments {
+                // gif
+                let isGIF = twitterAttachments.contains(where: { $0.kind == .animatedGIF })
+                if isGIF {
+                    logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): fix GIF missing")
+                    status.update(attachments: twitterAttachments)
+                    return
+                }
+                // media missing bug
+                if status.attachments.isEmpty {
+                    logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): fix media missing")
+                    status.update(attachments: twitterAttachments)
+                    return
+                }
             }
         }
         
