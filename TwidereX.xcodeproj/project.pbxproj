@@ -744,6 +744,7 @@
 		DBA6B30D27E9CB6F004D052D /* AddListMemberViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddListMemberViewController.swift; sourceTree = "<group>"; };
 		DBA6B31027E9CBCC004D052D /* AddListMemberViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddListMemberViewModel.swift; sourceTree = "<group>"; };
 		DBA7DD73256B96450008A95A /* UIFont.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIFont.swift; sourceTree = "<group>"; };
+		DBA8D79528609CC500F33B81 /* ShareExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = ShareExtension.entitlements; sourceTree = "<group>"; };
 		DBAA898D2758CF01001C273B /* DrawerSidebarHeaderView+ViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DrawerSidebarHeaderView+ViewModel.swift"; sourceTree = "<group>"; };
 		DBAA898F2758DFC9001C273B /* AvatarBarButtonItem+ViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AvatarBarButtonItem+ViewModel.swift"; sourceTree = "<group>"; };
 		DBAA89912758EF12001C273B /* DrawerSidebarViewModel+Diffable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DrawerSidebarViewModel+Diffable.swift"; sourceTree = "<group>"; };
@@ -1855,6 +1856,7 @@
 		DBBBBE5F2744E8CC007ACB4B /* ShareExtension */ = {
 			isa = PBXGroup;
 			children = (
+				DBA8D79528609CC500F33B81 /* ShareExtension.entitlements */,
 				DBBBBE602744E8CC007ACB4B /* ComposeViewController.swift */,
 				DBBBBE8C2744F9D9007ACB4B /* ComposeViewModel.swift */,
 				DBBBBE622744E8CC007ACB4B /* MainInterface.storyboard */,
@@ -3462,6 +3464,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
+				CODE_SIGN_ENTITLEMENTS = ShareExtension/ShareExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 102;
 				DEVELOPMENT_TEAM = 7LFDZ96332;
@@ -3583,6 +3586,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
+				CODE_SIGN_ENTITLEMENTS = ShareExtension/ShareExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 102;
 				DEVELOPMENT_TEAM = 7LFDZ96332;
@@ -3609,6 +3613,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
+				CODE_SIGN_ENTITLEMENTS = ShareExtension/ShareExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 102;
 				DEVELOPMENT_TEAM = 7LFDZ96332;
