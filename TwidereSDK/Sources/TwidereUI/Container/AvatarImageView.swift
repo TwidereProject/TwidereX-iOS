@@ -11,6 +11,9 @@ import FLAnimatedImage
 import AlamofireImage
 
 public class AvatarImageView: FLAnimatedImageView {
+    public static var borderColor: UIColor = UIColor.label.withAlphaComponent(0.05)
+    public static var borderWidth: CGFloat = 1
+    
     public var imageViewSize: CGSize?
     public var configuration = Configuration(url: nil)
     public var cornerConfiguration = CornerConfiguration()
@@ -21,7 +24,12 @@ extension AvatarImageView {
     override public func layoutSubviews() {
         super.layoutSubviews()
         
+        // set corner
         setup(corner: cornerConfiguration.corner)
+        
+        // set border
+        layer.borderColor = AvatarImageView.borderColor.cgColor
+        layer.borderWidth = AvatarImageView.borderWidth
     }
     
     private func setup(corner: CornerConfiguration.Corner) {
