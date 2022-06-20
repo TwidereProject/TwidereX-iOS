@@ -10,6 +10,7 @@ import UIKit
 import Combine
 import XLPagerTabStrip
 import TabBarPager
+import TwidereAsset
 
 protocol ProfilePagingViewControllerDelegate: AnyObject {
     func profilePagingViewController(_ viewController: ProfilePagingViewController, didScrollToPostCustomScrollViewContainerController customScrollViewContainerController: ScrollViewContainer, atIndex index: Int)
@@ -65,7 +66,7 @@ extension ProfilePagingViewController {
         settings.style.buttonBarItemBackgroundColor = .systemBackground
         settings.style.buttonBarItemsShouldFillAvailableWidth = true
         settings.style.selectedBarHeight = 3
-        settings.style.selectedBarBackgroundColor = .systemBlue
+        settings.style.selectedBarBackgroundColor = Asset.Colors.hightLight.color
         changeCurrentIndexProgressive = { [weak self] (oldCell: ButtonBarViewCell?, newCell: ButtonBarViewCell?, progressPercentage: CGFloat, changeCurrentIndex: Bool, animated: Bool) -> Void in
             guard let _ = self else { return }
             guard changeCurrentIndex == true else { return }
@@ -73,7 +74,7 @@ extension ProfilePagingViewController {
             newCell?.imageView.contentMode = .center
             
             oldCell?.imageView.tintColor = .secondaryLabel
-            newCell?.imageView.tintColor = .systemBlue
+            newCell?.imageView.tintColor = Asset.Colors.hightLight.color
         }
         
         super.viewDidLoad()
