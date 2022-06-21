@@ -146,7 +146,12 @@ extension NotificationBannerView {
         containerBackgroundView.layer.cornerCurve = .continuous
         containerBackgroundView.layer.cornerRadius = 12
         containerShadowView.layer.setupShadow(
-            alpha: 0.25,
+            color: .black,
+            alpha: 0.05,
+            x: 0,
+            y: 8,
+            blur: 40,
+            spread: 0,
             roundedRect: containerBackgroundView.bounds,
             byRoundingCorners: .allCorners,
             cornerRadii: CGSize(width: 12, height: 12)

@@ -266,6 +266,9 @@ extension ComposeContentView {
                 // expire configuration
                 Button {
                     isPollExpireConfigurationPopoverPresent.toggle()
+                    if isPollExpireConfigurationPopoverPresent {
+                        UIApplication.shared.keyWindowScene?.keyWindow?.endEditing(true)
+                    }
                 } label: {
                     HStack {
                         VectorImageView(
@@ -292,6 +295,8 @@ extension ComposeContentView {
                     attributes: {
                         // disable rubber to allow Picker interaction
                         $0.rubberBandingMode = .none
+                        // layout popover center to button center
+                        $0.position = .absolute(originAnchor: .bottomLeft, popoverAnchor: .topLeft)
                         $0.dismissal.mode = [.tapOutside]
                     }
                 ) {
