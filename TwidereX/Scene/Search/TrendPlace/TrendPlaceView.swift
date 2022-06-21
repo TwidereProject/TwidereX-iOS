@@ -29,7 +29,8 @@ struct TrendPlaceView: View {
             return viewModel.twitterTrendPlaces
         } else {
             return viewModel.twitterTrendPlaces.filter { place in
-                place.name.lowercased().contains(viewModel.searchText.lowercased())
+                let searchText = viewModel.searchText.lowercased()
+                return place.name.lowercased().hasPrefix(searchText)
             }
         }
     }
