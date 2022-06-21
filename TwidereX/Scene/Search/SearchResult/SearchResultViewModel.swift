@@ -102,16 +102,16 @@ extension SearchResultViewModel {
         switch scope {
         case .status:
             let _viewController = SearchTimelineViewController()
-            _viewController.viewModel = SearchTimelineViewModel(context: context)
-            $searchText.assign(to: &_viewController.viewModel.$searchText)
-            $userIdentifier.assign(to: &_viewController.viewModel.$userIdentifier)
+            let _viewModel = SearchTimelineViewModel(context: context)
+            _viewController.viewModel = _viewModel
+            $searchText.assign(to: &_viewModel.$searchText)
             viewController = _viewController
         
         case .media:
-            let _viewController = SearchMediaViewController()
-            _viewController.viewModel = SearchMediaViewModel(context: context)
-            $searchText.assign(to: &_viewController.viewModel.$searchText)
-            $userIdentifier.assign(to: &_viewController.viewModel.$userIdentifier)
+            let _viewController = SearchMediaTimelineViewController()
+            let _viewModel = SearchMediaTimelineViewModel(context: context)
+            _viewController.viewModel = _viewModel
+            $searchText.assign(to: &_viewModel.$searchText)
             viewController = _viewController
             
         case .user:
@@ -120,16 +120,19 @@ extension SearchResultViewModel {
             $searchText.assign(to: &_viewController.viewModel.$searchText)
             $userIdentifier.assign(to: &_viewController.viewModel.$userIdentifier)
             viewController = _viewController
+            
         case .hashtag:
             let _viewController = SearchHashtagViewController()
             _viewController.viewModel = SearchHashtagViewModel(context: context)
             $searchText.assign(to: &_viewController.viewModel.$searchText)
             viewController = _viewController
-        }
+        }   // end switch
+        
         if let viewController = viewController as? NeedsDependency {
             viewController.context = context
             viewController.coordinator = _coordinator
         }
+        
         return viewController
     }
 }

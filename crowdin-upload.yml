@@ -7,7 +7,5 @@ files: [
  {
   "source" : "TwidereXIntent/en.lproj/Intents.strings",
   "translation" : "translation/%locale_with_underscore%/%original_file_name%",
-  "update_option" : "update_as_unapproved",
-  "skip_untranslated_strings" : false,
  }
 ]

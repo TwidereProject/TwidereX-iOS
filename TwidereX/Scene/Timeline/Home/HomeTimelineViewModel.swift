@@ -9,17 +9,19 @@ import os.log
 import UIKit
 import CoreDataStack
 
-final class HomeTimelineViewModel: TimelineViewModel {
+final class HomeTimelineViewModel: ListTimelineViewModel {
     
     init(context: AppContext) {
         super.init(context: context, kind: .home)
+        
+        enableAutoFetchLatest = true
         
         context.authenticationService.$activeAuthenticationContext
             .sink { [weak self] authenticationContext in
                 guard let self = self else { return }
                 let emptyFeedPredicate = Feed.nonePredicate()
                 guard let authenticationContext = authenticationContext else {
-                    self.fetchedResultsController.predicate = emptyFeedPredicate
+                    self.feedFetchedResultsController.predicate = emptyFeedPredicate
                     return
                 }
                 
@@ -33,7 +35,7 @@ final class HomeTimelineViewModel: TimelineViewModel {
                     let userID = authenticationContext.userID
                     predicate = Feed.predicate(kind: .home, acct: Feed.Acct.mastodon(domain: domain, userID: userID))
                 }
-                self.fetchedResultsController.predicate = predicate
+                self.feedFetchedResultsController.predicate = predicate
             }
             .store(in: &disposeBag)
     }

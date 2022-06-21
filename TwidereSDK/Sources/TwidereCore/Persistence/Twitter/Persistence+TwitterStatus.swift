@@ -51,6 +51,16 @@ extension Persistence.TwitterStatus {
             self.isNewInsertion = isNewInsertion
             self.isNewInsertionAuthor = isNewInsertionAuthor
         }
+        
+        #if DEBUG
+        public let logger = Logger(subsystem: "Persistence.TwitterStatus.PersistResult", category: "Persist")
+        public func log() {
+            let statusInsertionFlag = isNewInsertion ? "+" : "-"
+            let authorInsertionFlag = isNewInsertionAuthor ? "+" : "-"
+            let contentPreview = status.text.prefix(32).replacingOccurrences(of: "\n", with: " ")
+            logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): [\(statusInsertionFlag)](\(status.id))[\(authorInsertionFlag)](\(status.author.id))@\(status.author.username): \(contentPreview)")
+        }
+        #endif
     }
     
     public static func createOrMerge(
@@ -106,6 +116,7 @@ extension Persistence.TwitterStatus {
             let author = authorResult.user
             
             let relationship = TwitterStatus.Relationship(
+                poll: nil,
                 author: author,
                 repost: repost,
                 quote: quote

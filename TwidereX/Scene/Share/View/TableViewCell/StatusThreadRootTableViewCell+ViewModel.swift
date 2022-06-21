@@ -57,12 +57,12 @@ extension StatusThreadRootTableViewCell {
             )
         case .twitterStatus(let status):
             statusView.configure(
-                twitterStatus: status,
+                status: status,
                 configurationContext: configurationContext
             )
         case .mastodonStatus(let status):
             statusView.configure(
-                mastodonStatus: status,
+                status: status,
                 notification: nil,
                 configurationContext: configurationContext
             )

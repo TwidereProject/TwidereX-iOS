@@ -10,6 +10,6 @@ import TwitterSDK
 import MastodonSDK
 
 public enum StatusPublishResult {
-    case twitter(Twitter.Response.Content<Twitter.Entity.Tweet>)
+    case twitter(Twitter.Response.Content<Twitter.API.V2.Status.PublishContent>)
     case mastodon(Mastodon.Response.Content<Mastodon.Entity.Status>)
 }

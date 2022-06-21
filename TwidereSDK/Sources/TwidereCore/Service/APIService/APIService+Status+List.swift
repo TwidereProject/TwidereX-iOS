@@ -35,6 +35,7 @@ extension APIService {
         )
         
         if let statusIDs = response.value.data?.compactMap({ $0.id }), !statusIDs.isEmpty {
+            assert(statusIDs.count <= 100)
             _ = try await twitterStatus(
                 statusIDs: statusIDs,
                 authenticationContext: authenticationContext

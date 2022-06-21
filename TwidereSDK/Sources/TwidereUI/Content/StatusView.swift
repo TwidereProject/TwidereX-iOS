@@ -229,6 +229,9 @@ public final class StatusView: UIView {
     // toolbar
     public let toolbar = StatusToolbar()
     
+    // reply settings
+    public let replySettingBannerView = ReplySettingBannerView()
+    
     public override init(frame: CGRect) {
         super.init(frame: frame)
         _init()
@@ -257,6 +260,7 @@ extension StatusView {
         viewModel.objects.removeAll()
         viewModel.authorAvatarImageURL = nil
         authorAvatarButton.avatarImageView.cancelTask()
+        quoteStatusView?.prepareForReuse()
         mediaGridContainerView.prepareForReuse()
         if var snapshot = pollTableViewDiffableDataSource?.snapshot() {
             snapshot.deleteAllItems()
@@ -359,6 +363,7 @@ extension StatusView {
             statusView.pollVoteActivityIndicatorView.isHidden = true
             statusView.quoteStatusView?.isHidden = true
             statusView.locationContainer.isHidden = true
+            statusView.replySettingBannerView.isHidden = true
         }
     }
 }
@@ -708,6 +713,9 @@ extension StatusView.Style {
         // toolbar
         statusView.containerStackView.addArrangedSubview(statusView.toolbar)
         statusView.toolbar.setContentHuggingPriority(.required - 9, for: .vertical)
+        
+        // reply settings
+        statusView.containerStackView.addArrangedSubview(statusView.replySettingBannerView)
     }
     
     private func layoutQuote(statusView: StatusView) {
@@ -944,6 +952,10 @@ extension StatusView {
     
     public func setLocationDisplay() {
         locationContainer.isHidden = false
+    }
+    
+    public func setReplySettingsDisplay() {
+        replySettingBannerView.isHidden = false
     }
     
     // content text Width

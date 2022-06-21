@@ -11,6 +11,8 @@ extension Twitter.API.V2.Status {
     public enum List { }
 }
 
+// List Tweets Lookup
+// https://developer.twitter.com/en/docs/twitter-api/lists/list-tweets/api-reference/get-lists-id-tweets
 extension Twitter.API.V2.Status.List {
 
     static func tweetsEndpointURL(listID: Twitter.Entity.V2.List.ID) -> URL {

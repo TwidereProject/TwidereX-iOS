@@ -46,7 +46,7 @@ extension APIService {
     ) async throws -> PublishStatusResponse {
         switch authenticationContext {
         case .twitter(let authenticationContext):
-            let response = try await publishTwitterStatus(
+            let response = try await publishTwitterStatusV1(
                 content: context.content,
                 mediaIDs: nil,
                 placeID: nil,
@@ -92,6 +92,19 @@ extension APIService {
 extension APIService {
     
     public func publishTwitterStatus(
+        query: Twitter.API.V2.Status.PublishQuery,
+        twitterAuthenticationContext: TwitterAuthenticationContext
+    ) async throws -> Twitter.Response.Content<Twitter.API.V2.Status.PublishContent> {
+        let response = try await Twitter.API.V2.Status.publish(
+            session: session,
+            query: query,
+            authorization: twitterAuthenticationContext.authorization
+        )
+        
+        return response
+    }
+    
+    public func publishTwitterStatusV1(
         content: String,
         mediaIDs: [String]?,
         placeID: String?,

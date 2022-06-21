@@ -66,25 +66,10 @@ extension Persistence.MastodonPoll {
                 isNewInsertion: false
             )
         } else {
-            let options: [MastodonPollOption] = context.entity.options.enumerated().map { i, entity in
-                let optionResult = Persistence.MastodonPollOption.persist(
-                    in: managedObjectContext,
-                    context: Persistence.MastodonPollOption.PersistContext(
-                        index: i,
-                        entity: entity,
-                        me: context.me,
-                        networkDate: context.networkDate
-                    )
-                )
-                return optionResult.option
-            }
-            
             let poll = create(
                 in: managedObjectContext,
                 context: context
             )
-            poll.attach(options: options)
-
             return PersistResult(
                 poll: poll,
                 isNewInsertion: true
@@ -125,6 +110,21 @@ extension Persistence.MastodonPoll {
             into: managedObjectContext,
             property: property
         )
+        
+        let options: [MastodonPollOption] = context.entity.options.enumerated().map { i, entity in
+            let optionResult = Persistence.MastodonPollOption.persist(
+                in: managedObjectContext,
+                context: Persistence.MastodonPollOption.PersistContext(
+                    index: i,
+                    entity: entity,
+                    me: context.me,
+                    networkDate: context.networkDate
+                )
+            )
+            return optionResult.option
+        }
+        poll.attach(options: options)
+        
         update(poll: poll, context: context)
         return poll
     }

@@ -8,6 +8,7 @@
 import os.log
 import Foundation
 import CoreDataStack
+import TwitterSDK
 import MastodonSDK
 import func QuartzCore.CACurrentMediaTime
 
@@ -124,4 +125,75 @@ extension APIService {
             
         }   // end managedObjectContext.performChanges
     }   // end func
+}
+
+// Fetch v1 API again to update v2 missing properies
+extension APIService {
+    
+    public struct TwitterBatchLookupResponse {
+        let logger = Logger(subsystem: "APIService", category: "TwitterBatchLookupResponse")
+        
+        public let lookupDict: [Twitter.Entity.Tweet.ID: Twitter.Entity.Tweet]
+        
+        public func update(status: TwitterStatus, me: TwitterUser) {
+            guard let lookupStatus = lookupDict[status.id] else { return }
+            
+            // like state
+            lookupStatus.favorited.flatMap {
+                status.update(isLike: $0, by: me)
+            }
+            // repost state
+            lookupStatus.retweeted.flatMap {
+                status.update(isRepost: $0, by: me)
+            }
+            // media
+            if let twitterAttachments = lookupStatus.twitterAttachments {
+                // gif
+                let isGIF = twitterAttachments.contains(where: { $0.kind == .animatedGIF })
+                if isGIF {
+                    logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): fix GIF missing")
+                    status.update(attachments: twitterAttachments)
+                    return
+                }
+                // media missing bug
+                if status.attachments.isEmpty {
+                    logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): fix media missing")
+                    status.update(attachments: twitterAttachments)
+                    return
+                }
+            }
+        }
+        
+        public func update(statuses: [TwitterStatus], me: TwitterUser) {
+            for status in statuses {
+                update(status: status, me: me)
+            }
+        }
+    }
+ 
+    public func twitterBatchLookup(
+        statusIDs: [Twitter.Entity.Tweet.ID],
+        authenticationContext: TwitterAuthenticationContext
+    ) async throws -> TwitterBatchLookupResponse {
+        let chunks = stride(from: 0, to: statusIDs.count, by: 100).map {
+            statusIDs[$0..<Swift.min(statusIDs.count, $0 + 100)]
+        }
+        
+        var lookupDict: [Twitter.Entity.Tweet.ID: Twitter.Entity.Tweet] = [:]
+        for chunk in chunks {
+            let query = Twitter.API.Lookup.LookupQuery(ids: Array(chunk))
+            let response = try await Twitter.API.Lookup.tweets(
+                session: session,
+                query: query,
+                authorization: authenticationContext.authorization
+            )
+            
+            for status in response.value {
+                lookupDict[status.idStr] = status
+            }
+        }
+        
+        return .init(lookupDict: lookupDict)
+    }
+    
 }

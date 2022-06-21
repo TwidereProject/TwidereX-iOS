@@ -6,72 +6,62 @@
 //
 
 import Foundation
+import OrderedCollections
 
 extension Twitter.Response.V2 {
     public class DictContent {
-        public let tweetDict: [Twitter.Entity.V2.Tweet.ID: Twitter.Entity.V2.Tweet]
-        public let userDict: [Twitter.Entity.V2.User.ID: Twitter.Entity.V2.User]
-        public let mediaDict: [Twitter.Entity.V2.Media.ID: Twitter.Entity.V2.Media]
-        public let placeDict: [Twitter.Entity.V2.Place.ID: Twitter.Entity.V2.Place]
+        public let tweetDict: OrderedDictionary<Twitter.Entity.V2.Tweet.ID, Twitter.Entity.V2.Tweet>
+        public let userDict: OrderedDictionary<Twitter.Entity.V2.User.ID, Twitter.Entity.V2.User>
+        public let mediaDict: OrderedDictionary<Twitter.Entity.V2.Media.ID, Twitter.Entity.V2.Media>
+        public let placeDict: OrderedDictionary<Twitter.Entity.V2.Place.ID, Twitter.Entity.V2.Place>
+        public let pollDict: OrderedDictionary<Twitter.Entity.V2.Tweet.Poll.ID, Twitter.Entity.V2.Tweet.Poll>
         
         public init(
-            tweetDict: [Twitter.Entity.V2.Tweet.ID: Twitter.Entity.V2.Tweet],
-            userDict: [Twitter.Entity.V2.User.ID: Twitter.Entity.V2.User],
-            mediaDict: [Twitter.Entity.V2.Media.ID: Twitter.Entity.V2.Media],
-            placeDict: [Twitter.Entity.V2.Place.ID: Twitter.Entity.V2.Place]
+            tweetDict: OrderedDictionary<Twitter.Entity.V2.Tweet.ID, Twitter.Entity.V2.Tweet>,
+            userDict: OrderedDictionary<Twitter.Entity.V2.User.ID, Twitter.Entity.V2.User>,
+            mediaDict: OrderedDictionary<Twitter.Entity.V2.Media.ID, Twitter.Entity.V2.Media>,
+            placeDict: OrderedDictionary<Twitter.Entity.V2.Place.ID, Twitter.Entity.V2.Place>,
+            pollDict: OrderedDictionary<Twitter.Entity.V2.Tweet.Poll.ID, Twitter.Entity.V2.Tweet.Poll>
         ) {
             self.tweetDict = tweetDict
             self.userDict = userDict
             self.mediaDict = mediaDict
             self.placeDict = placeDict
+            self.pollDict = pollDict
         }
         
         public convenience init(
             tweets: [Twitter.Entity.V2.Tweet],
             users: [Twitter.Entity.V2.User],
             media: [Twitter.Entity.V2.Media],
-            places: [Twitter.Entity.V2.Place]
+            places: [Twitter.Entity.V2.Place],
+            polls: [Twitter.Entity.V2.Tweet.Poll]
         ) {
-            var tweetDict: [Twitter.Entity.V2.Tweet.ID: Twitter.Entity.V2.Tweet] = [:]
-            for tweet in tweets {
-                guard tweetDict[tweet.id] == nil else {
-                    continue
-                }
-                tweetDict[tweet.id] = tweet
-            }
-            
-            var userDict: [Twitter.Entity.V2.User.ID: Twitter.Entity.V2.User] = [:]
-            for user in users {
-                guard userDict[user.id] == nil else {
-                    continue
-                }
-                userDict[user.id] = user
-            }
-            
-            var mediaDict: [Twitter.Entity.V2.Media.ID: Twitter.Entity.V2.Media] = [:]
-            for media in media {
-                guard mediaDict[media.mediaKey] == nil else {
-                    continue
-                }
-                mediaDict[media.mediaKey] = media
-            }
-            
-            var placeDict: [Twitter.Entity.V2.Place.ID: Twitter.Entity.V2.Place] = [:]
-            for place in places {
-                guard placeDict[place.id] == nil else {
-                    continue
-                }
-                placeDict[place.id] = place
-            }
-            
             self.init(
-                tweetDict: tweetDict,
-                userDict: userDict,
-                mediaDict: mediaDict,
-                placeDict: placeDict
+                tweetDict: Twitter.Response.V2.DictContent.collect(array: tweets),
+                userDict: Twitter.Response.V2.DictContent.collect(array: users),
+                mediaDict: Twitter.Response.V2.DictContent.collect(array: media),
+                placeDict: Twitter.Response.V2.DictContent.collect(array: places),
+                pollDict: Twitter.Response.V2.DictContent.collect(array: polls)
             )
         }
     }
+    
+}
+
+extension Twitter.Response.V2.DictContent {
+    
+    private static func collect<T: Identifiable>(array: [T]) -> OrderedDictionary<T.ID, T> {
+        var dict: OrderedDictionary<T.ID, T> = [:]
+        for element in array {
+            guard dict[element.id] == nil else {
+                continue
+            }
+            dict[element.id] = element
+        }
+        return dict
+    }
+    
 }
 
 extension Twitter.Response.V2.DictContent {
@@ -92,4 +82,8 @@ extension Twitter.Response.V2.DictContent {
         return placeDict[placeID]
     }
     
+    public func poll(for tweet: Twitter.Entity.V2.Tweet) -> Twitter.Entity.V2.Tweet.Poll? {
+        guard let pollID = tweet.attachments?.pollIDs?.first else { return nil }
+        return pollDict[pollID]
+    }
 }

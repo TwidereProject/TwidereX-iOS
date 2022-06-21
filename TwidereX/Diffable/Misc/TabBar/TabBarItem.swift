@@ -94,11 +94,11 @@ extension TabBarItem {
             viewController = _viewController
         case .local:
             let _viewController = FederatedTimelineViewController()
-            _viewController.viewModel = FederatedTimelineViewModel(context: context, local: true)
+            _viewController.viewModel = FederatedTimelineViewModel(context: context, isLocal: true)
             viewController = _viewController
         case .federated:
             let _viewController = FederatedTimelineViewController()
-            _viewController.viewModel = FederatedTimelineViewModel(context: context, local: false)
+            _viewController.viewModel = FederatedTimelineViewModel(context: context, isLocal: false)
             viewController = _viewController
         case .messages:
             fatalError()

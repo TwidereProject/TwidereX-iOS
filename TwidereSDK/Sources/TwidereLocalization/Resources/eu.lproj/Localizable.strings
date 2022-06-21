@@ -127,6 +127,8 @@
 "Common.Alerts.PhotoSaveFail.Message" = "Mesedez, saiatu berriro";
 "Common.Alerts.PhotoSaveFail.Title" = "Ezin izan da argazkia gorde";
 "Common.Alerts.PhotoSaved.Title" = "Argazkia gordeta";
+"Common.Alerts.PostFailInvalidPoll.Message" = "Poll has empty field. Please fulfill the field then try again";
+"Common.Alerts.PostFailInvalidPoll.Title" = "Failed to Publish";
 "Common.Alerts.RateLimitExceeded.Message" = "Twitterreko APIren erabilera-mugara iritsita";
 "Common.Alerts.RateLimitExceeded.Title" = "Tasaren muga gainditu da";
 "Common.Alerts.ReportAndBlockUserSuccess.Title" = "%@ spam bidez salatu da eta blokeatu da";
@@ -156,9 +158,11 @@
 "Common.Controls.Actions.Add" = "Gehitu";
 "Common.Controls.Actions.Browse" = "Arakatu";
 "Common.Controls.Actions.Cancel" = "Ezeztatu";
+"Common.Controls.Actions.Clear" = "Clear";
 "Common.Controls.Actions.Confirm" = "Baieztatu";
 "Common.Controls.Actions.Copy" = "Copy";
 "Common.Controls.Actions.Delete" = "Ezabatu";
+"Common.Controls.Actions.Done" = "Eginda";
 "Common.Controls.Actions.Edit" = "Editatu";
 "Common.Controls.Actions.Ok" = "Ados";
 "Common.Controls.Actions.OpenInSafari" = "Ireki esteka Safarirekin";
@@ -220,6 +224,8 @@
 "Common.Controls.Status.Poll.TotalPerson" = "%@ jende";
 "Common.Controls.Status.Poll.TotalVote" = "%@ boto";
 "Common.Controls.Status.Poll.TotalVotes" = "%@ boto";
+"Common.Controls.Status.ReplySettings.PeopleUserFollowsOrMentionedCanReply" = "People %@ follows or mentioned can reply.";
+"Common.Controls.Status.ReplySettings.PeopleUserMentionedCanReply" = "People %@ mentioned can reply.";
 "Common.Controls.Status.Thread.Show" = "Erakutsi hari hau";
 "Common.Controls.Status.UserBoosted" = "%@-(e)k bultzatu du";
 "Common.Controls.Status.UserRetweeted" = "%@ bertxiotu du";
@@ -265,8 +271,17 @@
 "Scene.Compose.And" = ", ";
 "Scene.Compose.CwPlaceholder" = "Idatz ezazu hemen zure ohartarazpena";
 "Scene.Compose.LastEnd" = " eta ";
+"Scene.Compose.Media.Caption.Add" = "Add Caption";
+"Scene.Compose.Media.Caption.AddADescriptionForThisImage" = "Add a description for this image";
+"Scene.Compose.Media.Caption.Remove" = "Remove Caption";
+"Scene.Compose.Media.Caption.Update" = "Update Caption";
+"Scene.Compose.Media.Preview" = "Aurrebista";
+"Scene.Compose.Media.Remove" = "Ezabatu";
 "Scene.Compose.OthersInThisConversation" = "Beste batzuk elkarrizketa honetan:";
 "Scene.Compose.Placeholder" = "Zer gertatzen ari da?";
+"Scene.Compose.ReplySettings.EveryoneCanReply" = "Everyone can peply";
+"Scene.Compose.ReplySettings.OnlyPeopleYouMentionCanReply" = "Only people you mention can reply";
+"Scene.Compose.ReplySettings.PeopleYouFollowCanReply" = "People you follow can reply";
 "Scene.Compose.ReplyTo" = "… erantzun";
 "Scene.Compose.ReplyingTo" = "Erantzuten bidaltzaile honi:";
 "Scene.Compose.SaveDraft.Action" = "Zirriborroa gorde";

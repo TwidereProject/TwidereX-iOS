@@ -8,7 +8,7 @@
 import Foundation
 
 extension Twitter.Entity.V2 {
-    public struct Tweet: Codable {
+    public struct Tweet: Codable, Identifiable {
         
         public typealias ID = String
         public typealias ConversationID = String
@@ -30,6 +30,7 @@ extension Twitter.Entity.V2 {
         public let publicMetrics: PublicMetrics?
         public let possiblySensitive: Bool?
         public let referencedTweets: [ReferencedTweet]?
+        public let replySettings: ReplySettings?
         public let source: String?
         public let withheld: Withheld?
         
@@ -49,6 +50,7 @@ extension Twitter.Entity.V2 {
             case publicMetrics = "public_metrics"
             case possiblySensitive = "possibly_sensitive"
             case referencedTweets = "referenced_tweets"
+            case replySettings = "reply_settings"
             case source
             case withheld
         }

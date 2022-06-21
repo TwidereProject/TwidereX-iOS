@@ -10,33 +10,10 @@ import SwiftUI
 import TwidereAsset
 import TwidereUI
 
-enum AboutEntryType: Identifiable, Hashable, CaseIterable {
-    
-    case github
-    case twitter
-    case telegram
-    case discord
-    case license
-    case privacyPolicy
-    
-    var id: AboutEntryType { return self }
-    
-    public var text: String {
-        switch self {
-        case .github:           return "GitHub"
-        case .twitter:          return "Twitter"
-        case .telegram:         return "Telegram"
-        case .discord:          return "Discord"
-        case .license:          return "License"
-        case .privacyPolicy:    return "Privacy Policy"
-        }
-    }
-    
-}
-
 struct AboutView: View {
     
     @EnvironmentObject var context: AppContext
+    @ObservedObject var viewModel: AboutViewModel
     @ObservedObject var manager = MotionManager()
     
     var body: some View {
@@ -66,28 +43,28 @@ struct AboutView: View {
                 .foregroundColor(Color(uiColor: .secondaryLabel))
                 HStack(alignment: .center, spacing: 24) {
                     Button(action: {
-                        context.viewStateStore.aboutView.aboutEntryPublisher.send(.twitter)
+                        viewModel.entryPublisher.send(.twitter)
                     }, label: {
                         Image(Asset.Logo.twitterCircle.name, bundle: TwidereAsset.bundle)
                             .renderingMode(.template)
                             .foregroundColor(.secondary)
                     })
                     Button(action: {
-                        context.viewStateStore.aboutView.aboutEntryPublisher.send(.github)
+                        viewModel.entryPublisher.send(.github)
                     }, label: {
                         Image(Asset.Logo.githubCircle.name, bundle: TwidereAsset.bundle)
                             .renderingMode(.template)
                             .foregroundColor(.secondary)
                     })
                     Button(action: {
-                        context.viewStateStore.aboutView.aboutEntryPublisher.send(.telegram)
+                        viewModel.entryPublisher.send(.telegram)
                     }, label: {
                         Image(Asset.Logo.telegramCircle.name, bundle: TwidereAsset.bundle)
                             .renderingMode(.template)
                             .foregroundColor(.secondary)
                     })
                     Button(action: {
-                        context.viewStateStore.aboutView.aboutEntryPublisher.send(.discord)
+                        viewModel.entryPublisher.send(.discord)
                     }, label: {
                         Image(Asset.Logo.discordCircle.name, bundle: TwidereAsset.bundle)
                             .renderingMode(.template)
@@ -97,15 +74,14 @@ struct AboutView: View {
                 }   // end logo stack
                 HStack(spacing: 20) {
                     Button(action: {
-                        context.viewStateStore.aboutView.aboutEntryPublisher.send(.license)
+                        viewModel.entryPublisher.send(.license)
                     }, label: {
-                        Text(AboutEntryType.license.text)
+                        Text(AboutViewModel.Entry.license.text)
                     })
-                    
                     Button(action: {
-                        context.viewStateStore.aboutView.aboutEntryPublisher.send(.privacyPolicy)
+                        viewModel.entryPublisher.send(.privacyPolicy)
                     }, label: {
-                        Text(AboutEntryType.privacyPolicy.text)
+                        Text(AboutViewModel.Entry.privacyPolicy.text)
                     })
                     Spacer()
                 }   // end Button stack
@@ -140,16 +116,16 @@ struct AboutView: View {
 struct AboutView_Previews: PreviewProvider {
     static var previews: some View {
         Group {
-            AboutView()
-            AboutView()
+            AboutView(viewModel: AboutViewModel())
+            AboutView(viewModel: AboutViewModel())
                 .preferredColorScheme(.dark)
-            AboutView()
+            AboutView(viewModel: AboutViewModel())
                 .previewDevice("iPhone SE")
-            AboutView()
+            AboutView(viewModel: AboutViewModel())
                 .previewDevice("iPhone 13 mini")
-            AboutView()
+            AboutView(viewModel: AboutViewModel())
                 .previewDevice("iPhone 8")
-            AboutView()
+            AboutView(viewModel: AboutViewModel())
                 .previewDevice("iPad mini (6th generation)")
         }
     }

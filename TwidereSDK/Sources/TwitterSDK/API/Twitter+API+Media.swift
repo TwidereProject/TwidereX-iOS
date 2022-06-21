@@ -9,9 +9,7 @@ import Foundation
 import Combine
 
 extension Twitter.API.Media {
-    
     static let uploadEndpointURL = Twitter.API.uploadEndpointURL.appendingPathComponent("media/upload.json")
-    
 }
 
 extension Twitter.API.Media {

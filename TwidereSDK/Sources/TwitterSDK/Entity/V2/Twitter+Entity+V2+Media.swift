@@ -8,8 +8,10 @@
 import Foundation
 
 extension Twitter.Entity.V2 {
-    public struct Media: Codable {
+    public struct Media: Codable, Identifiable {
         public typealias ID = String
+        
+        public var id: ID { mediaKey }
 
         public let mediaKey: ID
         public let type: String
@@ -20,6 +22,7 @@ extension Twitter.Entity.V2 {
         public let url: String?
         public let previewImageURL: String?
         public let publicMetrics: PublicMetrics?
+        public let altText: String?
         
         enum CodingKeys: String, CodingKey {
             case mediaKey = "media_key"
@@ -31,6 +34,7 @@ extension Twitter.Entity.V2 {
             case url
             case previewImageURL = "preview_image_url"
             case publicMetrics = "public_metrics"
+            case altText = "alt_text"
         }
     }
 }

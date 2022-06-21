@@ -9,6 +9,7 @@
 import UIKit
 import SwiftUI
 import Combine
+import TwidereCore
 
 final class SettingListViewController: UIViewController, NeedsDependency {
         
@@ -16,7 +17,7 @@ final class SettingListViewController: UIViewController, NeedsDependency {
     weak var coordinator: SceneCoordinator! { willSet { precondition(!isViewLoaded) } }
 
     var disposeBag = Set<AnyCancellable>()
-    let settingListView = SettingListView()
+    let viewModel = SettingListViewModel()
     
 }
 
@@ -29,7 +30,9 @@ extension SettingListViewController {
         navigationItem.leftBarButtonItem = .closeBarButtonItem(target: self, action: #selector(SettingListViewController.closeBarButtonItemPressed(_:)))
         navigationItem.leftBarButtonItem?.tintColor = .label
         
-        let hostingViewController = UIHostingController(rootView: settingListView.environmentObject(context))
+        let hostingViewController = UIHostingController(
+            rootView: SettingListView(viewModel: viewModel).environmentObject(context)
+        )
         addChild(hostingViewController)
         hostingViewController.view.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(hostingViewController.view)
@@ -40,7 +43,7 @@ extension SettingListViewController {
             hostingViewController.view.bottomAnchor.constraint(equalTo: view.bottomAnchor),
         ])
         
-        context.viewStateStore.settingView.presentSettingListEntryPublisher
+        viewModel.settingListEntryPublisher
             .receive(on: DispatchQueue.main)
             .sink { [weak self] entry in
                 guard let self = self else { return }                
