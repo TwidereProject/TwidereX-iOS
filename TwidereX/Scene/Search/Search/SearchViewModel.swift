@@ -59,7 +59,7 @@ final class SearchViewModel {
             guard let self = self else { return }
             guard let authenticationContext = self.context.authenticationService.activeAuthenticationContext else { return }
             
-            Task {
+            Task { @MainActor in 
                 do {
                     try await self.trendViewModel.trendService.fetchTrend(
                         index: trendGroupIndex,
