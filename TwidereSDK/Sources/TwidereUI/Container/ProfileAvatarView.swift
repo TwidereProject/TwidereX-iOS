@@ -8,11 +8,13 @@
 
 import UIKit
 import Combine
+import TwidereCore
 
 public final class ProfileAvatarView: UIView {
     
     var disposeBag = Set<AnyCancellable>()
-    
+    var observations = Set<NSKeyValueObservation>()
+
     public let avatarContainerView = UIView()
     
     public let avatarButton: AvatarButton = {
@@ -31,7 +33,7 @@ public final class ProfileAvatarView: UIView {
         
     private(set) var dimension: Dimension?
     
-    @Published public var avatarStyle: CornerStyle = .circle
+    @Published public var avatarStyle = UserDefaults.shared.avatarStyle
     @Published public var badge: Badge = .none
     let layoutDidChange = PassthroughSubject<Void, Never>()
     
@@ -70,6 +72,13 @@ extension ProfileAvatarView {
             self.updateBadge()
         }
         .store(in: &disposeBag)
+        
+        UserDefaults.shared
+            .observe(\.avatarStyle, options: [.initial, .new]) { [weak self] defaults, _ in
+                guard let self = self else { return }
+                self.avatarStyle = defaults.avatarStyle
+            }
+            .store(in: &observations)
         
         setNeedsUpdateConstraints()
     }
@@ -177,14 +186,15 @@ extension ProfileAvatarView.Dimension {
         }
         
         view.avatarButton.translatesAutoresizingMaskIntoConstraints = false
+        view.avatarContainerView.layoutMargins = UIEdgeInsets(4)
         view.avatarContainerView.addSubview(view.avatarButton)
         view.avatarButtonWidthLayoutConstraint = view.avatarButton.widthAnchor.constraint(equalToConstant: dimension.primitiveAvatarButtonSize.width).priority(.required - 1)
         view.avatarButtonHeightLayoutConstraint = view.avatarButton.heightAnchor.constraint(equalToConstant: dimension.primitiveAvatarButtonSize.height).priority(.required - 1)
         NSLayoutConstraint.activate([
-            view.avatarButton.topAnchor.constraint(equalTo: view.avatarContainerView.topAnchor),
-            view.avatarButton.leadingAnchor.constraint(equalTo: view.avatarContainerView.leadingAnchor),
-            view.avatarContainerView.trailingAnchor.constraint(equalTo: view.avatarButton.trailingAnchor),
-            view.avatarContainerView.bottomAnchor.constraint(equalTo: view.avatarButton.bottomAnchor),
+            view.avatarButton.topAnchor.constraint(equalTo: view.avatarContainerView.layoutMarginsGuide.topAnchor),
+            view.avatarButton.leadingAnchor.constraint(equalTo: view.avatarContainerView.layoutMarginsGuide.leadingAnchor),
+            view.avatarContainerView.layoutMarginsGuide.trailingAnchor.constraint(equalTo: view.avatarButton.trailingAnchor),
+            view.avatarContainerView.layoutMarginsGuide.bottomAnchor.constraint(equalTo: view.avatarButton.bottomAnchor),
             view.avatarButtonWidthLayoutConstraint,
             view.avatarButtonHeightLayoutConstraint,
         ])
@@ -273,19 +283,18 @@ extension ProfileAvatarView {
             badgeImageView.image = Asset.Badge.robot.image
         }
         
-        let cornerRadiusRatio: CGFloat = 4
         
         // mask outline
         let outlineMaskLayer = CAShapeLayer()
         outlineMaskLayer.fillRule = .evenOdd
         outlineMaskLayer.path = {
-            let containerFrame = bounds
             let path: UIBezierPath
             switch avatarStyle {
             case .circle:
-                path = UIBezierPath(ovalIn: containerFrame)
-            case .roundedRect:
-                path = UIBezierPath(roundedRect: containerFrame, cornerRadius: containerFrame.width / cornerRadiusRatio)
+                path = UIBezierPath(ovalIn: avatarContainerView.bounds)
+            case .roundedSquare:
+                let cornerRadiusRatio: CGFloat = 4
+                path = UIBezierPath(roundedRect: avatarContainerView.bounds, cornerRadius: avatarContainerView.bounds.width / cornerRadiusRatio)
             }
             return path.cgPath
         }()
@@ -295,8 +304,8 @@ extension ProfileAvatarView {
             switch avatarStyle {
             case .circle:
                 return .init(corner: .circle)
-            case .roundedRect:
-                return .init(corner: .fixed(radius: cornerRadiusRatio))
+            case .roundedSquare:
+                return .init(corner: .scale())
             }
         }()
         
