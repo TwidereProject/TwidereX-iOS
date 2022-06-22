@@ -104,22 +104,7 @@ extension UserView.ViewModel {
         }
         .store(in: &disposeBag)
         // badge
-        UserDefaults.shared
-            .observe(\.avatarStyle, options: [.initial, .new]) { defaults, _ in
-                let avatarStyle = defaults.avatarStyle
-                let animator = UIViewPropertyAnimator(duration: 0.3, timingParameters: UISpringTimingParameters())
-                animator.addAnimations { [weak userView] in
-                    guard let userView = userView else { return }
-                    switch avatarStyle {
-                    case .circle:
-                        userView.authorProfileAvatarView.avatarStyle = .circle
-                    case .roundedSquare:
-                        userView.authorProfileAvatarView.avatarStyle = .roundedRect
-                    }
-                }
-                animator.startAnimation()
-            }
-            .store(in: &observations)
+        // TODO:
         // header
         $header
             .sink { header in
