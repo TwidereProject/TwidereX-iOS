@@ -12,7 +12,7 @@ import Combine
 import TwidereCore
 import TwitterSDK
 
-final class TrendViewModel {
+final class TrendViewModel: ObservableObject {
     
     let logger = Logger(subsystem: "TrendViewModel", category: "ViewModel")
     
@@ -22,6 +22,7 @@ final class TrendViewModel {
     let context: AppContext
     let trendService: TrendService
     @Published var trendGroupIndex: TrendService.TrendGroupIndex = .none
+    @Published var searchText = ""
 
     // output
     var diffableDataSource: UITableViewDiffableDataSource<SearchSection, SearchItem>?
@@ -29,6 +30,8 @@ final class TrendViewModel {
     @Published var twitterTrendPlaces: [Twitter.Entity.Trend.Place] = []
     @Published var trendPlaceName: String?
 
+    let activeTwitterTrendPlacePublisher = PassthroughSubject<Twitter.Entity.Trend.Place, Never>()
+    
     init(context: AppContext) {
         self.context = context
         self.trendService = TrendService(apiService: context.apiService)
@@ -63,7 +66,7 @@ final class TrendViewModel {
             case .twitter(let placeID):
                 let _place = twitterTrendPlaces
                     .first(where: { $0.woeid == placeID })
-                let name = _place?.name ?? TrendViewModel.defaultTwitterTrendPlace?.name ?? L10n.Scene.Trends.worldWide
+                let name = _place?.name ?? TrendViewModel.defaultTwitterTrendPlace?.name ?? L10n.Scene.Trends.worldWideWithoutPrefix
                 return name
             case .mastodon:
                 return nil

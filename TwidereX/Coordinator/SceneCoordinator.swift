@@ -82,6 +82,7 @@ extension SceneCoordinator {
         // Search
         case savedSearch(viewModel: SavedSearchViewModel)
         case trend(viewModel: TrendViewModel)
+        case trendPlace(viewModel: TrendViewModel)
         case searchResult(viewModel: SearchResultViewModel)
         
         // Settings
@@ -316,6 +317,10 @@ private extension SceneCoordinator {
             viewController = _viewController
         case .trend(let viewModel):
             let _viewController = TrendViewController()
+            _viewController.viewModel = viewModel
+            viewController = _viewController
+        case .trendPlace(let viewModel):
+            let _viewController = TrendPlaceViewController()
             _viewController.viewModel = viewModel
             viewController = _viewController
         case .searchResult(let viewModel):

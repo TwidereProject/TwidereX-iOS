@@ -8,7 +8,11 @@
 import Foundation
 
 extension Twitter.Entity.Trend {
-    public struct Place: Codable {
+    public struct Place: Codable, Identifiable {
+        public var id: Int {
+            return woeid
+        }
+        
         public let name: String
         public let woeid: Int
         public let parentID: Int
