@@ -94,6 +94,10 @@ extension HomeTimelineViewController {
                     guard let self = self else { return }
                     self.cornerSmoothPreview(action)
                 }),
+                UIAction(title: "Non-AR Demo", attributes: [], state: .off, handler: { [weak self] action in
+                    guard let self = self else { return }
+                    self.showNonARDemo()
+                }),
             ]
         )
     }
@@ -570,6 +574,14 @@ extension HomeTimelineViewController {
         present(cornerSmoothPreviewViewController, animated: true, completion: nil)
     }
 
+    @objc func showNonARDemo() {
+        let nonARDemoViewController = NonARDemoViewController()
+        nonARDemoViewController.context = context
+        nonARDemoViewController.coordinator = coordinator
+        let navigationViewController = UINavigationController(rootViewController: nonARDemoViewController)
+        navigationViewController.presentationController?.delegate = nonARDemoViewController
+        present(navigationViewController, animated: true, completion: nil)
+    }
     
 }
 

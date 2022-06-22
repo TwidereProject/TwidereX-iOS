@@ -105,6 +105,14 @@ extension SceneCoordinator {
 extension SceneCoordinator {
     
     func setup() {
+        #if DEBUG
+        let nonARDemoViewController = NonARDemoViewController()
+        nonARDemoViewController.context = context
+        nonARDemoViewController.coordinator = self
+        sceneDelegate.window?.rootViewController = nonARDemoViewController
+        return
+        #endif
+        
         let rootViewController: UIViewController
         switch UIDevice.current.userInterfaceIdiom {
         case .phone:

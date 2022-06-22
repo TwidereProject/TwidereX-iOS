@@ -181,6 +181,7 @@
 		DB74A16E256E50E300C5F3C9 /* UIColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB74A16D256E50E300C5F3C9 /* UIColor.swift */; };
 		DB761E4E255935380050DC01 /* DrawerSidebarHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB761E4D255935380050DC01 /* DrawerSidebarHeaderView.swift */; };
 		DB761E62255942050050DC01 /* DrawerSidebarEntryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB761E61255942050050DC01 /* DrawerSidebarEntryView.swift */; };
+		DB7685102862EF9100B49EE5 /* NonARDemoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB76850F2862EF9100B49EE5 /* NonARDemoViewController.swift */; };
 		DB76A64B275DF9FA00A50673 /* TwitterStatusThreadReplyViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB76A64A275DF9FA00A50673 /* TwitterStatusThreadReplyViewModel.swift */; };
 		DB76A64D275DFA0600A50673 /* TwitterStatusThreadReplyViewModel+State.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB76A64C275DFA0600A50673 /* TwitterStatusThreadReplyViewModel+State.swift */; };
 		DB76A64F275F1C3200A50673 /* MediaPreviewingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBA5FA132553DB4300D2E98E /* MediaPreviewingViewController.swift */; };
@@ -660,6 +661,7 @@
 		DB761E4D255935380050DC01 /* DrawerSidebarHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawerSidebarHeaderView.swift; sourceTree = "<group>"; };
 		DB761E61255942050050DC01 /* DrawerSidebarEntryView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DrawerSidebarEntryView.swift; sourceTree = "<group>"; };
 		DB761E69255946160050DC01 /* DrawerSidebarViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawerSidebarViewModel.swift; sourceTree = "<group>"; };
+		DB76850F2862EF9100B49EE5 /* NonARDemoViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NonARDemoViewController.swift; sourceTree = "<group>"; };
 		DB76A64A275DF9FA00A50673 /* TwitterStatusThreadReplyViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwitterStatusThreadReplyViewModel.swift; sourceTree = "<group>"; };
 		DB76A64C275DFA0600A50673 /* TwitterStatusThreadReplyViewModel+State.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TwitterStatusThreadReplyViewModel+State.swift"; sourceTree = "<group>"; };
 		DB76A654275F30E800A50673 /* DataSourceFacade+Media.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DataSourceFacade+Media.swift"; sourceTree = "<group>"; };
@@ -1557,6 +1559,14 @@
 			path = View;
 			sourceTree = "<group>";
 		};
+		DB7685112862EF9400B49EE5 /* NonAR */ = {
+			isa = PBXGroup;
+			children = (
+				DB76850F2862EF9100B49EE5 /* NonARDemoViewController.swift */,
+			);
+			path = NonAR;
+			sourceTree = "<group>";
+		};
 		DB76A66B27606F6C00A50673 /* Video */ = {
 			isa = PBXGroup;
 			children = (
@@ -2081,6 +2091,7 @@
 				DBF69E932549601C00E2A915 /* Search */,
 				DBA5F9E42553CFEB00D2E98E /* MediaPreview */,
 				DB2C872E274F4B7D00CE0398 /* Setting */,
+				DB7685112862EF9400B49EE5 /* NonAR */,
 			);
 			path = Scene;
 			sourceTree = "<group>";
@@ -3110,6 +3121,7 @@
 				DB8E4FEC2563D42800459DA2 /* TwitterPinBasedAuthenticationViewModel.swift in Sources */,
 				DB8301F7273CED0400BF5224 /* NotificationTimelineViewController.swift in Sources */,
 				DBAA89922758EF12001C273B /* DrawerSidebarViewModel+Diffable.swift in Sources */,
+				DB7685102862EF9100B49EE5 /* NonARDemoViewController.swift in Sources */,
 				DB5632AD26DCE93900FC893F /* StatusThreadViewModel+Diffable.swift in Sources */,
 				DBF639F7259B1728009E12C8 /* TimelineHeaderCollectionViewCell.swift in Sources */,
 				DBD0B49B2758B5A60015A388 /* DrawerSidebarViewController.swift in Sources */,
