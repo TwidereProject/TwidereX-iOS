@@ -11,6 +11,10 @@ import CoreDataStack
 
 final class HomeTimelineViewModel: ListTimelineViewModel {
     
+    // input
+    var isUpdaingDataSource = false
+    var latestUnreadStatusItem: StatusItem?
+    
     init(context: AppContext) {
         super.init(context: context, kind: .home)
         
