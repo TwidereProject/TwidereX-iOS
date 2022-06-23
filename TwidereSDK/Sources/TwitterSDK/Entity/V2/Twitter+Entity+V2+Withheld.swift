@@ -8,7 +8,7 @@
 import Foundation
 
 extension Twitter.Entity.V2 {
-    public struct Withheld: Codable {
+    public struct Withheld: Codable, Hashable {
         public let copyright: Bool?
         public let countryCodes: [String]?
         

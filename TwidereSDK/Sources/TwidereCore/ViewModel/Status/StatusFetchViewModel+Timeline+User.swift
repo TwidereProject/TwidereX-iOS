@@ -108,6 +108,7 @@ extension StatusFetchViewModel.Timeline.User {
                     return try await api.twitterUserTimeline(
                         userID: fetchContext.userID,
                         query: .init(
+                            sinceID: nil,
                             untilID: nil,
                             paginationToken: fetchContext.paginationToken,
                             maxResults: fetchContext.maxResults ?? 20
@@ -118,6 +119,7 @@ extension StatusFetchViewModel.Timeline.User {
                     return try await api.twitterLikeTimeline(
                         userID: fetchContext.userID,
                         query: .init(
+                            sinceID: nil,
                             untilID: nil,
                             paginationToken: fetchContext.paginationToken,
                             maxResults: fetchContext.maxResults ?? 20

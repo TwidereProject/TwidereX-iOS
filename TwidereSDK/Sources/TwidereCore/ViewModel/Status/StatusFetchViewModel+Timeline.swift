@@ -216,7 +216,7 @@ extension StatusFetchViewModel.Timeline {
             case .twitter(let authenticationContext):
                 return await .home(.twitter(.init(
                     authenticationContext: authenticationContext,
-                    untilID: {
+                    sinceID: {
                         let managedObjectContext = fetchContext.managedObjectContext
                         switch fetchContext.position {
                         case .top(let anchor):
@@ -225,6 +225,15 @@ extension StatusFetchViewModel.Timeline {
                                 guard case let .twitter(record) = anchor else { return nil }
                                 return record.object(in: managedObjectContext)?.id
                             }
+                        case .middle, .bottom:
+                            return nil
+                        }
+                    }(),
+                    untilID: {
+                        let managedObjectContext = fetchContext.managedObjectContext
+                        switch fetchContext.position {
+                        case .top:
+                            return nil
                         case .middle(let anchor), .bottom(let anchor):
                             return await managedObjectContext.perform {
                                 guard case let .twitter(record) = anchor else { return nil }

@@ -105,16 +105,9 @@ extension TimelineViewModel.LoadOldestState {
                 let _anchorRecord: StatusRecord? = await managedObjectContext.perform {
                     switch viewModel.kind {
                     case .home:
-                        guard let feed = viewModel.feedFetchedResultsController.records.value.last else { return nil }
-                        guard let content = feed.object(in: managedObjectContext)?.content else { return nil }
-                        switch content {
-                        case .twitter(let status):
-                            return .twitter(record: .init(objectID: status.objectID))
-                        case .mastodon(let status):
-                            return .mastodon(record: .init(objectID: status.objectID))
-                        default:
-                            return nil
-                        }
+                        guard let record = viewModel.feedFetchedResultsController.records.last else { return nil }
+                        guard let feed = record.object(in: managedObjectContext) else { return nil }
+                        return feed.statusObject?.asRecord
                     case .public, .hashtag, .list, .search, .user:
                         guard let status = viewModel.statusRecordFetchedResultController.records.last else { return nil }
                         return status

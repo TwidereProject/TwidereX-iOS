@@ -135,12 +135,6 @@ extension APIService {
         
         public var lookupDict: [Twitter.Entity.Tweet.ID: Twitter.Entity.Tweet] = [:]
         
-        public mutating func merge(_ lookupResponse: TwitterBatchLookupResponse?) {
-            for (key, value) in lookupResponse?.lookupDict ?? [:] {
-                lookupDict[key] = value
-            }
-        }
-        
         public func update(status: TwitterStatus, me: TwitterUser) {
             guard let lookupStatus = lookupDict[status.id] else { return }
             
@@ -186,14 +180,18 @@ extension APIService {
         }
         
         var lookupDict: [Twitter.Entity.Tweet.ID: Twitter.Entity.Tweet] = [:]
-        for chunk in chunks {
+        let _responses = await chunks.parallelMap { chunk -> Twitter.Response.Content<[Twitter.Entity.Tweet]>? in
             let query = Twitter.API.Lookup.LookupQuery(ids: Array(chunk))
-            let response = try await Twitter.API.Lookup.tweets(
-                session: session,
+            let response = try? await Twitter.API.Lookup.tweets(
+                session: self.session,
                 query: query,
                 authorization: authenticationContext.authorization
             )
-            
+            return response
+        }
+        
+        for _response in _responses {
+            guard let response = _response else { continue }
             for status in response.value {
                 lookupDict[status.idStr] = status
             }

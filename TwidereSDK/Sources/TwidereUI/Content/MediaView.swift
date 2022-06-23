@@ -185,7 +185,7 @@ extension MediaView {
         playerIndicatorLabel.attributedText = NSAttributedString(AttributedString("GIF"))
         
         guard let player = setupGIFPlayer(info: info) else {
-            assertionFailure()
+            // assertionFailure()
             return
         }
         setupPlayerLooper(player: player)

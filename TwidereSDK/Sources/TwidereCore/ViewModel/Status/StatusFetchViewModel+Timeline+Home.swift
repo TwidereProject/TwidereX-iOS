@@ -25,17 +25,20 @@ extension StatusFetchViewModel.Timeline.Home {
     
     public struct TwitterFetchContext: Hashable {
         public let authenticationContext: TwitterAuthenticationContext
+        public let sinceID: Twitter.Entity.V2.Tweet.ID?
         public let untilID: Twitter.Entity.V2.Tweet.ID?
         public let maxResults: Int?
         public let filter: StatusFetchViewModel.Timeline.Filter
         
         public init(
             authenticationContext: TwitterAuthenticationContext,
+            sinceID: Twitter.Entity.V2.Tweet.ID?,
             untilID: Twitter.Entity.V2.Tweet.ID?,
             maxResults: Int?,
             filter: StatusFetchViewModel.Timeline.Filter
         ) {
             self.authenticationContext = authenticationContext
+            self.sinceID = sinceID
             self.untilID = untilID
             self.maxResults = maxResults
             self.filter = filter
@@ -44,6 +47,7 @@ extension StatusFetchViewModel.Timeline.Home {
         func map(untilID: String) -> TwitterFetchContext {
             return TwitterFetchContext(
                 authenticationContext: authenticationContext,
+                sinceID: sinceID,
                 untilID: untilID,
                 maxResults: maxResults,
                 filter: filter
@@ -86,8 +90,9 @@ extension StatusFetchViewModel.Timeline.Home {
     public static func fetch(api: APIService, input: Input) async throws -> StatusFetchViewModel.Timeline.Output {
         switch input {
         case .twitter(let fetchContext):
-            let response = try await api.twitterHomeTimeline(
+            let responses = try await api.twitterHomeTimeline(
                 query: .init(
+                    sinceID: fetchContext.sinceID,
                     untilID: fetchContext.untilID,
                     paginationToken: nil,
                     maxResults: fetchContext.maxResults ?? 100
@@ -95,14 +100,21 @@ extension StatusFetchViewModel.Timeline.Home {
                 authenticationContext: fetchContext.authenticationContext
             )
             let nextInput: Input? = {
-                guard response.value.meta.nextToken != nil,
-                      let oldestID = response.value.meta.oldestID
+                guard let last = responses.last,
+                      last.value.meta.nextToken != nil,
+                      let oldestID = last.value.meta.oldestID
                 else { return nil }
                 let fetchContext = fetchContext.map(untilID: oldestID)
                 return .twitter(fetchContext)
             }()
             return .init(
-                result: .twitterV2(response.value.data ?? []),
+                result: {
+                    let statuses = responses
+                        .map { $0.value.data }
+                        .compactMap{ $0 }
+                        .flatMap { $0 }
+                    return .twitterV2(statuses)
+                }(),
                 backInput: nil,
                 nextInput: nextInput.flatMap { .home($0) }
             )

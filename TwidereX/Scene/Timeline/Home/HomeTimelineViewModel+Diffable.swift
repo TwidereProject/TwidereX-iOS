@@ -40,7 +40,7 @@ extension HomeTimelineViewModel {
         snapshot.appendSections([.main])
         diffableDataSource?.applySnapshotUsingReloadData(snapshot)
         
-        feedFetchedResultsController.records
+        feedFetchedResultsController.$records
             .receive(on: DispatchQueue.main)
             .sink { [weak self] records in
                 guard let self = self else { return }
