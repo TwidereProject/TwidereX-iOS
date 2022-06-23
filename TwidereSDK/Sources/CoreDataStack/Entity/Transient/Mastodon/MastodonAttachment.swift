@@ -56,3 +56,9 @@ extension MastodonAttachment {
         case audio
     }
 }
+
+extension MastodonAttachment {
+    public var downloadURL: String? {
+        return assetURL
+    }
+}

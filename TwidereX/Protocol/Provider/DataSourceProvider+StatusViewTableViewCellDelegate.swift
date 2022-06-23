@@ -370,7 +370,7 @@ extension StatusViewTableViewCellDelegate where Self: DataSourceProvider {
                 do {
                     await impactFeedbackGenerator.impactOccurred()
                     for configuration in mediaViewConfigurations {
-                        guard let url = configuration.assetURL.flatMap({ URL(string: $0) }) else { continue }
+                        guard let url = configuration.downloadURL.flatMap({ URL(string: $0) }) else { continue }
                         try await context.photoLibraryService.save(source: .remote(url: url), resourceType: configuration.resourceType)
                     }
                     await context.photoLibraryService.presentSuccessNotification(title: L10n.Common.Alerts.PhotoSaved.title)

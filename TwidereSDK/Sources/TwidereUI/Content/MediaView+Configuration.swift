@@ -37,6 +37,17 @@ extension MediaView {
             }
         }
         
+        public var downloadURL: String? {
+            switch self {
+            case .image(let info):
+                return info.downloadURL ?? info.assetURL
+            case .gif(let info):
+                return info.assetURL
+            case .video(let info):
+                return info.assetURL
+            }
+        }
+        
         public var resourceType: PHAssetResourceType {
             switch self {
             case .image:
@@ -51,13 +62,16 @@ extension MediaView {
         public struct ImageInfo: Hashable {
             public let aspectRadio: CGSize
             public let assetURL: String?
+            public let downloadURL: String?
             
             public init(
                 aspectRadio: CGSize,
-                assetURL: String?
+                assetURL: String?,
+                downloadURL: String?
             ) {
                 self.aspectRadio = aspectRadio
                 self.assetURL = assetURL
+                self.downloadURL = downloadURL
             }
             
             public func hash(into hasher: inout Hasher) {
@@ -113,7 +127,8 @@ extension MediaView {
             case .photo:
                 let info = MediaView.Configuration.ImageInfo(
                     aspectRadio: attachment.size,
-                    assetURL: attachment.assetURL
+                    assetURL: attachment.assetURL,
+                    downloadURL: attachment.downloadURL
                 )
                 return .image(info: info)
             case .video:
@@ -142,7 +157,8 @@ extension MediaView {
             case .image:
                 let info = MediaView.Configuration.ImageInfo(
                     aspectRadio: attachment.size,
-                    assetURL: attachment.assetURL
+                    assetURL: attachment.assetURL,
+                    downloadURL: attachment.downloadURL
                 )
                 return .image(info: info)
             case .video:

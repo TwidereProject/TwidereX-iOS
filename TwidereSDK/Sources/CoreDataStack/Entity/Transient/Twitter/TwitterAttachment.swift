@@ -47,3 +47,32 @@ extension TwitterAttachment {
         }
     }
 }
+
+extension TwitterAttachment {
+    
+    public enum Size: String {
+        case thumbnail = "thumb"
+        case small
+        case medium
+        case large
+        case original = "orig"
+    }
+    
+    public var downloadURL: String? {
+        switch kind {
+        case .photo:
+            guard let urlString = self.assetURL, var url = URL(string: urlString) else { return assetURL }
+            let format = url.pathExtension
+            url.deletePathExtension()
+            guard var component = URLComponents(url: url, resolvingAgainstBaseURL: false) else { return assetURL }
+            component.queryItems = [
+                URLQueryItem(name: "format", value: format),
+                URLQueryItem(name: "name", value: Size.original.rawValue)
+            ]
+            guard let downloadURL = component.url else { return assetURL }
+            return downloadURL.absoluteString
+        default:
+            return assetURL
+        }
+    }
+}

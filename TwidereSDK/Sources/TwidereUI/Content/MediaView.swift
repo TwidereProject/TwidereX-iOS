@@ -169,7 +169,8 @@ extension MediaView {
         if let contentOverlayView = playerViewController.contentOverlayView {
             let imageInfo = Configuration.ImageInfo(
                 aspectRadio: info.aspectRadio,
-                assetURL: info.previewURL
+                assetURL: info.previewURL,
+                downloadURL: info.previewURL
             )
             configure(image: imageInfo, containerView: contentOverlayView)
             
@@ -206,7 +207,8 @@ extension MediaView {
     private func configure(video info: Configuration.VideoInfo) {
         let imageInfo = Configuration.ImageInfo(
             aspectRadio: info.aspectRadio,
-            assetURL: info.previewURL
+            assetURL: info.previewURL,
+            downloadURL: info.previewURL
         )
         configure(image: imageInfo, containerView: container)
         
