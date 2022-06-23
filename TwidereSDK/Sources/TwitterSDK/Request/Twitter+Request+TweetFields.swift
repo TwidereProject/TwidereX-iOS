@@ -25,6 +25,7 @@ extension Twitter.Request {
         case promotedMetrics = "promoted_metrics"
         case possiblySensitive = "possibly_sensitive"
         case referencedTweets = "referenced_tweets"
+        case replySettings = "reply_settings"
         case source = "source"
         case text = "text"
         case withheld = "withheld"

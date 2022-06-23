@@ -10,7 +10,7 @@ import os.log
 import UIKit
 import TwidereLocalization
 
-final class HomeTimelineViewController: TimelineViewController {
+final class HomeTimelineViewController: ListTimelineViewController {
 
     deinit {
         os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s:", ((#file as NSString).lastPathComponent), #line, #function)

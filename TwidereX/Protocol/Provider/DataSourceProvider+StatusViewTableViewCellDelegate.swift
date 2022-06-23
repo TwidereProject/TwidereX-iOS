@@ -8,7 +8,7 @@
 
 import UIKit
 import AppShared
-import TwidereComposeUI
+import TwidereUI
 import MetaTextArea
 import Meta
 
@@ -365,12 +365,12 @@ extension StatusViewTableViewCellDelegate where Self: DataSourceProvider {
             case .saveMedia:
                 let mediaViewConfigurations = await statusView.viewModel.mediaViewConfigurations
                 let impactFeedbackGenerator = await UIImpactFeedbackGenerator(style: .light)
-                let notificationFeedbackGenerator = UINotificationFeedbackGenerator()
+                let notificationFeedbackGenerator = await UINotificationFeedbackGenerator()
 
                 do {
                     await impactFeedbackGenerator.impactOccurred()
                     for configuration in mediaViewConfigurations {
-                        guard let url = configuration.assetURL.flatMap({ URL(string: $0) }) else { continue }
+                        guard let url = configuration.downloadURL.flatMap({ URL(string: $0) }) else { continue }
                         try await context.photoLibraryService.save(source: .remote(url: url), resourceType: configuration.resourceType)
                     }
                     await context.photoLibraryService.presentSuccessNotification(title: L10n.Common.Alerts.PhotoSaved.title)

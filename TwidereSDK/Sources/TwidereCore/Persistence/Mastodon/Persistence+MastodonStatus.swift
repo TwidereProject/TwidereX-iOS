@@ -186,12 +186,14 @@ extension Persistence.MastodonStatus {
         context: PersistContext
     ) {
         guard context.networkDate > status.updatedAt else { return }
+        
         let property = MastodonStatus.Property(
             entity: context.entity,
             domain: context.domain,
             networkDate: context.networkDate
         )
         status.update(property: property)
+        
         if let poll = status.poll, let entity = context.entity.poll {
             Persistence.MastodonPoll.merge(
                 poll: poll,
@@ -203,6 +205,7 @@ extension Persistence.MastodonStatus {
                 )
             )
         }
+        
         update(status: status, context: context)
     }
     

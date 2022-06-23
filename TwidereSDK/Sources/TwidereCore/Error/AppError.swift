@@ -18,6 +18,7 @@ public enum AppError: Error {
     
     public enum ErrorReason {
         // application internal error
+        case `internal`(reason: String)
         case twitterInternalError(Twitter.API.Error.InternalError)
         case authenticationMissing
         case badRequest
@@ -53,6 +54,8 @@ extension AppError.ErrorReason: LocalizedError {
     
     public var errorDescription: String? {
         switch self {
+        case .internal(let reason):
+            return "Internal"
         case .twitterInternalError(let error):
             return error.errorDescription
         case .authenticationMissing:
@@ -78,6 +81,8 @@ extension AppError.ErrorReason: LocalizedError {
     
     public var failureReason: String? {
         switch self {
+        case .internal(let reason):
+            return reason
         case .twitterInternalError(let error):
             return error.failureReason
         case .authenticationMissing:

@@ -15,9 +15,9 @@ import Floaty
 import Meta
 import MetaTextArea
 import MetaTextKit
-import TwidereComposeUI
 import TabBarPager
 import XLPagerTabStrip
+import TwidereUI
 
 final class ProfileViewController: UIViewController, NeedsDependency, DrawerSidebarTransitionHostViewController {
     
@@ -54,18 +54,33 @@ final class ProfileViewController: UIViewController, NeedsDependency, DrawerSide
     private(set) lazy var profilePagingViewController: ProfilePagingViewController = {
         let profilePagingViewController = ProfilePagingViewController()
         
-        let userTimelineViewModel = UserTimelineViewModel(context: context)
-        viewModel.$userIdentifier
-            .assign(to: &userTimelineViewModel.$userIdentifier)
+        let userTimelineViewModel = UserTimelineViewModel(
+            context: context,
+            timelineContext: .init(
+                timelineKind: .status,
+                userIdentifier: viewModel.$userIdentifier
+            )
+        )
+        userTimelineViewModel.isFloatyButtonDisplay = false
         
-        let userMediaTimelineViewModel = UserMediaTimelineViewModel(context: context)
-        viewModel.$userIdentifier
-            .assign(to: &userMediaTimelineViewModel.$userIdentifier)
+        let userMediaTimelineViewModel = UserMediaTimelineViewModel(
+            context: context,
+            timelineContext: .init(
+                timelineKind: .media,
+                userIdentifier: viewModel.$userIdentifier
+            )
+        )
+        userMediaTimelineViewModel.isFloatyButtonDisplay = false
         
-        let userLikeTimelineViewModel = UserLikeTimelineViewModel(context: context)
-        viewModel.$userIdentifier
-            .assign(to: &userLikeTimelineViewModel.$userIdentifier)
-        
+        let userLikeTimelineViewModel = UserTimelineViewModel(
+            context: context,
+            timelineContext: .init(
+                timelineKind: .like,
+                userIdentifier: viewModel.$userIdentifier
+            )
+        )
+        userLikeTimelineViewModel.isFloatyButtonDisplay = false
+
         profilePagingViewController.viewModel = {
             let profilePagingViewModel = ProfilePagingViewModel(
                 userTimelineViewModel: userTimelineViewModel,
@@ -265,15 +280,13 @@ extension ProfileViewController {
     }
     
     @objc private func refreshControlValueChanged(_ sender: UIRefreshControl) {
-        logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): <#message#>")
+        logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public)")
         
         let currentPage = profilePagingViewController.currentPage
         if let currentPage = currentPage as? UserTimelineViewController {
-            currentPage.viewModel.stateMachine.enter(UserTimelineViewModel.State.Reloading.self)
+            currentPage.reload()
         } else if let currentPage = currentPage as? UserMediaTimelineViewController {
-            currentPage.viewModel.stateMachine.enter(UserMediaTimelineViewModel.State.Reloading.self)
-        } else if let currentPage = currentPage as? UserLikeTimelineViewController {
-            currentPage.viewModel.stateMachine.enter(UserLikeTimelineViewModel.State.Reloading.self)
+            currentPage.reload()
         }
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
@@ -287,7 +300,7 @@ extension ProfileViewController {
         
         let composeViewModel = ComposeViewModel(context: context)
         let composeContentViewModel = ComposeContentViewModel(
-            inputContext: {
+            kind: {
                 if user == viewModel.me {
                     return .post
                 } else {
@@ -450,7 +463,15 @@ extension ProfileViewController: TabBarPagerDataSource {
 // MARK: - IndicatorInfoProvider
 extension UserTimelineViewController: IndicatorInfoProvider {
     func indicatorInfo(for pagerTabStripController: PagerTabStripViewController) -> IndicatorInfo {
-        return IndicatorInfo(image: Asset.TextFormatting.capitalFloatLeft.image.withRenderingMode(.alwaysTemplate))
+        guard case let .user(userTimelineContext) = viewModel.kind else { return IndicatorInfo(title: nil) }
+        switch userTimelineContext.timelineKind {
+        case .status:
+            return IndicatorInfo(image: Asset.TextFormatting.capitalFloatLeft.image.withRenderingMode(.alwaysTemplate))
+        case .media:
+            return IndicatorInfo(image: Asset.ObjectTools.photo.image.withRenderingMode(.alwaysTemplate))
+        case .like:
+            return IndicatorInfo(image: Asset.Health.heartFill.image.withRenderingMode(.alwaysTemplate))
+        }
     }
 }
 
@@ -458,13 +479,6 @@ extension UserTimelineViewController: IndicatorInfoProvider {
 extension UserMediaTimelineViewController: IndicatorInfoProvider {
     func indicatorInfo(for pagerTabStripController: PagerTabStripViewController) -> IndicatorInfo {
         return IndicatorInfo(image: Asset.ObjectTools.photo.image.withRenderingMode(.alwaysTemplate))
-    }
-}
-
-// MARK: - IndicatorInfoProvider
-extension UserLikeTimelineViewController: IndicatorInfoProvider {
-    func indicatorInfo(for pagerTabStripController: PagerTabStripViewController) -> IndicatorInfo {
-        return IndicatorInfo(image: Asset.Health.heartFill.image.withRenderingMode(.alwaysTemplate))
     }
 }
 

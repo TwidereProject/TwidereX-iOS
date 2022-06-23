@@ -22,7 +22,7 @@ extension Persistence.TwitterStatus {
         
         public let dictionary: Twitter.Response.V2.DictContent
         
-        public let user: TwitterUser?
+        public let me: TwitterUser?
         public let statusCache: Persistence.PersistCache<TwitterStatus>?
         public let userCache: Persistence.PersistCache<TwitterUser>?
         public let networkDate: Date
@@ -34,7 +34,7 @@ extension Persistence.TwitterStatus {
             quote: Persistence.TwitterStatus.PersistContextV2.Entity?,
             replyTo: Persistence.TwitterStatus.PersistContextV2.Entity?,
             dictionary: Twitter.Response.V2.DictContent,
-            user: TwitterUser?,
+            me: TwitterUser?,
             statusCache: Persistence.PersistCache<TwitterStatus>?,
             userCache: Persistence.PersistCache<TwitterUser>?,
             networkDate: Date
@@ -44,7 +44,7 @@ extension Persistence.TwitterStatus {
             self.quote = quote
             self.replyTo = replyTo
             self.dictionary = dictionary
-            self.user = user
+            self.me = me
             self.statusCache = statusCache
             self.userCache = userCache
             self.networkDate = networkDate
@@ -78,14 +78,14 @@ extension Persistence.TwitterStatus {
     public static func createOrMerge(
         in managedObjectContext: NSManagedObjectContext,
         context: PersistContextV2
-    ) -> (TwitterStatus, Bool) {
+    ) -> PersistResult {
                 
         // build tree
         // TODO: in reply to
         // let replyTo = context.replyTo.flatMap { entity in … }
         
         let repost = context.repost.flatMap { entity -> TwitterStatus in
-            let (status, _) = createOrMerge(
+            let result = createOrMerge(
                 in: managedObjectContext,
                 context: PersistContextV2(
                     entity: entity,
@@ -93,19 +93,19 @@ extension Persistence.TwitterStatus {
                     quote: context.quote,
                     replyTo: nil,
                     dictionary: context.dictionary,
-                    user: context.user,
+                    me: context.me,
                     statusCache: context.statusCache,
                     userCache: context.userCache,
                     networkDate: context.networkDate
                 )
             )
-            return status
+            return result.status
         }
         
         let quote: TwitterStatus? = {
             guard repost == nil else { return nil }
             return context.quote.flatMap { entity -> TwitterStatus in
-                let (status, _) = createOrMerge(
+                let result = createOrMerge(
                     in: managedObjectContext,
                     context: PersistContextV2(
                         entity: entity,
@@ -113,37 +113,50 @@ extension Persistence.TwitterStatus {
                         quote: nil,
                         replyTo: nil,
                         dictionary: context.dictionary,
-                        user: context.user,
+                        me: context.me,
                         statusCache: context.statusCache,
                         userCache: context.userCache,
                         networkDate: context.networkDate
                     )
                 )
-                return status
+                return result.status
             }
         }()
-
-        if let oldStatus = fetch(in: managedObjectContext, context: context) {
-            merge(twitterStatus: oldStatus, context: context)
-            return (oldStatus, false)
+        
+        if let old = fetch(in: managedObjectContext, context: context) {
+            merge(twitterStatus: old, context: context)
+            return .init(status: old, isNewInsertion: false, isNewInsertionAuthor: false)
         } else {
-            let result = Persistence.TwitterUser.createOrMerge(
+            let poll: TwitterPoll? = {
+                guard let entity = context.dictionary.poll(for: context.entity.status) else { return nil }
+                let result = Persistence.TwitterPoll.createOrMerge(
+                    in: managedObjectContext,
+                    context: .init(
+                        entity: entity,
+                        me: context.me,
+                        networkDate: context.networkDate
+                    )
+                )
+                return result.poll
+            }()
+            let authorResult = Persistence.TwitterUser.createOrMerge(
                 in: managedObjectContext,
                 context: Persistence.TwitterUser.PersistContextV2(
                     entity: context.entity.author,
-                    me: context.user,
+                    me: context.me,
                     cache: context.userCache,
                     networkDate: context.networkDate
                 )
             )
-            let author = result.user
+            let author = authorResult.user
             let relationship = TwitterStatus.Relationship(
+                poll: poll,
                 author: author,
                 repost: repost,
                 quote: quote
             )
             let status = create(in: managedObjectContext, context: context, relationship: relationship)
-            return (status, true)
+            return .init(status: status, isNewInsertion: true, isNewInsertionAuthor: authorResult.isNewInsertion)
         }
     }
     
@@ -179,7 +192,7 @@ extension Persistence.TwitterStatus {
         let property = TwitterStatus.Property(
             status: context.entity.status,
             author: context.entity.author,
-            place: nil,
+            place: context.dictionary.place(for: context.entity.status),
             media: context.dictionary.media(for: context.entity.status) ?? [],
             networkDate: context.networkDate
         )
@@ -201,11 +214,28 @@ extension Persistence.TwitterStatus {
         let property = TwitterStatus.Property(
             status: context.entity.status,
             author: context.entity.author,
-            place: nil,
+            place: context.dictionary.place(for: context.entity.status),
             media: context.dictionary.media(for: context.entity.status) ?? [],
             networkDate: context.networkDate
         )
         status.update(property: property)
+        
+        if let entity = context.dictionary.poll(for: context.entity.status),
+           let managedObjectContext = status.managedObjectContext
+        {
+            // status created from v1 not has a poll
+            // create or merge the poll and attach it to status
+            let result = Persistence.TwitterPoll.createOrMerge(
+                in: managedObjectContext,
+                context: .init(
+                    entity: entity,
+                    me: context.me,
+                    networkDate: context.networkDate
+                )
+            )
+            status.attach(poll: result.poll)
+        }
+        
         update(twitterStatus: status, context: context)
         
         // merge user
@@ -213,7 +243,7 @@ extension Persistence.TwitterStatus {
             twitterUser: status.author,
             context: Persistence.TwitterUser.PersistContextV2(
                 entity: context.entity.author,
-                me: context.user,
+                me: context.me,
                 cache: context.userCache,
                 networkDate: context.networkDate
             )
@@ -224,32 +254,45 @@ extension Persistence.TwitterStatus {
         twitterStatus status: TwitterStatus,
         context: PersistContextV2
     ) {
+        // entities
         status.update(entities: TwitterEntity(entity: context.entity.status.entities))
         
-        // V2 only properties
-        // conversationID
+        // replySettings (v2 only)
+        let _replySettings = context.entity.status.replySettings.flatMap {
+            TwitterReplySettings(value: $0.rawValue)
+        }
+        if let replySettings = _replySettings {
+            status.update(replySettings: replySettings)            
+        }
+        
+        // conversationID (v2 only)
         context.entity.status.conversationID.flatMap { status.update(conversationID: $0) }
-        // replyCount, quoteCount
+        
+        // replyCount, quoteCount (v2 only)
         context.entity.status.publicMetrics.flatMap { metrics in
             status.update(replyCount: Int64(metrics.replyCount))
             status.update(replyCount: Int64(metrics.quoteCount))
         }
         
-        // Not stable fields
-        // media
+        // media (not stable: URL may updated)
         context.dictionary.media(for: context.entity.status)
             .flatMap { media in
                 // https://twittercommunity.com/t/how-to-get-video-from-media-key/152449/6
                 // V2 API missing video asset URL
-                // do not update video & GIFV attachments
+                // do not update video & GIFV attachments except isEmpty
                 let isVideo = media.contains(where: { $0.type == TwitterAttachment.Kind.animatedGIF.rawValue || $0.type == TwitterAttachment.Kind.video.rawValue })
-                let isEmpty = status.attachments.isEmpty
-                guard !isVideo || isEmpty else { return }
+                if isVideo {
+                    let isEmpty = status.attachments.isEmpty
+                    if !isEmpty {
+                        return
+                    }
+                }
                 
                 let attachments = media.compactMap { $0.twitterAttachment }
                 status.update(attachments: attachments)
             }
-        // place
+        
+        // place (not stable: geo may erased)
         context.dictionary.place(for: context.entity.status)
             .flatMap { place in
                 status.update(location: place.twitterLocation)

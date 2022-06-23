@@ -127,6 +127,8 @@
 "Common.Alerts.PhotoSaveFail.Message" = "请重试";
 "Common.Alerts.PhotoSaveFail.Title" = "保存照片失败";
 "Common.Alerts.PhotoSaved.Title" = "照片已保存";
+"Common.Alerts.PostFailInvalidPoll.Message" = "投票中有空白字段。请完成此字段，然后再试一次";
+"Common.Alerts.PostFailInvalidPoll.Title" = "发布失败";
 "Common.Alerts.RateLimitExceeded.Message" = "已超过 Twitter API 用量限制";
 "Common.Alerts.RateLimitExceeded.Title" = "超出用量限制";
 "Common.Alerts.ReportAndBlockUserSuccess.Title" = "%@ 已被举报为垃圾信息用户并被屏蔽";
@@ -156,9 +158,11 @@
 "Common.Controls.Actions.Add" = "添加";
 "Common.Controls.Actions.Browse" = "浏览";
 "Common.Controls.Actions.Cancel" = "取消";
+"Common.Controls.Actions.Clear" = "清除";
 "Common.Controls.Actions.Confirm" = "确认";
 "Common.Controls.Actions.Copy" = "复制";
 "Common.Controls.Actions.Delete" = "删除";
+"Common.Controls.Actions.Done" = "完成";
 "Common.Controls.Actions.Edit" = "编辑";
 "Common.Controls.Actions.Ok" = "好的";
 "Common.Controls.Actions.OpenInSafari" = "在 Safari 中打开";
@@ -220,6 +224,8 @@
 "Common.Controls.Status.Poll.TotalPerson" = "%@ 人";
 "Common.Controls.Status.Poll.TotalVote" = "%@ 票";
 "Common.Controls.Status.Poll.TotalVotes" = "%@ 票";
+"Common.Controls.Status.ReplySettings.PeopleUserFollowsOrMentionedCanReply" = "%@ 关注或提及的用户可以回复";
+"Common.Controls.Status.ReplySettings.PeopleUserMentionedCanReply" = "%@ 提及的用户可以回复";
 "Common.Controls.Status.Thread.Show" = "显示此主题帖";
 "Common.Controls.Status.UserBoosted" = "%@ 转嘟了";
 "Common.Controls.Status.UserRetweeted" = "%@ 转推了";
@@ -265,8 +271,17 @@
 "Scene.Compose.And" = "，";
 "Scene.Compose.CwPlaceholder" = "折叠部分的警告消息";
 "Scene.Compose.LastEnd" = " 和 ";
+"Scene.Compose.Media.Caption.Add" = "添加描述";
+"Scene.Compose.Media.Caption.AddADescriptionForThisImage" = "为图片添加描述";
+"Scene.Compose.Media.Caption.Remove" = "移除描述";
+"Scene.Compose.Media.Caption.Update" = "更新描述";
+"Scene.Compose.Media.Preview" = "预览";
+"Scene.Compose.Media.Remove" = "删除";
 "Scene.Compose.OthersInThisConversation" = "此对话中的其他人：";
 "Scene.Compose.Placeholder" = "发生了什么？";
+"Scene.Compose.ReplySettings.EveryoneCanReply" = "所有人可以回复";
+"Scene.Compose.ReplySettings.OnlyPeopleYouMentionCanReply" = "仅你提及的人可以回复";
+"Scene.Compose.ReplySettings.PeopleYouFollowCanReply" = "你关注的人可以回复";
 "Scene.Compose.ReplyTo" = "回复给 …";
 "Scene.Compose.ReplyingTo" = "回复给";
 "Scene.Compose.SaveDraft.Action" = "保存草稿";

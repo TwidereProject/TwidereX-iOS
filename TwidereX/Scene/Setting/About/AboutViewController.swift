@@ -17,7 +17,7 @@ final class AboutViewController: UIViewController, NeedsDependency {
     weak var coordinator: SceneCoordinator! { willSet { precondition(!isViewLoaded) } }
     
     var disposeBag = Set<AnyCancellable>()
-    let aboutView = AboutView()
+    let viewModel = AboutViewModel()
     
 }
 
@@ -28,7 +28,9 @@ extension AboutViewController {
         
         title = L10n.Scene.Settings.About.title
         
-        let hostingViewController = UIHostingController(rootView: aboutView.environmentObject(context))
+        let hostingViewController = UIHostingController(
+            rootView: AboutView(viewModel: viewModel).environmentObject(context)
+        )
         addChild(hostingViewController)
         hostingViewController.view.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(hostingViewController.view)
@@ -39,7 +41,7 @@ extension AboutViewController {
             hostingViewController.view.bottomAnchor.constraint(equalTo: view.bottomAnchor),
         ])
         
-        context.viewStateStore.aboutView.aboutEntryPublisher
+        viewModel.entryPublisher
             .receive(on: DispatchQueue.main)
             .sink { [weak self] entry in
                 guard let self = self else { return }

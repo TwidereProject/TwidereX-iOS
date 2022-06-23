@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import SwiftUI
 
 public final class HighlightDimmableButton: UIButton {
     
@@ -36,5 +37,13 @@ extension HighlightDimmableButton {
         super.updateConfiguration()
         
         alpha = isHighlighted ? 0.6 : 1
+    }
+}
+
+struct HighlightDimmableButtonStyle: ButtonStyle {
+    func makeBody(configuration: Self.Configuration) -> some View {
+        configuration.label
+            .background(configuration.isPressed ? Color(.systemFill) : .clear)
+            .cornerRadius(5)
     }
 }

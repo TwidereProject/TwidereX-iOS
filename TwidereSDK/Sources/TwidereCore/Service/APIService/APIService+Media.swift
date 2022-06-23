@@ -72,6 +72,22 @@ extension APIService {
     
 }
 
+extension APIService {
+
+    public func twitterMediaMetadataCreate(
+        query: Twitter.API.Media.Metadata.CreateQuery,
+        twitterAuthenticationContext: TwitterAuthenticationContext
+    ) async throws -> Twitter.Response.Content<Twitter.API.Media.Metadata.CreateResponse> {
+        let authorization = twitterAuthenticationContext.authorization
+        return try await Twitter.API.Media.Metadata.create(
+            session: session,
+            query: query,
+            authorization: authorization
+        )
+    }
+    
+}
+
 // MARK: - Mastodon
 
 extension APIService {

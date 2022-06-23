@@ -10,7 +10,6 @@ import UIKit
 import SafariServices
 import CoreDataStack
 import TwidereUI
-import TwidereComposeUI
 
 final public class SceneCoordinator {
     
@@ -62,7 +61,7 @@ extension SceneCoordinator {
         // List
         case compositeList(viewModel: CompositeListViewModel)
         case list(viewModel: ListViewModel)
-        case listStatus(viewModel: ListStatusViewModel)
+        case listStatus(viewModel: ListStatusTimelineViewModel)
         case listUser(viewModel: ListUserViewModel)
         case editList(viewModel: EditListViewModel)
         case addListMember(viewModel: AddListMemberViewModel)
@@ -83,6 +82,7 @@ extension SceneCoordinator {
         // Search
         case savedSearch(viewModel: SavedSearchViewModel)
         case trend(viewModel: TrendViewModel)
+        case trendPlace(viewModel: TrendViewModel)
         case searchResult(viewModel: SearchResultViewModel)
         
         // Settings
@@ -275,7 +275,7 @@ private extension SceneCoordinator {
             _viewController.viewModel = viewModel
             viewController = _viewController
         case .listStatus(let viewModel):
-            let _viewController = ListStatusViewController()
+            let _viewController = ListStatusTimelineViewController()
             _viewController.viewModel = viewModel
             viewController = _viewController
         case .listUser(let viewModel):
@@ -317,6 +317,10 @@ private extension SceneCoordinator {
             viewController = _viewController
         case .trend(let viewModel):
             let _viewController = TrendViewController()
+            _viewController.viewModel = viewModel
+            viewController = _viewController
+        case .trendPlace(let viewModel):
+            let _viewController = TrendPlaceViewController()
             _viewController.viewModel = viewModel
             viewController = _viewController
         case .searchResult(let viewModel):

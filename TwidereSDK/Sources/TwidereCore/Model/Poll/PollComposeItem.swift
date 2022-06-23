@@ -5,7 +5,7 @@
 //  Created by MainasuK on 2021-11-29.
 //
 
-import Foundation
+import UIKit
 import Combine
 import TwidereLocalization
 
@@ -15,64 +15,35 @@ public enum PollComposeItem: Hashable {
     case multipleConfiguration(MultipleConfiguration)
 }
 
-public protocol PollItemOptionDelegate: AnyObject {
-    func option(_ option: PollComposeItem.Option, optionDidChanges option: String)
-}
-
 extension PollComposeItem {
-    public final class Option: Hashable {
-        private let id = UUID()
-        
-        var disposeBag = Set<AnyCancellable>()
-        public weak var delegate: PollItemOptionDelegate?
-        
-        @Published public var option = ""
-        
-        public init() {
-            $option
-                .sink { [weak self] option in
-                    guard let self = self else { return }
-                    self.delegate?.option(self, optionDidChanges: option)
-                }
-                .store(in: &disposeBag)
-        }
-        
-        public static func == (lhs: Option, rhs: Option) -> Bool {
-            return lhs.id == rhs.id
-                && lhs.option == rhs.option
-        }
+    public final class Option: NSObject, Identifiable, ObservableObject {
+        public let id = UUID()
 
-        public func hash(into hasher: inout Hasher) {
-            hasher.combine(id)
+        public weak var textField: UITextField?
+        
+        @Published public var text = ""
+        @Published public var shouldBecomeFirstResponder = false
+        
+        public override init() {
+            super.init()
         }
     }
 }
 
-public protocol PollItemExpireConfigurationDelegate: AnyObject {
-    func expireConfiguration(_ configuration: PollComposeItem.ExpireConfiguration,  expiresOptionDidChanges expiresOption: PollComposeItem.ExpireConfiguration.Option)
-}
-
 extension PollComposeItem {
-    public final class ExpireConfiguration: Hashable, ObservableObject {
-        private let id = UUID()
+    public final class ExpireConfiguration: Identifiable, Hashable, ObservableObject {
+        public let id = UUID()
         
-        var disposeBag = Set<AnyCancellable>()
-        public weak var delegate: PollItemExpireConfigurationDelegate?
-
-        @Published public var option: Option = .oneDay
-        
+        @Published public var countdown = DateComponents(day: 1)    // Twitter
+        @Published public var option: Option = .oneDay              // Mastodon
+    
         public init() {
-            $option
-                .sink { [weak self] expiresOption in
-                    guard let self = self else { return }
-                    self.delegate?.expireConfiguration(self, expiresOptionDidChanges: expiresOption)
-                }
-                .store(in: &disposeBag)
+            // end init
         }
-
+        
         public static func == (lhs: ExpireConfiguration, rhs: ExpireConfiguration) -> Bool {
             return lhs.id == rhs.id
-                && lhs.option == rhs.option
+                && (lhs.option == rhs.option && lhs.countdown == rhs.countdown)
         }
 
         public func hash(into hasher: inout Hasher) {
@@ -112,26 +83,14 @@ extension PollComposeItem {
     }
 }
 
-public protocol PollItemMultipleConfigurationDelegate: AnyObject {
-    func multipleConfiguration(_ configuration: PollComposeItem.MultipleConfiguration, isMultipleDidChanges isMultiple: Bool)
-}
-
 extension PollComposeItem {
     public final class MultipleConfiguration: Hashable, ObservableObject {
         private let id = UUID()
         
-        var disposeBag = Set<AnyCancellable>()
-        public weak var delegate: PollItemMultipleConfigurationDelegate?
-        
         @Published public var isMultiple = false
         
         public init() {
-            $isMultiple
-                .sink { [weak self] isMultiple in
-                    guard let self = self else { return }
-                    self.delegate?.multipleConfiguration(self, isMultipleDidChanges: isMultiple)
-                }
-                .store(in: &disposeBag)
+            // end init
         }
         
         public static func == (lhs: MultipleConfiguration, rhs: MultipleConfiguration) -> Bool {

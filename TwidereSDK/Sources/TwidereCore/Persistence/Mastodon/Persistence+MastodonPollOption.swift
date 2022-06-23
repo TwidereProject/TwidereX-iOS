@@ -79,6 +79,7 @@ extension Persistence.MastodonPollOption {
         option: MastodonPollOption,
         context: PersistContext
     ) {
+        assert(option.index == context.index)
         guard context.networkDate > option.updatedAt else { return }
         let property = MastodonPollOption.Property(
             index: context.index,

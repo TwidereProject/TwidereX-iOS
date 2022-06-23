@@ -22,6 +22,8 @@ public final class MediaView: UIView {
         formatter.allowedUnits = [.minute, .second]
         return formatter
     }()
+    public static let borderColor: UIColor = UIColor.label.withAlphaComponent(0.05)
+    public static let borderWidth: CGFloat = 1
     
     public let container = TouchBlockingView()
     
@@ -33,6 +35,8 @@ public final class MediaView: UIView {
         imageView.layer.masksToBounds = true
         imageView.layer.cornerCurve = .continuous
         imageView.layer.cornerRadius = MediaView.cornerRadius
+        imageView.layer.borderColor = MediaView.borderColor.cgColor
+        imageView.layer.borderWidth = MediaView.borderWidth
         imageView.isUserInteractionEnabled = false
         return imageView
     }()
@@ -42,6 +46,8 @@ public final class MediaView: UIView {
         playerViewController.view.layer.masksToBounds = true
         playerViewController.view.layer.cornerCurve = .continuous
         playerViewController.view.layer.cornerRadius = MediaView.cornerRadius
+        playerViewController.view.layer.borderColor = MediaView.borderColor.cgColor
+        playerViewController.view.layer.borderWidth = MediaView.borderWidth
         playerViewController.view.isUserInteractionEnabled = false
         return playerViewController
     }()
@@ -163,7 +169,8 @@ extension MediaView {
         if let contentOverlayView = playerViewController.contentOverlayView {
             let imageInfo = Configuration.ImageInfo(
                 aspectRadio: info.aspectRadio,
-                assetURL: info.previewURL
+                assetURL: info.previewURL,
+                downloadURL: info.previewURL
             )
             configure(image: imageInfo, containerView: contentOverlayView)
             
@@ -177,7 +184,10 @@ extension MediaView {
         }
         playerIndicatorLabel.attributedText = NSAttributedString(AttributedString("GIF"))
         
-        guard let player = setupGIFPlayer(info: info) else { return }
+        guard let player = setupGIFPlayer(info: info) else {
+            assertionFailure()
+            return
+        }
         setupPlayerLooper(player: player)
         playerViewController.player = player
         playerViewController.showsPlaybackControls = false
@@ -197,7 +207,8 @@ extension MediaView {
     private func configure(video info: Configuration.VideoInfo) {
         let imageInfo = Configuration.ImageInfo(
             aspectRadio: info.aspectRadio,
-            assetURL: info.previewURL
+            assetURL: info.previewURL,
+            downloadURL: info.previewURL
         )
         configure(image: imageInfo, containerView: container)
         

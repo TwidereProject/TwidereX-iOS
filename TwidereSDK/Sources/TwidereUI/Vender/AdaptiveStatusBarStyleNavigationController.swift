@@ -44,7 +44,25 @@ extension AdaptiveStatusBarStyleNavigationController {
 extension AdaptiveStatusBarStyleNavigationController: UIGestureRecognizerDelegate {
     public func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
         let isSystemSwipeToBackEnabled = interactivePopGestureRecognizer?.isEnabled == true
-        let isThereStackedViewControllers = viewControllers.count > 1
-        return isSystemSwipeToBackEnabled && isThereStackedViewControllers
+
+        let count = viewControllers.count
+        let isThereStackedViewControllers = count > 1
+        
+        let isPopToSecondaryRoot: Bool = {
+            let index = count - 2
+            guard index >= 0 else { return false }
+            return viewControllers[index] is SecondaryTabBarRootController
+        }()
+        
+        let isPanPopable = (topViewController as? PanPopableViewController)?.isPanPopable ?? true
+        
+        return isSystemSwipeToBackEnabled
+            && !isPopToSecondaryRoot
+            && isThereStackedViewControllers
+            && isPanPopable
     }
+}
+
+protocol PanPopableViewController: UIViewController {
+    var isPanPopable: Bool { get }
 }

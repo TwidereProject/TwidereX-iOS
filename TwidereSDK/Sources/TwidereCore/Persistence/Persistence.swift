@@ -13,6 +13,8 @@ public enum Persistence { }
 extension Persistence {
     public enum Twitter { }
     public enum TwitterList { }
+    public enum TwitterPoll { }
+    public enum TwitterPollOption { }
     public enum TwitterSavedSearch { }
     public enum TwitterUser { }
     public enum TwitterStatus { }

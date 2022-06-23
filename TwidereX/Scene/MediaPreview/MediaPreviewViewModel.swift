@@ -12,6 +12,7 @@ import CoreData
 import CoreDataStack
 import Pageboy
 import TwidereCore
+import TwidereUI
 
 final class MediaPreviewViewModel: NSObject {
     
@@ -41,6 +42,8 @@ final class MediaPreviewViewModel: NSObject {
             switch item {
             case .statusAttachment(let previewContext):
                 return previewContext.initialIndex
+            case .image:
+                return 0
             }
         }()
         self.transitionItem = transitionItem
@@ -50,6 +53,8 @@ final class MediaPreviewViewModel: NSObject {
             case .statusAttachment(let previewContext):
                 let status = previewContext.status.object(in: context.managedObjectContext)
                 return status
+            case .image:
+                return nil
             }
         }()
         self.viewControllers = {
@@ -92,7 +97,14 @@ final class MediaPreviewViewModel: NSObject {
                         viewControllers.append(UIViewController())
                     }
                 }
-            }
+            case .image(let previewContext):
+                let viewController = MediaPreviewImageViewController()
+                viewController.viewModel = MediaPreviewImageViewModel(
+                    context: context,
+                    item: .local(.init(image: previewContext.image))
+                )
+                viewControllers.append(viewController)
+            }   // end switch
             return viewControllers
         }()
         super.init()
@@ -116,7 +128,7 @@ extension MediaPreviewViewModel {
     
     enum Item {
         case statusAttachment(StatusAttachmentPreviewContext)
-        // case local(LocalImagePreviewMeta)
+        case image(ImagePreviewContext)
     }
 
     struct StatusAttachmentPreviewContext {
@@ -131,9 +143,9 @@ extension MediaPreviewViewModel {
         }
     }
 
-//    struct LocalImagePreviewMeta {
-//        let image: UIImage
-//    }
+    struct ImagePreviewContext {
+        let image: UIImage
+    }
         
 }
 
@@ -156,6 +168,8 @@ extension MediaPreviewViewModel: PageboyViewControllerDataSource {
         switch item {
         case .statusAttachment(let previewContext):
             return .at(index: previewContext.initialIndex)
+        case .image:
+            return .first
         }
     }
     

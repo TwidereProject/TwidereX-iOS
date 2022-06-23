@@ -10,7 +10,7 @@ import os.log
 import UIKit
 import TwidereLocalization
 
-final class FederatedTimelineViewController: TimelineViewController {
+final class FederatedTimelineViewController: ListTimelineViewController {
     
     deinit {
         os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s", ((#file as NSString).lastPathComponent), #line, #function)
@@ -24,7 +24,7 @@ extension FederatedTimelineViewController {
         super.viewDidLoad()
         
         switch viewModel.kind {
-        case .federated(let local):
+        case .public(let local):
             title = local ? L10n.Scene.Local.title : L10n.Scene.Federated.title
 
         default:
@@ -38,8 +38,7 @@ extension FederatedTimelineViewController {
         
         viewModel.setupDiffableDataSource(
             tableView: tableView,
-            statusViewTableViewCellDelegate: self,
-            timelineMiddleLoaderTableViewCellDelegate: self
+            statusViewTableViewCellDelegate: self
         )
     }
     

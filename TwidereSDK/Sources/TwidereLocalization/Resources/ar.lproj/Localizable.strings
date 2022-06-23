@@ -127,6 +127,8 @@
 "Common.Alerts.PhotoSaveFail.Message" = "الرجاء المحاولة مرة أخرى";
 "Common.Alerts.PhotoSaveFail.Title" = "تعذر حفظ الصورة";
 "Common.Alerts.PhotoSaved.Title" = "حُفظت الصورة";
+"Common.Alerts.PostFailInvalidPoll.Message" = "Poll has empty field. Please fulfill the field then try again";
+"Common.Alerts.PostFailInvalidPoll.Title" = "Failed to Publish";
 "Common.Alerts.RateLimitExceeded.Message" = "وصلت إلى حد استخدام واجهة برمجة تطبيقات تويتر";
 "Common.Alerts.RateLimitExceeded.Title" = "اجتزت الحد المسموح به";
 "Common.Alerts.ReportAndBlockUserSuccess.Title" = "أُبلغ عن %@ وحجب بسبب الازعاج";
@@ -156,9 +158,11 @@
 "Common.Controls.Actions.Add" = "أضف";
 "Common.Controls.Actions.Browse" = "تصفح";
 "Common.Controls.Actions.Cancel" = "ألغِ";
+"Common.Controls.Actions.Clear" = "Clear";
 "Common.Controls.Actions.Confirm" = "أكِّد";
 "Common.Controls.Actions.Copy" = "انسخ";
 "Common.Controls.Actions.Delete" = "حذف";
+"Common.Controls.Actions.Done" = "تم";
 "Common.Controls.Actions.Edit" = "عدّل";
 "Common.Controls.Actions.Ok" = "موافق";
 "Common.Controls.Actions.OpenInSafari" = "افتحه في سفاري";
@@ -220,6 +224,8 @@
 "Common.Controls.Status.Poll.TotalPerson" = "%@ شخص";
 "Common.Controls.Status.Poll.TotalVote" = "%@ صوت";
 "Common.Controls.Status.Poll.TotalVotes" = "%@ صوت";
+"Common.Controls.Status.ReplySettings.PeopleUserFollowsOrMentionedCanReply" = "People %@ follows or mentioned can reply.";
+"Common.Controls.Status.ReplySettings.PeopleUserMentionedCanReply" = "People %@ mentioned can reply.";
 "Common.Controls.Status.Thread.Show" = "اظهر هذا النقاش";
 "Common.Controls.Status.UserBoosted" = "رقى %@";
 "Common.Controls.Status.UserRetweeted" = "%@ أعاد التغريد";
@@ -265,8 +271,17 @@
 "Scene.Compose.And" = "، ";
 "Scene.Compose.CwPlaceholder" = "اكتب التحذير";
 "Scene.Compose.LastEnd" = " و ";
+"Scene.Compose.Media.Caption.Add" = "Add Caption";
+"Scene.Compose.Media.Caption.AddADescriptionForThisImage" = "Add a description for this image";
+"Scene.Compose.Media.Caption.Remove" = "Remove Caption";
+"Scene.Compose.Media.Caption.Update" = "Update Caption";
+"Scene.Compose.Media.Preview" = "معاينة";
+"Scene.Compose.Media.Remove" = "أزِل";
 "Scene.Compose.OthersInThisConversation" = "آخرون في هذه المحادثة:";
 "Scene.Compose.Placeholder" = "ماذا يحدث ؟";
+"Scene.Compose.ReplySettings.EveryoneCanReply" = "Everyone can peply";
+"Scene.Compose.ReplySettings.OnlyPeopleYouMentionCanReply" = "Only people you mention can reply";
+"Scene.Compose.ReplySettings.PeopleYouFollowCanReply" = "People you follow can reply";
 "Scene.Compose.ReplyTo" = "رد على …";
 "Scene.Compose.ReplyingTo" = "رد على";
 "Scene.Compose.SaveDraft.Action" = "احفظ المسودة";
