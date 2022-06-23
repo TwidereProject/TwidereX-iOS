@@ -59,7 +59,7 @@ extension UITableViewDelegate where Self: DataSourceProvider & MediaPreviewableV
                 continue
             }
             guard let image = mediaView.thumbnail(),
-                  let assetURLString = mediaView.configuration?.assetURL,
+                  let assetURLString = mediaView.configuration?.downloadURL,
                   let assetURL = URL(string: assetURLString),
                   let resourceType = mediaView.configuration?.resourceType
             else {
