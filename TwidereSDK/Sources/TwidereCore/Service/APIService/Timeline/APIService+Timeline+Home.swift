@@ -29,6 +29,8 @@ extension APIService {
             authorization: authenticationContext.authorization
         )
         
+        var lookupResponse = TwitterBatchLookupResponse()
+        
         let statusIDs: [Twitter.Entity.Tweet.ID] = {
             var ids: [Twitter.Entity.Tweet.ID] = []
             if let statuses = response.value.data {
@@ -43,6 +45,8 @@ extension APIService {
             statusIDs: statusIDs,
             authenticationContext: authenticationContext
         )
+        lookupResponse.merge(_lookupResponse)
+        
         
         #if DEBUG
         // log time cost

@@ -101,7 +101,7 @@ extension TimelineViewModel {
             position: {
                 switch kind {
                 case .home:
-                    return .top(anchor: nil)
+                    return .top(anchor: statusRecordFetchedResultController.records.first)
                 case .public, .hashtag, .list:
                     return .top(anchor: statusRecordFetchedResultController.records.first)
                 case .search:

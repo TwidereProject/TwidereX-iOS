@@ -91,7 +91,16 @@ extension HomeTimelineViewController {
         
         let translationThrottle = -(HomeTimelineViewController.unreadIndicatorViewTopMargin + unreadIndicatorView.frame.height)
         let translationY = min(max(unreadIndicatorView.translationY - offsetY, translationThrottle), 0)
-        unreadIndicatorView.translationY = translationY
+        
+        if lastVelocityYSign < 0 {
+            // down
+            guard offsetY > 0 else { return }
+            unreadIndicatorView.translationY = translationY
+        } else if lastVelocityYSign > 0 {
+            // up
+            guard offsetY < 0 else { return }
+            unreadIndicatorView.translationY = translationY
+        }
     }
     
 }

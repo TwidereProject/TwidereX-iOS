@@ -219,8 +219,12 @@ extension StatusFetchViewModel.Timeline {
                     untilID: {
                         let managedObjectContext = fetchContext.managedObjectContext
                         switch fetchContext.position {
-                        case .top:
-                            return nil
+                        case .top(let anchor):
+                            guard let anchor = anchor else { return nil }
+                            return await managedObjectContext.perform {
+                                guard case let .twitter(record) = anchor else { return nil }
+                                return record.object(in: managedObjectContext)?.id
+                            }
                         case .middle(let anchor), .bottom(let anchor):
                             return await managedObjectContext.perform {
                                 guard case let .twitter(record) = anchor else { return nil }

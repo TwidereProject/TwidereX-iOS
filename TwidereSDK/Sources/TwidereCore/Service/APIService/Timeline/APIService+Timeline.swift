@@ -133,7 +133,13 @@ extension APIService {
     public struct TwitterBatchLookupResponse {
         let logger = Logger(subsystem: "APIService", category: "TwitterBatchLookupResponse")
         
-        public let lookupDict: [Twitter.Entity.Tweet.ID: Twitter.Entity.Tweet]
+        public var lookupDict: [Twitter.Entity.Tweet.ID: Twitter.Entity.Tweet] = [:]
+        
+        public mutating func merge(_ lookupResponse: TwitterBatchLookupResponse?) {
+            for (key, value) in lookupResponse?.lookupDict ?? [:] {
+                lookupDict[key] = value
+            }
+        }
         
         public func update(status: TwitterStatus, me: TwitterUser) {
             guard let lookupStatus = lookupDict[status.id] else { return }

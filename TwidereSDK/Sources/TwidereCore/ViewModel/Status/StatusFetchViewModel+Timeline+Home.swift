@@ -90,7 +90,7 @@ extension StatusFetchViewModel.Timeline.Home {
                 query: .init(
                     untilID: fetchContext.untilID,
                     paginationToken: nil,
-                    maxResults: fetchContext.maxResults ?? 50
+                    maxResults: fetchContext.maxResults ?? 100
                 ),
                 authenticationContext: fetchContext.authenticationContext
             )
