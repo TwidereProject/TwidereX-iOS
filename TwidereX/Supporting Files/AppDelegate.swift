@@ -47,15 +47,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         // configure appearance
         ThemeService.shared.apply(theme: ThemeService.shared.theme.value)
-        
-        // configure alternative app icon
-        UserDefaults.shared.publisher(for: \.alternateIconNamePreference)
-            .receive(on: DispatchQueue.main)
-            .removeDuplicates()
-            .sink { preference in
-                UIApplication.shared.setAlternateIconName(preference == .twidere ? nil : preference.iconName)
-            }
-            .store(in: &disposeBag)
 
         return true
     }
