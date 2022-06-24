@@ -170,16 +170,15 @@ extension APIService {
             }
         }
     }
- 
-    public func twitterBatchLookup(
+    
+    public func twitterBatchLookupResponses(
         statusIDs: [Twitter.Entity.Tweet.ID],
         authenticationContext: TwitterAuthenticationContext
-    ) async throws -> TwitterBatchLookupResponse {
+    ) async -> [Twitter.Response.Content<[Twitter.Entity.Tweet]>] {
         let chunks = stride(from: 0, to: statusIDs.count, by: 100).map {
             statusIDs[$0..<Swift.min(statusIDs.count, $0 + 100)]
         }
         
-        var lookupDict: [Twitter.Entity.Tweet.ID: Twitter.Entity.Tweet] = [:]
         let _responses = await chunks.parallelMap { chunk -> Twitter.Response.Content<[Twitter.Entity.Tweet]>? in
             let query = Twitter.API.Lookup.LookupQuery(ids: Array(chunk))
             let response = try? await Twitter.API.Lookup.tweets(
@@ -190,8 +189,39 @@ extension APIService {
             return response
         }
         
-        for _response in _responses {
-            guard let response = _response else { continue }
+        return _responses.compactMap { $0 }
+    }
+    
+    public func twitterBatchLookupResponses(
+        content: Twitter.API.V2.User.Timeline.HomeContent,
+        authenticationContext: TwitterAuthenticationContext
+    ) async -> [Twitter.Response.Content<[Twitter.Entity.Tweet]>] {
+        let statusIDs: [Twitter.Entity.Tweet.ID] = {
+            var ids: [Twitter.Entity.Tweet.ID] = []
+            ids.append(contentsOf: content.data?.map { $0.id } ?? [])
+            ids.append(contentsOf: content.includes?.tweets?.map { $0.id } ?? [])
+            return ids
+        }()
+        
+        let responses = await twitterBatchLookupResponses(
+            statusIDs: statusIDs,
+            authenticationContext: authenticationContext
+        )
+        
+        return responses
+    }
+    
+    public func twitterBatchLookup(
+        statusIDs: [Twitter.Entity.Tweet.ID],
+        authenticationContext: TwitterAuthenticationContext
+    ) async throws -> TwitterBatchLookupResponse {
+        let responses = await twitterBatchLookupResponses(
+            statusIDs: statusIDs,
+            authenticationContext: authenticationContext
+        )
+        
+        var lookupDict: [Twitter.Entity.Tweet.ID: Twitter.Entity.Tweet] = [:]
+        for response in responses {
             for status in response.value {
                 lookupDict[status.idStr] = status
             }
@@ -201,3 +231,4 @@ extension APIService {
     }
     
 }
+

@@ -14,114 +14,210 @@ import TwitterSDK
 import MastodonSDK
 import func QuartzCore.CACurrentMediaTime
 
+//class TwitterBatchLookupTask {
+//
+//    // input
+//    let session: URLSession
+//    let statusIDs: [Twitter.Entity.V2.Tweet.ID]
+//
+//    // output
+//    let
+//    init(
+//        session: URLSession,
+//        content: Twitter.API.V2.User.Timeline.HomeContent
+//    ) {
+//        var statusIDs: [Twitter.Entity.Tweet.ID] = []
+//        statusIDs += (content.data ?? []).map { $0.id }
+//        statusIDs += (content.includes?.tweets ?? []).map { $0.id }
+//
+//        self.session = session
+//        self.statusIDs = statusIDs
+//    }
+//
+//    func start() {
+//        let chunks = stride(from: 0, to: statusIDs.count, by: 100).map {
+//            statusIDs[$0..<Swift.min(statusIDs.count, $0 + 100)]
+//        }
+//
+//        let _responses = await chunks.parallelMap { chunk -> Twitter.Response.Content<[Twitter.Entity.Tweet]>? in
+//            let query = Twitter.API.Lookup.LookupQuery(ids: Array(chunk))
+//            let response = try? await Twitter.API.Lookup.tweets(
+//                session: self.session,
+//                query: query,
+//                authorization: authenticationContext.authorization
+//            )
+//            return response
+//        }
+//
+//        let statuses = _responses
+//            .compactMap { $0 }
+//            .map { $0.value }
+//            .flatMap { $0 }
+//
+//        return statuses
+//    }
+//
+//
+//}
+
 extension APIService {
     
     static let homeTimelineRequestWindowInSec: TimeInterval = 15 * 60
+    
+    enum TwitterHomeTimelineTaskResult {
+        case content(Twitter.Response.Content<Twitter.API.V2.User.Timeline.HomeContent>)
+        case lookup([Twitter.Response.Content<[Twitter.Entity.Tweet]>])
+        case persist([ManagedObjectRecord<TwitterStatus>])
+    }
     
     public func twitterHomeTimeline(
         query: Twitter.API.V2.User.Timeline.HomeQuery,
         authenticationContext: TwitterAuthenticationContext
     ) async throws -> [Twitter.Response.Content<Twitter.API.V2.User.Timeline.HomeContent>] {
-        let _response = try await Twitter.API.V2.User.Timeline.home(
-            session: session,
-            userID: authenticationContext.userID,
-            query: query,
-            authorization: authenticationContext.authorization
-        )
-        
-        #if DEBUG
-        // log rate limit
-        _response.logRateLimit()
-        #endif
-        
-        var responses: [Twitter.Response.Content<Twitter.API.V2.User.Timeline.HomeContent>] = []
-        responses.append(_response)
-        
-        if query.sinceID != nil {
-            var response = _response
-            while let previousToken = response.value.meta.nextToken {
-                let nextResponse = try await Twitter.API.V2.User.Timeline.home(
-                    session: session,
-                    userID: authenticationContext.userID,
-                    query: .init(
-                        sinceID: nil,
-                        untilID: nil,
-                        paginationToken: previousToken,
-                        maxResults: query.maxResults
-                    ),
-                    authorization: authenticationContext.authorization
-                )
-                #if DEBUG
-                // log rate limit
-                response.logRateLimit()
-                #endif
-                responses.append(nextResponse)
-                response = nextResponse
-            }   // end while
-        }
-                
-        let statusIDs: [Twitter.Entity.Tweet.ID] = {
-            var ids: [Twitter.Entity.Tweet.ID] = []
-            for response in responses {
-                if let statuses = response.value.data {
-                    ids.append(contentsOf: statuses.map { $0.id })
-                }
-                if let statuses = response.value.includes?.tweets {
-                    ids.append(contentsOf: statuses.map { $0.id })
-                }
-            }
-            return Array(Set(ids))
-        }()
-        let _lookupResponse = try? await twitterBatchLookup(
-            statusIDs: statusIDs,
-            authenticationContext: authenticationContext
-        )
-        
         #if DEBUG
         // log time cost
         let start = CACurrentMediaTime()
         defer {
             let end = CACurrentMediaTime()
-            os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: persist cost %.2fs", ((#file as NSString).lastPathComponent), #line, #function, end - start)
+            os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: fetch home timeline cost %.2fs", ((#file as NSString).lastPathComponent), #line, #function, end - start)
         }
         #endif
-        
+
         let managedObjectContext = backgroundManagedObjectContext
-        try await managedObjectContext.performChanges {
-            let dictionary: Twitter.Response.V2.DictContent = {
-                let dictionary = Twitter.Response.V2.DictContent(
-                    tweets: {
-                        [
-                            responses.map { $0.value.data }.compactMap { $0 }.flatMap { $0 },
-                            responses.map { $0.value.includes?.tweets }.compactMap { $0 }.flatMap { $0 },
-                        ]
-                        .flatMap { $0 }
-                    }(),
-                    users: responses.map { $0.value.includes?.users }.compactMap { $0 }.flatMap { $0 },
-                    media: responses.map { $0.value.includes?.media }.compactMap { $0 }.flatMap { $0 },
-                    places: responses.map { $0.value.includes?.places }.compactMap { $0 }.flatMap { $0 },
-                    polls: responses.map { $0.value.includes?.polls }.compactMap { $0 }.flatMap { $0 }
+        
+        // note: the coordinator not handle history merge for directly derived context
+        // let managedObjectContext = NSManagedObjectContext(concurrencyType: .privateQueueConcurrencyType)
+        // managedObjectContext.parent = self.backgroundManagedObjectContext
+        // managedObjectContext.automaticallyMergesChangesFromParent = true
+        
+        let taskResults = try await withThrowingTaskGroup(of: TwitterHomeTimelineTaskResult.self) { group -> [TwitterHomeTimelineTaskResult] in
+            group.addTask {
+                let response = try await Twitter.API.V2.User.Timeline.home(
+                    session: self.session,
+                    userID: authenticationContext.userID,
+                    query: query,
+                    authorization: authenticationContext.authorization
                 )
-                
-                return dictionary
-            }()
-            let me = authenticationContext.authenticationRecord.object(in: managedObjectContext)?.user
-            
-            // persist [TwitterStatus]
-            let statusArray = Persistence.Twitter.persist(
-                in: managedObjectContext,
-                context: Persistence.Twitter.PersistContextV2(
-                    dictionary: dictionary,
-                    me: me,
-                    networkDate: _response.networkDate
-                )
-            )
-            
-            // amend the v2 missing properties
-            if let lookupResponse = _lookupResponse, let me = me {
-                lookupResponse.update(statuses: statusArray, me: me)
+                #if DEBUG
+                response.logRateLimit(category: "HomeContent")
+                #endif
+                return TwitterHomeTimelineTaskResult.content(response)
             }
             
+
+            var results: [TwitterHomeTimelineTaskResult] = []
+            while let next = try await group.next() {
+                results.append(next)
+
+                switch next {
+                case .content(let response):
+                    // persist response
+                    group.addTask {
+                        self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): persist home")
+                        #if DEBUG
+                        // log time cost
+                        let start = CACurrentMediaTime()
+                        defer {
+                            let end = CACurrentMediaTime()
+                            os_log(.info, log: .debug, "%{public}s[%{public}ld], %{public}s: persist cost %.2fs", ((#file as NSString).lastPathComponent), #line, #function, end - start)
+                        }
+                        #endif
+                        let records: [ManagedObjectRecord<TwitterStatus>] = await managedObjectContext.perform(schedule: .enqueued) {
+                            let content = response.value
+                            let dictionary = Twitter.Response.V2.DictContent(
+                                tweets: [content.data, content.includes?.tweets].compactMap { $0 }.flatMap { $0 },
+                                users: content.includes?.users ?? [],
+                                media: content.includes?.media ?? [],
+                                places: content.includes?.places ?? [],
+                                polls: content.includes?.polls ?? []
+                            )
+                            let me = authenticationContext.authenticationRecord.object(in: managedObjectContext)?.user
+                            let statusArray = Persistence.Twitter.persist(
+                                in: managedObjectContext,
+                                context: Persistence.Twitter.PersistContextV2(
+                                    dictionary: dictionary,
+                                    me: me,
+                                    networkDate: response.networkDate
+                                )
+                            )
+                            return statusArray.map { ManagedObjectRecord<TwitterStatus>(objectID: $0.objectID) }
+                        }
+                        return TwitterHomeTimelineTaskResult.persist(records)
+                    }
+                    // fetch next page
+                    if let sinceID = query.sinceID, let nextToken = response.value.meta.nextToken {
+                        group.addTask {
+                            self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): fetch home: \(nextToken)")
+                            let response = try await Twitter.API.V2.User.Timeline.home(
+                                session: self.session,
+                                userID: authenticationContext.userID,
+                                query: .init(
+                                    sinceID: sinceID,
+                                    untilID: nil,
+                                    paginationToken: nextToken,
+                                    maxResults: query.maxResults
+                                ),
+                                authorization: authenticationContext.authorization
+                            )
+                            #if DEBUG
+                            response.logRateLimit(category: "HomeContent")
+                            #endif
+                            return TwitterHomeTimelineTaskResult.content(response)
+                        }
+                    }
+                    // fetch lookup
+                    group.addTask {
+                        self.logger.log(level: .debug, "\((#file as NSString).lastPathComponent, privacy: .public)[\(#line, privacy: .public)], \(#function, privacy: .public): fetch lookup")
+                        let responses = await self.twitterBatchLookupResponses(
+                            content: response.value,
+                            authenticationContext: authenticationContext
+                        )
+                        #if DEBUG
+                        response.logRateLimit(category: "HomeLookup")
+                        #endif
+                        return TwitterHomeTimelineTaskResult.lookup(responses)
+                    }
+                case .lookup:
+                    break
+                case .persist:
+                    break
+                }
+            }
+            return results
+        }
+        
+        var contentResults: [Twitter.Response.Content<Twitter.API.V2.User.Timeline.HomeContent>] = []
+        var lookupResults: [Twitter.Response.Content<[Twitter.Entity.Tweet]>] = []
+        var statusRecords: [ManagedObjectRecord<TwitterStatus>] = []
+        
+        for taskResult in taskResults {
+            switch taskResult {
+            case .content(let response):
+                contentResults.append(response)
+            case .lookup(let responses):
+                lookupResults.append(contentsOf: responses)
+            case .persist(let records):
+                statusRecords.append(contentsOf: records)
+            }
+        }
+        
+        try await managedObjectContext.performChanges {
+            let me = authenticationContext.authenticationRecord.object(in: managedObjectContext)?.user
+
+            let statusArray = statusRecords.compactMap { $0.object(in: managedObjectContext) }
+            assert(statusArray.count == statusRecords.count)
+            
+            // amend the v2 missing properties
+            if let me = me {
+                var batchLookupResponse = TwitterBatchLookupResponse()
+                for lookupResult in lookupResults {
+                    for status in lookupResult.value {
+                        batchLookupResponse.lookupDict[status.idStr] = status
+                    }
+                }
+                batchLookupResponse.update(statuses: statusArray, me: me)
+            }
+
              // locate anchor status
              let anchorStatus: TwitterStatus? = {
                  guard let untilID = query.untilID else { return nil }
@@ -130,16 +226,21 @@ extension APIService {
                  request.fetchLimit = 1
                  return try? managedObjectContext.fetch(request).first
              }()
-            
+
             // update hasMore flag for anchor status
             let acct = Feed.Acct.twitter(userID: authenticationContext.userID)
             if let anchorStatus = anchorStatus,
                let feed = anchorStatus.feed(kind: .home, acct: acct) {
                 feed.update(hasMore: false)
             }
-        
+
             // persist Feed relationship
-            let feedStatusIDs = responses.map { $0.value.data }.compactMap { $0 }.flatMap { $0 }.map { $0.id }
+            let networkDate = contentResults.first?.networkDate ?? Date()
+            let feedStatusIDs = contentResults
+                .map { $0.value.data }
+                .compactMap { $0 }
+                .flatMap { $0 }
+                .map { $0.id }
             let sortedStatuses = statusArray
                 .filter { feedStatusIDs.contains($0.id) }
                 .sorted(by: { $0.createdAt < $1.createdAt })
@@ -148,29 +249,28 @@ extension APIService {
             for status in sortedStatuses {
                 let _feed = status.feed(kind: .home, acct: acct)
                 if let feed = _feed {
-                    feed.update(updatedAt: _response.networkDate)
+                    feed.update(updatedAt: networkDate)
                 } else {
                     let feedProperty = Feed.Property(
                         acct: acct,
                         kind: .home,
                         hasMore: false,
                         createdAt: status.createdAt,
-                        updatedAt: _response.networkDate
+                        updatedAt: networkDate
                     )
                     let feed = Feed.insert(into: managedObjectContext, property: feedProperty)
                     status.attach(feed: feed)
-                    
-                    
+
                     if status === oldestStatus, // set hasMore on oldest status if is new feed
-                        query.sinceID == nil    // break if loading mode
+                       query.sinceID == nil     // and break if is batch load mode
                     {
                         feed.update(hasMore: true)
                     }
                 }
             }
         }   // end managedObjectContext.performChanges
-        
-        return responses
+
+        return contentResults
     }
 
     public func twitterHomeTimelineV1(
